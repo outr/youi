@@ -1,0 +1,61 @@
+package com.outr.webframework.js
+
+import collection.mutable.ListBuffer
+import com.outr.webframework.{PreFormatted, WebContent}
+import xml.Text
+
+
+class JavaScriptContext extends Instruction with WebContent with PreFormatted {
+  protected var depth: Int = _
+  private val instructions = ListBuffer.empty[Instruction]
+
+  protected[js] def add(i: Instruction) = {
+    instructions += i
+  }
+
+  def toJS = {
+    val b = new StringBuilder
+    instructions.map(i => i.output).foreach {
+      case Some(output) => b.append("%s%s".format(tabs, output))
+      case None => // Nothing to output
+    }
+    b.toString()
+  }
+
+  override def preFormatted = Some(toJS)
+
+  def tabs = (0 until depth).map(i => '\t').mkString
+
+  def xml = new Text(uuid.toString)
+}
+
+object JavaScriptContext {
+  private val stack = new ThreadLocal[List[JavaScriptContext]] {
+    override def initialValue() = List.empty[JavaScriptContext]
+  }
+
+  def depth = stack.get().size
+
+  def add(context: JavaScriptContext) = {
+    context.depth = depth
+    val list = stack.get()
+    stack.set(context :: list)
+  }
+
+  def inContext = stack.get().nonEmpty
+
+  def apply() = stack.get().headOption.getOrElse(null)
+
+  def remove(context: JavaScriptContext) = {
+    val list = stack.get()
+    stack.set(list.filterNot(c => c == context))
+  }
+
+  def contextualize(f: => Any) = {
+    val context = new JavaScriptContext()
+    add(context)
+    f
+    remove(context)
+    context
+  }
+}

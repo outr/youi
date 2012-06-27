@@ -1,7 +1,7 @@
-package com.outr
+package org
 
-import webframework.tags.Text
+import hyperscala.tags.Text
 
-package object webframework {
+package object hyperscala {
   implicit def string2Text(s: String) = Text(s)
 }

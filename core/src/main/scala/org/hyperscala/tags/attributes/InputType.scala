@@ -1,11 +1,13 @@
-package com.outr.webframework.tags.attributes
+package org.hyperscala.tags.attributes
+
+import org.sgine.{Enumerated, EnumEntry}
 
 /**
  * @author Matt Hicks <mhicks@sgine.org>
  */
-sealed case class InputType(value: String) extends AttributeValue
+sealed case class InputType(value: String) extends EnumEntry[InputType] with AttributeValue
 
-object InputType {
+object InputType extends Enumerated[InputType] {
   val Button = InputType("button")
   val CheckBox = InputType("checkbox")
   val Color = InputType("color")

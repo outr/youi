@@ -1,8 +1,8 @@
-package com.outr.webframework.tags
+package org.hyperscala.tags
 
-import com.outr.webframework.value.Property
-import com.outr.webframework.{WebContent, BodyContent, Container}
-import com.outr.webframework.js.JavaScriptContext
+import org.hyperscala.value.Property
+import org.hyperscala.{WebContent, BodyContent, Container}
+import org.hyperscala.js.JavaScriptContent
 
 /**
  * @author Matt Hicks <mhicks@sgine.org>
@@ -13,7 +13,7 @@ class Head extends Container with BodyContent {
   }
   contents += title
 
-  def +=(js: JavaScriptContext) = contents += new Script(content = js)
+  def +=(js: JavaScriptContent) = contents += new Script(content = js)
 
   def tag = "head"
 }

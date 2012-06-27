@@ -1,5 +1,6 @@
-package com.outr.webframework
+package org.hyperscala
 
+import js.JavaScriptContent
 import tags.attributes.AttributeValue
 import xml._
 
@@ -12,6 +13,7 @@ trait BodyContent extends WebContent {
 
   implicit def c2s(c: Char) = c.toString
   implicit def i2s(i: Int) = i.toString
+  implicit def jsc2s(jsc: JavaScriptContent) = jsc.toJS
   implicit def av2s(av: AttributeValue) = av.value
 
   def xml = {
@@ -23,5 +25,5 @@ trait BodyContent extends WebContent {
   }
 
   def tag: String
-  private[webframework] var attributes = Map.empty[String, WebAttribute]
+  private[hyperscala] var attributes = Map.empty[String, WebAttribute]
 }

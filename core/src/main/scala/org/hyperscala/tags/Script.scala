@@ -1,7 +1,7 @@
-package com.outr.webframework.tags
+package org.hyperscala.tags
 
-import com.outr.webframework.WebAttribute
-import com.outr.webframework.js.JavaScriptContext
+import org.hyperscala.WebAttribute
+import org.hyperscala.js.JavaScriptContent
 
 /**
  * @author Matt Hicks <mhicks@sgine.org>
@@ -20,7 +20,7 @@ class Script extends Tag {
            spellCheck: String = null,
            tabIndex: String = null,
            title: String = null,
-           content: JavaScriptContext = null,
+           content: JavaScriptContent = null,
            async: String = null,
            defer: String = null,
            mimeType: String = null,

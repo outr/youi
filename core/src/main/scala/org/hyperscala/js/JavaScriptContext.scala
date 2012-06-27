@@ -1,11 +1,20 @@
-package com.outr.webframework.js
+package org.hyperscala.js
 
 import collection.mutable.ListBuffer
-import com.outr.webframework.{PreFormatted, WebContent}
+import org.hyperscala.{PreFormatted, WebContent}
 import xml.Text
 
+trait JavaScriptContent extends WebContent with PreFormatted {
+  def toJS: String
 
-class JavaScriptContext extends Instruction with WebContent with PreFormatted {
+  override def preFormatted = Some(toJS)
+
+  def xml = new Text(uuid.toString)
+}
+
+case class JavaScriptContentString(toJS: String) extends JavaScriptContent
+
+class JavaScriptContext extends Instruction with JavaScriptContent {
   protected var depth: Int = _
   private val instructions = ListBuffer.empty[Instruction]
 
@@ -22,11 +31,7 @@ class JavaScriptContext extends Instruction with WebContent with PreFormatted {
     b.toString()
   }
 
-  override def preFormatted = Some(toJS)
-
   def tabs = (0 until depth).map(i => '\t').mkString
-
-  def xml = new Text(uuid.toString)
 }
 
 object JavaScriptContext {

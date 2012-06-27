@@ -1,10 +1,15 @@
-package com.outr.webframework.helloworld
+package org.hyperscala.helloworld
 
-import com.outr.webframework.WebSite
+import org.hyperscala.WebSite
+import org.hyperscala.export.WebPageExporter
 
 /**
  * @author Matt Hicks <mhicks@sgine.org>
  */
 object HelloWorldSite extends WebSite {
   val default = HelloWorldPage
+
+  def main(args: Array[String]): Unit = {
+    println(WebPageExporter(HelloWorldPage, "HelloWorldPage"))
+  }
 }

@@ -1,6 +1,6 @@
-package com.outr.webframework.numberguess
+package org.hyperscala.numberguess
 
-import com.outr.webframework.WebSite
+import org.hyperscala.WebSite
 
 /**
  * @author Matt Hicks <mhicks@sgine.org>

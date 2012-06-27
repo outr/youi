@@ -1,4 +1,4 @@
-package com.outr.webframework.js
+package org.hyperscala.js
 
 trait TypedVar[T] extends Var {
   def :=(v: TypedVar[T]) = Instruction(output = Some("%s = %s;\r\n".format(reference.get, v.reference.get)))

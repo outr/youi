@@ -1,6 +1,6 @@
 package com.github.todomvc
 
-import com.outr.webframework.WebSite
+import org.hyperscala.WebSite
 
 /**
  * @author Matt Hicks <mhicks@sgine.org>

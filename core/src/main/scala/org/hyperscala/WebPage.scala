@@ -1,4 +1,4 @@
-package com.outr.webframework
+package org.hyperscala
 
 import tags.{Head, Body}
 import org.sgine.scene.AbstractMutableContainer

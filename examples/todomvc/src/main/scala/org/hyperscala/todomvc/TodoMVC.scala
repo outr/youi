@@ -1,7 +1,7 @@
 package com.github.todomvc
 
-import com.outr.webframework.WebPage
-import com.outr.webframework.tags._
+import org.hyperscala.WebPage
+import org.hyperscala.tags._
 import attributes.InputType
 
 object TodoMVC extends WebPage("index.html") {

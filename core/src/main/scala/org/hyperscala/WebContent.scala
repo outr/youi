@@ -1,4 +1,4 @@
-package com.outr.webframework
+package org.hyperscala
 
 import js.Var
 import org.sgine.hierarchy.Element

@@ -1,4 +1,4 @@
-package com.outr.webframework
+package org.hyperscala
 
 import js.{Instruction, JavaScriptContext}
 import org.sgine.scene.MutableContainer

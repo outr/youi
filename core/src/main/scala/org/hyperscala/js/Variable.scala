@@ -1,6 +1,6 @@
-package com.outr.webframework.js
+package org.hyperscala.js
 
-import com.outr.webframework.WebContent
+import org.hyperscala.WebContent
 
 class Variable[T](name: String, instanceRepresentation: String) extends TypedVar[T] {
   override val output = Some("var %s = %s;\r\n".format(name, instanceRepresentation))

@@ -1,6 +1,6 @@
-package com.outr.webframework.javascript.helper
+package org.hyperscala.javascript.helper
 
-import com.outr.webframework.{BodyContent, WebContent}
+import org.hyperscala.{BodyContent, WebContent}
 import collection.mutable.ListBuffer
 import xml.Node
 

@@ -1,4 +1,4 @@
-package com.outr.webframework.style
+package org.hyperscala.style
 
 /**
  * @author Matt Hicks <mhicks@sgine.org>

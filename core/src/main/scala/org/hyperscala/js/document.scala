@@ -1,6 +1,6 @@
-package com.outr.webframework.js
+package org.hyperscala.js
 
-import com.outr.webframework.WebContent
+import org.hyperscala.WebContent
 
 /**
  * @author Matt Hicks <mhicks@sgine.org>

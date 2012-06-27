@@ -1,6 +1,6 @@
-package com.outr.webframework.javascript.helper
+package org.hyperscala.javascript.helper
 
-import com.outr.webframework.WebContent
+import org.hyperscala.WebContent
 import xml.Text
 
 /**

@@ -1,4 +1,4 @@
-package com.outr.webframework.value
+package org.hyperscala.value
 
 import org.sgine.{MutableColor, ImmutableColor, Color}
 

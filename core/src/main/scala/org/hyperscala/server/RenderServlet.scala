@@ -1,10 +1,10 @@
-package com.outr.webframework.server
+package org.hyperscala.server
 
 import javax.servlet.http.{HttpServletResponse, HttpServletRequest, HttpServlet}
 import javax.servlet.ServletConfig
 
 import org.sgine.reflect._
-import com.outr.webframework.{WebPage, WebSite}
+import org.hyperscala.{WebPage, WebSite}
 
 /**
  * @author Matt Hicks <mhicks@sgine.org>

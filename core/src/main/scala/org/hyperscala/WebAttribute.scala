@@ -1,4 +1,4 @@
-package com.outr.webframework
+package org.hyperscala
 
 import js.{Instruction, Var, TypedVar}
 import value.Property

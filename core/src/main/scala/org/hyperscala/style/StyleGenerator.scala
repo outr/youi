@@ -1,4 +1,4 @@
-package com.outr.webframework.style
+package org.hyperscala.style
 
 import io.Source
 

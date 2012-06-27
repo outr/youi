@@ -1,11 +1,11 @@
-package com.outr.webframework.numberguess
+package org.hyperscala.numberguess
 
-import com.outr.webframework.{js, WebPage}
+import org.hyperscala.{js, WebPage}
 
-import com.outr.webframework.style._
-import com.outr.webframework.tags._
+import org.hyperscala.style._
+import org.hyperscala.tags._
 import attributes.InputType
-import com.outr.webframework.js._
+import org.hyperscala.js._
 
 /**
  * @author Matt Hicks <mhicks@sgine.org>
@@ -59,10 +59,10 @@ object NumberGuess extends WebPage("index.html") {
     contents += new P {
       contents += new Input(id = "input", inputType = InputType.Number)
       contents += new Button(id = "button", content = "Guess") {
-        event.click := "validateGuess();"
+        event.click := JavaScript("validateGuess();")
       }
       contents += new Button(content = "Reset") {
-        event.click := "resetGame();"
+        event.click := JavaScript("resetGame();")
       }
     }
     contents += new P {

@@ -28,23 +28,59 @@ object HyperScalaBuild extends Build {
       sgineScene
     ),
     scalacOptions ++= Seq("-unchecked", "-deprecation"),
-    resolvers ++= Seq("Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/")
+    resolvers ++= Seq("Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/"),
+    publishTo <<= version {
+      (v: String) =>
+        val nexus = "https://oss.sonatype.org/"
+        if (v.trim.endsWith("SNAPSHOT"))
+          Some("snapshots" at nexus + "content/repositories/snapshots")
+        else
+          Some("releases" at nexus + "service/local/staging/deploy/maven2")
+    },
+    publishArtifact in Test := false,
+    pomExtra := (
+      <url>http://hyperscala.org</url>
+        <licenses>
+          <license>
+            <name>BSD-style</name>
+            <url>http://www.opensource.org/licenses/bsd-license.php</url>
+            <distribution>repo</distribution>
+          </license>
+        </licenses>
+        <scm>
+          <developerConnection>scm:https://github.com/darkfrog26/hyperscala.git</developerConnection>
+          <connection>scm:https://github.com/darkfrog26/hyperscala.git</connection>
+          <url>https://github.com/darkfrog26/hyperscala</url>
+        </scm>
+        <developers>
+          <developer>
+            <id>darkfrog</id>
+            <name>Matt Hicks</name>
+            <url>http://matthicks.com</url>
+          </developer>
+        </developers>)
   )
 
-  lazy val root = Project("root", file("."), settings = baseSettings)
+  private def createSettings(_name: String) = baseSettings ++ Seq(name := _name)
+
+  lazy val root = Project("root", file("."), settings = createSettings("hyperscala-root"))
+    .settings(publishArtifact in Compile := false, publishArtifact in Test := false)
     .aggregate(core, helloworld, numberguess, todomvc)
-  lazy val core = Project("hyperscala-core", file("core"), settings = baseSettings)
+  lazy val core = Project("core", file("core"), settings = createSettings("hyperscala-core"))
     .settings(libraryDependencies += servletApi)
-  lazy val helloworld = Project("hyperscala-helloworld", file("examples/helloworld"), settings = baseSettings ++ seq(webSettings: _*))
+  lazy val helloworld = Project("helloworld", file("examples/helloworld"), settings = createSettings("hyperscala-helloworld"))
     .dependsOn(core)
+    .settings(webSettings: _*)
     .settings(port := 8080)
     .settings(libraryDependencies ++= Seq(jettyServer, jettyWebapp, jettyServlet, jettyJsp, glassfishJsp))
-  lazy val numberguess = Project("hyperscala-numberguess", file("examples/numberguess"), settings = baseSettings ++ seq(webSettings: _*))
+  lazy val numberguess = Project("numberguess", file("examples/numberguess"), settings = createSettings("hyperscala-numberguess"))
     .dependsOn(core)
+    .settings(webSettings: _*)
     .settings(port := 8080)
     .settings(libraryDependencies ++= Seq(jettyServer, jettyWebapp, jettyServlet, jettyJsp, glassfishJsp))
-  lazy val todomvc = Project("hyperscala-todomvc", file("examples/todomvc"), settings = baseSettings ++ seq(webSettings: _*))
+  lazy val todomvc = Project("todomvc", file("examples/todomvc"), settings = createSettings("hyperscala-todomvc"))
     .dependsOn(core)
+    .settings(webSettings: _*)
     .settings(port := 8080)
     .settings(libraryDependencies ++= Seq(jettyServer, jettyWebapp, jettyServlet, jettyJsp, glassfishJsp))
 }

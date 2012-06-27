@@ -1,6 +1,6 @@
-package com.outr.webframework.tags
+package org.hyperscala.tags
 
-import com.outr.webframework.WebAttribute
+import org.hyperscala.WebAttribute
 
 
 /**

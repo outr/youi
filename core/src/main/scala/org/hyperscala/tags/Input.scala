@@ -1,7 +1,7 @@
-package com.outr.webframework.tags
+package org.hyperscala.tags
 
 import attributes.InputType
-import com.outr.webframework.WebAttribute
+import org.hyperscala.WebAttribute
 
 /**
  * @author Matt Hicks <mhicks@sgine.org>

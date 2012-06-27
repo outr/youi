@@ -1,4 +1,4 @@
-package com.outr.webframework.tags.attributes
+package org.hyperscala.tags.attributes
 
 /**
  * @author Matt Hicks <mhicks@sgine.org>

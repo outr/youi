@@ -1,6 +1,6 @@
-package com.outr.webframework.helloworld
+package org.hyperscala.helloworld
 
-import com.outr.webframework.WebPage
+import org.hyperscala.WebPage
 
 /**
  * @author Matt Hicks <mhicks@sgine.org>

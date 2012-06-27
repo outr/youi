@@ -1,13 +1,15 @@
-package com.outr.webframework.js
+package org.hyperscala.js
 
-import com.outr.webframework.tags._
-import com.outr.webframework._
+import org.hyperscala.tags._
+import org.hyperscala._
 
 /**
  * @author Matt Hicks <mhicks@sgine.org>
  */
 object JavaScript {
   def apply(f: => Any) = JavaScriptContext.contextualize(f)
+
+  def apply(s: String) = JavaScriptContentString(s)
 
   def main(args: scala.Array[String]): Unit = {
     val js = JavaScript {

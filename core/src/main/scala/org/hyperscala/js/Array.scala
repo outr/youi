@@ -1,4 +1,4 @@
-package com.outr.webframework.js
+package org.hyperscala.js
 
 case class Array[T](values: Seq[TypedVar[T]], name: String) extends Var {
   override val output = Some("var %s = %s;\r\n".format(name, values.map(v => v.reference.get).mkString("[", ", ", "]")))

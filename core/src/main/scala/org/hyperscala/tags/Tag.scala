@@ -1,9 +1,9 @@
-package com.outr.webframework.tags
+package org.hyperscala.tags
 
-import com.outr.webframework.{WebAttribute, BodyContent, Container}
-import com.outr.webframework.style.StyleSheet
-import com.outr.webframework.javascript.events.EventSupport
-import com.outr.webframework.value.Property
+import org.hyperscala.{WebAttribute, BodyContent, Container}
+import org.hyperscala.style.StyleSheet
+import org.hyperscala.javascript.events.EventSupport
+import org.hyperscala.value.Property
 
 /**
  * @author Matt Hicks <mhicks@sgine.org>

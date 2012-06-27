@@ -1,4 +1,4 @@
-package com.outr.webframework.js
+package org.hyperscala.js
 
 /**
  * @author Matt Hicks <mhicks@sgine.org>

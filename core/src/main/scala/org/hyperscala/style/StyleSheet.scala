@@ -1,9 +1,9 @@
-package com.outr.webframework.style
+package org.hyperscala.style
 
-import com.outr.webframework.value.Property
+import org.hyperscala.value.Property
 import org.sgine.scene.AbstractMutableContainer
 import org.sgine.hierarchy.Element
-import com.outr.webframework.{BodyContent, WebAttribute}
+import org.hyperscala.{BodyContent, WebAttribute}
 import org.sgine.Color
 
 /**

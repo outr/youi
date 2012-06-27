@@ -1,4 +1,4 @@
-package com.outr.webframework
+package org.hyperscala
 
 import tags.Text
 import value.JSValue
@@ -6,7 +6,7 @@ import value.JSValue
 package object js {
   implicit def value2Variable[T](v: T) = Constant[T](v)
 
-  implicit def var2Content(v: Var) = Text(JSValue(v.reference.get), preformat = true)
+  implicit def var2Content(v: Var) = Text(JSValue(v.reference.get))
 
   implicit def var2Condition(v: TypedVar[Boolean]) = {
     new ExplicitInstruction(reference = Some(v.reference.get)) with Condition

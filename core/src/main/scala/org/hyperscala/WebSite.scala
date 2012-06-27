@@ -1,4 +1,4 @@
-package com.outr.webframework
+package org.hyperscala
 
 import org.sgine.reflect._
 

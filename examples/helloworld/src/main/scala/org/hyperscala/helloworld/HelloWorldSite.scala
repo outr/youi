@@ -1,7 +1,7 @@
 package org.hyperscala.helloworld
 
 import org.hyperscala.WebSite
-import org.hyperscala.export.WebPageExporter
+import org.hyperscala.io.WebPageExporter
 
 /**
  * @author Matt Hicks <mhicks@sgine.org>

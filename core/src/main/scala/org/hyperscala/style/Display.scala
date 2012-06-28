@@ -1,11 +1,13 @@
 package org.hyperscala.style
 
+import org.sgine.{Enumerated, EnumEntry}
+
 /**
  * @author Matt Hicks <mhicks@sgine.org>
  */
-sealed case class Display(value: String) extends StyleValue
+sealed case class Display(value: String) extends EnumEntry[Display] with StyleValue
 
-object Display {
+object Display extends Enumerated[Display] {
   val None = Display("none")
   val Block = Display("block")
   val Inline = Display("inline")

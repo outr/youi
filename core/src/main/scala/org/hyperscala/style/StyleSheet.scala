@@ -13,27 +13,29 @@ class StyleSheet(val name: String)(implicit val bodyContent: BodyContent) extend
   bodyContent.attributes += (name -> this)
   implicit def thisStyleSheet: StyleSheet = this
 
-  object alignment {
+  def modified = contents.find(sp => sp.modified) != None
+
+  val alignment = new AnyRef {
     val adjust = p[String]("alignment-adjust")
     val baseline = p[String]("alignment-baseline")
   }
 
-  object animation extends StyleProperty[String]("animation") {
+  val animation = new StyleProperty[String]("animation") {
     val delay = p[String]("animation-delay")
     val direction = p[String]("animation-direction")
     val duration = p[String]("animation-duration")
 
-    object iteration {
+    val iteration = new AnyRef {
       val count = p[String]("animation-iteration-count")
     }
 
     val name = p[String]("animation-name")
 
-    object play {
+    val play = new AnyRef {
       val state = p[String]("animation-play-state")
     }
 
-    object timing {
+    val timing = new AnyRef {
       val function = p[String]("animation-timing-function")
     }
 
@@ -41,11 +43,11 @@ class StyleSheet(val name: String)(implicit val bodyContent: BodyContent) extend
 
   val appearance = p[String]("appearance")
 
-  object backface {
+  val backface = new AnyRef {
     val visibility = p[String]("backface-visibility")
   }
 
-  object background extends StyleProperty[String]("background") {
+  val background = new StyleProperty[String]("background") {
     val attachment = p[String]("background-attachment")
     val clip = p[String]("background-clip")
     val color = p[Color]("background-color")
@@ -56,26 +58,26 @@ class StyleSheet(val name: String)(implicit val bodyContent: BodyContent) extend
     val size = p[String]("background-size")
   }
 
-  object baseline {
+  val baseline = new AnyRef {
     val shift = p[String]("baseline-shift")
   }
 
-  object bookmark {
+  val bookmark = new AnyRef {
     val label = p[String]("bookmark-label")
     val level = p[String]("bookmark-level")
     val target = p[String]("bookmark-target")
   }
 
-  object border extends StyleProperty[String]("border") {
+  val border = new StyleProperty[String]("border") {
 
-    object bottom extends StyleProperty[String]("border-bottom") {
+    val bottom = new StyleProperty[String]("border-bottom") {
       val color = p[Color]("border-bottom-color")
 
-      object left {
+      val left = new AnyRef {
         val radius = p[String]("border-bottom-left-radius")
       }
 
-      object right {
+      val right = new AnyRef {
         val radius = p[String]("border-bottom-right-radius")
       }
 
@@ -86,7 +88,7 @@ class StyleSheet(val name: String)(implicit val bodyContent: BodyContent) extend
     val collapse = p[String]("border-collapse")
     val color = p[Color]("border-color")
 
-    object image extends StyleProperty[String]("border-image") {
+    val image = new StyleProperty[String]("border-image") {
       val outset = p[String]("border-image-outset")
       val repeat = p[String]("border-image-repeat")
       val slice = p[String]("border-image-slice")
@@ -94,7 +96,7 @@ class StyleSheet(val name: String)(implicit val bodyContent: BodyContent) extend
       val width = p[String]("border-image-width")
     }
 
-    object left extends StyleProperty[String]("border-left") {
+    val left = new StyleProperty[String]("border-left") {
       val color = p[Color]("border-left-color")
       val style = p[String]("border-left-style")
       val width = p[String]("border-left-width")
@@ -102,7 +104,7 @@ class StyleSheet(val name: String)(implicit val bodyContent: BodyContent) extend
 
     val radius = p[String]("border-radius")
 
-    object right extends StyleProperty[String]("border-right") {
+    val right = new StyleProperty[String]("border-right") {
       val color = p[Color]("border-right-color")
       val style = p[String]("border-right-style")
       val width = p[String]("border-right-width")
@@ -111,14 +113,14 @@ class StyleSheet(val name: String)(implicit val bodyContent: BodyContent) extend
     val spacing = p[String]("border-spacing")
     val style = p[String]("border-style")
 
-    object top extends StyleProperty[String]("border-top") {
+    val top = new StyleProperty[String]("border-top") {
       val color = p[Color]("border-top-color")
 
-      object left {
+      val left = new AnyRef {
         val radius = p[String]("border-top-left-radius")
       }
 
-      object right {
+      val right = new AnyRef {
         val radius = p[String]("border-top-right-radius")
       }
 
@@ -131,22 +133,22 @@ class StyleSheet(val name: String)(implicit val bodyContent: BodyContent) extend
 
   val bottom = p[String]("bottom")
 
-  object box {
+  val box = new AnyRef {
     val align = p[String]("box-align")
 
-    object decoration {
+    val decoration = new AnyRef {
       val break = p[String]("box-decoration-break")
     }
 
     val direction = p[String]("box-direction")
 
-    object flex extends StyleProperty[String]("box-flex") {
+    val flex = new StyleProperty[String]("box-flex") {
       val group = p[String]("box-flex-group")
     }
 
     val lines = p[String]("box-lines")
 
-    object ordinal {
+    val ordinal = new AnyRef {
       val group = p[String]("box-ordinal-group")
     }
 
@@ -156,23 +158,23 @@ class StyleSheet(val name: String)(implicit val bodyContent: BodyContent) extend
     val sizing = p[String]("box-sizing")
   }
 
-  object caption {
+  val caption = new AnyRef {
     val side = p[String]("caption-side")
   }
 
-  val clear = p[String]("clear")
+  val clear = p[Clear]("clear")
   val clip = p[String]("clip")
 
-  object color extends StyleProperty[Color]("color") {
+  val color = new StyleProperty[Color]("color") {
     val profile = p[String]("color-profile")
   }
 
-  object column {
+  val column = new AnyRef {
     val count = p[String]("column-count")
     val fill = p[String]("column-fill")
     val gap = p[String]("column-gap")
 
-    object rule extends StyleProperty[String]("column-rule") {
+    val rule = new StyleProperty[String]("column-rule") {
       val color = p[Color]("column-rule-color")
       val style = p[String]("column-rule-style")
       val width = p[String]("column-rule-width")
@@ -185,7 +187,7 @@ class StyleSheet(val name: String)(implicit val bodyContent: BodyContent) extend
   val columns = p[String]("columns")
   val content = p[String]("content")
 
-  object counter {
+  val counter = new AnyRef {
     val increment = p[String]("counter-increment")
     val reset = p[String]("counter-reset")
   }
@@ -195,20 +197,20 @@ class StyleSheet(val name: String)(implicit val bodyContent: BodyContent) extend
   val direction = p[String]("direction")
   val display = p[Display]("display")
 
-  object dominant {
+  val dominant = new AnyRef {
     val baseline = p[String]("dominant-baseline")
   }
 
-  object drop {
+  val drop = new AnyRef {
 
-    object initial {
+    val initial = new AnyRef {
 
-      object after {
+      val after = new AnyRef {
         val adjust = p[String]("drop-initial-after-adjust")
         val align = p[String]("drop-initial-after-align")
       }
 
-      object before {
+      val before = new AnyRef {
         val adjust = p[String]("drop-initial-before-adjust")
         val align = p[String]("drop-initial-before-align")
       }
@@ -219,22 +221,22 @@ class StyleSheet(val name: String)(implicit val bodyContent: BodyContent) extend
 
   }
 
-  object empty {
+  val empty = new AnyRef {
     val cells = p[String]("empty-cells")
   }
 
-  object fit extends StyleProperty[String]("fit") {
+  val fit = new StyleProperty[String]("fit") {
     val position = p[String]("fit-position")
   }
 
-  object float extends StyleProperty[Float]("float") {
+  val float = new StyleProperty[Float]("float") {
     val offset = p[String]("float-offset")
   }
 
-  object font extends StyleProperty[String]("font") {
+  val font = new StyleProperty[String]("font") {
     val family = p[String]("font-family")
 
-    object size extends StyleProperty[Length]("font-size") {
+    val size = new StyleProperty[Length]("font-size") {
       val adjust = p[String]("font-size-adjust")
     }
 
@@ -245,18 +247,18 @@ class StyleSheet(val name: String)(implicit val bodyContent: BodyContent) extend
     val face = p[String]("@font-face")
   }
 
-  object grid {
+  val grid = new AnyRef {
     val columns = p[String]("grid-columns")
     val rows = p[String]("grid-rows")
   }
 
-  object hanging {
+  val hanging = new AnyRef {
     val punctuation = p[String]("hanging-punctuation")
   }
 
   val height = p[Length]("height")
 
-  object hyphenate {
+  val hyphenate = new AnyRef {
     val after = p[String]("hyphenate-after")
     val before = p[String]("hyphenate-before")
     val character = p[String]("hyphenate-character")
@@ -267,14 +269,14 @@ class StyleSheet(val name: String)(implicit val bodyContent: BodyContent) extend
   val hyphens = p[String]("hyphens")
   val icon = p[String]("icon")
 
-  object image {
+  val image = new AnyRef {
     val orientation = p[String]("image-orientation")
     val resolution = p[String]("image-resolution")
   }
 
-  object inline {
+  val inline = new AnyRef {
 
-    object box {
+    val box = new AnyRef {
       val align = p[String]("inline-box-align")
     }
 
@@ -282,14 +284,14 @@ class StyleSheet(val name: String)(implicit val bodyContent: BodyContent) extend
 
   val left = p[Length]("left")
 
-  object letter {
+  val letter = new AnyRef {
     val spacing = p[String]("letter-spacing")
   }
 
-  object line {
+  val line = new AnyRef {
     val height = p[String]("line-height")
 
-    object stacking extends StyleProperty[String]("line-stacking") {
+    val stacking = new StyleProperty[String]("line-stacking") {
       val ruby = p[String]("line-stacking-ruby")
       val shift = p[String]("line-stacking-shift")
       val strategy = p[String]("line-stacking-strategy")
@@ -297,9 +299,9 @@ class StyleSheet(val name: String)(implicit val bodyContent: BodyContent) extend
 
   }
 
-  object list {
+  val list = new AnyRef {
 
-    object style extends StyleProperty[String]("list-style") {
+    val style = new StyleProperty[String]("list-style") {
       val image = p[String]("list-style-image")
       val position = p[String]("list-style-position")
       val styleType = p[String]("list-style-type")
@@ -307,24 +309,24 @@ class StyleSheet(val name: String)(implicit val bodyContent: BodyContent) extend
 
   }
 
-  object margin extends StyleProperty[String]("margin") {
+  val margin = new StyleProperty[String]("margin") {
     val bottom = p[String]("margin-bottom")
     val left = p[String]("margin-left")
     val right = p[String]("margin-right")
     val top = p[String]("margin-top")
   }
 
-  object mark extends StyleProperty[String]("mark") {
+  val mark = new StyleProperty[String]("mark") {
     val after = p[String]("mark-after")
     val before = p[String]("mark-before")
   }
 
   val marks = p[String]("marks")
 
-  object marquee {
+  val marquee = new AnyRef {
     val direction = p[String]("marquee-direction")
 
-    object play {
+    val play = new AnyRef {
       val count = p[String]("marquee-play-count")
     }
 
@@ -332,21 +334,21 @@ class StyleSheet(val name: String)(implicit val bodyContent: BodyContent) extend
     val style = p[String]("marquee-style")
   }
 
-  object max {
+  val max = new AnyRef {
     val height = p[Length]("max-height")
     val width = p[Length]("max-width")
   }
 
-  object min {
+  val min = new AnyRef {
     val height = p[Length]("min-height")
     val width = p[Length]("min-width")
   }
 
-  object move {
+  val move = new AnyRef {
     val to = p[String]("move-to")
   }
 
-  object nav {
+  val nav = new AnyRef {
     val down = p[String]("nav-down")
     val index = p[String]("nav-index")
     val left = p[String]("nav-left")
@@ -357,29 +359,28 @@ class StyleSheet(val name: String)(implicit val bodyContent: BodyContent) extend
   val opacity = p[String]("opacity")
   val orphans = p[String]("orphans")
 
-  object outline extends StyleProperty[String]("outline") {
+  val outline = new StyleProperty[String]("outline") {
     val color = p[Color]("outline-color")
     val offset = p[String]("outline-offset")
     val style = p[String]("outline-style")
     val width = p[String]("outline-width")
   }
 
-  object overflow extends StyleProperty[String]("overflow") {
+  val overflow = new StyleProperty[String]("overflow") {
     val style = p[String]("overflow-style")
     val x = p[String]("overflow-x")
     val y = p[String]("overflow-y")
   }
 
-  object padding extends StyleProperty[Length]("padding") {
+  val padding = new StyleProperty[String]("padding") {
     val bottom = p[Length]("padding-bottom")
     val left = p[Length]("padding-left")
     val right = p[Length]("padding-right")
     val top = p[Length]("padding-top")
   }
 
-  object page extends StyleProperty[String]("page") {
-
-    object break {
+  val page = new StyleProperty[String]("page") {
+    val break = new AnyRef {
       val after = p[String]("page-break-after")
       val before = p[String]("page-break-before")
       val inside = p[String]("page-break-inside")
@@ -388,37 +389,37 @@ class StyleSheet(val name: String)(implicit val bodyContent: BodyContent) extend
     val policy = p[String]("page-policy")
   }
 
-  object perspective extends StyleProperty[String]("perspective") {
+  val perspective = new StyleProperty[String]("perspective") {
     val origin = p[String]("perspective-origin")
   }
 
   val phonemes = p[String]("phonemes")
   val position = p[Position]("position")
 
-  object punctuation {
+  val punctuation = new AnyRef {
     val trim = p[String]("punctuation-trim")
   }
 
   val quotes = p[String]("quotes")
 
-  object rendering {
+  val rendering = new AnyRef {
     val intent = p[String]("rendering-intent")
   }
 
   val resize = p[String]("resize")
 
-  object rest extends StyleProperty[String]("rest") {
+  val rest = new StyleProperty[String]("rest") {
     val after = p[String]("rest-after")
     val before = p[String]("rest-before")
   }
 
   val right = p[String]("right")
 
-  object rotation extends StyleProperty[String]("rotation") {
+  val rotation = new StyleProperty[String]("rotation") {
     val point = p[String]("rotation-point")
   }
 
-  object ruby {
+  val ruby = new AnyRef {
     val align = p[String]("ruby-align")
     val overhang = p[String]("ruby-overhang")
     val position = p[String]("ruby-position")
@@ -427,23 +428,22 @@ class StyleSheet(val name: String)(implicit val bodyContent: BodyContent) extend
 
   val size = p[String]("size")
 
-  object string {
+  val string = new AnyRef {
     val set = p[String]("string-set")
   }
 
-  object table {
+  val table = new AnyRef {
     val layout = p[String]("table-layout")
   }
 
-  object target extends StyleProperty[String]("target") {
+  val target = new StyleProperty[String]("target") {
     val name = p[String]("target-name")
     val newTarget = p[String]("target-new")
     val position = p[String]("target-position")
   }
 
-  object text {
-
-    object align extends StyleProperty[Alignment]("text-align") {
+  val text = new AnyRef {
+    val align = new StyleProperty[Alignment]("text-align") {
       val last = p[Alignment]("text-align-last")
     }
 
@@ -460,37 +460,36 @@ class StyleSheet(val name: String)(implicit val bodyContent: BodyContent) extend
 
   val top = p[Length]("top")
 
-  object transform extends StyleProperty[String]("transform") {
+  val transform = new StyleProperty[String]("transform") {
     val origin = p[String]("transform-origin")
     val style = p[String]("transform-style")
   }
 
-  object transition extends StyleProperty[String]("transition") {
+  val transition = new StyleProperty[String]("transition") {
     val delay = p[String]("transition-delay")
     val duration = p[String]("transition-duration")
     val property = p[String]("transition-property")
 
-    object timing {
+    val timing = new AnyRef {
       val function = p[String]("transition-timing-function")
     }
-
   }
 
-  object unicode {
+  val unicode = new AnyRef {
     val bidi = p[String]("unicode-bidi")
   }
 
-  object vertical {
-    val align = p[String]("vertical-align")
+  val vertical = new AnyRef {
+    val align = p[Length]("vertical-align")
   }
 
   val visibility = p[String]("visibility")
 
-  object voice {
+  val voice = new AnyRef {
     val balance = p[String]("voice-balance")
     val duration = p[String]("voice-duration")
 
-    object pitch extends StyleProperty[String]("voice-pitch") {
+    val pitch = new StyleProperty[String]("voice-pitch") {
       val range = p[String]("voice-pitch-range")
     }
 
@@ -499,24 +498,24 @@ class StyleSheet(val name: String)(implicit val bodyContent: BodyContent) extend
     val volume = p[String]("voice-volume")
   }
 
-  object white {
+  val white = new AnyRef {
     val space = p[WhiteSpace]("white-space")
   }
 
   val widows = p[String]("widows")
   val width = p[Length]("width")
 
-  object word {
+  val word = new AnyRef {
     val break = p[String]("word-break")
     val spacing = p[String]("word-spacing")
     val wrap = p[String]("word-wrap")
   }
 
-  object z {
+  val z = new AnyRef {
     val index = p[String]("z-index")
   }
 
-  private def p[T](name: String) = new StyleProperty[T](name)
+  private def p[T](name: String)(implicit manifest: Manifest[T]) = new StyleProperty[T](name)(this, manifest)
 
   def attribute = {
     contents.collect {
@@ -524,10 +523,27 @@ class StyleSheet(val name: String)(implicit val bodyContent: BodyContent) extend
     }.mkString("; ")
   }
 
+  def attribute_=(value: String) = if (value.trim.length > 0) {
+    try {
+      value.split(";").map(s => s.split(":")).map(a => a(0).trim -> a(1).trim).foreach {
+        case (k, v) => contents.find(p => p._name == k) match {
+          case Some(sp) => sp.manifest.erasure.getSimpleName match {
+            case "Display" => sp.asInstanceOf[StyleProperty[Display]] := Display(v)
+            case "Length" => sp.asInstanceOf[StyleProperty[Length]] := Length(v)
+            case "String" => sp.asInstanceOf[StyleProperty[String]] := v
+          }
+          case None => throw new RuntimeException("Unable to find attribute: %s".format(k))
+        }
+      }
+    } catch {
+      case exc => throw new RuntimeException("Error parsing: [%s]".format(value), exc)
+    }
+  }
+
   protected[style] def register(property: StyleProperty[_]) = addChild(property)
 }
 
-class StyleProperty[T](val _name: String)(implicit ss: StyleSheet) extends Property[T] with Element {
+class StyleProperty[T](val _name: String)(implicit ss: StyleSheet, val manifest: Manifest[T]) extends Property[T] with Element {
   ss.register(this)
 
   def styleValue = value match {

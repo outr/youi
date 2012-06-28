@@ -19,7 +19,10 @@ class Meta extends Tag {
            spellCheck: String = null,
            tabIndex: String = null,
            title: String = null,
-           content: String = null) = {
+           charSet: String = null,
+           content: String = null,
+           httpEquiv: String = null,
+           name: String = null) = {
     this()
     up(this.accessKey, accessKey)
     up(this.clazz, clazz)
@@ -34,10 +37,10 @@ class Meta extends Tag {
     up(this.spellCheck, spellCheck)
     up(this.tabIndex, tabIndex)
     up(this.title, title)
-    if (content != null) {
-      contents += content
-    }
-    // TODO: add tag-specific attributes
+    up(this.charSet, charSet)
+    up(this.content, content)
+    up(this.httpEquiv, httpEquiv)
+    up(this.name, name)
   }
 
   def tag = "meta"

@@ -26,4 +26,10 @@ trait BodyContent extends WebContent {
 
   def tag: String
   private[hyperscala] var attributes = Map.empty[String, WebAttribute]
+
+  def custom(name: String, value: String) = attributes += name -> new CustomAttribute(name, value)
+}
+
+class CustomAttribute(name: String, value: String)(implicit bodyContent: BodyContent) extends GenericAttribute[String](name) {
+  this := value
 }

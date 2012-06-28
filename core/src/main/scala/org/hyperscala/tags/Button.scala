@@ -43,7 +43,7 @@ class Button extends Tag {
   def tag = "button"
 
   val autoFocus = WebAttribute[String]("autofocus")
-  val disabled = WebAttribute[Boolean]("disabled")((b: Boolean) => if (b) "disabled" else "", this)
+  val disabled = WebAttribute[Boolean]("disabled")((b: Boolean) => if (b) "disabled" else "", this, Manifest.classType(classOf[Boolean]))
   val form = WebAttribute[String]("form")
   val formAction = WebAttribute[String]("formAction")
   val formEncType = WebAttribute[String]("formenctype")

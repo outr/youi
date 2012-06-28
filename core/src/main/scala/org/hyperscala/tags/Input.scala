@@ -103,7 +103,7 @@ class Input extends Tag {
   val autoComplete = WebAttribute[String]("autocomplete")
   val autoFocus = WebAttribute[String]("autofocus")
   val checked = WebAttribute[String]("checked")
-  val disabled = WebAttribute[Boolean]("disabled")((b: Boolean) => if (b) "disabled" else "", this)
+  val disabled = WebAttribute[Boolean]("disabled")((b: Boolean) => if (b) "disabled" else "", this, Manifest.classType(classOf[Boolean]))
   val form = WebAttribute[String]("form")
   val formAction = WebAttribute[String]("formaction")
   val formEncType = WebAttribute[String]("formenctype")

@@ -18,7 +18,13 @@ class Img extends Tag {
            lang: String = null,
            spellCheck: String = null,
            tabIndex: String = null,
-           title: String = null) = {
+           title: String = null,
+           src: String = null,
+           alt: String = null,
+           height: String = null,
+           isMap: String = null,
+           useMap: String = null,
+           width: String = null) = {
     this()
     up(this.accessKey, accessKey)
     up(this.clazz, clazz)
@@ -33,7 +39,12 @@ class Img extends Tag {
     up(this.spellCheck, spellCheck)
     up(this.tabIndex, tabIndex)
     up(this.title, title)
-    // TODO: add tag-specific attributes
+    up(this.src, src)
+    up(this.alt, alt)
+    up(this.height, height)
+    up(this.isMap, isMap)
+    up(this.useMap, useMap)
+    up(this.width, width)
   }
 
   def tag = "img"

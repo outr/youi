@@ -10,6 +10,8 @@ object HyperScalaBuild extends Build {
   val sgineReflect = "org.sgine" %% "sgine-reflect" % sgineVersion
   val sgineScene = "org.sgine" %% "sgine-scene" % sgineVersion
 
+  val htmlcleaner = "net.sourceforge.htmlcleaner" % "htmlcleaner" % "2.2"
+
   val jettyVersion = "7.4.2.v20110526"
   val jettyServer = "org.eclipse.jetty" % "jetty-server" % jettyVersion % "container;provided"
   val jettyWebapp = "org.eclipse.jetty" % "jetty-webapp" % jettyVersion % "container;provided"
@@ -25,7 +27,8 @@ object HyperScalaBuild extends Build {
     scalaVersion := "2.9.1",
     libraryDependencies ++= Seq(
       sgineReflect,
-      sgineScene
+      sgineScene,
+      htmlcleaner
     ),
     scalacOptions ++= Seq("-unchecked", "-deprecation"),
     resolvers ++= Seq("Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/"),

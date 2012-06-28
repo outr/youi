@@ -1,11 +1,11 @@
-package org.hyperscala.export
+package org.hyperscala.io
 
 import org.hyperscala._
 import js.JavaScriptContent
-import style.{Length, StyleProperty, StyleSheet}
+import style.{Display, Length, StyleProperty, StyleSheet}
 import org.sgine.Color
 import tags.attributes.InputType
-import tags.{Script, Tag, Text}
+import tags.{Tag, Text}
 import annotation.tailrec
 
 /**
@@ -34,10 +34,13 @@ private class WebPageExporter(webPage: WebPage, name: String) {
     case null => // Nothing set
     case title => writeLine("head.title := \"%s\"".format(title))
   }
-  webPage.head.contents.foreach {
-    case script: Script => writeLine("head += JavaScript(\"\"\"%s\"\"\")".format(script.contents.head.asInstanceOf[JavaScriptContent].toJS))
-    case content => println("Content: %s".format(content))
-  }
+  process(webPage.head, "head")
+//  webPage.head.contents.foreach {
+//    case script: Script => if (script.contents.nonEmpty) {
+//      ("head += JavaScript(\"\"\"%s\"\"\")".format(script.contents.head.asInstanceOf[JavaScriptContent].toJS))
+//    }
+//    case content => //println("Content: %s".format(content))
+//  }
   // TODO: add head content
   process(webPage.body, "body")
   depth -= 1
@@ -62,6 +65,9 @@ private class WebPageExporter(webPage: WebPage, name: String) {
     content match {
       case bodyContent: BodyContent => {
         bodyContent.attributes.values.foreach {
+          case a: CustomAttribute if (a.modified) => {
+            writeLine("custom(\"%s\", %s)".format(a.name, convert(a.value.value)))
+          }
           case a: GenericAttribute[_] if (a.modified && a.name.startsWith("on") && a.value.value.isInstanceOf[JavaScriptContent]) => {
             // Events
             writeLine("event.%s := %s".format(a.name.substring(2), convert(a.value.value)))
@@ -83,16 +89,13 @@ private class WebPageExporter(webPage: WebPage, name: String) {
     content match {
       case container: Container => {
         container.contents.foreach {
-          case text: Text => writeLine("contents += \"%s\"".format(text.value.value), prefix)
+          case text: Text => writeLine("contents += \"\"\"%s\"\"\"".format(text.value.value), prefix)
           case tag: Tag => {
             var attributes = List.empty[String]
             tag.attributes.values.foreach {
+              case a: CustomAttribute => // Ignore custom attributes
               case a: GenericAttribute[_] if (a.modified) => {
-                val name = a.name match {
-                  case "type" if (a.value.value.isInstanceOf[InputType]) => "inputType"
-                  case s if (s.startsWith("on") && a.value.value.isInstanceOf[JavaScriptContent]) => null
-                  case s => s
-                }
+                val name = a.scalaName.getOrElse(throw new RuntimeException("Unable to find scala name for: %s".format(a.name)))
                 if (name != null) {
                   attributes = "%s = %s".format(name, convert(a.value.value)) :: attributes
                 }
@@ -100,12 +103,17 @@ private class WebPageExporter(webPage: WebPage, name: String) {
               case _ => // Ignore StyleSheet
             }
             attributes = attributes.reverse
-            writeLine("contents += new %s(%s) {".format(tagName(tag.getClass), attributes.mkString(", ")), prefix)
-            depth += 1
-            process(tag, null)
-            depth -= 1
-            writeLine("}")
+            val enclosure = tag.contents.nonEmpty || tag.attributes.values.find(a => a.modified && (a.name.startsWith("on") || a.isInstanceOf[CustomAttribute])) != None || tag.style.modified
+            writeLine("contents += new %s(%s)%s".format(tagName(tag.getClass), attributes.mkString(", "), if (enclosure) " {" else ""), prefix)
+            if (enclosure) {
+              depth += 1
+              process(tag, null)
+              depth -= 1
+              writeLine("}")
+            }
           }
+          case js: JavaScriptContent => writeLine("contents += JavaScript(\"\"\"%s\"\"\")".format(js.toJS), prefix)
+          case child if (child == webPage.head.title) => // Ignore
           case child => sys.error("Unknown child type: %s (%s)".format(child, child.getClass.getSuperclass))
         }
       }
@@ -123,6 +131,7 @@ private class WebPageExporter(webPage: WebPage, name: String) {
   def convert(value: Any) = value match {
     case color: Color if (color.name != null) => "Color.%s".format(color.name)
     case color: Color => "Color.immutable(\"%s\")".format(color.hex.rgb)
+    case display: Display => "Display.%s".format(display.name)
     case length: Length => length.value match {
       case LengthRegex(n, t) => if (t == "auto") {
         "Length.Auto"

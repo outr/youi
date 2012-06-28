@@ -11,7 +11,9 @@ trait PreFormatted extends WebContent {
   override def afterRender() {
     super.afterRender()
     preFormatted match {
-      case Some(text) => WebContent.render = WebContent.render.replaceAll(uuid.toString, text)
+      case Some(text) => {
+        WebContent.render = WebContent.render.replaceAllLiterally(uuid.toString, text)
+      }
       case None =>
     }
   }

@@ -10,5 +10,5 @@ object Length {
   val Inherit = Length("inherit")
   def Pixels(v: Int) = Length("%spx".format(v))
   def Centimeters(v: Int) = Length("%scm".format(v))
-  def Percent(v: Int) = Length("%s%".format(v))
+  def Percent(v: Int) = Length(v + "%")
 }

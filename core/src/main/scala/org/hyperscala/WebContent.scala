@@ -3,7 +3,7 @@ package org.hyperscala
 import js.Var
 import org.sgine.hierarchy.Element
 import xml.{PrettyPrinter, Node}
-import java.io.PrintWriter
+import java.io.{FileWriter, File, PrintWriter}
 import java.util
 
 /**
@@ -36,6 +36,16 @@ trait WebContent extends Element with Var {
     val result = WebContent.render
     WebContent.render = null
     result
+  }
+
+  def renderToFile(file: File) = {
+    val writer = new FileWriter(file)
+    try {
+      writer.write(render)
+    } finally {
+      writer.flush()
+      writer.close()
+    }
   }
 
   def write(writer: PrintWriter) = {

@@ -19,7 +19,18 @@ class TextArea extends Tag {
            spellCheck: String = null,
            tabIndex: String = null,
            title: String = null,
-           content: String = null) = {
+           content: String = null,
+           autoFocus: String = null,
+           cols: String = null,
+           disabled: String = null,
+           form: String = null,
+           maxLength: String = null,
+           name: String = null,
+           placeHolder: String = null,
+           readOnly: String = null,
+           required: String = null,
+           rows: java.lang.Integer = null,
+           wrap: String = null) = {
     this()
     up(this.accessKey, accessKey)
     up(this.clazz, clazz)
@@ -37,7 +48,19 @@ class TextArea extends Tag {
     if (content != null) {
       contents += content
     }
-    // TODO: add tag-specific attributes
+    up(this.autoFocus, autoFocus)
+    up(this.cols, cols)
+    up(this.disabled, disabled)
+    up(this.form, form)
+    up(this.maxLength, maxLength)
+    up(this.name, name)
+    up(this.placeHolder, placeHolder)
+    up(this.readOnly, readOnly)
+    up(this.required, required)
+    if (rows != null) {
+      up(this.rows, rows.intValue())
+    }
+    up(this.wrap, wrap)
   }
 
   def tag = "textarea"

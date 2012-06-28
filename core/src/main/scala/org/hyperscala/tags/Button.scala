@@ -19,7 +19,18 @@ class Button extends Tag {
            spellCheck: String = null,
            tabIndex: String = null,
            title: String = null,
-           content: String = null) = {
+           content: String = null,
+           autoFocus: String = null,
+           disabled: java.lang.Boolean = null,
+           form: String = null,
+           formAction: String = null,
+           formEncType: String = null,
+           formMethod: String = null,
+           formNoValidate: String = null,
+           formTarget: String = null,
+           name: String = null,
+           buttonType: String = null,
+           value: String = null) = {
     this()
     up(this.accessKey, accessKey)
     up(this.clazz, clazz)
@@ -37,7 +48,19 @@ class Button extends Tag {
     if (content != null) {
       contents += content
     }
-    // TODO: add tag-specific attributes
+    up(this.autoFocus, autoFocus)
+    if (disabled != null) {
+      up(this.disabled, disabled.booleanValue())
+    }
+    up(this.form, form)
+    up(this.formAction, formAction)
+    up(this.formEncType, formEncType)
+    up(this.formMethod, formMethod)
+    up(this.formNoValidate, formNoValidate)
+    up(this.formTarget, formTarget)
+    up(this.name, name)
+    up(this.buttonType, buttonType)
+    up(this.value, value)
   }
 
   def tag = "button"

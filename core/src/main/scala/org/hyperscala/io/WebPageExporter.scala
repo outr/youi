@@ -143,6 +143,7 @@ private class WebPageExporter(webPage: WebPage, name: String) {
     }
     case jsc: JavaScriptContent => "JavaScript(\"\"\"%s\"\"\")".format(jsc.toJS)
     case inputType: InputType => "InputType.%s".format(inputType.name)
+    case i: Int => i.toString
     case s: String => "\"%s\"".format(s)
   }
 }

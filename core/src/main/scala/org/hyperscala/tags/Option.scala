@@ -19,7 +19,11 @@ class Option extends Tag {
            spellCheck: String = null,
            tabIndex: String = null,
            title: String = null,
-           content: String = null) = {
+           content: String = null,
+           disabled: String = null,
+           label: String = null,
+           selected: String = null,
+           value: String = null) = {
     this()
     up(this.accessKey, accessKey)
     up(this.clazz, clazz)
@@ -37,7 +41,10 @@ class Option extends Tag {
     if (content != null) {
       contents += content
     }
-    // TODO: add tag-specific attributes
+    up(this.disabled, disabled)
+    up(this.label, label)
+    up(this.selected, selected)
+    up(this.value, value)
   }
 
   def tag = "option"

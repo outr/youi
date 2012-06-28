@@ -30,7 +30,10 @@ class RenderServlet extends HttpServlet {
     val filename = request.getRequestURI.substring(1)
     val webPage = pages.get(filename) match {
       case Some(page) => page
-      case None => webSite.default
+      case None => pages.get(request.getRequestURI) match {
+        case Some(page) => page
+        case None => webSite.default
+      }
     }
     webPage.write(writer)
     writer.close()

@@ -19,7 +19,13 @@ class Select extends Tag {
            spellCheck: String = null,
            tabIndex: String = null,
            title: String = null,
-           content: String = null) = {
+           content: String = null,
+           autoFocus: String = null,
+           disabled: String = null,
+           form: String = null,
+           multiple: String = null,
+           name: String = null,
+           size: String = null) = {
     this()
     up(this.accessKey, accessKey)
     up(this.clazz, clazz)
@@ -37,7 +43,12 @@ class Select extends Tag {
     if (content != null) {
       contents += content
     }
-    // TODO: add tag-specific attributes
+    up(this.autoFocus, autoFocus)
+    up(this.disabled, disabled)
+    up(this.form, form)
+    up(this.multiple, multiple)
+    up(this.name, name)
+    up(this.size, size)
   }
 
   def tag = "select"

@@ -4,7 +4,7 @@ import Keys._
 import com.github.siasia.WebPlugin._
 import com.github.siasia.PluginKeys._
 
-object HyperScalaBuild extends Build {
+object HyperscalaBuild extends Build {
   val sgineVersion = "1.0-SNAPSHOT"
 
   val sgineReflect = "org.sgine" %% "sgine-reflect" % sgineVersion
@@ -71,6 +71,11 @@ object HyperScalaBuild extends Build {
     .aggregate(core, helloworld, numberguess, todomvc)
   lazy val core = Project("core", file("core"), settings = createSettings("hyperscala-core"))
     .settings(libraryDependencies += servletApi)
+  lazy val basic = Project("basic", file("examples/basic"), settings = createSettings("hyperscala-basic"))
+    .dependsOn(core)
+    .settings(webSettings: _*)
+    .settings(port := 8080)
+    .settings(libraryDependencies ++= Seq(jettyServer, jettyWebapp, jettyServlet, jettyJsp, glassfishJsp))
   lazy val helloworld = Project("helloworld", file("examples/helloworld"), settings = createSettings("hyperscala-helloworld"))
     .dependsOn(core)
     .settings(webSettings: _*)

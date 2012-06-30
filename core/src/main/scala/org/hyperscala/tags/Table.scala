@@ -19,7 +19,8 @@ class Table extends Tag {
            spellCheck: String = null,
            tabIndex: String = null,
            title: String = null,
-           content: String = null) = {
+           content: String = null,
+           border: String = null) = {
     this()
     up(this.accessKey, accessKey)
     up(this.clazz, clazz)
@@ -37,7 +38,7 @@ class Table extends Tag {
     if (content != null) {
       contents += content
     }
-    // TODO: add tag-specific attributes
+    up(this.border, border)
   }
 
   def tag = "table"

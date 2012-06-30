@@ -19,7 +19,15 @@ class Form extends Tag {
            spellCheck: String = null,
            tabIndex: String = null,
            title: String = null,
-           content: String = null) = {
+           content: String = null,
+           acceptCharset: String = null,
+           action: String = null,
+           autoComplete: String = null,
+           encType: String = null,
+           method: String = null,
+           name: String = null,
+           noValidate: String = null,
+           target: String = null) = {
     this()
     up(this.accessKey, accessKey)
     up(this.clazz, clazz)
@@ -37,7 +45,14 @@ class Form extends Tag {
     if (content != null) {
       contents += content
     }
-    // TODO: add tag-specific attributes
+    up(this.acceptCharset, acceptCharset)
+    up(this.action, action)
+    up(this.autoComplete, autoComplete)
+    up(this.encType, encType)
+    up(this.method, method)
+    up(this.name, name)
+    up(this.noValidate, noValidate)
+    up(this.target, target)
   }
 
   def tag = "form"

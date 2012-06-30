@@ -7,7 +7,7 @@ import org.hyperscala.js.JavaScriptContent
 /**
  * @author Matt Hicks <mhicks@sgine.org>
  */
-class Head extends Container with BodyContent {
+class Head extends Container[WebContent] with BodyContent {
   object title extends Property[String] with WebContent {
     def xml = <title>{value}</title>
   }

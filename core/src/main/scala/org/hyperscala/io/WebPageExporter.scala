@@ -2,7 +2,7 @@ package org.hyperscala.io
 
 import org.hyperscala._
 import js.JavaScriptContent
-import style.{Display, Length, StyleProperty, StyleSheet}
+import style._
 import org.sgine.Color
 import tags.attributes.InputType
 import tags.{Tag, Text}
@@ -16,7 +16,7 @@ object WebPageExporter {
 }
 
 private class WebPageExporter(webPage: WebPage, name: String) {
-  val LengthRegex = """(\d*)(.*)""".r
+  val LengthRegex = """([\d-.]*)(.*)""".r
 
   var depth = 0
   val b = new StringBuilder
@@ -87,7 +87,7 @@ private class WebPageExporter(webPage: WebPage, name: String) {
       }
     }
     content match {
-      case container: Container => {
+      case container: Container[_] => {
         container.contents.foreach {
           case text: Text => writeLine("contents += \"\"\"%s\"\"\"".format(text.value.value), prefix)
           case tag: Tag => {
@@ -137,13 +137,22 @@ private class WebPageExporter(webPage: WebPage, name: String) {
         "Length.Auto"
       } else if (t == "inherit") {
         "Length.Inherit"
+      } else if (n.length == 0) {
+        "Length(\"%s\")".format(t)
+      } else if (n.startsWith("-")) {
+        "(%s).%s".format(n, t)
       } else {
         "%s.%s".format(n, t)
       }
     }
+    case alignment: Alignment => "Alignment.%s".format(alignment.value.capitalize)
+    case position: Position => "Position.%s".format(position.value.capitalize)
+    case float: Float => "Float.%s".format(float.value.capitalize)
+    case clear: Clear => "Clear.%s".format(clear.value.capitalize)
     case jsc: JavaScriptContent => "JavaScript(\"\"\"%s\"\"\")".format(jsc.toJS)
     case inputType: InputType => "InputType.%s".format(inputType.name)
     case i: Int => i.toString
+    case b: Boolean => "true"
     case s: String => "\"%s\"".format(s)
   }
 }

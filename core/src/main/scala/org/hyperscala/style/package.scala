@@ -2,9 +2,12 @@ package org.hyperscala
 
 import style.{FontSize, Length}
 
+import scala.math._
+
 package object style {
   implicit def s2Resource(s: String): Resource = Resource(s)
   implicit def int2Convertable(i: Int) = ConvertableInt(i)
+  implicit def double2Convertable(d: Double) = ConvertableInt(round(d).toInt)
 
   def xxSmall = FontSize.XXSmall
   def xSmall = FontSize.XSmall

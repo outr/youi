@@ -2,6 +2,7 @@ package org.hyperscala
 
 import js.JavaScriptContent
 import tags.attributes.AttributeValue
+import value.Property
 import xml._
 
 
@@ -28,6 +29,21 @@ trait BodyContent extends WebContent {
   private[hyperscala] var attributes = Map.empty[String, WebAttribute]
 
   def custom(name: String, value: String) = attributes += name -> new CustomAttribute(name, value)
+
+  /**
+   * Updates attribute with value if it's not null.
+   */
+  protected def up[T](attribute: Property[T], value: T) = {
+    if (value != null) {
+      attribute := value
+    }
+  }
+
+  protected def up(attribute: Property[Int], value: java.lang.Integer) = {
+    if (value != null) {
+      attribute := value.intValue()
+    }
+  }
 }
 
 class CustomAttribute(name: String, value: String)(implicit bodyContent: BodyContent) extends GenericAttribute[String](name) {

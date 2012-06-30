@@ -108,6 +108,7 @@ private class WebPageImporter(html: Elem, filename: String) {
                 case "InputType" => ga.asInstanceOf[GenericAttribute[InputType]] := InputType(value)
                 case "String" => ga.asInstanceOf[GenericAttribute[String]] := value
                 case "int" => ga.asInstanceOf[GenericAttribute[Int]] := value.toInt
+                case "boolean" => ga.asInstanceOf[GenericAttribute[Boolean]] := true
                 case _ => throw new RuntimeException("Unable to handle attribute type of %s".format(ga.manifest.erasure))
               }
               case ss: StyleSheet => {

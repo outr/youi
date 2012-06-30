@@ -6,7 +6,7 @@ import org.sgine.scene.MutableContainer
 /**
  * @author Matt Hicks <mhicks@sgine.org>
  */
-trait Container extends MutableContainer[WebContent] with WebContent {
+trait Container[T <: WebContent] extends MutableContainer[T] with WebContent {
   override protected def children = contents.map{_.xml}
 
   override def beforeRender() {
@@ -36,7 +36,7 @@ trait Container extends MutableContainer[WebContent] with WebContent {
 
     override def length = super.length
 
-    override def +=(child: WebContent) = {
+    override def +=(child: T) = {
       if (JavaScriptContext.inContext && reference != None) {
         val content = child.render.replaceAll("\n", """\\""" + "\n").replaceAll("'", """\\""" + "'")
         Instruction(output = Some("%s.innerHTML += %s;\r\n".format(reference.get, content)))
@@ -44,7 +44,7 @@ trait Container extends MutableContainer[WebContent] with WebContent {
       super.+=(child)
     }
 
-    override def -=(child: WebContent) = {
+    override def -=(child: T) = {
       super.-=(child)
     }
   }

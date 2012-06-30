@@ -22,6 +22,11 @@ trait WebAttribute extends Var {
 
 object WebAttribute {
   def apply[T](name: String)(implicit conversion: T => String, bodyContent: BodyContent, manifest: Manifest[T]) = new GenericAttribute[T](name)(conversion, bodyContent, manifest)
+  def apply[T](name: String, value: T)(implicit conversion: T => String, bodyContent: BodyContent, manifest: Manifest[T]) = {
+    val a = new GenericAttribute[T](name)(conversion, bodyContent, manifest)
+    a := value
+    a
+  }
 }
 
 class GenericAttribute[T](val name: String)(implicit conversion: T => String, val bodyContent: BodyContent, val manifest: Manifest[T]) extends Property[T] with WebAttribute {

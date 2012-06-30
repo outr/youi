@@ -530,9 +530,21 @@ class StyleSheet(val name: String)(implicit val bodyContent: BodyContent) extend
           case Some(sp) => sp.manifest.erasure.getSimpleName match {
             case "Display" => sp.asInstanceOf[StyleProperty[Display]] := Display(v)
             case "Length" => sp.asInstanceOf[StyleProperty[Length]] := Length(v)
+            case "Color" => sp.asInstanceOf[StyleProperty[Color]] := (if (v.startsWith("#")) {
+              Color.immutable(v)
+            } else if (v.startsWith("rgb(")) {
+              val s = v.substring(4, v.length - 1).split(",")
+              Color.immutable(s(0).trim.toInt, s(1).trim.toInt, s(2).trim.toInt, 255)
+            } else {
+              Color.values.find(c => c.name.equalsIgnoreCase(v)).getOrElse(throw new RuntimeException("Unable to find color named: %s".format(v)))
+            })
+            case "Alignment" => sp.asInstanceOf[StyleProperty[Alignment]] := Alignment(v)
+            case "Position" => sp.asInstanceOf[StyleProperty[Position]] := Position(v)
+            case "Float" => sp.asInstanceOf[StyleProperty[Float]] := Float(v)
+            case "Clear" => sp.asInstanceOf[StyleProperty[Clear]] := Clear(v)
             case "String" => sp.asInstanceOf[StyleProperty[String]] := v
           }
-          case None => throw new RuntimeException("Unable to find attribute: %s".format(k))
+          case None => new CustomStyleProperty(k, v)
         }
       }
     } catch {
@@ -551,3 +563,5 @@ class StyleProperty[T](val _name: String)(implicit ss: StyleSheet, val manifest:
     case _ => value
   }
 }
+
+class CustomStyleProperty(_name: String, value: String)(implicit ss: StyleSheet) extends StyleProperty[String](_name)(ss, Manifest.classType(classOf[String]))

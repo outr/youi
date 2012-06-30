@@ -18,7 +18,14 @@ class IFrame extends Tag {
            lang: String = null,
            spellCheck: String = null,
            tabIndex: String = null,
-           title: String = null) = {
+           title: String = null,
+           height: String = null,
+           name: String = null,
+           sandbox: String = null,
+           seamless: String = null,
+           src: String = null,
+           srcDoc: String = null,
+           width: String = null) = {
     this()
     up(this.accessKey, accessKey)
     up(this.clazz, clazz)
@@ -33,7 +40,13 @@ class IFrame extends Tag {
     up(this.spellCheck, spellCheck)
     up(this.tabIndex, tabIndex)
     up(this.title, title)
-    // TODO: add tag-specific attributes
+    up(this.height, height)
+    up(this.name, name)
+    up(this.sandbox, sandbox)
+    up(this.seamless, seamless)
+    up(this.src, src)
+    up(this.srcDoc, srcDoc)
+    up(this.width, width)
   }
 
   def tag = "iframe"

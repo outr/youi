@@ -1,4 +1,4 @@
-package com.github.todomvc
+package org.hyperscala.todomvc
 
 import org.hyperscala.WebSite
 

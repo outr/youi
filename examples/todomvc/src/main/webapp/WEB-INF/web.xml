@@ -5,10 +5,10 @@
     <display-name>outr</display-name>
     <servlet>
         <servlet-name>RenderServlet</servlet-name>
-        <servlet-class>com.outr.webframework.server.RenderServlet</servlet-class>
+        <servlet-class>org.hyperscala.server.RenderServlet</servlet-class>
         <init-param>
             <param-name>webSite</param-name>
-            <param-value>com.github.todomvc.TodoMVCSite</param-value>
+            <param-value>org.hyperscala.todomvc.TodoMVCSite</param-value>
         </init-param>
     </servlet>
     <servlet>

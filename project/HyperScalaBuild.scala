@@ -4,7 +4,7 @@ import Keys._
 import com.github.siasia.WebPlugin._
 import com.github.siasia.PluginKeys._
 
-object HyperscalaBuild extends Build {
+object HyperScalaBuild extends Build {
   val sgineVersion = "1.0-SNAPSHOT"
 
   val sgineReflect = "org.sgine" %% "sgine-reflect" % sgineVersion

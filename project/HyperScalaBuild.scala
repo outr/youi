@@ -5,10 +5,8 @@ import com.github.siasia.WebPlugin._
 import com.github.siasia.PluginKeys._
 
 object HyperScalaBuild extends Build {
-  val sgineVersion = "1.0-SNAPSHOT"
-
-  val sgineReflect = "org.sgine" %% "sgine-reflect" % sgineVersion
-  val sgineScene = "org.sgine" %% "sgine-scene" % sgineVersion
+  val powerScalaReflect = "org.powerscala" %% "powerscala-reflect" % "1.0"
+  val powerScalaHierarchy = "org.powerscala" %% "powerscala-hierarchy" % "1.0"
 
   val htmlcleaner = "net.sourceforge.htmlcleaner" % "htmlcleaner" % "2.2"
 
@@ -22,12 +20,12 @@ object HyperScalaBuild extends Build {
   val servletApi = "javax.servlet" % "javax.servlet-api" % "3.0.1"
 
   val baseSettings = Defaults.defaultSettings ++ Seq(
-    version := "1.0",
+    version := "0.1",
     organization := "org.hyperscala",
-    scalaVersion := "2.9.1",
+    scalaVersion := "2.9.2",
     libraryDependencies ++= Seq(
-      sgineReflect,
-      sgineScene,
+      powerScalaReflect,
+      powerScalaHierarchy,
       htmlcleaner
     ),
     scalacOptions ++= Seq("-unchecked", "-deprecation"),

@@ -1,7 +1,7 @@
 package org.hyperscala
 
 import js.Var
-import org.sgine.hierarchy.Element
+import org.powerscala.hierarchy.Element
 import xml.{PrettyPrinter, Node}
 import java.io.{FileWriter, File, PrintWriter}
 import java.util

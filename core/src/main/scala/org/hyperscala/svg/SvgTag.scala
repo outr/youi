@@ -2,7 +2,7 @@ package org.hyperscala.svg
 
 import org.hyperscala.{BodyContent, Container, WebAttribute}
 import org.hyperscala.javascript.events.EventSupport
-import org.sgine.Color
+import org.powerscala.Color
 
 /**
  * @author Matt Hicks <mhicks@sgine.org>

@@ -1,7 +1,7 @@
 package org.hyperscala
 
 import js.{Instruction, JavaScriptContext}
-import org.sgine.scene.MutableContainer
+import org.powerscala.scene.MutableContainer
 
 /**
  * @author Matt Hicks <mhicks@sgine.org>

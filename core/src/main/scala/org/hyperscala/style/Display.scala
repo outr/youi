@@ -1,6 +1,6 @@
 package org.hyperscala.style
 
-import org.sgine.{Enumerated, EnumEntry}
+import org.powerscala.{Enumerated, EnumEntry}
 
 /**
  * @author Matt Hicks <mhicks@sgine.org>

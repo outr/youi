@@ -3,7 +3,7 @@ package org.hyperscala.server
 import javax.servlet.http.{HttpServletResponse, HttpServletRequest, HttpServlet}
 import javax.servlet.ServletConfig
 
-import org.sgine.reflect._
+import org.powerscala.reflect._
 import org.hyperscala.{WebPage, WebSite}
 
 /**

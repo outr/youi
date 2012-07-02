@@ -1,6 +1,6 @@
 package org.hyperscala.value
 
-import org.sgine.{MutableColor, ImmutableColor, Color}
+import org.powerscala.{MutableColor, ImmutableColor, Color}
 
 
 /**

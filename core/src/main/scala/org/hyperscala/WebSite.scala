@@ -1,6 +1,6 @@
 package org.hyperscala
 
-import org.sgine.reflect._
+import org.powerscala.reflect._
 
 /**
  * List WebPage instances that should be processed and converted to HTML pages.

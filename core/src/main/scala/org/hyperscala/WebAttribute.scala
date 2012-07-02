@@ -2,7 +2,7 @@ package org.hyperscala
 
 import js.{Instruction, Var, TypedVar}
 import value.Property
-import org.sgine.reflect._
+import org.powerscala.reflect._
 
 trait WebAttribute extends Var {
   def name: String

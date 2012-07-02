@@ -1,7 +1,7 @@
 package org.hyperscala.svg
 
 import org.hyperscala.{GenericAttribute, WebAttribute}
-import org.sgine.Color
+import org.powerscala.Color
 
 /**
  * @author Matt Hicks <mhicks@sgine.org>

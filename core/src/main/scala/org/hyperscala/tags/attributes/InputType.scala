@@ -1,6 +1,6 @@
 package org.hyperscala.tags.attributes
 
-import org.sgine.{Enumerated, EnumEntry}
+import org.powerscala.{Enumerated, EnumEntry}
 
 /**
  * @author Matt Hicks <mhicks@sgine.org>

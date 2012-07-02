@@ -1,10 +1,10 @@
 package org.hyperscala.style
 
 import org.hyperscala.value.Property
-import org.sgine.scene.AbstractMutableContainer
-import org.sgine.hierarchy.Element
+import org.powerscala.scene.AbstractMutableContainer
+import org.powerscala.hierarchy.Element
 import org.hyperscala.{BodyContent, WebAttribute}
-import org.sgine.Color
+import org.powerscala.Color
 
 /**
  * @author Matt Hicks <mhicks@sgine.org>

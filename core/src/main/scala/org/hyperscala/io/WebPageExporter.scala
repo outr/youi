@@ -3,7 +3,7 @@ package org.hyperscala.io
 import org.hyperscala._
 import js.JavaScriptContent
 import style._
-import org.sgine.Color
+import org.powerscala.Color
 import tags.attributes.InputType
 import tags.{Tag, Text}
 import annotation.tailrec
@@ -26,7 +26,7 @@ private class WebPageExporter(webPage: WebPage, name: String) {
   writeLine("import org.hyperscala.style._")
   writeLine("import org.hyperscala.tags._")
   writeLine("import org.hyperscala.tags.attributes._")
-  writeLine("import org.sgine.Color")
+  writeLine("import org.powerscala.Color")
   writeLine()
   writeLine("object %s extends WebPage(\"%s\") {".format(name, name))
   depth += 1

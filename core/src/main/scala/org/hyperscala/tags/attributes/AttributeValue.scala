@@ -1,7 +1,7 @@
 package org.hyperscala.tags.attributes
 
 /**
- * @author Matt Hicks <mhicks@sgine.org>
+ * @author Matt Hicks <mhicks@powerscala.org>
  */
 trait AttributeValue {
   def value: String

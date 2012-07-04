@@ -2,7 +2,7 @@ package org.hyperscala.value
 
 
 /**
- * @author Matt Hicks <mhicks@sgine.org>
+ * @author Matt Hicks <mhicks@powerscala.org>
  */
 class Property[T] {
   private var _value: Value[T] = _

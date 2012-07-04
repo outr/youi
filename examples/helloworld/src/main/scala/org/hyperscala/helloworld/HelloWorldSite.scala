@@ -4,7 +4,7 @@ import org.hyperscala.WebSite
 import org.hyperscala.io.WebPageExporter
 
 /**
- * @author Matt Hicks <mhicks@sgine.org>
+ * @author Matt Hicks <mhicks@powerscala.org>
  */
 object HelloWorldSite extends WebSite {
   val default = HelloWorldPage

@@ -15,7 +15,7 @@ import java.io.File
 import scala.collection.JavaConversions._
 
 /**
- * @author Matt Hicks <mhicks@sgine.org>
+ * @author Matt Hicks <mhicks@powerscala.org>
  */
 object WebPageImporter {
   lazy val tagClasses = classes("org.hyperscala.tags")

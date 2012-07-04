@@ -3,7 +3,7 @@ package org.hyperscala.tags
 import org.hyperscala.WebAttribute
 
 /**
- * @author Matt Hicks <mhicks@sgine.org>
+ * @author Matt Hicks <mhicks@powerscala.org>
  */
 class Option extends Tag {
   def this(accessKey: String = null,

@@ -7,7 +7,7 @@ import java.io.{FileWriter, File, PrintWriter}
 import java.util
 
 /**
- * @author Matt Hicks <mhicks@sgine.org>
+ * @author Matt Hicks <mhicks@powerscala.org>
  */
 trait WebContent extends Element with Var {
   implicit val thisWebContent: WebContent = this

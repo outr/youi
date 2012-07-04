@@ -5,7 +5,7 @@ import org.hyperscala.javascript.events.EventSupport
 import org.powerscala.Color
 
 /**
- * @author Matt Hicks <mhicks@sgine.org>
+ * @author Matt Hicks <mhicks@powerscala.org>
  */
 trait SvgTag extends Container[SvgTag] with BodyContent with EventSupport {
   implicit def c2s(color: Color) = color.name match {

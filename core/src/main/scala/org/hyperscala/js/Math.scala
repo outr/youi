@@ -1,7 +1,7 @@
 package org.hyperscala.js
 
 /**
- * @author Matt Hicks <mhicks@sgine.org>
+ * @author Matt Hicks <mhicks@powerscala.org>
  */
 object Math {
   def random() = ExistingVariable[Double]("Math.random()")

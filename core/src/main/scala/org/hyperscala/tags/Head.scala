@@ -5,7 +5,7 @@ import org.hyperscala.{WebContent, BodyContent, Container}
 import org.hyperscala.js.JavaScriptContent
 
 /**
- * @author Matt Hicks <mhicks@sgine.org>
+ * @author Matt Hicks <mhicks@powerscala.org>
  */
 class Head extends Container[WebContent] with BodyContent {
   object title extends Property[String] with WebContent {

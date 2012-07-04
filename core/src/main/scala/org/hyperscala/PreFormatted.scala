@@ -3,7 +3,7 @@ package org.hyperscala
 import scala.xml.{Text => TextNode}
 
 /**
- * @author Matt Hicks <mhicks@sgine.org>
+ * @author Matt Hicks <mhicks@powerscala.org>
  */
 trait PreFormatted extends WebContent {
   def preFormatted: Option[String] = None

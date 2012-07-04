@@ -3,7 +3,7 @@ package org.hyperscala.js
 import org.hyperscala.WebContent
 
 /**
- * @author Matt Hicks <mhicks@sgine.org>
+ * @author Matt Hicks <mhicks@powerscala.org>
  */
 object document {
   def getElementById[T <: WebContent](id: String)(implicit manifest: Manifest[T]) = {

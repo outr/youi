@@ -8,7 +8,7 @@ import attributes.InputType
 import org.hyperscala.js._
 
 /**
- * @author Matt Hicks <mhicks@sgine.org>
+ * @author Matt Hicks <mhicks@powerscala.org>
  */
 object NumberGuess extends WebPage("index.html") {
   head.title := "NumberGuess"

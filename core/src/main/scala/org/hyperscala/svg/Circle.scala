@@ -4,7 +4,7 @@ import org.hyperscala.WebAttribute
 import org.powerscala.Color
 
 /**
- * @author Matt Hicks <mhicks@sgine.org>
+ * @author Matt Hicks <mhicks@powerscala.org>
  */
 class Circle extends Shape {
   def this(id: String = null,

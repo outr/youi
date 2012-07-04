@@ -7,7 +7,7 @@ import org.powerscala.reflect._
 import org.hyperscala.{WebPage, WebSite}
 
 /**
- * @author Matt Hicks <mhicks@sgine.org>
+ * @author Matt Hicks <mhicks@powerscala.org>
  */
 class RenderServlet extends HttpServlet {
   private var webSite: WebSite = _

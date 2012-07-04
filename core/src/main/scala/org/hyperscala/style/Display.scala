@@ -3,7 +3,7 @@ package org.hyperscala.style
 import org.powerscala.{Enumerated, EnumEntry}
 
 /**
- * @author Matt Hicks <mhicks@sgine.org>
+ * @author Matt Hicks <mhicks@powerscala.org>
  */
 sealed case class Display(value: String) extends EnumEntry[Display] with StyleValue
 

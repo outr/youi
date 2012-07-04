@@ -6,7 +6,7 @@ import xml.Node
 
 
 /**
- * @author Matt Hicks <mhicks@sgine.org>
+ * @author Matt Hicks <mhicks@powerscala.org>
  */
 class Conditional extends BodyContent {
   def tag = "conditional"

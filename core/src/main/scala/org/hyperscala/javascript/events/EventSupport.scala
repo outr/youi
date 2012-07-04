@@ -4,7 +4,7 @@ import org.hyperscala.{WebAttribute, BodyContent}
 import org.hyperscala.js.JavaScriptContent
 
 /**
- * @author Matt Hicks <mhicks@sgine.org>
+ * @author Matt Hicks <mhicks@powerscala.org>
  */
 trait EventSupport extends BodyContent {
   object event {

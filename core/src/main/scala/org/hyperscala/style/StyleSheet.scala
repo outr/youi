@@ -7,7 +7,7 @@ import org.hyperscala.{BodyContent, WebAttribute}
 import org.powerscala.Color
 
 /**
- * @author Matt Hicks <mhicks@sgine.org>
+ * @author Matt Hicks <mhicks@powerscala.org>
  */
 class StyleSheet(val name: String)(implicit val bodyContent: BodyContent) extends AbstractMutableContainer[StyleProperty[_]] with WebAttribute {
   bodyContent.attributes += (name -> this)

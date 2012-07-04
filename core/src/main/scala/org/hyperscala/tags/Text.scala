@@ -6,7 +6,7 @@ import scala.xml.{Text => TextNode}
 import org.hyperscala.value.{StaticValue, Value}
 
 /**
- * @author Matt Hicks <mhicks@sgine.org>
+ * @author Matt Hicks <mhicks@powerscala.org>
  */
 case class Text(value: Value[String]) extends WebContent with PreFormatted {
   override def preFormatted = Some(value.value)

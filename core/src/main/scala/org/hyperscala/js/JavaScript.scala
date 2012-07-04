@@ -4,7 +4,7 @@ import org.hyperscala.tags._
 import org.hyperscala._
 
 /**
- * @author Matt Hicks <mhicks@sgine.org>
+ * @author Matt Hicks <mhicks@powerscala.org>
  */
 object JavaScript {
   def apply(f: => Any) = JavaScriptContext.contextualize(f)

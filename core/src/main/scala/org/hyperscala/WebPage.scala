@@ -4,7 +4,7 @@ import tags.{Head, Body}
 import org.powerscala.hierarchy.AbstractMutableContainer
 
 /**
- * @author Matt Hicks <mhicks@sgine.org>
+ * @author Matt Hicks <mhicks@powerscala.org>
  */
 class WebPage(val filename: String) extends AbstractMutableContainer[WebContent] with WebContent {
   val head = new Head()

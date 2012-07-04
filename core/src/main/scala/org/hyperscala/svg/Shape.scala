@@ -4,7 +4,7 @@ import org.hyperscala.{GenericAttribute, WebAttribute}
 import org.powerscala.Color
 
 /**
- * @author Matt Hicks <mhicks@sgine.org>
+ * @author Matt Hicks <mhicks@powerscala.org>
  */
 trait Shape extends SvgTag {
   val stroke = new GenericAttribute[Color]("stroke") {

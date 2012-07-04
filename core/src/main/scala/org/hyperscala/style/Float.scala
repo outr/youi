@@ -1,7 +1,7 @@
 package org.hyperscala.style
 
 /**
- * @author Matt Hicks <mhicks@sgine.org>
+ * @author Matt Hicks <mhicks@powerscala.org>
  */
 sealed case class Float(value: String) extends StyleValue
 

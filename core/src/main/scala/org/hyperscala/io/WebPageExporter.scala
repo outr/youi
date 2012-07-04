@@ -9,7 +9,7 @@ import tags.{Tag, Text}
 import annotation.tailrec
 
 /**
- * @author Matt Hicks <mhicks@sgine.org>
+ * @author Matt Hicks <mhicks@powerscala.org>
  */
 object WebPageExporter {
   def apply(webPage: WebPage, name: String) = new WebPageExporter(webPage, name).b.toString()

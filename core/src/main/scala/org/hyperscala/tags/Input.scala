@@ -4,7 +4,7 @@ import attributes.InputType
 import org.hyperscala.WebAttribute
 
 /**
- * @author Matt Hicks <mhicks@sgine.org>
+ * @author Matt Hicks <mhicks@powerscala.org>
  */
 class Input extends Tag {
   def this(accessKey: String = null,
@@ -46,7 +46,7 @@ class Input extends Tag {
            size: String = null,
            src: String = null,
            step: String = null,
-           inputType: InputType = null,
+           inputType: InputType = InputType.Text,
            value: String = null,
            width: String = null) = {
     this()

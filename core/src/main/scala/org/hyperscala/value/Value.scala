@@ -4,7 +4,7 @@ import org.powerscala.{MutableColor, ImmutableColor, Color}
 
 
 /**
- * @author Matt Hicks <mhicks@sgine.org>
+ * @author Matt Hicks <mhicks@powerscala.org>
  */
 trait Value[T] {
   def value: T

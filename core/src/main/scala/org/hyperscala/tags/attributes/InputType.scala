@@ -3,7 +3,7 @@ package org.hyperscala.tags.attributes
 import org.powerscala.{Enumerated, EnumEntry}
 
 /**
- * @author Matt Hicks <mhicks@sgine.org>
+ * @author Matt Hicks <mhicks@powerscala.org>
  */
 sealed case class InputType(value: String) extends EnumEntry[InputType] with AttributeValue
 

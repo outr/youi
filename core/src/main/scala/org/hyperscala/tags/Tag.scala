@@ -5,7 +5,7 @@ import org.hyperscala.style.StyleSheet
 import org.hyperscala.javascript.events.EventSupport
 
 /**
- * @author Matt Hicks <mhicks@sgine.org>
+ * @author Matt Hicks <mhicks@powerscala.org>
  */
 trait Tag extends Container[WebContent] with BodyContent with EventSupport {
   val accessKey = WebAttribute[String]("accesskey")

@@ -3,7 +3,7 @@ package org.hyperscala.style
 import io.Source
 
 /**
- * @author Matt Hicks <mhicks@sgine.org>
+ * @author Matt Hicks <mhicks@powerscala.org>
  */
 object StyleGenerator extends CSSHierarchy(null, null) {
   implicit val ordering = new Ordering[CSSHierarchy] {

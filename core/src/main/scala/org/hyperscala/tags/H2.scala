@@ -1,7 +1,7 @@
 package org.hyperscala.tags
 
 /**
- * @author Matt Hicks <mhicks@sgine.org>
+ * @author Matt Hicks <mhicks@powerscala.org>
  */
 class H2 extends Tag {
   def this(accessKey: String = null,

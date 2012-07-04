@@ -4,7 +4,7 @@ import org.hyperscala.WebAttribute
 
 
 /**
- * @author Matt Hicks <mhicks@sgine.org>
+ * @author Matt Hicks <mhicks@powerscala.org>
  */
 class A extends Tag {
   def this(accessKey: String = null,

@@ -4,7 +4,7 @@ import org.hyperscala.WebAttribute
 import org.hyperscala.js.JavaScriptContent
 
 /**
- * @author Matt Hicks <mhicks@sgine.org>
+ * @author Matt Hicks <mhicks@powerscala.org>
  */
 class Script extends Tag {
   def this(accessKey: String = null,

@@ -7,7 +7,7 @@ import xml._
 
 
 /**
- * @author Matt Hicks <mhicks@sgine.org>
+ * @author Matt Hicks <mhicks@powerscala.org>
  */
 trait BodyContent extends WebContent {
   implicit val bodyContent: BodyContent = this

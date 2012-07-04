@@ -4,7 +4,7 @@ import js.{Instruction, JavaScriptContext}
 import org.powerscala.hierarchy.MutableContainer
 
 /**
- * @author Matt Hicks <mhicks@sgine.org>
+ * @author Matt Hicks <mhicks@powerscala.org>
  */
 trait Container[T <: WebContent] extends MutableContainer[T] with WebContent {
   override protected def children = contents.map{_.xml}

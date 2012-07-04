@@ -5,7 +5,7 @@ import org.powerscala.reflect._
 /**
  * List WebPage instances that should be processed and converted to HTML pages.
  *
- * @author Matt Hicks <mhicks@sgine.org>
+ * @author Matt Hicks <mhicks@powerscala.org>
  */
 trait WebSite {
   def default: WebPage

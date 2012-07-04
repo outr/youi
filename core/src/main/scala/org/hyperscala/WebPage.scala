@@ -1,7 +1,7 @@
 package org.hyperscala
 
 import tags.{Head, Body}
-import org.powerscala.scene.AbstractMutableContainer
+import org.powerscala.hierarchy.AbstractMutableContainer
 
 /**
  * @author Matt Hicks <mhicks@sgine.org>

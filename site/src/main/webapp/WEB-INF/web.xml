@@ -8,7 +8,7 @@
         <servlet-class>org.hyperscala.server.RenderServlet</servlet-class>
         <init-param>
             <param-name>webSite</param-name>
-            <param-value>org.hyperscala.examples.basic.BasicExamplesSite</param-value>
+            <param-value>org.hyperscala.site.HyperscalaSite</param-value>
         </init-param>
     </servlet>
     <servlet>

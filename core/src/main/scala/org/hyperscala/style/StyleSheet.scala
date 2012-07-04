@@ -1,7 +1,7 @@
 package org.hyperscala.style
 
 import org.hyperscala.value.Property
-import org.powerscala.scene.AbstractMutableContainer
+import org.powerscala.hierarchy.AbstractMutableContainer
 import org.powerscala.hierarchy.Element
 import org.hyperscala.{BodyContent, WebAttribute}
 import org.powerscala.Color
@@ -544,13 +544,15 @@ class StyleSheet(val name: String)(implicit val bodyContent: BodyContent) extend
             case "Clear" => sp.asInstanceOf[StyleProperty[Clear]] := Clear(v)
             case "String" => sp.asInstanceOf[StyleProperty[String]] := v
           }
-          case None => new CustomStyleProperty(k, v)
+          case None => custom(k, v)
         }
       }
     } catch {
       case exc => throw new RuntimeException("Error parsing: [%s]".format(value), exc)
     }
   }
+
+  def custom(name: String, value: String) = new CustomStyleProperty(name, value)
 
   protected[style] def register(property: StyleProperty[_]) = addChild(property)
 }
@@ -564,4 +566,6 @@ class StyleProperty[T](val _name: String)(implicit ss: StyleSheet, val manifest:
   }
 }
 
-class CustomStyleProperty(_name: String, value: String)(implicit ss: StyleSheet) extends StyleProperty[String](_name)(ss, Manifest.classType(classOf[String]))
+class CustomStyleProperty(_name: String, value: String)(implicit ss: StyleSheet) extends StyleProperty[String](_name)(ss, Manifest.classType(classOf[String])) {
+  this := value
+}

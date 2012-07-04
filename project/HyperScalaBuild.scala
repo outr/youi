@@ -5,6 +5,8 @@ import com.github.siasia.WebPlugin._
 import com.github.siasia.PluginKeys._
 
 object HyperScalaBuild extends Build {
+  // ~;container:start; container:reload /
+
   val powerScalaReflect = "org.powerscala" %% "powerscala-reflect" % "1.0"
   val powerScalaHierarchy = "org.powerscala" %% "powerscala-hierarchy" % "1.0"
 
@@ -71,9 +73,6 @@ object HyperScalaBuild extends Build {
     .settings(libraryDependencies += servletApi)
   lazy val basic = Project("basic", file("examples/basic"), settings = createSettings("hyperscala-basic"))
     .dependsOn(core)
-    .settings(webSettings: _*)
-    .settings(port := 8080)
-    .settings(libraryDependencies ++= Seq(jettyServer, jettyWebapp, jettyServlet, jettyJsp, glassfishJsp))
   lazy val helloworld = Project("helloworld", file("examples/helloworld"), settings = createSettings("hyperscala-helloworld"))
     .dependsOn(core)
     .settings(webSettings: _*)
@@ -86,6 +85,11 @@ object HyperScalaBuild extends Build {
     .settings(libraryDependencies ++= Seq(jettyServer, jettyWebapp, jettyServlet, jettyJsp, glassfishJsp))
   lazy val todomvc = Project("todomvc", file("examples/todomvc"), settings = createSettings("hyperscala-todomvc"))
     .dependsOn(core)
+    .settings(webSettings: _*)
+    .settings(port := 8080)
+    .settings(libraryDependencies ++= Seq(jettyServer, jettyWebapp, jettyServlet, jettyJsp, glassfishJsp))
+  lazy val site = Project("site", file("site"), settings = createSettings("hyperscala-site"))
+    .dependsOn(core, basic)
     .settings(webSettings: _*)
     .settings(port := 8080)
     .settings(libraryDependencies ++= Seq(jettyServer, jettyWebapp, jettyServlet, jettyJsp, glassfishJsp))

@@ -1,7 +1,7 @@
 package org.hyperscala
 
 import js.{Instruction, JavaScriptContext}
-import org.powerscala.scene.MutableContainer
+import org.powerscala.hierarchy.MutableContainer
 
 /**
  * @author Matt Hicks <mhicks@sgine.org>

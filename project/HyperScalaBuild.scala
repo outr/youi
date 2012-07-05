@@ -7,6 +7,7 @@ import com.github.siasia.PluginKeys._
 object HyperScalaBuild extends Build {
   // ~;container:start; container:reload /
 
+  val powerScalaConvert = "org.powerscala" %% "powerscala-convert" % "1.0"
   val powerScalaReflect = "org.powerscala" %% "powerscala-reflect" % "1.0"
   val powerScalaHierarchy = "org.powerscala" %% "powerscala-hierarchy" % "1.0"
 
@@ -26,6 +27,7 @@ object HyperScalaBuild extends Build {
     organization := "org.hyperscala",
     scalaVersion := "2.9.2",
     libraryDependencies ++= Seq(
+      powerScalaConvert,
       powerScalaReflect,
       powerScalaHierarchy,
       htmlcleaner

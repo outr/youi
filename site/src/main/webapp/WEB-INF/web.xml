@@ -13,7 +13,7 @@
     </servlet>
     <servlet>
         <servlet-name>POSTExampleService</servlet-name>
-        <servlet-class>org.hyperscala.site.service.POSTExampleService</servlet-class>
+        <servlet-class>org.hyperscala.examples.basic.service.POSTExampleService</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>default</servlet-name>

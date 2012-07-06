@@ -15,10 +15,14 @@ abstract class Service[T, R](implicit manifest: Manifest[T]) extends HttpServlet
 
   override def doPost(req: HttpServletRequest, resp: HttpServletResponse) {
     val session = req.getSession
-    val ref = convert(req.getParameterMap)
-    val result = process(ref)
-    session.setAttribute("%s.result".format(getClass.getName), result)
-    respond(result, resp)
+    convert(req.getParameterMap) match {
+      case Some(ref) => {
+        val result = process(ref)
+        session.setAttribute("%s.result".format(getClass.getName), result)
+        respond(result, resp)
+      }
+      case None => respond(loadResult(req), resp)
+    }
   }
 
   protected def loadResult(req: HttpServletRequest): R = {
@@ -29,8 +33,15 @@ abstract class Service[T, R](implicit manifest: Manifest[T]) extends HttpServlet
   }
 
   override def doGet(req: HttpServletRequest, resp: HttpServletResponse) {
-    val result = loadResult(req)
-    respond(result, resp)
+    val session = req.getSession
+    convert(req.getParameterMap) match {
+      case Some(ref) => {
+        val result = process(ref)
+        session.setAttribute("%s.result".format(getClass.getName), result)
+        respond(result, resp)
+      }
+      case None => respond(loadResult(req), resp)
+    }
   }
 
   private def convert(map: java.util.Map[String, Array[String]]) = {
@@ -40,11 +51,21 @@ abstract class Service[T, R](implicit manifest: Manifest[T]) extends HttpServlet
         name -> values.head
       }
     }
-    enhanced.create[T](args)
+    try {
+      Some(enhanced.create[T](args))
+    } catch {
+      case exc => {
+        exc.printStackTrace()
+        None
+      }
+    }
   }
 
   private def respond(result: R, resp: HttpServletResponse) = {
-    val json = Object2JSON.toJSON(result)
+    val json = result match {
+      case null => "{}"
+      case _ => Object2JSON.toJSON(result)
+    }
     resp.setContentType("application/json")
     val writer = resp.getWriter
     try {

@@ -57,6 +57,12 @@ object WebPageImporter {
       }.toList
     }
   }
+
+  def main(args: Array[String]): Unit = {
+    val webPage = WebPageImporter(Source.fromFile(args(0)), "test.html")
+    val response = WebPageExporter(webPage, "ExampleExport")
+    println(response)
+  }
 }
 
 private class WebPageImporter(html: Elem, filename: String) {

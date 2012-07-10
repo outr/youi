@@ -1,17 +1,26 @@
 package org.hyperscala.server
 
 import javax.servlet.http.{HttpServletResponse, HttpServletRequest, HttpServlet}
+import javax.servlet.ServletConfig
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-trait ServiceManager[S <: Session] extends HttpServlet {
-  private var services = List.empty[Service[_, _]]
+abstract class ServiceManager[S <: Session](implicit manifest: Manifest[S]) extends HttpServlet {
+  private var services = List.empty[Service[_, _, S]]
+
+  override def init(config: ServletConfig) = {
+    super.init(config)
+    config.getInitParameter("services") match {
+      case null => // Nothing to do
+      case s => s.split(",").foreach(s => register(Class.forName(s.trim).newInstance().asInstanceOf[Service[_, _, S]]))
+    }
+  }
 
   def createSession(): S
 
-  def session(req: HttpServletRequest) = {
-    val sessionKey = "org.hyperscala.server.Session"
+  def loadSession(req: HttpServletRequest) = {
+    val sessionKey = manifest.erasure.getName
     val httpSession = req.getSession
     httpSession.getAttribute(sessionKey) match {
       case null => {
@@ -25,10 +34,21 @@ trait ServiceManager[S <: Session] extends HttpServlet {
 
   override def service(req: HttpServletRequest, resp: HttpServletResponse) {
     // Lookup service
-
+    val uri = req.getRequestURI
+    val session = loadSession(req)
+    services.find(s => s.matches(uri)) match {
+      case Some(service) => service(session, req, resp)
+      case None => {
+        resp.sendError(HttpServletResponse.SC_NOT_FOUND, "The requested page [%s] was not found.".format(uri))
+      }
+    }
   }
 
-  def register(service: Service[_, _]) = synchronized {
+  def register(service: Service[_, _, S]) = synchronized {
     services = (service :: services.reverse).reverse
   }
+}
+
+class BasicServiceManager extends ServiceManager[Session] {
+  def createSession() = new Session
 }

@@ -13,18 +13,3 @@ class Session {
 
   def update(name: String, value: Any) = map += name -> value
 }
-
-object Session {
-  private val sessions = new ThreadLocal[Session]
-
-  def apply(session: Session)(f: => Any) = {
-    sessions.set(session)
-    try {
-      f
-    } finally {
-      sessions.set(null)
-    }
-  }
-
-  def apply() = sessions.get()
-}

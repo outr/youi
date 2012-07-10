@@ -12,8 +12,12 @@
         </init-param>
     </servlet>
     <servlet>
-        <servlet-name>POSTExampleService</servlet-name>
-        <servlet-class>org.hyperscala.examples.basic.service.POSTExampleService</servlet-class>
+        <servlet-name>ServiceManager</servlet-name>
+        <servlet-class>org.hyperscala.server.BasicServiceManager</servlet-class>
+        <init-param>
+            <param-name>services</param-name>
+            <param-value>org.hyperscala.examples.basic.service.POSTExampleService</param-value>
+        </init-param>
     </servlet>
     <servlet>
         <servlet-name>default</servlet-name>
@@ -76,8 +80,8 @@
         <url-pattern>*.html</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>POSTExampleService</servlet-name>
-        <url-pattern>/service/postexample</url-pattern>
+        <servlet-name>ServiceManager</servlet-name>
+        <url-pattern>/service/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>default</servlet-name>

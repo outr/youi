@@ -1,6 +1,6 @@
 package org.hyperscala.server
 
-import javax.servlet.http.{HttpServletResponse, HttpServletRequest, HttpServlet}
+import javax.servlet.http.{HttpServletResponse, HttpServletRequest}
 
 import scala.collection.JavaConversions._
 
@@ -10,38 +10,17 @@ import org.powerscala.convert.json.Object2JSON
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-abstract class Service[T, R](implicit manifest: Manifest[T]) extends HttpServlet {
+abstract class Service[T, R, S <: Session](implicit manifest: Manifest[T]) {
   lazy val enhanced: EnhancedClass = manifest.erasure
 
-  override def doPost(req: HttpServletRequest, resp: HttpServletResponse) {
-    val session = req.getSession
-    convert(req.getParameterMap) match {
-      case Some(ref) => {
-        val result = process(ref)
-        session.setAttribute("%s.result".format(getClass.getName), result)
-        respond(result, resp)
-      }
-      case None => respond(loadResult(req), resp)
-    }
-  }
+  def matches(uri: String): Boolean
 
-  protected def loadResult(req: HttpServletRequest): R = {
-    req.getSession.getAttribute("%s.result".format(getClass.getName)).asInstanceOf[R] match {
-      case null => default
-      case r => r
-    }
-  }
+  def process(session: S, ref: Option[T]): R
 
-  override def doGet(req: HttpServletRequest, resp: HttpServletResponse) {
-    val session = req.getSession
-    convert(req.getParameterMap) match {
-      case Some(ref) => {
-        val result = process(ref)
-        session.setAttribute("%s.result".format(getClass.getName), result)
-        respond(result, resp)
-      }
-      case None => respond(loadResult(req), resp)
-    }
+  def apply(session: S, req: HttpServletRequest, resp: HttpServletResponse) = {
+    val ref = convert(req.getParameterMap)
+    val response = process(session, ref)
+    respond(response, req, resp)
   }
 
   private def convert(map: java.util.Map[String, Array[String]]) = {
@@ -54,6 +33,7 @@ abstract class Service[T, R](implicit manifest: Manifest[T]) extends HttpServlet
     try {
       Some(enhanced.create[T](args))
     } catch {
+      case exc: IllegalArgumentException => None
       case exc => {
         exc.printStackTrace()
         None
@@ -61,22 +41,37 @@ abstract class Service[T, R](implicit manifest: Manifest[T]) extends HttpServlet
     }
   }
 
-  private def respond(result: R, resp: HttpServletResponse) = {
+  private def respond(result: R, req: HttpServletRequest, resp: HttpServletResponse) = {
     val json = result match {
       case null => "{}"
       case _ => Object2JSON.toJSON(result)
     }
-    resp.setContentType("application/json")
+    val filename = req.getRequestURI match {
+      case s if (s.indexOf('/') != -1) => s.substring(s.lastIndexOf('/') + 1)
+      case s => s
+    }
+    val (name, extension) = filename match {
+      case s if (s.indexOf('.') != -1) => s.splitAt(s.lastIndexOf('.')) match {
+        case (n, e) => n -> e.substring(1).toLowerCase
+      }
+      case s => s -> "json"
+    }
+    val response = extension match {
+      case "json" => {
+        resp.setContentType("application/json")
+        json
+      }
+      case "js" => {
+       resp.setContentType("application/javascript")
+        "document.%s = %s;".format(name, json)
+      }
+    }
     val writer = resp.getWriter
     try {
-      writer.write(json)
+      writer.write(response)
     } finally {
       writer.flush()
       writer.close()
     }
   }
-
-  def default: R = null.asInstanceOf[R]
-
-  def process(ref: T): R
 }

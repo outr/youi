@@ -32,6 +32,13 @@ trait Container[T <: WebContent] extends MutableContainer[T] with WebContent {
       super.clear()
     }
 
+    def replaceWith(children: T*) = {
+      clear()
+      add(children: _*)
+    }
+
+    def add(children: T*) = children.foreach(child => this += child)
+
     override def apply(index: Int) = super.apply(index)
 
     override def length = super.length

@@ -1,12 +1,14 @@
 package org.hyperscala
 
 import tags.{Head, Body}
-import org.powerscala.hierarchy.AbstractMutableContainer
+import org.powerscala.hierarchy.{ContainerView, AbstractMutableContainer}
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
 class WebPage(val filename: String) extends AbstractMutableContainer[WebContent] with WebContent {
+  val webContent = new ContainerView[WebContent](this)
+
   val head = new Head()
   val body = new Body()
 

@@ -7,9 +7,9 @@ import com.github.siasia.PluginKeys._
 object HyperScalaBuild extends Build {
   // ~;container:start; container:reload /
 
-  val powerScalaConvert = "org.powerscala" %% "powerscala-convert" % "1.0"
-  val powerScalaReflect = "org.powerscala" %% "powerscala-reflect" % "1.0"
-  val powerScalaHierarchy = "org.powerscala" %% "powerscala-hierarchy" % "1.0"
+  val powerScalaConvert = "org.powerscala" %% "powerscala-convert" % "1.2-SNAPSHOT"
+  val powerScalaReflect = "org.powerscala" %% "powerscala-reflect" % "1.2-SNAPSHOT"
+  val powerScalaHierarchy = "org.powerscala" %% "powerscala-hierarchy" % "1.2-SNAPSHOT"
 
   val htmlcleaner = "net.sourceforge.htmlcleaner" % "htmlcleaner" % "2.2"
 
@@ -70,7 +70,7 @@ object HyperScalaBuild extends Build {
 
   lazy val root = Project("root", file("."), settings = createSettings("hyperscala-root"))
     .settings(publishArtifact in Compile := false, publishArtifact in Test := false)
-    .aggregate(core, helloworld, numberguess, todomvc)
+    .aggregate(core, helloworld, numberguess, todomvc, site)
   lazy val core = Project("core", file("core"), settings = createSettings("hyperscala-core"))
     .settings(libraryDependencies += servletApi)
   lazy val basic = Project("basic", file("examples/basic"), settings = createSettings("hyperscala-basic"))

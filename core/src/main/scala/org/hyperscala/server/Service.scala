@@ -6,42 +6,92 @@ import scala.collection.JavaConversions._
 
 import org.powerscala.reflect._
 import org.powerscala.convert.json.Object2JSON
+import java.util.UUID
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-abstract class Service[T, R, S <: Session](implicit manifest: Manifest[T]) {
-  lazy val enhanced: EnhancedClass = manifest.erasure
+trait Service[S <: Session] {
+  protected def name: String
 
-  def matches(uri: String): Boolean
+  def js = "/service/%s.js".format(name)
+  def json = "/service/%s.json".format(name)
+
+  final def matches(uri: String) = uri.startsWith("/service/%s".format(name))
+
+  /**
+   * Invoked immediately before the service is invoked.
+   */
+  def before(session: S): Unit = {}
+
+  /**
+   * Invoked immediately after the service is invoked.
+   */
+  def after(session: S): Unit = {}
+
+  final def apply(session: S, request: HttpServletRequest, response: HttpServletResponse): Unit = {
+    before(session)
+    invoke(session, request, response)
+    after(session)
+  }
+
+  protected def invoke(session: S, request: HttpServletRequest, response: HttpServletResponse): Unit
+}
+
+abstract class ServiceResponse[R, S <: Session] extends Service[S] {
+  def process(session: S): R
+
+  protected def invoke(session: S, request: HttpServletRequest, response: HttpServletResponse) = {
+    val r = process(session)
+    Service.respond(r, request, response)
+  }
+}
+
+abstract class ServiceRequestResponse[T, R, S <: Session](implicit manifest: Manifest[T]) extends Service[S] {
+  lazy val enhanced: EnhancedClass = manifest.erasure
 
   def process(session: S, ref: Option[T]): R
 
-  def apply(session: S, req: HttpServletRequest, resp: HttpServletResponse) = {
-    val ref = convert(req.getParameterMap)
+  protected def invoke(session: S, req: HttpServletRequest, resp: HttpServletResponse) = {
+    val ref = convert(req)
     val response = process(session, ref)
-    respond(response, req, resp)
+    Service.respond(response, req, resp)
   }
 
-  private def convert(map: java.util.Map[String, Array[String]]) = {
-    val args = map.toMap.collect {
+  protected def generateRequestArgs(request: HttpServletRequest): Map[String, Any] = {
+    request.getParameterMap.collect {
       case (name, values) if (enhanced.caseValue(name) != None) => {
         val caseValue = enhanced.caseValue(name).get
-        name -> values.head
+        caseValue.name -> convert(values, caseValue)
       }
-    }
-    try {
-      Some(enhanced.create[T](args))
-    } catch {
-      case exc: IllegalArgumentException => None
-      case exc => {
-        exc.printStackTrace()
-        None
-      }
-    }
+    }.toMap
   }
 
-  private def respond(result: R, req: HttpServletRequest, resp: HttpServletResponse) = {
+  protected def convert(values: Array[String], caseValue: CaseValue): Any = caseValue.valueType.simpleName match {
+    case "String" => values.head
+    case "UUID" => UUID.fromString(values.head)
+    case _ => throw new RuntimeException("Unable to convert %s with value %s".format(caseValue.valueType.name, values.head))
+  }
+
+  private def convert(request: HttpServletRequest) = {
+    val args = generateRequestArgs(request)
+    if (args.nonEmpty) {
+      try {
+        Some(enhanced.create[T](args))
+      } catch {
+        case t: Throwable => {
+          t.printStackTrace()
+          None
+        }
+      }
+    } else {
+      None
+    }
+  }
+}
+
+object Service {
+  def respond(result: Any, req: HttpServletRequest, resp: HttpServletResponse) = {
     val json = result match {
       case null => "{}"
       case _ => Object2JSON.toJSON(result)
@@ -62,7 +112,7 @@ abstract class Service[T, R, S <: Session](implicit manifest: Manifest[T]) {
         json
       }
       case "js" => {
-       resp.setContentType("application/javascript")
+        resp.setContentType("application/javascript")
         "document.%s = %s;".format(name, json)
       }
     }

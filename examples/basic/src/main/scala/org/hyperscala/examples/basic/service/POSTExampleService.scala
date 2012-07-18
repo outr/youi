@@ -1,12 +1,12 @@
 package org.hyperscala.examples.basic.service
 
-import org.hyperscala.server.{Session, Service}
+import org.hyperscala.server.{ServiceRequestResponse, Session}
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-class POSTExampleService extends Service[Person, Message, Session] {
-  def matches(uri: String) = uri == "/service/postexample"
+class POSTExampleService extends ServiceRequestResponse[Person, Message, Session] {
+  lazy val name = "postexample"
 
   def process(session: Session, ref: Option[Person]) = ref match {
     case Some(person) => Message("Hello %s".format(person.name))

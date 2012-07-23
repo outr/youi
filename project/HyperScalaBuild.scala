@@ -23,7 +23,7 @@ object HyperScalaBuild extends Build {
   val servletApi = "javax.servlet" % "javax.servlet-api" % "3.0.1"
 
   val baseSettings = Defaults.defaultSettings ++ Seq(
-    version := "0.2",
+    version := "0.3-SNAPSHOT",
     organization := "org.hyperscala",
     scalaVersion := "2.9.2",
     libraryDependencies ++= Seq(

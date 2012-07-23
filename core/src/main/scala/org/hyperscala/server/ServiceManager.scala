@@ -38,18 +38,14 @@ abstract class ServiceManager[S <: Session](implicit manifest: Manifest[S]) exte
     val session = loadSession(req)
     services.find(s => s.matches(uri)) match {
       case Some(service) => {
-        service(session, req, resp)
-//        val authenticated = service match {
-//          case auth: Authenticated[_] => auth.asInstanceOf[Authenticated[S]].isAuthenticated(session)
-//          case _ => true
-//        }
-//        if (authenticated) {
-//          service.before(session)
-//          service(session, req, resp)
-//          service.after(session)
-//        } else {
-//          resp.sendError(HttpServletResponse.SC_FORBIDDEN, "You are not authorized to access this page.")
-//        }
+        try {
+          service(session, req, resp)
+        } catch {
+          case t: Throwable => {
+            t.printStackTrace()     // TODO: fire to ServiceManager.handleException
+            throw t
+          }
+        }
       }
       case None => {
         resp.sendError(HttpServletResponse.SC_NOT_FOUND, "The requested page [%s] was not found.".format(uri))

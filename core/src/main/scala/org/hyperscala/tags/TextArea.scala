@@ -17,7 +17,7 @@ class TextArea extends Tag {
            id: String = null,
            lang: String = null,
            spellCheck: String = null,
-           tabIndex: String = null,
+           tabIndex: java.lang.Integer = null,
            title: String = null,
            content: String = null,
            autoFocus: String = null,
@@ -57,9 +57,7 @@ class TextArea extends Tag {
     up(this.placeHolder, placeHolder)
     up(this.readOnly, readOnly)
     up(this.required, required)
-    if (rows != null) {
-      up(this.rows, rows.intValue())
-    }
+    up(this.rows, rows)
     up(this.wrap, wrap)
   }
 

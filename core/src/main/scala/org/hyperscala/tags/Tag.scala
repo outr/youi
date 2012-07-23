@@ -20,6 +20,6 @@ trait Tag extends Container[WebContent] with BodyContent with EventSupport {
   val lang = WebAttribute[String]("lang")
   val spellCheck = WebAttribute[String]("spellcheck")
   val style = new StyleSheet("style")
-  val tabIndex = WebAttribute[String]("tabindex")
+  val tabIndex = WebAttribute[Int]("tabindex")
   val title = WebAttribute[String]("title")
 }

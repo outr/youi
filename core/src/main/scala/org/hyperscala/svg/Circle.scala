@@ -23,9 +23,7 @@ class Circle extends Shape {
     up(this.xmlLang, xmlLang)
     up(this.xmlSpace, xmlSpace)
     up(this.stroke, stroke)
-    if (strokeWidth != null) {
-      this.stroke.width := strokeWidth.intValue()
-    }
+    up(this.stroke.width, strokeWidth)
     up(this.fill, fill)
     up(this.cx, cx)
     up(this.cy, cy)

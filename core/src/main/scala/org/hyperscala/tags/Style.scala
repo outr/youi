@@ -17,7 +17,7 @@ class Style extends Tag {
            id: String = null,
            lang: String = null,
            spellCheck: String = null,
-           tabIndex: String = null,
+           tabIndex: java.lang.Integer = null,
            title: String = null,
            content: String = null) = {
     this()

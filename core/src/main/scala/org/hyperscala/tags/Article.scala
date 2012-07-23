@@ -15,7 +15,7 @@ class Article extends Tag {
            id: String = null,
            lang: String = null,
            spellCheck: String = null,
-           tabIndex: String = null,
+           tabIndex: java.lang.Integer = null,
            title: String = null) = {
     this()
     up(this.accessKey, accessKey)

@@ -13,6 +13,8 @@ object HyperScalaBuild extends Build {
 
   val htmlcleaner = "net.sourceforge.htmlcleaner" % "htmlcleaner" % "2.2"
 
+  val specs2 = "org.specs2" %% "specs2" % "1.11" % "test"
+
   val jettyVersion = "7.4.2.v20110526"
   val jettyServer = "org.eclipse.jetty" % "jetty-server" % jettyVersion % "container;provided"
   val jettyWebapp = "org.eclipse.jetty" % "jetty-webapp" % jettyVersion % "container;provided"
@@ -30,7 +32,8 @@ object HyperScalaBuild extends Build {
       powerScalaConvert,
       powerScalaReflect,
       powerScalaHierarchy,
-      htmlcleaner
+      htmlcleaner,
+      specs2
     ),
     scalacOptions ++= Seq("-unchecked", "-deprecation"),
     resolvers ++= Seq("Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/"),

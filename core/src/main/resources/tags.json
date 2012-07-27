@@ -1,0 +1,729 @@
+{
+    "tags": [
+        {
+            "name": "A",
+            "attributes": {
+                "href": "java.lang.String",
+                "hrefLang": "java.lang.String",
+                "media": "java.lang.String",
+                "rel": "java.lang.String",
+                "target": "java.lang.String",
+                "mimeType": "java.lang.String"
+            }
+        },
+        {
+            "name": "Abbr",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Address",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Area",
+            "attributes": {
+                "alt": "java.lang.String",
+                "coords": "java.lang.String",
+                "href": "java.lang.String",
+                "hrefLang": "java.lang.String",
+                "media": "java.lang.String",
+                "rel": "java.lang.String",
+                "shape": "java.lang.String",
+                "target": "java.lang.String",
+                "mimeType": "java.lang.String"
+            }
+        },
+        {
+            "name": "Article",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Aside",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Audio",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "B",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Base",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Bdi",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Bdo",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "BlockQuote",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Body",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Br",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Button",
+            "attributes": {
+                "autoFocus": "java.lang.String",
+                "disabled": "java.lang.Boolean",
+                "form": "java.lang.String",
+                "formAction": "java.lang.String",
+                "formEncType": "java.lang.String",
+                "formMethod": "java.lang.String",
+                "formNoValidate": "java.lang.String",
+                "formTarget": "java.lang.String",
+                "name": "java.lang.String",
+                "buttonType": "java.lang.String",
+                "value": "java.lang.String"
+            }
+        },
+        {
+            "name": "Canvas",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Caption",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Cite",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Code",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Col",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "ColGroup",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Command",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "DataList",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Dd",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Del",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Details",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Dfn",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Div",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Dl",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Dt",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Em",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Embed",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "FieldSet",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "FigCaption",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Figure",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Footer",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Form",
+            "attributes": {
+                "acceptCharset": "java.lang.String",
+                "action": "java.lang.String",
+                "autoComplete": "java.lang.String",
+                "encType": "java.lang.String",
+                "method": "java.lang.String",
+                "name": "java.lang.String",
+                "noValidate": "java.lang.String",
+                "target": "java.lang.String"
+            }
+        },
+        {
+            "name": "H1",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "H2",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "H3",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "H4",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "H5",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "H6",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Header",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "HGroup",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Hr",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "I",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "IFrame",
+            "attributes": {
+                "height": "java.lang.String",
+                "name": "java.lang.String",
+                "sandbox": "java.lang.String",
+                "seamless": "java.lang.String",
+                "src": "java.lang.String",
+                "srcDoc": "java.lang.String",
+                "width": "java.lang.String"
+            }
+        },
+        {
+            "name": "Img",
+            "attributes": {
+                "src": "java.lang.String",
+                "alt": "java.lang.String",
+                "height": "java.lang.String",
+                "isMap": "java.lang.String",
+                "useMap": "java.lang.String",
+                "width": "java.lang.String"
+            }
+        },
+        {
+            "name": "Input",
+            "attributes": {
+                "accept": "java.lang.String",
+                "alt": "java.lang.String",
+                "autoComplete": "java.lang.String",
+                "autoFocus": "java.lang.String",
+                "checked": "java.lang.String",
+                "disabled": "java.lang.Boolean",
+                "form": "java.lang.String",
+                "formAction": "java.lang.String",
+                "formEncType": "java.lang.String",
+                "formMethod": "java.lang.String",
+                "formNoValidate": "java.lang.String",
+                "formTarget": "java.lang.String",
+                "height": "java.lang.String",
+                "list": "java.lang.String",
+                "max": "java.lang.String",
+                "maxLength": "java.lang.String",
+                "min": "java.lang.String",
+                "multiple": "java.lang.String",
+                "name": "java.lang.String",
+                "pattern": "java.lang.String",
+                "placeHolder": "java.lang.String",
+                "readOnly": "java.lang.String",
+                "required": "java.lang.String",
+                "size": "java.lang.String",
+                "src": "java.lang.String",
+                "step": "java.lang.String",
+                "inputType": "org.hyperscala.tags.attributes.InputType",
+                "value": "java.lang.String",
+                "width": "java.lang.String"
+            }
+        },
+        {
+            "name": "Ins",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Kbd",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "KeyGen",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Label",
+            "attributes": {
+                "forElement": "java.lang.String",
+                "form": "java.lang.String"
+            }
+        },
+        {
+            "name": "Legend",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Li",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Link",
+            "attributes": {
+                "href": "java.lang.String",
+                "hrefLang": "java.lang.String",
+                "media": "java.lang.String",
+                "rel": "java.lang.String",
+                "sizes": "java.lang.String",
+                "mimeType": "java.lang.String"
+            }
+        },
+        {
+            "name": "Map",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Mark",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Menu",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Meta",
+            "attributes": {
+                "charSet": "java.lang.String",
+                "httpEquiv": "java.lang.String",
+                "name": "java.lang.String"
+            }
+        },
+        {
+            "name": "Meter",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Nav",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "NoScript",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Object",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Ol",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "OptGroup",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Option",
+            "attributes": {
+                "disabled": "java.lang.String",
+                "label": "java.lang.String",
+                "selected": "java.lang.String",
+                "value": "java.lang.String"
+            }
+        },
+        {
+            "name": "Output",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "P",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Param",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Pre",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Progress",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Q",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Rp",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Rt",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Ruby",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "S",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Samp",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Script",
+            "attributes": {
+                "async": "java.lang.String",
+                "defer": "java.lang.String",
+                "mimeType": "java.lang.String",
+                "charSet": "java.lang.String",
+                "src": "java.lang.String"
+            }
+        },
+        {
+            "name": "Section",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Select",
+            "attributes": {
+                "autoFocus": "java.lang.String",
+                "disabled": "java.lang.String",
+                "form": "java.lang.String",
+                "multiple": "java.lang.String",
+                "name": "java.lang.String",
+                "size": "java.lang.String"
+            }
+        },
+        {
+            "name": "Small",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Source",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Span",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Strong",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Style",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Sub",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Sup",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Table",
+            "attributes": {
+                "border": "java.lang.String"
+            }
+        },
+        {
+            "name": "TBody",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Td",
+            "attributes": {
+                "colSpan": "java.lang.String",
+                "headers": "java.lang.String",
+                "rowSpan": "java.lang.String"
+            }
+        },
+        {
+            "name": "TextArea",
+            "attributes": {
+                "autoFocus": "java.lang.String",
+                "cols": "java.lang.String",
+                "disabled": "java.lang.String",
+                "form": "java.lang.String",
+                "maxLength": "java.lang.String",
+                "name": "java.lang.String",
+                "placeHolder": "java.lang.String",
+                "readOnly": "java.lang.String",
+                "required": "java.lang.String",
+                "rows": "java.lang.Integer",
+                "wrap": "java.lang.String"
+            }
+        },
+        {
+            "name": "TFoot",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Th",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "THead",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Time",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Tr",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Track",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "U",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Ul",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Var",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Video",
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Wbr",
+            "attributes": {
+
+            }
+        }
+    ]
+}

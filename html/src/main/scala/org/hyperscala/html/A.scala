@@ -53,9 +53,6 @@ class A extends BodyChild with HTMLTag {
     up(this.target, target)
   }
 
-  implicit val relationshipPersistence = Relationship
-  implicit val targetPersistence = Target
-
   val href = PropertyAttribute[String]("href", null)
   val hrefLang = PropertyAttribute[String]("hreflang", null)
   val media = PropertyAttribute[String]("media", null)

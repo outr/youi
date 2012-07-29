@@ -1,18 +1,19 @@
-package org.hyperscala.html.attributes
+package org.hyperscala.%1$s.attributes
 
 import org.powerscala.{Enumerated, EnumEntry}
 import org.hyperscala.persistence.EnumEntryPersistence
+import org.hyperscala.AttributeValue
 
 /**
  * @author Matt Hicks <mhicks@hyperscala.org>
  */
-class %1$s(val value: String) extends EnumEntry[%1$s] with AttributeValue
+class %2$s(val value: String) extends EnumEntry[%2$s] with AttributeValue
 
-object %1$s extends Enumerated[%1$s] with EnumEntryPersistence[%1$s] {
-  %2$s
+object %2$s extends Enumerated[%2$s] with EnumEntryPersistence[%2$s] {
+  %3$s
 
   override def apply(name: String) = super.apply(name) match {
-    case null => new %1$s(name)
+    case null => new %2$s("%4$s".format(name))
     case v => v
   }
 }

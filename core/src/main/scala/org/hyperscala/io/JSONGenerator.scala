@@ -2,7 +2,7 @@ package org.hyperscala.io
 
 import org.objectweb.asm.{ClassReader, Type}
 import org.objectweb.asm.tree.{LocalVariableNode, MethodNode, ClassNode}
-import org.hyperscala.tags.Tag
+import org.hyperscala.tags.{Div, Tag}
 
 import scala.collection.JavaConversions._
 
@@ -15,6 +15,7 @@ object JSONGenerator {
   def main(args: Array[String]): Unit = {
     val b = new StringBuilder()
     b.append("{\r\n")
+    applyStyleSheet(b)
     b.append("\t\"tags\": [\r\n")
     var first = true
     WebPageImporter.classes("org.hyperscala.tags").foreach {
@@ -69,5 +70,23 @@ object JSONGenerator {
     b.append("\r\n\t]\r\n")
     b.append("}\r\n")
     println(b)
+  }
+
+  private def applyStyleSheet(b: StringBuilder) = {
+    b.append("\t\"css\": {\r\n")
+    val div = new Div
+    val styles = div.style.contents.map {
+      case sp => {
+        val classType = sp.manifest.erasure.getName match {
+          case "java.lang.String" => "String"
+          case "org.powerscala.Color" => "Color"
+          case name if (name.startsWith("org.hyperscala.style.")) => name.substring(name.lastIndexOf('.') + 1)
+          case name => throw new RuntimeException("Unsupported class type: %s".format(name))
+        }
+        "\t\t\"%s\": \"%s\"".format(sp._name, classType)
+      }
+    }.mkString(",\r\n")
+    b.append("%s\r\n".format(styles))
+    b.append("\t},\r\n")
   }
 }

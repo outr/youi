@@ -1,4 +1,4 @@
-package org.hyperscala.html.attributes
+package org.hyperscala
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>

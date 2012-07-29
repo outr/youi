@@ -97,8 +97,6 @@ class Input extends BodyChild with HTMLTag {
     up(this.width, width)
   }
 
-  implicit val inputTypePersistence = InputType
-
   val accept = PropertyAttribute[String]("accept", null)
   val alt = PropertyAttribute[String]("alt", null)
   val autoComplete = PropertyAttribute[String]("autocomplete", null)

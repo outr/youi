@@ -2,6 +2,7 @@ package org.hyperscala.html.attributes
 
 import org.powerscala.{Enumerated, EnumEntry}
 import org.hyperscala.persistence.EnumEntryPersistence
+import org.hyperscala.AttributeValue
 
 /**
  * @author Matt Hicks <mhicks@hyperscala.org>

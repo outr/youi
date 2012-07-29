@@ -1,0 +1,19 @@
+package org.hyperscala.css
+
+import org.powerscala.property.PropertyParent
+import org.hyperscala.PropertyAttribute
+import attributes._
+
+import org.powerscala.Color
+
+/**
+ * @author Matt Hicks <mhicks@hyperscala.org>
+ */
+class StyleSheet extends PropertyParent {
+  implicit val thisStyleSheet = this
+
+  val name = PropertyAttribute[String]("name", null)
+  def parent = null
+
+%s
+}

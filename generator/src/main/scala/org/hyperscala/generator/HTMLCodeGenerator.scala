@@ -15,15 +15,19 @@ object HTMLCodeGenerator {
   val ConstraintsTemplate = loadString("constraints.template")
   val GlobalTemplate = loadString("global.template")
   val TagTemplate = loadString("tag.template")
+  val PersistenceTemplate = loadString("persistence.template")
+  val StyleSheetTemplate = loadString("stylesheet.template")
 
   var globalConstructorValues = List.empty[(String, String)]
 
   def main(args: Array[String]): Unit = {
     val json = JSON.parseFull(loadString("meta.json")).get.asInstanceOf[Map[String, Any]]
     processEnums(json("enums").asInstanceOf[List[Map[String, Any]]])
+    processPersistence(json("enums").asInstanceOf[List[Map[String, Any]]])
     processConstraints(json("constraints").asInstanceOf[List[String]])
     processGlobal(json("global").asInstanceOf[Map[String, String]])
     processTags(json("tags").asInstanceOf[List[Map[String, Any]]])
+    processStyleSheet(json("css").asInstanceOf[Map[String, String]])
   }
 
   @tailrec
@@ -32,19 +36,45 @@ object HTMLCodeGenerator {
       val head = enums.head
       val name = head("name")
       val values = head("values").asInstanceOf[Map[String, String]]
-      val body = values.map {
+      val custom = head.getOrElse("custom", Nil).asInstanceOf[List[String]]
+      val definitions = values.map {
         case (key, value) => "val %s = new %s(\"%s\")".format(key, name, value)
-      }.mkString("\r\n  ")
+      }.toList
+      val body = (definitions ::: custom).mkString("\r\n  ")
       val instantiatable = head.getOrElse("instantiatable", false).asInstanceOf[Boolean]
+      val instantiationTemplate = head.getOrElse("instantiationTemplate", "%s").asInstanceOf[String]
+      val sub = head.getOrElse("sub", "html").asInstanceOf[String]
       val content = if (instantiatable) {
-        EnumInstantiatableTemplate.format(name, body)
+        EnumInstantiatableTemplate.format(sub, name, body, instantiationTemplate)
       } else {
-        EnumTemplate.format(name, body)
+        EnumTemplate.format(sub, name, body)
       }
-      val file = new File(BaseOutput, "html/attributes/%s.scala".format(name))
+      val file = new File(BaseOutput, "%s/attributes/%s.scala".format(sub, name))
       writeFile(content, file)
       processEnums(enums.tail)
     }
+  }
+
+  def processPersistence(enums: List[Map[String, Any]]): Unit = {
+    val predefined = List("BooleanPersistence",
+                          "CharPersistence",
+                          "ColorPersistence",
+                          "IntPersistence",
+                          "LanguagePersistence",
+                          "ListStringPersistence",
+                          "StringPersistence")
+    val values = (predefined ::: enums.map(m => m("name").asInstanceOf[String])).sorted
+    val implicits = values.map(n => {
+      val variable = if (n.endsWith("Persistence")) {
+        n
+      } else {
+        "%sPersistence".format(n)
+      }
+      "implicit val %s = %s".format(variable.charAt(0).toLower + variable.substring(1), n)
+    }).mkString("\r\n  ")
+    val content = PersistenceTemplate.format(implicits)
+    val file = new File(BaseOutput, "persistence/package.scala")
+    writeFile(content, file)
   }
 
   @tailrec
@@ -125,7 +155,7 @@ object HTMLCodeGenerator {
 
   private def generateAttributes(attributes: Map[String, String]) = {
     var enums = List.empty[String]
-    var body = attributes.toList.sortBy(t => t._1).map {
+    val body = attributes.toList.sortBy(t => t._1).map {
       case (key, value) => {
         val htmlKey = key.toLowerCase match {
           case "mimetype" => "type"
@@ -148,15 +178,76 @@ object HTMLCodeGenerator {
         "val %s = PropertyAttribute[%s](\"%s\", %s)".format(key, value, htmlKey, default)
       }
     }.mkString("\r\n  ")
-    if (enums.nonEmpty) {
-      enums = enums.reverse
-      val enumBody = enums.map {
-        case "Language" => "implicit val languagePersistence = LanguagePersistence"
-        case n => "implicit val %sPersistence = %s".format(n.charAt(0).toLower + n.substring(1), n)
-      }.mkString("\r\n  ")
-      body = "%s\r\n\r\n  %s".format(enumBody, body)
-    }
     body
+  }
+
+  def processStyleSheet(map: Map[String, String]) = {
+    val topLevel = SSProperty(null, null, null)
+    map.foreach {
+      case (name, classType) => {
+        val levels = name.split('-')
+        var current = topLevel
+        levels.foreach {
+          case level => {
+            current.children.find(ssp => ssp.variableName == sspVariableName(current, level)) match {
+              case Some(ssp) => current = ssp
+              case None => {
+                val child = SSProperty(current, level)
+                current.children = child :: current.children
+                current = child
+              }
+            }
+          }
+        }
+        current.value = classType
+      }
+    }
+    val b = new StringBuilder
+    topLevel.children = topLevel.children.sortBy(ssp => ssp.variableName)
+    topLevel.children.foreach(ssp => generateStyleSheetRecursive(ssp, b, 1))
+    val content = StyleSheetTemplate.format(b.toString())
+    val file = new File(BaseOutput, "css/StyleSheet.scala")
+    writeFile(content, file)
+  }
+
+  def generateStyleSheetRecursive(ssp: SSProperty, b: StringBuilder, depth: Int): Unit = {
+    (0 until depth).foreach(index => b.append("  "))
+    if (ssp.variableName == "name") {
+      b.append("override ")
+    }
+    b.append("val ")
+    b.append(ssp.variableName)
+    b.append(" = ")
+    if (ssp.children.nonEmpty) {
+      ssp.children = ssp.children.sortBy(child => child.variableName)
+      if (ssp.value != null) {
+        b.append("new StyleSheetAttribute[%s](\"%s\", null) {\r\n".format(ssp.value, ssp.fullName))
+      } else {
+        b.append("new AnyRef {\r\n")
+      }
+      ssp.children.foreach {
+        case child => generateStyleSheetRecursive(child, b, depth + 1)
+      }
+      (0 until depth).foreach(index => b.append("  "))
+      b.append("}\r\n")
+    } else {
+      b.append("StyleSheetAttribute[%s](\"%s\", null)\r\n".format(ssp.value, ssp.fullName))
+    }
+  }
+
+  case class SSProperty(parent: SSProperty, name: String, var value: String = null, var children: List[SSProperty] = Nil) {
+    lazy val variableName = sspVariableName(parent, name)
+    def fullName: String = if (parent != null && parent.name != null) {
+      "%s-%s".format(parent.fullName, name)
+    } else {
+      name
+    }
+  }
+
+  def sspVariableName(parent: SSProperty, name: String) = name.replaceAll("@", "") match {
+    case "type" => "%sType".format(parent.name)
+    case "new" => "%sNew".format(parent.name)
+    case n => n
   }
 
   private def loadString(uri: String) = {

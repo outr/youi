@@ -1,0 +1,8 @@
+package org.hyperscala
+
+import css.attributes._
+import html.attributes._
+
+package object persistence {
+  %s
+}

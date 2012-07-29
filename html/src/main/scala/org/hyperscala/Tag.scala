@@ -8,12 +8,6 @@ import persistence._
  * @author Matt Hicks <mhicks@powerscala.org>
  */
 trait Tag extends PropertyParent with Markup {
-  implicit val booleanPersistence = BooleanPersistence
-  implicit val charPersistence = CharPersistence
-  implicit val intPersistence = IntPersistence
-  implicit val listStringPersistence = ListStringPersistence
-  implicit val stringPersistance = StringPersistence
-
   val name = PropertyAttribute[String]("name", null)
 
   protected lazy val xmlAttributes = new NamingFilter[XMLAttribute](this)

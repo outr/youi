@@ -2,6 +2,7 @@ package org.hyperscala.html.attributes
 
 import org.powerscala.{Enumerated, EnumEntry}
 import org.hyperscala.persistence.EnumEntryPersistence
+import org.hyperscala.AttributeValue
 
 /**
  * @author Matt Hicks <mhicks@hyperscala.org>
@@ -15,7 +16,7 @@ object Target extends Enumerated[Target] with EnumEntryPersistence[Target] {
   val Top = new Target("_top")
 
   override def apply(name: String) = super.apply(name) match {
-    case null => new Target(name)
+    case null => new Target("%s".format(name))
     case v => v
   }
 }

@@ -7,11 +7,6 @@ import org.hyperscala._
  * @author Matt Hicks <mhicks@hyperscala.org>
  */
 trait HTMLTag extends Tag {
-  implicit val contentEditablePersistence = ContentEditable
-  implicit val directionPersistence = Direction
-  implicit val draggablePersistence = Draggable
-  implicit val dropZonePersistence = DropZone
-
   val accessKey = PropertyAttribute[Char]("accesskey", -1.toChar)
   val clazz = PropertyAttribute[List[String]]("class", Nil)
   val contentEditable = PropertyAttribute[ContentEditable]("contenteditable", null)

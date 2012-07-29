@@ -1,0 +1,1166 @@
+{
+    "enums": [
+        {
+            "name": "ContentEditable",
+            "values": {
+                "True": "true",
+                "False": "false",
+                "Inherit": "inherit"
+            }
+        },
+        {
+            "name": "Direction",
+            "values": {
+                "LeftToRight": "ltr",
+                "RightToLeft": "rtl",
+                "Auto": "auto"
+            }
+        },
+        {
+            "name": "Draggable",
+            "values": {
+                "True": "true",
+                "False": "false",
+                "Auto": "auto"
+            }
+        },
+        {
+            "name": "DropZone",
+            "values": {
+                "Copy": "copy",
+                "Move": "move",
+                "Link": "link"
+            }
+        },
+        {
+            "name": "Relationship",
+            "values": {
+                "Alternate": "alternate",
+                "Author": "author",
+                "Bookmark": "bookmark",
+                "Help": "help",
+                "License": "license",
+                "Next": "next",
+                "NoFollow": "nofollow",
+                "NoReferrer": "noreferrer",
+                "Prefetch": "prefetch",
+                "Previous": "prev",
+                "Search": "search",
+                "Tag": "tag"
+            }
+        },
+        {
+            "name": "Target",
+            "instantiatable": true,
+            "values": {
+                "Blank": "_blank",
+                "Self": "_self",
+                "Parent": "_parent",
+                "Top": "_top"
+            }
+        },
+        {
+            "name": "InputType",
+            "values": {
+                "Button": "button",
+                "CheckBox": "checkbox",
+                "Color": "color",
+                "Date": "date",
+                "DateTime": "datetime",
+                "DateTimeLocal": "datetime-local",
+                "Email": "email",
+                "File": "file",
+                "Hidden": "hidden",
+                "Image": "image",
+                "Month": "month",
+                "Number": "number",
+                "Password": "password",
+                "Radio": "radio",
+                "Range": "range",
+                "Reset": "reset",
+                "Search": "search",
+                "Submit": "submit",
+                "Tel": "tel",
+                "Text": "text",
+                "Time": "time",
+                "URL": "url",
+                "Week": "week"
+            }
+        }
+    ],
+    "constraints": [
+        "HTMLChild",
+        "HeadChild",
+        "BodyChild"
+    ],
+    "global": {
+        "accessKey": "Char",
+        "clazz": "List[String]",
+        "contentEditable": "ContentEditable",
+        "contextMenu": "String",
+        "dir": "Direction",
+        "draggable": "Draggable",
+        "dropZone": "DropZone",
+        "hidden": "Boolean",
+        "id": "String",
+        "lang": "String",
+        "spellCheck": "Boolean",
+        "style": "String",
+        "tabIndex": "Int",
+        "title": "String"
+    },
+    "tags": [
+        {
+            "name": "HTML",
+            "childTrait": "HTMLChild",
+            "attributes": {
+                "manifest": "String",
+                "xmlns": "String"
+            }
+        },
+        {
+            "name": "Head",
+            "traits": [
+                "HTMLChild"
+            ],
+            "childTrait": "HeadChild"
+        },
+        {
+            "name": "Title",
+            "traits": [
+                "HeadChild",
+                "Textual"
+            ],
+            "attributes": {
+            }
+        },
+        {
+            "name": "Body",
+            "traits": [
+                "HTMLChild"
+            ],
+            "childTrait": "BodyChild"
+        },
+        {
+            "name": "A",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+                "href": "String",
+                "hrefLang": "String",
+                "media": "String",
+                "rel": "Relationship",
+                "target": "Target",
+                "mimeType": "String"
+            }
+        },
+        {
+            "name": "Abbr",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Address",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Area",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+                "alt": "String",
+                "coords": "String",
+                "href": "String",
+                "hrefLang": "String",
+                "media": "String",
+                "rel": "String",
+                "shape": "String",
+                "target": "String",
+                "mimeType": "String"
+            }
+        },
+        {
+            "name": "Article",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Aside",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Audio",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "B",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Base",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Bdi",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Bdo",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "BlockQuote",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Br",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Button",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+                "autoFocus": "String",
+                "disabled": "Boolean",
+                "form": "String",
+                "formAction": "String",
+                "formEncType": "String",
+                "formMethod": "String",
+                "formNoValidate": "String",
+                "formTarget": "String",
+                "buttonType": "String",
+                "value": "String"
+            }
+        },
+        {
+            "name": "Canvas",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Caption",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Cite",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Code",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Col",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "ColGroup",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Command",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "DataList",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Dd",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Del",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Details",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Dfn",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Div",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Dl",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Dt",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Em",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Embed",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "FieldSet",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "FigCaption",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Figure",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Footer",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Form",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+                "acceptCharset": "String",
+                "action": "String",
+                "autoComplete": "String",
+                "encType": "String",
+                "method": "String",
+                "noValidate": "String",
+                "target": "String"
+            }
+        },
+        {
+            "name": "H1",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "H2",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "H3",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "H4",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "H5",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "H6",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Header",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "HGroup",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Hr",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "I",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "IFrame",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+                "height": "String",
+                "sandbox": "String",
+                "seamless": "String",
+                "src": "String",
+                "srcDoc": "String",
+                "width": "String"
+            }
+        },
+        {
+            "name": "Img",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+                "src": "String",
+                "alt": "String",
+                "height": "String",
+                "isMap": "String",
+                "useMap": "String",
+                "width": "String"
+            }
+        },
+        {
+            "name": "Input",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+                "accept": "String",
+                "alt": "String",
+                "autoComplete": "String",
+                "autoFocus": "String",
+                "checked": "String",
+                "disabled": "Boolean",
+                "form": "String",
+                "formAction": "String",
+                "formEncType": "String",
+                "formMethod": "String",
+                "formNoValidate": "String",
+                "formTarget": "String",
+                "height": "String",
+                "list": "String",
+                "max": "String",
+                "maxLength": "String",
+                "min": "String",
+                "multiple": "String",
+                "pattern": "String",
+                "placeHolder": "String",
+                "readOnly": "String",
+                "required": "String",
+                "size": "String",
+                "src": "String",
+                "step": "String",
+                "inputType": "InputType",
+                "value": "String",
+                "width": "String"
+            }
+        },
+        {
+            "name": "Ins",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Kbd",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "KeyGen",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Label",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+                "forElement": "String",
+                "form": "String"
+            }
+        },
+        {
+            "name": "Legend",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Li",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Link",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+                "href": "String",
+                "hrefLang": "String",
+                "media": "String",
+                "rel": "String",
+                "sizes": "String",
+                "mimeType": "String"
+            }
+        },
+        {
+            "name": "Map",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Mark",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Menu",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Meta",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+                "charSet": "String",
+                "httpEquiv": "String"
+            }
+        },
+        {
+            "name": "Meter",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Nav",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "NoScript",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Object",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Ol",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "OptGroup",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Option",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+                "disabled": "String",
+                "label": "String",
+                "selected": "String",
+                "value": "String"
+            }
+        },
+        {
+            "name": "Output",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "P",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Param",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Pre",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Progress",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Q",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Rp",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Rt",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Ruby",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "S",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Samp",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Script",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+                "async": "String",
+                "defer": "String",
+                "mimeType": "String",
+                "charSet": "String",
+                "src": "String"
+            }
+        },
+        {
+            "name": "Section",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Select",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+                "autoFocus": "String",
+                "disabled": "String",
+                "form": "String",
+                "multiple": "String",
+                "size": "String"
+            }
+        },
+        {
+            "name": "Small",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Source",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Span",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Strong",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Style",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Sub",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Sup",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Table",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+                "border": "String"
+            }
+        },
+        {
+            "name": "TBody",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Td",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+                "colSpan": "String",
+                "headers": "String",
+                "rowSpan": "String"
+            }
+        },
+        {
+            "name": "TextArea",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+                "autoFocus": "String",
+                "cols": "String",
+                "disabled": "String",
+                "form": "String",
+                "maxLength": "String",
+                "placeHolder": "String",
+                "readOnly": "String",
+                "required": "String",
+                "rows": "Int",
+                "wrap": "String"
+            }
+        },
+        {
+            "name": "TFoot",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Th",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "THead",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Time",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Tr",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Track",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "U",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Ul",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Var",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Video",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        },
+        {
+            "name": "Wbr",
+            "traits": [
+                "BodyChild"
+            ],
+            "attributes": {
+
+            }
+        }
+    ]
+}

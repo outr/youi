@@ -1,0 +1,11 @@
+package org.hyperscala.html
+
+import attributes._
+import org.hyperscala._
+
+/**
+ * @author Matt Hicks <mhicks@hyperscala.org>
+ */
+trait HTMLTag extends Tag {
+  %s
+}

@@ -1,0 +1,16 @@
+package org.hyperscala.html
+
+import org.hyperscala._
+import org.hyperscala.html.attributes._
+import org.hyperscala.html.constraints._
+
+/**
+ * @author Matt Hicks <mhicks@hyperscala.org>
+ */
+class %s extends %s {
+  protected lazy val xmlLabel = "%s"
+
+  %s
+
+  %s
+}

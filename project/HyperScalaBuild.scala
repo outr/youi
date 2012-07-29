@@ -10,6 +10,7 @@ object HyperScalaBuild extends Build {
   val powerScalaConvert = "org.powerscala" %% "powerscala-convert" % "1.2-SNAPSHOT"
   val powerScalaReflect = "org.powerscala" %% "powerscala-reflect" % "1.2-SNAPSHOT"
   val powerScalaHierarchy = "org.powerscala" %% "powerscala-hierarchy" % "1.2-SNAPSHOT"
+  val powerScalaProperty = "org.powerscala" %% "powerscala-property" % "1.2-SNAPSHOT"
 
   val htmlcleaner = "net.sourceforge.htmlcleaner" % "htmlcleaner" % "2.2"
 
@@ -32,6 +33,7 @@ object HyperScalaBuild extends Build {
       powerScalaConvert,
       powerScalaReflect,
       powerScalaHierarchy,
+      powerScalaProperty,
       htmlcleaner,
       specs2
     ),
@@ -76,6 +78,8 @@ object HyperScalaBuild extends Build {
     .aggregate(core, helloworld, numberguess, todomvc, site)
   lazy val core = Project("core", file("core"), settings = createSettings("hyperscala-core"))
     .settings(libraryDependencies += servletApi)
+  lazy val html = Project("html", file("html"), settings = createSettings("hyperscala-html"))
+  lazy val generator = Project("generator", file("generator"), settings = createSettings("hyperscala-generator"))
   lazy val basic = Project("basic", file("examples/basic"), settings = createSettings("hyperscala-basic"))
     .dependsOn(core)
   lazy val helloworld = Project("helloworld", file("examples/helloworld"), settings = createSettings("hyperscala-helloworld"))

@@ -1,16 +1,19 @@
 package org.hyperscala.html
 
 import org.hyperscala._
+import css.StyleSheet
 import org.hyperscala.html.attributes._
 import org.hyperscala.html.constraints._
 
 /**
+ * NOTE: This file has been generated. Do not modify directly!
  * @author Matt Hicks <mhicks@hyperscala.org>
  */
-class TextArea extends BodyChild with HTMLTag {
+class TextArea extends Container[BodyChild] with BodyChild with HTMLTag {
   protected lazy val xmlLabel = "textarea"
 
-  def this(accessKey: java.lang.Character = null,
+  def this(name: String = null,
+           accessKey: java.lang.Character = null,
            clazz: List[String] = null,
            contentEditable: ContentEditable = null,
            contextMenu: String = null,
@@ -21,7 +24,7 @@ class TextArea extends BodyChild with HTMLTag {
            id: String = null,
            lang: String = null,
            spellCheck: java.lang.Boolean = null,
-           style: String = null,
+           style: StyleSheet = null,
            tabIndex: java.lang.Integer = null,
            title: String = null,
            autoFocus: String = null,
@@ -33,8 +36,10 @@ class TextArea extends BodyChild with HTMLTag {
            readOnly: String = null,
            required: String = null,
            rows: java.lang.Integer = null,
-           wrap: String = null) = {
+           wrap: String = null,
+           content: BodyChild = null) = {
     this()
+    up(this.name, name)
     up(this.accessKey, accessKey)
     up(this.clazz, clazz)
     up(this.contentEditable, contentEditable)
@@ -59,6 +64,7 @@ class TextArea extends BodyChild with HTMLTag {
     up(this.required, required)
     up(this.rows, rows)
     up(this.wrap, wrap)
+    if (content != null) contents += content
   }
 
   val autoFocus = PropertyAttribute[String]("autofocus", null)

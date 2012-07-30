@@ -11,6 +11,7 @@ object HyperScalaBuild extends Build {
   val powerScalaReflect = "org.powerscala" %% "powerscala-reflect" % "1.2-SNAPSHOT"
   val powerScalaHierarchy = "org.powerscala" %% "powerscala-hierarchy" % "1.2-SNAPSHOT"
   val powerScalaProperty = "org.powerscala" %% "powerscala-property" % "1.2-SNAPSHOT"
+  val jdom = "org.jdom" % "jdom" % "2.0.2"
 
   val htmlcleaner = "net.sourceforge.htmlcleaner" % "htmlcleaner" % "2.2"
 
@@ -34,6 +35,7 @@ object HyperScalaBuild extends Build {
       powerScalaReflect,
       powerScalaHierarchy,
       powerScalaProperty,
+      jdom,
       htmlcleaner,
       specs2
     ),
@@ -75,30 +77,23 @@ object HyperScalaBuild extends Build {
 
   lazy val root = Project("root", file("."), settings = createSettings("hyperscala-root"))
     .settings(publishArtifact in Compile := false, publishArtifact in Test := false)
-    .aggregate(core, helloworld, numberguess, todomvc, site)
+    .aggregate(core, html, javascript, examples, site)
   lazy val core = Project("core", file("core"), settings = createSettings("hyperscala-core"))
-    .settings(libraryDependencies += servletApi)
   lazy val html = Project("html", file("html"), settings = createSettings("hyperscala-html"))
+    .dependsOn(core)
+  lazy val javascript = Project("javascript", file("javascript"), settings = createSettings("hyperscala-javascript"))
+    .dependsOn(html)
+  lazy val web = Project("web", file("web"), settings = createSettings("hyperscala-web"))
+    .dependsOn(html)
+    .settings(libraryDependencies += servletApi)
   lazy val generator = Project("generator", file("generator"), settings = createSettings("hyperscala-generator"))
-  lazy val basic = Project("basic", file("examples/basic"), settings = createSettings("hyperscala-basic"))
-    .dependsOn(core)
-  lazy val helloworld = Project("helloworld", file("examples/helloworld"), settings = createSettings("hyperscala-helloworld"))
-    .dependsOn(core)
-    .settings(webSettings: _*)
-    .settings(port := 8080)
-    .settings(libraryDependencies ++= Seq(jettyServer, jettyWebapp, jettyServlet, jettyJsp, glassfishJsp))
-  lazy val numberguess = Project("numberguess", file("examples/numberguess"), settings = createSettings("hyperscala-numberguess"))
-    .dependsOn(core)
-    .settings(webSettings: _*)
-    .settings(port := 8080)
-    .settings(libraryDependencies ++= Seq(jettyServer, jettyWebapp, jettyServlet, jettyJsp, glassfishJsp))
-  lazy val todomvc = Project("todomvc", file("examples/todomvc"), settings = createSettings("hyperscala-todomvc"))
-    .dependsOn(core)
-    .settings(webSettings: _*)
-    .settings(port := 8080)
-    .settings(libraryDependencies ++= Seq(jettyServer, jettyWebapp, jettyServlet, jettyJsp, glassfishJsp))
+    .settings(publishArtifact := false)
+
+  // Examples and Site
+  lazy val examples = Project("examples", file("examples"), settings = createSettings("hyperscala-examples"))
+    .dependsOn(web)
   lazy val site = Project("site", file("site"), settings = createSettings("hyperscala-site"))
-    .dependsOn(core, basic)
+    .dependsOn(examples)
     .settings(webSettings: _*)
     .settings(port := 8080)
     .settings(libraryDependencies ++= Seq(jettyServer, jettyWebapp, jettyServlet, jettyJsp, glassfishJsp))

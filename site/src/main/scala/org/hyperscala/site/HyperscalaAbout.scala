@@ -1,3 +1,4 @@
+/*
 package org.hyperscala.site
 
 /**
@@ -6,3 +7,4 @@ package org.hyperscala.site
 object HyperscalaAbout extends HyperscalaPage("index.html") {
 
 }
+*/

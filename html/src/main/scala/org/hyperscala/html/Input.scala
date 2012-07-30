@@ -1,16 +1,19 @@
 package org.hyperscala.html
 
 import org.hyperscala._
+import css.StyleSheet
 import org.hyperscala.html.attributes._
 import org.hyperscala.html.constraints._
 
 /**
+ * NOTE: This file has been generated. Do not modify directly!
  * @author Matt Hicks <mhicks@hyperscala.org>
  */
-class Input extends BodyChild with HTMLTag {
+class Input extends Container[BodyChild] with BodyChild with HTMLTag {
   protected lazy val xmlLabel = "input"
 
-  def this(accessKey: java.lang.Character = null,
+  def this(name: String = null,
+           accessKey: java.lang.Character = null,
            clazz: List[String] = null,
            contentEditable: ContentEditable = null,
            contextMenu: String = null,
@@ -21,7 +24,7 @@ class Input extends BodyChild with HTMLTag {
            id: String = null,
            lang: String = null,
            spellCheck: java.lang.Boolean = null,
-           style: String = null,
+           style: StyleSheet = null,
            tabIndex: java.lang.Integer = null,
            title: String = null,
            accept: String = null,
@@ -51,8 +54,10 @@ class Input extends BodyChild with HTMLTag {
            src: String = null,
            step: String = null,
            value: String = null,
-           width: String = null) = {
+           width: String = null,
+           content: BodyChild = null) = {
     this()
+    up(this.name, name)
     up(this.accessKey, accessKey)
     up(this.clazz, clazz)
     up(this.contentEditable, contentEditable)
@@ -95,6 +100,7 @@ class Input extends BodyChild with HTMLTag {
     up(this.step, step)
     up(this.value, value)
     up(this.width, width)
+    if (content != null) contents += content
   }
 
   val accept = PropertyAttribute[String]("accept", null)

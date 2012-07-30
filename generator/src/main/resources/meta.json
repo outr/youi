@@ -206,7 +206,7 @@
         "id": "String",
         "lang": "String",
         "spellCheck": "Boolean",
-        "style": "String",
+        "style": "StyleSheet",
         "tabIndex": "Int",
         "title": "String"
     },
@@ -254,7 +254,8 @@
                 "rel": "Relationship",
                 "target": "Target",
                 "mimeType": "String"
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Abbr",
@@ -263,7 +264,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Address",
@@ -272,7 +274,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Area",
@@ -289,7 +292,8 @@
                 "shape": "String",
                 "target": "String",
                 "mimeType": "String"
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Article",
@@ -298,7 +302,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Aside",
@@ -307,7 +312,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Audio",
@@ -316,7 +322,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "B",
@@ -325,7 +332,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Base",
@@ -334,7 +342,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Bdi",
@@ -343,7 +352,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Bdo",
@@ -352,7 +362,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "BlockQuote",
@@ -361,7 +372,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Br",
@@ -370,7 +382,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Button",
@@ -388,7 +401,8 @@
                 "formTarget": "String",
                 "buttonType": "String",
                 "value": "String"
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Canvas",
@@ -397,7 +411,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Caption",
@@ -406,7 +421,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Cite",
@@ -415,7 +431,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Code",
@@ -424,7 +441,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Col",
@@ -433,7 +451,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "ColGroup",
@@ -442,7 +461,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Command",
@@ -451,7 +471,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "DataList",
@@ -460,7 +481,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Dd",
@@ -469,7 +491,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Del",
@@ -478,7 +501,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Details",
@@ -487,7 +511,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Dfn",
@@ -496,7 +521,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Div",
@@ -505,7 +531,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Dl",
@@ -514,7 +541,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Dt",
@@ -523,7 +551,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Em",
@@ -532,7 +561,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Embed",
@@ -541,7 +571,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "FieldSet",
@@ -550,7 +581,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "FigCaption",
@@ -559,7 +591,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Figure",
@@ -568,7 +601,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Footer",
@@ -577,7 +611,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Form",
@@ -592,7 +627,8 @@
                 "method": "String",
                 "noValidate": "String",
                 "target": "String"
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "H1",
@@ -601,7 +637,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "H2",
@@ -610,7 +647,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "H3",
@@ -619,7 +657,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "H4",
@@ -628,7 +667,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "H5",
@@ -637,7 +677,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "H6",
@@ -646,7 +687,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Header",
@@ -655,7 +697,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "HGroup",
@@ -664,7 +707,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Hr",
@@ -673,7 +717,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "I",
@@ -682,7 +727,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "IFrame",
@@ -696,7 +742,8 @@
                 "src": "String",
                 "srcDoc": "String",
                 "width": "String"
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Img",
@@ -710,7 +757,8 @@
                 "isMap": "String",
                 "useMap": "String",
                 "width": "String"
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Input",
@@ -746,7 +794,8 @@
                 "inputType": "InputType",
                 "value": "String",
                 "width": "String"
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Ins",
@@ -755,7 +804,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Kbd",
@@ -764,7 +814,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "KeyGen",
@@ -773,7 +824,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Label",
@@ -783,7 +835,8 @@
             "attributes": {
                 "forElement": "String",
                 "form": "String"
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Legend",
@@ -792,7 +845,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Li",
@@ -801,12 +855,15 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Link",
             "traits": [
-                "BodyChild"
+                "HeadChild",
+                "BodyChild",
+                "Textual"
             ],
             "attributes": {
                 "href": "String",
@@ -824,7 +881,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Mark",
@@ -833,7 +891,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Menu",
@@ -842,16 +901,19 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Meta",
             "traits": [
+                "HeadChild",
                 "BodyChild"
             ],
             "attributes": {
                 "charSet": "String",
-                "httpEquiv": "String"
+                "httpEquiv": "String",
+                "content": "String"
             }
         },
         {
@@ -861,7 +923,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Nav",
@@ -870,7 +933,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "NoScript",
@@ -879,7 +943,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Object",
@@ -888,7 +953,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Ol",
@@ -897,7 +963,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "OptGroup",
@@ -906,7 +973,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Option",
@@ -918,7 +986,8 @@
                 "label": "String",
                 "selected": "String",
                 "value": "String"
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Output",
@@ -927,7 +996,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "P",
@@ -936,7 +1006,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Param",
@@ -945,7 +1016,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Pre",
@@ -954,7 +1026,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Progress",
@@ -963,7 +1036,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Q",
@@ -972,7 +1046,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Rp",
@@ -981,7 +1056,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Rt",
@@ -990,7 +1066,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Ruby",
@@ -999,7 +1076,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "S",
@@ -1008,7 +1086,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Samp",
@@ -1017,11 +1096,13 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Script",
             "traits": [
+                "HeadChild",
                 "BodyChild"
             ],
             "attributes": {
@@ -1030,7 +1111,8 @@
                 "mimeType": "String",
                 "charSet": "String",
                 "src": "String"
-            }
+            },
+            "childTrait": "JavaScriptContent"
         },
         {
             "name": "Section",
@@ -1039,7 +1121,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Select",
@@ -1052,7 +1135,8 @@
                 "form": "String",
                 "multiple": "String",
                 "size": "String"
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Small",
@@ -1061,7 +1145,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Source",
@@ -1070,7 +1155,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Span",
@@ -1079,7 +1165,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Strong",
@@ -1088,12 +1175,15 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Style",
             "traits": [
-                "BodyChild"
+                "HeadChild",
+                "BodyChild",
+                "Textual"
             ],
             "attributes": {
 
@@ -1106,7 +1196,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Sup",
@@ -1115,7 +1206,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Table",
@@ -1124,7 +1216,8 @@
             ],
             "attributes": {
                 "border": "String"
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "TBody",
@@ -1133,7 +1226,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Td",
@@ -1144,7 +1238,8 @@
                 "colSpan": "String",
                 "headers": "String",
                 "rowSpan": "String"
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "TextArea",
@@ -1162,7 +1257,8 @@
                 "required": "String",
                 "rows": "Int",
                 "wrap": "String"
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "TFoot",
@@ -1171,7 +1267,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Th",
@@ -1180,7 +1277,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "THead",
@@ -1189,7 +1287,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Time",
@@ -1198,7 +1297,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Tr",
@@ -1207,7 +1307,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Track",
@@ -1216,7 +1317,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "U",
@@ -1225,7 +1327,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Ul",
@@ -1234,7 +1337,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Var",
@@ -1243,7 +1347,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Video",
@@ -1252,7 +1357,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         },
         {
             "name": "Wbr",
@@ -1261,7 +1367,8 @@
             ],
             "attributes": {
 
-            }
+            },
+            "childTrait": "BodyChild"
         }
     ],
     "css": {

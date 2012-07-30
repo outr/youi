@@ -5,6 +5,7 @@ import org.hyperscala.persistence.EnumEntryPersistence
 import org.hyperscala.AttributeValue
 
 /**
+ * NOTE: This file has been generated. Do not modify directly!
  * @author Matt Hicks <mhicks@hyperscala.org>
  */
 class Target(val value: String) extends EnumEntry[Target] with AttributeValue

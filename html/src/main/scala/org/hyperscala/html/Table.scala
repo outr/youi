@@ -1,16 +1,19 @@
 package org.hyperscala.html
 
 import org.hyperscala._
+import css.StyleSheet
 import org.hyperscala.html.attributes._
 import org.hyperscala.html.constraints._
 
 /**
+ * NOTE: This file has been generated. Do not modify directly!
  * @author Matt Hicks <mhicks@hyperscala.org>
  */
-class Table extends BodyChild with HTMLTag {
+class Table extends Container[BodyChild] with BodyChild with HTMLTag {
   protected lazy val xmlLabel = "table"
 
-  def this(accessKey: java.lang.Character = null,
+  def this(name: String = null,
+           accessKey: java.lang.Character = null,
            clazz: List[String] = null,
            contentEditable: ContentEditable = null,
            contextMenu: String = null,
@@ -21,11 +24,13 @@ class Table extends BodyChild with HTMLTag {
            id: String = null,
            lang: String = null,
            spellCheck: java.lang.Boolean = null,
-           style: String = null,
+           style: StyleSheet = null,
            tabIndex: java.lang.Integer = null,
            title: String = null,
-           border: String = null) = {
+           border: String = null,
+           content: BodyChild = null) = {
     this()
+    up(this.name, name)
     up(this.accessKey, accessKey)
     up(this.clazz, clazz)
     up(this.contentEditable, contentEditable)
@@ -41,6 +46,7 @@ class Table extends BodyChild with HTMLTag {
     up(this.tabIndex, tabIndex)
     up(this.title, title)
     up(this.border, border)
+    if (content != null) contents += content
   }
 
   val border = PropertyAttribute[String]("border", null)

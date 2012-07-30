@@ -1,16 +1,19 @@
 package org.hyperscala.html
 
 import org.hyperscala._
+import css.StyleSheet
 import org.hyperscala.html.attributes._
 import org.hyperscala.html.constraints._
 
 /**
+ * NOTE: This file has been generated. Do not modify directly!
  * @author Matt Hicks <mhicks@hyperscala.org>
  */
-class Meta extends BodyChild with HTMLTag {
+class Meta extends BodyChild with HeadChild with HTMLTag {
   protected lazy val xmlLabel = "meta"
 
-  def this(accessKey: java.lang.Character = null,
+  def this(name: String = null,
+           accessKey: java.lang.Character = null,
            clazz: List[String] = null,
            contentEditable: ContentEditable = null,
            contextMenu: String = null,
@@ -21,12 +24,14 @@ class Meta extends BodyChild with HTMLTag {
            id: String = null,
            lang: String = null,
            spellCheck: java.lang.Boolean = null,
-           style: String = null,
+           style: StyleSheet = null,
            tabIndex: java.lang.Integer = null,
            title: String = null,
            charSet: String = null,
+           content: String = null,
            httpEquiv: String = null) = {
     this()
+    up(this.name, name)
     up(this.accessKey, accessKey)
     up(this.clazz, clazz)
     up(this.contentEditable, contentEditable)
@@ -42,9 +47,11 @@ class Meta extends BodyChild with HTMLTag {
     up(this.tabIndex, tabIndex)
     up(this.title, title)
     up(this.charSet, charSet)
+    up(this.content, content)
     up(this.httpEquiv, httpEquiv)
   }
 
   val charSet = PropertyAttribute[String]("charset", null)
+  val content = PropertyAttribute[String]("content", null)
   val httpEquiv = PropertyAttribute[String]("httpequiv", null)
 }

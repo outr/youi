@@ -9,7 +9,8 @@ import annotation.tailrec
  * @author Matt Hicks <mhicks@powerscala.org>
  */
 object HTMLCodeGenerator {
-  val BaseOutput = new File("html/src/main/scala/org/hyperscala")
+  val BaseOutput = new File("core/src/main/scala/org/hyperscala")
+  val BaseHTMLOutput = new File("html/src/main/scala/org/hyperscala")
   val EnumTemplate = loadString("enum.template")
   val EnumInstantiatableTemplate = loadString("instantiatableEnum.template")
   val ConstraintsTemplate = loadString("constraints.template")
@@ -19,9 +20,11 @@ object HTMLCodeGenerator {
   val StyleSheetTemplate = loadString("stylesheet.template")
 
   var globalConstructorValues = List.empty[(String, String)]
+  var tagClassNames = List.empty[String]
 
   def main(args: Array[String]): Unit = {
     val json = JSON.parseFull(loadString("meta.json")).get.asInstanceOf[Map[String, Any]]
+    tagClassNames = json("tags").asInstanceOf[List[Map[String, Any]]].map(m => m("name").asInstanceOf[String]).toList
     processEnums(json("enums").asInstanceOf[List[Map[String, Any]]])
     processPersistence(json("enums").asInstanceOf[List[Map[String, Any]]])
     processConstraints(json("constraints").asInstanceOf[List[String]])
@@ -49,7 +52,7 @@ object HTMLCodeGenerator {
       } else {
         EnumTemplate.format(sub, name, body)
       }
-      val file = new File(BaseOutput, "%s/attributes/%s.scala".format(sub, name))
+      val file = new File(BaseHTMLOutput, "%s/attributes/%s.scala".format(sub, name))
       writeFile(content, file)
       processEnums(enums.tail)
     }
@@ -62,7 +65,7 @@ object HTMLCodeGenerator {
                           "IntPersistence",
                           "LanguagePersistence",
                           "ListStringPersistence",
-                          "StringPersistence")
+                          "StyleSheetPersistence")
     val values = (predefined ::: enums.map(m => m("name").asInstanceOf[String])).sorted
     val implicits = values.map(n => {
       val variable = if (n.endsWith("Persistence")) {
@@ -73,7 +76,7 @@ object HTMLCodeGenerator {
       "implicit val %s = %s".format(variable.charAt(0).toLower + variable.substring(1), n)
     }).mkString("\r\n  ")
     val content = PersistenceTemplate.format(implicits)
-    val file = new File(BaseOutput, "persistence/package.scala")
+    val file = new File(BaseHTMLOutput, "persistence/package.scala")
     writeFile(content, file)
   }
 
@@ -82,7 +85,7 @@ object HTMLCodeGenerator {
     if (constraints.nonEmpty) {
       val head = constraints.head
       val content = ConstraintsTemplate.format(head)
-      val file = new File(BaseOutput, "html/constraints/%s.scala".format(head))
+      val file = new File(BaseHTMLOutput, "html/constraints/%s.scala".format(head))
       writeFile(content, file)
       processConstraints(constraints.tail)
     }
@@ -90,9 +93,9 @@ object HTMLCodeGenerator {
 
   def processGlobal(global: Map[String, String]) = {
     val body = generateAttributes(global)
-    globalConstructorValues = generateConstructorValues(global)
-    val content = GlobalTemplate.format(body)
-    val file = new File(BaseOutput, "html/HTMLTag.scala")
+    globalConstructorValues = ("name" -> "String") :: generateConstructorValues(global)
+    val content = GlobalTemplate.format(body, tagClassNames.map(s => "\"%s\" -> classOf[%s]".format(s.toLowerCase, s)).mkString(",\r\n                                  "))
+    val file = new File(BaseHTMLOutput, "html/HTMLTag.scala")
     writeFile(content, file)
   }
 
@@ -133,7 +136,7 @@ object HTMLCodeGenerator {
       }.mkString("\r\n    ")
       val constructor = "def this(%s) = {\r\n    this()\r\n    %s\r\n  }".format(constructorArgs, constructorUpdates)
       val content = TagTemplate.format(name, xtndContent, htmlName, constructor, attributes)
-      val file = new File(BaseOutput, "html/%s.scala".format(name))
+      val file = new File(BaseHTMLOutput, "html/%s.scala".format(name))
       writeFile(content, file)
       processTags(tags.tail)
     }
@@ -206,7 +209,7 @@ object HTMLCodeGenerator {
     topLevel.children = topLevel.children.sortBy(ssp => ssp.variableName)
     topLevel.children.foreach(ssp => generateStyleSheetRecursive(ssp, b, 1))
     val content = StyleSheetTemplate.format(b.toString())
-    val file = new File(BaseOutput, "css/StyleSheet.scala")
+    val file = new File(BaseHTMLOutput, "css/StyleSheet.scala")
     writeFile(content, file)
   }
 

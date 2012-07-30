@@ -1,16 +1,19 @@
 package org.hyperscala.html
 
 import org.hyperscala._
+import css.StyleSheet
 import org.hyperscala.html.attributes._
 import org.hyperscala.html.constraints._
 
 /**
+ * NOTE: This file has been generated. Do not modify directly!
  * @author Matt Hicks <mhicks@hyperscala.org>
  */
-class Form extends BodyChild with HTMLTag {
+class Form extends Container[BodyChild] with BodyChild with HTMLTag {
   protected lazy val xmlLabel = "form"
 
-  def this(accessKey: java.lang.Character = null,
+  def this(name: String = null,
+           accessKey: java.lang.Character = null,
            clazz: List[String] = null,
            contentEditable: ContentEditable = null,
            contextMenu: String = null,
@@ -21,7 +24,7 @@ class Form extends BodyChild with HTMLTag {
            id: String = null,
            lang: String = null,
            spellCheck: java.lang.Boolean = null,
-           style: String = null,
+           style: StyleSheet = null,
            tabIndex: java.lang.Integer = null,
            title: String = null,
            acceptCharset: String = null,
@@ -30,8 +33,10 @@ class Form extends BodyChild with HTMLTag {
            encType: String = null,
            method: String = null,
            noValidate: String = null,
-           target: String = null) = {
+           target: String = null,
+           content: BodyChild = null) = {
     this()
+    up(this.name, name)
     up(this.accessKey, accessKey)
     up(this.clazz, clazz)
     up(this.contentEditable, contentEditable)
@@ -53,6 +58,7 @@ class Form extends BodyChild with HTMLTag {
     up(this.method, method)
     up(this.noValidate, noValidate)
     up(this.target, target)
+    if (content != null) contents += content
   }
 
   val acceptCharset = PropertyAttribute[String]("acceptcharset", null)

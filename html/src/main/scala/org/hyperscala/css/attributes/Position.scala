@@ -5,6 +5,7 @@ import org.hyperscala.persistence.EnumEntryPersistence
 import org.hyperscala.AttributeValue
 
 /**
+ * NOTE: This file has been generated. Do not modify directly!
  * @author Matt Hicks <mhicks@hyperscala.org>
  */
 sealed class Position(val value: String) extends EnumEntry[Position] with AttributeValue

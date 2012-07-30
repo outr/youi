@@ -5,89 +5,14 @@
     <display-name>hyperscala-examples-basic</display-name>
     <servlet>
         <servlet-name>RenderServlet</servlet-name>
-        <servlet-class>org.hyperscala.server.RenderServlet</servlet-class>
+        <servlet-class>org.hyperscala.web.RenderServlet</servlet-class>
         <init-param>
-            <param-name>webSite</param-name>
+            <param-name>website</param-name>
             <param-value>org.hyperscala.site.HyperscalaSite</param-value>
         </init-param>
     </servlet>
-    <servlet>
-        <servlet-name>ServiceManager</servlet-name>
-        <servlet-class>org.hyperscala.server.BasicServiceManager</servlet-class>
-        <init-param>
-            <param-name>services</param-name>
-            <param-value>org.hyperscala.examples.basic.service.POSTExampleService</param-value>
-        </init-param>
-    </servlet>
-    <servlet>
-        <servlet-name>default</servlet-name>
-        <servlet-class>org.eclipse.jetty.servlet.DefaultServlet</servlet-class>
-        <init-param>
-            <param-name>aliases</param-name>
-            <param-value>false</param-value>
-        </init-param>
-        <init-param>
-            <param-name>acceptRanges</param-name>
-            <param-value>true</param-value>
-        </init-param>
-        <init-param>
-            <param-name>dirAllowed</param-name>
-            <param-value>true</param-value>
-        </init-param>
-        <init-param>
-            <param-name>welcomeServlets</param-name>
-            <param-value>false</param-value>
-        </init-param>
-        <init-param>
-            <param-name>redirectWelcome</param-name>
-            <param-value>false</param-value>
-        </init-param>
-        <init-param>
-            <param-name>maxCacheSize</param-name>
-            <param-value>256000000</param-value>
-        </init-param>
-        <init-param>
-            <param-name>maxCachedFileSize</param-name>
-            <param-value>200000000</param-value>
-        </init-param>
-        <init-param>
-            <param-name>maxCachedFiles</param-name>
-            <param-value>2048</param-value>
-        </init-param>
-        <init-param>
-            <param-name>gzip</param-name>
-            <param-value>true</param-value>
-        </init-param>
-        <init-param>
-            <param-name>useFileMappedBuffer</param-name>
-            <param-value>false</param-value>
-        </init-param>
-        <init-param>
-            <param-name>resourceCache</param-name>
-            <param-value>resourceCache</param-value>
-        </init-param>
-        <!--
-        <init-param>
-          <param-name>cacheControl</param-name>
-          <param-value>max-age=3600,public</param-value>
-        </init-param>
-        -->
-        <load-on-startup>0</load-on-startup>
-    </servlet>
-
     <servlet-mapping>
         <servlet-name>RenderServlet</servlet-name>
-        <url-pattern>*.html</url-pattern>
+        <url-pattern>/*</url-pattern>
     </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ServiceManager</servlet-name>
-        <url-pattern>/service/*</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>default</servlet-name>
-        <url-pattern>/</url-pattern>
-    </servlet-mapping>
-    <welcome-file-list>
-        <welcome-file>home.jsp</welcome-file>
-    </welcome-file-list>
 </web-app>

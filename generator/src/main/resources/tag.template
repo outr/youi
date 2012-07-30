@@ -1,10 +1,13 @@
 package org.hyperscala.html
 
 import org.hyperscala._
+import css.StyleSheet
+import javascript.JavaScriptContent
 import org.hyperscala.html.attributes._
 import org.hyperscala.html.constraints._
 
 /**
+ * NOTE: This file has been generated. Do not modify directly!
  * @author Matt Hicks <mhicks@hyperscala.org>
  */
 class %s extends %s {

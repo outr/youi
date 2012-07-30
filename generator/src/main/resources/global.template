@@ -2,10 +2,29 @@ package org.hyperscala.html
 
 import attributes._
 import org.hyperscala._
+import org.hyperscala.css.StyleSheet
+import scala.collection.{Map => ScalaMap}
 
 /**
+ * NOTE: This file has been generated. Do not modify directly!
  * @author Matt Hicks <mhicks@hyperscala.org>
  */
 trait HTMLTag extends Tag {
   %s
+
+  protected def generateChildFromTagName(name: String): XMLContent = {
+    HTMLTag.create(name)
+  }
+
+  protected def processText(text: String): Unit = {
+    this.asInstanceOf[Container[HTMLTag]].contents += new Text(text)
+  }
+}
+
+object HTMLTag {
+  private val registry = ScalaMap(%s)
+
+  def create(tagName: String) = {
+    registry(tagName).newInstance().asInstanceOf[XMLContent]
+  }
 }

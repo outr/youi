@@ -1,16 +1,20 @@
 package org.hyperscala.html
 
 import org.hyperscala._
+import css.StyleSheet
+import javascript.JavaScriptContent
 import org.hyperscala.html.attributes._
 import org.hyperscala.html.constraints._
 
 /**
+ * NOTE: This file has been generated. Do not modify directly!
  * @author Matt Hicks <mhicks@hyperscala.org>
  */
-class Script extends BodyChild with HTMLTag {
+class Script extends Container[JavaScriptContent] with BodyChild with HeadChild with HTMLTag {
   protected lazy val xmlLabel = "script"
 
-  def this(accessKey: java.lang.Character = null,
+  def this(name: String = null,
+           accessKey: java.lang.Character = null,
            clazz: List[String] = null,
            contentEditable: ContentEditable = null,
            contextMenu: String = null,
@@ -21,15 +25,17 @@ class Script extends BodyChild with HTMLTag {
            id: String = null,
            lang: String = null,
            spellCheck: java.lang.Boolean = null,
-           style: String = null,
+           style: StyleSheet = null,
            tabIndex: java.lang.Integer = null,
            title: String = null,
            async: String = null,
            charSet: String = null,
            defer: String = null,
            mimeType: String = null,
-           src: String = null) = {
+           src: String = null,
+           content: JavaScriptContent = null) = {
     this()
+    up(this.name, name)
     up(this.accessKey, accessKey)
     up(this.clazz, clazz)
     up(this.contentEditable, contentEditable)
@@ -49,6 +55,7 @@ class Script extends BodyChild with HTMLTag {
     up(this.defer, defer)
     up(this.mimeType, mimeType)
     up(this.src, src)
+    if (content != null) contents += content
   }
 
   val async = PropertyAttribute[String]("async", null)

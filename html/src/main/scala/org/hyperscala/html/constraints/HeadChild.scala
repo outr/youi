@@ -3,6 +3,7 @@ package org.hyperscala.html.constraints
 import org.hyperscala.html.HTMLTag
 
 /**
+ * NOTE: This file has been generated. Do not modify directly!
  * @author Matt Hicks <mhicks@hyperscala.org>
  */
 trait HeadChild extends HTMLTag

@@ -1,58 +1,43 @@
 package org.hyperscala
 
-import js.{Instruction, JavaScriptContext}
 import org.powerscala.hierarchy.MutableContainer
+import annotation.tailrec
+import org.jdom2.{Text, Content, Element}
+import scala.collection.JavaConversions._
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-trait Container[T <: WebContent] extends MutableContainer[T] with WebContent {
-  override protected def children = contents.map{_.xml}
-
-  override def beforeRender() {
-    super.beforeRender()
-
-    contents.foreach{_.beforeRender()}
+trait Container[C <: XMLContent] extends MutableContainer[C] with Markup {
+  override def toXML = {
+    val element = super.toXML.asInstanceOf[Element]
+    childrenToXML(element, contents)
+    element
   }
 
-  override def afterRender() {
-    super.afterRender()
-
-    contents.foreach{_.afterRender()}
+  override def fromXML(xml: Content) {
+    super.fromXML(xml)
+    val element = xml.asInstanceOf[Element]
+    element.getContent.foreach {
+      case childElement: Element => {
+        val child = generateChildFromTagName(childElement.getName).asInstanceOf[C]
+        child.fromXML(childElement)
+        contents += child
+      }
+      case childText: Text => processText(childText.getText)
+    }
   }
 
-  override val contents = new HTMLContents
+  protected def generateChildFromTagName(name: String): XMLContent
 
-  class HTMLContents extends VisibleContents {
-    override def clear() {
-      if (JavaScriptContext.inContext && reference != None) {
-        val ref = reference.get
-        Instruction(output = Some("while (%s.hasChildNodes()) { %s.removeChild(%s.lastChild); }\r\n".format(ref, ref, ref)))
-      }
-      super.clear()
-    }
+  protected def processText(text: String): Unit
 
-    def replaceWith(children: T*) = {
-      clear()
-      add(children: _*)
-    }
-
-    def add(children: T*) = children.foreach(child => this += child)
-
-    override def apply(index: Int) = super.apply(index)
-
-    override def length = super.length
-
-    override def +=(child: T) = {
-      if (JavaScriptContext.inContext && reference != None) {
-        val content = child.render.replaceAll("\n", """\\""" + "\n").replaceAll("'", """\\""" + "'")
-        Instruction(output = Some("%s.innerHTML += %s;\r\n".format(reference.get, content)))
-      }
-      super.+=(child)
-    }
-
-    override def -=(child: T) = {
-      super.-=(child)
+  @tailrec
+  private def childrenToXML(element: Element, children: Seq[C]): Unit = {
+    if (children.nonEmpty) {
+      val child = children.head
+      element.addContent(child.toXML)
+      childrenToXML(element, children.tail)
     }
   }
 }

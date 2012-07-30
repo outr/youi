@@ -1,3 +1,4 @@
+/*
 package org.hyperscala.site
 
 import org.hyperscala.WebPage
@@ -78,4 +79,4 @@ case class MenuItem(name: String) extends Td {
     style.color := Color.White
     contents += name
   }
-}
+}*/

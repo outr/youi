@@ -1,16 +1,19 @@
 package org.hyperscala.html
 
 import org.hyperscala._
+import css.StyleSheet
 import org.hyperscala.html.attributes._
 import org.hyperscala.html.constraints._
 
 /**
+ * NOTE: This file has been generated. Do not modify directly!
  * @author Matt Hicks <mhicks@hyperscala.org>
  */
-class Img extends BodyChild with HTMLTag {
+class Img extends Container[BodyChild] with BodyChild with HTMLTag {
   protected lazy val xmlLabel = "img"
 
-  def this(accessKey: java.lang.Character = null,
+  def this(name: String = null,
+           accessKey: java.lang.Character = null,
            clazz: List[String] = null,
            contentEditable: ContentEditable = null,
            contextMenu: String = null,
@@ -21,7 +24,7 @@ class Img extends BodyChild with HTMLTag {
            id: String = null,
            lang: String = null,
            spellCheck: java.lang.Boolean = null,
-           style: String = null,
+           style: StyleSheet = null,
            tabIndex: java.lang.Integer = null,
            title: String = null,
            alt: String = null,
@@ -29,8 +32,10 @@ class Img extends BodyChild with HTMLTag {
            isMap: String = null,
            src: String = null,
            useMap: String = null,
-           width: String = null) = {
+           width: String = null,
+           content: BodyChild = null) = {
     this()
+    up(this.name, name)
     up(this.accessKey, accessKey)
     up(this.clazz, clazz)
     up(this.contentEditable, contentEditable)
@@ -51,6 +56,7 @@ class Img extends BodyChild with HTMLTag {
     up(this.src, src)
     up(this.useMap, useMap)
     up(this.width, width)
+    if (content != null) contents += content
   }
 
   val alt = PropertyAttribute[String]("alt", null)

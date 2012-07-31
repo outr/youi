@@ -28,7 +28,7 @@ class PageHandler(instantiator: () => Page, matcher: String => Boolean, scope: S
         case Some(p) => p
         case None => {
           val p = instantiator()
-          website.session(uniqueName)
+          website.session(uniqueName) = p
           p
         }
       }

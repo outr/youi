@@ -80,7 +80,29 @@
             "custom": [
                 "def Pixels(v: Int) = Length(\"%spx\".format(v))",
                 "def Centimeters(v: Int) = Length(\"%scm\".format(v))",
-                "def Percent(v: Int) = Length(\"%s%\".format(v))"
+                "def Percent(v: Int) = Length(v + \"%\")"
+            ]
+        },
+        {
+            "name": "FontSize",
+            "sub": "css",
+            "instantiatable": true,
+            "values": {
+                "XXSmall": "xx-small",
+                "XSmall": "x-small",
+                "Small": "small",
+                "Medium": "medium",
+                "Large": "large",
+                "XLarge": "x-large",
+                "XXLarge": "xx-large",
+                "Smaller": "smaller",
+                "Larger": "larger",
+                "Inherit": "inherit"
+            },
+            "custom": [
+                "def Pixels(v: Int) = Length(\"%spx\".format(v))",
+                "def Centimeters(v: Int) = Length(\"%scm\".format(v))",
+                "def Percent(v: Int) = Length(v + \"%\")"
             ]
         },
         {
@@ -1478,7 +1500,7 @@
         "float-offset": "String",
         "font": "String",
         "font-family": "String",
-        "font-size": "Length",
+        "font-size": "FontSize",
         "font-size-adjust": "String",
         "font-stretch": "String",
         "font-style": "String",

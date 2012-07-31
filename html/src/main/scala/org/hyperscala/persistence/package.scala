@@ -18,6 +18,7 @@ package object persistence {
   implicit val draggablePersistence = Draggable
   implicit val dropZonePersistence = DropZone
   implicit val floatPersistence = Float
+  implicit val fontSizePersistence = FontSize
   implicit val inputTypePersistence = InputType
   implicit val intPersistence = IntPersistence
   implicit val languagePersistence = LanguagePersistence

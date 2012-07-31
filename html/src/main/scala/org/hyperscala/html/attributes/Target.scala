@@ -17,7 +17,7 @@ object Target extends Enumerated[Target] with EnumEntryPersistence[Target] {
   val Top = new Target("_top")
 
   override def apply(name: String) = super.apply(name) match {
-    case null => new Target("%s".format(name))
+    case null => new Target(name)
     case v => v
   }
 }

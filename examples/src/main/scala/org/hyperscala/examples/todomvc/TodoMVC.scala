@@ -1,11 +1,10 @@
-/*
-package org.hyperscala.todomvc
+package org.hyperscala.examples.todomvc
 
-import org.hyperscala.WebPage
-import org.hyperscala.tags._
+import org.hyperscala.web.HTMLPage
+import org.hyperscala.html._
 import attributes.InputType
 
-object TodoMVC extends WebPage("index.html") {
+object TodoMVC extends HTMLPage {
   head.title := "Webframework - TodoMVC"
   head.contents += new Link(rel = "stylesheet", href = "css/base.css")
   head.contents += new Link(rel = "stylesheet", href = "css/app.css")
@@ -73,4 +72,4 @@ object TodoMVC extends WebPage("index.html") {
   }
   body.contents += new Script(src = "javascript/base.js")
   body.contents += new Script(src = "javascript/app.js")
-}*/
+}

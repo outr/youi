@@ -23,7 +23,7 @@ class HTMLPage extends Page with PropertyParent {
   val body = new Body
 
   head.contents += new Meta(name = "generator", content = "Hyperscala")
-  head.contents += new Meta(charSet = "ISO-8859-1")
+  head.contents += new Meta(charSet = "UTF-8")
 
   html.contents.addAll(head, body)
 

@@ -14,7 +14,7 @@ class PropertyAttribute[T](_name: String, default: T, exclude: Boolean = false, 
 
   def attributeValue_=(value: String) = this := persister.fromString(value, manifest.erasure)
 
-  def shouldRender = modified && !exclude
+  def shouldRender = modified && !exclude && (value != true && attributeValue.length > 0)   // Keep empty attributes out
 }
 
 object PropertyAttribute {

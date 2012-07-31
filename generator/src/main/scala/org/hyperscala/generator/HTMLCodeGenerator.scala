@@ -45,7 +45,11 @@ object HTMLCodeGenerator {
       }.toList
       val body = (definitions ::: custom).mkString("\r\n  ")
       val instantiatable = head.getOrElse("instantiatable", false).asInstanceOf[Boolean]
-      val instantiationTemplate = head.getOrElse("instantiationTemplate", "%s").asInstanceOf[String]
+      val instantiationTemplateRef = head.getOrElse("instantiationTemplate", null).asInstanceOf[String]
+      val instantiationTemplate = instantiationTemplateRef match {
+        case null => "name"
+        case t => "\"%s\".format(name)".format(t)
+      }
       val sub = head.getOrElse("sub", "html").asInstanceOf[String]
       val content = if (instantiatable) {
         EnumInstantiatableTemplate.format(sub, name, body, instantiationTemplate)
@@ -173,6 +177,7 @@ object HTMLCodeGenerator {
           case "Int" => "-1"
           case "Boolean" => "false"
           case "String" => "null"
+          case "StyleSheet" => "new StyleSheet()"
           case _ => {
             enums = value :: enums
             "null"

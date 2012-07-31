@@ -1,16 +1,17 @@
-/*
 package org.hyperscala.site
 
-import org.hyperscala.WebPage
-import org.hyperscala.tags._
-import org.hyperscala.style._
+import org.hyperscala.web.HTMLPage
+
+import org.powerscala.property._
 import org.powerscala.Color
+import org.hyperscala.html._
+import org.hyperscala.css.attributes._
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-class HyperscalaPage(filename: String) extends WebPage(filename) {
-  head.title := "Hyperscala - Statically typed bare-metal HTML, CSS, and JavaScript framework for Scala."
+class HyperscalaPage extends HTMLPage {
+  title := "Hyperscala - Statically typed bare-metal HTML, CSS, and JavaScript framework for Scala."
 
   body.style.margin := "0"
   body.style.background.color := Color.Black
@@ -31,8 +32,8 @@ class HyperscalaPage(filename: String) extends WebPage(filename) {
     contents += new Div {
       style.width := 960.px
       style.height := 120.px
-      style.background.image := Resource("images/top_clouds.png")
-      contents += new Img(src = "images/hyperscala.png") {
+      style.background.image := Resource("top_clouds.png")
+      contents += new Img(src = "hyperscala.png") {
         style.margin.top := "10px"
         style.margin.left := "10px"
       }
@@ -55,7 +56,7 @@ class HyperscalaPage(filename: String) extends WebPage(filename) {
         style.padding.top := 8.px
         style.float := Float.Right
         style.font.size := FontSize.Small
-        contents += "&copy;2012 Hyperscala.org"
+        contents += "©2012 Hyperscala.org"
       }
     }
   }
@@ -65,10 +66,10 @@ class HyperscalaPage(filename: String) extends WebPage(filename) {
 class Bar extends Div {
   style.width := 960.px
   style.height := 30.px
-  style.background.image := Resource("images/bar.png")
+  style.background.image := Resource("bar.png")
 }
 
-case class MenuItem(name: String) extends Td {
+case class MenuItem(itemName: String) extends Td {
   style.text.align := Alignment.Center
   style.font.weight := "bold"
   style.width := 150.px
@@ -77,6 +78,6 @@ case class MenuItem(name: String) extends Td {
   contents += new A(href = "#") {
     style.text.decoration := "none"
     style.color := Color.White
-    contents += name
+    contents += itemName
   }
-}*/
+}

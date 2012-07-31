@@ -1,20 +1,18 @@
-/*
-package org.hyperscala.numberguess
+package org.hyperscala.examples.numberguess
 
-import org.hyperscala.{js, WebPage}
+import org.hyperscala.html._
+import attributes.{Target, InputType}
+import org.hyperscala.web.HTMLPage
 
-import org.hyperscala.style._
-import org.hyperscala.tags._
-import attributes.InputType
-import org.hyperscala.js._
+import org.powerscala.property._
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-object NumberGuess extends WebPage("index.html") {
-  head.title := "NumberGuess"
+object NumberGuess extends HTMLPage {
+  title := "NumberGuess"
 
-  head += JavaScript {
+  /*head += JavaScript {
     val guesses = V(0, "guesses")
     val random = V(Math.floor((Math.random() * 100.0) + 1.0), "random")
     JsFunction.f0("validateGuess") {
@@ -49,9 +47,9 @@ object NumberGuess extends WebPage("index.html") {
       guesses := 0
       random := Math.floor((Math.random() * 100.0) + 1.0)
     }
-  }
+  }*/
 
-  body.style.font.family := "sans-serif"
+  body.style().font.family := "sans-serif"
   body.contents += new Div {
     style.width := 600.px
     style.margin := "0px auto"
@@ -60,16 +58,18 @@ object NumberGuess extends WebPage("index.html") {
     contents += new P {
       contents += new Input(id = "input", inputType = InputType.Number)
       contents += new Button(id = "button", content = "Guess") {
-        event.click := JavaScript("validateGuess();")
+        //        event.click := JavaScript("validateGuess();")
       }
       contents += new Button(content = "Reset") {
-        event.click := JavaScript("resetGame();")
+        //        event.click := JavaScript("resetGame();")
       }
     }
     contents += new P {
       contents += "Created by "
       contents += new A(href = "http://www.matthicks.com", content = "Matt Hicks")
     }
-    contents += new A(content = "View Original Source", target = "_blank", href = "https://github.com/darkfrog26/webframework/blob/master/examples/numberguess/src/main/scala/com/outr/webframework/numberguess/NumberGuess.scala")
+    contents += new A(content = "View Original Source",
+      target = Target.Blank,
+      href = "https://github.com/darkfrog26/webframework/blob/master/examples/numberguess/src/main/scala/com/outr/webframework/numberguess/NumberGuess.scala")
   }
-}*/
+}

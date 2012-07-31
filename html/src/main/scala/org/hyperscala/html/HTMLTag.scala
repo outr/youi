@@ -21,9 +21,11 @@ trait HTMLTag extends Tag {
   val id = PropertyAttribute[String]("id", null)
   val lang = PropertyAttribute[String]("lang", null)
   val spellCheck = PropertyAttribute[Boolean]("spellcheck", false)
-  val style = PropertyAttribute[StyleSheet]("style", null)
+  val style = PropertyAttribute[StyleSheet]("style", new StyleSheet())
   val tabIndex = PropertyAttribute[Int]("tabindex", -1)
   val title = PropertyAttribute[String]("title", null)
+
+  style := style()      // Sets the style to modified state
 
   protected def generateChildFromTagName(name: String): XMLContent = {
     HTMLTag.create(name)

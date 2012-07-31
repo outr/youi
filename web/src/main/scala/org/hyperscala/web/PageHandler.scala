@@ -38,3 +38,11 @@ class PageHandler(instantiator: () => Page, matcher: String => Boolean, scope: S
     page.service(method, request, response)
   }
 }
+
+object PageHandler {
+  def uriMatcher(uri: String)(toMatch: String) = uri == toMatch || "/%s".format(uri) == toMatch
+
+  def apply(uri: String, scope: Scope = Scope.Request)(f: => Page)(implicit website: Website[_ <: Session]) = {
+    new PageHandler(() => f, uriMatcher(uri) _, scope)(website)
+  }
+}

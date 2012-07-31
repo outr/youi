@@ -12,6 +12,8 @@ import scala.collection.{Map => ScalaMap}
 trait HTMLTag extends Tag {
   %s
 
+  style := style()      // Sets the style to modified state
+
   protected def generateChildFromTagName(name: String): XMLContent = {
     HTMLTag.create(name)
   }

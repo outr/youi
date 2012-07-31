@@ -15,10 +15,10 @@ object Length extends Enumerated[Length] with EnumEntryPersistence[Length] {
   val Inherit = new Length("inherit")
   def Pixels(v: Int) = Length("%spx".format(v))
   def Centimeters(v: Int) = Length("%scm".format(v))
-  def Percent(v: Int) = Length("%s%".format(v))
+  def Percent(v: Int) = Length(v + "%")
 
   override def apply(name: String) = super.apply(name) match {
-    case null => new Length("%s".format(name))
+    case null => new Length(name)
     case v => v
   }
 }

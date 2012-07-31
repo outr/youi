@@ -184,7 +184,7 @@ class StyleSheet extends PropertyParent {
   val font = new StyleSheetAttribute[String]("font", null) {
     val face = StyleSheetAttribute[String]("font-face", null)
     val family = StyleSheetAttribute[String]("font-family", null)
-    val size = new StyleSheetAttribute[Length]("font-size", null) {
+    val size = new StyleSheetAttribute[FontSize]("font-size", null) {
       val adjust = StyleSheetAttribute[String]("font-size-adjust", null)
     }
     val stretch = StyleSheetAttribute[String]("font-stretch", null)

@@ -21,12 +21,13 @@ trait Website[S <: Session] extends MutableContainer[ContentHandler] with Proper
   // TODO: error page support
   // TODO: add configuration options for caching static content
 
+  contents += ResourceHandler
+
   def reload(config: ServletConfig) = {
     name := config.getServletContext.getServletContextName      // Load the web application name
   }
 
   def service(method: Method, request: HttpServletRequest, response: HttpServletResponse) = {
-    println("Website invoked!")
     val uri = request.getRequestURI
     _session.set(loadSession(request))
     try {
@@ -52,6 +53,7 @@ trait Website[S <: Session] extends MutableContainer[ContentHandler] with Proper
         httpSession.setAttribute(sessionKey, session)
         session
       }
+      case session => session.asInstanceOf[S]
     }
   }
 
@@ -67,5 +69,5 @@ trait Website[S <: Session] extends MutableContainer[ContentHandler] with Proper
 }
 
 object Website {
-  val prioritySort = (ch1: ContentHandler, ch2: ContentHandler) => ch1.priority.value.compareTo(ch2.priority.value)
+  val prioritySort = (ch1: ContentHandler, ch2: ContentHandler) => -ch1.priority.value.compareTo(ch2.priority.value)
 }

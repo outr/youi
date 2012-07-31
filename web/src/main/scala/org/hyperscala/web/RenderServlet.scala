@@ -13,6 +13,7 @@ class RenderServlet extends HttpServlet {
 
   override def init(config: ServletConfig) = {
     super.init(config)
+    RenderServlet.instance = this
 
     val websiteClassName = config.getInitParameter("website")
     val websiteClass = Class.forName(websiteClassName)
@@ -25,4 +26,10 @@ class RenderServlet extends HttpServlet {
     val method = Method(request.getMethod)
     website.service(method, request, response)
   }
+}
+
+object RenderServlet {
+  private var instance: RenderServlet = null
+
+  def apply() = instance
 }

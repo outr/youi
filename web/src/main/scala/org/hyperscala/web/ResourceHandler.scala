@@ -21,7 +21,15 @@ object ResourceHandler extends ContentHandler {
   def apply(method: Method, request: HttpServletRequest, response: HttpServletResponse) = {
     val url = toURL(request.getRequestURI)
     val connection = url.openConnection()
-    response.setContentType(connection.getContentType)
+    val contentType = connection.getContentType match {
+      case "content/unknown" => url.toString.substring(url.toString.lastIndexOf('.') + 1).toLowerCase match {
+        case "css" => "text/css"
+        case "js" => "application/javascript"
+        case extension => throw new RuntimeException("Unsupported content extension: %s for %s".format(extension, url))
+      }
+      case s => s
+    }
+    response.setContentType(contentType)
     response.setContentLength(connection.getContentLength)
     val input = connection.getInputStream
     val output = response.getOutputStream
@@ -43,7 +51,14 @@ object ResourceHandler extends ContentHandler {
     }
   }
 
-  def toURL(uri: String) = classLoader.getResource(uri.substring(1))
+  def toURL(uri: String) = if (uri.trim.length > 1) {     // Don't want to match the context root
+    RenderServlet().getServletContext.getResource(uri) match {
+      case null => classLoader.getResource(uri.substring(1))
+      case url => url
+    }
+  } else {
+    null
+  }
 
   override def priority = Priority.Low
 }

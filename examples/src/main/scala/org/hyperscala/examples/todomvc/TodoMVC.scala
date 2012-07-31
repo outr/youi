@@ -70,6 +70,6 @@ object TodoMVC extends HTMLPage {
       contents += new A(href = "http://www.todomvc.com", content = "TodoMVC")
     }
   }
-  body.contents += new Script(src = "javascript/base.js")
-  body.contents += new Script(src = "javascript/app.js")
+  body.contents += new Script(src = "js/base.js")
+  body.contents += new Script(src = "js/app.js")
 }

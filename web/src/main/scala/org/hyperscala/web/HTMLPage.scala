@@ -33,16 +33,14 @@ class HTMLPage extends Page with PropertyParent with Parent {
 
   html.contents.addAll(head, body)
 
+  title := getClass.getSimpleName     // We always have to have a title
+
   def service(method: Method, request: HttpServletRequest, response: HttpServletResponse) = {
     response.setContentType("text/html")
     if (method == Method.Post) {
       request.getParameterMap.foreach {
-        case (key, values) => byName[HTMLTag](key) match {
-          case Some(tag) => tag match {
-            case input: Input => input.value := values.head
-            case textArea: TextArea => textArea.contents.replaceWith(values.head)
-            // TODO: add support for other inputs
-          }
+        case (key, values) => byName[HTMLTag](key.asInstanceOf[String]) match {
+          case Some(tag) => updateValue(tag, values.asInstanceOf[Array[String]])
           case None => //println("Unable to find %s".format(key))
         }
       }
@@ -55,6 +53,15 @@ class HTMLPage extends Page with PropertyParent with Parent {
     } finally {
       output.flush()
       output.close()
+    }
+  }
+
+  protected def updateValue(tag: HTMLTag, values: Array[String]) = {
+    tag match {
+      case input: Input => input.value := values.head
+      case textArea: TextArea => textArea.contents.replaceWith(values.head)
+      case _ => throw new RuntimeException("Unsupported tag: %s".format(tag))
+      // TODO: add support for other inputs
     }
   }
 

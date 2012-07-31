@@ -24,7 +24,7 @@ object HyperScalaBuild extends Build {
   val jettyJsp = "org.eclipse.jetty" % "jetty-jsp-2.1" % jettyVersion % "container;provided"
   val glassfishJsp = "org.mortbay.jetty" % "jsp-2.1-glassfish" % "2.1.v20100127" % "container;provided"
 
-  val servletApi = "javax.servlet" % "javax.servlet-api" % "3.0.1"
+  val servletApi = "org.eclipse.jetty" % "jetty-servlet" % jettyVersion
 
   val baseSettings = Defaults.defaultSettings ++ Seq(
     version := "0.3-SNAPSHOT",

@@ -13,8 +13,10 @@ trait Markup extends XMLContent {
   protected def xmlAttributes: Seq[XMLAttribute]
 
   def toXML: Content = {
+    before()
     val element = new Element(xmlLabel)
     attributesToXML(element, xmlAttributes)
+    after()
     element
   }
   def fromXML(xml: Content) = xml match {
@@ -23,6 +25,10 @@ trait Markup extends XMLContent {
     }
     case _ => throw new RuntimeException("Unsupported content type: %s".format(xml.getClass.getName))
   }
+
+  protected def before() = {}
+
+  protected def after() = {}
 
   @tailrec
   private def attributesToXML(element: Element, attributes: Seq[XMLAttribute]): Unit = {

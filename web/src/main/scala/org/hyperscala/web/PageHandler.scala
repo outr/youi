@@ -17,16 +17,16 @@ class PageHandler(instantiator: () => Page, matcher: String => Boolean, scope: S
   def apply(method: Method, request: HttpServletRequest, response: HttpServletResponse) = {
     val page = scope match {
       case Scope.Application => website.get[Page](uniqueName) match {
-        case Some(p) => p
-        case None => {
+        case Some(p) if (!p.disposed) => p
+        case _ => {
           val p = instantiator()
           website(uniqueName) = p
           p
         }
       }
       case Scope.Session => website.session.get[Page](uniqueName) match {
-        case Some(p) => p
-        case None => {
+        case Some(p) if (!p.disposed) => p
+        case _ => {
           val p = instantiator()
           website.session(uniqueName) = p
           p

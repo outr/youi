@@ -1,0 +1,11 @@
+function %1$sFormSubmitResult() {
+    $('#%2$s').removeAttr('disabled');
+    window.location.reload();
+}
+
+$('#%1$s').submit(function (event) {
+    event.preventDefault();
+    $('#%2$s').attr('disabled', 'disabled');
+    var jqxhr = $.post(window.location.href, $('#%1$s').serialize(), %1$sFormSubmitResult);
+    jqxhr.error(%1$sFormSubmitResult);
+});

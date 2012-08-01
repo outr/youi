@@ -11,6 +11,11 @@ import collection.JavaConversions._
  * @author Matt Hicks <mhicks@powerscala.org>
  */
 class HTMLPage extends Page with PropertyParent with Parent {
+  HTMLPage.instance.set(this)
+
+  private var redirectPage: String = null
+  protected[web] var disposed = false
+
   val doctype = "<!DOCTYPE html>\r\n".getBytes
   val name = Property[String]("name", null)
   val title = Property[String]("title", null)
@@ -36,23 +41,34 @@ class HTMLPage extends Page with PropertyParent with Parent {
   title := getClass.getSimpleName     // We always have to have a title
 
   def service(method: Method, request: HttpServletRequest, response: HttpServletResponse) = {
-    response.setContentType("text/html")
-    if (method == Method.Post) {
-      request.getParameterMap.foreach {
-        case (key, values) => byName[HTMLTag](key.asInstanceOf[String]) match {
-          case Some(tag) => updateValue(tag, values.asInstanceOf[Array[String]])
-          case None => //println("Unable to find %s".format(key))
+    HTMLPage.instance.set(this)
+    try {
+      response.setContentType("text/html")
+      var ignoreResponse = false
+      if (method == Method.Post) {
+        request.getParameterMap.foreach {
+          case (key, values) => byName[HTMLTag](key.asInstanceOf[String]) match {
+            case Some(tag) => updateValue(tag, values.asInstanceOf[Array[String]])
+            case None => //println("Unable to find %s".format(key))
+          }
+        }
+        if (request.getParameter("sendResponse") == "false") {
+          ignoreResponse = true
         }
       }
-    }
-    refresh()
-    val output = response.getOutputStream
-    try {
-      output.write(doctype)
-      html.stream(output)
+      refresh()
+      if (!ignoreResponse) {
+        if (redirectPage != null) {     // Send redirect
+          response.sendRedirect(redirectPage)
+          redirectPage = null
+        } else {
+          sendResponse(method, request, response)
+        }
+      }
+    } catch {
+      case t: Throwable => handleException(t, method, request, response)
     } finally {
-      output.flush()
-      output.close()
+      HTMLPage.instance.set(null)
     }
   }
 
@@ -65,11 +81,42 @@ class HTMLPage extends Page with PropertyParent with Parent {
     }
   }
 
+  protected def sendResponse(method: Method, request: HttpServletRequest, response: HttpServletResponse) = {
+    val output = response.getOutputStream
+    try {
+      output.write(doctype)
+      html.stream(output)
+    } finally {
+      output.flush()
+      output.close()
+    }
+  }
+
+  protected def handleException(t: Throwable, method: Method, request: HttpServletRequest, response: HttpServletResponse) = {
+    t.printStackTrace()
+    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, t.getMessage)
+  }
+
+  /**
+   * Redirects the page for the next rendering. Additional rendering of the page will no longer redirect.
+   */
+  def sendRedirect(url: String) = redirectPage = url
+
   /**
    * Called every time the page is loaded into the browser.
    */
   def refresh(): Unit = {}
 
+  def dispose() = disposed = true
+
   def byName[T <: HTMLTag](name: String) = view.find(tag => tag.name() == name).asInstanceOf[scala.Option[T]]
   def byId[T <: HTMLTag](id: String) = view.find(tag => tag.id() == id).asInstanceOf[scala.Option[T]]
+}
+
+object HTMLPage {
+  private val instance = new ThreadLocal[HTMLPage]
+
+  def apply() = instance.get()
+
+  def apply(tag: HTMLTag) = tag.hierarchy.first.asInstanceOf[HTMLPage]
 }

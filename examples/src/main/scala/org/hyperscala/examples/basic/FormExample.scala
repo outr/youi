@@ -1,6 +1,6 @@
 package org.hyperscala.examples.basic
 
-import org.hyperscala.web.HTMLPage
+import org.hyperscala.web.{AJAXForm, HTMLPage}
 import org.hyperscala.html._
 import attributes.InputType
 import org.powerscala.property.event.PropertyChangeEvent
@@ -13,12 +13,14 @@ import org.powerscala.property._
 class FormExample extends HTMLPage {
   title := "Form Example"
 
+  head.contents += new Script(src = "/js/jquery-1.7.2.js")
+
   val messages = new Div {
     style.padding.bottom := 10.px
   }
   contents += messages
 
-  contents += new Form(method = "post") {
+  contents += new Form(id = "form", method = "post") with AJAXForm {
     val items = List("Name", "Phone", "Email")
     items.foreach {
       case item => {
@@ -35,6 +37,6 @@ class FormExample extends HTMLPage {
         }
       }
     }
-    contents += new Button(buttonType = "submit", content = "Submit")
+    contents += new Button(id = "button", buttonType = "submit", content = "Submit")
   }
 }

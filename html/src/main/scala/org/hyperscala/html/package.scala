@@ -9,11 +9,6 @@ package object html {
    */
   implicit def s2Text(s: String) = new Text(s)
 
-  /**
-   * Ease the conversion from String to List[String]
-   */
-  implicit def s2List(s: String) = List(s)
-
   implicit def int2LengthInt(i: Int) = LengthInt(i)
   implicit def double2LengthInt(d: Double) = LengthInt(round(d).toInt)
   implicit def l2Fs(l: Length) = FontSize(l.value)

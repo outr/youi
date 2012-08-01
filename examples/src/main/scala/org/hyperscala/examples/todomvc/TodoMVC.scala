@@ -18,21 +18,21 @@ object TodoMVC extends HTMLPage {
       contents += new Input(id = "toggle-all", inputType = InputType.CheckBox)
       contents += new Label(forElement = "toggle-all", content = "Mark all as complete")
       contents += new Ul(id = "todo-list") {
-        contents += new Li(clazz = "completed") {
-          contents += new Div(clazz = "view") {
-            contents += new Input(clazz = "toggle", inputType = InputType.CheckBox, checked = "checked")
+        contents += new Li(clazz = List("completed")) {
+          contents += new Div(clazz = List("view")) {
+            contents += new Input(clazz = List("toggle"), inputType = InputType.CheckBox, checked = "checked")
             contents += new Label(content = "Create a TodoMVC template")
-            contents += new Button(clazz = "destroy")
+            contents += new Button(clazz = List("destroy"))
           }
-          contents += new Input(clazz = "edit", value = "Create a TodoMVC template")
+          contents += new Input(clazz = List("edit"), value = "Create a TodoMVC template")
         }
         contents += new Li {
-          contents += new Div(clazz = "view") {
-            contents += new Input(clazz = "toggle", inputType = InputType.CheckBox)
+          contents += new Div(clazz = List("view")) {
+            contents += new Input(clazz = List("toggle"), inputType = InputType.CheckBox)
             contents += new Label(content = "Rule the web")
-            contents += new Button(clazz = "destroy")
+            contents += new Button(clazz = List("destroy"))
           }
-          contents += new Input(clazz = "edit", value = "Rule the web")
+          contents += new Input(clazz = List("edit"), value = "Rule the web")
         }
       }
     }
@@ -43,7 +43,7 @@ object TodoMVC extends HTMLPage {
       }
       contents += new Ul(id = "filters") {
         contents += new Li {
-          contents += new A(clazz = "selected", href = "#", content = "All")
+          contents += new A(clazz = List("selected"), href = "#", content = "All")
         }
         contents += new Li {
           contents += new A(href = "#/active", content = "Active")

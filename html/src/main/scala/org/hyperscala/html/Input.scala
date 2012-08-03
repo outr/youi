@@ -129,6 +129,6 @@ class Input extends Container[BodyChild] with BodyChild with HTMLTag {
   val size = PropertyAttribute[String]("size", null)
   val src = PropertyAttribute[String]("src", null)
   val step = PropertyAttribute[String]("step", null)
-  val value = PropertyAttribute[String]("value", null)
+  val value = PropertyAttribute[String]("value", null, inclusion = InclusionMode.Always)
   val width = PropertyAttribute[String]("width", null)
 }

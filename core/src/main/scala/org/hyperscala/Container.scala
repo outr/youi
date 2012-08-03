@@ -36,7 +36,9 @@ trait Container[C <: XMLContent] extends MutableContainer[C] with Markup {
   private def childrenToXML(element: Element, children: Seq[C]): Unit = {
     if (children.nonEmpty) {
       val child = children.head
-      element.addContent(child.toXML)
+      if (child.render) {
+        element.addContent(child.toXML)
+      }
       childrenToXML(element, children.tail)
     }
   }

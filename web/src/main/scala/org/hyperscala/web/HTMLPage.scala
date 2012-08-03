@@ -6,6 +6,7 @@ import org.powerscala.property.{PropertyParent, Property}
 import org.powerscala.hierarchy.{ContainerView, Parent, Element}
 
 import collection.JavaConversions._
+import org.powerscala.event.ActionEvent
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -45,15 +46,30 @@ class HTMLPage extends Page with PropertyParent with Parent {
     try {
       response.setContentType("text/html")
       var ignoreResponse = false
+      var form: Form = null
       if (method == Method.Post) {
         request.getParameterMap.foreach {
-          case (key, values) => byName[HTMLTag](key.asInstanceOf[String]) match {
-            case Some(tag) => updateValue(tag, values.asInstanceOf[Array[String]])
-            case None => //println("Unable to find %s".format(key))
+          case (key, values) => {
+//            println("Key: %s, Value: %s".format(key, values.asInstanceOf[Array[String]].head))
+            byName[HTMLTag](key.asInstanceOf[String]) match {
+              case Some(tag) => {
+                if (form == null) {
+                  tag.hierarchy.backward[Form]() match {
+                    case null => // Odd, but not impossible
+                    case f => form = f
+                  }
+                }
+                updateValue(tag, values.asInstanceOf[Array[String]])
+              }
+              case None => //println("Unable to find %s = %s".format(key, values.asInstanceOf[Array[String]].head))
+            }
           }
         }
         if (request.getParameter("sendResponse") == "false") {
           ignoreResponse = true
+        }
+        if (form != null) {
+          form.fire(ActionEvent("submit"))
         }
       }
       refresh()
@@ -76,6 +92,7 @@ class HTMLPage extends Page with PropertyParent with Parent {
     tag match {
       case input: Input => input.value := values.head
       case textArea: TextArea => textArea.contents.replaceWith(values.head)
+      case button: Button => button.fire(ActionEvent("submit"))
       case _ => throw new RuntimeException("Unsupported tag: %s".format(tag))
       // TODO: add support for other inputs
     }
@@ -109,7 +126,10 @@ class HTMLPage extends Page with PropertyParent with Parent {
 
   def dispose() = disposed = true
 
-  def byName[T <: HTMLTag](name: String) = view.find(tag => tag.name() == name).asInstanceOf[scala.Option[T]]
+  def allByName[T <: HTMLTag](name: String) = view.collect {
+    case tag if (tag.name() == name) => tag
+  }
+  def byName[T <: HTMLTag](name: String) = allByName[T](name).headOption
   def byId[T <: HTMLTag](id: String) = view.find(tag => tag.id() == id).asInstanceOf[scala.Option[T]]
 }
 

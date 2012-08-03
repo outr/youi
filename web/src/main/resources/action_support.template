@@ -1,0 +1,32 @@
+$(function() {
+    jQuery(document).on('focus', '*', function(event) {
+        event.stopPropagation();
+        var focused = $($(this)[0]);
+        var focusValue = '';
+        if (focused.attr('id') != null) {
+            focusValue += 'id=' + focused.attr('id');
+        } else if (focused.attr('name') != null) {
+            focusValue = 'name=' + focused.attr('name');
+        }
+        $('#%1$s').val(focusValue);
+    });
+});
+
+$(document).ready(function() {
+    var currentFocus = $('#%1$s').val();
+    if (currentFocus != null && currentFocus != '') {
+        var element = null;
+        if (currentFocus.indexOf('id=') == 0) {
+            element = $('#' + currentFocus.substring(3))
+        } else if (currentFocus.indexOf('name=') == 0) {
+            element = $('[name=' + currentFocus.substring(5) + ']');
+        }
+        if (element.length > 0) {
+            element.focus();
+            var tagName = element.get(0).tagName;
+            if (tagName == 'INPUT' || tagName == 'TEXTAREA') {
+                element.select();
+            }
+        }
+    }
+});

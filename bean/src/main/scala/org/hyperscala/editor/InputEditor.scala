@@ -1,0 +1,23 @@
+package org.hyperscala.editor
+
+import org.hyperscala.persistence.ValuePersistence
+import org.hyperscala.html.Input
+import org.powerscala.property.StandardProperty
+
+/**
+ * @author Matt Hicks <mhicks@powerscala.org>
+ */
+class InputEditor[T](val property: StandardProperty[T])(implicit persistence: ValuePersistence[T], manifest: Manifest[T]) extends Input with ValueEditor[T] {
+  val convert2String = (t: T) => persistence.toString(t, manifest.erasure)
+  val convert2T = (s: String) => persistence.fromString(s, manifest.erasure)
+
+  name := property.name()
+  autoComplete := "off"     // Make sure the field is correct every time
+
+  value.bindTo[T](property)(convert2String)
+  property.bindTo[String](value)(convert2T)
+
+  property.fireChanged()
+
+  def clear() = value := ""
+}

@@ -1,6 +1,6 @@
 package org.hyperscala.examples.basic
 
-import org.hyperscala.web.{AJAXForm, HTMLPage}
+import org.hyperscala.web.{ActionForm, AJAXForm, HTMLPage}
 import org.hyperscala.html._
 import attributes.InputType
 import org.powerscala.property.event.PropertyChangeEvent
@@ -20,7 +20,14 @@ class FormExample extends HTMLPage {
   }
   contents += messages
 
-  contents += new Form(id = "form", method = "post") with AJAXForm {
+  contents += new Form(id = "form", method = "post") with AJAXForm with ActionForm {
+    submittedBy.listeners.synchronous {
+      case evt: PropertyChangeEvent => {
+        messages.contents += "Form submitted by: %s".format(evt.newValue)
+        messages.contents += new Br
+      }
+    }
+
     val items = List("Name", "Phone", "Email")
     items.foreach {
       case item => {
@@ -37,6 +44,7 @@ class FormExample extends HTMLPage {
         }
       }
     }
-    contents += new Button(id = "button", buttonType = "submit", content = "Submit")
+    contents += new Button(id = "button1", buttonType = "submit", content = "Submit 1")
+    contents += new Button(id = "button2", buttonType = "submit", content = "Submit 2")
   }
 }

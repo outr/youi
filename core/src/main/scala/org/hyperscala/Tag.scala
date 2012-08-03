@@ -3,14 +3,19 @@ package org.hyperscala
 import org.powerscala.property.PropertyParent
 import org.powerscala.naming.NamingFilter
 import persistence._
+import org.powerscala.event.Listenable
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-trait Tag extends PropertyParent with Markup {
+trait Tag extends PropertyParent with Markup with Listenable {
+  implicit val booleanPersistence = BooleanPersistence
   implicit val stringPersistence = StringPersistence
 
   val name = PropertyAttribute[String]("name", null)
+  val renderTag = PropertyAttribute[Boolean]("render", true, inclusion = InclusionMode.Exclude)
+
+  override def render = renderTag()
 
   protected lazy val xmlAttributes = new NamingFilter[XMLAttribute](this)
 

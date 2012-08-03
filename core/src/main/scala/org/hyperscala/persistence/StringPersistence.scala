@@ -6,5 +6,8 @@ package org.hyperscala.persistence
 object StringPersistence extends ValuePersistence[String] {
   def fromString(s: String, clazz: Class[_]) = s
 
-  def toString(t: String, clazz: Class[_]) = t
+  def toString(t: String, clazz: Class[_]) = t match {
+    case null => ""
+    case _ => t
+  }
 }

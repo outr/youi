@@ -1,6 +1,6 @@
 package org.hyperscala.examples.basic
 
-import org.hyperscala.web.{AJAXForm, HTMLPage}
+import org.hyperscala.web.{ActionForm, AJAXForm, HTMLPage}
 import org.hyperscala.html._
 import org.powerscala.property._
 import event.PropertyChangeEvent
@@ -19,11 +19,12 @@ class BeanFormExample extends HTMLPage {
   }
   contents += messages
 
-  val form = new BeanForm[Person](Person("John Doe", "john@doe.com", "Some", "Where")) with AJAXForm
-  form.property.listeners.synchronous {
-    case evt: PropertyChangeEvent => {
-      messages.contents += "Person changed from %s to %s".format(evt.oldValue, evt.newValue)
-      messages.contents += new Br
+  val form = new BeanForm[Person](Person("John Doe", "john@doe.com", "Some", "Where")) with AJAXForm with ActionForm {
+    property.listeners.synchronous {
+      case evt: PropertyChangeEvent => {
+        messages.contents += "Person changed from %s to %s".format(evt.oldValue, evt.newValue)
+        messages.contents += new Br
+      }
     }
   }
   contents += form

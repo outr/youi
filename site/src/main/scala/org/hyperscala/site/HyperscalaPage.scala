@@ -56,7 +56,7 @@ class HyperscalaPage extends HTMLPage {
         style.padding.top := 8.px
         style.float := Float.Right
         style.font.size := FontSize.Small
-        contents += "©2012 Hyperscala.org"
+        contents += "&copy;2012 Hyperscala.org"
       }
     }
   }

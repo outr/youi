@@ -2,6 +2,7 @@ package org.hyperscala.web
 
 import javax.servlet.http.{HttpServletResponse, HttpServletRequest}
 import session.Session
+import org.hyperscala.Unique
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -12,7 +13,7 @@ class PageHandler(instantiator: () => Page, matcher: String => Boolean, scope: S
 
   def matches(uri: String) = matcher(uri)
 
-  lazy val uniqueName = getClass.getName
+  lazy val uniqueName = Unique()
 
   def apply(method: Method, request: HttpServletRequest, response: HttpServletResponse) = {
     val page = scope match {

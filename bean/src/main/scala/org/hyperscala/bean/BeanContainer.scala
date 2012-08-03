@@ -3,13 +3,15 @@ package org.hyperscala.bean
 import org.powerscala.property.{StandardProperty, Property, PropertyParent}
 
 import org.powerscala.reflect._
-import org.hyperscala.editor.{InputEditor, ValueEditor}
+import org.hyperscala.editor.{BooleanEditor, EnumEntryEditor, InputEditor, ValueEditor}
 import org.powerscala.property.backing.CaseValueVariableBacking
 import org.powerscala.property.event.PropertyChangeEvent
-import org.hyperscala.persistence.{StringPersistence, ValuePersistence}
+import org.hyperscala.persistence.{IntPersistence, StringPersistence, ValuePersistence}
+import org.powerscala.EnumEntry
 
 trait BeanContainer[T] extends PropertyParent with ValueEditor[T] {
   def default: T
+  def parentContainer: BeanContainer[_]
 
   def manifest: Manifest[T]
 
@@ -40,13 +42,24 @@ trait BeanContainer[T] extends PropertyParent with ValueEditor[T] {
     Some(BasicBeanField[T, C](BeanContainer.this, caseValue, editor))
   }
 
-  def createEditor[C](property: StandardProperty[C])(implicit manifest: Manifest[C]): ValueEditor[C] = manifest.erasure.getSimpleName match {
-    case "String" => new InputEditor[C](property)(StringPersistence.asInstanceOf[ValuePersistence[C]], manifest)
-    case _ if (manifest.erasure.isCase) => {
-      val bean = new BeanDiv[C](property())(manifest)
-      bean.property.bind(property)
-      property.bind(bean.property)
-      bean
+  def createEditor[C](property: StandardProperty[C])(implicit manifest: Manifest[C]): ValueEditor[C] = if (parentContainer != null) {
+    parentContainer.createEditor[C](property)(manifest)
+  } else {
+    manifest.erasure.getSimpleName match {
+      case "String" => new InputEditor[C](property)(StringPersistence.asInstanceOf[ValuePersistence[C]], manifest)
+      case "boolean" => {
+        val editor = new BooleanEditor(property.asInstanceOf[StandardProperty[Boolean]])
+        editor.asInstanceOf[ValueEditor[C]]
+      }
+      case "int" => new InputEditor[C](property)(IntPersistence.asInstanceOf[ValuePersistence[C]], manifest)
+      case _ if (classOf[EnumEntry[_]].isAssignableFrom(manifest.erasure)) => new EnumEntryEditor[C](property)(manifest)
+      case _ if (manifest.erasure.isCase) => {
+        val bean = new BeanDiv[C](this, property())(manifest)
+        bean.property.bind(property)
+        property.bind(bean.property)
+        bean
+      }
+      case s => throw new RuntimeException("Unsupported field %s with type of %s".format(property.name(), s))
     }
   }
 
@@ -76,11 +89,5 @@ trait BeanContainer[T] extends PropertyParent with ValueEditor[T] {
 
   private def fieldByName(name: String) = {
     fields.find(bf => bf.caseValue.name == name).getOrElse(throw new RuntimeException("Unable to find %s".format(name)))
-  }
-
-  def clear() = {
-    fields.foreach {
-      case f => f.field.clear()
-    }
   }
 }

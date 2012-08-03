@@ -89,10 +89,14 @@ class HTMLPage extends Page with PropertyParent with Parent {
   }
 
   protected def updateValue(tag: HTMLTag, values: Array[String]) = {
+    val value = values.head
     tag match {
-      case input: Input => input.value := values.head
-      case textArea: TextArea => textArea.contents.replaceWith(values.head)
+      case input: Input => input.value := value
+      case textArea: TextArea => textArea.contents.replaceWith(value)
       case button: Button => button.fire(ActionEvent("submit"))
+      case select: Select => select.contents.collectFirst {
+        case option: Option if (option.value() == value) => option.selected := true
+      }
       case _ => throw new RuntimeException("Unsupported tag: %s".format(tag))
       // TODO: add support for other inputs
     }

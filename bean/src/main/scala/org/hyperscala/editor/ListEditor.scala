@@ -4,37 +4,41 @@ import org.powerscala.property._
 import org.hyperscala.html._
 import org.powerscala.event.ActionEvent
 import org.hyperscala.css.attributes.Clear
+import org.powerscala.reflect._
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-//class ListEditor[T](val property: StandardProperty[List[T]],
-//                    valueEditor: ValueEditor[T],
-//                    filterOut: T => Boolean = (t: T) => false,
-//                    visualizer: T => String = (t: T) => t.toString)
-//                   (implicit manifest: Manifest[T]) extends Div with ValueEditor[List[T]] {
 trait ListEditor[T] extends Div with ValueEditor[List[T]] {
   def property: StandardProperty[List[T]]
   def valueEditor: ValueEditor[T]
-  def filterOut(value: T) = false
+  def filterOut(value: T) = property().contains(value)
   def visualizer(value: T) = value.toString
   def manifest: Manifest[T]
+  def default: T = manifest.erasure.defaultForType.asInstanceOf[T]
 
   val items = new Div {
   }
   contents += items
   valueEditor.style.clear := Clear.Both
   contents += valueEditor
-  contents += new Button(id = "%sAdd".format(property.name()), content = "Add", buttonType = "submit")
-
-  listeners.synchronous.filter.descendant() {
-    case evt: ActionEvent if (evt.action == "submit") => {
-      valueEditor.property() match {
-        case v if (!filterOut(v)) => property := (v :: property().reverse).reverse
-        case _ => // Don't add
-      }
-      clear()
+  contents += new Button(id = "%sAdd".format(property.name()), content = "Add", buttonType = "submit") {
+    listeners.synchronous {
+      case evt: ActionEvent if (evt.action == "submit") => addItem()
     }
+  }
+
+  valueEditor.listeners.synchronous.filter.descendant(includeCurrent = true) {
+    case evt: ActionEvent if (evt.action == "submit") => addItem()
+  }
+
+  def addItem() = {
+    valueEditor.property() match {
+      case v if (!filterOut(v)) => property := (v :: property().reverse).reverse
+      case _ => // Don't add
+    }
+    valueEditor.property := default
+    updateItems()
   }
 
   def updateItems(): Unit = {
@@ -56,10 +60,5 @@ trait ListEditor[T] extends Div with ValueEditor[List[T]] {
         }
       }
     }
-  }
-
-  def clear() = {
-    updateItems()
-    valueEditor.clear()
   }
 }

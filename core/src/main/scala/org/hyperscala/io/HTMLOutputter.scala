@@ -59,12 +59,13 @@ case class HTMLOutputter(tab: String = "\t", newLine: String = "\r\n") {
 }
 
 object HTMLOutputter {
+  def apply(output: OutputStream) = StreamWriter(output)
+  def apply(output: StringBuilder) = StringBuilderWriter(output)
   val PrintWriter = new OutputWriter {
     def write(s: String) = print(s)
 
     def close() = {}
   }
-  def OutputStreamWriter(output: OutputStream) = StreamWriter(output)
 }
 
 case class StreamWriter(output: OutputStream) extends OutputWriter {
@@ -76,6 +77,12 @@ case class StreamWriter(output: OutputStream) extends OutputWriter {
     writer.flush()
     writer.close()
   }
+}
+
+case class StringBuilderWriter(output: StringBuilder) extends OutputWriter {
+  def write(s: String) = output.append(s)
+
+  def close() = {}
 }
 
 trait OutputWriter {

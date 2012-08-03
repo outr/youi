@@ -18,6 +18,4 @@ class InputEditor[T](val property: StandardProperty[T])(implicit persistence: Va
   property.bindTo[String](value)(convert2T)
 
   property.fireChanged()
-
-  def clear() = value := ""
 }

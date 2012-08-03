@@ -19,7 +19,7 @@ class HTMLRenderingSpec extends Specification {
       val html = new HTML()
       html.name := "testing"
       val out = html.outputString
-      out must_==("<html name=\"testing\" />")
+      out must_==("<html name=\"testing\"/>")
     }
     "have correct parent for attributes" in {
       val html = new HTML()
@@ -31,21 +31,21 @@ class HTMLRenderingSpec extends Specification {
       element.setAttribute("name", "testing")
       html.fromXML(element)
       val out = html.outputString
-      out must_==("<html name=\"testing\" />")
+      out must_==("<html name=\"testing\"/>")
     }
     "load properly with an enum attribute set" in {
       val html = new HTML {
         contentEditable := ContentEditable.Inherit
       }
       val out = html.outputString
-      out must_==("<html contenteditable=\"inherit\" />")
+      out must_==("<html contenteditable=\"inherit\"/>")
     }
     "properly add Head tag" in {
       val html = new HTML {
         contents += new Head
       }
       val out = html.outputString
-      out must_==("<html><head /></html>")
+      out must_==("<html><head/></html>")
     }
   }
   "DOM building" should {
@@ -66,32 +66,32 @@ class HTMLRenderingSpec extends Specification {
     "show properly when Boolean true" in {
       val html = new HTML(hidden = true)
       val out = html.outputString
-      out must_==("<html hidden=\"\" />")
+      out must_==("<html hidden=\"\"/>")
     }
     "show properly when Boolean false" in {
       val html = new HTML(hidden = false)
       val out = html.outputString
-      out must_==("<html />")
+      out must_==("<html/>")
     }
     "show properly when Char" in {
       val html = new HTML(accessKey = 'T')
       val out = html.outputString
-      out must_==("<html accesskey=\"T\" />")
+      out must_==("<html accesskey=\"T\"/>")
     }
     "show properly when Int" in {
       val html = new HTML(tabIndex = 5)
       val out = html.outputString
-      out must_==("<html tabindex=\"5\" />")
+      out must_==("<html tabindex=\"5\"/>")
     }
     "show properly when List[String]" in {
       val html = new HTML(clazz = List("one", "two", "three"))
       val out = html.outputString
-      out must_==("<html class=\"one two three\" />")
+      out must_==("<html class=\"one two three\"/>")
     }
     "show properly when EnumEntry" in {
       val html = new HTML(contentEditable = ContentEditable.True)
       val out = html.outputString
-      out must_==("<html contenteditable=\"true\" />")
+      out must_==("<html contenteditable=\"true\"/>")
     }
     "show properly when CSS" in {
       val css = new StyleSheet {
@@ -100,14 +100,15 @@ class HTMLRenderingSpec extends Specification {
       }
       val html = new HTML(style = css)
       val out = html.outputString
-      out must_==("<html style=\"display: inline; font-face: Arial\" />")
+      out must_==("<html style=\"display: inline; font-face: Arial\"/>")
     }
   }
   "DOM deserialization" should {
     "properly deserialize a basic HTML page" in {
       val content = "<html><head><title>Test Title</title></head><body>Test Body</body></html>"
       val html = new HTML
-      html.fromXML(builder.build(new StringReader(content)).getRootElement)
+      val document = builder.build(new StringReader(content))
+      html.fromXML(document.getRootElement)
       val out = html.outputString
       out must_==(content)
     }

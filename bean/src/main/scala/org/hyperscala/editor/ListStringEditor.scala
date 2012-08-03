@@ -9,5 +9,5 @@ class ListStringEditor(val property: StandardProperty[List[String]]) extends Lis
   lazy val valueEditor = new InputEditor[String](new StandardProperty[String]("%sField".format(property.name()), ""))
   lazy val manifest = Manifest.classType[String](classOf[String])
 
-  override def filterOut(value: String) = value.trim.length == 0 || property().contains(value)
+  override def filterOut(value: String) = value.trim.length == 0 || super.filterOut(value)
 }

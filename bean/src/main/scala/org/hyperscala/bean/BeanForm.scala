@@ -8,6 +8,8 @@ import org.hyperscala.html._
 class BeanForm[T](val default: T)(implicit val manifest: Manifest[T]) extends Form with BeanContainer[T] {
   method := "post"
 
+  def parentContainer = null
+
   val button = createButton()
 
   protected def createButton() = new Button(buttonType = "submit", content = "Submit")

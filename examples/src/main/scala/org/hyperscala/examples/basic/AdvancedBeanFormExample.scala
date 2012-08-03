@@ -5,7 +5,8 @@ import org.hyperscala.html._
 import org.hyperscala.bean.BeanForm
 import org.powerscala.property._
 import org.powerscala.property.event.PropertyChangeEvent
-import org.hyperscala.editor.{ListStringEditor, ValueEditor}
+import org.hyperscala.editor.{ListBeanEditor, ListSelectEditor, ListStringEditor, ValueEditor}
+import org.powerscala.{Language, Country}
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -34,6 +35,13 @@ class AdvancedBeanFormExample extends HTMLPage {
       if (property.name() == "aliases") {
         // TODO: fix the stupid casting problem
         new ListStringEditor(property.asInstanceOf[StandardProperty[List[String]]]).asInstanceOf[ValueEditor[C]]
+      } else if (property.name() == "languages") {
+        val editor = new ListSelectEditor[Language](property.asInstanceOf[StandardProperty[List[Language]]])
+        editor.valueEditor.values := Language.values.toList
+        editor.asInstanceOf[ValueEditor[C]]
+      } else if (property.name() == "emails") {
+        val editor = new ListBeanEditor[CompanyEmail](property.asInstanceOf[StandardProperty[List[CompanyEmail]]], CompanyEmail())
+        editor.asInstanceOf[ValueEditor[C]]
       } else {
         super.createEditor(property)(manifest)
       }
@@ -42,6 +50,8 @@ class AdvancedBeanFormExample extends HTMLPage {
   contents += form
 }
 
-case class Company(name: String = "", email: String = "", address: CompanyAddress = CompanyAddress(), aliases: List[String] = Nil)
+case class Company(name: String = "", email: String = "", address: CompanyAddress = CompanyAddress(), aliases: List[String] = Nil, languages: List[Language] = Nil, receiveEmails: Boolean = false, age: Int = 10)
 
-case class CompanyAddress(city: String = "", state: String = "", zip: String = "")
+case class CompanyAddress(city: String = "", state: String = "", zip: String = "", country: Country = Country.EG, emails: List[CompanyEmail] = Nil)
+
+case class CompanyEmail(emailName: String = "", emailValue: String = "")

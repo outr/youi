@@ -8,6 +8,4 @@ import org.hyperscala.html.constraints.BodyChild
  */
 trait ValueEditor[T] extends BodyChild {
   def property: StandardProperty[T]
-
-  def clear(): Unit
 }

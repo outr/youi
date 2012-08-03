@@ -814,7 +814,10 @@
                 "src": "String",
                 "step": "String",
                 "inputType": "InputType",
-                "value": "String",
+                "value": {
+                    "class": "String",
+                    "inclusion": "Always"
+                },
                 "width": "String"
             },
             "childTrait": "BodyChild"
@@ -1006,7 +1009,7 @@
             "attributes": {
                 "disabled": "String",
                 "label": "String",
-                "selected": "String",
+                "selected": "Boolean",
                 "value": "String"
             },
             "childTrait": "BodyChild"

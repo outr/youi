@@ -9,7 +9,9 @@ import org.powerscala.property.event.PropertyChangeEvent
 import org.hyperscala.persistence.{IntPersistence, StringPersistence, ValuePersistence}
 import org.powerscala.EnumEntry
 
-trait BeanContainer[T] extends PropertyParent with ValueEditor[T] {
+trait BeanContainer[T] extends PropertyParent with ValueEditor[T] with BeanFieldContainer {
+  override type F = BasicBeanField
+
   def default: T
   def parentContainer: BeanContainer[_]
 
@@ -21,25 +23,30 @@ trait BeanContainer[T] extends PropertyParent with ValueEditor[T] {
       case null => caseValue.valueType.defaultForType
       case _ => caseValue[Any](default.asInstanceOf[AnyRef])
     }
-    createField(caseValue, d)
+    createBeanField(caseValue, d)
   }).collect {
     case Some(beanField) => beanField
   }
 
-  def createField[C](caseValue: CaseValue, default: C): scala.Option[BeanField[T, C]] = {
+  def createBeanField(caseValue: CaseValue, default: Any): scala.Option[F] = {
     // Create the property
-    val backing = new CaseValueVariableBacking[T, C](BeanContainer.this.property, caseValue)
-    val property = Property[C](caseValue.name, default, backing)
+    val backing = new CaseValueVariableBacking[T, Any](BeanContainer.this.property, caseValue)
+    val property = Property[Any](caseValue.name, default, backing)
     BeanContainer.this.property.listeners.synchronous {
       case evt: PropertyChangeEvent => property.fireChanged()
     }
 
     // Create the ValueEditor
-    val manifest = Manifest.classType[C](caseValue.valueType.javaClass.asInstanceOf[Class[C]])
+    val manifest = Manifest.classType[Any](caseValue.valueType.javaClass)
     val editor = createEditor(property)(manifest)
 
     // Create the BeanField
-    Some(BasicBeanField[T, C](BeanContainer.this, caseValue, editor))
+    createField(caseValue, editor)
+  }
+
+  def createField(caseValue: CaseValue, editor: ValueEditor[Any]): scala.Option[F] = {
+    // Create the BeanField
+    Some(BasicBeanField(caseValue, editor))
   }
 
   def createEditor[C](property: StandardProperty[C])(implicit manifest: Manifest[C]): ValueEditor[C] = if (parentContainer != null) {
@@ -71,12 +78,12 @@ trait BeanContainer[T] extends PropertyParent with ValueEditor[T] {
     case fieldName => field(fieldName).renderTag := false
   }
 
-  def field(fieldName: String): BeanField[_, _] = {
+  def field(fieldName: String): F = {
     val index = fieldName.indexOf('.')
     if (index > -1) {
       val name = fieldName.substring(0, index)
       fieldByName(name) match {
-        case basic: BasicBeanField[_, _] => basic.field match {
+        case basic: BasicBeanField => basic.field match {
           case container: BeanContainer[_] => container.field(fieldName.substring(index + 1))
           case f => throw new RuntimeException("%s is not a BeanContainer - %s".format(name, f.getClass))
         }
@@ -90,4 +97,8 @@ trait BeanContainer[T] extends PropertyParent with ValueEditor[T] {
   private def fieldByName(name: String) = {
     fields.find(bf => bf.caseValue.name == name).getOrElse(throw new RuntimeException("Unable to find %s".format(name)))
   }
+}
+
+trait BeanFieldContainer {
+  type F <: BeanField
 }

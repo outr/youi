@@ -24,7 +24,8 @@ class RenderServlet extends HttpServlet {
   }
 
   override def service(request: HttpServletRequest, response: HttpServletResponse) = {
-    val method = Method(request.getMethod)
+    val methodName = request.getMethod
+    val method = Method.values.find(m => m.name().equalsIgnoreCase(methodName)).getOrElse(throw new RuntimeException("Unknown Method type: %s".format(methodName)))
     website.service(method, request, response)
   }
 }

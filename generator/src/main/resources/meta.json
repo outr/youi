@@ -1219,7 +1219,7 @@
                 "BodyChild"
             ],
             "attributes": {
-                "autoFocus": "String",
+                "autoFocus": "Boolean",
                 "disabled": "Boolean",
                 "form": "String",
                 "multiple": "Boolean",

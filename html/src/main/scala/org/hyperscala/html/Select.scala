@@ -27,7 +27,7 @@ class Select extends Container[BodyChild] with BodyChild with HTMLTag {
            style: StyleSheet = null,
            tabIndex: java.lang.Integer = null,
            title: String = null,
-           autoFocus: String = null,
+           autoFocus: java.lang.Boolean = null,
            disabled: java.lang.Boolean = null,
            form: String = null,
            multiple: java.lang.Boolean = null,
@@ -57,7 +57,7 @@ class Select extends Container[BodyChild] with BodyChild with HTMLTag {
     if (content != null) contents += content
   }
 
-  val autoFocus = PropertyAttribute[String]("autofocus", null)
+  val autoFocus = PropertyAttribute[Boolean]("autofocus", false)
   val disabled = PropertyAttribute[Boolean]("disabled", false)
   val form = PropertyAttribute[String]("form", null)
   val multiple = PropertyAttribute[Boolean]("multiple", false)

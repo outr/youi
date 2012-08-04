@@ -1,5 +1,6 @@
 package org.hyperscala.web
 
+import event.FormSubmit
 import javax.servlet.http.{Cookie, HttpServletResponse, HttpServletRequest}
 import org.hyperscala.html._
 import attributes.Method
@@ -7,7 +8,6 @@ import org.powerscala.property.{PropertyParent, Property}
 import org.powerscala.hierarchy.{ContainerView, Parent, Element}
 
 import collection.JavaConversions._
-import org.powerscala.event.ActionEvent
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -66,7 +66,7 @@ class HTMLPage extends Page with PropertyParent with Parent {
                     case f => form = f
                   }
                 }
-                updateValue(tag, values.asInstanceOf[Array[String]])
+                updateValue(method, tag, values.asInstanceOf[Array[String]])
               }
               case None => //println("Unable to find %s = %s".format(key, values.asInstanceOf[Array[String]].head))
             }
@@ -76,7 +76,7 @@ class HTMLPage extends Page with PropertyParent with Parent {
           ignoreResponse = true
         }
         if (form != null) {
-          form.fire(ActionEvent("submit"))
+          form.fire(FormSubmit(method))
         }
       }
       refresh()
@@ -95,12 +95,12 @@ class HTMLPage extends Page with PropertyParent with Parent {
     }
   }
 
-  protected def updateValue(tag: HTMLTag, values: Array[String]) = {
+  protected def updateValue(method: Method, tag: HTMLTag, values: Array[String]) = {
     val value = values.head
     tag match {
       case input: Input => input.value := value
       case textArea: TextArea => textArea.contents.replaceWith(value)
-      case button: Button => button.fire(ActionEvent("submit"))
+      case button: Button => button.fire(FormSubmit(method))
       case select: Select => select.contents.collectFirst {
         case option: Option if (option.value() == value) => option.selected := true
       }
@@ -137,11 +137,13 @@ class HTMLPage extends Page with PropertyParent with Parent {
 
   def dispose() = disposed = true
 
-  def allByName[T <: HTMLTag](name: String) = view.collect {
-    case tag if (tag.name() == name) => tag
+  def allByName[T <: HTMLTag](name: String)(implicit manifest: Manifest[T]) = view.collect {
+    case tag if (tag.name() == name && manifest.erasure.isAssignableFrom(tag.getClass)) => tag.asInstanceOf[T]
   }
-  def byName[T <: HTMLTag](name: String) = allByName[T](name).headOption
-  def byId[T <: HTMLTag](id: String) = view.find(tag => tag.id() == id).asInstanceOf[scala.Option[T]]
+  def byName[T <: HTMLTag](name: String)(implicit manifest: Manifest[T]) = allByName[T](name).headOption
+  def byId[T <: HTMLTag](id: String)(implicit manifest: Manifest[T]) = {
+    view.find(tag => tag.id() == id && manifest.erasure.isAssignableFrom(tag.getClass)).asInstanceOf[scala.Option[T]]
+  }
 
   def nextTab = {
     val next = tab

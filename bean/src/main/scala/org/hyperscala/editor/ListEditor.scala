@@ -3,9 +3,9 @@ package org.hyperscala.editor
 import org.powerscala.property._
 import org.hyperscala.html._
 import attributes.ButtonType
-import org.powerscala.event.ActionEvent
 import org.hyperscala.css.attributes.Clear
 import org.powerscala.reflect._
+import org.hyperscala.web.event.FormSubmit
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -25,12 +25,12 @@ trait ListEditor[T] extends Div with ValueEditor[List[T]] {
   contents += valueEditor
   contents += new Button(id = "%sAdd".format(property.name()), content = "Add", buttonType = ButtonType.Submit) {
     listeners.synchronous {
-      case evt: ActionEvent if (evt.action == "submit") => addItem()
+      case evt: FormSubmit => addItem()
     }
   }
 
   valueEditor.listeners.synchronous.filter.descendant(includeCurrent = true) {
-    case evt: ActionEvent if (evt.action == "submit") => addItem()
+    case evt: FormSubmit => addItem()
   }
 
   def addItem() = {
@@ -53,7 +53,7 @@ trait ListEditor[T] extends Div with ValueEditor[List[T]] {
         contents += new Button(id = "%sItem.%s".format(property.name(), s), buttonType = ButtonType.Submit) {
           contents += new Img(src = "/delete.png")
           listeners.synchronous {
-            case evt: ActionEvent if (evt.action == "submit") => {
+            case evt: FormSubmit => {
               property := property().filterNot(t => t == v)
               updateItems()
             }

@@ -9,6 +9,8 @@ import annotation.tailrec
  * @author Matt Hicks <mhicks@powerscala.org>
  */
 object ResourceHandler extends ContentHandler {
+  def link = null
+
   lazy val classLoader = getClass.getClassLoader
 
   // TODO: add caching support

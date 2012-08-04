@@ -8,6 +8,8 @@ import org.powerscala.hierarchy.Element
  * @author Matt Hicks <mhicks@powerscala.org>
  */
 trait ContentHandler extends Element {
+  def link: String
+
   def matches(uri: String): Boolean
 
   def apply(method: Method, request: HttpServletRequest, response: HttpServletResponse): Unit

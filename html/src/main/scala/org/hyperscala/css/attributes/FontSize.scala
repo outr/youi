@@ -21,9 +21,10 @@ object FontSize extends Enumerated[FontSize] with EnumEntryPersistence[FontSize]
   val Inherit = new FontSize("inherit")
   val Larger = new FontSize("larger")
   val XLarge = new FontSize("x-large")
-  def Pixels(v: Int) = Length("%spx".format(v))
-  def Centimeters(v: Int) = Length("%scm".format(v))
-  def Percent(v: Int) = Length(v + "%")
+  def Pixels(v: Int) = new FontSize("%spx".format(v))
+  def Centimeters(v: Int) = new FontSize("%scm".format(v))
+  def Percent(v: Int) = new FontSize(v + "%")
+  def Points(v: Int) = new FontSize("%spt".format(v))
 
   override def apply(name: String) = super.apply(name) match {
     case null => new FontSize(name)

@@ -9,4 +9,6 @@ trait Session {
   def get[T](name: String): Option[T]
 
   def update(name: String, value: Any): Unit
+
+  def remove(name: String): Unit
 }

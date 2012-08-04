@@ -6,6 +6,7 @@ import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.html.attributes.InputType
 import org.powerscala.event.ActionEvent
 import org.powerscala.property.Property
+import org.hyperscala.Unique
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -13,7 +14,7 @@ import org.powerscala.property.Property
 trait ActionForm extends Form {
   val submittedBy = Property[HTMLTag]("submittedBy", null)
 
-  val lastFocused = new Input(id = "lastFocused", name = "lastFocused", inputType = InputType.Hidden)
+  val lastFocused = new Input(id = "lastFocused", name = "lastFocused", inputType = InputType.Hidden, autoComplete = "off")
   listeners.synchronous {     // Form will receive an ActionEvent upon completion of POST
     case evt: ActionEvent if (evt.action == "submit") => {
       lastFocused.value() match {
@@ -36,6 +37,12 @@ trait ActionForm extends Form {
     }
   }
 
+  def focus(tag: HTMLTag) = {
+    if (tag.id() == null) {
+      tag.id := Unique()
+    }
+    lastFocused.value := "id=%s".format(tag.id())
+  }
 
   contents += lastFocused
 

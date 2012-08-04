@@ -1,6 +1,6 @@
 package org.hyperscala.web
 
-import javax.servlet.http.{HttpServletResponse, HttpServletRequest}
+import javax.servlet.http.{Cookie, HttpServletResponse, HttpServletRequest}
 import org.hyperscala.html._
 import org.powerscala.property.{PropertyParent, Property}
 import org.powerscala.hierarchy.{ContainerView, Parent, Element}
@@ -20,6 +20,7 @@ class HTMLPage extends Page with PropertyParent with Parent {
   val doctype = "<!DOCTYPE html>\r\n".getBytes
   val name = Property[String]("name", null)
   val title = Property[String]("title", null)
+  val website = Website()
 
   val html = new HTML
   val head = new Head {
@@ -40,6 +41,11 @@ class HTMLPage extends Page with PropertyParent with Parent {
   html.contents.addAll(head, body)
 
   title := getClass.getSimpleName     // We always have to have a title
+
+  private var tab = 1
+
+  private def servletRequest = website.servletRequest
+  private def servletResponse = website.servletResponse
 
   def service(method: Method, request: HttpServletRequest, response: HttpServletResponse) = {
     HTMLPage.instance.set(this)
@@ -135,6 +141,127 @@ class HTMLPage extends Page with PropertyParent with Parent {
   }
   def byName[T <: HTMLTag](name: String) = allByName[T](name).headOption
   def byId[T <: HTMLTag](id: String) = view.find(tag => tag.id() == id).asInstanceOf[scala.Option[T]]
+
+  def nextTab = {
+    val next = tab
+    tab += 1
+    next
+  }
+
+  object parameters {
+    def apply(key: String) = servletRequest.getParameter(key)
+
+    def get(key: String) = apply(key) match {
+      case null => None
+      case value => Some(value)
+    }
+
+    def iterator = servletRequest.getParameterMap.map(m => m._1.toString -> m._2.asInstanceOf[Array[String]](0)).iterator
+  }
+
+  object cookies extends Seq[Cookie] {
+    def length = servletRequest.getCookies.length
+
+    def apply(idx: Int) = servletRequest.getCookies()(idx)
+
+    def iterator = servletRequest.getCookies.iterator
+
+    def add(name: String,
+                  value: String,
+                  comment: String = null,
+                  domain: String = null,
+                  maxAge: Int = -1,
+                  path: String = null,
+                  secure: Boolean = false,
+                  version: Int = 0) = {
+      val cookie = new Cookie(name, value)
+      if (comment != null) cookie.setComment(comment)
+      if (domain != null) cookie.setDomain(domain)
+      cookie.setMaxAge(maxAge)
+      if (path != null) cookie.setPath(path)
+      cookie.setSecure(secure)
+      cookie.setVersion(version)
+      servletResponse.addCookie(cookie)
+      cookie
+    }
+
+    def delete(name: String) = add(name, "", maxAge = 0)
+
+    def apply(name: String) = cookies.find(c => c.getName == name)
+  }
+
+  object cached {
+    /**
+     * Caches the content supplied in the specified Scope based on the key provided. The content will be reused until
+     * the "clear" method is invoked with the key.
+     */
+    def apply[T](key: String, scope: Scope = Scope.Session)(f: => T) = {
+      val storage = scope match {
+        case Scope.Application => website
+        case Scope.Session => website.session
+        case Scope.Request => null
+      }
+      val stored = if (storage != null) {
+        storage.get[T](key)
+      } else {
+        None
+      }
+      val content = stored match {
+        case Some(value) => value
+        case None => f
+      }
+      if (storage != null) {
+        storage(key) = content
+      }
+      content
+    }
+
+    def get[T](key: String, scope: Scope = Scope.Session) = {
+      val storage = scope match {
+        case Scope.Application => website
+        case Scope.Session => website.session
+        case Scope.Request => null
+      }
+      if (storage != null) {
+        storage.get[T](key)
+      } else {
+        None
+      }
+    }
+
+    /**
+     * Updates the value cached value with the supplied function and then returns it.
+     */
+    def set[T](key: String, scope: Scope = Scope.Session)(f: => T) = {
+      val storage = scope match {
+        case Scope.Application => website
+        case Scope.Session => website.session
+        case Scope.Request => null
+      }
+      val content = f
+      if (storage != null) {
+        storage(key) = content
+      }
+      content
+    }
+
+    /**
+     * Clears a cached item from the scope to be recreated upon next load.
+     */
+    def clear(key: String, scope: Scope = null) = {
+      val storage = scope match {
+        case Scope.Application => website
+        case Scope.Session => website.session
+        case _ => null
+      }
+      if (storage != null) {
+        storage.remove(key)
+      } else { // No scope defined, so remove from all scopes
+        website.remove(key)
+        website.session.remove(key)
+      }
+    }
+  }
 }
 
 object HTMLPage {

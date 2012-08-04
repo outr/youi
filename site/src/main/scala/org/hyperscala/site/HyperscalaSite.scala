@@ -10,22 +10,22 @@ import org.hyperscala.examples.helloworld.HelloWorldPage
  * @author Matt Hicks <mhicks@powerscala.org>
  */
 object HyperscalaSite extends Website[MapSession] {
-  contents += PageHandler("about.html") {
+  val about = PageHandler("about.html") {
     HyperscalaAbout
   }
-  contents += PageHandler("example/hello.html", Scope.Request) {
+  val hello = PageHandler("example/hello.html", Scope.Request) {
     HelloWorldPage
   }
-  contents += PageHandler("example/form.html", Scope.Session) {
+  val form = PageHandler("example/form.html", Scope.Session) {
     new FormExample
   }
-  contents += PageHandler("example/beanform.html", Scope.Session) {
+  val beanForm = PageHandler("example/beanform.html", Scope.Session) {
     new BeanFormExample
   }
-  contents += PageHandler("example/advancedbeanform.html", Scope.Session) {
+  val advancedBeanForm = PageHandler("example/advancedbeanform.html", Scope.Session) {
     new AdvancedBeanFormExample
   }
-  contents += PageHandler("todomvc.html") {
+  val todoMVC = PageHandler("todomvc.html") {
     TodoMVC
   }
 

@@ -14,6 +14,8 @@ trait Website[S <: Session] extends MutableContainer[ContentHandler] with Proper
 
   private var application = Map.empty[String, Any]
   private val _session = new ThreadLocal[S]
+  private val _servletRequest = new ThreadLocal[HttpServletRequest]
+  private val _servletResponse = new ThreadLocal[HttpServletResponse]
 
   val handlers = new ContainerView[ContentHandler](this, null, Website.prioritySort)
 
@@ -29,6 +31,9 @@ trait Website[S <: Session] extends MutableContainer[ContentHandler] with Proper
 
   def service(method: Method, request: HttpServletRequest, response: HttpServletResponse) = {
     val uri = request.getRequestURI
+    Website.instance.set(this)
+    _servletRequest.set(request)
+    _servletResponse.set(response)
     _session.set(loadSession(request))
     try {
       lookupHandler(uri) match {
@@ -36,11 +41,17 @@ trait Website[S <: Session] extends MutableContainer[ContentHandler] with Proper
         case None => response.sendError(HttpServletResponse.SC_NOT_FOUND, "The page could not be found: %s".format(uri))
       }
     } finally {
+      Website.instance.set(null)
+      _servletRequest.set(null)
+      _servletResponse.set(null)
       _session.set(null.asInstanceOf[S])
     }
   }
 
   def session: S = _session.get()
+
+  def servletRequest = _servletRequest.get()
+  def servletResponse = _servletResponse.get()
 
   protected def lookupHandler(uri: String) = handlers.find(ch => ch.matches(uri))
 
@@ -66,8 +77,14 @@ trait Website[S <: Session] extends MutableContainer[ContentHandler] with Proper
   def get[T](name: String) = application.get(name).asInstanceOf[Option[T]]
 
   def update(name: String, value: Any) = application += name -> value
+
+  def remove(name: String) = application -= name
 }
 
 object Website {
+  private val instance = new ThreadLocal[Website[_ <: Session]]
+
+  def apply() = instance.get()
+
   val prioritySort = (ch1: ContentHandler, ch2: ContentHandler) => -ch1.priority.value.compareTo(ch2.priority.value)
 }

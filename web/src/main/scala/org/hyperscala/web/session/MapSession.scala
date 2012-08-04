@@ -11,4 +11,6 @@ class MapSession extends Session {
   def get[T](name: String) = map.get(name).asInstanceOf[Option[T]]
 
   def update(name: String, value: Any) = map += name -> value
+
+  def remove(name: String) = map -= name
 }

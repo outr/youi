@@ -9,7 +9,7 @@ import annotation.tailrec
  * @author Matt Hicks <mhicks@powerscala.org>
  */
 case class HTMLOutputter(tab: String = "\t", newLine: String = "\r\n") {
-  val expandedTags = Set("title", "script", "div")
+  val expandedTags = Set("title", "script", "div", "a")
 
   def apply(content: Content, writer: OutputWriter = HTMLOutputter.PrintWriter, depth: Int = 0): Unit = content match {
     case element: Element => {

@@ -60,6 +60,28 @@
             }
         },
         {
+            "name": "AutoComplete",
+            "values": {
+                "On": "on",
+                "Off": "off"
+            }
+        },
+        {
+            "name": "ButtonType",
+            "values": {
+                "Button": "button",
+                "Submit": "submit",
+                "Reset": "reset"
+            }
+        },
+        {
+            "name": "TextAreaWrap",
+            "values": {
+                "Hard": "hard",
+                "Soft": "soft"
+            }
+        },
+        {
             "name": "Resource",
             "sub": "css",
             "instantiatable": true,
@@ -84,6 +106,30 @@
             ]
         },
         {
+            "name": "Opacity",
+            "sub": "css",
+            "instantiatable": true,
+            "values": {
+                "Inherit": "inherit"
+            },
+            "custom": [
+                "def apply(v: Double): Opacity = Opacity(v.toString)"
+            ]
+        },
+        {
+            "name": "Overflow",
+            "sub": "css",
+            "values": {
+                "Visible": "visible",
+                "Hidden": "hidden",
+                "Scroll": "scroll",
+                "Auto": "auto",
+                "Inherit": "inherit",
+                "NoDisplay": "no-display",
+                "NoContent": "no-content"
+            }
+        },
+        {
             "name": "FontSize",
             "sub": "css",
             "instantiatable": true,
@@ -100,9 +146,10 @@
                 "Inherit": "inherit"
             },
             "custom": [
-                "def Pixels(v: Int) = Length(\"%spx\".format(v))",
-                "def Centimeters(v: Int) = Length(\"%scm\".format(v))",
-                "def Percent(v: Int) = Length(v + \"%\")"
+                "def Pixels(v: Int) = new FontSize(\"%spx\".format(v))",
+                "def Centimeters(v: Int) = new FontSize(\"%scm\".format(v))",
+                "def Percent(v: Int) = new FontSize(v + \"%\")",
+                "def Points(v: Int) = new FontSize(\"%spt\".format(v))"
             ]
         },
         {
@@ -413,15 +460,15 @@
                 "BodyChild"
             ],
             "attributes": {
-                "autoFocus": "String",
+                "autoFocus": "Boolean",
                 "disabled": "Boolean",
                 "form": "String",
                 "formAction": "String",
                 "formEncType": "String",
-                "formMethod": "String",
-                "formNoValidate": "String",
-                "formTarget": "String",
-                "buttonType": "String",
+                "formMethod": "Method",
+                "formNoValidate": "Boolean",
+                "formTarget": "Target",
+                "buttonType": "ButtonType",
                 "value": "String"
             },
             "childTrait": "BodyChild"
@@ -644,7 +691,7 @@
             "attributes": {
                 "acceptCharset": "String",
                 "action": "String",
-                "autoComplete": "String",
+                "autoComplete": "AutoComplete",
                 "encType": "String",
                 "method": "String",
                 "noValidate": "String",
@@ -790,35 +837,35 @@
             "attributes": {
                 "accept": "String",
                 "alt": "String",
-                "autoComplete": "String",
-                "autoFocus": "String",
-                "checked": "String",
+                "autoComplete": "AutoComplete",
+                "autoFocus": "Boolean",
+                "checked": "Boolean",
                 "disabled": "Boolean",
                 "form": "String",
                 "formAction": "String",
                 "formEncType": "String",
-                "formMethod": "String",
-                "formNoValidate": "String",
-                "formTarget": "String",
-                "height": "String",
+                "formMethod": "Method",
+                "formNoValidate": "Boolean",
+                "formTarget": "Target",
+                "height": "Int",
                 "list": "String",
                 "max": "String",
-                "maxLength": "String",
+                "maxLength": "Int",
                 "min": "String",
-                "multiple": "String",
+                "multiple": "Boolean",
                 "pattern": "String",
                 "placeHolder": "String",
-                "readOnly": "String",
-                "required": "String",
-                "size": "String",
+                "readOnly": "Boolean",
+                "required": "Boolean",
+                "size": "Int",
                 "src": "String",
-                "step": "String",
+                "step": "Int",
                 "inputType": "InputType",
                 "value": {
                     "class": "String",
                     "inclusion": "Always"
                 },
-                "width": "String"
+                "width": "Int"
             },
             "childTrait": "BodyChild"
         },
@@ -1007,7 +1054,7 @@
                 "BodyChild"
             ],
             "attributes": {
-                "disabled": "String",
+                "disabled": "Boolean",
                 "label": "String",
                 "selected": "Boolean",
                 "value": "String"
@@ -1156,10 +1203,10 @@
             ],
             "attributes": {
                 "autoFocus": "String",
-                "disabled": "String",
+                "disabled": "Boolean",
                 "form": "String",
-                "multiple": "String",
-                "size": "String"
+                "multiple": "Boolean",
+                "size": "Int"
             },
             "childTrait": "BodyChild"
         },
@@ -1272,16 +1319,16 @@
                 "BodyChild"
             ],
             "attributes": {
-                "autoFocus": "String",
-                "cols": "String",
-                "disabled": "String",
+                "autoFocus": "Boolean",
+                "cols": "Int",
+                "disabled": "Boolean",
                 "form": "String",
-                "maxLength": "String",
+                "maxLength": "Int",
                 "placeHolder": "String",
                 "readOnly": "String",
                 "required": "String",
                 "rows": "Int",
-                "wrap": "String"
+                "wrap": "TextAreaWrap"
             },
             "childTrait": "BodyChild"
         },
@@ -1425,10 +1472,10 @@
         "border": "String",
         "border-bottom": "String",
         "border-bottom-color": "Color",
-        "border-bottom-left-radius": "String",
-        "border-bottom-right-radius": "String",
+        "border-bottom-left-radius": "Length",
+        "border-bottom-right-radius": "Length",
         "border-bottom-style": "String",
-        "border-bottom-width": "String",
+        "border-bottom-width": "Length",
         "border-collapse": "String",
         "border-color": "Color",
         "border-image": "String",
@@ -1436,25 +1483,25 @@
         "border-image-repeat": "String",
         "border-image-slice": "String",
         "border-image-source": "String",
-        "border-image-width": "String",
+        "border-image-width": "Length",
         "border-left": "String",
         "border-left-color": "Color",
         "border-left-style": "String",
-        "border-left-width": "String",
-        "border-radius": "String",
+        "border-left-width": "Length",
+        "border-radius": "Length",
         "border-right": "String",
         "border-right-color": "Color",
         "border-right-style": "String",
-        "border-right-width": "String",
+        "border-right-width": "Length",
         "border-spacing": "String",
         "border-style": "String",
         "border-top": "String",
         "border-top-color": "Color",
-        "border-top-left-radius": "String",
-        "border-top-right-radius": "String",
+        "border-top-left-radius": "Length",
+        "border-top-right-radius": "Length",
         "border-top-style": "String",
-        "border-top-width": "String",
-        "border-width": "String",
+        "border-top-width": "Length",
+        "border-width": "Length",
         "bottom": "String",
         "box-align": "String",
         "box-decoration-break": "String",
@@ -1478,9 +1525,9 @@
         "column-rule": "String",
         "column-rule-color": "Color",
         "column-rule-style": "String",
-        "column-rule-width": "String",
+        "column-rule-width": "Length",
         "column-span": "String",
-        "column-width": "String",
+        "column-width": "Length",
         "columns": "String",
         "content": "String",
         "counter-increment": "String",
@@ -1536,10 +1583,10 @@
         "list-style-position": "String",
         "list-style-type": "String",
         "margin": "String",
-        "margin-bottom": "String",
-        "margin-left": "String",
-        "margin-right": "String",
-        "margin-top": "String",
+        "margin-bottom": "Length",
+        "margin-left": "Length",
+        "margin-right": "Length",
+        "margin-top": "Length",
         "mark": "String",
         "mark-after": "String",
         "mark-before": "String",
@@ -1558,17 +1605,17 @@
         "nav-left": "String",
         "nav-right": "String",
         "nav-up": "String",
-        "opacity": "String",
+        "opacity": "Opacity",
         "orphans": "String",
         "outline": "String",
         "outline-color": "Color",
         "outline-offset": "String",
         "outline-style": "String",
-        "outline-width": "String",
-        "overflow": "String",
+        "outline-width": "Length",
+        "overflow": "Overflow",
         "overflow-style": "String",
-        "overflow-x": "String",
-        "overflow-y": "String",
+        "overflow-x": "Overflow",
+        "overflow-y": "Overflow",
         "padding": "String",
         "padding-bottom": "Length",
         "padding-left": "Length",

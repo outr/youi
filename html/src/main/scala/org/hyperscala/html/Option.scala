@@ -27,7 +27,7 @@ class Option extends Container[BodyChild] with BodyChild with HTMLTag {
            style: StyleSheet = null,
            tabIndex: java.lang.Integer = null,
            title: String = null,
-           disabled: String = null,
+           disabled: java.lang.Boolean = null,
            label: String = null,
            selected: java.lang.Boolean = null,
            value: String = null,
@@ -55,7 +55,7 @@ class Option extends Container[BodyChild] with BodyChild with HTMLTag {
     if (content != null) contents += content
   }
 
-  val disabled = PropertyAttribute[String]("disabled", null)
+  val disabled = PropertyAttribute[Boolean]("disabled", false)
   val label = PropertyAttribute[String]("label", null)
   val selected = PropertyAttribute[Boolean]("selected", false)
   val value = PropertyAttribute[String]("value", null)

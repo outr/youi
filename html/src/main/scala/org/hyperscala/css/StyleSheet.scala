@@ -63,13 +63,13 @@ class StyleSheet extends PropertyParent {
     val bottom = new StyleSheetAttribute[String]("border-bottom", null) {
       val color = StyleSheetAttribute[Color]("border-bottom-color", null)
       val left = new AnyRef {
-        val radius = StyleSheetAttribute[String]("border-bottom-left-radius", null)
+        val radius = StyleSheetAttribute[Length]("border-bottom-left-radius", null)
       }
       val right = new AnyRef {
-        val radius = StyleSheetAttribute[String]("border-bottom-right-radius", null)
+        val radius = StyleSheetAttribute[Length]("border-bottom-right-radius", null)
       }
       val style = StyleSheetAttribute[String]("border-bottom-style", null)
-      val width = StyleSheetAttribute[String]("border-bottom-width", null)
+      val width = StyleSheetAttribute[Length]("border-bottom-width", null)
     }
     val collapse = StyleSheetAttribute[String]("border-collapse", null)
     val color = StyleSheetAttribute[Color]("border-color", null)
@@ -78,33 +78,33 @@ class StyleSheet extends PropertyParent {
       val repeat = StyleSheetAttribute[String]("border-image-repeat", null)
       val slice = StyleSheetAttribute[String]("border-image-slice", null)
       val source = StyleSheetAttribute[String]("border-image-source", null)
-      val width = StyleSheetAttribute[String]("border-image-width", null)
+      val width = StyleSheetAttribute[Length]("border-image-width", null)
     }
     val left = new StyleSheetAttribute[String]("border-left", null) {
       val color = StyleSheetAttribute[Color]("border-left-color", null)
       val style = StyleSheetAttribute[String]("border-left-style", null)
-      val width = StyleSheetAttribute[String]("border-left-width", null)
+      val width = StyleSheetAttribute[Length]("border-left-width", null)
     }
-    val radius = StyleSheetAttribute[String]("border-radius", null)
+    val radius = StyleSheetAttribute[Length]("border-radius", null)
     val right = new StyleSheetAttribute[String]("border-right", null) {
       val color = StyleSheetAttribute[Color]("border-right-color", null)
       val style = StyleSheetAttribute[String]("border-right-style", null)
-      val width = StyleSheetAttribute[String]("border-right-width", null)
+      val width = StyleSheetAttribute[Length]("border-right-width", null)
     }
     val spacing = StyleSheetAttribute[String]("border-spacing", null)
     val style = StyleSheetAttribute[String]("border-style", null)
     val top = new StyleSheetAttribute[String]("border-top", null) {
       val color = StyleSheetAttribute[Color]("border-top-color", null)
       val left = new AnyRef {
-        val radius = StyleSheetAttribute[String]("border-top-left-radius", null)
+        val radius = StyleSheetAttribute[Length]("border-top-left-radius", null)
       }
       val right = new AnyRef {
-        val radius = StyleSheetAttribute[String]("border-top-right-radius", null)
+        val radius = StyleSheetAttribute[Length]("border-top-right-radius", null)
       }
       val style = StyleSheetAttribute[String]("border-top-style", null)
-      val width = StyleSheetAttribute[String]("border-top-width", null)
+      val width = StyleSheetAttribute[Length]("border-top-width", null)
     }
-    val width = StyleSheetAttribute[String]("border-width", null)
+    val width = StyleSheetAttribute[Length]("border-width", null)
   }
   val bottom = StyleSheetAttribute[String]("bottom", null)
   val box = new AnyRef {
@@ -140,10 +140,10 @@ class StyleSheet extends PropertyParent {
     val rule = new StyleSheetAttribute[String]("column-rule", null) {
       val color = StyleSheetAttribute[Color]("column-rule-color", null)
       val style = StyleSheetAttribute[String]("column-rule-style", null)
-      val width = StyleSheetAttribute[String]("column-rule-width", null)
+      val width = StyleSheetAttribute[Length]("column-rule-width", null)
     }
     val span = StyleSheetAttribute[String]("column-span", null)
-    val width = StyleSheetAttribute[String]("column-width", null)
+    val width = StyleSheetAttribute[Length]("column-width", null)
   }
   val columns = StyleSheetAttribute[String]("columns", null)
   val content = StyleSheetAttribute[String]("content", null)
@@ -238,10 +238,10 @@ class StyleSheet extends PropertyParent {
     }
   }
   val margin = new StyleSheetAttribute[String]("margin", null) {
-    val bottom = StyleSheetAttribute[String]("margin-bottom", null)
-    val left = StyleSheetAttribute[String]("margin-left", null)
-    val right = StyleSheetAttribute[String]("margin-right", null)
-    val top = StyleSheetAttribute[String]("margin-top", null)
+    val bottom = StyleSheetAttribute[Length]("margin-bottom", null)
+    val left = StyleSheetAttribute[Length]("margin-left", null)
+    val right = StyleSheetAttribute[Length]("margin-right", null)
+    val top = StyleSheetAttribute[Length]("margin-top", null)
   }
   val mark = new StyleSheetAttribute[String]("mark", null) {
     val after = StyleSheetAttribute[String]("mark-after", null)
@@ -274,18 +274,18 @@ class StyleSheet extends PropertyParent {
     val right = StyleSheetAttribute[String]("nav-right", null)
     val up = StyleSheetAttribute[String]("nav-up", null)
   }
-  val opacity = StyleSheetAttribute[String]("opacity", null)
+  val opacity = StyleSheetAttribute[Opacity]("opacity", null)
   val orphans = StyleSheetAttribute[String]("orphans", null)
   val outline = new StyleSheetAttribute[String]("outline", null) {
     val color = StyleSheetAttribute[Color]("outline-color", null)
     val offset = StyleSheetAttribute[String]("outline-offset", null)
     val style = StyleSheetAttribute[String]("outline-style", null)
-    val width = StyleSheetAttribute[String]("outline-width", null)
+    val width = StyleSheetAttribute[Length]("outline-width", null)
   }
-  val overflow = new StyleSheetAttribute[String]("overflow", null) {
+  val overflow = new StyleSheetAttribute[Overflow]("overflow", null) {
     val style = StyleSheetAttribute[String]("overflow-style", null)
-    val x = StyleSheetAttribute[String]("overflow-x", null)
-    val y = StyleSheetAttribute[String]("overflow-y", null)
+    val x = StyleSheetAttribute[Overflow]("overflow-x", null)
+    val y = StyleSheetAttribute[Overflow]("overflow-y", null)
   }
   val padding = new StyleSheetAttribute[String]("padding", null) {
     val bottom = StyleSheetAttribute[Length]("padding-bottom", null)

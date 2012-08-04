@@ -3,6 +3,7 @@ package org.hyperscala.web
 import javax.servlet.http.{HttpServletResponse, HttpServletRequest}
 import session.Session
 import org.hyperscala.Unique
+import org.hyperscala.html.attributes.Method
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>

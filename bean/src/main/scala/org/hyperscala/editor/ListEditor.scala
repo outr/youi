@@ -2,6 +2,7 @@ package org.hyperscala.editor
 
 import org.powerscala.property._
 import org.hyperscala.html._
+import attributes.ButtonType
 import org.powerscala.event.ActionEvent
 import org.hyperscala.css.attributes.Clear
 import org.powerscala.reflect._
@@ -22,7 +23,7 @@ trait ListEditor[T] extends Div with ValueEditor[List[T]] {
   contents += items
   valueEditor.style.clear := Clear.Both
   contents += valueEditor
-  contents += new Button(id = "%sAdd".format(property.name()), content = "Add", buttonType = "submit") {
+  contents += new Button(id = "%sAdd".format(property.name()), content = "Add", buttonType = ButtonType.Submit) {
     listeners.synchronous {
       case evt: ActionEvent if (evt.action == "submit") => addItem()
     }
@@ -49,7 +50,7 @@ trait ListEditor[T] extends Div with ValueEditor[List[T]] {
         val s = visualizer(v)
         contents += s
 
-        contents += new Button(id = "%sItem.%s".format(property.name(), s), buttonType = "submit") {
+        contents += new Button(id = "%sItem.%s".format(property.name(), s), buttonType = ButtonType.Submit) {
           contents += new Img(src = "/delete.png")
           listeners.synchronous {
             case evt: ActionEvent if (evt.action == "submit") => {

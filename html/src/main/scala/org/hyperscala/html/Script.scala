@@ -2,9 +2,9 @@ package org.hyperscala.html
 
 import org.hyperscala._
 import css.StyleSheet
-import javascript.JavaScriptContent
 import org.hyperscala.html.attributes._
 import org.hyperscala.html.constraints._
+import javascript.JavaScriptContent
 
 /**
  * NOTE: This file has been generated. Do not modify directly!

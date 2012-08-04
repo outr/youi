@@ -26,16 +26,16 @@ class HyperscalaPage extends HTMLPage {
   val main = new Div {
     style.width := 960.px
     style.display := Display.Block
-    style.margin.left := "auto"
-    style.margin.right := "auto"
+    style.margin.left := Length.Auto
+    style.margin.right := Length.Auto
 
     contents += new Div {
       style.width := 960.px
       style.height := 120.px
       style.background.image := Resource("top_clouds.png")
       contents += new Img(src = "hyperscala.png") {
-        style.margin.top := "10px"
-        style.margin.left := "10px"
+        style.margin.top := 10.px
+        style.margin.left := 10.px
       }
     }
     contents += new Bar {

@@ -27,15 +27,15 @@ class Button extends Container[BodyChild] with BodyChild with HTMLTag {
            style: StyleSheet = null,
            tabIndex: java.lang.Integer = null,
            title: String = null,
-           autoFocus: String = null,
-           buttonType: String = null,
+           autoFocus: java.lang.Boolean = null,
+           buttonType: ButtonType = null,
            disabled: java.lang.Boolean = null,
            form: String = null,
            formAction: String = null,
            formEncType: String = null,
-           formMethod: String = null,
-           formNoValidate: String = null,
-           formTarget: String = null,
+           formMethod: Method = null,
+           formNoValidate: java.lang.Boolean = null,
+           formTarget: Target = null,
            value: String = null,
            content: BodyChild = null) = {
     this()
@@ -67,14 +67,14 @@ class Button extends Container[BodyChild] with BodyChild with HTMLTag {
     if (content != null) contents += content
   }
 
-  val autoFocus = PropertyAttribute[String]("autofocus", null)
-  val buttonType = PropertyAttribute[String]("type", null)
+  val autoFocus = PropertyAttribute[Boolean]("autofocus", false)
+  val buttonType = PropertyAttribute[ButtonType]("type", null)
   val disabled = PropertyAttribute[Boolean]("disabled", false)
   val form = PropertyAttribute[String]("form", null)
   val formAction = PropertyAttribute[String]("formaction", null)
   val formEncType = PropertyAttribute[String]("formenctype", null)
-  val formMethod = PropertyAttribute[String]("formmethod", null)
-  val formNoValidate = PropertyAttribute[String]("formnovalidate", null)
-  val formTarget = PropertyAttribute[String]("formtarget", null)
+  val formMethod = PropertyAttribute[Method]("formmethod", null)
+  val formNoValidate = PropertyAttribute[Boolean]("formnovalidate", false)
+  val formTarget = PropertyAttribute[Target]("formtarget", null)
   val value = PropertyAttribute[String]("value", null)
 }

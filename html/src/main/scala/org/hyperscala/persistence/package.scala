@@ -8,7 +8,9 @@ import html.attributes._
  */
 package object persistence {
   implicit val alignmentPersistence = Alignment
+  implicit val autoCompletePersistence = AutoComplete
   implicit val booleanPersistence = BooleanPersistence
+  implicit val buttonTypePersistence = ButtonType
   implicit val charPersistence = CharPersistence
   implicit val clearPersistence = Clear
   implicit val colorPersistence = ColorPersistence
@@ -24,10 +26,14 @@ package object persistence {
   implicit val languagePersistence = LanguagePersistence
   implicit val lengthPersistence = Length
   implicit val listStringPersistence = ListStringPersistence
+  implicit val methodPersistence = Method
+  implicit val opacityPersistence = Opacity
+  implicit val overflowPersistence = Overflow
   implicit val positionPersistence = Position
   implicit val relationshipPersistence = Relationship
   implicit val resourcePersistence = Resource
   implicit val styleSheetPersistence = StyleSheetPersistence
   implicit val targetPersistence = Target
+  implicit val textAreaWrapPersistence = TextAreaWrap
   implicit val whiteSpacePersistence = WhiteSpace
 }

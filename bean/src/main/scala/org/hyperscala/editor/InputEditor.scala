@@ -3,6 +3,7 @@ package org.hyperscala.editor
 import org.hyperscala.persistence.ValuePersistence
 import org.hyperscala.html.Input
 import org.powerscala.property.StandardProperty
+import org.hyperscala.html.attributes.AutoComplete
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -12,7 +13,7 @@ class InputEditor[T](val property: StandardProperty[T])(implicit persistence: Va
   val convert2T = (s: String) => persistence.fromString(s, manifest.erasure)
 
   name := property.name()
-  autoComplete := "off"     // Make sure the field is correct every time
+  autoComplete := AutoComplete.Off     // Make sure the field is correct every time
 
   value.bindTo[T](property)(convert2String)
   property.bindTo[String](value)(convert2T)

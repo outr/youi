@@ -28,10 +28,10 @@ class Select extends Container[BodyChild] with BodyChild with HTMLTag {
            tabIndex: java.lang.Integer = null,
            title: String = null,
            autoFocus: String = null,
-           disabled: String = null,
+           disabled: java.lang.Boolean = null,
            form: String = null,
-           multiple: String = null,
-           size: String = null,
+           multiple: java.lang.Boolean = null,
+           size: java.lang.Integer = null,
            content: BodyChild = null) = {
     this()
     up(this.name, name)
@@ -58,8 +58,8 @@ class Select extends Container[BodyChild] with BodyChild with HTMLTag {
   }
 
   val autoFocus = PropertyAttribute[String]("autofocus", null)
-  val disabled = PropertyAttribute[String]("disabled", null)
+  val disabled = PropertyAttribute[Boolean]("disabled", false)
   val form = PropertyAttribute[String]("form", null)
-  val multiple = PropertyAttribute[String]("multiple", null)
-  val size = PropertyAttribute[String]("size", null)
+  val multiple = PropertyAttribute[Boolean]("multiple", false)
+  val size = PropertyAttribute[Int]("size", -1)
 }

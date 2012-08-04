@@ -4,6 +4,7 @@ import javax.servlet.http.{HttpServletResponse, HttpServletRequest}
 import org.powerscala.Priority
 import java.io.{OutputStream, InputStream}
 import annotation.tailrec
+import org.hyperscala.html.attributes.Method
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>

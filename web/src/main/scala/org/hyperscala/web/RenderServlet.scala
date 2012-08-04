@@ -4,6 +4,7 @@ import javax.servlet.http.{HttpServletResponse, HttpServletRequest, HttpServlet}
 import javax.servlet.ServletConfig
 
 import org.powerscala.reflect._
+import org.hyperscala.html.attributes.Method
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>

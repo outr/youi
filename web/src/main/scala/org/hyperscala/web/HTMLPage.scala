@@ -2,6 +2,7 @@ package org.hyperscala.web
 
 import javax.servlet.http.{Cookie, HttpServletResponse, HttpServletRequest}
 import org.hyperscala.html._
+import attributes.Method
 import org.powerscala.property.{PropertyParent, Property}
 import org.powerscala.hierarchy.{ContainerView, Parent, Element}
 

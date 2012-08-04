@@ -92,6 +92,20 @@
             }
         },
         {
+            "name": "Method",
+            "values": {
+                "Head": "head",
+                "Get": "get",
+                "Post": "post",
+                "Put": "put",
+                "Delete": "delete",
+                "Trace": "trace",
+                "Options": "options",
+                "Connect": "connect",
+                "Patch": "patch"
+            }
+        },
+        {
             "name": "Length",
             "sub": "css",
             "instantiatable": true,
@@ -1173,6 +1187,9 @@
         },
         {
             "name": "Script",
+            "imports": [
+                "javascript.JavaScriptContent"
+            ],
             "traits": [
                 "HeadChild",
                 "BodyChild"

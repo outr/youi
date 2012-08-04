@@ -12,7 +12,7 @@ object TodoMVC extends HTMLPage {
   body.contents += new Section(id = "todoapp") {
     contents += new Header(id = "header") {
       contents += new H1(content = "todos")
-      contents += new Input(id = "new-todo", placeHolder = "What needs to be done?", autoFocus = "autofocus")
+      contents += new Input(id = "new-todo", placeHolder = "What needs to be done?", autoFocus = true)
     }
     contents += new Section(id = "main") {
       contents += new Input(id = "toggle-all", inputType = InputType.CheckBox)
@@ -20,7 +20,7 @@ object TodoMVC extends HTMLPage {
       contents += new Ul(id = "todo-list") {
         contents += new Li(clazz = List("completed")) {
           contents += new Div(clazz = List("view")) {
-            contents += new Input(clazz = List("toggle"), inputType = InputType.CheckBox, checked = "checked")
+            contents += new Input(clazz = List("toggle"), inputType = InputType.CheckBox, checked = true)
             contents += new Label(content = "Create a TodoMVC template")
             contents += new Button(clazz = List("destroy"))
           }

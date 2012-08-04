@@ -27,16 +27,16 @@ class TextArea extends Container[BodyChild] with BodyChild with HTMLTag {
            style: StyleSheet = null,
            tabIndex: java.lang.Integer = null,
            title: String = null,
-           autoFocus: String = null,
-           cols: String = null,
-           disabled: String = null,
+           autoFocus: java.lang.Boolean = null,
+           cols: java.lang.Integer = null,
+           disabled: java.lang.Boolean = null,
            form: String = null,
-           maxLength: String = null,
+           maxLength: java.lang.Integer = null,
            placeHolder: String = null,
            readOnly: String = null,
            required: String = null,
            rows: java.lang.Integer = null,
-           wrap: String = null,
+           wrap: TextAreaWrap = null,
            content: BodyChild = null) = {
     this()
     up(this.name, name)
@@ -67,14 +67,14 @@ class TextArea extends Container[BodyChild] with BodyChild with HTMLTag {
     if (content != null) contents += content
   }
 
-  val autoFocus = PropertyAttribute[String]("autofocus", null)
-  val cols = PropertyAttribute[String]("cols", null)
-  val disabled = PropertyAttribute[String]("disabled", null)
+  val autoFocus = PropertyAttribute[Boolean]("autofocus", false)
+  val cols = PropertyAttribute[Int]("cols", -1)
+  val disabled = PropertyAttribute[Boolean]("disabled", false)
   val form = PropertyAttribute[String]("form", null)
-  val maxLength = PropertyAttribute[String]("maxlength", null)
+  val maxLength = PropertyAttribute[Int]("maxlength", -1)
   val placeHolder = PropertyAttribute[String]("placeholder", null)
   val readOnly = PropertyAttribute[String]("readonly", null)
   val required = PropertyAttribute[String]("required", null)
   val rows = PropertyAttribute[Int]("rows", -1)
-  val wrap = PropertyAttribute[String]("wrap", null)
+  val wrap = PropertyAttribute[TextAreaWrap]("wrap", null)
 }

@@ -43,7 +43,7 @@ object HTMLCodeGenerator {
       val definitions = values.map {
         case (key, value) => "val %s = new %s(\"%s\")".format(key, name, value)
       }.toList
-      val body = (definitions ::: custom).mkString("\r\n  ")
+      val body = (definitions ::: custom).mkString("\n  ")
       val instantiatable = head.getOrElse("instantiatable", false).asInstanceOf[Boolean]
       val instantiationTemplateRef = head.getOrElse("instantiationTemplate", null).asInstanceOf[String]
       val instantiationTemplate = instantiationTemplateRef match {
@@ -78,7 +78,7 @@ object HTMLCodeGenerator {
         "%sPersistence".format(n)
       }
       "implicit val %s = %s".format(variable.charAt(0).toLower + variable.substring(1), n)
-    }).mkString("\r\n  ")
+    }).mkString("\n  ")
     val content = PersistenceTemplate.format(implicits)
     val file = new File(BaseHTMLOutput, "persistence/package.scala")
     writeFile(content, file)
@@ -98,7 +98,7 @@ object HTMLCodeGenerator {
   def processGlobal(global: Map[String, String]) = {
     val body = generateAttributes(global)
     globalConstructorValues = ("name" -> "String") :: generateConstructorValues(global)
-    val content = GlobalTemplate.format(body, tagClassNames.map(s => "\"%s\" -> classOf[%s]".format(s.toLowerCase, s)).mkString(",\r\n                                  "))
+    val content = GlobalTemplate.format(body, tagClassNames.map(s => "\"%s\" -> classOf[%s]".format(s.toLowerCase, s)).mkString(",\n                                  "))
     val file = new File(BaseHTMLOutput, "html/HTMLTag.scala")
     writeFile(content, file)
   }
@@ -121,6 +121,7 @@ object HTMLCodeGenerator {
       }
       xtnd = "HTMLTag" :: xtnd
       val xtndContent = xtnd.reverse.mkString(" with ")
+      val imports = tag.getOrElse("imports", Nil).asInstanceOf[List[String]].map(s => "import %s\n".format(s)).mkString
       val attributeMap = tag.getOrElse("attributes", Map.empty[String, String]).asInstanceOf[Map[String, String]]
       val attributes = generateAttributes(attributeMap)
       val extraConstructorValues = if (xtnd.contains("Textual")) {
@@ -133,34 +134,35 @@ object HTMLCodeGenerator {
       val constructorValues = globalConstructorValues ::: generateConstructorValues(attributeMap) ::: extraConstructorValues
       val constructorArgs = constructorValues.map {
         case (n, c) => "%s: %s = null".format(n, c)
-      }.mkString(",\r\n           ")
+      }.mkString(",\n           ")
       val constructorUpdates = constructorValues.collect {
         case (n, c) if (n == "content" && childTrait != None) => "if (content != null) contents += content"
         case (n, c) => "up(this.%1$s, %1$s)".format(n)
-      }.mkString("\r\n    ")
-      val constructor = "def this(%s) = {\r\n    this()\r\n    %s\r\n  }".format(constructorArgs, constructorUpdates)
-      val content = TagTemplate.format(name, xtndContent, htmlName, constructor, attributes)
+      }.mkString("\n    ")
+      val constructor = "def this(%s) = {\n    this()\n    %s\n  }".format(constructorArgs, constructorUpdates)
+      val content = TagTemplate.format(imports, name, xtndContent, htmlName, constructor, attributes)
       val file = new File(BaseHTMLOutput, "html/%s.scala".format(name))
       writeFile(content, file)
       processTags(tags.tail)
     }
   }
 
-  private def generateConstructorValues(attributes: Map[String, String]) = {
+  private def generateConstructorValues(attributes: Map[String, Any]) = {
     attributes.toList.sortBy(t => t._1).map {
       case (key, value) => {
         val classType = value match {
+          case m: Map[_, _] => m.asInstanceOf[Map[String, String]]("class").toString
           case "Boolean" => "java.lang.Boolean"
           case "Char" => "java.lang.Character"
           case "Int" => "java.lang.Integer"
-          case _ => value
+          case _ => value.toString
         }
         key -> classType
       }
     }
   }
 
-  private def generateAttributes(attributes: Map[String, String]) = {
+  private def generateAttributes(attributes: Map[String, Any]) = {
     var enums = List.empty[String]
     val body = attributes.toList.sortBy(t => t._1).map {
       case (key, value) => {
@@ -171,7 +173,19 @@ object HTMLCodeGenerator {
           case "clazz" => "class"
           case k => k
         }
-        val default = value match {
+        var inclusionMode: String = null
+        val classType = value match {
+          case s: String => s
+          case m: Map[_, _] => {
+            val valueMap = m.asInstanceOf[Map[String, String]]
+            valueMap.get("inclusion") match {
+              case Some(i) => inclusionMode = i
+              case None =>
+            }
+            valueMap("class")
+          }
+        }
+        val default = classType match {
           case "Char" => "-1.toChar"
           case "List[String]" => "Nil"
           case "Int" => "-1"
@@ -179,13 +193,17 @@ object HTMLCodeGenerator {
           case "String" => "null"
           case "StyleSheet" => "new StyleSheet()"
           case _ => {
-            enums = value :: enums
+            enums = classType :: enums
             "null"
           }
         }
-        "val %s = PropertyAttribute[%s](\"%s\", %s)".format(key, value, htmlKey, default)
+        if (inclusionMode != null) {
+          "val %s = PropertyAttribute[%s](\"%s\", %s, inclusion = InclusionMode.%s)".format(key, classType, htmlKey, default, inclusionMode)
+        } else {
+          "val %s = PropertyAttribute[%s](\"%s\", %s)".format(key, value, htmlKey, default)
+        }
       }
-    }.mkString("\r\n  ")
+    }.mkString("\n  ")
     body
   }
 
@@ -229,17 +247,17 @@ object HTMLCodeGenerator {
     if (ssp.children.nonEmpty) {
       ssp.children = ssp.children.sortBy(child => child.variableName)
       if (ssp.value != null) {
-        b.append("new StyleSheetAttribute[%s](\"%s\", null) {\r\n".format(ssp.value, ssp.fullName))
+        b.append("new StyleSheetAttribute[%s](\"%s\", null) {\n".format(ssp.value, ssp.fullName))
       } else {
-        b.append("new AnyRef {\r\n")
+        b.append("new AnyRef {\n")
       }
       ssp.children.foreach {
         case child => generateStyleSheetRecursive(child, b, depth + 1)
       }
       (0 until depth).foreach(index => b.append("  "))
-      b.append("}\r\n")
+      b.append("}\n")
     } else {
-      b.append("StyleSheetAttribute[%s](\"%s\", null)\r\n".format(ssp.value, ssp.fullName))
+      b.append("StyleSheetAttribute[%s](\"%s\", null)\n".format(ssp.value, ssp.fullName))
     }
   }
 

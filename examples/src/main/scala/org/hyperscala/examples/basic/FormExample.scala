@@ -2,7 +2,7 @@ package org.hyperscala.examples.basic
 
 import org.hyperscala.web.{ActionForm, AJAXForm, HTMLPage}
 import org.hyperscala.html._
-import attributes.InputType
+import attributes.{ButtonType, InputType}
 import org.powerscala.property.event.PropertyChangeEvent
 
 import org.powerscala.property._
@@ -44,7 +44,7 @@ class FormExample extends HTMLPage {
         }
       }
     }
-    contents += new Button(id = "button1", buttonType = "submit", content = "Submit 1")
-    contents += new Button(id = "button2", buttonType = "submit", content = "Submit 2")
+    contents += new Button(id = "button1", buttonType = ButtonType.Submit, content = "Submit 1")
+    contents += new Button(id = "button2", buttonType = ButtonType.Submit, content = "Submit 2")
   }
 }

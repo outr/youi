@@ -29,7 +29,7 @@ class Form extends Container[BodyChild] with BodyChild with HTMLTag {
            title: String = null,
            acceptCharset: String = null,
            action: String = null,
-           autoComplete: String = null,
+           autoComplete: AutoComplete = null,
            encType: String = null,
            method: String = null,
            noValidate: String = null,
@@ -63,7 +63,7 @@ class Form extends Container[BodyChild] with BodyChild with HTMLTag {
 
   val acceptCharset = PropertyAttribute[String]("acceptcharset", null)
   val action = PropertyAttribute[String]("action", null)
-  val autoComplete = PropertyAttribute[String]("autocomplete", null)
+  val autoComplete = PropertyAttribute[AutoComplete]("autocomplete", null)
   val encType = PropertyAttribute[String]("enctype", null)
   val method = PropertyAttribute[String]("method", null)
   val noValidate = PropertyAttribute[String]("novalidate", null)

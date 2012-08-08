@@ -1,4 +1,4 @@
-package org.hyperscala.web
+package org.hyperscala.web.handler
 
 import javax.servlet.http.{HttpServletResponse, HttpServletRequest}
 import org.powerscala.Priority

@@ -1,5 +1,6 @@
 package org.hyperscala.web
 
+import handler.{DefaultResourceHandler, ContentHandler}
 import org.powerscala.property.{Property, PropertyParent}
 import org.powerscala.hierarchy.{ContainerView, MutableContainer}
 import javax.servlet.ServletConfig
@@ -24,7 +25,7 @@ trait Website[S <: Session] extends MutableContainer[ContentHandler] with Proper
   // TODO: error page support
   // TODO: add configuration options for caching static content
 
-  contents += ResourceHandler
+  contents += DefaultResourceHandler
 
   def reload(config: ServletConfig) = {
     name := config.getServletContext.getServletContextName      // Load the web application name
@@ -51,6 +52,14 @@ trait Website[S <: Session] extends MutableContainer[ContentHandler] with Proper
 
   def session: S = _session.get()
 
+  /**
+   * Destroys the existing session and creates a new one.
+   */
+  def disposeSession() = {
+    destroySession(servletRequest)
+    _session.set(loadSession(servletRequest))
+  }
+
   def servletRequest = _servletRequest.get()
   def servletResponse = _servletResponse.get()
 
@@ -69,6 +78,12 @@ trait Website[S <: Session] extends MutableContainer[ContentHandler] with Proper
     }
   }
 
+  protected def destroySession(request: HttpServletRequest) = {
+    val sessionKey = classOf[Session].getName
+    val httpSession = request.getSession
+    httpSession.setAttribute(sessionKey, null)
+  }
+
   protected def createSession: S
 
   // Session functionality
@@ -80,6 +95,8 @@ trait Website[S <: Session] extends MutableContainer[ContentHandler] with Proper
   def update(name: String, value: Any) = application += name -> value
 
   def remove(name: String) = application -= name
+
+  def clear() = application = Map.empty
 }
 
 object Website {

@@ -1,6 +1,7 @@
 package org.hyperscala.html
 
 import attributes._
+import event.EventSupport
 import org.hyperscala._
 import org.hyperscala.css.StyleSheet
 import scala.collection.{Map => ScalaMap}
@@ -9,7 +10,7 @@ import scala.collection.{Map => ScalaMap}
  * NOTE: This file has been generated. Do not modify directly!
  * @author Matt Hicks <mhicks@hyperscala.org>
  */
-trait HTMLTag extends Tag {
+trait HTMLTag extends Tag with EventSupport {
   val accessKey = PropertyAttribute[Char]("accesskey", -1.toChar)
   val clazz = PropertyAttribute[List[String]]("class", Nil)
   val contentEditable = PropertyAttribute[ContentEditable]("contenteditable", null)
@@ -21,11 +22,12 @@ trait HTMLTag extends Tag {
   val id = PropertyAttribute[String]("id", null)
   val lang = PropertyAttribute[String]("lang", null)
   val spellCheck = PropertyAttribute[Boolean]("spellcheck", false)
-  val style = PropertyAttribute[StyleSheet]("style", new StyleSheet())
   val tabIndex = PropertyAttribute[Int]("tabindex", -1)
   val title = PropertyAttribute[String]("title", null)
 
-  style := style()      // Sets the style to modified state
+  val style = new PropertyAttribute[StyleSheet]("style", null, inclusion = InclusionMode.NotEmpty) with LazyProperty[StyleSheet] {
+    protected def lazyValue = new StyleSheet
+  }
 
   protected def generateChildFromTagName(name: String): XMLContent = {
     HTMLTag.create(name)

@@ -40,7 +40,7 @@ class AdvancedBeanFormExample extends HTMLPage {
         editor.valueEditor.values := Language.values.toList
         editor.asInstanceOf[ValueEditor[C]]
       } else if (property.name() == "emails") {
-        val editor = new ListBeanEditor[CompanyEmail](property.asInstanceOf[StandardProperty[List[CompanyEmail]]], CompanyEmail())
+        val editor = new ListBeanEditor[CompanyEmail](this, property.asInstanceOf[StandardProperty[List[CompanyEmail]]], CompanyEmail())
         editor.asInstanceOf[ValueEditor[C]]
       } else {
         super.createEditor(property)(manifest)

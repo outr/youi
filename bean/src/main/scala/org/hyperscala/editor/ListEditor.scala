@@ -3,6 +3,7 @@ package org.hyperscala.editor
 import org.powerscala.property._
 import org.hyperscala.html._
 import attributes.ButtonType
+import constraints.BodyChild
 import org.hyperscala.css.attributes.Clear
 import org.powerscala.reflect._
 import org.hyperscala.web.event.FormSubmit
@@ -23,15 +24,18 @@ trait ListEditor[T] extends Div with ValueEditor[List[T]] {
   contents += items
   valueEditor.style.clear := Clear.Both
   contents += valueEditor
-  contents += new Button(id = "%sAdd".format(property.name()), content = "Add", buttonType = ButtonType.Submit) {
+  val button = new Button(id = "%sAdd".format(property.name()), content = "Add", buttonType = ButtonType.Submit) {
     listeners.synchronous {
       case evt: FormSubmit => addItem()
     }
   }
+  contents += button
 
   valueEditor.listeners.synchronous.filter.descendant(includeCurrent = true) {
     case evt: FormSubmit => addItem()
   }
+
+  updateItems()
 
   def addItem() = {
     valueEditor.property() match {
@@ -45,18 +49,23 @@ trait ListEditor[T] extends Div with ValueEditor[List[T]] {
   def updateItems(): Unit = {
     items.contents.clear()
     property().foreach {
-      case v => items.contents += new Div {
-        style.clear := Clear.Both
-        val s = visualizer(v)
-        contents += s
+      case v => items.contents += createItem(v)
+    }
+  }
 
-        contents += new Button(id = "%sItem.%s".format(property.name(), s), buttonType = ButtonType.Submit) {
-          contents += new Img(src = "/delete.png")
-          listeners.synchronous {
-            case evt: FormSubmit => {
-              property := property().filterNot(t => t == v)
-              updateItems()
-            }
+  def createItem(item: T): BodyChild = {
+    new Div {
+      style.clear := Clear.Both
+      val s = visualizer(item)
+      contents += s
+
+      contents += new Button(id = "%sItem.%s".format(property.name(), s), buttonType = ButtonType.Submit) {
+        style.margin.left := 10.px
+        contents += new Img(src = "/delete.png")
+        listeners.synchronous {
+          case evt: FormSubmit => {
+            property := property().filterNot(t => t == item)
+            updateItems()
           }
         }
       }

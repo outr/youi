@@ -8,6 +8,7 @@ import org.powerscala.property.{PropertyParent, Property}
 import org.powerscala.hierarchy.{ContainerView, Parent, Element}
 
 import collection.JavaConversions._
+import java.io.OutputStream
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -59,7 +60,7 @@ class HTMLPage extends Page with PropertyParent with Parent {
           case (key, values) => {
 //            println("Key: %s, Value: %s".format(key, values.asInstanceOf[Array[String]].head))
             byName[HTMLTag](key.asInstanceOf[String]) match {
-              case Some(tag) => {
+              case Some(tag) if (renderable(tag)) => {      // Only apply to tags that are rendered to the page
                 if (form == null) {
                   tag.hierarchy.backward[Form]() match {
                     case null => // Odd, but not impossible
@@ -68,7 +69,7 @@ class HTMLPage extends Page with PropertyParent with Parent {
                 }
                 updateValue(method, tag, values.asInstanceOf[Array[String]])
               }
-              case None => //println("Unable to find %s = %s".format(key, values.asInstanceOf[Array[String]].head))
+              case _ => //println("Unable to find %s = %s".format(key, values.asInstanceOf[Array[String]].head))
             }
           }
         }
@@ -95,6 +96,15 @@ class HTMLPage extends Page with PropertyParent with Parent {
     }
   }
 
+  protected def renderable(tag: HTMLTag): Boolean = if (tag.render) {
+    tag.parent match {
+      case parent: HTMLTag => renderable(parent)
+      case _ => true
+    }
+  } else {
+    false
+  }
+
   protected def updateValue(method: Method, tag: HTMLTag, values: Array[String]) = {
     val value = values.head
     tag match {
@@ -111,6 +121,10 @@ class HTMLPage extends Page with PropertyParent with Parent {
 
   protected def sendResponse(method: Method, request: HttpServletRequest, response: HttpServletResponse) = {
     val output = response.getOutputStream
+    write(output)
+  }
+
+  def write(output: OutputStream) = {
     try {
       output.write(doctype)
       html.stream(output)
@@ -120,8 +134,12 @@ class HTMLPage extends Page with PropertyParent with Parent {
     }
   }
 
-  protected def handleException(t: Throwable, method: Method, request: HttpServletRequest, response: HttpServletResponse) = {
+  def errorOccurred(t: Throwable) = {
     t.printStackTrace()
+  }
+
+  protected def handleException(t: Throwable, method: Method, request: HttpServletRequest, response: HttpServletResponse) = {
+    errorOccurred(t)
     response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, t.getMessage)
   }
 
@@ -197,8 +215,10 @@ class HTMLPage extends Page with PropertyParent with Parent {
     /**
      * Caches the content supplied in the specified Scope based on the key provided. The content will be reused until
      * the "clear" method is invoked with the key.
+     *
+     * If cache is set to false, if the default content is used it will not be cached. Defaults to true.
      */
-    def apply[T](key: String, scope: Scope = Scope.Session)(f: => T) = {
+    def apply[T](key: String, scope: Scope = Scope.Session, cache: Boolean = true)(f: => T) = {
       val storage = scope match {
         case Scope.Application => website
         case Scope.Session => website.session
@@ -213,7 +233,7 @@ class HTMLPage extends Page with PropertyParent with Parent {
         case Some(value) => value
         case None => f
       }
-      if (storage != null) {
+      if (storage != null && cache) {
         storage(key) = content
       }
       content

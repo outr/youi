@@ -3,8 +3,8 @@ package org.hyperscala.examples.basic
 import org.hyperscala.web.{ActionForm, AJAXForm, HTMLPage}
 import org.hyperscala.html._
 import org.powerscala.property._
-import event.PropertyChangeEvent
 import org.hyperscala.bean.BeanForm
+import org.powerscala.property.event.PropertyChangeEvent
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>

@@ -67,9 +67,11 @@ object HTMLCodeGenerator {
                           "CharPersistence",
                           "ColorPersistence",
                           "IntPersistence",
+                          "DoublePersistence",
                           "LanguagePersistence",
                           "ListStringPersistence",
-                          "StyleSheetPersistence")
+                          "StyleSheetPersistence",
+                          "JavaScriptContentPersistence")
     val values = (predefined ::: enums.map(m => m("name").asInstanceOf[String])).sorted
     val implicits = values.map(n => {
       val variable = if (n.endsWith("Persistence")) {

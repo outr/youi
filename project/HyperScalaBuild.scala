@@ -24,6 +24,9 @@ object HyperScalaBuild extends Build {
   val jettyJsp = "org.eclipse.jetty" % "jetty-jsp-2.1" % jettyVersion % "container;provided"
   val glassfishJsp = "org.mortbay.jetty" % "jsp-2.1-glassfish" % "2.1.v20100127" % "container;provided"
 
+  val commonsFileUpload = "commons-fileupload" % "commons-fileupload" % "1.2.2"
+  val commonsIO = "commons-io" % "commons-io" % "1.3.2"
+
   val servletApi = "org.eclipse.jetty" % "jetty-servlet" % jettyVersion
 
   val baseSettings = Defaults.defaultSettings ++ Seq(
@@ -85,7 +88,7 @@ object HyperScalaBuild extends Build {
     .dependsOn(html)
   lazy val web = Project("web", file("web"), settings = createSettings("hyperscala-web"))
     .dependsOn(html)
-    .settings(libraryDependencies += servletApi)
+    .settings(libraryDependencies ++= Seq(servletApi, commonsFileUpload, commonsIO))
   lazy val bean = Project("bean", file("bean"), settings = createSettings("hyperscala-bean"))
     .dependsOn(web)
   lazy val ui = Project("ui", file("ui"), settings = createSettings("hyperscala-ui"))

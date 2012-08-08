@@ -1,5 +1,6 @@
 package org.hyperscala.web.session
 
+
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
@@ -11,4 +12,6 @@ trait Session {
   def update(name: String, value: Any): Unit
 
   def remove(name: String): Unit
+
+  def clear(): Unit
 }

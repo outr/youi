@@ -289,7 +289,6 @@
         "id": "String",
         "lang": "String",
         "spellCheck": "Boolean",
-        "style": "StyleSheet",
         "tabIndex": "Int",
         "title": "String"
     },

@@ -1,24 +1,33 @@
-package org.hyperscala.web
+package org.hyperscala.web.handler
 
 import javax.servlet.http.{HttpServletResponse, HttpServletRequest}
-import session.Session
 import org.hyperscala.Unique
 import org.hyperscala.html.attributes.Method
+import org.hyperscala.web.{Website, Scope, Page}
+import org.hyperscala.web.session.Session
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
 class PageHandler(val link: String, instantiator: () => Page, matchers: List[String => Boolean], scope: Scope = Scope.Request)
                  (implicit website: Website[_ <: Session]) extends ContentHandler {
-  if (scope == Scope.Instance) throw new RuntimeException("Unsupported Instance Scope!!!")    // TODO: add support for Scope.Instance
+  if (scope == Scope.Instance) throw new RuntimeException("Unsupported Instance Scope!!!")
+
+  // TODO: add support for Scope.Instance
 
   def matches(uri: String) = matchers.find(matcher => matcher(uri)) != None
 
   lazy val uniqueName = Unique()
 
-  website.contents += this      // Automatically add itself to the website
+  website.contents += this
 
-  def apply(method: Method, request: HttpServletRequest, response: HttpServletResponse) = {
+  // Automatically add itself to the website
+
+  /**
+   * Returns the page this handler wraps. This will create a new instance if necessary or return a cached copy if the
+   * scope is set as such.
+   */
+  def page = {
     val storage = scope match {
       case Scope.Application => website
       case Scope.Session => website.session
@@ -29,13 +38,17 @@ class PageHandler(val link: String, instantiator: () => Page, matchers: List[Str
     } else {
       None
     }
-    val page = lookup match {
-      case Some(p) if (!p.disposed) => p      // Found page in storage
-      case None => instantiator()             // Create a new instance of the page
+    val p = lookup match {
+      case Some(pg) if (!pg.disposed) => pg // Found page in storage
+      case None => instantiator() // Create a new instance of the page
     }
     if (storage != null) {
-      storage(uniqueName) = page        // Store the page to the storage session if one exists
+      storage(uniqueName) = p // Store the page to the storage session if one exists
     }
+    p
+  }
+
+  def apply(method: Method, request: HttpServletRequest, response: HttpServletResponse) = {
     page.service(method, request, response)
   }
 }

@@ -1,28 +1,26 @@
-package org.hyperscala.web
+package org.hyperscala.web.handler
 
-import javax.servlet.http.{HttpServletResponse, HttpServletRequest}
-import org.powerscala.Priority
-import java.io.{OutputStream, InputStream}
-import annotation.tailrec
+import java.net.URL
 import org.hyperscala.html.attributes.Method
+import javax.servlet.http.{HttpServletResponse, HttpServletRequest}
+import annotation.tailrec
+import java.io.{OutputStream, InputStream}
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-object ResourceHandler extends ContentHandler {
-  def link = null
-
+trait ResourceHandler extends ContentHandler {
   lazy val classLoader = getClass.getClassLoader
 
   // TODO: add caching support
+  // TODO: add support for 304 Not Modified - override getLastModified in RenderServlet
 
-  def matches(uri: String) = toURL(uri) match {
-    case null => false
-    case _ => true
-  }
+  def matches(uri: String) = lookup(uri) != null
+
+  def lookup(uri: String): URL
 
   def apply(method: Method, request: HttpServletRequest, response: HttpServletResponse) = {
-    val url = toURL(request.getRequestURI)
+    val url = lookup(request.getRequestURI)
     val connection = url.openConnection()
     val contentType = connection.getContentType match {
       case "content/unknown" => url.toString.substring(url.toString.lastIndexOf('.') + 1).toLowerCase match {
@@ -53,15 +51,4 @@ object ResourceHandler extends ContentHandler {
       stream(input, output, b)
     }
   }
-
-  def toURL(uri: String) = if (uri.trim.length > 1) {     // Don't want to match the context root
-    RenderServlet().getServletContext.getResource(uri) match {
-      case null => classLoader.getResource(uri.substring(1))
-      case url => url
-    }
-  } else {
-    null
-  }
-
-  override def priority = Priority.Low
 }

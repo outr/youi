@@ -3,34 +3,89 @@ package org.hyperscala.bean
 import org.powerscala.property.{StandardProperty, Property, PropertyParent}
 
 import org.powerscala.reflect._
-import org.hyperscala.editor.{BooleanEditor, EnumEntryEditor, InputEditor, ValueEditor}
+import org.hyperscala.editor._
 import org.powerscala.property.backing.CaseValueVariableBacking
-import org.powerscala.property.event.PropertyChangeEvent
-import org.hyperscala.persistence.{IntPersistence, StringPersistence, ValuePersistence}
+import org.hyperscala.persistence.{DoublePersistence, IntPersistence, StringPersistence, ValuePersistence}
 import org.powerscala.EnumEntry
+import org.hyperscala.html.Input
+import org.powerscala.property.event.PropertyChangeEvent
+import scala.Some
+import org.powerscala.reflect.CaseValue
 
 trait BeanContainer[T] extends PropertyParent with ValueEditor[T] with BeanFieldContainer {
   override type F = BasicBeanField
 
   def default: T
   def parentContainer: BeanContainer[_]
+  def containerName: String
+
+  /**
+   * Defines the field names to include and in what order. If empty the fields and order are determined by class.
+   *
+   * Defaults to empty.
+   */
+  def fieldNames = List.empty[String]
 
   def manifest: Manifest[T]
 
   val property = Property[T]("property", default)
+  protected var _nextTab = 0
   val fields = manifest.erasure.caseValues.map(caseValue => {
     val d = default match {
       case null => caseValue.valueType.defaultForType
       case _ => caseValue[Any](default.asInstanceOf[AnyRef])
     }
-    createBeanField(caseValue, d)
+    val beanName = generateBeanName(caseValue)
+    createBeanField(beanName, caseValue, d, this.asInstanceOf[BeanContainer[Any]])
   }).collect {
-    case Some(beanField) => beanField
+    case Some(beanField) => {
+      beanField
+    }
   }
 
-  def createBeanField(caseValue: CaseValue, default: Any): scala.Option[F] = {
+  protected def assignTabs(fields: List[BeanField]): Unit = {
+    if (fields.nonEmpty) {
+      val field = fields.head
+      field.field match {
+        case container: BeanContainer[_] => assignTabs(container.fields)
+        case container: ListEditor[_] => {
+          container.valueEditor match {
+            case valueContainer: BeanContainer[_] => assignTabs(valueContainer.fields)
+            case ve => ve.tabIndex := nextTab
+          }
+          container.button.tabIndex := nextTab
+        }
+        case f => f.tabIndex := nextTab
+      }
+      assignTabs(fields.tail)
+    }
+  }
+
+  def nextTab: Int = if (parentContainer != null) {
+    parentContainer.nextTab
+  } else {
+    _nextTab += 1
+    _nextTab
+  }
+
+  private def generateBeanName(caseValue: CaseValue) = hierarchicalName match {
+    case null => caseValue.name
+    case hn => "%s.%s".format(hn, caseValue.name)
+  }
+
+  def hierarchicalName: String = {
+    if (parentContainer != null && parentContainer.hierarchicalName != null) {
+      "%s.%s".format(parentContainer.hierarchicalName, containerName)
+    } else {
+      containerName
+    }
+  }
+
+  def createBeanField(beanName: String, caseValue: CaseValue, default: Any, container: BeanContainer[Any]): scala.Option[F] = if (parentContainer != null) {
+    parentContainer.createBeanField(beanName, caseValue, default, container)
+  } else {
     // Create the property
-    val backing = new CaseValueVariableBacking[T, Any](BeanContainer.this.property, caseValue)
+    val backing = new CaseValueVariableBacking[Any, Any](container.property, caseValue)
     val property = Property[Any](caseValue.name, default, backing)
     BeanContainer.this.property.listeners.synchronous {
       case evt: PropertyChangeEvent => property.fireChanged()
@@ -46,12 +101,11 @@ trait BeanContainer[T] extends PropertyParent with ValueEditor[T] with BeanField
 
   def createField(caseValue: CaseValue, editor: ValueEditor[Any]): scala.Option[F] = {
     // Create the BeanField
-    Some(BasicBeanField(caseValue, editor))
+    val beanField = BasicBeanField(caseValue, editor)
+    Some(beanField)
   }
 
-  def createEditor[C](property: StandardProperty[C])(implicit manifest: Manifest[C]): ValueEditor[C] = if (parentContainer != null) {
-    parentContainer.createEditor[C](property)(manifest)
-  } else {
+  def createEditor[C](property: StandardProperty[C])(implicit manifest: Manifest[C]): ValueEditor[C] = {
     manifest.erasure.getSimpleName match {
       case "String" => new InputEditor[C](property)(StringPersistence.asInstanceOf[ValuePersistence[C]], manifest)
       case "boolean" => {
@@ -59,14 +113,29 @@ trait BeanContainer[T] extends PropertyParent with ValueEditor[T] with BeanField
         editor.asInstanceOf[ValueEditor[C]]
       }
       case "int" => new InputEditor[C](property)(IntPersistence.asInstanceOf[ValuePersistence[C]], manifest)
+      case "double" => new InputEditor[C](property)(DoublePersistence.asInstanceOf[ValuePersistence[C]], manifest)
       case _ if (classOf[EnumEntry[_]].isAssignableFrom(manifest.erasure)) => new EnumEntryEditor[C](property)(manifest)
       case _ if (manifest.erasure.isCase) => {
-        val bean = new BeanDiv[C](this, property())(manifest)
+        val bean = new BeanDiv[C](property.name(), this, property())(manifest)
         bean.property.bind(property)
         property.bind(bean.property)
         bean
       }
-      case s => throw new RuntimeException("Unsupported field %s with type of %s".format(property.name(), s))
+      case s => {
+        val sp = property
+        new Input with ValueEditor[C] {
+          def property = sp
+
+          disabled := true
+
+          property.onChange {
+            value := (property() match {
+              case null => ""
+              case p => p.toString
+            })
+          }
+        }
+      }
     }
   }
 
@@ -96,6 +165,15 @@ trait BeanContainer[T] extends PropertyParent with ValueEditor[T] with BeanField
 
   private def fieldByName(name: String) = {
     fields.find(bf => bf.caseValue.name == name).getOrElse(throw new RuntimeException("Unable to find %s".format(name)))
+  }
+
+  override def validate() = {
+    super.validate() match {
+      case Some(error) => Some(error)
+      case None => fields.map(f => f.field.validate()).collectFirst {
+        case Some(error) => error
+      }
+    }
   }
 }
 

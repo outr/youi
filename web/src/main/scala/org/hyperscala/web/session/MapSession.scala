@@ -13,4 +13,6 @@ class MapSession extends Session {
   def update(name: String, value: Any) = map += name -> value
 
   def remove(name: String) = map -= name
+
+  def clear() = map = Map.empty
 }

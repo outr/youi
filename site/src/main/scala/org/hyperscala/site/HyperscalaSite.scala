@@ -1,6 +1,7 @@
 package org.hyperscala.site
 
-import org.hyperscala.web.{Scope, PageHandler, Website}
+import org.hyperscala.web.handler.PageHandler
+import org.hyperscala.web.{Scope, Website}
 import org.hyperscala.web.session.MapSession
 import org.hyperscala.examples.basic.{AdvancedBeanFormExample, BeanFormExample, FormExample}
 import org.hyperscala.examples.todomvc.TodoMVC

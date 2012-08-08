@@ -17,10 +17,12 @@ package object persistence {
   implicit val contentEditablePersistence = ContentEditable
   implicit val directionPersistence = Direction
   implicit val displayPersistence = Display
+  implicit val doublePersistence = DoublePersistence
   implicit val draggablePersistence = Draggable
   implicit val dropZonePersistence = DropZone
   implicit val floatPersistence = Float
   implicit val fontSizePersistence = FontSize
+  implicit val javaScriptContentPersistence = JavaScriptContentPersistence
   implicit val inputTypePersistence = InputType
   implicit val intPersistence = IntPersistence
   implicit val languagePersistence = LanguagePersistence

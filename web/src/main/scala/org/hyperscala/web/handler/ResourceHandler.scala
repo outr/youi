@@ -22,13 +22,13 @@ trait ResourceHandler extends ContentHandler {
   def apply(method: Method, request: HttpServletRequest, response: HttpServletResponse) = {
     val url = lookup(request.getRequestURI)
     val connection = url.openConnection()
-    val contentType = connection.getContentType match {
-      case "content/unknown" => url.toString.substring(url.toString.lastIndexOf('.') + 1).toLowerCase match {
-        case "css" => "text/css"
-        case "js" => "application/javascript"
-        case extension => throw new RuntimeException("Unsupported content extension: %s for %s".format(extension, url))
+    val contentType = url.toString.substring(url.toString.lastIndexOf('.') + 1).toLowerCase match {
+      case "css" => "text/css"
+      case "js" => "application/javascript"
+      case extension => connection.getContentType match {
+        case "content/unknown" => throw new RuntimeException("Unsupported content extension: %s for %s".format(extension, url))
+        case mimeType => mimeType
       }
-      case s => s
     }
     response.setContentType(contentType)
     response.setContentLength(connection.getContentLength)

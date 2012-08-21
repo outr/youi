@@ -15,15 +15,18 @@ import scala.Some
 trait ActionForm extends Form {
   val submittedBy = Property[HTMLTag]("submittedBy", null)
 
-  val lastFocused = new Input(id = "lastFocused", name = "lastFocused", inputType = InputType.Hidden, autoComplete = AutoComplete.Off)
+  val lastFocused = new Input(id = "%sLastFocused".format(ActionForm.this.name()), name = "%sLastFocused".format(ActionForm.this.name()), inputType = InputType.Hidden, autoComplete = AutoComplete.Off)
   listeners.synchronous {     // Form will receive an ActionEvent upon completion of POST
     case evt: FormSubmit => {
+//      println("LastFocused: %s".format(lastFocused.value()))
       lastFocused.value() match {
-        case "" => // Nothing selectable focused
+        case "" | null => // Nothing selectable focused
         case s if (s.startsWith("id=")) => HTMLPage().byId[HTMLTag](s.substring(3)) match {
           case Some(tag) => {
             submittedBy := tag
-            tag.fire(FormSubmit(evt.method))
+            if (tag != this) {
+              tag.fire(FormSubmit(evt.method))
+            }
           }
           case None => // Cannot find by id
         }
@@ -38,22 +41,24 @@ trait ActionForm extends Form {
     }
   }
 
-  def focus(tag: HTMLTag) = {
+  def focus(tag: HTMLTag): Unit = {
     if (tag.id() == null) {
       tag.id := Unique()
     }
-    tag match {
-      case input: Input => input.autoFocus := true
-      case button: Button => button.autoFocus := true
-      case select: Select => select.autoFocus := true
-      case textArea: TextArea => textArea.autoFocus := true
-    }
+    autoFocus(tag)
     lastFocused.value := "id=%s".format(tag.id())
+  }
+
+  def autoFocus(tag: HTMLTag) = tag match {
+    case input: Input => input.autoFocus := true
+    case button: Button => button.autoFocus := true
+    case select: Select => select.autoFocus := true
+    case textArea: TextArea => textArea.autoFocus := true
   }
 
   contents += lastFocused
 
-  contents += new Script(content = JavaScriptString(ActionForm.template.format("lastFocused")))
+  contents += new Script(content = JavaScriptString(ActionForm.template.format("%sLastFocused".format(ActionForm.this.name()))))
 }
 
 object ActionForm {

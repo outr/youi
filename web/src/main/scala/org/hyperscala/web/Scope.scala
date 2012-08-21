@@ -17,11 +17,6 @@ object Scope extends Enumerated[Scope] {
    */
   val Session = new Scope
   /**
-   * Defines an instance per browser window. This works similarly to Session except allows multiple tabs or windows
-   * within the same session to have multiple instances.
-   */
-  val Instance = new Scope
-  /**
    * A new instance is created for every request. No caching.
    */
   val Request = new Scope

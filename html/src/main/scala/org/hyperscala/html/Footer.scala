@@ -10,7 +10,7 @@ import org.hyperscala.html.constraints._
  * @author Matt Hicks <mhicks@hyperscala.org>
  */
 class Footer extends Container[BodyChild] with BodyChild with HTMLTag {
-  protected lazy val xmlLabel = "footer"
+  lazy val xmlLabel = "footer"
 
   def this(name: String = null,
            accessKey: java.lang.Character = null,

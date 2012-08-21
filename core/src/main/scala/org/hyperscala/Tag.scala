@@ -1,5 +1,6 @@
 package org.hyperscala
 
+import event.TagCreated
 import org.powerscala.property.PropertyParent
 import org.powerscala.naming.NamingFilter
 import persistence._
@@ -17,7 +18,7 @@ trait Tag extends PropertyParent with Markup with Listenable {
 
   override def render = renderTag()
 
-  protected lazy val xmlAttributes = new NamingFilter[XMLAttribute](this)
+  lazy val xmlAttributes = new NamingFilter[XMLAttribute](this)
 
   /**
    * Updates attribute with value if it's not null.
@@ -45,4 +46,6 @@ trait Tag extends PropertyParent with Markup with Listenable {
       attribute := value.booleanValue()
     }
   }
+
+  fire(TagCreated(this))
 }

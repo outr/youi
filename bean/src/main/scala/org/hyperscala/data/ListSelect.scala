@@ -11,6 +11,7 @@ import org.hyperscala.editor.ValueEditor
 class ListSelect[T](val property: StandardProperty[T],
                     identifier: T => String = (t: T) => t.toString, visualizer: T => String = (t: T) => t.toString)
                    (implicit manifest: Manifest[T]) extends Select with ValueEditor[T] {
+  id := property.name()
   name := property.name()
   val values = new StandardProperty[List[T]]("values", Nil) with ListProperty[T]
 

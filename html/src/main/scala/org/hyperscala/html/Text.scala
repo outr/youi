@@ -14,7 +14,7 @@ class Text extends Textual with BodyChild with HTMLTag {
     this.content := content
   }
 
-  protected def xmlLabel = null
+  def xmlLabel = null
 
   override def toXML = new JDOMText(content())
 

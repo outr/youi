@@ -97,6 +97,18 @@ trait Website[S <: Session] extends MutableContainer[ContentHandler] with Proper
   def remove(name: String) = application -= name
 
   def clear() = application = Map.empty
+
+  /**
+   * Handles any errors that occur on pages within this website.
+   */
+  def errorOccurred(t: Throwable) = {
+    t.printStackTrace()
+  }
+
+  /**
+   * Called when the web context is stopping.
+   */
+  def destroy() = {}
 }
 
 object Website {

@@ -19,7 +19,7 @@ class BeanFormExample extends HTMLPage {
   }
   contents += messages
 
-  val form = new BeanForm[Person](Person("John Doe", "john@doe.com", "Some", "Where")) with AJAXForm with ActionForm {
+  val form = new BeanForm[Person]("person", Person("John Doe", "john@doe.com", "Some", "Where")) with AJAXForm with ActionForm {
     property.listeners.synchronous {
       case evt: PropertyChangeEvent => {
         messages.contents += "Person changed from %s to %s".format(evt.oldValue, evt.newValue)

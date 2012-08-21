@@ -9,8 +9,8 @@ import scala.collection.JavaConversions._
  * @author Matt Hicks <mhicks@powerscala.org>
  */
 trait Markup extends XMLContent {
-  protected def xmlLabel: String
-  protected def xmlAttributes: Seq[XMLAttribute]
+  def xmlLabel: String
+  def xmlAttributes: Seq[XMLAttribute]
 
   def toXML: Content = {
     before()

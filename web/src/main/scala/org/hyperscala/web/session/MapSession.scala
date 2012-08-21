@@ -10,7 +10,11 @@ class MapSession extends Session {
 
   def get[T](name: String) = map.get(name).asInstanceOf[Option[T]]
 
-  def update(name: String, value: Any) = map += name -> value
+  def update(name: String, value: Any) = if (value != null) {
+    map += name -> value
+  } else {
+    remove(name)
+  }
 
   def remove(name: String) = map -= name
 

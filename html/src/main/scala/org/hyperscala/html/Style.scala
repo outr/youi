@@ -10,7 +10,7 @@ import org.hyperscala.html.constraints._
  * @author Matt Hicks <mhicks@hyperscala.org>
  */
 class Style extends Textual with BodyChild with HeadChild with HTMLTag {
-  protected lazy val xmlLabel = "style"
+  lazy val xmlLabel = "style"
 
   def this(name: String = null,
            accessKey: java.lang.Character = null,

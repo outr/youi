@@ -16,9 +16,6 @@ import java.io.OutputStream
 class HTMLPage extends Page with PropertyParent with Parent {
   HTMLPage.instance.set(this)
 
-  private var redirectPage: String = null
-  protected[web] var disposed = false
-
   val doctype = "<!DOCTYPE html>\r\n".getBytes
   val name = Property[String]("name", null)
   val title = Property[String]("title", null)
@@ -59,22 +56,24 @@ class HTMLPage extends Page with PropertyParent with Parent {
         request.getParameterMap.foreach {
           case (key, values) => {
 //            println("Key: %s, Value: %s".format(key, values.asInstanceOf[Array[String]].head))
+            if (key.toString.endsWith("SendResponse") && values.asInstanceOf[Array[String]].head == "false") {
+              ignoreResponse = true
+            }
             byName[HTMLTag](key.asInstanceOf[String]) match {
               case Some(tag) if (renderable(tag)) => {      // Only apply to tags that are rendered to the page
                 if (form == null) {
                   tag.hierarchy.backward[Form]() match {
-                    case null => // Odd, but not impossible
+                    case null => println("WARNING: Unable to find form for %s".format(key)) // Odd, but not impossible
                     case f => form = f
                   }
                 }
-                updateValue(method, tag, values.asInstanceOf[Array[String]])
+                val v = values.asInstanceOf[Array[String]]
+//                println("Updating %s for %s with %s".format(tag, key, v.mkString(", ")))
+                updateValue(method, tag, v)
               }
-              case _ => //println("Unable to find %s = %s".format(key, values.asInstanceOf[Array[String]].head))
+              case _ => println("Unable to find %s = %s".format(key, values.asInstanceOf[Array[String]].head))
             }
           }
-        }
-        if (request.getParameter("sendResponse") == "false") {
-          ignoreResponse = true
         }
         if (form != null) {
           form.fire(FormSubmit(method))
@@ -82,11 +81,11 @@ class HTMLPage extends Page with PropertyParent with Parent {
       }
       refresh()
       if (!ignoreResponse) {
-        if (redirectPage != null) {     // Send redirect
-          response.sendRedirect(redirectPage)
-          redirectPage = null
-        } else {
-          sendResponse(method, request, response)
+        cached.poll[String](redirectId) match {
+          case Some(redirect) => response.sendRedirect(redirect)
+          case None => {
+            sendResponse(method, request, response)
+          }
         }
       }
     } catch {
@@ -134,8 +133,8 @@ class HTMLPage extends Page with PropertyParent with Parent {
     }
   }
 
-  def errorOccurred(t: Throwable) = {
-    t.printStackTrace()
+  final def errorOccurred(t: Throwable) = {
+    website.errorOccurred(t)
   }
 
   protected def handleException(t: Throwable, method: Method, request: HttpServletRequest, response: HttpServletResponse) = {
@@ -146,14 +145,18 @@ class HTMLPage extends Page with PropertyParent with Parent {
   /**
    * Redirects the page for the next rendering. Additional rendering of the page will no longer redirect.
    */
-  def sendRedirect(url: String) = redirectPage = url
+  def sendRedirect(url: String) = cached.set(redirectId) {
+    url
+  }
+
+  def hasRedirect = cached.get(redirectId) != None
+
+  private def redirectId = "%s.redirect".format(getClass.getName)
 
   /**
    * Called every time the page is loaded into the browser.
    */
   def refresh(): Unit = {}
-
-  def dispose() = disposed = true
 
   def allByName[T <: HTMLTag](name: String)(implicit manifest: Manifest[T]) = view.collect {
     case tag if (tag.name() == name && manifest.erasure.isAssignableFrom(tag.getClass)) => tag.asInstanceOf[T]
@@ -237,6 +240,15 @@ class HTMLPage extends Page with PropertyParent with Parent {
         storage(key) = content
       }
       content
+    }
+
+    /**
+     * Gets and removes the value from the scope.
+     */
+    def poll[T](key: String, scope: Scope = Scope.Session) = {
+      val response = get[T](key, scope)
+      clear(key, scope)
+      response
     }
 
     def get[T](key: String, scope: Scope = Scope.Session) = {

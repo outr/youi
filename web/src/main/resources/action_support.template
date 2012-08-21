@@ -1,6 +1,5 @@
 $(function() {
-    jQuery(document).on('focus', '*', function(event) {
-        event.stopPropagation();
+    var f = function(event) {
         var focused = $($(this)[0]);
         var focusValue = '';
         if (focused.attr('id') != null) {
@@ -8,8 +7,14 @@ $(function() {
         } else if (focused.attr('name') != null) {
             focusValue = 'name=' + focused.attr('name');
         }
-        $('#%1$s').val(focusValue);
-    });
+        if (focusValue != '') {
+            console.log('Focus changed: ' + focusValue + ' / ' + focused[0].tagName);
+            $('#%1$s').val(focusValue);
+            event.stopPropagation();
+        }
+    }
+    jQuery(document).on('focus', '*', f);
+    //jQuery(document).on('click', '*', f);
 });
 
 $(document).ready(function() {

@@ -10,7 +10,7 @@ import org.hyperscala.html.constraints._
  * @author Matt Hicks <mhicks@hyperscala.org>
  */
 class Button extends Container[BodyChild] with BodyChild with HTMLTag {
-  protected lazy val xmlLabel = "button"
+  lazy val xmlLabel = "button"
 
   def this(name: String = null,
            accessKey: java.lang.Character = null,

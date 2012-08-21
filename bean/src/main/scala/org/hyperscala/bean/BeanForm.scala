@@ -2,15 +2,18 @@ package org.hyperscala.bean
 
 import org.hyperscala.html._
 import attributes.ButtonType
+import org.hyperscala.editor.ListEditor
+import org.hyperscala.web.ActionForm
+import org.hyperscala.css.attributes.Clear
+import org.powerscala.property._
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-class BeanForm[T](val default: T)(implicit val manifest: Manifest[T]) extends Form with BeanContainer[T] {
-  method := "post"
-
+class BeanForm[T](_name: String, val default: T)(implicit val manifest: Manifest[T])
+        extends Form(method = "post", id = _name, name = _name) with BeanContainer[T] with ActionForm {
   def parentContainer = null
-  def containerName = null
+  def containerName: String = null
 
   val button = createButton()
 
@@ -22,11 +25,17 @@ class BeanForm[T](val default: T)(implicit val manifest: Manifest[T]) extends Fo
   fields.foreach {
     case field => contents += field
   }
-  fields.head.field match { // Auto focus the first item
-    case input: Input => input.autoFocus := true
-    case button: Button => button.autoFocus := true
-    case select: Select => select.autoFocus := true
-    case textArea: TextArea => textArea.autoFocus := true
+  focus(fields.head.field)
+
+  val footer = new Footer {
+    style.clear := Clear.Both
+
+    contents += button
   }
-  contents += button
+  contents += footer
+
+  override def autoFocus(tag: HTMLTag): Unit = tag match {
+    case listEditor: ListEditor[_] => autoFocus(listEditor.valueEditor)
+    case _ => super.autoFocus(tag)
+  }
 }

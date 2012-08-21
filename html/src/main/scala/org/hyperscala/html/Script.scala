@@ -11,7 +11,7 @@ import javascript.JavaScriptContent
  * @author Matt Hicks <mhicks@hyperscala.org>
  */
 class Script extends Container[JavaScriptContent] with BodyChild with HeadChild with HTMLTag {
-  protected lazy val xmlLabel = "script"
+  lazy val xmlLabel = "script"
 
   def this(name: String = null,
            accessKey: java.lang.Character = null,

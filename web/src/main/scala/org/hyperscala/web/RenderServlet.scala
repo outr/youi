@@ -28,6 +28,11 @@ class RenderServlet extends HttpServlet {
     val method = Method.values.find(m => m.name().equalsIgnoreCase(methodName)).getOrElse(throw new RuntimeException("Unknown Method type: %s".format(methodName)))
     website.service(method, request, response)
   }
+
+  override def destroy() {
+    website.destroy()
+    super.destroy()
+  }
 }
 
 object RenderServlet {

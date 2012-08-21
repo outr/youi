@@ -2,7 +2,7 @@ package org.hyperscala.examples.basic
 
 import org.hyperscala.web.{ActionForm, AJAXForm, HTMLPage}
 import org.hyperscala.html._
-import org.hyperscala.bean.BeanForm
+import org.hyperscala.bean.{BeanContainer, BeanForm}
 import org.powerscala.property._
 import org.powerscala.property.event.PropertyChangeEvent
 import org.hyperscala.editor.{ListBeanEditor, ListSelectEditor, ListStringEditor, ValueEditor}
@@ -21,7 +21,7 @@ class AdvancedBeanFormExample extends HTMLPage {
   }
   contents += messages
 
-  val form = new BeanForm[Company](Company()) with AJAXForm with ActionForm {
+  val form = new BeanForm[Company]("company", Company()) with AJAXForm with ActionForm {
     property.listeners.synchronous {
       case evt: PropertyChangeEvent => {
         messages.contents += "Company changed from %s to %s".format(evt.oldValue, evt.newValue)
@@ -31,7 +31,7 @@ class AdvancedBeanFormExample extends HTMLPage {
 
     hideFields("email", "address.state")
 
-    override def createEditor[C](property: StandardProperty[C])(implicit manifest: Manifest[C]) = {
+    override def createEditor[C](beanName: String, property: StandardProperty[C], container: BeanContainer[Any])(implicit manifest: Manifest[C]) = {
       if (property.name() == "aliases") {
         // TODO: fix the stupid casting problem
         new ListStringEditor(property.asInstanceOf[StandardProperty[List[String]]]).asInstanceOf[ValueEditor[C]]
@@ -40,10 +40,10 @@ class AdvancedBeanFormExample extends HTMLPage {
         editor.valueEditor.values := Language.values.toList
         editor.asInstanceOf[ValueEditor[C]]
       } else if (property.name() == "emails") {
-        val editor = new ListBeanEditor[CompanyEmail](this, property.asInstanceOf[StandardProperty[List[CompanyEmail]]], CompanyEmail())
+        val editor = new ListBeanEditor[CompanyEmail](container, property.asInstanceOf[StandardProperty[List[CompanyEmail]]], CompanyEmail())
         editor.asInstanceOf[ValueEditor[C]]
       } else {
-        super.createEditor(property)(manifest)
+        super.createEditor[C](beanName, property, container)(manifest)
       }
     }
   }

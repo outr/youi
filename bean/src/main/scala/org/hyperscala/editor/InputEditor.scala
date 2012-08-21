@@ -12,6 +12,7 @@ class InputEditor[T](val property: StandardProperty[T])(implicit persistence: Va
   val convert2String = (t: T) => persistence.toString(t, manifest.erasure)
   val convert2T = (s: String) => persistence.fromString(s, manifest.erasure)
 
+  id := property.name()
   name := property.name()
   autoComplete := AutoComplete.Off     // Make sure the field is correct every time
 

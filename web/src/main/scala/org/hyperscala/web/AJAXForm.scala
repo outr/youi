@@ -10,11 +10,20 @@ import org.hyperscala.html.attributes.{ButtonType, InputType}
  * @author Matt Hicks <mhicks@powerscala.org>
  */
 trait AJAXForm extends Form {
+  def confirmMessage: String = null
+
   lazy val submitButton = HTMLPage(this).view.find {
     case tag: Button => tag.buttonType() == ButtonType.Submit
     case _ => false
-  }.getOrElse(throw new RuntimeException("Unable to find submit button for form!"))
-  lazy val script = new Script(content = JavaScriptString(AJAXForm.template.format(id(), submitButton.id())))
+  }.getOrElse(null)
+  lazy val submitButtonId = submitButton match {
+    case null => null
+    case b => b.id()
+  }
+  lazy val script = new Script(content = JavaScriptString(AJAXForm.template.format(id(), submitButtonId, confirmMessage match {
+    case null => "null"
+    case m => "'%s'".format(m)
+  })))
 
   override protected def before() = {
     super.before()
@@ -22,16 +31,16 @@ trait AJAXForm extends Form {
     if (id() == null) {
       id := Unique()
     }
-    if (submitButton.id() == null) {
+    if (submitButton != null && submitButton.id() == null) {
       submitButton.id := Unique()
     }
 
-    if (!contents.contains(script)) {
+    if (script != null && !contents.contains(script)) {
       contents += script
     }
   }
 
-  contents += new Input(inputType = InputType.Hidden, name = "sendResponse", value = "false")
+  contents += new Input(inputType = InputType.Hidden, name = "%sSendResponse".format(name()), value = "false")
 }
 
 object AJAXForm {

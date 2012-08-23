@@ -1,29 +1,32 @@
 package org.hyperscala.web.live
 
 import org.hyperscala.{Unique, Container, PropertyAttribute}
-import org.hyperscala.html.HTMLTag
+import org.hyperscala.html.{Text, Title, HTMLTag}
 import org.hyperscala.css.StyleSheetAttribute
 import org.hyperscala.web.HTMLPage
 import org.powerscala.property.event.PropertyChangeEvent
+import org.hyperscala.event.TagCreated
+import actors.threadpool.AtomicInteger
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
 class LivePage extends HTMLPage {
-  @volatile private var increment = 0
+  private val increment = new AtomicInteger(0)
 
   head.id := "liveHead"
   head.contents(0).id := "liveTitle"
   body.id := "liveBody"
 
   listeners.synchronous.filter(evt => true) {
+    case evt: TagCreated if (evt.tag.isInstanceOf[Text]) => // Ignore Text elements being created
+    case evt: PropertyChangeEvent if (evt.property == title) => // Ignore title property
     case evt: PropertyChangeEvent if (evt.property.isInstanceOf[PropertyAttribute[_]] && evt.property.parent.isInstanceOf[HTMLTag]) => {
-      increment += 1
-      val id = increment
       val tag = evt.property.parent.asInstanceOf[HTMLTag]
-      if (tag.id() == null) {
+      if (tag.id() == null && !tag.isInstanceOf[Text]) {
         tag.id := Unique()
       }
+      val id = increment.addAndGet(1)
       val attribute = evt.property.asInstanceOf[PropertyAttribute[_]]
       val change = LiveChange.attribute(id, tag, attribute)
 //      println("Property: %s changed from %s to %s".format(evt.property.name(), evt.oldValue, evt.newValue))
@@ -73,7 +76,11 @@ case class LiveChange(id: Int, key: String, script: String)
 object LiveChange {
   def attribute(id: Int, tag: HTMLTag, attribute: PropertyAttribute[_]) = {
     val key = "%s.%s".format(tag.id(), attribute.name())
-    val script = "liveLookup('%s').attr('%s', %s);".format(tag.id(), attribute.name(), attribute.attributeValue)
+    val script = if (tag.isInstanceOf[Title] && attribute.name() == "content") {
+      "document.title = '%s';".format(attribute.attributeValue)
+    } else {
+      "liveLookup('%s').attr('%s', %s);".format(tag.id(), attribute.name(), attribute.attributeValue)
+    }
     LiveChange(id, key, script)
   }
 

@@ -45,11 +45,20 @@ trait Markup extends XMLContent {
   private def attributesFromXML(attributes: Seq[Attribute]): Unit = {
     if (attributes.nonEmpty) {
       val a = attributes.head
-      xmlAttributes.find(xmla => xmla.name() == a.getName) match {
-        case Some(xmla) => xmla.attributeValue = a.getValue
-        case None => unsupportedAttribute(a.getName, a.getValue)
+      if (!attributeFromXML(a)) {
+        unsupportedAttribute(a.getName, a.getValue)
       }
       attributesFromXML(attributes.tail)
+    }
+  }
+
+  protected def attributeFromXML(a: Attribute): Boolean = {
+    xmlAttributes.find(xmla => xmla.name() == a.getName) match {
+      case Some(xmla) => {
+        xmla.attributeValue = a.getValue
+        true
+      }
+      case None => false
     }
   }
 

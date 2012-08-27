@@ -2,7 +2,7 @@ package org.hyperscala
 
 import org.powerscala.hierarchy.MutableContainer
 import annotation.tailrec
-import org.jdom2.{Text, Content, Element}
+import org.jdom2.{Comment, Text, Content, Element}
 import scala.collection.JavaConversions._
 
 /**
@@ -22,9 +22,12 @@ trait Container[C <: XMLContent] extends MutableContainer[C] with Markup {
       case childElement: Element => {
         val child = generateChildFromTagName(childElement.getName).asInstanceOf[C]
         child.fromXML(childElement)
-        contents += child
+        if (!contents.contains(child)) {
+          contents += child
+        }
       }
       case childText: Text => processText(childText.getText)
+      case childComment: Comment => // Ignore comments
     }
   }
 

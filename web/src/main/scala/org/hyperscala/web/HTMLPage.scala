@@ -35,7 +35,7 @@ class HTMLPage extends Page with PropertyParent with Parent {
   Element.assignParent(html, this)
 
   head.contents += new Meta(name = "generator", content = "Hyperscala")
-  head.contents += new Meta(charSet = "UTF-8")
+  head.contents += new Meta(charset = "UTF-8")
 
   html.contents.addAll(head, body)
 
@@ -45,6 +45,26 @@ class HTMLPage extends Page with PropertyParent with Parent {
 
   private def servletRequest = website.servletRequest
   private def servletResponse = website.servletResponse
+
+  /**
+   * Ensures that the script referenced via url is loaded in the head.
+   *
+   * @param url the url of the script
+   * @param regex optional regular expression match
+   * @return true if the script was added
+   */
+  def ensureScript(url: String, regex: String = null) = {
+    val hasScript = head.contents.find {
+      case script: Script if ((regex != null && script.src().matches(regex)) || script.src() == url) => true
+      case _ => false
+    }.nonEmpty
+    if (!hasScript) {
+      head.contents += new Script(src = url)
+      true
+    } else {
+      false
+    }
+  }
 
   def service(method: Method, request: HttpServletRequest, response: HttpServletResponse) = {
     HTMLPage.instance.set(this)

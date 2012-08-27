@@ -1,6 +1,11 @@
+var url = %4$s;
+if (url == null) {
+    url = window.location.href;
+}
+
 function %1$sFormSubmitResult() {
     $('#%2$s').removeAttr('disabled');
-    window.location.reload();
+    window.location.href = url;
 }
 
 $(document).ready(function () {
@@ -10,7 +15,7 @@ $(document).ready(function () {
         if (!confirmMessage || confirm(confirmMessage)) {
             $('#%2$s').attr('disabled', 'disabled');
             var json = $('#%1$s').serialize();
-            var jqxhr = $.post(window.location.href, json, %1$sFormSubmitResult);
+            var jqxhr = $.post(url, json, %1$sFormSubmitResult);
             jqxhr.error(%1$sFormSubmitResult);
         }
     });

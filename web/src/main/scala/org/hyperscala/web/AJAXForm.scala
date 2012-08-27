@@ -20,10 +20,13 @@ trait AJAXForm extends Form {
     case null => null
     case b => b.id()
   }
-  lazy val script = new Script(content = JavaScriptString(AJAXForm.template.format(id(), submitButtonId, confirmMessage match {
+  def submitURL: String = null
+  lazy val script = new Script(content = JavaScriptString(AJAXForm.template.format(id(), submitButtonId, jsString(confirmMessage), jsString(submitURL))))
+
+  private def jsString(v: String) = v match {
     case null => "null"
-    case m => "'%s'".format(m)
-  })))
+    case _ => "'%s'".format(v)
+  }
 
   override protected def before() = {
     super.before()

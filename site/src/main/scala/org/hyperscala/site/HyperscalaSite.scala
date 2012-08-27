@@ -3,7 +3,7 @@ package org.hyperscala.site
 import org.hyperscala.web.handler.PageHandler
 import org.hyperscala.web.{Scope, Website}
 import org.hyperscala.web.session.MapSession
-import org.hyperscala.examples.basic.{LivePageExample, AdvancedBeanFormExample, BeanFormExample, FormExample}
+import org.hyperscala.examples.basic._
 import org.hyperscala.examples.todomvc.TodoMVC
 import org.hyperscala.examples.helloworld.HelloWorldPage
 

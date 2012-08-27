@@ -4,7 +4,7 @@ import org.hyperscala._
 import css.StyleSheet
 import org.hyperscala.html.attributes._
 import org.hyperscala.html.constraints._
-import javascript.JavaScriptContent
+import javascript.{JavaScriptString, JavaScriptContent}
 
 /**
  * NOTE: This file has been generated. Do not modify directly!
@@ -63,4 +63,8 @@ class Script extends Container[JavaScriptContent] with BodyChild with HeadChild 
   val defer = PropertyAttribute[String]("defer", null)
   val mimeType = PropertyAttribute[String]("type", null)
   val src = PropertyAttribute[String]("src", null)
+
+  override protected def processText(text: String) = {
+    contents += new JavaScriptString(text)
+  }
 }

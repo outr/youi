@@ -1,7 +1,11 @@
 package org.hyperscala.examples.basic
 
 import org.hyperscala.html._
-import org.hyperscala.web.live.LivePage
+import org.hyperscala.web.live.{LiveEvent, LivePage}
+import org.powerscala.event.ActionEvent
+
+import org.powerscala.property._
+import org.powerscala.Color
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -9,5 +13,30 @@ import org.hyperscala.web.live.LivePage
 class LivePageExample extends LivePage {
   title := "Live Page Example"
 
-  contents += "Hello World!"
+  var count = 0
+  var reversed = false
+
+  contents += new Button(id = "testButton", content = "Test Button") {
+    event.click := LiveEvent
+
+    listeners.synchronous {
+      case evt: ActionEvent => {
+        style.color := Color.values.random
+        if (count >= 10) {
+          reversed = true
+        } else if (count <= 0) {
+          reversed = false
+        }
+        if (reversed) {
+          count -= 1
+          LivePageExample.this.contents -= LivePageExample.this.contents.last
+        } else {
+          count += 1
+          LivePageExample.this.contents += new Div {
+            contents += "Testing %s!".format(count)
+          }
+        }
+      }
+    }
+  }
 }

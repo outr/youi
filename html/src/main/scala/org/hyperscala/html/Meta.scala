@@ -27,7 +27,7 @@ class Meta extends BodyChild with HeadChild with HTMLTag {
            style: StyleSheet = null,
            tabIndex: java.lang.Integer = null,
            title: String = null,
-           charSet: String = null,
+           charset: String = null,
            content: String = null,
            httpEquiv: String = null) = {
     this()
@@ -46,12 +46,12 @@ class Meta extends BodyChild with HeadChild with HTMLTag {
     up(this.style, style)
     up(this.tabIndex, tabIndex)
     up(this.title, title)
-    up(this.charSet, charSet)
+    up(this.charset, charset)
     up(this.content, content)
     up(this.httpEquiv, httpEquiv)
   }
 
-  val charSet = PropertyAttribute[String]("charset", null)
+  val charset = PropertyAttribute[String]("charset", null)
   val content = PropertyAttribute[String]("content", null)
-  val httpEquiv = PropertyAttribute[String]("httpequiv", null)
+  val httpEquiv = PropertyAttribute[String]("http-equiv", null)
 }

@@ -47,5 +47,14 @@ class Head extends Container[HeadChild] with HTMLChild with HTMLTag {
     if (content != null) contents += content
   }
 
-  
+  override protected def generateChildFromTagName(name: String) = {
+    if (name == "title") {
+      contents.find(c => c.xmlLabel == name) match {
+        case Some(tag) => tag
+        case None => super.generateChildFromTagName(name)
+      }
+    } else {
+      super.generateChildFromTagName(name)
+    }
+  }
 }

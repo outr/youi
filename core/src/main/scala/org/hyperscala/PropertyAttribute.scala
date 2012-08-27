@@ -24,9 +24,15 @@ class PropertyAttribute[T](_name: String, default: T, inclusion: InclusionMode =
   }
 }
 
+// TODO: migrate to powerscala
 trait LazyProperty[T] extends StandardProperty[T] {
   private var useLazy = true
   protected def lazyValue: T
+
+  /**
+   * true if the lazy property has already been loaded
+   */
+  def loaded = !useLazy
 
   override def apply() = {
     if (useLazy) {

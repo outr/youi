@@ -1,9 +1,9 @@
 package org.hyperscala.web.live
 
 import org.hyperscala.{Unique, Container, PropertyAttribute}
-import org.hyperscala.html.{Script, Text, Title, HTMLTag}
+import org.hyperscala.html.{Script, Text, Title, HTMLTag, Input, Select, TextArea}
 import org.hyperscala.css.StyleSheet
-import org.hyperscala.web.HTMLPage
+import org.hyperscala.web.{Website, HTMLPage}
 import actors.threadpool.AtomicInteger
 import org.powerscala.hierarchy.event.{ChildRemovedEvent, ChildAddedEvent}
 import io.Source
@@ -16,6 +16,9 @@ import org.powerscala.event.ActionEvent
 import org.powerscala.hierarchy.Child
 import org.powerscala.property.event.PropertyChangeEvent
 
+import org.powerscala.concurrent.Time._
+import org.powerscala.concurrent.Time
+
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
@@ -27,14 +30,35 @@ class LivePage extends HTMLPage {
 
   /**
    * How frequently the client will poll the server when idle.
+   *
+   * Defaults to 15 seconds
    */
-  def pollInterval = 15000
+  def pollInterval: Double = 15.seconds
+
+  /**
+   * The amount of time a connection should live without any communication.
+   *
+   * Defaults to 2 minutes.
+   */
+  def connectionTimeout: Double = 2.minutes
+
+  /**
+   * If true the session will be disconnected after all connections are removed.
+   *
+   * Defaults to true.
+   */
+  def killSessionOnDisconnect = true
 
   implicit val livePage = this
 
   private var connections = List.empty[LiveConnection]
   protected[live] val increment = new AtomicInteger(0)
   protected def nextId = increment.addAndGet(1)
+
+  // True if a value is currently being applied from the client
+  private val applying = new ThreadLocal[Boolean] {
+    override def initialValue() = false
+  }
 
   head.id := "liveHead"
   head.contents(0).id := "liveTitle"
@@ -45,7 +69,7 @@ class LivePage extends HTMLPage {
         val connection = new LiveConnection()
         connections = connection :: connections
         // TODO: add support for timing out connection
-        LivePage.Template.format(connection.id, increment.get(), maximumClientRetries, pollInterval)
+        LivePage.Template.format(connection.id, increment.get(), maximumClientRetries, Time.millis(pollInterval))
       }
 
       protected def content_=(content: String) {}
@@ -65,7 +89,7 @@ class LivePage extends HTMLPage {
   }
 
   listeners.synchronous.filter.descendant() {
-    case evt: ChildAddedEvent => {
+    case evt: ChildAddedEvent if (!applying.get()) => {
       val parent = evt.parent.asInstanceOf[HTMLTag with Container[HTMLTag]]
       val child = evt.child.asInstanceOf[HTMLTag]
       if (parent.id() == null) {
@@ -77,7 +101,7 @@ class LivePage extends HTMLPage {
       val index = parent.contents.indexOf(child)
       enqueue(LiveChange(nextId, null, "liveAdd('%s', %s, '%s');".format(parent.id(), index, child.outputString)))
     }
-    case evt: ChildRemovedEvent => evt.child match {
+    case evt: ChildRemovedEvent if (!applying.get()) => evt.child match {
       case text: Text => {
         val parent = evt.parent.asInstanceOf[HTMLTag with Container[HTMLTag]]
         val index = parent.contents.indexOf(text)
@@ -88,7 +112,7 @@ class LivePage extends HTMLPage {
   }
 
   listeners.synchronous.filter(evt => true) {
-    case evt: PropertyChangeEvent => evt.property match {
+    case evt: PropertyChangeEvent if (!applying.get()) => evt.property match {
       case property: PropertyAttribute[_] => property.parent match {
         case tag: HTMLTag => if (hasRoot(tag) && property != tag.style && !tag.isInstanceOf[Text]) {
           if (property == tag.id && evt.oldValue == null) {
@@ -98,7 +122,7 @@ class LivePage extends HTMLPage {
             val script = if (tag.isInstanceOf[Title] && property.name() == "content") {
               "document.title = '%s';".format(property.attributeValue)
             } else {
-              "$('#%s').attr('%s', %s);".format(tag.id(), property.name(), property.attributeValue)
+              "$('#%s').attr('%s', '%s');".format(tag.id(), property.name(), property.attributeValue)
             }
             enqueue(LiveChange(nextId, key, script))
           }
@@ -134,10 +158,12 @@ class LivePage extends HTMLPage {
   override def service(method: Method, request: HttpServletRequest, response: HttpServletResponse) {
     if (method == Method.Post) {
       val postData = Source.fromInputStream(request.getInputStream).mkString
+//      println("PostData: %s".format(postData))
       val json = JSON.parseFull(postData).get.asInstanceOf[Map[String, Any]]
       val connectionId = json("liveId").asInstanceOf[String]
       val messageId = json("liveMessageId").asInstanceOf[Double].toInt
       val messages = json("messages").asInstanceOf[List[Any]]
+
       messages.foreach {
         case m: Map[_, _] => {
           val map = m.asInstanceOf[Map[String, Any]]
@@ -149,11 +175,29 @@ class LivePage extends HTMLPage {
               val event = map("event").asInstanceOf[String]
               tag.fire(ActionEvent(event))
             }
+            case "change" => {
+              val v = map("value").asInstanceOf[String]
+              applying.set(true)    // Make sure we don't send extraneous information back
+              try {
+                tag match {
+                  case input: Input => input.value := v
+                  case select: Select => select.contents.foreach {
+                    case option: org.hyperscala.html.Option => if (option.value() == v) {
+                      option.selected := true
+                    } else {
+                      option.selected := false
+                    }
+                  }
+                  case textArea: TextArea => textArea.contents.replaceWith(v)
+                }
+              } finally {
+                applying.set(false)
+              }
+            }
           }
         }
         case m => throw new RuntimeException("Unhandled Message Type: %s".format(m))
       }
-      // TODO: apply messages
       val changes = connections.find(c => c.id == connectionId) match {
         case Some(connection) => {
           connection(messageId)
@@ -178,6 +222,41 @@ class LivePage extends HTMLPage {
       super.service(method, request, response)
     }
   }
+
+  override def update(delta: Double) {
+    super.update(delta)
+
+    // Check connections
+    checkConnections()
+  }
+
+  @tailrec
+  private def checkConnections(connections: List[LiveConnection] = connections): Unit = {
+    if (connections.nonEmpty) {
+      val connection = connections.head
+      if (connection.elapsed > connectionTimeout) {   // Connection has timed out
+        this.connections = this.connections.filterNot(c => c == connection)
+        if (killSessionOnDisconnect &&  this.connections.isEmpty) {   // Kill the page session
+          dispose()
+          try {
+            Website().session.map.foreach {
+              case (key, value) => if (value == LivePage.this) {
+                Website().session.update(key, null)   // Remove from the session
+              }
+            }
+            Website().application.map.foreach {
+              case (key, value) => if (value == LivePage.this) {
+                Website().application.update(key, null)   // Remove from the application
+              }
+            }
+          } catch {
+            case t: Throwable => t.printStackTrace()
+          }
+        }
+      }
+      checkConnections(connections.tail)
+    }
+  }
 }
 
 object LivePage {
@@ -193,6 +272,8 @@ class LiveConnection(val id: String = Unique(),
                      val created: Long = System.currentTimeMillis(),
                      var lastUpdated: Long = System.currentTimeMillis()) {
   private var changes = Vector.empty[LiveChange]
+
+  def elapsed = Time.fromMillis(System.currentTimeMillis() - lastUpdated)
 
   /**
    * Retrieves all changes since lastId or Nil if no changes.

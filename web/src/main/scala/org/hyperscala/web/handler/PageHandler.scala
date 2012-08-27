@@ -31,7 +31,7 @@ class PageHandler(val link: String, scope: Scope = Scope.Request, matcher: Strin
   def page = {
     try {
       val storage = scope match {
-        case Scope.Application => website
+        case Scope.Application => website.application
         case Scope.Session => website.session
         case _ => null
       }
@@ -42,7 +42,7 @@ class PageHandler(val link: String, scope: Scope = Scope.Request, matcher: Strin
       }
       val p = lookup match {
         case Some(pg) if (!pg.isDisposed) => pg // Found page in storage
-        case None => instantiator() // Create a new instance of the page
+        case _ => instantiator() // Create a new instance of the page
       }
       if (storage != null) {
         storage(uniqueName) = p // Store the page to the storage session if one exists

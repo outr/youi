@@ -1,17 +1,44 @@
 package org.hyperscala.web.session
 
+import org.powerscala.concurrent.Time._
+import org.powerscala.Updatable
+import org.powerscala.concurrent.Time
+import org.hyperscala.web.Website
+
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-trait Session {
-  def apply[T](name: String): T
+trait Session extends Updatable {
+  protected[web] var lastCheckin = System.currentTimeMillis()
 
-  def get[T](name: String): Option[T]
+  def name = getClass.getName
+  def timeout: Double = 30.minutes
 
-  def update(name: String, value: Any): Unit
+  def map: Map[Any, Any]
 
-  def remove(name: String): Unit
+  def apply[T](key: Any): T
+
+  def get[T](key: Any): Option[T]
+
+  def update(key: Any, value: Any): Unit
+
+  def remove(key: Any): Unit
 
   def clear(): Unit
+
+  def dispose() = {}
+
+  override def update(delta: Double) = {
+    val elapsed = Time.fromMillis(System.currentTimeMillis() - lastCheckin)
+    if (elapsed > timeout) {    // Timeout the session
+      Website().disposeSession()
+    } else {
+      super.update(delta)
+      map.values.foreach {
+        case u: Updatable => u.update(delta)
+        case _ => // Ignore
+      }
+    }
+  }
 }

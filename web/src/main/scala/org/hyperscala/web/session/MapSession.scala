@@ -4,19 +4,19 @@ package org.hyperscala.web.session
  * @author Matt Hicks <mhicks@powerscala.org>
  */
 class MapSession extends Session {
-  private var map = Map.empty[String, Any]
+  var map = Map.empty[Any, Any]
 
-  def apply[T](name: String) = map(name).asInstanceOf[T]
+  def apply[T](key: Any) = map(key).asInstanceOf[T]
 
-  def get[T](name: String) = map.get(name).asInstanceOf[Option[T]]
+  def get[T](key: Any) = map.get(key).asInstanceOf[Option[T]]
 
-  def update(name: String, value: Any) = if (value != null) {
-    map += name -> value
+  def update(key: Any, value: Any) = if (value != null) {
+    map += key -> value
   } else {
-    remove(name)
+    remove(key)
   }
 
-  def remove(name: String) = map -= name
+  def remove(key: Any) = map -= key
 
   def clear() = map = Map.empty
 }

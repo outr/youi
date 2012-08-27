@@ -30,8 +30,12 @@ function liveRemoveByIndex(parentId, index) {
 
 // Enqueue a JSON message
 function liveMessage(message) {
-    liveQueue.push(message);
+    liveEnqueue(message);
     liveSend();     // Try to send immediately
+}
+
+function liveEnqueue(message) {
+    liveQueue.push(message);
 }
 
 // Fire an event to the server on a specified id
@@ -46,7 +50,15 @@ function liveEvent(id, event) {
 // Add as a handler to fire live events to server
 function liveEventHandler(e) {
     var element = $(e.target);
-    liveEvent(element.attr('id'), e.type);
+    var id = element.attr('id');
+    if (e.type == 'change') {
+        liveEnqueue({
+            'id': id,
+            'type': 'change',
+            'value': element.val()
+        });
+    }
+    liveEvent(id, e.type);
 }
 
 // Sends enqueued messages to the server

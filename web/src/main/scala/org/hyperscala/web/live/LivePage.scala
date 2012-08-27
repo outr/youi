@@ -2,7 +2,7 @@ package org.hyperscala.web.live
 
 import org.hyperscala.{Unique, Container, PropertyAttribute}
 import org.hyperscala.html.{Script, Text, Title, HTMLTag}
-import org.hyperscala.css.{StyleSheet, StyleSheetAttribute}
+import org.hyperscala.css.StyleSheet
 import org.hyperscala.web.HTMLPage
 import actors.threadpool.AtomicInteger
 import org.powerscala.hierarchy.event.{ChildRemovedEvent, ChildAddedEvent}
@@ -14,11 +14,22 @@ import javax.servlet.http.{HttpServletResponse, HttpServletRequest}
 import util.parsing.json.{JSONFormat, JSONArray, JSONObject, JSON}
 import org.powerscala.event.ActionEvent
 import org.powerscala.hierarchy.Child
+import org.powerscala.property.event.PropertyChangeEvent
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
 class LivePage extends HTMLPage {
+  /**
+   * Maximum number of times the client / browser will retry a poll before giving up
+   */
+  def maximumClientRetries = 10
+
+  /**
+   * How frequently the client will poll the server when idle.
+   */
+  def pollInterval = 15000
+
   implicit val livePage = this
 
   private var connections = List.empty[LiveConnection]
@@ -34,7 +45,7 @@ class LivePage extends HTMLPage {
         val connection = new LiveConnection()
         connections = connection :: connections
         // TODO: add support for timing out connection
-        LivePage.Template.format(connection.id, increment.get())
+        LivePage.Template.format(connection.id, increment.get(), maximumClientRetries, pollInterval)
       }
 
       protected def content_=(content: String) {}
@@ -55,7 +66,7 @@ class LivePage extends HTMLPage {
 
   listeners.synchronous.filter.descendant() {
     case evt: ChildAddedEvent => {
-      val parent = evt.parent.asInstanceOf[HTMLTag]
+      val parent = evt.parent.asInstanceOf[HTMLTag with Container[HTMLTag]]
       val child = evt.child.asInstanceOf[HTMLTag]
       if (parent.id() == null) {
         parent.id := Unique()
@@ -63,52 +74,46 @@ class LivePage extends HTMLPage {
       if (child.id() == null) {
         child.id := Unique()
       }
-//      println("hasRoot? %s".format(hasRoot(child)))
-//      println("\t%s".format(child.outputString))
-      enqueue(LiveChange(nextId, null, "liveAdd("))
-    }
-    case evt: ChildRemovedEvent => println("ChildRemoved! %s".format(evt))
-  }
-
-  /*listeners.synchronous.filter(evt => true) {
-    case evt: PropertyChangeEvent => evt.property match {
-      case p if (p == title) => // Ignore
-      case attribute: StyleSheetAttribute[_] => attribute.parent match {
-        case ss: StyleSheet => {
-          tagsByStyleSheet(ss) {
-            case tag => enqueue(LiveChange.css(tag, attribute))
-          }
-        }
-      }
-      case attribute: PropertyAttribute[_] => if (hasRoot(attribute)) {
-        attribute.parent match {
-          case tag: Text => if (tag.parent != null) {
-            println("*** Unhandled Text changed: %s".format(tag.content()))
-          }
-          case tag: HTMLTag => {
-            if (attribute.name() == "id" && evt.oldValue == null) {   // Assigned ID for the first time - create
-              enqueue(LiveChange.create(tag))
-            } else if (attribute.name() != "style") {
-              enqueue(LiveChange.attribute(tag, attribute))
-            }
-          }
-        }
-      }
-    }
-    case evt: ChildAddedEvent => evt.child match {
-      case tag: HTMLTag => {
-        enqueue(LiveChange.insert(tag))
-      }
+      val index = parent.contents.indexOf(child)
+      enqueue(LiveChange(nextId, null, "liveAdd('%s', %s, '%s');".format(parent.id(), index, child.outputString)))
     }
     case evt: ChildRemovedEvent => evt.child match {
-      case tag: HTMLTag => {
-        println("REMOVE!!!!")
+      case text: Text => {
+        val parent = evt.parent.asInstanceOf[HTMLTag with Container[HTMLTag]]
+        val index = parent.contents.indexOf(text)
+        enqueue(LiveChange(nextId, null, "liveRemoveByIndex('%s', %s);".format(parent.id(), index)))
       }
+      case tag: HTMLTag => enqueue(LiveChange(nextId, null, "liveRemove('%s');".format(tag.id())))
     }
-    case evt: TagCreated => // Ignore
-    case evt: ActionEvent => // Ignore
-    case evt => println("*** Unhandled LivePage Event: %s".format(evt))
-  }*/
+  }
+
+  listeners.synchronous.filter(evt => true) {
+    case evt: PropertyChangeEvent => evt.property match {
+      case property: PropertyAttribute[_] => property.parent match {
+        case tag: HTMLTag => if (hasRoot(tag) && property != tag.style && !tag.isInstanceOf[Text]) {
+          if (property == tag.id && evt.oldValue == null) {
+            // Ignore
+          } else {
+            val key = "%s.%s".format(tag.id(), property.name())
+            val script = if (tag.isInstanceOf[Title] && property.name() == "content") {
+              "document.title = '%s';".format(property.attributeValue)
+            } else {
+              "$('#%s').attr('%s', %s);".format(tag.id(), property.name(), property.attributeValue)
+            }
+            enqueue(LiveChange(nextId, key, script))
+          }
+        }
+        case ss: StyleSheet => tagsByStyleSheet(ss) {
+          case tag => {
+            val key = "%s.style.%s".format(tag.id(), property.name())
+            val script = "$('#%s').css('%s', '%s');".format(tag.id(), property.name(), property.attributeValue)
+            enqueue(LiveChange(nextId, key, script))
+          }
+        }
+      }
+      case _ => // Ignore
+    }
+  }
 
   private def hasRoot(parent: Any): Boolean = parent match {
     case _ if (parent == this) => true
@@ -117,12 +122,12 @@ class LivePage extends HTMLPage {
   }
 
   @tailrec
-  private def enqueue(changes: List[LiveChange], connections: List[LiveConnection] = this.connections): Unit = {
+  private def enqueue(change: LiveChange, connections: List[LiveConnection] = this.connections): Unit = {
     if (connections.nonEmpty) {
-      changes.foreach(println)
+//      println(change)
       val c = connections.head
-      c ++= changes
-      enqueue(changes, connections.tail)
+      c += change
+      enqueue(change, connections.tail)
     }
   }
 
@@ -208,15 +213,6 @@ class LiveConnection(val id: String = Unique(),
     }
   }
 
-  @tailrec
-  final def ++=(changes: List[LiveChange]): Unit = {
-    if (changes.nonEmpty) {
-      val change = changes.head
-      this += change
-      this ++= changes.tail
-    }
-  }
-
   def +=(change: LiveChange) = synchronized {
     if (change.key != null) {
       changes = changes.filterNot(c => c.key == change.key)   // Remove duplicates
@@ -226,56 +222,3 @@ class LiveConnection(val id: String = Unique(),
 }
 
 case class LiveChange(id: Int, key: String, script: String)
-
-object LiveChange {
-  def attribute(tag: HTMLTag, attribute: PropertyAttribute[_])(implicit page: LivePage) = {
-    if (tag.id() == null) {
-      tag.id := Unique()
-    }
-    val key = "%s.%s".format(tag.id(), attribute.name())
-    val script = if (tag.isInstanceOf[Title] && attribute.name() == "content") {
-      "document.title = '%s';".format(attribute.attributeValue)
-    } else {
-      "liveLookup('%s').attr('%s', %s);".format(tag.id(), attribute.name(), attribute.attributeValue)
-    }
-    List(LiveChange(page.increment.addAndGet(1), key, script))
-  }
-
-  def css(tag: HTMLTag, attribute: StyleSheetAttribute[_])(implicit page: LivePage) = {
-    if (tag.id() == null) {
-      tag.id := Unique()
-    }
-    val key = "%s.style.%s".format(tag.id(), attribute.name())
-    val script = "liveLookup('%s').css('%s', '%s');".format(tag.id(), attribute.name(), attribute.attributeValue)
-    List(LiveChange(page.increment.addAndGet(1), key, script))
-  }
-
-  def create(tag: HTMLTag)(implicit page: LivePage) = {
-    val key = tag.id()
-    val script = "liveCreate('%s', '%s');".format(tag.id(), tag.outputString)
-    List(LiveChange(page.increment.addAndGet(1), key, script))
-  }
-
-  def insert(tag: HTMLTag)(implicit page: LivePage) = {
-    val parent = tag.parent.asInstanceOf[HTMLTag with Container[HTMLTag]]
-    if (parent.id() == null) {
-      parent.id := Unique()
-      Nil
-    } else {
-      if (tag.id() == null) {
-        tag.id := Unique()
-      }
-      val key = null
-      val index = parent.contents.indexOf(tag)
-      val script = tag match {
-        case text: Text => "liveInsertText('%s', '%s', %s);".format(parent.id(), text.content(), index)
-        case _ => "liveInsert('%s', '%s', %s);".format(parent.id(), tag.id(), index)
-      }
-      List(LiveChange(page.increment.addAndGet(1), key, script))
-    }
-  }
-
-  def remove(tag: HTMLTag)(implicit page: LivePage) = {
-
-  }
-}

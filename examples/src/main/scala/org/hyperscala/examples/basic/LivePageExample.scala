@@ -16,11 +16,12 @@ class LivePageExample extends LivePage {
   var count = 0
   var reversed = false
 
-  contents += new Button(id = "testButton", content = "Test Button") {
+  contents += new Button(content = "Test Button") {
     event.click := LiveEvent
 
     listeners.synchronous {
       case evt: ActionEvent => {
+        contents.replaceWith("Test Button %s".format(count))
         style.color := Color.values.random
         if (count >= 10) {
           reversed = true

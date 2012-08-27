@@ -2,41 +2,30 @@
 var liveId = '%1$s';
 // Last message id received
 var liveMessageId = %2$s;
-// Storage of identifiable references
-var liveReferences = {};
 // Set to true if currently in the process of an AJAX call
 var liveSending = false;
 // Message queue
 var liveQueue = [];
-// Temporary holder for creating elements
-var liveDiv = document.createElement('div');
+// Currently sending data
+var liveData = null;
+// Number of times the AJAX send has failed
+var failures = 0;
+// Maximum number of times the send can fail before it gives up
+var maxFailures = %3$s;
 
-// Returns identifiable object by id
-function liveLookup(id) {
-    // TODO: support cleanup of gc'd objects for long-running apps
-    if (liveReferences[id] == null) {       // Doesn't exist in references
-        liveReferences[id] = $('#' + id);
-    }
-    return liveReferences[id];
+function liveAdd(parentId, index, tagContent) {
+    var parent = $('#' + parentId);
+    parent.insertAt(index, tagContent);
 }
 
-// Creates a tag or text node for reference by id
-function liveCreate(id, tagContent) {
-    liveDiv.innerHTML = tagContent;
-    liveReferences[id] = $(liveDiv.firstChild);
+function liveRemove(id) {
+    var element = $('#' + id);
+    element.remove();
 }
 
-// Inserts the element by id into the parent by parentId at index
-function liveInsert(parentId, id, index) {
-    var parent = liveLookup(parentId);
-    var child = liveLookup(id);
-    parent.insertAt(index, child);
-}
-
-// Inserts the text into the parent by parentId at index
-function liveInsertText(parentId, text, index) {
-    var parent = liveLookup(parentId);
-    parent.insertAt(index, text);
+function liveRemoveByIndex(parentId, index) {
+    var parent = $('#' + parentId);
+    parent.contents().eq(index).remove();
 }
 
 // Enqueue a JSON message
@@ -69,6 +58,7 @@ function liveSend() {
             'liveMessageId': liveMessageId,
             'messages': liveQueue
         };
+        liveData = liveQueue;       // Hold onto the data just in case we have to retry
         liveQueue = [];     // Reset live queue
         var url = window.location.href;
         $.ajax({
@@ -88,11 +78,12 @@ function liveSend() {
 
 function liveSendSuccessful(data) {
 //    console.log('live send successful!');
+    failures = 0;       // Reset failure counter
     if (data != null) {
         for (var i = 0; i < data.length; i++) {
             var id = data[i]['id'];
             var script = data[i]['script'];
-            console.log('evaluating: ' + script);
+            //console.log('evaluating: ' + script);
             eval(script);
             liveMessageId = Math.max(id, liveMessageId);
         }
@@ -103,8 +94,14 @@ function liveSendSuccessful(data) {
 }
 
 function liveSendFailure() {
-    // TODO: attempt retry of send
     console.log('live send failure!');
+    failures++;
+    if (failures < maxFailures) {
+        liveQueue = liveData.concat(liveQueue);     // Join the attempted data back to retry
+    } else {
+        console.log('live send failed ' + failures + ' times - stopping updates');
+        clearInterval(liveTimer);
+    }
 }
 
 function liveSendComplete() {
@@ -143,4 +140,4 @@ JSON.stringify = JSON.stringify || function (obj) {
     }
 };
 
-var liveTimer = setInterval(liveSend, 5000);
+var liveTimer = setInterval(liveSend, %4$s);

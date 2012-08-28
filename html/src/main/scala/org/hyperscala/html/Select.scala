@@ -62,4 +62,16 @@ class Select extends Container[BodyChild] with BodyChild with HTMLTag {
   val form = PropertyAttribute[String]("form", null)
   val multiple = PropertyAttribute[Boolean]("multiple", false)
   val size = PropertyAttribute[Int]("size", -1)
+
+  def selected = contents.collectFirst {
+    case option: Option if (option.selected()) => option.value()
+  } match {
+    case Some(value) => value
+    case None => contents.find(c => c.isInstanceOf[Option]).map(c => c.asInstanceOf[Option].value()).getOrElse(null)
+  }
+
+  def selected_=(value: String) = contents.foreach {
+    case option: Option => option.selected := option.value() == value
+    case _ => // Text could be here
+  }
 }

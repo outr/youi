@@ -31,6 +31,8 @@ trait Container[C <: XMLContent] extends MutableContainer[C] with Markup {
     }
   }
 
+  def bodyText = toXML.getTextTrim
+
   protected def generateChildFromTagName(name: String): XMLContent
 
   protected def processText(text: String): Unit

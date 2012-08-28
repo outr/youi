@@ -1,12 +1,11 @@
 package org.hyperscala.examples.basic
 
 import org.hyperscala.html._
-import org.hyperscala.web.live.{LiveEvent, LivePage}
+import org.hyperscala.web.live.{ChangeEvent, ClickEvent, LiveEvent, LivePage}
 import org.powerscala.event.ActionEvent
 
 import org.powerscala.property._
 import org.powerscala.Color
-import org.powerscala.property.event.PropertyChangeEvent
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -37,8 +36,8 @@ class LivePageExample extends LivePage {
     contents += new Option(value = "dos", content = "Two")
     contents += new Option(value = "tres", content = "Three")
 
-    listeners.synchronous.filter.descendant() {
-      case evt: PropertyChangeEvent => println(evt)
+    listeners.synchronous {
+      case evt: ChangeEvent => println("Selected: %s".format(selected))
     }
   }
   contents += select
@@ -47,7 +46,7 @@ class LivePageExample extends LivePage {
     event.change := LiveEvent
 
     listeners.synchronous {
-      case evt => println(outputString + " - " + evt)
+      case evt: ChangeEvent => println(bodyText)
     }
   }
   contents += textArea
@@ -56,7 +55,8 @@ class LivePageExample extends LivePage {
     event.click := LiveEvent
 
     listeners.synchronous {
-      case evt: ActionEvent => {
+      case evt: ClickEvent => {
+        println("Selected: %s".format(select.selected))
         input.value := "Button clicked %s".format(count)
         contents.replaceWith("Test Button %s".format(count))
         style.color := Color.values.random

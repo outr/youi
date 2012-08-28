@@ -9,7 +9,7 @@ import org.hyperscala.PropertyAttribute
  */
 trait EventSupport extends PropertyParent {
   val event = new {
-    val afterPrint = new PropertyAttribute[JavaScriptContent]("onbeforeprint", null) with EventProperty
+    val afterPrint = new PropertyAttribute[JavaScriptContent]("onafterprint", null) with EventProperty
     val beforePrint = new PropertyAttribute[JavaScriptContent]("onbeforeprint", null) with EventProperty
     val beforeOnLoad = new PropertyAttribute[JavaScriptContent]("onbeforeonload", null) with EventProperty
     val hasChange = new PropertyAttribute[JavaScriptContent]("onhaschange", null) with EventProperty

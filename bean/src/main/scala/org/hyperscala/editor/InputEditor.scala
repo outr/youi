@@ -1,9 +1,9 @@
 package org.hyperscala.editor
 
 import org.hyperscala.persistence.ValuePersistence
-import org.hyperscala.html.Input
 import org.powerscala.property.StandardProperty
 import org.hyperscala.html.attributes.AutoComplete
+import org.hyperscala.html.tag.Input
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>

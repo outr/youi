@@ -8,6 +8,7 @@ import org.hyperscala.css.attributes.Clear
 import org.powerscala.reflect._
 import org.hyperscala.web.event.FormSubmit
 import org.hyperscala.javascript.JavaScriptString
+import tag.{Img, Button, Div}
 import validation.ValidationFailed
 
 /**

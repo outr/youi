@@ -12,10 +12,12 @@ var liveData = null;
 var failures = 0;
 // Maximum number of times the send can fail before it gives up
 var maxFailures = %3$s;
+// Debug mode defines whether additional information is output to the console logging.
+var debugMode = %5$s;
 
 function liveAdd(parentId, index, tagContent) {
     var parent = $('#' + parentId);
-    parent.insertAt(index, tagContent);
+    liveInsertAt(parent, index, content);
 }
 
 function liveRemove(id) {
@@ -95,7 +97,9 @@ function liveSendSuccessful(data) {
         for (var i = 0; i < data.length; i++) {
             var id = data[i]['id'];
             var script = data[i]['script'];
-            //console.log('evaluating: ' + script);
+            if (debugMode) {
+                console.log('evaluating:[' + script + ']');
+            }
             eval(script);
             liveMessageId = Math.max(id, liveMessageId);
         }
@@ -118,19 +122,21 @@ function liveSendFailure() {
 
 function liveSendComplete() {
     liveSending = false;
+    if (liveQueue.length > 0 && failures == 0) {
+        liveSend();     // There's more in the queue to send
+    }
 }
 
-jQuery.fn.insertAt = function(index, element) {
-    var lastIndex = this.children().size();
+function liveInsertAt(parent, index, element) {
+    var lastIndex = parent.children().size();
     if (index < 0) {
-        index = Math.max(0, lastIndex + 1 + index);
+        index = Math.max(0, lastIndex + 1, index);
     }
-    this.append(element);
+    parent.append(element);
     if (index < lastIndex) {
-        this.children().eq(index).before(this.children().last());
+        parent.children().eq(index).before(parent.children().last());
     }
-    return this;
-};
+}
 
 JSON.stringify = JSON.stringify || function (obj) {
     var t = typeof (obj);
@@ -152,4 +158,5 @@ JSON.stringify = JSON.stringify || function (obj) {
     }
 };
 
+liveSend(); // Send immediately just in case we missed something
 var liveTimer = setInterval(liveSend, %4$s);

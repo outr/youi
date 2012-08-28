@@ -3,9 +3,10 @@ package org.hyperscala.examples.basic
 import org.hyperscala.web.{ActionForm, AJAXForm, HTMLPage}
 import org.hyperscala.html._
 import attributes.{ButtonType, InputType}
-import org.powerscala.property.event.PropertyChangeEvent
 
 import org.powerscala.property._
+import tag._
+import org.powerscala.property.event.PropertyChangeEvent
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>

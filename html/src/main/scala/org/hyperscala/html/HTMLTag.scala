@@ -3,6 +3,7 @@ package org.hyperscala.html
 import attributes._
 import event.EventSupport
 import org.hyperscala._
+import org.hyperscala.html.tag._
 import org.hyperscala.css.StyleSheet
 import scala.collection.{Map => ScalaMap}
 
@@ -29,6 +30,10 @@ trait HTMLTag extends Tag with EventSupport {
     protected def lazyValue = new StyleSheet
   }
 
+  if (HTMLTag.GenerateIds) {
+    id := Unique()
+  }
+
   protected def generateChildFromTagName(name: String): XMLContent = {
     HTMLTag.create(name)
   }
@@ -39,6 +44,8 @@ trait HTMLTag extends Tag with EventSupport {
 }
 
 object HTMLTag {
+  var GenerateIds = false
+
   private val registry = ScalaMap("html" -> classOf[HTML],
                                   "head" -> classOf[Head],
                                   "title" -> classOf[Title],
@@ -99,17 +106,17 @@ object HTMLTag {
                                   "legend" -> classOf[Legend],
                                   "li" -> classOf[Li],
                                   "link" -> classOf[Link],
-                                  "map" -> classOf[Map],
+                                  "map" -> classOf[tag.Map],
                                   "mark" -> classOf[Mark],
                                   "menu" -> classOf[Menu],
                                   "meta" -> classOf[Meta],
                                   "meter" -> classOf[Meter],
                                   "nav" -> classOf[Nav],
                                   "noscript" -> classOf[NoScript],
-                                  "object" -> classOf[Object],
+                                  "object" -> classOf[tag.Object],
                                   "ol" -> classOf[Ol],
                                   "optgroup" -> classOf[OptGroup],
-                                  "option" -> classOf[Option],
+                                  "option" -> classOf[tag.Option],
                                   "output" -> classOf[Output],
                                   "p" -> classOf[P],
                                   "param" -> classOf[Param],

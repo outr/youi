@@ -2,10 +2,11 @@ package org.hyperscala.examples.basic
 
 import org.hyperscala.html._
 import org.hyperscala.web.live.{ChangeEvent, ClickEvent, LiveEvent, LivePage}
-import org.powerscala.event.ActionEvent
 
 import org.powerscala.property._
 import org.powerscala.Color
+import tag._
+import org.powerscala.event.ActionEvent
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -32,9 +33,9 @@ class LivePageExample extends LivePage {
   val select = new Select {
     event.change := LiveEvent
 
-    contents += new Option(value = "uno", content = "One")
-    contents += new Option(value = "dos", content = "Two")
-    contents += new Option(value = "tres", content = "Three")
+    contents += new tag.Option(value = "uno", content = "One")
+    contents += new tag.Option(value = "dos", content = "Two")
+    contents += new tag.Option(value = "tres", content = "Three")
 
     listeners.synchronous {
       case evt: ChangeEvent => println("Selected: %s".format(selected))

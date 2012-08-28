@@ -7,6 +7,7 @@ import org.hyperscala.css.StyleSheet
 import org.hyperscala.css.attributes.Display
 import org.jdom2.input.SAXBuilder
 import java.io.StringReader
+import tag.{Head, HTML, Body, Title}
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>

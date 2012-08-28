@@ -7,10 +7,10 @@ import org.hyperscala.editor._
 import org.powerscala.property.backing.CaseValueVariableBacking
 import org.hyperscala.persistence.{DoublePersistence, IntPersistence, StringPersistence, ValuePersistence}
 import org.powerscala.EnumEntry
-import org.hyperscala.html.Input
 import org.powerscala.property.event.PropertyChangeEvent
 import scala.Some
 import org.powerscala.reflect.CaseValue
+import org.hyperscala.html.tag.Input
 
 trait BeanContainer[T] extends PropertyParent with ValueEditor[T] with BeanFieldContainer {
   override type F = BasicBeanField

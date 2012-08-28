@@ -2,6 +2,7 @@ package org.hyperscala.web
 
 import org.hyperscala.html._
 import attributes.{InputType, ButtonType}
+import tag.{Form, Button, Input}
 
 /**
  * ActionButton fires FormSubmit events when clicked.

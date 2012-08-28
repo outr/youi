@@ -6,6 +6,7 @@ import org.powerscala.property._
 import org.powerscala.Color
 import org.hyperscala.html._
 import org.hyperscala.css.attributes._
+import tag._
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>

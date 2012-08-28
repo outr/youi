@@ -1,6 +1,7 @@
 package org.hyperscala
 
 import css.attributes._
+import html.tag.Text
 import math._
 
 package object html {

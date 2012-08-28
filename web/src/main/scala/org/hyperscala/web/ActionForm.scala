@@ -6,6 +6,7 @@ import io.Source
 import org.hyperscala.html.attributes.{AutoComplete, InputType}
 import org.powerscala.property.Property
 import org.hyperscala.Unique
+import tag._
 import org.hyperscala.javascript.JavaScriptString
 import scala.Some
 

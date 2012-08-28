@@ -5,6 +5,7 @@ import attributes.{Target, InputType}
 import org.hyperscala.web.HTMLPage
 
 import org.powerscala.property._
+import tag._
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>

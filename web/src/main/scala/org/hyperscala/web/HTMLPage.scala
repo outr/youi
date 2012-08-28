@@ -10,6 +10,9 @@ import org.powerscala.hierarchy.{ContainerView, Parent, Element}
 import collection.JavaConversions._
 import java.io.OutputStream
 import org.powerscala.Updatable
+import tag._
+import scala.Some
+import org.hyperscala
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -132,7 +135,7 @@ class HTMLPage extends Page with PropertyParent with Parent with Updatable {
       case textArea: TextArea => textArea.contents.replaceWith(value)
       case button: Button => button.fire(FormSubmit(method))
       case select: Select => select.contents.collectFirst {
-        case option: Option if (option.value() == value) => option.selected := true
+        case option: hyperscala.html.tag.Option if (option.value() == value) => option.selected := true
       }
       case _ => throw new RuntimeException("Unsupported tag: %s".format(tag))
       // TODO: add support for other inputs
@@ -166,7 +169,7 @@ class HTMLPage extends Page with PropertyParent with Parent with Updatable {
   /**
    * Redirects the page for the next rendering. Additional rendering of the page will no longer redirect.
    */
-  def sendRedirect(url: String) = cached.set(redirectId) {
+  def sendRedirect(url: String): Unit = cached.set(redirectId) {
     url
   }
 
@@ -209,7 +212,7 @@ class HTMLPage extends Page with PropertyParent with Parent with Updatable {
 }
 
 object HTMLPage {
-  private val instance = new ThreadLocal[HTMLPage]
+  val instance = new ThreadLocal[HTMLPage]
 
   def apply() = instance.get()
 

@@ -1,6 +1,6 @@
 package org.hyperscala.bean
 
-import org.hyperscala.html.{Label, Div}
+import org.hyperscala.html.tag.{Label, Div}
 import org.hyperscala.editor.ValueEditor
 import org.powerscala.reflect.CaseValue
 

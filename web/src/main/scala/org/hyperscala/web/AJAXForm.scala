@@ -1,6 +1,6 @@
 package org.hyperscala.web
 
-import org.hyperscala.html.{Input, Button, Script, Form}
+import org.hyperscala.html.tag.{Script, Form, Button, Input}
 import io.Source
 import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.Unique

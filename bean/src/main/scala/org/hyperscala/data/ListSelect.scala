@@ -4,6 +4,7 @@ import org.hyperscala.html._
 import org.powerscala.property.{ListProperty, StandardProperty}
 import org.powerscala.property.event.PropertyChangeEvent
 import org.hyperscala.editor.ValueEditor
+import tag.{Select, Option}
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>

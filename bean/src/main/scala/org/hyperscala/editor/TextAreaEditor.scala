@@ -4,6 +4,7 @@ import org.powerscala.property.StandardProperty
 import org.hyperscala.persistence.ValuePersistence
 import org.hyperscala.html._
 import org.powerscala.hierarchy.event.ChildAddedEvent
+import tag.TextArea
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>

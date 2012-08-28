@@ -6,6 +6,7 @@ import org.hyperscala.editor.ListEditor
 import org.hyperscala.web.ActionForm
 import org.hyperscala.css.attributes.Clear
 import org.powerscala.property._
+import tag.{Footer, Form, Button}
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>

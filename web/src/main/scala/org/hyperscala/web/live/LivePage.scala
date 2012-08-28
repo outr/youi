@@ -1,27 +1,32 @@
 package org.hyperscala.web.live
 
-import org.hyperscala.{Unique, Container, PropertyAttribute}
-import org.hyperscala.html.{Script, Text, Title, HTMLTag, Input, Select, TextArea}
+import org.hyperscala._
+import org.hyperscala.html._
 import org.hyperscala.css.StyleSheet
 import org.hyperscala.web.{Website, HTMLPage}
 import actors.threadpool.AtomicInteger
-import org.powerscala.hierarchy.event.{ChildRemovedEvent, ChildAddedEvent}
-import io.Source
+import scala.io.Source
 import org.hyperscala.javascript.JavaScriptContent
 import annotation.tailrec
 import org.hyperscala.html.attributes.Method
 import javax.servlet.http.{HttpServletResponse, HttpServletRequest}
-import util.parsing.json.{JSONFormat, JSONArray, JSONObject, JSON}
+import util.parsing.json.{JSONFormat, JSON}
 import org.powerscala.hierarchy.Child
-import org.powerscala.property.event.PropertyChangeEvent
 
 import org.powerscala.concurrent.Time._
 import org.powerscala.concurrent.Time
+import org.powerscala.property.event.PropertyChangeEvent
+import org.powerscala.hierarchy.event.ChildRemovedEvent
+import org.powerscala.hierarchy.event.ChildAddedEvent
+import util.parsing.json.JSONArray
+import util.parsing.json.JSONObject
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
 class LivePage extends HTMLPage {
+  HTMLTag.GenerateIds = true    // Every element should have an ID
+
   /**
    * Maximum number of times the client / browser will retry a poll before giving up
    */
@@ -48,6 +53,8 @@ class LivePage extends HTMLPage {
    */
   def killSessionOnDisconnect = true
 
+  def debugMode = false
+
   implicit val livePage = this
 
   private var connections = List.empty[LiveConnection]
@@ -62,13 +69,12 @@ class LivePage extends HTMLPage {
   head.id := "liveHead"
   head.contents(0).id := "liveTitle"
   ensureScript("/js/jquery-1.7.2.js", ".*/jquery.*")
-  head.contents += new Script {
+  head.contents += new tag.Script {
     contents += new JavaScriptContent {
       def content = synchronized {   // Called per render!!!
         val connection = new LiveConnection()
         connections = connection :: connections
-        // TODO: add support for timing out connection
-        LivePage.Template.format(connection.id, increment.get(), maximumClientRetries, Time.millis(pollInterval))
+        LivePage.Template.format(connection.id, increment.get(), maximumClientRetries, Time.millis(pollInterval), debugMode)
       }
 
       protected def content_=(content: String) {}
@@ -98,10 +104,19 @@ class LivePage extends HTMLPage {
         child.id := Unique()
       }
       val index = parent.contents.indexOf(child)
-      enqueue(LiveChange(nextId, null, "liveAdd('%s', %s, '%s');".format(parent.id(), index, child.outputString)))
+      val script = if (index == parent.contents.length - 1) {    // Append to then end
+        "$('#%s').append('%s');".format(parent.id(), child.outputString)
+      } else if (index == 0) {                                   // Append before
+        val after = parent.contents(1)
+        "$('#%s').before('%s');".format(after.id(), child.outputString)
+      } else {
+        val before = parent.contents(index - 1)
+        "$('#%s').after('%s');".format(before.id(), child.outputString)
+      }
+      enqueue(LiveChange(nextId, null, script))
     }
     case evt: ChildRemovedEvent if (!applying.get()) => evt.child match {
-      case text: Text => {
+      case text: tag.Text => {
         val parent = evt.parent.asInstanceOf[HTMLTag with Container[HTMLTag]]
         val index = parent.contents.indexOf(text)
         enqueue(LiveChange(nextId, null, "liveRemoveByIndex('%s', %s);".format(parent.id(), index)))
@@ -113,15 +128,15 @@ class LivePage extends HTMLPage {
   listeners.synchronous.filter(evt => true) {
     case evt: PropertyChangeEvent if (!applying.get()) => evt.property match {
       case property: PropertyAttribute[_] => property.parent match {
-        case tag: HTMLTag => if (hasRoot(tag) && property != tag.style && !tag.isInstanceOf[Text]) {
-          if (property == tag.id && evt.oldValue == null) {
+        case t: HTMLTag => if (hasRoot(t) && property != t.style && !t.isInstanceOf[tag.Text]) {
+          if (property == t.id && evt.oldValue == null) {
             // Ignore
           } else {
-            val key = "%s.%s".format(tag.id(), property.name())
-            val script = if (tag.isInstanceOf[Title] && property.name() == "content") {
+            val key = "%s.%s".format(t.id(), property.name())
+            val script = if (t.isInstanceOf[tag.Title] && property.name() == "content") {
               "document.title = '%s';".format(property.attributeValue)
             } else {
-              "$('#%s').attr('%s', '%s');".format(tag.id(), property.name(), property.attributeValue)
+              "$('#%s').attr('%s', '%s');".format(t.id(), property.name(), property.attributeValue)
             }
             enqueue(LiveChange(nextId, key, script))
           }
@@ -144,8 +159,12 @@ class LivePage extends HTMLPage {
     case _ => false
   }
 
+  override def sendRedirect(url: String) = sendJavaScript("window.location.href = '%s';".format(url))
+
+  def sendJavaScript(js: String) = enqueue(LiveChange(nextId, null, js))
+
   @tailrec
-  private def enqueue(change: LiveChange, connections: List[LiveConnection] = this.connections): Unit = {
+  final def enqueue(change: LiveChange, connections: List[LiveConnection] = this.connections): Unit = {
     if (connections.nonEmpty) {
 //      println(change)
       val c = connections.head
@@ -156,71 +175,82 @@ class LivePage extends HTMLPage {
 
   override def service(method: Method, request: HttpServletRequest, response: HttpServletResponse) {
     if (method == Method.Post) {
-      val postData = Source.fromInputStream(request.getInputStream).mkString
-//      println("PostData: %s".format(postData))
-      val json = JSON.parseFull(postData).get.asInstanceOf[Map[String, Any]]
-      val connectionId = json("liveId").asInstanceOf[String]
-      val messageId = json("liveMessageId").asInstanceOf[Double].toInt
-      val messages = json("messages").asInstanceOf[List[Any]]
+      HTMLPage.instance.set(this)
+      try {
+        val postData = Source.fromInputStream(request.getInputStream).mkString
+  //      println("PostData: %s".format(postData))
+        val json = JSON.parseFull(postData).get.asInstanceOf[Map[String, Any]]
+        val connectionId = json("liveId").asInstanceOf[String]
+        val messageId = json("liveMessageId").asInstanceOf[Double].toInt
+        val messages = json("messages").asInstanceOf[List[Any]]
 
-      messages.foreach {
-        case m: Map[_, _] => {
-          val map = m.asInstanceOf[Map[String, Any]]
-          val id = map("id").asInstanceOf[String]
-          val tag = view.find(t => t.id() == id).getOrElse(throw new RuntimeException("Unable to find %s".format(id)))
-          val messageType = map("type").asInstanceOf[String]
-          messageType match {
-            case "event" => {
-              val event = map("event").asInstanceOf[String]
-              tag.fire(LiveEvent(tag, event))
-            }
-            case "change" => {
-              val v = map("value").asInstanceOf[String]
-              applying.set(true)    // Make sure we don't send extraneous information back
-              try {
-                tag match {
-                  case input: Input => input.value := v
-                  case select: Select => select.contents.foreach {
-                    case option: org.hyperscala.html.Option => if (option.value() == v) {
-                      option.selected := true
-                    } else {
-                      option.selected := false
+        messages.foreach {
+          case m: Map[_, _] => {
+            val map = m.asInstanceOf[Map[String, Any]]
+            val id = map("id").asInstanceOf[String]
+            val t = view.find(t => t.id() == id).getOrElse(throw new RuntimeException("Unable to find %s".format(id)))
+            val messageType = map("type").asInstanceOf[String]
+            messageType match {
+              case "event" => {
+                val event = map("event").asInstanceOf[String]
+                t.fire(LiveEvent(t, event))
+              }
+              case "change" => {
+                val v = map("value").asInstanceOf[String]
+                applying.set(true)    // Make sure we don't send extraneous information back
+                try {
+                  t match {
+                    case input: tag.Input => input.value := v
+                    case select: tag.Select => select.contents.foreach {
+                      case option: tag.Option => if (option.value() == v) {
+                        option.selected := true
+                      } else {
+                        option.selected := false
+                      }
                     }
+                    case textArea: tag.TextArea => textArea.contents.replaceWith(v)
                   }
-                  case textArea: TextArea => textArea.contents.replaceWith(v)
+                } finally {
+                  applying.set(false)
                 }
-              } finally {
-                applying.set(false)
               }
             }
           }
+          case m => throw new RuntimeException("Unhandled Message Type: %s".format(m))
         }
-        case m => throw new RuntimeException("Unhandled Message Type: %s".format(m))
-      }
-      val changes = connections.find(c => c.id == connectionId) match {
-        case Some(connection) => {
-          connection(messageId)
+        val changes = connections.find(c => c.id == connectionId) match {
+          case Some(connection) => {
+            connection(messageId)
+          }
+          case None => {
+            System.err.println("Connection dead (%s)!".format(connectionId))
+            List(LiveChange(0, null, "window.location.href = window.location.href;"))
+          }
         }
-        case None => {
-          System.err.println("Connection dead (%s)!".format(connectionId))
-          List(LiveChange(0, null, "window.location.href = window.location.href;"))
+        val changesJSON = changes.map(c => new JSONObject(Map("id" -> c.id, "script" -> c.script))).toList
+        val responseArray = JSONArray(changesJSON)
+        val formatted = JSONFormat.defaultFormatter(responseArray)
+        response.setContentType("application/json")
+        val output = response.getOutputStream
+        try {
+          output.write(formatted.getBytes)
+        } finally {
+          output.flush()
+          output.close()
         }
-      }
-      val changesJSON = changes.map(c => new JSONObject(Map("id" -> c.id, "script" -> c.script))).toList
-      val responseArray = JSONArray(changesJSON)
-      val formatted = JSONFormat.defaultFormatter(responseArray)
-      response.setContentType("application/json")
-      val output = response.getOutputStream
-      try {
-        output.write(formatted.getBytes)
       } finally {
-        output.flush()
-        output.close()
+        HTMLPage.instance.set(null)
       }
     } else {
       super.service(method, request, response)
+      pageLoaded()
     }
   }
+
+  /**
+   * Called when the page is reloaded.
+   */
+  def pageLoaded() = {}
 
   override def update(delta: Double) {
     super.update(delta)

@@ -11,6 +11,7 @@ import org.hyperscala.{PropertyAttribute, Container}
 import org.hyperscala.persistence.StyleSheetPersistence
 import org.hyperscala.css.{StyleSheetAttribute, StyleSheet}
 import org.hyperscala.javascript.JavaScriptString
+import tag.{Link, Script, Text, Title}
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>

@@ -7,6 +7,7 @@ import org.powerscala.property._
 import org.powerscala.property.event.PropertyChangeEvent
 import org.hyperscala.editor.{ListBeanEditor, ListSelectEditor, ListStringEditor, ValueEditor}
 import org.powerscala.{Language, Country}
+import tag.{Br, Script, Div}
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>

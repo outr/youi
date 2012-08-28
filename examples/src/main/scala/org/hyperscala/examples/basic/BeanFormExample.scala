@@ -5,6 +5,7 @@ import org.hyperscala.html._
 import org.powerscala.property._
 import org.hyperscala.bean.BeanForm
 import org.powerscala.property.event.PropertyChangeEvent
+import tag.{Br, Script, Div}
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>

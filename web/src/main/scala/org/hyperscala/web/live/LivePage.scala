@@ -218,6 +218,7 @@ class LivePage extends HTMLPage {
           }
           case m => throw new RuntimeException("Unhandled Message Type: %s".format(m))
         }
+        pageUpdate()
         val changes = connections.find(c => c.id == connectionId) match {
           case Some(connection) => {
             connection(messageId)
@@ -251,6 +252,11 @@ class LivePage extends HTMLPage {
    * Called when the page is reloaded.
    */
   def pageLoaded() = {}
+
+  /**
+   * Called when the client checks in to the server.
+   */
+  def pageUpdate() = {}
 
   override def update(delta: Double) {
     super.update(delta)

@@ -243,10 +243,16 @@ class LivePage extends HTMLPage {
         HTMLPage.instance.set(null)
       }
     } else {
+      pageLoading()
       super.service(method, request, response)
       pageLoaded()
     }
   }
+
+  /**
+   * Called before the page is reloaded.
+   */
+  def pageLoading() = {}
 
   /**
    * Called when the page is reloaded.

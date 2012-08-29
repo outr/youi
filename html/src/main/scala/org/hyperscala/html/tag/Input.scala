@@ -132,4 +132,11 @@ class Input extends Container[BodyChild] with BodyChild with HTMLTag {
   val step = PropertyAttribute[Int]("step", -1)
   val value = PropertyAttribute[String]("value", null, inclusion = InclusionMode.Always)
   val width = PropertyAttribute[Int]("width", -1)
+
+  override def toXML = {
+    if (inputType() == InputType.Password) {
+      value := ""   // Password cannot be carried over between reloads for security reasons
+    }
+    super.toXML
+  }
 }

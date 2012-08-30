@@ -8,7 +8,6 @@ $(function() {
             focusValue = 'name=' + focused.attr('name');
         }
         if (focusValue != '') {
-            console.log('Focus changed: ' + focusValue + ' / ' + focused[0].tagName);
             $('#%1$s').val(focusValue);
             event.stopPropagation();
         }

@@ -158,5 +158,9 @@ JSON.stringify = JSON.stringify || function (obj) {
     }
 };
 
-liveSend(); // Send immediately just in case we missed something
-var liveTimer = setInterval(liveSend, %4$s);
+var liveTimer = null;
+
+$(document).ready(function () {
+    liveSend(); // Send immediately just in case we missed something
+    liveTimer = setInterval(liveSend, %4$s);
+});

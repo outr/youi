@@ -135,8 +135,10 @@ class LivePage extends HTMLPage {
             val key = "%s.%s".format(t.id(), property.name())
             val script = if (t.isInstanceOf[tag.Title] && property.name() == "content") {
               "document.title = '%s';".format(property.attributeValue)
+            } else if (property() == false) {   // Remove attribute
+              "$('#%s').removeAttr('%s');".format(t.id(), property.name())
             } else {
-              "$('#%s').attr('%s', '%s');".format(t.id(), property.name(), property.attributeValue)
+              "$('#%s').attr('%s', %s);".format(t.id(), property.name(), scriptifyValue(property))
             }
             enqueue(LiveChange(nextId, key, script))
           }
@@ -144,13 +146,18 @@ class LivePage extends HTMLPage {
         case ss: StyleSheet => tagsByStyleSheet(ss) {
           case tag => {
             val key = "%s.style.%s".format(tag.id(), property.name())
-            val script = "$('#%s').css('%s', '%s');".format(tag.id(), property.name(), property.attributeValue)
+            val script = "$('#%s').css('%s', '%s');".format(tag.id(), property.name(), scriptifyValue(property))
             enqueue(LiveChange(nextId, key, script))
           }
         }
       }
       case _ => // Ignore
     }
+  }
+
+  private def scriptifyValue(property: PropertyAttribute[_]) = property.manifest.erasure.getClass.getSimpleName match {
+    case _ if (property() == null) => "''"
+    case _ => "'%s'".format(property.attributeValue)
   }
 
   private def hasRoot(parent: Any): Boolean = parent match {
@@ -166,7 +173,9 @@ class LivePage extends HTMLPage {
   @tailrec
   final def enqueue(change: LiveChange, connections: List[LiveConnection] = this.connections): Unit = {
     if (connections.nonEmpty) {
-//      println(change)
+      if (debugMode) {
+        println(change)
+      }
       val c = connections.head
       c += change
       enqueue(change, connections.tail)
@@ -178,74 +187,91 @@ class LivePage extends HTMLPage {
       HTMLPage.instance.set(this)
       try {
         val postData = Source.fromInputStream(request.getInputStream).mkString
-  //      println("PostData: %s".format(postData))
-        val json = JSON.parseFull(postData).get.asInstanceOf[Map[String, Any]]
-        val connectionId = json("liveId").asInstanceOf[String]
-        val messageId = json("liveMessageId").asInstanceOf[Double].toInt
-        val messages = json("messages").asInstanceOf[List[Any]]
+        JSON.parseFull(postData) match {
+          case Some(parsed) => {
+            val json = parsed.asInstanceOf[Map[String, Any]]
+            val connectionId = json("liveId").asInstanceOf[String]
+            val messageId = json("liveMessageId").asInstanceOf[Double].toInt
+            val messages = json("messages").asInstanceOf[List[Any]]
 
-        messages.foreach {
-          case m: Map[_, _] => {
-            val map = m.asInstanceOf[Map[String, Any]]
-            val id = map("id").asInstanceOf[String]
-            val t = view.find(t => t.id() == id).getOrElse(throw new RuntimeException("Unable to find %s".format(id)))
-            val messageType = map("type").asInstanceOf[String]
-            messageType match {
-              case "event" => {
-                val event = map("event").asInstanceOf[String]
-                t.fire(LiveEvent(t, event))
-              }
-              case "change" => {
-                val v = map("value").asInstanceOf[String]
-                applying.set(true)    // Make sure we don't send extraneous information back
-                try {
-                  t match {
-                    case input: tag.Input => input.value := v
-                    case select: tag.Select => select.contents.foreach {
-                      case option: tag.Option => if (option.value() == v) {
-                        option.selected := true
-                      } else {
-                        option.selected := false
-                      }
-                    }
-                    case textArea: tag.TextArea => textArea.contents.replaceWith(v)
+            messages.foreach {
+              case m: Map[_, _] => {
+                val map = m.asInstanceOf[Map[String, Any]]
+                val id = map("id").asInstanceOf[String]
+                val t = view.find(t => t.id() == id).getOrElse(throw new RuntimeException("Unable to find %s".format(id)))
+                val messageType = map("type").asInstanceOf[String]
+                messageType match {
+                  case "event" => {
+                    val event = map("event").asInstanceOf[String]
+                    t.fire(LiveEvent(t, event))
                   }
-                } finally {
-                  applying.set(false)
+                  case "change" => {
+                    val v = map("value").asInstanceOf[String]
+                    applying.set(true)    // Make sure we don't send extraneous information back
+                    try {
+                      t match {
+                        case input: tag.Input => input.value := v
+                        case select: tag.Select => select.contents.foreach {
+                          case option: tag.Option => if (option.value() == v) {
+                            option.selected := true
+                          } else {
+                            option.selected := false
+                          }
+                        }
+                        case textArea: tag.TextArea => textArea.contents.replaceWith(v)
+                      }
+                    } finally {
+                      applying.set(false)
+                    }
+                  }
                 }
               }
+              case m => throw new RuntimeException("Unhandled Message Type: %s".format(m))
+            }
+            pageUpdate()
+            val changes = connections.find(c => c.id == connectionId) match {
+              case Some(connection) => {
+                connection(messageId)
+              }
+              case None => {
+                System.err.println("Connection dead (%s)!".format(connectionId))
+                List(LiveChange(0, null, "window.location.href = window.location.href;"))
+              }
+            }
+            val changesJSON = changes.map(c => new JSONObject(Map("id" -> c.id, "script" -> c.script))).toList
+            val responseArray = JSONArray(changesJSON)
+            val formatted = JSONFormat.defaultFormatter(responseArray)
+            if (changes.nonEmpty && debugMode) {
+              println(formatted)
+            }
+            response.setContentType("application/json")
+            val output = response.getOutputStream
+            try {
+              output.write(formatted.getBytes)
+            } finally {
+              output.flush()
+              output.close()
             }
           }
-          case m => throw new RuntimeException("Unhandled Message Type: %s".format(m))
-        }
-        pageUpdate()
-        val changes = connections.find(c => c.id == connectionId) match {
-          case Some(connection) => {
-            connection(messageId)
-          }
-          case None => {
-            System.err.println("Connection dead (%s)!".format(connectionId))
-            List(LiveChange(0, null, "window.location.href = window.location.href;"))
-          }
-        }
-        val changesJSON = changes.map(c => new JSONObject(Map("id" -> c.id, "script" -> c.script))).toList
-        val responseArray = JSONArray(changesJSON)
-        val formatted = JSONFormat.defaultFormatter(responseArray)
-        response.setContentType("application/json")
-        val output = response.getOutputStream
-        try {
-          output.write(formatted.getBytes)
-        } finally {
-          output.flush()
-          output.close()
+          case None => println("Unable to parse as JSON: [%s]".format(postData))
         }
       } finally {
         HTMLPage.instance.set(null)
       }
     } else {
-      pageLoading()
+      HTMLPage.instance.set(this)
+      try {
+        pageLoading()
+      } finally {
+        HTMLPage.instance.set(null)
+      }
       super.service(method, request, response)
-      pageLoaded()
+      HTMLPage.instance.set(this)
+      try {
+        pageLoaded()
+      } finally {
+        HTMLPage.instance.set(null)
+      }
     }
   }
 

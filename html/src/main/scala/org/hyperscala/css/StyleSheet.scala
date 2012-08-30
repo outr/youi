@@ -1,6 +1,6 @@
 package org.hyperscala.css
 
-import org.powerscala.property.PropertyParent
+import org.powerscala.property.{Property, PropertyParent}
 import org.hyperscala.PropertyAttribute
 import attributes._
 import org.hyperscala.persistence.StringPersistence
@@ -242,6 +242,15 @@ class StyleSheet extends PropertyParent {
     val left = StyleSheetAttribute[Length]("margin-left", null)
     val right = StyleSheetAttribute[Length]("margin-right", null)
     val top = StyleSheetAttribute[Length]("margin-top", null)
+
+    /**
+     * Allows modification of all lengths with one property
+     */
+    val all = Property[Length]("margin-all", null)
+    bottom.bind(all)
+    left.bind(all)
+    right.bind(all)
+    top.bind(all)
   }
   val mark = new StyleSheetAttribute[String]("mark", null) {
     val after = StyleSheetAttribute[String]("mark-after", null)
@@ -292,6 +301,15 @@ class StyleSheet extends PropertyParent {
     val left = StyleSheetAttribute[Length]("padding-left", null)
     val right = StyleSheetAttribute[Length]("padding-right", null)
     val top = StyleSheetAttribute[Length]("padding-top", null)
+
+    /**
+     * Allows modification of all lengths with one property
+     */
+    val all = Property[Length]("padding-all", null)
+    bottom.bind(all)
+    left.bind(all)
+    right.bind(all)
+    top.bind(all)
   }
   val page = new StyleSheetAttribute[String]("page", null) {
     val break = new AnyRef {

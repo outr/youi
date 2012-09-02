@@ -25,6 +25,8 @@ import util.parsing.json.JSONObject
  * @author Matt Hicks <mhicks@powerscala.org>
  */
 class LivePage extends HTMLPage {
+  import LivePage.escape
+
   HTMLTag.GenerateIds = true    // Every element should have an ID
 
   /**
@@ -105,13 +107,13 @@ class LivePage extends HTMLPage {
       }
       val index = parent.contents.indexOf(child)
       val script = if (index == parent.contents.length - 1) {    // Append to then end
-        "$('#%s').append('%s');".format(parent.id(), child.outputString)
+        "$('#%s').append('%s');".format(parent.id(), escape(child.outputString))
       } else if (index == 0) {                                   // Append before
         val after = parent.contents(1)
-        "$('#%s').before('%s');".format(after.id(), child.outputString)
+        "$('#%s').before('%s');".format(after.id(), escape(child.outputString))
       } else {
         val before = parent.contents(index - 1)
-        "$('#%s').after('%s');".format(before.id(), child.outputString)
+        "$('#%s').after('%s');".format(before.id(), escape(child.outputString))
       }
       enqueue(LiveChange(nextId, null, script))
     }
@@ -146,10 +148,11 @@ class LivePage extends HTMLPage {
         case ss: StyleSheet => tagsByStyleSheet(ss) {
           case tag => {
             val key = "%s.style.%s".format(tag.id(), property.name())
-            val script = "$('#%s').css('%s', '%s');".format(tag.id(), property.name(), scriptifyValue(property))
+            val script = "$('#%s').css('%s', %s);".format(tag.id(), property.name(), scriptifyValue(property))
             enqueue(LiveChange(nextId, key, script))
           }
         }
+        case _ => // Ignore others
       }
       case _ => // Ignore
     }
@@ -157,7 +160,7 @@ class LivePage extends HTMLPage {
 
   private def scriptifyValue(property: PropertyAttribute[_]) = property.manifest.erasure.getClass.getSimpleName match {
     case _ if (property() == null) => "''"
-    case _ => "'%s'".format(property.attributeValue)
+    case _ => "'%s'".format(escape(property.attributeValue))
   }
 
   private def hasRoot(parent: Any): Boolean = parent match {
@@ -207,8 +210,8 @@ class LivePage extends HTMLPage {
                   }
                   case "change" => {
                     val v = map("value").asInstanceOf[String]
-                    applying.set(true)    // Make sure we don't send extraneous information back
-                    try {
+//                    applying.set(true)    // Make sure we don't send extraneous information back
+//                    try {
                       t match {
                         case input: tag.Input => input.value := v
                         case select: tag.Select => select.contents.foreach {
@@ -220,9 +223,9 @@ class LivePage extends HTMLPage {
                         }
                         case textArea: tag.TextArea => textArea.contents.replaceWith(v)
                       }
-                    } finally {
-                      applying.set(false)
-                    }
+//                    } finally {
+//                      applying.set(false)
+//                    }
                   }
                 }
               }
@@ -328,4 +331,6 @@ class LivePage extends HTMLPage {
 
 object LivePage {
   val Template = Source.fromURL(getClass.getClassLoader.getResource("livepage.js")).mkString
+
+  def escape(s: String) = s.replaceAll("'", "\\\\'")
 }

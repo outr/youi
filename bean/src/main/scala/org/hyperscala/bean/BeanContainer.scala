@@ -87,7 +87,7 @@ trait BeanContainer[T] extends PropertyParent with ValueEditor[T] with BeanField
     // Create the property
     val backing = new CaseValueVariableBacking[Any, Any](container.property, caseValue)
     val property = Property[Any](beanName, default, backing)
-    BeanContainer.this.property.listeners.synchronous {
+    container.property.listeners.synchronous {
       case evt: PropertyChangeEvent => property.fireChanged()
     }
 

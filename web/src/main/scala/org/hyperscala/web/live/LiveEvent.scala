@@ -10,6 +10,10 @@ import org.powerscala.event.Event
 class LiveEvent(tag: HTMLTag) extends Event
 
 object LiveEvent extends JavaScriptString("liveEventHandler(event); return false;") {
+  def confirm(message: String) = {
+    JavaScriptString("if (confirm('%s')) { liveEventHandler(event); } return false;".format(LivePage.escape(message)))
+  }
+
   def apply(tag: HTMLTag, eventType: String) = eventType match {
     case "afterprint" => new AfterPrintEvent(tag)
     case "beforeprint" => new BeforePrintEvent(tag)

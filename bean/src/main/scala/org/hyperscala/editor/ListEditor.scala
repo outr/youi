@@ -8,8 +8,10 @@ import org.hyperscala.css.attributes.Clear
 import org.powerscala.reflect._
 import org.hyperscala.web.event.FormSubmit
 import org.hyperscala.javascript.JavaScriptString
-import tag.{Img, Button, Div}
+import tag.{Input, Img, Button, Div}
 import validation.ValidationFailed
+import org.hyperscala.web.HTMLPage
+import org.hyperscala.web.live.LivePage
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -18,7 +20,7 @@ trait ListEditor[T] extends Div with ValueEditor[List[T]] {
   def property: StandardProperty[List[T]]
   def valueEditor: ValueEditor[T]
   def filterOut(value: T) = property().contains(value)
-  def visualizer(value: T) = value.toString
+  def visualizer(value: T) = String.valueOf(value)
   def manifest: Manifest[T]
   def default: T = manifest.erasure.defaultForType.asInstanceOf[T]
 
@@ -27,7 +29,9 @@ trait ListEditor[T] extends Div with ValueEditor[List[T]] {
   valueEditor.style.clear := Clear.Both
   contents += valueEditor
   val button = new Button(id = "%sAdd".format(property.name()), content = "Add", buttonType = ButtonType.Button) {
-    event.click := JavaScriptString("$(this).closest('form').submit();")
+    if (!HTMLPage().isInstanceOf[LivePage]) {
+      event.click := JavaScriptString("$(this).closest('form').submit();")
+    }
     listeners.synchronous {
       case evt: FormSubmit => addItem()
     }
@@ -40,18 +44,28 @@ trait ListEditor[T] extends Div with ValueEditor[List[T]] {
 
   updateItems()
 
-  def addItem() = {
+//  if (HTMLPage().isInstanceOf[LivePage]) {
+    hierarchy.process[Input] {
+      case input => input.event.keyPress := JavaScriptString("if (event.keyCode == 13) { $(this).trigger('change'); $('#%s').click(); return false; }".format(button.id()))
+    }
+//  }
+
+  def addItem() = if (valueEditor.property() != null) {
     valueEditor.validate() match {
       case Some(error) => fire(ValidationFailed(error))
       case None => {
         valueEditor.property() match {
-          case v if (!filterOut(v)) => property := (v :: property().reverse).reverse
+          case v if (!filterOut(v)) => updateList(v)
           case _ => // Don't add
         }
         valueEditor.property := default
         updateItems()
       }
     }
+  }
+
+  def updateList(item: T) = {
+    property := (item :: property().reverse).reverse
   }
 
   def updateItems(): Unit = {
@@ -67,8 +81,13 @@ trait ListEditor[T] extends Div with ValueEditor[List[T]] {
       val s = visualizer(item)
       contents += s
 
-      contents += new Button(id = "%sItem%s".format(property.name(), s.capitalize), buttonType = ButtonType.Button) {
-        event.click := JavaScriptString("$(this).focus(); $(this).closest('form').submit();")
+      val cleaned = s.capitalize.collect {
+        case c if (c.isLetterOrDigit) => c
+      }
+      contents += new Button(id = "%sItem%s".format(property.name(), cleaned), buttonType = ButtonType.Button) {
+        if (!HTMLPage().isInstanceOf[LivePage]) {
+          event.click := JavaScriptString("$(this).focus(); $(this).closest('form').submit();")
+        }
         style.margin.left := 10.px
         contents += new Img(src = "/delete.png")
         listeners.synchronous {

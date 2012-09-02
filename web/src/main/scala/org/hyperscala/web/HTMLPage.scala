@@ -187,7 +187,13 @@ class HTMLPage extends Page with PropertyParent with Parent with Updatable {
   }
   def byName[T <: HTMLTag](name: String)(implicit manifest: Manifest[T]) = allByName[T](name).headOption
   def byId[T <: HTMLTag](id: String)(implicit manifest: Manifest[T]) = {
-    view.find(tag => tag.id() == id && manifest.erasure.isAssignableFrom(tag.getClass)).asInstanceOf[scala.Option[T]]
+    val results = view.collect {
+      case tag if (tag.id() == id && manifest.erasure.isAssignableFrom(tag.getClass)) => tag.asInstanceOf[T]
+    }
+    if (results.size > 1) {
+      throw new RuntimeException("%s matches for byId(\"%s\")".format(results.size, id))
+    }
+    results.headOption
   }
 
   def nextTab = {
@@ -202,6 +208,11 @@ class HTMLPage extends Page with PropertyParent with Parent with Updatable {
     def get(key: String) = apply(key) match {
       case null => None
       case value => Some(value)
+    }
+
+    def getOrElse(key: String, default: String) = apply(key) match {
+      case null => default
+      case value => value
     }
 
     def iterator = servletRequest.getParameterMap.map(m => m._1.toString -> m._2.asInstanceOf[Array[String]](0)).iterator

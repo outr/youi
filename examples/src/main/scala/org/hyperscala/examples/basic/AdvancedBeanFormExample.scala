@@ -1,6 +1,5 @@
 package org.hyperscala.examples.basic
 
-import org.hyperscala.web.{ActionForm, AJAXForm, HTMLPage}
 import org.hyperscala.html._
 import org.hyperscala.bean.{BeanContainer, BeanForm}
 import org.powerscala.property._
@@ -8,11 +7,12 @@ import org.powerscala.property.event.PropertyChangeEvent
 import org.hyperscala.editor.{ListBeanEditor, ListSelectEditor, ListStringEditor, ValueEditor}
 import org.powerscala.{Language, Country}
 import tag.{Br, Script, Div}
+import org.hyperscala.web.live.{LiveForm, LivePage}
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-class AdvancedBeanFormExample extends HTMLPage {
+class AdvancedBeanFormExample extends LivePage {
   title := "Advanced BeanForm Example"
 
   head.contents += new Script(src = "/js/jquery-1.7.2.js")
@@ -22,7 +22,7 @@ class AdvancedBeanFormExample extends HTMLPage {
   }
   contents += messages
 
-  val form = new BeanForm[Company]("company", Company()) with AJAXForm with ActionForm {
+  val form = new BeanForm[Company]("company", Company()) with LiveForm {
     property.listeners.synchronous {
       case evt: PropertyChangeEvent => {
         messages.contents += "Company changed from %s to %s".format(evt.oldValue, evt.newValue)

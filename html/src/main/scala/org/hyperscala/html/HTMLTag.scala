@@ -5,6 +5,7 @@ import event.EventSupport
 import org.hyperscala._
 import org.hyperscala.html.tag._
 import org.hyperscala.css.StyleSheet
+import persistence.StyleSheetPersistence
 import scala.collection.{Map => ScalaMap}
 
 /**
@@ -28,6 +29,9 @@ trait HTMLTag extends Tag with EventSupport {
 
   val style = new PropertyAttribute[StyleSheet]("style", null, inclusion = InclusionMode.NotEmpty) with LazyProperty[StyleSheet] {
     protected def lazyValue = new StyleSheet
+
+    // Avoid overwriting previously set values
+    override def attributeValue_=(value: String) = StyleSheetPersistence(this.value, value)
   }
 
   if (HTMLTag.GenerateIds) {
@@ -41,6 +45,12 @@ trait HTMLTag extends Tag with EventSupport {
   protected def processText(text: String): Unit = {
     this.asInstanceOf[Container[HTMLTag]].contents += new Text(text)
   }
+
+  def byId[T <: HTMLTag](id: String)(implicit manifest: Manifest[T]) = hierarchy.findFirst[T](t => t.id() == id)(manifest)
+
+  def byName[T <: HTMLTag](name: String)(implicit manifest: Manifest[T]) = hierarchy.findAll[T](t => t.name() == name)(manifest)
+
+  def byTag[T <: HTMLTag](implicit manifest: Manifest[T]) = hierarchy.findAll[T](t => true)(manifest)
 }
 
 object HTMLTag {
@@ -155,6 +165,6 @@ object HTMLTag {
                                   "wbr" -> classOf[Wbr])
 
   def create(tagName: String) = {
-    registry(tagName).newInstance().asInstanceOf[XMLContent]
+    registry(tagName).newInstance().asInstanceOf[HTMLTag]
   }
 }

@@ -32,6 +32,13 @@ object HTMLToScala {
     page
   }
 
+  def toHTML(source: Source) = {
+    val xml = toXML(source)
+    val root = HTMLTag.create(xml.getName)
+    root.fromXML(xml)
+    root
+  }
+
   def toXML(source: Source) = {
     val html = source.mkString
     val cleaner = new HtmlCleaner()

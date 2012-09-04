@@ -55,6 +55,7 @@ trait ActionForm extends Form {
     case button: Button => button.autoFocus := true
     case select: Select => select.autoFocus := true
     case textArea: TextArea => textArea.autoFocus := true
+    case _ => // Ignore
   }
 
   contents += lastFocused

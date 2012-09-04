@@ -5,6 +5,9 @@ import css.StyleSheet
 import html.HTMLTag
 import org.hyperscala.html.attributes._
 import org.hyperscala.html.constraints._
+import org.jdom2.Attribute
+import org.hyperscala.css.attributes._
+import org.powerscala.property._
 
 /**
  * NOTE: This file has been generated. Do not modify directly!
@@ -66,4 +69,16 @@ class Img extends Container[BodyChild] with BodyChild with HTMLTag {
   val src = PropertyAttribute[String]("src", null)
   val useMap = PropertyAttribute[String]("usemap", null)
   val width = PropertyAttribute[String]("width", null)
+
+  override protected def attributeFromXML(a: Attribute) = {
+    if (a.getName == "align") {
+      a.getValue.trim.toLowerCase match {
+        case "left" => style.float := Float.Left
+        case "right" => style.float := Float.Right
+      }
+      true
+    } else {
+      super.attributeFromXML(a)
+    }
+  }
 }

@@ -23,7 +23,7 @@ trait Markup extends XMLContent {
     case element: Element => {
       attributesFromXML(element.getAttributes)
     }
-    case _ => throw new RuntimeException("Unsupported content type: %s".format(xml.getClass.getName))
+    case _ => throw new RuntimeException("%s: Unsupported content type: %s".format(getClass.getName, xml.getClass.getName))
   }
 
   protected def before() = {}
@@ -63,6 +63,14 @@ trait Markup extends XMLContent {
   }
 
   protected def unsupportedAttribute(name: String, value: String) = {
-    throw new RuntimeException("Unsupported attribute: %s = %s".format(name, value))
+    if (Markup.UnsupportedAttributeException) {
+      throw new RuntimeException("%s: Unsupported attribute: %s = %s".format(getClass.getName, name, value))
+    } else {
+      System.err.println("%s: Unsupported attribute: %s = %s".format(getClass.getName, name, value))
+    }
   }
+}
+
+object Markup {
+  var UnsupportedAttributeException = true
 }

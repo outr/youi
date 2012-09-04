@@ -28,6 +28,9 @@ class Style extends Textual with BodyChild with HeadChild with HTMLTag {
            style: StyleSheet = null,
            tabIndex: java.lang.Integer = null,
            title: String = null,
+           mimeType: String = null,
+           media: String = null,
+           scoped: java.lang.Boolean = null,
            content: String = null) = {
     this()
     up(this.name, name)
@@ -45,8 +48,13 @@ class Style extends Textual with BodyChild with HeadChild with HTMLTag {
     up(this.style, style)
     up(this.tabIndex, tabIndex)
     up(this.title, title)
+    up(this.mimeType, mimeType)
+    up(this.media, media)
+    up(this.scoped, scoped)
     up(this.content, content)
   }
 
-
+  val mimeType = PropertyAttribute[String]("type", null)
+  val media = PropertyAttribute[String]("media", null)
+  val scoped = PropertyAttribute[Boolean]("scoped", false)
 }

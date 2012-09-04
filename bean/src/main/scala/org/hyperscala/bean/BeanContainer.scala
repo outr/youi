@@ -15,6 +15,8 @@ import org.hyperscala.html.tag.Input
 trait BeanContainer[T] extends PropertyParent with ValueEditor[T] with BeanFieldContainer {
   override type F = BasicBeanField
 
+  protected def startingTab = 0
+
   def default: T
   def parentContainer: BeanContainer[_]
   def containerName: String
@@ -29,7 +31,7 @@ trait BeanContainer[T] extends PropertyParent with ValueEditor[T] with BeanField
   def manifest: Manifest[T]
 
   val property = Property[T]("property", default)
-  protected var _nextTab = 0
+  protected var _nextTab = startingTab
   val fields = manifest.erasure.caseValues.map(caseValue => {
     val d = default match {
       case null => caseValue.valueType.defaultForType

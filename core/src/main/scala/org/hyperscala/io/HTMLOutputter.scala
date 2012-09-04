@@ -35,7 +35,7 @@ case class HTMLOutputter(tab: String = "", newLine: String = "") {
     }
     case text: Text => {
       writeTabs(writer, depth)
-      writer.write(text.getTextTrim)
+      writer.write(text.getText)
       writer.write(newLine)
     }
   }

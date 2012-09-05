@@ -65,10 +65,10 @@ class Select extends Container[BodyChild] with BodyChild with HTMLTag {
   val size = PropertyAttribute[Int]("size", -1)
 
   def selected = contents.collectFirst {
-    case option: Option if (option.selected()) => option.value()
+    case option: Option if (option.selected()) => option
   } match {
     case Some(value) => value
-    case None => contents.find(c => c.isInstanceOf[Option]).map(c => c.asInstanceOf[Option].value()).getOrElse(null)
+    case None => contents.find(c => c.isInstanceOf[Option]).getOrElse(null).asInstanceOf[Option]
   }
 
   def selected_=(value: String) = contents.foreach {

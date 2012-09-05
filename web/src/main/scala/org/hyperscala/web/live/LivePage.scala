@@ -3,7 +3,7 @@ package org.hyperscala.web.live
 import org.hyperscala._
 import org.hyperscala.html._
 import org.hyperscala.css.StyleSheet
-import org.hyperscala.web.{Website, HTMLPage}
+import web.{Scope, Website, HTMLPage}
 import actors.threadpool.AtomicInteger
 import scala.io.Source
 import org.hyperscala.javascript.JavaScriptContent
@@ -173,6 +173,12 @@ class LivePage extends HTMLPage {
 
   def sendJavaScript(js: String) = enqueue(LiveChange(nextId, null, js))
 
+  override def shouldDispose(scope: Scope, method: Method, request: HttpServletRequest) = if (scope == Scope.Page) {
+    method == Method.Get  // Dispose each page load
+  } else {
+    super.shouldDispose(scope, method, request)
+  }
+
   @tailrec
   final def enqueue(change: LiveChange, connections: List[LiveConnection] = this.connections): Unit = {
     if (connections.nonEmpty) {
@@ -222,6 +228,7 @@ class LivePage extends HTMLPage {
                           }
                         }
                         case textArea: tag.TextArea => textArea.contents.replaceWith(v)
+                        case _ => throw new RuntimeException("Change not supported on %s with id %s".format(t.getClass.getName, id))
                       }
 //                    } finally {
 //                      applying.set(false)

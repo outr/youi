@@ -28,7 +28,7 @@ class PageHandler(val link: String, scope: Scope = Scope.Request, matcher: Strin
    * Returns the page this handler wraps. This will create a new instance if necessary or return a cached copy if the
    * scope is set as such.
    */
-  def page = {
+  def page(method: Method, request: HttpServletRequest) = {
     try {
       val storage = scope match {
         case Scope.Application => website.application
@@ -41,8 +41,8 @@ class PageHandler(val link: String, scope: Scope = Scope.Request, matcher: Strin
         None
       }
       val p = lookup match {
-        case Some(pg) if (!pg.isDisposed) => pg // Found page in storage
-        case _ => instantiator() // Create a new instance of the page
+        case Some(pg) if (!disposed(pg, scope, method, request)) => pg // Found page in storage
+        case _ => createPage()
       }
       if (storage != null) {
         storage(uniqueName) = p // Store the page to the storage session if one exists
@@ -53,9 +53,27 @@ class PageHandler(val link: String, scope: Scope = Scope.Request, matcher: Strin
     }
   }
 
+  private def disposed(page: Page, scope: Scope, method: Method, request: HttpServletRequest) = {
+    if (page.isDisposed) {
+      true
+    } else if (page.shouldDispose(scope, method, request)) {
+      page.dispose()
+      true
+    } else {
+      false
+    }
+  }
+
+  /**
+   * Create a new instance of the page
+   */
+  def createPage() = {
+    instantiator()
+  }
+
   def apply(method: Method, request: HttpServletRequest, response: HttpServletResponse) = {
     try {
-      val page = this.page
+      val page = this.page(method, request)
 
       Bus.current = page.bus
       try {

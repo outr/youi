@@ -17,6 +17,15 @@ trait Page extends Listenable {
 
   def service(method: Method, request: HttpServletRequest, response: HttpServletResponse): Unit
 
+  /**
+   * Called before service to see if this page should still be in service.
+   *
+   * Defaults to false.
+   */
+  def shouldDispose(scope: Scope, method: Method, request: HttpServletRequest): Boolean = {
+    false
+  }
+
   def dispose() = {
     disposed = true
     bus.clear()

@@ -84,7 +84,7 @@ trait Website[S <: Session] extends MutableContainer[ContentHandler] with Proper
    * Destroys the existing session and creates a new one.
    */
   def disposeSession() = {
-    destroySession(servletRequest)
+    destroySession()
     _session.set(loadSession(servletRequest))
   }
 
@@ -101,7 +101,7 @@ trait Website[S <: Session] extends MutableContainer[ContentHandler] with Proper
     session
   }
 
-  protected def destroySession(request: HttpServletRequest) = {
+  def destroySession() = {
     val sessionKey = classOf[Session].getName
     cookies(sessionKey) match {
       case Some(cookie) => _sessions.get(cookie.getValue) match {

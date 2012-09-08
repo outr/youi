@@ -32,7 +32,7 @@ trait Session extends Updatable {
   override def update(delta: Double) = {
     val elapsed = Time.fromMillis(System.currentTimeMillis() - lastCheckin)
     if (elapsed > timeout) {    // Timeout the session
-      Website().disposeSession()
+      Website().destroySession()
     } else {
       super.update(delta)
       map.values.foreach {

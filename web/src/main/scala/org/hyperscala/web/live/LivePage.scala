@@ -63,10 +63,7 @@ class LivePage extends HTMLPage {
   protected[live] val increment = new AtomicInteger(0)
   protected def nextId = increment.addAndGet(1)
 
-  // True if a value is currently being applied from the client
-  private val applying = new ThreadLocal[Boolean] {
-    override def initialValue() = false
-  }
+  private val applying = new ThreadLocal[(PropertyAttribute[_], Any)]
 
   head.id := "liveHead"
   head.contents(0).id := "liveTitle"
@@ -96,7 +93,7 @@ class LivePage extends HTMLPage {
   }
 
   listeners.synchronous.filter.descendant() {
-    case evt: ChildAddedEvent if (!applying.get()) => {
+    case evt: ChildAddedEvent => {
       val parent = evt.parent.asInstanceOf[HTMLTag with Container[HTMLTag]]
       val child = evt.child.asInstanceOf[HTMLTag]
       if (parent.id() == null) {
@@ -106,7 +103,7 @@ class LivePage extends HTMLPage {
         child.id := Unique()
       }
       val index = parent.contents.indexOf(child)
-      val script = if (index == parent.contents.length - 1) {    // Append to then end
+      val script = if (index == parent.contents.length - 1) {    // Append to the end
         "$('#%s').append('%s');".format(parent.id(), escape(child.outputString))
       } else if (index == 0) {                                   // Append before
         val after = parent.contents(1)
@@ -117,7 +114,7 @@ class LivePage extends HTMLPage {
       }
       enqueue(LiveChange(nextId, null, script))
     }
-    case evt: ChildRemovedEvent if (!applying.get()) => evt.child match {
+    case evt: ChildRemovedEvent => evt.child match {
       case text: tag.Text => {
         val parent = evt.parent.asInstanceOf[HTMLTag with Container[HTMLTag]]
         val index = parent.contents.indexOf(text)
@@ -128,7 +125,11 @@ class LivePage extends HTMLPage {
   }
 
   listeners.synchronous.filter(evt => true) {
-    case evt: PropertyChangeEvent if (!applying.get()) => evt.property match {
+    case evt: PropertyChangeEvent if (applying.get() != null && applying.get()._1 == evt.property && applying.get()._2 == evt.newValue) => {
+      // Ignoring changes that are pushed from client
+//      println("Ignoring change resulting from client: %s".format(evt))
+    }
+    case evt: PropertyChangeEvent => evt.property match {
       case property: PropertyAttribute[_] => property.parent match {
         case t: HTMLTag => if (hasRoot(t) && property != t.style && !t.isInstanceOf[tag.Text]) {
           if (property == t.id && evt.oldValue == null) {
@@ -207,33 +208,37 @@ class LivePage extends HTMLPage {
               case m: Map[_, _] => {
                 val map = m.asInstanceOf[Map[String, Any]]
                 val id = map("id").asInstanceOf[String]
-                val t = view.find(t => t.id() == id).getOrElse(throw new RuntimeException("Unable to find %s".format(id)))
-                val messageType = map("type").asInstanceOf[String]
-                messageType match {
-                  case "event" => {
-                    val event = map("event").asInstanceOf[String]
-                    t.fire(LiveEvent(t, event))
-                  }
-                  case "change" => {
-                    val v = map("value").asInstanceOf[String]
-//                    applying.set(true)    // Make sure we don't send extraneous information back
-//                    try {
-                      t match {
-                        case input: tag.Input => input.value := v
-                        case select: tag.Select => select.contents.foreach {
-                          case option: tag.Option => if (option.value() == v) {
-                            option.selected := true
-                          } else {
-                            option.selected := false
-                          }
-                        }
-                        case textArea: tag.TextArea => textArea.contents.replaceWith(v)
-                        case _ => throw new RuntimeException("Change not supported on %s with id %s".format(t.getClass.getName, id))
+//                val t = view.find(t => t.id() == id).getOrElse(throw new RuntimeException("Unable to find %s".format(id)))
+                view.find(t => t.id() == id) match {
+                  case Some(t) => {
+                    val messageType = map("type").asInstanceOf[String]
+                    messageType match {
+                      case "event" => {
+                        t.fire(LiveEvent.create(t, map))
                       }
-//                    } finally {
-//                      applying.set(false)
-//                    }
+                      case "change" => {
+                        val v = map("value").asInstanceOf[String]
+    //                    applying.set(true)    // Make sure we don't send extraneous information back
+    //                    try {
+                          t match {
+                            case input: tag.Input => applyChange(input.value, v)
+                            case select: tag.Select => select.contents.foreach {
+                              case option: tag.Option => if (option.value() == v) {
+                                applyChange(option.selected, true)
+                              } else {
+                                applyChange(option.selected, false)
+                              }
+                            }
+                            case textArea: tag.TextArea => textArea.contents.replaceWith(v)   // TODO: how do I ignore these events?
+                            case _ => throw new RuntimeException("Change not supported on %s with id %s".format(t.getClass.getName, id))
+                          }
+    //                    } finally {
+    //                      applying.set(false)
+    //                    }
+                      }
+                    }
                   }
+                  case None => // Unable to find the element by id (could have been removed since last update)
                 }
               }
               case m => throw new RuntimeException("Unhandled Message Type: %s".format(m))
@@ -244,11 +249,11 @@ class LivePage extends HTMLPage {
                 connection(messageId)
               }
               case None => {
-                System.err.println("Connection dead (%s)!".format(connectionId))
+//                System.err.println("Connection dead (%s)!".format(connectionId))
                 List(LiveChange(0, null, "window.location.href = window.location.href;"))
               }
             }
-            val changesJSON = changes.map(c => new JSONObject(Map("id" -> c.id, "script" -> c.script))).toList
+            val changesJSON = changes.map(c => new JSONObject(Map("id" -> c.id, "script" -> convertScript(c.script)))).toList
             val responseArray = JSONArray(changesJSON)
             val formatted = JSONFormat.defaultFormatter(responseArray)
             if (changes.nonEmpty && debugMode) {
@@ -283,6 +288,19 @@ class LivePage extends HTMLPage {
         HTMLPage.instance.set(null)
       }
     }
+  }
+
+  private def applyChange[T](property: PropertyAttribute[T], value: T) = {
+    applying.set(property -> value)
+    try {
+      property := value
+    } finally {
+      applying.set(null)
+    }
+  }
+
+  private def convertScript(script: String) = {
+    script.map(c => if (c == '\n') ' ' else if (c == '\r') ' ' else c)
   }
 
   /**

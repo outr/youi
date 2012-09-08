@@ -6,6 +6,7 @@ import org.hyperscala.web.session.MapSession
 import org.hyperscala.examples.basic._
 import org.hyperscala.examples.todomvc.TodoMVC
 import org.hyperscala.examples.helloworld.HelloWorldPage
+import org.hyperscala.examples.ui.AutoCompleteExample
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -28,6 +29,9 @@ object HyperscalaSite extends Website[MapSession] {
   }
   val livePage = PageHandler("/example/livepage.html", Scope.Session) {
     new LivePageExample
+  }
+  val autoComplete = PageHandler("/example/autocomplete.html", Scope.Session) {
+    new AutoCompleteExample
   }
   val todoMVC = PageHandler("/todomvc.html") {
     TodoMVC

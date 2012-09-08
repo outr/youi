@@ -31,36 +31,99 @@ function liveRemoveByIndex(parentId, index) {
 }
 
 // Enqueue a JSON message
-function liveMessage(message) {
-    liveEnqueue(message);
+function liveMessage(message, replaceQuery) {
+    liveEnqueue(message, replaceQuery);
     liveSend();     // Try to send immediately
 }
 
-function liveEnqueue(message) {
-    liveQueue.push(message);
+function liveEnqueue(message, replaceQuery) {
+    var replaceIndex = indexInQueue(replaceQuery);
+    if (replaceIndex == -1) {
+        liveQueue.push(message);
+    } else {
+//        console.log('Replacing: ' + JSON.stringify(liveQueue[replaceIndex]) + ' with ' + JSON.stringify(message));
+        liveQueue[replaceIndex] = message;
+    }
 }
 
 // Fire an event to the server on a specified id
-function liveEvent(id, event) {
+function liveEvent(id, event, replaceQuery) {
     liveMessage({
         'id': id,
         'type': 'event',
         'event': event
-    });
+    }, replaceQuery);
+}
+
+function indexInQueue(query) {
+    if (query == null) {
+        return -1;
+    }
+    for (var i = 0; i < liveQueue.length; i++) {
+        var json = liveQueue[i];
+        if (jsonMatch(json, query)) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+function jsonMatch(json, query) {
+    for(var key in query) {
+        if (json[key] != query[key]) {
+            return false;
+        }
+    }
+    return true;
 }
 
 // Add as a handler to fire live events to server
-function liveEventHandler(e) {
+function liveEventHandler(e, fireChange, onlyLast) {
     var element = $(e.target);
     var id = element.attr('id');
-    if (e.type == 'change') {
+    if (e.type == 'change' || fireChange) {
+        var changeQuery = null;
+        if (onlyLast) {
+            changeQuery = {
+                'id': id,
+                'type': 'change'
+            };
+        }
         liveEnqueue({
             'id': id,
             'type': 'change',
             'value': element.val()
-        });
+        }, changeQuery);
     }
-    liveEvent(id, e.type);
+    var lastQuery = null;
+    if (onlyLast) {
+        lastQuery = {
+            'id': id,
+            'type': 'event',
+            'event': e.type
+        };
+    }
+    if (e.type == 'keydown' || e.type == 'keypress' || e.type == 'keyup') {
+        var json = {
+            'id': id,
+            'type': 'event',
+            'event': e.type,
+            'altKey': e.altKey,
+            'char': e.char ? e.char : e.charCode,
+            'ctrlKey': e.ctrlKey,
+            'key': e.key ? e.key : e.keyCode,
+            'locale': e.locale,
+            'location': e.location,
+            'metaKey': e.metaKey,
+            'repeat': e.repeat,
+            'shiftKey': e.shiftKey
+        };
+        // TODO: support onlyLast
+        liveMessage(json, lastQuery);
+    } else {
+        // TODO: support onlyLast
+        liveEvent(id, e.type, lastQuery);
+    }
 }
 
 // Sends enqueued messages to the server
@@ -95,8 +158,9 @@ function liveSendSuccessful(data) {
     failures = 0;       // Reset failure counter
     if (data != null) {
         for (var i = 0; i < data.length; i++) {
-            var id = data[i]['id'];
-            var script = data[i]['script'];
+            var entry = data[i];
+            var id = entry['id'];
+            var script = entry['script'];
             if (debugMode) {
                 console.log('evaluating:[' + script + ']');
             }
@@ -109,8 +173,8 @@ function liveSendSuccessful(data) {
     }
 }
 
-function liveSendFailure() {
-    console.log('live send failure!');
+function liveSendFailure(jqXHR, textStatus, errorThrown) {
+    console.log('live send failure! status: ' + textStatus + ', error: ' + errorThrown);
     failures++;
     if (failures < maxFailures) {
         liveQueue = liveData.concat(liveQueue);     // Join the attempted data back to retry

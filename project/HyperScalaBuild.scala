@@ -98,7 +98,7 @@ object HyperScalaBuild extends Build {
 
   // Examples and Site
   lazy val examples = Project("examples", file("examples"), settings = createSettings("hyperscala-examples"))
-    .dependsOn(web, bean)
+    .dependsOn(web, bean, ui)
   lazy val site = Project("site", file("site"), settings = createSettings("hyperscala-site"))
     .dependsOn(examples)
     .settings(webSettings: _*)

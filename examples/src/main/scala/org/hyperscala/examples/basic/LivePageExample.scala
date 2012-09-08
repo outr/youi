@@ -18,7 +18,7 @@ class LivePageExample extends LivePage {
   var reversed = false
 
   val input = new Input {
-    event.change := LiveEvent
+    event.change := LiveEvent()
 
     value.onChange {
       println("Input value changed: %s".format(value()))
@@ -31,7 +31,7 @@ class LivePageExample extends LivePage {
   contents += input
 
   val select = new Select {
-    event.change := LiveEvent
+    event.change := LiveEvent()
 
     contents += new tag.Option(value = "uno", content = "One")
     contents += new tag.Option(value = "dos", content = "Two")
@@ -44,7 +44,7 @@ class LivePageExample extends LivePage {
   contents += select
 
   val textArea = new TextArea {
-    event.change := LiveEvent
+    event.change := LiveEvent()
 
     listeners.synchronous {
       case evt: ChangeEvent => println(bodyText)
@@ -53,7 +53,7 @@ class LivePageExample extends LivePage {
   contents += textArea
 
   contents += new Button(content = "Test Button") {
-    event.click := LiveEvent
+    event.click := LiveEvent()
 
     listeners.synchronous {
       case evt: ClickEvent => {

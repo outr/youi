@@ -14,10 +14,10 @@ trait LiveForm extends Form {
 
   view.live {
     case input: Input => {
-      input.event.change := LiveEvent
+      input.event.change := LiveEvent()
     }
     case button: Button => {
-      button.event.click := LiveEvent
+      button.event.click := LiveEvent()
 
       button.listeners.synchronous {
         case evt: ClickEvent => {
@@ -29,10 +29,10 @@ trait LiveForm extends Form {
       }
     }
     case select: Select => {
-      select.event.change := LiveEvent
+      select.event.change := LiveEvent()
     }
     case textArea: TextArea => {
-      textArea.event.change := LiveEvent
+      textArea.event.change := LiveEvent()
     }
     case _ => // Ignore
   }

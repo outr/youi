@@ -32,7 +32,7 @@ class HTMLPage extends Page with PropertyParent with Parent with Updatable {
     }
   }
   val body = new Body
-  val contents = body.contents
+  def contents = body.contents
 
   val view = new ContainerView[HTMLTag](html)
 

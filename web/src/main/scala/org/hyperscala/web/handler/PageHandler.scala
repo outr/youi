@@ -32,7 +32,7 @@ class PageHandler(val link: String, scope: Scope = Scope.Request, matcher: Strin
     try {
       val storage = scope match {
         case Scope.Application => website.application
-        case Scope.Session => website.session
+        case Scope.Session | Scope.Page => website.session
         case _ => null
       }
       val lookup = if (storage != null) {

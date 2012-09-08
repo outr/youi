@@ -11,7 +11,7 @@ import org.hyperscala.javascript.JavaScriptString
 import tag.{Input, Img, Button, Div}
 import validation.ValidationFailed
 import org.hyperscala.web.HTMLPage
-import org.hyperscala.web.live.LivePage
+import org.hyperscala.web.live.{ClickEvent, LiveEvent, LivePage}
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -89,11 +89,22 @@ trait ListEditor[T] extends Div with ValueEditor[List[T]] {
           event.click := JavaScriptString("$(this).focus(); $(this).closest('form').submit();")
         }
         style.margin.left := 10.px
-        contents += new Img(src = "/delete.png")
+
+        def remove() = {
+          property := property().filterNot(t => t == item)
+          updateItems()
+        }
+
+        contents += new Img(src = "/delete.png") {
+          event.click := LiveEvent()
+
+          listeners.synchronous {
+            case evt: ClickEvent => remove()    // Workaround for Chrome
+          }
+        }
         listeners.synchronous {
           case evt: FormSubmit => {
-            property := property().filterNot(t => t == item)
-            updateItems()
+            remove()
             // TODO: support focusing back to the valueEditor - this refers to the button
 //            hierarchy.ancestor[ActionForm]((f: ActionForm) => true) match {
 //              case Some(f) => f.focus(valueEditor)

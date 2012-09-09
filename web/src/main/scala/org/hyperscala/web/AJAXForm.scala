@@ -5,6 +5,7 @@ import io.Source
 import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.Unique
 import org.hyperscala.html.attributes.{ButtonType, InputType}
+import org.jdom2.Element
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -28,8 +29,8 @@ trait AJAXForm extends Form {
     case _ => "'%s'".format(v)
   }
 
-  override protected def before() = {
-    super.before()
+  override protected def before(element: Element) = {
+    super.before(element)
 
     if (id() == null) {
       id := Unique()

@@ -4,9 +4,11 @@ import attributes._
 import event.EventSupport
 import org.hyperscala._
 import org.hyperscala.html.tag._
-import org.hyperscala.css.StyleSheet
+import css.StyleSheet
 import persistence.StyleSheetPersistence
 import scala.collection.{Map => ScalaMap}
+import org.powerscala.property.PropertyParent
+import org.jdom2.Element
 
 /**
  * NOTE: This file has been generated. Do not modify directly!
@@ -27,11 +29,17 @@ trait HTMLTag extends Tag with EventSupport {
   val tabIndex = PropertyAttribute[Int]("tabindex", -1)
   val title = PropertyAttribute[String]("title", null)
 
-  val style = new PropertyAttribute[StyleSheet]("style", null, inclusion = InclusionMode.NotEmpty) with LazyProperty[StyleSheet] {
-    protected def lazyValue = new StyleSheet
-
-    // Avoid overwriting previously set values
-    override def attributeValue_=(value: String) = StyleSheetPersistence(this.value, value)
+  val style = new StyleProperty("style", InclusionMode.NotEmpty) {
+    val link = new StyleProperty("link", InclusionMode.Exclude)(HTMLTag.this)
+    val visited = new StyleProperty("visited", InclusionMode.Exclude)(HTMLTag.this)
+    val active = new StyleProperty("active", InclusionMode.Exclude)(HTMLTag.this)
+    val hover = new StyleProperty("hover", InclusionMode.Exclude)(HTMLTag.this)
+    val focus = new StyleProperty("focus", InclusionMode.Exclude)(HTMLTag.this)
+    val empty = new StyleProperty("empty", InclusionMode.Exclude)(HTMLTag.this)
+    val target = new StyleProperty("target", InclusionMode.Exclude)(HTMLTag.this)
+    val checked = new StyleProperty("checked", InclusionMode.Exclude)(HTMLTag.this)
+    val enabled = new StyleProperty("enabled", InclusionMode.Exclude)(HTMLTag.this)
+    val disabled = new StyleProperty("disabled", InclusionMode.Exclude)(HTMLTag.this)
   }
 
   if (HTMLTag.GenerateIds) {
@@ -46,11 +54,59 @@ trait HTMLTag extends Tag with EventSupport {
     this.asInstanceOf[Container[HTMLTag]].contents += new Text(text)
   }
 
+  override protected def after(element: Element) {
+    super.after(element)
+
+    val extraStyle = new StringBuilder
+    validateExtraStyle(element, style.link, extraStyle)
+    validateExtraStyle(element, style.visited, extraStyle)
+    validateExtraStyle(element, style.active, extraStyle)
+    validateExtraStyle(element, style.hover, extraStyle)
+    validateExtraStyle(element, style.focus, extraStyle)
+    validateExtraStyle(element, style.empty, extraStyle)
+    validateExtraStyle(element, style.target, extraStyle)
+    validateExtraStyle(element, style.checked, extraStyle)
+    validateExtraStyle(element, style.enabled, extraStyle)
+    validateExtraStyle(element, style.disabled, extraStyle)
+    if (extraStyle.length != 0) {
+      val general = element.getAttributeValue("style") match {
+        case null => ""
+        case v => v
+      }
+      element.removeAttribute("style")
+      extraStyle.append("\t#%s { %s }\n".format(id(), general))
+
+      val styleTag = new Element("style")
+      styleTag.setText("\n%s".format(extraStyle.toString()))
+      element.addContent(styleTag)
+    }
+  }
+
+  private def validateExtraStyle(element: Element, s: StyleProperty, extraStyle: StringBuilder) = {
+    if (s.loaded && s.modified) {
+      val css = s.attributeValue
+      if (css.nonEmpty) {
+        if (id() == null) {
+          id := Unique()
+          element.setAttribute("id", id())
+        }
+        extraStyle.append("\t#%s:%s { %s }\n".format(id(), s.name(), css))
+      }
+    }
+  }
+
   def byId[T <: HTMLTag](id: String)(implicit manifest: Manifest[T]) = hierarchy.findFirst[T](t => t.id() == id)(manifest)
 
   def byName[T <: HTMLTag](name: String)(implicit manifest: Manifest[T]) = hierarchy.findAll[T](t => t.name() == name)(manifest)
 
   def byTag[T <: HTMLTag](implicit manifest: Manifest[T]) = hierarchy.findAll[T](t => true)(manifest)
+}
+
+class StyleProperty(_name: String, inclusion: InclusionMode)(implicit parent: PropertyParent) extends PropertyAttribute[StyleSheet](_name, null, inclusion = inclusion)(StyleSheetPersistence, parent, Manifest.classType[StyleSheet](classOf[StyleSheet])) with LazyProperty[StyleSheet] {
+  protected def lazyValue = new StyleSheet
+
+  // Avoid overwriting previously set values
+  override def attributeValue_=(value: String) = StyleSheetPersistence(this.value, value)
 }
 
 object HTMLTag {

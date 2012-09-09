@@ -3,7 +3,6 @@ package org.hyperscala
 import org.jdom2.{Attribute, Element, Content}
 import annotation.tailrec
 
-import scala.collection.JavaConversions._
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -13,10 +12,10 @@ trait Markup extends XMLContent {
   def xmlAttributes: Seq[XMLAttribute]
 
   def toXML: Content = {
-    before()
     val element = new Element(xmlLabel)
+    before(element)
     attributesToXML(element, xmlAttributes)
-    after()
+    after(element)
     element
   }
   def fromXML(xml: Content) = xml match {
@@ -26,9 +25,9 @@ trait Markup extends XMLContent {
     case _ => throw new RuntimeException("%s: Unsupported content type: %s".format(getClass.getName, xml.getClass.getName))
   }
 
-  protected def before() = {}
+  protected def before(element: Element) = {}
 
-  protected def after() = {}
+  protected def after(element: Element) = {}
 
   @tailrec
   private def attributesToXML(element: Element, attributes: Seq[XMLAttribute]): Unit = {

@@ -79,7 +79,7 @@ function jsonMatch(json, query) {
 
 // Add as a handler to fire live events to server
 function liveEventHandler(e, fireChange, onlyLast) {
-    var element = $(e.target);
+    var element = $(e.currentTarget);
     var id = element.attr('id');
     if (e.type == 'change' || fireChange) {
         var changeQuery = null;

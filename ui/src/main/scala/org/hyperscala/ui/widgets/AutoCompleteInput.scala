@@ -8,6 +8,8 @@ import org.powerscala.Color
 import org.hyperscala.web.live._
 import org.hyperscala.css.attributes.{Display, Position}
 
+import scala.math._
+
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
@@ -15,9 +17,76 @@ abstract class AutoCompleteInput[T](id: String = Unique(), default: T) extends t
   val property = Property[T]("property", default)
   property.onChange {
     updateInput()
+    hideCompletion()
   }
 
-  def updateInput() = {
+  def selected = if (showingCompletion) {
+    completion.contents.find {
+      case result: Result[_] => result.active
+      case _ => false
+    }.asInstanceOf[Option[Result[T]]]
+  } else {
+    None
+  }
+
+  def selectedIndex = if (showingCompletion) {
+    selected match {
+      case Some(s) => completion.contents.indexOf(s)
+      case None => -1
+    }
+  } else {
+    -1
+  }
+
+  def selectedIndex_=(index: Int) = {
+    completion.contents.zipWithIndex.foreach {
+      case (r, i) => {
+        val result = r.asInstanceOf[Result[T]]
+        result.state(i == index)
+      }
+    }
+    selectedIndex != -1
+  }
+
+  def selectPrevious() = {
+    if (selectedIndex = selectedIndex - 1) {
+      // Properly went backwards
+    } else {
+      selectFirst()
+    }
+  }
+
+  def selectNext() = {
+    if (selectedIndex = selectedIndex + 1) {
+      // Properly went forward
+    } else {
+      selectLast()
+    }
+  }
+
+  def selectFirst() = {
+    selectedIndex = 0
+  }
+
+  def selectLast() = {
+    selectedIndex = completion.contents.length - 1
+  }
+
+  def applySelected(): Unit = if (showingCompletion) {
+    selected match {
+      case Some(result) if (result.result != property()) => property := result.result
+      case _ => {
+        updateInput()
+        hideCompletion()
+      }
+    }
+  } else {
+    property := null.asInstanceOf[T]
+  }
+
+  // TODO: focus gained / lost
+
+  def updateInput(): Unit = if (property() != null) {
     input.value := resultToString(property())
   }
 
@@ -28,19 +97,22 @@ abstract class AutoCompleteInput[T](id: String = Unique(), default: T) extends t
     style.height := 100.pct
 
     event.keyUp := LiveEvent(fireChange = true, preventDefault = true, onlyLast = true)
+    event.blur := LiveEvent(preventDefault = false)
 
     listeners.synchronous {
-      case evt: KeyUpEvent if (evt.key == Key.Escape) => completion.style.display := Display.None
-      case evt: KeyUpEvent => {
-        val query = value().toLowerCase
-        val results = complete(query).map(r => result(r, query))
-        if (results.nonEmpty) {
-          completion.contents.replaceWith(results: _*)
-          completion.style.display := Display.Block
-        } else {
-          completion.style.display := Display.None
-        }
+      case evt: BlurEvent => {
+        updateInput()
+        hideCompletion()
       }
+      case evt: KeyUpEvent if (evt.key == Key.Return) => applySelected()
+      case evt: KeyUpEvent if (evt.key == Key.Up) => selectPrevious()
+      case evt: KeyUpEvent if (evt.key == Key.Down) => selectNext()
+      case evt: KeyUpEvent if (evt.key == Key.Escape) => hideCompletion()
+      case evt: KeyUpEvent if (evt.key == Key.Left ||
+                               evt.key == Key.Right ||
+                               evt.key == Key.Home ||
+                               evt.key == Key.End) => // Ignore
+      case evt: KeyUpEvent => showCompletion()
     }
   }
 
@@ -62,40 +134,86 @@ abstract class AutoCompleteInput[T](id: String = Unique(), default: T) extends t
 
   def resultToString(result: T) = result.toString
 
-  def result(r: T, query: String) = new tag.Div with Result[T] {
-    val result = r
-    val resultString = resultToString(r)
+  def result(r: T, query: String) = new BasicResult[T](r, query, this)
 
-    if (query.nonEmpty) {
-      val index = resultString.toLowerCase.indexOf(query)
-      if (index > 0) {
-        contents += resultString.substring(0, index)
-      }
-      contents += new tag.B {
-        contents += resultString.substring(index, index + query.length)
-      }
-      if (index != resultString.length - 1) {
-        contents += resultString.substring(index + query.length)
+  def showingCompletion = completion.style.display() != Display.None
+
+  def showCompletion(): Unit = {
+    val index = max(selectedIndex, 0)
+    val query = input.value().toLowerCase
+    val results = complete(query).map(r => result(r, query))
+    if (results.nonEmpty) {
+      completion.contents.replaceWith(results: _*)
+      completion.style.display := Display.Block
+      if (!(selectedIndex = index)) {
+        selectLast()
       }
     } else {
-      contents += resultString
+      completion.style.display := Display.None
     }
+  }
 
-    style.padding.left := 15.px
-    style.padding.right := 15.px
-    style.padding.top := 5.px
-    style.padding.bottom := 5.px
-
-    event.mouseOver := LiveEvent()
-    event.mouseOut := LiveEvent()
-
-    listeners.synchronous {
-      case evt: MouseOverEvent => style.background.color := Color.LightGray
-      case evt: MouseOutEvent => style.background.color := Color.White
-    }
+  def hideCompletion() = {
+    completion.style.display := Display.None
   }
 }
 
 trait Result[T] {
   def result: T
+
+  private var _active: Boolean = false
+
+  def active = _active
+
+  def state(active: Boolean) = {
+    _active = active
+  }
+}
+
+class BasicResult[T](val result: T, query: String, input: AutoCompleteInput[T]) extends tag.Div with Result[T] {
+  val resultString = input.resultToString(result)
+
+  if (query.nonEmpty) {
+    val index = resultString.toLowerCase.indexOf(query)
+    if (index > 0) {
+      contents += resultString.substring(0, index)
+    }
+    contents += new tag.B {
+      contents += resultString.substring(index, index + query.length)
+    }
+    if (index != resultString.length - 1) {
+      contents += resultString.substring(index + query.length)
+    }
+  } else {
+    contents += resultString
+  }
+
+  style.padding.left := 15.px
+  style.padding.right := 15.px
+  style.padding.top := 5.px
+  style.padding.bottom := 5.px
+  style.cursor := "pointer"
+
+  event.mouseOver := LiveEvent()
+  event.mouseOut := LiveEvent()
+  event.click := LiveEvent()
+
+  listeners.synchronous {
+    case evt: MouseOverEvent => {
+      input.completion.contents.foreach {
+        case child => child.asInstanceOf[Result[T]].state(active = false)
+      }
+      state(active = true)
+    }
+    case evt: MouseOutEvent => state(active = false)
+    case evt: ClickEvent => input.property := result
+  }
+
+  override def state(active: Boolean) = {
+    super.state(active)
+    active match {
+      case true => style.background.color := Color.LightGray
+      case false => style.background.color := Color.White
+    }
+  }
 }

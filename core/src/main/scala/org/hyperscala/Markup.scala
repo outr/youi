@@ -20,7 +20,7 @@ trait Markup extends XMLContent {
   }
   def fromXML(xml: Content) = xml match {
     case element: Element => {
-      attributesFromXML(element.getAttributes)
+      attributesFromXML(element.getAttributes.toList)
     }
     case _ => throw new RuntimeException("%s: Unsupported content type: %s".format(getClass.getName, xml.getClass.getName))
   }

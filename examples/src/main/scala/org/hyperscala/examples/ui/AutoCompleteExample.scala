@@ -5,6 +5,7 @@ import org.hyperscala.ui.widgets.AutoCompleteInput
 import org.hyperscala.html._
 import org.powerscala.property._
 import org.powerscala.Language
+import org.powerscala.property.event.PropertyChangeEvent
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -22,6 +23,9 @@ class AutoCompleteExample extends LivePage {
           case l if (l.name().toLowerCase.contains(v)) => l
         }.slice(0, 10)
       }
+    }
+    input.property.listeners.synchronous {
+      case evt: PropertyChangeEvent => println("OldValue: %s, NewValue: %s".format(evt.oldValue, evt.newValue))
     }
     contents += input
 

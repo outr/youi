@@ -2,18 +2,19 @@ package org.hyperscala.io
 
 import org.jdom2._
 import java.io.{OutputStreamWriter, BufferedWriter, OutputStream}
-import scala.collection.JavaConversions._
 import annotation.tailrec
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-case class HTMLOutputter(tab: String = "", newLine: String = "") {
+case class HTMLOutputter(tab: String = "\t", newLine: String = "\n") {
   val expandedTags = Set("title", "script", "div", "a", "select", "textarea")
 
-  def apply(content: Content, writer: OutputWriter = HTMLOutputter.PrintWriter, depth: Int = 0): Unit = content match {
+  def apply(content: Content, writer: OutputWriter = HTMLOutputter.PrintWriter, depth: Int = 0, includeWhitespace: Boolean = true): Unit = content match {
     case element: Element => {
-      writeTabs(writer, depth)
+      if (includeWhitespace) {
+        writeTabs(writer, depth)
+      }
       writer.write("<")
       writer.write(element.getName)
       element.getAttributes.map(a => "%s=\"%s\"".format(a.getName, a.getValue)).mkString(" ") match {
@@ -23,29 +24,51 @@ case class HTMLOutputter(tab: String = "", newLine: String = "") {
       val children = element.getContent.toList
       if (children.isEmpty && !expandedTags.contains(element.getName)) {
         writer.write("/>")
-        writer.write(newLine)
+        if (includeWhitespace) {
+          writer.write(newLine)
+        }
       } else {
         writer.write(">")
-        writer.write(newLine)
-        writeChildren(children, writer, depth + 1)
-        writeTabs(writer, depth)
+        val childrenHasText = hasText(children)
+        if (!childrenHasText) {
+          writer.write(newLine)
+        }
+        writeChildren(children, writer, depth + 1, !childrenHasText)
+        if (!childrenHasText) {
+          writeTabs(writer, depth)
+        }
         writer.write("</%s>".format(element.getName))
-        writer.write(newLine)
+        if (includeWhitespace) {
+          writer.write(newLine)
+        }
       }
     }
     case text: Text => {
-      writeTabs(writer, depth)
+//      writeTabs(writer, depth)
       writer.write(text.getText)
-      writer.write(newLine)
+//      writer.write(newLine)
     }
   }
 
   @tailrec
-  private def writeChildren(children: List[Content], writer: OutputWriter, depth: Int): Unit = {
+  private def hasText(list: List[Content]): Boolean = {
+    if (list.isEmpty) {
+      false
+    } else {
+      if (list.head.isInstanceOf[Text]) {
+        true
+      } else {
+        hasText(list.tail)
+      }
+    }
+  }
+
+  @tailrec
+  private def writeChildren(children: List[Content], writer: OutputWriter, depth: Int, includeWhitespace: Boolean): Unit = {
     if (children.nonEmpty) {
       val child = children.head
-      apply(child, writer, depth)
-      writeChildren(children.tail, writer, depth)
+      apply(child, writer, depth, includeWhitespace)
+      writeChildren(children.tail, writer, depth, includeWhitespace)
     }
   }
 

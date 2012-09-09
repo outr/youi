@@ -67,7 +67,7 @@ object LiveEvent {
         val ctrlKey = map("ctrlKey").asInstanceOf[Boolean]
         val key = map("key").asInstanceOf[Double].toInt
         val locale = map.getOrElse("locale", null).asInstanceOf[String]
-        val location = map("location").asInstanceOf[Double].toLong
+        val location = map.getOrElse("location", 0.0).asInstanceOf[Double].toLong
         val metaKey = map("metaKey").asInstanceOf[Boolean]
         val repeat = map.getOrElse("repeat", false).asInstanceOf[Boolean]
         val shiftKey = map("shiftKey").asInstanceOf[Boolean]

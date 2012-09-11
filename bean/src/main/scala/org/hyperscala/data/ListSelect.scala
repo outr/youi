@@ -18,21 +18,8 @@ class ListSelect[T](val property: StandardProperty[T],
 
   property.listeners.synchronous {
     case evt: PropertyChangeEvent => {
-      if (evt.oldValue != null) {
-        contents.collectFirst {
-          case beanOption: BeanOption[_] if (beanOption.t == evt.oldValue) => beanOption.asInstanceOf[BeanOption[T]]
-        } match {
-          case Some(beanOption) => beanOption.selected := false
-          case None => // Can't find it in the list, may have been removed
-        }
-      }
-      if (evt.newValue != null) {
-        contents.collectFirst {
-          case beanOption: BeanOption[_] if (beanOption.t == evt.newValue) => beanOption.asInstanceOf[BeanOption[T]]
-        } match {
-          case Some(beanOption) => beanOption.selected := true
-          case None => // Can't find it in the list, may have been removed
-        }
+      contents.foreach {
+        case beanOption: BeanOption[_] => beanOption.selected := (beanOption.t == evt.newValue)
       }
     }
   }
@@ -55,9 +42,11 @@ class ListSelect[T](val property: StandardProperty[T],
 }
 
 case class BeanOption[T](select: ListSelect[T],
-                         t: T, currentlySelected: Boolean,
+                         t: T,
+                         currentlySelected: Boolean,
                          identifier: T => String,
                          visualizer: T => String) extends Option {
+  id := "%s%s".format(select.id(), identifier(t))
   value := identifier(t)
   contents += visualizer(t)
   if (currentlySelected) {

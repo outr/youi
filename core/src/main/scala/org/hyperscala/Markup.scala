@@ -2,7 +2,7 @@ package org.hyperscala
 
 import org.jdom2.{Attribute, Element, Content}
 import annotation.tailrec
-
+import scala.collection.JavaConversions._
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>

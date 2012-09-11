@@ -3,6 +3,7 @@ package org.hyperscala.io
 import org.jdom2._
 import java.io.{OutputStreamWriter, BufferedWriter, OutputStream}
 import annotation.tailrec
+import scala.collection.JavaConversions._
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -24,6 +25,11 @@ case class HTMLOutputter(tab: String = "\t", newLine: String = "\n") {
       val children = element.getContent.toList
       if (children.isEmpty && !expandedTags.contains(element.getName)) {
         writer.write("/>")
+        if (includeWhitespace) {
+          writer.write(newLine)
+        }
+      } else if (children.isEmpty) {
+        writer.write("></%s>".format(element.getName))
         if (includeWhitespace) {
           writer.write(newLine)
         }

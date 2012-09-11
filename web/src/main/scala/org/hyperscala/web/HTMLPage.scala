@@ -132,7 +132,7 @@ class HTMLPage extends Page with PropertyParent with Parent with Updatable {
     val value = values.head
     tag match {
       case input: Input => input.value := value
-      case textArea: TextArea => textArea.contents.replaceWith(value)
+      case textArea: TextArea => textArea.content := value
       case button: Button => button.fire(FormSubmit(method))
       case select: Select => select.contents.collectFirst {
         case option: hyperscala.html.tag.Option if (option.value() == value) => option.selected := true

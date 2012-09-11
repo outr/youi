@@ -10,7 +10,7 @@ import org.hyperscala.html.constraints._
  * NOTE: This file has been generated. Do not modify directly!
  * @author Matt Hicks <mhicks@hyperscala.org>
  */
-class TextArea extends Container[BodyChild] with BodyChild with HTMLTag {
+class TextArea extends Textual with BodyChild with HTMLTag {
   lazy val xmlLabel = "textarea"
 
   def this(name: String = null,
@@ -38,7 +38,7 @@ class TextArea extends Container[BodyChild] with BodyChild with HTMLTag {
            required: String = null,
            rows: java.lang.Integer = null,
            wrap: TextAreaWrap = null,
-           content: BodyChild = null) = {
+           content: String = null) = {
     this()
     up(this.name, name)
     up(this.accessKey, accessKey)
@@ -65,7 +65,7 @@ class TextArea extends Container[BodyChild] with BodyChild with HTMLTag {
     up(this.required, required)
     up(this.rows, rows)
     up(this.wrap, wrap)
-    if (content != null) contents += content
+    up(this.content, content)
   }
 
   val autoFocus = PropertyAttribute[Boolean]("autofocus", false)

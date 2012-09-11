@@ -118,10 +118,8 @@ function liveEventHandler(e, fireChange, onlyLast) {
             'repeat': e.repeat,
             'shiftKey': e.shiftKey
         };
-        // TODO: support onlyLast
         liveMessage(json, lastQuery);
     } else {
-        // TODO: support onlyLast
         liveEvent(id, e.type, lastQuery);
     }
 }

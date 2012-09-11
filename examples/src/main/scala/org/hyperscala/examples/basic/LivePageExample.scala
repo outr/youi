@@ -47,7 +47,7 @@ class LivePageExample extends LivePage {
     event.change := LiveEvent()
 
     listeners.synchronous {
-      case evt: ChangeEvent => println(bodyText)
+      case evt: ChangeEvent => println(content())
     }
   }
   contents += textArea

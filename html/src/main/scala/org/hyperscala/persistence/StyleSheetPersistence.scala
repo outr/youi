@@ -19,13 +19,17 @@ object StyleSheetPersistence extends ValuePersistence[StyleSheet] {
   }.mkString("; ")
 
   def apply(ss: StyleSheet, s: String) = {
-    s.split(";").map(s => s.split(":")).map(a => a(0).trim -> a(1).trim).foreach {
-      case (key, value) => ss.properties.get(key) match {
-        case Some(p) => {
-          p.asInstanceOf[StyleSheetAttribute[_]].attributeValue = value
+    try {
+      s.split(";").map(s => s.split(":")).map(a => a(0).trim -> a(1).trim).foreach {
+        case (key, value) => ss.properties.get(key) match {
+          case Some(p) => {
+            p.asInstanceOf[StyleSheetAttribute[_]].attributeValue = value
+          }
+          case None => throw new RuntimeException("No support for custom StyleSheet attributes: [%s] = [%s]".format(key, value))
         }
-        case None => throw new RuntimeException("No support for custom StyleSheet attributes: [%s] = [%s]".format(key, value))
       }
+    } catch {
+      case t: Throwable => System.err.println("Error parsing CSS: [%s]".format(s))
     }
   }
 }

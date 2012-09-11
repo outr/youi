@@ -128,6 +128,7 @@ class LivePage extends HTMLPage {
     case evt: PropertyChangeEvent if (applying.get() != null && applying.get()._1 == evt.property && applying.get()._2 == evt.newValue) => {
       // Ignoring changes that are pushed from client
 //      println("Ignoring change resulting from client: %s".format(evt))
+      applying.set(null)  // Ignore only once
     }
     case evt: PropertyChangeEvent => evt.property match {
       case property: PropertyAttribute[_] => property.parent match {
@@ -138,6 +139,8 @@ class LivePage extends HTMLPage {
             val key = "%s.%s".format(t.id(), property.name())
             val script = if (t.isInstanceOf[tag.Title] && property.name() == "content") {
               "document.title = '%s';".format(property.attributeValue)
+            } else if (t.isInstanceOf[Textual] && property.name() == "content") {
+              "$('#%s').val(%s);".format(t.id(), scriptifyValue(property))
             } else if (property() == false) {   // Remove attribute
               "$('#%s').removeAttr('%s');".format(t.id(), property.name())
             } else {
@@ -229,7 +232,7 @@ class LivePage extends HTMLPage {
                                 applyChange(option.selected, false)
                               }
                             }
-                            case textArea: tag.TextArea => textArea.contents.replaceWith(v)   // TODO: how do I ignore these events?
+                            case textArea: tag.TextArea => applyChange(textArea.content, v)
                             case _ => throw new RuntimeException("Change not supported on %s with id %s".format(t.getClass.getName, id))
                           }
     //                    } finally {

@@ -2,8 +2,6 @@ package org.hyperscala.editor
 
 import org.powerscala.property.StandardProperty
 import org.hyperscala.persistence.ValuePersistence
-import org.hyperscala.html._
-import org.powerscala.hierarchy.event.ChildAddedEvent
 import tag.TextArea
 
 /**
@@ -13,17 +11,11 @@ class TextAreaEditor[T](val property: StandardProperty[T])(implicit persistence:
   val convert2String = (t: T) => persistence.toString(t, manifest.erasure)
   val convert2T = (s: String) => persistence.fromString(s, manifest.erasure)
 
+  id := property.name()
   name := property.name()
 
-  listeners.synchronous {
-    case evt: ChildAddedEvent => property := convert2T(toXML.getTextTrim)
-  }
-
-//  value.bindTo[T](property)(convert2String)
-//  property.bindTo[String](value)(convert2T)
-  property.onChange {
-    contents.replaceWith(convert2String(property()))
-  }
+  content.bindTo[T](property)(convert2String)
+  property.bindTo[String](content)(convert2T)
 
   property.fireChanged()
 }

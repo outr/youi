@@ -2,7 +2,7 @@ package org.hyperscala.editor
 
 import org.powerscala.property.StandardProperty
 import org.hyperscala.persistence.ValuePersistence
-import tag.TextArea
+import org.hyperscala.html.tag.TextArea
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>

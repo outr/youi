@@ -175,6 +175,8 @@ class LivePage extends HTMLPage {
 
   override def sendRedirect(url: String) = sendJavaScript("window.location.href = '%s';".format(url))
 
+  def reload() = sendRedirect(Website().servletRequest.getRequestURI)
+
   def sendJavaScript(js: String) = enqueue(LiveChange(nextId, null, js))
 
   override def shouldDispose(scope: Scope, method: Method, request: HttpServletRequest) = if (scope == Scope.Page) {

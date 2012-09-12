@@ -3,7 +3,7 @@ package org.hyperscala.web.live
 import org.hyperscala._
 import org.hyperscala.html._
 import org.hyperscala.css.StyleSheet
-import web.{Scope, Website, HTMLPage}
+import web.{Website, HTMLPage}
 import actors.threadpool.AtomicInteger
 import scala.io.Source
 import org.hyperscala.javascript.JavaScriptContent
@@ -178,12 +178,6 @@ class LivePage extends HTMLPage {
   def reload() = sendRedirect(Website().servletRequest.getRequestURI)
 
   def sendJavaScript(js: String) = enqueue(LiveChange(nextId, null, js))
-
-  override def shouldDispose(scope: Scope, method: Method, request: HttpServletRequest) = if (scope == Scope.Page) {
-    method == Method.Get  // Dispose each page load
-  } else {
-    super.shouldDispose(scope, method, request)
-  }
 
   @tailrec
   final def enqueue(change: LiveChange, connections: List[LiveConnection] = this.connections): Unit = {

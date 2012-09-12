@@ -7,6 +7,8 @@ import annotation.tailrec
 import java.io.{OutputStream, InputStream}
 
 /**
+ * URLWebResource represents a resource for a specific URL that will be streamed back to the client.
+ *
  * @author Matt Hicks <mhicks@powerscala.org>
  */
 class URLWebResource(url: URL) extends WebResource {
@@ -41,6 +43,9 @@ class URLWebResource(url: URL) extends WebResource {
 }
 
 object URLWebResource {
+  /**
+   * Looks up the Content-Type based on the extension or defaults to "default".
+   */
   def contentType(extension: String, default: String) = extension.toLowerCase match {
     case "css" => "text/css"
     case "js" => "application/javascript"

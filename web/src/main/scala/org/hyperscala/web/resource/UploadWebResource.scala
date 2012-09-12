@@ -10,6 +10,8 @@ import org.apache.commons.fileupload.FileItem
 import scala.collection.JavaConversions._
 
 /**
+ * UploadWebResource handles HTTP POST multi-part file uploads.
+ *
  * @author Matt Hicks <mhicks@powerscala.org>
  */
 trait UploadWebResource extends WebResource {
@@ -24,7 +26,15 @@ trait UploadWebResource extends WebResource {
     uploadComplete()
   }
 
+  /**
+   * Called for each file included in the multi-part upload.
+   *
+   * @param fileItem the file item currently being processed
+   */
   protected def processFileItem(fileItem: FileItem): Unit
 
+  /**
+   * Called when the upload has completed.
+   */
   protected def uploadComplete(): Unit
 }

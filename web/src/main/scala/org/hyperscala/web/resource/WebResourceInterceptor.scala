@@ -12,8 +12,9 @@ import javax.servlet.http.{HttpServletResponse, HttpServletRequest}
 trait WebResourceInterceptor {
   /**
    * Invoked before the WebResource.apply method is invoked. If the method returns false all processing is stopped and
-   * further WebResourceInterceptors are ignored (before and after) as well as WebResource.apply is not invoked for the
-   * request.
+   * further WebResourceInterceptors are ignored (before and after), WebResource.apply is not called, but for all
+   * interceptors that have been invoked, the after method is guaranteed to be called before returning. Will not be
+   * called if a WebResourceInterceptor before it returned false.
    *
    * @param method the HTTP method this resource was hit with
    * @param request the servlet request
@@ -23,7 +24,8 @@ trait WebResourceInterceptor {
   def before(method: Method, request: HttpServletRequest, response: HttpServletResponse): Boolean
 
   /**
-   * Invoked after the WebResource.apply method is invoked and only if all interceptor before methods return true.
+   * Invoked after before, and after WebResource.apply if all WebResourceInterceptors returned true. Will not be called
+   * if a WebResourceInterceptor before it returned false in the before method.
    *
    * @param method the HTTP method this resource was hit with
    * @param request the servlet request

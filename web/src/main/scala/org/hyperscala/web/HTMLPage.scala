@@ -114,7 +114,10 @@ class HTMLPage extends PageResource with PropertyParent with Parent with Updatab
         }
       }
     } catch {
-      case t: Throwable => handleException(t, method, request, response)
+      case t: Throwable => {
+        errorOccurred(t)
+        handleError(t, method, request, response)
+      }
     } finally {
       HTMLPage.instance.set(null)
     }
@@ -158,13 +161,22 @@ class HTMLPage extends PageResource with PropertyParent with Parent with Updatab
     }
   }
 
-  final def errorOccurred(t: Throwable) = {
+  /**
+   * Responsible for logging any errors that occur on this page.
+   *
+   * Defaults to calling website.errorOccurred
+   */
+  protected def errorOccurred(t: Throwable) = {
     website.errorOccurred(t)
   }
 
-  protected def handleException(t: Throwable, method: Method, request: HttpServletRequest, response: HttpServletResponse) = {
-    errorOccurred(t)
-    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, t.getMessage)
+  /**
+   * Handles the errors that occur for this page. This should send any response back to the client that is necessary.
+   *
+   * Defaults to calling website.handleError
+   */
+  protected def handleError(t: Throwable, method: Method, request: HttpServletRequest, response: HttpServletResponse) = {
+    website.handleError(t, method, request, response)
   }
 
   /**

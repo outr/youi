@@ -82,6 +82,11 @@ trait Website[S <: Session] extends MutableContainer[WebResourceHandler] with Pr
         case Some(resource) => resource.service(method, request, response)
         case None => response.sendError(HttpServletResponse.SC_NOT_FOUND, "The page could not be found: %s".format(uri))
       }
+    } catch {
+      case t: Throwable => {
+        errorOccurred(t)
+        handleError(t, method, request, response)
+      }
     } finally {
       Website.instance.set(null)
       _servletRequest.set(null)
@@ -133,10 +138,20 @@ trait Website[S <: Session] extends MutableContainer[WebResourceHandler] with Pr
   protected def createSession: S
 
   /**
-   * Handles any errors that occur on pages within this website.
+   * Logs the error in a standardized way for the site.
    */
   def errorOccurred(t: Throwable) = {
     t.printStackTrace()
+  }
+
+  /**
+   * Handles any unhandled errors and called errorOccurred to log the error.
+   *
+   * Defaults to sending an internal server error message back to the client.
+   */
+  // TODO: support error pages
+  def handleError(t: Throwable, method: Method, request: HttpServletRequest, response: HttpServletResponse) = {
+    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "An internal error occurred: %s".format(t.getMessage))
   }
 
   /**

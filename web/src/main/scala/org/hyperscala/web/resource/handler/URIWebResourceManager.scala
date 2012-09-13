@@ -5,6 +5,6 @@ package org.hyperscala.web.resource.handler
  *
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-abstract class URIWebResourceManager(uri: String) extends WebResourceManager {
-  def isMatch(uri: String) = this.uri == uri
+abstract class URIWebResourceManager(val link: String) extends WebResourceManager {
+  def isMatch(uri: String) = link == uri
 }

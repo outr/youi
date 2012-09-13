@@ -27,10 +27,8 @@ trait URLWebResourceManager extends WebResourceManager {
 
   /**
    * Modifies the uri supplied for consuming in lookup.
-   *
-   * Defaults to strip the '/' off the front
    */
-  def modifyURI(uri: String) = uri.substring(1)
+  def modifyURI(uri: String) = uri
 
   def create(uri: String) = createWebResource(lookup(modifyURI(uri)))
 

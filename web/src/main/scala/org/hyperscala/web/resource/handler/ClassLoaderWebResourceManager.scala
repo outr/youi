@@ -8,4 +8,6 @@ package org.hyperscala.web.resource.handler
  */
 class ClassLoaderWebResourceManager(classLoader: ClassLoader = getClass.getClassLoader) extends URLWebResourceManager {
   def lookup(uri: String) = classLoader.getResource(uri)
+
+  override def modifyURI(uri: String) = super.modifyURI(uri).substring(1)
 }

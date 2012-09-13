@@ -10,6 +10,7 @@ import org.powerscala.hierarchy.{ContainerView, Parent, Element}
 import collection.JavaConversions._
 import java.io.OutputStream
 import org.powerscala.Updatable
+import resource.PageResource
 import tag._
 import scala.Some
 import org.hyperscala
@@ -17,7 +18,7 @@ import org.hyperscala
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-class HTMLPage extends Page with PropertyParent with Parent with Updatable {
+class HTMLPage extends PageResource with PropertyParent with Parent with Updatable {
   HTMLPage.instance.set(this)
 
   val doctype = "<!DOCTYPE html>\r\n".getBytes
@@ -47,8 +48,8 @@ class HTMLPage extends Page with PropertyParent with Parent with Updatable {
 
   private var tab = 1
 
-  private def servletRequest = website.servletRequest
-  private def servletResponse = website.servletResponse
+  def servletRequest = website.servletRequest
+  def servletResponse = website.servletResponse
 
   /**
    * Ensures that the script referenced via url is loaded in the head.
@@ -70,13 +71,13 @@ class HTMLPage extends Page with PropertyParent with Parent with Updatable {
     }
   }
 
-  def service(method: Method, request: HttpServletRequest, response: HttpServletResponse) = {
-    HTMLPage.instance.set(this)
+  def apply(method: Method, request: HttpServletRequest, response: HttpServletResponse) = {
+    HTMLPage.instance.set(this)     // TODO: extract this out into an interceptor
     try {
       response.setContentType("text/html")
       var ignoreResponse = false
       var form: Form = null
-      if (method == Method.Post) {
+      if (method == Method.Post) {    // TODO: extract all POST support out
         request.getParameterMap.foreach {
           case (key, values) => {
 //            println("Key: %s, Value: %s".format(key, values.asInstanceOf[Array[String]].head))

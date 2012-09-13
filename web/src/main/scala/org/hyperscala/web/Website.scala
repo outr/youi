@@ -1,10 +1,10 @@
 package org.hyperscala.web
 
-import handler.{DefaultResourceHandler, ContentHandler}
 import org.powerscala.property.{Property, PropertyParent}
 import org.powerscala.hierarchy.{ContainerView, MutableContainer}
 import javax.servlet.ServletConfig
 import javax.servlet.http.{Cookie, HttpServletResponse, HttpServletRequest}
+import resource.handler.{ServletContextWebResourceManager, WebResourceHandler}
 import session.{MapSession, Session}
 import org.hyperscala.html.attributes.Method
 import org.hyperscala.Unique
@@ -12,10 +12,11 @@ import org.powerscala.concurrent.Executor
 import org.powerscala.concurrent.Time._
 import org.powerscala.Updatable
 
+
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-trait Website[S <: Session] extends MutableContainer[ContentHandler] with PropertyParent with Updatable {
+trait Website[S <: Session] extends MutableContainer[WebResourceHandler] with PropertyParent with Updatable {
   implicit val thisWebsite = this
 
   /**
@@ -48,15 +49,17 @@ trait Website[S <: Session] extends MutableContainer[ContentHandler] with Proper
   private val _servletRequest = new ThreadLocal[HttpServletRequest]
   private val _servletResponse = new ThreadLocal[HttpServletResponse]
 
-  val handlers = new ContainerView[ContentHandler](this, null, Website.prioritySort)
+  val handlers = new ContainerView[WebResourceHandler](this, null, Website.prioritySort)
   def sessions = _sessions.values
 
   val name = Property[String]("name", null)
 
-  contents += DefaultResourceHandler
+  contents += ServletContextWebResourceManager    // Default support to lookup content in the webapp folder
 
   def reload(config: ServletConfig) = {
     name := config.getServletContext.getServletContextName      // Load the web application name
+
+    // TODO: load references via hasType
   }
 
   def service(method: Method, request: HttpServletRequest, response: HttpServletResponse) = {
@@ -66,8 +69,8 @@ trait Website[S <: Session] extends MutableContainer[ContentHandler] with Proper
     _servletResponse.set(response)
     _session.set(loadSession(request))
     try {
-      lookupHandler(uri) match {
-        case Some(handler) => handler(method, request, response)
+      lookupResource(uri) match {
+        case Some(resource) => resource(method, request, response)
         case None => response.sendError(HttpServletResponse.SC_NOT_FOUND, "The page could not be found: %s".format(uri))
       }
     } finally {
@@ -91,7 +94,10 @@ trait Website[S <: Session] extends MutableContainer[ContentHandler] with Proper
   def servletRequest = _servletRequest.get()
   def servletResponse = _servletResponse.get()
 
-  protected def lookupHandler(uri: String) = handlers.find(ch => ch.matches(uri))
+  // TODO: is this the most efficient way to handle this?
+  protected def lookupResource(uri: String) = handlers.view.map(handler => handler(uri)).collectFirst {
+    case Some(resource) => resource
+  }
 
   protected def loadSession(request: HttpServletRequest) = {
     val sessionKey = classOf[Session].getName
@@ -281,5 +287,5 @@ object Website {
 
   def apply() = instance.get()
 
-  val prioritySort = (ch1: ContentHandler, ch2: ContentHandler) => -ch1.priority.value.compareTo(ch2.priority.value)
+  val prioritySort = (rh1: WebResourceHandler, rh2: WebResourceHandler) => -rh1.priority.value.compareTo(rh2.priority.value)
 }

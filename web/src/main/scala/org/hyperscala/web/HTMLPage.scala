@@ -166,7 +166,7 @@ class HTMLPage extends PageResource with PropertyParent with Parent with Updatab
    *
    * Defaults to calling website.errorOccurred
    */
-  protected def errorOccurred(t: Throwable) = {
+  def errorOccurred(t: Throwable) = {
     website.errorOccurred(t)
   }
 
@@ -175,7 +175,7 @@ class HTMLPage extends PageResource with PropertyParent with Parent with Updatab
    *
    * Defaults to calling website.handleError
    */
-  protected def handleError(t: Throwable, method: Method, request: HttpServletRequest, response: HttpServletResponse) = {
+  def handleError(t: Throwable, method: Method, request: HttpServletRequest, response: HttpServletResponse) = {
     website.handleError(t, method, request, response)
   }
 

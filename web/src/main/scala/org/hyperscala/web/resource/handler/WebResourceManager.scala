@@ -1,30 +1,36 @@
 package org.hyperscala.web.resource.handler
 
-import org.hyperscala.web.resource.WebResource
+import org.hyperscala.web.resource.{Interceptable, WebResource}
 import org.hyperscala.web.session.Session
+import org.hyperscala.html.attributes.Method
+import javax.servlet.http.{HttpServletResponse, HttpServletRequest}
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-trait WebResourceManager extends WebResourceHandler {
-  def apply(uri: String) = {
+trait WebResourceManager extends WebResourceHandler with Interceptable {
+  def apply(method: Method, request: HttpServletRequest, response: HttpServletResponse) = {
+    val uri = request.getRequestURI
     if (isMatch(uri)) {
-      sessionOption match {
-        case Some(session) => {
-          val key = sessionKey(uri)
-          session.get[WebResource](key) match {
-            case Some(resource) if (!resource.disposed) => Some(resource)
-            case _ => {
-              val resource = create(uri)
-              session(key) = resource
-              Some(resource)
+      processInterceptors(interceptors, method, request, response)(() => {
+        val resource = sessionOption match {
+          case Some(session) => {
+            val key = sessionKey(uri)
+            session.get[WebResource](key) match {
+              case Some(r) if (!r.disposed) => r
+              case _ => {
+                val r = create(uri)
+                session(key) = r
+                r
+              }
             }
           }
+          case None => create(uri)
         }
-        case None => Some(create(uri))
-      }
+        resource.service(method, request, response)
+      })
     } else {
-      None
+      false
     }
   }
 

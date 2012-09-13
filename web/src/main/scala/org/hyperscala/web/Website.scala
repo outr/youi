@@ -78,9 +78,11 @@ trait Website[S <: Session] extends MutableContainer[WebResourceHandler] with Pr
     _servletResponse.set(response)
     _session.set(loadSession(request))
     try {
-      lookupResource(uri) match {
-        case Some(resource) => resource.service(method, request, response)
-        case None => response.sendError(HttpServletResponse.SC_NOT_FOUND, "The page could not be found: %s".format(uri))
+      handlers.find(handler => handler(method, request, response)) match {
+        case Some(handler) => // Handled!
+        case None => if (!response.isCommitted) {   // Only send an error if the response hasn't been committed
+          response.sendError(HttpServletResponse.SC_NOT_FOUND, "The page could not be found: %s".format(uri))
+        }
       }
     } catch {
       case t: Throwable => {
@@ -107,11 +109,6 @@ trait Website[S <: Session] extends MutableContainer[WebResourceHandler] with Pr
 
   def servletRequest = _servletRequest.get()
   def servletResponse = _servletResponse.get()
-
-  // TODO: is this the most efficient way to handle this?
-  protected def lookupResource(uri: String) = handlers.view.map(handler => handler(uri)).collectFirst {
-    case Some(resource) => resource
-  }
 
   protected def loadSession(request: HttpServletRequest) = {
     val sessionKey = classOf[Session].getName

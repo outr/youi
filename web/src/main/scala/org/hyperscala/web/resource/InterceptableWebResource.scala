@@ -9,33 +9,10 @@ import javax.servlet.http.{HttpServletResponse, HttpServletRequest}
  *
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-trait InterceptableWebResource extends WebResource {
-  /**
-   * Lazily loaded interceptors from createInterceptors method.
-   */
-  lazy val interceptors = createInterceptors()
-
-  /**
-   * Creates the list of WebResourceInterceptors to be used when this WebResource is invoked.
-   */
-  protected def createInterceptors(): List[WebResourceInterceptor] = Nil
-
+trait InterceptableWebResource extends WebResource with Interceptable {
   override def service(method: Method, request: HttpServletRequest, response: HttpServletResponse) {
-    processInterceptors(interceptors.toList, method, request, response)
-  }
-
-  private def processInterceptors(list: List[WebResourceInterceptor], method: Method, request: HttpServletRequest, response: HttpServletResponse): Unit = {
-    if (list.isEmpty) {
+    processInterceptors(interceptors.toList, method, request, response)(() => {
       super.service(method, request, response)
-    } else {
-      val interceptor = list.head
-      try {
-        if (interceptor.before(method, request, response)) {
-          processInterceptors(list.tail, method, request, response)
-        }
-      } finally {
-        interceptor.after(method, request, response)
-      }
-    }
+    })
   }
 }

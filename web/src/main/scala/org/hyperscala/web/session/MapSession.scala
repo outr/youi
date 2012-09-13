@@ -19,4 +19,6 @@ class MapSession extends Session {
   def remove(key: Any) = map -= key
 
   def clear() = map = Map.empty
+
+  def values = map.values
 }

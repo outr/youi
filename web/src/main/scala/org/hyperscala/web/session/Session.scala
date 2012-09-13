@@ -25,6 +25,8 @@ trait Session extends Updatable {
 
   def remove(key: Any): Unit
 
+  def values: Iterable[Any]
+
   def clear(): Unit
 
   def dispose() = {}

@@ -6,7 +6,7 @@ import org.hyperscala.examples.basic._
 import org.hyperscala.examples.todomvc.TodoMVC
 import org.hyperscala.examples.helloworld.HelloWorldPage
 import org.hyperscala.examples.ui.AutoCompleteExample
-import org.hyperscala.web.resource.handler.{SessionWebResourceManager, URIWebResourceManager}
+import org.hyperscala.web.resource.handler.{ClassLoaderWebResourceManager, SessionWebResourceManager, URIWebResourceManager}
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -36,6 +36,8 @@ object HyperscalaSite extends Website[MapSession] {
   val todoMVC = new URIWebResourceManager("/todomvc.html") {
     def create(uri: String) = TodoMVC
   }
+
+  val defaultLoader = new ClassLoaderWebResourceManager()
 
   protected def createSession = new MapSession
 }

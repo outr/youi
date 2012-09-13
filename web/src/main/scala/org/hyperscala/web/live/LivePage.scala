@@ -191,7 +191,7 @@ class LivePage extends HTMLPage {
     }
   }
 
-  override def service(method: Method, request: HttpServletRequest, response: HttpServletResponse) {
+  override def apply(method: Method, request: HttpServletRequest, response: HttpServletResponse) {
     if (method == Method.Post) {
       HTMLPage.instance.set(this)
       try {
@@ -279,7 +279,7 @@ class LivePage extends HTMLPage {
       } finally {
         HTMLPage.instance.set(null)
       }
-      super.service(method, request, response)
+      super.apply(method, request, response)
       HTMLPage.instance.set(this)
       try {
         pageLoaded()

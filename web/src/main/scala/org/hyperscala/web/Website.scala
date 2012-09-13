@@ -11,7 +11,7 @@ import org.hyperscala.Unique
 import org.powerscala.concurrent.Executor
 import org.powerscala.concurrent.Time._
 import org.powerscala.Updatable
-
+import org.powerscala.reflect._
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -59,7 +59,16 @@ trait Website[S <: Session] extends MutableContainer[WebResourceHandler] with Pr
   def reload(config: ServletConfig) = {
     name := config.getServletContext.getServletContextName      // Load the web application name
 
-    // TODO: load references via hasType
+    // Statically load all referenced vals that are of type WebResourceHandler
+    getClass.methods.foreach {
+      case m if (m.returnType.`type`.hasType(classOf[WebResourceHandler])) => {
+        val handler = m[WebResourceHandler](Website.this)
+        if (!contents.contains(handler)) {
+          contents += handler
+        }
+      }
+      case _ =>
+    }
   }
 
   def service(method: Method, request: HttpServletRequest, response: HttpServletResponse) = {
@@ -70,7 +79,7 @@ trait Website[S <: Session] extends MutableContainer[WebResourceHandler] with Pr
     _session.set(loadSession(request))
     try {
       lookupResource(uri) match {
-        case Some(resource) => resource(method, request, response)
+        case Some(resource) => resource.service(method, request, response)
         case None => response.sendError(HttpServletResponse.SC_NOT_FOUND, "The page could not be found: %s".format(uri))
       }
     } finally {

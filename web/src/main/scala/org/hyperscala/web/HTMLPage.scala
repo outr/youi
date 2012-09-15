@@ -14,11 +14,13 @@ import resource.PageResource
 import tag._
 import scala.Some
 import org.hyperscala
+import org.powerscala.concurrent.WorkQueue
+import org.powerscala.event.Event
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-class HTMLPage extends PageResource with PropertyParent with Parent with Updatable {
+class HTMLPage extends PageResource with PropertyParent with Parent with Updatable with WorkQueue {
   HTMLPage.instance.set(this)
 
   val doctype = "<!DOCTYPE html>\r\n".getBytes
@@ -74,6 +76,7 @@ class HTMLPage extends PageResource with PropertyParent with Parent with Updatab
   def apply(method: Method, request: HttpServletRequest, response: HttpServletResponse) = {
     HTMLPage.instance.set(this)     // TODO: extract this out into an interceptor
     try {
+      doAllWork()   // Handle any enqueued work
       response.setContentType("text/html")
       var ignoreResponse = false
       var form: Form = null
@@ -233,6 +236,26 @@ class HTMLPage extends PageResource with PropertyParent with Parent with Updatab
 
   def cookies = website.cookies
   def cached = website.cached
+
+  def fireLater(event: Event) = {
+    WorkQueue.enqueue(this, () => fire(event))
+  }
+
+  def invokeLater(f: => Unit) = {
+    WorkQueue.enqueue(this, () => f)
+  }
+
+  override def update(delta: Double) {
+    val previous = HTMLPage.instance.get()
+    HTMLPage.instance.set(this)
+    try {
+      super.update(delta)
+
+      doAllWork()
+    } finally {
+      HTMLPage.instance.set(previous)
+    }
+  }
 }
 
 object HTMLPage {

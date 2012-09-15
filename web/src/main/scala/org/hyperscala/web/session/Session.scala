@@ -2,14 +2,15 @@ package org.hyperscala.web.session
 
 import org.powerscala.concurrent.Time._
 import org.powerscala.Updatable
-import org.powerscala.concurrent.Time
+import org.powerscala.concurrent.{WorkQueue, Time}
 import org.hyperscala.web.Website
+import org.powerscala.event.{Listenable, Event}
 
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-trait Session extends Updatable {
+trait Session extends Updatable with Listenable with WorkQueue {
   protected[web] var lastCheckin = System.currentTimeMillis()
 
   def name = getClass.getName
@@ -31,8 +32,17 @@ trait Session extends Updatable {
 
   def dispose() = {}
 
+  def fireLater(event: Event) = {
+    WorkQueue.enqueue(this, () => fire(event))
+  }
+
+  def invokeLater(f: => Unit) = {
+    WorkQueue.enqueue(this, () => f)
+  }
+
   override def update(delta: Double) = {
     val elapsed = Time.fromMillis(System.currentTimeMillis() - lastCheckin)
+    doAllWork()
     if (elapsed > timeout) {    // Timeout the session
       Website().destroySession()
     } else {

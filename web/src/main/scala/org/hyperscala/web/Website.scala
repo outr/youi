@@ -29,9 +29,9 @@ trait Website[S <: Session] extends MutableContainer[WebResourceHandler] with Pr
   /**
    * The frequency the site, sessions, and pages will be background updated in seconds.
    *
-   * Defaults to 15.0 (15 seconds)
+   * Defaults to 5.0 (5 seconds)
    */
-  def updateFrequency = 15.seconds
+  def updateFrequency = 5.seconds
 
   private var lastUpdate = System.nanoTime()
   val updates = Executor.scheduleWithFixedDelay(updateFrequency, updateFrequency) {

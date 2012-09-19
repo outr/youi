@@ -354,6 +354,8 @@ class LivePage extends HTMLPage {
 }
 
 object LivePage {
+  def apply() = HTMLPage().asInstanceOf[LivePage]
+
   val Template = Source.fromURL(getClass.getClassLoader.getResource("livepage.js")).mkString
 
   def escape(s: String) = s.replaceAll("'", "\\\\'")

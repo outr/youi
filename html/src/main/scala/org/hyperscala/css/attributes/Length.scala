@@ -8,7 +8,13 @@ import org.hyperscala.AttributeValue
  * NOTE: This file has been generated. Do not modify directly!
  * @author Matt Hicks <mhicks@hyperscala.org>
  */
-class Length(val value: String) extends EnumEntry[Length] with AttributeValue
+class Length(val value: String) extends EnumEntry[Length] with AttributeValue {
+  lazy val pixels = if (value.endsWith("px")) {
+    value.substring(0, value.length - 2).toInt
+  } else {
+    0
+  }
+}
 
 object Length extends Enumerated[Length] with EnumEntryPersistence[Length] {
   val Auto = new Length("auto")

@@ -3,6 +3,7 @@ package org.hyperscala.web.live
 import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.html.HTMLTag
 import org.powerscala.event.Event
+import org.hyperscala.css.StyleSheetAttribute
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -18,7 +19,7 @@ object LiveEvent {
     if (confirmation != null) {
       b.append("if (confirm('%s')) { ".format(confirmation))
     }
-    b.append("liveEventHandler(event, %s, %s); ".format(fireChange, onlyLast))
+    b.append("liveEventHandler(event, data, %s, %s); ".format(fireChange, onlyLast))
     if (confirmation != null) {
       b.append("} ")
     }
@@ -146,6 +147,15 @@ object LiveEvent {
       case "timeupdate" => new TimeUpdateEvent(tag)
       case "volumechange" => new VolumeChangeEvent(tag)
       case "waiting" => new WaitingEvent(tag)
+      case "stylechange" => {
+        val event = new StyleChangeEvent(tag, map("propertyName").asInstanceOf[String], map("propertyValue").asInstanceOf[String])
+        if (tag.applyStyleChanges()) {
+          val p = event.property[Any]
+          println("Changing %s (%s) to %s".format(event.propertyName, p, event.propertyValue))
+          p.attributeValue = event.propertyValue
+        }
+        event
+      }
     }
   }
 }
@@ -269,3 +279,8 @@ class SuspendEvent(tag: HTMLTag) extends LiveEvent(tag)
 class TimeUpdateEvent(tag: HTMLTag) extends LiveEvent(tag)
 class VolumeChangeEvent(tag: HTMLTag) extends LiveEvent(tag)
 class WaitingEvent(tag: HTMLTag) extends LiveEvent(tag)
+class StyleChangeEvent(tag: HTMLTag,
+                       val propertyName: String,
+                       val propertyValue: String) extends LiveEvent(tag) {
+  def property[T] = tag.style().properties[T](propertyName).asInstanceOf[StyleSheetAttribute[T]]
+}

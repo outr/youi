@@ -32,12 +32,16 @@ trait Markup extends XMLContent {
   @tailrec
   private def attributesToXML(element: Element, attributes: Seq[XMLAttribute]): Unit = {
     if (attributes.nonEmpty) {
-      val a = attributes.head
-      if (a.shouldRender && a.attributeValue != null) {
-        element.setAttribute(a.name(), a.attributeValue)
-      }
+      attributeToXML(element, attributes.head)
+//      if (a.shouldRender && a.attributeValue != null) {
+//        element.setAttribute(a.name(), a.attributeValue)
+//      }
       attributesToXML(element, attributes.tail)
     }
+  }
+
+  protected def attributeToXML(element: Element, attribute: XMLAttribute) = {
+    attribute.write(this, element)
   }
 
   @tailrec
@@ -54,7 +58,8 @@ trait Markup extends XMLContent {
   protected def attributeFromXML(a: Attribute): Boolean = {
     xmlAttributes.find(xmla => xmla.name() == a.getName) match {
       case Some(xmla) => {
-        xmla.attributeValue = a.getValue
+        xmla.read(this, a.getValue)
+//        xmla.attributeValue = a.getValue
         true
       }
       case None => false

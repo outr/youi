@@ -1,13 +1,32 @@
 package org.hyperscala.html.event
 
 import org.hyperscala.javascript.JavaScriptContent
-import org.powerscala.property.PropertyParent
-import org.hyperscala.PropertyAttribute
+import org.powerscala.property.Property
+import org.hyperscala._
+import org.jdom2.Element
+import org.hyperscala.html.HTMLTag
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-trait EventSupport extends PropertyParent {
+trait EventSupport extends Tag {
+  this: HTMLTag =>
+
+  /**
+   * Specifies whether event handlers should be used instead of inlining the event support into the tags
+   *
+   * Defaults to true
+   */
+  val eventHandlers = Property[Boolean]("eventHandlers", true)
+
+  /**
+   * Specifies whether style change events coming from the client will be applied back to the property.
+   *
+   * Defaults to true
+   */
+  val applyStyleChanges = Property[Boolean]("applyStyleChanges", true)
+
+  // TODO: add support for multiple handlers
   val event = new {
     val afterPrint = new PropertyAttribute[JavaScriptContent]("onafterprint", null) with EventProperty
     val beforePrint = new PropertyAttribute[JavaScriptContent]("onbeforeprint", null) with EventProperty
@@ -78,7 +97,48 @@ trait EventSupport extends PropertyParent {
     val timeUpdate = new PropertyAttribute[JavaScriptContent]("ontimeupdate", null) with EventProperty
     val volumeChange = new PropertyAttribute[JavaScriptContent]("onvolumechange", null) with EventProperty
     val waiting = new PropertyAttribute[JavaScriptContent]("onwaiting", null) with EventProperty
+    val styleChange = new PropertyAttribute[JavaScriptContent]("onstylechange", null) with EventProperty
+  }
+
+  private val scriptBlock = new ThreadLocal[StringBuilder]
+
+  override protected def before(element: Element) = {
+    if (eventHandlers()) {      // Event Handlers requires the use of an id
+      if (id() == null) {
+        id := Unique()
+      }
+      scriptBlock.set(new StringBuilder)
+    }
+
+    super.before(element)
+  }
+
+  override protected def attributeToXML(element: Element, attribute: XMLAttribute) = attribute match {
+    case ep: EventProperty if ((ep eq event.styleChange) && !eventHandlers()) => {
+      throw new RuntimeException("Unable to utilize propertyChange unless eventHandlers property is set to true")
+    }
+    case ep: EventProperty if (eventHandlers() && ep.shouldRender) => {
+      val b = scriptBlock.get()
+      b.append("$('#%s').bind('%s', function(event, data) {\n".format(id(), ep.name().substring(2)))
+      b.append(ep().content)
+      b.append("\n});\n\n")
+    }
+    case _ => super.attributeToXML(element, attribute)
+  }
+
+  override protected def after(element: Element) {
+    super.after(element)
+    if (eventHandlers()) {
+      val b = scriptBlock.get()
+      scriptBlock.set(null)
+      if (b.nonEmpty) {   // There is script data to render
+        val script = new Element("script")
+        script.setAttribute("type", "text/javascript")
+        script.setText(b.toString())
+        element.addContent(script)
+      }
+    }
   }
 }
 
-trait EventProperty
+trait EventProperty extends PropertyAttribute[JavaScriptContent]

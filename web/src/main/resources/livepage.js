@@ -14,6 +14,8 @@ var failures = 0;
 var maxFailures = %3$s;
 // Debug mode defines whether additional information is output to the console logging.
 var debugMode = %5$s;
+// Used to not fire stylechange events if changes are coming from the server
+var applyingChanges = false;
 
 function liveAdd(parentId, index, tagContent) {
     var parent = $('#' + parentId);
@@ -47,12 +49,18 @@ function liveEnqueue(message, replaceQuery) {
 }
 
 // Fire an event to the server on a specified id
-function liveEvent(id, event, replaceQuery) {
-    liveMessage({
+function liveEvent(id, data, event, replaceQuery) {
+    var json = {
         'id': id,
         'type': 'event',
         'event': event
-    }, replaceQuery);
+    };
+    if (data != null) {
+        for (var key in data) {
+            json[key] = data[key];
+        }
+    }
+    liveMessage(json, replaceQuery);
 }
 
 function indexInQueue(query) {
@@ -78,7 +86,7 @@ function jsonMatch(json, query) {
 }
 
 // Add as a handler to fire live events to server
-function liveEventHandler(e, fireChange, onlyLast) {
+function liveEventHandler(e, data, fireChange, onlyLast) {
     var element = $(e.currentTarget);
     var id = element.attr('id');
     if (e.type == 'change' || fireChange) {
@@ -120,7 +128,7 @@ function liveEventHandler(e, fireChange, onlyLast) {
         };
         liveMessage(json, lastQuery);
     } else {
-        liveEvent(id, e.type, lastQuery);
+        liveEvent(id, data, e.type, lastQuery);
     }
 }
 
@@ -155,15 +163,20 @@ function liveSendSuccessful(data) {
 //    console.log('live send successful!');
     failures = 0;       // Reset failure counter
     if (data != null) {
-        for (var i = 0; i < data.length; i++) {
-            var entry = data[i];
-            var id = entry['id'];
-            var script = entry['script'];
-            if (debugMode) {
-                console.log('evaluating:[' + script + ']');
+        applyingChanges = true;
+        try {
+            for (var i = 0; i < data.length; i++) {
+                var entry = data[i];
+                var id = entry['id'];
+                var script = entry['script'];
+                if (debugMode) {
+                    console.log('evaluating:[' + script + ']');
+                }
+                eval(script);
+                liveMessageId = Math.max(id, liveMessageId);
             }
-            eval(script);
-            liveMessageId = Math.max(id, liveMessageId);
+        } finally {
+            applyingChanges = false;
         }
     } else {
         console.log('Response was null - stopping updates');
@@ -220,52 +233,19 @@ JSON.stringify = JSON.stringify || function (obj) {
     }
 };
 
-var MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
-
-function isDOMAttrModifiedSupported() {
-    var p = document.createElement('p');
-    var flag = false;
-
-    if (p.addEventListener) p.addEventListener('DOMAttrModified', function() {
-        flag = true
-    }, false);
-    else if (p.attachEvent) p.attachEvent('onDOMAttrModified', function() {
-        flag = true
-    });
-    else return false;
-
-    p.setAttribute('id', 'target');
-
-    return flag;
-}
-
-$.fn.attrchange = function(callback) {
-    if (MutationObserver) {
-        var options = {
-            subtree: false,
-            attributes: true
-        };
-
-        var observer = new MutationObserver(function(mutations) {
-            mutations.forEach(function(e) {
-                callback.call(e.target, e.attributeName);
+// TODO: move this elsewhere for general usage
+(function() {
+    var orig = $.fn.css;
+    $.fn.css = function() {
+        orig.apply(this, arguments);
+        if (!applyingChanges) {
+            this.trigger('stylechange', {
+                'propertyName': arguments[0],
+                'propertyValue': arguments[1]
             });
-        });
-
-        return this.each(function() {
-            observer.observe(this, options);
-        });
-
-    } else if (isDOMAttrModifiedSupported()) {
-        return this.on('DOMAttrModified', function(e) {
-            callback.call(this, e.attrName);
-        });
-    } else if ('onpropertychange' in document.body) {
-        return this.on('propertychange', function(e) {
-            callback.call(this, window.event.propertyName);
-        });
+        }
     }
-};
+})();
 
 var liveTimer = null;
 

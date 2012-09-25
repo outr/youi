@@ -17,7 +17,8 @@ trait EventSupport extends Tag {
    *
    * Defaults to true
    */
-  val eventHandlers = Property[Boolean]("eventHandlers", true)
+  val eventHandlers = Property[Boolean]("eventHandlers", false)   // TODO: push script to <HEAD> instead of inner
+  // TODO: add ability for Website to inject functionality into tags
 
   /**
    * Specifies whether style change events coming from the client will be applied back to the property.
@@ -114,7 +115,7 @@ trait EventSupport extends Tag {
   }
 
   override protected def attributeToXML(element: Element, attribute: XMLAttribute) = attribute match {
-    case ep: EventProperty if ((ep eq event.styleChange) && !eventHandlers()) => {
+    case ep: EventProperty if (ep.name() == "onstylechange" && !eventHandlers() && ep.shouldRender) => {
       throw new RuntimeException("Unable to utilize propertyChange unless eventHandlers property is set to true")
     }
     case ep: EventProperty if (eventHandlers() && ep.shouldRender) => {

@@ -33,7 +33,7 @@ class ListSelect[T](val property: StandardProperty[T],
     val items = values()
     val current = property()
     items.foreach {
-      case value => contents += BeanOption(this, value, current == value, identifier, visualizer)
+      case v => contents += BeanOption(this, v, current == v, identifier, visualizer)
     }
     if (current == null && items.nonEmpty) {
       property := items.head
@@ -41,19 +41,19 @@ class ListSelect[T](val property: StandardProperty[T],
   }
 }
 
-case class BeanOption[T](select: ListSelect[T],
+case class BeanOption[T](listSelect: ListSelect[T],
                          t: T,
                          currentlySelected: Boolean,
                          identifier: T => String,
-                         visualizer: T => String) extends Option {
-  id := "%s%s".format(select.id(), identifier(t))
+                         visualizer: T => String) extends Option() {
+  id := "%s%s".format(listSelect.id(), identifier(t))
   value := identifier(t)
-  contents += visualizer(t)
+  content := visualizer(t)
   if (currentlySelected) {
     selected := true
   }
 
   selected.listeners.synchronous {
-    case evt: PropertyChangeEvent if (evt.newValue == true) => select.property := t
+    case evt: PropertyChangeEvent if (evt.newValue == true) => listSelect.property := t
   }
 }

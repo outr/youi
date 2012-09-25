@@ -2,15 +2,19 @@ package org.hyperscala.html.tag
 
 import org.hyperscala._
 import css.StyleSheet
-import html.HTMLTag
+import html.{FormField, HTMLTag}
 import org.hyperscala.html.attributes._
 import org.hyperscala.html.constraints._
+import org.powerscala.property.event.PropertyChangeEvent
+import org.powerscala.property.{ListProperty, StandardProperty, Property}
 
 /**
  * NOTE: This file has been generated. Do not modify directly!
  * @author Matt Hicks <mhicks@hyperscala.org>
  */
-class Select extends Container[BodyChild] with BodyChild with HTMLTag {
+class Select extends Container[Option] with BodyChild with HTMLTag with FormField {
+  implicit val thisSelect = this
+
   lazy val xmlLabel = "select"
 
   def this(name: String = null,
@@ -33,7 +37,7 @@ class Select extends Container[BodyChild] with BodyChild with HTMLTag {
            form: String = null,
            multiple: java.lang.Boolean = null,
            size: java.lang.Integer = null,
-           content: BodyChild = null) = {
+           content: Option = null) = {
     this()
     up(this.name, name)
     up(this.accessKey, accessKey)
@@ -64,15 +68,39 @@ class Select extends Container[BodyChild] with BodyChild with HTMLTag {
   val multiple = PropertyAttribute[Boolean]("multiple", false)
   val size = PropertyAttribute[Int]("size", -1)
 
-  def selected = contents.collectFirst {
-    case option: Option if (option.selected()) => option
-  } match {
-    case Some(value) => value
-    case None => contents.find(c => c.isInstanceOf[Option]).getOrElse(null).asInstanceOf[Option]
+  val selected = new StandardProperty[List[String]]("selected", Nil) with ListProperty[String]
+  val value = Property[String]("value", null)
+  def selectedOptions = selected().map(value => optionByValue(value).getOrElse(throw new NullPointerException("Unable to find option by value: %s".format(value))))
+
+  def optionByValue(value: String) = contents.find(o => o.value() == value)
+
+  selected.listeners.synchronous {
+    case evt: PropertyChangeEvent => {
+      val values = selectedValues
+      contents.foreach {                // Select the values
+        case option => option.selected := values.contains(option.value())
+      }
+      value := values.mkString("|")
+    }
   }
 
-  def selected_=(value: String) = contents.foreach {
-    case option: Option => option.selected := option.value() == value
-    case _ => // Text could be here
+  value.listeners.synchronous {
+    case evt: PropertyChangeEvent => {
+      val values = selectedValues
+      val v = values.mkString("|")
+      if (value() != v) {
+        if (value() == null) {
+          selected := Nil
+        } else {
+          selected := value().split('|').toList // Set the selected values from value string
+        }
+      }
+    }
+  }
+
+  protected def selectedValues = selected() match {   // Support for multiple or single selection
+    case Nil => Nil
+    case v if (!multiple() && v.size > 1) => List(v.head)
+    case v => v
   }
 }

@@ -221,11 +221,17 @@ class LivePage extends HTMLPage {
     //                    try {
                           t match {
                             case input: tag.Input => applyChange(input.value, v)
-                            case select: tag.Select => select.contents.foreach {
-                              case option: tag.Option => if (option.value() == v) {
-                                applyChange(option.selected, true)
-                              } else {
-                                applyChange(option.selected, false)
+                            case select: tag.Select => {
+                              var toSelect: tag.Option = null
+                              select.contents.foreach {
+                                case option: tag.Option => if (option.value() == v) {
+                                  toSelect = option
+                                } else {
+                                  applyChange(option.selected, false)
+                                }
+                              }
+                              if (toSelect != null) {
+                                applyChange(toSelect.selected, true)
                               }
                             }
                             case textArea: tag.TextArea => applyChange(textArea.content, v)

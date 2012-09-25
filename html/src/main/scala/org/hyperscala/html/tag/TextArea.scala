@@ -2,7 +2,7 @@ package org.hyperscala.html.tag
 
 import org.hyperscala._
 import css.StyleSheet
-import html.HTMLTag
+import html.{FormField, HTMLTag}
 import org.hyperscala.html.attributes._
 import org.hyperscala.html.constraints._
 
@@ -10,7 +10,11 @@ import org.hyperscala.html.constraints._
  * NOTE: This file has been generated. Do not modify directly!
  * @author Matt Hicks <mhicks@hyperscala.org>
  */
-class TextArea extends Textual with BodyChild with HTMLTag {
+class TextArea extends Textual with BodyChild with HTMLTag with FormField {
+  eventHandlers := false    // Necessary since scripts won't work in the body of the textarea
+
+  def value = content
+
   lazy val xmlLabel = "textarea"
 
   def this(name: String = null,

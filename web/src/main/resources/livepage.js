@@ -89,46 +89,55 @@ function jsonMatch(json, query) {
 function liveEventHandler(e, data, fireChange, onlyLast) {
     var element = $(e.currentTarget);
     var id = element.attr('id');
-    if (e.type == 'change' || fireChange) {
-        var changeQuery = null;
-        if (onlyLast) {
-            changeQuery = {
+    if (id == null) {           // Investigate this further
+        element = $(e.target);
+        id = element.attr('id');
+    }
+    if (id != null) {
+        if (e.type == 'change' || fireChange) {
+            var changeQuery = null;
+            if (onlyLast) {
+                changeQuery = {
+                    'id': id,
+                    'type': 'change'
+                };
+            }
+            liveEnqueue({
                 'id': id,
-                'type': 'change'
+                'type': 'change',
+                'value': element.val()
+            }, changeQuery);
+        }
+        var lastQuery = null;
+        if (onlyLast) {
+            lastQuery = {
+                'id': id,
+                'type': 'event',
+                'event': e.type
             };
         }
-        liveEnqueue({
-            'id': id,
-            'type': 'change',
-            'value': element.val()
-        }, changeQuery);
-    }
-    var lastQuery = null;
-    if (onlyLast) {
-        lastQuery = {
-            'id': id,
-            'type': 'event',
-            'event': e.type
-        };
-    }
-    if (e.type == 'keydown' || e.type == 'keypress' || e.type == 'keyup') {
-        var json = {
-            'id': id,
-            'type': 'event',
-            'event': e.type,
-            'altKey': e.altKey,
-            'char': e.char ? e.char : e.charCode,
-            'ctrlKey': e.ctrlKey,
-            'key': e.key ? e.key : e.keyCode,
-            'locale': e.locale,
-            'location': e.location,
-            'metaKey': e.metaKey,
-            'repeat': e.repeat,
-            'shiftKey': e.shiftKey
-        };
-        liveMessage(json, lastQuery);
+        if (e.type == 'keydown' || e.type == 'keypress' || e.type == 'keyup') {
+            var json = {
+                'id': id,
+                'type': 'event',
+                'event': e.type,
+                'altKey': e.altKey,
+                'char': e.char ? e.char : e.charCode,
+                'ctrlKey': e.ctrlKey,
+                'key': e.key ? e.key : e.keyCode,
+                'locale': e.locale,
+                'location': e.location,
+                'metaKey': e.metaKey,
+                'repeat': e.repeat,
+                'shiftKey': e.shiftKey
+            };
+            liveMessage(json, lastQuery);
+        } else {
+            liveEvent(id, data, e.type, lastQuery);
+        }
     } else {
-        liveEvent(id, data, e.type, lastQuery);
+        var target = $(e.target);
+        console.log('liveEventHandler - No id found for ' + element + ', type: ' + e.type + ', targetId: ' + target.attr('id'));
     }
 }
 
@@ -234,6 +243,7 @@ JSON.stringify = JSON.stringify || function (obj) {
 };
 
 // TODO: move this elsewhere for general usage
+// TODO: test for performance impact
 (function() {
     var orig = $.fn.css;
     $.fn.css = function() {

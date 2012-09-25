@@ -10,7 +10,7 @@ import org.hyperscala.html.constraints._
  * NOTE: This file has been generated. Do not modify directly!
  * @author Matt Hicks <mhicks@hyperscala.org>
  */
-class Option extends Container[BodyChild] with BodyChild with HTMLTag {
+class Option extends Textual with BodyChild with HTMLTag {
   lazy val xmlLabel = "option"
 
   def this(name: String = null,
@@ -32,7 +32,7 @@ class Option extends Container[BodyChild] with BodyChild with HTMLTag {
            label: String = null,
            selected: java.lang.Boolean = null,
            value: String = null,
-           content: BodyChild = null) = {
+           content: String = null) = {
     this()
     up(this.name, name)
     up(this.accessKey, accessKey)
@@ -53,11 +53,28 @@ class Option extends Container[BodyChild] with BodyChild with HTMLTag {
     up(this.label, label)
     up(this.selected, selected)
     up(this.value, value)
-    if (content != null) contents += content
+    up(this.content, content)
   }
 
   val disabled = PropertyAttribute[Boolean]("disabled", false)
   val label = PropertyAttribute[String]("label", null)
   val selected = PropertyAttribute[Boolean]("selected", false)
   val value = PropertyAttribute[String]("value", null)
+
+  selected.onChange {
+    parent match {
+      case select: Select => {
+        if (selected()) {
+          if (!select.selected().contains(value())) {
+            select.selected += value()      // Add the value to the selection if it isn't already there
+          }
+        } else {
+          if (select.selected().contains(value())) {
+            select.selected -= value()      // Remove the value from the selection if it is there
+          }
+        }
+      }
+      case _ => // Parent isn't a SELECT
+    }
+  }
 }

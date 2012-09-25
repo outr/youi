@@ -3,15 +3,21 @@ package org.hyperscala
 import org.jdom2.{Attribute, Element, Content}
 import annotation.tailrec
 import scala.collection.JavaConversions._
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
 trait Markup extends XMLContent {
+  private val initialized = new AtomicBoolean(false)
+
   def xmlLabel: String
   def xmlAttributes: Seq[XMLAttribute]
 
   def toXML: Content = {
+    if (initialized.compareAndSet(false, true)) {
+      initialize()
+    }
     val element = new Element(xmlLabel)
     before(element)
     attributesToXML(element, xmlAttributes)
@@ -24,6 +30,8 @@ trait Markup extends XMLContent {
     }
     case _ => throw new RuntimeException("%s: Unsupported content type: %s".format(getClass.getName, xml.getClass.getName))
   }
+
+  protected def initialize() = {}
 
   protected def before(element: Element) = {}
 

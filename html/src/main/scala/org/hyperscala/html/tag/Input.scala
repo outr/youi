@@ -2,7 +2,7 @@ package org.hyperscala.html.tag
 
 import org.hyperscala._
 import css.StyleSheet
-import html.HTMLTag
+import html.{FormField, HTMLTag}
 import org.hyperscala.html.attributes._
 import org.hyperscala.html.constraints._
 
@@ -10,7 +10,7 @@ import org.hyperscala.html.constraints._
  * NOTE: This file has been generated. Do not modify directly!
  * @author Matt Hicks <mhicks@hyperscala.org>
  */
-class Input extends Container[BodyChild] with BodyChild with HTMLTag {
+class Input extends Container[BodyChild] with BodyChild with HTMLTag with FormField {
   lazy val xmlLabel = "input"
 
   def this(name: String = null,

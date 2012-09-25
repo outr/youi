@@ -12,7 +12,7 @@ trait XMLContent extends org.powerscala.hierarchy.Element {
   def fromXML(content: Content): Unit
   def render = true
 
-  def stream(out: OutputStream, pretty: Boolean = true, outputter: HTMLOutputter = XMLContent.defaultOutputter) = {
+  def stream(out: OutputStream, outputter: HTMLOutputter = XMLContent.defaultOutputter) = {
     val writer = HTMLOutputter(out)
     outputter(toXML, writer)
     writer.close()
@@ -21,7 +21,7 @@ trait XMLContent extends org.powerscala.hierarchy.Element {
   def outputString = {
     val b = new StringBuilder
     val writer = HTMLOutputter(b)
-    val outputter = new HTMLOutputter("", "")
+    val outputter = XMLContent.defaultOutputter
     outputter(toXML, writer)
     b.toString().trim
   }

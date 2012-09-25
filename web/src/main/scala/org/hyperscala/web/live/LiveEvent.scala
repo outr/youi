@@ -19,7 +19,7 @@ object LiveEvent {
     if (confirmation != null) {
       b.append("if (confirm('%s')) { ".format(confirmation))
     }
-    b.append("liveEventHandler(event, data, %s, %s); ".format(fireChange, onlyLast))
+    b.append("liveEventHandler(event, (typeof data === 'undefined') ? null : data, %s, %s); ".format(fireChange, onlyLast))
     if (confirmation != null) {
       b.append("} ")
     }

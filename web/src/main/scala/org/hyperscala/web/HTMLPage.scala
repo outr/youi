@@ -16,12 +16,17 @@ import scala.Some
 import org.hyperscala
 import org.powerscala.concurrent.WorkQueue
 import org.powerscala.event.Event
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
 class HTMLPage extends PageResource with PropertyParent with Parent with Updatable with WorkQueue {
   HTMLPage.instance.set(this)
+
+  private val _initialized = new AtomicBoolean(false)
+
+  def initialized = _initialized.get()
 
   val doctype = "<!DOCTYPE html>\r\n".getBytes
   val name = Property[String]("name", null)
@@ -156,6 +161,11 @@ class HTMLPage extends PageResource with PropertyParent with Parent with Updatab
 
   def write(output: OutputStream) = {
     try {
+      // Initialize
+      if (_initialized.compareAndSet(false, true)) {
+        initialize()
+      }
+
       output.write(doctype)
       html.stream(output)
     } finally {
@@ -163,6 +173,8 @@ class HTMLPage extends PageResource with PropertyParent with Parent with Updatab
       output.close()
     }
   }
+
+  protected def initialize() = {}
 
   /**
    * Responsible for logging any errors that occur on this page.

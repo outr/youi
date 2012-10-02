@@ -10,6 +10,8 @@ import org.powerscala.event.{Listenable, Event}
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
+// TODO: re-architect so it can be a case class or class with Properties
+// TODO: make pages first-class citizens
 trait Session extends Updatable with Listenable with WorkQueue {
   protected[web] var lastCheckin = System.currentTimeMillis()
 

@@ -1,7 +1,7 @@
 package org.hyperscala.web.session
 
 import org.powerscala.concurrent.Time._
-import org.powerscala.Updatable
+import org.powerscala.{Logging, Updatable}
 import org.powerscala.concurrent.{WorkQueue, Time}
 import org.hyperscala.web.Website
 import org.powerscala.event.{Listenable, Event}
@@ -13,7 +13,9 @@ import org.powerscala.event.{Listenable, Event}
 // TODO: re-architect so it can be a case class or class with Properties
 // TODO: make pages first-class citizens
 trait Session extends Updatable with Listenable with WorkQueue {
-  protected[web] var lastCheckin = System.currentTimeMillis()
+  val created = System.currentTimeMillis()
+  protected[web] var lastCheckin = created
+  def lifetime = Time.fromMillis(System.currentTimeMillis() - created)
 
   def name = getClass.getName
   def timeout: Double = 30.minutes
@@ -43,10 +45,11 @@ trait Session extends Updatable with Listenable with WorkQueue {
   }
 
   override def update(delta: Double) = {
-    val elapsed = Time.fromMillis(System.currentTimeMillis() - lastCheckin)
+    val elapsed = lifetime
     doAllWork()
     if (elapsed > timeout) {    // Timeout the session
-      Website().destroySession()
+      Session.info("Session has timed out; Elapsed: %s, Timeout: %s, Session: %s".format(elapsed, timeout, this))
+      Website().destroySession(this)
     } else {
       super.update(delta)
       map.values.foreach {
@@ -56,3 +59,5 @@ trait Session extends Updatable with Listenable with WorkQueue {
     }
   }
 }
+
+object Session extends Logging

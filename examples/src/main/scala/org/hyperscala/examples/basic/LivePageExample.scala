@@ -78,4 +78,9 @@ class LivePageExample extends LivePage {
       }
     }
   }
+
+  override def dispose() {
+    super.dispose()
+    println("LivePageExample being disposed!")
+  }
 }

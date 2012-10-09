@@ -9,9 +9,9 @@ import javax.servlet.http.{HttpServletResponse, HttpServletRequest}
  *
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-trait InterceptableWebResource extends WebResource with Interceptable {
+trait InterceptableWebResource extends WebResource with WebResourceInterceptable {
   override def service(method: Method, request: HttpServletRequest, response: HttpServletResponse) {
-    processInterceptors(interceptors.toList, method, request, response)(() => {
+    processInterceptors(webResourceInterceptors.toList, method, request, response)(() => {
       super.service(method, request, response)
     })
   }

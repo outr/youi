@@ -12,6 +12,16 @@ trait XMLContent extends org.powerscala.hierarchy.Element {
   def fromXML(content: Content): Unit
   def render = true
 
+  def removeFromParent() = {
+    parent match {
+      case container: Container[_] => {
+        container.asInstanceOf[Container[XMLContent]].contents -= this
+        true
+      }
+      case _ => false
+    }
+  }
+
   def stream(out: OutputStream, outputter: HTMLOutputter = XMLContent.defaultOutputter) = {
     val writer = HTMLOutputter(out)
     outputter(toXML, writer)

@@ -6,11 +6,11 @@ import javax.servlet.http.{HttpServletResponse, HttpServletRequest}
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-trait Interceptable {
+trait WebResourceInterceptable {
   /**
    * Lazily loaded interceptors from createInterceptors method.
    */
-  lazy val interceptors = createInterceptors()
+  lazy val webResourceInterceptors = createInterceptors()
 
   /**
    * Creates the list of WebResourceInterceptors to be used when this WebResource is invoked.

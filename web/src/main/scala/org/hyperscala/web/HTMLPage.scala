@@ -14,6 +14,7 @@ import resource.PageResource
 import tag._
 import scala.Some
 import org.hyperscala
+import hyperscala.{Page, Markup}
 import org.powerscala.concurrent.WorkQueue
 import org.powerscala.event.Event
 import java.util.concurrent.atomic.AtomicBoolean
@@ -21,8 +22,24 @@ import java.util.concurrent.atomic.AtomicBoolean
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-class HTMLPage extends PageResource with PropertyParent with Parent with Updatable with WorkQueue {
-  HTMLPage.instance.set(this)
+class HTMLPage extends PageResource with PropertyParent with Parent with Updatable with WorkQueue with Page {
+  override def init(markup: Markup) {
+    Website().init(markup)
+
+    super.init(markup)
+  }
+
+  override def before(markup: Markup) {
+    Website().before(markup)
+
+    super.before(markup)
+  }
+
+  override def after(markup: Markup) {
+    Website().after(markup)
+
+    super.after(markup)
+  }
 
   private val _initialized = new AtomicBoolean(false)
 
@@ -79,7 +96,7 @@ class HTMLPage extends PageResource with PropertyParent with Parent with Updatab
   }
 
   def apply(method: Method, request: HttpServletRequest, response: HttpServletResponse) = {
-    HTMLPage.instance.set(this)     // TODO: extract this out into an interceptor
+    Page.instance.set(this)     // TODO: extract this out into an interceptor
     try {
       doAllWork()   // Handle any enqueued work
       response.setContentType("text/html")
@@ -127,7 +144,7 @@ class HTMLPage extends PageResource with PropertyParent with Parent with Updatab
         handleError(t, method, request, response)
       }
     } finally {
-      HTMLPage.instance.set(null)
+      Page.instance.set(null)
     }
   }
 
@@ -258,22 +275,20 @@ class HTMLPage extends PageResource with PropertyParent with Parent with Updatab
   }
 
   override def update(delta: Double) {
-    val previous = HTMLPage.instance.get()
-    HTMLPage.instance.set(this)
+    val previous = HTMLPage()
+    Page.instance.set(this)
     try {
       super.update(delta)
 
       doAllWork()
     } finally {
-      HTMLPage.instance.set(previous)
+      Page.instance.set(previous)
     }
   }
 }
 
 object HTMLPage {
-  val instance = new ThreadLocal[HTMLPage]
-
-  def apply() = instance.get()
+  def apply() = Page().asInstanceOf[HTMLPage]
 
   def apply(tag: HTMLTag) = tag.hierarchy.first.asInstanceOf[HTMLPage]
 }

@@ -10,7 +10,7 @@ import org.hyperscala.javascript.JavaScriptContent
 import annotation.tailrec
 import org.hyperscala.html.attributes.Method
 import javax.servlet.http.{HttpServletResponse, HttpServletRequest}
-import util.parsing.json.{JSONFormat, JSON}
+import util.parsing.json.JSON
 import org.powerscala.hierarchy.Child
 
 import org.powerscala.concurrent.Time._
@@ -18,8 +18,6 @@ import org.powerscala.concurrent.Time
 import org.powerscala.property.event.PropertyChangeEvent
 import org.powerscala.hierarchy.event.ChildRemovedEvent
 import org.powerscala.hierarchy.event.ChildAddedEvent
-import util.parsing.json.JSONArray
-import util.parsing.json.JSONObject
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -103,24 +101,25 @@ class LivePage extends HTMLPage {
         child.id := Unique()
       }
       val index = parent.contents.indexOf(child)
-      val script = if (index == parent.contents.length - 1) {    // Append to the end
-        "$('#%s').append('%s');".format(parent.id(), escape(child.outputString))
+      val instruction = if (index == parent.contents.length - 1) {    // Append to the end
+        "$('#%s').append(content);".format(parent.id())
       } else if (index == 0) {                                   // Append before
-        val after = parent.contents(1)
-        "$('#%s').before('%s');".format(after.id(), escape(child.outputString))
+      val after = parent.contents(1)
+        "$('#%s').before(content);".format(after.id())
       } else {
         val before = parent.contents(index - 1)
-        "$('#%s').after('%s');".format(before.id(), escape(child.outputString))
+        "$('#%s').after(content);".format(before.id())
       }
-      enqueue(LiveChange(nextId, null, script))
+      val content = child.outputString
+      enqueue(LiveChange(nextId, null, instruction, content))
     }
     case evt: ChildRemovedEvent => evt.child match {
       case text: tag.Text => {
         val parent = evt.parent.asInstanceOf[HTMLTag with Container[HTMLTag]]
         val index = parent.contents.indexOf(text)
-        enqueue(LiveChange(nextId, null, "liveRemoveByIndex('%s', %s);".format(parent.id(), index)))
+        enqueue(LiveChange(nextId, null, "liveRemoveByIndex('%s', %s);".format(parent.id(), index), null))
       }
-      case tag: HTMLTag => enqueue(LiveChange(nextId, null, "liveRemove('%s');".format(tag.id())))
+      case tag: HTMLTag => enqueue(LiveChange(nextId, null, "liveRemove('%s');".format(tag.id()), null))
     }
   }
 
@@ -146,14 +145,14 @@ class LivePage extends HTMLPage {
             } else {
               "$('#%s').attr('%s', %s);".format(t.id(), property.name(), scriptifyValue(property))
             }
-            enqueue(LiveChange(nextId, key, script))
+            enqueue(LiveChange(nextId, key, script, null))
           }
         }
         case ss: StyleSheet => tagsByStyleSheet(ss) {
           case tag => {
             val key = "%s.style.%s".format(tag.id(), property.name())
             val script = "$('#%s').css('%s', %s);".format(tag.id(), property.name(), scriptifyValue(property))
-            enqueue(LiveChange(nextId, key, script))
+            enqueue(LiveChange(nextId, key, script, null))
           }
         }
         case _ => // Ignore others
@@ -177,7 +176,7 @@ class LivePage extends HTMLPage {
 
   def reload() = sendRedirect(Website().servletRequest.getRequestURI)
 
-  def sendJavaScript(js: String) = enqueue(LiveChange(nextId, null, js))
+  def sendJavaScript(js: String, content: String = null) = enqueue(LiveChange(nextId, null, js, content))
 
   @tailrec
   final def enqueue(change: LiveChange, connections: List[LiveConnection] = this.connections): Unit = {
@@ -193,7 +192,7 @@ class LivePage extends HTMLPage {
 
   override def apply(method: Method, request: HttpServletRequest, response: HttpServletResponse) {
     if (method == Method.Post) {
-      HTMLPage.instance.set(this)
+      Page.instance.set(this)
       try {
         val postData = Source.fromInputStream(request.getInputStream).mkString
         JSON.parseFull(postData) match {
@@ -243,7 +242,9 @@ class LivePage extends HTMLPage {
                       }
                     }
                   }
-                  case None => // Unable to find the element by id (could have been removed since last update)
+                  case None => {    // Unable to find the element by id (could have been removed since last update)
+                    println("Unable to find %s by id".format(id))
+                  }
                 }
               }
               case m => throw new RuntimeException("Unhandled Message Type: %s".format(m))
@@ -255,16 +256,15 @@ class LivePage extends HTMLPage {
               }
               case None => {
 //                System.err.println("Connection dead (%s)!".format(connectionId))
-                List(LiveChange(0, null, "window.location.href = window.location.href;"))
+                List(LiveChange(0, null, "window.location.href = window.location.href;", null))
               }
             }
-            val changesJSON = changes.map(c => new JSONObject(Map("id" -> c.id, "script" -> convertScript(c.script)))).toList
-            val responseArray = JSONArray(changesJSON)
-            val formatted = JSONFormat.defaultFormatter(responseArray)
-            if (changes.nonEmpty && debugMode) {
-              println(formatted)
-            }
-            response.setContentType("application/json")
+            val formatted = changes.map(change => change.output).mkString("\n")
+//            val changesJSON = changes.map(c => new JSONObject(Map("id" -> c.id, "script" -> convertScript(c.script)))).toList
+//            val responseArray = JSONArray(changesJSON)
+//            val formatted = JSONFormat.defaultFormatter(responseArray)
+            response.setContentType("text/plain")
+//            println("SENDING[%s]".format(formatted))
             val output = response.getOutputStream
             try {
               output.write(formatted.getBytes)
@@ -276,21 +276,21 @@ class LivePage extends HTMLPage {
           case None => println("Unable to parse as JSON: [%s]".format(postData))
         }
       } finally {
-        HTMLPage.instance.set(null)
+        Page.instance.set(null)
       }
     } else {
-      HTMLPage.instance.set(this)
+      Page.instance.set(this)
       try {
         pageLoading()
       } finally {
-        HTMLPage.instance.set(null)
+        Page.instance.set(null)
       }
       super.apply(method, request, response)
-      HTMLPage.instance.set(this)
+      Page.instance.set(this)
       try {
         pageLoaded()
       } finally {
-        HTMLPage.instance.set(null)
+        Page.instance.set(null)
       }
     }
   }

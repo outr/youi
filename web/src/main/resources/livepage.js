@@ -156,7 +156,7 @@ function liveSend() {
         $.ajax({
             type: 'POST',
             url: url,
-            dataType: 'json',
+            dataType: 'text',
             async: true,
             data: JSON.stringify(message),
             processData: false,
@@ -171,25 +171,42 @@ function liveSend() {
 function liveSendSuccessful(data) {
 //    console.log('live send successful!');
     failures = 0;       // Reset failure counter
-    if (data != null) {
+//    if (data != null) {
         applyingChanges = true;
         try {
-            for (var i = 0; i < data.length; i++) {
-                var entry = data[i];
-                var id = entry['id'];
-                var script = entry['script'];
-                if (debugMode) {
-                    console.log('evaluating:[' + script + ']');
-                }
-                eval(script);
-                liveMessageId = Math.max(id, liveMessageId);
-            }
+            parseNextResponse(data);
         } finally {
             applyingChanges = false;
         }
-    } else {
-        console.log('Response was null - stopping updates');
-        clearInterval(liveTimer);
+//    } else {
+//        console.log('No response data');
+//        clearInterval(liveTimer);
+//    }
+}
+
+function parseNextResponse(data) {
+    if (data != null && data.length > 0) {
+        if (data.charAt(0) == '[') {
+            var p1 = data.indexOf('|');
+            var p2 = data.indexOf('|', p1 + 1);
+            var closeBracket = data.indexOf(']', p2);
+            var id = parseInt(data.substring(1, p1));
+            var instruction = data.substring(p1 + 1, p2);
+            var contentLength = parseInt(data.substring(p2 + 1, closeBracket));
+            var content = null;
+            if (contentLength > -1) {
+                content = data.substring(closeBracket + 1, closeBracket + 1 + contentLength);
+            }
+//            console.log('Parsed id: ' + id + ', instruction: ' + instruction + ', contentLength: ' + contentLength);
+            if (liveMessageId < id) {       // Only evaluate once
+                eval(instruction);
+                liveMessageId = Math.max(id, liveMessageId);
+            }
+            var updated = data.substring(closeBracket + Math.max(contentLength, 0) + 2);
+            parseNextResponse(updated);
+        } else {
+            console.log('Parsing error attempting to parse:' + data + ':')
+        }
     }
 }
 

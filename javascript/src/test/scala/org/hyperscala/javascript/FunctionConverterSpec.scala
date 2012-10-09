@@ -123,7 +123,7 @@ class FunctionConverterSpec extends Specification {
       cleanScript(script) must_== ("function test(b, s, i, d) {return i;}")
     }
   }
-  /*"FunctionConverter with conditionals" should {
+  "FunctionConverter with conditionals" should {
     "properly invoke with if equals" in {
       val script = FunctionConverter.f1("test", (i: Int) => {
         if (i == -1) {
@@ -134,7 +134,7 @@ class FunctionConverterSpec extends Specification {
       })
       cleanScript(script) must_== ("function test(i) {if (i == -1) {return 0;} else {return i;}}")
     }
-  }*/
+  }
 
   private def cleanScript(script: String) = script.trim.replaceAll("\r", "").replaceAll("\n", "").replaceAll("\t", "")
 }

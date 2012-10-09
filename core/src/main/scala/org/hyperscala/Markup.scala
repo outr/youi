@@ -31,11 +31,17 @@ trait Markup extends XMLContent {
     case _ => throw new RuntimeException("%s: Unsupported content type: %s".format(getClass.getName, xml.getClass.getName))
   }
 
-  protected def initialize() = {}
+  protected def initialize() = {
+    Page().init(this)
+  }
 
-  protected def before(element: Element) = {}
+  protected def before(element: Element) = {
+    Page().before(this)
+  }
 
-  protected def after(element: Element) = {}
+  protected def after(element: Element) = {
+    Page().after(this)
+  }
 
   @tailrec
   private def attributesToXML(element: Element, attributes: Seq[XMLAttribute]): Unit = {

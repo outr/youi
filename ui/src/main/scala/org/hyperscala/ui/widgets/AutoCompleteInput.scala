@@ -13,12 +13,14 @@ import scala.math._
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-abstract class AutoCompleteInput[T](id: String = Unique(), default: T) extends tag.Div(id = id) {
+abstract class AutoCompleteInput[T](id: String = Unique(), default: T) extends tag.Div(id = id) with FormField {
   val property = Property[T]("property", default)
   property.onChange {
     updateInput()
     hideCompletion()
   }
+
+  def value = input.value
 
   def selected = if (showingCompletion) {
     completion.contents.find {
@@ -83,8 +85,6 @@ abstract class AutoCompleteInput[T](id: String = Unique(), default: T) extends t
   } else {
     property := null.asInstanceOf[T]
   }
-
-  // TODO: focus gained / lost
 
   def updateInput(): Unit = if (property() != null) {
     input.value := resultToString(property())

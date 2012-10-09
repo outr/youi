@@ -10,13 +10,14 @@ import org.hyperscala.html.attributes.Method
 import org.hyperscala.Unique
 import org.powerscala.concurrent.Executor
 import org.powerscala.concurrent.Time._
-import org.powerscala.Updatable
+import org.powerscala.{Logging, Updatable}
 import org.powerscala.reflect._
+import org.hyperscala.intercept.Intercepting
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-trait Website[S <: Session] extends MutableContainer[WebResourceHandler] with PropertyParent with Updatable {
+trait Website[S <: Session] extends MutableContainer[WebResourceHandler] with PropertyParent with Updatable with Intercepting with Logging {
   implicit val thisWebsite = this
 
   /**
@@ -102,8 +103,8 @@ trait Website[S <: Session] extends MutableContainer[WebResourceHandler] with Pr
   /**
    * Destroys the existing session and creates a new one.
    */
-  def disposeSession() = {
-    destroySession()
+  def disposeSession(session: Session) = {
+    destroySession(session)
     _session.set(loadSession(servletRequest))
   }
 
@@ -114,21 +115,17 @@ trait Website[S <: Session] extends MutableContainer[WebResourceHandler] with Pr
     val sessionKey = classOf[Session].getName
     val sessionId = cookies.getOrSet(sessionKey, Unique(), maxAge = sessionIdLifetime).getValue
     val session = _sessions.getOrElse(sessionId, createSession)
+    session.lastCheckin = System.currentTimeMillis()
     _sessions += sessionId -> session
     session
   }
 
-  def destroySession() = {
-    val sessionKey = classOf[Session].getName
-    cookies(sessionKey) match {
-      case Some(cookie) => _sessions.get(cookie.getValue) match {
-        case Some(session) => {
-          session.dispose()
-          _sessions -= cookie.getValue
-        }
-        case None => // Couldn't find the session to destroy
-      }   // Remove the session from the list
-      case None => // No session to destroy
+  def destroySession(session: Session) = {
+    info("Disposing session: %s".format(session))
+    session.dispose()
+    _sessions.find(t => t._2 == session) match {
+      case Some((key, value)) => _sessions -= key
+      case None => System.err.println("Unable to find session key to remove session!")
     }
   }
 

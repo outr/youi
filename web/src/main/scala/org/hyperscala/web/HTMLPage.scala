@@ -14,6 +14,7 @@ import resource.PageResource
 import tag._
 import scala.Some
 import org.hyperscala
+import hyperscala.io.HTMLWriter
 import hyperscala.{Page, Markup}
 import org.powerscala.concurrent.WorkQueue
 import org.powerscala.event.Event
@@ -68,7 +69,7 @@ class HTMLPage extends PageResource with PropertyParent with Parent with Updatab
 
   html.contents.addAll(head, body)
 
-  title := getClass.getSimpleName     // We always have to have a title
+  title := getClass.getSimpleName.replaceAll("\\$", "")     // We always have to have a title
 
   private var tab = 1
 
@@ -184,7 +185,8 @@ class HTMLPage extends PageResource with PropertyParent with Parent with Updatab
       }
 
       output.write(doctype)
-      html.stream(output)
+      val writer = HTMLWriter(output)
+      html.write(writer)
     } finally {
       output.flush()
       output.close()

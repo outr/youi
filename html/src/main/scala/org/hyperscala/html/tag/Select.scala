@@ -14,6 +14,7 @@ import org.powerscala.property.{ListProperty, StandardProperty, Property}
  */
 class Select extends Container[Option] with BodyChild with HTMLTag with FormField {
   implicit val thisSelect = this
+  override def xmlExpanded = true
 
   lazy val xmlLabel = "select"
 

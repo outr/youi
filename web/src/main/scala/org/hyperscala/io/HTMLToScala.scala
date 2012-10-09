@@ -28,14 +28,14 @@ object HTMLToScala {
 
   def toPage(source: Source) = {
     val page = new HTMLPage()
-    page.html.fromXML(toXML(source))
+    page.html.read(toXML(source))
     page
   }
 
   def toHTML(source: Source) = {
     val xml = toXML(source)
     val root = HTMLTag.create(xml.getName)
-    root.fromXML(xml)
+    root.read(xml)
     root
   }
 

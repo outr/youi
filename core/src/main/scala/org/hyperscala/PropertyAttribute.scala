@@ -1,9 +1,9 @@
 package org.hyperscala
 
+import io.HTMLWriter
 import org.powerscala.property.{PropertyParent, StandardProperty}
 import org.powerscala.property.backing.{VariableBacking, Backing}
 import persistence.ValuePersistence
-import org.jdom2.Element
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -19,8 +19,8 @@ class PropertyAttribute[T](_name: String, default: T, inclusion: InclusionMode =
 
   def shouldRender = include
 
-  def write(markup: Markup, element: Element) = if (shouldRender) {
-    element.setAttribute(name(), attributeValue)
+  def write(markup: Markup, writer: HTMLWriter) = if (shouldRender) {
+    writer.write(" %s=\"%s\"".format(name(), attributeValue))
   }
 
   def read(markup: Markup, value: String) = {

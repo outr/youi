@@ -1,6 +1,7 @@
 package org.hyperscala.web.live
 
 import org.hyperscala._
+import io.{StringBuilderHTMLWriter, HTMLWriter}
 import org.hyperscala.html._
 import org.hyperscala.css.StyleSheet
 import web.{Website, HTMLPage}
@@ -110,7 +111,9 @@ class LivePage extends HTMLPage {
         val before = parent.contents(index - 1)
         "$('#%s').after(content);".format(before.id())
       }
-      val content = child.outputString
+      val writer = HTMLWriter().asInstanceOf[StringBuilderHTMLWriter]
+      child.write(writer)
+      val content = writer.writer.toString()
       enqueue(LiveChange(nextId, null, instruction, content))
     }
     case evt: ChildRemovedEvent => evt.child match {

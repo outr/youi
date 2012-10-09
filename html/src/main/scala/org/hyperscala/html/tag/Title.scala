@@ -12,6 +12,7 @@ import org.hyperscala.html.constraints._
  */
 class Title extends Textual with HeadChild with HTMLTag {
   lazy val xmlLabel = "title"
+  override def xmlExpanded = true
 
   def this(name: String = null,
            accessKey: java.lang.Character = null,

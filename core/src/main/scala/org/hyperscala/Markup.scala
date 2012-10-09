@@ -1,5 +1,6 @@
 package org.hyperscala
 
+import io.HTMLWriter
 import org.jdom2.{Attribute, Element, Content}
 import annotation.tailrec
 import scala.collection.JavaConversions._
@@ -13,49 +14,86 @@ trait Markup extends XMLContent {
 
   def xmlLabel: String
   def xmlAttributes: Seq[XMLAttribute]
+  def xmlChildren: Seq[XMLContent] = Nil
+  /**
+   * True if tag should never be self-closing even if there are no children.
+   *
+   * Defaults to false
+   */
+  def xmlExpanded = false
 
-  def toXML: Content = {
+  def write(writer: HTMLWriter) = {
     if (initialized.compareAndSet(false, true)) {
       initialize()
     }
-    val element = new Element(xmlLabel)
-    before(element)
-    attributesToXML(element, xmlAttributes)
-    after(element)
-    element
+    before()
+    writeTag(writer)
+    after()
   }
-  def fromXML(xml: Content) = xml match {
+
+  protected def writeTag(writer: HTMLWriter) = {
+    writer.write(writer.newLine)
+    writer.writeTabs()
+    writer.write("<")
+    writer.write(xmlLabel)
+    writeAttributes(writer, xmlAttributes)
+    val children = xmlChildren
+    if (xmlExpanded || children.nonEmpty) {
+      writer.write(">")
+      writer.tabbed {
+        writeChildren(writer, children)
+      }
+      if (children.nonEmpty && children.find(c => !c.isInstanceOf[TextMarkup]).nonEmpty && !this.isInstanceOf[Textual]) {
+        writer.write(writer.newLine)
+        writer.writeTabs()
+      }
+      writer.write("</%s>".format(xmlLabel))
+    } else {
+      writer.write("/>")
+    }
+  }
+
+  @tailrec
+  private def writeAttributes(writer: HTMLWriter, attributes: Seq[XMLAttribute]): Unit = {
+    if (attributes.nonEmpty) {
+      writeAttribute(writer, attributes.head)
+      writeAttributes(writer, attributes.tail)
+    }
+  }
+
+  protected def writeAttribute(writer: HTMLWriter, attribute: XMLAttribute): Unit = {
+    attribute.write(this, writer)
+  }
+
+  @tailrec
+  private def writeChildren(writer: HTMLWriter, children: Seq[XMLContent]): Unit = {
+    if (children.nonEmpty) {
+      writeChild(writer, children.head)
+      writeChildren(writer, children.tail)
+    }
+  }
+
+  protected def writeChild(writer: HTMLWriter, child: XMLContent): Unit = {
+    child.write(writer)
+  }
+
+  def read(content: Content) = content match {
     case element: Element => {
       attributesFromXML(element.getAttributes.toList)
     }
-    case _ => throw new RuntimeException("%s: Unsupported content type: %s".format(getClass.getName, xml.getClass.getName))
+    case _ => throw new RuntimeException("%s: Unsupported content type: %s".format(getClass.getName, content.getClass.getName))
   }
 
   protected def initialize() = {
     Page().init(this)
   }
 
-  protected def before(element: Element) = {
+  protected def before() = {
     Page().before(this)
   }
 
-  protected def after(element: Element) = {
+  protected def after() = {
     Page().after(this)
-  }
-
-  @tailrec
-  private def attributesToXML(element: Element, attributes: Seq[XMLAttribute]): Unit = {
-    if (attributes.nonEmpty) {
-      attributeToXML(element, attributes.head)
-//      if (a.shouldRender && a.attributeValue != null) {
-//        element.setAttribute(a.name(), a.attributeValue)
-//      }
-      attributesToXML(element, attributes.tail)
-    }
-  }
-
-  protected def attributeToXML(element: Element, attribute: XMLAttribute) = {
-    attribute.write(this, element)
   }
 
   @tailrec

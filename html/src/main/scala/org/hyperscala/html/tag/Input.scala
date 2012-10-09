@@ -3,6 +3,7 @@ package org.hyperscala.html.tag
 import org.hyperscala._
 import css.StyleSheet
 import html.{FormField, HTMLTag}
+import io.HTMLWriter
 import org.hyperscala.html.attributes._
 import org.hyperscala.html.constraints._
 
@@ -133,10 +134,11 @@ class Input extends Container[BodyChild] with BodyChild with HTMLTag with FormFi
   val value = PropertyAttribute[String]("value", null, inclusion = InclusionMode.Always)
   val width = PropertyAttribute[Int]("width", -1)
 
-  override def toXML = {
+  override def write(writer: HTMLWriter) = {
     if (inputType() == InputType.Password) {
       value := ""   // Password cannot be carried over between reloads for security reasons
     }
-    super.toXML
+
+    super.write(writer)
   }
 }

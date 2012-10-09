@@ -54,32 +54,33 @@ trait HTMLTag extends Tag with EventSupport {
     this.asInstanceOf[Container[HTMLTag]].contents += new Text(text)
   }
 
-  override protected def after(element: Element) {
-    super.after(element)
+  override protected def after() {
+    super.after()
 
-    val extraStyle = new StringBuilder
-    validateExtraStyle(element, style.link, extraStyle)
-    validateExtraStyle(element, style.visited, extraStyle)
-    validateExtraStyle(element, style.active, extraStyle)
-    validateExtraStyle(element, style.hover, extraStyle)
-    validateExtraStyle(element, style.focus, extraStyle)
-    validateExtraStyle(element, style.empty, extraStyle)
-    validateExtraStyle(element, style.target, extraStyle)
-    validateExtraStyle(element, style.checked, extraStyle)
-    validateExtraStyle(element, style.enabled, extraStyle)
-    validateExtraStyle(element, style.disabled, extraStyle)
-    if (extraStyle.length != 0) {
-      val general = element.getAttributeValue("style") match {
-        case null => ""
-        case v => v
-      }
-      element.removeAttribute("style")
-      extraStyle.append("\t#%s { %s }\n".format(id(), general))
-
-      val styleTag = new Element("style")
-      styleTag.setText("\n%s".format(extraStyle.toString()))
-      element.addContent(styleTag)
-    }
+    // TODO: add support back for extra stylization
+//    val extraStyle = new StringBuilder
+//    validateExtraStyle(element, style.link, extraStyle)
+//    validateExtraStyle(element, style.visited, extraStyle)
+//    validateExtraStyle(element, style.active, extraStyle)
+//    validateExtraStyle(element, style.hover, extraStyle)
+//    validateExtraStyle(element, style.focus, extraStyle)
+//    validateExtraStyle(element, style.empty, extraStyle)
+//    validateExtraStyle(element, style.target, extraStyle)
+//    validateExtraStyle(element, style.checked, extraStyle)
+//    validateExtraStyle(element, style.enabled, extraStyle)
+//    validateExtraStyle(element, style.disabled, extraStyle)
+//    if (extraStyle.length != 0) {
+//      val general = element.getAttributeValue("style") match {
+//        case null => ""
+//        case v => v
+//      }
+//      element.removeAttribute("style")
+//      extraStyle.append("\t#%s { %s }\n".format(id(), general))
+//
+//      val styleTag = new Element("style")
+//      styleTag.setText("\n%s".format(extraStyle.toString()))
+//      element.addContent(styleTag)
+//    }
   }
 
   private def validateExtraStyle(element: Element, s: StyleProperty, extraStyle: StringBuilder) = {

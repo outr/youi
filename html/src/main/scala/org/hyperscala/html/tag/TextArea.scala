@@ -16,6 +16,7 @@ class TextArea extends Textual with BodyChild with HTMLTag with FormField {
   def value = content
 
   lazy val xmlLabel = "textarea"
+  override def xmlExpanded = true
 
   def this(name: String = null,
            accessKey: java.lang.Character = null,

@@ -2,6 +2,7 @@ package org.hyperscala.javascript
 
 import org.hyperscala.XMLContent
 import org.jdom2.{Text, Content}
+import org.hyperscala.io.HTMLWriter
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -10,9 +11,9 @@ trait JavaScriptContent extends XMLContent {
   def content: String
   protected def content_=(content: String): Unit
 
-  def toXML = new Text(content)
+  def write(writer: HTMLWriter) = writer.write(content)
 
-  def fromXML(content: Content) = this.content = content.asInstanceOf[Text].getText
+  def read(content: Content) = this.content = content.asInstanceOf[Text].getText
 }
 
 case class JavaScriptString(var content: String) extends JavaScriptContent

@@ -3,6 +3,7 @@ package org.hyperscala.html.event
 import org.hyperscala.javascript.JavaScriptContent
 import org.powerscala.property.Property
 import org.hyperscala._
+import io.HTMLWriter
 import org.jdom2.Element
 import org.hyperscala.html.HTMLTag
 
@@ -103,7 +104,7 @@ trait EventSupport extends Tag {
 
   private val scriptBlock = new ThreadLocal[StringBuilder]
 
-  override protected def before(element: Element) = {
+  override protected def before() = {
     if (eventHandlers()) {      // Event Handlers requires the use of an id
       if (id() == null) {
         id := Unique()
@@ -111,10 +112,10 @@ trait EventSupport extends Tag {
       scriptBlock.set(new StringBuilder)
     }
 
-    super.before(element)
+    super.before()
   }
 
-  override protected def attributeToXML(element: Element, attribute: XMLAttribute) = attribute match {
+  override protected def writeAttribute(writer: HTMLWriter, attribute: XMLAttribute) = attribute match {
     case ep: EventProperty if (ep.name() == "onstylechange" && !eventHandlers() && ep.shouldRender) => {
       throw new RuntimeException("Unable to utilize propertyChange unless eventHandlers property is set to true")
     }
@@ -124,11 +125,11 @@ trait EventSupport extends Tag {
       b.append(ep().content)
       b.append("\n});\n\n")
     }
-    case _ => super.attributeToXML(element, attribute)
+    case _ => super.writeAttribute(writer, attribute)
   }
 
-  override protected def after(element: Element) {
-    super.after(element)
+  override protected def after() {
+    super.after()
     if (eventHandlers()) {
       val b = scriptBlock.get()
       scriptBlock.set(null)
@@ -136,7 +137,8 @@ trait EventSupport extends Tag {
         val script = new Element("script")
         script.setAttribute("type", "text/javascript")
         script.setText(b.toString())
-        element.addContent(script)
+//        element.addContent(script)
+        throw new RuntimeException("Support not added yet!")
       }
     }
   }

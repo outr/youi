@@ -13,6 +13,7 @@ import javascript.{JavaScriptString, JavaScriptContent}
  */
 class Script extends Container[JavaScriptContent] with BodyChild with HeadChild with HTMLTag {
   lazy val xmlLabel = "script"
+  override def xmlExpanded = true
 
   def this(name: String = null,
            accessKey: java.lang.Character = null,

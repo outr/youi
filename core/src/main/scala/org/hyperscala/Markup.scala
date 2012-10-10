@@ -22,10 +22,21 @@ trait Markup extends XMLContent {
    */
   def xmlExpanded = false
 
-  def write(writer: HTMLWriter) = {
+  /**
+   * Iterate over everything
+   */
+  protected def checkInit(): Unit = {
     if (initialized.compareAndSet(false, true)) {
       initialize()
     }
+    xmlChildren.foreach {
+      case markup: Markup => markup.checkInit()
+      case _ =>
+    }
+  }
+
+  def write(writer: HTMLWriter) = {
+    checkInit()
     before()
     writeTag(writer)
     after()

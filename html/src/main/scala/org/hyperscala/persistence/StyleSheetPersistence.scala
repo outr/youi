@@ -1,6 +1,7 @@
 package org.hyperscala.persistence
 
 import org.hyperscala.css.{StyleSheetAttribute, StyleSheet}
+import org.hyperscala.Page
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -15,8 +16,10 @@ object StyleSheetPersistence extends ValuePersistence[StyleSheet] {
   }
 
   def toString(t: StyleSheet, clazz: Class[_]) = t.properties.collect {
-    case p: StyleSheetAttribute[_] if (p.modified) => "%s: %s".format(p.name(), p.attributeValue)
-  }.mkString("; ")
+    case p: StyleSheetAttribute[_] if (p.modified) => {
+      Page().intercept.renderAttribute.fire(p).map(pa => "%s: %s".format(p.name(), p.attributeValue))
+    }
+  }.flatten.mkString("; ")
 
   def apply(ss: StyleSheet, s: String) = {
     try {

@@ -6,12 +6,13 @@ import attributes._
 import org.hyperscala.persistence.StringPersistence
 
 import org.powerscala.Color
+import org.powerscala.event.Listenable
 
 /**
  * NOTE: This file has been generated. Do not modify directly!
  * @author Matt Hicks <mhicks@hyperscala.org>
  */
-class StyleSheet extends PropertyParent {
+class StyleSheet extends PropertyParent with Listenable {
   implicit val stringPersistence = StringPersistence
   implicit val thisStyleSheet = this
 
@@ -415,5 +416,4 @@ class StyleSheet extends PropertyParent {
   val z = new AnyRef {
     val index = StyleSheetAttribute[String]("z-index", null)
   }
-
 }

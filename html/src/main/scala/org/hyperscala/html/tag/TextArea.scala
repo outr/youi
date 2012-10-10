@@ -11,8 +11,6 @@ import org.hyperscala.html.constraints._
  * @author Matt Hicks <mhicks@hyperscala.org>
  */
 class TextArea extends Textual with BodyChild with HTMLTag with FormField {
-  eventHandlers := false    // Necessary since scripts won't work in the body of the textarea
-
   def value = content
 
   lazy val xmlLabel = "textarea"

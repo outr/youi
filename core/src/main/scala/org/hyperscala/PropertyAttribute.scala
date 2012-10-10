@@ -58,9 +58,18 @@ trait LazyProperty[T] extends StandardProperty[T] {
   }
 
   override def apply(v: T) = {
+    val firstLoad = useLazy
     useLazy = false
     super.apply(v)
+    if (firstLoad) {
+      lazyLoaded()
+    }
   }
+
+  /**
+   * Called when a value has been assigned to this LazyProperty and is no longer lazy.
+   */
+  def lazyLoaded(): Unit = {}
 }
 
 object PropertyAttribute {

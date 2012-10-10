@@ -4,7 +4,6 @@ import org.hyperscala.web.Website
 import org.hyperscala.web.session.MapSession
 import org.hyperscala.examples.basic._
 import org.hyperscala.examples.todomvc.TodoMVC
-import org.hyperscala.examples.helloworld.HelloWorldPage
 import org.hyperscala.examples.ui.{EditableExample, AutoCompleteExample}
 import org.hyperscala.web.resource.handler.{ClassLoaderWebResourceManager, SessionWebResourceManager, URIWebResourceManager}
 
@@ -16,7 +15,7 @@ object HyperscalaSite extends Website[MapSession] {
     def create(uri: String) = HyperscalaAbout
   }
   val hello = new URIWebResourceManager("/example/hello.html") {
-    def create(uri: String) = HelloWorldPage
+    def create(uri: String) = new HelloWorldPage
   }
   val form = new URIWebResourceManager("/example/form.html") with SessionWebResourceManager {
     def create(uri: String) = new FormExample

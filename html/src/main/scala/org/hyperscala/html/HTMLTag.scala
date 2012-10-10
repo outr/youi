@@ -40,10 +40,9 @@ trait HTMLTag extends Tag with EventSupport {
     val checked = new StyleProperty("checked", InclusionMode.Exclude)(HTMLTag.this)
     val enabled = new StyleProperty("enabled", InclusionMode.Exclude)(HTMLTag.this)
     val disabled = new StyleProperty("disabled", InclusionMode.Exclude)(HTMLTag.this)
-  }
 
-  if (HTMLTag.GenerateIds) {
-    id := Unique()
+    // TODO: add support for custom selectors
+    val selectors: List[StyleProperty] = List(this, link, visited, active, hover, focus, empty, target, checked, enabled, disabled)
   }
 
   protected def generateChildFromTagName(name: String): XMLContent = {
@@ -108,11 +107,15 @@ class StyleProperty(_name: String, inclusion: InclusionMode)(implicit parent: Pr
 
   // Avoid overwriting previously set values
   override def attributeValue_=(value: String) = StyleSheetPersistence(this.value, value)
+
+  override def lazyLoaded() = {
+    super.lazyLoaded()
+
+    Page().intercept.initStyle.fire(parent.asInstanceOf[Markup])
+  }
 }
 
 object HTMLTag {
-  var GenerateIds = false
-
   private val registry = ScalaMap("html" -> classOf[HTML],
                                   "head" -> classOf[Head],
                                   "title" -> classOf[Title],

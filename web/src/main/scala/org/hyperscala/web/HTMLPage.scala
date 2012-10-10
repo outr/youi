@@ -2,6 +2,7 @@ package org.hyperscala.web
 
 import event.FormSubmit
 import javax.servlet.http.{HttpServletResponse, HttpServletRequest}
+import module.Module
 import org.hyperscala.html._
 import attributes.Method
 import org.powerscala.property.{PropertyParent, Property}
@@ -59,6 +60,14 @@ class HTMLPage extends PageResource with PropertyParent with Parent with Updatab
 
   def servletRequest = website.servletRequest
   def servletResponse = website.servletResponse
+
+  private var modules = Set.empty[Module]
+  def require(module: Module) = synchronized {
+    if (!modules.contains(module)) {
+      modules += module
+      module.load(this)
+    }
+  }
 
   /**
    * Ensures that the script referenced via url is loaded in the head.

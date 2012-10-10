@@ -102,6 +102,6 @@ object HyperScalaBuild extends Build {
   lazy val site = Project("site", file("site"), settings = createSettings("hyperscala-site"))
     .dependsOn(examples)
     .settings(webSettings: _*)
-    .settings(port := 8080)
+    .settings(port in container.Configuration := 8000)
     .settings(libraryDependencies ++= Seq(jettyServer, jettyWebapp, jettyServlet, jettyJsp, glassfishJsp))
 }

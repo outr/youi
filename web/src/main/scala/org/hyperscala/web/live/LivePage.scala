@@ -23,10 +23,8 @@ import org.powerscala.hierarchy.event.ChildAddedEvent
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-class LivePage extends HTMLPage {
+class LivePage extends HTMLPage with IdentifyTags {
   import LivePage.escape
-
-  HTMLTag.GenerateIds = true    // Every element should have an ID
 
   /**
    * Maximum number of times the client / browser will retry a poll before giving up

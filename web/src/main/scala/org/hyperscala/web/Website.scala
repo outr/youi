@@ -4,7 +4,8 @@ import org.powerscala.property.{Property, PropertyParent}
 import org.powerscala.hierarchy.{ContainerView, MutableContainer}
 import javax.servlet.ServletConfig
 import javax.servlet.http.{Cookie, HttpServletResponse, HttpServletRequest}
-import resource.handler.{ServletContextWebResourceManager, WebResourceHandler}
+import resource.handler.{RegistrationWebResourceManager, ServletContextWebResourceManager, WebResourceHandler}
+import resource.{WebResource, URLWebResource}
 import session.{MapSession, Session}
 import org.hyperscala.html.attributes.Method
 import org.hyperscala.{MarkupIntercepting, Unique}
@@ -12,6 +13,7 @@ import org.powerscala.concurrent.Executor
 import org.powerscala.concurrent.Time._
 import org.powerscala.{Logging, Updatable}
 import org.powerscala.reflect._
+import java.net.URL
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -55,6 +57,11 @@ trait Website[S <: Session] extends MutableContainer[WebResourceHandler] with Pr
   def sessions = _sessions.values
 
   val name = Property[String]("name", null)
+
+  private val resourceRegistration = new RegistrationWebResourceManager
+  def register(uri: String, path: String) = resourceRegistration.register(uri, new URLWebResource(getClass.getClassLoader.getResource(path)))
+  def register(uri: String, url: URL) = resourceRegistration.register(uri, new URLWebResource(url))
+  def register(uri: String, resource: WebResource) = resourceRegistration.register(uri, resource)
 
   contents += ServletContextWebResourceManager    // Default support to lookup content in the webapp folder
 
@@ -145,7 +152,7 @@ trait Website[S <: Session] extends MutableContainer[WebResourceHandler] with Pr
    * Defaults to sending an internal server error message back to the client.
    */
   // TODO: support error pages
-  def handleError(t: Throwable, method: Method, request: HttpServletRequest, response: HttpServletResponse) = {
+  def handleError(t: Throwable, method: Method, request: HttpServletRequest, response: HttpServletResponse) = if (!response.isCommitted) {
     response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "An internal error occurred")
   }
 

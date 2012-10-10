@@ -5,6 +5,7 @@ import javax.servlet.http.{HttpServletResponse, HttpServletRequest}
 import java.net.URL
 import annotation.tailrec
 import java.io.{OutputStream, InputStream}
+import org.powerscala.Logging
 
 /**
  * URLWebResource represents a resource for a specific URL that will be streamed back to the client.
@@ -12,6 +13,8 @@ import java.io.{OutputStream, InputStream}
  * @author Matt Hicks <mhicks@powerscala.org>
  */
 class URLWebResource(url: URL) extends WebResource {
+  if (url == null) throw new NullPointerException("URLWebResource must have a non-null URL.")
+
   def apply(method: Method, request: HttpServletRequest, response: HttpServletResponse) = {
     val connection = url.openConnection()
     val extension = url.toString.substring(url.toString.lastIndexOf('.') + 1)
@@ -42,7 +45,7 @@ class URLWebResource(url: URL) extends WebResource {
   }
 }
 
-object URLWebResource {
+object URLWebResource extends Logging {
   /**
    * Looks up the Content-Type based on the extension or defaults to "default".
    */
@@ -50,7 +53,10 @@ object URLWebResource {
     case "css" => "text/css"
     case "js" => "application/javascript"
     case _ => default match {
-      case "content/unknown" => throw new RuntimeException("Unsupported content extension: %s for %s".format(extension, default))
+      case "content/unknown" => {
+        warn("Unsupported content extension: %s for %s".format(extension, default))
+        "text/plain"
+      }
       case _ => default
     }
   }

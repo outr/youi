@@ -14,6 +14,8 @@ trait JavaScriptContent extends XMLContent {
   def write(writer: HTMLWriter) = writer.write(content)
 
   def read(content: Content) = this.content = content.asInstanceOf[Text].getText
+
+  def +(js: JavaScriptContent) = JavaScriptString("%s\n\n%s".format(content, js.content))
 }
 
 case class JavaScriptString(var content: String) extends JavaScriptContent

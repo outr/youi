@@ -3,8 +3,6 @@ package org.hyperscala.html.event
 import org.hyperscala.javascript.JavaScriptContent
 import org.powerscala.property.Property
 import org.hyperscala._
-import io.HTMLWriter
-import org.jdom2.Element
 import org.hyperscala.html.HTMLTag
 
 /**
@@ -14,21 +12,12 @@ trait EventSupport extends Tag {
   this: HTMLTag =>
 
   /**
-   * Specifies whether event handlers should be used instead of inlining the event support into the tags
-   *
-   * Defaults to true
-   */
-  val eventHandlers = Property[Boolean]("eventHandlers", false)   // TODO: push script to <HEAD> instead of inner
-  // TODO: add ability for Website to inject functionality into tags
-
-  /**
    * Specifies whether style change events coming from the client will be applied back to the property.
    *
    * Defaults to true
    */
   val applyStyleChanges = Property[Boolean]("applyStyleChanges", true)
 
-  // TODO: add support for multiple handlers
   val event = new {
     val afterPrint = new PropertyAttribute[JavaScriptContent]("onafterprint", null) with EventProperty
     val beforePrint = new PropertyAttribute[JavaScriptContent]("onbeforeprint", null) with EventProperty
@@ -101,47 +90,15 @@ trait EventSupport extends Tag {
     val waiting = new PropertyAttribute[JavaScriptContent]("onwaiting", null) with EventProperty
     val styleChange = new PropertyAttribute[JavaScriptContent]("onstylechange", null) with EventProperty
   }
-
-  private val scriptBlock = new ThreadLocal[StringBuilder]
-
-  override protected def before() = {
-    if (eventHandlers()) {      // Event Handlers requires the use of an id
-      if (id() == null) {
-        id := Unique()
-      }
-      scriptBlock.set(new StringBuilder)
-    }
-
-    super.before()
-  }
-
-  override protected def writeAttribute(writer: HTMLWriter, attribute: XMLAttribute) = attribute match {
-    case ep: EventProperty if (ep.name() == "onstylechange" && !eventHandlers() && ep.shouldRender) => {
-      throw new RuntimeException("Unable to utilize propertyChange unless eventHandlers property is set to true")
-    }
-    case ep: EventProperty if (eventHandlers() && ep.shouldRender) => {
-      val b = scriptBlock.get()
-      b.append("$('#%s').bind('%s', function(event, data) {\n".format(id(), ep.name().substring(2)))
-      b.append(ep().content)
-      b.append("\n});\n\n")
-    }
-    case _ => super.writeAttribute(writer, attribute)
-  }
-
-  override protected def after() {
-    super.after()
-    if (eventHandlers()) {
-      val b = scriptBlock.get()
-      scriptBlock.set(null)
-      if (b.nonEmpty) {   // There is script data to render
-        val script = new Element("script")
-        script.setAttribute("type", "text/javascript")
-        script.setText(b.toString())
-//        element.addContent(script)
-        throw new RuntimeException("Support not added yet!")
-      }
-    }
-  }
 }
 
-trait EventProperty extends PropertyAttribute[JavaScriptContent]
+trait EventProperty extends PropertyAttribute[JavaScriptContent] {
+  /**
+   * Concatenation of JavaScript support
+   */
+  def +=(content: JavaScriptContent) = if (value == null) {
+    value = content
+  } else {
+    value = value + content
+  }
+}

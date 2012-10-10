@@ -6,6 +6,7 @@ import org.hyperscala.examples.basic._
 import org.hyperscala.examples.todomvc.TodoMVC
 import org.hyperscala.examples.ui.{EditableExample, AutoCompleteExample}
 import org.hyperscala.web.resource.handler.{ClassLoaderWebResourceManager, SessionWebResourceManager, URIWebResourceManager}
+import org.hyperscala.examples.helloworld.HelloWorldPage
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>

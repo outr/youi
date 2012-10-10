@@ -8,7 +8,6 @@ import css.StyleSheet
 import persistence.StyleSheetPersistence
 import scala.collection.{Map => ScalaMap}
 import org.powerscala.property.PropertyParent
-import org.jdom2.Element
 
 /**
  * NOTE: This file has been generated. Do not modify directly!
@@ -51,48 +50,6 @@ trait HTMLTag extends Tag with EventSupport {
 
   protected def processText(text: String): Unit = {
     this.asInstanceOf[Container[HTMLTag]].contents += new Text(text)
-  }
-
-  override protected def after() {
-    super.after()
-
-    // TODO: add support back for extra stylization
-//    val extraStyle = new StringBuilder
-//    validateExtraStyle(element, style.link, extraStyle)
-//    validateExtraStyle(element, style.visited, extraStyle)
-//    validateExtraStyle(element, style.active, extraStyle)
-//    validateExtraStyle(element, style.hover, extraStyle)
-//    validateExtraStyle(element, style.focus, extraStyle)
-//    validateExtraStyle(element, style.empty, extraStyle)
-//    validateExtraStyle(element, style.target, extraStyle)
-//    validateExtraStyle(element, style.checked, extraStyle)
-//    validateExtraStyle(element, style.enabled, extraStyle)
-//    validateExtraStyle(element, style.disabled, extraStyle)
-//    if (extraStyle.length != 0) {
-//      val general = element.getAttributeValue("style") match {
-//        case null => ""
-//        case v => v
-//      }
-//      element.removeAttribute("style")
-//      extraStyle.append("\t#%s { %s }\n".format(id(), general))
-//
-//      val styleTag = new Element("style")
-//      styleTag.setText("\n%s".format(extraStyle.toString()))
-//      element.addContent(styleTag)
-//    }
-  }
-
-  private def validateExtraStyle(element: Element, s: StyleProperty, extraStyle: StringBuilder) = {
-    if (s.loaded && s.modified) {
-      val css = s.attributeValue
-      if (css.nonEmpty) {
-        if (id() == null) {
-          id := Unique()
-          element.setAttribute("id", id())
-        }
-        extraStyle.append("\t#%s:%s { %s }\n".format(id(), s.name(), css))
-      }
-    }
   }
 
   def byId[T <: HTMLTag](id: String)(implicit manifest: Manifest[T]) = hierarchy.findFirst[T](t => t.id() == id)(manifest)

@@ -6,7 +6,7 @@ import org.hyperscala.web.HTMLPage
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-object HelloWorldPage extends HTMLPage {
+class HelloWorldPage extends HTMLPage {
   title := "Hello World Page"
 
   body.contents += "Hello World!"

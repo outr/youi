@@ -1,6 +1,6 @@
 package org.hyperscala.examples.basic
 
-import org.hyperscala.web.{ActionForm, AJAXForm, HTMLPage}
+import org.hyperscala.web.{FormSupport, ActionForm, AJAXForm, HTMLPage}
 import org.hyperscala.html._
 import org.powerscala.property._
 import org.hyperscala.bean.BeanForm
@@ -10,7 +10,7 @@ import tag.{Br, Script, Div}
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-class BeanFormExample extends HTMLPage {
+class BeanFormExample extends HTMLPage with FormSupport {
   title := "BeanForm Example"
 
   head.contents += new Script(src = "/js/jquery-1.7.2.js")

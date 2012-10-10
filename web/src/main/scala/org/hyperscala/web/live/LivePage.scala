@@ -193,10 +193,11 @@ class LivePage extends HTMLPage {
     }
   }
 
-  override def apply(method: Method, request: HttpServletRequest, response: HttpServletResponse) {
+  override def processRequest(method: Method, request: HttpServletRequest, response: HttpServletResponse) = {
     if (method == Method.Post) {
       Page.instance.set(this)
       try {
+        // TODO: extract live events from LivePage
         val postData = Source.fromInputStream(request.getInputStream).mkString
         JSON.parseFull(postData) match {
           case Some(parsed) => {
@@ -281,20 +282,9 @@ class LivePage extends HTMLPage {
       } finally {
         Page.instance.set(null)
       }
+      false   // Never send a response page during POST
     } else {
-      Page.instance.set(this)
-      try {
-        pageLoading()
-      } finally {
-        Page.instance.set(null)
-      }
-      super.apply(method, request, response)
-      Page.instance.set(this)
-      try {
-        pageLoaded()
-      } finally {
-        Page.instance.set(null)
-      }
+      true
     }
   }
 
@@ -310,16 +300,6 @@ class LivePage extends HTMLPage {
   private def convertScript(script: String) = {
     script.map(c => if (c == '\n') ' ' else if (c == '\r') ' ' else c)
   }
-
-  /**
-   * Called before the page is reloaded.
-   */
-  def pageLoading() = {}
-
-  /**
-   * Called when the page is reloaded.
-   */
-  def pageLoaded() = {}
 
   /**
    * Called when the client checks in to the server.

@@ -81,42 +81,12 @@ class HTMLPage extends PageResource with PropertyParent with Parent with Updatab
   }
 
   def apply(method: Method, request: HttpServletRequest, response: HttpServletResponse) = {
-    Page.instance.set(this)     // TODO: extract this out into an interceptor
+    Page.instance.set(this)
     try {
-      doAllWork()   // Handle any enqueued work
-      response.setContentType("text/html")
-      var ignoreResponse = false
-      var form: Form = null
-      if (method == Method.Post) {    // TODO: extract all POST support out
-        request.getParameterMap.foreach {
-          case (key, values) => {
-//            println("Key: %s, Value: %s".format(key, values.asInstanceOf[Array[String]].head))
-            if (key.toString.endsWith("SendResponse") && values.asInstanceOf[Array[String]].head == "false") {
-              ignoreResponse = true
-            }
-            byName[HTMLTag](key.asInstanceOf[String]) match {
-              case Some(tag) if (renderable(tag)) => {      // Only apply to tags that are rendered to the page
-                if (form == null) {
-                  tag.hierarchy.backward[Form]() match {
-                    case null => println("WARNING: Unable to find form for %s".format(key)) // Odd, but not impossible
-                    case f => form = f
-                  }
-                }
-                val v = values.asInstanceOf[Array[String]]
-//                println("Updating %s for %s with %s".format(tag, key, v.mkString(", ")))
-                updateValue(method, tag, v)
-              }
-              case _ => println("Unable to find %s = %s".format(key, values.asInstanceOf[Array[String]].head))
-            }
-          }
-        }
-        if (form != null) {
-          form.fire(FormSubmit(method))
-        }
-      }
+      doAllWork()
       refresh()
-      if (!ignoreResponse) {
-        cached.poll[String](redirectId) match {
+      if (processRequest(method, request, response)) {
+        cached.poll[String](redirectId) match {     // TODO: evaluate removal?
           case Some(redirect) => response.sendRedirect(redirect)
           case None => {
             sendResponse(method, request, response)
@@ -129,9 +99,44 @@ class HTMLPage extends PageResource with PropertyParent with Parent with Updatab
         handleError(t, method, request, response)
       }
     } finally {
-      Page.instance.set(null)
+      Page.instance.remove()
     }
   }
+
+  /**
+   * Processes the request. Return true if response should be sent.
+   *
+   * Defaults to true
+   */
+  protected def processRequest(method: Method, request: HttpServletRequest, response: HttpServletResponse): Boolean = {
+    true
+  }
+
+  /**
+   * Streams back the page to the client.
+   */
+  protected def sendResponse(method: Method, request: HttpServletRequest, response: HttpServletResponse) = {
+    pageLoading()
+    response.setContentType("text/html")
+    val output = response.getOutputStream
+    try {
+      write(output)
+    } finally {
+      output.flush()
+      output.close()
+    }
+    pageLoaded()
+  }
+
+  /**
+   * Called before the page is reloaded.
+   */
+  def pageLoading() = {}
+
+  /**
+   * Called when the page is reloaded.
+   */
+  def pageLoaded() = {}
 
   protected def renderable(tag: HTMLTag): Boolean = if (tag.render) {
     tag.parent match {
@@ -154,11 +159,6 @@ class HTMLPage extends PageResource with PropertyParent with Parent with Updatab
       case _ => throw new RuntimeException("Unsupported tag: %s".format(tag))
       // TODO: add support for other inputs
     }
-  }
-
-  protected def sendResponse(method: Method, request: HttpServletRequest, response: HttpServletResponse) = {
-    val output = response.getOutputStream
-    write(output)
   }
 
   def write(output: OutputStream) = {

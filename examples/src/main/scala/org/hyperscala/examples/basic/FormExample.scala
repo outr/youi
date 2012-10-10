@@ -1,6 +1,6 @@
 package org.hyperscala.examples.basic
 
-import org.hyperscala.web.{ActionForm, AJAXForm, HTMLPage}
+import org.hyperscala.web.{FormSupport, ActionForm, AJAXForm, HTMLPage}
 import org.hyperscala.html._
 import attributes.{ButtonType, InputType}
 
@@ -11,7 +11,7 @@ import org.powerscala.property.event.PropertyChangeEvent
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-class FormExample extends HTMLPage {
+class FormExample extends HTMLPage with FormSupport {
   title := "Form Example"
 
   head.contents += new Script(src = "/js/jquery-1.7.2.js")

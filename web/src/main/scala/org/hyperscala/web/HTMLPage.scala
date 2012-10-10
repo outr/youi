@@ -15,7 +15,7 @@ import tag._
 import scala.Some
 import org.hyperscala
 import hyperscala.io.HTMLWriter
-import hyperscala.{Page, Markup}
+import hyperscala.Page
 import org.powerscala.concurrent.WorkQueue
 import org.powerscala.event.Event
 import java.util.concurrent.atomic.AtomicBoolean
@@ -24,23 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean
  * @author Matt Hicks <mhicks@powerscala.org>
  */
 class HTMLPage extends PageResource with PropertyParent with Parent with Updatable with WorkQueue with Page {
-  override def init(markup: Markup) {
-    Website().init(markup)
-
-    super.init(markup)
-  }
-
-  override def before(markup: Markup) {
-    Website().before(markup)
-
-    super.before(markup)
-  }
-
-  override def after(markup: Markup) {
-    Website().after(markup)
-
-    super.after(markup)
-  }
+  override protected def parentIntercept = Website().intercept
 
   private val _initialized = new AtomicBoolean(false)
 

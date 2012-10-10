@@ -48,6 +48,4 @@ class Title extends Textual with HeadChild with HTMLTag {
     up(this.title, title)
     up(this.content, content)
   }
-
-
 }

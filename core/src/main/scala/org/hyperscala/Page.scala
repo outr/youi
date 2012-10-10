@@ -1,12 +1,16 @@
 package org.hyperscala
 
-import intercept.Intercepting
+import org.powerscala.event.Listenable
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-trait Page extends Intercepting {
+trait Page extends Listenable {
   Page.instance.set(this)
+
+  protected def parentIntercept: MarkupIntercepting = null
+
+  val intercept = new MarkupIntercepting("Page", bus, parentIntercept)
 }
 
 object Page {

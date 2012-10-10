@@ -11,6 +11,8 @@ import persistence.ValuePersistence
 class PropertyAttribute[T](_name: String, default: T, inclusion: InclusionMode = InclusionMode.NotEmpty, backing: Backing[T] = new VariableBacking[T])
                              (implicit persister: ValuePersistence[T], parent: PropertyParent, val manifest: Manifest[T])
                              extends StandardProperty[T](_name, default, backing)(parent) with XMLAttribute {
+  Page().intercept.initAttribute.fire(this)   // Fire the initialization to be intercepted
+
   // TODO: remove this
   def attributeValue = persister.toString(value, manifest.erasure)
 
@@ -20,7 +22,10 @@ class PropertyAttribute[T](_name: String, default: T, inclusion: InclusionMode =
   def shouldRender = include
 
   def write(markup: Markup, writer: HTMLWriter) = if (shouldRender) {
-    writer.write(" %s=\"%s\"".format(name(), attributeValue))
+    Page().intercept.renderAttribute.fire(this) match {
+      case Some(pa) => writer.write(" %s=\"%s\"".format(pa.name(), pa.attributeValue))
+      case None => // Told not to render by intercept
+    }
   }
 
   def read(markup: Markup, value: String) = {

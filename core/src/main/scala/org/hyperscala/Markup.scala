@@ -84,16 +84,16 @@ trait Markup extends XMLContent {
     case _ => throw new RuntimeException("%s: Unsupported content type: %s".format(getClass.getName, content.getClass.getName))
   }
 
-  protected def initialize() = {
-    Page().init(this)
+  protected def initialize(): Unit = {
+    Page().intercept.init.fire(this)
   }
 
-  protected def before() = {
-    Page().before(this)
+  protected def before(): Unit = {
+    Page().intercept.beforeRender.fire(this)
   }
 
-  protected def after() = {
-    Page().after(this)
+  protected def after(): Unit = {
+    Page().intercept.afterRender.fire(this)
   }
 
   @tailrec
@@ -111,7 +111,6 @@ trait Markup extends XMLContent {
     xmlAttributes.find(xmla => xmla.name() == a.getName) match {
       case Some(xmla) => {
         xmla.read(this, a.getValue)
-//        xmla.attributeValue = a.getValue
         true
       }
       case None => false

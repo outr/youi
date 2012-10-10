@@ -7,18 +7,19 @@ import javax.servlet.http.{Cookie, HttpServletResponse, HttpServletRequest}
 import resource.handler.{ServletContextWebResourceManager, WebResourceHandler}
 import session.{MapSession, Session}
 import org.hyperscala.html.attributes.Method
-import org.hyperscala.Unique
+import org.hyperscala.{MarkupIntercepting, Unique}
 import org.powerscala.concurrent.Executor
 import org.powerscala.concurrent.Time._
 import org.powerscala.{Logging, Updatable}
 import org.powerscala.reflect._
-import org.hyperscala.intercept.Intercepting
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-trait Website[S <: Session] extends MutableContainer[WebResourceHandler] with PropertyParent with Updatable with Intercepting with Logging {
+trait Website[S <: Session] extends MutableContainer[WebResourceHandler] with PropertyParent with Updatable with Logging {
   implicit val thisWebsite = this
+
+  val intercept = new MarkupIntercepting(getClass.getSimpleName, bus, null)
 
   /**
    * Defines how long the sessionId cookie will live.

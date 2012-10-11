@@ -4,7 +4,7 @@ import org.hyperscala._
 import io.{StringBuilderHTMLWriter, HTMLWriter}
 import org.hyperscala.html._
 import org.hyperscala.css.StyleSheet
-import web.{Website, HTMLPage}
+import web.{HeadScript, HeadStyle, Website, HTMLPage}
 import actors.threadpool.AtomicInteger
 import scala.io.Source
 import org.hyperscala.javascript.JavaScriptContent
@@ -23,7 +23,7 @@ import org.powerscala.hierarchy.event.ChildAddedEvent
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-class LivePage extends HTMLPage with IdentifyTags {
+class LivePage extends HTMLPage with IdentifyTags with HeadStyle with HeadScript {
   import LivePage.escape
 
   /**
@@ -92,27 +92,31 @@ class LivePage extends HTMLPage with IdentifyTags {
   listeners.synchronous.filter.descendant() {
     case evt: ChildAddedEvent => {
       val parent = evt.parent.asInstanceOf[HTMLTag with Container[HTMLTag]]
-      val child = evt.child.asInstanceOf[HTMLTag]
-      if (parent.id() == null) {
-        parent.id := Unique()
+      evt.child match {
+        case child: HTMLTag => {
+          if (parent.id() == null) {
+            parent.id := Unique()
+          }
+          if (child.id() == null) {
+            child.id := Unique()
+          }
+          val index = parent.contents.indexOf(child)
+          val instruction = if (index == parent.contents.length - 1) {    // Append to the end
+            "$('#%s').append(content);".format(parent.id())
+          } else if (index == 0) {                                   // Append before
+          val after = parent.contents(1)
+            "$('#%s').before(content);".format(after.id())
+          } else {
+            val before = parent.contents(index - 1)
+            "$('#%s').after(content);".format(before.id())
+          }
+          val writer = HTMLWriter().asInstanceOf[StringBuilderHTMLWriter]
+          child.write(writer)
+          val content = writer.writer.toString()
+          enqueue(LiveChange(nextId, null, instruction, content))
+        }
+        case js: JavaScriptContent => sendJavaScript(js.content)
       }
-      if (child.id() == null) {
-        child.id := Unique()
-      }
-      val index = parent.contents.indexOf(child)
-      val instruction = if (index == parent.contents.length - 1) {    // Append to the end
-        "$('#%s').append(content);".format(parent.id())
-      } else if (index == 0) {                                   // Append before
-      val after = parent.contents(1)
-        "$('#%s').before(content);".format(after.id())
-      } else {
-        val before = parent.contents(index - 1)
-        "$('#%s').after(content);".format(before.id())
-      }
-      val writer = HTMLWriter().asInstanceOf[StringBuilderHTMLWriter]
-      child.write(writer)
-      val content = writer.writer.toString()
-      enqueue(LiveChange(nextId, null, instruction, content))
     }
     case evt: ChildRemovedEvent => evt.child match {
       case text: tag.Text => {
@@ -121,6 +125,7 @@ class LivePage extends HTMLPage with IdentifyTags {
         enqueue(LiveChange(nextId, null, "liveRemoveByIndex('%s', %s);".format(parent.id(), index), null))
       }
       case tag: HTMLTag => enqueue(LiveChange(nextId, null, "liveRemove('%s');".format(tag.id()), null))
+      case js: JavaScriptContent => // Nothing necessary
     }
   }
 
@@ -136,17 +141,26 @@ class LivePage extends HTMLPage with IdentifyTags {
           if (property == t.id && evt.oldValue == null) {
             // Ignore
           } else {
-            val key = "%s.%s".format(t.id(), property.name())
-            val script = if (t.isInstanceOf[tag.Title] && property.name() == "content") {
-              "document.title = '%s';".format(property.attributeValue)
-            } else if (t.isInstanceOf[Textual] && property.name() == "content") {
-              "$('#%s').val(%s);".format(t.id(), scriptifyValue(property))
-            } else if (property() == false) {   // Remove attribute
-              "$('#%s').removeAttr('%s');".format(t.id(), property.name())
-            } else {
-              "$('#%s').attr('%s', %s);".format(t.id(), property.name(), scriptifyValue(property))
+            if (property.shouldRender) {
+              Page().intercept.renderAttribute.fire(property) match {
+                case Some(pa) => {
+                  val key = "%s.%s".format(t.id(), property.name())
+                  var content: String = null
+                  val script = if (t.isInstanceOf[tag.Title] && property.name() == "content") {
+                    "document.title = '%s';".format(property.attributeValue)
+                  } else if (t.isInstanceOf[Textual] && property.name() == "content") {
+                    content = property.attributeValue
+                    "$('#%s').val(content);".format(t.id())
+                  } else if (property() == false) {   // Remove attribute
+                    "$('#%s').removeAttr('%s');".format(t.id(), property.name())
+                  } else {    // TODO: ignore values when HeadScript is in use! - add intercept logic
+                    "$('#%s').attr('%s', %s);".format(t.id(), property.name(), scriptifyValue(property))
+                  }
+                  enqueue(LiveChange(nextId, key, script, null))
+                }
+                case None => // Shouldn't render
+              }
             }
-            enqueue(LiveChange(nextId, key, script, null))
           }
         }
         case ss: StyleSheet => tagsByStyleSheet(ss) {
@@ -293,10 +307,6 @@ class LivePage extends HTMLPage with IdentifyTags {
     } finally {
       applying.set(null)
     }
-  }
-
-  private def convertScript(script: String) = {
-    script.map(c => if (c == '\n') ' ' else if (c == '\r') ' ' else c)
   }
 
   /**

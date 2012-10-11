@@ -45,6 +45,7 @@ class HeadScriptTag(page: HTMLPage, tag: HTMLTag) {
           tag.id := Unique()
         }
 
+        b.append("\n\t$('#%s').unbind('%s');".format(tag.id(), ep.name().substring(2)))
         b.append("\n\t$('#%s').bind('%s', function(event, data) {\n\t\t".format(tag.id(), ep.name().substring(2)))
         b.append(ep().content)
         b.append("\n\t});\n")
@@ -56,7 +57,7 @@ class HeadScriptTag(page: HTMLPage, tag: HTMLTag) {
         script = new Script(mimeType = "text/javascript", id = "%sScript".format(tag.id()))
         page.head.contents += script
       }
-      val s = "\n$(document).ready(function() {%s});".format(b)
+      val s = "\n$(function() {%s});".format(b)
       script.contents.replaceWith(JavaScriptString(s))
     }
   }

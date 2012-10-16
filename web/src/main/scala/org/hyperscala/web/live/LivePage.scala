@@ -189,7 +189,7 @@ class LivePage extends HTMLPage with IdentifyTags with HeadStyle with HeadScript
 
   override def sendRedirect(url: String) = sendJavaScript("window.location.href = '%s';".format(url))
 
-  def reload() = sendRedirect(Website().servletRequest.getRequestURI)
+  def reload() = sendJavaScript("window.location.reload(true);")
 
   def sendJavaScript(js: String, content: String = null) = enqueue(LiveChange(nextId, null, js, content))
 

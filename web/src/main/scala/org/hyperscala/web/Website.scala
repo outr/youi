@@ -152,8 +152,9 @@ trait Website[S <: Session] extends MutableContainer[WebResourceHandler] with Pr
    * Defaults to sending an internal server error message back to the client.
    */
   // TODO: support error pages
-  def handleError(t: Throwable, method: Method, request: HttpServletRequest, response: HttpServletResponse) = if (!response.isCommitted) {
-    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "An internal error occurred")
+  def handleError(t: Throwable, method: Method, request: HttpServletRequest, response: HttpServletResponse) = if (!response.isCommitted) t match {
+    case se: SecurityException => response.sendError(HttpServletResponse.SC_UNAUTHORIZED, se.getMessage)
+    case _ => response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "An internal error occurred")
   }
 
   /**

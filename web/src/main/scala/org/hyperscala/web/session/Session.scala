@@ -16,6 +16,7 @@ trait Session extends Updatable with Listenable with WorkQueue {
   val created = System.currentTimeMillis()
   protected[web] var lastCheckin = created
   def lifetime = Time.fromMillis(System.currentTimeMillis() - created)
+  def stale = Time.fromMillis(System.currentTimeMillis() - lastCheckin)
 
   def name = getClass.getName
   def timeout: Double = 30.minutes
@@ -45,7 +46,7 @@ trait Session extends Updatable with Listenable with WorkQueue {
   }
 
   override def update(delta: Double) = {
-    val elapsed = lifetime
+    val elapsed = stale
     doAllWork()
     if (elapsed > timeout) {    // Timeout the session
       Session.info("Session has timed out; Elapsed: %s, Timeout: %s, Session: %s".format(elapsed, timeout, this))

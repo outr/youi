@@ -17,17 +17,18 @@ object HyperScalaBuild extends Build {
 
   val specs2 = "org.specs2" %% "specs2" % "1.11" % "test"
 
-  val jettyVersion = "7.4.2.v20110526"
-  val jettyServer = "org.eclipse.jetty" % "jetty-server" % jettyVersion % "container;provided"
-  val jettyWebapp = "org.eclipse.jetty" % "jetty-webapp" % jettyVersion % "container;provided"
-  val jettyServlet = "org.eclipse.jetty" % "jetty-servlet" % jettyVersion % "container;provided"
-  val jettyJsp = "org.eclipse.jetty" % "jetty-jsp-2.1" % jettyVersion % "container;provided"
-  val glassfishJsp = "org.mortbay.jetty" % "jsp-2.1-glassfish" % "2.1.v20100127" % "container;provided"
+  val jettyVersion = "8.1.7.v20120910"
+  val jettyWebapp = "org.eclipse.jetty" % "jetty-webapp" % "8.1.7.v20120910" % "container,compile"
+  val servlet = "org.eclipse.jetty.orbit" % "javax.servlet" % "3.0.0.v201112011016" % "container,compile" artifacts Artifact("javax.servlet", "jar", "jar")
 
   val commonsFileUpload = "commons-fileupload" % "commons-fileupload" % "1.2.2"
   val commonsIO = "commons-io" % "commons-io" % "1.3.2"
 
-  val servletApi = "org.eclipse.jetty" % "jetty-servlet" % jettyVersion
+  val atmosphereRuntime = "org.atmosphere" % "atmosphere-runtime" % "1.0.2"
+  val atmosphereJQuery = "org.atmosphere" % "atmosphere-jquery" % "1.0.2"
+  val annotationDetector = "eu.infomas" % "annotation-detector" % "3.0.0"
+
+  val servletApi = "javax.servlet" % "javax.servlet-api" % "3.0.1" % "compile"
 
   val baseSettings = Defaults.defaultSettings ++ Seq(
     version := "0.3-SNAPSHOT",
@@ -88,7 +89,12 @@ object HyperScalaBuild extends Build {
     .dependsOn(html)
   lazy val web = Project("web", file("web"), settings = createSettings("hyperscala-web"))
     .dependsOn(html)
-    .settings(libraryDependencies ++= Seq(servletApi, commonsFileUpload, commonsIO))
+    .settings(libraryDependencies ++= Seq(servletApi,
+                                          commonsFileUpload,
+                                          commonsIO,
+                                          atmosphereRuntime,
+                                          atmosphereJQuery,
+                                          annotationDetector))
   lazy val bean = Project("bean", file("bean"), settings = createSettings("hyperscala-bean"))
     .dependsOn(web)
   lazy val ui = Project("ui", file("ui"), settings = createSettings("hyperscala-ui"))
@@ -101,7 +107,7 @@ object HyperScalaBuild extends Build {
     .dependsOn(web, bean, ui)
   lazy val site = Project("site", file("site"), settings = createSettings("hyperscala-site"))
     .dependsOn(examples)
+    .settings(libraryDependencies ++= Seq(jettyWebapp, servlet))
     .settings(webSettings: _*)
     .settings(port in container.Configuration := 8000)
-    .settings(libraryDependencies ++= Seq(jettyServer, jettyWebapp, jettyServlet, jettyJsp, glassfishJsp))
 }

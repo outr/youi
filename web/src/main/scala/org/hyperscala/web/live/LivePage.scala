@@ -4,7 +4,7 @@ import org.hyperscala._
 import io.{StringBuilderHTMLWriter, HTMLWriter}
 import org.hyperscala.html._
 import org.hyperscala.css.StyleSheet
-import web.{HeadScript, HeadStyle, Website, HTMLPage}
+import web.{Website, HTMLPage}
 import actors.threadpool.AtomicInteger
 import scala.io.Source
 import org.hyperscala.javascript.JavaScriptContent
@@ -23,7 +23,7 @@ import org.powerscala.hierarchy.event.ChildAddedEvent
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-class LivePage extends HTMLPage with IdentifyTags with HeadStyle with HeadScript {
+class LivePage extends HTMLPage with IdentifyTags {
   import LivePage.escape
 
   /**
@@ -141,7 +141,8 @@ class LivePage extends HTMLPage with IdentifyTags with HeadStyle with HeadScript
           if (property == t.id && evt.oldValue == null) {
             // Ignore
           } else {
-            if (property.shouldRender) {
+            // TODO: figure out why property.shouldRender was there - if necessary to return then solve Textual.content property problem
+//            if (property.shouldRender) {
               Page().intercept.renderAttribute.fire(property) match {
                 case Some(pa) => {
                   val key = "%s.%s".format(t.id(), property.name())
@@ -156,11 +157,11 @@ class LivePage extends HTMLPage with IdentifyTags with HeadStyle with HeadScript
                   } else {    // TODO: ignore values when HeadScript is in use! - add intercept logic
                     "$('#%s').attr('%s', %s);".format(t.id(), property.name(), scriptifyValue(property))
                   }
-                  enqueue(LiveChange(nextId, key, script, null))
+                  enqueue(LiveChange(nextId, key, script, content))
                 }
                 case None => // Shouldn't render
               }
-            }
+//            }
           }
         }
         case ss: StyleSheet => tagsByStyleSheet(ss) {

@@ -8,7 +8,7 @@ import persistence.ValuePersistence
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-class PropertyAttribute[T](_name: String, default: T, inclusion: InclusionMode = InclusionMode.NotEmpty, backing: Backing[T] = new VariableBacking[T])
+class PropertyAttribute[T](_name: String, default: T, val inclusion: InclusionMode = InclusionMode.NotEmpty, backing: Backing[T] = new VariableBacking[T])
                              (implicit persister: ValuePersistence[T], parent: PropertyParent, val manifest: Manifest[T])
                              extends StandardProperty[T](_name, default, backing)(parent) with XMLAttribute {
   Page().intercept.initAttribute.fire(this)   // Fire the initialization to be intercepted

@@ -3,6 +3,7 @@ package org.hyperscala.html
 import attributes._
 import event.EventSupport
 import org.hyperscala._
+import io.{StringBuilderHTMLWriter, HTMLWriter}
 import org.hyperscala.html.tag._
 import css.StyleSheet
 import persistence.StyleSheetPersistence
@@ -57,6 +58,12 @@ trait HTMLTag extends Tag with EventSupport {
   def byName[T <: HTMLTag](name: String)(implicit manifest: Manifest[T]) = hierarchy.findAll[T](t => t.name() == name)(manifest)
 
   def byTag[T <: HTMLTag](implicit manifest: Manifest[T]) = hierarchy.findAll[T](t => true)(manifest)
+
+  def outputString = {
+    val writer = HTMLWriter().asInstanceOf[StringBuilderHTMLWriter]
+    this.write(writer)
+    writer.writer.toString()
+  }
 }
 
 class StyleProperty(_name: String, inclusion: InclusionMode)(implicit parent: PropertyParent) extends PropertyAttribute[StyleSheet](_name, null, inclusion = inclusion)(StyleSheetPersistence, parent, Manifest.classType[StyleSheet](classOf[StyleSheet])) with LazyProperty[StyleSheet] {

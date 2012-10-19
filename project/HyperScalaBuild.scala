@@ -7,10 +7,10 @@ import com.github.siasia.PluginKeys._
 object HyperScalaBuild extends Build {
   // ~;container:start; container:reload /
 
-  val powerScalaConvert = "org.powerscala" %% "powerscala-convert" % "1.2-SNAPSHOT"
-  val powerScalaReflect = "org.powerscala" %% "powerscala-reflect" % "1.2-SNAPSHOT"
-  val powerScalaHierarchy = "org.powerscala" %% "powerscala-hierarchy" % "1.2-SNAPSHOT"
-  val powerScalaProperty = "org.powerscala" %% "powerscala-property" % "1.2-SNAPSHOT"
+  val powerScalaConvert = "org.powerscala" %% "powerscala-convert" % "1.3-SNAPSHOT"
+  val powerScalaReflect = "org.powerscala" %% "powerscala-reflect" % "1.3-SNAPSHOT"
+  val powerScalaHierarchy = "org.powerscala" %% "powerscala-hierarchy" % "1.3-SNAPSHOT"
+  val powerScalaProperty = "org.powerscala" %% "powerscala-property" % "1.3-SNAPSHOT"
   val jdom = "org.jdom" % "jdom" % "2.0.2"
 
   val htmlcleaner = "net.sourceforge.htmlcleaner" % "htmlcleaner" % "2.2"
@@ -18,7 +18,8 @@ object HyperScalaBuild extends Build {
   val specs2 = "org.specs2" %% "specs2" % "1.11" % "test"
 
   val jettyVersion = "8.1.7.v20120910"
-  val jettyWebapp = "org.eclipse.jetty" % "jetty-webapp" % "8.1.7.v20120910" % "container,compile"
+  val jettyWebapp = "org.eclipse.jetty" % "jetty-webapp" % jettyVersion % "container,compile"
+  val jettyWebsocket = "org.eclipse.jetty" % "jetty-websocket" % jettyVersion % "container,compile"
   val servlet = "org.eclipse.jetty.orbit" % "javax.servlet" % "3.0.0.v201112011016" % "container,compile" artifacts Artifact("javax.servlet", "jar", "jar")
 
   val commonsFileUpload = "commons-fileupload" % "commons-fileupload" % "1.2.2"
@@ -26,12 +27,12 @@ object HyperScalaBuild extends Build {
 
   val atmosphereRuntime = "org.atmosphere" % "atmosphere-runtime" % "1.0.2"
   val atmosphereJQuery = "org.atmosphere" % "atmosphere-jquery" % "1.0.2"
-  val annotationDetector = "eu.infomas" % "annotation-detector" % "3.0.0"
+  val annotationDetector = "eu.infomas" % "annotation-detector" % "3.0.1" % "container,compile"
 
   val servletApi = "javax.servlet" % "javax.servlet-api" % "3.0.1" % "compile"
 
   val baseSettings = Defaults.defaultSettings ++ Seq(
-    version := "0.3-SNAPSHOT",
+    version := "0.4-SNAPSHOT",
     organization := "org.hyperscala",
     scalaVersion := "2.9.2",
     libraryDependencies ++= Seq(
@@ -93,8 +94,7 @@ object HyperScalaBuild extends Build {
                                           commonsFileUpload,
                                           commonsIO,
                                           atmosphereRuntime,
-                                          atmosphereJQuery,
-                                          annotationDetector))
+                                          atmosphereJQuery))
   lazy val bean = Project("bean", file("bean"), settings = createSettings("hyperscala-bean"))
     .dependsOn(web)
   lazy val ui = Project("ui", file("ui"), settings = createSettings("hyperscala-ui"))
@@ -107,7 +107,7 @@ object HyperScalaBuild extends Build {
     .dependsOn(web, bean, ui)
   lazy val site = Project("site", file("site"), settings = createSettings("hyperscala-site"))
     .dependsOn(examples)
-    .settings(libraryDependencies ++= Seq(jettyWebapp, servlet))
+    .settings(libraryDependencies ++= Seq(jettyWebapp, jettyWebsocket, annotationDetector, servlet))
     .settings(webSettings: _*)
     .settings(port in container.Configuration := 8000)
 }

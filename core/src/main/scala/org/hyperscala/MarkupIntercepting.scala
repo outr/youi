@@ -13,25 +13,25 @@ class MarkupIntercepting(name: String, bus: Bus, parent: MarkupIntercepting) {
    * Called during initialization of the Markup instance. This occurs only once per instance and immediately before the
    * first rendering.
    */
-  val init: Interceptable[Markup] = Interceptable[Markup]("%s.init".format(name), bus, if (parent != null) parent.init else null)
+  val init: Interceptable[Markup] = Interceptable[Markup]("%s.init".format(name), if (parent != null) parent.init else null)
   /**
    * Called during lazy initialization of StyleSheet instance on Markup.
    */
-  val initStyle: Interceptable[Markup] = Interceptable[Markup]("%s.initStyle".format(name), bus, if (parent != null) parent.initStyle else null)
+  val initStyle: Interceptable[Markup] = Interceptable[Markup]("%s.initStyle".format(name), if (parent != null) parent.initStyle else null)
   /**
    * Called before rendering of the Markup instance.
    */
-  val beforeRender: Interceptable[Markup] = Interceptable[Markup]("%s.beforeRender".format(name), bus, if (parent != null) parent.beforeRender else null)
+  val beforeRender: Interceptable[Markup] = Interceptable[Markup]("%s.beforeRender".format(name), if (parent != null) parent.beforeRender else null)
   /**
    * Called immediately after rendering of the Markup instance.
    */
-  val afterRender: Interceptable[Markup] = Interceptable[Markup]("%s.afterRender".format(name), bus, if (parent != null) parent.afterRender else null)
+  val afterRender: Interceptable[Markup] = Interceptable[Markup]("%s.afterRender".format(name), if (parent != null) parent.afterRender else null)
   /**
    * Called upon initialization of a PropertyAttribute.
    */
-  val initAttribute: Interceptable[PropertyAttribute[_]] = Interceptable[PropertyAttribute[_]]("%s.initAttribute".format(name), bus, if (parent != null) parent.initAttribute else null)
+  val initAttribute: Interceptable[PropertyAttribute[_]] = Interceptable[PropertyAttribute[_]]("%s.initAttribute".format(name), if (parent != null) parent.initAttribute else null)
   /**
    * Called upon rendering of a PropertyAttribute. Returning Routing.Stop will cause the property not to be rendered.
    */
-  val renderAttribute: Interceptable[PropertyAttribute[_]] = Interceptable[PropertyAttribute[_]]("%s.renderAttribute".format(name), bus, if (parent != null) parent.renderAttribute else null)
+  val renderAttribute: Interceptable[PropertyAttribute[_]] = Interceptable[PropertyAttribute[_]]("%s.renderAttribute".format(name), if (parent != null) parent.renderAttribute else null)
 }

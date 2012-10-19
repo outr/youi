@@ -25,7 +25,10 @@ import java.util.concurrent.atomic.AtomicBoolean
  * @author Matt Hicks <mhicks@powerscala.org>
  */
 class HTMLPage extends PageResource with PropertyParent with Parent with Updatable with WorkQueue with Page {
-  override protected def parentIntercept = Website().intercept
+  override protected def parentIntercept = Website() match {
+    case null => null
+    case ws => ws.intercept
+  }
 
   private val _initialized = new AtomicBoolean(false)
 

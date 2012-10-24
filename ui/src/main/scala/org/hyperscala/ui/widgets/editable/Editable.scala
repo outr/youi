@@ -10,7 +10,7 @@ import org.hyperscala.web.live.LiveEvent
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-abstract class Editable[T, I <: FormField](initialValue: T) extends tag.Div {
+abstract class Editable[T, I <: FormField](initialValue: T)(implicit manifest: Manifest[T]) extends tag.Div {
   /**
    * Defines the type of backing for this editable property.
    */

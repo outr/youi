@@ -11,7 +11,7 @@ import org.hyperscala.web.live.LivePage
 class ListStringEditor(val property: StandardProperty[List[String]]) extends ListEditor[String] {
   lazy val inputName = "%sField".format(property.name())
   lazy val valueEditor = new InputEditor[String](new StandardProperty[String](inputName, ""))
-  lazy val manifest = Manifest.classType[String](classOf[String])
+  val manifest = implicitly[Manifest[List[String]]]
 
   override def filterOut(value: String) = value == null || value.trim.length == 0 || super.filterOut(value)
 

@@ -10,9 +10,11 @@ import org.hyperscala.web.live.LivePage
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-class ListSelectEditor[T](val property: StandardProperty[List[T]])(implicit val manifest: Manifest[T]) extends ListEditor[T] {
+class ListSelectEditor[T](val property: StandardProperty[List[T]])(implicit val typeManifest: Manifest[T]) extends ListEditor[T] {
+  def manifest = implicitly[Manifest[List[T]]]
+
   lazy val fieldName = "%sField".format(property.name())
-  lazy val valueEditor = new ListSelect[T](new StandardProperty[T](fieldName, manifest.erasure.defaultForType.asInstanceOf[T]))
+  lazy val valueEditor = new ListSelect[T](new StandardProperty[T](fieldName, typeManifest.erasure.defaultForType.asInstanceOf[T]))
 
   if (!HTMLPage().isInstanceOf[LivePage]) {
     button.event.click := JavaScriptString("$('#%1$s').focus(); $(this).closest('form').submit();".format(fieldName))

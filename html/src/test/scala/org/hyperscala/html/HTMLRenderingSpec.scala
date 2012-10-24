@@ -30,7 +30,7 @@ class HTMLRenderingSpec extends Specification {
       val html = new HTML()
       val element = new Element("html")
       element.setAttribute("name", "testing")
-      html.fromXML(element)
+      html.read(element)
       val out = html.outputString
       out must_==("<html name=\"testing\"/>")
     }
@@ -109,14 +109,14 @@ class HTMLRenderingSpec extends Specification {
       val content = "<html><head><title>Test Title</title></head><body>Test Body</body></html>"
       val html = new HTML
       val document = builder.build(new StringReader(content))
-      html.fromXML(document.getRootElement)
+      html.read(document.getRootElement)
       val out = html.outputString
       out must_==(content)
     }
     "properly deserialize a basic HTML page with CSS" in {
       val content = "<html><head><title>Test Title</title></head><body><h1 style=\"display: none\">Test Body</h1></body></html>"
       val html = new HTML
-      html.fromXML(builder.build(new StringReader(content)).getRootElement)
+      html.read(builder.build(new StringReader(content)).getRootElement)
       val out = html.outputString
       out must_==(content)
     }

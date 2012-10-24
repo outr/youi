@@ -1,6 +1,6 @@
 package org.hyperscala.editor
 
-import org.powerscala.property.{ListProperty, StandardProperty}
+import org.powerscala.property.{PropertyParent, ListProperty, StandardProperty}
 import org.hyperscala.html.constraints.BodyChild
 import validation.Validator
 
@@ -8,7 +8,10 @@ import validation.Validator
  * @author Matt Hicks <mhicks@powerscala.org>
  */
 trait ValueEditor[T] extends BodyChild {
-  val validators = new StandardProperty[List[Validator[T]]]("validators", Nil) with ListProperty[Validator[T]]
+  implicit def manifest: Manifest[T]
+
+  val validators = new StandardProperty[List[Validator[T]]]("validators", Nil)(implicitly[PropertyParent], implicitly[Manifest[List[org.hyperscala.editor.validation.Validator[T]]]])
+                   with ListProperty[Validator[T]]
 
   def property: StandardProperty[T]
 

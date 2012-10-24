@@ -8,7 +8,7 @@ import org.hyperscala.html.tag.Input
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-class InputEditor[T](val property: StandardProperty[T])(implicit persistence: ValuePersistence[T], manifest: Manifest[T]) extends Input with ValueEditor[T] {
+class InputEditor[T](val property: StandardProperty[T])(implicit persistence: ValuePersistence[T], val manifest: Manifest[T]) extends Input with ValueEditor[T] {
   val convert2String = (t: T) => persistence.toString(t, manifest.erasure)
   val convert2T = (s: String) => persistence.fromString(s, manifest.erasure)
 

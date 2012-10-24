@@ -30,7 +30,7 @@ trait BeanContainer[T] extends PropertyParent with ValueEditor[T] with BeanField
 
   def manifest: Manifest[T]
 
-  val property = Property[T]("property", default)
+  val property = Property[T]("property", default)(implicitly[PropertyParent], manifest)
   protected var _nextTab = startingTab
   val fields = manifest.erasure.caseValues.map(caseValue => {
     val d = default match {
@@ -124,9 +124,11 @@ trait BeanContainer[T] extends PropertyParent with ValueEditor[T] with BeanField
         bean
       }
       case s => {
+        val m = manifest
         val sp = property
         new Input with ValueEditor[C] {
           def property = sp
+          def manifest = m
 
           disabled := true
 

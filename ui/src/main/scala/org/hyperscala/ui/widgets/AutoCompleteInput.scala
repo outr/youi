@@ -13,8 +13,8 @@ import scala.math._
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-abstract class AutoCompleteInput[T](id: String = Unique(), default: T) extends tag.Div(id = id) with FormField {
-  val property = Property[T]("property", default)
+abstract class AutoCompleteInput[T](id: String = Unique(), default: T)(implicit manifest: Manifest[T]) extends tag.Div(id = id) with FormField {
+  val property = Property[T]("property", default)(this, manifest)
   property.onChange {
     updateInput()
     hideCompletion()

@@ -21,7 +21,6 @@ trait ListEditor[T] extends Div with ValueEditor[List[T]] {
   def valueEditor: ValueEditor[T]
   def filterOut(value: T) = property().contains(value)
   def visualizer(value: T) = String.valueOf(value)
-  def manifest: Manifest[T]
   def default: T = manifest.erasure.defaultForType.asInstanceOf[T]
 
   val items = new Div

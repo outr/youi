@@ -6,7 +6,7 @@ import org.hyperscala.html._
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-class EnumEditable[E <: EnumEntry[E]](enumerated: Enumerated[E], initialValue: E) extends Editable[E, tag.Select](initialValue) {
+class EnumEditable[E <: EnumEntry[E]](enumerated: Enumerated[E], initialValue: E)(implicit manifest: Manifest[E]) extends Editable[E, tag.Select](initialValue)(manifest) {
   val editor = new tag.Select {
     contents.addAll(enumerated.values.map(e => new tag.Option(value = e.name(), content = e.toString())): _*)
   }

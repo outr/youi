@@ -4621,7 +4621,7 @@ var Expr = Sizzle.selectors = {
 		},
 
 		password: function( elem ) {
-			return elem.nodeName.toLowerCase() === "input" && "masked" === elem.type;
+			return elem.nodeName.toLowerCase() === "input" && "password" === elem.type;
 		},
 
 		submit: function( elem ) {
@@ -7291,7 +7291,7 @@ jQuery.extend({
 		data: null,
 		dataType: null,
 		username: null,
-		masked: null,
+		password: null,
 		cache: null,
 		traditional: false,
 		headers: {},

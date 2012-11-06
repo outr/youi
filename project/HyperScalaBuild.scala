@@ -25,9 +25,7 @@ object HyperScalaBuild extends Build {
   val commonsFileUpload = "commons-fileupload" % "commons-fileupload" % "1.2.2"
   val commonsIO = "commons-io" % "commons-io" % "1.3.2"
 
-  val atmosphereRuntime = "org.atmosphere" % "atmosphere-runtime" % "1.0.2"
-  val atmosphereJQuery = "org.atmosphere" % "atmosphere-jquery" % "1.0.2"
-  val annotationDetector = "eu.infomas" % "annotation-detector" % "3.0.1" % "container,compile"
+  val jerkson = "io.backchat.jerkson" %% "jerkson" % "0.7.0"
 
   val servletApi = "javax.servlet" % "javax.servlet-api" % "3.0.1" % "compile"
 
@@ -93,8 +91,7 @@ object HyperScalaBuild extends Build {
     .settings(libraryDependencies ++= Seq(servletApi,
                                           commonsFileUpload,
                                           commonsIO,
-                                          atmosphereRuntime,
-                                          atmosphereJQuery))
+                                          jerkson))
   lazy val bean = Project("bean", file("bean"), settings = createSettings("hyperscala-bean"))
     .dependsOn(web)
   lazy val ui = Project("ui", file("ui"), settings = createSettings("hyperscala-ui"))
@@ -107,7 +104,7 @@ object HyperScalaBuild extends Build {
     .dependsOn(web, bean, ui)
   lazy val site = Project("site", file("site"), settings = createSettings("hyperscala-site"))
     .dependsOn(examples)
-    .settings(libraryDependencies ++= Seq(jettyWebapp, jettyWebsocket, annotationDetector, servlet))
+    .settings(libraryDependencies ++= Seq(jettyWebapp, jettyWebsocket, servlet))
     .settings(webSettings: _*)
     .settings(port in container.Configuration := 8000)
 }

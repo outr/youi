@@ -4,6 +4,7 @@ import org.powerscala.property.StandardProperty
 import org.hyperscala.html.attributes.InputType
 import org.hyperscala.html._
 import org.hyperscala.ui.widgets.visual.VisualDetails
+import org.hyperscala.web.live.LiveEvent
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -17,6 +18,9 @@ object StringVisualType extends VisualType[String] {
     } else {
       inputType := InputType.Text
     }
+
+    // TODO: remove ties to LiveEvent
+    event.change := LiveEvent()
 
     property.onChange {
       updateInput()

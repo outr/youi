@@ -4,7 +4,7 @@ import org.hyperscala.web.Website
 import org.hyperscala.web.session.MapSession
 import org.hyperscala.examples.basic._
 import org.hyperscala.examples.todomvc.TodoMVC
-import org.hyperscala.examples.ui.{EditableExample, AutoCompleteExample}
+import org.hyperscala.examples.ui.{VisualExample, EditableExample, AutoCompleteExample}
 import org.hyperscala.web.resource.handler.{ClassLoaderWebResourceManager, SessionWebResourceManager, URIWebResourceManager}
 import org.hyperscala.examples.helloworld.HelloWorldPage
 
@@ -35,6 +35,9 @@ object HyperscalaSite extends Website[MapSession] {
   }
   val editable = new URIWebResourceManager("/example/editable.html") with SessionWebResourceManager {
     def create(uri: String) = new EditableExample
+  }
+  val visual = new URIWebResourceManager("/example/visual.html") with SessionWebResourceManager {
+    def create(uri: String) = new VisualExample
   }
   val todoMVC = new URIWebResourceManager("/todomvc.html") {
     def create(uri: String) = TodoMVC

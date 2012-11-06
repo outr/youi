@@ -56,7 +56,7 @@ class StandardVisual[T](builder: VisualBuilder[T]) extends Visual[T]
       editableDiv.contents.replaceWith(editor)
       contents += editableDiv
     }
-    editing := builder.editing
+    editing := builder.isEditing
     builder.default match {
       case Some(d) => property := d
       case None => // Leave it alone

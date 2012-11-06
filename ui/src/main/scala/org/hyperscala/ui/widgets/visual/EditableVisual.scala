@@ -12,5 +12,8 @@ trait EditableVisual {
 
   val editing = new StandardProperty[Boolean]("editing")
 
-  def visualize(): BodyChild = property().toString
+  def visualize(): BodyChild = property() match {
+    case null => ""
+    case v => v.toString
+  }
 }

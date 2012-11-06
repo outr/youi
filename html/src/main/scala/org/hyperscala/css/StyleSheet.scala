@@ -19,6 +19,18 @@ class StyleSheet extends PropertyParent with Listenable {
   val name = PropertyAttribute[String]("name", null)
   def parent = null
 
+  /**
+   * Apply all modified values of the supplied StyleSheet (ss) to this instance (this).
+   */
+  def apply(ss: StyleSheet): Unit = {
+    ss.properties.foreach {
+      case ssa: StyleSheetAttribute[_] if (ssa.modified) => properties[Any](ssa.name()) match {
+        case a: StyleSheetAttribute[_] => a := ssa()
+      }
+      case _ =>
+    }
+  }
+
   val alignment = new AnyRef {
     val adjust = StyleSheetAttribute[String]("alignment-adjust", null)
     val baseline = StyleSheetAttribute[String]("alignment-baseline", null)

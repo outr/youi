@@ -13,3 +13,7 @@ trait Visual[T] extends tag.Div with PropertyParent with Listenable {
 
   val property = new StandardProperty[T]("property")(this, manifest)
 }
+
+object Visual {
+  def apply[T]()(implicit manifest: Manifest[T]) = VisualBuilder[T]()(manifest)
+}

@@ -4,6 +4,7 @@ import org.hyperscala._
 import io.{StringBuilderHTMLWriter, HTMLWriter}
 import org.hyperscala.html._
 import org.hyperscala.css.StyleSheet
+import web.module.jQuery182
 import web.{Website, HTMLPage}
 import actors.threadpool.AtomicInteger
 import scala.io.Source
@@ -64,7 +65,7 @@ class LivePage extends HTMLPage with IdentifyTags {
 
   head.id := "liveHead"
   head.contents(0).id := "liveTitle"
-  ensureScript("/js/jquery-1.7.2.js", ".*/jquery.*")
+  require(jQuery182)
   head.contents += new tag.Script {
     contents += new JavaScriptContent {
       def content = synchronized {   // Called per render!!!

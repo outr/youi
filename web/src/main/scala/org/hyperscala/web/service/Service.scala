@@ -9,6 +9,7 @@ import org.hyperscala.web.Website
 
 import com.codahale.jerkson.Json._
 import io.Source
+import java.lang.reflect.Modifier
 
 /**
  * Service allows methods to be created in implementations that act as endpoints.
@@ -35,6 +36,7 @@ trait Service extends WebResource {
     endpoints = getClass.methods.collect {
       case m if (m.declaring.hasType(classOf[Service]) &&
                  m.declaring.javaClass != classOf[Service] &&
+                 Modifier.isPublic(m.javaMethod.getModifiers) &&
                  !m.name.contains("$") &&
                  !Service.excludedMethods.contains(m.name)) => m
     }.map(m => m.name -> m).toMap

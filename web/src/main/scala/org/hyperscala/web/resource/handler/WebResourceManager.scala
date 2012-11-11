@@ -19,7 +19,7 @@ trait WebResourceManager extends WebResourceHandler with WebResourceInterceptabl
             session.get[WebResource](key) match {
               case Some(r) if (!r.disposed) => r
               case _ => {
-                val r = create(uri)
+                val r = createOverride(uri)
                 session(key) = r
                 r
               }
@@ -33,6 +33,11 @@ trait WebResourceManager extends WebResourceHandler with WebResourceInterceptabl
       false
     }
   }
+
+  /**
+   * Allows a mix-in to circumvent the create method call.
+   */
+  protected def createOverride(uri: String) = create(uri)
 
   /**
    * Checks the supplied URI to determine if a match is found in this manager.

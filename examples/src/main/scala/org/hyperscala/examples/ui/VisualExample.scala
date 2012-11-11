@@ -2,10 +2,11 @@ package org.hyperscala.examples.ui
 
 import org.hyperscala.html._
 import org.hyperscala.web.live.{ClickEvent, LiveEvent, LivePage}
-import org.hyperscala.ui.widgets.visual.{StandardVisual, Visual}
+import org.hyperscala.ui.widgets.visual.Visual
 import org.hyperscala.css.attributes._
 
 import org.powerscala.property._
+import org.powerscala.property.event.PropertyChangeEvent
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -13,37 +14,47 @@ import org.powerscala.property._
 class VisualExample extends LivePage {
   body.style.font.family := "sans-serif"
 
-  intercept.beforeRender {
-    case v: StandardVisual[_] => {
-      v.labelDiv.style.float := Float.Left
-      v.labelDiv.style.width := 300.px
-      v.labelDiv.style.text.align := Alignment.Right
-      v.labelDiv.style.padding.all := 5.px
-      v.readDiv.style.padding.all := 5.px
-      v.editableDiv.style.padding.all := 5.px
-    }
+  val property = Property[Test]("property", new Test(name = "John Doe"))
+  property.listeners.synchronous {
+    case evt: PropertyChangeEvent => println("New Value: %s".format(evt.newValue))
   }
 
-  val stringVisual = Visual[String]().label("String Visual").editing.build()
+  val stringVisual = Visual[String]().label("String Visual").editing.required.validation(emptyValidator).build()
   stringVisual.property := "Hello World!"
 
+  val bindingVisual = Visual[String]().label("Binding Visual").editing.bind(property, "name").build()
+
   body.contents += stringVisual
+  body.contents += bindingVisual
 
-  body.contents += new tag.Button(content = "Toggle Editing") {
-    event.click := LiveEvent()
+  body.contents += new tag.Div {
+    style.clear := Clear.Both
 
-    listeners.synchronous {
-      case evt: ClickEvent => {
-        stringVisual.editing := !stringVisual.editing()
+    contents += new tag.Button(content = "Toggle Editing") {
+      event.click := LiveEvent()
+
+      listeners.synchronous {
+        case evt: ClickEvent => {
+          stringVisual.editing := !stringVisual.editing()
+          bindingVisual.editing := !bindingVisual.editing()
+        }
+      }
+    }
+
+    contents += new tag.Button(content = "Set Value") {
+      event.click := LiveEvent()
+
+      listeners.synchronous {
+        case evt: ClickEvent => stringVisual.property := "Value Set!"
       }
     }
   }
 
-  body.contents += new tag.Button(content = "Set Value") {
-    event.click := LiveEvent()
-
-    listeners.synchronous {
-      case evt: ClickEvent => stringVisual.property := "Value Set!"
-    }
+  def emptyValidator(s: String) = if (s.isEmpty) {
+    Right("Field must not be empty!")
+  } else {
+    Left(Some(s))
   }
 }
+
+case class Test(name: String)

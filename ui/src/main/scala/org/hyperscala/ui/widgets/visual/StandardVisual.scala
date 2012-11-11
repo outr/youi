@@ -2,8 +2,11 @@ package org.hyperscala.ui.widgets.visual
 
 import `type`.VisualType
 import org.hyperscala.html._
-import org.hyperscala.css.attributes.Display
+import org.hyperscala.css.attributes._
 import org.powerscala.property._
+import org.hyperscala.Unique
+import org.powerscala.Color
+import tag.Text
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -26,6 +29,55 @@ class StandardVisual[T](builder: VisualBuilder[T]) extends Visual[T]
     case f => this += f
   }
 
+  def hasError = errorContainer.contents.head.asInstanceOf[Text].content() != ""
+
+  def errorMessage(message: String) = {
+    if (message != null) {
+      errorContainer.contents.replaceWith(message)
+    } else {
+      errorContainer.contents.replaceWith("")
+    }
+  }
+
+  val errorContainer = new tag.Span {
+    style.display := Display.Block
+    style.color := Color.immutable("#c00")
+    style.font.size := FontSize.Percent(80)
+    style.font.style := "normal"
+    style.float := Float.Left
+    style.padding.all := 2.px
+    style.padding.left := 5.px
+  }
+  val labelContainer = new tag.Label(content = builder.label) {
+    style.float := Float.Left
+    style.text.align := Alignment.Right
+    style.padding.right := 5.px
+    if (builder.isRequired) {
+      contents += new tag.Div(content = "*") {
+        style.float := Float.Right
+        style.padding.left := 5.px
+        style.color := Color.immutable("#c00")
+      }
+    }
+  }
+  val readContainer = new tag.Div {
+    style.float := Float.Left
+  }
+  val editor = builder.visualType match {
+    case Some(visualType) => visualType.create(property, builder)
+    case None => VisualType(property, builder).getOrElse(throw new NullPointerException("No visual type for %s".format(builder)))
+  }
+  if (editor.id() == null) {
+    editor.id := Unique()
+  }
+  if (editor.name() == null) {
+    editor.name := editor.id()
+  }
+  labelContainer.forElement := editor.name()
+  editor.style.float := Float.Left
+
+  setup()
+
   // Optionally binds to a higher-level property using CaseClassBinding
   val binding = if (builder.bindProperty != null && builder.bindHierarchy != null) {    // Bind to another property
     val b = CaseClassBinding(builder.bindProperty, builder.bindHierarchy, property.asInstanceOf[StandardProperty[Any]])
@@ -35,27 +87,18 @@ class StandardVisual[T](builder: VisualBuilder[T]) extends Visual[T]
     None
   }
 
-  val labelDiv = new tag.Div
-  val readDiv = new tag.Div
-  val editableDiv = new tag.Div
-  val editor = builder.visualType match {
-    case Some(visualType) => visualType.create(property, builder)
-    case None => VisualType(property, builder).getOrElse(throw new NullPointerException("No visual type for %s".format(builder)))
-  }
-
-  setup()
-
   def setup() = {
+    style.clear := Clear.Left
+
     if (builder.labeled) {
-      labelDiv.contents.replaceWith(builder.label)
-      contents += labelDiv
+      contents += labelContainer
     }
-    readDiv.contents.replaceWith(visualize())
-    contents += readDiv
+    readContainer.contents.replaceWith(visualize())
+    contents += readContainer
     if (builder.editable) {
-      editableDiv.contents.replaceWith(editor)
-      contents += editableDiv
+      contents += editor
     }
+    contents += errorContainer
     editing := builder.isEditing
     builder.default match {
       case Some(d) => property := d
@@ -66,16 +109,16 @@ class StandardVisual[T](builder: VisualBuilder[T]) extends Visual[T]
 
   def updateEditing() = {
     if (editing()) {
-      readDiv.style.display := Display.None
-      editableDiv.style.display := Display.Block
+      readContainer.style.display := Display.None
+      editor.style.display := Display.Block
     } else {
-      readDiv.style.display := Display.Block
-      editableDiv.style.display := Display.None
+      readContainer.style.display := Display.Block
+      editor.style.display := Display.None
     }
   }
 
   def updateVisual() = {
-    readDiv.contents.replaceWith(visualize())
+    readContainer.contents.replaceWith(visualize())
   }
 
   def dispose() = {     // TODO: make use of this method

@@ -6,7 +6,7 @@ import attributes.InputType
 import tag._
 
 object TodoMVC extends HTMLPage {
-  head.title := "Webframework - TodoMVC"
+  title := "Webframework - TodoMVC"
   head.contents += new Link(rel = "stylesheet", href = "css/base.css")
   head.contents += new Link(rel = "stylesheet", href = "css/app.css")
 

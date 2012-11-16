@@ -28,7 +28,7 @@ class Input extends Container[BodyChild] with BodyChild with HTMLTag with FormFi
            spellCheck: java.lang.Boolean = null,
            style: StyleSheet = null,
            tabIndex: java.lang.Integer = null,
-           title: String = null,
+           titleText: String = null,
            accept: String = null,
            alt: String = null,
            autoComplete: AutoComplete = null,
@@ -73,7 +73,7 @@ class Input extends Container[BodyChild] with BodyChild with HTMLTag with FormFi
     up(this.spellCheck, spellCheck)
     up(this.style, style)
     up(this.tabIndex, tabIndex)
-    up(this.title, title)
+    up(this.titleText, titleText)
     up(this.accept, accept)
     up(this.alt, alt)
     up(this.autoComplete, autoComplete)
@@ -141,4 +141,6 @@ class Input extends Container[BodyChild] with BodyChild with HTMLTag with FormFi
 
     super.write(writer)
   }
+
+  override def formValue = value
 }

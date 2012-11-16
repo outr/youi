@@ -1,4 +1,4 @@
-package org.hyperscala.web.event
+package org.hyperscala.event
 
 import org.powerscala.event.Event
 import org.hyperscala.html.attributes.Method

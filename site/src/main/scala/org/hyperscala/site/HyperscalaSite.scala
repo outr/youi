@@ -1,17 +1,15 @@
 package org.hyperscala.site
 
-import org.hyperscala.web.Website
+import org.hyperscala.web.site.{WebpageResource, Website}
 import org.hyperscala.web.session.MapSession
-import org.hyperscala.examples.basic._
-import org.hyperscala.examples.todomvc.TodoMVC
-import org.hyperscala.examples.ui.{VisualExample, EditableExample, AutoCompleteExample}
-import org.hyperscala.web.resource.handler.{ClassLoaderWebResourceManager, SessionWebResourceManager, URIWebResourceManager}
 import org.hyperscala.examples.helloworld.HelloWorldPage
+import org.hyperscala.web.Scope
+import org.hyperscala.examples.basic.FormExample
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-object HyperscalaSite extends Website[MapSession] {
+/*object HyperscalaSite extends Website[MapSession] {
   val about = new URIWebResourceManager("/about.html") {
     def create(uri: String) = HyperscalaAbout
   }
@@ -46,4 +44,20 @@ object HyperscalaSite extends Website[MapSession] {
   val defaultLoader = new ClassLoaderWebResourceManager()
 
   protected def createSession = new MapSession
+}*/
+
+object HyperscalaSite extends Website[MapSession] {
+  val about = WebpageResource.regex("/about.html") {
+    HyperscalaAbout
+  }
+  val hello = WebpageResource.regex("/example/hello.html", scope = Scope.Session) {
+    new HelloWorldPage
+  }
+  val form = WebpageResource.regex("/example/form.html", scope = Scope.Session) {
+    new FormExample
+  }
+
+  registerPath("images/", "/images/", enableCaching = true)
+
+  protected def createSession() = new MapSession
 }

@@ -1,14 +1,15 @@
 package org.hyperscala.web
 
-import event.FormSubmit
 import org.hyperscala.html._
 import io.Source
 import org.hyperscala.html.attributes.{AutoComplete, InputType}
 import org.powerscala.property.Property
 import org.hyperscala.Unique
+import site.Webpage
 import tag._
 import org.hyperscala.javascript.JavaScriptString
 import scala.Some
+import org.hyperscala.event.FormSubmit
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -22,7 +23,7 @@ trait ActionForm extends Form {
 //      println("LastFocused: %s".format(lastFocused.value()))
       lastFocused.value() match {
         case "" | null => // Nothing selectable focused
-        case s if (s.startsWith("id=")) => HTMLPage().byId[HTMLTag](s.substring(3)) match {
+        case s if (s.startsWith("id=")) => Webpage().html.byId[HTMLTag](s.substring(3)) match {
           case Some(tag) => {
             submittedBy := tag
             if (tag != this) {
@@ -31,7 +32,7 @@ trait ActionForm extends Form {
           }
           case None => // Cannot find by id
         }
-        case s if (s.startsWith("name=")) => HTMLPage().byName[HTMLTag](s.substring(5)) match {
+        case s if (s.startsWith("name=")) => Webpage().html.byName[HTMLTag](s.substring(5)).headOption match {
           case Some(tag) => {
             submittedBy := tag
             tag.fire(FormSubmit(evt.method))

@@ -6,12 +6,12 @@ import attributes.ButtonType
 import constraints.BodyChild
 import org.hyperscala.css.attributes.Clear
 import org.powerscala.reflect._
-import org.hyperscala.web.event.FormSubmit
 import org.hyperscala.javascript.JavaScriptString
 import tag.{Input, Img, Button, Div}
 import validation.ValidationFailed
 import org.hyperscala.web.HTMLPage
 import org.hyperscala.web.live.{ClickEvent, LiveEvent, LivePage}
+import org.hyperscala.event.FormSubmit
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>

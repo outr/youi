@@ -27,7 +27,7 @@ class Meta extends BodyChild with HeadChild with HTMLTag {
            spellCheck: java.lang.Boolean = null,
            style: StyleSheet = null,
            tabIndex: java.lang.Integer = null,
-           title: String = null,
+           titleText: String = null,
            charset: String = null,
            content: String = null,
            httpEquiv: String = null) = {
@@ -46,7 +46,7 @@ class Meta extends BodyChild with HeadChild with HTMLTag {
     up(this.spellCheck, spellCheck)
     up(this.style, style)
     up(this.tabIndex, tabIndex)
-    up(this.title, title)
+    up(this.titleText, titleText)
     up(this.charset, charset)
     up(this.content, content)
     up(this.httpEquiv, httpEquiv)

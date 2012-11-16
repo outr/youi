@@ -28,7 +28,7 @@ class Head extends Container[HeadChild] with HTMLChild with HTMLTag {
            spellCheck: java.lang.Boolean = null,
            style: StyleSheet = null,
            tabIndex: java.lang.Integer = null,
-           title: String = null,
+           titleText: String = null,
            content: HeadChild = null) = {
     this()
     up(this.name, name)
@@ -45,7 +45,7 @@ class Head extends Container[HeadChild] with HTMLChild with HTMLTag {
     up(this.spellCheck, spellCheck)
     up(this.style, style)
     up(this.tabIndex, tabIndex)
-    up(this.title, title)
+    up(this.titleText, titleText)
     if (content != null) contents += content
   }
 

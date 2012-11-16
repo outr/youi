@@ -1,17 +1,17 @@
 package org.hyperscala.site
 
-import org.hyperscala.web.HTMLPage
 
 import org.powerscala.property._
 import org.powerscala.Color
 import org.hyperscala.html._
 import org.hyperscala.css.attributes._
 import tag._
+import org.hyperscala.web.site.Webpage
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-class HyperscalaPage extends HTMLPage {
+class HyperscalaPage extends Webpage {
   title := "Hyperscala - Statically typed bare-metal HTML, CSS, and JavaScript framework for Scala."
 
   body.style.margin := "0"
@@ -33,8 +33,8 @@ class HyperscalaPage extends HTMLPage {
     contents += new Div {
       style.width := 960.px
       style.height := 120.px
-      style.background.image := Resource("top_clouds.png")
-      contents += new Img(src = "hyperscala.png") {
+      style.background.image := Resource("/images/top_clouds.png")
+      contents += new Img(src = "/images/hyperscala.png") {
         style.margin.top := 10.px
         style.margin.left := 10.px
       }
@@ -67,7 +67,7 @@ class HyperscalaPage extends HTMLPage {
 class Bar extends Div {
   style.width := 960.px
   style.height := 30.px
-  style.background.image := Resource("bar.png")
+  style.background.image := Resource("/images/bar.png")
 }
 
 case class MenuItem(itemName: String) extends Td {

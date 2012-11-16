@@ -27,7 +27,7 @@ class Style extends Textual with BodyChild with HeadChild with HTMLTag {
            spellCheck: java.lang.Boolean = null,
            style: StyleSheet = null,
            tabIndex: java.lang.Integer = null,
-           title: String = null,
+           titleText: String = null,
            mimeType: String = null,
            media: String = null,
            scoped: java.lang.Boolean = null,
@@ -47,7 +47,7 @@ class Style extends Textual with BodyChild with HeadChild with HTMLTag {
     up(this.spellCheck, spellCheck)
     up(this.style, style)
     up(this.tabIndex, tabIndex)
-    up(this.title, title)
+    up(this.titleText, titleText)
     up(this.mimeType, mimeType)
     up(this.media, media)
     up(this.scoped, scoped)

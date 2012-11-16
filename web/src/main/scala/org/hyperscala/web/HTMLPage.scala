@@ -1,6 +1,5 @@
 package org.hyperscala.web
 
-import event.FormSubmit
 import javax.servlet.http.{HttpServletResponse, HttpServletRequest}
 import module.Module
 import org.hyperscala.html._
@@ -15,6 +14,7 @@ import resource.PageResource
 import tag._
 import scala.Some
 import org.hyperscala
+import hyperscala.event.FormSubmit
 import hyperscala.io.HTMLWriter
 import hyperscala.Page
 import org.powerscala.concurrent.WorkQueue
@@ -68,7 +68,7 @@ class HTMLPage extends PageResource with PropertyParent with Parent with Updatab
   def require(module: Module) = synchronized {
     if (!modules.contains(module)) {
       modules += module
-      module.load(this)
+//      module.load(this)
     }
   }
 

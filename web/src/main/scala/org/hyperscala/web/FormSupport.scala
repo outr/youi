@@ -1,48 +1,45 @@
 package org.hyperscala.web
 
-import event.FormSubmit
 import org.hyperscala.html.attributes.Method
-import javax.servlet.http.{HttpServletResponse, HttpServletRequest}
 import org.hyperscala.html._
 import scala.collection.JavaConversions._
+import site.Webpage
 import tag.Form
+import org.jboss.netty.buffer.ChannelBuffer
+import org.jboss.netty.handler.codec.http.QueryStringDecoder
+import org.jboss.netty.util.CharsetUtil
+import org.hyperscala.event.FormSubmit
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-trait FormSupport {
-  this: HTMLPage =>
-
-  override protected def processRequest(method: Method, request: HttpServletRequest, response: HttpServletResponse) = {
-    var ignoreResponse = false
+trait FormSupport extends Webpage {
+  override protected def processPost(content: ChannelBuffer) = {
+    val decoder = new QueryStringDecoder("?%s".format(content.toString(CharsetUtil.UTF_8)))
     var form: Form = null
-    if (method == Method.Post) {
-      request.getParameterMap.foreach {
-        case (key, values) => {
-          //            println("Key: %s, Value: %s".format(key, values.asInstanceOf[Array[String]].head))
-          if (key.toString.endsWith("SendResponse") && values.asInstanceOf[Array[String]].head == "false") {
-            ignoreResponse = true
-          }
-          byName[HTMLTag](key.asInstanceOf[String]) match {
-            case Some(tag) if (renderable(tag)) => {      // Only apply to tags that are rendered to the page
-              if (form == null) {
-                tag.hierarchy.backward[Form]() match {
-                  case null => println("WARNING: Unable to find form for %s".format(key)) // Odd, but not impossible
-                  case f => form = f
-                }
+    decoder.getParameters.foreach {
+      case (key, values) => {
+        html.byName[HTMLTag](key).headOption match {
+          case Some(t) if (t.renderable) => {      // Only apply to tags that are rendered to the page
+            if (form == null) {
+              t.hierarchy.backward[Form]() match {
+                case null => warn("WARNING: Unable to find form for %s".format(key)) // Odd, but not impossible
+                case f => form = f
               }
-              val v = values.asInstanceOf[Array[String]]
-              //                println("Updating %s for %s with %s".format(tag, key, v.mkString(", ")))
-              updateValue(method, tag, v)
             }
-            case _ => println("Unable to find %s = %s".format(key, values.asInstanceOf[Array[String]].head))
+            val v = values.toArray.map(o => o.toString)
+            //                println("Updating %s for %s with %s".format(tag, key, v.mkString(", ")))
+            t match {
+              case button: tag.Button => button.fire(FormSubmit(Method.Post))
+              case _ => t.formValue := v.head
+            }
           }
+          case _ => println("Unable to find %s = %s".format(key, values.asInstanceOf[Array[String]].head))
         }
       }
-      if (form != null) {
-        form.fire(FormSubmit(method))
-      }
     }
-    !ignoreResponse
+    if (form != null) {
+      form.fire(FormSubmit(Method.Post))
+    }
   }
 }

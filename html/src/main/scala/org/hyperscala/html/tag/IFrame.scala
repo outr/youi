@@ -27,7 +27,7 @@ class IFrame extends Container[BodyChild] with BodyChild with HTMLTag {
            spellCheck: java.lang.Boolean = null,
            style: StyleSheet = null,
            tabIndex: java.lang.Integer = null,
-           title: String = null,
+           titleText: String = null,
            height: String = null,
            sandbox: String = null,
            seamless: String = null,
@@ -50,7 +50,7 @@ class IFrame extends Container[BodyChild] with BodyChild with HTMLTag {
     up(this.spellCheck, spellCheck)
     up(this.style, style)
     up(this.tabIndex, tabIndex)
-    up(this.title, title)
+    up(this.titleText, titleText)
     up(this.height, height)
     up(this.sandbox, sandbox)
     up(this.seamless, seamless)

@@ -30,7 +30,7 @@ class TextArea extends Textual with BodyChild with HTMLTag with FormField {
            spellCheck: java.lang.Boolean = null,
            style: StyleSheet = null,
            tabIndex: java.lang.Integer = null,
-           title: String = null,
+           titleText: String = null,
            autoFocus: java.lang.Boolean = null,
            cols: java.lang.Integer = null,
            disabled: java.lang.Boolean = null,
@@ -57,7 +57,7 @@ class TextArea extends Textual with BodyChild with HTMLTag with FormField {
     up(this.spellCheck, spellCheck)
     up(this.style, style)
     up(this.tabIndex, tabIndex)
-    up(this.title, title)
+    up(this.titleText, titleText)
     up(this.autoFocus, autoFocus)
     up(this.cols, cols)
     up(this.disabled, disabled)
@@ -81,4 +81,6 @@ class TextArea extends Textual with BodyChild with HTMLTag with FormField {
   val required = PropertyAttribute[String]("required", null)
   val rows = PropertyAttribute[Int]("rows", -1)
   val wrap = PropertyAttribute[TextAreaWrap]("wrap", null)
+
+  override def formValue = content
 }

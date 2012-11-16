@@ -1,6 +1,6 @@
 package org.hyperscala.web.module
 
-import org.hyperscala.web.HTMLPage
+import org.hyperscala.web.site.Webpage
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -8,5 +8,5 @@ import org.hyperscala.web.HTMLPage
 trait Module {
   def name: String
   def version: String
-  protected[web] def load(page: HTMLPage): Unit
+  protected[web] def load(page: Webpage): Unit
 }

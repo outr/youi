@@ -4,7 +4,7 @@ import org.hyperscala.html.tag._
 import org.powerscala.hierarchy.ContainerView
 import org.hyperscala.html.HTMLTag
 import org.hyperscala.html.attributes.{Method, ButtonType}
-import org.hyperscala.web.event.FormSubmit
+import org.hyperscala.event.FormSubmit
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>

@@ -32,7 +32,7 @@ class Select extends Container[Option] with BodyChild with HTMLTag with FormFiel
            spellCheck: java.lang.Boolean = null,
            style: StyleSheet = null,
            tabIndex: java.lang.Integer = null,
-           title: String = null,
+           titleText: String = null,
            autoFocus: java.lang.Boolean = null,
            disabled: java.lang.Boolean = null,
            form: String = null,
@@ -54,7 +54,7 @@ class Select extends Container[Option] with BodyChild with HTMLTag with FormFiel
     up(this.spellCheck, spellCheck)
     up(this.style, style)
     up(this.tabIndex, tabIndex)
-    up(this.title, title)
+    up(this.titleText, titleText)
     up(this.autoFocus, autoFocus)
     up(this.disabled, disabled)
     up(this.form, form)
@@ -104,4 +104,6 @@ class Select extends Container[Option] with BodyChild with HTMLTag with FormFiel
     case v if (!multiple() && v.size > 1) => List(v.head)
     case v => v
   }
+
+  override def formValue = value
 }

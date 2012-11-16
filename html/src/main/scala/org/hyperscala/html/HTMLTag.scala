@@ -8,7 +8,7 @@ import org.hyperscala.html.tag._
 import css.StyleSheet
 import persistence.StyleSheetPersistence
 import scala.collection.{Map => ScalaMap}
-import org.powerscala.property.PropertyParent
+import org.powerscala.property.{StandardProperty, PropertyParent}
 
 /**
  * NOTE: This file has been generated. Do not modify directly!
@@ -27,7 +27,19 @@ trait HTMLTag extends Tag with EventSupport {
   val lang = PropertyAttribute[String]("lang", null)
   val spellCheck = PropertyAttribute[Boolean]("spellcheck", false)
   val tabIndex = PropertyAttribute[Int]("tabindex", -1)
-  val title = PropertyAttribute[String]("title", null)
+  val titleText = PropertyAttribute[String]("title", null)
+
+  /**
+   * Gets the id value and sets it to a unique value if it's null.
+   */
+  def identity = id() match {
+    case null => {
+      val uuid = Unique()
+      id := uuid
+      uuid
+    }
+    case value => value
+  }
 
   val style = new StyleProperty("style", InclusionMode.NotEmpty) {
     val link = new StyleProperty("link", InclusionMode.Exclude)(HTMLTag.this)
@@ -63,6 +75,10 @@ trait HTMLTag extends Tag with EventSupport {
     val writer = HTMLWriter().asInstanceOf[StringBuilderHTMLWriter]
     this.write(writer)
     writer.writer.toString()
+  }
+
+  def formValue: StandardProperty[String] = {
+    throw new UnsupportedOperationException("%s doesn't support updating value!".format(xmlLabel))
   }
 }
 

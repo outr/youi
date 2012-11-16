@@ -18,6 +18,19 @@ trait Tag extends PropertyParent with Markup with Listenable {
 
   override def render = renderTag()
 
+  /**
+   * Recursively walks up the DOM validating the 'render' state on its parents returning true only if all parents have
+   * the 'render' value set to true.
+   */
+  def renderable: Boolean = if (render) {
+    parent match {
+      case p: Tag => p.renderable
+      case _ => true
+    }
+  } else {
+    false
+  }
+
   lazy val xmlAttributes = new NamingFilter[XMLAttribute](this)
 
   /**

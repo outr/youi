@@ -27,7 +27,7 @@ class Link extends Textual with BodyChild with HeadChild with HTMLTag {
            spellCheck: java.lang.Boolean = null,
            style: StyleSheet = null,
            tabIndex: java.lang.Integer = null,
-           title: String = null,
+           titleText: String = null,
            href: String = null,
            hrefLang: String = null,
            media: String = null,
@@ -50,7 +50,7 @@ class Link extends Textual with BodyChild with HeadChild with HTMLTag {
     up(this.spellCheck, spellCheck)
     up(this.style, style)
     up(this.tabIndex, tabIndex)
-    up(this.title, title)
+    up(this.titleText, titleText)
     up(this.href, href)
     up(this.hrefLang, hrefLang)
     up(this.media, media)

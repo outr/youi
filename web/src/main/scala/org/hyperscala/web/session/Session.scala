@@ -27,6 +27,11 @@ trait Session extends Updatable with Listenable with WorkQueue {
 
   def get[T](key: Any): Option[T]
 
+  def getOrElse[T](key: Any, default: => T) = get[T](key) match {
+    case Some(value) => value
+    case None => default
+  }
+
   def update(key: Any, value: Any): Unit
 
   def remove(key: Any): Unit

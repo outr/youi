@@ -29,7 +29,7 @@ class Script extends Container[JavaScriptContent] with BodyChild with HeadChild 
            spellCheck: java.lang.Boolean = null,
            style: StyleSheet = null,
            tabIndex: java.lang.Integer = null,
-           title: String = null,
+           titleText: String = null,
            async: String = null,
            charSet: String = null,
            defer: String = null,
@@ -51,7 +51,7 @@ class Script extends Container[JavaScriptContent] with BodyChild with HeadChild 
     up(this.spellCheck, spellCheck)
     up(this.style, style)
     up(this.tabIndex, tabIndex)
-    up(this.title, title)
+    up(this.titleText, titleText)
     up(this.async, async)
     up(this.charSet, charSet)
     up(this.defer, defer)

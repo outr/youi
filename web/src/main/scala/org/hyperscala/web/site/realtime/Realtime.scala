@@ -28,11 +28,10 @@ object Realtime extends Module {
     page.head.contents += new tag.Script(src = "/js/realtime.js")
     page.head.contents += new tag.Script(content = new JavaScriptContent {
       def content = {   // Every page request we create a new connection
-      val id = UUID.randomUUID()
+        val id = UUID.randomUUID()
         val connection = Website().create(id)
         connection.page = page
         Realtime.addConnection(page, connection)
-
         "connectRealtime('%s');".format(id.toString)
       }
 
@@ -58,7 +57,6 @@ object Realtime extends Module {
 
   def send(page: Webpage, event: String, message: String) = synchronized {
     val connections = getConnections(page)
-//    println("Sending to %s connections: %s".format(connections.size, event))
     sendRecursive(page, event, message, connections)
   }
 

@@ -36,6 +36,8 @@ object WebContext {
     case c => c
   }
 
+  def inContext = current.get() != null
+
   protected[site] def apply[T](context: WebContext)(action: => T): T = {
     val previous = current.get()
     current.set(context)

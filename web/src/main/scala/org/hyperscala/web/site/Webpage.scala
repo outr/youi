@@ -102,7 +102,11 @@ trait Webpage extends Page with RequestHandler with Parent {
 
   protected def processPost(content: ChannelBuffer) = {}
 
-  override def errorThrown(t: Throwable) = website.errorThrown(this, t)
+  override def errorThrown(t: Throwable) = if (WebContext.inContext) {
+    website.errorThrown(this, t)
+  } else {
+    error("Error occurred on page: %s".format(this), t)
+  }
 }
 
 object Webpage {

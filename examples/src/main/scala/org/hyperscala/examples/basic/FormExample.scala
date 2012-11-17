@@ -8,14 +8,12 @@ import org.powerscala.property._
 import tag._
 import org.powerscala.property.event.PropertyChangeEvent
 import org.hyperscala.web.module.jQuery172
-import org.hyperscala.web.site.realtime.RealtimeWebpage
-import org.hyperscala.event.{ClickEvent, KeyUpEvent, ChangeEvent, JavaScriptEvent}
-import org.powerscala.Color
+import org.hyperscala.web.site.Webpage
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-class FormExample extends RealtimeWebpage with FormSupport {
+class FormExample extends Webpage with FormSupport {
   title := "Form Example"
 
   require(jQuery172)
@@ -26,30 +24,12 @@ class FormExample extends RealtimeWebpage with FormSupport {
   body.contents += messages
 
   body.contents += new Form(id = "form", method = "post") {
-//    submittedBy.listeners.synchronous {
-//      case evt: PropertyChangeEvent => {
-//        messages.contents += "Form submitted by: %s".format(evt.newValue)
-//        messages.contents += new Br
-//      }
-//    }
-
     val items = List("Name", "Phone", "Email")
     items.foreach {
       case item => {
         contents += new Div {
           contents += new Label(content = item)
-          val input = new Input(name = item, inputType = InputType.Text) {
-            event.keyUp := JavaScriptEvent(fireChange = true)
-
-            listeners.synchronous {
-              case evt: KeyUpEvent => println("KeyUp: %s".format(evt))
-              case evt: ChangeEvent => println("Input ChangeEvent: %s".format(value()))
-              case evt => println("Unhandled input event: %s".format(evt))
-            }
-            value.listeners.synchronous {
-              case evt: PropertyChangeEvent => println("Value changed: %s to %s".format(evt.oldValue, evt.newValue))
-            }
-          }
+          val input = new Input(name = item, inputType = InputType.Text)
           input.value.listeners.synchronous {
             case evt: PropertyChangeEvent => {
               messages.contents += "Input changed (%s) from %s to %s".format(item, evt.oldValue, evt.newValue)
@@ -60,17 +40,7 @@ class FormExample extends RealtimeWebpage with FormSupport {
         }
       }
     }
-    contents += new Button(id = "button1", buttonType = ButtonType.Submit, content = "Submit 1") {
-      event.click := JavaScriptEvent()
-
-      listeners.synchronous {
-        case evt: ClickEvent => {
-          val input = html.byName[tag.Input]("Name").head
-          input.value := "Wahoo!"
-          input.style.color := Color.Red
-        }
-      }
-    }
+    contents += new Button(id = "button1", buttonType = ButtonType.Submit, content = "Submit 1")
     contents += new Button(id = "button2", buttonType = ButtonType.Submit, content = "Submit 2")
   }
 }

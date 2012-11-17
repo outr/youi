@@ -5,7 +5,6 @@ import java.util.UUID
 import org.powerscala.Logging
 import org.hyperscala.html.{tag, HTMLTag}
 
-import com.codahale.jerkson.Json._
 import org.hyperscala.event.{FormSubmit, JavaScriptEvent}
 import org.hyperscala.html.attributes.Method
 import org.powerscala.hierarchy.event.{ChildRemovedEvent, ChildAddedEvent}
@@ -17,11 +16,17 @@ import org.hyperscala.javascript.JavaScriptContent
 import realtime.Realtime
 import org.powerscala.property.MutableProperty
 
+import org.json4s._
+import org.json4s.jackson.JsonMethods._
+import org.json4s.jackson.Serialization.write
+
 /**
  * @author Matt Hicks <matt@outr.com>
  */
 class WebpageConnection(val id: UUID) extends Communicator with Logging {
-  println("WebpageConnection created: %s".format(id))
+  implicit val jsonFormats = DefaultFormats
+
+  info("WebpageConnection created: %s".format(id))
 
   var applyingProperty: MutableProperty[_] = _
   var applyingValue: Any = _
@@ -31,7 +36,7 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
   def page = _page
   def page_=(page: Webpage) = {
     _page = page
-    initializePage()
+    initializePage()    // TODO: why does commenting this out throw OutOfContextExceptions?
   }
 
   def initializePage() = {
@@ -60,9 +65,9 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
   def receive(event: String, message: String) = WebContext(page.webContext) {
     try {
       event match {
-        case "event" => receiveJavaScriptEvent(parse[SimpleEvent](message))
-        case "change" => receiveJavaScriptChange(parse[SimpleChangeEvent](message))
-        case "keyEvent" => receiveJavaScriptKeyEvent(parse[SimpleKeyEvent](message))
+        case "event" => receiveJavaScriptEvent(parse(message).extract[SimpleEvent])
+        case "change" => receiveJavaScriptChange(parse(message).extract[SimpleChangeEvent])
+        case "keyEvent" => receiveJavaScriptKeyEvent(parse(message).extract[SimpleKeyEvent])
         case _ => info("WebpageConnection(%s) received event: %s with message: %s from the client (Page: %s)!".format(id, event, message, page))
       }
     } catch {
@@ -164,7 +169,7 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
   }
 
   def send(js: JavaScriptMessage) = {
-    val message = generate(js)
+    val message = write(js)
 //        println("Sending: %s".format(js))
     Realtime.send(page, "eval", message)
   }

@@ -21,13 +21,13 @@ object HyperScalaBuild extends Build {
   val commonsFileUpload = "commons-fileupload" % "commons-fileupload" % "1.2.2"
   val commonsIO = "commons-io" % "commons-io" % "1.3.2"
 
-  val jerkson = "io.backchat.jerkson" %% "jerkson" % "0.7.0"
+  val json4s = "org.json4s" % "json4s-jackson" % "3.0.0-SNAPSHOT"
   val webcommunicator = "com.outr.webcommunicator" %% "webcommunicator" % "1.0-SNAPSHOT"
 
   val servletApi = "javax.servlet" % "javax.servlet-api" % "3.0.1" % "compile"
 
   val baseSettings = Defaults.defaultSettings ++ Seq(
-    version := "0.4-SNAPSHOT",
+    version := "0.5-SNAPSHOT",
     organization := "org.hyperscala",
     scalaVersion := "2.9.2",
     libraryDependencies ++= Seq(
@@ -88,7 +88,7 @@ object HyperScalaBuild extends Build {
     .settings(libraryDependencies ++= Seq(servletApi,
                                           commonsFileUpload,
                                           commonsIO,
-                                          jerkson,
+                                          json4s,
                                           webcommunicator))
   lazy val bean = Project("bean", file("bean"), settings = createSettings("hyperscala-bean"))
     .dependsOn(web)

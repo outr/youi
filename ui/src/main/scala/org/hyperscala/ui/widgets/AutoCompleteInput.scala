@@ -5,10 +5,11 @@ import org.hyperscala.Unique
 
 import org.powerscala.property._
 import org.powerscala.Color
-import org.hyperscala.web.live._
 import org.hyperscala.css.attributes.{Display, Position}
 
 import scala.math._
+import org.hyperscala.event._
+import scala.Some
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -96,8 +97,8 @@ abstract class AutoCompleteInput[T](id: String = Unique(), default: T)(implicit 
     style.width := 100.pct
     style.height := 100.pct
 
-    event.keyUp := LiveEvent(fireChange = true, preventDefault = true, onlyLast = true)
-    event.blur := LiveEvent(preventDefault = false)
+    event.keyUp := JavaScriptEvent(fireChange = true, preventDefault = true, onlyLast = true)
+    event.blur := JavaScriptEvent(preventDefault = false)
 
     listeners.synchronous {
       case evt: BlurEvent => {
@@ -194,9 +195,9 @@ class BasicResult[T](val result: T, query: String, input: AutoCompleteInput[T]) 
   style.padding.bottom := 5.px
   style.cursor := "pointer"
 
-  event.mouseOver := LiveEvent()
-  event.mouseOut := LiveEvent()
-  event.click := LiveEvent()
+  event.mouseOver := JavaScriptEvent()
+  event.mouseOut := JavaScriptEvent()
+  event.click := JavaScriptEvent()
 
   listeners.synchronous {
     case evt: MouseOverEvent => {

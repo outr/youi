@@ -1,19 +1,19 @@
 package org.hyperscala.examples.ui
 
-import org.hyperscala.web.live.LivePage
 import org.hyperscala.ui.widgets.AutoCompleteInput
 import org.hyperscala.html._
 import org.powerscala.property._
 import org.powerscala.Language
 import org.powerscala.property.event.PropertyChangeEvent
+import org.hyperscala.web.site.realtime.RealtimeWebpage
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-class AutoCompleteExample extends LivePage {
+class AutoCompleteExample extends RealtimeWebpage {
   body.style.font.family := "Arial, sans-serif"
 
-  contents += new tag.Div {
+  body.contents += new tag.Div {
     style.padding.all := 25.px
 
     val input = new AutoCompleteInput[Language]("language", Language.English) {

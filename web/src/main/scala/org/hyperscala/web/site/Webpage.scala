@@ -15,12 +15,15 @@ import org.hyperscala.web.module.Module
 import org.powerscala.hierarchy.{Parent, Element, ContainerView}
 import org.hyperscala.web.session.MapSession
 import org.hyperscala.css.StyleSheet
+import org.powerscala.property.PropertyParent
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-trait Webpage extends Page with RequestHandler with Parent {
+trait Webpage extends Page with RequestHandler with Parent with PropertyParent {
   Page.instance.set(this)
+
+  val name = () => getClass.getSimpleName
 
   protected[site] var webContext: WebContext = _
 

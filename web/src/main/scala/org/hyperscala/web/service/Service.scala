@@ -7,9 +7,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 import org.powerscala.reflect._
 import org.hyperscala.web.Website
 
-import org.json4s._
-import org.json4s.jackson.JsonMethods._
-import org.json4s.jackson.Serialization.write
+import org.powerscala.json._
 import io.Source
 import java.lang.reflect.Modifier
 
@@ -23,8 +21,6 @@ import java.lang.reflect.Modifier
  * @author Matt Hicks <matt@outr.com>
  */
 trait Service extends WebResource {
-  implicit val jsonFormats = DefaultFormats
-
   private val initialized = new AtomicBoolean(false)
   private var endpoints = Map.empty[String, EnhancedMethod]
 
@@ -58,9 +54,9 @@ trait Service extends WebResource {
   def callEndpoint(uri: String, request: String): String = {
     val endpoint = uri.substring(this.uri.length + 1)
     val method = endpoints(endpoint)
-    val args = parse(request).extract[Map[String, Any]]
+    val args = parse[Map[String, Any]](request)   // TODO: verify this will work!
     val result = method.apply[AnyRef](this, args)
-    write(result)
+    generate(result)
   }
 
   /**

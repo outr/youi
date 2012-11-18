@@ -5,6 +5,8 @@ import org.hyperscala.web.session.MapSession
 import org.hyperscala.examples.helloworld.HelloWorldPage
 import org.hyperscala.web.Scope
 import org.hyperscala.examples.basic.FormExample
+import org.hyperscala.examples.ui.{AutoCompleteExample, VisualExample}
+import org.hyperscala.examples.todomvc.TodoMVC
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -56,8 +58,19 @@ object HyperscalaSite extends Website[MapSession] {
   val form = WebpageResource.regex("/example/form.html", scope = Scope.Session) {
     new FormExample
   }
+  val visual = WebpageResource.regex("/example/visual.html", scope = Scope.Session) {
+    new VisualExample
+  }
+  val autoComplete = WebpageResource.regex("/example/autocomplete.html", scope = Scope.Session) {
+    new AutoCompleteExample
+  }
+  val todoMVC = WebpageResource.regex("/todomvc.html", scope = Scope.Session) {
+    TodoMVC
+  }
 
   registerPath("images/", "/images/", enableCaching = true)
+  registerPath("css/", "/css/", enableCaching = true)
+  registerPath("js/", "/js/", enableCaching = true)
 
   protected def createSession() = new MapSession
 }

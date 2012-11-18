@@ -1,11 +1,11 @@
 package org.hyperscala.examples.todomvc
 
-import org.hyperscala.web.HTMLPage
 import org.hyperscala.html._
 import attributes.InputType
 import tag._
+import org.hyperscala.web.site.Webpage
 
-object TodoMVC extends HTMLPage {
+object TodoMVC extends Webpage {
   title := "Webframework - TodoMVC"
   head.contents += new Link(rel = "stylesheet", href = "css/base.css")
   head.contents += new Link(rel = "stylesheet", href = "css/app.css")

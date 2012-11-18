@@ -1,17 +1,18 @@
 package org.hyperscala.examples.ui
 
 import org.hyperscala.html._
-import org.hyperscala.web.live.{ClickEvent, LiveEvent, LivePage}
 import org.hyperscala.ui.widgets.visual.Visual
 import org.hyperscala.css.attributes._
 
 import org.powerscala.property._
 import org.powerscala.property.event.PropertyChangeEvent
+import org.hyperscala.web.site.realtime.RealtimeWebpage
+import org.hyperscala.event.{ClickEvent, JavaScriptEvent}
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-class VisualExample extends LivePage {
+class VisualExample extends RealtimeWebpage {
   body.style.font.family := "sans-serif"
 
   val property = Property[Test]("property", new Test(name = "John Doe"))
@@ -31,7 +32,7 @@ class VisualExample extends LivePage {
     style.clear := Clear.Both
 
     contents += new tag.Button(content = "Toggle Editing") {
-      event.click := LiveEvent()
+      event.click := JavaScriptEvent()
 
       listeners.synchronous {
         case evt: ClickEvent => {
@@ -42,7 +43,7 @@ class VisualExample extends LivePage {
     }
 
     contents += new tag.Button(content = "Set Value") {
-      event.click := LiveEvent()
+      event.click := JavaScriptEvent()
 
       listeners.synchronous {
         case evt: ClickEvent => stringVisual.property := "Value Set!"

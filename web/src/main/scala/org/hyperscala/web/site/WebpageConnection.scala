@@ -16,16 +16,12 @@ import org.hyperscala.javascript.JavaScriptContent
 import realtime.Realtime
 import org.powerscala.property.MutableProperty
 
-import org.json4s._
-import org.json4s.jackson.JsonMethods._
-import org.json4s.jackson.Serialization.write
+import org.powerscala.json._
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
 class WebpageConnection(val id: UUID) extends Communicator with Logging {
-  implicit val jsonFormats = DefaultFormats
-
   info("WebpageConnection created: %s".format(id))
 
   var applyingProperty: MutableProperty[_] = _
@@ -65,9 +61,9 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
   def receive(event: String, message: String) = WebContext(page.webContext) {
     try {
       event match {
-        case "event" => receiveJavaScriptEvent(parse(message).extract[SimpleEvent])
-        case "change" => receiveJavaScriptChange(parse(message).extract[SimpleChangeEvent])
-        case "keyEvent" => receiveJavaScriptKeyEvent(parse(message).extract[SimpleKeyEvent])
+        case "event" => receiveJavaScriptEvent(parse[SimpleEvent](message))
+        case "change" => receiveJavaScriptChange(parse[SimpleChangeEvent](message))
+        case "keyEvent" => receiveJavaScriptKeyEvent(parse[SimpleKeyEvent](message))
         case _ => info("WebpageConnection(%s) received event: %s with message: %s from the client (Page: %s)!".format(id, event, message, page))
       }
     } catch {
@@ -169,7 +165,7 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
   }
 
   def send(js: JavaScriptMessage) = {
-    val message = write(js)
+    val message = generate(js)
 //        println("Sending: %s".format(js))
     Realtime.send(page, "eval", message)
   }

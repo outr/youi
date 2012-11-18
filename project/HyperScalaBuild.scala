@@ -14,14 +14,9 @@ object HyperScalaBuild extends Build {
 
   val specs2 = "org.specs2" %% "specs2" % "1.11" % "test"
 
-//  val jettyVersion = "8.1.7.v20120910"
-//  val jettyWebapp = "org.eclipse.jetty" % "jetty-webapp" % jettyVersion % "container,compile"
-//  val jettyWebsocket = "org.eclipse.jetty" % "jetty-websocket" % jettyVersion % "container,compile"
-
   val commonsFileUpload = "commons-fileupload" % "commons-fileupload" % "1.2.2"
   val commonsIO = "commons-io" % "commons-io" % "1.3.2"
 
-  val json4s = "org.json4s" % "json4s-jackson" % "3.0.0-SNAPSHOT"
   val webcommunicator = "com.outr.webcommunicator" %% "webcommunicator" % "1.0-SNAPSHOT"
 
   val servletApi = "javax.servlet" % "javax.servlet-api" % "3.0.1" % "compile"
@@ -88,7 +83,6 @@ object HyperScalaBuild extends Build {
     .settings(libraryDependencies ++= Seq(servletApi,
                                           commonsFileUpload,
                                           commonsIO,
-                                          json4s,
                                           webcommunicator))
   lazy val bean = Project("bean", file("bean"), settings = createSettings("hyperscala-bean"))
     .dependsOn(web)

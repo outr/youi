@@ -15,7 +15,12 @@ import org.powerscala.bus.Bus
 class WebContext {
   var website: Website[_ <: Session] = _
   private var _webpage: Webpage = _
-  def webpage = _webpage
+  def webpage = {
+    if (_webpage == null) {
+      _webpage = Page().asInstanceOf[Webpage]
+    }
+    _webpage
+  }
   def webpage_=(page: Webpage) = {
     _webpage = page
     Page.instance.set(page)

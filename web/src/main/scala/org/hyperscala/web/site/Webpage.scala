@@ -3,14 +3,13 @@ package org.hyperscala.web.site
 import org.hyperscala.Page
 import com.outr.webcommunicator.netty.handler.RequestHandler
 import com.outr.webcommunicator.netty.NettyWebapp
-import org.jboss.netty.channel.{MessageEvent, ChannelHandlerContext}
+import org.jboss.netty.channel.{ChannelFutureListener, MessageEvent, ChannelHandlerContext}
 import org.jboss.netty.handler.codec.http.{HttpMethod, HttpRequest, CookieEncoder}
 import com.google.common.net.HttpHeaders
 
 import org.hyperscala.html._
 import org.hyperscala.io.HTMLWriter
-import java.io.{ByteArrayInputStream, ByteArrayOutputStream}
-import org.jboss.netty.buffer.ChannelBuffer
+import org.jboss.netty.buffer.{ChannelBuffers, ChannelBufferOutputStream, ChannelBuffer}
 import org.hyperscala.web.module.Module
 import org.powerscala.hierarchy.{Parent, Element, ContainerView}
 import org.hyperscala.web.session.MapSession
@@ -87,19 +86,17 @@ trait Webpage extends Page with RequestHandler with Parent with PropertyParent {
       response.setHeader(HttpHeaders.SET_COOKIE, encoder.encode())
 
       // Generate HTML from page
-      // TODO: actually stream instead of this crap!
-      val output = new ByteArrayOutputStream()
+      // TODO: stream content back rather than loading into a buffer first
+      val buffer = ChannelBuffers.dynamicBuffer()
+      val output = new ChannelBufferOutputStream(buffer)
       output.write(doctype)
       val writer = HTMLWriter(output)
       html.write(writer)
-      output.flush()
-      val bytes = output.toByteArray
-      val input = new ByteArrayInputStream(bytes)
 
-      // Stream page out
+      // Stream data back
       val channel = context.getChannel
       channel.write(response)
-      RequestHandler.writeInput(channel, input, chunkSize, closeOnFinish = true)
+      channel.write(output.buffer()).addListener(ChannelFutureListener.CLOSE)
     }
   }
 

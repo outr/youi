@@ -1,24 +1,23 @@
 package org.hyperscala.examples.basic
 
+import org.hyperscala.web.site.realtime.RealtimeWebpage
 import org.hyperscala.html._
-import org.hyperscala.web.live.{ChangeEvent, ClickEvent, LiveEvent, LivePage}
-
-import org.powerscala.property._
 import org.powerscala.Color
-import tag._
+import org.hyperscala.event.{ChangeEvent, ClickEvent, JavaScriptEvent}
+import org.powerscala.property._
 import org.powerscala.event.ActionEvent
 
 /**
- * @author Matt Hicks <mhicks@powerscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
-class LivePageExample extends LivePage {
-  title := "Live Page Example"
+class RealtimeWebpageExample extends RealtimeWebpage {
+  title := "Realtime Example"
 
   var count = 0
   var reversed = false
 
-  val input = new Input {
-    event.change := LiveEvent()
+  val input = new tag.Input {
+    event.change := JavaScriptEvent()
 
     value.onChange {
       println("Input value changed: %s".format(value()))
@@ -28,32 +27,32 @@ class LivePageExample extends LivePage {
       case evt: ActionEvent => println("Input event: %s".format(evt))
     }
   }
-  contents += input
+  body.contents += input
 
-  val select = new Select {
-    event.change := LiveEvent()
+  val select = new tag.Select(id = "realtimeSelect") {
+    event.change := JavaScriptEvent()
 
     contents += new tag.Option(value = "uno", content = "One")
     contents += new tag.Option(value = "dos", content = "Two")
     contents += new tag.Option(value = "tres", content = "Three")
 
     listeners.synchronous {
-      case evt: ChangeEvent => println("Selected: %s".format(selected))
+      case evt: ChangeEvent => println("Selected: %s".format(selected()))
     }
   }
-  contents += select
+  body.contents += select
 
-  val textArea = new TextArea {
-    event.change := LiveEvent()
+  val textArea = new tag.TextArea {
+    event.change := JavaScriptEvent()
 
     listeners.synchronous {
       case evt: ChangeEvent => println(content())
     }
   }
-  contents += textArea
+  body.contents += textArea
 
-  contents += new Button(content = "Test Button") {
-    event.click := LiveEvent()
+  body.contents += new tag.Button(content = "Test Button") {
+    event.click := JavaScriptEvent()
 
     listeners.synchronous {
       case evt: ClickEvent => {
@@ -68,10 +67,10 @@ class LivePageExample extends LivePage {
         }
         if (reversed) {
           count -= 1
-          LivePageExample.this.contents -= LivePageExample.this.contents.last
+          body.contents -= body.contents.last
         } else {
           count += 1
-          LivePageExample.this.contents += new Div {
+          body.contents += new tag.Div {
             contents += "Testing %s!".format(count)
           }
         }

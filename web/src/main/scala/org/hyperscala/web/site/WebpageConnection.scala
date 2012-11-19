@@ -43,7 +43,7 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
     page.listeners.synchronous.filter(evt => true) {    // Accept all events on this pages' bus
       case evt: PropertyChangeEvent if (applyingProperty == evt.property && applyingValue == evt.newValue) => {
         // Ignore a change initialized by this connector (avoid recursive changes)
-        info("Ignoring change being appied: %s".format(applyingValue))
+//        info("Ignoring change being appied: %s".format(applyingValue))
         applyingProperty = null   // Only necessary to ignore the first event
         applyingValue = null
       }
@@ -58,6 +58,7 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
   }
 
   def receive(event: String, message: String) = WebContext(page.webContext) {
+//    info("Receive: %s - %s".format(event, message))
     try {
       event match {
         case "event" => receiveJavaScriptEvent(parse[SimpleEvent](message))

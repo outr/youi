@@ -17,6 +17,8 @@ class StandardVisual[T](builder: VisualBuilder[T]) extends Visual[T]
                                                    with ValidatableVisual[T] {
   def manifest = builder.manifest
 
+  name := builder.name
+
   property.onChange {                 // Update the read visualization on property change
     updateVisual()
   }

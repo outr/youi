@@ -3,13 +3,13 @@ package org.hyperscala.web.site
 import org.hyperscala.Page
 import com.outr.webcommunicator.netty.handler.RequestHandler
 import com.outr.webcommunicator.netty.NettyWebapp
-import org.jboss.netty.channel.{ChannelFutureListener, MessageEvent, ChannelHandlerContext}
+import org.jboss.netty.channel.{ChannelFuture, ChannelFutureListener, MessageEvent, ChannelHandlerContext}
 import org.jboss.netty.handler.codec.http.{HttpMethod, HttpRequest, CookieEncoder}
 import com.google.common.net.HttpHeaders
 
 import org.hyperscala.html._
 import org.hyperscala.io.HTMLWriter
-import org.jboss.netty.buffer.{ChannelBuffers, ChannelBufferOutputStream, ChannelBuffer}
+import org.jboss.netty.buffer.{ChannelBuffers, ChannelBuffer}
 import org.hyperscala.web.module.Module
 import org.powerscala.hierarchy.{Parent, Element, ContainerView}
 import org.hyperscala.web.session.MapSession
@@ -35,7 +35,7 @@ trait Webpage extends Page with RequestHandler with Parent with PropertyParent {
   def url = WebContext().url
   def cookies = WebContext().cookies
 
-  val doctype = "<!DOCTYPE html>\r\n".getBytes
+  val doctype = "<!DOCTYPE html>\r\n"
   val html = new tag.HTML
   val head = new tag.Head {
     val title = new tag.Title
@@ -87,16 +87,29 @@ trait Webpage extends Page with RequestHandler with Parent with PropertyParent {
 
       // Generate HTML from page
       // TODO: stream content back rather than loading into a buffer first
-      val buffer = ChannelBuffers.dynamicBuffer()
-      val output = new ChannelBufferOutputStream(buffer)
-      output.write(doctype)
-      val writer = HTMLWriter(output)
-      html.write(writer)
+//      val buffer = ChannelBuffers.dynamicBuffer()
+//      val output = new ChannelBufferOutputStream(buffer)
+//      output.write(doctype)
+//      val writer = HTMLWriter(output)
+//      html.write(writer)
+//
+//      // Stream data back
+//      val channel = context.getChannel
+//      channel.write(response)
+//      channel.write(output.buffer()).addListener(ChannelFutureListener.CLOSE)
 
-      // Stream data back
       val channel = context.getChannel
+      // Write the HttpResponse
       channel.write(response)
-      channel.write(output.buffer()).addListener(ChannelFutureListener.CLOSE)
+      // Set up the writer
+      var lastWriteFuture: ChannelFuture = null
+      val writer = (s: String) => lastWriteFuture = channel.write(ChannelBuffers.wrappedBuffer(s.getBytes()))
+      // Write the doctype
+      writer(doctype)
+      // Stream the page back
+      val htmlWriter = HTMLWriter(writer)
+      html.write(htmlWriter)
+      lastWriteFuture.addListener(ChannelFutureListener.CLOSE)
     }
   }
 

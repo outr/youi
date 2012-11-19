@@ -1,7 +1,6 @@
 package org.hyperscala.web.live
 
 import org.hyperscala._
-import io.{StringBuilderHTMLWriter, HTMLWriter}
 import org.hyperscala.html._
 import org.hyperscala.css.StyleSheet
 import web.module.jQuery182
@@ -111,9 +110,7 @@ class LivePage extends HTMLPage with IdentifyTags {
             val before = parent.contents(index - 1)
             "$('#%s').after(content);".format(before.id())
           }
-          val writer = HTMLWriter().asInstanceOf[StringBuilderHTMLWriter]
-          child.write(writer)
-          val content = writer.writer.toString()
+          val content = child.outputString
           enqueue(LiveChange(nextId, null, instruction, content))
         }
         case js: JavaScriptContent => sendJavaScript(js.content)

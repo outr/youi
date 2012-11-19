@@ -11,7 +11,6 @@ import org.powerscala.hierarchy.event.{ChildRemovedEvent, ChildAddedEvent}
 import org.powerscala.property.event.PropertyChangeEvent
 import org.hyperscala.{Container, Textual, Page, PropertyAttribute}
 import org.hyperscala.css.StyleSheet
-import org.hyperscala.io.{StringBuilderHTMLWriter, HTMLWriter}
 import org.hyperscala.javascript.JavaScriptContent
 import realtime.Realtime
 import org.powerscala.property.MutableProperty
@@ -144,9 +143,7 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
           val before = parent.contents(index - 1)
           "$('#%s').after(content);".format(before.id())
         }
-        val writer = HTMLWriter().asInstanceOf[StringBuilderHTMLWriter]
-        child.write(writer)
-        val content = writer.writer.toString()
+        val content = child.outputString
         send(JavaScriptMessage(instruction, content))
       }
       case js: JavaScriptContent => send(JavaScriptMessage(js.content))

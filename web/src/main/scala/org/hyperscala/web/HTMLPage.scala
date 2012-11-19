@@ -15,7 +15,6 @@ import tag._
 import scala.Some
 import org.hyperscala
 import hyperscala.event.FormSubmit
-import hyperscala.io.HTMLWriter
 import hyperscala.Page
 import org.powerscala.concurrent.WorkQueue
 import org.powerscala.event.Event
@@ -181,8 +180,8 @@ class HTMLPage extends PageResource with PropertyParent with Parent with Updatab
       }
 
       output.write(doctype)
-      val writer = HTMLWriter(output)
-      html.write(writer)
+//      val writer = HTMLWriter(output)
+//      html.write(writer)
     } finally {
       output.flush()
       output.close()

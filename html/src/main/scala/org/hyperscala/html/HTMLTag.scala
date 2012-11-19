@@ -3,7 +3,7 @@ package org.hyperscala.html
 import attributes._
 import event.EventSupport
 import org.hyperscala._
-import io.{StringBuilderHTMLWriter, HTMLWriter}
+import io.HTMLWriter
 import org.hyperscala.html.tag._
 import css.StyleSheet
 import persistence.StyleSheetPersistence
@@ -72,9 +72,11 @@ trait HTMLTag extends Tag with EventSupport {
   def byTag[T <: HTMLTag](implicit manifest: Manifest[T]) = hierarchy.findAll[T](t => true)(manifest)
 
   def outputString = {
-    val writer = HTMLWriter().asInstanceOf[StringBuilderHTMLWriter]
-    this.write(writer)
-    writer.writer.toString()
+    val b = new StringBuilder
+    val writer: String => Unit = (s: String) => b.append(s)
+    val htmlWriter = HTMLWriter(writer)
+    write(htmlWriter)
+    b.toString()
   }
 
   def formValue: StandardProperty[String] = {

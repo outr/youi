@@ -106,7 +106,7 @@ class StandardVisual[T](builder: VisualBuilder[T]) extends Visual[T]
       case Some(d) => property := d
       case None => // Leave it alone
     }
-    updateEditing()
+    property.fireChanged()
   }
 
   def updateEditing() = {

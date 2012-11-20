@@ -1,0 +1,44 @@
+package org.hyperscala.ui.widgets.visual.`type`
+
+import org.powerscala.{EnumEntry, Enumerated}
+import org.powerscala.property.StandardProperty
+import org.hyperscala.ui.widgets.visual.VisualDetails
+
+import org.powerscala.reflect._
+import org.hyperscala.ui.widgets.ListSelect
+import org.hyperscala.event.JavaScriptEvent
+import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.site.realtime.Realtime
+
+/**
+ * @author Matt Hicks <matt@outr.com>
+ */
+object EnumEntryVisualType extends VisualType[EnumEntry[_]] {
+  def valid(details: VisualDetails[_]) = details.clazz.hasType(classOf[EnumEntry[_]])
+
+  def create(property: StandardProperty[EnumEntry[_]], details: VisualDetails[EnumEntry[_]]) = {
+    val enumerated = details.clazz.instance.get.asInstanceOf[Enumerated[_]]
+    val nullAllowed = details.nullAllowed
+    val list = new ListSelect[Any](enumerated.values, nullAllowed = nullAllowed) {
+      Webpage().require(Realtime)
+
+      event.change := JavaScriptEvent()
+
+      property.onChange {
+        updateSelect()
+      }
+
+      selected.onChange {
+        updateProperty()
+      }
+
+      def updateSelect() = selected := List(property().asInstanceOf[Any])
+
+      def updateProperty() = property := selected().headOption.getOrElse(null).asInstanceOf[EnumEntry[_]]
+    }
+    if (details.default.nonEmpty) {
+      list.selected := List(details.default.get.asInstanceOf[Any])
+    }
+    list
+  }
+}

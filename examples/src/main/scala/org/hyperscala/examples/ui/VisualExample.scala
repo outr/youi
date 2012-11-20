@@ -8,6 +8,7 @@ import org.powerscala.property._
 import org.powerscala.property.event.PropertyChangeEvent
 import org.hyperscala.web.site.realtime.RealtimeWebpage
 import org.hyperscala.event.{ClickEvent, JavaScriptEvent}
+import org.powerscala.Country
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -25,8 +26,22 @@ class VisualExample extends RealtimeWebpage {
 
   val bindingVisual = Visual[String]().label("Binding Visual").editing.bind(property, "name").build()
 
-  body.contents += stringVisual
-  body.contents += bindingVisual
+  val enumVisual = Visual[Country]().label("Country Visual").editing.build()
+  enumVisual.property.listeners.synchronous {
+    case evt: PropertyChangeEvent => println("Enum Changed: %s -> %s".format(evt.oldValue, evt.newValue))
+  }
+
+  val booleanVisual = Visual[Boolean]().label("Boolean Visual").editing.build()
+  booleanVisual.property.listeners.synchronous {
+    case evt: PropertyChangeEvent => println("Boolean Changed: %s -> %s".format(evt.oldValue, evt.newValue))
+  }
+
+  // TODO: add Int
+  // TODO: add List of Strings
+  // TODO: add List of Enums
+  // TODO: add List of case classes
+
+  body.contents.addAll(stringVisual, bindingVisual, enumVisual, booleanVisual)
 
   body.contents += new tag.Div {
     style.clear := Clear.Both
@@ -38,6 +53,7 @@ class VisualExample extends RealtimeWebpage {
         case evt: ClickEvent => {
           stringVisual.editing := !stringVisual.editing()
           bindingVisual.editing := !bindingVisual.editing()
+          enumVisual.editing := !enumVisual.editing()
         }
       }
     }
@@ -46,7 +62,10 @@ class VisualExample extends RealtimeWebpage {
       event.click := JavaScriptEvent()
 
       listeners.synchronous {
-        case evt: ClickEvent => stringVisual.property := "Value Set!"
+        case evt: ClickEvent => {
+          stringVisual.property := "Value Set!"
+          enumVisual.property := Country.KZ
+        }
       }
     }
   }

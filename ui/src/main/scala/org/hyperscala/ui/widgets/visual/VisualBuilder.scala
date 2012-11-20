@@ -13,8 +13,9 @@ case class VisualBuilder[T](_name: String = null,
                             _editable: Boolean = true,
                             _editing: Boolean = false,
                             _selection: List[T] = Nil,
+                            _nullAllowed: Boolean = true,
                             _default: Option[T] = None,
-                            _valueType: Class[_] = null,
+                            _itemizedType: Class[_] = null,
                             _masked: Boolean = false,
                             _validations: List[T => Either[Option[T], String]] = Nil,
                             _visualType: Option[VisualType[T]] = None,
@@ -40,10 +41,12 @@ case class VisualBuilder[T](_name: String = null,
   def editing = copy(_editing = true, _editable = true)
   def selection = _selection
   def selection(s: List[T]) = copy(_selection = s)
+  def nullAllowed = _nullAllowed
+  def nullAllowed(b: Boolean) = copy(_nullAllowed = b)
   def default = _default
   def default(d: T) = copy(_default = Some(d))
-  def valueType = _valueType
-  def valueType(v: Class[_]) = copy(_valueType = v)
+  def itemizedType = _itemizedType
+  def itemizedType(v: Class[_]) = copy(_itemizedType = v)
   def mask = masked(m = true)
   def masked = _masked
   def masked(m: Boolean) = copy(_masked = m)

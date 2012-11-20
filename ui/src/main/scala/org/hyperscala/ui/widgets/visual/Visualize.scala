@@ -13,8 +13,11 @@ case class Visualize(_labeled: Boolean = true,
                      _editable: Boolean = true,
                      _editing: Boolean = false,
                      _fields: List[VisualBuilder[_]] = Nil) {
+
+  // TODO: support groupings
   def clazz[T](className: String = null,
                bindProperty: StandardProperty[_] = null,
+               basePath: String = null,
                valueUpdatesProperty: Boolean = true,
                propertyUpdatesValue: Boolean = true)(implicit manifest: Manifest[T]): Visualize = {
     val cn = className match {
@@ -24,7 +27,16 @@ case class Visualize(_labeled: Boolean = true,
     var instance = this
     manifest.erasure.caseValues.map(cv => {
       val name = "%s.%s".format(cn, cv.name)
-      instance = instance.caseValue(name, cv, bindProperty, cv.name, valueUpdatesProperty, propertyUpdatesValue)
+      val hierarchy = if (basePath == null) {
+        cv.name
+      } else {
+        "%s.%s".format(basePath, cv.name)
+      }
+      if (cv.valueType.isCase) {
+        instance = instance.clazz[Any](null, bindProperty, hierarchy, valueUpdatesProperty, propertyUpdatesValue)
+      } else {
+        instance = instance.caseValue(name, cv, bindProperty, hierarchy, valueUpdatesProperty, propertyUpdatesValue)
+      }
     })
     instance
   }

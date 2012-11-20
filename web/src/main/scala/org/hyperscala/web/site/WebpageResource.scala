@@ -1,8 +1,9 @@
 package org.hyperscala.web.site
 
 import com.outr.webcommunicator.netty._
+import handler.RequestHandler
 import org.jboss.netty.channel.{MessageEvent, ChannelHandlerContext}
-import org.jboss.netty.handler.codec.http.HttpRequest
+import org.jboss.netty.handler.codec.http.{HttpResponseStatus, HttpRequest}
 import org.hyperscala.web.Scope
 import org.hyperscala.web.session.Session
 
@@ -15,11 +16,18 @@ case class WebpageResource(matcher: HttpRequest => Boolean,
     case request: HttpRequest if (matcher(request)) => {
       val context = WebContext.create(website, request)
       WebContext(context) {
-        // Load the webpage
-        val webpage = loader(request)
-        context.webpage = webpage
-
-        Some(webpage)
+        try {
+          // Load the webpage
+          val webpage = loader(request)
+          context.webpage = webpage
+          Some(webpage)
+        } catch {
+          // TODO: add security exception handling here
+          case t: Throwable => {
+            Webpage().errorThrown(t)
+            Some(RequestHandler.responder(HttpResponseStatus.INTERNAL_SERVER_ERROR))
+          }
+        }
       }
     }
     case _ => None

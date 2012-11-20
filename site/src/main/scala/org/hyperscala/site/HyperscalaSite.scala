@@ -5,7 +5,7 @@ import org.hyperscala.web.session.MapSession
 import org.hyperscala.examples.helloworld.HelloWorldPage
 import org.hyperscala.web.Scope
 import org.hyperscala.examples.basic.{RealtimeWebpageExample, FormExample}
-import org.hyperscala.examples.ui.{VisualizeExample, AutoCompleteExample, VisualExample}
+import org.hyperscala.examples.ui.{VisualizeAdvancedExample, VisualizeExample, AutoCompleteExample, VisualExample}
 import org.hyperscala.examples.todomvc.TodoMVC
 
 /**
@@ -66,6 +66,9 @@ object HyperscalaSite extends Website[MapSession] {
   }
   val visualize = WebpageResource.regex("/example/visualize.html", scope = Scope.Session) {
     new VisualizeExample
+  }
+  val visualizeAdvanced = WebpageResource.regex("/example/visualize_advanced.html", scope = Scope.Session) {
+    new VisualizeAdvancedExample
   }
   val autoComplete = WebpageResource.regex("/example/autocomplete.html", scope = Scope.Session) {
     new AutoCompleteExample

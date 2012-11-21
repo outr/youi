@@ -42,12 +42,15 @@ class VisualExample extends RealtimeWebpage {
     case evt: PropertyChangeEvent => println("Date Changed: %s - %s".format(evt.oldValue, evt.newValue))
   }
 
-  // TODO: add Int
+  val enumsVisual = Visual[List[Country]]().label("Countries Visual").editing.itemizedType[Country].build()
+  enumsVisual.property.listeners.synchronous {
+    case evt: PropertyChangeEvent => println("Countries Changed: %s -> %s".format(evt.oldValue, evt.newValue))
+  }
+
   // TODO: add List of Strings
-  // TODO: add List of Enums
   // TODO: add List of case classes
 
-  body.contents.addAll(stringVisual, bindingVisual, enumVisual, booleanVisual, dateVisual)
+  body.contents.addAll(stringVisual, bindingVisual, enumVisual, booleanVisual, dateVisual, enumsVisual)
 
   body.contents += new tag.Div {
     style.clear := Clear.Both

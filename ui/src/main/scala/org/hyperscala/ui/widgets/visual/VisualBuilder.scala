@@ -47,7 +47,7 @@ case class VisualBuilder[T](_name: String = null,
   def default = _default
   def default(d: T) = copy(_default = Some(d))
   def itemizedType = _itemizedType
-  def itemizedType(v: Class[_]) = copy(_itemizedType = v)
+  def itemizedType[V](implicit itemManifest: Manifest[V]) = copy(_itemizedType = itemManifest.erasure)
   def mask = masked(m = true)
   def masked = _masked
   def masked(m: Boolean) = copy(_masked = m)

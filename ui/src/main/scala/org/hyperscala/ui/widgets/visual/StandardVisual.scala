@@ -67,7 +67,7 @@ class StandardVisual[T](builder: VisualBuilder[T]) extends Visual[T]
   }
   val editor = builder.visualType match {
     case Some(visualType) => visualType.create(property, builder)
-    case None => VisualType(property, builder).getOrElse(throw new NullPointerException("No visual type for %s".format(builder)))
+    case None => VisualType(property, builder).getOrElse(throw new NullPointerException("No visual type for %s - %s".format(builder, builder.clazz)))
   }
   if (editor.id() == null) {
     editor.id := Unique()

@@ -20,7 +20,7 @@ class Text extends Textual with HTMLChild with BodyChild with HeadChild with HTM
 
   def xmlLabel = null
 
-  override protected def writeTag(writer: HTMLWriter) {
+  override protected def writeTag(writer: HTMLWriter) = if (content() != null) {
     writer.write(content())
   }
 

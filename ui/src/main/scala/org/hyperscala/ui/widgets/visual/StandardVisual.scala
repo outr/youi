@@ -82,9 +82,20 @@ class StandardVisual[T](builder: VisualBuilder[T]) extends Visual[T]
 
   // Optionally binds to a higher-level property using CaseClassBinding
   val binding = if (builder.bindProperty != null && builder.bindHierarchy != null) {    // Bind to another property
-    val b = CaseClassBinding(builder.bindProperty, builder.bindHierarchy, property.asInstanceOf[StandardProperty[Any]])
-    b.updateValueProperty()
+    val b = CaseClassBinding(builder.bindProperty, builder.bindHierarchy, property.asInstanceOf[StandardProperty[Any]], valueUpdatesProperty = builder.bindValueUpdatesProperty, propertyUpdatesValue = builder.bindPropertyUpdatesValue)
+    if (builder.bindProperty() != null) {
+      b.updateValueProperty()
+    }
     Some(b)
+  } else if (builder.bindProperty != null) {    // Directly bind to another property
+    // TODO: we should make some mechanism of disconnecting
+    if (builder.bindPropertyUpdatesValue) {
+      property bind builder.bindProperty
+    }
+    if (builder.bindValueUpdatesProperty) {
+      builder.bindProperty bind property
+    }
+    None
   } else {
     None
   }
@@ -107,6 +118,7 @@ class StandardVisual[T](builder: VisualBuilder[T]) extends Visual[T]
       case None => // Leave it alone
     }
     property.fireChanged()
+    updateEditing()
   }
 
   def updateEditing() = {

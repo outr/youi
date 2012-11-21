@@ -14,7 +14,13 @@ trait VisualType[T] {
 }
 
 object VisualType {
-  private var _list = List[VisualType[_]](StringInputVisualType, StringTextAreaVisualType, EnumEntryVisualType, BooleanVisualType)
+  private var _list = List[VisualType[_]](StringInputVisualType,
+                                          StringTextAreaVisualType,
+                                          EnumEntryVisualType,
+                                          BooleanVisualType,
+                                          IntInputVisualType,
+                                          ListSelectVisualType,
+                                          CaseClassVisualType)
 
   def +=(vt: VisualType[_]) = synchronized {
     _list = vt :: _list

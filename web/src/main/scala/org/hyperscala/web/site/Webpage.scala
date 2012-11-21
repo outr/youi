@@ -15,6 +15,7 @@ import org.powerscala.hierarchy.{Parent, Element, ContainerView}
 import org.hyperscala.web.session.MapSession
 import org.hyperscala.css.StyleSheet
 import org.powerscala.property.PropertyParent
+import org.powerscala.reflect.CaseValue
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -23,6 +24,8 @@ trait Webpage extends Page with RequestHandler with Parent with PropertyParent {
   Page.instance.set(this)
 
   val name = () => getClass.getSimpleName
+
+  def defaultTitle = CaseValue.generateLabel(getClass.getSimpleName.replaceAll("\\$", ""))
 
   protected[site] var webContext: WebContext = _
 
@@ -38,7 +41,7 @@ trait Webpage extends Page with RequestHandler with Parent with PropertyParent {
   val doctype = "<!DOCTYPE html>\r\n"
   val html = new tag.HTML
   val head = new tag.Head {
-    val title = new tag.Title
+    val title = new tag.Title(content = defaultTitle)
     val generator = new tag.Meta(name = "generator", content = "Hyperscala")
     val charset = new tag.Meta(charset = "UTF-8")
 

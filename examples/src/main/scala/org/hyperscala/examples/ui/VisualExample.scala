@@ -17,7 +17,7 @@ import org.hyperscala.ui.widgets.visual.`type`.DateInputVisualType
 class VisualExample extends RealtimeWebpage {
   body.style.font.family := "sans-serif"
 
-  val property = Property[Test]("property", new Test(name = "John Doe"))
+  val property = Property[TestPerson]("property", new TestPerson(name = "John Doe", age = 21))
   property.listeners.synchronous {
     case evt: PropertyChangeEvent => println("New Value: %s".format(evt.newValue))
   }
@@ -42,15 +42,25 @@ class VisualExample extends RealtimeWebpage {
     case evt: PropertyChangeEvent => println("Date Changed: %s - %s".format(evt.oldValue, evt.newValue))
   }
 
-  val enumsVisual = Visual[List[Country]]().label("Countries Visual").editing.itemizedType[Country].build()
+  val enumsVisual = Visual[List[Country]]().label("Countries Visual").editing.itemizedType[Country]().build()
+  enumsVisual.property := List(Country.AI, Country.ZA)
   enumsVisual.property.listeners.synchronous {
     case evt: PropertyChangeEvent => println("Countries Changed: %s -> %s".format(evt.oldValue, evt.newValue))
   }
 
-  // TODO: add List of Strings
-  // TODO: add List of case classes
+  val stringsVisual = Visual[List[String]]().label("Strings Visual").editing.itemizedType[String] {
+    case vb => vb.validation(emptyValidator)
+  }.build()
+  stringsVisual.property.listeners.synchronous {
+    case evt: PropertyChangeEvent => println("String Changed: %s -> %s".format(evt.oldValue, evt.newValue))
+  }
 
-  body.contents.addAll(stringVisual, bindingVisual, enumVisual, booleanVisual, dateVisual, enumsVisual)
+  val caseClassesVisual = Visual[List[TestPerson]]().label("Case Classes Visual").editing.itemizedType[TestPerson]().build()
+  caseClassesVisual.property.listeners.synchronous {
+    case evt: PropertyChangeEvent => println("Case Classes Changed: %s -> %s".format(evt.oldValue, evt.newValue))
+  }
+
+  body.contents.addAll(stringVisual, bindingVisual, enumVisual, booleanVisual, dateVisual, enumsVisual, stringsVisual, caseClassesVisual)
 
   body.contents += new tag.Div {
     style.clear := Clear.Both
@@ -84,4 +94,4 @@ class VisualExample extends RealtimeWebpage {
   }
 }
 
-case class Test(name: String)
+case class TestPerson(name: String, age: Int)

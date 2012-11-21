@@ -15,7 +15,7 @@ case class VisualBuilder[T](_name: String = null,
                             _selection: List[T] = Nil,
                             _nullAllowed: Boolean = true,
                             _default: Option[T] = None,
-                            _itemizedType: Class[_] = null,
+                            _itemizedType: VisualBuilder[_] = null,
                             _masked: Boolean = false,
                             _multiLine: Boolean = false,
                             _validations: List[T => Either[Option[T], String]] = Nil,
@@ -47,7 +47,11 @@ case class VisualBuilder[T](_name: String = null,
   def default = _default
   def default(d: T) = copy(_default = Some(d))
   def itemizedType = _itemizedType
-  def itemizedType[V](implicit itemManifest: Manifest[V]) = copy(_itemizedType = itemManifest.erasure)
+  def itemizedType[V](f: VisualBuilder[V] => VisualBuilder[V] = (vb: VisualBuilder[V]) => vb)
+                     (implicit itemManifest: Manifest[V]): VisualBuilder[T] = {
+    val original = Visual[V]()(itemManifest)
+    copy(_itemizedType = f(original))
+  }
   def mask = masked(m = true)
   def masked = _masked
   def masked(m: Boolean) = copy(_masked = m)

@@ -5,7 +5,7 @@ package org.hyperscala.ui.widgets.visual
  */
 trait VisualDetails[T] {
   def clazz: Class[_]
-  def itemizedType: Class[_]
+  def itemizedType: VisualBuilder[_]
   def nullAllowed: Boolean
   def default: Option[T]
   def selection: List[T]
@@ -14,7 +14,7 @@ trait VisualDetails[T] {
 }
 
 case class VisualTypeDetails[T](clazz: Class[_],
-                                itemizedType: Class[_] = null,
+                                itemizedType: VisualBuilder[_] = null,
                                 nullAllowed: Boolean = true,
                                 default: Option[T] = None,
                                 selection: List[T] = Nil,

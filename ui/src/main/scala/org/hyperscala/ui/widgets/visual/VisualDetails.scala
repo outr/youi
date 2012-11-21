@@ -10,6 +10,7 @@ trait VisualDetails[T] {
   def default: Option[T]
   def selection: List[T]
   def masked: Boolean
+  def multiLine: Boolean
 }
 
 case class VisualTypeDetails[T](clazz: Class[_],
@@ -17,4 +18,5 @@ case class VisualTypeDetails[T](clazz: Class[_],
                                 nullAllowed: Boolean = true,
                                 default: Option[T] = None,
                                 selection: List[T] = Nil,
-                                masked: Boolean = false) extends VisualDetails[T]
+                                masked: Boolean = false,
+                                multiLine: Boolean = false) extends VisualDetails[T]

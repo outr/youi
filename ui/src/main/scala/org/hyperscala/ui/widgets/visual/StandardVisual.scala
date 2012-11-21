@@ -12,7 +12,7 @@ import tag.Text
  * @author Matt Hicks <mhicks@powerscala.org>
  */
 class StandardVisual[T](builder: VisualBuilder[T]) extends Visual[T]
-                                                   with EditableVisual
+                                                   with EditableVisual[T]
                                                    with LabeledVisual
                                                    with ValidatableVisual[T] {
   def manifest = builder.manifest
@@ -121,6 +121,11 @@ class StandardVisual[T](builder: VisualBuilder[T]) extends Visual[T]
 
   def updateVisual() = {
     readContainer.contents.replaceWith(visualize())
+  }
+
+  override def toString(t: T) = editor match {
+    case stringify: Stringify[_] => stringify.asInstanceOf[Stringify[T]].toString(t)
+    case _ => super.toString(t)
   }
 
   def dispose() = {     // TODO: make use of this method

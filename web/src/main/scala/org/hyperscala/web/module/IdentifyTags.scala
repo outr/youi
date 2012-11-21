@@ -12,7 +12,7 @@ object IdentifyTags extends Module {
 
   def version = "1.0"
 
-  protected[web] def load(page: Webpage) = {
+  def load(page: Webpage) = {
     page.view.foreach {
       case tag => if (tag.id() == null) {
         tag.id := Unique()

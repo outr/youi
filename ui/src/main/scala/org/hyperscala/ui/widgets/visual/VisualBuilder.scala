@@ -17,6 +17,7 @@ case class VisualBuilder[T](_name: String = null,
                             _default: Option[T] = None,
                             _itemizedType: Class[_] = null,
                             _masked: Boolean = false,
+                            _multiLine: Boolean = false,
                             _validations: List[T => Either[Option[T], String]] = Nil,
                             _visualType: Option[VisualType[T]] = None,
                             _bindProperty: StandardProperty[_] = null,
@@ -50,6 +51,8 @@ case class VisualBuilder[T](_name: String = null,
   def mask = masked(m = true)
   def masked = _masked
   def masked(m: Boolean) = copy(_masked = m)
+  def multiLine = _multiLine
+  def multiLine(b: Boolean) = copy(_multiLine = b)
   def validation(v: T => Either[Option[T], String]) = copy(_validations = (v :: _validations.reverse).reverse)
   def validations = _validations
   def validations(v: List[T => Either[Option[T], String]]) = copy(_validations = v)

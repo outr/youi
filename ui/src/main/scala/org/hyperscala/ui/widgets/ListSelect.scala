@@ -2,11 +2,12 @@ package org.hyperscala.ui.widgets
 
 import org.hyperscala.html._
 import org.powerscala.property.{ListProperty, StandardProperty}
+import visual.Stringify
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class ListSelect[T](values: Seq[T], nullAllowed: Boolean = false)(implicit manifest: Manifest[T]) extends tag.Div {
+class ListSelect[T](values: Seq[T], nullAllowed: Boolean = false)(implicit manifest: Manifest[T]) extends tag.Div with Stringify[T] {
   val select = new tag.Select
 
   override val event = select.event

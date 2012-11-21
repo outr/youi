@@ -8,5 +8,5 @@ import org.hyperscala.web.site.Webpage
 trait Module {
   def name: String
   def version: String
-  protected[web] def load(page: Webpage): Unit
+  def load(page: Webpage): Unit
 }

@@ -16,7 +16,7 @@ object Realtime extends Module {
 
   def version = "1.0"
 
-  protected[web] def load(page: Webpage) = {
+  def load(page: Webpage) = {
     // Module requirements
     page.require(IdentifyTags)  // Make sure that every element has an id
     page.require(jQuery182)   // jQuery is necessary

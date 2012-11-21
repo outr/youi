@@ -9,6 +9,7 @@ import org.powerscala.property.event.PropertyChangeEvent
 import org.hyperscala.web.site.realtime.RealtimeWebpage
 import org.hyperscala.event.{ClickEvent, JavaScriptEvent}
 import org.powerscala.Country
+import org.hyperscala.ui.widgets.visual.`type`.DateInputVisualType
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -36,12 +37,17 @@ class VisualExample extends RealtimeWebpage {
     case evt: PropertyChangeEvent => println("Boolean Changed: %s -> %s".format(evt.oldValue, evt.newValue))
   }
 
+  val dateVisual = Visual[Long]().visualType(new DateInputVisualType()).label("Date Visual").editing.build()
+  dateVisual.property.listeners.synchronous {
+    case evt: PropertyChangeEvent => println("Date Changed: %s - %s".format(evt.oldValue, evt.newValue))
+  }
+
   // TODO: add Int
   // TODO: add List of Strings
   // TODO: add List of Enums
   // TODO: add List of case classes
 
-  body.contents.addAll(stringVisual, bindingVisual, enumVisual, booleanVisual)
+  body.contents.addAll(stringVisual, bindingVisual, enumVisual, booleanVisual, dateVisual)
 
   body.contents += new tag.Div {
     style.clear := Clear.Both
@@ -51,9 +57,7 @@ class VisualExample extends RealtimeWebpage {
 
       listeners.synchronous {
         case evt: ClickEvent => {
-          stringVisual.editing := !stringVisual.editing()
-          bindingVisual.editing := !bindingVisual.editing()
-          enumVisual.editing := !enumVisual.editing()
+          Visual.toggleEditing(body)
         }
       }
     }

@@ -7,13 +7,8 @@ import org.hyperscala.html._
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-trait EditableVisual {
-  this: Visual[_] =>
-
+trait EditableVisual[T] extends Visual[T] {
   val editing = new StandardProperty[Boolean]("editing")
 
-  def visualize(): BodyChild = property() match {
-    case null => ""
-    case v => v.toString
-  }
+  def visualize(): BodyChild = toString(property())
 }

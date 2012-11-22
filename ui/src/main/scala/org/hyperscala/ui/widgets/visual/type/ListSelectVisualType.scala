@@ -12,7 +12,7 @@ object ListSelectVisualType extends VisualType[List[_]] {
 
   def create(property: StandardProperty[List[_]], details: VisualDetails[List[_]]) = {
     if (details.itemizedType == null) {
-      throw new NullPointerException("%s with List as class type must define itemizedType for creation".format(details))
+      throw new NullPointerException("%s with List as class type must define itemizedType for creation".format(details.name))
     }
 
     new ListEditor[Any] {

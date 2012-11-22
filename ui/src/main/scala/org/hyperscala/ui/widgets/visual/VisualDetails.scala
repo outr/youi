@@ -4,6 +4,7 @@ package org.hyperscala.ui.widgets.visual
  * @author Matt Hicks <mhicks@powerscala.org>
  */
 trait VisualDetails[T] {
+  def name: String
   def clazz: Class[_]
   def itemizedType: VisualBuilder[_]
   def nullAllowed: Boolean
@@ -13,7 +14,8 @@ trait VisualDetails[T] {
   def multiLine: Boolean
 }
 
-case class VisualTypeDetails[T](clazz: Class[_],
+case class VisualTypeDetails[T](name: String,
+                                clazz: Class[_],
                                 itemizedType: VisualBuilder[_] = null,
                                 nullAllowed: Boolean = true,
                                 default: Option[T] = None,

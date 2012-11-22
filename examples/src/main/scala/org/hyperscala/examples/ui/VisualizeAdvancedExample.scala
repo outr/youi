@@ -28,7 +28,13 @@ class VisualizeAdvancedExample extends Webpage {
                                                                      List(CompanyEmail("John Doe", "john@doeco.com"),
                                                                           CompanyEmail("Jane Doe", "jane@doeco.com")))))
 
-  val visualize = Visualize().clazz[Company](bindProperty = instance)
+  val visualize = Visualize().clazz[Company](bindProperty = instance).field[List[String]]("Company.aliases") {
+    case vb => vb.itemizedType[String]()
+  }.field[List[Language]]("Company.languages") {
+    case vb => vb.itemizedType[Language]()
+  }.field[List[CompanyEmail]]("Company.address.emails") {
+    case vb => vb.itemizedType[CompanyEmail]()
+  }
   body.contents += visualize.build()
 
   instance.listeners.synchronous {

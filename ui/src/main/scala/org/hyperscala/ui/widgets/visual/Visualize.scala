@@ -33,7 +33,7 @@ case class Visualize(_labeled: Boolean = true,
         "%s.%s".format(basePath, cv.name)
       }
       if (cv.valueType.isCase) {
-        instance = instance.clazz[Any](null, bindProperty, hierarchy, valueUpdatesProperty, propertyUpdatesValue)
+        instance = instance.clazz[Any](name, bindProperty, hierarchy, valueUpdatesProperty, propertyUpdatesValue)(Manifest.classType[Any](cv.valueType.javaClass))
       } else {
         instance = instance.caseValue(name, cv, bindProperty, hierarchy, valueUpdatesProperty, propertyUpdatesValue)
       }

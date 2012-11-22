@@ -72,7 +72,7 @@ object HyperScalaBuild extends Build {
 
   lazy val root = Project("root", file("."), settings = createSettings("hyperscala-root"))
     .settings(publishArtifact in Compile := false, publishArtifact in Test := false)
-    .aggregate(core, html, javascript, web, bean, ui, generator, examples, site)
+    .aggregate(core, html, javascript, web, ui, generator, examples, site)
   lazy val core = Project("core", file("core"), settings = createSettings("hyperscala-core"))
   lazy val html = Project("html", file("html"), settings = createSettings("hyperscala-html"))
     .dependsOn(core)
@@ -84,16 +84,14 @@ object HyperScalaBuild extends Build {
                                           commonsFileUpload,
                                           commonsIO,
                                           webcommunicator))
-  lazy val bean = Project("bean", file("bean"), settings = createSettings("hyperscala-bean"))
-    .dependsOn(web)
   lazy val ui = Project("ui", file("ui"), settings = createSettings("hyperscala-ui"))
-    .dependsOn(bean)
+    .dependsOn(web)
   lazy val generator = Project("generator", file("generator"), settings = createSettings("hyperscala-generator"))
     .settings(publishArtifact := false)
 
   // Examples and Site
   lazy val examples = Project("examples", file("examples"), settings = createSettings("hyperscala-examples"))
-    .dependsOn(web, bean, ui)
+    .dependsOn(web, ui)
   lazy val site = Project("site", file("site"), settings = createSettings("hyperscala-site"))
     .dependsOn(examples)
     .settings(libraryDependencies ++= Seq(servletApi))

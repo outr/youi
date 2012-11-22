@@ -7,12 +7,13 @@ import org.hyperscala.html.tag.Script
 import org.hyperscala.html.event.EventProperty
 import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.Unique
+import site.Webpage
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
 trait HeadScript {
-  this: HTMLPage =>
+  this: Webpage =>
 
   intercept.renderAttribute {
     case ep: EventProperty => Routing.Stop    // Don't render JavaScript in HTML directly
@@ -23,7 +24,7 @@ trait HeadScript {
   }
 }
 
-class HeadScriptTag(page: HTMLPage, tag: HTMLTag) {
+class HeadScriptTag(page: Webpage, tag: HTMLTag) {
   private var script: Script = null
 
   // TODO: support id changing

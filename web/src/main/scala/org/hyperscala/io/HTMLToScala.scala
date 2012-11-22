@@ -6,12 +6,12 @@ import org.jdom2.input.SAXBuilder
 import java.io.StringReader
 import io.Source
 import org.htmlcleaner.{PrettyXmlSerializer, HtmlCleaner}
-import org.hyperscala.web.HTMLPage
 import org.hyperscala.{PropertyAttribute, Container}
 import org.hyperscala.persistence.StyleSheetPersistence
 import org.hyperscala.css.{StyleSheetAttribute, StyleSheet}
 import org.hyperscala.javascript.JavaScriptString
 import tag.{Link, Script, Text, Title}
+import org.hyperscala.web.site.Webpage
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -21,13 +21,13 @@ object HTMLToScala {
 
   val builder = new SAXBuilder()
 
-  def toScala(page: HTMLPage, packageName: String, className: String) = {
+  def toScala(page: Webpage, packageName: String, className: String) = {
     val b = new ScalaBuffer(packageName, className, page)
     b.code
   }
 
   def toPage(source: Source) = {
-    val page = new HTMLPage()
+    val page = new Webpage()
     page.html.read(toXML(source))
     page
   }
@@ -49,7 +49,7 @@ object HTMLToScala {
   }
 }
 
-private class ScalaBuffer(packageName: String, className: String, page: HTMLPage) {
+private class ScalaBuffer(packageName: String, className: String, page: Webpage) {
   var depth = 1
   val b = new StringBuilder
 

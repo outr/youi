@@ -1,15 +1,15 @@
 package org.hyperscala.web.service
 
-import org.hyperscala.web.resource.WebResource
-import org.hyperscala.html.attributes.Method
-import javax.servlet.http.{HttpServletResponse, HttpServletRequest}
 import java.util.concurrent.atomic.AtomicBoolean
 import org.powerscala.reflect._
-import org.hyperscala.web.Website
 
 import org.powerscala.json._
-import io.Source
 import java.lang.reflect.Modifier
+import org.hyperscala.web.site.Website
+import com.outr.webcommunicator.netty._
+import handler.RequestHandler
+import org.jboss.netty.channel.{MessageEvent, ChannelHandlerContext}
+import org.jboss.netty.handler.codec.http.HttpRequest
 
 /**
  * Service allows methods to be created in implementations that act as endpoints.
@@ -20,7 +20,7 @@ import java.lang.reflect.Modifier
  *
  * @author Matt Hicks <matt@outr.com>
  */
-trait Service extends WebResource {
+trait Service extends WebResource with RequestHandler {
   private val initialized = new AtomicBoolean(false)
   private var endpoints = Map.empty[String, EnhancedMethod]
 
@@ -69,24 +69,38 @@ trait Service extends WebResource {
       init()
     }
     endpoints.keys.foreach {
-      case key => website.register("%s/%s".format(uri, key), this)
+      case key => website.register(this)//website.register("%s/%s".format(uri, key), this)
     }
   }
 
-  def apply(method: Method, request: HttpServletRequest, response: HttpServletResponse) = {
+  def request(webapp: NettyWebapp, context: ChannelHandlerContext, event: MessageEvent) = event.getMessage match {
+    case request: HttpRequest if (hasEndpoint(request.path)) => Some(this)
+    case _ => None
+  }
+
+
+  def apply(webapp: NettyWebapp, context: ChannelHandlerContext, event: MessageEvent) = {
     if (initialized.compareAndSet(false, true)) {
       init()
     }
-    val data = Source.fromInputStream(request.getInputStream).mkString
-    val result = callEndpoint(request.getRequestURI, data)
-    response.setContentType("application/json")
-    val writer = response.getWriter
-    try {
-      writer.write(result)
-    } finally {
-      writer.flush()
-      writer.close()
-    }
+    throw new UnsupportedOperationException("Service has not yet been upgrade to work with the latest version of Hyperscala yet!")
+//    val data = Source.fromInputStream(request.getInputStream).mkString
+//    val result = callEndpoint(request.getRequestURI, data)
+//    response.setContentType("application/json")
+//    val writer = response.getWriter
+//    try {
+//      writer.write(result)
+//    } finally {
+//      writer.flush()
+//      writer.close()
+//    }
+  }
+
+  def hasEndpoint(uri: String) = if (uri.startsWith(this.uri + "/")) {
+    val endpoint = uri.substring(this.uri.length + 1)
+    endpoints.contains(endpoint)
+  } else {
+    false
   }
 }
 

@@ -2,17 +2,15 @@ package org.hyperscala.examples.numberguess
 
 import org.hyperscala.html._
 import attributes.{Target, InputType}
-import org.hyperscala.web.HTMLPage
 
 import org.powerscala.property._
 import tag._
+import org.hyperscala.web.site.Webpage
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-object NumberGuess extends HTMLPage {
-  title := "NumberGuess"
-
+object NumberGuess extends Webpage {
   /*head += JavaScript {
     val guesses = V(0, "guesses")
     val random = V(Math.floor((Math.random() * 100.0) + 1.0), "random")

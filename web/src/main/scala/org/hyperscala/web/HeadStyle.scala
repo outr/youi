@@ -7,12 +7,13 @@ import org.hyperscala.html.tag.Style
 import org.powerscala.property.event.PropertyChangeEvent
 import org.hyperscala.Unique
 import java.util
+import site.Webpage
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
 trait HeadStyle {
-  this: HTMLPage =>
+  this: Webpage =>
 
   private val map = new util.WeakHashMap[HTMLTag, HeadStyleTag]()
 
@@ -30,7 +31,7 @@ trait HeadStyle {
   }
 }
 
-class HeadStyleTag(page: HTMLPage, tag: HTMLTag) {
+class HeadStyleTag(page: Webpage, tag: HTMLTag) {
   private var style: Style = null
 
   // TODO: support id changing

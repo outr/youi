@@ -20,7 +20,7 @@ import org.powerscala.reflect.CaseValue
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-trait Webpage extends Page with RequestHandler with Parent with PropertyParent {
+class Webpage extends Page with RequestHandler with Parent with PropertyParent {
   Page.instance.set(this)
 
   val name = () => getClass.getSimpleName

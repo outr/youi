@@ -3,8 +3,8 @@ package org.hyperscala.web.session
 import org.powerscala.concurrent.Time._
 import org.powerscala.{Logging, Updatable}
 import org.powerscala.concurrent.{WorkQueue, Time}
-import org.hyperscala.web.Website
 import org.powerscala.event.{Listenable, Event}
+import org.hyperscala.web.site.Website
 
 
 /**

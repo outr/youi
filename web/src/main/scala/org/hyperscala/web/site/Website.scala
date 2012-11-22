@@ -52,6 +52,16 @@ trait Website[S <: Session] extends NettyCommunicatorManager[WebpageConnection] 
     s
   }
 
+  protected[web] final def destroySession(session: Session) = {
+    session.dispose()
+    synchronized {
+      _sessions.find(t => t._2 == session) match {
+        case Some((key, value)) => _sessions -= key
+        case None => warn("Unable to find session key to remove session!")
+      }
+    }
+  }
+
   private var _sessions = Map.empty[String, S]
   def sessions = _sessions
 

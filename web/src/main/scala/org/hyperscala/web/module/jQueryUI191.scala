@@ -2,6 +2,7 @@ package org.hyperscala.web.module
 
 import org.hyperscala.web.site.Webpage
 import org.hyperscala.html._
+import org.powerscala.Version
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -9,7 +10,7 @@ import org.hyperscala.html._
 object jQueryUI191 extends Module {
   def name = "jquery-ui"
 
-  def version = "1.9.1"
+  def version = Version(1, 9, 1)
 
   def load(page: Webpage) = {
     page.require(jQuery182)

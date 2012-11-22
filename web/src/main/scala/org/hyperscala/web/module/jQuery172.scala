@@ -2,6 +2,7 @@ package org.hyperscala.web.module
 
 import org.hyperscala.html._
 import org.hyperscala.web.site.Webpage
+import org.powerscala.Version
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -9,7 +10,7 @@ import org.hyperscala.web.site.Webpage
 object jQuery172 extends Module {
   def name = "jquery"
 
-  def version = "1.7.2"
+  def version = Version(1, 7, 2)
 
   def load(page: Webpage) = {
     page.website.register("/jquery-1.7.2.js", "jquery-1.7.2.js")

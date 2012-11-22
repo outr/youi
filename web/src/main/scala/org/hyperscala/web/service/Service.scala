@@ -10,6 +10,7 @@ import com.outr.webcommunicator.netty._
 import handler.RequestHandler
 import org.jboss.netty.channel.{MessageEvent, ChannelHandlerContext}
 import org.jboss.netty.handler.codec.http.HttpRequest
+import org.jboss.netty.util.CharsetUtil
 
 /**
  * Service allows methods to be created in implementations that act as endpoints.
@@ -83,17 +84,10 @@ trait Service extends WebResource with RequestHandler {
     if (initialized.compareAndSet(false, true)) {
       init()
     }
-    throw new UnsupportedOperationException("Service has not yet been upgrade to work with the latest version of Hyperscala yet!")
-//    val data = Source.fromInputStream(request.getInputStream).mkString
-//    val result = callEndpoint(request.getRequestURI, data)
-//    response.setContentType("application/json")
-//    val writer = response.getWriter
-//    try {
-//      writer.write(result)
-//    } finally {
-//      writer.flush()
-//      writer.close()
-//    }
+    val request = event.getMessage.asInstanceOf[HttpRequest]
+    val data = request.getContent.toString(CharsetUtil.UTF_8)
+    val result = callEndpoint(request.path, data)
+    streamString(result, context, request, "application/json", enableCaching = false)
   }
 
   def hasEndpoint(uri: String) = if (uri.startsWith(this.uri + "/")) {

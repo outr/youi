@@ -7,6 +7,7 @@ import org.hyperscala.html._
 import org.hyperscala.javascript.JavaScriptContent
 import java.util.UUID
 import annotation.tailrec
+import org.powerscala.Version
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -14,7 +15,7 @@ import annotation.tailrec
 object Realtime extends Module {
   def name = "realtime"
 
-  def version = "1.0"
+  def version = Version(1)
 
   def load(page: Webpage) = {
     // Module requirements

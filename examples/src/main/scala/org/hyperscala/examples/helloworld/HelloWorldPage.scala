@@ -7,8 +7,6 @@ import org.hyperscala.web.site.Webpage
  * @author Matt Hicks <mhicks@powerscala.org>
  */
 class HelloWorldPage extends Webpage {
-  println("new instance created!")
-
   title := "Hello World Page"
 
   body.contents += "Hello World!"

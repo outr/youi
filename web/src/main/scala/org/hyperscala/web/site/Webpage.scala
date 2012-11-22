@@ -10,7 +10,7 @@ import com.google.common.net.HttpHeaders
 import org.hyperscala.html._
 import org.hyperscala.io.HTMLWriter
 import org.jboss.netty.buffer.{ChannelBuffers, ChannelBuffer}
-import org.hyperscala.web.module.Module
+import org.hyperscala.web.module.{Interface, Module}
 import org.powerscala.hierarchy.{Parent, Element, ContainerView}
 import org.hyperscala.web.session.MapSession
 import org.hyperscala.css.StyleSheet
@@ -58,12 +58,70 @@ class Webpage extends Page with RequestHandler with Parent with PropertyParent {
 
   val view = new ContainerView[HTMLTag](html)
 
-  private var modules = Set.empty[Module]
-  def require(module: Module) = synchronized {
-    if (!modules.contains(module)) {
-      modules += module
-      module.load(this)
+  private var interfaces = Map.empty[String, Module]
+  private var modules = Map.empty[String, Module]
+  private var initializedModules = Set.empty[String]
+  private var pageRendered = false
+  intercept.beforeRender {
+    case html: tag.HTML => synchronized {
+      if (modules.size != initializedModules.size) {
+        modules.values.foreach {
+          case module => {
+            if (!initializedModules.contains(module.name)) {    // Module not initialized yet
+              println("Loading module: %s %s".format(module.name, module.version))
+              module.load(this)
+              module.interfaces.foreach {
+                case interface => {
+                  println("Removing interface: %s".format(interface.name))
+                  interfaces -= interface.name
+                }
+              }
+              initializedModules += module.name
+            }
+          }
+        }
+      }
+      pageRendered = true
+      if (interfaces.size > 0) {
+        interfaces.foreach {          // Check for defaults
+          case (interface, default) => if (default != null) {
+            require(default)
+            interfaces -= interface
+          }
+        }
+        if (interfaces.size > 0) {    // Still unimplemented interfaces
+          throw new RuntimeException("Unimplemented interface(s) found: %s".format(interfaces.keys.mkString(", ")))
+        }
+      }
     }
+  }
+  def require(module: Module) = synchronized {
+    modules.get(module.name) match {
+      case Some(current) => current.version.compare(module.version) match {
+        case -1 => // Nothing changes, the current is the newer version
+        case 0 => // Nothing changes, they are both the same
+        case 1 => {
+          if (initializedModules.contains(module.name)) {
+            throw new RuntimeException("Module %s already initialized on page with earlier version (%s)".format(module.name, module.version))
+          }
+          modules += module.name -> module
+          if (pageRendered) {   // Page has already rendered, so load immediately
+            module.load(this)
+            initializedModules += module.name
+          }
+        }
+      }
+      case None => {
+        modules += module.name -> module
+        if (pageRendered) {   // Page has already rendered, so load immediately
+          module.load(this)
+          initializedModules += module.name
+        }
+      }
+    }
+  }
+  def require(interface: Interface, default: Module = null) = synchronized {
+    interfaces += interface.name -> default
   }
 
   /**

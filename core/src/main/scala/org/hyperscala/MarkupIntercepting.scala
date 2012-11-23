@@ -34,4 +34,8 @@ class MarkupIntercepting(name: String, bus: Bus, parent: MarkupIntercepting) {
    * Called upon rendering of a PropertyAttribute. Returning Routing.Stop will cause the property not to be rendered.
    */
   val renderAttribute: Interceptable[PropertyAttribute[_]] = Interceptable[PropertyAttribute[_]]("%s.renderAttribute".format(name), if (parent != null) parent.renderAttribute else null)
+  /**
+   * Called upon update of Page instance.
+   */
+  val update: Interceptable[Page] = Interceptable[Page]("%s.update".format(name), if (parent != null) parent.update else null)
 }

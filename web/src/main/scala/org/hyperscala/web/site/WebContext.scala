@@ -8,6 +8,7 @@ import com.outr.webcommunicator.URL
 import com.outr.webcommunicator.netty._
 import org.hyperscala.{Page, Unique}
 import org.powerscala.bus.Bus
+import org.powerscala.Logging
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -33,7 +34,7 @@ class WebContext {
   var session: Session = _
 }
 
-object WebContext {
+object WebContext extends Logging {
   val current = new ThreadLocal[WebContext]
 
   protected[web] def apply() = current.get() match {
@@ -43,13 +44,20 @@ object WebContext {
 
   def inContext = current.get() != null
 
-  protected[site] def apply[T](context: WebContext)(action: => T): T = {
+  protected[web] def apply[T](context: WebContext, checkIn: Boolean)(action: => T): T = {
     val previous = current.get()
     current.set(context)
     val previousPage = Page.instance.get()    // Work-around for modularity
     Page.instance.set(context.webpage)
     if (context.webpage != null) {
       Bus.current = context.webpage.bus
+    }
+    if (checkIn) {
+      if (context.webpage != null) {
+        context.webpage.checkIn()     // Webpage checks-in session
+      } else if (context.session != null) {
+        context.session.checkIn()
+      }
     }
     try {
       action

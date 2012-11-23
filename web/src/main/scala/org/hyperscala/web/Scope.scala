@@ -20,4 +20,9 @@ object Scope extends Enumerated[Scope] {
    * A new instance is created for every request. No caching.
    */
   val Request = new Scope
+  /**
+   * Works like Request in that a new instance is created for every request. However, the page is cached temporarily to
+   * allow real-time communication with it.
+   */
+  val Page = new Scope
 }

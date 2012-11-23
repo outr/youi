@@ -16,20 +16,21 @@ import org.hyperscala.web.session.MapSession
 import org.hyperscala.css.StyleSheet
 import org.powerscala.property.PropertyParent
 import org.powerscala.reflect.CaseValue
+import org.powerscala.concurrent.Time._
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class Webpage extends Page with RequestHandler with Parent with PropertyParent {
+class Webpage extends Page with RequestHandler with Parent with PropertyParent with Temporal {
   Page.instance.set(this)
 
   val name = () => getClass.getSimpleName
 
   def defaultTitle = CaseValue.generateLabel(getClass.getSimpleName.replaceAll("\\$", ""))
 
-  protected[site] var webContext: WebContext = _
+  protected[web] var webContext: WebContext = _
 
-  val store = new MapSession {
+  val store = new MapSession(Website()) {
     override def timeout = Double.MaxValue
   }
 
@@ -37,6 +38,13 @@ class Webpage extends Page with RequestHandler with Parent with PropertyParent {
   def headers = WebContext().headers
   def url = WebContext().url
   def cookies = WebContext().cookies
+
+  /**
+   * The amount of time in seconds this webpage will continue to be cached in memory without any communication.
+   *
+   * Defaults to 2 minutes.
+   */
+  def timeout = 2.minutes
 
   val doctype = "<!DOCTYPE html>\r\n"
   val html = new tag.HTML
@@ -64,6 +72,7 @@ class Webpage extends Page with RequestHandler with Parent with PropertyParent {
   private var pageRendered = false
   intercept.beforeRender {
     case html: tag.HTML => synchronized {
+      pageRendered = true
       if (modules.size != initializedModules.size) {
         modules.values.foreach {
           case module => {
@@ -81,7 +90,6 @@ class Webpage extends Page with RequestHandler with Parent with PropertyParent {
           }
         }
       }
-      pageRendered = true
       if (interfaces.size > 0) {
         interfaces.foreach {          // Check for defaults
           case (interface, default) => if (default != null) {
@@ -132,7 +140,7 @@ class Webpage extends Page with RequestHandler with Parent with PropertyParent {
   }
 
   def apply(webapp: NettyWebapp, context: ChannelHandlerContext, event: MessageEvent) = {
-    WebContext(webContext) {
+    WebContext(webContext, checkIn = true) {
       val request = event.getMessage.asInstanceOf[HttpRequest]
       if (request.getMethod == HttpMethod.POST) {
         processPost(request.getContent)
@@ -145,19 +153,6 @@ class Webpage extends Page with RequestHandler with Parent with PropertyParent {
         case cookie => encoder.addCookie(cookie.toNettyCookie)
       }
       response.setHeader(HttpHeaders.SET_COOKIE, encoder.encode())
-
-      // Generate HTML from page
-      // TODO: stream content back rather than loading into a buffer first
-//      val buffer = ChannelBuffers.dynamicBuffer()
-//      val output = new ChannelBufferOutputStream(buffer)
-//      output.write(doctype)
-//      val writer = HTMLWriter(output)
-//      html.write(writer)
-//
-//      // Stream data back
-//      val channel = context.getChannel
-//      channel.write(response)
-//      channel.write(output.buffer()).addListener(ChannelFutureListener.CLOSE)
 
       val channel = context.getChannel
       // Write the HttpResponse
@@ -180,6 +175,19 @@ class Webpage extends Page with RequestHandler with Parent with PropertyParent {
     website.errorThrown(this, t)
   } else {
     error("Error occurred on page: %s".format(this), t)
+  }
+
+  override protected[web] def checkIn() {
+    super.checkIn()
+
+    webContext.session.checkIn()    // Always update the session when the page gets a check-in
+  }
+
+  override def dispose() {
+    super.dispose()
+
+    Website().session.removeByValue(this)
+    bus.clear()
   }
 }
 

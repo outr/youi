@@ -2,12 +2,12 @@ package org.hyperscala
 
 import org.powerscala.event.Listenable
 import org.powerscala.bus.Bus
-import org.powerscala.Priority
+import org.powerscala.{Updatable, Priority}
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-trait Page extends Listenable {
+trait Page extends Listenable with Updatable {
   override val bus = new Bus(Priority.Normal)
   Bus.current = bus
 
@@ -17,8 +17,10 @@ trait Page extends Listenable {
 
   val intercept = new MarkupIntercepting("Page", bus, parentIntercept)
 
-  def dispose(): Unit = {
-    bus.clear()
+  override def update(delta: Double) {
+    super.update(delta)
+
+    intercept.update.fire(this)
   }
 }
 

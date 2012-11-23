@@ -52,7 +52,7 @@ object HyperscalaSite extends Website[MapSession] {
   val about = WebpageResource.regex("/about.html") {
     HyperscalaAbout
   }
-  val hello = WebpageResource.regex("/example/hello.html", scope = Scope.Session) {
+  val hello = WebpageResource.regex("/example/hello.html", scope = Scope.Page) {
     new HelloWorldPage
   }
   val form = WebpageResource.regex("/example/form.html", scope = Scope.Session) {
@@ -81,5 +81,11 @@ object HyperscalaSite extends Website[MapSession] {
   registerPath("css/", "/css/", enableCaching = true)
   registerPath("js/", "/js/", enableCaching = true)
 
-  protected def createSession() = new MapSession
+  protected def createSession() = new MapSession(this) {
+    override def timeout = 30.0
+
+    override def update(delta: Double) {
+      super.update(delta)
+    }
+  }
 }

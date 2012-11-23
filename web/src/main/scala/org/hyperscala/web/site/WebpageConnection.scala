@@ -40,6 +40,11 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
       case evt: ChildAddedEvent => childAdded(evt)
       case evt: ChildRemovedEvent => childRemoved(evt)
     }
+    page.intercept.update {
+      case page if (communicatorReceiver != null || communicatorSender != null) => {
+        page.asInstanceOf[Webpage].checkIn()
+      }
+    }
     page.listeners.synchronous.filter(evt => true) {    // Accept all events on this pages' bus
       case evt: PropertyChangeEvent if (applyingProperty == evt.property && applyingValue == evt.newValue) => {
         // Ignore a change initialized by this connector (avoid recursive changes)
@@ -57,7 +62,7 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
     }
   }
 
-  def receive(event: String, message: String) = WebContext(page.webContext) {
+  def receive(event: String, message: String) = WebContext(page.webContext, checkIn = true) {
 //    info("Receive: %s - %s".format(event, message))
     try {
       event match {

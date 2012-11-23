@@ -1,32 +1,36 @@
-package org.hyperscala.web
+package org.hyperscala.web.module
 
+import org.hyperscala.web.site.Webpage
+import org.powerscala.Version
+import java.util
 import org.hyperscala.html.{StyleProperty, HTMLTag}
-import org.hyperscala.css.StyleSheetAttribute
-import org.powerscala.bus.Routing
 import org.hyperscala.html.tag.Style
 import org.powerscala.property.event.PropertyChangeEvent
+import org.hyperscala.css.StyleSheetAttribute
 import org.hyperscala.Unique
-import java.util
-import site.Webpage
+import org.powerscala.bus.Routing
 
 /**
- * @author Matt Hicks <mhicks@powerscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
-trait HeadStyle {
-  this: Webpage =>
+object HeadStyle extends Module {
+  def name = "headstyle"
 
-  private val map = new util.WeakHashMap[HTMLTag, HeadStyleTag]()
+  def version = Version(1)
 
-  intercept.renderAttribute {
-    case ssa: StyleSheetAttribute[_] => Routing.Stop
-  }
-
-  intercept.initStyle {
-    case tag: HTMLTag => {
-      map.get(tag) match {
-        case null => map.put(tag, new HeadStyleTag(this, tag))
+  def load(page: Webpage) = {
+    val map = page.store.getOrSet("headStyleMap", new util.WeakHashMap[HTMLTag, HeadStyleTag]())
+    page.intercept.renderAttribute {
+      case ssa: StyleSheetAttribute[_] => Routing.Stop
+    }
+    page.intercept.initStyle {
+      case tag: HTMLTag => map.get(tag) match {
+        case null => map.put(tag, new HeadStyleTag(page, tag))
         case hst => hst.updateStyle()
-      } // TODO: support removal if style changes
+      }
+    }
+    page.view.foreach {
+      case tag => map.put(tag, new HeadStyleTag(page, tag))
     }
   }
 }
@@ -66,7 +70,7 @@ class HeadStyleTag(page: Webpage, tag: HTMLTag) {
     if (sp.loaded && sp.modified) {
       val s = sp().properties.collect {
         case p: StyleSheetAttribute[_] if (p.modified) => "\t%s: %s".format(p.name(), p.attributeValue)
-      }.mkString(",\n")
+      }.mkString(";\n")
       val selector = sp.name() match {
         case "style" => ""
         case n => ":%s".format(n)

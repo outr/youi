@@ -1,26 +1,37 @@
-package org.hyperscala.web
+package org.hyperscala.web.module
 
+import org.hyperscala.web.site.Webpage
+import org.powerscala.Version
+import org.hyperscala.html.event.EventProperty
 import org.powerscala.bus.Routing
 import org.hyperscala.html.HTMLTag
-import org.powerscala.property.event.PropertyChangeEvent
 import org.hyperscala.html.tag.Script
-import org.hyperscala.html.event.EventProperty
-import org.hyperscala.javascript.JavaScriptString
+import org.powerscala.property.event.PropertyChangeEvent
 import org.hyperscala.Unique
-import site.Webpage
+import org.hyperscala.javascript.JavaScriptString
 
 /**
- * @author Matt Hicks <mhicks@powerscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
-trait HeadScript {
-  this: Webpage =>
+object HeadScript extends Module {
+  def name = "headscript"
 
-  intercept.renderAttribute {
-    case ep: EventProperty => Routing.Stop    // Don't render JavaScript in HTML directly
-  }
+  def version = Version(1)
 
-  intercept.init {
-    case tag: HTMLTag => new HeadScriptTag(this, tag)
+  def load(page: Webpage) = {
+    page.require(jQuery, jQuery182)
+
+    page.intercept.renderAttribute {
+      case ep: EventProperty => Routing.Stop    // Don't render JavaScript in HTML
+    }
+
+    page.intercept.init {
+      case tag: HTMLTag => new HeadScriptTag(page, tag)
+    }
+
+    page.view.foreach {
+      case tag => new HeadScriptTag(page, tag)
+    }
   }
 }
 

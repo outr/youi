@@ -1,6 +1,6 @@
 package org.hyperscala.web.site.realtime
 
-import org.hyperscala.web.module.{IdentifyTags, jQuery182, Module}
+import org.hyperscala.web.module.{jQuery, IdentifyTags, jQuery182, Module}
 import org.hyperscala.web.site.{WebpageConnection, Webpage, Website}
 
 import org.hyperscala.html._
@@ -20,7 +20,7 @@ object Realtime extends Module {
   def load(page: Webpage) = {
     // Module requirements
     page.require(IdentifyTags)  // Make sure that every element has an id
-    page.require(jQuery182)   // jQuery is necessary
+    page.require(jQuery, jQuery182)   // jQuery is necessary
 
     // Configure JavaScript on page
     Website().register("/js/communicator.js", "communicator.js")

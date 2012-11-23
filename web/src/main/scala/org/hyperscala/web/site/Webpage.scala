@@ -77,7 +77,6 @@ class Webpage extends Page with RequestHandler with Parent with PropertyParent w
         modules.values.foreach {
           case module => {
             if (!initializedModules.contains(module.name)) {    // Module not initialized yet
-              println("Loading module: %s %s".format(module.name, module.version))
               module.load(this)
               module.interfaces.foreach {
                 case interface => {
@@ -128,8 +127,21 @@ class Webpage extends Page with RequestHandler with Parent with PropertyParent w
       }
     }
   }
-  def require(interface: Interface, default: Module = null) = synchronized {
-    interfaces += interface.name -> default
+  def require(interface: Interface, default: Module = null): Unit = synchronized {
+    if (pageRendered) {
+      if (modules.values.find(m => m.interfaces.find(i => i.name == interface.name).nonEmpty).isEmpty) {
+        // Interface not already loaded
+        if (default == null) {
+          throw new RuntimeException("Unimplemented interface found: %s".format(interface.name))
+        } else {
+          require(default)
+        }
+      }
+    } else interfaces.get(interface.name) match {
+      case Some(module) if (module != null && default != null && module.version.compare(default.version) == 1) => // Don't replace with older module
+      case Some(module) if (default == null) => // Don't replace with a null default
+      case _ => interfaces += interface.name -> default
+    }
   }
 
   /**

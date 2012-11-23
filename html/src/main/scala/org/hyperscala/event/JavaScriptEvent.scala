@@ -18,6 +18,8 @@ object JavaScriptEvent {
             preventDefault: Boolean = true,
             fireChange: Boolean = false,
             onlyLast: Boolean = true) = {
+    // TODO: require Realtime
+
     val b = new StringBuilder
     if (confirmation != null) {
       b.append("if (confirm('%s')) { ".format(confirmation))

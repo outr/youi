@@ -36,6 +36,15 @@ trait Session extends Temporal with Listenable with WorkQueue {
     case None => default
   }
 
+  def getOrSet[T](key: Any, default: => T) = get[T](key) match {
+    case Some(value) => value
+    case None => {
+      val v: T = default
+      update(key, v)
+      v
+    }
+  }
+
   def update(key: Any, value: Any): Unit
 
   def remove(key: Any): Boolean

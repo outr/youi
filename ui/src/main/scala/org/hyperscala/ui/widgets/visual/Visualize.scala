@@ -1,9 +1,10 @@
 package org.hyperscala.ui.widgets.visual
 
 import org.powerscala.reflect._
-import org.powerscala.property.StandardProperty
+import org.powerscala.property._
 
 import org.hyperscala.html._
+import org.hyperscala.css.attributes.Clear
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -13,13 +14,12 @@ case class Visualize(_labeled: Boolean = true,
                      _editable: Boolean = true,
                      _editing: Boolean = false,
                      _fields: List[VisualBuilder[_]] = Nil) {
-
-  // TODO: support groupings
   def clazz[T](className: String = null,
                bindProperty: StandardProperty[_] = null,
                basePath: String = null,
                valueUpdatesProperty: Boolean = true,
-               propertyUpdatesValue: Boolean = true)(implicit manifest: Manifest[T]): Visualize = {
+               propertyUpdatesValue: Boolean = true,
+               group: String = null)(implicit manifest: Manifest[T]): Visualize = {
     val cn = className match {
       case null => manifest.erasure.getSimpleName
       case _ => className
@@ -33,9 +33,9 @@ case class Visualize(_labeled: Boolean = true,
         "%s.%s".format(basePath, cv.name)
       }
       if (cv.valueType.isCase) {
-        instance = instance.clazz[Any](name, bindProperty, hierarchy, valueUpdatesProperty, propertyUpdatesValue)(Manifest.classType[Any](cv.valueType.javaClass))
+        instance = instance.clazz[Any](name, bindProperty, hierarchy, valueUpdatesProperty, propertyUpdatesValue, cv.name)(Manifest.classType[Any](cv.valueType.javaClass))
       } else {
-        instance = instance.caseValue(name, cv, bindProperty, hierarchy, valueUpdatesProperty, propertyUpdatesValue)
+        instance = instance.caseValue(name, cv, bindProperty, hierarchy, valueUpdatesProperty, propertyUpdatesValue, group)
       }
     })
     instance
@@ -46,7 +46,8 @@ case class Visualize(_labeled: Boolean = true,
                 bindProperty: StandardProperty[_] = null,
                 hierarchy: String = null,
                 valueUpdatesProperty: Boolean = true,
-                propertyUpdatesValue: Boolean = true): Visualize = {
+                propertyUpdatesValue: Boolean = true,
+                group: String = null): Visualize = {
     val builder = Visual[Any]()(Manifest.classType[Any](cv.valueType.javaClass))
                     .name(name)
                     .label(cv.label)
@@ -55,6 +56,7 @@ case class Visualize(_labeled: Boolean = true,
                     .editable(_editable)
                     .editing
                     .bind(bindProperty, hierarchy, valueUpdatesProperty, propertyUpdatesValue)
+                    .group(group)
     field[Any](builder)
   }
 
@@ -66,9 +68,44 @@ case class Visualize(_labeled: Boolean = true,
     copy(_fields = _fields.map(vb => if (vb.name == original.name) modified else vb))
   }
 
-  def build() = new tag.Div with Visualized {
-    val visuals = _fields.map(vb => vb.build())
+  def groups() = _fields.collect {
+    case vb if (vb.group != null) => vb.group
+  }.distinct
 
+  def group(name: String) = _fields.collect {
+    case vb if (vb.group == name) => vb
+  }
+
+  def renameGroup(currentName: String, newName: String) = {
+    copy(_fields = _fields.map(vb => if (vb.group == currentName) vb.group(newName) else vb))
+  }
+
+  def build() = new tag.Div with Visualized {
+    val groupNames = Visualize.this.groups()
+    val visuals = _fields.map(vb => vb.build())
+    val map = (_fields zip visuals).toMap
+    val groups = groupNames.map(name => name -> buildGroup(name, group(name).map(vb => map(vb)))).toMap
+
+    private var unusedGroups = groupNames.toSet
+    _fields.foreach {
+      case vb if (vb.group == null) => {
+        contents += map(vb)
+      }
+      case vb if (unusedGroups.contains(vb.group)) => {
+        contents += groups(vb.group)
+        unusedGroups -= vb.group
+      }
+      case _ => // Group already used
+    }
+  }
+
+  def buildGroup(groupName: String, fields: List[Visual[_]]) = new tag.FieldSet with Visualized {
+    style.clear := Clear.Both
+
+    val group = groupName
+    val visuals = fields
+
+    contents += new tag.Legend(content = "%s:".format(groupName))
     contents.addAll(visuals: _*)
   }
 }

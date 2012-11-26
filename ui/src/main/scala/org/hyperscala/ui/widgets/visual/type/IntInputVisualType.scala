@@ -1,12 +1,12 @@
 package org.hyperscala.ui.widgets.visual.`type`
 
-import org.hyperscala.ui.widgets.visual.VisualDetails
+import org.hyperscala.ui.widgets.visual.VisualBuilder
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
 object IntInputVisualType extends InputVisualType[Int] {
-  def valid(details: VisualDetails[_]) = details.clazz == classOf[Int]
+  def valid(details: VisualBuilder[_]) = details.clazz == classOf[Int]
 
   def fromString(s: String) = if (s == null || s == "") {
     0

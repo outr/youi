@@ -2,7 +2,7 @@ package org.hyperscala.ui.widgets.visual.`type`
 
 import org.powerscala.{EnumEntry, Enumerated}
 import org.powerscala.property.StandardProperty
-import org.hyperscala.ui.widgets.visual.VisualDetails
+import org.hyperscala.ui.widgets.visual.VisualBuilder
 
 import org.powerscala.reflect._
 import org.hyperscala.ui.widgets.ListSelect
@@ -14,9 +14,9 @@ import org.hyperscala.web.site.realtime.Realtime
  * @author Matt Hicks <matt@outr.com>
  */
 object EnumEntryVisualType extends VisualType[EnumEntry[_]] {
-  def valid(details: VisualDetails[_]) = details.clazz.hasType(classOf[EnumEntry[_]])
+  def valid(details: VisualBuilder[_]) = details.clazz.hasType(classOf[EnumEntry[_]])
 
-  def create(property: StandardProperty[EnumEntry[_]], details: VisualDetails[EnumEntry[_]]) = {
+  def create(property: StandardProperty[EnumEntry[_]], details: VisualBuilder[EnumEntry[_]]) = {
     val enumerated = details.clazz.instance.get.asInstanceOf[Enumerated[_]]
     val nullAllowed = details.nullAllowed
     val list = new ListSelect[Any](enumerated.values, nullAllowed = nullAllowed) {

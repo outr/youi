@@ -20,11 +20,12 @@ case class VisualBuilder[T](_name: String = null,
                             _multiLine: Boolean = false,
                             _validations: List[T => Either[Option[T], String]] = Nil,
                             _visualType: Option[VisualType[T]] = None,
+                            _group: String = null,
                             _bindProperty: StandardProperty[_] = null,
                             _bindHierarchy: String = null,
                             bindValueUpdatesProperty: Boolean = true,
                             bindPropertyUpdatesValue: Boolean = true)
-                           (implicit val manifest: Manifest[T]) extends VisualDetails[T] {
+                           (implicit val manifest: Manifest[T]) {
   def clazz = manifest.erasure
 
   def name = _name
@@ -62,6 +63,8 @@ case class VisualBuilder[T](_name: String = null,
   def validations(v: List[T => Either[Option[T], String]]) = copy(_validations = v)
   def visualType = _visualType
   def visualType(v: VisualType[T]) = copy(_visualType = Some(v))
+  def group = _group
+  def group(_group: String) = copy(_group = _group)
   def bindProperty = _bindProperty
   def bindHierarchy = _bindHierarchy
   def bind(b: StandardProperty[_], hierarchy: String, valueUpdatesProperty: Boolean = true, propertyUpdatesValue: Boolean = true) = {

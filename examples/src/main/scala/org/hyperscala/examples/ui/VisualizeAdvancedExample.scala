@@ -34,7 +34,7 @@ class VisualizeAdvancedExample extends Webpage {
     case vb => vb.itemizedType[Language]()
   }.field[List[CompanyEmail]]("Company.address.emails") {
     case vb => vb.itemizedType[CompanyEmail]()
-  }
+  }.renameGroup("address", "Mailing Address")
   body.contents += visualize.build()
 
   instance.listeners.synchronous {

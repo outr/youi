@@ -12,7 +12,6 @@ import org.powerscala.property.event.PropertyChangeEvent
 import org.hyperscala.{Container, Textual, Page, PropertyAttribute}
 import org.hyperscala.css.StyleSheet
 import org.hyperscala.javascript.JavaScriptContent
-import realtime.Realtime
 import org.powerscala.property.MutableProperty
 
 import org.powerscala.json._
@@ -167,10 +166,9 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
     case js: JavaScriptContent => // TODO: evaluate? - Previously nothing was needed here
   }
 
-  def send(js: JavaScriptMessage) = {
+  def send(js: JavaScriptMessage): Unit = {
     val message = generate(js)
-//        println("Sending: %s".format(js))
-    Realtime.send(page, "eval", message)
+    send("eval", message)
   }
 }
 

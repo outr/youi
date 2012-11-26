@@ -1,7 +1,7 @@
 package org.hyperscala.ui.widgets.visual.`type`
 
 import org.powerscala.property.StandardProperty
-import org.hyperscala.ui.widgets.visual.{Stringify, VisualDetails}
+import org.hyperscala.ui.widgets.visual.{Stringify, VisualBuilder}
 import org.hyperscala.html.tag
 import org.hyperscala.web.site.Webpage
 import org.hyperscala.web.site.realtime.Realtime
@@ -15,7 +15,7 @@ import org.hyperscala.html.constraints.BodyChild
 trait InputVisualType[T] extends VisualType[T] with Stringify[T] {
   def fromString(s: String): T
 
-  def create(property: StandardProperty[T], details: VisualDetails[T]): BodyChild = new tag.Input {
+  def create(property: StandardProperty[T], details: VisualBuilder[T]): BodyChild = new tag.Input {
     Webpage().require(Realtime)
 
     if (details.masked) {

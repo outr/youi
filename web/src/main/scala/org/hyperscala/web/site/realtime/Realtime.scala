@@ -56,7 +56,7 @@ object Realtime extends Module {
     page.store(connectionsKey) = connection :: connections
   }
 
-  def send(page: Webpage, event: String, message: String) = synchronized {
+  def broadcast(page: Webpage, event: String, message: String) = synchronized {
     val connections = getConnections(page)
     sendRecursive(page, event, message, connections)
   }

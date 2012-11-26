@@ -1,13 +1,15 @@
 package org.hyperscala.web.site.realtime
 
 import org.hyperscala.web.module.{jQuery, IdentifyTags, jQuery182, Module}
-import org.hyperscala.web.site.{WebpageConnection, Webpage, Website}
+import org.hyperscala.web.site.{JavaScriptMessage, WebpageConnection, Webpage, Website}
 
 import org.hyperscala.html._
 import org.hyperscala.javascript.JavaScriptContent
 import java.util.UUID
 import annotation.tailrec
 import org.powerscala.Version
+
+import org.powerscala.json._
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -56,9 +58,17 @@ object Realtime extends Module {
     page.store(connectionsKey) = connection :: connections
   }
 
-  def broadcast(page: Webpage, event: String, message: String) = synchronized {
+  def broadcast(event: String, message: Any, page: Webpage = Webpage()) = synchronized {
     val connections = getConnections(page)
-    sendRecursive(page, event, message, connections)
+    val content = message match {
+      case s: String => s
+      case other => generate(other)
+    }
+    sendRecursive(page, event, content, connections)
+  }
+
+  def sendJavaScript(instruction: String, content: String = null) = {
+    broadcast("eval", JavaScriptMessage(instruction, content))
   }
 
   @tailrec

@@ -1,7 +1,6 @@
 package org.hyperscala.web.site
 
 import com.outr.webcommunicator.netty.communicator.NettyCommunicatorManager
-import handler.RequestHandler
 import java.util.UUID
 import org.powerscala.{Updatable, Logging}
 import org.hyperscala.web.session.{MapSession, Session}
@@ -9,6 +8,7 @@ import org.powerscala.concurrent.Time._
 
 import org.powerscala.concurrent.Executor
 import org.jboss.netty.channel.{MessageEvent, ChannelHandlerContext}
+import com.outr.webcommunicator.netty.handler.RequestHandler
 
 /**
  * @author Matt Hicks <matt@outr.com>

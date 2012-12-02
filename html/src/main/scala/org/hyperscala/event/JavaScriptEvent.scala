@@ -11,7 +11,7 @@ import org.hyperscala.css.StyleSheetAttribute
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-class JavaScriptEvent(tag: HTMLTag) extends Event
+class JavaScriptEvent(val tag: HTMLTag) extends Event
 
 object JavaScriptEvent {
   def apply(confirmation: String = null,

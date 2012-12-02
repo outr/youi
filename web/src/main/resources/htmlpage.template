@@ -1,9 +1,0 @@
-package %s
-
-import org.hyperscala.html._
-import org.hyperscala.web.HTMLPage
-import org.hyperscala.javascript.JavaScriptString
-
-class %s extends HTMLPage {
-%s
-}

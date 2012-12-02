@@ -11,7 +11,10 @@ import persistence.ValuePersistence
 class PropertyAttribute[T](_name: String, default: T, val inclusion: InclusionMode = InclusionMode.NotEmpty, backing: Backing[T] = new VariableBacking[T])
                              (implicit persister: ValuePersistence[T], parent: PropertyParent, manifest: Manifest[T])
                              extends StandardProperty[T](_name, default, backing)(parent, manifest) with XMLAttribute {
-  Page().intercept.initAttribute.fire(this)   // Fire the initialization to be intercepted
+  Page() match {
+    case null => // May not be part of a page
+    case page => page.intercept.initAttribute.fire(this)   // Fire the initialization to be intercepted
+  }
 
   // TODO: remove this
   def attributeValue = persister.toString(value, manifest.erasure)
@@ -22,9 +25,12 @@ class PropertyAttribute[T](_name: String, default: T, val inclusion: InclusionMo
   def shouldRender = include
 
   def write(markup: Markup, writer: HTMLWriter) = if (shouldRender) {
-    Page().intercept.renderAttribute.fire(this) match {
-      case Some(pa) => writer.write(" %s=\"%s\"".format(pa.name(), pa.attributeValue))
-      case None => // Told not to render by intercept
+    Page() match {
+      case null => writer.write(" %s=\"%s\"".format(name(), attributeValue))
+      case page => page.intercept.renderAttribute.fire(this) match {
+        case Some(pa) => writer.write(" %s=\"%s\"".format(pa.name(), pa.attributeValue))
+        case None => // Told not to render by intercept
+      }
     }
   }
 

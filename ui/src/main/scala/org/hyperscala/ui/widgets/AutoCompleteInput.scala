@@ -119,6 +119,8 @@ abstract class AutoCompleteInput[T](id: String = Unique(), default: T)(implicit 
 
   updateInput()
 
+  def disabled = input.disabled
+
   val completion = new tag.Div(id = "%sCompletion".format(id)) {
     style.display := Display.None
     style.position := Position.Absolute

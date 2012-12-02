@@ -1,0 +1,12 @@
+%s
+
+import org.powerscala.property._
+
+import org.hyperscala.html._
+import org.hyperscala.html.attributes._
+import org.hyperscala.css.attributes._
+import org.hyperscala.javascript.JavaScriptString
+
+class %s extends tag.%s {
+%s
+}

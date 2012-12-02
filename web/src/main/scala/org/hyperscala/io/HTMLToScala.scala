@@ -1,178 +1,79 @@
 package org.hyperscala.io
 
 import org.hyperscala.html._
-import event.EventProperty
 import org.jdom2.input.SAXBuilder
-import java.io.StringReader
+import java.io.{FileWriter, File, StringReader}
 import io.Source
 import org.htmlcleaner.{PrettyXmlSerializer, HtmlCleaner}
-import org.hyperscala.{PropertyAttribute, Container}
-import org.hyperscala.persistence.StyleSheetPersistence
-import org.hyperscala.css.{StyleSheetAttribute, StyleSheet}
-import org.hyperscala.javascript.JavaScriptString
-import tag.{Link, Script, Text, Title}
+import org.hyperscala.Unique
 import org.hyperscala.web.site.Webpage
+import org.powerscala.reflect.DynamicCompiler
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
 object HTMLToScala {
-  lazy val template = Source.fromURL(getClass.getClassLoader.getResource("htmlpage.template")).mkString
+  lazy val WebpageTemplate = Source.fromURL(getClass.getClassLoader.getResource("webpage.template")).mkString
+  lazy val TagTemplate = Source.fromURL(getClass.getClassLoader.getResource("tag.template")).mkString
 
   val builder = new SAXBuilder()
 
   def toScala(page: Webpage, packageName: String, className: String) = {
-    val b = new ScalaBuffer(packageName, className, page)
+    val b = new ScalaWebpageBuffer(packageName, className, page)
     b.code
   }
 
-  def toPage(source: Source) = {
+  def toScala(tag: HTMLTag, packageName: String, className: String) = {
+    val b = new ScalaTagBuffer(packageName, className, tag)
+    b.code
+  }
+
+  def toInstantiator[T <: HTMLTag](tag: HTMLTag, className: String) = {
+    val source = toScala(tag, null, className)
+    val file = File.createTempFile("hyperscala", ".scala")
+    try {
+      val writer = new FileWriter(file)
+      try {
+        writer.write(source)
+      } finally {
+        writer.flush()
+        writer.close()
+      }
+      DynamicCompiler[T](className, file.toURI.toURL)
+    } finally {
+      file.delete()
+    }
+  }
+
+  def toInstantiator[T <: HTMLTag](source: Source, clean: Boolean) = {
+    val tag = toHTML(source, clean)
+    val className = "Custom%s".format(Unique())
+    toInstantiator[T](tag, className)
+  }
+
+  def toPage(source: Source, clean: Boolean = true) = {
     val page = new Webpage()
-    page.html.read(toXML(source))
+    page.html.read(toXML(source, clean))
     page
   }
 
-  def toHTML(source: Source) = {
-    val xml = toXML(source)
+  def toHTML(source: Source, clean: Boolean) = {
+    val xml = toXML(source, clean)
     val root = HTMLTag.create(xml.getName)
     root.read(xml)
     root
   }
 
-  def toXML(source: Source) = {
-    val html = source.mkString
-    val cleaner = new HtmlCleaner()
-    val props = cleaner.getProperties
-    val cleaned = cleaner.clean(html)
-    val content = new PrettyXmlSerializer(props).getAsString(cleaned)
-    builder.build(new StringReader(content)).getRootElement
-  }
-}
-
-private class ScalaBuffer(packageName: String, className: String, page: Webpage) {
-  var depth = 1
-  val b = new StringBuilder
-
-  writeAttributes(page.head, all = true, prefix = "head")
-  page.head.contents.foreach(t => writeTag(t, "head"))
-  writeAttributes(page.body, all = true, prefix = "body")
-  page.body.contents.foreach(t => writeTag(t, "body"))
-
-  val code = HTMLToScala.template.format(packageName, className, b.toString())
-
-  def createWrappedString(s: String) = if (s.indexOf('\n') != -1) {
-    "\"\"\"%s\"\"\"".format(s)
-  } else {
-    "\"%s\"".format(s.replaceAll("\"", "\\\\\""))
-  }
-
-  def writeTag(tag: HTMLTag, prefix: String = null): Unit = {
-//    println("Tag: %s.%s".format(prefix, tag.xmlLabel))
-    if (tag.render) {
-      tag match {
-        case title: Title => writeLine("title := \"%s\"".format(title.content()))
-        case text: Text => writeLine("contents += %s".format(createWrappedString(text.content())))
-        case _ => {
-          val attributes = tag.xmlAttributes.collect {
-            case a: PropertyAttribute[_] if (a.shouldRender && !a.isInstanceOf[EventProperty]) => "%s = %s".format(namify(tag, a.name()), valuify(a.name(), a()))
-          }.mkString(", ")
-          val constructor = attributes.nonEmpty match {
-            case true => "(%s)".format(attributes)
-            case false => ""
-          }
-          val style = StyleSheetPersistence.toString(tag.style(), classOf[StyleSheet])
-          val children = tag match {
-            case container: Container[_] if (container.contents.nonEmpty) => true
-            case _ if (style.trim.nonEmpty) => true
-            case _ => false
-          }
-          val opening = if (children) {
-            " {"
-          } else {
-            ""
-          }
-          writeLine("contents += new %s%s%s".format(tag.getClass.getSimpleName, constructor, opening), prefix)
-          if (children) {
-            depth += 1
-            writeAttributes(tag, all = false, prefix = null)
-            tag.asInstanceOf[Container[_]].contents.foreach {
-              case child: HTMLTag => writeTag(child)
-              case child: JavaScriptString => if (child.content.trim.nonEmpty) {
-                writeLine("contents += JavaScriptString(%s)".format(createWrappedString(child.content)))
-              }
-            }
-            depth -= 1
-            writeLine("}")
-          }
-        }
-      }
-    }
-  }
-
-  def writeAttributes(tag: HTMLTag, all: Boolean, prefix: String) = {
-    // Write style data
-    tag.style().properties.foreach {
-      case a: StyleSheetAttribute[_] if (a.shouldRender) => {
-        writeLine("style.%s := %s".format(a.name(), a.attributeValue), prefix)
-      }
-      case _ => // Ignore
-    }
-    // Write event data
-    tag.xmlAttributes.foreach {
-      case a: PropertyAttribute[_] with EventProperty if (a.shouldRender) => {
-        writeLine("event.%s := %s".format(a.name().substring(2), valuify(a.name(), a())), prefix)
-      }
-      case a: PropertyAttribute[_] if (a.shouldRender && all) => {
-        // Write out attributes that could be in constructor - used in <body>
-        writeLine("%s := %s".format(namify(tag, a.name()), valuify(a.name(), a())), prefix)
-      }
-      case _ => // Ignore
-    }
-  }
-
-  def writeLine(line: String = "", prefix: String = null) = {
-    (0 until depth).foreach(i => b.append("  "))
-    if (prefix != null) {
-      write(prefix)
-      write(".")
-    }
-    write(line)
-    b.append('\r')
-    b.append('\n')
-  }
-
-  def write(content: String) = {
-    b.append(content)
-  }
-
-  def namify(tag: HTMLTag, name: String) = {
-    if (name == "type") {
-      tag match {
-        case l: Link => "mimeType"
-        case s: Script => "mimeType"
-      }
-    } else if (name == "class") {
-      "clazz"
+  def toXML(source: Source, clean: Boolean) = {
+    val content = if (clean) {
+      val html = source.mkString
+      val cleaner = new HtmlCleaner()
+      val props = cleaner.getProperties
+      val cleaned = cleaner.clean(html)
+      new PrettyXmlSerializer(props).getAsString(cleaned)
     } else {
-      var nextCapital = false
-      val b = new StringBuilder
-      name.foreach {
-        case '-' => nextCapital = true
-        case c => if (nextCapital) {
-          b.append(c.toUpper)
-          nextCapital = false
-        } else {
-          b.append(c)
-        }
-      }
-      b.toString()
+      source.mkString
     }
-  }
-
-  def valuify(name: String, v: Any) = v match {
-    case s: String => "\"%s\"".format(s)
-    case l: List[_] if (name == "class") => "List(%s)".format(l.mkString("\"", ", ", "\""))
-    case js: JavaScriptString => "JavaScriptString(%s)".format(createWrappedString(js.content))
-    case _ => throw new RuntimeException("Unsupported value: %s (%s)".format(v, name))
+    builder.build(new StringReader(content)).getRootElement
   }
 }

@@ -10,5 +10,6 @@ trait Module {
   def name: String
   def version: Version
   def interfaces: List[Interface] = Nil
+  // TODO: add def requires: List[Module] but allow for requiring Interfaces with defaults...
   def load(page: Webpage): Unit
 }

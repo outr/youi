@@ -19,7 +19,7 @@ object Realtime extends Module {
 
   def version = Version(1)
 
-  def load(page: Webpage) = {
+  def load(page: Webpage) = {   // TODO: fix bug causing jQuery to be loaded after other scripts - prioritization
     // Module requirements
     page.require(IdentifyTags)  // Make sure that every element has an id
     page.require(jQuery, jQuery182)   // jQuery is necessary
@@ -69,6 +69,14 @@ object Realtime extends Module {
 
   def sendJavaScript(instruction: String, content: String = null) = {
     broadcast("eval", JavaScriptMessage(instruction, content))
+  }
+
+  def sendRedirect(url: String) = {
+    sendJavaScript("window.location.href = content;", url)
+  }
+
+  def reload(fresh: Boolean = false) = {
+    sendJavaScript("location.reload(%s);".format(fresh))
   }
 
   @tailrec

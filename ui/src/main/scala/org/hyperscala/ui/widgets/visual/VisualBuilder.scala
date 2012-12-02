@@ -19,6 +19,7 @@ case class VisualBuilder[T](_name: String = null,
                             _masked: Boolean = false,
                             _multiLine: Boolean = false,
                             _validations: List[T => Either[Option[T], String]] = Nil,
+                            _validateOnChange: Boolean = false,
                             _visualType: Option[VisualType[T]] = None,
                             _group: String = null,
                             _bindProperty: StandardProperty[_] = null,
@@ -61,6 +62,8 @@ case class VisualBuilder[T](_name: String = null,
   def validation(v: T => Either[Option[T], String]) = copy(_validations = (v :: _validations.reverse).reverse)
   def validations = _validations
   def validations(v: List[T => Either[Option[T], String]]) = copy(_validations = v)
+  def validateOnChange = _validateOnChange
+  def validateOnChange(b: Boolean) = copy(_validateOnChange = b)
   def visualType = _visualType
   def visualType(v: VisualType[T]) = copy(_visualType = Some(v))
   def group = _group

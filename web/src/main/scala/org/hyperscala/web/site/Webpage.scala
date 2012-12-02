@@ -17,18 +17,18 @@ import org.hyperscala.css.StyleSheet
 import org.powerscala.property.PropertyParent
 import org.powerscala.reflect.CaseValue
 import org.powerscala.concurrent.Time._
+import org.powerscala.concurrent.WorkQueue
+import org.powerscala.event.Event
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class Webpage extends Page with RequestHandler with Parent with PropertyParent with Temporal {
+class Webpage extends Page with RequestHandler with Parent with PropertyParent with Temporal with WorkQueue with Contextual {
   Page.instance.set(this)
 
   val name = () => getClass.getSimpleName
 
   def defaultTitle = CaseValue.generateLabel(getClass.getSimpleName.replaceAll("\\$", ""))
-
-  protected[web] var webContext: WebContext = _
 
   val store = new MapSession(Website()) {
     override def timeout = Double.MaxValue
@@ -80,7 +80,6 @@ class Webpage extends Page with RequestHandler with Parent with PropertyParent w
               module.load(this)
               module.interfaces.foreach {
                 case interface => {
-                  println("Removing interface: %s".format(interface.name))
                   interfaces -= interface.name
                 }
               }
@@ -152,34 +151,47 @@ class Webpage extends Page with RequestHandler with Parent with PropertyParent w
   }
 
   def apply(webapp: NettyWebapp, context: ChannelHandlerContext, event: MessageEvent) = {
-    WebContext(webContext, checkIn = true) {
-      val request = event.getMessage.asInstanceOf[HttpRequest]
-      if (request.getMethod == HttpMethod.POST) {
-        processPost(request.getContent)
-      }
-      val response = RequestHandler.createResponse(contentType = "text/html", sendExpiration = false)
-
-      // Add modified or created cookies
-      val encoder = new CookieEncoder(true)
-      webContext.cookies.modified.foreach {
-        case cookie => encoder.addCookie(cookie.toNettyCookie)
-      }
-      response.setHeader(HttpHeaders.SET_COOKIE, encoder.encode())
-
-      val channel = context.getChannel
-      // Write the HttpResponse
-      channel.write(response)
-      // Set up the writer
-      var lastWriteFuture: ChannelFuture = null
-      val writer = (s: String) => lastWriteFuture = channel.write(ChannelBuffers.wrappedBuffer(s.getBytes()))
-      // Write the doctype
-      writer(doctype)
-      // Stream the page back
-      val htmlWriter = HTMLWriter(writer)
-      html.write(htmlWriter)
-      lastWriteFuture.addListener(ChannelFutureListener.CLOSE)
+    val request = event.getMessage.asInstanceOf[HttpRequest]
+    if (request.getMethod == HttpMethod.POST) {
+      processPost(request.getContent)
     }
+    val response = RequestHandler.createResponse(contentType = "text/html", sendExpiration = false)
+
+    // Add modified or created cookies
+    val encoder = new CookieEncoder(true)
+    webContext.cookies.modified.foreach {
+      case cookie => {
+        encoder.addCookie(cookie.toNettyCookie)
+        response.addHeader(HttpHeaders.SET_COOKIE, encoder.encode())
+      }
+    }
+
+    doAllWork()
+    pageLoading()
+    val channel = context.getChannel
+    // Write the HttpResponse
+    channel.write(response)
+    // Set up the writer
+    var lastWriteFuture: ChannelFuture = null
+    val writer = (s: String) => lastWriteFuture = channel.write(ChannelBuffers.wrappedBuffer(s.getBytes()))
+    // Write the doctype
+    writer(doctype)
+    // Stream the page back
+    val htmlWriter = HTMLWriter(writer)
+    html.write(htmlWriter)
+    lastWriteFuture.addListener(ChannelFutureListener.CLOSE)
+    pageLoaded()
   }
+
+  /**
+   * Called before the page is reloaded.
+   */
+  def pageLoading() = {}
+
+  /**
+   * Called when the page is reloaded.
+   */
+  def pageLoaded() = {}
 
   protected def processPost(content: ChannelBuffer) = {}
 
@@ -193,6 +205,20 @@ class Webpage extends Page with RequestHandler with Parent with PropertyParent w
     super.checkIn()
 
     webContext.session.checkIn()    // Always update the session when the page gets a check-in
+  }
+
+  def fireLater(event: Event) = {
+    WorkQueue.enqueue(this, () => fire(event))
+  }
+
+  def invokeLater(f: => Unit) = {
+    WorkQueue.enqueue(this, () => f)
+  }
+
+  override def update(delta: Double) {
+    super.update(delta)
+
+    doAllWork()
   }
 
   override def dispose() {

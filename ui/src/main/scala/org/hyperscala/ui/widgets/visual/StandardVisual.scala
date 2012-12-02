@@ -31,6 +31,8 @@ class StandardVisual[T](builder: VisualBuilder[T]) extends Visual[T]
     case f => this += f
   }
 
+  override def validateOnChange = builder.validateOnChange
+
   def hasError = errorContainer.contents.head.asInstanceOf[Text].content() != ""
 
   def errorMessage(message: String) = {

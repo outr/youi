@@ -75,8 +75,8 @@ trait Session extends Temporal with Listenable with WorkQueue {
     if (!disposed) {
       doAllWork()
       map.values.foreach {
-        case page: Webpage => WebContext(page.webContext, checkIn = false) {
-          page.update(delta)
+        case contextual: Contextual if (contextual.isInstanceOf[Updatable]) => WebContext(contextual.webContext, checkIn = false) {
+          contextual.asInstanceOf[Updatable].update(delta)
         }
         case u: Updatable => u.update(delta)
         case _ => // Ignore
@@ -89,8 +89,8 @@ trait Session extends Temporal with Listenable with WorkQueue {
 
     website.destroySession(this)
     map.values.foreach {
-      case page: Webpage => WebContext(page.webContext, checkIn = false) {
-        page.dispose()
+      case contextual: Contextual if (contextual.isInstanceOf[Disposable]) => WebContext(contextual.webContext, checkIn = false) {
+        contextual.asInstanceOf[Disposable].dispose()
       }
       case d: Disposable => d.dispose()
       case _ => // Not disposable

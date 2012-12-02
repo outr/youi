@@ -14,7 +14,8 @@ trait VisualType[T] {
 }
 
 object VisualType {
-  private var _list = List[VisualType[_]](StringInputVisualType,
+  private var _list = List[VisualType[_]](ListVisualType,
+                                          StringInputVisualType,
                                           StringTextAreaVisualType,
                                           EnumEntryVisualType,
                                           BooleanVisualType,

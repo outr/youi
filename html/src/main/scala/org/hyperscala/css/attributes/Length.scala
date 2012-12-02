@@ -14,6 +14,12 @@ class Length(val value: String) extends EnumEntry[Length] with AttributeValue {
   } else {
     0
   }
+
+  override def toString() = if (name() != null) {
+    super.toString()
+  } else {
+    "Length(%s)".format(value)
+  }
 }
 
 object Length extends Enumerated[Length] with EnumEntryPersistence[Length] {

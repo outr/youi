@@ -93,7 +93,10 @@ class StyleProperty(_name: String, inclusion: InclusionMode)(implicit parent: Pr
   override def lazyLoaded() = {
     super.lazyLoaded()
 
-    Page().intercept.initStyle.fire(parent.asInstanceOf[Markup])
+    Page() match {
+      case null => // May not be part of a page
+      case page => page.intercept.initStyle.fire(parent.asInstanceOf[Markup])
+    }
   }
 }
 

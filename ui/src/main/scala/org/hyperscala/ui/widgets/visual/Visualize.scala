@@ -13,27 +13,31 @@ case class Visualize(_labeled: Boolean = true,
                      _required: Boolean = false,
                      _editable: Boolean = true,
                      _editing: Boolean = false,
+                     _validateOnChange: Boolean = false,
                      _fields: List[VisualBuilder[_]] = Nil) {
   def clazz[T](className: String = null,
                bindProperty: StandardProperty[_] = null,
                basePath: String = null,
                valueUpdatesProperty: Boolean = true,
                propertyUpdatesValue: Boolean = true,
-               group: String = null)(implicit manifest: Manifest[T]): Visualize = {
+               group: String = null,
+               exclude: List[String] = Nil)(implicit manifest: Manifest[T]): Visualize = {
     val cn = className match {
       case null => manifest.erasure.getSimpleName
       case _ => className
     }
     var instance = this
-    manifest.erasure.caseValues.map(cv => {
+    manifest.erasure.caseValues.foreach(cv => {
       val name = "%s.%s".format(cn, cv.name)
       val hierarchy = if (basePath == null) {
         cv.name
       } else {
         "%s.%s".format(basePath, cv.name)
       }
-      if (cv.valueType.isCase) {
-        instance = instance.clazz[Any](name, bindProperty, hierarchy, valueUpdatesProperty, propertyUpdatesValue, cv.name)(Manifest.classType[Any](cv.valueType.javaClass))
+      if (exclude.contains(name)) {
+        // Ignore this field
+      } else if (cv.valueType.isCase) {
+        instance = instance.clazz[Any](name, bindProperty, hierarchy, valueUpdatesProperty, propertyUpdatesValue, cv.name, exclude)(Manifest.classType[Any](cv.valueType.javaClass))
       } else {
         instance = instance.caseValue(name, cv, bindProperty, hierarchy, valueUpdatesProperty, propertyUpdatesValue, group)
       }
@@ -54,6 +58,7 @@ case class Visualize(_labeled: Boolean = true,
                     .labeled(_labeled)
                     .required(_required)
                     .editable(_editable)
+                    .validateOnChange(_validateOnChange)
                     .editing
                     .bind(bindProperty, hierarchy, valueUpdatesProperty, propertyUpdatesValue)
                     .group(group)

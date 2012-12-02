@@ -5,11 +5,12 @@ import org.jdom2.{Attribute, Element, Content}
 import annotation.tailrec
 import scala.collection.JavaConversions._
 import java.util.concurrent.atomic.AtomicBoolean
+import org.powerscala.Logging
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-trait Markup extends XMLContent {
+trait Markup extends XMLContent with Logging {
   private val initialized = new AtomicBoolean(false)
 
   def xmlLabel: String
@@ -96,15 +97,24 @@ trait Markup extends XMLContent {
   }
 
   protected def initialize(): Unit = {
-    Page().intercept.init.fire(this)
+    Page() match {
+      case null => // May not be part of a page
+      case page => page.intercept.init.fire(this)
+    }
   }
 
   protected def before(): Unit = {
-    Page().intercept.beforeRender.fire(this)
+    Page() match {
+      case null => // May not be part of a page
+      case page => page.intercept.beforeRender.fire(this)
+    }
   }
 
   protected def after(): Unit = {
-    Page().intercept.afterRender.fire(this)
+    Page() match {
+      case null => // May not be part of a page
+      case page => page.intercept.afterRender.fire(this)
+    }
   }
 
   @tailrec
@@ -132,7 +142,7 @@ trait Markup extends XMLContent {
     if (Markup.UnsupportedAttributeException) {
       throw new RuntimeException("%s: Unsupported attribute: %s = %s".format(getClass.getName, name, value))
     } else {
-      System.err.println("%s: Unsupported attribute: %s = %s".format(getClass.getName, name, value))
+      warn("%s: Unsupported attribute: %s = %s".format(getClass.getName, name, value))
     }
   }
 }

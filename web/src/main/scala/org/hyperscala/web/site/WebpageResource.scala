@@ -1,6 +1,6 @@
 package org.hyperscala.web.site
 
-import com.outr.webcommunicator.netty.MutableWebResource
+import com.outr.webcommunicator.netty.{RequestResult, MutableWebResource}
 import org.powerscala.property.StandardProperty
 import org.hyperscala.web.Scope
 import org.jboss.netty.handler.codec.http.{HttpResponseStatus, HttpRequest}
@@ -14,28 +14,53 @@ import org.hyperscala.Unique
  * @author Matt Hicks <matt@outr.com>
  */
 class WebpageResource(implicit website: Website[_ <: Session]) extends MutableWebResource {
+  website.register(this)
+
+  protected var _link: String = null
+
   val id = new StandardProperty[String]("id", Unique())
+  def link = _link
   val scope = new StandardProperty[Scope]("scope", Scope.Request)
   scope.listeners.synchronous {
     case evt: PropertyChangingEvent if (evt.newValue == null) => Routing.Stop
   }
   loader := load _
 
+  def this(path: String,
+            createFunction: => RequestHandler,
+            pageScope: Scope,
+            pre: (HttpRequest => RequestResult)*)
+           (implicit website: Website[_ <: Session]) = {
+    this()
+    _link = path
+
+    matchers += matches(path)
+    creator := ((request: HttpRequest) => createFunction)
+    preChecks := pre.toList
+    scope := pageScope
+  }
+
   override protected def apply(request: HttpRequest) = {
     val context = WebContext.create(website, request)
     WebContext(context, checkIn = true) {
       try {
         val option = super.apply(request)
-        val handler = option.get
-        handler match {
-          case webpage: Webpage => context.webpage = webpage
-          case _ => // Not a webpage
+        if (option.nonEmpty) {
+          val handler = option.get
+          handler match {
+            case webpage: Webpage => context.webpage = webpage
+            case contextual: Contextual => contextual.webContext = context
+            case _ => // Not a webpage
+          }
+          cache(handler)
         }
-        cache(handler)
         option
       } catch {
         case t: Throwable => {
-          Webpage().errorThrown(t)
+          Webpage() match {
+            case null => Website().errorThrown(null, t)
+            case page => page.errorThrown(t)
+          }
           Some(RequestHandler.responder(HttpResponseStatus.INTERNAL_SERVER_ERROR))
         }
       }
@@ -58,11 +83,9 @@ class WebpageResource(implicit website: Website[_ <: Session]) extends MutableWe
 }
 
 object WebpageResource {
-  def apply(path: String, createFunction: => RequestHandler, pageScope: Scope = Scope.Request)(implicit website: Website[_ <: Session]) = new WebpageResource {
-    val link = path
-
-    matchers += matches(path)
-    creator := ((request: HttpRequest) => createFunction)
-    scope := pageScope
-  }
+  def apply(path: String,
+            createFunction: => RequestHandler,
+            pageScope: Scope,
+            pre: (HttpRequest => RequestResult)*)
+           (implicit website: Website[_ <: Session]) = new WebpageResource(path, createFunction, pageScope, pre: _*)(website)
 }

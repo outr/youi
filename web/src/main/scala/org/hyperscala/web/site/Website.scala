@@ -1,14 +1,14 @@
 package org.hyperscala.web.site
 
-import com.outr.webcommunicator.netty._
 import com.outr.webcommunicator.netty.communicator.NettyCommunicatorManager
+import handler.RequestHandler
 import java.util.UUID
 import org.powerscala.{Updatable, Logging}
 import org.hyperscala.web.session.{MapSession, Session}
 import org.powerscala.concurrent.Time._
 
-import org.powerscala.reflect._
 import org.powerscala.concurrent.Executor
+import org.jboss.netty.channel.{MessageEvent, ChannelHandlerContext}
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -16,10 +16,39 @@ import org.powerscala.concurrent.Executor
 trait Website[S <: Session] extends NettyCommunicatorManager[WebpageConnection] with Logging with Updatable {
   implicit val thisWebsite = this
 
+  /**
+   * The key used for cookie naming.
+   *
+   * Defaults to the class name.
+   */
   def sessionCookieKey = getClass.getSimpleName
+
+  /**
+   * The lifetime of the cookie in seconds.
+   *
+   * Defaults to Int.MaxValue.
+   */
   def sessionCookieLifetime = Int.MaxValue
 
-  def host: String = "localhost"
+  /**
+   * If set to true will attempt to set a wildcard domain cookie to match sub-domains.
+   *
+   * Defaults to true.
+   */
+  def sessionCookieWildcard = true
+
+  /**
+   * The host to default bind to.
+   *
+   * Defaults to null (wildcard)
+   */
+  def host: String = null
+
+  /**
+   * The port to default bind to.
+   *
+   * Defaults to 8080
+   */
   def port: Int = 8080
 
   /**
@@ -53,13 +82,13 @@ trait Website[S <: Session] extends NettyCommunicatorManager[WebpageConnection] 
     super.initialize()
 
     // Statically load all referenced vals that are of type WebResourceHandler
-    getClass.methods.foreach {
-      case m if (m.returnType.`type`.hasType(classOf[WebResource])) => {
-        val resource = m[WebResource](Website.this)
-        register(resource)
-      }
-      case _ =>
-    }
+//    getClass.methods.foreach {
+//      case m if (m.returnType.`type`.hasType(classOf[WebResource])) => {
+//        val resource = m[WebResource](Website.this)
+//        register(resource)
+//      }
+//      case _ =>
+//    }
   }
 
   protected[web] final def instantiateSession(id: String) = {
@@ -76,6 +105,15 @@ trait Website[S <: Session] extends NettyCommunicatorManager[WebpageConnection] 
         case Some((key, value)) => _sessions -= key
         case None => warn("Unable to find session key to remove session!")
       }
+    }
+  }
+
+  override protected def invokeHandler(context: ChannelHandlerContext, event: MessageEvent, handler: RequestHandler) {
+    handler match {
+      case contextual: Contextual => WebContext(contextual.webContext, checkIn = true) {
+        super.invokeHandler(context, event, handler)
+      }
+      case _ => super.invokeHandler(context, event, handler)
     }
   }
 

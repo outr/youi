@@ -17,7 +17,11 @@ object StyleSheetPersistence extends ValuePersistence[StyleSheet] {
 
   def toString(t: StyleSheet, clazz: Class[_]) = t.properties.collect {
     case p: StyleSheetAttribute[_] if (p.modified) => {
-      Page().intercept.renderAttribute.fire(p).map(pa => "%s: %s".format(p.name(), p.attributeValue))
+      val option = Page() match {
+        case null => Some(p)
+        case page => page.intercept.renderAttribute.fire(p)
+      }
+      option.map(pa => "%s: %s".format(p.name(), p.attributeValue))
     }
   }.flatten.mkString("; ")
 

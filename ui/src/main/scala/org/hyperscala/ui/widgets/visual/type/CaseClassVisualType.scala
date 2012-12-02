@@ -11,7 +11,7 @@ import org.powerscala.bus.Routing
  * @author Matt Hicks <matt@outr.com>
  */
 object CaseClassVisualType extends VisualType[AnyRef] {
-  def valid(details: VisualBuilder[_]) = details.clazz.isCase
+  def valid(details: VisualBuilder[_]) = details.clazz.isCase && details.selection.isEmpty
 
   def create(property: StandardProperty[AnyRef], details: VisualBuilder[AnyRef]) = {
     property.listeners.synchronous {

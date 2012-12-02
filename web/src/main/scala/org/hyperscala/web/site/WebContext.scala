@@ -44,6 +44,38 @@ object WebContext extends Logging {
 
   def inContext = current.get() != null
 
+  def wrap[T](website: Website[_ <: Session], session: Session = null, webpage: Webpage = null, url: URL = null, headers: Map[String, String] = Map.empty, cookies: Cookies = Cookies(Map.empty, Map.empty), checkIn: Boolean = true)(action: => T): T = {
+    val context = new WebContext
+    val previous = current.get()
+    val previousPage = Page.instance.get()
+    val previousBus = Bus.current
+    try {
+      context.website = website
+      context.session = session
+      context.webpage = webpage
+      context.url = url
+      context.headers = headers
+      context.cookies = cookies
+      Page.instance.set(context.webpage)
+
+      if (checkIn) {
+        if (context.webpage != null) {
+          context.webpage.checkIn()
+        } else if (context.session != null) {
+          context.session.checkIn()
+        }
+      }
+      if (context.webpage != null) {
+        Bus.current = context.webpage.bus
+      }
+      action
+    } finally {
+      current.set(previous)
+      Page.instance.set(previousPage)
+      Bus.current = previousBus
+    }
+  }
+
   protected[web] def apply[T](context: WebContext, checkIn: Boolean)(action: => T): T = {
     val previous = current.get()
     current.set(context)
@@ -87,18 +119,20 @@ object WebContext extends Logging {
       context.cookies = Cookies(cookies, cookies)
 
       // Load or create session
-      val sessionCookie = context.cookies.get(website.sessionCookieKey) match {
+      val cs = List(context.cookies.get("%sWild".format(website.sessionCookieKey)), context.cookies.get(website.sessionCookieKey)).flatten
+      val sessionCookie = cs.headOption match {
         case Some(cookie) => cookie
         case None => {
-          val domain = context.url.domain match {
-            case d if (d.indexOf('.') == -1) => null
-            case d => d
-          }
           val cookie = Cookie(name = website.sessionCookieKey,
                               value = Unique(),
-                              domain = domain,
                               maxAge = website.sessionCookieLifetime)
           context.cookies(cookie)   // Set a new cookie for the response
+          context.url.domain match {    // Set a cookie for all subdomains
+            case d if (website.sessionCookieWildcard && d.indexOf('.') != -1) => {
+              context.cookies(cookie.copy(name = "%sWild".format(cookie.name), domain = ".%s".format(d)))
+            }
+            case _ => // Don't set a wildcard cookie
+          }
           cookie
         }
       }

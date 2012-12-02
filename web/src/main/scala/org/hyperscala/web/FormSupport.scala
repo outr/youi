@@ -34,7 +34,7 @@ trait FormSupport extends Webpage {
               case _ => t.formValue := v.head
             }
           }
-          case _ => println("Unable to find %s = %s".format(key, values.asInstanceOf[Array[String]].head))
+          case _ => warn("Unable to find %s = %s".format(key, values.asInstanceOf[Array[String]].head))
         }
       }
     }

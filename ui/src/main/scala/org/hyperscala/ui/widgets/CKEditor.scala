@@ -15,9 +15,9 @@ object CKEditor extends Module {
 
   def version = Version(4, 0)
 
-  def load(page: Webpage) = {
-    page.require(Realtime)
+  override def dependencies = List(Realtime)
 
+  def load(page: Webpage) = {
     page.website.register(PathHandler("/cke/", "ckeditor/"))
 
     page.head.contents += new tag.Script(mimeType = "text/javascript", src = "/cke/ckeditor.js")

@@ -18,9 +18,9 @@ object HeadScript extends Module {
 
   def version = Version(1)
 
-  def load(page: Webpage) = {
-    page.require(jQuery, jQuery182)
+  override def dependencies = List(InterfaceWithDefault(jQuery, jQuery182))
 
+  def load(page: Webpage) = {
     page.intercept.renderAttribute {
       case ep: EventProperty => Routing.Stop    // Don't render JavaScript in HTML
     }

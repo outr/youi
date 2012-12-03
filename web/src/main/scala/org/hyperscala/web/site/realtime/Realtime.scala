@@ -1,15 +1,17 @@
 package org.hyperscala.web.site.realtime
 
-import org.hyperscala.web.module.{jQuery, IdentifyTags, jQuery182, Module}
-import org.hyperscala.web.site.{JavaScriptMessage, WebpageConnection, Webpage, Website}
+import org.hyperscala.web.module._
+import org.hyperscala.web.site.{WebpageConnection, Webpage, Website}
 
 import org.hyperscala.html._
 import org.hyperscala.javascript.JavaScriptContent
 import java.util.UUID
 import annotation.tailrec
-import org.powerscala.Version
 
 import org.powerscala.json._
+import org.hyperscala.web.module.IdentifyTags
+import org.hyperscala.web.site.JavaScriptMessage
+import org.powerscala.Version
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -19,11 +21,9 @@ object Realtime extends Module {
 
   def version = Version(1)
 
-  def load(page: Webpage) = {   // TODO: fix bug causing jQuery to be loaded after other scripts - prioritization
-    // Module requirements
-    page.require(IdentifyTags)  // Make sure that every element has an id
-    page.require(jQuery, jQuery182)   // jQuery is necessary
+  override def dependencies = List(InterfaceWithDefault(jQuery, jQuery182), IdentifyTags)
 
+  def load(page: Webpage) = {   // TODO: fix bug causing jQuery to be loaded after other scripts - prioritization
     // Configure JavaScript on page
     Website().register("/js/communicator.js", "communicator.js")
     Website().register("/js/realtime.js", "realtime.js")

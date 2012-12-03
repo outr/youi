@@ -12,9 +12,9 @@ object jQueryUI191 extends Module {
 
   def version = Version(1, 9, 1)
 
-  def load(page: Webpage) = {
-    page.require(jQuery182)
+  override def dependencies = List(InterfaceWithDefault(jQuery, jQuery182))
 
+  def load(page: Webpage) = {
     page.website.register("jquery_ui/jquery-ui-1.9.1.custom.min.js")
     page.website.register("jquery_ui/jquery-ui-1.9.1.custom.min.css")
     page.website.register("jquery_ui/images/ui-bg_flat_0_aaaaaa_40x100.png")

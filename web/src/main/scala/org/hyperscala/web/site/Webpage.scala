@@ -10,7 +10,7 @@ import com.google.common.net.HttpHeaders
 import org.hyperscala.html._
 import org.hyperscala.io.HTMLWriter
 import org.jboss.netty.buffer.{ChannelBuffers, ChannelBuffer}
-import org.hyperscala.web.module.{Interface, Module}
+import org.hyperscala.web.module.ModularPage
 import org.powerscala.hierarchy.{Parent, Element, ContainerView}
 import org.hyperscala.web.session.MapSession
 import org.hyperscala.css.StyleSheet
@@ -23,7 +23,7 @@ import org.powerscala.event.Event
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class Webpage extends Page with RequestHandler with Parent with PropertyParent with Temporal with WorkQueue with Contextual {
+class Webpage extends Page with ModularPage with RequestHandler with Parent with PropertyParent with Temporal with WorkQueue with Contextual {
   Page.instance.set(this)
 
   val name = () => getClass.getSimpleName
@@ -65,83 +65,6 @@ class Webpage extends Page with RequestHandler with Parent with PropertyParent w
   def title = head.title.content
 
   val view = new ContainerView[HTMLTag](html)
-
-  private var interfaces = Map.empty[String, Module]
-  private var modules = Map.empty[String, Module]
-  private var initializedModules = Set.empty[String]
-  private var pageRendered = false
-  intercept.beforeRender {
-    case html: tag.HTML => synchronized {
-      pageRendered = true
-      if (modules.size != initializedModules.size) {
-        modules.values.foreach {
-          case module => {
-            if (!initializedModules.contains(module.name)) {    // Module not initialized yet
-              module.load(this)
-              module.interfaces.foreach {
-                case interface => {
-                  interfaces -= interface.name
-                }
-              }
-              initializedModules += module.name
-            }
-          }
-        }
-      }
-      if (interfaces.size > 0) {
-        interfaces.foreach {          // Check for defaults
-          case (interface, default) => if (default != null) {
-            require(default)
-            interfaces -= interface
-          }
-        }
-        if (interfaces.size > 0) {    // Still unimplemented interfaces
-          throw new RuntimeException("Unimplemented interface(s) found: %s".format(interfaces.keys.mkString(", ")))
-        }
-      }
-    }
-  }
-  def require(module: Module) = synchronized {
-    modules.get(module.name) match {
-      case Some(current) => current.version.compare(module.version) match {
-        case -1 => // Nothing changes, the current is the newer version
-        case 0 => // Nothing changes, they are both the same
-        case 1 => {
-          if (initializedModules.contains(module.name)) {
-            throw new RuntimeException("Module %s already initialized on page with earlier version (%s)".format(module.name, module.version))
-          }
-          modules += module.name -> module
-          if (pageRendered) {   // Page has already rendered, so load immediately
-            module.load(this)
-            initializedModules += module.name
-          }
-        }
-      }
-      case None => {
-        modules += module.name -> module
-        if (pageRendered) {   // Page has already rendered, so load immediately
-          module.load(this)
-          initializedModules += module.name
-        }
-      }
-    }
-  }
-  def require(interface: Interface, default: Module = null): Unit = synchronized {
-    if (pageRendered) {
-      if (modules.values.find(m => m.interfaces.find(i => i.name == interface.name).nonEmpty).isEmpty) {
-        // Interface not already loaded
-        if (default == null) {
-          throw new RuntimeException("Unimplemented interface found: %s".format(interface.name))
-        } else {
-          require(default)
-        }
-      }
-    } else interfaces.get(interface.name) match {
-      case Some(module) if (module != null && default != null && module.version.compare(default.version) == 1) => // Don't replace with older module
-      case Some(module) if (default == null) => // Don't replace with a null default
-      case _ => interfaces += interface.name -> default
-    }
-  }
 
   /**
    * Returns all the HTMLTags that currently reference the supplied StyleSheet in the entire Webpage hierarchy.

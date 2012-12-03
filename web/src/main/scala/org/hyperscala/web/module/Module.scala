@@ -6,10 +6,10 @@ import org.powerscala.Version
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-trait Module {
+trait Module extends Interface {
   def name: String
   def version: Version
-  def interfaces: List[Interface] = Nil
-  // TODO: add def requires: List[Module] but allow for requiring Interfaces with defaults...
+  def implements: List[Interface] = Nil
+  def dependencies: List[Interface] = Nil
   def load(page: Webpage): Unit
 }

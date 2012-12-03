@@ -5,4 +5,6 @@ package org.hyperscala.web.module
  *
  * @author Matt Hicks <matt@outr.com>
  */
-class Interface(val name: String)
+trait Interface {
+  def name: String
+}

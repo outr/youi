@@ -18,7 +18,7 @@ class RichEditorExample extends Webpage {
       case evt => println("Event: %s / %s".format(evt, content()))
     }
   }
-  val button = new tag.Button(content = "Modify") {
+  val modify = new tag.Button(content = "Modify") {
     event.click := JavaScriptEvent()
 
     listeners.synchronous {
@@ -34,7 +34,17 @@ class RichEditorExample extends Webpage {
       }
     }
   }
+  val check = new tag.Button(content = "Check") {
+    event.click := JavaScriptEvent()
+
+    listeners.synchronous {
+      case evt: ClickEvent => {
+        println("Editor Content: %s".format(editor.content()))
+      }
+    }
+  }
 
   body.contents += editor
-  body.contents += button
+  body.contents += modify
+  body.contents += check
 }

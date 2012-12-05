@@ -11,7 +11,7 @@ import org.hyperscala.web.site.realtime.Realtime
  * @author Matt Hicks <matt@outr.com>
  */
 object StringTextAreaVisualType extends VisualType[String] {
-  def valid(details: VisualBuilder[_]) = details.clazz == classOf[String] && details.selection.isEmpty && details.multiLine
+  def valid(details: VisualBuilder[_]) = details.clazz == classOf[String] && details.selection == null && details.multiLine
 
   def create(property: StandardProperty[String], details: VisualBuilder[String]) = new tag.TextArea {
     Webpage().require(Realtime)

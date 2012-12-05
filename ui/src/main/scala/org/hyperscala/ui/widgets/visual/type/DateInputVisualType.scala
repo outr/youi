@@ -39,3 +39,5 @@ class DateInputVisualType(format: String = "MM/dd/yyyy") extends InputVisualType
     }
   }
 }
+
+object DateInputVisualType extends DateInputVisualType(format = "MM/dd/yyyy")

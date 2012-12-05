@@ -11,7 +11,7 @@ import org.hyperscala.event.JavaScriptEvent
  * @author Matt Hicks <matt@outr.com>
  */
 object ListVisualType extends VisualType[Any] {
-  def valid(details: VisualBuilder[_]) = details.selection.nonEmpty
+  def valid(details: VisualBuilder[_]) = details.selection != null
 
   def create(property: StandardProperty[Any], details: VisualBuilder[Any]) = {
     val list = new ListSelect[Any](values = details.selection, nullAllowed = details.nullAllowed) {

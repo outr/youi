@@ -25,4 +25,8 @@ object Visual {
   def toggleEditing(container: HTMLTag) = container.byTag[EditableVisual[_]].foreach {
     case v => v.editing := !v.editing()
   }
+
+  def editing(enabled: Boolean, container: HTMLTag) = container.byTag[EditableVisual[_]].foreach {
+    case v => v.editing := enabled
+  }
 }

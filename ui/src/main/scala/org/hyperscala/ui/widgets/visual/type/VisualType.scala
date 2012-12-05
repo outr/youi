@@ -21,7 +21,8 @@ object VisualType {
                                           BooleanVisualType,
                                           IntInputVisualType,
                                           ListSelectVisualType,
-                                          CaseClassVisualType)
+                                          CaseClassVisualType,
+                                          DateInputVisualType)
 
   def +=(vt: VisualType[_]) = synchronized {
     _list = vt :: _list

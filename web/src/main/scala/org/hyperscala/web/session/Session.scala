@@ -14,8 +14,6 @@ import scala.Some
 // TODO: re-architect so it can be a case class or class with Properties
 // TODO: make pages first-class citizens
 trait Session extends Temporal with Listenable with WorkQueue {
-  def website: Website[_]
-
   def name = getClass.getName
 
   /**
@@ -87,7 +85,7 @@ trait Session extends Temporal with Listenable with WorkQueue {
   override def dispose() = {
     super.dispose()
 
-    website.destroySession(this)
+    Website().destroySession(this)
     map.values.foreach {
       case contextual: Contextual if (contextual.isInstanceOf[Disposable]) => WebContext(contextual.webContext, checkIn = false) {
         contextual.asInstanceOf[Disposable].dispose()

@@ -62,7 +62,9 @@ trait HTMLTag extends Tag with EventSupport {
   }
 
   protected def processText(text: String): Unit = {
-    this.asInstanceOf[Container[HTMLTag]].contents += new Text(text)
+    if (text != null && text.trim.length > 0) {
+      this.asInstanceOf[Container[HTMLTag]].contents += new Text(text)
+    }
   }
 
   def byId[T <: HTMLTag](id: String)(implicit manifest: Manifest[T]) = hierarchy.findFirst[T](t => t.id() == id)(manifest)

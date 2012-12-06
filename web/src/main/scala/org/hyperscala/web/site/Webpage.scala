@@ -30,11 +30,11 @@ class Webpage extends Page with ModularPage with RequestHandler with Parent with
 
   def defaultTitle = CaseValue.generateLabel(getClass.getSimpleName.replaceAll("\\$", ""))
 
-  val store = new MapSession(Website()) {
+  val store = new MapSession {
     override def timeout = Double.MaxValue
   }
 
-  def website = WebContext().website
+  def website = Website()
   def headers = WebContext().headers
   def url = WebContext().url
   def cookies = WebContext().cookies

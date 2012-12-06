@@ -9,6 +9,7 @@ import org.powerscala.concurrent.Time._
 import org.powerscala.concurrent.Executor
 import org.jboss.netty.channel.{MessageEvent, ChannelHandlerContext}
 import com.outr.webcommunicator.netty.handler.RequestHandler
+import com.outr.webcommunicator.netty.NettyWebapp
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -66,7 +67,7 @@ trait Website[S <: Session] extends NettyCommunicatorManager[WebpageConnection] 
   def cookies = WebContext().cookies
   def session = WebContext().session.asInstanceOf[S]
 
-  object application extends MapSession(this) {
+  object application extends MapSession {
     override def timeout = Double.MaxValue
   }
 
@@ -144,5 +145,5 @@ trait Website[S <: Session] extends NettyCommunicatorManager[WebpageConnection] 
 }
 
 object Website {
-  def apply() = WebContext().website
+  def apply() = NettyWebapp().asInstanceOf[Website[_ <: Session]]
 }

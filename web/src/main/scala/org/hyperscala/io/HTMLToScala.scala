@@ -5,9 +5,11 @@ import org.jdom2.input.SAXBuilder
 import java.io.{FileWriter, File, StringReader}
 import io.Source
 import org.htmlcleaner.{PrettyXmlSerializer, HtmlCleaner}
-import org.hyperscala.Unique
+import org.hyperscala.{Markup, Unique}
 import org.hyperscala.web.site.Webpage
 import org.powerscala.reflect.DynamicCompiler
+import swing.FileChooser
+import java.util.prefs.Preferences
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -75,5 +77,42 @@ object HTMLToScala {
       source.mkString
     }
     builder.build(new StringReader(content)).getRootElement
+  }
+
+  def main(args: Array[String]): Unit = {
+    Markup.UnsupportedAttributeException = false
+    val preferences = Preferences.userNodeForPackage(getClass)
+    val filePath = preferences.get("path", ".")
+    val chooser = new FileChooser(new File(filePath))
+    chooser.title = "Select the HTML file to process"
+    chooser.showOpenDialog(null) match {
+      case FileChooser.Result.Approve => {
+        val file = chooser.selectedFile
+        preferences.put("path", file.getParentFile.getAbsolutePath)
+
+        val webpage = toPage(Source.fromFile(file), clean = true)
+
+        val savePath = preferences.get("savePath", preferences.get("path", "."))
+        val saver = new FileChooser(new File(savePath))
+        saver.title = "Select the location to save the generate code"
+        saver.showSaveDialog(null) match {
+          case FileChooser.Result.Approve => {
+            val file = saver.selectedFile
+            preferences.put("savePath", file.getParentFile.getAbsolutePath)
+
+            val scala = toScala(webpage, file.getParentFile.getName, file.getName.substring(0, file.getName.indexOf('.')))
+            val writer = new FileWriter(file)
+            try {
+              writer.write(scala)
+            } finally {
+              writer.flush()
+              writer.close()
+            }
+          }
+          case _ => // Cancelled save
+        }
+      }
+      case _ => // Cancelled open
+    }
   }
 }

@@ -84,6 +84,7 @@ object HyperScalaBuild extends Build {
                                           commonsFileUpload,
                                           commonsIO,
                                           webcommunicator))
+    .settings(libraryDependencies <+= scalaVersion { "org.scala-lang" % "scala-swing" % _ })
   lazy val ui = Project("ui", file("ui"), settings = createSettings("hyperscala-ui"))
     .dependsOn(web)
   lazy val generator = Project("generator", file("generator"), settings = createSettings("hyperscala-generator"))

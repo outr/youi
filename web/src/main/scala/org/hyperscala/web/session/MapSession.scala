@@ -1,11 +1,10 @@
 package org.hyperscala.web.session
 
-import org.hyperscala.web.site.Website
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-class MapSession(val website: Website[_]) extends Session {
+class MapSession extends Session {
   var map = Map.empty[Any, Any]
 
   def apply[T](key: Any) = map(key).asInstanceOf[T]

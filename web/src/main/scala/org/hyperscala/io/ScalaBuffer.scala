@@ -116,7 +116,7 @@ abstract class ScalaBuffer {
 
   def valuify(tag: HTMLTag, name: String, v: Any) = v match {
     case s: String => "\"%s\"".format(s)
-    case l: List[_] if (name == "class") => "List(%s)".format(l.mkString("\"", ", ", "\""))
+    case l: List[_] if (name == "class") => "List(%s)".format(l.map(v => "\"%s\"".format(v)).mkString(", "))
     case js: JavaScriptString => "JavaScriptString(%s)".format(createWrappedString(js.content))
     case l: Length if (l.name() == null && l.value.endsWith("px")) => "%s.px".format(l.pixels)
     case e: EnumEntry[_] => "%s.%s".format(e.parent.name, e.name())

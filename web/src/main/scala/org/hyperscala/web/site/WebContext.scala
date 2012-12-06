@@ -14,7 +14,6 @@ import org.powerscala.Logging
  * @author Matt Hicks <matt@outr.com>
  */
 class WebContext {
-  var website: Website[_ <: Session] = _
   private var _webpage: Webpage = _
   def webpage = {
     if (_webpage == null) {
@@ -44,13 +43,12 @@ object WebContext extends Logging {
 
   def inContext = current.get() != null
 
-  def wrap[T](website: Website[_ <: Session], session: Session = null, webpage: Webpage = null, url: URL = null, headers: Map[String, String] = Map.empty, cookies: Cookies = Cookies(Map.empty, Map.empty), checkIn: Boolean = true)(action: => T): T = {
+  def wrap[T](session: Session = null, webpage: Webpage = null, url: URL = null, headers: Map[String, String] = Map.empty, cookies: Cookies = Cookies(Map.empty, Map.empty), checkIn: Boolean = true)(action: => T): T = {
     val context = new WebContext
     val previous = current.get()
     val previousPage = Page.instance.get()
     val previousBus = Bus.current
     try {
-      context.website = website
       context.session = session
       context.webpage = webpage
       context.url = url
@@ -104,7 +102,6 @@ object WebContext extends Logging {
     val context = new WebContext
     current.set(context)
     try {
-      context.website = website
       context.headers = request.getHeaders.map(entry => entry.getKey -> entry.getValue).toMap
       context.url = request
 

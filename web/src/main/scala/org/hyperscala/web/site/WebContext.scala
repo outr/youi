@@ -23,9 +23,11 @@ class WebContext {
   }
   def webpage_=(page: Webpage) = {
     _webpage = page
-    Page.instance.set(page)
-    page.webContext = this
-    Bus.current = page.bus
+    if (page != null) {
+      Page.instance.set(page)
+      page.webContext = this
+      Bus.current = page.bus
+    }
   }
   var headers: Map[String, String] = _
   var url: URL = _

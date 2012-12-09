@@ -29,6 +29,7 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
 
   def page = _page
   def page_=(page: Webpage) = {
+//    info("Initialize page with WebpageConnection")
     _page = page
     initializePage()    // TODO: why does commenting this out throw OutOfContextExceptions?
   }
@@ -47,7 +48,7 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
     page.listeners.synchronous.filter(evt => true) {    // Accept all events on this pages' bus
       case evt: PropertyChangeEvent if (applyingProperty == evt.property && applyingValue == evt.newValue) => {
         // Ignore a change initialized by this connector (avoid recursive changes)
-//        info("Ignoring change being appied: %s".format(applyingValue))
+//        info("Ignoring change being applied: %s".format(applyingValue))
         applyingProperty = null   // Only necessary to ignore the first event
         applyingValue = null
       }
@@ -109,6 +110,7 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
   }
 
   def propertyChanged(t: HTMLTag, property: PropertyAttribute[_], oldValue: Any, newValue: Any) = {
+//    info("propertyChanged: %s.%s from %s to %s".format(t.xmlLabel, property.name(), oldValue, newValue))
     if (t.root[Webpage].nonEmpty && property != t.style && !t.isInstanceOf[tag.Text]) {
       if (property == t.id && oldValue == null) {
         // Ignore initial id change as it is sent when added
@@ -169,6 +171,11 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
   def send(js: JavaScriptMessage): Unit = {
     val message = generate(js)
     send("eval", message)
+  }
+
+  override def send(event: String, message: String) {
+//    info("Sending event: %s, message: %s".format(event, message))
+    super.send(event, message)
   }
 }
 

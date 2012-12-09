@@ -84,6 +84,8 @@ trait HTMLTag extends Tag with EventSupport {
   def formValue: StandardProperty[String] = {
     throw new UnsupportedOperationException("%s doesn't support updating value!".format(xmlLabel))
   }
+
+  def rendered() = {}
 }
 
 class StyleProperty(_name: String, inclusion: InclusionMode)(implicit parent: PropertyParent) extends PropertyAttribute[StyleSheet](_name, null, inclusion = inclusion)(StyleSheetPersistence, parent, Manifest.classType[StyleSheet](classOf[StyleSheet])) with LazyProperty[StyleSheet] {

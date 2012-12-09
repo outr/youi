@@ -107,14 +107,18 @@ class Webpage extends Page with ModularPage with RequestHandler with Parent with
   }
 
   /**
-   * Called before the page is reloaded.
+   * Called before the page is (re)loaded.
    */
   def pageLoading() = {}
 
   /**
-   * Called when the page is reloaded.
+   * Called after the page is (re)loaded.
    */
-  def pageLoaded() = {}
+  def pageLoaded() = {
+    view.foreach {
+      case tag => tag.rendered()
+    }
+  }
 
   protected def processPost(content: ChannelBuffer) = {}
 

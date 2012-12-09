@@ -60,5 +60,6 @@ function jsEval(message) {
     var json = jQuery.parseJSON(message);
     var content = json['content'];
     var instruction = json['instruction'];
+//    console.log('Instruction: ' + instruction + ', Content: ' + content);
     eval(instruction);
 }

@@ -13,6 +13,8 @@ import com.outr.webcommunicator.netty.handler.PathHandler
  * @author Matt Hicks <mhicks@powerscala.org>
  */
 object HyperscalaSite extends Website[MapSession] {
+  override def port = 8888
+
   val site = new {
     val about = new WebpageResource {
       matchers += matches("/")
@@ -32,6 +34,7 @@ object HyperscalaSite extends Website[MapSession] {
     val autoComplete = WebpageResource("/example/autocomplete.html", new AutoCompleteExample, Scope.Session)
     val richEditor = WebpageResource("/example/richeditor.html", new RichEditorExample, Scope.Page)
     val nivoSlider = WebpageResource("/example/nivoslider.html", new NivoSliderExample, Scope.Page)
+    val dialog = WebpageResource("/example/dialog.html", new DialogExample, Scope.Page)
   }
   val todoMVC = WebpageResource("/todomvc.html", TodoMVC, Scope.Session)
 

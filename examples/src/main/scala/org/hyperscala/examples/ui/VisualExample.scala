@@ -22,40 +22,40 @@ class VisualExample extends RealtimeWebpage {
     case evt: PropertyChangeEvent => println("New Value: %s".format(evt.newValue))
   }
 
-  val stringVisual = Visual[String]().label("String Visual").editing.required.validation(emptyValidator).build()
+  val stringVisual = Visual[String]().label("String Visual").editing(true).required.validation(emptyValidator).build()
   stringVisual.property := "Hello World!"
 
-  val bindingVisual = Visual[String]().label("Binding Visual").editing.bind(property, "name").build()
+  val bindingVisual = Visual[String]().label("Binding Visual").editing(true).bind(property, "name").build()
 
-  val enumVisual = Visual[Country]().label("Country Visual").editing.build()
+  val enumVisual = Visual[Country]().label("Country Visual").editing(true).build()
   enumVisual.property.listeners.synchronous {
     case evt: PropertyChangeEvent => println("Enum Changed: %s -> %s".format(evt.oldValue, evt.newValue))
   }
 
-  val booleanVisual = Visual[Boolean]().label("Boolean Visual").editing.build()
+  val booleanVisual = Visual[Boolean]().label("Boolean Visual").editing(true).build()
   booleanVisual.property.listeners.synchronous {
     case evt: PropertyChangeEvent => println("Boolean Changed: %s -> %s".format(evt.oldValue, evt.newValue))
   }
 
-  val dateVisual = Visual[Long]().visualType(new DateInputVisualType()).label("Date Visual").editing.build()
+  val dateVisual = Visual[Long]().visualType(new DateInputVisualType()).label("Date Visual").editing(true).build()
   dateVisual.property.listeners.synchronous {
     case evt: PropertyChangeEvent => println("Date Changed: %s - %s".format(evt.oldValue, evt.newValue))
   }
 
-  val enumsVisual = Visual[List[Country]]().label("Countries Visual").editing.itemizedType[Country]().build()
+  val enumsVisual = Visual[List[Country]]().label("Countries Visual").editing(true).itemizedType[Country]().build()
   enumsVisual.property := List(Country.AI, Country.ZA)
   enumsVisual.property.listeners.synchronous {
     case evt: PropertyChangeEvent => println("Countries Changed: %s -> %s".format(evt.oldValue, evt.newValue))
   }
 
-  val stringsVisual = Visual[List[String]]().label("Strings Visual").editing.itemizedType[String] {
+  val stringsVisual = Visual[List[String]]().label("Strings Visual").editing(true).itemizedType[String] {
     case vb => vb.validation(emptyValidator)
   }.build()
   stringsVisual.property.listeners.synchronous {
     case evt: PropertyChangeEvent => println("String Changed: %s -> %s".format(evt.oldValue, evt.newValue))
   }
 
-  val caseClassesVisual = Visual[List[TestPerson]]().label("Case Classes Visual").editing.itemizedType[TestPerson]().build()
+  val caseClassesVisual = Visual[List[TestPerson]]().label("Case Classes Visual").editing(true).itemizedType[TestPerson]().build()
   caseClassesVisual.property.listeners.synchronous {
     case evt: PropertyChangeEvent => println("Case Classes Changed: %s -> %s".format(evt.oldValue, evt.newValue))
   }

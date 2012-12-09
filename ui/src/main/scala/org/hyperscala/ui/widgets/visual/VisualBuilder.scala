@@ -41,7 +41,7 @@ case class VisualBuilder[T](_name: String = null,
   def editable = _editable
   def editable(e: Boolean) = copy(_editable = e)
   def isEditing = _editing
-  def editing = copy(_editing = true, _editable = true)
+  def editing(e: Boolean) = copy(_editing = e)
   def selection = _selection
   def selection(s: List[T]) = copy(_selection = s)
   def nullAllowed = _nullAllowed

@@ -15,6 +15,12 @@ class Length(val value: String) extends EnumEntry[Length] with AttributeValue {
     0
   }
 
+  lazy val percent = if (value.endsWith("%")) {
+    value.substring(0, value.length - 1).toInt
+  } else {
+    0
+  }
+
   override def toString() = if (name() != null) {
     super.toString()
   } else {

@@ -12,6 +12,8 @@ object jQuery182 extends Module {
 
   def version = Version(1, 8, 2)
 
+  override def implements = List(jQuery)
+
   def load(page: Webpage) = {
     page.website.register("/jquery-1.8.2.js", "jquery-1.8.2.min.js")
     page.head.contents += new tag.Script(mimeType = "text/javascript", src = "/jquery-1.8.2.js")

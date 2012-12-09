@@ -28,7 +28,10 @@ case class Visualize(_labeled: Boolean = true,
     }
     var instance = this
     manifest.erasure.caseValues.foreach(cv => {
-      val name = "%s.%s".format(cn, cv.name)
+      val name = cn match {
+        case "" => cv.name
+        case _ => "%s.%s".format(cn, cv.name)
+      }
       val hierarchy = if (basePath == null) {
         cv.name
       } else {
@@ -59,7 +62,7 @@ case class Visualize(_labeled: Boolean = true,
                     .required(_required)
                     .editable(_editable)
                     .validateOnChange(_validateOnChange)
-                    .editing
+                    .editing(_editing)
                     .bind(bindProperty, hierarchy, valueUpdatesProperty, propertyUpdatesValue)
                     .group(group)
     field[Any](builder)
@@ -71,6 +74,10 @@ case class Visualize(_labeled: Boolean = true,
     val original = _fields.find(vb => vb.name == name).getOrElse(throw new NullPointerException("Unable to find field by name: %s".format(name))).asInstanceOf[VisualBuilder[T]]
     val modified = modifier(original)
     copy(_fields = _fields.map(vb => if (vb.name == original.name) modified else vb))
+  }
+
+  def visuals(names: String*) = names.collect {
+    case name => _fields.find(vb => vb.name == name).getOrElse(throw new NullPointerException("Unable to find visual by name: '%s'".format(name))).build()
   }
 
   def groups() = _fields.collect {

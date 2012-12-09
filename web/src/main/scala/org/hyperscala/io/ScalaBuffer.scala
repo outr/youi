@@ -62,11 +62,14 @@ abstract class ScalaBuffer {
           if (children) {
             depth += 1
             writeAttributes(tag, all = false, prefix = null)
-            tag.asInstanceOf[Container[_]].contents.foreach {
-              case child: HTMLTag => writeTag(child)
-              case child: JavaScriptString => if (child.content.trim.nonEmpty) {
-                writeLine("contents += JavaScriptString(%s)".format(createWrappedString(child.content)))
+            tag match {
+              case container: Container[_] => container.contents.foreach {
+                case child: HTMLTag => writeTag(child)
+                case child: JavaScriptString => if (child.content.trim.nonEmpty) {
+                  writeLine("contents += JavaScriptString(%s)".format(createWrappedString(child.content)))
+                }
               }
+              case _ => // Not a container
             }
             depth -= 1
             writeLine("}")
@@ -119,6 +122,7 @@ abstract class ScalaBuffer {
     case l: List[_] if (name == "class") => "List(%s)".format(l.map(v => "\"%s\"".format(v)).mkString(", "))
     case js: JavaScriptString => "JavaScriptString(%s)".format(createWrappedString(js.content))
     case l: Length if (l.name() == null && l.value.endsWith("px")) => "%s.px".format(l.pixels)
+    case l: Length if (l.name() == null && l.value.endsWith("%")) => "%s.pct".format(l.percent)
     case e: EnumEntry[_] => "%s.%s".format(e.parent.name, e.name())
     case i: Int => i.toString
     case _ => throw new RuntimeException("Unsupported value: %s.%s (%s: %s)".format(tag.getClass.getName, name, v, v.asInstanceOf[AnyRef].getClass.getName))

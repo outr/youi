@@ -20,7 +20,7 @@ object ListSelectVisualType extends VisualType[List[_]] {
 
       def visual = editor.asInstanceOf[Visual[_]]
 
-      def createEditor() = details.itemizedType.labeled(l = false).editing.build()
+      def createEditor() = details.itemizedType.labeled(l = false).editing(e = true).build()
 
       property bind list
       list bind property

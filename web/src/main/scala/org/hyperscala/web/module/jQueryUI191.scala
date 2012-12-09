@@ -12,6 +12,8 @@ object jQueryUI191 extends Module {
 
   def version = Version(1, 9, 1)
 
+  override def implements = List(jQueryUI)
+
   override def dependencies = List(InterfaceWithDefault(jQuery, jQuery182))
 
   def load(page: Webpage) = {

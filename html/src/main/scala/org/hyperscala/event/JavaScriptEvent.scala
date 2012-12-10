@@ -18,7 +18,7 @@ object JavaScriptEvent {
             preventDefault: Boolean = true,
             fireChange: Boolean = false,
             onlyLast: Boolean = true) = {
-    // TODO: require Realtime
+    // TODO: require Realtime - but it's not available in the html module
 
     val b = new StringBuilder
     if (confirmation != null) {

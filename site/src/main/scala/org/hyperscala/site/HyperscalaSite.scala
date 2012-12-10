@@ -4,7 +4,7 @@ import org.hyperscala.web.site.{WebpageResource, Website}
 import org.hyperscala.web.session.MapSession
 import org.hyperscala.examples.helloworld.HelloWorldPage
 import org.hyperscala.web.Scope
-import org.hyperscala.examples.basic.{LinkedHTMLExample, StaticHTMLExample, RealtimeWebpageExample, FormExample}
+import org.hyperscala.examples.basic._
 import org.hyperscala.examples.ui._
 import org.hyperscala.examples.todomvc.TodoMVC
 import com.outr.webcommunicator.netty.handler.PathHandler
@@ -36,7 +36,7 @@ object HyperscalaSite extends Website[MapSession] {
     val richEditor = WebpageResource("/example/richeditor.html", new RichEditorExample, Scope.Page)
     val nivoSlider = WebpageResource("/example/nivoslider.html", new NivoSliderExample, Scope.Page)
     val dialog = WebpageResource("/example/dialog.html", new DialogExample, Scope.Page)
-    val linked = WebpageResource("/example/linked.html", new LinkedHTMLExample, Scope.Page)
+    val dynamic = WebpageResource("/example/dynamic.html", new DynamicContentExample, Scope.Page)
   }
   val todoMVC = WebpageResource("/todomvc.html", TodoMVC, Scope.Session)
 

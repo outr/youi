@@ -9,6 +9,7 @@ import com.outr.webcommunicator.netty.handler.RequestHandler
 import org.powerscala.property.event.PropertyChangingEvent
 import org.powerscala.bus.Routing
 import org.hyperscala.Unique
+import org.jboss.netty.channel.ChannelHandlerContext
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -40,11 +41,11 @@ class WebpageResource(implicit website: Website[_ <: Session]) extends MutableWe
     scope := pageScope
   }
 
-  override protected def apply(request: HttpRequest) = {
+  override protected def apply(context: ChannelHandlerContext, request: HttpRequest) = {
     WebContext.wrap {
-      WebContext.parse(request)
+      WebContext.parse(context, request)
       try {
-        val option = super.apply(request)
+        val option = super.apply(context, request)
         if (option.nonEmpty) {
           val handler = option.get
           handler match {
@@ -57,9 +58,9 @@ class WebpageResource(implicit website: Website[_ <: Session]) extends MutableWe
         option
       } catch {
         case t: Throwable => {
-          WebContext.webpage() match {
-            case null => Website().errorThrown(null, t)
-            case page => page.errorThrown(t)
+          WebContext.webpage.get() match {
+            case Some(page) => page.errorThrown(t)
+            case None => Website().errorThrown(null, t)
           }
           Some(RequestHandler.responder(HttpResponseStatus.INTERNAL_SERVER_ERROR))
         }

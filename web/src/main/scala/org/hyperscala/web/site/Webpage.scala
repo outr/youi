@@ -40,6 +40,8 @@ class Webpage extends Page with ModularPage with RequestHandler with Parent with
   def headers = WebContext.headers()
   def url = WebContext.url()
   def cookies = WebContext.cookies()
+  def localAddress = WebContext.localAddress()
+  def remoteAddress = WebContext.remoteAddress()
 
   /**
    * The amount of time in seconds this webpage will continue to be cached in memory without any communication.

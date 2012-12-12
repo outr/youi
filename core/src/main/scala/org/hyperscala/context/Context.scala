@@ -86,7 +86,7 @@ class Context {
    * @tparam T the value to return
    * @return T
    */
-  def apply[T](name: String) = contextInstance.map(name).asInstanceOf[T]
+  def apply[T](name: String) = contextInstance(name).asInstanceOf[T]
 
   /**
    * Gets the value back in an Option
@@ -95,7 +95,7 @@ class Context {
    * @tparam T the value to return
    * @return Option[T]
    */
-  def get[T](name: String) = contextInstance.map.get(name).asInstanceOf[Option[T]]
+  def get[T](name: String) = contextInstance.get(name).asInstanceOf[Option[T]]
 
   /**
    * Gets the value back or returns the default.
@@ -105,7 +105,7 @@ class Context {
    * @tparam T the value to return
    * @return T
    */
-  def getOrElse[T](name: String, default: => T) = contextInstance.map.getOrElse(name, default).asInstanceOf[T]
+  def getOrElse[T](name: String, default: => T) = contextInstance.getOrElse(name, default).asInstanceOf[T]
 
   /**
    * Updates the value in the context
@@ -113,7 +113,7 @@ class Context {
    * @param name the key
    * @param value the new value to set
    */
-  def update(name: String, value: Any) = contextInstance.map += name -> value
+  def update(name: String, value: Any) = contextInstance(name) = value
 
   /**
    * Updates the value in the context
@@ -122,7 +122,7 @@ class Context {
    * @param value the new value to set
    * @tparam T the type
    */
-  def set[T](name: String, value: T) = contextInstance.map += name -> value
+  def set[T](name: String, value: T) = contextInstance(name) = value
 }
 
 object Context {

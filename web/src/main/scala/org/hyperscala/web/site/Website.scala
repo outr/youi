@@ -67,6 +67,8 @@ trait Website[S <: Session] extends NettyCommunicatorManager[WebpageConnection] 
   def url = WebContext.url()
   def cookies = WebContext.cookies()
   def session = WebContext.session().asInstanceOf[S]
+  def localAddress = WebContext.localAddress()
+  def remoteAddress = WebContext.remoteAddress()
 
   object application extends MapSession {
     override def timeout = Double.MaxValue

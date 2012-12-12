@@ -10,6 +10,8 @@ import org.hyperscala.{Unique, Page}
 import org.jboss.netty.handler.codec.http.{Cookie => NettyCookie, CookieDecoder, HttpRequest}
 import scala.collection.JavaConversions._
 import org.hyperscala.web.cookie.Cookie
+import org.jboss.netty.channel.ChannelHandlerContext
+import java.net.InetSocketAddress
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
@@ -26,6 +28,8 @@ object WebContext extends Context {
   val url = new ContextEntry[URL]("url")
   val cookies = new ContextEntry[Cookies]("cookies")
   val session = new ContextEntry[Session]("session")
+  val localAddress = new ContextEntry[InetSocketAddress]("localAddress")
+  val remoteAddress = new ContextEntry[InetSocketAddress]("remoteAddress")
 
   override def wrap[T](contextual: Contextual)(f: => T): T = {
     super.wrap(contextual) {
@@ -41,13 +45,18 @@ object WebContext extends Context {
   }
 
   def checkIn() = {
-    webpage() match {
-      case null => session().checkIn()
-      case page => page.checkIn()
+    webpage.get() match {
+      case Some(page) => page.checkIn()
+      case None => session().checkIn()
     }
   }
 
-  def parse(request: HttpRequest) = {
+  def parse(context: ChannelHandlerContext, request: HttpRequest) = {
+    // Process additional information
+    val channel = context.getChannel
+    localAddress := channel.getLocalAddress.asInstanceOf[InetSocketAddress]
+    remoteAddress := channel.getRemoteAddress.asInstanceOf[InetSocketAddress]
+
     // Process headers
     headers := request.getHeaders.map(entry => entry.getKey -> entry.getValue).toMap
 

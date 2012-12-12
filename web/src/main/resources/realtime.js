@@ -28,6 +28,7 @@ function jsEventHandler(e, data, fireChange, onlyLast) {
                 id: id,
                 value: element.val()
             });
+//            console.log('sending change event: ' + id + ' - ' + element.val());
         }
         // TODO: support mouse events better
         if (e.type == 'keydown' || e.type == 'keypress' || e.type == 'keyup') {

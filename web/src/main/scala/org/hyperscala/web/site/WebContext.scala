@@ -1,148 +1,91 @@
 package org.hyperscala.web.site
 
-import org.hyperscala.web.cookie.{Cookie, Cookies}
-import org.hyperscala.web.session.Session
-import org.jboss.netty.handler.codec.http.{Cookie => NettyCookie, CookieDecoder, HttpRequest}
-import scala.collection.JavaConversions._
+import org.powerscala.bus.Bus
 import com.outr.webcommunicator.URL
 import com.outr.webcommunicator.netty._
-import org.hyperscala.{Page, Unique}
-import org.powerscala.bus.Bus
-import org.powerscala.Logging
+import org.hyperscala.web.cookie.Cookies
+import org.hyperscala.web.session.Session
+import org.hyperscala.context._
+import org.hyperscala.{Unique, Page}
+import org.jboss.netty.handler.codec.http.{Cookie => NettyCookie, CookieDecoder, HttpRequest}
+import scala.collection.JavaConversions._
+import org.hyperscala.web.cookie.Cookie
 
 /**
- * @author Matt Hicks <matt@outr.com>
+ * @author Matt Hicks <mhicks@outr.com>
  */
-class WebContext {
-  private var _webpage: Webpage = _
-  def webpage = {
-    if (_webpage == null) {
-      _webpage = Page().asInstanceOf[Webpage]
-    }
-    _webpage
-  }
-  def webpage_=(page: Webpage) = {
-    _webpage = page
-    if (page != null) {
+object WebContext extends Context {
+  val webpage = new ContextEntry[Webpage]("webpage") {
+    override def onChange(page: Webpage) {
+      super.onChange(value)
       Page.instance.set(page)
-      page.webContext = this
       Bus.current = page.bus
     }
   }
-  var headers: Map[String, String] = _
-  var url: URL = _
-  var cookies: Cookies = _
-  var session: Session = _
-}
+  val headers = new ContextEntry[Map[String, String]]("headers")
+  val url = new ContextEntry[URL]("url")
+  val cookies = new ContextEntry[Cookies]("cookies")
+  val session = new ContextEntry[Session]("session")
 
-object WebContext extends Logging {
-  val current = new ThreadLocal[WebContext]
-
-  protected[web] def apply() = current.get() match {
-    case null => throw new OutOfContextException
-    case c => c
-  }
-
-  def inContext = current.get() != null
-
-  def wrap[T](session: Session = null, webpage: Webpage = null, url: URL = null, headers: Map[String, String] = Map.empty, cookies: Cookies = Cookies(Map.empty, Map.empty), checkIn: Boolean = true)(action: => T): T = {
-    val context = new WebContext
-    val previous = current.get()
-    val previousPage = Page.instance.get()
-    val previousBus = Bus.current
-    try {
-      context.session = session
-      context.webpage = webpage
-      context.url = url
-      context.headers = headers
-      context.cookies = cookies
-      Page.instance.set(context.webpage)
-
-      if (checkIn) {
-        if (context.webpage != null) {
-          context.webpage.checkIn()
-        } else if (context.session != null) {
-          context.session.checkIn()
+  override def wrap[T](contextual: Contextual)(f: => T): T = {
+    super.wrap(contextual) {
+      webpage() match {
+        case null => // Nothing to do here
+        case page => {
+          Bus.current = page.bus
+          Page.instance.set(page)
         }
       }
-      if (context.webpage != null) {
-        Bus.current = context.webpage.bus
-      }
-      action
-    } finally {
-      current.set(previous)
-      Page.instance.set(previousPage)
-      Bus.current = previousBus
+      f
     }
   }
 
-  protected[web] def apply[T](context: WebContext, checkIn: Boolean)(action: => T): T = {
-    val previous = current.get()
-    current.set(context)
-    val previousPage = Page.instance.get()    // Work-around for modularity
-    Page.instance.set(context.webpage)
-    if (context.webpage != null) {
-      Bus.current = context.webpage.bus
-    }
-    if (checkIn) {
-      if (context.webpage != null) {
-        context.webpage.checkIn()     // Webpage checks-in session
-      } else if (context.session != null) {
-        context.session.checkIn()
-      }
-    }
-    try {
-      action
-    } finally {
-      current.set(previous)
-      Page.instance.set(previousPage)
-      Bus.current = null
+  def checkIn() = {
+    webpage() match {
+      case null => session().checkIn()
+      case page => page.checkIn()
     }
   }
 
-  protected[site] def create(website: Website[_ <: Session], request: HttpRequest) = {
-    val context = new WebContext
-    current.set(context)
-    try {
-      context.headers = request.getHeaders.map(entry => entry.getKey -> entry.getValue).toMap
-      context.url = request
+  def parse(request: HttpRequest) = {
+    // Process headers
+    headers := request.getHeaders.map(entry => entry.getKey -> entry.getValue).toMap
 
-      // Process cookies
-      val cookieHeader = request.getHeader("Cookie")
-      val cookies = if (cookieHeader != null) {
-        val cookieSet = new CookieDecoder().decode(cookieHeader)
-        cookieSet.map(cookieConverter).toMap
-      } else {
-        Map.empty[String, Cookie]
-      }
-      context.cookies = Cookies(cookies, cookies)
+    // Process URL
+    url := request
 
-      // Load or create session
-      val cs = List(context.cookies.get("%sWild".format(website.sessionCookieKey)), context.cookies.get(website.sessionCookieKey)).flatten
-      val sessionCookie = cs.headOption match {
-        case Some(cookie) => cookie
-        case None => {
-          val cookie = Cookie(name = website.sessionCookieKey,
-                              value = Unique(),
-                              maxAge = website.sessionCookieLifetime)
-          context.cookies(cookie)   // Set a new cookie for the response
-          context.url.domain match {    // Set a cookie for all subdomains
-            case d if (website.sessionCookieWildcard && d.indexOf('.') != -1) => {
-              context.cookies(cookie.copy(name = "%sWild".format(cookie.name), domain = ".%s".format(d)))
-            }
-            case _ => // Don't set a wildcard cookie
+    // Process cookies
+    val cookieHeader = request.getHeader("Cookie")
+    val cookies = if (cookieHeader != null) {
+      val cookieSet = new CookieDecoder().decode(cookieHeader)
+      cookieSet.map(cookieConverter).toMap
+    } else {
+      Map.empty[String, Cookie]
+    }
+    this.cookies := Cookies(cookies, cookies)
+
+    // Load or create session
+    val cs = List(this.cookies().get("%sWild".format(Website().sessionCookieKey)), this.cookies().get(Website().sessionCookieKey)).flatten
+    val sessionCookie = cs.headOption match {
+      case Some(cookie) => cookie
+      case None => {
+        val cookie = Cookie(name = Website().sessionCookieKey,
+                            value = Unique(),
+                            maxAge = Website().sessionCookieLifetime)
+        this.cookies()(cookie)   // Set a new cookie for the response
+        url().domain match {    // Set a cookie for all subdomains
+          case d if (Website().sessionCookieWildcard && d.indexOf('.') != -1) => {
+            this.cookies()(cookie.copy(name = "%sWild".format(cookie.name), domain = ".%s".format(d)))
           }
-          cookie
+          case _ => // Don't set a wildcard cookie
         }
+        cookie
       }
-      context.session = website.sessions.get(sessionCookie.value) match {
-        case Some(s) => s.asInstanceOf[Session]
-        case None => website.instantiateSession(sessionCookie.value).asInstanceOf[Session]
-      }
-    } finally {
-      current.set(null)
     }
-    context
+    session := (Website().sessions.get(sessionCookie.value) match {
+      case Some(s) => s
+      case None => Website().instantiateSession(sessionCookie.value).asInstanceOf[Session]
+    })
   }
 
   private def cookieConverter(cookie: NettyCookie) = {

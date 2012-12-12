@@ -19,12 +19,14 @@ import org.powerscala.reflect.CaseValue
 import org.powerscala.concurrent.Time._
 import org.powerscala.concurrent.WorkQueue
 import org.powerscala.event.Event
+import java.io.IOException
+import org.hyperscala.context.Contextual
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
 class Webpage extends Page with ModularPage with RequestHandler with Parent with PropertyParent with Temporal with WorkQueue with Contextual {
-  Page.instance.set(this)
+  WebContext.webpage := this
 
   val name = () => getClass.getSimpleName
 
@@ -35,9 +37,9 @@ class Webpage extends Page with ModularPage with RequestHandler with Parent with
   }
 
   def website = Website()
-  def headers = WebContext().headers
-  def url = WebContext().url
-  def cookies = WebContext().cookies
+  def headers = WebContext.headers()
+  def url = WebContext.url()
+  def cookies = WebContext.cookies()
 
   /**
    * The amount of time in seconds this webpage will continue to be cached in memory without any communication.
@@ -82,7 +84,7 @@ class Webpage extends Page with ModularPage with RequestHandler with Parent with
 
     // Add modified or created cookies
     val encoder = new CookieEncoder(true)
-    webContext.cookies.modified.foreach {
+    cookies.modified.foreach {
       case cookie => {
         encoder.addCookie(cookie.toNettyCookie)
         response.addHeader(HttpHeaders.SET_COOKIE, encoder.encode())
@@ -96,14 +98,25 @@ class Webpage extends Page with ModularPage with RequestHandler with Parent with
     channel.write(response)
     // Set up the writer
     var lastWriteFuture: ChannelFuture = null
-    val writer = (s: String) => lastWriteFuture = channel.write(ChannelBuffers.wrappedBuffer(s.getBytes()))
-    // Write the doctype
-    writer(doctype)
-    // Stream the page back
-    val htmlWriter = HTMLWriter(writer)
-    html.write(htmlWriter)
-    lastWriteFuture.addListener(ChannelFutureListener.CLOSE)
-    pageLoaded()
+    try {
+      val writer = (s: String) => lastWriteFuture = channel.write(ChannelBuffers.wrappedBuffer(s.getBytes()))
+      // Write the doctype
+      writer(doctype)
+      // Stream the page back
+      val htmlWriter = HTMLWriter(writer)
+      html.write(htmlWriter)
+      lastWriteFuture.addListener(ChannelFutureListener.CLOSE)
+      pageLoaded()
+    } catch {
+      case exc: IOException => {
+        warn("IOException occurred while writing webpage (%s) with message: %s".format(getClass.getSimpleName, exc.getMessage))
+        try {
+          channel.close()
+        } catch {
+          case t: Throwable => // Ignore closing errors
+        }
+      }
+    }
   }
 
   /**
@@ -122,16 +135,14 @@ class Webpage extends Page with ModularPage with RequestHandler with Parent with
 
   protected def processPost(content: ChannelBuffer) = {}
 
-  override def errorThrown(t: Throwable) = if (WebContext.inContext) {
-    website.errorThrown(this, t)
-  } else {
-    error("Error occurred on page: %s".format(this), t)
-  }
+  override def errorThrown(t: Throwable) = website.errorThrown(this, t)
 
   override protected[web] def checkIn() {
     super.checkIn()
 
-    webContext.session.checkIn()    // Always update the session when the page gets a check-in
+    if (WebContext.session != null) {
+      WebContext.session().checkIn()    // Always update the session when the page gets a check-in
+    }
   }
 
   def fireLater(event: Event) = {
@@ -157,5 +168,5 @@ class Webpage extends Page with ModularPage with RequestHandler with Parent with
 }
 
 object Webpage {
-  def apply() = WebContext().webpage
+  def apply() = WebContext.webpage()
 }

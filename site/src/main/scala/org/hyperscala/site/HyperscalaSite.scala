@@ -40,14 +40,9 @@ object HyperscalaSite extends Website[MapSession] {
   }
   val todoMVC = WebpageResource("/todomvc.html", TodoMVC, Scope.Session)
 
-  register("images/slide1.jpg")
-  register("images/slide2.jpg")
-  register("images/slide3.jpg")
-  register("images/slide4.jpg")
-
-  register(PathHandler("images/", "/images/"))
-  register(PathHandler("css/", "/css/"))
-  register(PathHandler("js/", "/js/"))
+  register(PathHandler("/images/", "images/"))
+  register(PathHandler("/css/", "css/"))
+  register(PathHandler("/js/", "js/"))
 
   protected def createSession() = new MapSession
 }

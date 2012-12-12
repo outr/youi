@@ -7,20 +7,32 @@ import org.hyperscala.event.JavaScriptEvent
  * @author Matt Hicks <mhicks@outr.com>
  */
 package object binder {
-  implicit val inputString = new Binder[tag.Input, String] {
+  implicit def inputString = new Binder[tag.Input, String] {
     def bind(input: tag.Input) = {
       input.value bind valueProperty
       valueProperty bind input.value
+
       input.event.change := JavaScriptEvent()
     }
   }
 
-  implicit val inputInt = new Binder[tag.Input, Int] {
+  implicit def textAreaString = new Binder[tag.TextArea, String] {
+    def bind(textArea: tag.TextArea) = {
+      textArea.content bind valueProperty
+      valueProperty bind textArea.content
+      textArea.event.change := JavaScriptEvent()
+    }
+  }
+
+  implicit def inputInt = new Binder[tag.Input, Int] {
     def bind(input: tag.Input) = {
       input.value.onChange {
-        valueProperty := input.value().collect {
+        valueProperty := (input.value().collect {
           case c if (c.isDigit) => c
-        }.toInt
+        } match {
+          case "" => 0
+          case s => s.toInt
+        })
       }
       valueProperty.onChange {
         input.value := valueProperty().toString

@@ -10,6 +10,7 @@ import org.powerscala.concurrent.Executor
 import org.jboss.netty.channel.{MessageEvent, ChannelHandlerContext}
 import com.outr.webcommunicator.netty.handler.RequestHandler
 import com.outr.webcommunicator.netty.NettyWebapp
+import org.hyperscala.context.Contextual
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -61,11 +62,11 @@ trait Website[S <: Session] extends NettyCommunicatorManager[WebpageConnection] 
 
   protected def createSession(): S
 
-  def webpage = WebContext().webpage
-  def headers = WebContext().headers
-  def url = WebContext().url
-  def cookies = WebContext().cookies
-  def session = WebContext().session.asInstanceOf[S]
+  def webpage = WebContext.webpage()
+  def headers = WebContext.headers()
+  def url = WebContext.url()
+  def cookies = WebContext.cookies()
+  def session = WebContext.session().asInstanceOf[S]
 
   object application extends MapSession {
     override def timeout = Double.MaxValue
@@ -111,7 +112,8 @@ trait Website[S <: Session] extends NettyCommunicatorManager[WebpageConnection] 
 
   override protected def invokeHandler(context: ChannelHandlerContext, event: MessageEvent, handler: RequestHandler) {
     handler match {
-      case contextual: Contextual => WebContext(contextual.webContext, checkIn = true) {
+      case contextual: Contextual => WebContext.wrap(contextual) {
+        WebContext.checkIn()
         super.invokeHandler(context, event, handler)
       }
       case _ => super.invokeHandler(context, event, handler)

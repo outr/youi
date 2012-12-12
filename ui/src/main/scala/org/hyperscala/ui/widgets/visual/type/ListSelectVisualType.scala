@@ -25,8 +25,8 @@ object ListSelectVisualType extends VisualType[List[_]] {
       property bind list
       list bind property
 
-      current bind visual.property
-      visual.property bind current
+      current bind visual.property.asInstanceOf[StandardProperty[Any]]
+      visual.property.asInstanceOf[StandardProperty[Any]] bind current
     }
   }
 }

@@ -41,23 +41,23 @@ class WebpageResource(implicit website: Website[_ <: Session]) extends MutableWe
   }
 
   override protected def apply(request: HttpRequest) = {
-    val context = WebContext.create(website, request)
-    WebContext(context, checkIn = true) {
+    WebContext.wrap {
+      WebContext.parse(request)
       try {
         val option = super.apply(request)
         if (option.nonEmpty) {
           val handler = option.get
           handler match {
-            case webpage: Webpage => context.webpage = webpage
-            case contextual: Contextual => contextual.webContext = context
+            case webpage: Webpage => WebContext.webpage := webpage
             case _ => // Not a webpage
           }
           cache(handler)
+          WebContext.checkIn()
         }
         option
       } catch {
         case t: Throwable => {
-          Webpage() match {
+          WebContext.webpage() match {
             case null => Website().errorThrown(null, t)
             case page => page.errorThrown(t)
           }

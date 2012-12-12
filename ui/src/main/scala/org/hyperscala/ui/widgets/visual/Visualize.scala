@@ -12,7 +12,7 @@ import org.hyperscala.css.attributes.Clear
 case class Visualize(_labeled: Boolean = true,
                      _required: Boolean = false,
                      _editable: Boolean = true,
-                     _editing: Boolean = false,
+                     _editing: Boolean = true,
                      _validateOnChange: Boolean = false,
                      _fields: List[VisualBuilder[_]] = Nil) {
   def clazz[T](className: String = null,

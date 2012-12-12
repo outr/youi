@@ -6,6 +6,7 @@ import org.powerscala.concurrent.WorkQueue
 import org.powerscala.event.{Listenable, Event}
 import org.hyperscala.web.site._
 import scala.Some
+import org.hyperscala.context.Contextual
 
 
 /**
@@ -73,10 +74,12 @@ trait Session extends Temporal with Listenable with WorkQueue {
     if (!disposed) {
       doAllWork()
       map.values.foreach {
-        case contextual: Contextual if (contextual.isInstanceOf[Updatable]) => WebContext(contextual.webContext, checkIn = false) {
-          contextual.asInstanceOf[Updatable].update(delta)
+        case u: Updatable => u match {
+          case contextual: Contextual => WebContext.wrap(contextual) {
+            u.update(delta)
+          }
+          case _ => u.update(delta)
         }
-        case u: Updatable => u.update(delta)
         case _ => // Ignore
       }
     }
@@ -87,10 +90,12 @@ trait Session extends Temporal with Listenable with WorkQueue {
 
     Website().destroySession(this)
     map.values.foreach {
-      case contextual: Contextual if (contextual.isInstanceOf[Disposable]) => WebContext(contextual.webContext, checkIn = false) {
-        contextual.asInstanceOf[Disposable].dispose()
+      case d: Disposable => d match {
+        case contextual: Contextual => WebContext.wrap(contextual) {
+          d.dispose()
+        }
+        case _ => d.dispose()
       }
-      case d: Disposable => d.dispose()
       case _ => // Not disposable
     }
   }

@@ -20,7 +20,7 @@ import org.powerscala.json._
  * @author Matt Hicks <matt@outr.com>
  */
 class WebpageConnection(val id: UUID) extends Communicator with Logging {
-  info("WebpageConnection created: %s".format(id))
+  debug("WebpageConnection created: %s".format(id))
 
   var applyingProperty: MutableProperty[_] = _
   var applyingValue: Any = _
@@ -62,7 +62,7 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
     }
   }
 
-  def receive(event: String, message: String) = WebContext(page.webContext, checkIn = true) {
+  def receive(event: String, message: String) = WebContext.wrap(page) {
 //    info("Receive: %s - %s".format(event, message))
     try {
       event match {

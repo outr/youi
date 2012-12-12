@@ -92,10 +92,10 @@ class StandardVisual[T](builder: VisualBuilder[T]) extends Visual[T]
   } else if (builder.bindProperty != null) {    // Directly bind to another property
     // TODO: we should make some mechanism of disconnecting
     if (builder.bindPropertyUpdatesValue) {
-      property bind builder.bindProperty
+      property bind builder.bindProperty.asInstanceOf[StandardProperty[T]]
     }
     if (builder.bindValueUpdatesProperty) {
-      builder.bindProperty bind property
+      builder.bindProperty.asInstanceOf[StandardProperty[T]] bind property
     }
     None
   } else {

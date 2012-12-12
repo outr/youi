@@ -2,10 +2,10 @@ package org.hyperscala.ui
 
 import org.hyperscala.html.HTMLTag
 import org.jdom2.Element
-import org.hyperscala.Container
+import org.hyperscala.{Unique, Container}
 import org.hyperscala.html.constraints.BodyChild
 import org.hyperscala.io.HTMLWriter
-import org.jdom2.input.SAXBuilder
+import org.jdom2.input.{JDOMParseException, SAXBuilder}
 import java.io.StringReader
 import annotation.tailrec
 import org.powerscala.property.{CaseClassBinding, StandardProperty}
@@ -57,8 +57,37 @@ trait DynamicContent extends Container[HTMLTag] with BodyChild with HTMLTag {
    * @return T
    */
   def bind[T <: HTMLTag, V](id: String, property: StandardProperty[_], hierarchy: String = null)(implicit binder: Binder[T, V]) = {
-    Webpage().require(Realtime)   // Make sure we have realtime access
     val tag = load[T](id)
+    bind[T, V](tag, property, hierarchy)
+  }
+
+  /**
+   * Sets 'newId' to the id of the tag and then returns the tag. This is useful for single-line chaining.
+   *
+   * @param tag to modify the id for
+   * @param newId the new id to set (defaults to Unique())
+   * @tparam T the tag type
+   * @return T
+   */
+  def modifyId[T <: HTMLTag](tag: T, newId: String = Unique()) = {
+    tag.id := newId
+    tag
+  }
+
+  /**
+   * Binds the tag (two-way) to the property and hierarchy defined. This allows a convenient way to associate properties
+   * with dynamically defined fields.
+   *
+   * @param tag the tag to bind
+   * @param property the property to bind to
+   * @param hierarchy the name within the property to associate the binding (null represents a direct binding)
+   * @param binder provides the bind implementation
+   * @tparam T the HTMLTag type
+   * @tparam V the value type for association
+   * @return T
+   */
+  def bind[T <: HTMLTag, V](tag: T, property: StandardProperty[_], hierarchy: String)(implicit binder: Binder[T, V]) = {
+    Webpage().require(Realtime)   // Make sure we have realtime access
     binder.bind(tag, property, hierarchy)
     tag
   }
@@ -132,22 +161,26 @@ class DynamicHTML(content: String) {
           val begin = block.content.lastIndexOf('<', idIndex)
           val end = findCloseIndex(begin, block.content)
           val content = block.content.substring(begin, end)
-          val element = DynamicContent.builder.build(new StringReader(content)).getRootElement
-          var newBlocks = List.empty[HTMLBlock]
-          if (end < block.content.length) {
-            newBlocks = StaticHTMLBlock(block.content.substring(end)) :: newBlocks
+          try {
+            val element = DynamicContent.builder.build(new StringReader(content)).getRootElement
+            var newBlocks = List.empty[HTMLBlock]
+            if (end < block.content.length) {
+              newBlocks = StaticHTMLBlock(block.content.substring(end)) :: newBlocks
+            }
+            val dhb = DynamicHTMLBlock(id, element, content)
+            newBlocks = dhb :: newBlocks
+            if (begin > 0) {
+              newBlocks = StaticHTMLBlock(block.content.substring(0, begin)) :: newBlocks
+            }
+            _blocks = _blocks.patch(_blocks.indexOf(block), newBlocks, 1)
+  //          blocks = blocks.flatMap {
+  //            case b if (b == block) => newBlocks
+  //            case b => List(block)
+  //          }
+            dhb
+          } catch {
+            case exc: JDOMParseException => throw new RuntimeException("Unable to parse [%s]".format(content), exc)
           }
-          val dhb = DynamicHTMLBlock(id, element, content)
-          newBlocks = dhb :: newBlocks
-          if (begin > 0) {
-            newBlocks = StaticHTMLBlock(block.content.substring(0, begin - 1)) :: newBlocks
-          }
-          _blocks = _blocks.patch(_blocks.indexOf(block), newBlocks, 1)
-//          blocks = blocks.flatMap {
-//            case b if (b == block) => newBlocks
-//            case b => List(block)
-//          }
-          dhb
         }
         case None => throw new NullPointerException("Unable to find block with id: %s".format(id))
       }
@@ -234,11 +267,16 @@ case class DynamicHTMLBlock(id: String, element: Element, original: String, tag:
 abstract class Binder[T <: HTMLTag, V](implicit manifest: Manifest[V]) {
   val valueProperty = new StandardProperty[V]("valueProperty")(parent = null, manifest = manifest)
 
-  final def bind(tag: T, property: StandardProperty[_], hierarchy: String): Unit = {
-    CaseClassBinding(property, hierarchy, valueProperty.asInstanceOf[StandardProperty[Any]])
-    bind(tag)
+  final def bind(t: T, property: StandardProperty[_], hierarchy: String): Unit = {
+    if (hierarchy == null) {
+      property.asInstanceOf[StandardProperty[V]] bind valueProperty
+      valueProperty bind property.asInstanceOf[StandardProperty[V]]
+    } else {
+      CaseClassBinding(property, hierarchy, valueProperty.asInstanceOf[StandardProperty[Any]])
+    }
+    bind(t)
     property.fireChanged()    // TODO: find a more efficient way to do this?
   }
 
-  def bind(tag: T): Unit
+  def bind(t: T): Unit
 }

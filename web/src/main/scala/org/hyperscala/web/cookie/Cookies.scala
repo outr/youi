@@ -11,7 +11,7 @@ case class Cookies(cookies: Map[String, Cookie], original: Map[String, Cookie]) 
   def getOrElse(name: String, default: => Cookie) = cookies.getOrElse(name, default)
   def apply(cookie: Cookie) = {
     val updated = cookies + (cookie.name -> cookie)
-    WebContext().cookies = copy(cookies = updated)
+    WebContext.cookies := copy(cookies = updated)
     updated
   }
   def modified = cookies.collect {

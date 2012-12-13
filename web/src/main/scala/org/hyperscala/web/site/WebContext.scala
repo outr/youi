@@ -33,12 +33,12 @@ object WebContext extends Context {
 
   override def wrap[T](contextual: Contextual)(f: => T): T = {
     super.wrap(contextual) {
-      webpage() match {
-        case null => // Nothing to do here
-        case page => {
+      webpage.get() match {
+        case Some(page) => {
           Bus.current = page.bus
           Page.instance.set(page)
         }
+        case None => // Nothing to do here
       }
       f
     }

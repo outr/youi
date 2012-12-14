@@ -44,6 +44,18 @@ trait Session extends Temporal with Listenable with WorkQueue {
     }
   }
 
+  def getAndSet[T](key: Any, newValue: T) = {
+    val option = get[T](key)
+    update(key, newValue)
+    option
+  }
+
+  def getAndRemove[T](key: Any): Option[T] = {
+    val option = get[T](key)
+    remove(key)
+    option
+  }
+
   def update(key: Any, value: Any): Unit
 
   def remove(key: Any): Boolean

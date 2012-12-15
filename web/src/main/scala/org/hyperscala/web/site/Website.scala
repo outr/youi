@@ -82,19 +82,6 @@ trait Website[S <: Session] extends NettyCommunicatorManager[WebpageConnection] 
     lastUpdate = currentUpdate
   }
 
-  override def initialize() {
-    super.initialize()
-
-    // Statically load all referenced vals that are of type WebResourceHandler
-//    getClass.methods.foreach {
-//      case m if (m.returnType.`type`.hasType(classOf[WebResource])) => {
-//        val resource = m[WebResource](Website.this)
-//        register(resource)
-//      }
-//      case _ =>
-//    }
-  }
-
   protected[web] final def instantiateSession(id: String) = {
     val s = createSession()
     synchronized {

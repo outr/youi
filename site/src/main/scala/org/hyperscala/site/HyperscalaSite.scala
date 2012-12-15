@@ -1,6 +1,6 @@
 package org.hyperscala.site
 
-import org.hyperscala.web.site.{WebpageResource, Website}
+import org.hyperscala.web.site.{InterpreterWrapper, InterpreterWebsite, WebpageResource}
 import org.hyperscala.web.session.MapSession
 import org.hyperscala.examples.helloworld.HelloWorldPage
 import org.hyperscala.web.Scope
@@ -12,7 +12,7 @@ import com.outr.webcommunicator.netty.handler.PathHandler
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-object HyperscalaSite extends Website[MapSession] {
+object HyperscalaSite extends InterpreterWebsite[MapSession] {
   override def port = 8888
 
   val site = new {
@@ -45,4 +45,10 @@ object HyperscalaSite extends Website[MapSession] {
   register(PathHandler("/js/", "js/"))
 
   protected def createSession() = new MapSession
+
+  override def configureInterpreter(interpreter: InterpreterWrapper) {
+    super.configureInterpreter(interpreter)
+
+    interpreter.autoImport("org.hyperscala.site._")
+  }
 }

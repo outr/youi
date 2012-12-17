@@ -37,6 +37,7 @@ object HyperscalaSite extends InterpreterWebsite[MapSession] {
     val nivoSlider = WebpageResource("/example/nivoslider.html", new NivoSliderExample, Scope.Page)
     val dialog = WebpageResource("/example/dialog.html", new DialogExample, Scope.Page)
     val dynamic = WebpageResource("/example/dynamic.html", new DynamicContentExample, Scope.Page)
+    val pageChange = WebpageResource("/example/page_change.html", new PageChangeWarningExample, Scope.Page)
   }
   val todoMVC = WebpageResource("/todomvc.html", TodoMVC, Scope.Session)
 

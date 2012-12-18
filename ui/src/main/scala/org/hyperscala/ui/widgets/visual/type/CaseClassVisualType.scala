@@ -22,6 +22,6 @@ object CaseClassVisualType extends VisualType[AnyRef] {
     if (property() == null) {
       property := details.clazz.create[Any](Map.empty).asInstanceOf[AnyRef]
     }
-    Visualize(_labeled = false, _editing = true).clazz[AnyRef](bindProperty = property)(Manifest.classType[AnyRef](details.clazz)).build()
+    Visualize(_labeled = true, _editing = true).clazz[AnyRef](bindProperty = property)(Manifest.classType[AnyRef](details.clazz)).build()
   }
 }

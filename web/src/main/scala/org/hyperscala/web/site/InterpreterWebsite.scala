@@ -7,8 +7,6 @@ import org.powerscala.concurrent.Executor
  * @author Matt Hicks <mhicks@outr.com>
  */
 trait InterpreterWebsite[S <: Session] extends Website[S] {
-  private def interpreterWebsiteInstance = this
-
   val className = getClass.getSimpleName.replaceAll("\\$", "")
   // Setup the interpreter
   protected lazy val interpreter = new InterpreterWrapper {

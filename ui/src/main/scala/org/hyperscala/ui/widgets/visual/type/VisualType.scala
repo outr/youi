@@ -20,6 +20,7 @@ object VisualType {
                                           EnumEntryVisualType,
                                           BooleanVisualType,
                                           IntInputVisualType,
+                                          FloatInputVisualType,
                                           ListSelectVisualType,
                                           CaseClassVisualType,
                                           DateInputVisualType)

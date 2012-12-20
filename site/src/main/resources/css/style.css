@@ -1,0 +1,62 @@
+html {
+    background: url('/images/background.jpg') no-repeat;
+    background-size: cover;
+    height: 100%;
+}
+body {
+    background: url('/images/transbg.png') repeat-y center top;
+    height: 100%;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    overflow: hidden;
+}
+
+#wrap {
+    margin: 0 auto;
+    padding: 1px 30px;
+    width: 960px;
+    height: 100%;
+}
+
+#middle {
+    margin: 15px;
+}
+
+#main {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    background-color: white;
+    opacity: 0.6;
+    border-radius: 10px;
+    overflow: auto;
+    padding: 15px;
+}
+
+.menuItem {
+    font-size: 14pt;
+    font-weight: bold;
+    width: 125px;
+    float: left;
+    padding-left: 30px;
+    padding-right: 30px;
+}
+
+.menuItem a {
+    text-decoration: none;
+    color: white;
+}
+.menuItem a:hover {
+    color: #072459;
+    text-decoration: underline;
+}
+
+h1 {
+    font-size: 24pt;
+    font-weight: bold;
+    text-align: center;
+}
+
+h2 {
+    font-size: 18pt;
+    font-weight: bold;
+}

@@ -4,81 +4,72 @@ package org.hyperscala.site
 import org.powerscala.property._
 import org.powerscala.Color
 import org.hyperscala.html._
+import attributes.Target
 import org.hyperscala.css.attributes._
 import tag._
 import org.hyperscala.web.site.Webpage
+import org.hyperscala.ui.WindowSized
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
 class HyperscalaPage extends Webpage {
+  def site = HyperscalaSite
+
   title := "Hyperscala - Statically typed bare-metal HTML, CSS, and JavaScript framework for Scala."
 
-  body.style.margin := "0"
-  body.style.background.color := Color.Black
-  body.style.color := Color.White
-  body.style.font.family := "Arial, sans-serif"
+  def sourceURL: String = null
 
-  val page = new Div {
-    style.background.color := Color.White
-    (0 until 40).foreach(i => contents += new Br)
+  head.contents += new tag.Link(rel = "stylesheet", href = "/css/style.css")
+
+  val main = new tag.Div(id = "main") {
+    WindowSized.heightAlgorithm("main", "windowHeight - 235")
   }
-
-  val main = new Div {
-    style.width := 960.px
-    style.display := Display.Block
-    style.margin.left := Length.Auto
-    style.margin.right := Length.Auto
-
-    contents += new Div {
-      style.width := 960.px
-      style.height := 120.px
-      style.background.image := Resource("/images/top_clouds.png")
-      contents += new Img(src = "/images/hyperscala.png") {
-        style.margin.top := 10.px
-        style.margin.left := 10.px
-      }
+  val middle = new tag.Div(id = "middle") {
+    contents += new tag.Img(src = "/images/hyperscala.png") {
+      style.float := Float.Left
     }
-    contents += new Bar {
-      contents += new Table {
-        style.width := 100.pct
-        contents += new Tr {
-          contents += MenuItem("Home")
-          contents += MenuItem("Examples")
-          contents += MenuItem("Documentation")
-          contents += MenuItem("Utilities")
-        }
-      }
-    }
-    contents += page
-    contents += new Bar {
-      contents += new Div {
-        style.padding.right := 10.px
-        style.padding.top := 8.px
+    if (sourceURL != null) {
+      contents += new tag.A(href = sourceURL, target = Target.Blank, content = "View Source") {
         style.float := Float.Right
+      }
+    }
+    contents += new Bar {
+      contents += MenuItem("Home")
+      contents += MenuItem("About", site.site.about.link)
+      contents += MenuItem("Examples")
+      contents += MenuItem("Utilities")
+      contents += MenuItem("Documentation")
+    }
+    contents += main
+    contents += new Bar {
+      contents += new tag.I {
+        style.float := Float.Right
+        style.color := Color.White
+        style.padding.top := 3.px
+        style.padding.right := 30.px
         style.font.size := FontSize.Small
         contents += "&copy;2012 Hyperscala.org"
       }
     }
   }
-  body.contents += main
+  val wrapper = new tag.Div(id = "wrap") {
+    contents += middle
+  }
+
+  body.contents += wrapper
 }
 
 class Bar extends Div {
-  style.width := 960.px
-  style.height := 30.px
-  style.background.image := Resource("/images/bar.png")
+  style.background.color := Color.Black
+  style.opacity := Opacity(0.5)
+  style.border.radius := 10.px
+  style.height := 25.px
+  style.clear := Clear.Both
 }
 
-case class MenuItem(itemName: String) extends Td {
-  style.text.align := Alignment.Center
-  style.font.weight := "bold"
-  style.width := 150.px
-  style.padding.top := 2.px
-
-  contents += new A(href = "#") {
-    style.text.decoration := "none"
-    style.color := Color.White
+case class MenuItem(itemName: String, url: String = "#") extends tag.Div(clazz = List("menuItem")) {
+  contents += new A(href = url) {
     contents += itemName
   }
 }

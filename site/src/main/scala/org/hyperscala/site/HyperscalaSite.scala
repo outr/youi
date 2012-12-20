@@ -8,24 +8,22 @@ import org.hyperscala.examples.basic._
 import org.hyperscala.examples.ui._
 import org.hyperscala.examples.todomvc.TodoMVC
 import com.outr.webcommunicator.netty.handler.PathHandler
+import org.hyperscala.examples.numberguess.NumberGuess
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
 object HyperscalaSite extends InterpreterWebsite[MapSession] {
-  override def port = 8888
+  override def port = 8080
 
   val site = new {
-    val about = new WebpageResource {
+    val about = new WebpageResource("/about.html", HyperscalaAbout, Scope.Request) {
       matchers += matches("/")
-      matchers += matches("/about.html")
-      creator {
-        HyperscalaAbout
-      }
     }
   }
   val examples = new {
     val hello = WebpageResource("/example/hello.html", new HelloWorldPage, Scope.Request)
+    val numberGuess = WebpageResource("/example/number_guess.html", new HyperscalaExample(new NumberGuess), Scope.Page)
     val static = WebpageResource("/example/static.html", new StaticHTMLExample, Scope.Request)
     val form = WebpageResource("/example/form.html", new FormExample, Scope.Session)
     val realTime = WebpageResource("/example/realtime.html", new RealtimeWebpageExample, Scope.Session)

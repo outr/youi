@@ -89,7 +89,16 @@ trait ModularPage {
       if (!modularPageLoaded) {
         modularPageLoaded = true
 
+        val headItems = head.contents.toList
         interfaces.foreach(loadInterface)
+
+        // Make sure module head functionality appears before everything else
+        headItems.foreach {
+          case h => h.removeFromParent()
+        }
+        headItems.foreach {
+          case h => head.contents += h
+        }
       }
     }
   }

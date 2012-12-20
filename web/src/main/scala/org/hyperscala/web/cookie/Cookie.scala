@@ -16,7 +16,7 @@ case class Cookie(name: String,
                   path: String = "/",
                   ports: List[Int] = Nil,
                   secure: Boolean = false,
-                  version: Int = 1) {
+                  version: Int = 0) {
   def toNettyCookie = {
     val c = new DefaultCookie(name, value)
     c.setComment(comment)

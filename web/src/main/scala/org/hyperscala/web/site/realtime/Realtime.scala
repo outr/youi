@@ -17,6 +17,8 @@ import org.powerscala.Version
  * @author Matt Hicks <matt@outr.com>
  */
 object Realtime extends Module {
+  var debug = false
+
   def name = "realtime"
 
   def version = Version(1)
@@ -35,7 +37,7 @@ object Realtime extends Module {
         val connection = Website().create(id)
         connection.page = page
         Realtime.addConnection(page, connection)
-        "connectRealtime('%s');".format(id.toString)
+        "connectRealtime('%s', %s);".format(id.toString, debug)
       }
 
       protected def content_=(content: String) {}

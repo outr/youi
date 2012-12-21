@@ -82,7 +82,7 @@ class Webpage extends Page with ModularPage with RequestHandler with Parent with
     if (request.getMethod == HttpMethod.POST) {
       processPost(request.getContent)
     }
-    val response = RequestHandler.createResponse(contentType = "text/html", sendExpiration = false)
+    val response = RequestHandler.createResponse(contentType = "text/html; charset=UTF-8", sendExpiration = false)
 
     // Add modified or created cookies
     val encoder = new CookieEncoder(true)

@@ -7,9 +7,9 @@ communicator.pollingURL = 'http://' + host + '/ajax/polling';
 communicator.sendingURL = 'http://' + host + '/ajax/receiver';
 communicator.on('eval', jsEval);
 
-function connectRealtime(id) {
+function connectRealtime(id, debug) {
     console.log('Establishing realtime connection...');
-    communicator.debug = false;
+    communicator.debug = debug;
     communicator.id = id;
     communicator.connect();
 }

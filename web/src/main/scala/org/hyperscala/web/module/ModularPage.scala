@@ -89,7 +89,11 @@ trait ModularPage {
       if (!modularPageLoaded) {
         modularPageLoaded = true
 
-        val headItems = head.contents.toList
+        val headItems = head.contents.collect {
+          case script: tag.Script => script
+          case link: tag.Link => link
+          case style: tag.Style => style
+        }.toList
         interfaces.foreach(loadInterface)
 
         // Make sure module head functionality appears before everything else

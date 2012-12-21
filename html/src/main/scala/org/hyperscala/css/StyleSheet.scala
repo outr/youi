@@ -42,7 +42,7 @@ class StyleSheet extends PropertyParent with Listenable {
     val iteration = new AnyRef {
       val count = StyleSheetAttribute[String]("animation-iteration-count", null)
     }
-    override val name = StyleSheetAttribute[String]("animation-name", null)
+    val animationName = StyleSheetAttribute[String]("animation-name", null)
     val play = new AnyRef {
       val state = StyleSheetAttribute[String]("animation-play-state", null)
     }
@@ -367,7 +367,7 @@ class StyleSheet extends PropertyParent with Listenable {
     val layout = StyleSheetAttribute[String]("table-layout", null)
   }
   val target = new StyleSheetAttribute[String]("target", null) {
-    override val name = StyleSheetAttribute[String]("target-name", null)
+    val targetName = StyleSheetAttribute[String]("target-name", null)
     val position = StyleSheetAttribute[String]("target-position", null)
     val targetNew = StyleSheetAttribute[String]("target-new", null)
   }
@@ -427,5 +427,79 @@ class StyleSheet extends PropertyParent with Listenable {
   }
   val z = new AnyRef {
     val index = StyleSheetAttribute[String]("z-index", null)
+  }
+}
+
+object StyleSheet {
+  def main(args: Array[String]): Unit = {
+    val ss = new StyleSheet
+    val results = ss.properties.collect {
+      case p: StyleSheetAttribute[_] => {
+        val name = p.name()
+        val fieldName = camelCase(name)
+        val clazz = p.manifest.erasure
+        (name, fieldName, clazz)
+      }
+    }
+//    val args = results.map {
+//      case (name, fieldName, clazz) => "                 val %s: %s = null".format(fieldName, clazz.getSimpleName)
+//    }.mkString(",\n")
+
+    val styleNames = results.map {
+      case (name, fieldName, clazz) => "  val %s = \"%s\"".format(fieldName.capitalize, name)
+    }.mkString("\n")
+
+    val caseClasses = results.map {
+      case (name, fieldName, clazz) =>
+        """
+          |case class %1$sStyle(value: %2$s) extends Style[%2$s] {
+          |  def name = Style.%1$s
+          |}
+        """.stripMargin.format(fieldName.capitalize, clazz.getSimpleName)
+    }.mkString
+
+    val properties = results.map {
+      case (name, fieldName, clazz) =>
+        """
+          |  def %1$s = v[%2$s](Style.%3$s)
+          |  def %1$s_=(v: %2$s) = set(%3$sStyle(v))
+        """.stripMargin.format(fieldName, clazz.getSimpleName, fieldName.capitalize)
+    }.mkString
+
+    val s =
+      """
+        |object Style {
+        |%s
+        |}
+        |
+        |%s
+        |
+        |class StyleSheetProperty(implicit tag: HTMLTag) extends StandardProperty[Map[String, Style[_]]]("styleSheet", Map.empty)(tag, implicitly[Manifest[Map[String, Style[_]]]]) {
+        |%s
+        |  private def v[T](name: String) = value.get(name).map(s => s.asInstanceOf[Style[T]].value)
+        |  private def set(s: Style[_]) = if (s.value == null) {
+        |    value = value - s.name
+        |  } else {
+        |    value = value + (s.name -> s)
+        |  }
+        |}
+      """.stripMargin.format(styleNames, caseClasses, properties)
+    println(s)
+  }
+
+  def camelCase(value: String) = {
+    val b = new StringBuilder
+    var capitalize = false
+    for (c <- value) {
+      if (c == '-') {
+        capitalize = true
+      } else if (capitalize) {
+        b.append(c.toUpper)
+        capitalize = false
+      } else {
+        b.append(c)
+      }
+    }
+    b.toString()
   }
 }

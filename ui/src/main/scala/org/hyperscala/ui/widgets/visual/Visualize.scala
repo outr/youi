@@ -112,7 +112,7 @@ case class Visualize(_labeled: Boolean = true,
   }
 
   def buildGroup(groupName: String, fields: List[Visual[_]]) = new tag.FieldSet with Visualized {
-    style.clear := Clear.Both
+    style.clear = Clear.Both
 
     val group = groupName
     val visuals = fields

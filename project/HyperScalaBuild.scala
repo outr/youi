@@ -17,7 +17,7 @@ object HyperScalaBuild extends Build {
   val webcommunicator = "com.outr.webcommunicator" %% "webcommunicator" % "1.0-SNAPSHOT"
 
   val baseSettings = Defaults.defaultSettings ++ Seq(
-    version := "0.5-SNAPSHOT",
+    version := "0.6-SNAPSHOT",
     organization := "org.hyperscala",
     scalaVersion := "2.9.2",
     libraryDependencies ++= Seq(

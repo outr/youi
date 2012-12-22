@@ -5,12 +5,12 @@ import java.util.UUID
 import org.powerscala.Logging
 import org.hyperscala.html.{tag, HTMLTag}
 
-import org.hyperscala.event.{FormSubmit, JavaScriptEvent}
+import org.hyperscala.event.{StylePropertyChangeEvent, FormSubmit, JavaScriptEvent}
 import org.hyperscala.html.attributes.Method
 import org.powerscala.hierarchy.event.{ChildRemovedEvent, ChildAddedEvent}
 import org.powerscala.property.event.PropertyChangeEvent
 import org.hyperscala.{Container, Textual, Page, PropertyAttribute}
-import org.hyperscala.css.StyleSheet
+import org.hyperscala.css.{Style, StyleSheet}
 import org.hyperscala.javascript.JavaScriptContent
 import org.powerscala.property.MutableProperty
 
@@ -52,10 +52,11 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
         applyingProperty = null   // Only necessary to ignore the first event
         applyingValue = null
       }
+      case evt: StylePropertyChangeEvent => styleChanged(evt.styleSheet, evt.style, evt.newStyleValue)
       case evt: PropertyChangeEvent => evt.property match {
         case property: PropertyAttribute[_] => property.parent match {
           case tag: HTMLTag => propertyChanged(tag, property, evt.oldValue, evt.newValue)
-          case ss: StyleSheet => styleChanged(ss, property)
+//          case ss: StyleSheet => styleChanged(ss, property)
         }
         case _ => // Ignore other changes
       }
@@ -128,8 +129,12 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
     }
   }
 
-  def styleChanged(ss: StyleSheet, property: PropertyAttribute[_]) = page.tagsByStyleSheet(ss).foreach {
-    case tag => send(JavaScriptMessage("$('#%s').css('%s', content);".format(tag.id(), property.name()), property.attributeValue))
+//  def styleChanged(ss: StyleSheet, property: PropertyAttribute[_]) = page.tagsByStyleSheet(ss).foreach {
+//    case tag => send(JavaScriptMessage("$('#%s').css('%s', content);".format(tag.id(), property.name()), property.attributeValue))
+//  }
+
+  def styleChanged(ss: StyleSheet, style: Style[_], value: AnyRef) = page.tagsByStyleSheet(ss).foreach {
+    case tag => send(JavaScriptMessage("$('#%s').css('%s', content);".format(tag.id(), style.cssName), style.asInstanceOf[Style[AnyRef]].persistence.toString(value, value.getClass)))
   }
 
   def childAdded(evt: ChildAddedEvent) = {

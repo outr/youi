@@ -25,7 +25,7 @@ object Realtime extends Module {
 
   override def dependencies = List(InterfaceWithDefault(jQuery, jQuery182), IdentifyTags)
 
-  def load(page: Webpage) = {   // TODO: fix bug causing jQuery to be loaded after other scripts - prioritization
+  def load(page: Webpage) = {
     // Configure JavaScript on page
     Website().register("/js/communicator.js", "communicator.js")
     Website().register("/js/realtime.js", "realtime.js")

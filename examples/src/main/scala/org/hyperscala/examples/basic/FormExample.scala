@@ -4,7 +4,6 @@ import org.hyperscala.web.FormSupport
 import org.hyperscala.html._
 import attributes.{ButtonType, InputType}
 
-import org.powerscala.property._
 import tag._
 import org.powerscala.property.event.PropertyChangeEvent
 import org.hyperscala.web.module.jQuery172
@@ -19,7 +18,7 @@ class FormExample extends Webpage with FormSupport {
   require(jQuery172)
 
   val messages = new Div {
-    style.padding.bottom := 10.px
+    style.paddingBottom = 10.px
   }
   body.contents += messages
 

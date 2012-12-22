@@ -4,7 +4,6 @@ import org.hyperscala.web.site.realtime.RealtimeWebpage
 import org.hyperscala.html._
 import org.powerscala.Color
 import org.hyperscala.event.{ChangeEvent, ClickEvent, JavaScriptEvent}
-import org.powerscala.property._
 import org.powerscala.event.ActionEvent
 
 /**
@@ -59,7 +58,7 @@ class RealtimeWebpageExample extends RealtimeWebpage {
         println("Selected: %s".format(select.selected))
         input.value := "Button clicked %s".format(count)
         contents.replaceWith("Test Button %s".format(count))
-        style.color := Color.values.random
+        style.color = Color.values.random
         if (count >= 10) {
           reversed = true
         } else if (count <= 0) {

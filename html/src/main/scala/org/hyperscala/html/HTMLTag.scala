@@ -5,10 +5,9 @@ import event.EventSupport
 import org.hyperscala._
 import io.HTMLWriter
 import org.hyperscala.html.tag._
-import css.StyleSheet
-import persistence.StyleSheetPersistence
+import css.StyleSheetProperty
 import scala.collection.{Map => ScalaMap}
-import org.powerscala.property.{StandardProperty, PropertyParent}
+import org.powerscala.property.StandardProperty
 
 /**
  * NOTE: This file has been generated. Do not modify directly!
@@ -41,20 +40,21 @@ trait HTMLTag extends Tag with EventSupport {
     case value => value
   }
 
-  val style = new StyleProperty("style", InclusionMode.NotEmpty) {
-    val link = new StyleProperty("link", InclusionMode.Exclude)(HTMLTag.this)
-    val visited = new StyleProperty("visited", InclusionMode.Exclude)(HTMLTag.this)
-    val active = new StyleProperty("active", InclusionMode.Exclude)(HTMLTag.this)
-    val hover = new StyleProperty("hover", InclusionMode.Exclude)(HTMLTag.this)
-    val focus = new StyleProperty("focus", InclusionMode.Exclude)(HTMLTag.this)
-    val empty = new StyleProperty("empty", InclusionMode.Exclude)(HTMLTag.this)
-    val target = new StyleProperty("target", InclusionMode.Exclude)(HTMLTag.this)
-    val checked = new StyleProperty("checked", InclusionMode.Exclude)(HTMLTag.this)
-    val enabled = new StyleProperty("enabled", InclusionMode.Exclude)(HTMLTag.this)
-    val disabled = new StyleProperty("disabled", InclusionMode.Exclude)(HTMLTag.this)
+  // TODO: add back selectors
+  val style = new StyleSheetProperty("style", InclusionMode.NotEmpty)(this) {
+//    val link = new StyleSheetProperty("link", InclusionMode.Exclude)(HTMLTag.this)
+//    val visited = new StyleSheetProperty("visited", InclusionMode.Exclude)(HTMLTag.this)
+//    val active = new StyleSheetProperty("active", InclusionMode.Exclude)(HTMLTag.this)
+//    val hover = new StyleSheetProperty("hover", InclusionMode.Exclude)(HTMLTag.this)
+//    val focus = new StyleSheetProperty("focus", InclusionMode.Exclude)(HTMLTag.this)
+//    val empty = new StyleSheetProperty("empty", InclusionMode.Exclude)(HTMLTag.this)
+//    val target = new StyleSheetProperty("target", InclusionMode.Exclude)(HTMLTag.this)
+//    val checked = new StyleSheetProperty("checked", InclusionMode.Exclude)(HTMLTag.this)
+//    val enabled = new StyleSheetProperty("enabled", InclusionMode.Exclude)(HTMLTag.this)
+//    val disabled = new StyleSheetProperty("disabled", InclusionMode.Exclude)(HTMLTag.this)
 
     // TODO: add support for custom selectors
-    val selectors: List[StyleProperty] = List(this, link, visited, active, hover, focus, empty, target, checked, enabled, disabled)
+//    val selectors: List[StyleProperty] = List(this, link, visited, active, hover, focus, empty, target, checked, enabled, disabled)
   }
 
   protected def generateChildFromTagName(name: String): XMLContent = {
@@ -88,7 +88,7 @@ trait HTMLTag extends Tag with EventSupport {
   def rendered() = {}
 }
 
-class StyleProperty(_name: String, inclusion: InclusionMode)(implicit parent: PropertyParent) extends PropertyAttribute[StyleSheet](_name, null, inclusion = inclusion)(StyleSheetPersistence, parent, Manifest.classType[StyleSheet](classOf[StyleSheet])) with LazyProperty[StyleSheet] {
+/*class StyleProperty(_name: String, inclusion: InclusionMode)(implicit parent: PropertyParent) extends PropertyAttribute[StyleSheet](_name, null, inclusion = inclusion)(StyleSheetPersistence, parent, Manifest.classType[StyleSheet](classOf[StyleSheet])) with LazyProperty[StyleSheet] {
   protected def lazyValue = new StyleSheet
 
   // Avoid overwriting previously set values
@@ -102,7 +102,7 @@ class StyleProperty(_name: String, inclusion: InclusionMode)(implicit parent: Pr
       case page => page.intercept.initStyle.fire(parent.asInstanceOf[Markup])
     }
   }
-}
+}*/
 
 object HTMLTag {
   private val registry = ScalaMap("html" -> classOf[HTML],

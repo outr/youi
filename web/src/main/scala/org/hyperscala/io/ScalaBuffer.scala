@@ -1,12 +1,11 @@
 package org.hyperscala.io
 
 import org.hyperscala.web.site.Webpage
-import org.hyperscala.html.{StyleProperty, HTMLTag}
+import org.hyperscala.html.HTMLTag
 import org.hyperscala.{PropertyAttribute, Container}
 import org.hyperscala.html.tag.{Text, Title}
 import org.hyperscala.html.event.EventProperty
-import org.hyperscala.persistence.StyleSheetPersistence
-import org.hyperscala.css.{StyleSheetAttribute, StyleSheet}
+import org.hyperscala.css.{StyleSheetProperty, StyleSheet}
 import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.css.attributes.Length
 import org.powerscala.EnumEntry
@@ -39,7 +38,7 @@ abstract class ScalaBuffer {
         case text: Text if (text.content() != null && text.content().trim.length > 0) => writeLine("contents += %s".format(createWrappedString(text.content())), prefix)
         case _ => {
           val attributes = tag.xmlAttributes.collect {
-            case a: PropertyAttribute[_] if (a.shouldRender && !a.isInstanceOf[EventProperty] && !a.isInstanceOf[StyleProperty] && a() != null) => {
+            case a: PropertyAttribute[_] if (a.shouldRender && !a.isInstanceOf[EventProperty] && !a.isInstanceOf[StyleSheetProperty] && a() != null) => {
               "%s = %s".format(namify(tag, a), valuify(tag, a.name(), a()))
             }
           }.mkString(", ")
@@ -47,7 +46,7 @@ abstract class ScalaBuffer {
             case true => "(%s)".format(attributes)
             case false => ""
           }
-          val style = StyleSheetPersistence.toString(tag.style(), classOf[StyleSheet])
+          val style = StyleSheet.toString(tag.style(), classOf[StyleSheet])
           val children = tag match {
             case container: Container[_] if (container.contents.nonEmpty) => true
             case _ if (style.trim.nonEmpty) => true
@@ -81,12 +80,13 @@ abstract class ScalaBuffer {
 
   def writeAttributes(tag: HTMLTag, all: Boolean, prefix: String) = {
     // Write style data
-    tag.style().properties.foreach {
+    throw new RuntimeException("writeAttributes disabled")
+    /*tag.style().properties.foreach {
       case a: StyleSheetAttribute[_] if (a.shouldRender) => {
         writeLine("style.%s := %s".format(a.name().replace('-', '.'), valuify(tag, a.name(), a())), prefix)
       }
       case _ => // Ignore
-    }
+    }*/
     // Write event data
     tag.xmlAttributes.foreach {
       case a: PropertyAttribute[_] with EventProperty if (a.shouldRender) => {

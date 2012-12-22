@@ -3,12 +3,10 @@ package org.hyperscala.web.module
 import org.hyperscala.web.site.Webpage
 import org.powerscala.Version
 import java.util
-import org.hyperscala.html.{StyleProperty, HTMLTag}
+import org.hyperscala.html.HTMLTag
 import org.hyperscala.html.tag.Style
-import org.powerscala.property.event.PropertyChangeEvent
-import org.hyperscala.css.StyleSheetAttribute
-import org.hyperscala.Unique
 import org.powerscala.bus.Routing
+import org.hyperscala.css.StyleSheetProperty
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -21,7 +19,7 @@ object HeadStyle extends Module {
   def load(page: Webpage) = {
     val map = page.store.getOrSet("headStyleMap", new util.WeakHashMap[HTMLTag, HeadStyleTag]())
     page.intercept.renderAttribute {
-      case ssa: StyleSheetAttribute[_] => Routing.Stop
+      case ssa: StyleSheetProperty => Routing.Stop
     }
     page.intercept.initStyle {
       case tag: HTMLTag => map.get(tag) match {
@@ -40,13 +38,14 @@ class HeadStyleTag(page: Webpage, tag: HTMLTag) {
 
   // TODO: support id changing
 
-  var listening: List[StyleProperty] = Nil
+  var listening: List[StyleSheetProperty] = Nil
 
   updateStyle()
 
   def updateStyle(): Unit = synchronized {
     val b = new StringBuilder
-    tag.style.selectors.foreach {
+    // TODO: re configure
+    /*tag.style.selectors.foreach {
       case selector => {
         buildStyle(b, selector)
         if (selector.loaded && !listening.contains(selector)) {
@@ -63,10 +62,11 @@ class HeadStyleTag(page: Webpage, tag: HTMLTag) {
         page.head.contents += style
       }
       style.content := "\n%s".format(b)
-    }
+    }*/
   }
 
-  def buildStyle(b: StringBuilder, sp: StyleProperty) = {
+  // TODO: re configure
+  /*def buildStyle(b: StringBuilder, sp: StyleProperty) = {
     if (sp.loaded && sp.modified) {
       val s = sp().properties.collect {
         case p: StyleSheetAttribute[_] if (p.modified) => "\t%s: %s".format(p.name(), p.attributeValue)
@@ -83,5 +83,5 @@ class HeadStyleTag(page: Webpage, tag: HTMLTag) {
         b.append("#%s%s {\n%s\n}\n".format(tag.id(), selector, s))
       }
     }
-  }
+  }*/
 }

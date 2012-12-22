@@ -15,7 +15,7 @@ import org.hyperscala.ui.widgets.visual.`type`.DateInputVisualType
  * @author Matt Hicks <mhicks@powerscala.org>
  */
 class VisualExample extends RealtimeWebpage {
-  body.style.font.family := "sans-serif"
+  body.style.fontFamily = "sans-serif"
 
   val property = Property[TestPerson]("property", new TestPerson(name = "John Doe", age = 21))
   property.listeners.synchronous {
@@ -63,7 +63,7 @@ class VisualExample extends RealtimeWebpage {
   body.contents.addAll(stringVisual, bindingVisual, enumVisual, booleanVisual, dateVisual, enumsVisual, stringsVisual, caseClassesVisual)
 
   body.contents += new tag.Div {
-    style.clear := Clear.Both
+    style.clear = Clear.Both
 
     contents += new tag.Button(content = "Toggle Editing") {
       event.click := JavaScriptEvent()

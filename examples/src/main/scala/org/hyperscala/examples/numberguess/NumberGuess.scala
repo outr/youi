@@ -3,15 +3,14 @@ package org.hyperscala.examples.numberguess
 import org.hyperscala.html._
 import attributes.InputType
 
-import org.powerscala.property._
 import org.hyperscala.examples.Example
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
 class NumberGuess extends Example {
-  style.width := 600.px
-  style.margin := "0px auto"
+  style.width = 600.px
+  style.margin = "0px auto"
   contents += new tag.H1(content = "Number Guess Example")
   contents += new tag.H5(id = "message", content = "Guess a number between 0 and 100.")
   contents += new tag.P {

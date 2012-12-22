@@ -1,12 +1,14 @@
 package org.hyperscala
 
 import css.attributes._
+import css.StyleSheet
 import html.attributes._
 
 /**
  * NOTE: This file has been generated. Do not modify directly!
  */
 package object persistence {
+  implicit val stringPersistence = StringPersistence
   implicit val alignmentPersistence = Alignment
   implicit val autoCompletePersistence = AutoComplete
   implicit val booleanPersistence = BooleanPersistence
@@ -34,7 +36,7 @@ package object persistence {
   implicit val positionPersistence = Position
   implicit val relationshipPersistence = Relationship
   implicit val resourcePersistence = Resource
-  implicit val styleSheetPersistence = StyleSheetPersistence
+  implicit val styleSheetPersistence = StyleSheet
   implicit val targetPersistence = Target
   implicit val textAreaWrapPersistence = TextAreaWrap
   implicit val whiteSpacePersistence = WhiteSpace

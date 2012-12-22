@@ -6,7 +6,6 @@ package org.hyperscala.event
 import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.html.HTMLTag
 import org.powerscala.event.Event
-import org.hyperscala.css.StyleSheetAttribute
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -370,5 +369,5 @@ class WaitingEvent(tag: HTMLTag) extends JavaScriptEvent(tag)
 class StyleChangeEvent(tag: HTMLTag,
                        val propertyName: String,
                        val propertyValue: String) extends JavaScriptEvent(tag) {
-  def property[T] = tag.style().properties[T](propertyName).asInstanceOf[StyleSheetAttribute[T]]
+//  def property[T] = tag.style().properties[T](propertyName).asInstanceOf[StyleSheetAttribute[T]]
 }

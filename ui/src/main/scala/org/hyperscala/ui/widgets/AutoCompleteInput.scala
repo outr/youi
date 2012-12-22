@@ -91,11 +91,11 @@ abstract class AutoCompleteInput[T](id: String = Unique(), default: T)(implicit 
     input.value := resultToString(property())
   }
 
-  style.width := 200.px
+  style.width = 200.px
 
   val input = new tag.Input(id = "%sInput".format(id)) {
-    style.width := 100.pct
-    style.height := 100.pct
+    style.width = 100.pct
+    style.height = 100.pct
 
     event.keyUp := JavaScriptEvent(fireChange = true, preventDefault = true, onlyLast = true)
     event.blur := JavaScriptEvent(preventDefault = false)
@@ -122,12 +122,12 @@ abstract class AutoCompleteInput[T](id: String = Unique(), default: T)(implicit 
   def disabled = input.disabled
 
   val completion = new tag.Div(id = "%sCompletion".format(id)) {
-    style.display := Display.None
-    style.position := Position.Absolute
-    style.background.color := Color.White
-    style.border.color := Color.LightGray
-    style.border.style := "solid"
-    style.border.width := 1.px
+    style.display = Display.None
+    style.position = Position.Absolute
+    style.backgroundColor = Color.White
+    style.borderColor = Color.LightGray
+    style.borderStyle = "solid"
+    style.borderWidth = 1.px
   }
 
   contents += input
@@ -139,7 +139,7 @@ abstract class AutoCompleteInput[T](id: String = Unique(), default: T)(implicit 
 
   def result(r: T, query: String) = new BasicResult[T](r, query, this)
 
-  def showingCompletion = completion.style.display() != Display.None
+  def showingCompletion = completion.style.display != Display.None
 
   def showCompletion(): Unit = {
     val index = max(selectedIndex, 0)
@@ -147,17 +147,17 @@ abstract class AutoCompleteInput[T](id: String = Unique(), default: T)(implicit 
     val results = complete(query).map(r => result(r, query))
     if (results.nonEmpty) {
       completion.contents.replaceWith(results: _*)
-      completion.style.display := Display.Block
+      completion.style.display = Display.Block
       if (!(selectedIndex = index)) {
         selectLast()
       }
     } else {
-      completion.style.display := Display.None
+      completion.style.display = Display.None
     }
   }
 
   def hideCompletion() = {
-    completion.style.display := Display.None
+    completion.style.display = Display.None
   }
 }
 
@@ -191,11 +191,11 @@ class BasicResult[T](val result: T, query: String, input: AutoCompleteInput[T]) 
     contents += resultString
   }
 
-  style.padding.left := 15.px
-  style.padding.right := 15.px
-  style.padding.top := 5.px
-  style.padding.bottom := 5.px
-  style.cursor := "pointer"
+  style.paddingLeft = 15.px
+  style.paddingRight = 15.px
+  style.paddingTop = 5.px
+  style.paddingBottom = 5.px
+  style.cursor = "pointer"
 
   event.mouseOver := JavaScriptEvent()
   event.mouseOut := JavaScriptEvent()
@@ -215,8 +215,8 @@ class BasicResult[T](val result: T, query: String, input: AutoCompleteInput[T]) 
   override def state(active: Boolean) = {
     super.state(active)
     active match {
-      case true => style.background.color := Color.LightGray
-      case false => style.background.color := Color.White
+      case true => style.backgroundColor = Color.LightGray
+      case false => style.backgroundColor = Color.White
     }
   }
 }

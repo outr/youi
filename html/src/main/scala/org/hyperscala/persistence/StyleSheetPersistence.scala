@@ -1,12 +1,11 @@
 package org.hyperscala.persistence
 
-import org.hyperscala.css.{StyleSheetAttribute, StyleSheet}
-import org.hyperscala.Page
+
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-object StyleSheetPersistence extends ValuePersistence[StyleSheet] {
+/*object StyleSheetPersistence extends ValuePersistence[Map[String, Style[_]]] {
   def fromString(s: String, clazz: Class[_]) = if (s.trim.length > 0) {
     val ss = new StyleSheet()
     apply(ss, s)
@@ -39,4 +38,4 @@ object StyleSheetPersistence extends ValuePersistence[StyleSheet] {
       case t: Throwable => System.err.println("Error parsing CSS: [%s]".format(s))
     }
   }
-}
+}*/

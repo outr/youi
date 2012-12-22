@@ -95,10 +95,11 @@ class HTMLRenderingSpec extends Specification {
       out must_==("<html contenteditable=\"true\"/>")
     }
     "show properly when CSS" in {
-      val css = new StyleSheet {
-        font.face := "Arial"
-        display := Display.Inline
-      }
+//      val css = new StyleSheet {
+//        font.face := "Arial"
+//        display := Display.Inline
+//      }
+      val css = StyleSheet().fontFace("Arial").display(Display.Inline)
       val html = new HTML(style = css)
       val out = html.outputString
       out must_==("<html style=\"display: inline; font-face: Arial\"/>")

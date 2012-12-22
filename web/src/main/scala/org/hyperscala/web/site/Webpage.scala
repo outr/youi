@@ -74,7 +74,7 @@ class Webpage extends Page with ModularPage with RequestHandler with Parent with
    * Returns all the HTMLTags that currently reference the supplied StyleSheet in the entire Webpage hierarchy.
    */
   def tagsByStyleSheet(ss: StyleSheet) = view.collect {
-    case tag if (tag.style.loaded && tag.style() == ss) => tag
+    case tag if (tag.style() == ss) => tag
   }
 
   def apply(webapp: NettyWebapp, context: ChannelHandlerContext, event: MessageEvent) = {

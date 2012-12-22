@@ -15,7 +15,7 @@ class VisualizeAdvancedExample extends Webpage {
   title := "Visualize Advanced Example"
 
   val messages = new tag.Div {
-    style.padding.bottom := 10.px
+    style.paddingBottom = 10.px
   }
   body.contents += messages
 

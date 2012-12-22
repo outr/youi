@@ -7,7 +7,7 @@ import org.hyperscala.persistence._
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */
-sealed class Style[T](val cssName: String)(implicit manifest: Manifest[T], val persistence: ValuePersistence[T]) extends EnumEntry[Style[_]]
+sealed class Style[T](val cssName: String)(implicit val manifest: Manifest[T], val persistence: ValuePersistence[T]) extends EnumEntry[Style[_]]
 
 object Style extends Enumerated[Style[_]] {
   val alignmentAdjust = new Style[String]("alignment-adjust")

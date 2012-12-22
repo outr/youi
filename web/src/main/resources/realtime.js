@@ -8,7 +8,7 @@ communicator.sendingURL = 'http://' + host + '/ajax/receiver';
 communicator.on('eval', jsEval);
 
 function connectRealtime(id, debug) {
-    console.log('Establishing realtime connection...');
+    log('Establishing realtime connection...');
     communicator.debug = debug;
     communicator.id = id;
     communicator.connect();
@@ -28,7 +28,7 @@ function jsEventHandler(e, data, fireChange, onlyLast) {
                 id: id,
                 value: element.val()
             });
-//            console.log('sending change event: ' + id + ' - ' + element.val());
+//            log('sending change event: ' + id + ' - ' + element.val());
         }
         // TODO: support mouse events better
         if (e.type == 'keydown' || e.type == 'keypress' || e.type == 'keyup') {
@@ -53,7 +53,7 @@ function jsEventHandler(e, data, fireChange, onlyLast) {
         }
     } else {
         var target = $(e.target);
-        console.log('jsEventHandler - No id found for ' + element + ', type: ' + e.type + ', targetId: ' + target.attr('id'));
+        log('jsEventHandler - No id found for ' + element + ', type: ' + e.type + ', targetId: ' + target.attr('id'));
     }
 }
 
@@ -61,6 +61,15 @@ function jsEval(message) {
     var json = jQuery.parseJSON(message);
     var content = json['content'];
     var instruction = json['instruction'];
-//    console.log('Instruction: ' + instruction + ', Content: ' + content);
+//    log('Instruction: ' + instruction + ', Content: ' + content);
     eval(instruction);
+}
+
+function log(msg) {
+    if (!console) {
+        console = {};
+        console.log = function() {};
+    }
+    var message = new Date().toLocaleString() + ': ' + msg;
+    console.log(message);
 }

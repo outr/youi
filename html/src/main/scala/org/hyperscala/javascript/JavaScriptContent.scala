@@ -9,16 +9,17 @@ import org.hyperscala.io.HTMLWriter
  */
 trait JavaScriptContent extends XMLContent {
   def content: String
-  protected def content_=(content: String): Unit
 
   def write(writer: HTMLWriter) = writer.write(content)
 
-  def read(content: Content) = this.content = content.asInstanceOf[Text].getText
+  def read(content: Content): Unit = throw new UnsupportedOperationException("JavaScriptContent does not support loading. Use JavaScriptString instead.")
 
   def +(js: JavaScriptContent) = JavaScriptString("%s\n\n%s".format(content, js.content))
 }
 
-case class JavaScriptString(var content: String) extends JavaScriptContent
+case class JavaScriptString(var content: String) extends JavaScriptContent {
+  override def read(content: Content): Unit = this.content = content.asInstanceOf[Text].getText
+}
 
 trait JSFunction0[R] extends JavaScriptContent
 

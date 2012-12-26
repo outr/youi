@@ -1,3 +1,16 @@
+// Avoid `console` errors in browsers that lack a console.
+if (!(window.console && console.log)) {
+    (function() {
+        var noop = function() {};
+        var methods = ['assert', 'clear', 'count', 'debug', 'dir', 'dirxml', 'error', 'exception', 'group', 'groupCollapsed', 'groupEnd', 'info', 'log', 'markTimeline', 'profile', 'profileEnd', 'markTimeline', 'table', 'time', 'timeEnd', 'timeStamp', 'trace', 'warn'];
+        var length = methods.length;
+        var console = window.console = {};
+        while (length--) {
+            console[methods[length]] = noop;
+        }
+    }());
+}
+
 var host = document.location.host;
 
 var communicator = new Communicator();
@@ -65,11 +78,36 @@ function jsEval(message) {
     eval(instruction);
 }
 
+var logHistory = [];
+
 function log(msg) {
-    if (!console) {
-        console = {};
-        console.log = function() {};
-    }
     var message = new Date().toLocaleString() + ': ' + msg;
+    logHistory.push(message);
     console.log(message);
 }
+
+$(document).ready(function() {
+    var ctrlDown = false;
+    var ctrlKey = 17;
+    var keyCodeL = 76;
+
+    $(document).keydown(function(e) {
+        if (e.keyCode == ctrlKey) {
+            ctrlDown = true;
+        }
+    });
+    $(document).keyup(function(e) {
+        if (e.keyCode == ctrlKey) {
+            ctrlDown = false;
+        }
+    });
+    $(document).keydown(function(e) {
+        if (ctrlDown && e.keyCode == keyCodeL) {
+            var s = 'Log Entries: ' + logHistory.length + '\n';
+            for (var i = 0; i < logHistory.length; i++) {
+                s += logHistory[i] + '\n';
+            }
+            alert(s);
+        }
+    });
+});

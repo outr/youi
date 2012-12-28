@@ -30,6 +30,8 @@ package object persistence {
   implicit val languagePersistence = LanguagePersistence
   implicit val lengthPersistence = Length
   implicit val listStringPersistence = ListStringPersistence
+  implicit val listIntPersistence = ListIntPersistence
+  implicit val listDoublePersistence = ListDoublePersistence
   implicit val methodPersistence = Method
   implicit val opacityPersistence = Opacity
   implicit val overflowPersistence = Overflow

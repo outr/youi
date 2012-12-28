@@ -42,6 +42,12 @@ trait Tag extends PropertyParent with Markup with Listenable {
     }
   }
 
+  protected def up(attribute: PropertyAttribute[Double], value: java.lang.Double) = {
+    if (value != null) {
+      attribute := value.doubleValue()
+    }
+  }
+
   protected def up(attribute: PropertyAttribute[Int], value: java.lang.Integer) = {
     if (value != null) {
       attribute := value.intValue()

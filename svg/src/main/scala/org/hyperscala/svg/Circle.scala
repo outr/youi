@@ -14,9 +14,9 @@ class Circle extends Shape {
            xmlBase: String = null,
            xmlLang: String = null,
            xmlSpace: XMLSpace = null,
-           cx: java.lang.Integer = null,
-           cy: java.lang.Integer = null,
-           r: java.lang.Integer = null) = {
+           cx: java.lang.Double = null,
+           cy: java.lang.Double = null,
+           r: java.lang.Double = null) = {
     this()
     up(this.id, id)
     up(this.xmlBase, xmlBase)
@@ -27,7 +27,7 @@ class Circle extends Shape {
     up(this.r, r)
   }
 
-  val cx = PropertyAttribute[Int]("cx", 0)
-  val cy = PropertyAttribute[Int]("cy", 0)
-  val r = PropertyAttribute[Int]("r", 0)
+  val cx = PropertyAttribute[Double]("cx", 0.0)
+  val cy = PropertyAttribute[Double]("cy", 0.0)
+  val r = PropertyAttribute[Double]("r", 0.0)
 }

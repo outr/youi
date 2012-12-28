@@ -1,9 +1,8 @@
 package org.hyperscala.css
 
 import attributes._
-import org.hyperscala.html._
 import org.powerscala.Color
-import org.hyperscala.{InclusionMode, PropertyAttribute}
+import org.hyperscala.{Tag, InclusionMode, PropertyAttribute}
 import org.powerscala.bus.Routing
 import org.hyperscala.event.StylePropertyChangeEvent
 
@@ -11,7 +10,7 @@ import org.hyperscala.event.StylePropertyChangeEvent
  * @author Matt Hicks <mhicks@outr.com>
  */
 class StyleSheetProperty(_name: String, inclusionMode: InclusionMode = InclusionMode.NotEmpty)
-                        (implicit tag: HTMLTag) extends PropertyAttribute[StyleSheet](_name, StyleSheet(), inclusionMode)(StyleSheet, tag, implicitly[Manifest[StyleSheet]]) {
+                        (implicit tag: Tag) extends PropertyAttribute[StyleSheet](_name, StyleSheet(), inclusionMode)(StyleSheet, tag, implicitly[Manifest[StyleSheet]]) {
   def alignmentAdjust = get[String](Style.alignmentAdjust)
   def alignmentAdjust_=(v: String) = set(Style.alignmentAdjust, v)
 

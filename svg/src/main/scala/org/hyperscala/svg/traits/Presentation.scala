@@ -4,6 +4,7 @@ import org.hyperscala.svg.SVGTag
 import org.hyperscala.PropertyAttribute
 import org.powerscala.Color
 import org.hyperscala.svg.attributes._
+import org.hyperscala.css.attributes.FontSize
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
@@ -33,7 +34,7 @@ trait Presentation {
   val floodColor = PropertyAttribute[Color]("flood-color", null)
   val floodOpacity = PropertyAttribute[String]("flood-opacity", null)
   val fontFamily = PropertyAttribute[String]("font-family", null)
-  val fontSize = PropertyAttribute[String]("font-size", null)
+  val fontSize = PropertyAttribute[FontSize]("font-size", null)
   val fontSizeAdjust = PropertyAttribute[String]("font-size-adjust", null)
   val fontStretch = PropertyAttribute[FontStretch]("font-stretch", FontStretch.Normal)
   val fontStyle = PropertyAttribute[FontStyle]("font-style", FontStyle.Normal)
@@ -62,7 +63,7 @@ trait Presentation {
   val strokeLineJoin = PropertyAttribute[String]("stroke-linejoin", null)
   val strokeMiterLimit = PropertyAttribute[String]("stroke-miterlimit", null)
   val strokeOpacity = PropertyAttribute[String]("stroke-opacity", null)
-  val strokeWidth = PropertyAttribute[Int]("stroke-width", 0)
+  val strokeWidth = PropertyAttribute[Double]("stroke-width", 0.0)
   val textAnchor = PropertyAttribute[String]("text-anchor", null)
   val textDecoration = PropertyAttribute[String]("text-decoration", null)
   val textRendering = PropertyAttribute[String]("text-rendering", null)

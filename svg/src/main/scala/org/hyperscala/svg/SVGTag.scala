@@ -1,8 +1,9 @@
 package org.hyperscala.svg
 
-import attributes.XMLSpace
-import org.hyperscala.{Unique, PropertyAttribute, Tag}
+import attributes.{Transform, XMLSpace}
+import org.hyperscala.{InclusionMode, Unique, PropertyAttribute, Tag}
 import org.hyperscala.io.HTMLWriter
+import org.hyperscala.css.StyleSheetProperty
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
@@ -12,6 +13,10 @@ trait SVGTag extends Tag {
   val xmlBase = PropertyAttribute[String]("xml:base", null)
   val xmlLang = PropertyAttribute[String]("xml:lang", null)
   val xmlSpace = PropertyAttribute[XMLSpace]("xml:space", null)
+  val clazz = PropertyAttribute[List[String]]("class", Nil)
+  val style = new StyleSheetProperty("style", InclusionMode.NotEmpty)(this)
+  val externalResourcesRequired = PropertyAttribute[Boolean]("externalResourcesRequired", false)
+  val transform = PropertyAttribute[List[Transform]]("transform", Nil)
 
   /**
    * Gets the id value and sets it to a unique value if it's null.

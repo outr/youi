@@ -7,7 +7,10 @@ import svg.attributes._
  */
 package object svg {
   implicit val xmlSpacePersistence = XMLSpace
-  implicit val alignmentBaseline = AlignmentBaseline
-  implicit val fontStyle = FontStyle
-  implicit val fontVariant = FontVariant
+  implicit val alignmentBaselinePersistence = AlignmentBaseline
+  implicit val fontStylePersistence = FontStyle
+  implicit val fontVariantPersistence = FontVariant
+  implicit val fontStretchPersistence = FontStretch
+  implicit val fontWeightPersistence = FontWeight
+  implicit val listTransformPersistence = ListTransformPersistence
 }

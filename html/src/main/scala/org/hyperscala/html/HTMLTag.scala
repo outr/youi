@@ -88,22 +88,6 @@ trait HTMLTag extends Tag with EventSupport {
   def rendered() = {}
 }
 
-/*class StyleProperty(_name: String, inclusion: InclusionMode)(implicit parent: PropertyParent) extends PropertyAttribute[StyleSheet](_name, null, inclusion = inclusion)(StyleSheetPersistence, parent, Manifest.classType[StyleSheet](classOf[StyleSheet])) with LazyProperty[StyleSheet] {
-  protected def lazyValue = new StyleSheet
-
-  // Avoid overwriting previously set values
-  override def attributeValue_=(value: String) = StyleSheetPersistence(this.value, value)
-
-  override def lazyLoaded() = {
-    super.lazyLoaded()
-
-    Page() match {
-      case null => // May not be part of a page
-      case page => page.intercept.initStyle.fire(parent.asInstanceOf[Markup])
-    }
-  }
-}*/
-
 object HTMLTag {
   private val registry = ScalaMap("html" -> classOf[HTML],
                                   "head" -> classOf[Head],

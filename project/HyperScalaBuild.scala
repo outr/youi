@@ -71,6 +71,8 @@ object HyperScalaBuild extends Build {
   lazy val core = Project("core", file("core"), settings = createSettings("hyperscala-core"))
   lazy val html = Project("html", file("html"), settings = createSettings("hyperscala-html"))
     .dependsOn(core)
+  lazy val svg = Project("svg", file("svg"), settings = createSettings("hyperscala-svg"))
+    .dependsOn(html)
   lazy val javascript = Project("javascript", file("javascript"), settings = createSettings("hyperscala-javascript"))
     .dependsOn(html)
   lazy val web = Project("web", file("web"), settings = createSettings("hyperscala-web"))
@@ -84,7 +86,7 @@ object HyperScalaBuild extends Build {
 
   // Examples and Site
   lazy val examples = Project("examples", file("examples"), settings = createSettings("hyperscala-examples"))
-    .dependsOn(web, ui)
+    .dependsOn(web, ui, svg)
   lazy val site = Project("site", file("site"), settings = createSettings("hyperscala-site"))
     .dependsOn(examples)
 }

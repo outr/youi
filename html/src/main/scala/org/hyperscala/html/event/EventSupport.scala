@@ -1,8 +1,8 @@
 package org.hyperscala.html.event
 
-import org.hyperscala.javascript.JavaScriptContent
 import org.powerscala.property.Property
 import org.hyperscala._
+import javascript.{EventProperty, JavaScriptContent}
 import org.hyperscala.html.HTMLTag
 
 /**
@@ -89,16 +89,5 @@ trait EventSupport extends Tag {
     val volumeChange = new PropertyAttribute[JavaScriptContent]("onvolumechange", null) with EventProperty
     val waiting = new PropertyAttribute[JavaScriptContent]("onwaiting", null) with EventProperty
     val styleChange = new PropertyAttribute[JavaScriptContent]("onstylechange", null) with EventProperty
-  }
-}
-
-trait EventProperty extends PropertyAttribute[JavaScriptContent] {
-  /**
-   * Concatenation of JavaScript support
-   */
-  def +=(content: JavaScriptContent) = if (value == null) {
-    value = content
-  } else {
-    value = value + content
   }
 }

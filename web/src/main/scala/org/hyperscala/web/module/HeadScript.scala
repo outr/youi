@@ -2,13 +2,12 @@ package org.hyperscala.web.module
 
 import org.hyperscala.web.site.Webpage
 import org.powerscala.Version
-import org.hyperscala.html.event.EventProperty
 import org.powerscala.bus.Routing
 import org.hyperscala.html.HTMLTag
 import org.hyperscala.html.tag.Script
 import org.powerscala.property.event.PropertyChangeEvent
 import org.hyperscala.Unique
-import org.hyperscala.javascript.JavaScriptString
+import org.hyperscala.javascript.{EventProperty, JavaScriptString}
 
 /**
  * @author Matt Hicks <matt@outr.com>

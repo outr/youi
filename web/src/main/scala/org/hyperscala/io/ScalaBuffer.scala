@@ -4,9 +4,8 @@ import org.hyperscala.web.site.Webpage
 import org.hyperscala.html.HTMLTag
 import org.hyperscala.{PropertyAttribute, Container}
 import org.hyperscala.html.tag.{Text, Title}
-import org.hyperscala.html.event.EventProperty
 import org.hyperscala.css.{StyleSheetProperty, StyleSheet}
-import org.hyperscala.javascript.JavaScriptString
+import org.hyperscala.javascript.{EventProperty, JavaScriptString}
 import org.hyperscala.css.attributes.Length
 import org.powerscala.EnumEntry
 

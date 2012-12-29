@@ -1,5 +1,6 @@
 package org.hyperscala.svg
 
+import attributes.ViewBox
 import org.hyperscala.{InclusionMode, PropertyAttribute, Container}
 import org.hyperscala.html.constraints.BodyChild
 import org.hyperscala.html._
@@ -20,12 +21,13 @@ class Svg extends Container[SVGTag] with BodyChild with HTMLTag {
     if (content != null) contents += content
   }
 
-  val version = PropertyAttribute[String]("version", "1.1", inclusion = InclusionMode.Always)
-  val baseProfile = PropertyAttribute[String]("baseProfile", null)
-  val x = PropertyAttribute[Int]("x", 0)
-  val y = PropertyAttribute[Int]("y", 0)
+  val x = PropertyAttribute[Double]("x", 0.0)
+  val y = PropertyAttribute[Double]("y", 0.0)
   val width = PropertyAttribute[Length]("width", 100.pct)
   val height = PropertyAttribute[Length]("height", null)
+  val viewBox = PropertyAttribute[ViewBox]("viewBox", null)
+  val version = PropertyAttribute[String]("version", "1.1", inclusion = InclusionMode.Always)
+  val baseProfile = PropertyAttribute[String]("baseProfile", null)
   val preserveAspectRatio = PropertyAttribute[String]("preserveAspectRatio", null)
   val contentScriptType = PropertyAttribute[String]("contentScriptType", null)
   val contentStyleType = PropertyAttribute[String]("contentStyleType", null)

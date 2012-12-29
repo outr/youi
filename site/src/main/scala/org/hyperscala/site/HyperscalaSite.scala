@@ -9,7 +9,7 @@ import org.hyperscala.examples.ui._
 import org.hyperscala.examples.todomvc.TodoMVC
 import com.outr.webcommunicator.netty.handler.PathHandler
 import org.hyperscala.examples.numberguess.NumberGuess
-import org.hyperscala.examples.svg.BasicSVGExample
+import org.hyperscala.examples.svg.{SVGShapesExample, BasicSVGExample}
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -37,7 +37,10 @@ object HyperscalaSite extends InterpreterWebsite[MapSession] {
     val dialog = WebpageResource("/example/dialog.html", new DialogExample, Scope.Page)
     val dynamic = WebpageResource("/example/dynamic.html", new DynamicContentExample, Scope.Page)
     val pageChange = WebpageResource("/example/page_change.html", new PageChangeWarningExample, Scope.Page)
-    val svg = WebpageResource("/example/basic_svg.html", new HyperscalaExample(new BasicSVGExample), Scope.Page)
+    val svg = new {
+      val basic = WebpageResource("/example/svg/basic.html", new HyperscalaExample(new BasicSVGExample), Scope.Page)
+      val shapes = WebpageResource("/example/svg/shapes.html", new HyperscalaExample(new SVGShapesExample), Scope.Page)
+    }
   }
   val todoMVC = WebpageResource("/todomvc.html", TodoMVC, Scope.Session)
 

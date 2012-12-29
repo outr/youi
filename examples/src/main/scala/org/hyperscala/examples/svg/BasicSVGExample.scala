@@ -2,6 +2,7 @@ package org.hyperscala.examples.svg
 
 import org.hyperscala.examples.Example
 import org.hyperscala.svg
+import org.hyperscala.svg._
 import org.powerscala.Color
 import svg.attributes.{Transform, FontWeight}
 import org.hyperscala.html._

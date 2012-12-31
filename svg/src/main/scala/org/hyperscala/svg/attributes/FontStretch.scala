@@ -3,7 +3,7 @@ package org.hyperscala.svg.attributes
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */
-sealed class FontStretch extends AttributeEntry[FontStretch]
+sealed class FontStretch extends AttributeEntry[FontStretch](parent = FontStretch)
 
 object FontStretch extends AttributeObject[FontStretch] {
   val Normal = new FontStretch

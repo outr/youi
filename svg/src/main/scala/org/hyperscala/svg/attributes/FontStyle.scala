@@ -3,7 +3,7 @@ package org.hyperscala.svg.attributes
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */
-sealed class FontStyle extends AttributeEntry[FontStyle]
+sealed class FontStyle extends AttributeEntry[FontStyle](parent = FontStyle)
 
 object FontStyle extends AttributeObject[FontStyle] {
   val Normal = new FontStyle

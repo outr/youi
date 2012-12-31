@@ -3,7 +3,7 @@ package org.hyperscala.svg.attributes
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */
-sealed class FontWeight(v: String = null) extends AttributeEntry[FontWeight](v)
+sealed class FontWeight(v: String = null) extends AttributeEntry[FontWeight](v, parent = FontWeight)
 
 object FontWeight extends AttributeObject[FontWeight] {
   val Normal = new FontWeight

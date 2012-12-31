@@ -7,4 +7,6 @@ import org.hyperscala.AttributeValue
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */
-trait AttributeObject[E <: EnumEntry[E] with AttributeValue] extends Enumerated[E] with EnumEntryPersistence[E]
+trait AttributeObject[E <: EnumEntry[E] with AttributeValue] extends Enumerated[E] with EnumEntryPersistence[E] {
+  implicit def _thisAttributeObject = this
+}

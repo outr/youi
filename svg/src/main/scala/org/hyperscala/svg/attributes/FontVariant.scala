@@ -3,7 +3,7 @@ package org.hyperscala.svg.attributes
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */
-sealed class FontVariant extends AttributeEntry[FontVariant]
+sealed class FontVariant extends AttributeEntry[FontVariant](parent = FontVariant)
 
 object FontVariant extends AttributeObject[FontVariant] {
   val Normal = new FontVariant

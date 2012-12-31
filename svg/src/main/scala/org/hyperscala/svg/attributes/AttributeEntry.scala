@@ -1,13 +1,13 @@
 package org.hyperscala.svg.attributes
 
-import org.powerscala.{Enumerated, EnumEntry}
+import org.powerscala.EnumEntry
 import org.hyperscala.AttributeValue
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */
-abstract class AttributeEntry[E <: EnumEntry[E]](v: String = null)(implicit parent: Enumerated[E]) extends EnumEntry[E]()(parent) with AttributeValue {
-  val value = v match {
+abstract class AttributeEntry[E <: EnumEntry[E] with AttributeValue](v: String = null, parent: AttributeObject[E]) extends EnumEntry[E]()(parent) with AttributeValue {
+  lazy val value = v match {
     case null => generateValue()
     case _ => v
   }

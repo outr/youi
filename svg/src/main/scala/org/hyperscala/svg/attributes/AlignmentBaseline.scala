@@ -4,7 +4,7 @@ package org.hyperscala.svg.attributes
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */
-sealed class AlignmentBaseline extends AttributeEntry[AlignmentBaseline]
+sealed class AlignmentBaseline extends AttributeEntry[AlignmentBaseline](parent = AlignmentBaseline)
 
 object AlignmentBaseline extends AttributeObject[AlignmentBaseline] {
   val Auto = new AlignmentBaseline

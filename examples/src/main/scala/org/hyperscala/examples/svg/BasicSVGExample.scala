@@ -6,6 +6,7 @@ import org.hyperscala.svg._
 import org.powerscala.Color
 import svg.attributes.{Transform, FontWeight}
 import org.hyperscala.html._
+import svg.event.SVGEvent
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
@@ -21,6 +22,7 @@ class BasicSVGExample extends Example {
       stroke := Color.Black
       strokeWidth := 2
       fill := Color.Red
+      event.click := SVGEvent()
     }
     contents += new svg.Text {
       x := 200

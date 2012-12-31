@@ -8,6 +8,7 @@ import org.hyperscala.html.tag.Script
 import org.powerscala.property.event.PropertyChangeEvent
 import org.hyperscala.Unique
 import org.hyperscala.javascript.{EventProperty, JavaScriptString}
+import org.hyperscala.module._
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -19,7 +20,8 @@ object HeadScript extends Module {
 
   override def dependencies = List(InterfaceWithDefault(jQuery, jQuery182))
 
-  def load(page: Webpage) = {
+  def load() = {
+    val page = Webpage()
     page.intercept.renderAttribute {
       case ep: EventProperty => Routing.Stop    // Don't render JavaScript in HTML
     }
@@ -29,7 +31,8 @@ object HeadScript extends Module {
     }
 
     page.view.foreach {
-      case tag => new HeadScriptTag(page, tag)
+      case tag: HTMLTag => new HeadScriptTag(page, tag)
+      case _ =>
     }
   }
 }

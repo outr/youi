@@ -1,7 +1,7 @@
-package org.hyperscala.web.module
+package org.hyperscala.module
 
 import org.hyperscala.html._
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.Page
 
 /**
  * ModularPage represents all the functionality within a Webpage for dealing with Modules and Interfaces.
@@ -9,7 +9,7 @@ import org.hyperscala.web.site.Webpage
  * @author Matt Hicks <matt@outr.com>
  */
 trait ModularPage {
-  this: Webpage =>
+  this: Page =>
 
   private var modularPageLoaded = false
   private var interfaces = List.empty[Interface]
@@ -76,10 +76,10 @@ trait ModularPage {
   }
 
   private def loadInterface(interface: Interface) = interface match {
-    case module: Module => module.load(this)
+    case module: Module => module.load()
     case iwd: InterfaceWithDefault => {
       replaceInterface(iwd.name, iwd.default, checkPageLoaded = false)    // Replace the interface with the default at load-time
-      iwd.default.load(this)
+      iwd.default.load()
     }
     case _ => throw new RuntimeException("No implementation defined for interface: %s".format(interface.name))
   }
@@ -89,7 +89,7 @@ trait ModularPage {
       if (!modularPageLoaded) {
         modularPageLoaded = true
 
-        val headItems = head.contents.collect {
+        val headItems = html.head.contents.collect {
           case script: tag.Script => script
           case link: tag.Link => link
           case style: tag.Style => style
@@ -101,7 +101,7 @@ trait ModularPage {
           case h => h.removeFromParent()
         }
         headItems.foreach {
-          case h => head.contents += h
+          case h => html.head.contents += h
         }
       }
     }

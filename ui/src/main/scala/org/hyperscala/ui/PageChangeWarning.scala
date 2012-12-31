@@ -1,6 +1,6 @@
 package org.hyperscala.ui
 
-import org.hyperscala.web.module.Module
+import org.hyperscala.module._
 import org.hyperscala.web.site.{Website, Webpage}
 import org.powerscala.Version
 import org.hyperscala.web.site.realtime.Realtime
@@ -17,9 +17,9 @@ object PageChangeWarning extends Module {
 
   override def dependencies = List(Realtime)
 
-  def load(page: Webpage) = {
+  def load() = {
     Website().register("/js/page_change_warning.js", "page_change_warning.js")
-    page.head.contents += new tag.Script(src = "/js/page_change_warning.js")
+    Webpage().head.contents += new tag.Script(src = "/js/page_change_warning.js")
   }
 
   def warn(message: String) = {

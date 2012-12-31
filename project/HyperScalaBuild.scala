@@ -76,17 +76,16 @@ object HyperScalaBuild extends Build {
   lazy val javascript = Project("javascript", file("javascript"), settings = createSettings("hyperscala-javascript"))
     .dependsOn(html)
   lazy val web = Project("web", file("web"), settings = createSettings("hyperscala-web"))
-    .dependsOn(html)
+    .dependsOn(html, svg)
     .settings(libraryDependencies ++= Seq(webcommunicator))
     .settings(libraryDependencies <+= scalaVersion { "org.scala-lang" % "scala-swing" % _ })
   lazy val ui = Project("ui", file("ui"), settings = createSettings("hyperscala-ui"))
     .dependsOn(web)
   lazy val generator = Project("generator", file("generator"), settings = createSettings("hyperscala-generator"))
     .settings(publishArtifact := false)
-
   // Examples and Site
   lazy val examples = Project("examples", file("examples"), settings = createSettings("hyperscala-examples"))
-    .dependsOn(web, ui, svg)
+    .dependsOn(web, ui)
   lazy val site = Project("site", file("site"), settings = createSettings("hyperscala-site"))
     .dependsOn(examples)
 }

@@ -3,6 +3,7 @@ package org.hyperscala.web.module
 import org.hyperscala.web.site.Webpage
 import org.hyperscala.html._
 import org.powerscala.Version
+import org.hyperscala.module._
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -16,7 +17,8 @@ object jQueryUI191 extends Module {
 
   override def dependencies = List(InterfaceWithDefault(jQuery, jQuery182))
 
-  def load(page: Webpage) = {
+  def load() = {
+    val page = Webpage()
     page.website.register("jquery_ui/jquery-ui-1.9.1.custom.min.js")
     page.website.register("jquery_ui/jquery-ui-1.9.1.custom.min.css")
     page.website.register("jquery_ui/images/ui-bg_flat_0_aaaaaa_40x100.png")

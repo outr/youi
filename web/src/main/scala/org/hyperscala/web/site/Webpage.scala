@@ -1,16 +1,15 @@
 package org.hyperscala.web.site
 
-import org.hyperscala.Page
+import org.hyperscala.{Tag, Page}
 import com.outr.webcommunicator.netty.handler.RequestHandler
-import com.outr.webcommunicator.netty.NettyWebapp
-import org.jboss.netty.channel.{ChannelFuture, ChannelFutureListener, MessageEvent, ChannelHandlerContext}
+import com.outr.webcommunicator.netty.{ChannelStringWriter, NettyWebapp}
+import org.jboss.netty.channel.{ChannelFutureListener, MessageEvent, ChannelHandlerContext}
 import org.jboss.netty.handler.codec.http.{HttpMethod, HttpRequest, CookieEncoder}
 import com.google.common.net.HttpHeaders
 
 import org.hyperscala.html._
 import org.hyperscala.io.HTMLWriter
-import org.jboss.netty.buffer.{ChannelBuffers, ChannelBuffer}
-import org.hyperscala.web.module.ModularPage
+import org.jboss.netty.buffer.ChannelBuffer
 import org.powerscala.hierarchy.{Parent, Element, ContainerView}
 import org.hyperscala.web.session.MapSession
 import org.hyperscala.css.StyleSheet
@@ -21,6 +20,8 @@ import org.powerscala.concurrent.WorkQueue
 import org.powerscala.event.Event
 import java.io.IOException
 import org.hyperscala.context.Contextual
+import org.hyperscala.module.ModularPage
+import org.hyperscala.svg.SVGTag
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -68,13 +69,13 @@ class Webpage extends Page with ModularPage with RequestHandler with Parent with
 
   def title = head.title.content
 
-  val view = new ContainerView[HTMLTag](html)
+  val view = new ContainerView[Tag](html)
 
   /**
    * Returns all the HTMLTags that currently reference the supplied StyleSheet in the entire Webpage hierarchy.
    */
   def tagsByStyleSheet(ss: StyleSheet) = view.collect {
-    case tag if (tag.style() == ss) => tag
+    case tag: HTMLTag if (tag.style() == ss) => tag
   }
 
   def apply(webapp: NettyWebapp, context: ChannelHandlerContext, event: MessageEvent) = {
@@ -99,15 +100,17 @@ class Webpage extends Page with ModularPage with RequestHandler with Parent with
     // Write the HttpResponse
     channel.write(response)
     // Set up the writer
-    var lastWriteFuture: ChannelFuture = null
     try {
-      val writer = (s: String) => lastWriteFuture = channel.write(ChannelBuffers.wrappedBuffer(s.getBytes()))
+      val output = new ChannelStringWriter(channel, buffer = 1024)
+      val writer = (s: String) => output.write(s)
+//      val writer = (s: String) => lastWriteFuture = channel.write(ChannelBuffers.wrappedBuffer(s.getBytes()))
       // Write the doctype
       writer(doctype)
       // Stream the page back
       val htmlWriter = HTMLWriter(writer)
       html.write(htmlWriter)
-      lastWriteFuture.addListener(ChannelFutureListener.CLOSE)
+      val future = output.finish()
+      future.addListener(ChannelFutureListener.CLOSE)
       pageLoaded()
     } catch {
       case exc: IOException => {
@@ -131,7 +134,8 @@ class Webpage extends Page with ModularPage with RequestHandler with Parent with
    */
   def pageLoaded() = {
     view.foreach {
-      case tag => tag.rendered()
+      case tag: HTMLTag => tag.rendered()
+      case tag: SVGTag => tag.rendered()
     }
   }
 

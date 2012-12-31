@@ -6,6 +6,7 @@ package org.hyperscala.event
 import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.html.HTMLTag
 import org.powerscala.event.Event
+import org.hyperscala.Page
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -17,7 +18,7 @@ object JavaScriptEvent {
             preventDefault: Boolean = true,
             fireChange: Boolean = false,
             onlyLast: Boolean = true) = {
-    // TODO: require Realtime - but it's not available in the html module
+    Page().require("realtime")
 
     val b = new StringBuilder
     if (confirmation != null) {

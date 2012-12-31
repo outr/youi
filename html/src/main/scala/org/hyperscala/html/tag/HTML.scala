@@ -56,6 +56,9 @@ class HTML extends Container[HTMLChild] with HTMLTag {
   val manifest = PropertyAttribute[String]("manifest", null)
   val xmlns = PropertyAttribute[String]("xmlns", null)
 
+  def head = byTag[Head].headOption.getOrElse(null)
+  def body = byTag[Body].headOption.getOrElse(null)
+
   override protected def generateChildFromTagName(name: String) = {
     contents.find(c => c.xmlLabel == name) match {
       case Some(tag) => tag

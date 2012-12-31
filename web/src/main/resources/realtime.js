@@ -27,6 +27,50 @@ function connectRealtime(id, debug) {
     communicator.connect();
 }
 
+function svgEventHandler(evt) {
+    var element = $(evt.currentTarget);
+    var id = element.attr('id');
+    if (id == null) {       // TODO: Should we always be using target instead of currentTarget?
+        element = $(evt.target);
+        id = element.attr('id');
+    }
+    if (evt instanceof MouseEvent) {
+        communicator.send('svgMouseEvent', {
+            id: id,
+            event: evt.type,
+            altKey: evt.altKey,
+            button: evt.button,
+            clientX: evt.clientX,
+            clientY: evt.clientY,
+            ctrlKey: evt.ctrlKey,
+            metaKey: evt.metaKey,
+            screenX: evt.screenX,
+            screenY: evt.screenY,
+            shiftKey: evt.shiftKey
+        });
+    } else if (evt instanceof MutationEvent) {
+        communicator.send('svgMutationEvent', {
+            id: id,
+            event: evt.type,
+            attrChange: evt.attrChange,
+            attrName: evt.attrName,
+            newValue: evt.newValue,
+            prevValue: evt.prevValue
+        });
+    } else if (evt instanceof UIEvent) {
+        communicator.send('svgUIEvent', {
+            id: id,
+            event: evt.type,
+            detail: evt.detail
+        });
+    } else {
+        communicator.send('svgEvent', {
+            id: id,
+            event: evt.type
+        });
+    }
+}
+
 // TODO: add support in communicator for filtering out overlapping messages
 function jsEventHandler(e, data, fireChange, onlyLast) {
     var element = $(e.currentTarget);

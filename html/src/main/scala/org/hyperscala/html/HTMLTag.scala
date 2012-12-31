@@ -13,7 +13,7 @@ import org.powerscala.property.StandardProperty
  * NOTE: This file has been generated. Do not modify directly!
  * @author Matt Hicks <mhicks@hyperscala.org>
  */
-trait HTMLTag extends Tag with EventSupport {
+trait HTMLTag extends IdentifiableTag with EventSupport {
   val accessKey = PropertyAttribute[Char]("accesskey", -1.toChar)
   val clazz = PropertyAttribute[List[String]]("class", Nil)
   val contentEditable = PropertyAttribute[ContentEditable]("contenteditable", null)
@@ -22,23 +22,10 @@ trait HTMLTag extends Tag with EventSupport {
   val draggable = PropertyAttribute[Draggable]("draggable", null)
   val dropZone = PropertyAttribute[DropZone]("dropzone", null)
   val hidden = PropertyAttribute[Boolean]("hidden", false)
-  val id = PropertyAttribute[String]("id", null)
   val lang = PropertyAttribute[String]("lang", null)
   val spellCheck = PropertyAttribute[Boolean]("spellcheck", false)
   val tabIndex = PropertyAttribute[Int]("tabindex", -1)
   val titleText = PropertyAttribute[String]("title", null)
-
-  /**
-   * Gets the id value and sets it to a unique value if it's null.
-   */
-  def identity = id() match {
-    case null => {
-      val uuid = Unique()
-      id := uuid
-      uuid
-    }
-    case value => value
-  }
 
   // TODO: add back selectors
   val style = new StyleSheetProperty("style", InclusionMode.NotEmpty)(this) {
@@ -66,8 +53,6 @@ trait HTMLTag extends Tag with EventSupport {
       this.asInstanceOf[Container[HTMLTag]].contents += new Text(text)
     }
   }
-
-  def byId[T <: HTMLTag](id: String)(implicit manifest: Manifest[T]) = hierarchy.findFirst[T](t => t.id() == id)(manifest)
 
   def byName[T <: HTMLTag](name: String)(implicit manifest: Manifest[T]) = hierarchy.findAll[T](t => t.name() == name)(manifest)
 

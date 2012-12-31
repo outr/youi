@@ -4,7 +4,7 @@ import org.hyperscala.web.module._
 import org.hyperscala.web.site.Webpage
 import org.hyperscala.html._
 import org.powerscala.Version
-import org.hyperscala.web.module.InterfaceWithDefault
+import org.hyperscala.module._
 import org.hyperscala.javascript.{JavaScriptString, JavaScriptContent}
 
 /**
@@ -17,7 +17,8 @@ object WindowSized extends Module {
 
   override def dependencies = List(InterfaceWithDefault(jQuery, jQuery182))
 
-  def load(page: Webpage) = {
+  def load() = {
+    val page = Webpage()
     page.website.register("/window_size.js", "window_size.js")
     page.head.contents += new tag.Script(mimeType = "text/javascript", src = "/window_size.js")
   }

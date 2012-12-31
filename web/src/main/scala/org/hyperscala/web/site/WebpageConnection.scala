@@ -15,6 +15,8 @@ import org.hyperscala.javascript.JavaScriptContent
 import org.powerscala.property.MutableProperty
 
 import org.powerscala.json._
+import org.hyperscala.svg.SVGTag
+import org.hyperscala.svg.event._
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -70,6 +72,10 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
         case "event" => receiveJavaScriptEvent(parse[SimpleEvent](message))
         case "change" => receiveJavaScriptChange(parse[SimpleChangeEvent](message))
         case "keyEvent" => receiveJavaScriptKeyEvent(parse[SimpleKeyEvent](message))
+        case "svgMouseEvent" => receiveSVGMouseEvent(parse[SimpleSVGMouseEvent](message))
+        case "svgMutationEvent" => receiveSVGMutationEvent(parse[SimpleSVGMutationEvent](message))
+        case "svgUIEvent" => receiveSVGUIEvent(parse[SimpleSVGUIEvent](message))
+        case "svgEvent" => receiveSVGEvent(parse[SimpleEvent](message))
         case _ => info("WebpageConnection(%s) received event: %s with message: %s from the client (Page: %s)!".format(id, event, message, page))
       }
     } catch {
@@ -108,6 +114,68 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
       tag.fire(evt)
     }
     case None => warn("Unable to find tag by id: %s to fire key event: %s".format(message.id, message.event))
+  }
+
+  private def receiveSVGMouseEvent(m: SimpleSVGMouseEvent) = page.html.byId[SVGTag](m.id) match {
+    case Some(tag) => {
+      val evt = m.event match {
+        case "click" => new SVGClickEvent(tag, m.altKey, MouseButton(m.button), m.clientX, m.clientY, m.ctrlKey, m.metaKey, m.screenX, m.screenY, m.shiftKey)
+        case "mousedown" => new SVGMouseDownEvent(tag, m.altKey, MouseButton(m.button), m.clientX, m.clientY, m.ctrlKey, m.metaKey, m.screenX, m.screenY, m.shiftKey)
+        case "mouseup" => new SVGMouseUpEvent(tag, m.altKey, MouseButton(m.button), m.clientX, m.clientY, m.ctrlKey, m.metaKey, m.screenX, m.screenY, m.shiftKey)
+        case "mouseover" => new SVGMouseOverEvent(tag, m.altKey, MouseButton(m.button), m.clientX, m.clientY, m.ctrlKey, m.metaKey, m.screenX, m.screenY, m.shiftKey)
+        case "mousemove" => new SVGMouseMoveEvent(tag, m.altKey, MouseButton(m.button), m.clientX, m.clientY, m.ctrlKey, m.metaKey, m.screenX, m.screenY, m.shiftKey)
+        case "mouseout" => new SVGMouseOutEvent(tag, m.altKey, MouseButton(m.button), m.clientX, m.clientY, m.ctrlKey, m.metaKey, m.screenX, m.screenY, m.shiftKey)
+      }
+      tag.fire(evt)
+    }
+    case None => warn("Unable to find svg tag by id: %s to fire mouse event: %s".format(m.id, m.event))
+  }
+
+  private def receiveSVGMutationEvent(m: SimpleSVGMutationEvent) = page.html.byId[SVGTag](m.id) match {
+    case Some(tag) => {
+      val evt = m.event match {
+        case "DOMSubtreeModified" => new SVGDOMSubtreeModifiedEvent(tag, m.attrChange, m.attrName, m.newValue, m.prevValue)
+        case "DOMNodeInserted" => new SVGDOMNodeInsertedEvent(tag, m.attrChange, m.attrName, m.newValue, m.prevValue)
+        case "DOMNodeRemoved" => new SVGDOMNodeRemovedEvent(tag, m.attrChange, m.attrName, m.newValue, m.prevValue)
+        case "DOMNodeRemovedFromDocument" => new SVGDOMNodeRemovedFromDocumentEvent(tag, m.attrChange, m.attrName, m.newValue, m.prevValue)
+        case "DOMNodeInsertedIntoDocument" => new SVGDOMNodeInsertedIntoDocumentEvent(tag, m.attrChange, m.attrName, m.newValue, m.prevValue)
+        case "DOMAttrModified" => new SVGDOMAttrModifiedEvent(tag, m.attrChange, m.attrName, m.newValue, m.prevValue)
+        case "DOMCharacterDataModified" => new SVGDOMCharacterDataModifiedEvent(tag, m.attrChange, m.attrName, m.newValue, m.prevValue)
+      }
+      tag.fire(evt)
+    }
+    case None => warn("Unable to find svg tag by id: %s to fire mutation event: %s".format(m.id, m.event))
+  }
+
+  private def receiveSVGUIEvent(m: SimpleSVGUIEvent) = page.html.byId[SVGTag](m.id) match {
+    case Some(tag) => {
+      val evt = m.event match {
+        case "focusin" => new SVGFocusInEvent(tag, m.detail)
+        case "focusout" => new SVGFocusOutEvent(tag, m.detail)
+        case "activate" => new SVGActivateEvent(tag, m.detail)
+      }
+      tag.fire(evt)
+    }
+    case None => warn("Unable to find svg tag by id: %s to fire ui event: %s".format(m.id, m.event))
+  }
+
+  private def receiveSVGEvent(m: SimpleEvent) = page.html.byId[SVGTag](m.id) match {
+    case Some(tag) => {
+      val evt = m.event match {
+        case "SVGLoad" => new SVGLoadEvent(tag)
+        case "SVGUnload" => new SVGUnloadEvent(tag)
+        case "SVGAbort" => new SVGAbortEvent(tag)
+        case "SVGError" => new SVGErrorEvent(tag)
+        case "SVGResize" => new SVGResizeEvent(tag)
+        case "SVGScroll" => new SVGScrollEvent(tag)
+        case "SVGZoom" => new SVGZoomEvent(tag)
+        case "beginEvent" => new SVGBeginEvent(tag)
+        case "endEvent" => new SVGEndEvent(tag)
+        case "repeatEvent" => new SVGRepeatEvent(tag)
+      }
+      tag.fire(evt)
+    }
+    case None => warn("Unable to find svg tag by id: %s to fire ui event: %s".format(m.id, m.event))
   }
 
   def propertyChanged(t: HTMLTag, property: PropertyAttribute[_], oldValue: Any, newValue: Any) = {
@@ -189,5 +257,11 @@ case class SimpleEvent(id: String, event: String)
 case class SimpleChangeEvent(id: String, value: String)
 
 case class SimpleKeyEvent(id: String, event: String, altKey: Boolean = false, char: Int = 0, ctrlKey: Boolean = false, key: Int = 0, locale: String = null, location: Long = 0, metaKey: Boolean = false, repeat: Boolean = false, shiftKey: Boolean = false)
+
+case class SimpleSVGMouseEvent(id: String, event: String, altKey: Boolean, button: Int, clientX: Long, clientY: Long, ctrlKey: Boolean, metaKey: Boolean, screenX: Long, screenY: Long, shiftKey: Boolean)
+
+case class SimpleSVGMutationEvent(id: String, event: String, attrChange: Int, attrName: String, newValue: String, prevValue: String)
+
+case class SimpleSVGUIEvent(id: String, event: String, detail: Long)
 
 case class JavaScriptMessage(instruction: String, content: String = null)

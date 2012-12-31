@@ -1,6 +1,6 @@
 package org.hyperscala.ui.widgets
 
-import org.hyperscala.web.module.Module
+import org.hyperscala.module._
 import org.powerscala.Version
 import org.hyperscala.web.site.Webpage
 import org.hyperscala.html.tag
@@ -17,7 +17,8 @@ object CKEditor extends Module {
 
   override def dependencies = List(Realtime)
 
-  def load(page: Webpage) = {
+  def load() = {
+    val page = Webpage()
     page.website.register(PathHandler("/cke/", "ckeditor/"))
 
     page.head.contents += new tag.Script(mimeType = "text/javascript", src = "/cke/ckeditor.js")

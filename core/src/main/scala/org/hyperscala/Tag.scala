@@ -66,5 +66,10 @@ trait Tag extends PropertyParent with Markup with Listenable {
     }
   }
 
+  def byId[T <: Tag](id: String)(implicit manifest: Manifest[T]) = hierarchy.findFirst[T](t => t match {
+    case it: IdentifiableTag => it.id() == id
+    case _ => false
+  })(manifest)
+
   fire(TagCreated(this))
 }

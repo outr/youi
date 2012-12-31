@@ -7,6 +7,7 @@ import org.hyperscala.html.HTMLTag
 import org.hyperscala.html.tag.Style
 import org.powerscala.bus.Routing
 import org.hyperscala.css.StyleSheetProperty
+import org.hyperscala.module._
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -16,7 +17,8 @@ object HeadStyle extends Module {
 
   def version = Version(1)
 
-  def load(page: Webpage) = {
+  def load() = {
+    val page = Webpage()
     val map = page.store.getOrSet("headStyleMap", new util.WeakHashMap[HTMLTag, HeadStyleTag]())
     page.intercept.renderAttribute {
       case ssa: StyleSheetProperty => Routing.Stop
@@ -28,7 +30,8 @@ object HeadStyle extends Module {
       }
     }
     page.view.foreach {
-      case tag => map.put(tag, new HeadStyleTag(page, tag))
+      case tag: HTMLTag => map.put(tag, new HeadStyleTag(page, tag))
+      case _ =>
     }
   }
 }

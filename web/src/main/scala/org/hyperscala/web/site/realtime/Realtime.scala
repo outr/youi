@@ -12,6 +12,7 @@ import org.powerscala.json._
 import org.hyperscala.web.module.IdentifyTags
 import org.hyperscala.web.site.JavaScriptMessage
 import org.powerscala.Version
+import org.hyperscala.module._
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -25,7 +26,8 @@ object Realtime extends Module {
 
   override def dependencies = List(InterfaceWithDefault(jQuery, jQuery182), IdentifyTags)
 
-  def load(page: Webpage) = {
+  def load() = {
+    val page = Webpage()
     // Configure JavaScript on page
     Website().register("/js/communicator.js", "communicator.js")
     Website().register("/js/realtime.js", "realtime.js")

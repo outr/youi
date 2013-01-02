@@ -30,7 +30,8 @@ object HyperScalaBuild extends Build {
       specs2
     ),
     scalacOptions ++= Seq("-unchecked", "-deprecation"),
-    resolvers ++= Seq("Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/"),
+    resolvers ++= Seq("Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/",
+                      "twitter-repo" at "http://maven.twttr.com"),
     publishTo <<= version {
       (v: String) =>
         val nexus = "https://oss.sonatype.org/"

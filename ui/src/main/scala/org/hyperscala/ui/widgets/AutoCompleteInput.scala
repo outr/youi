@@ -98,7 +98,7 @@ abstract class AutoCompleteInput[T](id: String = Unique(), default: T)(implicit 
     style.height = 100.pct
 
     event.keyUp := JavaScriptEvent(fireChange = true, preventDefault = true, onlyLast = true)
-    event.blur := JavaScriptEvent(preventDefault = false)
+    event.blur := JavaScriptEvent(preventDefault = false, delay = 100)
 
     listeners.synchronous {
       case evt: BlurEvent => {

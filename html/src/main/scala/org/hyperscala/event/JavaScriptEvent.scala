@@ -17,16 +17,23 @@ object JavaScriptEvent {
   def apply(confirmation: String = null,
             preventDefault: Boolean = true,
             fireChange: Boolean = false,
-            onlyLast: Boolean = true) = {
+            onlyLast: Boolean = true,
+            delay: Int = 0) = {
     Page().require("realtime")
 
     val b = new StringBuilder
     if (confirmation != null) {
       b.append("if (confirm('%s')) { ".format(confirmation))
     }
-    b.append("jsEventHandler(event, (typeof data === 'undefined') ? null : data, %s, %s); ".format(fireChange, onlyLast))
+    if (delay != 0) {
+      b.append("setTimeout(function() { ")
+    }
+    b.append("jsEventHandler(event, (typeof data === 'undefined') ? null : data, %s, %s);".format(fireChange, onlyLast))
+    if (delay != 0) {
+      b.append(" }, %s); ".format(delay))
+    }
     if (confirmation != null) {
-      b.append("} ")
+      b.append(" } ")
     }
     if (preventDefault) {
       b.append("return false;")

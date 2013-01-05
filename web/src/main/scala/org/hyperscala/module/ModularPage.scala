@@ -2,6 +2,7 @@ package org.hyperscala.module
 
 import org.hyperscala.html._
 import org.hyperscala.Page
+import org.hyperscala.web.site.Website
 
 /**
  * ModularPage represents all the functionality within a Webpage for dealing with Modules and Interfaces.
@@ -76,12 +77,25 @@ trait ModularPage {
   }
 
   private def loadInterface(interface: Interface) = interface match {
-    case module: Module => module.load()
+    case module: Module => loadModule(module)
     case iwd: InterfaceWithDefault => {
       replaceInterface(iwd.name, iwd.default, checkPageLoaded = false)    // Replace the interface with the default at load-time
+      loadModule(iwd.default)
       iwd.default.load()
     }
     case _ => throw new RuntimeException("No implementation defined for interface: %s".format(interface.name))
+  }
+
+  /**
+   * Makes sure the module is initialized the first use in the website and then loads it.
+   */
+  private def loadModule(module: Module) = {
+    val initialized = Website().application.getOrElse("initializedModules", Set.empty[Module])
+    if (!initialized.contains(module)) {
+      module.init()
+      Website().application("initializedModules") = initialized + module
+    }
+    module.load()
   }
 
   intercept.beforeRender {

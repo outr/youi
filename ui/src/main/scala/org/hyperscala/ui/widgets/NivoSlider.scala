@@ -2,7 +2,7 @@ package org.hyperscala.ui.widgets
 
 import org.hyperscala.module._
 import org.hyperscala.web.module.{jQuery182, jQuery}
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.site.{Website, Webpage}
 import org.powerscala.Version
 
 import org.hyperscala.html._
@@ -68,10 +68,12 @@ object NivoSlider extends Module {
 
   override def dependencies = List(InterfaceWithDefault(jQuery, jQuery182))
 
+  def init() = {
+    Website().register(PathHandler("/nivo-slider/", "nivo-slider/"))
+  }
+
   def load() = {
     val page = Webpage()
-    page.website.register(PathHandler("/nivo-slider/", "nivo-slider/"))
-
     page.head.contents += new tag.Link(rel = "stylesheet", href = "/nivo-slider/themes/default/default.css", mimeType = "text/css", media = "screen")
     page.head.contents += new tag.Link(rel = "stylesheet", href = "/nivo-slider/themes/light/light.css", mimeType = "text/css", media = "screen")
     page.head.contents += new tag.Link(rel = "stylesheet", href = "/nivo-slider/themes/dark/dark.css", mimeType = "text/css", media = "screen")

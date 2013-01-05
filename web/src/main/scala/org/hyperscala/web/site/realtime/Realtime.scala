@@ -26,11 +26,14 @@ object Realtime extends Module {
 
   override def dependencies = List(InterfaceWithDefault(jQuery, jQuery182), IdentifyTags)
 
+  def init() = {
+    Website().register("/js/communicator.js", "communicator.js")
+    Website().register("/js/realtime.js", "realtime.js")
+  }
+
   def load() = {
     val page = Webpage()
     // Configure JavaScript on page
-    Website().register("/js/communicator.js", "communicator.js")
-    Website().register("/js/realtime.js", "realtime.js")
     page.head.contents += new tag.Script(src = "/js/communicator.js")
     page.head.contents += new tag.Script(src = "/js/realtime.js")
     page.head.contents += new tag.Script(content = new JavaScriptContent {

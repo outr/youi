@@ -17,6 +17,8 @@ object HeadStyle extends Module {
 
   def version = Version(1)
 
+  def init() = {}
+
   def load() = {
     val page = Webpage()
     val map = page.store.getOrSet("headStyleMap", new util.WeakHashMap[HTMLTag, HeadStyleTag]())

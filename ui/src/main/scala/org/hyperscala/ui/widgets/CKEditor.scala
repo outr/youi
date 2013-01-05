@@ -2,7 +2,7 @@ package org.hyperscala.ui.widgets
 
 import org.hyperscala.module._
 import org.powerscala.Version
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.site.{Website, Webpage}
 import org.hyperscala.html.tag
 import org.hyperscala.web.site.realtime.Realtime
 import com.outr.webcommunicator.netty.handler.PathHandler
@@ -17,10 +17,12 @@ object CKEditor extends Module {
 
   override def dependencies = List(Realtime)
 
+  def init() = {
+    Website().register(PathHandler("/cke/", "ckeditor/"))
+  }
+
   def load() = {
     val page = Webpage()
-    page.website.register(PathHandler("/cke/", "ckeditor/"))
-
     page.head.contents += new tag.Script(mimeType = "text/javascript", src = "/cke/ckeditor.js")
     page.head.contents += new tag.Script(mimeType = "text/javascript", src = "/cke/richeditor.js")
   }

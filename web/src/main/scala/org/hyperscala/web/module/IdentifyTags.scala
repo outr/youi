@@ -15,6 +15,8 @@ object IdentifyTags extends Module {
 
   def version = Version(1)
 
+  def init() = {}
+
   def load() = {
     val page = Webpage()
     page.view.foreach {

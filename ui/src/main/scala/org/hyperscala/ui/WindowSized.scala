@@ -1,7 +1,7 @@
 package org.hyperscala.ui
 
 import org.hyperscala.web.module._
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.site.{Website, Webpage}
 import org.hyperscala.html._
 import org.powerscala.Version
 import org.hyperscala.module._
@@ -17,9 +17,12 @@ object WindowSized extends Module {
 
   override def dependencies = List(InterfaceWithDefault(jQuery, jQuery182))
 
+  def init() = {
+    Website().register("/window_size.js", "window_size.js")
+  }
+
   def load() = {
     val page = Webpage()
-    page.website.register("/window_size.js", "window_size.js")
     page.head.contents += new tag.Script(mimeType = "text/javascript", src = "/window_size.js")
   }
 

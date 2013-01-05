@@ -1,6 +1,6 @@
 package org.hyperscala.web.module
 
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.site.{Website, Webpage}
 import org.powerscala.Version
 import org.hyperscala.html.tag
 import org.hyperscala.module._
@@ -13,9 +13,11 @@ object StyleChange extends Module {
 
   def version = Version(1)
 
+  def init() = {
+    Website().register("/js/stylechange.js", "stylechange.js")
+  }
+
   def load() = {
-    val page = Webpage()
-    page.website.register("/js/stylechange.js", "stylechange.js")
-    page.head.contents += new tag.Script(mimeType = "text/javascript", src = "/js/stylechange.js")
+    Webpage().head.contents += new tag.Script(mimeType = "text/javascript", src = "/js/stylechange.js")
   }
 }

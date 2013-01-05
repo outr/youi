@@ -20,6 +20,8 @@ object HeadScript extends Module {
 
   override def dependencies = List(InterfaceWithDefault(jQuery, jQuery182))
 
+  def init() = {}
+
   def load() = {
     val page = Webpage()
     page.intercept.renderAttribute {

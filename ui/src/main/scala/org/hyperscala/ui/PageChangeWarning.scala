@@ -17,8 +17,11 @@ object PageChangeWarning extends Module {
 
   override def dependencies = List(Realtime)
 
-  def load() = {
+  def init() = {
     Website().register("/js/page_change_warning.js", "page_change_warning.js")
+  }
+
+  def load() = {
     Webpage().head.contents += new tag.Script(src = "/js/page_change_warning.js")
   }
 

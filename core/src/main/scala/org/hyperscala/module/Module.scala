@@ -10,5 +10,6 @@ trait Module extends Interface {
   def version: Version
   def implements: List[Interface] = Nil
   def dependencies: List[Interface] = Nil
+  def init(): Unit
   def load(): Unit
 }

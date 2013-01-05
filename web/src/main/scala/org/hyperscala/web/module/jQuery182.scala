@@ -1,7 +1,7 @@
 package org.hyperscala.web.module
 
 import org.hyperscala.html.tag
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.site.{Website, Webpage}
 import org.powerscala.Version
 import org.hyperscala.module._
 
@@ -15,8 +15,11 @@ object jQuery182 extends Module {
 
   override def implements = List(jQuery)
 
+  def init() = {
+    Website().register("/jquery-1.8.2.js", "jquery-1.8.2.min.js")
+  }
+
   def load() = {
-    Webpage().website.register("/jquery-1.8.2.js", "jquery-1.8.2.min.js")
     Webpage().head.contents += new tag.Script(mimeType = "text/javascript", src = "/jquery-1.8.2.js")
   }
 }

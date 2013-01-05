@@ -34,7 +34,7 @@ class Form extends Container[BodyChild] with BodyChild with HTMLTag {
            encType: String = null,
            method: String = null,
            noValidate: String = null,
-           target: String = null,
+           target: Target = null,
            content: BodyChild = null) = {
     this()
     up(this.name, name)
@@ -68,5 +68,5 @@ class Form extends Container[BodyChild] with BodyChild with HTMLTag {
   val encType = PropertyAttribute[String]("enctype", null)
   val method = PropertyAttribute[String]("method", null)
   val noValidate = PropertyAttribute[String]("novalidate", null)
-  val target = PropertyAttribute[String]("target", null)
+  val target = PropertyAttribute[Target]("target", null)
 }

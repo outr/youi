@@ -9,8 +9,10 @@ import org.powerscala.concurrent.Time._
 import org.powerscala.concurrent.Executor
 import org.jboss.netty.channel.{MessageEvent, ChannelHandlerContext}
 import com.outr.webcommunicator.netty.handler.RequestHandler
-import com.outr.webcommunicator.netty.NettyWebapp
+import com.outr.webcommunicator.netty.{WebResource, NettyWebapp}
 import org.hyperscala.context.Contextual
+import org.jboss.netty.handler.codec.http.HttpRequest
+import annotation.tailrec
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -70,9 +72,19 @@ trait Website[S <: Session] extends NettyCommunicatorManager[WebpageConnection] 
   def localAddress = WebContext.localAddress()
   def remoteAddress = WebContext.remoteAddress()
 
+  register(SessionResources)    // Allow for session-based resources
+
   object application extends MapSession {
     override def timeout = Double.MaxValue
   }
+
+  /**
+   * Registers this resource only for the current session. This is a convenience feature to make a resource available
+   * to a specific session but not visible to anyone else.
+   *
+   * @param resource to register to the current session
+   */
+  def registerSession(resource: WebResource) = SessionResources.register(resource)
 
   private var lastUpdate = System.nanoTime()
   val updated = Executor.scheduleWithFixedDelay(updateFrequency, updateFrequency) {
@@ -114,6 +126,16 @@ trait Website[S <: Session] extends NettyCommunicatorManager[WebpageConnection] 
 
   protected def instantiate(id: UUID) = new WebpageConnection(id)
 
+  override protected def contextualize[T](context: ChannelHandlerContext, event: MessageEvent)(f: => T): T = {
+    event.getMessage match {
+      case request: HttpRequest => WebContext.wrap {
+        WebContext.parse(context, request)
+        f
+      }
+      case _ => f
+    }
+  }
+
   def errorThrown(page: Webpage, t: Throwable) = error("Error occurred on page: %s".format(page), t)
 
   override def update(delta: Double) {
@@ -137,4 +159,37 @@ trait Website[S <: Session] extends NettyCommunicatorManager[WebpageConnection] 
 
 object Website {
   def apply() = NettyWebapp().asInstanceOf[Website[_ <: Session]]
+}
+
+object SessionResources extends WebResource {
+  private val key = "sessionWebResources"
+
+  def register(resource: WebResource) = {
+    val resources = Website().session.getOrElse[List[WebResource]](key, Nil)
+    val updated = (resource :: resources).sortBy(h => h.priority.value)
+    Website().session(key) = updated
+  }
+
+  def request(webapp: NettyWebapp, context: ChannelHandlerContext, event: MessageEvent): Option[RequestHandler] = {
+    val resources = Website().session.getOrElse[List[WebResource]](key, Nil)
+    findFirst(webapp, context, event, resources)
+  }
+
+  @tailrec
+  private def findFirst(webapp: NettyWebapp,
+                        context: ChannelHandlerContext,
+                        event: MessageEvent,
+                        resources: List[WebResource]): Option[RequestHandler] = {
+    if (resources.isEmpty) {
+      None
+    } else {
+      val head = resources.head
+      val option = head.request(webapp, context, event)
+      if (option.nonEmpty) {
+        option
+      } else {
+        findFirst(webapp, context, event, resources.tail)
+      }
+    }
+  }
 }

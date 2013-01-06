@@ -4,7 +4,6 @@ import com.outr.webcommunicator.netty.{RequestResult, MutableWebResource}
 import org.powerscala.property.StandardProperty
 import org.hyperscala.web.Scope
 import org.jboss.netty.handler.codec.http.{HttpResponseStatus, HttpRequest}
-import org.hyperscala.web.session.Session
 import com.outr.webcommunicator.netty.handler.RequestHandler
 import org.powerscala.property.event.PropertyChangingEvent
 import org.powerscala.bus.Routing
@@ -14,8 +13,10 @@ import org.jboss.netty.channel.ChannelHandlerContext
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class WebpageResource(implicit website: Website[_ <: Session]) extends MutableWebResource {
-  website.register(this)
+class WebpageResource(autoRegister: Boolean = true) extends MutableWebResource()(Website()) {
+  if (autoRegister) {
+    Website().register(this)
+  }
 
   protected var _link: String = null
 
@@ -30,8 +31,7 @@ class WebpageResource(implicit website: Website[_ <: Session]) extends MutableWe
   def this(path: String,
             createFunction: => RequestHandler,
             pageScope: Scope,
-            pre: (HttpRequest => RequestResult)*)
-           (implicit website: Website[_ <: Session]) = {
+            pre: (HttpRequest => RequestResult)*) = {
     this()
     _link = path
 
@@ -42,28 +42,25 @@ class WebpageResource(implicit website: Website[_ <: Session]) extends MutableWe
   }
 
   override protected def apply(context: ChannelHandlerContext, request: HttpRequest) = {
-    WebContext.wrap {
-      WebContext.parse(context, request)
-      try {
-        val option = super.apply(context, request)
-        if (option.nonEmpty) {
-          val handler = option.get
-          handler match {
-            case webpage: Webpage => WebContext.webpage := webpage
-            case _ => // Not a webpage
-          }
-          cache(handler)
-          WebContext.checkIn()
+    try {
+      val option = super.apply(context, request)
+      if (option.nonEmpty) {
+        val handler = option.get
+        handler match {
+          case webpage: Webpage => WebContext.webpage := webpage
+          case _ => // Not a webpage
         }
-        option
-      } catch {
-        case t: Throwable => {
-          WebContext.webpage.get() match {
-            case Some(page) => page.errorThrown(t)
-            case None => Website().errorThrown(null, t)
-          }
-          Some(RequestHandler.responder(HttpResponseStatus.INTERNAL_SERVER_ERROR))
+        cache(handler)
+        WebContext.checkIn()
+      }
+      option
+    } catch {
+      case t: Throwable => {
+        WebContext.webpage.get() match {
+          case Some(page) => page.errorThrown(t)
+          case None => Website().errorThrown(null, t)
         }
+        Some(RequestHandler.responder(HttpResponseStatus.INTERNAL_SERVER_ERROR))
       }
     }
   }
@@ -87,6 +84,5 @@ object WebpageResource {
   def apply(path: String,
             createFunction: => RequestHandler,
             pageScope: Scope,
-            pre: (HttpRequest => RequestResult)*)
-           (implicit website: Website[_ <: Session]) = new WebpageResource(path, createFunction, pageScope, pre: _*)(website)
+            pre: (HttpRequest => RequestResult)*) = new WebpageResource(path, createFunction, pageScope, pre: _*)
 }

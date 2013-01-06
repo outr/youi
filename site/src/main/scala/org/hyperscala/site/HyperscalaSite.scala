@@ -37,6 +37,7 @@ object HyperscalaSite extends InterpreterWebsite[MapSession] {
     val dialog = WebpageResource("/example/dialog.html", new DialogExample, Scope.Page)
     val dynamic = WebpageResource("/example/dynamic.html", new DynamicContentExample, Scope.Page)
     val pageChange = WebpageResource("/example/page_change.html", new PageChangeWarningExample, Scope.Page)
+    val fileUploader = WebpageResource("/example/file_upload.html", new HyperscalaExample(new FileUploaderExample), Scope.Page)
     val svg = new {
       val basic = WebpageResource("/example/svg/basic.html", new HyperscalaExample(new BasicSVGExample), Scope.Page)
       val shapes = WebpageResource("/example/svg/shapes.html", new HyperscalaExample(new SVGShapesExample), Scope.Page)

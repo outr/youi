@@ -14,12 +14,15 @@ import org.hyperscala.web.site.realtime.Realtime
 import org.hyperscala.module.Module
 import org.powerscala.Version
 import org.hyperscala.jquery.ui.Dialog
+import org.hyperscala.css.attributes.{Display, Length}
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */
-class FileUploader extends tag.Div {
+abstract class FileUploader extends tag.Div {
   Webpage().require(FileUploader)
+
+  def uploaded(upload: FileUpload): Unit
 
   val uid = identity
   val uploadPath = "/file_upload/%s.html".format(uid)
@@ -27,8 +30,10 @@ class FileUploader extends tag.Div {
   val handler = new FileUploadHandler(this)
   Website().registerSession(WebpageResource(uploadPath, handler, Scope.Request))
 
-  val iframe = new tag.IFrame(id = "iframe%s".format(uid), name = Unique(), src = "http://goclassichomes.intuitwebsites.com/G_O_Red_Page.gif")
-  val uploadForm = new tag.Form(id = "form%s".format(uid), action = uploadPath, encType = "multipart/form-data", method = "post", target = Target(iframe.name()))
+  val iFrame = new tag.IFrame(id = "iframe%s".format(uid), name = Unique(), src = "about:blank") {
+    style.display = Display.None
+  }
+  val uploadForm = new tag.Form(id = "form%s".format(uid), action = uploadPath, encType = "multipart/form-data", method = "post", target = Target(iFrame.name()))
   val input = new tag.Input(id = "file%s".format(uid), name = "file", inputType = InputType.File) {
     event.change := JavaScriptEvent()
     listeners.synchronous {
@@ -44,15 +49,18 @@ class FileUploader extends tag.Div {
     dialog.closeOnEscape := false
     dialog.modal := true
     dialog.title := "Uploading file..."
-    dialog.width := 235
+    dialog.width := 240
     dialog.height := 120
     dialog.resizable := false
-    contents += new tag.Img(src = "/images/indeterminate_progress01.gif")
+    contents += new tag.Img(src = "/images/indeterminate_progress01.gif", width = "200", height = "40") {
+      style.marginLeft = Length.Auto
+      style.marginRight = Length.Auto
+    }
   }
 
   uploadForm.contents += input
   contents += uploadForm
-  contents += iframe
+  contents += iFrame
   contents += progressDialog
 }
 
@@ -70,13 +78,20 @@ object FileUploader extends Module {
 }
 
 class FileUploadHandler(uploader: FileUploader) extends UploadHandler {
-  def receivedAttribute(attribute: Attribute) = println("Received attribute: %s=%s".format(attribute.getName, attribute.getValue))
+  override def minimumFileSize = 0L
 
-  def receivedFileUpload(upload: FileUpload) = println("Received file: %s".format(upload.getFilename))
+  private val webpage = Webpage()
+  private var upload: FileUpload = _
+
+  def receivedAttribute(attribute: Attribute) = {}
+
+  def receivedFileUpload(upload: FileUpload) = this.upload = upload
 
   def sendResponse(context: ChannelHandlerContext) = {
-    println("Redirecting to google!")
-    RequestHandler.redirect("http://richardkeys.com/Images/blue_page_1c.jpg", context)
-    uploader.progressDialog.dialog.close()
+    RequestHandler.redirect("about:blank", context)
+    webpage.context {
+      uploader.progressDialog.dialog.close()
+      uploader.uploaded(upload)
+    }
   }
 }

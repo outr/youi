@@ -87,7 +87,7 @@ trait Session extends Temporal with Listenable with WorkQueue {
       doAllWork()
       map.values.foreach {
         case u: Updatable => u match {
-          case contextual: Contextual => WebContext.wrap(contextual) {
+          case contextual: Contextual => WebContext.contextualize(contextual) {
             u.update(delta)
           }
           case _ => u.update(delta)
@@ -103,7 +103,7 @@ trait Session extends Temporal with Listenable with WorkQueue {
     Website().destroySession(this)
     map.values.foreach {
       case d: Disposable => d match {
-        case contextual: Contextual => WebContext.wrap(contextual) {
+        case contextual: Contextual => WebContext.contextualize(contextual) {
           d.dispose()
         }
         case _ => d.dispose()

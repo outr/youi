@@ -65,7 +65,7 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
     }
   }
 
-  def receive(event: String, message: String) = WebContext.wrap(page) {
+  def receive(event: String, message: String) = WebContext.contextualize(page) {
 //    info("Receive: %s - %s".format(event, message))
     try {
       event match {

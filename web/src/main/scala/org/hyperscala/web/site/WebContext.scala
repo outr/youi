@@ -31,8 +31,8 @@ object WebContext extends Context {
   val localAddress = new ContextEntry[InetSocketAddress]("localAddress")
   val remoteAddress = new ContextEntry[InetSocketAddress]("remoteAddress")
 
-  override def wrap[T](contextual: Contextual)(f: => T): T = {
-    super.wrap(contextual) {
+  override def contextualize[T](contextual: Contextual)(f: => T): T = {
+    super.contextualize(contextual) {
       webpage.get() match {
         case Some(page) => {
           Bus.current = page.bus

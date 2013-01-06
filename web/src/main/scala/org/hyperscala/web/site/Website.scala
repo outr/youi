@@ -113,7 +113,7 @@ trait Website[S <: Session] extends NettyCommunicatorManager[WebpageConnection] 
 
   override protected def invokeHandler(context: ChannelHandlerContext, event: MessageEvent, handler: RequestHandler) {
     handler match {
-      case contextual: Contextual => WebContext.wrap(contextual) {
+      case contextual: Contextual => WebContext.contextualize(contextual) {
         WebContext.checkIn()
         super.invokeHandler(context, event, handler)
       }

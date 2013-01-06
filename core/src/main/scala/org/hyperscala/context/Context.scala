@@ -70,7 +70,7 @@ class Context {
     }
   }
 
-  def wrap[T](contextual: Contextual)(f: => T): T = {
+  def contextualize[T](contextual: Contextual)(f: => T): T = {
     load(contextual)
     try {
       f

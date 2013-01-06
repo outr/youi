@@ -139,6 +139,15 @@ class Webpage extends Page with ModularPage with RequestHandler with Parent with
     }
   }
 
+  /**
+   * Executes the supplied function in this Webpage's context. Useful if pages are cross-communicating.
+   *
+   * @param f function to invoke in context
+   * @tparam T the return value of the function
+   * @return T
+   */
+  def context[T](f: => T): T = WebContext.contextualize[T](this)(f)
+
   protected def processPost(content: ChannelBuffer) = {}
 
   override def errorThrown(t: Throwable) = website.errorThrown(this, t)

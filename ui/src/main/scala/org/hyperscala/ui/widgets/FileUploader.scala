@@ -22,6 +22,9 @@ import org.hyperscala.css.attributes.{Display, Length}
 abstract class FileUploader extends tag.Div {
   Webpage().require(FileUploader)
 
+  def uploadTitle = "Uploading file..."
+  def processingTitle = "Processing file..."
+
   def uploaded(upload: FileUpload): Unit
 
   val uid = identity
@@ -38,6 +41,7 @@ abstract class FileUploader extends tag.Div {
     event.change := JavaScriptEvent()
     listeners.synchronous {
       case evt: ChangeEvent => {
+        progressDialog.dialog.title := uploadTitle
         progressDialog.dialog.open()
         Realtime.sendJavaScript("$('#%s').submit();".format(uploadForm.id()))
       }
@@ -48,7 +52,6 @@ abstract class FileUploader extends tag.Div {
     dialog.autoOpen := false
     dialog.closeOnEscape := false
     dialog.modal := true
-    dialog.title := "Uploading file..."
     dialog.width := 240
     dialog.height := 120
     dialog.resizable := false
@@ -90,8 +93,12 @@ class FileUploadHandler(uploader: FileUploader) extends UploadHandler {
   def sendResponse(context: ChannelHandlerContext) = {
     RequestHandler.redirect("about:blank", context)
     webpage.context {
-      uploader.progressDialog.dialog.close()
-      uploader.uploaded(upload)
+      uploader.progressDialog.dialog.title := uploader.processingTitle
+      try {
+        uploader.uploaded(upload)
+      } finally {
+        uploader.progressDialog.dialog.close()
+      }
     }
   }
 }

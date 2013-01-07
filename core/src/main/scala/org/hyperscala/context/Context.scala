@@ -50,7 +50,9 @@ class Context {
    */
   def close() = {
     val contextInstance = local.get()
-    local.set(contextInstance.outer)
+    if (contextInstance != null) {
+      local.set(contextInstance.outer)
+    }
   }
 
   /**

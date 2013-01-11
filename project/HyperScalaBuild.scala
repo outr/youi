@@ -11,6 +11,7 @@ object HyperScalaBuild extends Build {
   val jdom = "org.jdom" % "jdom" % "2.0.2"
 
   val htmlcleaner = "net.sourceforge.htmlcleaner" % "htmlcleaner" % "2.2"
+  val akkaActors = "com.typesafe.akka" % "akka-actor" % "2.0.5"
 
   val specs2 = "org.specs2" %% "specs2" % "1.11" % "test"
 
@@ -27,11 +28,13 @@ object HyperScalaBuild extends Build {
       powerScalaProperty,
       jdom,
       htmlcleaner,
+      akkaActors,
       specs2
     ),
     scalacOptions ++= Seq("-unchecked", "-deprecation"),
     resolvers ++= Seq("Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/",
-                      "twitter-repo" at "http://maven.twttr.com"),
+                      "twitter-repo" at "http://maven.twttr.com",
+                      "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/"),
     publishTo <<= version {
       (v: String) =>
         val nexus = "https://oss.sonatype.org/"

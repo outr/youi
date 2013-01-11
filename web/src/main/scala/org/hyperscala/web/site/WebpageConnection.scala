@@ -54,7 +54,9 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
         applyingProperty = null   // Only necessary to ignore the first event
         applyingValue = null
       }
-      case evt: StylePropertyChangeEvent => styleChanged(evt.styleSheet, evt.style, evt.newStyleValue)
+      case evt: StylePropertyChangeEvent => {
+        styleChanged(evt.property.parent.asInstanceOf[HTMLTag], evt.styleSheet, evt.style, evt.newStyleValue)
+      }
       case evt: PropertyChangeEvent => evt.property match {
         case property: PropertyAttribute[_] => property.parent match {
           case tag: HTMLTag => propertyChanged(tag, property, evt.oldValue, evt.newValue)
@@ -197,12 +199,18 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
     }
   }
 
-//  def styleChanged(ss: StyleSheet, property: PropertyAttribute[_]) = page.tagsByStyleSheet(ss).foreach {
-//    case tag => send(JavaScriptMessage("$('#%s').css('%s', content);".format(tag.id(), property.name()), property.attributeValue))
-//  }
-
-  def styleChanged(ss: StyleSheet, style: Style[_], value: AnyRef) = page.tagsByStyleSheet(ss).foreach {
-    case tag => send(JavaScriptMessage("$('#%s').css('%s', content);".format(tag.id(), style.cssName), style.asInstanceOf[Style[AnyRef]].persistence.toString(value, value.getClass)))
+  def styleChanged(tag: HTMLTag, ss: StyleSheet, style: Style[_], value: AnyRef): Unit = {
+    val tagId = tag.id()
+    if (style == null) {    // StyleSheet assigned, so we need to send everything
+      ss.map.foreach {
+        case (s, v) => styleChanged(tag, ss, s, v)
+      }
+    } else {
+      val anyStyle = style.asInstanceOf[Style[AnyRef]]
+      val styleName = anyStyle.cssName
+      val styleValue = anyStyle.persistence.toString(value, value.getClass)
+      send(JavaScriptMessage("$('#%s').css('%s', content);".format(tagId, styleName), styleValue))
+    }
   }
 
   def childAdded(evt: ChildAddedEvent) = {

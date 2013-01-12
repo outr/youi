@@ -1,6 +1,8 @@
 import sbt._
 import Keys._
 
+import spray.revolver.RevolverPlugin._
+
 object HyperScalaBuild extends Build {
   // ~;container:start; container:reload /
 
@@ -67,7 +69,7 @@ object HyperScalaBuild extends Build {
         </developers>)
   )
 
-  private def createSettings(_name: String) = baseSettings ++ Seq(name := _name)
+  private def createSettings(_name: String) = baseSettings ++ Revolver.settings ++ Seq(name := _name)
 
   lazy val root = Project("root", file("."), settings = createSettings("hyperscala-root"))
     .settings(publishArtifact in Compile := false, publishArtifact in Test := false)
@@ -91,5 +93,6 @@ object HyperScalaBuild extends Build {
   lazy val examples = Project("examples", file("examples"), settings = createSettings("hyperscala-examples"))
     .dependsOn(web, ui)
   lazy val site = Project("site", file("site"), settings = createSettings("hyperscala-site"))
+    .settings(mainClass := Some("org.hyperscala.site.HyperscalaSite"))
     .dependsOn(examples)
 }

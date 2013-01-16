@@ -4,12 +4,11 @@ import Keys._
 import spray.revolver.RevolverPlugin._
 
 object HyperScalaBuild extends Build {
-  // ~;container:start; container:reload /
-
-  val powerScalaConvert = "org.powerscala" %% "powerscala-convert" % "1.4-SNAPSHOT"
-  val powerScalaReflect = "org.powerscala" %% "powerscala-reflect" % "1.4-SNAPSHOT"
-  val powerScalaHierarchy = "org.powerscala" %% "powerscala-hierarchy" % "1.4-SNAPSHOT"
-  val powerScalaProperty = "org.powerscala" %% "powerscala-property" % "1.4-SNAPSHOT"
+  val powerScalaVersion = "1.5.0-SNAPSHOT"
+  val powerScalaConvert = "org.powerscala" %% "powerscala-convert" % powerScalaVersion
+  val powerScalaReflect = "org.powerscala" %% "powerscala-reflect" % powerScalaVersion
+  val powerScalaHierarchy = "org.powerscala" %% "powerscala-hierarchy" % powerScalaVersion
+  val powerScalaProperty = "org.powerscala" %% "powerscala-property" % powerScalaVersion
   val jdom = "org.jdom" % "jdom" % "2.0.2"
 
   val htmlcleaner = "net.sourceforge.htmlcleaner" % "htmlcleaner" % "2.2"
@@ -17,10 +16,10 @@ object HyperScalaBuild extends Build {
 
   val specs2 = "org.specs2" %% "specs2" % "1.11" % "test"
 
-  val webcommunicator = "com.outr.webcommunicator" %% "webcommunicator" % "1.0-SNAPSHOT"
+  val webcommunicator = "com.outr.webcommunicator" %% "webcommunicator" % "1.0.1-SNAPSHOT"
 
   val baseSettings = Defaults.defaultSettings ++ Seq(
-    version := "0.6-SNAPSHOT",
+    version := "0.7.0-SNAPSHOT",
     organization := "org.hyperscala",
     scalaVersion := "2.9.2",
     libraryDependencies ++= Seq(

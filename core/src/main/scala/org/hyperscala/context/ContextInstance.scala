@@ -12,13 +12,13 @@ private[context] class ContextInstance(var outer: ContextInstance) {
     map(name)
   }
 
-  def get(name: String): Any = if (!map.contains(name) && outer != null) {
+  def get(name: String): Any = if (!map.contains(name) && outer != null && outer != this) {
     outer.get(name)
   } else {
     map.get(name)
   }
 
-  def getOrElse(name: String, default: => Any): Any = if (!map.contains(name) && outer != null) {
+  def getOrElse(name: String, default: => Any): Any = if (!map.contains(name) && outer != null && outer != this) {
     outer.getOrElse(name, default)
   } else {
     map.getOrElse(name, default)

@@ -5,9 +5,8 @@ import org.jdom2.input.SAXBuilder
 import java.io.{FileWriter, File, StringReader}
 import io.Source
 import org.htmlcleaner.{PrettyXmlSerializer, HtmlCleaner}
-import org.hyperscala.{Markup, Unique}
+import org.hyperscala.Markup
 import org.hyperscala.web.site.Webpage
-import org.powerscala.reflect.DynamicCompiler
 import swing.FileChooser
 import java.util.prefs.Preferences
 
@@ -30,7 +29,7 @@ object HTMLToScala {
     b.code
   }
 
-  def toInstantiator[T <: HTMLTag](tag: HTMLTag, className: String) = {
+  /*def toInstantiator[T <: HTMLTag](tag: HTMLTag, className: String) = {
     val source = toScala(tag, null, className)
     val file = File.createTempFile("hyperscala", ".scala")
     try {
@@ -45,13 +44,13 @@ object HTMLToScala {
     } finally {
       file.delete()
     }
-  }
+  }*/
 
-  def toInstantiator[T <: HTMLTag](source: Source, clean: Boolean) = {
+  /*def toInstantiator[T <: HTMLTag](source: Source, clean: Boolean) = {
     val tag = toHTML(source, clean)
     val className = "Custom%s".format(Unique())
     toInstantiator[T](tag, className)
-  }
+  }*/
 
   def toPage(source: Source, clean: Boolean = true) = {
     val page = new Webpage()

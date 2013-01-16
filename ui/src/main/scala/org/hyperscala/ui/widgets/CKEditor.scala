@@ -13,7 +13,7 @@ import com.outr.webcommunicator.netty.handler.PathHandler
 object CKEditor extends Module {
   def name = "ckeditor"
 
-  def version = Version(4, 0)
+  def version = Version(4, 0, 1)
 
   override def dependencies = List(Realtime)
 

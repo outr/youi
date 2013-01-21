@@ -8,6 +8,7 @@ import org.hyperscala.html.tag._
 import css.StyleSheetProperty
 import scala.collection.{Map => ScalaMap}
 import org.powerscala.property.StandardProperty
+import org.hyperscala.event.JavaScriptEvent
 
 /**
  * NOTE: This file has been generated. Do not modify directly!
@@ -71,6 +72,28 @@ trait HTMLTag extends IdentifiableTag with EventSupport {
   }
 
   def rendered() = {}
+
+  override def receive(event: String, message: Message) = event match {
+    case "event" => {     // Applies general JavaScript event from client
+      val evt = JavaScriptEvent.create(this, message[String]("event"))
+      fire(evt)
+    }
+    case "keyEvent" => {  // Fires key events on this tag
+      val eventType = message[String]("event")
+      val altKey = message[Boolean]("altKey")
+      val char = message[Int]("char")
+      val ctrlKey = message[Boolean]("ctrlKey")
+      val key = message[Int]("key")
+      val locale = message.getOrElse[String]("locale", null)
+      val location = message[Long]("location")
+      val metaKey = message[Boolean]("metaKey")
+      val repeat = message.getOrElse[Boolean]("repeat", false)
+      val shiftKey = message[Boolean]("shiftKey")
+      val evt = JavaScriptEvent.createKeyEvent(this, eventType, altKey, char, ctrlKey, key, locale, location, metaKey, repeat, shiftKey)
+      fire(evt)
+    }
+    case _ => super.receive(event, message)
+  }
 }
 
 object HTMLTag {

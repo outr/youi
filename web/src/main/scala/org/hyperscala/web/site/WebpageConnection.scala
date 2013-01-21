@@ -5,18 +5,18 @@ import java.util.UUID
 import org.powerscala.Logging
 import org.hyperscala.html.{tag, HTMLTag}
 
-import org.hyperscala.event.{StylePropertyChangeEvent, FormSubmit, JavaScriptEvent}
-import org.hyperscala.html.attributes.Method
-import org.powerscala.hierarchy.event.{ChildRemovedEvent, ChildAddedEvent}
 import org.powerscala.property.event.PropertyChangeEvent
-import org.hyperscala.{Container, Textual, Page, PropertyAttribute}
+import org.hyperscala._
+import event.StylePropertyChangeEvent
+import html.FormField
 import org.hyperscala.css.{Style, StyleSheet}
 import org.hyperscala.javascript.JavaScriptContent
-import org.powerscala.property.MutableProperty
 
 import org.powerscala.json._
-import org.hyperscala.svg.SVGTag
-import org.hyperscala.svg.event._
+import scala.Some
+import org.powerscala.hierarchy.event.ChildRemovedEvent
+import org.powerscala.hierarchy.event.ChildAddedEvent
+import util.parsing.json.JSON
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -24,16 +24,13 @@ import org.hyperscala.svg.event._
 class WebpageConnection(val id: UUID) extends Communicator with Logging {
   debug("WebpageConnection created: %s".format(id))
 
-  var applyingProperty: MutableProperty[_] = _
-  var applyingValue: Any = _
-
   private var _page: Webpage = _
 
   def page = _page
   def page_=(page: Webpage) = {
 //    info("Initialize page with WebpageConnection")
     _page = page
-    initializePage()    // TODO: why does commenting this out throw OutOfContextExceptions?
+    initializePage()
   }
 
   def initializePage() = {
@@ -48,11 +45,9 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
       }
     }
     page.listeners.synchronous.filter(evt => true) {    // Accept all events on this pages' bus
-      case evt: PropertyChangeEvent if (applyingProperty == evt.property && applyingValue == evt.newValue) => {
+      case evt: PropertyChangeEvent if (FormField.changingProperty == evt.property && FormField.changingValue == evt.newValue) => {
         // Ignore a change initialized by this connector (avoid recursive changes)
-//        info("Ignoring change being applied: %s".format(applyingValue))
-        applyingProperty = null   // Only necessary to ignore the first event
-        applyingValue = null
+        debug("Ignoring change being applied: %s".format(FormField.changingValue))
       }
       case evt: StylePropertyChangeEvent => {
         styleChanged(evt.property.parent.asInstanceOf[HTMLTag], evt.styleSheet, evt.style, evt.newStyleValue)
@@ -60,128 +55,26 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
       case evt: PropertyChangeEvent => evt.property match {
         case property: PropertyAttribute[_] => property.parent match {
           case tag: HTMLTag => propertyChanged(tag, property, evt.oldValue, evt.newValue)
-//          case ss: StyleSheet => styleChanged(ss, property)
         }
         case _ => // Ignore other changes
       }
     }
   }
 
-  def receive(event: String, message: String) = WebContext.contextualize(page) {
-//    info("Receive: %s - %s".format(event, message))
+  def receive(event: String, id: String, message: String) = WebContext.contextualize(page) {
     try {
-      event match {
-        case "event" => receiveJavaScriptEvent(parse[SimpleEvent](message))
-        case "change" => receiveJavaScriptChange(parse[SimpleChangeEvent](message))
-        case "keyEvent" => receiveJavaScriptKeyEvent(parse[SimpleKeyEvent](message))
-        case "svgMouseEvent" => receiveSVGMouseEvent(parse[SimpleSVGMouseEvent](message))
-        case "svgMutationEvent" => receiveSVGMutationEvent(parse[SimpleSVGMutationEvent](message))
-        case "svgUIEvent" => receiveSVGUIEvent(parse[SimpleSVGUIEvent](message))
-        case "svgEvent" => receiveSVGEvent(parse[SimpleEvent](message))
-        case _ => info("WebpageConnection(%s) received event: %s with message: %s from the client (Page: %s)!".format(id, event, message, page))
+      val map = JSON.parseFull(message).getOrElse(throw new RuntimeException("Failed to parse: %s".format(message))).asInstanceOf[Map[String, Any]]
+      page.html.byId[IdentifiableTag](id) match {
+        case Some(tag) => tag.receive(event, Message(message, map))
+        case None => warn("Unable to find tag by id: %s to fire event: %s for message: %s".format(id, event, message))
       }
     } catch {
       case t: Throwable => page.errorThrown(t)
     }
   }
 
-  private def receiveJavaScriptEvent(message: SimpleEvent) = page.html.byId[HTMLTag](message.id) match {
-    case Some(tag) => {
-      val evt = JavaScriptEvent.create(tag, message.event)
-      tag.fire(evt)
-    }
-    case None => warn("Unable to find tag by id: %s to fire event: %s".format(message.id, message.event))
-  }
-
-  private def receiveJavaScriptChange(message: SimpleChangeEvent) = page.html.byId[HTMLTag](message.id) match {
-    case Some(t) => t match {
-      case button: tag.Button => button.fire(FormSubmit(Method.Post))
-      case _ => {
-        applyingProperty = t.formValue
-        applyingValue = message.value
-        try {
-          t.formValue := message.value
-        } finally {
-          applyingProperty = null
-          applyingValue = null
-        }
-      }
-    }
-    case None => warn("Unable to find tag by id: %s to fire change: %s".format(message.id, message.value))
-  }
-
-  private def receiveJavaScriptKeyEvent(message: SimpleKeyEvent) = page.html.byId[HTMLTag](message.id) match {
-    case Some(tag) => {
-      val evt = JavaScriptEvent.createKeyEvent(tag, message.event, message.altKey, message.char, message.ctrlKey, message.key, message.locale, message.location, message.metaKey, message.repeat, message.shiftKey)
-      tag.fire(evt)
-    }
-    case None => warn("Unable to find tag by id: %s to fire key event: %s".format(message.id, message.event))
-  }
-
-  private def receiveSVGMouseEvent(m: SimpleSVGMouseEvent) = page.html.byId[SVGTag](m.id) match {
-    case Some(tag) => {
-      val evt = m.event match {
-        case "click" => new SVGClickEvent(tag, m.altKey, MouseButton(m.button), m.clientX, m.clientY, m.ctrlKey, m.metaKey, m.screenX, m.screenY, m.shiftKey)
-        case "mousedown" => new SVGMouseDownEvent(tag, m.altKey, MouseButton(m.button), m.clientX, m.clientY, m.ctrlKey, m.metaKey, m.screenX, m.screenY, m.shiftKey)
-        case "mouseup" => new SVGMouseUpEvent(tag, m.altKey, MouseButton(m.button), m.clientX, m.clientY, m.ctrlKey, m.metaKey, m.screenX, m.screenY, m.shiftKey)
-        case "mouseover" => new SVGMouseOverEvent(tag, m.altKey, MouseButton(m.button), m.clientX, m.clientY, m.ctrlKey, m.metaKey, m.screenX, m.screenY, m.shiftKey)
-        case "mousemove" => new SVGMouseMoveEvent(tag, m.altKey, MouseButton(m.button), m.clientX, m.clientY, m.ctrlKey, m.metaKey, m.screenX, m.screenY, m.shiftKey)
-        case "mouseout" => new SVGMouseOutEvent(tag, m.altKey, MouseButton(m.button), m.clientX, m.clientY, m.ctrlKey, m.metaKey, m.screenX, m.screenY, m.shiftKey)
-      }
-      tag.fire(evt)
-    }
-    case None => warn("Unable to find svg tag by id: %s to fire mouse event: %s".format(m.id, m.event))
-  }
-
-  private def receiveSVGMutationEvent(m: SimpleSVGMutationEvent) = page.html.byId[SVGTag](m.id) match {
-    case Some(tag) => {
-      val evt = m.event match {
-        case "DOMSubtreeModified" => new SVGDOMSubtreeModifiedEvent(tag, m.attrChange, m.attrName, m.newValue, m.prevValue)
-        case "DOMNodeInserted" => new SVGDOMNodeInsertedEvent(tag, m.attrChange, m.attrName, m.newValue, m.prevValue)
-        case "DOMNodeRemoved" => new SVGDOMNodeRemovedEvent(tag, m.attrChange, m.attrName, m.newValue, m.prevValue)
-        case "DOMNodeRemovedFromDocument" => new SVGDOMNodeRemovedFromDocumentEvent(tag, m.attrChange, m.attrName, m.newValue, m.prevValue)
-        case "DOMNodeInsertedIntoDocument" => new SVGDOMNodeInsertedIntoDocumentEvent(tag, m.attrChange, m.attrName, m.newValue, m.prevValue)
-        case "DOMAttrModified" => new SVGDOMAttrModifiedEvent(tag, m.attrChange, m.attrName, m.newValue, m.prevValue)
-        case "DOMCharacterDataModified" => new SVGDOMCharacterDataModifiedEvent(tag, m.attrChange, m.attrName, m.newValue, m.prevValue)
-      }
-      tag.fire(evt)
-    }
-    case None => warn("Unable to find svg tag by id: %s to fire mutation event: %s".format(m.id, m.event))
-  }
-
-  private def receiveSVGUIEvent(m: SimpleSVGUIEvent) = page.html.byId[SVGTag](m.id) match {
-    case Some(tag) => {
-      val evt = m.event match {
-        case "focusin" => new SVGFocusInEvent(tag, m.detail)
-        case "focusout" => new SVGFocusOutEvent(tag, m.detail)
-        case "activate" => new SVGActivateEvent(tag, m.detail)
-      }
-      tag.fire(evt)
-    }
-    case None => warn("Unable to find svg tag by id: %s to fire ui event: %s".format(m.id, m.event))
-  }
-
-  private def receiveSVGEvent(m: SimpleEvent) = page.html.byId[SVGTag](m.id) match {
-    case Some(tag) => {
-      val evt = m.event match {
-        case "SVGLoad" => new SVGLoadEvent(tag)
-        case "SVGUnload" => new SVGUnloadEvent(tag)
-        case "SVGAbort" => new SVGAbortEvent(tag)
-        case "SVGError" => new SVGErrorEvent(tag)
-        case "SVGResize" => new SVGResizeEvent(tag)
-        case "SVGScroll" => new SVGScrollEvent(tag)
-        case "SVGZoom" => new SVGZoomEvent(tag)
-        case "beginEvent" => new SVGBeginEvent(tag)
-        case "endEvent" => new SVGEndEvent(tag)
-        case "repeatEvent" => new SVGRepeatEvent(tag)
-      }
-      tag.fire(evt)
-    }
-    case None => warn("Unable to find svg tag by id: %s to fire ui event: %s".format(m.id, m.event))
-  }
-
   def propertyChanged(t: HTMLTag, property: PropertyAttribute[_], oldValue: Any, newValue: Any) = {
-//    info("propertyChanged: %s.%s from %s to %s".format(t.xmlLabel, property.name(), oldValue, newValue))
+    debug("propertyChanged: %s.%s from %s to %s".format(t.xmlLabel, property.name(), oldValue, newValue))
     if (t.root[Webpage].nonEmpty && property != t.style && !t.isInstanceOf[tag.Text]) {
       if (property == t.id && oldValue == null) {
         // Ignore initial id change as it is sent when added
@@ -255,21 +148,9 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
   }
 
   override def send(event: String, message: String) {
-//    info("Sending event: %s, message: %s".format(event, message))
+    debug("Sending event: %s, message: %s".format(event, message))
     super.send(event, message)
   }
 }
-
-case class SimpleEvent(id: String, event: String)
-
-case class SimpleChangeEvent(id: String, value: String)
-
-case class SimpleKeyEvent(id: String, event: String, altKey: Boolean = false, char: Int = 0, ctrlKey: Boolean = false, key: Int = 0, locale: String = null, location: Long = 0, metaKey: Boolean = false, repeat: Boolean = false, shiftKey: Boolean = false)
-
-case class SimpleSVGMouseEvent(id: String, event: String, altKey: Boolean, button: Int, clientX: Long, clientY: Long, ctrlKey: Boolean, metaKey: Boolean, screenX: Long, screenY: Long, shiftKey: Boolean)
-
-case class SimpleSVGMutationEvent(id: String, event: String, attrChange: Int, attrName: String, newValue: String, prevValue: String)
-
-case class SimpleSVGUIEvent(id: String, event: String, detail: Long)
 
 case class JavaScriptMessage(instruction: String, content: String = null)

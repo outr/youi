@@ -112,7 +112,17 @@ object JavaScriptEvent {
     }
   }
 
-  def createKeyEvent(tag: HTMLTag, eventType: String, altKey: Boolean, char: Int, ctrlKey: Boolean, key: Int, locale: String, location: Long, metaKey: Boolean, repeat: Boolean, shiftKey: Boolean) = {
+  def createKeyEvent(tag: HTMLTag,
+                     eventType: String,
+                     altKey: Boolean,
+                     char: Int,
+                     ctrlKey: Boolean,
+                     key: Int,
+                     locale: String,
+                     location: Long,
+                     metaKey: Boolean,
+                     repeat: Boolean,
+                     shiftKey: Boolean) = {
     val c = char match {
       case 0 => None
       case _ => Some(char.toChar)

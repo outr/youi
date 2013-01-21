@@ -35,8 +35,7 @@ function svgEventHandler(evt) {
         id = element.attr('id');
     }
     if (evt instanceof MouseEvent) {
-        communicator.send('svgMouseEvent', {
-            id: id,
+        communicator.send('svgMouseEvent', id, {
             event: evt.type,
             altKey: evt.altKey,
             button: evt.button,
@@ -49,8 +48,7 @@ function svgEventHandler(evt) {
             shiftKey: evt.shiftKey
         });
     } else if (evt instanceof MutationEvent) {
-        communicator.send('svgMutationEvent', {
-            id: id,
+        communicator.send('svgMutationEvent', id, {
             event: evt.type,
             attrChange: evt.attrChange,
             attrName: evt.attrName,
@@ -58,14 +56,12 @@ function svgEventHandler(evt) {
             prevValue: evt.prevValue
         });
     } else if (evt instanceof UIEvent) {
-        communicator.send('svgUIEvent', {
-            id: id,
+        communicator.send('svgUIEvent', id, {
             event: evt.type,
             detail: evt.detail
         });
     } else {
-        communicator.send('svgEvent', {
-            id: id,
+        communicator.send('svgEvent', id, {
             event: evt.type
         });
     }
@@ -81,16 +77,14 @@ function jsEventHandler(e, data, fireChange, onlyLast) {
     }
     if (id != null) {
         if (e.type == 'change' || fireChange) {
-            communicator.send('change', {
-                id: id,
+            communicator.send('change', id, {
                 value: element.val()
             });
 //            log('sending change event: ' + id + ' - ' + element.val());
         }
         // TODO: support mouse events better
         if (e.type == 'keydown' || e.type == 'keypress' || e.type == 'keyup') {
-            communicator.send('keyEvent', {
-                id: id,
+            communicator.send('keyEvent', id, {
                 event: e.type,
                 altKey: e.altKey,
                 char: e.charCode,
@@ -103,8 +97,7 @@ function jsEventHandler(e, data, fireChange, onlyLast) {
                 shiftKey: e.shiftKey
             });
         } else {
-            communicator.send('event', {
-                id: id,
+            communicator.send('event', id, {
                 event: e.type
             });
         }

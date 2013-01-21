@@ -153,7 +153,11 @@ trait Website[S <: Session] extends NettyCommunicatorManager[WebpageConnection] 
 
   def main(args: Array[String]): Unit = {
     bind(host, port)
-    info("%s bound to %s:%s".format(getClass.getSimpleName, host, port))
+    val hostname = host match {
+      case null => "*"
+      case _ => host
+    }
+    info("%s bound to %s:%s".format(getClass.getSimpleName, hostname, port))
   }
 }
 

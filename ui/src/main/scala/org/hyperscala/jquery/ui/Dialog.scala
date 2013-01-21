@@ -3,7 +3,7 @@ package org.hyperscala.jquery.ui
 import org.hyperscala.html._
 import org.hyperscala.web.site.Webpage
 import org.hyperscala.web.module.jQueryUI191
-import org.hyperscala.javascript.{JavaScriptString, JavaScriptContent}
+import org.hyperscala.javascript.JavaScriptString
 import org.powerscala.property._
 import org.hyperscala.web.site.realtime.Realtime
 import org.powerscala.event.Listenable
@@ -12,9 +12,7 @@ import org.powerscala.property.event.PropertyChangeEvent
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-trait Dialog {
-  this: HTMLTag =>
-
+trait Dialog extends HTMLTag {
   identity    // Make sure it has an id
 
   Webpage().require(Realtime)
@@ -77,12 +75,11 @@ trait Dialog {
 
   private var generated = false
 
-  private val script = new tag.Script {
-    contents += new JavaScriptContent {
-      def content = generateScript()
-    }
+  override protected def before() = {
+    super.before()
+
+    Webpage().sendJavaScript(generateScript(), forId = id())
   }
-  Webpage().head.contents += script
 
   private def generateScript() = {
     generated = true

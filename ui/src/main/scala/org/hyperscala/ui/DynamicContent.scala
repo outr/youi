@@ -23,17 +23,18 @@ trait DynamicContent extends Container[HTMLTag] with BodyChild with HTMLTag {
   def content: String
   def cached: Boolean = true
 
-  private val dynamicContent = DynamicContent(content, cached)
+  private val dynamicContent = DynamicContent.load(content, cached)
   private var dynamicBlocks = Map.empty[String, DynamicHTMLBlock]
 
   /**
    * Loads the tag found within the content by id and returns as T.
    *
    * @param id to find the tag by
+   * @param reId sets a unique id to this tag before returning if true (defaults to false)
    * @tparam T the type of HTMLTag being returned
    * @return T
    */
-  def load[T <: HTMLTag](id: String): T = synchronized {
+  def load[T <: HTMLTag](id: String, reId: Boolean = false): T = synchronized {
     val dhb = dynamicContent.extract(id)
     val tag = HTMLTag.create(dhb.element.getName)
     tag.read(dhb.element)
@@ -41,6 +42,9 @@ trait DynamicContent extends Container[HTMLTag] with BodyChild with HTMLTag {
     dynamicBlocks += id -> block
     contents += tag
 
+    if (reId) {
+      tag.id := Unique()
+    }
     tag.asInstanceOf[T]
   }
 
@@ -129,11 +133,15 @@ trait DynamicContent extends Container[HTMLTag] with BodyChild with HTMLTag {
   }
 }
 
+class StringDynamicContent(val content: String) extends DynamicContent
+
 object DynamicContent {
   val builder = new SAXBuilder()
   private var contents = Map.empty[String, DynamicHTML]
 
-  def apply(content: String, cache: Boolean) = contents.get(content) match {
+  def apply(html: String) = new StringDynamicContent(html)
+
+  private def load(content: String, cache: Boolean) = contents.get(content) match {
     case Some(dhtml) => dhtml
     case None => synchronized {
       val dhtml = new DynamicHTML(content)

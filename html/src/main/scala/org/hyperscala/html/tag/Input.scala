@@ -131,7 +131,7 @@ class Input extends Container[BodyChild] with BodyChild with HTMLTag with FormFi
   val size = PropertyAttribute[Int]("size", -1)
   val src = PropertyAttribute[String]("src", null)
   val step = PropertyAttribute[Int]("step", -1)
-  val value = PropertyAttribute[String]("value", null, inclusion = InclusionMode.Always)
+  val value = PropertyAttribute[String]("value", "", inclusion = InclusionMode.Always)
   val width = PropertyAttribute[Int]("width", -1)
 
   override def write(writer: HTMLWriter) = {

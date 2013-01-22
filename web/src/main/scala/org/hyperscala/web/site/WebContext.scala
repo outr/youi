@@ -91,7 +91,7 @@ object WebContext extends Context {
         cookie
       }
     }
-    session := (Website().sessions.get(sessionCookie.value) match {
+    session := (Website().sessions.map.get(sessionCookie.value) match {
       case Some(s) => s
       case None => Website().instantiateSession(sessionCookie.value).asInstanceOf[Session]
     })

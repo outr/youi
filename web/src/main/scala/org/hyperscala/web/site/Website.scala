@@ -12,6 +12,7 @@ import com.outr.webcommunicator.netty.handler.RequestHandler
 import com.outr.webcommunicator.netty.{WebResource, NettyWebapp}
 import org.hyperscala.context.Contextual
 import org.jboss.netty.handler.codec.http.HttpRequest
+import org.powerscala.reflect._
 import annotation.tailrec
 
 /**
@@ -63,6 +64,19 @@ trait Website[S <: Session] extends NettyCommunicatorManager[WebpageConnection] 
   def updateFrequency = 5.seconds
 
   protected def createSession(): S
+
+  private var _sessions = Map.empty[String, S]
+  val sessions = new {
+    def map = _sessions
+    def values = _sessions.values
+    def valuesByType[T](implicit manifest: Manifest[T]) = {
+      values.flatMap {
+        case session => session.values.collect {
+          case v if (v.getClass.hasType(manifest.erasure)) => v.asInstanceOf[T]
+        }
+      }
+    }
+  }
 
   def webpage = WebContext.webpage()
   def headers = WebContext.headers()
@@ -120,9 +134,6 @@ trait Website[S <: Session] extends NettyCommunicatorManager[WebpageConnection] 
       case _ => super.invokeHandler(context, event, handler)
     }
   }
-
-  private var _sessions = Map.empty[String, S]
-  def sessions = _sessions
 
   protected def instantiate(id: UUID) = new WebpageConnection(id)
 

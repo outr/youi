@@ -36,6 +36,7 @@ object HyperscalaSite extends Website[MapSession] {
     val nivoSlider = WebpageResource("/example/nivoslider.html", new NivoSliderExample, Scope.Page)
     val dialog = WebpageResource("/example/dialog.html", new DialogExample, Scope.Page)
     val dynamic = WebpageResource("/example/dynamic.html", new DynamicContentExample, Scope.Page)
+    val chat = WebpageResource("/example/chat.html", new ChatExample, Scope.Session)
     val pageChange = WebpageResource("/example/page_change.html", new PageChangeWarningExample, Scope.Page)
     val fileUploader = WebpageResource("/example/file_upload.html", new HyperscalaExample(new FileUploaderExample), Scope.Page)
     val svg = new {

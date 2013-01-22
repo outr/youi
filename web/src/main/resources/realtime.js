@@ -117,12 +117,10 @@ function jsEval(message) {
 
 function invokeForId(id, f) {
     if ($('#' + id).length == 0) {
-        console.log('Waiting for ' + id);
         setTimeout(function() {
             invokeForId(id, f);
         }, 10);
     } else {
-        console.log('Found ' + id);
         f();
     }
 }

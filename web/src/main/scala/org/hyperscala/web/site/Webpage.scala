@@ -189,6 +189,7 @@ class Webpage extends Page with ModularPage with RequestHandler with Parent with
   }
 
   def sendJavaScript(script: String, forId: String = null, head: Boolean = true) = if (rendered) {
+    require(Realtime)
     if (forId != null) {
       val s = """
         |invokeForId('%s', function() {

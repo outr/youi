@@ -79,7 +79,7 @@ object ChatExample {
     if (instances.find(c => c.nickname() == nick).isEmpty) {
       nick
     } else {
-      generateNick(nick, increment + 1)
+      generateNick(nickname, increment + 1)
     }
   }
   def sendMessage(nickname: String, message: String) = synchronized {

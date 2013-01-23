@@ -9,6 +9,8 @@ import org.hyperscala.javascript.JavaScriptString
  * @author Matt Hicks <matt@outr.com>
  */
 object jQuery extends Interface {
+  def Latest = jQuery190
+
   def name = "jquery"
 
   def blur(tag: HTMLTag) = call(tag, "blur()")

@@ -12,7 +12,7 @@ import org.hyperscala.web.module.IdentifyTags
 import org.hyperscala.web.site.JavaScriptMessage
 import org.powerscala.Version
 import org.hyperscala.module._
-import org.hyperscala.jquery.{jQuery182, jQuery}
+import org.hyperscala.jquery.jQuery
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -24,7 +24,7 @@ object Realtime extends Module {
 
   def version = Version(1)
 
-  override def dependencies = List(InterfaceWithDefault(jQuery, jQuery182), IdentifyTags)
+  override def dependencies = List(InterfaceWithDefault(jQuery, jQuery.Latest), IdentifyTags)
 
   def init() = {
     Website().register("/js/communicator.js", "communicator.js")

@@ -9,7 +9,7 @@ import org.powerscala.property.event.PropertyChangeEvent
 import org.hyperscala.Unique
 import org.hyperscala.javascript.{EventProperty, JavaScriptString}
 import org.hyperscala.module._
-import org.hyperscala.jquery.{jQuery182, jQuery}
+import org.hyperscala.jquery.jQuery
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -19,7 +19,7 @@ object HeadScript extends Module {
 
   def version = Version(1)
 
-  override def dependencies = List(InterfaceWithDefault(jQuery, jQuery182))
+  override def dependencies = List(InterfaceWithDefault(jQuery, jQuery.Latest))
 
   def init() = {}
 

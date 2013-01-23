@@ -5,7 +5,7 @@ import org.hyperscala.html._
 import org.powerscala.Version
 import org.hyperscala.module._
 import org.hyperscala.javascript.{JavaScriptString, JavaScriptContent}
-import org.hyperscala.jquery.{jQuery182, jQuery}
+import org.hyperscala.jquery.jQuery
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
@@ -15,7 +15,7 @@ object WindowSized extends Module {
 
   def version = Version(1)
 
-  override def dependencies = List(InterfaceWithDefault(jQuery, jQuery182))
+  override def dependencies = List(InterfaceWithDefault(jQuery, jQuery.Latest))
 
   def init() = {
     Website().register("/window_size.js", "window_size.js")

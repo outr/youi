@@ -1,11 +1,11 @@
 package org.hyperscala.ui
 
-import org.hyperscala.web.module._
 import org.hyperscala.web.site.{Website, Webpage}
 import org.hyperscala.html._
 import org.powerscala.Version
 import org.hyperscala.module._
 import org.hyperscala.javascript.{JavaScriptString, JavaScriptContent}
+import org.hyperscala.jquery.{jQuery182, jQuery}
 
 /**
  * @author Matt Hicks <mhicks@outr.com>

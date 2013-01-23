@@ -1,6 +1,5 @@
-package org.hyperscala.web.site.realtime
+package org.hyperscala.realtime
 
-import org.hyperscala.web.module._
 import org.hyperscala.web.site.{WebpageConnection, Webpage, Website}
 
 import org.hyperscala.html._
@@ -13,6 +12,7 @@ import org.hyperscala.web.module.IdentifyTags
 import org.hyperscala.web.site.JavaScriptMessage
 import org.powerscala.Version
 import org.hyperscala.module._
+import org.hyperscala.jquery.{jQuery182, jQuery}
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -74,8 +74,36 @@ object Realtime extends Module {
     sendRecursive(page, event, content, connections)
   }
 
-  def sendJavaScript(instruction: String, content: String = null) = {
-    broadcast("eval", JavaScriptMessage(instruction, content))
+  def sendJavaScript(instruction: String, content: String = null, forId: String = null, head: Boolean = true) = {
+    if (Webpage().rendered) {
+      Webpage().require(this)
+
+      if (forId != null) {
+        val s = """
+                  |invokeForId('%s', function() {
+                  | %s
+                  |});
+                """.stripMargin.format(forId, instruction)
+        if (content != null) {
+          throw new RuntimeException("forId not supported with non-null content")
+        }
+        broadcast("eval", JavaScriptMessage(s, content))
+      } else {
+        broadcast("eval", JavaScriptMessage(instruction, content))
+      }
+    } else {
+      val script = instruction.replaceAll("content", content)
+      val s = new tag.Script {
+        contents += new JavaScriptContent {
+          def content = script
+        }
+      }
+      if (head) {
+        Webpage().head.contents += s
+      } else {
+        Webpage().body.contents += s
+      }
+    }
   }
 
   def sendRedirect(url: String) = {

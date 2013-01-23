@@ -1,4 +1,4 @@
-package org.hyperscala.web.module
+package org.hyperscala.ui.module
 
 import org.hyperscala.web.site.Webpage
 import org.powerscala.Version

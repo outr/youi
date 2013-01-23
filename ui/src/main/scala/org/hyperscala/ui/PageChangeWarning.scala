@@ -3,9 +3,9 @@ package org.hyperscala.ui
 import org.hyperscala.module._
 import org.hyperscala.web.site.{Website, Webpage}
 import org.powerscala.Version
-import org.hyperscala.web.site.realtime.Realtime
 import org.hyperscala.html._
 import org.hyperscala.javascript.JavaScriptString
+import org.hyperscala.realtime.Realtime
 
 /**
  * @author Matt Hicks <mhicks@outr.com>

@@ -6,15 +6,18 @@ import org.hyperscala.css.attributes._
 
 import org.powerscala.property._
 import org.powerscala.property.event.PropertyChangeEvent
-import org.hyperscala.web.site.realtime.RealtimeWebpage
 import org.hyperscala.event.{ClickEvent, JavaScriptEvent}
 import org.powerscala.Country
 import org.hyperscala.ui.widgets.visual.`type`.DateInputVisualType
+import org.hyperscala.web.site.Webpage
+import org.hyperscala.realtime.Realtime
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-class VisualExample extends RealtimeWebpage {
+class VisualExample extends Webpage {
+  require(Realtime)
+
   body.style.fontFamily = "sans-serif"
 
   val property = Property[TestPerson]("property", new TestPerson(name = "John Doe", age = 21))

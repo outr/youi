@@ -6,7 +6,7 @@ import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.web.site.Webpage
 import org.hyperscala.event.ChangeEvent
 import org.powerscala.property.event.PropertyChangeEvent
-import org.hyperscala.web.site.realtime.Realtime
+import org.hyperscala.realtime.Realtime
 
 /**
  * @author Matt Hicks <matt@outr.com>

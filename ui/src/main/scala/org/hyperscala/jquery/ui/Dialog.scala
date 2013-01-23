@@ -2,12 +2,11 @@ package org.hyperscala.jquery.ui
 
 import org.hyperscala.html._
 import org.hyperscala.web.site.Webpage
-import org.hyperscala.web.module.jQueryUI191
 import org.hyperscala.javascript.JavaScriptString
 import org.powerscala.property._
-import org.hyperscala.web.site.realtime.Realtime
 import org.powerscala.event.Listenable
 import org.powerscala.property.event.PropertyChangeEvent
+import org.hyperscala.realtime.Realtime
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -78,7 +77,7 @@ trait Dialog extends HTMLTag {
   override protected def before() = {
     super.before()
 
-    Webpage().sendJavaScript(generateScript(), forId = id())
+    Realtime.sendJavaScript(generateScript(), forId = id())
   }
 
   private def generateScript() = {

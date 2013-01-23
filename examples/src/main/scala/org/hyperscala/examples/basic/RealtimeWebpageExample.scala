@@ -1,15 +1,17 @@
 package org.hyperscala.examples.basic
 
-import org.hyperscala.web.site.realtime.RealtimeWebpage
 import org.hyperscala.html._
 import org.powerscala.Color
 import org.hyperscala.event.{ChangeEvent, ClickEvent, JavaScriptEvent}
 import org.powerscala.event.ActionEvent
+import org.hyperscala.web.site.Webpage
+import org.hyperscala.realtime.Realtime
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class RealtimeWebpageExample extends RealtimeWebpage {
+class RealtimeWebpageExample extends Webpage {
+  require(Realtime)
   title := "Realtime Example"
 
   var count = 0

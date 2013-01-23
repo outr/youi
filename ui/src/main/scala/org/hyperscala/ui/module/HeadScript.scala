@@ -1,4 +1,4 @@
-package org.hyperscala.web.module
+package org.hyperscala.ui.module
 
 import org.hyperscala.web.site.Webpage
 import org.powerscala.Version
@@ -9,6 +9,7 @@ import org.powerscala.property.event.PropertyChangeEvent
 import org.hyperscala.Unique
 import org.hyperscala.javascript.{EventProperty, JavaScriptString}
 import org.hyperscala.module._
+import org.hyperscala.jquery.{jQuery182, jQuery}
 
 /**
  * @author Matt Hicks <matt@outr.com>

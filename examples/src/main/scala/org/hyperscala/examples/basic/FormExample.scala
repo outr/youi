@@ -6,8 +6,8 @@ import attributes.{ButtonType, InputType}
 
 import tag._
 import org.powerscala.property.event.PropertyChangeEvent
-import org.hyperscala.web.module.jQuery172
 import org.hyperscala.web.site.Webpage
+import org.hyperscala.jquery.jQuery172
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>

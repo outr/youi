@@ -84,8 +84,12 @@ object HyperScalaBuild extends Build {
     .dependsOn(html, svg)
     .settings(libraryDependencies ++= Seq(webcommunicator))
     .settings(libraryDependencies <+= scalaVersion { "org.scala-lang" % "scala-swing" % _ })
-  lazy val ui = Project("ui", file("ui"), settings = createSettings("hyperscala-ui"))
+  lazy val jquery = Project("jquery", file("jquery"), settings = createSettings("hyperscala-jquery"))
     .dependsOn(web)
+  lazy val realtime = Project("realtime", file("realtime"), settings = createSettings("hyperscala-realtime"))
+    .dependsOn(web, jquery)
+  lazy val ui = Project("ui", file("ui"), settings = createSettings("hyperscala-ui"))
+    .dependsOn(web, realtime, jquery)
   lazy val generator = Project("generator", file("generator"), settings = createSettings("hyperscala-generator"))
     .settings(publishArtifact := false)
   // Examples and Site

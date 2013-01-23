@@ -4,12 +4,14 @@ import org.hyperscala.ui.widgets.AutoCompleteInput
 import org.hyperscala.html._
 import org.powerscala.Language
 import org.powerscala.property.event.PropertyChangeEvent
-import org.hyperscala.web.site.realtime.RealtimeWebpage
+import org.hyperscala.web.site.Webpage
+import org.hyperscala.realtime.Realtime
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-class AutoCompleteExample extends RealtimeWebpage {
+class AutoCompleteExample extends Webpage {
+  require(Realtime)
   body.style.fontFamily = "Arial, sans-serif"
 
   body.contents += new tag.Div {

@@ -4,8 +4,8 @@ import org.hyperscala.module._
 import org.powerscala.Version
 import org.hyperscala.web.site.{Website, Webpage}
 import org.hyperscala.html.tag
-import org.hyperscala.web.site.realtime.Realtime
 import com.outr.webcommunicator.netty.handler.PathHandler
+import org.hyperscala.realtime.Realtime
 
 /**
  * @author Matt Hicks <matt@outr.com>

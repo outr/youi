@@ -23,8 +23,6 @@ import org.hyperscala.context.Contextual
 import org.hyperscala.module.ModularPage
 import org.hyperscala.svg.SVGTag
 import java.util.concurrent.atomic.AtomicBoolean
-import realtime.Realtime
-import org.hyperscala.javascript.JavaScriptContent
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -186,31 +184,6 @@ class Webpage extends Page with ModularPage with RequestHandler with Parent with
 
     Website().session.removeByValue(this)
     bus.clear()
-  }
-
-  def sendJavaScript(script: String, forId: String = null, head: Boolean = true) = if (rendered) {
-    require(Realtime)
-    if (forId != null) {
-      val s = """
-        |invokeForId('%s', function() {
-        | %s
-        |});
-      """.stripMargin.format(forId, script)
-      Realtime.sendJavaScript(s)
-    } else {
-      Realtime.sendJavaScript(script)
-    }
-  } else {
-    val s = new tag.Script {
-      contents += new JavaScriptContent {
-        def content = script
-      }
-    }
-    if (head) {
-      Webpage().head.contents += s
-    } else {
-      Webpage().body.contents += s
-    }
   }
 }
 

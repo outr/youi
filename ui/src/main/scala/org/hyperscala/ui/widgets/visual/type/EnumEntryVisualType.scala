@@ -8,7 +8,7 @@ import org.powerscala.reflect._
 import org.hyperscala.ui.widgets.ListSelect
 import org.hyperscala.event.JavaScriptEvent
 import org.hyperscala.web.site.Webpage
-import org.hyperscala.web.site.realtime.Realtime
+import org.hyperscala.realtime.Realtime
 
 /**
  * @author Matt Hicks <matt@outr.com>

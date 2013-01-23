@@ -10,11 +10,11 @@ import org.hyperscala.Unique
 import org.hyperscala.event.{ChangeEvent, JavaScriptEvent}
 import org.hyperscala.web.site.{Webpage, WebpageResource, Website}
 import org.hyperscala.web.Scope
-import org.hyperscala.web.site.realtime.Realtime
 import org.hyperscala.module.Module
 import org.powerscala.Version
 import org.hyperscala.jquery.ui.Dialog
 import org.hyperscala.css.attributes.{Display, Length}
+import org.hyperscala.realtime.Realtime
 
 /**
  * @author Matt Hicks <mhicks@outr.com>

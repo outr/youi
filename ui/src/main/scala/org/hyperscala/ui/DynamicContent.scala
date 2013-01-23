@@ -10,7 +10,7 @@ import java.io.StringReader
 import annotation.tailrec
 import org.powerscala.property.{CaseClassBinding, StandardProperty}
 import org.hyperscala.web.site.Webpage
-import org.hyperscala.web.site.realtime.Realtime
+import org.hyperscala.realtime.Realtime
 
 /**
  * DynamicContent provides similar functionality to StaticContent rendering pre-defined HTML onto the page in place of

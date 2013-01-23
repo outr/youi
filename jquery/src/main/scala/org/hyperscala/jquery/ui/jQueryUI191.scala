@@ -1,10 +1,11 @@
-package org.hyperscala.web.module
+package org.hyperscala.jquery.ui
 
 import org.hyperscala.web.site.{Website, Webpage}
 import org.hyperscala.html._
 import org.powerscala.Version
 import org.hyperscala.module._
 import com.outr.webcommunicator.netty.handler.PathHandler
+import org.hyperscala.jquery.{jQuery182, jQuery}
 
 /**
  * @author Matt Hicks <matt@outr.com>

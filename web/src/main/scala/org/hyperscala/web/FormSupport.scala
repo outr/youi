@@ -28,7 +28,6 @@ trait FormSupport extends Webpage {
               }
             }
             val v = values.toArray.map(o => o.toString)
-            //                println("Updating %s for %s with %s".format(tag, key, v.mkString(", ")))
             t match {
               case button: tag.Button => button.fire(FormSubmit(Method.Post))
               case _ => t.formValue := v.head

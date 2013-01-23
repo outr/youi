@@ -1,4 +1,4 @@
-package org.hyperscala.web.module
+package org.hyperscala.jquery.ui
 
 import org.hyperscala.module._
 

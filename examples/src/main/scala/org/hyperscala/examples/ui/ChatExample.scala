@@ -4,11 +4,11 @@ import org.hyperscala.html._
 import org.hyperscala.ui.DynamicContent
 import io.Source
 import org.hyperscala.event.{ChangeEvent, ClickEvent, JavaScriptEvent}
-import org.hyperscala.web.site.realtime.Realtime
 import org.hyperscala.web.site.{Website, Webpage}
 import org.powerscala.property.StandardProperty
 import annotation.tailrec
-import org.hyperscala.web.module.jQuery
+import org.hyperscala.jquery.jQuery
+import org.hyperscala.realtime.Realtime
 
 /**
  * @author Matt Hicks <mhicks@outr.com>

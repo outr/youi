@@ -5,7 +5,7 @@ import org.hyperscala.html._
 import org.hyperscala.ui.widgets.visual.VisualBuilder
 import org.hyperscala.event.JavaScriptEvent
 import org.hyperscala.web.site.Webpage
-import org.hyperscala.web.site.realtime.Realtime
+import org.hyperscala.realtime.Realtime
 
 /**
  * @author Matt Hicks <matt@outr.com>

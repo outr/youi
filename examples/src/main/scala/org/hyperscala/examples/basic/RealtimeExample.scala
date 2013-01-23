@@ -1,9 +1,9 @@
 package org.hyperscala.examples.basic
 
 import org.hyperscala.web.site.Webpage
-import org.hyperscala.web.site.realtime.Realtime
 import org.hyperscala.html._
 import org.hyperscala.event.{ClickEvent, JavaScriptEvent}
+import org.hyperscala.realtime.Realtime
 
 /**
  * @author Matt Hicks <mhicks@outr.com>

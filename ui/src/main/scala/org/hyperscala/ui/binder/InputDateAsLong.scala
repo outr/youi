@@ -4,10 +4,10 @@ import org.hyperscala.ui.Binder
 import org.hyperscala.html._
 import org.hyperscala.event.JavaScriptEvent
 import org.hyperscala.web.site.Webpage
-import org.hyperscala.web.module.{jQueryUI, jQueryUI191}
 import org.hyperscala.javascript.JavaScriptString
 import java.text.SimpleDateFormat
 import java.util.Date
+import org.hyperscala.jquery.ui.{jQueryUI191, jQueryUI}
 
 /**
  * @author Matt Hicks <mhicks@outr.com>

@@ -3,7 +3,6 @@ package org.hyperscala.examples.ui
 import org.hyperscala.web.site.Webpage
 
 import org.hyperscala.html._
-import org.hyperscala.web.module.jQueryUI191
 import org.hyperscala.jquery.ui._
 import org.hyperscala.event.{ClickEvent, JavaScriptEvent}
 

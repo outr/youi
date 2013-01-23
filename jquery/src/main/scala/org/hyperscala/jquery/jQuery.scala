@@ -31,6 +31,7 @@ object jQuery extends Interface {
         |    $('#%1$s').%2$s;
         |  }
         |}
+        |callFunction();
       """.stripMargin.format(t.identity, function)))
   }
 }

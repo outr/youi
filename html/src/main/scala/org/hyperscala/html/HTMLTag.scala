@@ -85,7 +85,7 @@ trait HTMLTag extends IdentifiableTag with EventSupport {
       val ctrlKey = message[Boolean]("ctrlKey")
       val key = message[Int]("key")
       val locale = message.getOrElse[String]("locale", null)
-      val location = message[Long]("location")
+      val location = message.getOrElse[Long]("location", 0L)
       val metaKey = message[Boolean]("metaKey")
       val repeat = message.getOrElse[Boolean]("repeat", false)
       val shiftKey = message[Boolean]("shiftKey")

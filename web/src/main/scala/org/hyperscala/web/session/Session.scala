@@ -1,12 +1,13 @@
 package org.hyperscala.web.session
 
 import org.powerscala.concurrent.Time._
-import org.powerscala.{Logging, Updatable}
+import org.powerscala.Updatable
 import org.powerscala.concurrent.WorkQueue
 import org.powerscala.event.{Listenable, Event}
 import org.hyperscala.web.site._
 import scala.Some
 import org.hyperscala.context.Contextual
+import org.powerscala.log.Logging
 
 
 /**

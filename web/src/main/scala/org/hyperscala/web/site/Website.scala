@@ -2,7 +2,7 @@ package org.hyperscala.web.site
 
 import com.outr.webcommunicator.netty.communicator.NettyCommunicatorManager
 import java.util.UUID
-import org.powerscala.{Updatable, Logging}
+import org.powerscala.Updatable
 import org.hyperscala.web.session.{MapSession, Session}
 import org.powerscala.concurrent.Time._
 
@@ -14,6 +14,7 @@ import org.hyperscala.context.Contextual
 import org.jboss.netty.handler.codec.http.HttpRequest
 import org.powerscala.reflect._
 import annotation.tailrec
+import org.powerscala.log.Logging
 
 /**
  * @author Matt Hicks <matt@outr.com>

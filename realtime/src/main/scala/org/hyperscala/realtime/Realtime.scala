@@ -74,7 +74,7 @@ object Realtime extends Module {
     sendRecursive(page, event, content, connections)
   }
 
-  def sendJavaScript(instruction: String, content: String = null, forId: String = null, head: Boolean = true) = {
+  def sendJavaScript(instruction: String, content: String = null, forId: String = null, head: Boolean = true, onlyRealtime: Boolean = true) = {
     if (Webpage().rendered) {
       Webpage().require(this)
 
@@ -91,7 +91,7 @@ object Realtime extends Module {
       } else {
         broadcast("eval", JavaScriptMessage(instruction, content))
       }
-    } else {
+    } else if (!onlyRealtime) {
       val script = instruction.replaceAll("content", content)
       val s = new tag.Script {
         contents += new JavaScriptContent {

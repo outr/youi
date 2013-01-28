@@ -2,7 +2,7 @@ package org.hyperscala.web.site
 
 import com.outr.webcommunicator.Communicator
 import java.util.UUID
-import org.powerscala.Logging
+import org.powerscala.log.Logging
 import org.hyperscala.html.{tag, HTMLTag}
 
 import org.powerscala.property.event.PropertyChangeEvent

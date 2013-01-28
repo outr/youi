@@ -5,7 +5,7 @@ import org.jdom2.{Attribute, Element, Content}
 import annotation.tailrec
 import scala.collection.JavaConversions._
 import java.util.concurrent.atomic.AtomicBoolean
-import org.powerscala.Logging
+import org.powerscala.log.Logging
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>

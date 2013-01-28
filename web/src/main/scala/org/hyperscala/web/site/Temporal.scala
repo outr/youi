@@ -1,7 +1,8 @@
 package org.hyperscala.web.site
 
-import org.powerscala.{Logging, Updatable}
+import org.powerscala.Updatable
 import org.powerscala.concurrent.Time._
+import org.powerscala.log.Logging
 
 /**
  * @author Matt Hicks <matt@outr.com>

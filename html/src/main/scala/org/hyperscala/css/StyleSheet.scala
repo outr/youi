@@ -1,8 +1,9 @@
 package org.hyperscala.css
 
 import attributes._
-import org.powerscala.{Logging, Color}
+import org.powerscala.Color
 import org.hyperscala.persistence.ValuePersistence
+import org.powerscala.log.Logging
 
 /**
  * @author Matt Hicks <mhicks@outr.com>

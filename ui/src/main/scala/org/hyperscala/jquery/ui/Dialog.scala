@@ -77,7 +77,7 @@ trait Dialog extends HTMLTag {
   override protected def before() = {
     super.before()
 
-    Realtime.sendJavaScript(generateScript(), forId = id())
+    Realtime.sendJavaScript(generateScript(), forId = id(), onlyRealtime = false)
   }
 
   private def generateScript() = {

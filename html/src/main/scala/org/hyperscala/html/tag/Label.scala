@@ -52,6 +52,6 @@ class Label extends Container[BodyChild] with BodyChild with HTMLTag {
     if (content != null) contents += content
   }
 
-  val forElement = PropertyAttribute[String]("forelement", null)
+  val forElement = PropertyAttribute[String]("for", null)
   val form = PropertyAttribute[String]("form", null)
 }

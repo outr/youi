@@ -109,6 +109,12 @@ trait Website[S <: Session] extends NettyCommunicatorManager[WebpageConnection] 
     lastUpdate = currentUpdate
   }
 
+  Runtime.getRuntime.addShutdownHook(new Thread() {     // Make sure we dispose at shutdown
+    override def run() {
+      dispose()
+    }
+  })
+
   protected[web] final def instantiateSession(id: String) = {
     val s = createSession()
     synchronized {
@@ -161,6 +167,11 @@ trait Website[S <: Session] extends NettyCommunicatorManager[WebpageConnection] 
         case t: Throwable => errorThrown(null, t)
       }
     }
+  }
+
+  override def dispose() = {
+    super.dispose()
+    Logging.await()     // Make sure the asynchronous logging queue is empty before we terminate
   }
 
   def main(args: Array[String]): Unit = {

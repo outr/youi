@@ -15,7 +15,7 @@ trait Dialog extends HTMLTag {
   identity    // Make sure it has an id
 
   Webpage().require(Realtime)
-  Webpage().require(jQueryUI191)
+  Webpage().require(jQueryUI, jQueryUI191)
 
   private var _open = false
 

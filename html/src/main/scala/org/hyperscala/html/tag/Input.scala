@@ -11,7 +11,7 @@ import org.hyperscala.html.constraints._
  * NOTE: This file has been generated. Do not modify directly!
  * @author Matt Hicks <mhicks@hyperscala.org>
  */
-class Input extends Container[BodyChild] with BodyChild with HTMLTag with FormField {
+class Input extends BodyChild with HTMLTag with FormField {
   lazy val xmlLabel = "input"
 
   def this(name: String = null,
@@ -102,7 +102,6 @@ class Input extends Container[BodyChild] with BodyChild with HTMLTag with FormFi
     up(this.step, step)
     up(this.value, value)
     up(this.width, width)
-    if (content != null) contents += content
   }
 
   val accept = PropertyAttribute[String]("accept", null)

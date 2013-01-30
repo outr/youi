@@ -8,8 +8,13 @@ import org.hyperscala.ui.validation._
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.event.{ClickEvent, JavaScriptEvent}
 import org.hyperscala.css.attributes.Display
+import org.powerscala.Color
 
 /**
+ * Comparison port of Play! Framework's Hello World example that's not really a Hello World example.
+ *
+ * Reference to the original code found here: https://github.com/playframework/Play20/tree/master/samples/scala/helloworld
+ *
  * @author Matt Hicks <mhicks@outr.com>
  */
 class PlayHelloWorldPage extends Webpage {
@@ -36,7 +41,7 @@ class PlayHelloWorldPage extends Webpage {
   submitButton.event.click := JavaScriptEvent()
 
   submitButton.listeners.synchronous {
-    case evt: ClickEvent => if (configuration.style.display == Display.None) {
+    case evt: ClickEvent => if (configuration.style.display.getOrElse(Display.Block) == Display.None) {
       showConfigure()
     } else if (ValidatableTag.validateAll(configuration)) {
       showResults()
@@ -51,7 +56,7 @@ class PlayHelloWorldPage extends Webpage {
         case evt: ClickEvent => showConfigure()
       }
     })
-    submitButton.contents.replaceWith("Back to the form")
+    submitButton.value := "Back to the form"
 
     configuration.style.display = Display.None
     results.style.display = Display.Block
@@ -59,6 +64,13 @@ class PlayHelloWorldPage extends Webpage {
     val resultName = configuration.nameInput.value()
     val repeat = configuration.repeatInput.value().toInt
     results.contents.replaceWith(new tag.Ul {
+      style.color = configuration.colorSelect.value() match {
+        case "red" => Color.Red
+        case "green" => Color.Green
+        case "blue" => Color.Blue
+        case _ => Color.Black
+      }
+
       (0 until repeat).foreach {
         case index => contents += new tag.Li(content = resultName)
       }
@@ -68,7 +80,7 @@ class PlayHelloWorldPage extends Webpage {
   def showConfigure() = {
     title := "The 'helloworld' application"
     header.contents.replaceWith(new tag.A(href = "#", content = "The 'helloworld' application"))
-    submitButton.contents.replaceWith("Submit Query")
+    submitButton.value := "Submit Query"
 
     configuration.style.display = Display.Block
     results.style.display = Display.None

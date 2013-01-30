@@ -4,10 +4,10 @@ import org.hyperscala.ui.Binder
 import org.hyperscala.html._
 import org.hyperscala.event.JavaScriptEvent
 import org.hyperscala.web.site.Webpage
-import org.hyperscala.javascript.JavaScriptString
 import java.text.SimpleDateFormat
 import java.util.Date
 import org.hyperscala.jquery.ui.{jQueryUI191, jQueryUI}
+import org.hyperscala.jquery.jQuery
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
@@ -32,14 +32,8 @@ class InputDateAsLong(format: String = "MM/dd/yyyy") extends Binder[tag.Input, L
       input.value := formatted
     }
 
-    input.contents += new tag.Script {
-      contents += new JavaScriptString(
-        """
-          |$(function() {
-          | $('#%s').datepicker();
-          |});
-        """.stripMargin.format(input.id()))
-    }
+    jQuery.call(input.id(), "datepicker()")
+
     input.event.change := JavaScriptEvent()
 //    Webpage().body.contents += new tag.Script {
 //      contents += new JavaScriptString(

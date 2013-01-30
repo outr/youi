@@ -19,6 +19,7 @@ import org.powerscala.Color
  */
 class PlayHelloWorldPage extends Webpage {
   require(Realtime)
+  Realtime.connectStandard()
 
   title := "The 'helloworld' application"
 
@@ -27,7 +28,6 @@ class PlayHelloWorldPage extends Webpage {
   val main = DynamicContent(PlayHelloWorldPage.main)
   val header = main.load[tag.Header]("header")
   val content = main.load[tag.Section]("content")
-
   val submitButton = main.load[tag.Input]("submit")
 
   val configuration = new PlayHelloWorldConfiguration(this)
@@ -35,10 +35,7 @@ class PlayHelloWorldPage extends Webpage {
 
   val results = new tag.Div(id = "results")
   content.contents += results
-
   body.contents += main
-
-  submitButton.event.click := JavaScriptEvent()
 
   submitButton.listeners.synchronous {
     case evt: ClickEvent => if (configuration.style.display.getOrElse(Display.Block) == Display.None) {
@@ -104,10 +101,6 @@ class PlayHelloWorldConfiguration(page: PlayHelloWorldPage) extends DynamicConte
 
   nameInput.addValidation(NotEmpty)(new ClassValidationHandler(classTag = nameContainer, errorContainer = nameError))
   repeatInput.addValidation(IntBetween(min = 1, max = 100))(new ClassValidationHandler(classTag = repeatContainer, errorContainer = repeatError))
-
-  nameInput.event.change := JavaScriptEvent(preventDefault = false)
-  repeatInput.event.change := JavaScriptEvent(preventDefault = false)
-  colorSelect.event.change := JavaScriptEvent(preventDefault = false)
 }
 
 object PlayHelloWorldPage {

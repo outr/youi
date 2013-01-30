@@ -1,6 +1,6 @@
 package org.hyperscala.web.site
 
-import org.hyperscala.{Tag, Page}
+import org.hyperscala.{Markup, Tag, Page}
 import com.outr.webcommunicator.netty.handler.RequestHandler
 import com.outr.webcommunicator.netty.{ChannelStringWriter, NettyWebapp}
 import org.jboss.netty.channel.{ChannelFutureListener, MessageEvent, ChannelHandlerContext}
@@ -14,7 +14,7 @@ import org.powerscala.hierarchy.{Parent, Element, ContainerView}
 import org.hyperscala.web.session.MapSession
 import org.hyperscala.css.StyleSheet
 import org.powerscala.property.PropertyParent
-import org.powerscala.reflect.CaseValue
+import org.powerscala.reflect._
 import org.powerscala.concurrent.Time._
 import org.powerscala.concurrent.WorkQueue
 import org.powerscala.event.Event
@@ -47,6 +47,24 @@ class Webpage extends Page with ModularPage with RequestHandler with Parent with
   def cookies = WebContext.cookies()
   def localAddress = WebContext.localAddress()
   def remoteAddress = WebContext.remoteAddress()
+
+  /**
+   * Invokes the supplied function on all matching tags immediately and invokes on all new tags created at init time.
+   *
+   * @param f the function to invoke
+   * @param manifest defines the erasured generic type of the matching T
+   * @tparam T the filtered tag type to apply to the function
+   */
+  def live[T <: HTMLTag](f: T => Unit)(implicit manifest: Manifest[T]) = {
+    // First we walk through the hierarchical structure
+    html.byTag[T](manifest).foreach {
+      case t => f(t)
+    }
+    // Now we intercept init to determine when new items are created
+    intercept.init {
+      case m: Markup if (m.getClass.hasType(manifest.erasure)) => f(m.asInstanceOf[T])
+    }
+  }
 
   /**
    * The amount of time in seconds this webpage will continue to be cached in memory without any communication.

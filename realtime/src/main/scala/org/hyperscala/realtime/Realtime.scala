@@ -13,6 +13,7 @@ import org.hyperscala.web.site.JavaScriptMessage
 import org.powerscala.Version
 import org.hyperscala.module._
 import org.hyperscala.jquery.jQuery
+import org.hyperscala.event.JavaScriptEvent
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -120,6 +121,24 @@ object Realtime extends Module {
       val c = connections.head
       c.send(event, message)
       sendRecursive(page, event, message, connections.tail)
+    }
+  }
+
+  /**
+   * Connects change events for FormField (input, textarea, and select) as well as click events on button and input.
+   */
+  def connectStandard() = {
+    Webpage().live[FormField] {
+      case field => {
+        field.event.change := JavaScriptEvent()
+        field match {
+          case i: tag.Input => field.event.click := JavaScriptEvent()
+          case _ => // Not an input
+        }
+      }
+    }
+    Webpage().live[tag.Button] {
+      case b => b.event.click := JavaScriptEvent()
     }
   }
 }

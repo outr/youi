@@ -1,0 +1,31 @@
+<div id="configure">
+    <h1>Configure your 'Hello world':</h1>
+    <form action="/hello" method="GET" id="helloform">
+        <dl class=" " id="name_field">
+            <dt><label for="name">What&#x27;s your name?</label></dt>
+            <dd>
+                <input type="text" id="name" name="name" value="" placeholder="World"/>
+            </dd>
+            <dd id="name_error" class="error"></dd>
+        </dl>
+        <dl class=" " id="repeat_field">
+            <dt><label for="repeat">How many times?</label></dt>
+            <dd>
+                <input type="text" id="repeat" name="repeat" value="" size="3" placeholder="10"/>
+            </dd>
+            <dd id="repeat_error" class="error"></dd>
+        </dl>
+        <dl class=" " id="color_field">
+            <dt><label for="color">Choose a color</label></dt>
+            <dd>
+                <select id="color" name="color" >
+                    <option value="" >Default</option>
+                    <option value="red" >Red</option>
+                    <option value="green" >Green</option>
+                    <option value="blue" >Blue</option>
+                </select>
+            </dd>
+            <dd id="color_error" class="error"></dd>
+        </dl>
+    </form>
+</div>

@@ -13,6 +13,7 @@ import scala.Some
  */
 class Head extends Container[HeadChild] with HTMLChild with HTMLTag {
   lazy val xmlLabel = "head"
+  override def xmlExpanded = true
 
   def this(name: String = null,
            accessKey: java.lang.Character = null,
@@ -47,6 +48,15 @@ class Head extends Container[HeadChild] with HTMLChild with HTMLTag {
     up(this.tabIndex, tabIndex)
     up(this.titleText, titleText)
     if (content != null) contents += content
+  }
+
+  def title = byTag[Title].headOption match {
+    case Some(t) => t.content
+    case None => {
+      val t = new Title
+      contents += t
+      t.content
+    }
   }
 
   override protected def generateChildFromTagName(name: String) = {

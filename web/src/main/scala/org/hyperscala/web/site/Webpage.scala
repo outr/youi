@@ -58,11 +58,11 @@ class Webpage extends Page with ModularPage with RequestHandler with Parent with
   val doctype = "<!DOCTYPE html>\r\n"
   val html = new tag.HTML
   val head = new tag.Head {
-    val title = new tag.Title(content = defaultTitle)
+    title := defaultTitle
     val generator = new tag.Meta(name = "generator", content = "Hyperscala")
     val charset = new tag.Meta(charset = "UTF-8")
 
-    contents.addAll(title, generator, charset)
+    contents.addAll(generator, charset)
   }
   val body = new tag.Body
 
@@ -71,7 +71,7 @@ class Webpage extends Page with ModularPage with RequestHandler with Parent with
   html.contents.addAll(head, body)
   Element.assignParent(html, this)
 
-  def title = head.title.content
+  def title = head.title
 
   val view = new ContainerView[Tag](html)
 

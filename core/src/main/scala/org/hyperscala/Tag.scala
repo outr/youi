@@ -71,5 +71,9 @@ trait Tag extends PropertyParent with Markup with Listenable {
     case _ => false
   })(manifest)
 
+  def getById[T <: Tag](id: String)(implicit manifest: Manifest[T]) = {
+    byId[T](id)(manifest).getOrElse(throw new NullPointerException("Unable to find '%s' by id.".format(id)))
+  }
+
   fire(TagCreated(this))
 }

@@ -13,6 +13,7 @@ import scala.Some
  */
 class HTML extends Container[HTMLChild] with HTMLTag {
   lazy val xmlLabel = "html"
+  override def xmlExpanded = true
 
   def this(name: String = null,
            accessKey: java.lang.Character = null,

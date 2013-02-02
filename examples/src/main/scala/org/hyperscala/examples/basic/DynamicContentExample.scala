@@ -17,7 +17,7 @@ class DynamicContentExample extends Webpage {
   body.contents += form
 }
 
-class SimpleDynamicForm extends DynamicContent {
+class SimpleDynamicForm extends DynamicContent(null) {
   def content = SimpleDynamicForm.content
 
   val person = Property[Person]("person", Person("John Doe", 123))

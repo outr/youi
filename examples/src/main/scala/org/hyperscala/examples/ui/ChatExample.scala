@@ -20,7 +20,7 @@ class ChatExample extends Webpage {
 
   body.style.fontFamily = "Helvetica, sans-serif"
 
-  val chatMain = DynamicContent(ChatExample.Main)
+  val chatMain = DynamicContent(ChatExample.Main, null)
 
   val chatName = chatMain.load[tag.Input]("chatName")
   val message = chatMain.load[tag.TextArea]("chatMessage")
@@ -93,7 +93,7 @@ object ChatExample {
   def chatHistory = history.reverse
 }
 
-class ChatEntry(name: String, message: String) extends DynamicContent {
+class ChatEntry(name: String, message: String) extends DynamicContent(null) {
   def content = ChatExample.Entry
 
   val chatName = load[tag.Div]("chatName", reId = true)

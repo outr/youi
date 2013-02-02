@@ -40,4 +40,8 @@ package object binder {
       input.event.change := JavaScriptEvent()
     }
   }
+
+  implicit def selectBoolean = new SelectBoolean()
+
+  implicit def inputListInt = new InputListInt
 }

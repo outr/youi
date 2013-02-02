@@ -19,7 +19,8 @@ import org.hyperscala.realtime.Realtime
  *
  * @author Matt Hicks <mhicks@outr.com>
  */
-trait DynamicContent extends Container[HTMLTag] with BodyChild with HTMLTag {
+abstract class DynamicContent(existingId: String) extends Container[HTMLTag] with BodyChild with HTMLTag {
+  id := existingId
   def content: String
   def cached: Boolean = true
 
@@ -133,13 +134,13 @@ trait DynamicContent extends Container[HTMLTag] with BodyChild with HTMLTag {
   }
 }
 
-class StringDynamicContent(val content: String) extends DynamicContent
+class StringDynamicContent(val content: String, existingId: String) extends DynamicContent(existingId)
 
 object DynamicContent {
   val builder = new SAXBuilder()
   private var contents = Map.empty[String, DynamicHTML]
 
-  def apply(html: String) = new StringDynamicContent(html)
+  def apply(html: String, existingId: String) = new StringDynamicContent(html, existingId)
 
   private def load(content: String, cache: Boolean) = contents.get(content) match {
     case Some(dhtml) => dhtml

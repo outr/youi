@@ -26,6 +26,7 @@ package object binder {
 
   implicit def inputInt = new Binder[tag.Input, Int] {
     def bind(input: tag.Input) = {
+      input.value := valueProperty().toString
       input.value.onChange {
         valueProperty := (input.value().collect {
           case c if (c.isDigit) => c

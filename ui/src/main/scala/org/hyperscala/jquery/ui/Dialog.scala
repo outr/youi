@@ -95,9 +95,7 @@ trait Dialog extends HTMLTag {
     """.stripMargin.format(id(), options)
   }
 
-  private def injectScript(script: String) = Webpage().head.contents += new tag.Script {
-    contents += new JavaScriptString(script)
-  }
+  private def injectScript(script: String) = Webpage().head.injectScript(new JavaScriptString(script), temporal = true)
 
   private def value2String(v: Any) = v match {
     case null => "null"

@@ -3,6 +3,7 @@ package org.hyperscala.html.tag
 import org.hyperscala._
 import css.StyleSheet
 import html.HTMLTag
+import javascript.JavaScriptContent
 import org.hyperscala.html.attributes._
 import org.hyperscala.html.constraints._
 import scala.Some
@@ -14,6 +15,8 @@ import scala.Some
 class Head extends Container[HeadChild] with HTMLChild with HTMLTag {
   lazy val xmlLabel = "head"
   override def xmlExpanded = true
+
+  private var temporalScripts = List.empty[Script]
 
   def this(name: String = null,
            accessKey: java.lang.Character = null,
@@ -68,5 +71,29 @@ class Head extends Container[HeadChild] with HTMLChild with HTMLTag {
     } else {
       super.generateChildFromTagName(name)
     }
+  }
+
+  override protected def before() {
+    super.before()
+
+    // Remove temporal scripts
+    synchronized {
+      temporalScripts.foreach {
+        case script => contents -= script
+      }
+      temporalScripts = Nil
+    }
+  }
+
+  def injectScript(content: JavaScriptContent, temporal: Boolean = false) = {
+    val script = new Script {
+      contents += content
+    }
+    if (temporal) {
+      synchronized {
+        temporalScripts = script :: temporalScripts
+      }
+    }
+    contents += script
   }
 }

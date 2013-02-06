@@ -23,6 +23,7 @@ import org.hyperscala.context.Contextual
 import org.hyperscala.module.ModularPage
 import org.hyperscala.svg.SVGTag
 import java.util.concurrent.atomic.AtomicBoolean
+import org.powerscala.Updatable
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -92,6 +93,7 @@ class Webpage extends Page with ModularPage with RequestHandler with Parent with
   def title = head.title
 
   val view = new ContainerView[Tag](html)
+  val updatables = new ContainerView[Updatable](html)
 
   /**
    * Returns all the HTMLTags that currently reference the supplied StyleSheet in the entire Webpage hierarchy.
@@ -195,6 +197,9 @@ class Webpage extends Page with ModularPage with RequestHandler with Parent with
     super.update(delta)
 
     doAllWork()
+    updatables.foreach {
+      case u => u.update(delta)
+    }
   }
 
   override def dispose() {

@@ -2,13 +2,12 @@ package org.hyperscala.examples.comparison
 
 import org.hyperscala.html._
 import org.hyperscala.web.site.Webpage
-import io.Source
 import org.hyperscala.ui.DynamicContent
 import org.hyperscala.ui.validation._
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.event.{ClickEvent, JavaScriptEvent}
 import org.hyperscala.css.attributes.Display
-import org.powerscala.Color
+import org.powerscala.{IO, Color}
 
 /**
  * Comparison port of Play! Framework's Hello World example that's not really a Hello World example.
@@ -105,5 +104,5 @@ object PlayHelloWorldPage {
   val main = load("play_hello_world.html")
   val configuration = load("play_hello_world_configuration.html")
 
-  def load(filename: String) = Source.fromURL(getClass.getClassLoader.getResource(filename)).mkString
+  def load(filename: String) = IO.copy(getClass.getClassLoader.getResource(filename))
 }

@@ -75,25 +75,32 @@ class Webpage extends Page with ModularPage with RequestHandler with Parent with
   def timeout = 2.minutes
 
   val doctype = "<!DOCTYPE html>\r\n"
-  val html = new tag.HTML
-  val head = new tag.Head {
-    title := defaultTitle
-    val generator = new tag.Meta(name = "generator", content = "Hyperscala")
-    val charset = new tag.Meta(charset = "UTF-8")
+  private lazy val basicHTML = new tag.HTML
+  def html = basicHTML
 
-    contents.addAll(generator, charset)
-  }
-  val body = new tag.Body
+  def head = html.head
+  def body = html.body
 
   val contents = List(html)
 
-  html.contents.addAll(head, body)
   Element.assignParent(html, this)
 
   def title = head.title
 
+  title := defaultTitle
+  head.meta("generator", "Hyperscala")
+  head.charset("UTF-8")
+
   val view = new ContainerView[Tag](html)
   val updatables = new ContainerView[Updatable](html)
+
+  def byName[T <: HTMLTag](name: String)(implicit manifest: Manifest[T]) = html.byName[T](name)(manifest)
+
+  def byTag[T <: HTMLTag](implicit manifest: Manifest[T]) = html.byTag[T](manifest)
+
+  def byId[T <: Tag](id: String)(implicit manifest: Manifest[T]) = html.byId[T](id)(manifest)
+
+  def getById[T <: Tag](id: String)(implicit manifest: Manifest[T]) = html.getById[T](id)(manifest)
 
   /**
    * Returns all the HTMLTags that currently reference the supplied StyleSheet in the entire Webpage hierarchy.

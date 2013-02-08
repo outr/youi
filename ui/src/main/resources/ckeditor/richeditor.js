@@ -9,12 +9,10 @@ function createRichEditor(id) {
         editor.on('blur', function() {
             var value = editor.getData();
             if (value != lastValue) {
-                communicator.send('change', {
-                    id: id,
+                communicator.send('change', id, {
                     value: value
                 });
-                communicator.send('event', {
-                    id: id,
+                communicator.send('event', id, {
                     event: 'change'
                 });
                 lastValue = value;

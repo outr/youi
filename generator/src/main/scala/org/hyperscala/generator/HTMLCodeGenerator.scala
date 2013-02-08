@@ -1,9 +1,9 @@
 package org.hyperscala.generator
 
 import util.parsing.json.JSON
-import io.Source
 import java.io.{FileWriter, File}
 import annotation.tailrec
+import org.powerscala.IO
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -279,7 +279,7 @@ object HTMLCodeGenerator {
   }
 
   private def loadString(uri: String) = {
-    Source.fromInputStream(getClass.getClassLoader.getResourceAsStream(uri)).mkString
+    IO.copy(getClass.getClassLoader.getResource(uri))
   }
 
   def writeFile(content: String, file: File) = {

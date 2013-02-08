@@ -1,13 +1,13 @@
 package org.hyperscala.examples.basic
 
 import org.hyperscala.html._
-import io.Source
 import org.hyperscala.web.site.Webpage
 import org.powerscala.property.Property
 import org.hyperscala.ui.DynamicContent
 
 import org.hyperscala.ui.binder._
 import org.powerscala.property.event.PropertyChangeEvent
+import org.powerscala.IO
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
@@ -33,7 +33,7 @@ class SimpleDynamicForm extends DynamicContent(null) {
 }
 
 object SimpleDynamicForm {
-  val content = Source.fromURL(getClass.getClassLoader.getResource("dynamic.html")).mkString
+  val content = IO.copy(getClass.getClassLoader.getResource("dynamic.html"))
 }
 
 case class Person(name: String, age: Int)

@@ -3,19 +3,19 @@ package org.hyperscala.io
 import org.hyperscala.html._
 import org.jdom2.input.SAXBuilder
 import java.io.{FileWriter, File, StringReader}
-import io.Source
 import org.htmlcleaner.{PrettyXmlSerializer, HtmlCleaner}
 import org.hyperscala.Markup
 import org.hyperscala.web.site.Webpage
 import swing.FileChooser
 import java.util.prefs.Preferences
+import org.powerscala.IO
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
 object HTMLToScala {
-  lazy val WebpageTemplate = Source.fromURL(getClass.getClassLoader.getResource("webpage.template")).mkString
-  lazy val TagTemplate = Source.fromURL(getClass.getClassLoader.getResource("tag.template")).mkString
+  lazy val WebpageTemplate = IO.copy(getClass.getClassLoader.getResource("webpage.template"))
+  lazy val TagTemplate = IO.copy(getClass.getClassLoader.getResource("tag.template"))
 
   val builder = new SAXBuilder()
 
@@ -52,28 +52,28 @@ object HTMLToScala {
     toInstantiator[T](tag, className)
   }*/
 
-  def toPage(source: Source, clean: Boolean = true) = {
+  def toPage(source: String, clean: Boolean = true) = {
     val page = new Webpage()
     page.html.read(toXML(source, clean))
     page
   }
 
-  def toHTML(source: Source, clean: Boolean) = {
+  def toHTML(source: String, clean: Boolean) = {
     val xml = toXML(source, clean)
     val root = HTMLTag.create(xml.getName)
     root.read(xml)
     root
   }
 
-  def toXML(source: Source, clean: Boolean) = {
+  def toXML(source: String, clean: Boolean) = {
     val content = if (clean) {
-      val html = source.mkString
+      val html = source
       val cleaner = new HtmlCleaner()
       val props = cleaner.getProperties
       val cleaned = cleaner.clean(html)
       new PrettyXmlSerializer(props).getAsString(cleaned)
     } else {
-      source.mkString
+      source
     }
     builder.build(new StringReader(content)).getRootElement
   }
@@ -89,7 +89,7 @@ object HTMLToScala {
         val file = chooser.selectedFile
         preferences.put("path", file.getParentFile.getAbsolutePath)
 
-        val webpage = toPage(Source.fromFile(file), clean = true)
+        val webpage = toPage(IO.copy(file), clean = true)
 
         val savePath = preferences.get("savePath", preferences.get("path", "."))
         val saver = new FileChooser(new File(savePath))

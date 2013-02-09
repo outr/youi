@@ -24,7 +24,7 @@ trait Temporal extends Updatable with Logging with Disposable {
   override def update(delta: Double) {
     val elapsed = stale
     if (elapsed > timeout) {    // Temporal has timed out
-      info("%s (%s) has timed out; Elapsed: %s, Timeout: %s".format(getClass.getSimpleName, this, elapsed, timeout))
+      debug("%s (%s) has timed out; Elapsed: %s, Timeout: %s".format(getClass.getSimpleName, this, elapsed, timeout))
       _disposed = true
       dispose()
     } else if (disposed) {

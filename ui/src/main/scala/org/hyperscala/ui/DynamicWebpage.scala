@@ -18,6 +18,8 @@ abstract class DynamicWebpage extends Webpage {
 object DynamicWebpage {
   private var map = Map.empty[String, Element]
 
+  // TODO: add support for DynamicTag to provide an integration point between DynamicWebpage and DynamicContent and allow a specific tag to be loaded from a file and fully parsed.
+
   def html(content: String) = {
     val element = htmlXML(content)
     val html = HTMLTag.create("html").asInstanceOf[tag.HTML]

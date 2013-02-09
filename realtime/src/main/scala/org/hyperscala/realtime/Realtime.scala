@@ -141,4 +141,25 @@ object Realtime extends Module {
       case b => b.event.click := JavaScriptEvent()
     }
   }
+
+  /**
+   * All change and click events fire events to the server and form submits prevent default and send event to server.
+   */
+  def connectForm() = {
+    Webpage().live[FormField] {
+      case field => {
+        field.event.change := JavaScriptEvent(preventDefault = false)
+        field match {
+          case i: tag.Input => field.event.click := JavaScriptEvent(preventDefault = false)
+          case _ => // Not an input
+        }
+      }
+    }
+    Webpage().live[tag.Button] {
+      case b => b.event.click := JavaScriptEvent(preventDefault = false)
+    }
+    Webpage().live[tag.Form] {
+      case f => f.event.submit := JavaScriptEvent()
+    }
+  }
 }

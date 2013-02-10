@@ -2,13 +2,12 @@ package org.hyperscala.examples.comparison
 
 import org.hyperscala.html._
 import org.hyperscala.web.site.Webpage
-import org.hyperscala.ui.DynamicContent
 import org.hyperscala.ui.validation._
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.event.{ClickEvent, JavaScriptEvent}
 import org.hyperscala.css.attributes.Display
 import org.powerscala.Color
-import org.hyperscala.ui.dynamic.DynamicString
+import org.hyperscala.ui.dynamic.{DynamicContent, DynamicString}
 
 /**
  * Comparison port of Play! Framework's Hello World example that's not really a Hello World example.

@@ -1,9 +1,9 @@
 package org.hyperscala.ui.binder
 
-import org.hyperscala.ui.Binder
 
 import org.hyperscala.html._
 import org.hyperscala.event.JavaScriptEvent
+import org.hyperscala.ui.dynamic.Binder
 
 /**
  * @author Matt Hicks <mhicks@outr.com>

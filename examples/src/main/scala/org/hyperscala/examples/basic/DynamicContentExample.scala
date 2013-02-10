@@ -3,11 +3,10 @@ package org.hyperscala.examples.basic
 import org.hyperscala.html._
 import org.hyperscala.web.site.Webpage
 import org.powerscala.property.Property
-import org.hyperscala.ui.DynamicContent
 
 import org.hyperscala.ui.binder._
 import org.powerscala.property.event.PropertyChangeEvent
-import org.hyperscala.ui.dynamic.DynamicString
+import org.hyperscala.ui.dynamic.{DynamicContent, DynamicString}
 
 /**
  * @author Matt Hicks <mhicks@outr.com>

@@ -1,6 +1,5 @@
-package org.hyperscala.ui
+package org.hyperscala.ui.dynamic
 
-import dynamic.DynamicString
 import org.hyperscala.html.HTMLTag
 import org.jdom2.Element
 import org.hyperscala.{Unique, Container}

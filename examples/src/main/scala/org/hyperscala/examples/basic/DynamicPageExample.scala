@@ -1,8 +1,7 @@
 package org.hyperscala.examples.basic
 
-import org.hyperscala.ui.DynamicWebpage
 import org.hyperscala.html._
-import org.hyperscala.ui.dynamic.DynamicTag
+import org.hyperscala.ui.dynamic.{DynamicWebpage, DynamicTag}
 
 /**
  * @author Matt Hicks <mhicks@outr.com>

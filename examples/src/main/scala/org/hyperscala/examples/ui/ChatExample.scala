@@ -1,14 +1,13 @@
 package org.hyperscala.examples.ui
 
 import org.hyperscala.html._
-import org.hyperscala.ui.DynamicContent
 import org.hyperscala.event.{ChangeEvent, ClickEvent, JavaScriptEvent}
 import org.hyperscala.web.site.{Website, Webpage}
 import org.powerscala.property.StandardProperty
 import annotation.tailrec
 import org.hyperscala.jquery.jQuery
 import org.hyperscala.realtime.Realtime
-import org.hyperscala.ui.dynamic.DynamicString
+import org.hyperscala.ui.dynamic.{DynamicContent, DynamicString}
 
 /**
  * @author Matt Hicks <mhicks@outr.com>

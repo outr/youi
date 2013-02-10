@@ -1,5 +1,6 @@
 package org.hyperscala.ui
 
+import dynamic.Binder
 import org.hyperscala.html._
 import org.hyperscala.event.JavaScriptEvent
 

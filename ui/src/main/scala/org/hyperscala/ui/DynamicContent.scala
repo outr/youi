@@ -1,16 +1,18 @@
 package org.hyperscala.ui
 
+import dynamic.DynamicString
 import org.hyperscala.html.HTMLTag
 import org.jdom2.Element
 import org.hyperscala.{Unique, Container}
 import org.hyperscala.html.constraints.BodyChild
 import org.hyperscala.io.HTMLWriter
 import org.jdom2.input.{JDOMParseException, SAXBuilder}
-import java.io.StringReader
+import java.io.{File, StringReader}
 import annotation.tailrec
 import org.powerscala.property.{CaseClassBinding, StandardProperty}
 import org.hyperscala.web.site.Webpage
 import org.hyperscala.realtime.Realtime
+import java.net.URL
 
 /**
  * DynamicContent provides similar functionality to StaticContent rendering pre-defined HTML onto the page in place of
@@ -19,13 +21,12 @@ import org.hyperscala.realtime.Realtime
  *
  * @author Matt Hicks <mhicks@outr.com>
  */
-// TODO: integrate DynamicString instead of all this hardcoded functionality
 abstract class DynamicContent(existingId: String) extends Container[HTMLTag] with BodyChild with HTMLTag {
   id := existingId
-  def content: String
+  def dynamicString: DynamicString
   def cached: Boolean = true
 
-  private val dynamicContent = DynamicContent.load(content, cached)
+  private val dynamicContent = DynamicContent.load(dynamicString, cached)
   private var dynamicBlocks = Map.empty[String, DynamicHTMLBlock]
 
   /**
@@ -135,22 +136,29 @@ abstract class DynamicContent(existingId: String) extends Container[HTMLTag] wit
   }
 }
 
-class StringDynamicContent(val content: String, existingId: String) extends DynamicContent(existingId)
+class StringDynamicContent(val dynamicString: DynamicString, existingId: String) extends DynamicContent(existingId)
 
 object DynamicContent {
   val builder = new SAXBuilder()
   private var contents = Map.empty[String, DynamicHTML]
 
-  def apply(html: String, existingId: String) = new StringDynamicContent(html, existingId)
+  def apply(dynamicString: DynamicString, existingId: String) = new StringDynamicContent(dynamicString, existingId)
 
-  private def load(content: String, cache: Boolean) = contents.get(content) match {
-    case Some(dhtml) => dhtml
-    case None => synchronized {
-      val dhtml = new DynamicHTML(content)
-      if (cache) {
-        contents += content -> dhtml
+  def apply(url: URL, existingId: String) = new StringDynamicContent(DynamicString(url.toString, url), existingId)
+
+  def apply(file: File, existingId: String) = new StringDynamicContent(DynamicString(file.getAbsolutePath, file), existingId)
+
+  private def load(dynamicString: DynamicString, cache: Boolean = true) = synchronized {
+    val content = dynamicString.content
+    contents.get(content) match {
+      case Some(dhtml) if (dhtml == content) => dhtml
+      case _ => {
+        val dhtml = new DynamicHTML(content)
+        if (cache) {
+          contents += content -> dhtml
+        }
+        dhtml
       }
-      dhtml
     }
   }
 }

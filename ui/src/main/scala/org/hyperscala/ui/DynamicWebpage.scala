@@ -1,5 +1,6 @@
 package org.hyperscala.ui
 
+import dynamic.DynamicTag
 import org.hyperscala.web.site.Webpage
 import org.hyperscala.html._
 

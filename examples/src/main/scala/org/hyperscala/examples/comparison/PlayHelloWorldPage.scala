@@ -7,7 +7,8 @@ import org.hyperscala.ui.validation._
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.event.{ClickEvent, JavaScriptEvent}
 import org.hyperscala.css.attributes.Display
-import org.powerscala.{IO, Color}
+import org.powerscala.Color
+import org.hyperscala.ui.dynamic.DynamicString
 
 /**
  * Comparison port of Play! Framework's Hello World example that's not really a Hello World example.
@@ -84,7 +85,7 @@ class PlayHelloWorldPage extends Webpage {
 }
 
 class PlayHelloWorldConfiguration(page: PlayHelloWorldPage) extends DynamicContent("configure") {
-  def content = PlayHelloWorldPage.configuration
+  def dynamicString = DynamicString("play_hello_world_configuration.html", PlayHelloWorldPage.configuration)
 
   val nameContainer = load[tag.Dl]("name_field")
   val nameInput = nameContainer.getById[tag.Input]("name")
@@ -101,8 +102,8 @@ class PlayHelloWorldConfiguration(page: PlayHelloWorldPage) extends DynamicConte
 }
 
 object PlayHelloWorldPage {
-  val main = load("play_hello_world.html")
-  val configuration = load("play_hello_world_configuration.html")
+  val main = url("play_hello_world.html")
+  val configuration = url("play_hello_world_configuration.html")
 
-  def load(filename: String) = IO.copy(getClass.getClassLoader.getResource(filename))
+  def url(filename: String) = getClass.getClassLoader.getResource(filename)
 }

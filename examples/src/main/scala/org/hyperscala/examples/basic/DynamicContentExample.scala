@@ -7,7 +7,7 @@ import org.hyperscala.ui.DynamicContent
 
 import org.hyperscala.ui.binder._
 import org.powerscala.property.event.PropertyChangeEvent
-import org.powerscala.IO
+import org.hyperscala.ui.dynamic.DynamicString
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
@@ -18,7 +18,7 @@ class DynamicContentExample extends Webpage {
 }
 
 class SimpleDynamicForm extends DynamicContent(null) {
-  def content = SimpleDynamicForm.content
+  def dynamicString = DynamicString("dynamic.html", SimpleDynamicForm.content)
 
   val person = Property[Person]("person", Person("John Doe", 123))
   person.listeners.synchronous {
@@ -33,7 +33,7 @@ class SimpleDynamicForm extends DynamicContent(null) {
 }
 
 object SimpleDynamicForm {
-  val content = IO.copy(getClass.getClassLoader.getResource("dynamic.html"))
+  val content = getClass.getClassLoader.getResource("dynamic.html")
 }
 
 case class Person(name: String, age: Int)

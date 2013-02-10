@@ -1,6 +1,5 @@
-package org.hyperscala.ui
+package org.hyperscala.ui.dynamic
 
-import dynamic.DynamicString
 import org.hyperscala.html.HTMLTag
 import org.jdom2.Element
 import org.jdom2.input.SAXBuilder
@@ -28,7 +27,7 @@ class DynamicTag[T <: HTMLTag] private(contentFunction: () => String, lastModifi
 }
 
 object DynamicTag {
-  private val builder = new SAXBuilder()
+  val builder = new SAXBuilder()
 
   import DynamicString._
 

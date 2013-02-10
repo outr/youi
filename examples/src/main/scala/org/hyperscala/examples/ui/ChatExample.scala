@@ -8,7 +8,7 @@ import org.powerscala.property.StandardProperty
 import annotation.tailrec
 import org.hyperscala.jquery.jQuery
 import org.hyperscala.realtime.Realtime
-import org.powerscala.IO
+import org.hyperscala.ui.dynamic.DynamicString
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
@@ -64,8 +64,8 @@ class ChatExample extends Webpage {
 }
 
 object ChatExample {
-  val Main = IO.copy(getClass.getClassLoader.getResource("chat.html"))
-  val Entry = IO.copy(getClass.getClassLoader.getResource("chat_entry.html"))
+  val Main = getClass.getClassLoader.getResource("chat.html")
+  val Entry = getClass.getClassLoader.getResource("chat_entry.html")
 
   private var history = List.empty[(String, String)]
 
@@ -94,7 +94,7 @@ object ChatExample {
 }
 
 class ChatEntry(name: String, message: String) extends DynamicContent(null) {
-  def content = ChatExample.Entry
+  def dynamicString = DynamicString("chat_entry.html", ChatExample.Entry)
 
   val chatName = load[tag.Div]("chatName", reId = true)
   val chatBody = load[tag.Div]("chatBody", reId = true)

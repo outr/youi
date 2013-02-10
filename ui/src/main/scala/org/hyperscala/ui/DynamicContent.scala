@@ -19,6 +19,7 @@ import org.hyperscala.realtime.Realtime
  *
  * @author Matt Hicks <mhicks@outr.com>
  */
+// TODO: integrate DynamicTag instead of all this hardcoded functionality
 abstract class DynamicContent(existingId: String) extends Container[HTMLTag] with BodyChild with HTMLTag {
   id := existingId
   def content: String

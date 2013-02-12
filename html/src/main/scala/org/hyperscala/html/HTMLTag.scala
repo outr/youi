@@ -24,6 +24,7 @@ trait HTMLTag extends IdentifiableTag with EventSupport {
   val dropZone = PropertyAttribute[DropZone]("dropzone", null)
   val hidden = PropertyAttribute[Boolean]("hidden", false)
   val lang = PropertyAttribute[String]("lang", null)
+  val role = PropertyAttribute[String]("role", null)
   val spellCheck = PropertyAttribute[Boolean]("spellcheck", false)
   val tabIndex = PropertyAttribute[Int]("tabindex", -1)
   val titleText = PropertyAttribute[String]("title", null)

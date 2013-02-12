@@ -7,7 +7,7 @@ import org.powerscala.Version
 import org.hyperscala.html._
 import com.outr.webcommunicator.netty.handler.PathHandler
 import org.hyperscala.javascript.JavaScriptString
-import org.hyperscala.jquery.jQuery
+import org.hyperscala.jquery.{jQuery182, jQuery}
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -66,7 +66,7 @@ object NivoSlider extends Module {
 
   def version = Version(3, 1)
 
-  override def dependencies = List(InterfaceWithDefault(jQuery, jQuery.Latest))
+  override def dependencies = List(InterfaceWithDefault(jQuery, jQuery182))
 
   def init() = {
     Website().register(PathHandler("/nivo-slider/", "nivo-slider/"))

@@ -41,6 +41,7 @@ object HyperscalaSite extends Website[MapSession] {
     val dynamicPage = WebpageResource("/example/dynamic_page.html", new DynamicPageExample, Scope.Page)
     val chat = WebpageResource("/example/chat.html", new ChatExample, Scope.Session)
     val pageChange = WebpageResource("/example/page_change.html", new PageChangeWarningExample, Scope.Page)
+    val pageLoader = WebpageResource("/example/page_loader.html", new PageLoaderExample, Scope.Page)
     val fileUploader = WebpageResource("/example/file_upload.html", new HyperscalaExample(new FileUploaderExample), Scope.Page)
     val svg = new {
       val basic = WebpageResource("/example/svg/basic.html", new HyperscalaExample(new BasicSVGExample), Scope.Page)

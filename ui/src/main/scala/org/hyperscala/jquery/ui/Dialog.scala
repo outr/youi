@@ -7,6 +7,7 @@ import org.powerscala.property._
 import org.powerscala.event.Listenable
 import org.powerscala.property.event.PropertyChangeEvent
 import org.hyperscala.realtime.Realtime
+import org.hyperscala.css.attributes.Display
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -16,6 +17,8 @@ trait Dialog extends HTMLTag {
 
   Webpage().require(Realtime)
   Webpage().require(jQueryUI, jQueryUI191)
+
+  style.display = Display.None
 
   private var _open = false
 

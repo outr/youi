@@ -1,19 +1,20 @@
 package org.hyperscala.web.site
 
-import com.outr.webcommunicator.netty.{RequestResult, MutableWebResource}
 import org.powerscala.property.StandardProperty
 import org.hyperscala.web.Scope
 import org.jboss.netty.handler.codec.http.{HttpResponseStatus, HttpRequest}
+import com.outr.webcommunicator.netty._
 import com.outr.webcommunicator.netty.handler.RequestHandler
 import org.powerscala.property.event.PropertyChangingEvent
 import org.powerscala.bus.Routing
 import org.hyperscala.Unique
 import org.jboss.netty.channel.ChannelHandlerContext
+import org.powerscala.log.Logging
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class WebpageResource(autoRegister: Boolean = true) extends MutableWebResource()(Website()) {
+class WebpageResource(autoRegister: Boolean = true) extends MutableWebResource()(Website()) with Logging {
   if (autoRegister) {
     Website().register(this)
   }
@@ -44,7 +45,7 @@ class WebpageResource(autoRegister: Boolean = true) extends MutableWebResource()
   override protected def apply(context: ChannelHandlerContext, request: HttpRequest) = {
     try {
       val option = super.apply(context, request)
-      if (option.nonEmpty) {
+      if (option.nonEmpty) {                                          // Matched handler
         val handler = option.get
         handler match {
           case webpage: Webpage => WebContext.webpage := webpage
@@ -67,7 +68,16 @@ class WebpageResource(autoRegister: Boolean = true) extends MutableWebResource()
 
   private def load(request: HttpRequest): RequestHandler = scope() match {
     case Scope.Request => null
-    case Scope.Page => null
+    case Scope.Page => {
+      val url = request2URL(request)
+      url.parameters.get("pageId") match {
+        case Some(pageIds) => {
+          val pageId = pageIds.head
+          Website().session.getOrElse[RequestHandler](pageId, null)
+        }
+        case None => null
+      }
+    }
     case Scope.Session => Website().session.getOrElse[RequestHandler](id(), null)
     case Scope.Application => Website().application.getOrElse[RequestHandler](id(), null)
   }

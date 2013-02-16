@@ -17,7 +17,7 @@ class DynamicContentExample extends Webpage {
 }
 
 class SimpleDynamicForm extends DynamicContent(null) {
-  def dynamicString = DynamicString("dynamic.html", SimpleDynamicForm.content)
+  def dynamicString = DynamicString.url("dynamic.html", SimpleDynamicForm.content)
 
   val person = Property[Person]("person", Person("John Doe", 123))
   person.listeners.synchronous {

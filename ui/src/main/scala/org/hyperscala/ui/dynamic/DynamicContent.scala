@@ -143,9 +143,13 @@ object DynamicContent {
 
   def apply(dynamicString: DynamicString, existingId: String) = new StringDynamicContent(dynamicString, existingId)
 
-  def apply(url: URL, existingId: String) = new StringDynamicContent(DynamicString(url.toString, url), existingId)
+  def url(url: URL, existingId: String, checkLastModified: Boolean = false, converter: String => String = DynamicString.defaultConverter) = {
+    new StringDynamicContent(DynamicString.url(url.toString, url, checkLastModified, converter), existingId)
+  }
 
-  def apply(file: File, existingId: String) = new StringDynamicContent(DynamicString(file.getAbsolutePath, file), existingId)
+  def file(file: File, existingId: String, converter: String => String = DynamicString.defaultConverter) = {
+    new StringDynamicContent(DynamicString.file(file.getAbsolutePath, file, converter), existingId)
+  }
 
   private def load(dynamicString: DynamicString, cache: Boolean = true) = synchronized {
     val content = dynamicString.content
@@ -160,53 +164,15 @@ object DynamicContent {
       }
     }
   }
-}
 
-class DynamicHTML(content: String) {
-  private var _blocks = List[HTMLBlock](new StaticHTMLBlock(content))
-
-  def blocks = _blocks
-
-  def extract(id: String) = synchronized {
-    _blocks.collectFirst {
-      case dhb: DynamicHTMLBlock if (dhb.id == id) => dhb
-    }.headOption match {
-      case Some(dhb) => dhb
-      case None => findBlockWithId(id) match {
-        case Some(block) => {
-          val idIndex = block.content.indexOf("id=\"%s\"".format(id))
-          val begin = block.content.lastIndexOf('<', idIndex)
-          val end = findCloseIndex(begin, block.content)
-          val content = block.content.substring(begin, end)
-          try {
-            val element = DynamicContent.builder.build(new StringReader(content)).getRootElement
-            var newBlocks = List.empty[HTMLBlock]
-            if (end < block.content.length) {
-              newBlocks = StaticHTMLBlock(block.content.substring(end)) :: newBlocks
-            }
-            val dhb = DynamicHTMLBlock(id, element, content)
-            newBlocks = dhb :: newBlocks
-            if (begin > 0) {
-              newBlocks = StaticHTMLBlock(block.content.substring(0, begin)) :: newBlocks
-            }
-            _blocks = _blocks.patch(_blocks.indexOf(block), newBlocks, 1)
-  //          blocks = blocks.flatMap {
-  //            case b if (b == block) => newBlocks
-  //            case b => List(block)
-  //          }
-            dhb
-          } catch {
-            case exc: JDOMParseException => throw new RuntimeException("Unable to parse [%s]".format(content), exc)
-          }
-        }
-        case None => throw new NullPointerException("Unable to find block with id: %s".format(id))
-      }
-    }
+  def extract(content: String, id: String) = {
+    val idIndex = content.indexOf("id=\"%s\"".format(id))
+    val begin = content.lastIndexOf('<', idIndex)
+    val end = findCloseIndex(begin, content)
+    (content.substring(begin, end), begin, end)
   }
 
-  private def findBlockWithId(id: String) = _blocks.collectFirst {
-    case shb: StaticHTMLBlock if (shb.content.indexOf("id=\"%s\"".format(id)) != -1) => shb
-  }
+  def extractFunction(id: String) = (content: String) => extract(content, id)._1
 
   private def findCloseIndex(start: Int, content: String): Int = {
     var tagOpen = false
@@ -264,6 +230,50 @@ class DynamicHTML(content: String) {
       p = c
     }
     throw new RuntimeException("No closing tag found: %s".format(content.substring(start)))
+  }
+}
+
+class DynamicHTML(content: String) {
+  private var _blocks = List[HTMLBlock](new StaticHTMLBlock(content))
+
+  def blocks = _blocks
+
+  def extract(id: String) = synchronized {
+    _blocks.collectFirst {
+      case dhb: DynamicHTMLBlock if (dhb.id == id) => dhb
+    }.headOption match {
+      case Some(dhb) => dhb
+      case None => findBlockWithId(id) match {
+        case Some(block) => {
+          val (content, begin, end) = DynamicContent.extract(block.content, id)
+          try {
+            val element = DynamicContent.builder.build(new StringReader(content)).getRootElement
+            var newBlocks = List.empty[HTMLBlock]
+            if (end < block.content.length) {
+              newBlocks = StaticHTMLBlock(block.content.substring(end)) :: newBlocks
+            }
+            val dhb = DynamicHTMLBlock(id, element, content)
+            newBlocks = dhb :: newBlocks
+            if (begin > 0) {
+              newBlocks = StaticHTMLBlock(block.content.substring(0, begin)) :: newBlocks
+            }
+            _blocks = _blocks.patch(_blocks.indexOf(block), newBlocks, 1)
+  //          blocks = blocks.flatMap {
+  //            case b if (b == block) => newBlocks
+  //            case b => List(block)
+  //          }
+            dhb
+          } catch {
+            case exc: JDOMParseException => throw new RuntimeException("Unable to parse [%s]".format(content), exc)
+          }
+        }
+        case None => throw new NullPointerException("Unable to find block with id: %s".format(id))
+      }
+    }
+  }
+
+  private def findBlockWithId(id: String) = _blocks.collectFirst {
+    case shb: StaticHTMLBlock if (shb.content.indexOf("id=\"%s\"".format(id)) != -1) => shb
   }
 }
 

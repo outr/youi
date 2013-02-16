@@ -9,7 +9,7 @@ import java.net.URL
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */
-class DynamicTag[T <: HTMLTag] private(contentFunction: () => String, lastModifiedFunction: () => Long) extends DynamicString(contentFunction, lastModifiedFunction) {
+class DynamicTag[T <: HTMLTag] private(contentFunction: () => String, lastModifiedFunction: () => Long, converter: String => String) extends DynamicString(contentFunction, lastModifiedFunction, converter) {
   private var _element: Element = _
   def element = _element
 
@@ -31,16 +31,22 @@ object DynamicTag {
 
   import DynamicString._
 
-  def apply[T <: HTMLTag](name: String, content: String) = {
-    getOrSet(name, new DynamicTag[T](contentFunction(content), defaultLastModifyFunction))
+  def apply[T <: HTMLTag](dynamicString: DynamicString, converter: String => String = DynamicString.defaultConverter) = {
+    val name = "%s.dynamicTag"
+    val wrappedConverter = (content: String) => converter(dynamicString.converter(content))
+    getOrSet(name, new DynamicTag[T](dynamicString.contentFunction, dynamicString.lastModifiedFunction, wrappedConverter))
   }
 
-  def apply[T <: HTMLTag](name: String, file: File) = {
-    getOrSet(name, new DynamicTag[T](contentFunction(file), lastModifyFunction(file)))
+  def static[T <: HTMLTag](name: String, content: String, converter: String => String = DynamicString.defaultConverter) = {
+    getOrSet(name, new DynamicTag[T](contentFunction(content), defaultLastModifyFunction, converter))
   }
 
-  def apply[T <: HTMLTag](name: String, url: URL, checkLastModified: Boolean = false) = {
-    getOrSet(name, new DynamicTag[T](contentFunction(url), lastModifyFunction(url, checkLastModified)))
+  def file[T <: HTMLTag](name: String, file: File, converter: String => String = DynamicString.defaultConverter) = {
+    getOrSet(name, new DynamicTag[T](contentFunction(file), lastModifyFunction(file), converter))
+  }
+
+  def url[T <: HTMLTag](name: String, url: URL, checkLastModified: Boolean = false, converter: String => String = DynamicString.defaultConverter) = {
+    getOrSet(name, new DynamicTag[T](contentFunction(url), lastModifyFunction(url, checkLastModified), converter))
   }
 
   def string2Element(html: String) = {

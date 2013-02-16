@@ -24,7 +24,7 @@ class PlayHelloWorldPage extends Webpage {
 
   head.contents += new tag.Link(rel = "stylesheet", media = "screen", href = "/css/play_hello_world.css")
 
-  val main = DynamicContent(PlayHelloWorldPage.main, "main")
+  val main = DynamicContent.url(PlayHelloWorldPage.main, "main")
   val header = main.load[tag.Header]("header")
   val content = main.load[tag.Section]("content")
   val submitButton = main.load[tag.Input]("submit")
@@ -84,7 +84,7 @@ class PlayHelloWorldPage extends Webpage {
 }
 
 class PlayHelloWorldConfiguration(page: PlayHelloWorldPage) extends DynamicContent("configure") {
-  def dynamicString = DynamicString("play_hello_world_configuration.html", PlayHelloWorldPage.configuration)
+  def dynamicString = DynamicString.url("play_hello_world_configuration.html", PlayHelloWorldPage.configuration)
 
   val nameContainer = load[tag.Dl]("name_field")
   val nameInput = nameContainer.getById[tag.Input]("name")

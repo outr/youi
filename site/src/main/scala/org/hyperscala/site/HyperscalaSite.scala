@@ -36,6 +36,7 @@ object HyperscalaSite extends Website[MapSession] {
     val autoComplete = WebpageResource("/example/autocomplete.html", new AutoCompleteExample, Scope.Session)
     val richEditor = WebpageResource("/example/richeditor.html", new RichEditorExample, Scope.Page)
     val nivoSlider = WebpageResource("/example/nivoslider.html", new NivoSliderExample, Scope.Page)
+    val gritter = WebpageResource("/example/gritter.html", new GritterExample, Scope.Page)
     val dialog = WebpageResource("/example/dialog.html", new DialogExample, Scope.Page)
     val dynamic = WebpageResource("/example/dynamic.html", new DynamicContentExample, Scope.Page)
     val dynamicPage = WebpageResource("/example/dynamic_page.html", new DynamicPageExample, Scope.Page)

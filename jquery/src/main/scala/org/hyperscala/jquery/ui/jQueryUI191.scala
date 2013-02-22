@@ -5,7 +5,7 @@ import org.hyperscala.html._
 import org.powerscala.Version
 import org.hyperscala.module._
 import com.outr.webcommunicator.netty.handler.PathHandler
-import org.hyperscala.jquery.{jQuery182, jQuery}
+import org.hyperscala.jquery.jQuery
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -17,7 +17,7 @@ object jQueryUI191 extends Module {
 
   override def implements = List(jQueryUI)
 
-  override def dependencies = List(InterfaceWithDefault(jQuery, jQuery182))
+  override def dependencies = List(InterfaceWithDefault(jQuery, jQuery.Latest))
 
   def init() = {
     Website().register(PathHandler("/jquery_ui/", "jquery_ui/"))

@@ -150,16 +150,18 @@ object Realtime extends Module {
       case field => {
         field.event.change := JavaScriptEvent(preventDefault = false)
         field match {
-          case i: tag.Input => field.event.click := JavaScriptEvent(preventDefault = false)
+          case i: tag.Input => if (field.event.click() == null) {
+            field.event.click := JavaScriptEvent(preventDefault = false)
+          }
           case _ => // Not an input
         }
       }
     }
     Webpage().live[tag.Button] {
-      case b => b.event.click := JavaScriptEvent(preventDefault = false)
+      case b => if (b.event.click() == null) b.event.click := JavaScriptEvent(preventDefault = false)
     }
     Webpage().live[tag.Form] {
-      case f => f.event.submit := JavaScriptEvent()
+      case f => if (f.event.submit() == null) f.event.submit := JavaScriptEvent()
     }
   }
 }

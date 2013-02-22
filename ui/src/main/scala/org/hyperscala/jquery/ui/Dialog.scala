@@ -2,17 +2,17 @@ package org.hyperscala.jquery.ui
 
 import org.hyperscala.html._
 import org.hyperscala.web.site.Webpage
-import org.hyperscala.javascript.JavaScriptString
 import org.powerscala.property._
 import org.powerscala.event.Listenable
 import org.powerscala.property.event.PropertyChangeEvent
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.css.attributes.Display
+import org.hyperscala.jquery.JavaScriptCaller
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-trait Dialog extends HTMLTag {
+trait Dialog extends HTMLTag with JavaScriptCaller {
   identity    // Make sure it has an id
 
   Webpage().require(Realtime)
@@ -96,14 +96,6 @@ trait Dialog extends HTMLTag {
       | });
       |});
     """.stripMargin.format(id(), options)
-  }
-
-  private def injectScript(script: String) = Webpage().head.injectScript(new JavaScriptString(script), temporal = true)
-
-  private def value2String(v: Any) = v match {
-    case null => "null"
-    case s: String => "'%s'".format(s)
-    case _ => v.toString
   }
 }
 

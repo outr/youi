@@ -36,4 +36,11 @@ object ValidatableTag {
   def validateAll(container: HTMLTag) = container.byTag[FormField].collect {
     case vv if (!vv.validate()) => vv
   }.isEmpty
+
+  def validateTag(tag: FormField) = {
+    val routing = tag.fire(new ValidateEvent)
+    routing match {
+      case rr: RoutingResponse => false     //
+    }
+  }
 }

@@ -28,6 +28,7 @@ class Q extends Container[BodyChild] with BodyChild with HTMLTag {
            style: StyleSheet = null,
            tabIndex: java.lang.Integer = null,
            titleText: String = null,
+           cite: String = null,
            content: BodyChild = null) = {
     this()
     up(this.name, name)
@@ -45,8 +46,9 @@ class Q extends Container[BodyChild] with BodyChild with HTMLTag {
     up(this.style, style)
     up(this.tabIndex, tabIndex)
     up(this.titleText, titleText)
+    up(this.cite, cite)
     if (content != null) contents += content
   }
 
-
+  val cite = PropertyAttribute[String]("cite", null)
 }

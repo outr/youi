@@ -25,12 +25,12 @@ object HeadStyle extends Module {
     page.intercept.renderAttribute {
       case ssa: StyleSheetProperty => Routing.Stop
     }
-    page.intercept.initStyle {
-      case tag: HTMLTag => map.get(tag) match {
-        case null => map.put(tag, new HeadStyleTag(page, tag))
-        case hst => hst.updateStyle()
-      }
-    }
+//    page.intercept.initStyle {
+//      case tag: HTMLTag => map.get(tag) match {
+//        case null => map.put(tag, new HeadStyleTag(page, tag))
+//        case hst => hst.updateStyle()
+//      }
+//    }
     page.view.foreach {
       case tag: HTMLTag => map.put(tag, new HeadStyleTag(page, tag))
       case _ =>

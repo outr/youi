@@ -5,11 +5,12 @@ import org.powerscala.property.PropertyParent
 import org.powerscala.naming.NamingFilter
 import persistence._
 import org.powerscala.event.Listenable
+import org.powerscala.Storage
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-trait Tag extends PropertyParent with Markup with Listenable {
+trait Tag extends PropertyParent with Markup with Listenable with Storage[Any] {
   implicit val booleanPersistence = BooleanPersistence
   implicit val stringPersistence = StringPersistence
 

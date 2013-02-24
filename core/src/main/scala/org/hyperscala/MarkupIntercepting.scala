@@ -15,10 +15,6 @@ class MarkupIntercepting(name: String, bus: Bus, parent: MarkupIntercepting) {
    */
   val init: Interceptable[Markup] = Interceptable[Markup]("%s.init".format(name), if (parent != null) parent.init else null)
   /**
-   * Called during lazy initialization of StyleSheet instance on Markup.
-   */
-  val initStyle: Interceptable[Markup] = Interceptable[Markup]("%s.initStyle".format(name), if (parent != null) parent.initStyle else null)
-  /**
    * Called before rendering of the Markup instance.
    */
   val beforeRender: Interceptable[Markup] = Interceptable[Markup]("%s.beforeRender".format(name), if (parent != null) parent.beforeRender else null)

@@ -6,12 +6,13 @@ import annotation.tailrec
 import scala.collection.JavaConversions._
 import java.util.concurrent.atomic.AtomicBoolean
 import org.powerscala.log.Logging
+import org.powerscala.bus.intercept.Interceptable
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
 trait Markup extends XMLContent with Logging {
-  private val initialized = new AtomicBoolean(false)
+  private val _initialized = new AtomicBoolean(false)
 
   def xmlLabel: String
   def xmlAttributes: Seq[XMLAttribute]
@@ -24,10 +25,15 @@ trait Markup extends XMLContent with Logging {
   def xmlExpanded = false
 
   /**
+   * true if this Markup has been initialized.
+   */
+  def initialized = _initialized.get()
+
+  /**
    * Iterate over everything
    */
   protected def checkInit(): Unit = {
-    if (initialized.compareAndSet(false, true)) {
+    if (_initialized.compareAndSet(false, true)) {
       initialize()
     }
     xmlChildren.foreach {
@@ -100,6 +106,18 @@ trait Markup extends XMLContent with Logging {
     Page() match {
       case null => // May not be part of a page
       case page => page.intercept.init.fire(this)
+    }
+  }
+
+  def onInit(f: => Any) = intercept(Page().intercept.init, f)
+
+  def onBeforeRender(f: => Any) = intercept(Page().intercept.beforeRender, f)
+
+  def onAfterRender(f: => Any) = intercept(Page().intercept.afterRender, f)
+
+  private def intercept(interceptable: Interceptable[Markup], f: => Any) = {
+    interceptable {
+      case markup if (markup == Markup.this) => f
     }
   }
 

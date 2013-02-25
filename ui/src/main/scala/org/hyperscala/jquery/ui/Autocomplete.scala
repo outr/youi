@@ -34,6 +34,41 @@ class Autocompletified private(input: tag.Input) {
   val disabled = Property[Boolean]("disabled", false)
   val minLength = Property[Int]("minLength", 1)
   val multiple = Property[Boolean]("multiple", false)
+  val highlight = Property[Boolean]("highlight", true)
+  val caseSensitive = Property[Boolean]("caseSensitive", false)
+
+  def submit(query: String) = {
+    val term = caseSensitive() match {
+      case true => query
+      case false => query.toLowerCase
+    }
+    // TODO: make multiple a server-side operation
+    val results = search()(term).map(s => AutocompleteResult(label = s, value = s))
+    if (highlight()) {
+      results.map {
+        case AutocompleteResult(label, value, category) => {
+          val index = label.toLowerCase.indexOf(term)
+          if (index != -1) {
+            val b = new StringBuilder
+            if (index > 0) {
+              b.append(label.substring(0, index))
+            }
+            b.append("<strong>")
+            b.append(label.substring(index, index + term.length))
+            b.append("</strong>")
+            if (index != label.length - 1) {
+              b.append(label.substring(index + term.length))
+            }
+            AutocompleteResult(b.toString(), value, category)
+          } else {
+            AutocompleteResult(label, value, category)
+          }
+        }
+      }
+    } else {
+      results
+    }
+  }
 
   if (input.initialized) {
     autoCompletify()
@@ -97,7 +132,9 @@ class Autocompletified private(input: tag.Input) {
         |    disabled: %5$s,
         |    minLength: %6$s,
         |    change: function() { jsFireChange($('#%1$s')); jsFireGenericEvent($('#%1$s'), 'change'); }
-        |  });
+        |  }).data('autocomplete')._renderItem = function(ul, item) {
+        |    return $('<li></li>').data('item.autocomplete', item).append($('<a></a>').html(item.label)).appendTo(ul);
+        |  };
         |});
       """.stripMargin.format(input.id(), source, autoFocus(), delay(), disabled(), minLength(), multiple()), onlyRealtime = false)
     Listenable.listenTo(autoFocus, delay, disabled, minLength) {
@@ -115,14 +152,26 @@ class Autocompletified private(input: tag.Input) {
 
 object Autocompletified {
   def apply(input: tag.Input) = input.getOrSet[Autocompletified]("autocompletified", new Autocompletified(input))
+
+  val Result2JSON = (r: AutocompleteResult) => {
+    """
+      |{
+      | "label": "%s",
+      | "value": "%s",
+      | "category": "%s"
+      |}
+    """.stripMargin.format(r.label, r.value, r.category)
+  }
 }
 
 class AutocompleteSearchHandler(autocompletified: Autocompletified) extends RequestHandler {
   def apply(webapp: NettyWebapp, context: ChannelHandlerContext, event: MessageEvent) = event.getMessage match {
     case request: HttpRequest => {
       val term = request2URL(request).parameters("term").head
-      val results = autocompletified.search()(term).map(s => "\"%s\"".format(s)).mkString("[", ", ", "]")
+      val results = autocompletified.submit(term).map(Autocompletified.Result2JSON).mkString("[", ", ", "]")
       RequestHandler.streamString(results, context, request, "text/plain")
     }
   }
 }
+
+case class AutocompleteResult(label: String, value: String, category: String = "")

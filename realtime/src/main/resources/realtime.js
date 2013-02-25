@@ -67,6 +67,20 @@ function svgEventHandler(evt) {
     }
 }
 
+function jsFireChange(element) {
+    var id = element.attr('id');
+    communicator.send('change', id, {
+        value: element.val()
+    });
+}
+
+function jsFireGenericEvent(element, eventType) {
+    var id = element.attr('id');
+    communicator.send('event', id, {
+        event: eventType
+    });
+}
+
 // TODO: add support in communicator for filtering out overlapping messages
 function jsEventHandler(e, data, fireChange, onlyLast) {
     var element = $(e.currentTarget);
@@ -77,9 +91,7 @@ function jsEventHandler(e, data, fireChange, onlyLast) {
     }
     if (id != null) {
         if (e.type == 'change' || fireChange) {
-            communicator.send('change', id, {
-                value: element.val()
-            });
+            jsFireChange(element);
 //            log('sending change event: ' + id + ' - ' + element.val());
         }
         // TODO: support mouse events better
@@ -97,9 +109,7 @@ function jsEventHandler(e, data, fireChange, onlyLast) {
                 shiftKey: e.shiftKey
             });
         } else {
-            communicator.send('event', id, {
-                event: e.type
-            });
+            jsFireGenericEvent(element, e.type);
         }
     } else {
         var target = $(e.target);

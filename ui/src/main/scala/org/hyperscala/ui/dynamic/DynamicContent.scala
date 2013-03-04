@@ -12,6 +12,7 @@ import org.powerscala.property.{CaseClassBinding, StandardProperty}
 import org.hyperscala.web.site.Webpage
 import org.hyperscala.realtime.Realtime
 import java.net.URL
+import org.hyperscala.html.tag.Text
 
 /**
  * DynamicContent provides similar functionality to StaticContent rendering pre-defined HTML onto the page in place of
@@ -116,6 +117,19 @@ abstract class DynamicContent(existingId: String) extends Container[HTMLTag] wit
     tag
   }
 
+  /**
+   * Removes the tag from use in this instance of DynamicContent.
+   *
+   * @param id to remove
+   */
+  def remove(id: String): Unit = synchronized {
+    val dhb = dynamicContent.extract(id)
+    val t = new Text("")      // Add empty tag
+    val block = dhb.copy(tag = t)
+    dynamicBlocks += id -> block
+    contents += t
+  }
+
   def xmlLabel: String = "dynamiccontent"
 
   override protected def writeTag(writer: HTMLWriter) = writeBlocks(writer, dynamicContent.blocks)
@@ -138,7 +152,6 @@ abstract class DynamicContent(existingId: String) extends Container[HTMLTag] wit
 class StringDynamicContent(val dynamicString: DynamicString, existingId: String) extends DynamicContent(existingId)
 
 object DynamicContent {
-  val builder = new SAXBuilder()
   private var contents = Map.empty[String, DynamicHTML]
 
   def apply(dynamicString: DynamicString, existingId: String) = new StringDynamicContent(dynamicString, existingId)
@@ -172,7 +185,14 @@ object DynamicContent {
     (content.substring(begin, end), begin, end)
   }
 
-  def extractFunction(id: String) = (content: String) => extract(content, id)._1
+  def extractFunction(id: String, reId: Boolean = false) = (content: String) => {
+    val extracted = extract(content, id)._1
+    if (reId) {
+      extracted.replace("id=\"%s\"".format(id), "id=\"%s\"".format(Unique()))
+    } else {
+      extracted
+    }
+  }
 
   private def findCloseIndex(start: Int, content: String): Int = {
     var tagOpen = false
@@ -247,7 +267,8 @@ class DynamicHTML(content: String) {
         case Some(block) => {
           val (content, begin, end) = DynamicContent.extract(block.content, id)
           try {
-            val element = DynamicContent.builder.build(new StringReader(content)).getRootElement
+            val builder = new SAXBuilder()
+            val element = builder.build(new StringReader(content)).getRootElement
             var newBlocks = List.empty[HTMLBlock]
             if (end < block.content.length) {
               newBlocks = StaticHTMLBlock(block.content.substring(end)) :: newBlocks

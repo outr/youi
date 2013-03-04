@@ -3,6 +3,7 @@ package org.hyperscala.module
 import org.hyperscala.html._
 import org.hyperscala.Page
 import org.hyperscala.web.site.Website
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * ModularPage represents all the functionality within a Webpage for dealing with Modules and Interfaces.
@@ -12,7 +13,7 @@ import org.hyperscala.web.site.Website
 trait ModularPage {
   this: Page =>
 
-  private var modularPageLoaded = false
+  private val modularPageLoaded = new AtomicBoolean(false)
   private var interfaces = List.empty[Interface]
 
   def require(interface: Interface): Unit = synchronized {
@@ -55,7 +56,7 @@ trait ModularPage {
   }
 
   private def replaceInterface(name: String, replacement: Interface, checkPageLoaded: Boolean = true) = {
-    if (checkPageLoaded && modularPageLoaded) {
+    if (checkPageLoaded && modularPageLoaded.get()) {
       throw new RuntimeException("Module with name '%s' is already loaded. Cannot replace the module after page load!".format(name))
     }
     replacement match {
@@ -71,7 +72,7 @@ trait ModularPage {
       case _ =>
     }
     interfaces = (interface :: interfaces.reverse).reverse
-    if (modularPageLoaded) {
+    if (modularPageLoaded.get()) {
       loadInterface(interface)
     }
   }
@@ -81,7 +82,6 @@ trait ModularPage {
     case iwd: InterfaceWithDefault => {
       replaceInterface(iwd.name, iwd.default, checkPageLoaded = false)    // Replace the interface with the default at load-time
       loadModule(iwd.default)
-      iwd.default.load()
     }
     case _ => throw new RuntimeException("No implementation defined for interface: %s".format(interface.name))
   }
@@ -95,14 +95,13 @@ trait ModularPage {
       module.init()
       Website().application("initializedModules") = initialized + module
     }
+    debug("Loading module: %s".format(module.getClass.getSimpleName))
     module.load()
   }
 
   intercept.beforeRender {
-    case html: tag.HTML => synchronized {
-      if (!modularPageLoaded) {
-        modularPageLoaded = true
-
+    case html: tag.HTML => {
+      if (modularPageLoaded.compareAndSet(false, true)) {
         val headItems = html.head.contents.collect {
           case script: tag.Script => script
           case link: tag.Link => link

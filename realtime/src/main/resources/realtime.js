@@ -75,10 +75,14 @@ function jsFireChange(element) {
 }
 
 function jsFireGenericEvent(element, eventType) {
-    var id = element.attr('id');
-    communicator.send('event', id, {
+    jsFire(element, 'event', {
         event: eventType
     });
+}
+
+function jsFire(element, event, message) {
+    var id = element.attr('id');
+    communicator.send(event, id, message)
 }
 
 // TODO: add support in communicator for filtering out overlapping messages
@@ -117,11 +121,15 @@ function jsEventHandler(e, data, fireChange, onlyLast) {
     }
 }
 
+var logEvals = false;
+
 function jsEval(message) {
     var json = jQuery.parseJSON(message);
     var content = json['content'];
     var instruction = json['instruction'];
-//    log('Instruction: ' + instruction + ', Content: ' + content);
+    if (logEvals) {
+        log('Instruction: ' + instruction + ', Content: ' + content);
+    }
     eval(instruction);
 }
 
@@ -147,6 +155,7 @@ $(document).ready(function() {
     var ctrlDown = false;
     var ctrlKey = 17;
     var keyCodeL = 76;
+    var keyCodeI = 73;
 
     $(document).keydown(function(e) {
         if (e.keyCode == ctrlKey) {
@@ -165,6 +174,8 @@ $(document).ready(function() {
                 s += logHistory[i] + '\n';
             }
             alert(s);
+        } else if (ctrlDown && e.keyCode == keyCodeI) {     // Toggle logging evals
+            logEvals = !logEvals;
         }
     });
 });

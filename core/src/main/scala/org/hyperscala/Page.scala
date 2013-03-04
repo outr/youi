@@ -4,11 +4,12 @@ import org.powerscala.event.Listenable
 import org.powerscala.bus.Bus
 import org.powerscala.{Updatable, Priority}
 import module.{Module, Interface}
+import org.powerscala.log.Logging
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-trait Page extends Listenable with Updatable {
+trait Page extends Listenable with Updatable with Logging {
   override val bus = new Bus(Priority.Normal)
   Bus.current = bus
 

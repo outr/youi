@@ -4,7 +4,7 @@ import org.hyperscala.html._
 import org.powerscala.Language
 import org.hyperscala.web.site.Webpage
 import org.hyperscala.realtime.Realtime
-import org.hyperscala.jquery.ui.Autocomplete
+import org.hyperscala.jquery.ui.{AutocompleteResult, Autocomplete}
 import org.hyperscala.event.{ClickEvent, ChangeEvent, JavaScriptEvent}
 
 /**
@@ -23,7 +23,7 @@ class AutoCompleteExample extends Webpage {
         val v = query.toLowerCase
         Language.values.collect {
           case l if (l.name().toLowerCase.contains(v)) => l
-        }.slice(0, 10).map(l => l.name())
+        }.slice(0, 10).map(l => AutocompleteResult(l.name(), l.name()))
       })
       autocomplete.autoFocus := true
       autocomplete.multiple := true
@@ -39,7 +39,10 @@ class AutoCompleteExample extends Webpage {
       event.click := JavaScriptEvent()
 
       listeners.synchronous {
-        case evt: ClickEvent => println("Clicked! - %s".format(input.value()))
+        case evt: ClickEvent => {
+          println("Clicked! - %s".format(input.autocomplete.selected()))
+          input.value := "testing"
+        }
       }
     }
   }

@@ -1,6 +1,8 @@
 package org.hyperscala
 
+import event.EventReceived
 import org.powerscala.reflect._
+import org.powerscala.bus.Routing
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
@@ -21,7 +23,10 @@ trait IdentifiableTag extends Tag {
   }
 
   def receive(event: String, message: Message): Unit = {
-    warn("Unhandled inbound message. Event: %s, Tag: %s, Message: %s".format(event, getClass.getName, message))
+    fire(EventReceived(event, message)) match {
+      case Routing.Stop => // Handled
+      case _ => warn("Unhandled inbound message. Event: %s, Tag: %s, Message: %s".format(event, getClass.getName, message))
+    }
   }
 }
 

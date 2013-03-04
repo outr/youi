@@ -2,7 +2,7 @@ package org.hyperscala.examples.ui
 
 import org.hyperscala.html._
 import org.hyperscala.event.{ChangeEvent, ClickEvent, JavaScriptEvent}
-import org.hyperscala.web.site.{Website, Webpage}
+import org.hyperscala.web.site.{SessionContextualizable, Website, Webpage}
 import org.powerscala.property.StandardProperty
 import annotation.tailrec
 import org.hyperscala.jquery.jQuery
@@ -66,6 +66,8 @@ object ChatExample {
   val Main = getClass.getClassLoader.getResource("chat.html")
   val Entry = getClass.getClassLoader.getResource("chat_entry.html")
 
+  val pages = new SessionContextualizable[ChatExample]
+
   private var history = List.empty[(String, String)]
 
   def instances = Website().sessions.valuesByType[ChatExample].toList
@@ -82,10 +84,8 @@ object ChatExample {
     }
   }
   def sendMessage(nickname: String, message: String) = synchronized {
-    instances.foreach {
-      case chat => chat.context {
-        chat.messages.contents += new ChatEntry(nickname, message)
-      }
+    pages.contextualize {
+      case chat => chat.messages.contents += new ChatEntry(nickname, message)
     }
     history = (nickname, message) :: history
   }

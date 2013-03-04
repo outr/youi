@@ -11,6 +11,9 @@ import com.outr.webcommunicator.netty.handler.RequestHandler
 import com.outr.webcommunicator.netty._
 import org.jboss.netty.channel.{MessageEvent, ChannelHandlerContext}
 import org.jboss.netty.handler.codec.http.HttpRequest
+import org.hyperscala.event.EventReceived
+import org.powerscala.bus.Routing
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -19,16 +22,18 @@ class Autocomplete extends tag.Input {
   val autocomplete = Autocompletified(this)
 }
 
-class Autocompletified private(input: tag.Input) {
+// TODO: re-test now that input.value change is fixed on realtime
+class Autocompletified private(input: FormField) {
   input.identity
 
   private lazy val handler = new AutocompleteSearchHandler(this)
+  private val changing = new AtomicBoolean(false)
 
   Webpage().require(jQueryUI, jQueryUI191)
 
-  implicit val thisInput = input
+  private implicit val thisInput = input
 
-  val search = Property[String => Seq[String]]("search", (s: String) => Nil)
+  val search = Property[String => Seq[AutocompleteResult]]("search", (s: String) => Nil)
   val autoFocus = Property[Boolean]("autoFocus", false)
   val delay = Property[Int]("delay", 300)
   val disabled = Property[Boolean]("disabled", false)
@@ -37,13 +42,31 @@ class Autocompletified private(input: tag.Input) {
   val highlight = Property[Boolean]("highlight", true)
   val caseSensitive = Property[Boolean]("caseSensitive", false)
 
+  val selected = Property[List[String]]("values", Nil)
+  selected.onChange {
+    changing.set(true)
+    try {
+      val v = if (multiple()) {
+        selected().map(e => "%s, ".format(e)).mkString
+      } else if (selected().nonEmpty) {
+        selected().head
+      } else {
+        ""
+      }
+      input.value := v
+    } finally {
+      changing.set(false)
+    }
+  }
+  def firstSelected = selected().headOption
+
   def submit(query: String) = {
     val term = caseSensitive() match {
       case true => query
       case false => query.toLowerCase
     }
     // TODO: make multiple a server-side operation
-    val results = search()(term).map(s => AutocompleteResult(label = s, value = s))
+    val results = search()(term)
     if (highlight()) {
       results.map {
         case AutocompleteResult(label, value, category) => {
@@ -81,6 +104,7 @@ class Autocompletified private(input: tag.Input) {
   private def autoCompletify() = {
     val source = "/autocomplete/%s".format(input.identity)
     Website().registerSession(WebpageResource(source, handler, Scope.Request))
+    // TODO: extract this into its own Module + .js file
     Realtime.sendJavaScript(
       """
         |function split(v) {
@@ -122,10 +146,16 @@ class Autocompletified private(input: tag.Input) {
         |       var terms = split(this.value);
         |       terms.pop();
         |       terms.push(ui.item.value);
+        |       jsFire($(this), 'autocompleteMultiSelect', {
+        |         values: terms
+        |       });
         |       terms.push('');
         |       this.value = terms.join(', ');
         |       return false;
         |     }
+        |     jsFire($(this), 'autocompleteSelect', {
+        |       value: ui.item.value
+        |     });
         |    },
         |    autoFocus: %3$s,
         |    delay: %4$s,
@@ -140,6 +170,24 @@ class Autocompletified private(input: tag.Input) {
     Listenable.listenTo(autoFocus, delay, disabled, minLength) {
       case evt: PropertyChangeEvent => sendChanges(evt)
     }
+    input.listeners.synchronous {
+      case EventReceived(event, message) if (event == "autocompleteSelect") => {
+        val value = message.map("value").asInstanceOf[String]
+        selected := List(value)
+        Routing.Stop
+      }
+      case EventReceived(event, message) if (event == "autocompleteMultiSelect") => {
+        val values = message.map("values").asInstanceOf[List[String]]
+        selected := values
+        Routing.Stop
+      }
+    }
+    input.value.listeners.synchronous {
+      case evt: PropertyChangeEvent if (!changing.get()) => {
+        Realtime.sendJavaScript("$('#%s')[0].value = \"%s\";".format(input.id(), input.value()))
+        selected := input.value().split(",").map(s => s.trim).toList
+      }
+    }
   }
 
   private def sendChanges(evt: PropertyChangeEvent) = evt.property.name() match {
@@ -151,7 +199,16 @@ class Autocompletified private(input: tag.Input) {
 }
 
 object Autocompletified {
-  def apply(input: tag.Input) = input.getOrSet[Autocompletified]("autocompletified", new Autocompletified(input))
+  def apply(input: FormField) = input.synchronized {
+    input.get[Autocompletified]("autocompletified") match {
+      case Some(a) => a
+      case None => {
+        val a = new Autocompletified(input)
+        input("autocompletified") = a
+        a
+      }
+    }
+  }
 
   val Result2JSON = (r: AutocompleteResult) => {
     """

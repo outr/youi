@@ -7,13 +7,40 @@ import java.net.URL
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */
-class DynamicString protected(val contentFunction: () => String, val lastModifiedFunction: () => Long, val converter: String => String) {
+trait DynamicString {
+  def name = DynamicString.name(this)
+  def lastModified: Long
+  def content: String
+}
+
+class DependentDynamicString protected[dynamic](dynamicString: DynamicString, val converter: String => String) extends DynamicString {
+  private var originalContent: String = _
+  private var converted: String = _
+
+  def lastModified = dynamicString.lastModified
+  def content = {
+    checkUpdate()
+    converted
+  }
+
+  protected def checkUpdate() = {
+    val newContent = dynamicString.content
+    if (newContent != originalContent) {
+      converted = converter(newContent)
+      originalContent = newContent
+      refresh()
+    }
+  }
+
+  protected def refresh() = {
+  }
+}
+
+class GeneralDynamicString protected[dynamic](val contentFunction: () => String, val lastModifiedFunction: () => Long, val converter: String => String) extends DynamicString {
   private var _lastModified: Long = _
   private var _content: String = _
 
   refresh(force = true)
-
-  def name = DynamicString.name(this)
 
   def lastModified = {
     refresh()
@@ -62,14 +89,18 @@ object DynamicString {
 
   val defaultConverter = (s: String) => s
 
+  def dependent(name: String, dynamicString: DynamicString, converter: String => String = defaultConverter) = {
+    getOrSet[DynamicString](name, new DependentDynamicString(dynamicString, converter))
+  }
+
   def static(name: String, content: String, converter: String => String = defaultConverter) = {
-    getOrSet(name, new DynamicString(contentFunction(content), defaultLastModifyFunction, converter))
+    getOrSet[DynamicString](name, new GeneralDynamicString(contentFunction(content), defaultLastModifyFunction, converter))
   }
   def file(name: String, file: File, converter: String => String = defaultConverter) = {
-    getOrSet(name, new DynamicString(contentFunction(file), lastModifyFunction(file), converter))
+    getOrSet[DynamicString](name, new GeneralDynamicString(contentFunction(file), lastModifyFunction(file), converter))
   }
   def url(name: String, url: URL, checkLastModified: Boolean = false, converter: String => String = defaultConverter) = {
-    getOrSet(name, new DynamicString(contentFunction(url), lastModifyFunction(url, checkLastModified), converter))
+    getOrSet[DynamicString](name, new GeneralDynamicString(contentFunction(url), lastModifyFunction(url, checkLastModified), converter))
   }
 
   def contentFunction(content: String) = () => content

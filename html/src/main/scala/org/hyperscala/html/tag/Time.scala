@@ -5,6 +5,7 @@ import css.StyleSheet
 import html.HTMLTag
 import org.hyperscala.html.attributes._
 import org.hyperscala.html.constraints._
+import java.util.Calendar
 
 /**
  * NOTE: This file has been generated. Do not modify directly!
@@ -51,4 +52,11 @@ class Time extends Container[BodyChild] with BodyChild with HTMLTag {
   }
 
   val dateTime = PropertyAttribute[String]("datetime", null)
+}
+
+object Time {
+  def Format = "%1$tFT%1$tT%1$tz"
+
+  def apply(l: Long) = Format.format(l)
+  def apply(c: Calendar) = Format.format(c)
 }

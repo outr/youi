@@ -12,4 +12,6 @@ trait Module extends Interface {
   def dependencies: List[Interface] = Nil
   def init(): Unit
   def load(): Unit
+
+  override def toString() = "Module(name = %s, version = %s)".format(name, version)
 }

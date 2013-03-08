@@ -38,6 +38,7 @@ object HyperscalaSite extends Website[MapSession] {
     val nivoSlider = WebpageResource("/example/nivoslider.html", new NivoSliderExample, Scope.Page)
     val gritter = WebpageResource("/example/gritter.html", new GritterExample, Scope.Page)
     val dialog = WebpageResource("/example/dialog.html", new DialogExample, Scope.Page)
+    val confirmDialog = WebpageResource("/example/confirm_dialog.html", new ConfirmDialogExample, Scope.Page)
     val dynamic = WebpageResource("/example/dynamic.html", new DynamicContentExample, Scope.Page)
     val dynamicPage = WebpageResource("/example/dynamic_page.html", new DynamicPageExample, Scope.Page)
     val chat = WebpageResource("/example/chat.html", new ChatExample, Scope.Session)

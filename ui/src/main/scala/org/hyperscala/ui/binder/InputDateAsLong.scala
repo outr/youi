@@ -5,7 +5,7 @@ import org.hyperscala.event.JavaScriptEvent
 import org.hyperscala.web.site.Webpage
 import java.text.SimpleDateFormat
 import java.util.Date
-import org.hyperscala.jquery.ui.{jQueryUI191, jQueryUI}
+import org.hyperscala.jquery.ui.jQueryUI
 import org.hyperscala.jquery.jQuery
 import org.hyperscala.ui.dynamic.Binder
 
@@ -14,7 +14,7 @@ import org.hyperscala.ui.dynamic.Binder
  */
 class InputDateAsLong(format: String = "MM/dd/yyyy") extends Binder[tag.Input, Long] {
   def bind(input: tag.Input) = {
-    Webpage().require(jQueryUI, jQueryUI191)
+    Webpage().require(jQueryUI, jQueryUI.Latest)
 
     input.value.onChange {
       val time = try {

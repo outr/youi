@@ -7,6 +7,8 @@ package org.hyperscala.module
  */
 trait Interface {
   def name: String
+
+  override def toString = "Interface(%s)".format(name)
 }
 
 object Interface {

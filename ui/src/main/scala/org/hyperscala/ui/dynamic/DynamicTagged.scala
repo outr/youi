@@ -13,9 +13,10 @@ trait DynamicTagged[T <: HTMLTag] extends HTMLTag {
 
   dynamicTag(this)
 
-  def reId[T <: HTMLTag](id: String, newId: String = Unique())(implicit manifest: Manifest[T]) = {
-    val t = getById[T](id)
-    t.id := newId
-    t
+  def regenIds() = {
+    id := Unique()
+    byTag[HTMLTag].foreach {
+      case t => t.id := Unique()
+    }
   }
 }

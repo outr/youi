@@ -29,7 +29,7 @@ class Autocompletified private(input: FormField) {
   private lazy val handler = new AutocompleteSearchHandler(this)
   private val changing = new AtomicBoolean(false)
 
-  Webpage().require(jQueryUI, jQueryUI191)
+  Webpage().require(jQueryUI, jQueryUI.Latest)
 
   private implicit val thisInput = input
 
@@ -162,7 +162,7 @@ class Autocompletified private(input: FormField) {
         |    disabled: %5$s,
         |    minLength: %6$s,
         |    change: function() { jsFireChange($('#%1$s')); jsFireGenericEvent($('#%1$s'), 'change'); }
-        |  }).data('autocomplete')._renderItem = function(ul, item) {
+        |  }).data('ui-autocomplete')._renderItem = function(ul, item) {
         |    return $('<li></li>').data('item.autocomplete', item).append($('<a></a>').html(item.label)).appendTo(ul);
         |  };
         |});

@@ -152,6 +152,14 @@ class Webpage extends Page with ModularPage with RequestHandler with Parent with
           case t: Throwable => // Ignore closing errors
         }
       }
+      case t: Throwable => {
+        errorThrown(t)
+        try {
+          channel.close()
+        } catch {
+          case t: Throwable => // Ignore closing errors
+        }
+      }
     }
   }
 

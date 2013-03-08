@@ -195,6 +195,7 @@ object DynamicContent {
   }
 
   private def findCloseIndex(start: Int, content: String): Int = {
+    // TODO: add tag name matching - make sure the same tag name opened as closed
     var tagOpen = false
     var comment = false
     var quoteOpen = false
@@ -279,10 +280,6 @@ class DynamicHTML(content: String) {
               newBlocks = StaticHTMLBlock(block.content.substring(0, begin)) :: newBlocks
             }
             _blocks = _blocks.patch(_blocks.indexOf(block), newBlocks, 1)
-  //          blocks = blocks.flatMap {
-  //            case b if (b == block) => newBlocks
-  //            case b => List(block)
-  //          }
             dhb
           } catch {
             case exc: JDOMParseException => throw new RuntimeException("Unable to parse [%s]".format(content), exc)

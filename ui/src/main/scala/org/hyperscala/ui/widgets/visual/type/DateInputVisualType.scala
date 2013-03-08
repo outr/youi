@@ -8,7 +8,7 @@ import org.powerscala.property.StandardProperty
 import org.hyperscala.html._
 import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.web.site.Webpage
-import org.hyperscala.jquery.ui.jQueryUI191
+import org.hyperscala.jquery.ui.jQueryUI
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -30,7 +30,7 @@ class DateInputVisualType(format: String = "MM/dd/yyyy") extends InputVisualType
   override def create(property: StandardProperty[Long], details: VisualBuilder[Long]) = {
     val input = super.create(property, details)
     input.identity
-    Webpage().require(jQueryUI191)
+    Webpage().require(jQueryUI.Latest)
     new tag.Div {
       contents += input
       contents += new tag.Script {

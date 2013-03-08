@@ -10,7 +10,7 @@ import org.hyperscala.javascript.JavaScriptString
 trait DatePicker extends HTMLTag {
   identity        // Make sure it has an id
 
-  Webpage().require(jQueryUI, jQueryUI191)
+  Webpage().require(jQueryUI, jQueryUI.Latest)
 
   override protected def initialize() {
     super.initialize()
@@ -28,7 +28,7 @@ trait DatePicker extends HTMLTag {
 
 object DatePicker {
   def apply(t: HTMLTag) = {
-    Webpage().require(jQueryUI, jQueryUI191)
+    Webpage().require(jQueryUI, jQueryUI.Latest)
 
     val script = """
                    |$(function() {

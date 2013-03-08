@@ -10,7 +10,7 @@ import org.hyperscala.event.{ClickEvent, JavaScriptEvent}
  * @author Matt Hicks <matt@outr.com>
  */
 class DialogExample extends Webpage {
-  require(jQueryUI191)
+  require(jQueryUI.Latest)
 
   val myDialog = new tag.Div(id = "dialog", titleText = "Dialog Example") with Dialog {
     dialog.title := "Hello World"

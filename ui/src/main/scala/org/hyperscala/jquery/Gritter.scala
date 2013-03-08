@@ -38,12 +38,12 @@ object Gritter extends Module with JavaScriptCaller {
     Webpage().body.contents += new tag.Script(content = new JavaScriptString(
       """
         |$.gritter.add({
-        |   title: %s,
-        |   text: %s,
-        |   image: %s,
-        |   sticky: %s,
-        |   time: %s,
-        |   class_name: %s
+        |   'title': %s,
+        |   'text': %s,
+        |   'image': %s,
+        |   'sticky': %s,
+        |   'time': %s,
+        |   'class_name': %s
         |});
       """.stripMargin.format(value2String(title),       // Title
                              value2String(text),        // Text

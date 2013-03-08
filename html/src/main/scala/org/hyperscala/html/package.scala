@@ -15,6 +15,8 @@ package object html {
   implicit def int2FontSizeInt(i: Int) = FontSizeInt(i)
   implicit def double2FontSizeInt(d: Double) = FontSizeInt(round(d).toInt)
   implicit def l2Fs(l: Length) = FontSize(l.value)
+
+  implicit def it2Rit[T <: IdentifiableTag](t: T) = ReIdentifiable[T](t)
 }
 
 case class LengthInt(i: Int) {
@@ -26,4 +28,11 @@ case class LengthInt(i: Int) {
 
 case class FontSizeInt(i: Int) {
   def pt = FontSize.Points(i)
+}
+
+case class ReIdentifiable[T <: IdentifiableTag](t: T) {
+  def reId = {
+    t.id := Unique()
+    t
+  }
 }

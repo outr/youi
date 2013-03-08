@@ -176,6 +176,7 @@ $(document).ready(function() {
             alert(s);
         } else if (ctrlDown && e.keyCode == keyCodeI) {     // Toggle logging evals
             logEvals = !logEvals;
+            console.log('Setting logging of evals to: ' + logEvals);
         }
     });
 });

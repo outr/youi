@@ -16,8 +16,10 @@ trait ModularPage {
   private val modularPageLoaded = new AtomicBoolean(false)
   private var interfaces = List.empty[Interface]
 
+  def module(name: String) = interfaces.find(i => i.name == name)
+
   def require(interface: Interface): Unit = synchronized {
-    val existing = interfaces.find(i => i.name == interface.name)
+    val existing = module(interface.name)
     interface match {
       case module: Module => requireModule(module, existing)
       case iwd: InterfaceWithDefault => requireInterfaceWithDefault(iwd, existing)
@@ -34,9 +36,9 @@ trait ModularPage {
   private def requireModule(module: Module, existing: Option[Interface]) = existing match {
     case Some(i) => i match {
       case e: Module => e.version.compare(module.version) match {
-        case -1 => // Nothing changes, the current is the newer version
+        case 1 => // Nothing changes, the current is the newer version
         case 0 => // Nothing changes, they are both the same
-        case 1 => replaceInterface(e.name, module)
+        case -1 => replaceInterface(e.name, module)
       }
       case _ => replaceInterface(i.name, module)
     }
@@ -47,9 +49,9 @@ trait ModularPage {
     case Some(i) => i match {
       case e: Module => // Nothing changes, module supersedes default
       case e: InterfaceWithDefault => e.default.version.compare(iwd.default.version) match {
-        case -1 => // Nothing changes, the current default is the newer version
+        case 1 => // Nothing changes, the current default is the newer version
         case 0 => // Nothing changes, they are both the same
-        case 1 => replaceInterface(e.name, iwd)
+        case -1 => replaceInterface(e.name, iwd)
       }
     }
     case None => addInterface(iwd)
@@ -57,7 +59,7 @@ trait ModularPage {
 
   private def replaceInterface(name: String, replacement: Interface, checkPageLoaded: Boolean = true) = {
     if (checkPageLoaded && modularPageLoaded.get()) {
-      throw new RuntimeException("Module with name '%s' is already loaded. Cannot replace the module after page load!".format(name))
+      throw new RuntimeException("Module with name '%s' is already loaded: %s. Cannot replace after page load with: %s!".format(name, module(name).get, replacement))
     }
     replacement match {
       case module: Module => module.dependencies.foreach(require)

@@ -1,5 +1,6 @@
 package org.hyperscala.jquery.ui
 
+import event.ButtonClicked
 import org.hyperscala.html._
 import org.hyperscala.web.site.Webpage
 import org.powerscala.property._
@@ -8,6 +9,7 @@ import org.powerscala.property.event.PropertyChangeEvent
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.css.attributes.Display
 import org.hyperscala.jquery.JavaScriptCaller
+import org.hyperscala.Message
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -24,7 +26,7 @@ trait Dialog extends HTMLTag with JavaScriptCaller {
 
   val dialog = new {
     val autoOpen = new StandardProperty[Boolean]("autoOpen", true) with DialogProperty
-    val buttons = new StandardProperty[List[String]]("buttons", Nil) with DialogProperty
+    val buttons = new StandardProperty[DialogButtons]("buttons", null) with DialogProperty
     val closeOnEscape = new StandardProperty[Boolean]("closeOnEscape", true) with DialogProperty
     val closeText = new StandardProperty[String]("closeText", "close") with DialogProperty
     val dialogClass = new StandardProperty[String]("dialogClass", "") with DialogProperty
@@ -97,6 +99,18 @@ trait Dialog extends HTMLTag with JavaScriptCaller {
       |});
     """.stripMargin.format(id(), options)
   }
+
+  override protected def value2String(v: Any): String = v match {
+    case db: DialogButtons => "{ %s }".format(db.names.map(name => "'%1$s': function() { jsFire($(this), 'buttonClicked', { 'name': '%1$s' }); }".format(name)).mkString(", "))
+    case _ => super.value2String(v)
+  }
+
+  override def receive(event: String, message: Message) = event match {
+    case "buttonClicked" => fire(ButtonClicked(message[String]("name")))
+    case _ => super.receive(event, message)
+  }
 }
 
 trait DialogProperty
+
+case class DialogButtons(names: String*)

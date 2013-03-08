@@ -30,6 +30,13 @@ trait IdentifiableTag extends Tag {
   }
 }
 
+object IdentifiableTag {
+  def reId[T <: IdentifiableTag](t: T, newId: String = Unique()) = {
+    t.id := newId
+    t
+  }
+}
+
 case class Message(content: String, map: Map[String, Any]) {
   def apply[T](key: String)(implicit manifest: Manifest[T]) = convert[T](manifest, map(key))
   def get[T](key: String)(implicit manifest: Manifest[T]) = map.get(key).map(v => convert[T](manifest, v))

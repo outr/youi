@@ -6,7 +6,7 @@ function createRichEditor(id) {
     var editable = null;
     editor.on('instanceReady', function() {
         editable = editor.editable();
-        editor.on('blur', function() {
+        editable.on('blur', function() {
             var value = editor.getData();
             if (value != lastValue) {
                 communicator.send('change', id, {

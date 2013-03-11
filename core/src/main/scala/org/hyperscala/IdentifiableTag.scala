@@ -25,7 +25,7 @@ trait IdentifiableTag extends Tag {
   def receive(event: String, message: Message): Unit = {
     fire(EventReceived(event, message)) match {
       case Routing.Stop => // Handled
-      case _ => warn("Unhandled inbound message. Event: %s, Tag: %s, Message: %s".format(event, getClass.getName, message))
+      case _ => warn("IdentifiableTag.receive: Unhandled inbound message. Event: %s, Tag: %s, Message: %s".format(event, getClass.getName, message))
     }
   }
 }

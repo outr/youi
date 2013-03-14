@@ -9,12 +9,13 @@ import org.powerscala.concurrent.Time._
 import org.powerscala.concurrent.Executor
 import org.jboss.netty.channel.{MessageEvent, ChannelHandlerContext}
 import com.outr.webcommunicator.netty.handler.RequestHandler
-import com.outr.webcommunicator.netty.{WebResource, NettyWebapp}
+import com.outr.webcommunicator.netty._
 import org.hyperscala.context.Contextual
 import org.jboss.netty.handler.codec.http.HttpRequest
 import org.powerscala.reflect._
 import annotation.tailrec
 import org.powerscala.log.Logging
+import com.outr.webcommunicator.URL
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -155,6 +156,34 @@ trait Website[S <: Session] extends NettyCommunicatorManager[WebpageConnection] 
   }
 
   def errorThrown(page: Webpage, t: Throwable) = error("Error occurred on page: %s".format(page), t)
+
+  protected def notFoundPage(url: URL): Option[Webpage] = None
+  protected def forbiddenPage(url: URL): Option[Webpage] = None
+  protected def errorPage(url: URL, t: Throwable): Option[Webpage] = None
+
+  override protected def notFound(context: ChannelHandlerContext, event: MessageEvent) {
+    val url = request2URL(event.getMessage.asInstanceOf[HttpRequest])
+    notFoundPage(url) match {
+      case Some(webpage) => webpage(this, context, event)
+      case None => super.notFound(context, event)
+    }
+  }
+
+  override protected def forbidden(context: ChannelHandlerContext, event: MessageEvent) {
+    val url = request2URL(event.getMessage.asInstanceOf[HttpRequest])
+    forbiddenPage(url) match {
+      case Some(webpage) => webpage(this, context, event)
+      case None => super.forbidden(context, event)
+    }
+  }
+
+  override protected def error(context: ChannelHandlerContext, event: MessageEvent, t: Throwable) {
+    val url = request2URL(event.getMessage.asInstanceOf[HttpRequest])
+    errorPage(url, t) match {
+      case Some(webpage) => webpage(this, context, event)
+      case None => super.error(context, event, t)
+    }
+  }
 
   override def update(delta: Double) {
     super.update(delta)

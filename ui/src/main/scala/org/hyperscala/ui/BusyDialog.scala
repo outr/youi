@@ -51,4 +51,13 @@ object BusyDialog extends Module {
       window.dialog.close()
     }
   }
+
+  def apply[T](title: String)(f: => T): T = {
+    BusyDialog.show(title)
+    try {
+      f
+    } finally {
+      BusyDialog.hide()
+    }
+  }
 }

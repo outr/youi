@@ -38,7 +38,7 @@ trait Dialog extends HTMLTag with JavaScriptCaller {
     val minHeight = new StandardProperty[Int]("minHeight", 150) with DialogProperty
     val minWidth = new StandardProperty[Int]("minWidth", 150) with DialogProperty
     val modal = new StandardProperty[Boolean]("modal", false) with DialogProperty
-    val position = new StandardProperty[String]("position", null) with DialogProperty
+    val position = new StandardProperty[String]("position", "{ my: 'center', at: 'center', of: 'window', collision: 'none' }") with DialogProperty
     val resizable = new StandardProperty[Boolean]("resizable", true) with DialogProperty
     val show = new StandardProperty[EffectInstance]("show", null) with DialogProperty
     val stack = new StandardProperty[Boolean]("stack", true) with DialogProperty

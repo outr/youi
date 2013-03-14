@@ -154,7 +154,7 @@ function log(msg) {
 $(document).ready(function() {
     var ctrlDown = false;
     var ctrlKey = 17;
-    var keyCodeL = 76;
+    var keyCodeE = 69;
     var keyCodeI = 73;
 
     $(document).keydown(function(e) {
@@ -168,7 +168,7 @@ $(document).ready(function() {
         }
     });
     $(document).keydown(function(e) {
-        if (ctrlDown && e.keyCode == keyCodeL) {
+        if (ctrlDown && e.keyCode == keyCodeE) {
             var s = 'Log Entries: ' + logHistory.length + '\n';
             for (var i = 0; i < logHistory.length; i++) {
                 s += logHistory[i] + '\n';

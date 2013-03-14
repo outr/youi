@@ -4,8 +4,7 @@ import org.hyperscala.{Markup, Tag, Page}
 import com.outr.webcommunicator.netty.handler.RequestHandler
 import com.outr.webcommunicator.netty.{ChannelStringWriter, NettyWebapp}
 import org.jboss.netty.channel.{ChannelFutureListener, MessageEvent, ChannelHandlerContext}
-import org.jboss.netty.handler.codec.http.{HttpMethod, HttpRequest, CookieEncoder}
-import com.google.common.net.HttpHeaders
+import org.jboss.netty.handler.codec.http.{HttpHeaders, HttpMethod, HttpRequest, CookieEncoder}
 
 import org.hyperscala.html._
 import org.hyperscala.io.HTMLWriter
@@ -115,13 +114,14 @@ class Webpage extends Page with ModularPage with RequestHandler with Parent with
       processPost(request.getContent)
     }
     val response = RequestHandler.createResponse(contentType = "text/html; charset=UTF-8", sendExpiration = false)
+    response.setHeader(HttpHeaders.Names.CACHE_CONTROL, "no-cache, max-age=0, must-revalidate, no-store")
 
     // Add modified or created cookies
     val encoder = new CookieEncoder(true)
     cookies.modified.foreach {
       case cookie => {
         encoder.addCookie(cookie.toNettyCookie)
-        response.addHeader(HttpHeaders.SET_COOKIE, encoder.encode())
+        response.addHeader(HttpHeaders.Names.SET_COOKIE, encoder.encode())
       }
     }
 
@@ -134,7 +134,6 @@ class Webpage extends Page with ModularPage with RequestHandler with Parent with
     try {
       val output = new ChannelStringWriter(channel, buffer = 1024)
       val writer = (s: String) => output.write(s)
-//      val writer = (s: String) => lastWriteFuture = channel.write(ChannelBuffers.wrappedBuffer(s.getBytes()))
       // Write the doctype
       writer(doctype)
       // Stream the page back

@@ -5,9 +5,9 @@ import org.hyperscala.web.site.Webpage
 import org.hyperscala.jquery.jQuery
 
 /**
- * @author Matt Hicks <mhicks@outr.com>
+ * @author Matt Hicks <matt@outr.com>
  */
-trait DatePicker extends HTMLTag {
+trait Tooltip extends HTMLTag {
   identity        // Make sure it has an id
 
   Webpage().require(jQueryUI, jQueryUI.Latest)
@@ -15,14 +15,13 @@ trait DatePicker extends HTMLTag {
   override protected def initialize() {
     super.initialize()
 
-    DatePicker(this)
+    Tooltip(this)
   }
 }
 
-object DatePicker {
+object Tooltip {
   def apply(t: HTMLTag) = {
     Webpage().require(jQueryUI, jQueryUI.Latest)
-
-    jQuery.call(t, "datepicker()")
+    jQuery.call(t, "tooltip()")
   }
 }

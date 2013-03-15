@@ -17,7 +17,7 @@ class GritterExample extends Webpage {
     listeners.synchronous {
       case evt: ClickEvent => {
         Gritter.add("Test Title", "Example message that will disappear after a few seconds.", "http://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Go-home.svg/48px-Go-home.svg.png", time = 3000)
-        Gritter.add("Test Title", "Example message that will disappear after a few seconds.", sticky = true)
+        Gritter.add("Test Title", "Example message that will not disappear after a few seconds.", sticky = true)
       }
     }
   }

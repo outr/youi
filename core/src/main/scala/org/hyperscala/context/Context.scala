@@ -131,6 +131,11 @@ object Context {
   private var context: Context = _
 
   def apply() = context
+
+  def inContext = apply() match {
+    case null => false
+    case context => context.inContext
+  }
 }
 
 

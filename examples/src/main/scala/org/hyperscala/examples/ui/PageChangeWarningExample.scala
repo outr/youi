@@ -5,14 +5,15 @@ import org.hyperscala.ui.PageChangeWarning
 
 import org.hyperscala.html._
 import org.hyperscala.event.{ClickEvent, JavaScriptEvent}
+import org.hyperscala.examples.Example
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */
-class PageChangeWarningExample extends Webpage {
-  require(PageChangeWarning)
+class PageChangeWarningExample extends Example {
+  Webpage().require(PageChangeWarning)
 
-  body.contents += new tag.Div {
+  contents += new tag.Div {
     contents += new tag.A(href = "http://www.google.com", content = "Leave the Page")
     contents += new tag.Button(content = "Set Warning") {
       event.click := JavaScriptEvent()

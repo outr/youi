@@ -1,6 +1,5 @@
 package org.hyperscala.examples.basic
 
-import org.hyperscala.web.FormSupport
 import org.hyperscala.html._
 import attributes.{ButtonType, InputType}
 
@@ -8,21 +7,20 @@ import tag._
 import org.powerscala.property.event.PropertyChangeEvent
 import org.hyperscala.web.site.Webpage
 import org.hyperscala.jquery.jQuery172
+import org.hyperscala.examples.Example
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-class FormExample extends Webpage with FormSupport {
-  title := "Form Example"
-
-  require(jQuery172)
+class FormExample extends Example {
+  Webpage().require(jQuery172)
 
   val messages = new Div {
     style.paddingBottom = 10.px
   }
-  body.contents += messages
+  contents += messages
 
-  body.contents += new Form(id = "form", method = "post") {
+  contents += new Form(id = "form", method = "post") {
     val items = List("Name", "Phone", "Email")
     items.foreach {
       case item => {

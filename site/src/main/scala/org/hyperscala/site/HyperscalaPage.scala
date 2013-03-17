@@ -8,11 +8,12 @@ import org.hyperscala.css.attributes._
 import tag._
 import org.hyperscala.web.site.Webpage
 import org.hyperscala.ui.WindowSized
+import org.hyperscala.web.FormSupport
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-class HyperscalaPage extends Webpage {
+class HyperscalaPage extends Webpage with FormSupport {
   def site = HyperscalaSite
 
   title := "Hyperscala - Statically typed bare-metal HTML, CSS, and JavaScript framework for Scala."
@@ -34,11 +35,10 @@ class HyperscalaPage extends Webpage {
       }
     }
     contents += new Bar {
-      contents += MenuItem("Home")
       contents += MenuItem("About", site.site.about.link)
-      contents += MenuItem("Examples")
-      contents += MenuItem("Utilities")
-      contents += MenuItem("Documentation")
+      contents += MenuItem("Examples", site.site.examples.link)
+      contents += MenuItem("Documentation", site.site.documentation.link)
+      contents += MenuItem("Project", "https://github.com/darkfrog26/hyperscala/")
     }
     contents += main
     contents += new Bar {
@@ -48,7 +48,7 @@ class HyperscalaPage extends Webpage {
         style.paddingTop = 3.px
         style.paddingRight = 30.px
         style.fontSize = FontSize.Small
-        contents += "&copy;2012 Hyperscala.org"
+        contents += "&copy;2013 Hyperscala.org"
       }
     }
   }

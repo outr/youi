@@ -6,15 +6,16 @@ import org.hyperscala.web.site.Webpage
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.jquery.ui.{AutocompleteResult, Autocomplete}
 import org.hyperscala.event.{ClickEvent, ChangeEvent, JavaScriptEvent}
+import org.hyperscala.examples.Example
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-class AutoCompleteExample extends Webpage {
-  require(Realtime)
-  body.style.fontFamily = "Arial, sans-serif"
+class AutoCompleteExample extends Example {
+  Webpage().require(Realtime)
+  Webpage().body.style.fontFamily = "Arial, sans-serif"
 
-  body.contents += new tag.Div {
+  contents += new tag.Div {
     style.paddingAll = 25.px
     val input = new Autocomplete {
       event.change := JavaScriptEvent()

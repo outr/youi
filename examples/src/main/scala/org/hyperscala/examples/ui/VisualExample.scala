@@ -11,14 +11,15 @@ import org.powerscala.Country
 import org.hyperscala.ui.widgets.visual.`type`.DateInputVisualType
 import org.hyperscala.web.site.Webpage
 import org.hyperscala.realtime.Realtime
+import org.hyperscala.examples.Example
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-class VisualExample extends Webpage {
-  require(Realtime)
+class VisualExample extends Example {
+  Webpage().require(Realtime)
 
-  body.style.fontFamily = "sans-serif"
+  Webpage().body.style.fontFamily = "sans-serif"
 
   val property = Property[TestPerson]("property", new TestPerson(name = "John Doe", age = 21))
   property.listeners.synchronous {
@@ -63,9 +64,9 @@ class VisualExample extends Webpage {
     case evt: PropertyChangeEvent => println("Case Classes Changed: %s -> %s".format(evt.oldValue, evt.newValue))
   }
 
-  body.contents.addAll(stringVisual, bindingVisual, enumVisual, booleanVisual, dateVisual, enumsVisual, stringsVisual, caseClassesVisual)
+  contents.addAll(stringVisual, bindingVisual, enumVisual, booleanVisual, dateVisual, enumsVisual, stringsVisual, caseClassesVisual)
 
-  body.contents += new tag.Div {
+  contents += new tag.Div {
     style.clear = Clear.Both
 
     contents += new tag.Button(content = "Toggle Editing") {
@@ -73,7 +74,7 @@ class VisualExample extends Webpage {
 
       listeners.synchronous {
         case evt: ClickEvent => {
-          Visual.toggleEditing(body)
+          Visual.toggleEditing(VisualExample.this)
         }
       }
     }

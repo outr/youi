@@ -4,14 +4,15 @@ import org.hyperscala.html._
 import org.hyperscala.web.site.Webpage
 import org.hyperscala.jquery.Gritter
 import org.hyperscala.event.{ClickEvent, JavaScriptEvent}
+import org.hyperscala.examples.Example
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class GritterExample extends Webpage {
-  require(Gritter)
+class GritterExample extends Example {
+  Webpage().require(Gritter)
 
-  body.contents += new tag.Button(content = "Show Message") {
+  contents += new tag.Button(content = "Show Message") {
     event.click := JavaScriptEvent()
 
     listeners.synchronous {

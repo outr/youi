@@ -13,6 +13,4 @@ class FileUploaderExample extends Example {
       println("File Uploaded: %s / %s".format(upload.getFilename, upload.getFile.getAbsolutePath))
     }
   }
-
-  def sourceURL = "https://github.com/darkfrog26/hyperscala/blob/master/examples/src/main/scala/org/hyperscala/examples/ui/FileUploaderExample.scala"
 }

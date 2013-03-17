@@ -5,7 +5,7 @@ import org.hyperscala.html._
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-object HyperscalaAbout extends HyperscalaPage {
+class HyperscalaAbout extends HyperscalaPage {
   main.contents += new tag.H1(content = "About Hyperscala")
   main.contents += new tag.H2(content = "What is Hyperscala?")
   main.contents +=

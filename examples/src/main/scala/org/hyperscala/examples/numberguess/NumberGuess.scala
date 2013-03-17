@@ -26,6 +26,4 @@ class NumberGuess extends Example {
     contents += "Created by "
     contents += new tag.A(href = "http://www.matthicks.com", content = "Matt Hicks")
   }
-
-  def sourceURL = "https://github.com/darkfrog26/hyperscala/blob/master/examples/src/main/scala/org/hyperscala/examples/numberguess/NumberGuess.scala"
 }

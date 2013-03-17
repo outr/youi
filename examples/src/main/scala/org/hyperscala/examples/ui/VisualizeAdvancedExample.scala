@@ -1,23 +1,21 @@
 package org.hyperscala.examples.ui
 
 import org.hyperscala.html._
-import org.hyperscala.web.site.Webpage
 
 import org.powerscala.property._
 import org.powerscala.{Country, Language}
 import org.hyperscala.ui.widgets.visual.Visualize
 import org.powerscala.property.event.PropertyChangeEvent
+import org.hyperscala.examples.Example
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class VisualizeAdvancedExample extends Webpage {
-  title := "Visualize Advanced Example"
-
+class VisualizeAdvancedExample extends Example {
   val messages = new tag.Div {
     style.paddingBottom = 10.px
   }
-  body.contents += messages
+  contents += messages
 
   val instance = Property[Company]("company", Company("Doeco",
                                                       "contact@doeco.com",
@@ -35,7 +33,7 @@ class VisualizeAdvancedExample extends Webpage {
   }.field[List[CompanyEmail]]("Company.address.emails") {
     case vb => vb.itemizedType[CompanyEmail]()
   }.renameGroup("address", "Mailing Address")
-  body.contents += visualize.build()
+  contents += visualize.build()
 
   instance.listeners.synchronous {
     case evt: PropertyChangeEvent => {

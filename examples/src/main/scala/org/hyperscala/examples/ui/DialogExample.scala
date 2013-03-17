@@ -5,12 +5,13 @@ import org.hyperscala.web.site.Webpage
 import org.hyperscala.html._
 import org.hyperscala.jquery.ui._
 import org.hyperscala.event.{ClickEvent, JavaScriptEvent}
+import org.hyperscala.examples.Example
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class DialogExample extends Webpage {
-  require(jQueryUI.Latest)
+class DialogExample extends Example {
+  Webpage().require(jQueryUI.Latest)
 
   val myDialog = new tag.Div(id = "dialog", titleText = "Dialog Example") with Dialog {
     dialog.title := "Hello World"
@@ -20,9 +21,9 @@ class DialogExample extends Webpage {
 
     contents += new tag.P(content = "This is the default dialog which is useful for displaying information. The dialog window can be moved, resized and closed with the 'x' icon.")
   }
-  body.contents += myDialog
+  contents += myDialog
 
-  body.contents += new tag.Button(content = "Toggle Dialog Visible") {
+  contents += new tag.Button(content = "Toggle Dialog Visible") {
     event.click := JavaScriptEvent()
 
     listeners.synchronous {

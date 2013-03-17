@@ -1,16 +1,16 @@
 package org.hyperscala.examples.ui
 
 import org.hyperscala.html._
-import org.hyperscala.web.site.Webpage
 import org.hyperscala.ui.widgets.RichEditor
 
 import org.hyperscala.event.{ClickEvent, JavaScriptEvent}
 import org.powerscala.Color
+import org.hyperscala.examples.Example
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class RichEditorExample extends Webpage {
+class RichEditorExample extends Example {
   val editor = new RichEditor {
     style.width = 500.px
     listeners.synchronous {
@@ -43,7 +43,7 @@ class RichEditorExample extends Webpage {
     }
   }
 
-  body.contents += editor
-  body.contents += modify
-  body.contents += check
+  contents += editor
+  contents += modify
+  contents += check
 }

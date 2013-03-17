@@ -61,7 +61,12 @@ class WebpageResource(autoRegister: Boolean = true) extends MutableWebResource()
           case Some(page) => page.errorThrown(t)
           case None => Website().errorThrown(null, t)
         }
-        Some(RequestHandler.responder(HttpResponseStatus.INTERNAL_SERVER_ERROR))
+        val errorPage = Website().errorPage(request, t)
+        if (errorPage.nonEmpty) {
+          errorPage
+        } else {
+          Some(RequestHandler.responder(HttpResponseStatus.INTERNAL_SERVER_ERROR))
+        }
       }
     }
   }

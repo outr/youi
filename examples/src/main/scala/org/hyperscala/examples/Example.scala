@@ -8,5 +8,9 @@ import org.hyperscala.html._
 trait Example extends tag.Div {
   def exampleName = getClass.getSimpleName
 
-  def sourceURL: String
+  final def sourceURL = Example.URL.format(getClass.getName.replaceAll("[.]", "/"))
+}
+
+object Example {
+  def URL = "https://github.com/darkfrog26/hyperscala/blob/master/examples/src/main/scala/%s.scala"
 }

@@ -6,13 +6,13 @@ import org.hyperscala.event.{ChangeEvent, ClickEvent, JavaScriptEvent}
 import org.powerscala.event.ActionEvent
 import org.hyperscala.web.site.Webpage
 import org.hyperscala.realtime.Realtime
+import org.hyperscala.examples.Example
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class RealtimeWebpageExample extends Webpage {
-  require(Realtime)
-  title := "Realtime Example"
+class RealtimeWebpageExample extends Example {
+  Webpage().require(Realtime)
 
   var count = 0
   var reversed = false
@@ -28,7 +28,7 @@ class RealtimeWebpageExample extends Webpage {
       case evt: ActionEvent => println("Input event: %s".format(evt))
     }
   }
-  body.contents += input
+  contents += input
 
   val select = new tag.Select(id = "realtimeSelect") {
     event.change := JavaScriptEvent()
@@ -41,7 +41,7 @@ class RealtimeWebpageExample extends Webpage {
       case evt: ChangeEvent => println("Selected: %s".format(selected()))
     }
   }
-  body.contents += select
+  contents += select
 
   val textArea = new tag.TextArea {
     event.change := JavaScriptEvent()
@@ -50,9 +50,9 @@ class RealtimeWebpageExample extends Webpage {
       case evt: ChangeEvent => println(content())
     }
   }
-  body.contents += textArea
+  contents += textArea
 
-  body.contents += new tag.Button(content = "Test Button") {
+  contents += new tag.Button(content = "Test Button") {
     event.click := JavaScriptEvent()
 
     listeners.synchronous {
@@ -68,19 +68,14 @@ class RealtimeWebpageExample extends Webpage {
         }
         if (reversed) {
           count -= 1
-          body.contents -= body.contents.last
+          RealtimeWebpageExample.this.contents -= contents.last
         } else {
           count += 1
-          body.contents += new tag.Div {
+          RealtimeWebpageExample.this.contents += new tag.Div {
             contents += "Testing %s!".format(count)
           }
         }
       }
     }
-  }
-
-  override def dispose() {
-    super.dispose()
-    println("LivePageExample being disposed!")
   }
 }

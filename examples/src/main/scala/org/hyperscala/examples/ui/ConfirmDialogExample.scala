@@ -6,13 +6,14 @@ import org.hyperscala.jquery.ui.jQueryUI
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.event.ClickEvent
 import org.hyperscala.ui.ConfirmDialog
+import org.hyperscala.examples.Example
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class ConfirmDialogExample extends Webpage {
-  require(Realtime)
-  require(jQueryUI.Latest)
+class ConfirmDialogExample extends Example {
+  Webpage().require(Realtime)
+  Webpage().require(jQueryUI.Latest)
   Realtime.connectForm()
 
   val button = new tag.Button(content = "Show Dialog")
@@ -20,10 +21,10 @@ class ConfirmDialogExample extends Webpage {
     case evt: ClickEvent => showDialog()
   }
 
-  body.contents += button
+  contents += button
 
   def showDialog() = {
-    body.contents += new ConfirmDialog {
+    contents += new ConfirmDialog {
       dialog.title := "Are you sure?"
       def body = new tag.Div {
         contents += new tag.P(content = "This is an example confirmation dialog.")

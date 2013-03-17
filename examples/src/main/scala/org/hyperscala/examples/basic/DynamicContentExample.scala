@@ -1,19 +1,19 @@
 package org.hyperscala.examples.basic
 
 import org.hyperscala.html._
-import org.hyperscala.web.site.Webpage
 import org.powerscala.property.Property
 
 import org.hyperscala.ui.binder._
 import org.powerscala.property.event.PropertyChangeEvent
 import org.hyperscala.ui.dynamic.{DynamicContent, DynamicString}
+import org.hyperscala.examples.Example
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */
-class DynamicContentExample extends Webpage {
+class DynamicContentExample extends Example {
   val form = new SimpleDynamicForm
-  body.contents += form
+  contents += form
 }
 
 class SimpleDynamicForm extends DynamicContent(null) {

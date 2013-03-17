@@ -5,12 +5,13 @@ import org.hyperscala.ui.widgets._
 import org.powerscala.{Country, Language}
 import org.hyperscala.jquery.Gritter
 import vs._
+import org.hyperscala.examples.Example
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class VisualSearchExample extends Webpage {
-  require(Gritter)
+class VisualSearchExample extends Example {
+  Webpage().require(Gritter)
 
   val search = new VisualSearch {
     add(VisualSearchFacet.enum(Language))
@@ -22,5 +23,5 @@ class VisualSearchExample extends Webpage {
       Gritter.add("Search", "Searched for: %s".format(query.query))
     }
   }
-  body.contents += search
+  contents += search
 }

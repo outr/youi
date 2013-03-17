@@ -157,9 +157,9 @@ trait Website[S <: Session] extends NettyCommunicatorManager[WebpageConnection] 
 
   def errorThrown(page: Webpage, t: Throwable) = error("Error occurred on page: %s".format(page), t)
 
-  protected def notFoundPage(url: URL): Option[Webpage] = None
-  protected def forbiddenPage(url: URL): Option[Webpage] = None
-  protected def errorPage(url: URL, t: Throwable): Option[Webpage] = None
+  def notFoundPage(url: URL): Option[Webpage] = None
+  def forbiddenPage(url: URL): Option[Webpage] = None
+  def errorPage(url: URL, t: Throwable): Option[Webpage] = None
 
   override protected def notFound(context: ChannelHandlerContext, event: MessageEvent) {
     val url = request2URL(event.getMessage.asInstanceOf[HttpRequest])

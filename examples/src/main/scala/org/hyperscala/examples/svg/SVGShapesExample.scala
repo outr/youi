@@ -108,6 +108,4 @@ class SVGShapesExample extends Example {
       }
     }
   }
-
-  def sourceURL = "https://github.com/darkfrog26/hyperscala/blob/master/examples/src/main/scala/org/hyperscala/examples/svg/BasicSVGExample.scala"
 }

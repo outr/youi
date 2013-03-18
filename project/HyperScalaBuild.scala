@@ -3,8 +3,9 @@ import Keys._
 
 import spray.revolver.RevolverPlugin._
 
+
 object HyperScalaBuild extends Build {
-  val powerScalaVersion = "1.5.0-SNAPSHOT"
+  val powerScalaVersion = "1.5.1-SNAPSHOT"
   val powerScalaConvert = "org.powerscala" %% "powerscala-convert" % powerScalaVersion
   val powerScalaReflect = "org.powerscala" %% "powerscala-reflect" % powerScalaVersion
   val powerScalaHierarchy = "org.powerscala" %% "powerscala-hierarchy" % powerScalaVersion
@@ -16,10 +17,10 @@ object HyperScalaBuild extends Build {
 
   val specs2 = "org.specs2" %% "specs2" % "1.11" % "test"
 
-  val webcommunicator = "com.outr.webcommunicator" %% "webcommunicator" % "1.0.1-SNAPSHOT"
+  val webcommunicator = "com.outr.webcommunicator" %% "webcommunicator" % "1.0.2-SNAPSHOT"
 
   val baseSettings = Defaults.defaultSettings ++ Seq(
-    version := "0.7.0-SNAPSHOT",
+    version := "0.7.1-SNAPSHOT",
     organization := "org.hyperscala",
     scalaVersion := "2.9.2",
     libraryDependencies ++= Seq(
@@ -68,7 +69,7 @@ object HyperScalaBuild extends Build {
         </developers>)
   )
 
-  private def createSettings(_name: String) = baseSettings ++ Revolver.settings ++ Seq(name := _name)
+  private def createSettings(_name: String) = baseSettings ++ assemblySettings ++ Revolver.settings ++ Seq(name := _name)
 
   lazy val root = Project("root", file("."), settings = createSettings("hyperscala-root"))
     .settings(publishArtifact in Compile := false, publishArtifact in Test := false)
@@ -96,6 +97,9 @@ object HyperScalaBuild extends Build {
   lazy val examples = Project("examples", file("examples"), settings = createSettings("hyperscala-examples"))
     .dependsOn(web, ui)
   lazy val site = Project("site", file("site"), settings = createSettings("hyperscala-site"))
+    .settings(jarName in assembly <<= version {
+      (v: String) => "hyperscala-%s.jar".format(v)
+    }, mainClass in assembly := Some("org.hyperscala.site.HyperscalaSite"))
     .settings(mainClass := Some("org.hyperscala.site.HyperscalaSite"))
     .dependsOn(examples)
 }

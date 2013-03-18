@@ -15,7 +15,7 @@ import org.hyperscala.examples.comparison.PlayHelloWorldPage
  * @author Matt Hicks <mhicks@powerscala.org>
  */
 object HyperscalaSite extends Website[MapSession] {
-  override def port = 8080
+  override def port = 8889
 
   val site = new {
     val about = new WebpageResource("/about.html", new HyperscalaAbout, Scope.Request) {

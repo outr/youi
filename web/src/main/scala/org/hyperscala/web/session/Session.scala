@@ -82,6 +82,15 @@ trait Session extends Temporal with Listenable with WorkQueue {
     WorkQueue.enqueue(this, () => f)
   }
 
+  def clearPages() = {
+    iterator.foreach {
+      case (key, value) => value match {
+        case page: Webpage => remove(key)
+        case _ => // Ignore
+      }
+    }
+  }
+
   override def update(delta: Double) = {
     super.update(delta)
     if (!disposed) {

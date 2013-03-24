@@ -40,9 +40,11 @@ function createVisualSearch(id, url) {
                 },
                 valueMatches : function(facet, searchTerm, callback) {
                     var facetResultsKey = id + '.' + facet;
+                    var facetExactMatchKey = id + '.' + facet + '.exactMatch';
                     var cache = visualSearchCache[facetResultsKey];
                     if (cache != null) {
-                        callback(cache);
+                        var exactMatch = visualSearchCache[facetExactMatchKey];
+                        searchCallback(searchTerm, cache, exactMatch, callback);
                     } else {
                         $.getJSON(url, {
                             requestType: 'values',
@@ -50,14 +52,24 @@ function createVisualSearch(id, url) {
                             term: searchTerm,
                             r: Math.random()
                         }, function(result) {
-                            if (result.resultType == 'Complete') {
-                                visualSearchCache[facetResultsKey] = result.results;
-                            }
-                            callback(result.results);
+                            var results = result.results;
+                            var exactMatch = result.exactMatch;
+                            searchCallback(searchTerm, results, exactMatch, callback);
                         });
                     }
                 }
             }
         });
     });
+}
+
+function searchCallback(searchTerm, results, exactMatch, callback) {
+    if (!exactMatch && results.length > 1 && searchTerm != '') {
+        results = results.slice(0);
+        results.unshift({
+            value: searchTerm,
+            label: 'Search for ' + searchTerm
+        });
+    }
+    callback(results);
 }

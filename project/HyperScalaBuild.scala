@@ -3,6 +3,8 @@ import Keys._
 
 import spray.revolver.RevolverPlugin._
 
+import sbtassembly.Plugin._
+import AssemblyKeys._
 
 object HyperScalaBuild extends Build {
   val powerScalaVersion = "1.5.1-SNAPSHOT"

@@ -78,8 +78,11 @@ class Select extends Container[Option] with BodyChild with HTMLTag with FormFiel
   selected.listeners.synchronous {
     case evt: PropertyChangeEvent => {
       val values = selectedValues
+      val selected = values.map {
+        case v => contents.find(o => o.value() == v || (o.value() == null && o.content == v))
+      }.flatten
       contents.foreach {                // Select the values
-        case option => option.selected := values.contains(option.value())
+        case option => option.selected := selected.contains(option)
       }
       value := values.mkString("|")
     }

@@ -14,7 +14,7 @@ class VisualSearchExample extends Example {
   Webpage().require(Gritter)
 
   val search = new VisualSearch {
-    add(VisualSearchFacet.enum(Language))
+    add(VisualSearchFacet.enum(Language, exactMatch = false))
     add(VisualSearchFacet.enum(Country))
 
     override def search(query: VisualSearchQuery) {

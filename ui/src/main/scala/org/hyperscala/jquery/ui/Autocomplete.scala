@@ -166,7 +166,7 @@ class Autocompletified private(input: FormField) {
         |    return $('<li></li>').data('item.autocomplete', item).append($('<a></a>').html(item.label)).appendTo(ul);
         |  };
         |});
-      """.stripMargin.format(input.id(), source, autoFocus(), delay(), disabled(), minLength(), multiple()), onlyRealtime = false)
+      """.stripMargin.format(input.id(), source, autoFocus(), delay(), disabled(), minLength(), multiple()), onlyRealtime = false, forId = input.id())
     Listenable.listenTo(autoFocus, delay, disabled, minLength) {
       case evt: PropertyChangeEvent => sendChanges(evt)
     }

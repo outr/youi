@@ -32,6 +32,8 @@ trait Tag extends PropertyParent with Markup with Listenable with Storage[Any] {
     false
   }
 
+  def outputString: String
+
   lazy val xmlAttributes = new NamingFilter[XMLAttribute](this)
 
   /**

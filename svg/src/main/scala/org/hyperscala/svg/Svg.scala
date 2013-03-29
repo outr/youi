@@ -5,6 +5,8 @@ import org.hyperscala.{InclusionMode, PropertyAttribute, Container}
 import org.hyperscala.html.constraints.BodyChild
 import org.hyperscala.html._
 import org.hyperscala.css.attributes.Length
+import org.hyperscala.html.attributes.{DropZone, Draggable, Direction, ContentEditable}
+import org.hyperscala.css.StyleSheet
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
@@ -12,12 +14,62 @@ import org.hyperscala.css.attributes.Length
 class Svg extends Container[SVGTag] with BodyChild with HTMLTag {
   lazy val xmlLabel = "svg"
 
-  def this(xmlns: String = null,
+  def this(name: String = null,
+           accessKey: java.lang.Character = null,
+           clazz: List[String] = null,
+           contentEditable: ContentEditable = null,
+           contextMenu: String = null,
+           dir: Direction = null,
+           draggable: Draggable = null,
+           dropZone: DropZone = null,
+           hidden: java.lang.Boolean = null,
+           id: String = null,
+           lang: String = null,
+           spellCheck: java.lang.Boolean = null,
+           style: StyleSheet = null,
+           tabIndex: java.lang.Integer = null,
+           titleText: String = null,
+           x: java.lang.Double = null,
+           y: java.lang.Double = null,
+           width: Length = null,
+           height: Length = null,
+           viewBox: ViewBox = null,
            version: String = null,
+           baseProfile: String = null,
+           preserveAspectRatio: String = null,
+           contentScriptType: String = null,
+           contentStyleType: String = null,
+           zoomAndPan: String = null,
+           xmlns: String = null,
            content: SVGTag = null) = {
     this()
-    up(this.xmlns, xmlns)
+    up(this.name, name)
+    up(this.accessKey, accessKey)
+    up(this.clazz, clazz)
+    up(this.contentEditable, contentEditable)
+    up(this.contextMenu, contextMenu)
+    up(this.dir, dir)
+    up(this.draggable, draggable)
+    up(this.dropZone, dropZone)
+    up(this.hidden, hidden)
+    up(this.id, id)
+    up(this.lang, lang)
+    up(this.spellCheck, spellCheck)
+    up(this.style, style)
+    up(this.tabIndex, tabIndex)
+    up(this.titleText, titleText)
+    up(this.x, x)
+    up(this.y, y)
+    up(this.width, width)
+    up(this.height, height)
+    up(this.viewBox, viewBox)
     up(this.version, version)
+    up(this.baseProfile, baseProfile)
+    up(this.preserveAspectRatio, preserveAspectRatio)
+    up(this.contentScriptType, contentScriptType)
+    up(this.contentStyleType, contentStyleType)
+    up(this.zoomAndPan, zoomAndPan)
+    up(this.xmlns, xmlns)
     if (content != null) contents += content
   }
 

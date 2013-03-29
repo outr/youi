@@ -9,7 +9,7 @@ import org.powerscala.property.event.PropertyChangeEvent
 import org.hyperscala._
 import event.StylePropertyChangeEvent
 import html.FormField
-import org.hyperscala.css.{Style, StyleSheet}
+import css.{StyleSheetProperty, Style, StyleSheet}
 import org.hyperscala.javascript.JavaScriptContent
 
 import org.powerscala.json._
@@ -54,7 +54,7 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
       }
       case evt: PropertyChangeEvent => evt.property match {
         case property: PropertyAttribute[_] => property.parent match {
-          case tag: HTMLTag => propertyChanged(tag, property, evt.oldValue, evt.newValue)
+          case tag: IdentifiableTag => propertyChanged(tag, property, evt.oldValue, evt.newValue)
         }
         case _ => // Ignore other changes
       }
@@ -73,9 +73,9 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
     }
   }
 
-  def propertyChanged(t: HTMLTag, property: PropertyAttribute[_], oldValue: Any, newValue: Any) = {
+  def propertyChanged(t: IdentifiableTag, property: PropertyAttribute[_], oldValue: Any, newValue: Any) = {
     debug("propertyChanged: %s.%s from %s to %s".format(t.xmlLabel, property.name(), oldValue, newValue))
-    if (t.root[Webpage].nonEmpty && property != t.style && !t.isInstanceOf[tag.Text]) {
+    if (t.root[Webpage].nonEmpty && !property.isInstanceOf[StyleSheetProperty] && !t.isInstanceOf[tag.Text]) {
       if (property == t.id && oldValue == null) {
         // Ignore initial id change as it is sent when added
       } else {
@@ -110,7 +110,7 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
   def childAdded(evt: ChildAddedEvent) = {
     val parent = evt.parent.asInstanceOf[HTMLTag with Container[HTMLTag]]
     evt.child match {
-      case child: HTMLTag => {
+      case child: IdentifiableTag => {
         // Verifies the parent and child have an id
         parent.identity
         child.identity
@@ -125,7 +125,7 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
           val before = parent.contents(index - 1)
           "$('#%s').after(content);".format(before.id())
         }
-        val content = child.outputString
+        val content = child.outputString      // TODO: change to support SVG inserts properly - use innersvg?
         send(JavaScriptMessage(instruction, content))
       }
       case js: JavaScriptContent => send(JavaScriptMessage(js.content))

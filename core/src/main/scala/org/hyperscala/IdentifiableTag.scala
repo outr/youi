@@ -28,6 +28,21 @@ trait IdentifiableTag extends Tag {
       case _ => warn("IdentifiableTag.receive: Unhandled inbound message. Event: %s, Tag: %s, Message: %s".format(event, getClass.getName, message))
     }
   }
+
+  /**
+   * Handles received events by name.
+   *
+   * @param event the name of the event being received
+   * @param f the function to receive the message
+   */
+  def handle(event: String)(f: Message => Unit): Unit = {
+    listeners.synchronous {
+      case evt: EventReceived if (evt.event == event) => {
+        f(evt.message)
+        Routing.Stop
+      }
+    }
+  }
 }
 
 object IdentifiableTag {

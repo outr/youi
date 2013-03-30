@@ -53,23 +53,30 @@ case class DynamicURLInstance(webpage: Webpage) extends PropertyParent {
   listenForServerChanges()
 
   /**
-   * Creates a Property instance representing the specified name in the hash. The value defaults to null but will be
-   * changed based on what is set in the browser.
+   * Creates a Property instance representing the specified name in the hash. The value will be
+   * changed based on what is set in the browser or by explicitly modifying the property.
    *
    * @param name the name to match in the hash
+   * @param default the default value to use if not found in the hash
    * @return new property bound multi-directionally to changes in the hash
    */
-  def property(name: String) = {
-    val initial = map.getOrElse(name, null)
-    val p = Property[String](name, initial)
+  def property[T](name: String, default: T)(implicit t2s: T => String, s2t: String => T, manifest: Manifest[T]) = {
+    val initial = map.get(name) match {
+      case Some(value) => s2t(value)
+      case None => default
+    }
+    val p = Property[T](name, initial)
     map.onChange {    // Update the property when the map changes
       synchronized {
-        p := map.getOrElse(name, null)
+        map.get(name) match {
+          case Some(value) => p := s2t(value)
+          case None => // Ignore
+        }
       }
     }
     p.onChange {      // Update the map when the property changes
       synchronized {
-        val updated = map() + (name -> p())
+        val updated = map() + (name -> t2s(p()))
         map := updated
       }
     }
@@ -113,8 +120,8 @@ case class DynamicURLInstance(webpage: Webpage) extends PropertyParent {
     import java.net.URLEncoder.encode
     map.listeners.synchronous {
       case evt: PropertyChangeEvent if (!changing.get()) => {
-        val hashString = map.map {
-          case (key, value) => "%s%s%s".format(encode(key, "UTF-8"), DynamicURL.splitCharacter, encode(value, "UTF-8"))
+        val hashString = map.collect {
+          case (key, value) if (value != null) => "%s%s%s".format(encode(key, "UTF-8"), DynamicURL.splitCharacter, encode(value, "UTF-8"))
         }.mkString(DynamicURL.delineationCharacter.toString)
         Realtime.sendJavaScript("setHash(content);", content = hashString, onlyRealtime = false)
       }

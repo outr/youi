@@ -69,8 +69,12 @@ function svgEventHandler(evt) {
 
 function jsFireChange(element) {
     var id = element.attr('id');
+    var value = element.val();
+    if (element.is('input') && (element.prop('type') == 'checkbox' || element.prop('type') == 'radio')) {
+        value = element.prop('checked');
+    }
     communicator.send('change', id, {
-        value: element.val()
+        value: value
     });
 }
 

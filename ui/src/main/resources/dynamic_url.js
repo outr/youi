@@ -1,3 +1,5 @@
+var currentHash = null;
+
 $(function() {
     jsFireHashChanged();
     $(window).on('hashchange', function() {
@@ -7,8 +9,16 @@ $(function() {
 
 function jsFireHashChanged() {
     var hash = window.location.hash;
-    var body = $('body');
-    jsFire(body, 'hashChanged', {
-        hash: hash
-    });
+    if (hash != currentHash) {
+        var body = $('body');
+        jsFire(body, 'hashChanged', {
+            hash: hash
+        });
+        currentHash = hash;
+    }
+}
+
+function setHash(newValue) {
+    currentHash = '#' + newValue;
+    window.location.hash = currentHash;
 }

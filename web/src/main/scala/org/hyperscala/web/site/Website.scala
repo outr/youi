@@ -161,7 +161,7 @@ trait Website[S <: Session] extends NettyCommunicatorManager[WebpageConnection] 
   def forbiddenPage(url: URL): Option[Webpage] = None
   def errorPage(url: URL, t: Throwable): Option[Webpage] = None
 
-  override protected def notFound(context: ChannelHandlerContext, event: MessageEvent) {
+  override def notFound(context: ChannelHandlerContext, event: MessageEvent) {
     val url = request2URL(event.getMessage.asInstanceOf[HttpRequest])
     notFoundPage(url) match {
       case Some(webpage) => webpage(this, context, event)
@@ -169,7 +169,7 @@ trait Website[S <: Session] extends NettyCommunicatorManager[WebpageConnection] 
     }
   }
 
-  override protected def forbidden(context: ChannelHandlerContext, event: MessageEvent) {
+  override def forbidden(context: ChannelHandlerContext, event: MessageEvent) {
     val url = request2URL(event.getMessage.asInstanceOf[HttpRequest])
     forbiddenPage(url) match {
       case Some(webpage) => webpage(this, context, event)
@@ -177,7 +177,7 @@ trait Website[S <: Session] extends NettyCommunicatorManager[WebpageConnection] 
     }
   }
 
-  override protected def error(context: ChannelHandlerContext, event: MessageEvent, t: Throwable) {
+  override def error(context: ChannelHandlerContext, event: MessageEvent, t: Throwable) {
     val url = request2URL(event.getMessage.asInstanceOf[HttpRequest])
     errorPage(url, t) match {
       case Some(webpage) => webpage(this, context, event)

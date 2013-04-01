@@ -9,7 +9,7 @@ import org.hyperscala.javascript.JavaScriptString
  * @author Matt Hicks <matt@outr.com>
  */
 object jQuery extends Interface {
-  def Latest = jQuery190
+  def Latest = jQuery191
   val LatestWithDefault = InterfaceWithDefault(jQuery, Latest)
 
   def name = "jquery"

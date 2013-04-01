@@ -161,7 +161,18 @@ object Realtime extends Module {
       case b => if (b.event.click() == null) b.event.click := JavaScriptEvent(preventDefault = false)
     }
     Webpage().live[tag.Form] {
-      case f => if (f.event.submit() == null) f.event.submit := JavaScriptEvent()
+      case f => {
+        if (f.event.submit() == null) f.event.submit := JavaScriptEvent()
+      }
+    }
+  }
+
+  /**
+   * Sends all form data over realtime upon form submit.
+   */
+  def connectPost() = {
+    Webpage().live[tag.Form] {
+      case f => if (f.event.submit() == null) f.event.submit := JavaScriptEvent(fireChange = true)
     }
   }
 }

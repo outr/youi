@@ -13,13 +13,14 @@ import org.hyperscala.examples.Example
 class RealtimeFormExample extends Example {
   Webpage().require(Realtime)
   Realtime.connectForm()
+//  Realtime.connectPost()
 
   contents += new tag.Form(method = "get") {
     listeners.synchronous {
       case evt: SubmitEvent => println("Form submitted with '%s'.".format(input.value()))
     }
 
-    val input = new tag.Input(name = "name")
+    val input = new tag.Input(name = "field")
     contents += input
     contents += new tag.Button(buttonType = ButtonType.Submit, content = "Submit")
   }

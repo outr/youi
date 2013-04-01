@@ -30,7 +30,7 @@ object HyperscalaSite extends Website[MapSession] {
     val static = WebpageResource("/example/static.html", new HyperscalaExample(new StaticHTMLExample), Scope.Request)
     val form = WebpageResource("/example/form.html", new HyperscalaExample(new FormExample), Scope.Session)
     val realTime = WebpageResource("/example/realtime.html", new HyperscalaExample(new RealtimeWebpageExample), Scope.Session)
-    val realTimeForm = WebpageResource("/example/realtime_form.html", new HyperscalaExample(new RealtimeFormExample), Scope.Session)
+    val realTimeForm = WebpageResource("/example/realtime_form.html", new HyperscalaExample(new RealtimeFormExample), Scope.Page)
     val visual = WebpageResource("/example/visual.html", new HyperscalaExample(new VisualExample), Scope.Session)
     val visualize = WebpageResource("/example/visualize.html", new HyperscalaExample(new VisualizeExample), Scope.Session)
     val visualizeAdvanced = WebpageResource("/example/visualize_advanced.html", new HyperscalaExample(new VisualizeAdvancedExample), Scope.Session)

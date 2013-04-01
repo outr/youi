@@ -11,6 +11,26 @@ if (!(window.console && console.log)) {
     }());
 }
 
+// Work-around for bad drag-and-drop support - forces a change event upon dropped text
+$(document).on('drop', 'input, textarea', function() {
+    var element = $(this);
+    var currentValue = element.val();
+    var times = 0;
+    var poller = function() {
+        if (element.val() == currentValue) {
+            if (times < 10) {
+                times += 1;
+                setTimeout(poller, 10);
+            } else {
+                // Nothing changed, give up
+            }
+        } else {
+            element.change();
+        }
+    };
+    poller();
+});
+
 var host = document.location.host;
 
 var communicator = new Communicator();
@@ -72,6 +92,8 @@ function jsFireChange(element) {
     var value = element.val();
     if (element.is('input') && (element.prop('type') == 'checkbox' || element.prop('type') == 'radio')) {
         value = element.prop('checked');
+    } else if (element.is('form')) {        // Send form data via change event
+        value = element.serialize();
     }
     communicator.send('change', id, {
         value: value

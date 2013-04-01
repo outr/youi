@@ -2,7 +2,7 @@ package org.hyperscala.html.tag
 
 import org.hyperscala._
 import css.StyleSheet
-import html.HTMLTag
+import html.{FormField, HTMLTag}
 import org.hyperscala.html.attributes._
 import org.hyperscala.html.constraints._
 
@@ -69,4 +69,24 @@ class Form extends Container[BodyChild] with BodyChild with HTMLTag {
   val method = PropertyAttribute[String]("method", null)
   val noValidate = PropertyAttribute[String]("novalidate", null)
   val target = PropertyAttribute[Target]("target", null)
+
+  override def receive(event: String, message: Message) = event match {
+    case "change" => {
+      val v = message[String]("value")
+      if (v.nonEmpty) {
+        v.split('&').foreach {
+          case pair => {
+            val split = pair.indexOf('=')
+            val key = pair.substring(0, split)
+            val value = pair.substring(split + 1)
+            byName[FormField](key).headOption match {
+              case Some(f) => f.value := value
+              case None => warn("Unable to find %s by name.".format(key))
+            }
+          }
+        }
+      }
+    }
+    case _ => super.receive(event, message)
+  }
 }

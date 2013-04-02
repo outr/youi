@@ -17,6 +17,8 @@ import annotation.tailrec
 import org.powerscala.log.Logging
 import com.outr.webcommunicator.URL
 
+import language.reflectiveCalls
+
 /**
  * @author Matt Hicks <matt@outr.com>
  */
@@ -74,7 +76,7 @@ trait Website[S <: Session] extends NettyCommunicatorManager[WebpageConnection] 
     def valuesByType[T](implicit manifest: Manifest[T]) = {
       values.flatMap {
         case session => session.values.collect {
-          case v if (v.getClass.hasType(manifest.erasure)) => v.asInstanceOf[T]
+          case v if (v.getClass.hasType(manifest.runtimeClass)) => v.asInstanceOf[T]
         }
       }
     }

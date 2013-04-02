@@ -15,6 +15,8 @@ import org.hyperscala.module._
 import org.hyperscala.jquery.jQuery
 import org.hyperscala.event.JavaScriptEvent
 
+import language.reflectiveCalls
+
 /**
  * @author Matt Hicks <matt@outr.com>
  */

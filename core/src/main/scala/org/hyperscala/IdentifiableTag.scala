@@ -58,6 +58,6 @@ case class Message(content: String, map: Map[String, Any]) {
   def getOrElse[T](key: String, f: => T)(implicit manifest: Manifest[T]) = convert[T](manifest, map.getOrElse(key, f))
 
   private def convert[T](manifest: Manifest[T], value: Any) = {
-    manifest.erasure.convertTo[T](value)
+    manifest.runtimeClass.convertTo[T](value)
   }
 }

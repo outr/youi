@@ -12,6 +12,7 @@ import org.hyperscala.ui.widgets.visual.`type`.DateInputVisualType
 import org.hyperscala.web.site.Webpage
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.examples.Example
+import language.reflectiveCalls
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>

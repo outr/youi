@@ -7,6 +7,7 @@ import org.hyperscala.event.{ClickEvent, JavaScriptEvent}
 import org.hyperscala.jquery.Gritter
 import org.hyperscala.web.site.Webpage
 import org.hyperscala.css.attributes._
+import language.reflectiveCalls
 
 /**
  * @author Matt Hicks <matt@outr.com>

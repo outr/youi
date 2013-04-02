@@ -768,7 +768,7 @@ object StyleSheet extends ValuePersistence[StyleSheet] with Logging {
     var ss = apply()
     css.split(";").map(s => s.split(":")).map(a => a(0).trim -> a(1).trim).foreach {
       case (key, value) => Style.byCSSName(key) match {
-        case Some(style) => ss = ss.set[AnyRef](style.asInstanceOf[Style[AnyRef]], style.persistence.fromString(value, style.manifest.erasure).asInstanceOf[AnyRef])
+        case Some(style) => ss = ss.set[AnyRef](style.asInstanceOf[Style[AnyRef]], style.persistence.fromString(value, style.manifest.runtimeClass).asInstanceOf[AnyRef])
         case None => warn("Unable to find style by css name '%s' with value '%s'.".format(key, value))
       }
     }

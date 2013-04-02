@@ -14,6 +14,8 @@ import org.hyperscala.css.attributes.Display
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.ui.BusyDialog
 
+import language.reflectiveCalls
+
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */

@@ -3,6 +3,8 @@ package org.hyperscala
 import svg.attributes._
 import org.powerscala.Color
 
+import language.implicitConversions
+
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */

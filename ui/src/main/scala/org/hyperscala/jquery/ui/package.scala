@@ -2,6 +2,8 @@ package org.hyperscala.jquery
 
 import org.hyperscala.html._
 
+import language.implicitConversions
+
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */

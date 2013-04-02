@@ -7,6 +7,7 @@ import org.hyperscala.realtime.Realtime
 import org.hyperscala.event.ClickEvent
 import org.hyperscala.ui.ConfirmDialog
 import org.hyperscala.examples.Example
+import language.reflectiveCalls
 
 /**
  * @author Matt Hicks <matt@outr.com>

@@ -7,6 +7,7 @@ import org.hyperscala.web.site.{Website, Webpage}
 import org.hyperscala.jquery.ui.Dialog
 import org.hyperscala.css.attributes.Length
 import org.hyperscala.realtime.Realtime
+import language.reflectiveCalls
 
 /**
  * @author Matt Hicks <mhicks@outr.com>

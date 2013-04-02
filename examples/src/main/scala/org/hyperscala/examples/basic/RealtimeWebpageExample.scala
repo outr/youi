@@ -7,6 +7,7 @@ import org.powerscala.event.ActionEvent
 import org.hyperscala.web.site.Webpage
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.examples.Example
+import language.reflectiveCalls
 
 /**
  * @author Matt Hicks <matt@outr.com>

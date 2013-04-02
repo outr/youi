@@ -4,6 +4,7 @@ import org.powerscala.{Enumerated, EnumEntry}
 import org.hyperscala.html._
 import org.hyperscala.event.JavaScriptEvent
 import org.hyperscala.ui.dynamic.Binder
+import language.reflectiveCalls
 
 /**
  * @author Matt Hicks <mhicks@outr.com>

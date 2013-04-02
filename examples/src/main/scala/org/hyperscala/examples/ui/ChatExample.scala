@@ -8,6 +8,7 @@ import annotation.tailrec
 import org.hyperscala.jquery.jQuery
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.ui.dynamic.{DynamicContent, DynamicString}
+import language.reflectiveCalls
 
 /**
  * @author Matt Hicks <mhicks@outr.com>

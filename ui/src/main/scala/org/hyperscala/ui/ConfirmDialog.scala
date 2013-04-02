@@ -5,6 +5,7 @@ import constraints.BodyChild
 import org.hyperscala.jquery.ui.{DialogButtons, Dialog}
 import org.hyperscala.jquery.ui.event.ButtonClicked
 import org.hyperscala.web.site.Webpage
+import language.reflectiveCalls
 
 /**
  * Displays a confirmation dialog that allows the user to accept or cancel.

@@ -4,6 +4,8 @@ import css.attributes._
 import html.tag.Text
 import math._
 
+import language.implicitConversions
+
 package object html {
   /**
    * Support conversion from String to Text instance

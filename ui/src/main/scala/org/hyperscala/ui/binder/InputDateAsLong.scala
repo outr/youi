@@ -8,6 +8,7 @@ import java.util.Date
 import org.hyperscala.jquery.ui.jQueryUI
 import org.hyperscala.jquery.jQuery
 import org.hyperscala.ui.dynamic.Binder
+import language.reflectiveCalls
 
 /**
  * @author Matt Hicks <mhicks@outr.com>

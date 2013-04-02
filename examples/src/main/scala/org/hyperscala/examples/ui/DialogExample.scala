@@ -6,6 +6,7 @@ import org.hyperscala.html._
 import org.hyperscala.jquery.ui._
 import org.hyperscala.event.{ClickEvent, JavaScriptEvent}
 import org.hyperscala.examples.Example
+import language.reflectiveCalls
 
 /**
  * @author Matt Hicks <matt@outr.com>

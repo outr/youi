@@ -6,6 +6,8 @@ import org.hyperscala.ui.PageChangeWarning
 import org.hyperscala.html._
 import org.hyperscala.event.{ClickEvent, JavaScriptEvent}
 import org.hyperscala.examples.Example
+import language.reflectiveCalls
+import language.reflectiveCalls
 
 /**
  * @author Matt Hicks <mhicks@outr.com>

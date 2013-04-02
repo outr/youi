@@ -9,6 +9,8 @@ import org.powerscala.bus.Routing
 import org.hyperscala.event.{ClickEvent, JavaScriptEvent}
 import org.powerscala.reflect._
 
+import language.reflectiveCalls
+
 /**
  * @author Matt Hicks <matt@outr.com>
  */
@@ -16,7 +18,7 @@ trait ListEditor[T] extends tag.Div {
   def manifest: Manifest[T]
   def createEditor(): BodyChild
 
-  val defaultValue = manifest.erasure.defaultForType[T]
+  val defaultValue = manifest.runtimeClass.defaultForType[T]
 
   val list = new StandardProperty[List[T]]("list", Nil)(this, Manifest.classType[List[T]](classOf[List[T]])) with ListProperty[T] {
     override def +=(t: T) = if (!value.contains(t)) {   // No duplicates allowed

@@ -11,6 +11,8 @@ import scala.math._
 import org.hyperscala.event._
 import scala.Some
 
+import language.reflectiveCalls
+
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
@@ -139,7 +141,7 @@ abstract class AutoCompleteInput[T](id: String = Unique(), default: T)(implicit 
 
   def result(r: T, query: String) = new BasicResult[T](r, query, this)
 
-  def showingCompletion = completion.style.display != Display.None
+  def showingCompletion = completion.style.display.getOrElse(null) != Display.None
 
   def showCompletion(): Unit = {
     val index = max(selectedIndex, 0)

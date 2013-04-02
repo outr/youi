@@ -63,7 +63,7 @@ abstract class DynamicContent(existingId: String) extends Container[HTMLTag] wit
    * @tparam V the value type for association
    * @return T
    */
-  def bind[T <: HTMLTag, V](id: String, property: StandardProperty[_], hierarchy: String = null)(implicit binder: Binder[T, V]) = {
+  def bind[T <: HTMLTag, V](id: String, property: StandardProperty[_], hierarchy: String = null)(implicit binder: Binder[T, V]): T = {
     val tag = load[T](id)
     bind[T, V](tag, property, hierarchy)
   }
@@ -93,7 +93,7 @@ abstract class DynamicContent(existingId: String) extends Container[HTMLTag] wit
    * @tparam V the value type for association
    * @return T
    */
-  def bind[T <: HTMLTag, V](tag: T, property: StandardProperty[_], hierarchy: String)(implicit binder: Binder[T, V]) = {
+  def bind[T <: HTMLTag, V](tag: T, property: StandardProperty[_], hierarchy: String)(implicit binder: Binder[T, V]): T = {
     Webpage().require(Realtime)   // Make sure we have realtime access
     binder.bind(tag, property, hierarchy)
     tag

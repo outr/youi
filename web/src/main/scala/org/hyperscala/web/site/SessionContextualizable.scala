@@ -1,5 +1,7 @@
 package org.hyperscala.web.site
 
+import language.reflectiveCalls
+
 /**
  * SessionContextualizable allows easy ability to iterate over and communicate to all instances of a specific
  * Webpage type.

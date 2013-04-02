@@ -11,6 +11,8 @@ import org.hyperscala.css.attributes.Display
 import org.hyperscala.jquery.JavaScriptCaller
 import org.hyperscala.Message
 
+import language.reflectiveCalls
+
 /**
  * @author Matt Hicks <matt@outr.com>
  */

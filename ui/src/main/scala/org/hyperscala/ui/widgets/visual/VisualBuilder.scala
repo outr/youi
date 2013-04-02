@@ -3,6 +3,8 @@ package org.hyperscala.ui.widgets.visual
 import `type`.VisualType
 import org.powerscala.property.StandardProperty
 
+import language.existentials
+
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
@@ -27,7 +29,7 @@ case class VisualBuilder[T](_name: String = null,
                             bindValueUpdatesProperty: Boolean = true,
                             bindPropertyUpdatesValue: Boolean = true)
                            (implicit val manifest: Manifest[T]) {
-  def clazz = manifest.erasure
+  def clazz = manifest.runtimeClass
 
   def name = _name
   def name(_name: String) = copy(_name = _name)

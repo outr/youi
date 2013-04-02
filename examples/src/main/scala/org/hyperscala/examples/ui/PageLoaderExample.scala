@@ -5,6 +5,7 @@ import org.hyperscala.web.site.Webpage
 import org.hyperscala.ui.{PageLoader, BusyDialog}
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.event.{ClickEvent, JavaScriptEvent}
+import language.reflectiveCalls
 
 /**
  * @author Matt Hicks <matt@outr.com>

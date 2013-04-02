@@ -62,7 +62,7 @@ class Webpage extends Page with ModularPage with RequestHandler with Parent with
     }
     // Now we intercept init to determine when new items are created
     intercept.init {
-      case m: Markup if (m.getClass.hasType(manifest.erasure)) => f(m.asInstanceOf[T])
+      case m: Markup if (m.getClass.hasType(manifest.runtimeClass)) => f(m.asInstanceOf[T])
     }
   }
 

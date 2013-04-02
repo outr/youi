@@ -4,6 +4,7 @@ import org.hyperscala.web.site.Webpage
 import org.hyperscala.html._
 import org.hyperscala.event.{ClickEvent, JavaScriptEvent}
 import org.hyperscala.realtime.Realtime
+import language.reflectiveCalls
 
 /**
  * @author Matt Hicks <mhicks@outr.com>

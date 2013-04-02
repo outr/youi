@@ -8,6 +8,8 @@ import org.hyperscala.web.site.Webpage
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.event.{ChangeEvent, JavaScriptEvent}
 
+import language.reflectiveCalls
+
 /**
  * @author Matt Hicks <matt@outr.com>
  */

@@ -7,6 +7,7 @@ import org.hyperscala.realtime.Realtime
 import org.hyperscala.jquery.ui.{AutocompleteResult, Autocomplete}
 import org.hyperscala.event.{ClickEvent, ChangeEvent, JavaScriptEvent}
 import org.hyperscala.examples.Example
+import language.reflectiveCalls
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>

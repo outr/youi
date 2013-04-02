@@ -23,11 +23,11 @@ case class Visualize(_labeled: Boolean = true,
                group: String = null,
                exclude: List[String] = Nil)(implicit manifest: Manifest[T]): Visualize = {
     val cn = className match {
-      case null => manifest.erasure.getSimpleName
+      case null => manifest.runtimeClass.getSimpleName
       case _ => className
     }
     var instance = this
-    manifest.erasure.caseValues.foreach(cv => {
+    manifest.runtimeClass.caseValues.foreach(cv => {
       val name = cn match {
         case "" => cv.name
         case _ => "%s.%s".format(cn, cv.name)

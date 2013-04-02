@@ -9,6 +9,7 @@ import tag._
 import org.hyperscala.web.site.Webpage
 import org.hyperscala.ui.WindowSized
 import org.hyperscala.web.FormSupport
+import language.reflectiveCalls
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>

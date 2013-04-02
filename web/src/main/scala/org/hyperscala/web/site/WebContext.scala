@@ -13,6 +13,8 @@ import org.hyperscala.web.cookie.Cookie
 import org.jboss.netty.channel.ChannelHandlerContext
 import java.net.InetSocketAddress
 
+import language.reflectiveCalls
+
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */

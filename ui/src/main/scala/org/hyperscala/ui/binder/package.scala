@@ -4,6 +4,8 @@ import dynamic.Binder
 import org.hyperscala.html._
 import org.hyperscala.event.JavaScriptEvent
 
+import language.reflectiveCalls
+
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */

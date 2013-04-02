@@ -7,6 +7,8 @@ import org.hyperscala.web.site.Webpage
 import org.hyperscala.event.JavaScriptEvent
 import org.hyperscala.realtime.Realtime
 
+import language.reflectiveCalls
+
 /**
  * @author Matt Hicks <matt@outr.com>
  */

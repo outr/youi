@@ -9,6 +9,8 @@ import org.hyperscala.event.JavaScriptEvent
 import org.hyperscala.html.constraints.BodyChild
 import org.hyperscala.realtime.Realtime
 
+import language.reflectiveCalls
+
 /**
  * @author Matt Hicks <matt@outr.com>
  */

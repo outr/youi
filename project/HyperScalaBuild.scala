@@ -7,7 +7,7 @@ import sbtassembly.Plugin._
 import AssemblyKeys._
 
 object HyperScalaBuild extends Build {
-  val powerScalaVersion = "1.5.1-SNAPSHOT"
+  val powerScalaVersion = "1.5.2-SNAPSHOT"
   val powerScalaConvert = "org.powerscala" %% "powerscala-convert" % powerScalaVersion
   val powerScalaReflect = "org.powerscala" %% "powerscala-reflect" % powerScalaVersion
   val powerScalaHierarchy = "org.powerscala" %% "powerscala-hierarchy" % powerScalaVersion
@@ -15,16 +15,16 @@ object HyperScalaBuild extends Build {
   val jdom = "org.jdom" % "jdom" % "2.0.2"
 
   val htmlcleaner = "net.sourceforge.htmlcleaner" % "htmlcleaner" % "2.2"
-  val akkaActors = "com.typesafe.akka" % "akka-actor" % "2.0.5"
+  val akkaActors = "com.typesafe.akka" % "akka-actor_2.10" % "2.1.2"
 
   val specs2 = "org.specs2" %% "specs2" % "1.11" % "test"
 
-  val webcommunicator = "com.outr.webcommunicator" %% "webcommunicator" % "1.0.2-SNAPSHOT"
+  val webcommunicator = "com.outr.webcommunicator" %% "webcommunicator" % "1.0.3-SNAPSHOT"
 
   val baseSettings = Defaults.defaultSettings ++ Seq(
-    version := "0.7.1-SNAPSHOT",
+    version := "0.7.2-SNAPSHOT",
     organization := "org.hyperscala",
-    scalaVersion := "2.9.2",
+    scalaVersion := "2.10.1",
     libraryDependencies ++= Seq(
       powerScalaConvert,
       powerScalaReflect,
@@ -35,7 +35,7 @@ object HyperScalaBuild extends Build {
       akkaActors,
       specs2
     ),
-    scalacOptions ++= Seq("-unchecked", "-deprecation"),
+    scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature"),
     resolvers ++= Seq("Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/",
                       "twitter-repo" at "http://maven.twttr.com",
                       "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/"),

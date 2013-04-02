@@ -7,6 +7,7 @@ import org.hyperscala.ui.module.DynamicURL
 import org.hyperscala.event.{ClickEvent, JavaScriptEvent}
 
 import org.powerscala.convert.string._
+import language.reflectiveCalls
 
 /**
  * @author Matt Hicks <matt@outr.com>

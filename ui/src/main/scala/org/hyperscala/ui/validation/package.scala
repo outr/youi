@@ -3,6 +3,8 @@ package org.hyperscala.ui
 import org.hyperscala.html.FormField
 import validation.ValidationResponse
 
+import language.implicitConversions
+
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */

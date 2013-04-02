@@ -17,10 +17,10 @@ class PropertyAttribute[T](_name: String, default: T, val inclusion: InclusionMo
   }
 
   // TODO: remove this
-  def attributeValue = persister.toString(value, manifest.erasure)
+  def attributeValue = persister.toString(value, manifest.runtimeClass)
 
   // TODO: remove this
-  def attributeValue_=(value: String) = this := persister.fromString(value, manifest.erasure)
+  def attributeValue_=(value: String) = this := persister.fromString(value, manifest.runtimeClass)
 
   def shouldRender = include
 

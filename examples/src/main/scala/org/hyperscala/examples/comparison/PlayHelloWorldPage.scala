@@ -8,6 +8,7 @@ import org.hyperscala.event.{ClickEvent, JavaScriptEvent}
 import org.hyperscala.css.attributes.Display
 import org.powerscala.Color
 import org.hyperscala.ui.dynamic.{DynamicContent, DynamicString}
+import language.reflectiveCalls
 
 /**
  * Comparison port of Play! Framework's Hello World example that's not really a Hello World example.

@@ -2,6 +2,8 @@ package org.hyperscala
 
 import web.VisualException
 
+import language.implicitConversions
+
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */

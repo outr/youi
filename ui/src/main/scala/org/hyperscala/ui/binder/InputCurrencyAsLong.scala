@@ -1,6 +1,6 @@
 package org.hyperscala.ui.binder
 
-
+import language.reflectiveCalls
 import org.hyperscala.html._
 import org.hyperscala.event.JavaScriptEvent
 import java.text.NumberFormat

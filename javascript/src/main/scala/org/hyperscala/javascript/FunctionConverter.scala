@@ -12,10 +12,10 @@ import scala.collection.JavaConversions._
 object FunctionConverter {
   def f0[R](name: String, f: () => R, includeLineNumbers: Boolean = false, debug: Boolean = false)
            (implicit manifest: Manifest[R]) = {
-    //    println("Erasure: %s".format(manifest.erasure.getName))
+    //    println("Erasure: %s".format(manifest.runtimeClass.getName))
     //    f.getClass.getMethods.foreach(println)
-    val methodName = lookupMethodName(manifest.erasure)
-    val method = f.getClass.getMethods.find(m => m.getReturnType == manifest.erasure && m.getName == methodName && m.getParameterTypes.length == 0).get
+    val methodName = lookupMethodName(manifest.runtimeClass)
+    val method = f.getClass.getMethods.find(m => m.getReturnType == manifest.runtimeClass && m.getName == methodName && m.getParameterTypes.length == 0).get
     val node = lookupMethodNode(method).get
     val script = convert(node, includeLineNumbers, debug)
     "function %s() {\r\n%s}".format(name, script)
@@ -25,7 +25,7 @@ object FunctionConverter {
                (implicit manifest: Manifest[R]) = {
     //    f.getClass.getMethods.foreach(println)
     val methodName = "apply"
-    val method = f.getClass.getMethods.find(m => m.getReturnType == manifest.erasure && m.getName == methodName && m.getParameterTypes.length == 1).get
+    val method = f.getClass.getMethods.find(m => m.getReturnType == manifest.runtimeClass && m.getName == methodName && m.getParameterTypes.length == 1).get
     val node = lookupMethodNode(method).get
     val script = convert(node, includeLineNumbers, debug)
     val arg1Name = node.localVariables.get(1).asInstanceOf[LocalVariableNode].name
@@ -36,7 +36,7 @@ object FunctionConverter {
                    (implicit manifest: Manifest[R]) = {
     //    f.getClass.getMethods.foreach(println)
     val methodName = "apply"
-    val method = f.getClass.getMethods.find(m => m.getReturnType == manifest.erasure && m.getName == methodName && m.getParameterTypes.length == 2).get
+    val method = f.getClass.getMethods.find(m => m.getReturnType == manifest.runtimeClass && m.getName == methodName && m.getParameterTypes.length == 2).get
     val node = lookupMethodNode(method).get
     val script = convert(node, includeLineNumbers, debug)
     val arg1Name = node.localVariables.get(1).asInstanceOf[LocalVariableNode].name
@@ -48,7 +48,7 @@ object FunctionConverter {
                        (implicit manifest: Manifest[R]) = {
     //    f.getClass.getMethods.foreach(println)
     val methodName = "apply"
-    val method = f.getClass.getMethods.find(m => m.getReturnType == manifest.erasure && m.getName == methodName && m.getParameterTypes.length == 3).get
+    val method = f.getClass.getMethods.find(m => m.getReturnType == manifest.runtimeClass && m.getName == methodName && m.getParameterTypes.length == 3).get
     val node = lookupMethodNode(method).get
     val script = convert(node, includeLineNumbers, debug)
     val arg1Name = node.localVariables.get(1).asInstanceOf[LocalVariableNode].name
@@ -61,7 +61,7 @@ object FunctionConverter {
                            (implicit manifest: Manifest[R]) = {
     //    f.getClass.getMethods.foreach(println)
     val methodName = "apply"
-    val method = f.getClass.getMethods.find(m => m.getReturnType == manifest.erasure && m.getName == methodName && m.getParameterTypes.length == 4).get
+    val method = f.getClass.getMethods.find(m => m.getReturnType == manifest.runtimeClass && m.getName == methodName && m.getParameterTypes.length == 4).get
     val node = lookupMethodNode(method).get
     val script = convert(node, includeLineNumbers, debug)
     val arg1Name = node.localVariables.get(1).asInstanceOf[LocalVariableNode].name

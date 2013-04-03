@@ -3,7 +3,7 @@ package org.hyperscala.realtime
 import org.hyperscala.web.site.{WebpageConnection, Webpage, Website}
 
 import org.hyperscala.html._
-import org.hyperscala.javascript.JavaScriptContent
+import org.hyperscala.javascript.{JavaScriptString, JavaScriptContent}
 import java.util.UUID
 import annotation.tailrec
 
@@ -77,29 +77,29 @@ object Realtime extends Module {
     sendRecursive(page, event, content, connections)
   }
 
+  private def wrapInInvokeForId(id: String, instruction: String) =
+    """
+      |invokeForId('%s', function() {
+      | %s
+      |});
+    """.stripMargin.format(id, instruction)
+
   def sendJavaScript(instruction: String, content: String = null, forId: String = null, head: Boolean = true, onlyRealtime: Boolean = true) = {
     if (Webpage().rendered) {
       Webpage().require(this)
 
       if (forId != null) {
-        val s = """
-                  |invokeForId('%s', function() {
-                  | %s
-                  |});
-                """.stripMargin.format(forId, instruction)
         if (content != null) {
           throw new RuntimeException("forId not supported with non-null content")
         }
-        broadcast("eval", JavaScriptMessage(s, content))
+        broadcast("eval", JavaScriptMessage(wrapInInvokeForId(forId, instruction), content))
       } else {
         broadcast("eval", JavaScriptMessage(instruction, content))
       }
     } else if (!onlyRealtime) {
       val script = instruction.replaceAll("content", content)
       val s = new tag.Script {
-        contents += new JavaScriptContent {
-          def content = script
-        }
+        contents += JavaScriptString(if (forId != null) wrapInInvokeForId(forId, script) else script)
       }
       if (head) {
         Webpage().head.contents += s

@@ -16,6 +16,7 @@ import org.powerscala.json._
 import scala.Some
 import org.powerscala.hierarchy.event.ChildRemovedEvent
 import org.powerscala.hierarchy.event.ChildAddedEvent
+import svg.{Svg, SVGTag}
 import util.parsing.json.JSON
 
 /**
@@ -116,16 +117,20 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
         child.identity
 
         val index = parent.contents.indexOf(child)
+        val variable = child match {
+          case tag: SVGTag if (!tag.isInstanceOf[Svg]) => "parseSVG(content)"
+          case _ => "content"
+        }
         val instruction = if (index == parent.contents.length - 1) {    // Append to the end
-          "$('#%s').append(content);".format(parent.id())
+          "$('#%s').append(%s);".format(parent.id(), variable)
         } else if (index == 0) {                                   // Append before
         val after = parent.contents(1)
-          "$('#%s').before(content);".format(after.id())
+          "$('#%s').before(%s);".format(after.id(), variable)
         } else {
           val before = parent.contents(index - 1)
-          "$('#%s').after(content);".format(before.id())
+          "$('#%s').after(%s);".format(before.id(), variable)
         }
-        val content = child.outputString      // TODO: change to support SVG inserts properly - use innersvg?
+        val content = child.outputString
         send(JavaScriptMessage(instruction, content))
       }
       case js: JavaScriptContent => send(JavaScriptMessage(js.content))

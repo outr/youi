@@ -17,6 +17,15 @@ trait JavaScriptContent extends XMLContent {
   def +(js: JavaScriptContent) = JavaScriptString("%s\n\n%s".format(content, js.content))
 }
 
+object JavaScriptContent {
+  def toJS(v: Any): String = v match {
+    case null => "null"
+    case s: String => "'%s'".format(s.replaceAll("\n", " ").replaceAll("\r", " ").replaceAll("'", "\\\\'"))
+    case l: List[_] => l.map(toJS).mkString("[", ", ", "]")
+    case _ => v.toString
+  }
+}
+
 case class JavaScriptString(var content: String) extends JavaScriptContent {
   override def read(content: Content): Unit = this.content = content.asInstanceOf[Text].getText
 }

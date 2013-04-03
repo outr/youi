@@ -159,6 +159,15 @@ function jsEval(message) {
     eval(instruction);
 }
 
+function parseSVG(content) {
+    var parser = new DOMParser();
+    parser.async = false;
+    content = content.toString().trim();
+    content = '<svg xmlns=\'http://www.w3.org/2000/svg\'>' + content + '</svg>';
+    var document = parser.parseFromString(content, 'text/xml').documentElement;
+    return document.firstChild;
+}
+
 function invokeForId(id, f) {
     if ($('#' + id).length == 0) {
         setTimeout(function() {

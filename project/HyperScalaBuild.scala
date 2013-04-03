@@ -12,7 +12,7 @@ object HyperScalaBuild extends Build {
   val powerScalaReflect = "org.powerscala" %% "powerscala-reflect" % powerScalaVersion
   val powerScalaHierarchy = "org.powerscala" %% "powerscala-hierarchy" % powerScalaVersion
   val powerScalaProperty = "org.powerscala" %% "powerscala-property" % powerScalaVersion
-  val jdom = "org.jdom" % "jdom" % "2.0.2"
+  val jdom = "org.jdom" % "jdom2" % "2.0.4"
 
   val htmlcleaner = "net.sourceforge.htmlcleaner" % "htmlcleaner" % "2.2"
   val akkaActors = "com.typesafe.akka" % "akka-actor_2.10" % "2.1.2"

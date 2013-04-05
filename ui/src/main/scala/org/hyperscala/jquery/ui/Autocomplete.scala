@@ -36,6 +36,7 @@ class Autocompletified private(input: FormField) {
   val search = Property[String => Seq[AutocompleteResult]]("search", (s: String) => Nil)
   val autoFocus = Property[Boolean]("autoFocus", false)
   val delay = Property[Int]("delay", 300)
+  val appendTo = Property[HTMLTag]("appendTo", null)
   val disabled = Property[Boolean]("disabled", false)
   val minLength = Property[Int]("minLength", 1)
   val multiple = Property[Boolean]("multiple", false)
@@ -105,6 +106,10 @@ class Autocompletified private(input: FormField) {
     val source = "/autocomplete/%s".format(input.identity)
     Website().registerSession(WebpageResource(source, handler, Scope.Request))
     // TODO: extract this into its own Module + .js file
+    val appendId = appendTo() match {
+      case null => null
+      case t => t.id()
+    }
     Realtime.sendJavaScript(
       """
         |function split(v) {
@@ -159,14 +164,15 @@ class Autocompletified private(input: FormField) {
         |    },
         |    autoFocus: %3$s,
         |    delay: %4$s,
-        |    disabled: %5$s,
-        |    minLength: %6$s,
+        |    appendTo: %5$s,
+        |    disabled: %6$s,
+        |    minLength: %7$s,
         |    change: function() { jsFireChange($('#%1$s')); jsFireGenericEvent($('#%1$s'), 'change'); }
         |  }).data('ui-autocomplete')._renderItem = function(ul, item) {
         |    return $('<li></li>').data('item.autocomplete', item).append($('<a></a>').html(item.label)).appendTo(ul);
         |  };
         |});
-      """.stripMargin.format(input.id(), source, autoFocus(), delay(), disabled(), minLength(), multiple()), onlyRealtime = false, forId = input.id())
+      """.stripMargin.format(input.id(), source, autoFocus(), delay(), appendId, disabled(), minLength(), multiple()), onlyRealtime = false, forId = input.id())
     Listenable.listenTo(autoFocus, delay, disabled, minLength) {
       case evt: PropertyChangeEvent => sendChanges(evt)
     }

@@ -144,7 +144,7 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
       val instruction = "$('#%s').contents().eq(%s).remove();".format(parent.id(), index)
       send(JavaScriptMessage(instruction))
     }
-    case tag: HTMLTag => send(JavaScriptMessage("$('#%s').remove();".format(tag.id())))
+    case tag: IdentifiableTag => send(JavaScriptMessage("$('#%s').remove();".format(tag.id())))
     case js: JavaScriptContent => // TODO: evaluate? - Previously nothing was needed here
   }
 

@@ -36,6 +36,7 @@ object HyperscalaSite extends Website[MapSession] {
     val visualizeAdvanced = WebpageResource("/example/visualize_advanced.html", new HyperscalaExample(new VisualizeAdvancedExample), Scope.Session)
     val autoComplete = WebpageResource("/example/autocomplete.html", new HyperscalaExample(new AutoCompleteExample), Scope.Session)
     val tabs = WebpageResource("/example/tabs.html", new HyperscalaExample(new TabsExample), Scope.Page)
+    val tree = WebpageResource("/example/tree.html", new HyperscalaExample(new TreeExample), Scope.Page)
     val richEditor = WebpageResource("/example/richeditor.html", new HyperscalaExample(new RichEditorExample), Scope.Page)
     val nivoSlider = WebpageResource("/example/nivoslider.html", new HyperscalaExample(new NivoSliderExample), Scope.Page)
     val gritter = WebpageResource("/example/gritter.html", new HyperscalaExample(new GritterExample), Scope.Page)

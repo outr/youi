@@ -24,6 +24,7 @@ class Td extends Container[BodyChild] with BodyChild with HTMLTag {
            hidden: java.lang.Boolean = null,
            id: String = null,
            lang: String = null,
+           role: String = null,
            spellCheck: java.lang.Boolean = null,
            style: StyleSheet = null,
            tabIndex: java.lang.Integer = null,
@@ -33,21 +34,7 @@ class Td extends Container[BodyChild] with BodyChild with HTMLTag {
            rowSpan: String = null,
            content: BodyChild = null) = {
     this()
-    up(this.name, name)
-    up(this.accessKey, accessKey)
-    up(this.clazz, clazz)
-    up(this.contentEditable, contentEditable)
-    up(this.contextMenu, contextMenu)
-    up(this.dir, dir)
-    up(this.draggable, draggable)
-    up(this.dropZone, dropZone)
-    up(this.hidden, hidden)
-    up(this.id, id)
-    up(this.lang, lang)
-    up(this.spellCheck, spellCheck)
-    up(this.style, style)
-    up(this.tabIndex, tabIndex)
-    up(this.titleText, titleText)
+    init(name, accessKey, clazz, contentEditable, contextMenu, dir, draggable, dropZone, hidden, id, lang, role, spellCheck, style, tabIndex, titleText)
     up(this.colSpan, colSpan)
     up(this.headers, headers)
     up(this.rowSpan, rowSpan)

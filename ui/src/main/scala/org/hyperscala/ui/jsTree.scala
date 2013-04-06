@@ -28,24 +28,27 @@ object jsTree extends Module {
 
   def load() = Webpage().head.contents += new tag.Script(mimeType = "text/javascript", src = "/js/jstree/jquery.jstree.js")
 
-  def apply(t: HTMLTag, types: List[Type] = Nil) = {
+  def apply(t: HTMLTag, types: Type*) = {
     Webpage().require(jsTree)
     val attributes = ListBuffer.empty[String]
-    attributes += "'plugins': ['themes', 'html_data', 'ui', 'types']"
     if (types.nonEmpty) {
       attributes +=
         """
           |'types': {
+          | 'valid_children': [ 'default', 'leaf' ],
+          | 'types': {
           |%s
+          | }
           |}
-        """.stripMargin.trim.format(types.map(t => "\t%s".format(t.toJSON)).mkString(",\r\n"))
+        """.stripMargin.trim.format(types.map(t => "\t\t\t%s".format(t.toJSON)).mkString(",\r\n"))
     }
+    attributes += "'plugins': ['themes', 'html_data', 'ui', 'types']"
     val js =
       """
         |jstree({
         |%s
         |})
-      """.stripMargin.trim.format(attributes.map(s => "\t%s".format(s)).mkString(",\r\n"))
+      """.stripMargin.trim.format(attributes.map(s => "\t\t%s".format(s)).mkString(",\r\n"))
     jQuery.call(t, js)
   }
 
@@ -55,7 +58,8 @@ object jsTree extends Module {
                   useData: Boolean = false,
                   iconURL: String = null,
                   allowSelect: Boolean = true,
-                  typeAttr: String = "rel") {
+                  hoverNode: Boolean = true,
+                  typeAttr: String = "role") {
     def toJSON = {
       val attributes = ListBuffer.empty[String]
       if (maxChildren != -1) {
@@ -71,16 +75,17 @@ object jsTree extends Module {
         attributes += "'icon': { 'image': '%s' }".format(iconURL)
       }
       if (!allowSelect) {
-        attributes += "'select_node': function() { return false; }"
+        attributes += "'select_node': function() { console.log('select!'); return false; }"
       }
-      if (typeAttr != "rel") {
-        attributes += "'type_attr': '%s'".format(typeAttr)
+      if (!hoverNode) {
+        attributes += "'hover_node': false"
       }
+      attributes += "'type_attr': '%s'".format(typeAttr)
       """
         |'%s': {
         |%s
         |}
-      """.stripMargin.trim.format(name, attributes.map(s => "\t%s".format(s)).mkString(",\r\n"))
+      """.stripMargin.trim.format(name, attributes.map(s => "\t\t\t\t%s".format(s)).mkString(",\r\n"))
     }
   }
 }

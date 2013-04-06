@@ -5,7 +5,7 @@ import event.EventSupport
 import org.hyperscala._
 import io.HTMLWriter
 import org.hyperscala.html.tag._
-import css.StyleSheetProperty
+import org.hyperscala.css.{StyleSheet, StyleSheetProperty}
 import scala.collection.{Map => ScalaMap}
 import org.powerscala.property.StandardProperty
 import org.hyperscala.event.JavaScriptEvent
@@ -28,6 +28,40 @@ trait HTMLTag extends IdentifiableTag with EventSupport {
   val spellCheck = PropertyAttribute[Boolean]("spellcheck", false)
   val tabIndex = PropertyAttribute[Int]("tabindex", -1)
   val titleText = PropertyAttribute[String]("title", null)
+
+  protected def init(name: String = null,
+           accessKey: java.lang.Character = null,
+           clazz: List[String] = null,
+           contentEditable: ContentEditable = null,
+           contextMenu: String = null,
+           dir: Direction = null,
+           draggable: Draggable = null,
+           dropZone: DropZone = null,
+           hidden: java.lang.Boolean = null,
+           id: String = null,
+           lang: String = null,
+           role: String = null,
+           spellCheck: java.lang.Boolean = null,
+           style: StyleSheet = null,
+           tabIndex: java.lang.Integer = null,
+           titleText: String = null) = {
+    up(this.name, name)
+    up(this.accessKey, accessKey)
+    up(this.clazz, clazz)
+    up(this.contentEditable, contentEditable)
+    up(this.contextMenu, contextMenu)
+    up(this.dir, dir)
+    up(this.draggable, draggable)
+    up(this.dropZone, dropZone)
+    up(this.hidden, hidden)
+    up(this.id, id)
+    up(this.lang, lang)
+    up(this.role, role)
+    up(this.spellCheck, spellCheck)
+    up(this.style, style)
+    up(this.tabIndex, tabIndex)
+    up(this.titleText, titleText)
+  }
 
   // TODO: add back selectors
   val style = new StyleSheetProperty("style", InclusionMode.NotEmpty)(this) {

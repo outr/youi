@@ -10,6 +10,8 @@ import org.hyperscala.realtime.Realtime
 import util.Random
 import org.hyperscala.event.{JavaScriptEvent, ClickEvent}
 
+import language.reflectiveCalls
+
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */

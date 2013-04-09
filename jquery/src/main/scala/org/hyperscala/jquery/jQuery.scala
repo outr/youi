@@ -14,6 +14,8 @@ object jQuery extends Interface {
 
   def name = "jquery"
 
+  def scrollTop(offset: Int) = call("html,body", "scrollTop(%s)".format(offset))
+
   def blur(tag: HTMLTag) = call(tag, "blur()")
 
   def change(tag: HTMLTag) = call(tag, "change()")
@@ -24,17 +26,19 @@ object jQuery extends Interface {
 
   def submit(tag: HTMLTag) = call(tag, "submit()")
 
-  def call(t: HTMLTag, function: String) = {
+  def call(t: HTMLTag, function: String): Unit = call("#%s".format(t.identity), function)
+
+  def call(selector: String, function: String): Unit = {
     Webpage().body.contents += new tag.Script(content = new JavaScriptString(
       """
         |var callFunction = function() {
-        |  if ($('#%1$s').length == 0) {
+        |  if ($('%1$s').length == 0) {
         |    setTimeout(callFunction, 10);
         |  } else {
-        |    $('#%1$s').%2$s;
+        |    $('%1$s').%2$s;
         |  }
         |}
         |callFunction();
-      """.stripMargin.format(t.identity, function)))
+      """.stripMargin.format(selector, function)))
   }
 }

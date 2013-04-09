@@ -16,4 +16,8 @@ object jQueryUI extends Interface {
   def tabs(t: HTMLTag) = {
     jQuery.call(t, "tabs()")
   }
+
+  def menu(t: HTMLTag) = {
+    jQuery.call(t, "menu()")
+  }
 }

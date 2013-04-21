@@ -12,6 +12,11 @@ trait VisualSearchFacet {
   def name: String
 
   /**
+   * The category this facet is represented by.
+   */
+  def category: String
+
+  /**
    * Only allows one entry of this facet in the VisualSearch.
    */
   def allowMultiple: Boolean
@@ -30,25 +35,26 @@ trait VisualSearchFacet {
   /**
    * Search for entries for this facet.
    */
-  def search(query: String): Seq[VisualSearchResult]
+  def search(query: String, search: VisualSearch): Seq[VisualSearchResult]
 }
 
 case class BasicVisualSearchFacet(name: String,
+                                  category: String,
                                   allowMultiple: Boolean,
                                   exactMatch: Boolean,
                                   resultType: ResultType,
                                   searchHandler: String => Seq[VisualSearchResult]) extends VisualSearchFacet {
-  def search(query: String) = searchHandler(query)
+  def search(query: String, search: VisualSearch) = searchHandler(query)
 }
 
 object VisualSearchFacet {
-  def enum(e: Enumerated[_ <: EnumEntry[_]], allowMultiple: Boolean = false, exactMatch: Boolean = true) = {
+  def enum(e: Enumerated[_ <: EnumEntry[_]], allowMultiple: Boolean = false, exactMatch: Boolean = true, category: String = null) = {
     val results = e.values.map(entry => VisualSearchResult(entry.label, entry.label))
-    BasicVisualSearchFacet(e.name, allowMultiple, exactMatch, ResultType.Complete, (query: String) => results)
+    BasicVisualSearchFacet(e.name, category, allowMultiple, exactMatch, ResultType.Complete, (query: String) => results)
   }
 
-  def basic(name: String, allowMultiple: Boolean = false, exactMatch: Boolean = false, entries: List[String]) = {
+  def basic(name: String, allowMultiple: Boolean = false, exactMatch: Boolean = false, entries: List[String], category: String = null) = {
     val results = entries.map(s => VisualSearchResult(s, s))
-    BasicVisualSearchFacet(name, allowMultiple, exactMatch, ResultType.Complete, (query: String) => results)
+    BasicVisualSearchFacet(name, category, allowMultiple, exactMatch, ResultType.Complete, (query: String) => results)
   }
 }

@@ -39,17 +39,25 @@ object BusyDialog extends Module {
   }
 
   def show(title: String) = {
-    val window = Webpage().body.getById[tag.Div with Dialog]("busyDialog")
-    window.dialog.title := title
-    if (!window.dialog.isOpen) {
-      window.dialog.open()
+    Webpage().body.byId[tag.Div with Dialog]("busyDialog") match {
+      case Some(window) => {
+        window.dialog.title := title
+        if (!window.dialog.isOpen) {
+          window.dialog.open()
+        }
+      }
+      case None => // Page probably not loaded yet
     }
   }
 
   def hide() = {
-    val window = Webpage().body.getById[tag.Div with Dialog]("busyDialog")
-    if (window.dialog.isOpen) {
-      window.dialog.close()
+    Webpage().body.byId[tag.Div with Dialog]("busyDialog") match {
+      case Some(window) => {
+        if (window.dialog.isOpen) {
+          window.dialog.close()
+        }
+      }
+      case None => // Page probably not loaded yet
     }
   }
 

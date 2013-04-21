@@ -18,7 +18,11 @@ class VisualSearchHandler(visualSearch: VisualSearch) extends RequestHandler {
       val response = requestType match {
         case "facets" => {
           visualSearch.facets.collect {
-            case f if (f.allowMultiple || !visualSearch.queryHasFacet(f.name)) => "\"%s\"".format(f.name)
+            case f if (f.allowMultiple || !visualSearch.queryHasFacet(f.name)) => if (f.category == null) {
+              "\"%s\"".format(f.name)
+            } else {
+              "{\"label\": \"%s\", \"category\": \"%s\"}".format(f.name, f.category)
+            }
           }.mkString("[", ", ", "]")
         }
         case "values" => {
@@ -26,7 +30,7 @@ class VisualSearchHandler(visualSearch: VisualSearch) extends RequestHandler {
           val term = url.parameters("term").head
           visualSearch.facet(facetName) match {
             case Some(facet) => {
-              val results = facet.search(term)
+              val results = facet.search(term, visualSearch)
               val resultString = results.map(r => "{\"value\": \"%s\", \"label\": \"%s\"}".format(r.value, r.label)).mkString("[", ", ", "]")
               "{\"resultType\": \"%s\", \"exactMatch\": %s, \"results\": %s}".format(facet.resultType.name(), facet.exactMatch, resultString)
             }

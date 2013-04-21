@@ -16,6 +16,7 @@ function createVisualSearch(id, url) {
             showFacets: true,
             unquotable: [],
             remainder: 'text',
+            preserveMatches: true,
             callbacks  : {
                 search : function(query, searchCollection) {
                     visualSearchCache[facetCacheKey] = null;
@@ -34,7 +35,7 @@ function createVisualSearch(id, url) {
                             r: Math.random()
                         }, function(result) {
 //                            visualSearchCache[facetCacheKey] = result;
-                            callback(result);
+                            callback(result, { preserveOrder: true });
                         });
                     }
                 },
@@ -71,5 +72,6 @@ function searchCallback(searchTerm, results, exactMatch, callback) {
             label: 'Search for ' + searchTerm
         });
     }
+    console.log('Callback: ' + results);
     callback(results);
 }

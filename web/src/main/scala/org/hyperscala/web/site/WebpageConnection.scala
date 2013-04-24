@@ -83,7 +83,10 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
         Page().intercept.renderAttribute.fire(property) match {
           case Some(pa) => t match {
             case title: tag.Title if (property == title.content) => send(JavaScriptMessage("document.title = content;", property.attributeValue))
-            case textual: Textual if (property == textual.content) => send(JavaScriptMessage("$('#%s').val(content);".format(t.id()), property.attributeValue))
+            case textual: Textual if (property == textual.content) => textual match {
+              case option: tag.Option => send(JavaScriptMessage("$('#%s').html(content);".format(t.id()), property.attributeValue))
+              case _ => send(JavaScriptMessage("$('#%s').val(content);".format(t.id()), property.attributeValue))
+            }
             case input: tag.Input if (property == input.value) => send(JavaScriptMessage("$('#%s').val(content);".format(t.id()), property.attributeValue))
             case _ if (property() == false) => send(JavaScriptMessage("$('#%s').removeAttr('%s');".format(t.id(), property.name())))
             case _ => send(JavaScriptMessage("$('#%s').attr('%s', content);".format(t.id(), property.name()), property.attributeValue))

@@ -72,6 +72,6 @@ function searchCallback(searchTerm, results, exactMatch, callback) {
             label: 'Search for ' + searchTerm
         });
     }
-    console.log('Callback: ' + results);
+//    console.log('Callback: ' + results);
     callback(results);
 }

@@ -20,5 +20,9 @@ function jsFireHashChanged() {
 
 function setHash(newValue) {
     currentHash = '#' + newValue;
-    window.location.hash = currentHash;
+    if ('pushState' in history) {
+        history.pushState(null, null, currentHash);
+    } else {
+        window.location.hash = currentHash;
+    }
 }

@@ -77,14 +77,26 @@ object Realtime extends Module {
     sendRecursive(page, event, content, connections)
   }
 
-  private def wrapInInvokeForId(id: String, instruction: String) =
+  private def wrapInInvokeForId(id: String, instruction: String) = {
     """
       |invokeForId('%s', function() {
       | %s
       |});
     """.stripMargin.format(id, instruction)
+  }
 
-  def sendJavaScript(instruction: String, content: String = null, forId: String = null, head: Boolean = true, onlyRealtime: Boolean = true) = {
+  private def wrapInDelay(instruction: String, delay: Int) = if (delay > 0) {
+    """
+      |setTimeout(function() {
+      | %s
+      |}, %s);
+    """.stripMargin.format(instruction, delay)
+  } else {
+    instruction
+  }
+
+  def sendJavaScript(instruction: String, content: String = null, forId: String = null, head: Boolean = true, onlyRealtime: Boolean = true, delay: Int = 0) = {
+    val i = wrapInDelay(instruction, delay)
     if (Webpage().rendered) {
       Webpage().require(this)
 
@@ -92,12 +104,12 @@ object Realtime extends Module {
         if (content != null) {
           throw new RuntimeException("forId not supported with non-null content")
         }
-        broadcast("eval", JavaScriptMessage(wrapInInvokeForId(forId, instruction), content))
+        broadcast("eval", JavaScriptMessage(wrapInInvokeForId(forId, i), content))
       } else {
-        broadcast("eval", JavaScriptMessage(instruction, content))
+        broadcast("eval", JavaScriptMessage(i, content))
       }
     } else if (!onlyRealtime) {
-      val script = instruction.replaceAll("content", content)
+      val script = i.replaceAll("content", content)
       val s = new tag.Script {
         contents += JavaScriptString(if (forId != null) wrapInInvokeForId(forId, script) else script)
       }

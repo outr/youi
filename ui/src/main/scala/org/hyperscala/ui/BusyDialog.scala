@@ -5,7 +5,6 @@ import org.hyperscala.module.Module
 import org.powerscala.Version
 import org.hyperscala.web.site.{Website, Webpage}
 import org.hyperscala.jquery.ui.Dialog
-import org.hyperscala.css.attributes.Length
 import org.hyperscala.realtime.Realtime
 import language.reflectiveCalls
 
@@ -28,12 +27,11 @@ object BusyDialog extends Module {
       dialog.autoOpen := false
       dialog.closeOnEscape := false
       dialog.modal := true
-      dialog.width := 240
+      dialog.width := 320
       dialog.height := 120
       dialog.resizable := false
       contents += new tag.Img(src = "/images/indeterminate_progress01.gif", width = "200", height = "40") {
-        style.marginLeft = Length.Auto
-        style.marginRight = Length.Auto
+        style.marginLeft = 40.px
       }
     }
   }

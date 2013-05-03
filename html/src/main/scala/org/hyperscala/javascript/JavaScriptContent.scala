@@ -20,10 +20,19 @@ trait JavaScriptContent extends XMLContent {
 object JavaScriptContent {
   def toJS(v: Any): String = v match {
     case null => "null"
+    case js: JavaScriptContent => js.content
     case s: String => "'%s'".format(s.replaceAll("\n", " ").replaceAll("\r", " ").replaceAll("'", "\\\\'"))
     case l: List[_] => l.map(toJS).mkString("[", ", ", "]")
     case _ => v.toString
   }
+
+  def options(options: JSOption*) = {
+    options.collect {
+      case o if (o.value.isDefined) => s"${o.name}: ${toJS(o.value.get)}"
+    }.mkString("{ ", ", ", " }")
+  }
+
+  case class JSOption(name: String, value: Option[Any])
 }
 
 case class JavaScriptString(var content: String) extends JavaScriptContent {

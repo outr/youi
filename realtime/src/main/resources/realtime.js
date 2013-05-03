@@ -156,7 +156,11 @@ function jsEval(message) {
     if (logEvals) {
         log('Instruction: ' + instruction + ', Content: ' + content);
     }
-    eval(instruction);
+    try {
+        eval(instruction);
+    } catch(err) {
+        log('Error occurred (' + err.message + ') while attempting to evaluate instruction: [' + instruction + '].')
+    }
 }
 
 function parseSVG(content) {

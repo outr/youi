@@ -1,7 +1,7 @@
 package org.hyperscala
 
 import org.powerscala.hierarchy.MutableContainer
-import org.jdom2.{Comment, Text, Content, Element}
+import org.jdom2.{Comment => JDOMComment, Text, Content, Element}
 import scala.collection.JavaConversions._
 
 /**
@@ -22,11 +22,13 @@ trait Container[C <: XMLContent] extends MutableContainer[C] with Markup {
         }
       }
       case childText: Text => processText(childText.getText)
-      case childComment: Comment => // Ignore comments
+      case comment: JDOMComment => processComment(comment.getText)
     }
   }
 
   protected def generateChildFromTagName(name: String): XMLContent
 
   protected def processText(text: String): Unit
+
+  protected def processComment(text: String): Unit
 }

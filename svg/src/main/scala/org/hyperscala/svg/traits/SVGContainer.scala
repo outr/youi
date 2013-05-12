@@ -18,4 +18,8 @@ trait SVGContainer[C <: SVGTag] extends Container[C] {
       }
     }
   }
+
+  protected def processComment(text: String): Unit = {
+    warn(s"Ignoring SVG comment - $text")     // TODO: support
+  }
 }

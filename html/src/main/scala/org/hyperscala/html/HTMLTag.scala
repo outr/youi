@@ -90,6 +90,12 @@ trait HTMLTag extends IdentifiableTag with EventSupport {
     }
   }
 
+  protected def processComment(text: String): Unit = {
+    if (text != null && text.trim.length > 0) {
+      this.asInstanceOf[Container[HTMLTag]].contents += new Comment(text)
+    }
+  }
+
   def byName[T <: HTMLTag](name: String)(implicit manifest: Manifest[T]) = hierarchy.findAll[T](t => t.name() == name)(manifest)
 
   def byTag[T <: HTMLTag](implicit manifest: Manifest[T]) = hierarchy.findAll[T](t => true)(manifest)

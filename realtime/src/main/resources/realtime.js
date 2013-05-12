@@ -118,6 +118,10 @@ function jsEventHandler(e, data, fireChange, onlyLast) {
     if (id == null) {       // TODO: Should we always be using target instead of currentTarget?
         element = $(e.target);
         id = element.attr('id');
+        if (id == null) {
+            element = $(e.srcElement);
+            id = element.attr('id');
+        }
     }
     if (id != null) {
         if (e.type == 'change' || fireChange) {

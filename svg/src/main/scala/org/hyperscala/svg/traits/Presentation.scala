@@ -68,7 +68,7 @@ trait Presentation {
   val textDecoration = PropertyAttribute[TextDecoration]("text-decoration", TextDecoration.None)
   val textRendering = PropertyAttribute[TextRendering]("text-rendering", TextRendering.Auto)
   val unicodeBidi = PropertyAttribute[String]("unicode-bidi", null)
-  val visibility = PropertyAttribute[String]("visibility", null)
+  val visibility = PropertyAttribute[Visibility]("visibility", null)
   val wordSpacing = PropertyAttribute[String]("word-spacing", null)
   val writingMode = PropertyAttribute[String]("writing-mode", null)
 }

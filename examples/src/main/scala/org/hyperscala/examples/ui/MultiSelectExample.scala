@@ -36,8 +36,8 @@ class MultiSelectExample extends Example {
       case 10 => "Ten"
     }
 
-    override def createEntry(t: Int): Selectable[Int] = {
-      val e = super.createEntry(t)
+    override def createEntry(t: Int, checked: Boolean): Selectable[Int] = {
+      val e = super.createEntry(t, checked)
       e.style.display = Display.Block
       e
     }

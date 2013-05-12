@@ -6,7 +6,7 @@ import constraints.BodyChild
 import org.powerscala.property.Property
 import org.hyperscala.web.site.Webpage
 import org.hyperscala.realtime.Realtime
-import org.hyperscala.event.{ChangeEvent, JavaScriptEvent}
+import org.hyperscala.event.JavaScriptEvent
 
 import language.reflectiveCalls
 
@@ -34,7 +34,7 @@ abstract class MultiSelect[T](implicit manifest: Manifest[T]) extends tag.Div {
     }
   }
 
-  def createEntry(t: T): Selectable[T] = new DefaultSelectable(this, t)
+  def createEntry(t: T, checked: Boolean): Selectable[T] = new DefaultSelectable(this, t, checked)
 
   def insertEntries(entries: List[Selectable[T]]) = {
     entries.foreach {
@@ -47,8 +47,7 @@ abstract class MultiSelect[T](implicit manifest: Manifest[T]) extends tag.Div {
 
     val entries = availableValues.collect {
       case t => {
-        val entry = createEntry(t)
-        entry.selected = isSelected(t)
+        val entry = createEntry(t, isSelected(t))
         entry
       }
     }
@@ -74,12 +73,12 @@ trait Selectable[T] extends BodyChild {
   def selected_=(b: Boolean): Unit
 }
 
-class DefaultSelectable[T](multiSelect: MultiSelect[T], val value: T) extends tag.Label with Selectable[T] {
-  val input = new tag.Input(inputType = InputType.CheckBox, value = multiSelect.value(value)) {
+class DefaultSelectable[T](multiSelect: MultiSelect[T], val value: T, checked: Boolean) extends tag.Label with Selectable[T] {
+  val input = new tag.Input(inputType = InputType.CheckBox, value = multiSelect.value(value), checked = checked) {
     event.change := JavaScriptEvent()
 
-    listeners.synchronous {
-      case evt: ChangeEvent => multiSelect.updateSelectedFromUI()
+    checked.onChange {
+      multiSelect.updateSelectedFromUI()
     }
   }
   contents += input

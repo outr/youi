@@ -101,6 +101,11 @@ object HyperScalaBuild extends Build {
   lazy val site = Project("site", file("site"), settings = createSettings("hyperscala-site"))
     .settings(jarName in assembly <<= version {
       (v: String) => "hyperscala-%s.jar".format(v)
+    }, mergeStrategy in assembly <<= (mergeStrategy in assembly) {
+      case old => {
+        case PathList("META-INF", "jdom-info.xml") => MergeStrategy.first
+        case x => old(x)
+      }
     }, mainClass in assembly := Some("org.hyperscala.site.HyperscalaSite"))
     .settings(mainClass := Some("org.hyperscala.site.HyperscalaSite"))
     .dependsOn(examples)

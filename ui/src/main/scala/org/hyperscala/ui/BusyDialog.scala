@@ -22,6 +22,26 @@ object BusyDialog extends Module {
     Website().register("/images/indeterminate_progress01.gif", "indeterminate_progress01.gif")
   }
 
+  def disabled[T](f: => T): T = {
+    disable()
+    try {
+      f
+    } finally {
+      enable()
+    }
+  }
+
+  def enable() = {
+    Webpage().store.remove("BusyDialog.disabled")
+  }
+
+  def disable() = {
+    hide()
+    Webpage().store("BusyDialog.disabled") = true
+  }
+
+  def isDisabled = Webpage().store.getOrElse("BusyDialog.disabled", false)
+
   def load() = {
     Webpage().body.contents += new tag.Div(id = "busyDialog") with Dialog {
       dialog.autoOpen := false
@@ -36,7 +56,7 @@ object BusyDialog extends Module {
     }
   }
 
-  def show(title: String) = {
+  def show(title: String) = if (!isDisabled) {
     Webpage().body.byId[tag.Div with Dialog]("busyDialog") match {
       case Some(window) => {
         window.dialog.title := title
@@ -48,7 +68,7 @@ object BusyDialog extends Module {
     }
   }
 
-  def hide() = {
+  def hide() = if (!isDisabled) {
     Webpage().body.byId[tag.Div with Dialog]("busyDialog") match {
       case Some(window) => {
         if (window.dialog.isOpen) {

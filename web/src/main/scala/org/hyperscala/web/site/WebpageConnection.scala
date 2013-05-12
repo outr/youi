@@ -112,7 +112,7 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
   }
 
   def childAdded(evt: ChildAddedEvent) = {
-    val parent = evt.parent.asInstanceOf[HTMLTag with Container[HTMLTag]]
+    val parent = evt.parent.asInstanceOf[IdentifiableTag with Container[IdentifiableTag]]
     evt.child match {
       case child: IdentifiableTag => {
         // Verifies the parent and child have an id

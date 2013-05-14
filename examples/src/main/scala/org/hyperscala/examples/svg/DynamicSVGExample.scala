@@ -8,7 +8,7 @@ import org.hyperscala.html._
 import org.hyperscala.web.site.Webpage
 import org.hyperscala.realtime.Realtime
 import util.Random
-import org.hyperscala.event.{JavaScriptEvent, ClickEvent}
+import org.hyperscala.event.JavaScriptEvent
 
 import language.reflectiveCalls
 
@@ -28,9 +28,9 @@ class DynamicSVGExample extends Example {
   contents += canvas
 
   contents += new tag.Button(content = "Add Circle") {
-    event.click := JavaScriptEvent()
-    listeners.synchronous {
-      case evt: ClickEvent => addCircle()
+    clickEvent := JavaScriptEvent()
+    clickEvent.on {
+      case evt => addCircle()
     }
   }
 
@@ -38,7 +38,7 @@ class DynamicSVGExample extends Example {
     canvas.contents += new svg.Circle(cx = r.nextInt(canvasWidth - 100) + 50, cy = r.nextInt(canvasHeight - 100) + 50, r = 50.0) {
       stroke := Color.Black
       strokeWidth := 1.0
-      fill := Color.values.random
+      fill := Color.random
     }
   }
 }

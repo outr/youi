@@ -1,11 +1,11 @@
 package org.hyperscala.web
 
-import org.powerscala.{Enumerated, EnumEntry}
+import org.powerscala.enum.{Enumerated, EnumEntry}
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-sealed class Scope extends EnumEntry[Scope]
+class Scope private() extends EnumEntry
 
 object Scope extends Enumerated[Scope] {
   /**

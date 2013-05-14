@@ -4,9 +4,9 @@ import org.hyperscala.html._
 import org.powerscala.property.Property
 
 import org.hyperscala.ui.binder._
-import org.powerscala.property.event.PropertyChangeEvent
 import org.hyperscala.ui.dynamic.{DynamicContent, DynamicString}
 import org.hyperscala.examples.Example
+import org.hyperscala.event.JavaScriptEvent
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
@@ -19,14 +19,18 @@ class DynamicContentExample extends Example {
 class SimpleDynamicForm extends DynamicContent(null) {
   def dynamicString = DynamicString.url("dynamic.html", SimpleDynamicForm.content)
 
-  val person = Property[Person]("person", Person("John Doe", 123))
-  person.listeners.synchronous {
-    case evt: PropertyChangeEvent => println("Person changed from %s to %s".format(evt.oldValue, evt.newValue))
+  val person = Property[Person](default = Some(Person("John Doe", 123)))
+  person.change.on {
+    case evt => println("Person changed from %s to %s".format(evt.oldValue, evt.newValue))
   }
 
   val nameInput = bind[tag.Input, String]("i1", person, "name")
   val ageInput = bind[tag.Input, Int]("i2", person, "age")
   val button = load[tag.Button]("b1")
+  button.clickEvent := JavaScriptEvent()
+  button.clickEvent.on {
+    case evt => person := Person("Test User", 987)
+  }
 
   button.contents.replaceWith("Do Something")
 }

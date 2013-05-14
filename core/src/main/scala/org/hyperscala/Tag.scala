@@ -1,18 +1,31 @@
 package org.hyperscala
 
 import event.TagCreated
-import org.powerscala.property.PropertyParent
-import org.powerscala.naming.NamingFilter
 import persistence._
-import org.powerscala.event.Listenable
-import org.powerscala.Storage
+import org.powerscala.{TypeFilteredIterator, Storage}
+import scala.collection.mutable.ListBuffer
+import org.powerscala.hierarchy.ParentLike
+import org.powerscala.hierarchy.event.StandardHierarchyEventProcessor
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-trait Tag extends PropertyParent with Markup with Listenable with Storage[Any] {
+trait Tag extends Markup with Storage[Any] {
+  implicit val thisTag = this
+
   implicit val booleanPersistence = BooleanPersistence
   implicit val stringPersistence = StringPersistence
+
+  private var _xmlAttributes: ListBuffer[PropertyAttribute[_]] = _
+  def addAttribute(attribute: PropertyAttribute[_]) = synchronized {
+    if (_xmlAttributes == null) {
+      _xmlAttributes = ListBuffer.empty
+    }
+    _xmlAttributes += attribute
+  }
+  def xmlAttributes = _xmlAttributes.toList
+
+  val tagCreated = new StandardHierarchyEventProcessor[TagCreated]("tagCreated")
 
   val name = PropertyAttribute[String]("name", null)
   val renderTag = PropertyAttribute[Boolean]("render", true, inclusion = InclusionMode.Exclude)
@@ -33,8 +46,6 @@ trait Tag extends PropertyParent with Markup with Listenable with Storage[Any] {
   }
 
   def outputString: String
-
-  lazy val xmlAttributes = new NamingFilter[XMLAttribute](this)
 
   /**
    * Updates attribute with value if it's not null.
@@ -69,14 +80,16 @@ trait Tag extends PropertyParent with Markup with Listenable with Storage[Any] {
     }
   }
 
-  def byId[T <: Tag](id: String)(implicit manifest: Manifest[T]) = hierarchy.findFirst[T](t => t match {
+  def byId[T <: Tag](id: String)(implicit manifest: Manifest[T]) = TypeFilteredIterator[T](ParentLike.descendants(this)).find {
     case it: IdentifiableTag => it.id() == id
     case _ => false
-  })(manifest)
+  }
 
   def getById[T <: Tag](id: String)(implicit manifest: Manifest[T]) = {
     byId[T](id)(manifest).getOrElse(throw new NullPointerException("Unable to find '%s' by id.".format(id)))
   }
 
-  fire(TagCreated(this))
+  def byTag[T <: Tag](implicit manifest: Manifest[T]) = TypeFilteredIterator[T](ParentLike.descendants(this)).toStream
+
+  tagCreated.fire(TagCreated(this))
 }

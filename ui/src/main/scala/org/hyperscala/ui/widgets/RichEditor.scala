@@ -5,7 +5,6 @@ import org.hyperscala.Unique
 import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.web.site.Webpage
 import org.hyperscala.event.ChangeEvent
-import org.powerscala.property.event.PropertyChangeEvent
 import org.hyperscala.realtime.Realtime
 
 /**
@@ -15,8 +14,8 @@ class RichEditor extends tag.Div {
   Webpage().require(CKEditor)
 
   val textArea = new tag.TextArea(id = Unique(), style = style()) {
-    content.listeners.synchronous {
-      case evt: PropertyChangeEvent => {
+    content.change.on {
+      case evt => {
         // TODO: avoid sending back what we receive from the client
         // TODO: this would be much easier if textarea was still hearing changes in browser!!!
         Realtime.sendJavaScript("updateRichEditor('%s', content);".format(id()), content())
@@ -24,8 +23,8 @@ class RichEditor extends tag.Div {
     }
   }
   val content = textArea.content
-  textArea.listeners.synchronous {    // Refire change events to the RichEditor
-    case evt: ChangeEvent => RichEditor.this.fire(new ChangeEvent(evt.tag))
+  textArea.changeEvent.on {    // Refire change events to the RichEditor
+    case evt => RichEditor.this.fire(new ChangeEvent(evt.tag))
   }
 
   contents += textArea

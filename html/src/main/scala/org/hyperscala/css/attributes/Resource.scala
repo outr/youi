@@ -1,6 +1,6 @@
 package org.hyperscala.css.attributes
 
-import org.powerscala.{Enumerated, EnumEntry}
+import org.powerscala.enum.{Enumerated, EnumEntry}
 import org.hyperscala.persistence.EnumEntryPersistence
 import org.hyperscala.AttributeValue
 
@@ -8,7 +8,7 @@ import org.hyperscala.AttributeValue
  * NOTE: This file has been generated. Do not modify directly!
  * @author Matt Hicks <mhicks@hyperscala.org>
  */
-class Resource(val value: String) extends EnumEntry[Resource] with AttributeValue
+class Resource(val value: String) extends EnumEntry with AttributeValue
 
 object Resource extends Enumerated[Resource] with EnumEntryPersistence[Resource] {
   val None = new Resource("none")

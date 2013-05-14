@@ -2,7 +2,6 @@ package org.hyperscala.ui.module
 
 import org.hyperscala.web.site.Webpage
 import org.powerscala.Version
-import org.powerscala.bus.Routing
 import org.hyperscala.html.HTMLTag
 import org.hyperscala.html.tag.Script
 import org.powerscala.property.event.PropertyChangeEvent
@@ -10,6 +9,7 @@ import org.hyperscala.Unique
 import org.hyperscala.javascript.{EventProperty, JavaScriptString}
 import org.hyperscala.module._
 import org.hyperscala.jquery.jQuery
+import org.powerscala.hierarchy.event.Descendants
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -25,11 +25,11 @@ object HeadScript extends Module {
 
   def load() = {
     val page = Webpage()
-    page.intercept.renderAttribute {
-      case ep: EventProperty => Routing.Stop    // Don't render JavaScript in HTML
+    page.intercept.renderAttribute.on {
+      case ep: EventProperty => None    // Don't render JavaScript in HTML
     }
 
-    page.intercept.init {
+    page.intercept.init.on {
       case tag: HTMLTag => new HeadScriptTag(page, tag)
     }
 
@@ -45,11 +45,10 @@ class HeadScriptTag(page: Webpage, tag: HTMLTag) {
 
   // TODO: support id changing
 
-  tag.listeners.synchronous.filter.descendant() {
-    case evt: PropertyChangeEvent if (evt.property.isInstanceOf[EventProperty] && evt.property.parent == tag) => {
+  tag.listen[PropertyChangeEvent[_], Unit, Unit]("change", Descendants) {
+    case evt => if (evt.property.isInstanceOf[EventProperty] && evt.property.parent == tag) {
       updateScript()
     }
-    case _ =>
   }
 
   updateScript()
@@ -62,8 +61,8 @@ class HeadScriptTag(page: Webpage, tag: HTMLTag) {
           tag.id := Unique()
         }
 
-        b.append("\n\t$('#%s').unbind('%s');".format(tag.id(), ep.name().substring(2)))
-        b.append("\n\t$('#%s').bind('%s', function(event, data) {\n\t\t".format(tag.id(), ep.name().substring(2)))
+        b.append("\n\t$('#%s').unbind('%s');".format(tag.id(), ep.name.substring(2)))
+        b.append("\n\t$('#%s').bind('%s', function(event, data) {\n\t\t".format(tag.id(), ep.name.substring(2)))
         b.append(ep().content)
         b.append("\n\t});\n")
       }

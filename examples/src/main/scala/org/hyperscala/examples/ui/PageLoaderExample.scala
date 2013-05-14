@@ -4,7 +4,7 @@ import org.hyperscala.html._
 import org.hyperscala.web.site.Webpage
 import org.hyperscala.ui.{PageLoader, BusyDialog}
 import org.hyperscala.realtime.Realtime
-import org.hyperscala.event.{ClickEvent, JavaScriptEvent}
+import org.hyperscala.event.JavaScriptEvent
 import language.reflectiveCalls
 
 /**
@@ -15,10 +15,10 @@ class PageLoaderExample extends Webpage {
   require(Realtime)
 
   body.contents += new tag.Button(content = "Load Page") {
-    event.click := JavaScriptEvent()
+    clickEvent := JavaScriptEvent()
 
-    listeners.synchronous {
-      case evt: ClickEvent => reloadPage()
+    clickEvent.on {
+      case evt => reloadPage()
     }
   }
 

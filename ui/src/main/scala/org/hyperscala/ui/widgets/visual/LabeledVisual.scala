@@ -1,6 +1,6 @@
 package org.hyperscala.ui.widgets.visual
 
-import org.powerscala.property.StandardProperty
+import org.powerscala.property.Property
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -8,5 +8,5 @@ import org.powerscala.property.StandardProperty
 trait LabeledVisual {
   this: Visual[_] =>
 
-  val label = new StandardProperty[String]("label")
+  val label = new Property[String]()
 }

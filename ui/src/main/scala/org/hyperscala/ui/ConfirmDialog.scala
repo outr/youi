@@ -3,7 +3,6 @@ package org.hyperscala.ui
 import org.hyperscala.html._
 import constraints.BodyChild
 import org.hyperscala.jquery.ui.{DialogButtons, Dialog}
-import org.hyperscala.jquery.ui.event.ButtonClicked
 import org.hyperscala.web.site.Webpage
 import language.reflectiveCalls
 
@@ -31,8 +30,8 @@ abstract class ConfirmDialog extends tag.Div with Dialog {
 
   contents += body
 
-  listeners.synchronous {
-    case evt: ButtonClicked => {
+  dialog.buttonEvent.on {
+    case evt => {
       dialog.close()
       confirm(evt.name == accept)
     }

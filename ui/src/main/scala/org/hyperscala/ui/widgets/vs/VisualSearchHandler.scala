@@ -32,7 +32,7 @@ class VisualSearchHandler(visualSearch: VisualSearch) extends RequestHandler {
             case Some(facet) => {
               val results = facet.search(term, visualSearch)
               val resultString = results.map(r => "{\"value\": \"%s\", \"label\": \"%s\"}".format(r.value, r.label)).mkString("[", ", ", "]")
-              "{\"resultType\": \"%s\", \"exactMatch\": %s, \"results\": %s}".format(facet.resultType.name(), facet.exactMatch, resultString)
+              "{\"resultType\": \"%s\", \"exactMatch\": %s, \"results\": %s}".format(facet.resultType.name, facet.exactMatch, resultString)
             }
             case None => "{\"results\": []}"
           }

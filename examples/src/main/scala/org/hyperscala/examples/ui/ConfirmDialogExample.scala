@@ -4,7 +4,6 @@ import org.hyperscala.html._
 import org.hyperscala.web.site.Webpage
 import org.hyperscala.jquery.ui.jQueryUI
 import org.hyperscala.realtime.Realtime
-import org.hyperscala.event.ClickEvent
 import org.hyperscala.ui.ConfirmDialog
 import org.hyperscala.examples.Example
 import language.reflectiveCalls
@@ -18,8 +17,8 @@ class ConfirmDialogExample extends Example {
   Realtime.connectForm()
 
   val button = new tag.Button(content = "Show Dialog")
-  button.listeners.synchronous {
-    case evt: ClickEvent => showDialog()
+  button.clickEvent.on {
+    case evt => showDialog()
   }
 
   contents += button

@@ -4,7 +4,7 @@ import org.hyperscala.html._
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.web.site.{WebpageResource, Website, Webpage}
 import org.powerscala.property.Property
-import org.powerscala.event.Listenable
+import org.powerscala.event.Intercept
 import org.powerscala.property.event.PropertyChangeEvent
 import org.hyperscala.web.Scope
 import com.outr.webcommunicator.netty.handler.RequestHandler
@@ -12,7 +12,6 @@ import com.outr.webcommunicator.netty._
 import org.jboss.netty.channel.{MessageEvent, ChannelHandlerContext}
 import org.jboss.netty.handler.codec.http.HttpRequest
 import org.hyperscala.event.EventReceived
-import org.powerscala.bus.Routing
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -33,30 +32,32 @@ class Autocompletified private(input: FormField) {
 
   private implicit val thisInput = input
 
-  val search = Property[String => Seq[AutocompleteResult]]("search", (s: String) => Nil)
-  val autoFocus = Property[Boolean]("autoFocus", false)
-  val delay = Property[Int]("delay", 300)
-  val appendTo = Property[HTMLTag]("appendTo", null)
-  val disabled = Property[Boolean]("disabled", false)
-  val minLength = Property[Int]("minLength", 1)
-  val multiple = Property[Boolean]("multiple", false)
-  val highlight = Property[Boolean]("highlight", true)
-  val caseSensitive = Property[Boolean]("caseSensitive", false)
+  val search = Property[String => Seq[AutocompleteResult]](default = Some((s: String) => Nil))
+  val autoFocus = Property[Boolean](default = Some(false))
+  val delay = Property[Int](default = Some(300))
+  val appendTo = Property[HTMLTag]()
+  val disabled = Property[Boolean](default = Some(false))
+  val minLength = Property[Int](default = Some(1))
+  val multiple = Property[Boolean](default = Some(false))
+  val highlight = Property[Boolean](default = Some(true))
+  val caseSensitive = Property[Boolean](default = Some(false))
 
-  val selected = Property[List[String]]("values", Nil)
-  selected.onChange {
-    changing.set(true)
-    try {
-      val v = if (multiple()) {
-        selected().map(e => "%s, ".format(e)).mkString
-      } else if (selected().nonEmpty) {
-        selected().head
-      } else {
-        ""
+  val selected = Property[List[String]](default = Some(Nil))
+  selected.change.on {
+    case evt => {
+      changing.set(true)
+      try {
+        val v = if (multiple()) {
+          selected().map(e => "%s, ".format(e)).mkString
+        } else if (selected().nonEmpty) {
+          selected().head
+        } else {
+          ""
+        }
+        input.value := v
+      } finally {
+        changing.set(false)
       }
-      input.value := v
-    } finally {
-      changing.set(false)
     }
   }
   def firstSelected = selected().headOption
@@ -173,34 +174,43 @@ class Autocompletified private(input: FormField) {
         |  };
         |});
       """.stripMargin.format(input.id(), source, autoFocus(), delay(), appendId, disabled(), minLength(), multiple()), onlyRealtime = false, forId = input.id())
-    Listenable.listenTo(autoFocus, delay, disabled, minLength) {
-      case evt: PropertyChangeEvent => sendChanges(evt)
+    autoFocus.change.on {
+      case evt => sendChanges(evt)
     }
-    input.listeners.synchronous {
+    delay.change.on {
+      case evt => sendChanges(evt)
+    }
+    disabled.change.on {
+      case evt => sendChanges(evt)
+    }
+    minLength.change.on {
+      case evt => sendChanges(evt)
+    }
+    input.eventReceived.on {
       case EventReceived(event, message) if (event == "autocompleteSelect") => {
         val value = message.map("value").asInstanceOf[String]
         selected := List(value)
-        Routing.Stop
+        Intercept.Stop
       }
       case EventReceived(event, message) if (event == "autocompleteMultiSelect") => {
         val values = message.map("values").asInstanceOf[List[String]]
         selected := values
-        Routing.Stop
+        Intercept.Stop
       }
     }
-    input.value.listeners.synchronous {
-      case evt: PropertyChangeEvent if (!changing.get()) => {
+    input.value.change.on {
+      case evt => if (!changing.get()) {
         Realtime.sendJavaScript("$('#%s')[0].value = \"%s\";".format(input.id(), input.value()))
         selected := input.value().split(",").map(s => s.trim).toList
       }
     }
   }
 
-  private def sendChanges(evt: PropertyChangeEvent) = evt.property.name() match {
-    case "autoFocus" => Realtime.sendJavaScript("$('#%s').autocomplete('option', 'autoFocus', %s);".format(input.id(), autoFocus()))
-    case "delay" => Realtime.sendJavaScript("$('#%s').autocomplete('option', 'delay', %s);".format(input.id(), delay()))
-    case "disabled" => Realtime.sendJavaScript("$('#%s').autocomplete('option', 'disabled', %s);".format(input.id(), disabled()))
-    case "minLength" => Realtime.sendJavaScript("$('#%s').autocomplete('option', 'minLength', %s);".format(input.id(), minLength()))
+  private def sendChanges(evt: PropertyChangeEvent[_]) = evt.property match {
+    case p if (p == autoFocus) => Realtime.sendJavaScript("$('#%s').autocomplete('option', 'autoFocus', %s);".format(input.id(), autoFocus()))
+    case p if (p == delay) => Realtime.sendJavaScript("$('#%s').autocomplete('option', 'delay', %s);".format(input.id(), delay()))
+    case p if (p == disabled) => Realtime.sendJavaScript("$('#%s').autocomplete('option', 'disabled', %s);".format(input.id(), disabled()))
+    case p if (p == minLength) => Realtime.sendJavaScript("$('#%s').autocomplete('option', 'minLength', %s);".format(input.id(), minLength()))
   }
 }
 

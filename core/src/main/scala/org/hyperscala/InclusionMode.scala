@@ -1,11 +1,11 @@
 package org.hyperscala
 
-import org.powerscala.{Enumerated, EnumEntry}
+import org.powerscala.enum.{Enumerated, EnumEntry}
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-sealed class InclusionMode extends EnumEntry[InclusionMode]
+class InclusionMode extends EnumEntry
 
 object InclusionMode extends Enumerated[InclusionMode] {
   val NotEmpty = new InclusionMode

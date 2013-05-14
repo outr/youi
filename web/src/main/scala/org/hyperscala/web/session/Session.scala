@@ -3,7 +3,7 @@ package org.hyperscala.web.session
 import org.powerscala.concurrent.Time._
 import org.powerscala.Updatable
 import org.powerscala.concurrent.WorkQueue
-import org.powerscala.event.{Listenable, Event}
+import org.powerscala.event.Listenable
 import org.hyperscala.web.site._
 import scala.Some
 import org.hyperscala.context.Contextual
@@ -73,10 +73,6 @@ trait Session extends Temporal with Listenable with WorkQueue {
   def values: Iterable[Any]
 
   def clear(): Unit
-
-  def fireLater(event: Event) = {
-    WorkQueue.enqueue(this, () => fire(event))
-  }
 
   def invokeLater(f: => Unit) = {
     WorkQueue.enqueue(this, () => f)

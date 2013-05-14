@@ -15,7 +15,7 @@ package object binder {
       input.value bind valueProperty
       valueProperty bind input.value
 
-      input.event.change := JavaScriptEvent()
+      input.changeEvent := JavaScriptEvent()
     }
   }
 
@@ -23,25 +23,27 @@ package object binder {
     def bind(textArea: tag.TextArea) = {
       textArea.content bind valueProperty
       valueProperty bind textArea.content
-      textArea.event.change := JavaScriptEvent()
+      textArea.changeEvent := JavaScriptEvent()
     }
   }
 
   implicit def inputInt = new Binder[tag.Input, Int] {
     def bind(input: tag.Input) = {
       input.value := valueProperty().toString
-      input.value.onChange {
-        valueProperty := (input.value().collect {
-          case c if (c.isDigit) => c
-        } match {
-          case "" => 0
-          case s => s.toInt
-        })
+      input.value.change.on {
+        case evt => {
+          valueProperty := (input.value().collect {
+            case c if (c.isDigit) => c
+          } match {
+            case "" => 0
+            case s => s.toInt
+          })
+        }
       }
-      valueProperty.onChange {
-        input.value := valueProperty().toString
+      valueProperty.change.on {
+        case evt => input.value := valueProperty().toString
       }
-      input.event.change := JavaScriptEvent()
+      input.changeEvent := JavaScriptEvent()
     }
   }
 

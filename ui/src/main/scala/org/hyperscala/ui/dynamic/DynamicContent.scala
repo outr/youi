@@ -8,7 +8,7 @@ import org.hyperscala.io.HTMLWriter
 import org.jdom2.input.{JDOMParseException, SAXBuilder}
 import java.io.{File, StringReader}
 import annotation.tailrec
-import org.powerscala.property.{CaseClassBinding, StandardProperty}
+import org.powerscala.property.{CaseClassBinding, Property}
 import org.hyperscala.web.site.Webpage
 import org.hyperscala.realtime.Realtime
 import java.net.URL
@@ -63,7 +63,7 @@ abstract class DynamicContent(existingId: String) extends Container[HTMLTag] wit
    * @tparam V the value type for association
    * @return T
    */
-  def bind[T <: HTMLTag, V](id: String, property: StandardProperty[_], hierarchy: String = null)(implicit binder: Binder[T, V]): T = {
+  def bind[T <: HTMLTag, V](id: String, property: Property[_], hierarchy: String = null)(implicit binder: Binder[T, V]): T = {
     val tag = load[T](id)
     bind[T, V](tag, property, hierarchy)
   }
@@ -93,7 +93,7 @@ abstract class DynamicContent(existingId: String) extends Container[HTMLTag] wit
    * @tparam V the value type for association
    * @return T
    */
-  def bind[T <: HTMLTag, V](tag: T, property: StandardProperty[_], hierarchy: String)(implicit binder: Binder[T, V]): T = {
+  def bind[T <: HTMLTag, V](tag: T, property: Property[_], hierarchy: String)(implicit binder: Binder[T, V]): T = {
     Webpage().require(Realtime)   // Make sure we have realtime access
     binder.bind(tag, property, hierarchy)
     tag
@@ -310,17 +310,18 @@ case class DynamicHTMLBlock(id: String, element: Element, original: String, tag:
 }
 
 abstract class Binder[T <: HTMLTag, V](implicit manifest: Manifest[V]) {
-  val valueProperty = new StandardProperty[V]("valueProperty")(parent = null, manifest = manifest)
+  val valueProperty = new Property[V]()(parent = null, manifest = manifest)
 
-  final def bind(t: T, property: StandardProperty[_], hierarchy: String): Unit = {
+  final def bind(t: T, property: Property[_], hierarchy: String): Unit = {
     if (hierarchy == null) {
-      property.asInstanceOf[StandardProperty[V]] bind valueProperty
-      valueProperty bind property.asInstanceOf[StandardProperty[V]]
+      property.asInstanceOf[Property[V]] bind valueProperty
+      valueProperty bind property.asInstanceOf[Property[V]]
     } else {
-      CaseClassBinding(property, hierarchy, valueProperty.asInstanceOf[StandardProperty[Any]])
+      CaseClassBinding(property, hierarchy, valueProperty.asInstanceOf[Property[Any]])
     }
+    println(s"Class: $getClass, T: $t, Hierarchy: $hierarchy")
     bind(t)
-    property.fireChanged()    // TODO: find a more efficient way to do this?
+    Property.fireChanged(property)    // TODO: find a more efficient way to do this?
   }
 
   def bind(t: T): Unit

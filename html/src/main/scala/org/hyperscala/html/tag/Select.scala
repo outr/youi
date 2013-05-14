@@ -5,8 +5,7 @@ import css.StyleSheet
 import html.{FormField, HTMLTag}
 import org.hyperscala.html.attributes._
 import org.hyperscala.html.constraints._
-import org.powerscala.property.event.PropertyChangeEvent
-import org.powerscala.property.{ListProperty, StandardProperty, Property}
+import org.powerscala.property.{ListProperty, Property}
 
 /**
  * NOTE: This file has been generated. Do not modify directly!
@@ -56,14 +55,14 @@ class Select extends Container[Option] with BodyChild with HTMLTag with FormFiel
   val multiple = PropertyAttribute[Boolean]("multiple", false)
   val size = PropertyAttribute[Int]("size", -1)
 
-  val selected = new StandardProperty[List[String]]("selected", Nil) with ListProperty[String]
-  val value = Property[String]("value", null)
+  val selected = new Property[List[String]](default = Some(Nil)) with ListProperty[String]
+  val value = Property[String]()
   def selectedOptions = selected().map(value => optionByValue(value).getOrElse(throw new NullPointerException("Unable to find option by value: %s".format(value))))
 
   def optionByValue(value: String) = contents.find(o => o.value() == value)
 
-  selected.listeners.synchronous {
-    case evt: PropertyChangeEvent => {
+  selected.change.on {
+    case evt => {
       val values = selectedValues
       val selected = values.map {
         case v => contents.find(o => o.value() == v || (o.value() == null && o.content == v))
@@ -75,8 +74,8 @@ class Select extends Container[Option] with BodyChild with HTMLTag with FormFiel
     }
   }
 
-  value.listeners.synchronous {
-    case evt: PropertyChangeEvent => {
+  value.change.on {
+    case evt => {
       val values = selectedValues
       val v = values.mkString("|")
       if (value() != v) {

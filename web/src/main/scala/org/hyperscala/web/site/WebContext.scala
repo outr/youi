@@ -1,6 +1,5 @@
 package org.hyperscala.web.site
 
-import org.powerscala.bus.Bus
 import com.outr.webcommunicator.URL
 import com.outr.webcommunicator.netty._
 import org.hyperscala.web.cookie.Cookies
@@ -23,7 +22,6 @@ object WebContext extends Context {
     override def onChange(page: Webpage) {
       super.onChange(value)
       Page.instance.set(page)
-      Bus.current = page.bus
     }
   }
   val headers = new ContextEntry[Map[String, String]]("headers")
@@ -37,7 +35,6 @@ object WebContext extends Context {
     super.contextualize(contextual) {
       webpage.get() match {
         case Some(page) => {
-          Bus.current = page.bus
           Page.instance.set(page)
         }
         case None => // Nothing to do here

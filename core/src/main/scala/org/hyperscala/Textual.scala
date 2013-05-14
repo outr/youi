@@ -3,13 +3,12 @@ package org.hyperscala
 import io.HTMLWriter
 import org.jdom2.{Element, Content}
 import persistence.StringPersistence
-import org.powerscala.property.PropertyParent
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-trait Textual extends Markup with PropertyParent {
-  val content = PropertyAttribute[String]("content", null, inclusion = InclusionMode.Exclude)(StringPersistence, implicitly[PropertyParent], implicitly[Manifest[String]])
+trait Textual extends Markup {
+  val content = PropertyAttribute[String]("content", null, inclusion = InclusionMode.Exclude)(StringPersistence, this, implicitly[Manifest[String]])
 
   private val children = List(new TextualChild(this))
   override def xmlChildren = if (content() == null || content() == "") {

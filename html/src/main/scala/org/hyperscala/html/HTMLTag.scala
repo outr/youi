@@ -1,20 +1,20 @@
 package org.hyperscala.html
 
 import attributes._
-import event.EventSupport
 import org.hyperscala._
 import io.HTMLWriter
 import org.hyperscala.html.tag._
 import org.hyperscala.css.{StyleSheet, StyleSheetProperty}
 import scala.collection.{Map => ScalaMap}
-import org.powerscala.property.StandardProperty
-import org.hyperscala.event.JavaScriptEvent
+import org.powerscala.property.Property
+import org.hyperscala.event._
+import org.hyperscala.event.processor._
 
 /**
  * NOTE: This file has been generated. Do not modify directly!
  * @author Matt Hicks <mhicks@hyperscala.org>
  */
-trait HTMLTag extends IdentifiableTag with EventSupport {
+trait HTMLTag extends IdentifiableTag {
   val accessKey = PropertyAttribute[Char]("accesskey", -1.toChar)
   val clazz = PropertyAttribute[List[String]]("class", Nil)
   val contentEditable = PropertyAttribute[ContentEditable]("contenteditable", null)
@@ -28,6 +28,76 @@ trait HTMLTag extends IdentifiableTag with EventSupport {
   val spellCheck = PropertyAttribute[Boolean]("spellcheck", false)
   val tabIndex = PropertyAttribute[Int]("tabindex", -1)
   val titleText = PropertyAttribute[String]("title", null)
+
+  val afterPrintEvent = new AfterPrintEventProcessor()
+  val beforePrintEvent = new BeforePrintEventProcessor()
+  val beforeOnLoadEvent = new BeforeOnLoadEventProcessor()
+  val hasChangeEvent = new HasChangeEventProcessor()
+  val loadEvent = new LoadEventProcessor()
+  val messageEvent = new MessageEventProcessor()
+  val offlineEvent = new OfflineEventProcessor()
+  val onlineEvent = new OnlineEventProcessor()
+  val pageHideEvent = new PageHideEventProcessor()
+  val pageShowEvent = new PageShowEventProcessor()
+  val popStateEvent = new PopStateEventProcessor()
+  val redoEvent = new RedoEventProcessor()
+  val resizeEvent = new ResizeEventProcessor()
+  val storageEvent = new StorageEventProcessor()
+  val undoEvent = new UndoEventProcessor()
+  val unLoadEvent = new UnLoadEventProcessor()
+  val blurEvent = new BlurEventProcessor()
+  val changeEvent = new ChangeEventProcessor()
+  val contextMenuEvent = new ContextMenuEventProcessor()
+  val focusEvent = new FocusEventProcessor()
+  val formChangeEvent = new FormChangeEventProcessor()
+  val formInputEvent = new FormInputEventProcessor()
+  val inputEvent = new InputEventProcessor()
+  val invalidEvent = new InvalidEventProcessor()
+  val resetEvent = new ResetEventProcessor()
+  val selectEvent = new SelectEventProcessor()
+  val submitEvent = new SubmitEventProcessor()
+  val keyDownEvent = new KeyDownEventProcessor()
+  val keyPressEvent = new KeyPressEventProcessor()
+  val keyUpEvent = new KeyUpEventProcessor()
+  val clickEvent = new ClickEventProcessor()
+  val doubleClickEvent = new DoubleClickEventProcessor()
+  val dragEvent = new DragEventProcessor()
+  val dragEndEvent = new DragEndEventProcessor()
+  val dragEnterEvent = new DragEnterEventProcessor()
+  val dragLeaveEvent = new DragLeaveEventProcessor()
+  val dragOverEvent = new DragOverEventProcessor()
+  val dragStartEvent = new DragStartEventProcessor()
+  val dropEvent = new DropEventProcessor()
+  val mouseDownEvent = new MouseDownEventProcessor()
+  val mouseMoveEvent = new MouseMoveEventProcessor()
+  val mouseOutEvent = new MouseOutEventProcessor()
+  val mouseOverEvent = new MouseOverEventProcessor()
+  val mouseUpEvent = new MouseUpEventProcessor()
+  val mouseWheelEvent = new MouseWheelEventProcessor()
+  val scrollEvent = new ScrollEventProcessor()
+  val abortEvent = new AbortEventProcessor()
+  val canPlayEvent = new CanPlayEventProcessor()
+  val canPlayThroughEvent = new CanPlayThroughEventProcessor()
+  val durationChangeEvent = new DurationChangeEventProcessor()
+  val emptiedEvent = new EmptiedEventProcessor()
+  val endedEvent = new EndedEventProcessor()
+  val errorEvent = new ErrorEventProcessor()
+  val loadedDataEvent = new LoadedDataEventProcessor()
+  val loadedMetaDataEvent = new LoadedMetaDataEventProcessor()
+  val loadStartEvent = new LoadStartEventProcessor()
+  val pauseEvent = new PauseEventProcessor()
+  val playEvent = new PlayEventProcessor()
+  val playingEvent = new PlayingEventProcessor()
+  val progressEvent = new ProgressEventProcessor()
+  val rateChangeEvent = new RateChangeEventProcessor()
+  val readyStateChangeEvent = new ReadyStateChangeEventProcessor()
+  val seekedEvent = new SeekedEventProcessor()
+  val seekingEvent = new SeekingEventProcessor()
+  val stalledEvent = new StalledEventProcessor()
+  val suspendEvent = new SuspendEventProcessor()
+  val timeUpdateEvent = new TimeUpdateEventProcessor()
+  val volumeChangeEvent = new VolumeChangeEventProcessor()
+  val waitingEvent = new WaitingEventProcessor()
 
   protected def init(name: String = null,
            accessKey: java.lang.Character = null,
@@ -96,9 +166,11 @@ trait HTMLTag extends IdentifiableTag with EventSupport {
     }
   }
 
-  def byName[T <: HTMLTag](name: String)(implicit manifest: Manifest[T]) = hierarchy.findAll[T](t => t.name() == name)(manifest)
-
-  def byTag[T <: HTMLTag](implicit manifest: Manifest[T]) = hierarchy.findAll[T](t => true)(manifest)
+  def byName[T <: HTMLTag](name: String)(implicit manifest: Manifest[T]) = {
+    byTag[T].collect {
+      case t if (t.name() == name) => t
+    }
+  }
 
   def outputString = {
     val b = new StringBuilder
@@ -108,7 +180,7 @@ trait HTMLTag extends IdentifiableTag with EventSupport {
     b.toString()
   }
 
-  def formValue: StandardProperty[String] = {
+  def formValue: Property[String] = {
     throw new UnsupportedOperationException("%s doesn't support updating value!".format(xmlLabel))
   }
 
@@ -134,6 +206,78 @@ trait HTMLTag extends IdentifiableTag with EventSupport {
       fire(evt)
     }
     case _ => super.receive(event, message)
+  }
+  
+  protected def fire(event: JavaScriptEvent) = event match {
+    case evt: AfterPrintEvent => afterPrintEvent.fire(evt)
+    case evt: BeforePrintEvent => beforePrintEvent.fire(evt)
+    case evt: BeforeOnLoadEvent => beforeOnLoadEvent.fire(evt)
+    case evt: HasChangeEvent => hasChangeEvent.fire(evt)
+    case evt: LoadEvent => loadEvent.fire(evt)
+    case evt: MessageEvent => messageEvent.fire(evt)
+    case evt: OfflineEvent => offlineEvent.fire(evt)
+    case evt: OnlineEvent => onlineEvent.fire(evt)
+    case evt: PageHideEvent => pageHideEvent.fire(evt)
+    case evt: PageShowEvent => pageShowEvent.fire(evt)
+    case evt: PopStateEvent => popStateEvent.fire(evt)
+    case evt: RedoEvent => redoEvent.fire(evt)
+    case evt: ResizeEvent => resizeEvent.fire(evt)
+    case evt: StorageEvent => storageEvent.fire(evt)
+    case evt: UndoEvent => undoEvent.fire(evt)
+    case evt: UnLoadEvent => unLoadEvent.fire(evt)
+    case evt: BlurEvent => blurEvent.fire(evt)
+    case evt: ChangeEvent => changeEvent.fire(evt)
+    case evt: ContextMenuEvent => contextMenuEvent.fire(evt)
+    case evt: FocusEvent => focusEvent.fire(evt)
+    case evt: FormChangeEvent => formChangeEvent.fire(evt)
+    case evt: FormInputEvent => formInputEvent.fire(evt)
+    case evt: InputEvent => inputEvent.fire(evt)
+    case evt: InvalidEvent => invalidEvent.fire(evt)
+    case evt: ResetEvent => resetEvent.fire(evt)
+    case evt: SelectEvent => selectEvent.fire(evt)
+    case evt: SubmitEvent => submitEvent.fire(evt)
+    case evt: KeyDownEvent => keyDownEvent.fire(evt)
+    case evt: KeyPressEvent => keyPressEvent.fire(evt)
+    case evt: KeyUpEvent => keyUpEvent.fire(evt)
+    case evt: ClickEvent => clickEvent.fire(evt)
+    case evt: DoubleClickEvent => doubleClickEvent.fire(evt)
+    case evt: DragEvent => dragEvent.fire(evt)
+    case evt: DragEndEvent => dragEndEvent.fire(evt)
+    case evt: DragEnterEvent => dragEnterEvent.fire(evt)
+    case evt: DragLeaveEvent => dragLeaveEvent.fire(evt)
+    case evt: DragOverEvent => dragOverEvent.fire(evt)
+    case evt: DragStartEvent => dragStartEvent.fire(evt)
+    case evt: DropEvent => dropEvent.fire(evt)
+    case evt: MouseDownEvent => mouseDownEvent.fire(evt)
+    case evt: MouseMoveEvent => mouseMoveEvent.fire(evt)
+    case evt: MouseOutEvent => mouseOutEvent.fire(evt)
+    case evt: MouseOverEvent => mouseOverEvent.fire(evt)
+    case evt: MouseUpEvent => mouseUpEvent.fire(evt)
+    case evt: MouseWheelEvent => mouseWheelEvent.fire(evt)
+    case evt: ScrollEvent => scrollEvent.fire(evt)
+    case evt: AbortEvent => abortEvent.fire(evt)
+    case evt: CanPlayEvent => canPlayEvent.fire(evt)
+    case evt: CanPlayThroughEvent => canPlayThroughEvent.fire(evt)
+    case evt: DurationChangeEvent => durationChangeEvent.fire(evt)
+    case evt: EmptiedEvent => emptiedEvent.fire(evt)
+    case evt: EndedEvent => endedEvent.fire(evt)
+    case evt: ErrorEvent => errorEvent.fire(evt)
+    case evt: LoadedDataEvent => loadedDataEvent.fire(evt)
+    case evt: LoadedMetaDataEvent => loadedMetaDataEvent.fire(evt)
+    case evt: LoadStartEvent => loadStartEvent.fire(evt)
+    case evt: PauseEvent => pauseEvent.fire(evt)
+    case evt: PlayEvent => playEvent.fire(evt)
+    case evt: PlayingEvent => playingEvent.fire(evt)
+    case evt: ProgressEvent => progressEvent.fire(evt)
+    case evt: RateChangeEvent => rateChangeEvent.fire(evt)
+    case evt: ReadyStateChangeEvent => readyStateChangeEvent.fire(evt)
+    case evt: SeekedEvent => seekedEvent.fire(evt)
+    case evt: SeekingEvent => seekingEvent.fire(evt)
+    case evt: StalledEvent => stalledEvent.fire(evt)
+    case evt: SuspendEvent => suspendEvent.fire(evt)
+    case evt: TimeUpdateEvent => timeUpdateEvent.fire(evt)
+    case evt: VolumeChangeEvent => volumeChangeEvent.fire(evt)
+    case evt: WaitingEvent => waitingEvent.fire(evt)
   }
 }
 

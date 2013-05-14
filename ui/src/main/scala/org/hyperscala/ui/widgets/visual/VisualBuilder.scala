@@ -1,7 +1,7 @@
 package org.hyperscala.ui.widgets.visual
 
 import `type`.VisualType
-import org.powerscala.property.StandardProperty
+import org.powerscala.property.Property
 
 import language.existentials
 
@@ -24,7 +24,7 @@ case class VisualBuilder[T](_name: String = null,
                             _validateOnChange: Boolean = false,
                             _visualType: Option[VisualType[T]] = None,
                             _group: String = null,
-                            _bindProperty: StandardProperty[_] = null,
+                            _bindProperty: Property[_] = null,
                             _bindHierarchy: String = null,
                             bindValueUpdatesProperty: Boolean = true,
                             bindPropertyUpdatesValue: Boolean = true)
@@ -72,7 +72,7 @@ case class VisualBuilder[T](_name: String = null,
   def group(_group: String) = copy(_group = _group)
   def bindProperty = _bindProperty
   def bindHierarchy = _bindHierarchy
-  def bind(b: StandardProperty[_], hierarchy: String, valueUpdatesProperty: Boolean = true, propertyUpdatesValue: Boolean = true) = {
+  def bind(b: Property[_], hierarchy: String, valueUpdatesProperty: Boolean = true, propertyUpdatesValue: Boolean = true) = {
     copy(_bindProperty = b,
          _bindHierarchy = hierarchy,
          bindValueUpdatesProperty = valueUpdatesProperty,

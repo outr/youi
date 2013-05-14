@@ -5,9 +5,9 @@ import org.powerscala.Version
 import org.hyperscala.web.site.{Webpage, Website}
 import org.hyperscala.html._
 import org.hyperscala.realtime.Realtime
-import org.powerscala.property.{PropertyParent, Property}
+import org.powerscala.property.Property
 import java.util.concurrent.atomic.AtomicBoolean
-import org.powerscala.property.event.PropertyChangeEvent
+import org.powerscala.event.Listenable
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -38,7 +38,7 @@ object DynamicURL extends Module {
   }
 }
 
-case class DynamicURLInstance(webpage: Webpage) extends PropertyParent {
+case class DynamicURLInstance(webpage: Webpage) extends Listenable {
   val name = () => "DynamicURLInstance"
   def parent = null
 
@@ -46,7 +46,7 @@ case class DynamicURLInstance(webpage: Webpage) extends PropertyParent {
    * Represents the map of key/value pairs in the hash. This should generally not be manipulated directly but rather
    * you should use the property method to create properties that represent the keys you wish to mainpulate and/or read.
    */
-  val map = Property[Map[String, String]]("map", Map.empty[String, String])
+  val map = Property[Map[String, String]](default = Some(Map.empty[String, String]))
   private val changing = new AtomicBoolean(false)
 
   listenForBrowserChanges()
@@ -61,21 +61,21 @@ case class DynamicURLInstance(webpage: Webpage) extends PropertyParent {
    * @return new property bound multi-directionally to changes in the hash
    */
   def property[T](name: String, default: T)(implicit t2s: T => String, s2t: String => T, manifest: Manifest[T]) = {
-    val initial = map.get(name) match {
+    val initial = map().get(name) match {
       case Some(value) => s2t(value)
       case None => default
     }
-    val p = Property[T](name, initial)
-    map.onChange {    // Update the property when the map changes
-      synchronized {
-        map.get(name) match {
+    val p = Property[T](default = Some(initial))
+    map.change.on {    // Update the property when the map changes
+      case evt => synchronized {
+        map().get(name) match {
           case Some(value) => p := s2t(value)
           case None => // Ignore
         }
       }
     }
-    p.onChange {      // Update the map when the property changes
-      synchronized {
+    p.change.on {      // Update the map when the property changes
+      case evt => synchronized {
         val updated = map() + (name -> t2s(p()))
         map := updated
       }
@@ -118,9 +118,9 @@ case class DynamicURLInstance(webpage: Webpage) extends PropertyParent {
 
   private def listenForServerChanges() = {
     import java.net.URLEncoder.encode
-    map.listeners.synchronous {
-      case evt: PropertyChangeEvent if (!changing.get()) => {
-        val hashString = map.collect {
+    map.change.on {
+      case evt => if (!changing.get()) {
+        val hashString = map().collect {
           case (key, value) if (value != null) => "%s%s%s".format(encode(key, "UTF-8"), DynamicURL.splitCharacter, encode(value, "UTF-8"))
         }.mkString(DynamicURL.delineationCharacter.toString)
         Realtime.sendJavaScript("setHash(content);", content = hashString, onlyRealtime = false)

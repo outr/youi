@@ -4,10 +4,11 @@ import org.hyperscala.html._
 import org.hyperscala.examples.Example
 import org.hyperscala.web.site.Webpage
 import org.hyperscala.ui.module.DynamicURL
-import org.hyperscala.event.{ClickEvent, JavaScriptEvent}
+import org.hyperscala.event.JavaScriptEvent
 
-import org.powerscala.convert.string._
+//import org.powerscala.convert.string._
 import language.reflectiveCalls
+import language.implicitConversions
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -15,20 +16,27 @@ import language.reflectiveCalls
 class DynamicURLExample extends Example {
   Webpage().require(DynamicURL)
 
+  implicit def i2s(i: Int) = i.toString
+  implicit def s2i(s: String) = try {
+    s.toInt
+  } catch {
+    case t: Throwable => 0
+  }
+
   val test = DynamicURL().property("test", "")
-  test.onChange {
-    writeValues()
+  test.change.on {
+    case evt => writeValues()
   }
   val num = DynamicURL().property("num", 2)
-  num.onChange {
-    writeValues()
+  num.change.on {
+    case evt => writeValues()
   }
 
   contents += new tag.Button(content = "Set Hash") {
-    event.click := JavaScriptEvent()
+    clickEvent := JavaScriptEvent()
 
-    listeners.synchronous {
-      case evt: ClickEvent => {
+    clickEvent.on {
+      case evt => {
         test := "hello"
         num := 5
       }

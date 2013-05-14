@@ -2,12 +2,15 @@ package org.hyperscala
 
 import event.EventReceived
 import org.powerscala.reflect._
-import org.powerscala.bus.Routing
+import org.hyperscala.event.processor.EventReceivedProcessor
+import org.powerscala.event.Intercept
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */
 trait IdentifiableTag extends Tag {
+  val eventReceived = new EventReceivedProcessor()
+
   val id = PropertyAttribute[String]("id", null)
 
   /**
@@ -23,9 +26,9 @@ trait IdentifiableTag extends Tag {
   }
 
   def receive(event: String, message: Message): Unit = {
-    fire(EventReceived(event, message)) match {
-      case Routing.Stop => // Handled
-      case _ => warn("IdentifiableTag.receive: Unhandled inbound message. Event: %s, Tag: %s, Message: %s".format(event, getClass.getName, message))
+    eventReceived.fire(EventReceived(event, message)) match {
+      case Intercept.Stop => // Handled
+      case _ => warn("IdentifiableTag.receive: Unhandled inbound message. Event: %s, Tag: %s (%s), Message: %s".format(event, getClass.getName, xmlLabel, message))
     }
   }
 
@@ -35,12 +38,12 @@ trait IdentifiableTag extends Tag {
    * @param event the name of the event being received
    * @param f the function to receive the message
    */
-  def handle(event: String)(f: Message => Unit): Unit = {
-    listeners.synchronous {
-      case evt: EventReceived if (evt.event == event) => {
-        f(evt.message)
-        Routing.Stop
-      }
+  def handle(event: String)(f: Message => Unit): Unit = eventReceived.on {
+    case evt => if (evt.event == event) {
+      f(evt.message)
+      Intercept.Stop
+    } else {
+      Intercept.Continue
     }
   }
 }

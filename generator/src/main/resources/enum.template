@@ -1,6 +1,6 @@
 package org.hyperscala.%1$s.attributes
 
-import org.powerscala.{Enumerated, EnumEntry}
+import org.powerscala.enum.{Enumerated, EnumEntry}
 import org.hyperscala.persistence.EnumEntryPersistence
 import org.hyperscala.AttributeValue
 
@@ -8,7 +8,7 @@ import org.hyperscala.AttributeValue
  * NOTE: This file has been generated. Do not modify directly!
  * @author Matt Hicks <mhicks@hyperscala.org>
  */
-sealed class %2$s(val value: String) extends EnumEntry[%2$s] with AttributeValue
+sealed class %2$s(val value: String) extends EnumEntry with AttributeValue
 
 object %2$s extends Enumerated[%2$s] with EnumEntryPersistence[%2$s] {
   %3$s

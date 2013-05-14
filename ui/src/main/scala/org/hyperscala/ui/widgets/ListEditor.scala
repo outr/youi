@@ -4,9 +4,7 @@ import org.hyperscala.html._
 import org.powerscala.property._
 import org.hyperscala.html.constraints.BodyChild
 import org.hyperscala.css.attributes._
-import org.powerscala.property.event.PropertyChangingEvent
-import org.powerscala.bus.Routing
-import org.hyperscala.event.{ClickEvent, JavaScriptEvent}
+import org.hyperscala.event.JavaScriptEvent
 import org.powerscala.reflect._
 
 import language.reflectiveCalls
@@ -20,12 +18,12 @@ trait ListEditor[T] extends tag.Div {
 
   val defaultValue = manifest.runtimeClass.defaultForType[T]
 
-  val list = new StandardProperty[List[T]]("list", Nil)(this, Manifest.classType[List[T]](classOf[List[T]])) with ListProperty[T] {
+  val list = new Property[List[T]](default = Some(Nil))(this, Manifest.classType[List[T]](classOf[List[T]])) with ListProperty[T] {
     override def +=(t: T) = if (!value.contains(t)) {   // No duplicates allowed
       super.+=(t)
     }
   }
-  val current = new StandardProperty[T]("current")(this, manifest)
+  val current = new Property[T]()(this, manifest)
 
   val listDiv = new tag.Div
   val editorDiv = new tag.Div {
@@ -37,11 +35,15 @@ trait ListEditor[T] extends tag.Div {
   }
   val editor = createEditor()
 
-  list.listeners.synchronous {
-    case evt: PropertyChangingEvent if (evt.newValue == null) => Routing.Stop   // Nulls not allowed
+  list.changing.on {
+    case evt => if (evt == null) {
+      None      // Nulls not allowed
+    } else {
+      Some(evt)
+    }
   }
-  list.onChange {
-    updateList()
+  list.change.on {
+    case evt => updateList()
   }
 
   override protected def initialize() {
@@ -58,10 +60,10 @@ trait ListEditor[T] extends tag.Div {
     editorDiv.contents += editor
 
     editorButtons.contents += new tag.Button(content = "Add") {
-      event.click := JavaScriptEvent()
+      clickEvent := JavaScriptEvent()
 
-      listeners.synchronous {
-        case evt: ClickEvent => addCurrent()
+      clickEvent.on {
+        case evt => addCurrent()
       }
     }
   }
@@ -119,10 +121,10 @@ trait ListEditorItem[T] extends BodyChild {
 class DefaultListEditorItem[T](val value: T, editor: ListEditor[T]) extends tag.Div with ListEditorItem[T] {
   contents += value.toString
   contents += new tag.Button(content = "Delete") {
-    event.click := JavaScriptEvent()
+    clickEvent := JavaScriptEvent()
 
-    listeners.synchronous {
-      case evt: ClickEvent => delete()
+    clickEvent.on {
+      case evt => delete()
     }
   }
 

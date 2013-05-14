@@ -2,9 +2,9 @@ package org.hyperscala.svg
 
 import attributes.{Transform, XMLSpace}
 import event._
-import org.hyperscala.{IdentifiableTag, PropertyAttribute}
-import org.hyperscala.Message
+import org.hyperscala.{IdentifiableTag, PropertyAttribute, Message}
 import org.hyperscala.io.HTMLWriter
+import org.hyperscala.svg.event.processor._
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
@@ -18,7 +18,32 @@ trait SVGTag extends IdentifiableTag {
   val externalResourcesRequired = PropertyAttribute[Boolean]("externalResourcesRequired", false)
   val transform = PropertyAttribute[List[Transform]]("transform", Nil)
 
-  def byTag[T <: SVGTag](implicit manifest: Manifest[T]) = hierarchy.findAll[T](t => true)(manifest)
+  val focusInEvent = new SVGFocusInEventProcessor()
+  val focusOutEvent = new SVGFocusOutEventProcessor()
+  val activateEvent = new SVGActivateEventProcessor()
+  val clickEvent = new SVGClickEventProcessor()
+  val mouseDownEvent = new SVGMouseDownEventProcessor()
+  val mouseUpEvent = new SVGMouseUpEventProcessor()
+  val mouseOverEvent = new SVGMouseOverEventProcessor()
+  val mouseMoveEvent = new SVGMouseMoveEventProcessor()
+  val mouseOutEvent = new SVGMouseOutEventProcessor()
+  val dOMSubtreeModifiedEvent = new SVGDOMSubtreeModifiedEventProcessor()
+  val dOMNodeInsertedEvent = new SVGDOMNodeInsertedEventProcessor()
+  val dOMNodeRemovedEvent = new SVGDOMNodeRemovedEventProcessor()
+  val dOMNodeRemovedFromDocumentEvent = new SVGDOMNodeRemovedFromDocumentEventProcessor()
+  val dOMNodeInsertedIntoDocumentEvent = new SVGDOMNodeInsertedIntoDocumentEventProcessor()
+  val dOMAttrModifiedEvent = new SVGDOMAttrModifiedEventProcessor()
+  val dOMCharacterDataModifiedEvent = new SVGDOMCharacterDataModifiedEventProcessor()
+  val loadEvent = new SVGLoadEventProcessor()
+  val unloadEvent = new SVGUnloadEventProcessor()
+  val abortEvent = new SVGAbortEventProcessor()
+  val errorEvent = new SVGErrorEventProcessor()
+  val resizeEvent = new SVGResizeEventProcessor()
+  val scrollEvent = new SVGScrollEventProcessor()
+  val zoomEvent = new SVGZoomEventProcessor()
+  val beginEvent = new SVGBeginEventProcessor()
+  val endEvent = new SVGEndEventProcessor()
+  val repeatEvent = new SVGRepeatEventProcessor()
 
   def outputString = {
     val b = new StringBuilder
@@ -96,5 +121,34 @@ trait SVGTag extends IdentifiableTag {
       fire(evt)
     }
     case _ => super.receive(event, message)
+  }
+  
+  protected def fire(event: SVGEvent) = event match {
+    case evt: SVGFocusInEvent => focusInEvent.fire(evt)
+    case evt: SVGFocusOutEvent => focusOutEvent.fire(evt)
+    case evt: SVGActivateEvent => activateEvent.fire(evt)
+    case evt: SVGClickEvent => clickEvent.fire(evt)
+    case evt: SVGMouseDownEvent => mouseDownEvent.fire(evt)
+    case evt: SVGMouseUpEvent => mouseUpEvent.fire(evt)
+    case evt: SVGMouseOverEvent => mouseOverEvent.fire(evt)
+    case evt: SVGMouseMoveEvent => mouseMoveEvent.fire(evt)
+    case evt: SVGMouseOutEvent => mouseOutEvent.fire(evt)
+    case evt: SVGDOMSubtreeModifiedEvent => dOMSubtreeModifiedEvent.fire(evt)
+    case evt: SVGDOMNodeInsertedEvent => dOMNodeInsertedEvent.fire(evt)
+    case evt: SVGDOMNodeRemovedEvent => dOMNodeRemovedEvent.fire(evt)
+    case evt: SVGDOMNodeRemovedFromDocumentEvent => dOMNodeRemovedFromDocumentEvent.fire(evt)
+    case evt: SVGDOMNodeInsertedIntoDocumentEvent => dOMNodeInsertedIntoDocumentEvent.fire(evt)
+    case evt: SVGDOMAttrModifiedEvent => dOMAttrModifiedEvent.fire(evt)
+    case evt: SVGDOMCharacterDataModifiedEvent => dOMCharacterDataModifiedEvent.fire(evt)
+    case evt: SVGLoadEvent => loadEvent.fire(evt)
+    case evt: SVGUnloadEvent => unloadEvent.fire(evt)
+    case evt: SVGAbortEvent => abortEvent.fire(evt)
+    case evt: SVGErrorEvent => errorEvent.fire(evt)
+    case evt: SVGResizeEvent => resizeEvent.fire(evt)
+    case evt: SVGScrollEvent => scrollEvent.fire(evt)
+    case evt: SVGZoomEvent => zoomEvent.fire(evt)
+    case evt: SVGBeginEvent => beginEvent.fire(evt)
+    case evt: SVGEndEvent => endEvent.fire(evt)
+    case evt: SVGRepeatEvent => repeatEvent.fire(evt)
   }
 }

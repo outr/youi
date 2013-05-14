@@ -144,15 +144,15 @@ object Realtime extends Module {
   def connectStandard() = {
     Webpage().live[FormField] {
       case field => {
-        field.event.change := JavaScriptEvent()
+        field.changeEvent := JavaScriptEvent()
         field match {
-          case i: tag.Input => field.event.click := JavaScriptEvent()
+          case i: tag.Input => field.clickEvent := JavaScriptEvent()
           case _ => // Not an input
         }
       }
     }
     Webpage().live[tag.Button] {
-      case b => b.event.click := JavaScriptEvent()
+      case b => b.clickEvent := JavaScriptEvent()
     }
   }
 
@@ -162,21 +162,21 @@ object Realtime extends Module {
   def connectForm() = {
     Webpage().live[FormField] {
       case field => {
-        field.event.change := JavaScriptEvent(preventDefault = false)
+        field.changeEvent := JavaScriptEvent(preventDefault = false)
         field match {
-          case i: tag.Input => if (field.event.click() == null) {
-            field.event.click := JavaScriptEvent(preventDefault = false)
+          case i: tag.Input => if (field.clickEvent() == null) {
+            field.clickEvent := JavaScriptEvent(preventDefault = false)
           }
           case _ => // Not an input
         }
       }
     }
     Webpage().live[tag.Button] {
-      case b => if (b.event.click() == null) b.event.click := JavaScriptEvent(preventDefault = false)
+      case b => if (b.clickEvent() == null) b.clickEvent := JavaScriptEvent(preventDefault = false)
     }
     Webpage().live[tag.Form] {
       case f => {
-        if (f.event.submit() == null) f.event.submit := JavaScriptEvent()
+        if (f.submitEvent() == null) f.submitEvent := JavaScriptEvent()
       }
     }
   }
@@ -186,7 +186,7 @@ object Realtime extends Module {
    */
   def connectPost() = {
     Webpage().live[tag.Form] {
-      case f => if (f.event.submit() == null) f.event.submit := JavaScriptEvent(fireChange = true)
+      case f => if (f.submitEvent() == null) f.submitEvent := JavaScriptEvent(fireChange = true)
     }
   }
 }

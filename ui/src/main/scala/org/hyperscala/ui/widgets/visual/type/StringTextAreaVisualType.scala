@@ -1,6 +1,6 @@
 package org.hyperscala.ui.widgets.visual.`type`
 
-import org.powerscala.property.StandardProperty
+import org.powerscala.property.Property
 import org.hyperscala.html._
 import org.hyperscala.ui.widgets.visual.VisualBuilder
 import org.hyperscala.event.JavaScriptEvent
@@ -15,17 +15,17 @@ import language.reflectiveCalls
 object StringTextAreaVisualType extends VisualType[String] {
   def valid(details: VisualBuilder[_]) = details.clazz == classOf[String] && details.selection == null && details.multiLine
 
-  def create(property: StandardProperty[String], details: VisualBuilder[String]) = new tag.TextArea {
+  def create(property: Property[String], details: VisualBuilder[String]) = new tag.TextArea {
     Webpage().require(Realtime)
 
-    event.change := JavaScriptEvent()
+    changeEvent := JavaScriptEvent()
 
-    property.onChange {
-      updateInput()
+    property.change.on {
+      case evt => updateInput()
     }
 
-    value.onChange {
-      updateProperty()
+    value.change.on {
+      case evt => updateProperty()
     }
 
     def updateInput() = value := property()

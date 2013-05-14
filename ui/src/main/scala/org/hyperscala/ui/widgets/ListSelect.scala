@@ -1,7 +1,7 @@
 package org.hyperscala.ui.widgets
 
 import org.hyperscala.html._
-import org.powerscala.property.{ListProperty, StandardProperty}
+import org.powerscala.property.{ListProperty, Property}
 import visual.Stringify
 
 /**
@@ -10,40 +10,43 @@ import visual.Stringify
 class ListSelect[T](values: Seq[T], nullAllowed: Boolean = false)(implicit manifest: Manifest[T]) extends tag.Div with Stringify[T] {
   val select = new tag.Select
 
-  override val event = select.event
   def multiple = select.multiple
 
-  val selected = new StandardProperty[List[T]]("selected", Nil) with ListProperty[T]
+  val selected = new Property[List[T]](default = Some(Nil)) with ListProperty[T]
   private var changing = false
-  selected.onChange {
-    if (!changing) {
-      var break = false
-      val selection = selected().map {
-        case null if (!nullAllowed) => select.contents.headOption match {
-          case Some(first) => toString(first.asInstanceOf[ListSelectItem[T]].item)
-          case None => {
-            break = true
-            null
-          } // Nothing we can do right now
+  selected.change.on {
+    case evt => {
+      if (!changing) {
+        var break = false
+        val selection = selected().map {
+          case null if (!nullAllowed) => select.contents.headOption match {
+            case Some(first) => toString(first.asInstanceOf[ListSelectItem[T]].item)
+            case None => {
+              break = true
+              null
+            } // Nothing we can do right now
+          }
+          case t => toString(t)
         }
-        case t => toString(t)
-      }
-      if (!break) {
-        select.selected := selection
+        if (!break) {
+          select.selected := selection
+        }
       }
     }
   }
-  select.selected.onChange {
-    changing = true
-    try {
-      selected := select.selectedOptions.map(o => o.asInstanceOf[ListSelectItem[T]].item).filterNot(t => t == null)
-    } catch {
-      case t: Throwable => {
-        t.printStackTrace()
-        select.contents.foreach(o => println("*** Option: %s".format(o.value())))
+  select.selected.change.on {
+    case evt => {
+      changing = true
+      try {
+        selected := select.selectedOptions.map(o => o.asInstanceOf[ListSelectItem[T]].item).filterNot(t => t == null)
+      } catch {
+        case t: Throwable => {
+          t.printStackTrace()
+          select.contents.foreach(o => println("*** Option: %s".format(o.value())))
+        }
+      } finally {
+        changing = false
       }
-    } finally {
-      changing = false
     }
   }
 

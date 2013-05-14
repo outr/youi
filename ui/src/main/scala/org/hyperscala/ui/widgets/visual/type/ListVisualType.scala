@@ -1,6 +1,6 @@
 package org.hyperscala.ui.widgets.visual.`type`
 
-import org.powerscala.property.StandardProperty
+import org.powerscala.property.Property
 import org.hyperscala.ui.widgets.visual.VisualBuilder
 import org.hyperscala.ui.widgets.ListSelect
 import org.hyperscala.web.site.Webpage
@@ -15,17 +15,17 @@ import language.reflectiveCalls
 object ListVisualType extends VisualType[Any] {
   def valid(details: VisualBuilder[_]) = details.selection != null
 
-  def create(property: StandardProperty[Any], details: VisualBuilder[Any]) = {
+  def create(property: Property[Any], details: VisualBuilder[Any]) = {
     val list = new ListSelect[Any](values = details.selection, nullAllowed = details.nullAllowed) {
       Webpage().require(Realtime)
 
-      event.change := JavaScriptEvent()
+      changeEvent := JavaScriptEvent()
 
-      property.onChange {
-        updateSelect()
+      property.change.on {
+        case evt => updateSelect()
       }
-      selected.onChange {
-        updateProperty()
+      selected.change.on {
+        case evt => updateProperty()
       }
 
       def updateSelect() = selected := List(property())

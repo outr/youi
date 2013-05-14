@@ -1,6 +1,6 @@
 package org.hyperscala.ui.widgets.visual
 
-import org.powerscala.property.{PropertyParent, StandardProperty}
+import org.powerscala.property.Property
 import org.powerscala.event.Listenable
 
 import org.hyperscala.html._
@@ -8,10 +8,10 @@ import org.hyperscala.html._
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-trait Visual[T] extends tag.Div with PropertyParent with Listenable with Stringify[T] {
+trait Visual[T] extends tag.Div with Listenable with Stringify[T] {
   def manifest: Manifest[T]
 
-  val property = new StandardProperty[T]("property")(this, manifest)
+  val property = new Property[T]()(this, manifest)
 
   def toString(t: T) = property() match {
     case null => ""

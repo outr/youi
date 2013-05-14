@@ -1,6 +1,6 @@
 package org.hyperscala.jquery.ui
 
-import org.powerscala.{Enumerated, EnumEntry}
+import org.powerscala.enum.{Enumerated, EnumEntry}
 
 /**
  * jQuery UI Easings
@@ -8,8 +8,8 @@ import org.powerscala.{Enumerated, EnumEntry}
  * @see http://api.jqueryui.com/easings/
  * @author Matt Hicks <mhicks@outr.com>
  */
-sealed class Easing extends EnumEntry[Easing] {
-  lazy val easingName = cs(name())
+sealed class Easing extends EnumEntry {
+  lazy val easingName = cs(name)
 
   protected def cs(s: String) = s.charAt(0).toLower + s.substring(1)
 }

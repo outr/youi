@@ -1,15 +1,15 @@
 package org.hyperscala.html
 
 import constraints.BodyChild
-import org.powerscala.property.StandardProperty
 import org.hyperscala.{Message, PropertyAttribute}
+import org.powerscala.property.Property
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
 trait FormField extends BodyChild {
   def disabled: PropertyAttribute[Boolean]
-  def value: StandardProperty[String]
+  def value: Property[String]
 
   override def receive(event: String, message: Message) = event match {
     case "change" => {
@@ -27,7 +27,7 @@ trait FormField extends BodyChild {
 }
 
 object FormField {
-  private val _changingProperty = new ThreadLocal[StandardProperty[String]]()
+  private val _changingProperty = new ThreadLocal[Property[String]]()
   private val _changingValue = new ThreadLocal[String]()
   private def clear() = {
     _changingProperty.remove()

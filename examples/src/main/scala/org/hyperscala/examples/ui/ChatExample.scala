@@ -1,9 +1,9 @@
 package org.hyperscala.examples.ui
 
 import org.hyperscala.html._
-import org.hyperscala.event.{ChangeEvent, ClickEvent, JavaScriptEvent}
+import org.hyperscala.event.JavaScriptEvent
 import org.hyperscala.web.site.{SessionContextualizable, Website, Webpage}
-import org.powerscala.property.StandardProperty
+import org.powerscala.property.Property
 import annotation.tailrec
 import org.hyperscala.jquery.jQuery
 import org.hyperscala.realtime.Realtime
@@ -16,7 +16,7 @@ import language.reflectiveCalls
 class ChatExample extends Webpage {
   Webpage().require(Realtime)
 
-  val nickname = new StandardProperty[String]
+  val nickname = new Property[String]
 
   body.style.fontFamily = "Helvetica, sans-serif"
 
@@ -27,15 +27,15 @@ class ChatExample extends Webpage {
   val submit = chatMain.load[tag.Button]("submit")
   val messages = chatMain.load[tag.Div]("messages")
 
-  chatName.event.change := JavaScriptEvent()
-  message.event.change := JavaScriptEvent()
-  submit.event.click := JavaScriptEvent()
+  chatName.changeEvent := JavaScriptEvent()
+  message.changeEvent := JavaScriptEvent()
+  submit.clickEvent := JavaScriptEvent()
 
-  chatName.listeners.synchronous {
-    case evt: ChangeEvent => updateNickname()
+  chatName.changeEvent.on {
+    case evt => updateNickname()
   }
-  submit.listeners.synchronous {
-    case evt: ClickEvent => sendMessage()
+  submit.clickEvent.on {
+    case evt => sendMessage()
   }
 
   body.contents += chatMain

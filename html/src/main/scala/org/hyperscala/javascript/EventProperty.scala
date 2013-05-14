@@ -1,11 +1,11 @@
 package org.hyperscala.javascript
 
-import org.hyperscala.PropertyAttribute
+import org.hyperscala.{Markup, PropertyAttribute}
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */
-trait EventProperty extends PropertyAttribute[JavaScriptContent] {
+class EventProperty(name: String)(implicit markup: Markup) extends PropertyAttribute[JavaScriptContent](name, null) {
   /**
    * Concatenation of JavaScript support
    */

@@ -7,7 +7,7 @@ import org.hyperscala.html.tag.{Text, Title}
 import org.hyperscala.css.{StyleSheetProperty, StyleSheet}
 import org.hyperscala.javascript.{EventProperty, JavaScriptString}
 import org.hyperscala.css.attributes.Length
-import org.powerscala.EnumEntry
+import org.powerscala.enum.EnumEntry
 
 import org.powerscala.reflect._
 
@@ -38,7 +38,7 @@ abstract class ScalaBuffer {
         case _ => {
           val attributes = tag.xmlAttributes.collect {
             case a: PropertyAttribute[_] if (a.shouldRender && !a.isInstanceOf[EventProperty] && !a.isInstanceOf[StyleSheetProperty] && a() != null) => {
-              "%s = %s".format(namify(tag, a), valuify(tag, a.name(), a()))
+              "%s = %s".format(namify(tag, a), valuify(tag, a.name, a()))
             }
           }.mkString(", ")
           val constructor = attributes.nonEmpty match {
@@ -89,11 +89,11 @@ abstract class ScalaBuffer {
     // Write event data
     tag.xmlAttributes.foreach {
       case a: PropertyAttribute[_] with EventProperty if (a.shouldRender) => {
-        writeLine("event.%s := %s".format(a.name().substring(2), valuify(tag, a.name(), a())), prefix)
+        writeLine("event.%s := %s".format(a.name.substring(2), valuify(tag, a.name, a())), prefix)
       }
       case a: PropertyAttribute[_] if (a.shouldRender && all) => {
         // Write out attributes that could be in constructor - used in <body>
-        writeLine("%s := %s".format(namify(tag, a), valuify(tag, a.name(), a())), prefix)
+        writeLine("%s := %s".format(namify(tag, a), valuify(tag, a.name, a())), prefix)
       }
       case _ => // Ignore
     }
@@ -120,9 +120,9 @@ abstract class ScalaBuffer {
     case s: String => "\"%s\"".format(s)
     case l: List[_] if (name == "class") => "List(%s)".format(l.map(v => "\"%s\"".format(v)).mkString(", "))
     case js: JavaScriptString => "JavaScriptString(%s)".format(createWrappedString(js.content))
-    case l: Length if (l.name() == null && l.value.endsWith("px")) => "%s.px".format(l.pixels)
-    case l: Length if (l.name() == null && l.value.endsWith("%")) => "%s.pct".format(l.percent)
-    case e: EnumEntry[_] => "%s.%s".format(e.parent.name, e.name())
+    case l: Length if (l.name == null && l.value.endsWith("px")) => "%s.px".format(l.pixels)
+    case l: Length if (l.name == null && l.value.endsWith("%")) => "%s.pct".format(l.percent)
+    case e: EnumEntry => "%s.%s".format(e.parent.name, e.name)
     case i: Int => i.toString
     case _ => throw new RuntimeException("Unsupported value: %s.%s (%s: %s)".format(tag.getClass.getName, name, v, v.asInstanceOf[AnyRef].getClass.getName))
   }
@@ -132,7 +132,7 @@ object ScalaBuffer {
   private var attributes = Map.empty[String, String]
 
   def attributeName(tag: HTMLTag, attribute: PropertyAttribute[_]) = synchronized {
-    val key = "%s.%s".format(tag.xmlLabel, attribute.name())
+    val key = "%s.%s".format(tag.xmlLabel, attribute.name)
     attributes.get(key) match {
       case Some(alias) => alias
       case None => {

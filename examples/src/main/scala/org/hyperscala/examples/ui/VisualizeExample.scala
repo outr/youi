@@ -4,14 +4,13 @@ import org.hyperscala.ui.widgets.visual.Visualize
 import org.powerscala.property.Property
 
 import org.hyperscala.html._
-import org.powerscala.property.event.PropertyChangeEvent
 import org.hyperscala.examples.Example
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
 class VisualizeExample extends Example {
-  val instance = Property[Person]("person", Person("John Doe", "john@doeco.com", "Norman", "Oklahoma"))
+  val instance = Property[Person](default = Some(Person("John Doe", "john@doeco.com", "Norman", "Oklahoma")))
 
   val messages = new tag.Div
   contents += messages
@@ -19,8 +18,8 @@ class VisualizeExample extends Example {
   val visualize = Visualize().clazz[Person](bindProperty = instance)
   contents += visualize.build()
 
-  instance.listeners.synchronous {
-    case evt: PropertyChangeEvent => {
+  instance.change.on {
+    case evt => {
       messages.contents += new tag.Div(content = "Person changed from %s to %s".format(evt.oldValue, evt.newValue))
     }
   }

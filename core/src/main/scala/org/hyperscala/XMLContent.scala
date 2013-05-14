@@ -6,7 +6,7 @@ import org.jdom2._
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-trait XMLContent extends org.powerscala.hierarchy.Element {
+trait XMLContent extends org.powerscala.hierarchy.Element[Any] {
   def write(writer: HTMLWriter): Unit
   def read(content: Content): Unit
   def render = true

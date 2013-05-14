@@ -1,6 +1,6 @@
 package org.hyperscala.css.attributes
 
-import org.powerscala.{Enumerated, EnumEntry}
+import org.powerscala.enum.{Enumerated, EnumEntry}
 import org.hyperscala.persistence.EnumEntryPersistence
 import org.hyperscala.AttributeValue
 
@@ -8,7 +8,7 @@ import org.hyperscala.AttributeValue
  * NOTE: This file has been generated. Do not modify directly!
  * @author Matt Hicks <mhicks@hyperscala.org>
  */
-class Length(val value: String) extends EnumEntry[Length] with AttributeValue {
+class Length(val value: String) extends EnumEntry with AttributeValue {
   lazy val pixels = if (value.endsWith("px")) {
     value.substring(0, value.length - 2).toInt
   } else {
@@ -21,7 +21,7 @@ class Length(val value: String) extends EnumEntry[Length] with AttributeValue {
     0
   }
 
-  override def toString() = if (name() != null) {
+  override def toString() = if (name != null) {
     super.toString()
   } else {
     "Length(%s)".format(value)

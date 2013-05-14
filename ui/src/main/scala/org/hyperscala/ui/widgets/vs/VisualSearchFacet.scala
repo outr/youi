@@ -1,6 +1,6 @@
 package org.hyperscala.ui.widgets.vs
 
-import org.powerscala.{EnumEntry, Enumerated}
+import org.powerscala.enum.{EnumEntry, Enumerated}
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -48,7 +48,7 @@ case class BasicVisualSearchFacet(name: String,
 }
 
 object VisualSearchFacet {
-  def enum(e: Enumerated[_ <: EnumEntry[_]], allowMultiple: Boolean = false, exactMatch: Boolean = true, category: String = null) = {
+  def enum(e: Enumerated[_ <: EnumEntry], allowMultiple: Boolean = false, exactMatch: Boolean = true, category: String = null) = {
     val results = e.values.map(entry => VisualSearchResult(entry.label, entry.label))
     BasicVisualSearchFacet(e.name, category, allowMultiple, exactMatch, ResultType.Complete, (query: String) => results)
   }

@@ -7,7 +7,7 @@ import org.jboss.netty.handler.codec.http.multipart.{Attribute, FileUpload}
 import org.hyperscala.html._
 import attributes.{InputType, Target}
 import org.hyperscala.Unique
-import org.hyperscala.event.{ChangeEvent, JavaScriptEvent}
+import org.hyperscala.event.JavaScriptEvent
 import org.hyperscala.web.site.{Webpage, WebpageResource, Website}
 import org.hyperscala.web.Scope
 import org.hyperscala.css.attributes.Display
@@ -50,9 +50,9 @@ abstract class FileUploader extends tag.Div {
 
   protected def createInput() = {
     new tag.Input(id = inputId, name = "file", inputType = InputType.File, size = 20) {
-      event.change := JavaScriptEvent()
-      listeners.synchronous {
-        case evt: ChangeEvent => {
+      changeEvent := JavaScriptEvent()
+      changeEvent.on {
+        case evt => {
           BusyDialog.show(uploadTitle)
           Realtime.sendJavaScript("$('#%s').submit();".format(uploadForm.id()))
         }

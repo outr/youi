@@ -9,5 +9,5 @@ import org.powerscala.Language
 object LanguagePersistence extends ValuePersistence[Language] {
   def fromString(s: String, clazz: Class[_]) = Language(s)
 
-  def toString(t: Language, clazz: Class[_]) = t.name()
+  def toString(t: Language, clazz: Class[_]) = t.name
 }

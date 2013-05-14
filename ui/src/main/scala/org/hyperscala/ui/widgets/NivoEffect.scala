@@ -1,12 +1,12 @@
 package org.hyperscala.ui.widgets
 
-import org.powerscala.{Enumerated, EnumEntry}
+import org.powerscala.enum.{Enumerated, EnumEntry}
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-sealed class NivoEffect extends EnumEntry[NivoEffect] {
-  def value = name().charAt(0).toLower + name().substring(1)
+sealed class NivoEffect extends EnumEntry {
+  def value = name.charAt(0).toLower + name.substring(1)
 }
 
 object NivoEffect extends Enumerated[NivoEffect] {

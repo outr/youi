@@ -4,7 +4,6 @@ import org.hyperscala.html._
 import attributes.{ButtonType, InputType}
 
 import tag._
-import org.powerscala.property.event.PropertyChangeEvent
 import org.hyperscala.web.site.Webpage
 import org.hyperscala.jquery.jQuery172
 import org.hyperscala.examples.Example
@@ -27,8 +26,8 @@ class FormExample extends Example {
         contents += new Div {
           contents += new Label(content = item)
           val input = new Input(name = item, inputType = InputType.Text)
-          input.value.listeners.synchronous {
-            case evt: PropertyChangeEvent => {
+          input.value.change.on {
+            case evt => {
               messages.contents += "Input changed (%s) from %s to %s".format(item, evt.oldValue, evt.newValue)
               messages.contents += new Br
             }

@@ -3,7 +3,7 @@ package org.hyperscala.examples.ui
 import org.hyperscala.html._
 import org.hyperscala.ui.widgets.RichEditor
 
-import org.hyperscala.event.{ClickEvent, JavaScriptEvent}
+import org.hyperscala.event.JavaScriptEvent
 import org.powerscala.Color
 import org.hyperscala.examples.Example
 import language.reflectiveCalls
@@ -14,15 +14,15 @@ import language.reflectiveCalls
 class RichEditorExample extends Example {
   val editor = new RichEditor {
     style.width = 500.px
-    listeners.synchronous {
+    content.change.on {
       case evt => println("Event: %s / %s".format(evt, content()))
     }
   }
   val modify = new tag.Button(content = "Modify") {
-    event.click := JavaScriptEvent()
+    clickEvent := JavaScriptEvent()
 
-    listeners.synchronous {
-      case evt: ClickEvent => {
+    clickEvent.on {
+      case evt => {
         editor.content := new tag.P {
           contents += new tag.B(content = "This")
           contents += " is "
@@ -35,10 +35,10 @@ class RichEditorExample extends Example {
     }
   }
   val check = new tag.Button(content = "Check") {
-    event.click := JavaScriptEvent()
+    clickEvent := JavaScriptEvent()
 
-    listeners.synchronous {
-      case evt: ClickEvent => {
+    clickEvent.on {
+      case evt => {
         println("Editor Content: %s".format(editor.content()))
       }
     }

@@ -1,11 +1,9 @@
 package org.hyperscala.ui.widgets.visual.`type`
 
-import org.powerscala.property.StandardProperty
+import org.powerscala.property.Property
 import org.hyperscala.ui.widgets.visual.{Visualize, VisualBuilder}
 
 import org.powerscala.reflect._
-import org.powerscala.property.event.PropertyChangingEvent
-import org.powerscala.bus.Routing
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -13,10 +11,12 @@ import org.powerscala.bus.Routing
 object CaseClassVisualType extends VisualType[AnyRef] {
   def valid(details: VisualBuilder[_]) = details.clazz.isCase && details.selection == null
 
-  def create(property: StandardProperty[AnyRef], details: VisualBuilder[AnyRef]) = {
-    property.listeners.synchronous {
-      case evt: PropertyChangingEvent if (evt.newValue == null) => {
-        Routing.Response(details.clazz.create[Any](Map.empty))    // Keep null from ever being set
+  def create(property: Property[AnyRef], details: VisualBuilder[AnyRef]) = {
+    property.changing.on {
+      case newValue => if (newValue == null) {
+        Some(details.clazz.create[AnyRef](Map.empty))    // Keep null from ever being set
+      } else {
+        Some(newValue)
       }
     }
     if (property() == null) {

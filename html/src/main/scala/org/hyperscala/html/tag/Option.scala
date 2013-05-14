@@ -48,20 +48,22 @@ class Option extends Textual with BodyChild with HTMLTag {
   val selected = PropertyAttribute[Boolean]("selected", false)
   val value = PropertyAttribute[String]("value", null)
 
-  selected.onChange {
-    parent match {
-      case select: Select => {
-        if (selected()) {
-          if (!select.selected().contains(value())) {
-            select.selected += value()      // Add the value to the selection if it isn't already there
-          }
-        } else {
-          if (select.selected().contains(value())) {
-            select.selected -= value()      // Remove the value from the selection if it is there
+  selected.change.on {
+    case evt => {
+      parent match {
+        case select: Select => {
+          if (selected()) {
+            if (!select.selected().contains(value())) {
+              select.selected += value()      // Add the value to the selection if it isn't already there
+            }
+          } else {
+            if (select.selected().contains(value())) {
+              select.selected -= value()      // Remove the value from the selection if it is there
+            }
           }
         }
+        case _ => // Parent isn't a SELECT
       }
-      case _ => // Parent isn't a SELECT
     }
   }
 }

@@ -1,37 +1,46 @@
 package org.hyperscala
 
-import org.powerscala.bus.intercept.Interceptable
-import org.powerscala.bus.Bus
+import org.powerscala.hierarchy.event.{DescendantProcessor, AncestorProcessor, StandardHierarchyEventProcessor}
+import org.powerscala.event.processor.{ModifiableProcessor, InterceptProcessor}
+import org.powerscala.event.{Listenable, Intercept}
+import org.powerscala.hierarchy.ChildLike
 
 /**
  * Convenience intercepting of actions in a page.
  *
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-class MarkupIntercepting(name: String, bus: Bus, parent: MarkupIntercepting) {
+class MarkupIntercepting(parentInterceptor: MarkupIntercepting) extends Listenable with ChildLike[MarkupIntercepting] {
+  protected def hierarchicalParent = parentInterceptor
+
   /**
    * Called during initialization of the Markup instance. This occurs only once per instance and immediately before the
    * first rendering.
    */
-  val init: Interceptable[Markup] = Interceptable[Markup]("%s.init".format(name), if (parent != null) parent.init else null)
+  val init = new StandardHierarchyEventProcessor[Markup]("init")
   /**
    * Called before rendering of the Markup instance.
    */
-  val beforeRender: Interceptable[Markup] = Interceptable[Markup]("%s.beforeRender".format(name), if (parent != null) parent.beforeRender else null)
+  val beforeRender = new InterceptProcessor[Markup]("beforeRender") with AncestorProcessor[Markup, Intercept, Intercept] with DescendantProcessor[Markup, Intercept, Intercept]
   /**
    * Called immediately after rendering of the Markup instance.
    */
-  val afterRender: Interceptable[Markup] = Interceptable[Markup]("%s.afterRender".format(name), if (parent != null) parent.afterRender else null)
+  val afterRender = new StandardHierarchyEventProcessor[Markup]("afterRender")
   /**
    * Called upon initialization of a PropertyAttribute.
    */
-  val initAttribute: Interceptable[PropertyAttribute[_]] = Interceptable[PropertyAttribute[_]]("%s.initAttribute".format(name), if (parent != null) parent.initAttribute else null)
+  val initAttribute = new StandardHierarchyEventProcessor[PropertyAttribute[_]]("initAttribute")
   /**
    * Called upon rendering of a PropertyAttribute. Returning Routing.Stop will cause the property not to be rendered.
    */
-  val renderAttribute: Interceptable[PropertyAttribute[_]] = Interceptable[PropertyAttribute[_]]("%s.renderAttribute".format(name), if (parent != null) parent.renderAttribute else null)
+  val renderAttribute = new RenderAttributeProcessor()
   /**
    * Called upon update of Page instance.
    */
-  val update: Interceptable[Page] = Interceptable[Page]("%s.update".format(name), if (parent != null) parent.update else null)
+  val update = new StandardHierarchyEventProcessor[Page]("update")
 }
+
+class RenderAttributeProcessor(implicit listenable: Listenable)
+  extends ModifiableProcessor[PropertyAttribute[_]]("renderAttribute")
+  with AncestorProcessor[PropertyAttribute[_], Option[PropertyAttribute[_]], Option[PropertyAttribute[_]]]
+  with DescendantProcessor[PropertyAttribute[_], Option[PropertyAttribute[_]], Option[PropertyAttribute[_]]]

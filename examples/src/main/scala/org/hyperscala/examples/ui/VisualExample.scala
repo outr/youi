@@ -5,8 +5,7 @@ import org.hyperscala.ui.widgets.visual.Visual
 import org.hyperscala.css.attributes._
 
 import org.powerscala.property._
-import org.powerscala.property.event.PropertyChangeEvent
-import org.hyperscala.event.{ClickEvent, JavaScriptEvent}
+import org.hyperscala.event.JavaScriptEvent
 import org.powerscala.Country
 import org.hyperscala.ui.widgets.visual.`type`.DateInputVisualType
 import org.hyperscala.web.site.Webpage
@@ -22,9 +21,9 @@ class VisualExample extends Example {
 
   Webpage().body.style.fontFamily = "sans-serif"
 
-  val property = Property[TestPerson]("property", new TestPerson(name = "John Doe", age = 21))
-  property.listeners.synchronous {
-    case evt: PropertyChangeEvent => println("New Value: %s".format(evt.newValue))
+  val property = Property[TestPerson](default = Some(new TestPerson(name = "John Doe", age = 21)))
+  property.change.on {
+    case evt => println("New Value: %s".format(evt.newValue))
   }
 
   val stringVisual = Visual[String]().label("String Visual").editing(true).required.validation(emptyValidator).build()
@@ -33,36 +32,36 @@ class VisualExample extends Example {
   val bindingVisual = Visual[String]().label("Binding Visual").editing(true).bind(property, "name").build()
 
   val enumVisual = Visual[Country]().label("Country Visual").editing(true).build()
-  enumVisual.property.listeners.synchronous {
-    case evt: PropertyChangeEvent => println("Enum Changed: %s -> %s".format(evt.oldValue, evt.newValue))
+  enumVisual.property.change.on {
+    case evt => println("Enum Changed: %s -> %s".format(evt.oldValue, evt.newValue))
   }
 
   val booleanVisual = Visual[Boolean]().label("Boolean Visual").editing(true).build()
-  booleanVisual.property.listeners.synchronous {
-    case evt: PropertyChangeEvent => println("Boolean Changed: %s -> %s".format(evt.oldValue, evt.newValue))
+  booleanVisual.property.change.on {
+    case evt => println("Boolean Changed: %s -> %s".format(evt.oldValue, evt.newValue))
   }
 
   val dateVisual = Visual[Long]().visualType(new DateInputVisualType()).label("Date Visual").editing(true).build()
-  dateVisual.property.listeners.synchronous {
-    case evt: PropertyChangeEvent => println("Date Changed: %s - %s".format(evt.oldValue, evt.newValue))
+  dateVisual.property.change.on {
+    case evt => println("Date Changed: %s - %s".format(evt.oldValue, evt.newValue))
   }
 
   val enumsVisual = Visual[List[Country]]().label("Countries Visual").editing(true).itemizedType[Country]().build()
   enumsVisual.property := List(Country.AI, Country.ZA)
-  enumsVisual.property.listeners.synchronous {
-    case evt: PropertyChangeEvent => println("Countries Changed: %s -> %s".format(evt.oldValue, evt.newValue))
+  enumsVisual.property.change.on {
+    case evt => println("Countries Changed: %s -> %s".format(evt.oldValue, evt.newValue))
   }
 
   val stringsVisual = Visual[List[String]]().label("Strings Visual").editing(true).itemizedType[String] {
     case vb => vb.validation(emptyValidator)
   }.build()
-  stringsVisual.property.listeners.synchronous {
-    case evt: PropertyChangeEvent => println("String Changed: %s -> %s".format(evt.oldValue, evt.newValue))
+  stringsVisual.property.change.on {
+    case evt => println("String Changed: %s -> %s".format(evt.oldValue, evt.newValue))
   }
 
   val caseClassesVisual = Visual[List[TestPerson]]().label("Case Classes Visual").editing(true).itemizedType[TestPerson]().build()
-  caseClassesVisual.property.listeners.synchronous {
-    case evt: PropertyChangeEvent => println("Case Classes Changed: %s -> %s".format(evt.oldValue, evt.newValue))
+  caseClassesVisual.property.change.on {
+    case evt => println("Case Classes Changed: %s -> %s".format(evt.oldValue, evt.newValue))
   }
 
   contents.addAll(stringVisual, bindingVisual, enumVisual, booleanVisual, dateVisual, enumsVisual, stringsVisual, caseClassesVisual)
@@ -71,20 +70,20 @@ class VisualExample extends Example {
     style.clear = Clear.Both
 
     contents += new tag.Button(content = "Toggle Editing") {
-      event.click := JavaScriptEvent()
+      clickEvent := JavaScriptEvent()
 
-      listeners.synchronous {
-        case evt: ClickEvent => {
+      clickEvent.on {
+        case evt => {
           Visual.toggleEditing(VisualExample.this)
         }
       }
     }
 
     contents += new tag.Button(content = "Set Value") {
-      event.click := JavaScriptEvent()
+      clickEvent := JavaScriptEvent()
 
-      listeners.synchronous {
-        case evt: ClickEvent => {
+      clickEvent.on {
+        case evt => {
           stringVisual.property := "Value Set!"
           enumVisual.property := Country.KZ
         }

@@ -3,7 +3,7 @@ package org.hyperscala.ui.widgets.visual.`type`
 import org.hyperscala.ui.widgets.visual.VisualBuilder
 import java.text.SimpleDateFormat
 import java.util.Date
-import org.powerscala.property.StandardProperty
+import org.powerscala.property.Property
 
 import org.hyperscala.html._
 import org.hyperscala.javascript.JavaScriptString
@@ -27,7 +27,7 @@ class DateInputVisualType(format: String = "MM/dd/yyyy") extends InputVisualType
     case _ => new SimpleDateFormat(format).format(new Date(t))
   }
 
-  override def create(property: StandardProperty[Long], details: VisualBuilder[Long]) = {
+  override def create(property: Property[Long], details: VisualBuilder[Long]) = {
     val input = super.create(property, details)
     input.identity
     Webpage().require(jQueryUI.Latest)

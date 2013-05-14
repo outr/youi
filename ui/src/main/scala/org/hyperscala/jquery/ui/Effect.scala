@@ -1,12 +1,13 @@
 package org.hyperscala.jquery.ui
 
-import org.powerscala.{Color, Enumerated, EnumEntry}
+import org.powerscala.Color
+import org.powerscala.enum.{Enumerated, EnumEntry}
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */
-sealed class Effect extends EnumEntry[Effect] {
-  lazy val effectName = cs(name())
+sealed class Effect extends EnumEntry {
+  lazy val effectName = cs(name)
 
   def instance(options: String = null, duration: Int = -1, easing: Easing = null) = EffectInstance(effectName, options, duration, easing)
 
@@ -16,7 +17,7 @@ sealed class Effect extends EnumEntry[Effect] {
 object Effect extends Enumerated[Effect] {
   val Blind = new Effect {
     def apply(direction: Direction = Direction.Up, duration: Int = -1, easing: Easing = null) = {
-      instance("direction: '%s'".format(cs(direction.name())), duration, easing)
+      instance("direction: '%s'".format(cs(direction.name)), duration, easing)
     }
   }
   val Bounce = new Effect {
@@ -26,12 +27,12 @@ object Effect extends Enumerated[Effect] {
   }
   val Clip = new Effect {
     def apply(direction: Direction = Direction.Up, duration: Int = -1, easing: Easing = null) = {
-      instance("direction: '%s'".format(cs(direction.name())), duration, easing)
+      instance("direction: '%s'".format(cs(direction.name)), duration, easing)
     }
   }
   val Drop = new Effect {
     def apply(direction: Direction = Direction.Left, duration: Int = -1, easing: Easing = null) = {
-      instance("direction: '%s'".format(cs(direction.name())), duration, easing)
+      instance("direction: '%s'".format(cs(direction.name)), duration, easing)
     }
   }
   val Explode = new Effect {
@@ -114,7 +115,7 @@ case class EffectInstance(name: String, options: String = null, duration: Int = 
   }
 }
 
-sealed class Direction extends EnumEntry[Direction]
+sealed class Direction extends EnumEntry
 
 object Direction extends Enumerated[Direction] {
   val Up = new Direction

@@ -1,7 +1,7 @@
 package org.hyperscala.ui.widgets.visual.`type`
 
-import org.powerscala.{EnumEntry, Enumerated}
-import org.powerscala.property.StandardProperty
+import org.powerscala.enum.{EnumEntry, Enumerated}
+import org.powerscala.property.Property
 import org.hyperscala.ui.widgets.visual.VisualBuilder
 
 import org.powerscala.reflect._
@@ -15,28 +15,28 @@ import language.reflectiveCalls
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-object EnumEntryVisualType extends VisualType[EnumEntry[_]] {
-  def valid(details: VisualBuilder[_]) = details.clazz.hasType(classOf[EnumEntry[_]])
+object EnumEntryVisualType extends VisualType[EnumEntry] {
+  def valid(details: VisualBuilder[_]) = details.clazz.hasType(classOf[EnumEntry])
 
-  def create(property: StandardProperty[EnumEntry[_]], details: VisualBuilder[EnumEntry[_]]) = {
+  def create(property: Property[EnumEntry], details: VisualBuilder[EnumEntry]) = {
     val enumerated = details.clazz.instance.get.asInstanceOf[Enumerated[_]]
     val nullAllowed = details.nullAllowed
     val list = new ListSelect[Any](enumerated.values, nullAllowed = nullAllowed) {
       Webpage().require(Realtime)
 
-      event.change := JavaScriptEvent()
+      changeEvent := JavaScriptEvent()
 
-      property.onChange {
-        updateSelect()
+      property.change.on {
+        case evt => updateSelect()
       }
 
-      selected.onChange {
-        updateProperty()
+      selected.change.on {
+        case evt => updateProperty()
       }
 
       def updateSelect() = selected := List(property().asInstanceOf[Any])
 
-      def updateProperty() = property := selected().headOption.getOrElse(null).asInstanceOf[EnumEntry[_]]
+      def updateProperty() = property := selected().headOption.getOrElse(null).asInstanceOf[EnumEntry]
     }
     if (details.default.nonEmpty) {
       list.selected := List(details.default.get.asInstanceOf[Any])

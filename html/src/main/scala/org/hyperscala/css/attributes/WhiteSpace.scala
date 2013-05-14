@@ -1,6 +1,6 @@
 package org.hyperscala.css.attributes
 
-import org.powerscala.{Enumerated, EnumEntry}
+import org.powerscala.enum.{Enumerated, EnumEntry}
 import org.hyperscala.persistence.EnumEntryPersistence
 import org.hyperscala.AttributeValue
 
@@ -8,7 +8,7 @@ import org.hyperscala.AttributeValue
  * NOTE: This file has been generated. Do not modify directly!
  * @author Matt Hicks <mhicks@hyperscala.org>
  */
-sealed class WhiteSpace(val value: String) extends EnumEntry[WhiteSpace] with AttributeValue
+sealed class WhiteSpace(val value: String) extends EnumEntry with AttributeValue
 
 object WhiteSpace extends Enumerated[WhiteSpace] with EnumEntryPersistence[WhiteSpace] {
   val Normal = new WhiteSpace("normal")

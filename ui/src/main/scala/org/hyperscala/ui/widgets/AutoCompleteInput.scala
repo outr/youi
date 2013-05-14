@@ -17,10 +17,12 @@ import language.reflectiveCalls
  * @author Matt Hicks <mhicks@powerscala.org>
  */
 abstract class AutoCompleteInput[T](id: String = Unique(), default: T)(implicit manifest: Manifest[T]) extends tag.Div(id = id) with FormField {
-  val property = Property[T]("property", default)(this, manifest)
-  property.onChange {
-    updateInput()
-    hideCompletion()
+  val property = Property[T](default = Some(default))(this, manifest)
+  property.change.on {
+    case evt => {
+      updateInput()
+      hideCompletion()
+    }
   }
 
   def value = input.value
@@ -99,23 +101,25 @@ abstract class AutoCompleteInput[T](id: String = Unique(), default: T)(implicit 
     style.width = 100.pct
     style.height = 100.pct
 
-    event.keyUp := JavaScriptEvent(fireChange = true, preventDefault = true, onlyLast = true)
-    event.blur := JavaScriptEvent(preventDefault = false, delay = 100)
+    keyUpEvent := JavaScriptEvent(fireChange = true, preventDefault = true, onlyLast = true)
+    blurEvent := JavaScriptEvent(preventDefault = false, delay = 100)
 
-    listeners.synchronous {
-      case evt: BlurEvent => {
+    blurEvent.on {
+      case evt => {
         updateInput()
         hideCompletion()
       }
-      case evt: KeyUpEvent if (evt.key == Key.Return) => applySelected()
-      case evt: KeyUpEvent if (evt.key == Key.Up) => selectPrevious()
-      case evt: KeyUpEvent if (evt.key == Key.Down) => selectNext()
-      case evt: KeyUpEvent if (evt.key == Key.Escape) => hideCompletion()
-      case evt: KeyUpEvent if (evt.key == Key.Left ||
+    }
+    keyUpEvent.on {
+      case evt if (evt.key == Key.Return) => applySelected()
+      case evt if (evt.key == Key.Up) => selectPrevious()
+      case evt if (evt.key == Key.Down) => selectNext()
+      case evt if (evt.key == Key.Escape) => hideCompletion()
+      case evt if (evt.key == Key.Left ||
                                evt.key == Key.Right ||
                                evt.key == Key.Home ||
                                evt.key == Key.End) => // Ignore
-      case evt: KeyUpEvent => showCompletion()
+      case evt => showCompletion()
     }
   }
 
@@ -199,19 +203,23 @@ class BasicResult[T](val result: T, query: String, input: AutoCompleteInput[T]) 
   style.paddingBottom = 5.px
   style.cursor = "pointer"
 
-  event.mouseOver := JavaScriptEvent()
-  event.mouseOut := JavaScriptEvent()
-  event.click := JavaScriptEvent()
+  mouseOverEvent := JavaScriptEvent()
+  mouseOutEvent := JavaScriptEvent()
+  clickEvent := JavaScriptEvent()
 
-  listeners.synchronous {
-    case evt: MouseOverEvent => {
+  mouseOverEvent.on {
+    case evt => {
       input.completion.contents.foreach {
         case child => child.asInstanceOf[Result[T]].state(active = false)
       }
       state(active = true)
     }
-    case evt: MouseOutEvent => state(active = false)
-    case evt: ClickEvent => input.property := result
+  }
+  mouseOutEvent.on {
+    case evt => state(active = false)
+  }
+  clickEvent.on {
+    case evt => input.property := result
   }
 
   override def state(active: Boolean) = {

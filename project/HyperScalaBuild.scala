@@ -7,8 +7,7 @@ import sbtassembly.Plugin._
 import AssemblyKeys._
 
 object HyperScalaBuild extends Build {
-  val powerScalaVersion = "1.5.2-SNAPSHOT"
-  val powerScalaConvert = "org.powerscala" %% "powerscala-convert" % powerScalaVersion
+  val powerScalaVersion = "1.6.0-SNAPSHOT"
   val powerScalaReflect = "org.powerscala" %% "powerscala-reflect" % powerScalaVersion
   val powerScalaHierarchy = "org.powerscala" %% "powerscala-hierarchy" % powerScalaVersion
   val powerScalaProperty = "org.powerscala" %% "powerscala-property" % powerScalaVersion
@@ -19,14 +18,13 @@ object HyperScalaBuild extends Build {
 
   val specs2 = "org.specs2" %% "specs2" % "1.11" % "test"
 
-  val webcommunicator = "com.outr.webcommunicator" %% "webcommunicator" % "1.0.3-SNAPSHOT"
+  val webcommunicator = "com.outr.webcommunicator" %% "webcommunicator" % "1.0.4-SNAPSHOT"
 
   val baseSettings = Defaults.defaultSettings ++ Seq(
     version := "0.7.2-SNAPSHOT",
     organization := "org.hyperscala",
     scalaVersion := "2.10.1",
     libraryDependencies ++= Seq(
-      powerScalaConvert,
       powerScalaReflect,
       powerScalaHierarchy,
       powerScalaProperty,

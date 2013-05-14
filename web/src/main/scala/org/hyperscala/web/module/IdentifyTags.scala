@@ -27,12 +27,13 @@ object IdentifyTags extends Module {
         tag.id := Unique()
       }
     }
-    page.intercept.init {
+    page.intercept.init.on {
       case tag: HTMLTag => {
         if (tag.id() == null) {
           tag.id := Unique()
         }
       }
+      case _ => // Ignore
     }
   }
 }

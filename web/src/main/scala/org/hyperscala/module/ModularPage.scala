@@ -4,6 +4,7 @@ import org.hyperscala.html._
 import org.hyperscala.Page
 import org.hyperscala.web.site.Website
 import java.util.concurrent.atomic.AtomicBoolean
+import org.powerscala.event.Intercept
 
 /**
  * ModularPage represents all the functionality within a Webpage for dealing with Modules and Interfaces.
@@ -101,7 +102,7 @@ trait ModularPage {
     module.load()
   }
 
-  intercept.beforeRender {
+  intercept.beforeRender.on {
     case html: tag.HTML => {
       if (modularPageLoaded.compareAndSet(false, true)) {
         val headItems = html.head.contents.collect {
@@ -119,6 +120,8 @@ trait ModularPage {
           case h => html.head.contents += h
         }
       }
+      Intercept.Continue
     }
+    case _ => Intercept.Continue
   }
 }

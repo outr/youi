@@ -1,8 +1,5 @@
 package org.hyperscala.ui.widgets.visual
 
-import org.powerscala.property.event.PropertyChangingEvent
-import org.powerscala.bus.Routing
-
 import org.hyperscala.html._
 
 /**
@@ -11,12 +8,11 @@ import org.hyperscala.html._
 trait ValidatableVisual[T] extends Visual[T] {
   type Validation = T => Either[Option[T], String]
 
-  property.listeners.synchronous {
-    case evt: PropertyChangingEvent => if (validateOnChange) {
-      validate(evt.newValue.asInstanceOf[T]) match {
-        case Some(t) => Routing.Response(t)
-        case None => Routing.Stop
-      }
+  property.changing.on {
+    case newValue => if (validateOnChange) {
+      validate(newValue)
+    } else {
+      Some(newValue)
     }
   }
 

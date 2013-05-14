@@ -1,14 +1,13 @@
 package org.hyperscala.svg.event
 
 import org.hyperscala.svg.SVGTag
-import org.powerscala.event.Event
 import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.Page
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */
-class SVGEvent(val tag: SVGTag) extends Event
+class SVGEvent(val tag: SVGTag)
 
 object SVGEvent {
   def apply(confirmation: String = null,

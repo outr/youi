@@ -1,6 +1,6 @@
 package org.hyperscala.html.attributes
 
-import org.powerscala.{Enumerated, EnumEntry}
+import org.powerscala.enum.{Enumerated, EnumEntry}
 import org.hyperscala.persistence.EnumEntryPersistence
 import org.hyperscala.AttributeValue
 
@@ -8,7 +8,7 @@ import org.hyperscala.AttributeValue
  * NOTE: This file has been generated. Do not modify directly!
  * @author Matt Hicks <mhicks@hyperscala.org>
  */
-class Target(val value: String) extends EnumEntry[Target] with AttributeValue
+class Target(val value: String) extends EnumEntry with AttributeValue
 
 object Target extends Enumerated[Target] with EnumEntryPersistence[Target] {
   val Blank = new Target("_blank")

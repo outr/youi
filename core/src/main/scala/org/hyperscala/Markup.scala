@@ -6,12 +6,12 @@ import annotation.tailrec
 import scala.collection.JavaConversions._
 import java.util.concurrent.atomic.AtomicBoolean
 import org.powerscala.log.Logging
-import org.powerscala.bus.intercept.Interceptable
+import org.powerscala.event.{Intercept, Listenable}
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-trait Markup extends XMLContent with Logging {
+trait Markup extends XMLContent with Listenable with Logging {
   private val _initialized = new AtomicBoolean(false)
 
   def xmlLabel: String
@@ -109,15 +109,24 @@ trait Markup extends XMLContent with Logging {
     }
   }
 
-  def onInit(f: => Any) = intercept(Page().intercept.init, f)
+  def onInit(f: => Unit) = Page().intercept.init.on {
+    case markup => if (markup == Markup.this) {
+      f
+    }
+  }
 
-  def onBeforeRender(f: => Any) = intercept(Page().intercept.beforeRender, f)
+  def onBeforeRender(f: => Unit) = Page().intercept.beforeRender.on {
+    case markup => {
+      if (markup == Markup.this) {
+        f
+      }
+      Intercept.Continue
+    }
+  }
 
-  def onAfterRender(f: => Any) = intercept(Page().intercept.afterRender, f)
-
-  private def intercept(interceptable: Interceptable[Markup], f: => Any) = {
-    interceptable {
-      case markup if (markup == Markup.this) => f
+  def onAfterRender(f: => Unit) = Page().intercept.afterRender.on {
+    case markup => if (markup == Markup.this) {
+      f
     }
   }
 
@@ -147,7 +156,7 @@ trait Markup extends XMLContent with Logging {
   }
 
   protected def attributeFromXML(a: Attribute): Boolean = {
-    xmlAttributes.find(xmla => xmla.name() == a.getName) match {
+    xmlAttributes.find(xmla => xmla.name == a.getName) match {
       case Some(xmla) => {
         xmla.read(this, a.getValue)
         true

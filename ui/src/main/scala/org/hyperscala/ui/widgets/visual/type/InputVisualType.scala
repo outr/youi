@@ -1,6 +1,6 @@
 package org.hyperscala.ui.widgets.visual.`type`
 
-import org.powerscala.property.StandardProperty
+import org.powerscala.property.Property
 import org.hyperscala.ui.widgets.visual.{Stringify, VisualBuilder}
 import org.hyperscala.html.tag
 import org.hyperscala.web.site.Webpage
@@ -17,7 +17,7 @@ import language.reflectiveCalls
 trait InputVisualType[T] extends VisualType[T] with Stringify[T] {
   def fromString(s: String): T
 
-  def create(property: StandardProperty[T], details: VisualBuilder[T]): BodyChild = new tag.Input {
+  def create(property: Property[T], details: VisualBuilder[T]): BodyChild = new tag.Input {
     Webpage().require(Realtime)
 
     if (details.masked) {
@@ -26,14 +26,14 @@ trait InputVisualType[T] extends VisualType[T] with Stringify[T] {
       inputType := InputType.Text
     }
 
-    event.change := JavaScriptEvent()
+    changeEvent := JavaScriptEvent()
 
-    property.onChange {
-      updateInput()
+    property.change.on {
+      case evt => updateInput()
     }
 
-    value.onChange {
-      updateProperty()
+    value.change.on {
+      case evt => updateProperty()
     }
 
     def updateInput() = value := InputVisualType.this.toString(property())

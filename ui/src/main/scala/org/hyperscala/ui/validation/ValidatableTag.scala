@@ -1,7 +1,9 @@
 package org.hyperscala.ui.validation
 
 import org.hyperscala.html.{FormField, HTMLTag}
-import org.powerscala.bus.{RoutingResponse, Routing}
+import org.powerscala.hierarchy.event.{DescendantProcessor, AncestorProcessor}
+import org.powerscala.event.processor.ListProcessor
+import org.powerscala.event.Listenable
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
@@ -9,27 +11,23 @@ import org.powerscala.bus.{RoutingResponse, Routing}
 class ValidatableTag(t: FormField) {
   type Validator = String => ValidationResponse
 
+  val validateEvent = new ValidatableEventProcessor()(t)
+
   def addValidation(validator: Validator)(implicit handler: ValidationHandler) = {
-    t.listeners.synchronous {
-      case evt: ValidateEvent => {                  // Invoke validation upon receipt of ValidateEvent
+    validateEvent.on {
+      case evt => {
         val response = validator(t.value())         // Validate the field
         handler.validated(t, response)              // Apply the validation through the handler
-        response.result match {                     // Handle response routing
-          case ValidationResult.Success => Routing.Continue
-          case ValidationResult.Warning => Routing.Results(List(response))
-          case ValidationResult.Error => Routing.Response(response)
+        if (response.result == ValidationResult.Success) {
+          None
+        } else {
+          Some(response)
         }
       }
     }
   }
 
-  def validate() = {
-    val routing = t.fire(new ValidateEvent)
-    routing match {
-      case rr: RoutingResponse => false       // Return false if failure occurred
-      case _ => true                          // Return true for everything else
-    }
-  }
+  def validate() = validateEvent.fire(ValidateEvent).isEmpty
 }
 
 object ValidatableTag {
@@ -38,9 +36,15 @@ object ValidatableTag {
   }.isEmpty
 
   def validateTag(tag: FormField) = {
-    val routing = tag.fire(new ValidateEvent)
-    routing match {
-      case rr: RoutingResponse => false     //
-    }
+    tag.validateEvent.fire(ValidateEvent).isEmpty
   }
 }
+
+class ValidateEvent private()
+
+object ValidateEvent extends ValidateEvent
+
+class ValidatableEventProcessor(implicit listenable: Listenable)
+  extends ListProcessor[ValidateEvent, ValidationResponse]("validate")
+  with AncestorProcessor[ValidateEvent, Option[ValidationResponse], List[ValidationResponse]]
+  with DescendantProcessor[ValidateEvent, Option[ValidationResponse], List[ValidationResponse]]

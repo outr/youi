@@ -4,7 +4,6 @@ import org.hyperscala.html._
 import attributes.ButtonType
 import org.hyperscala.web.site.Webpage
 import org.hyperscala.realtime.Realtime
-import org.hyperscala.event.SubmitEvent
 import org.hyperscala.examples.Example
 
 /**
@@ -16,8 +15,8 @@ class RealtimeFormExample extends Example {
 //  Realtime.connectPost()
 
   contents += new tag.Form(method = "get") {
-    listeners.synchronous {
-      case evt: SubmitEvent => println("Form submitted with '%s'.".format(input.value()))
+    submitEvent.on {
+      case evt => println("Form submitted with '%s'.".format(input.value()))
     }
 
     val input = new tag.Input(name = "field")

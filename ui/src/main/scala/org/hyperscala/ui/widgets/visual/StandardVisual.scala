@@ -19,12 +19,12 @@ class StandardVisual[T](builder: VisualBuilder[T]) extends Visual[T]
 
   name := builder.name
 
-  property.onChange {                 // Update the read visualization on property change
-    updateVisual()
+  property.change.on {                 // Update the read visualization on property change
+    case evt => updateVisual()
   }
 
-  editing.onChange {                  // Update the editing state on property change
-    updateEditing()
+  editing.change.on {                  // Update the editing state on property change
+    case evt => updateEditing()
   }
 
   builder.validations.foreach {       // Add builder validations
@@ -84,7 +84,7 @@ class StandardVisual[T](builder: VisualBuilder[T]) extends Visual[T]
 
   // Optionally binds to a higher-level property using CaseClassBinding
   val binding = if (builder.bindProperty != null && builder.bindHierarchy != null) {    // Bind to another property
-    val b = CaseClassBinding(builder.bindProperty, builder.bindHierarchy, property.asInstanceOf[StandardProperty[Any]], valueUpdatesProperty = builder.bindValueUpdatesProperty, propertyUpdatesValue = builder.bindPropertyUpdatesValue)
+    val b = CaseClassBinding(builder.bindProperty, builder.bindHierarchy, property.asInstanceOf[Property[Any]], valueUpdatesProperty = builder.bindValueUpdatesProperty, propertyUpdatesValue = builder.bindPropertyUpdatesValue)
     if (builder.bindProperty() != null) {
       b.updateValueProperty()
     }
@@ -92,10 +92,10 @@ class StandardVisual[T](builder: VisualBuilder[T]) extends Visual[T]
   } else if (builder.bindProperty != null) {    // Directly bind to another property
     // TODO: we should make some mechanism of disconnecting
     if (builder.bindPropertyUpdatesValue) {
-      property bind builder.bindProperty.asInstanceOf[StandardProperty[T]]
+      property bind builder.bindProperty.asInstanceOf[Property[T]]
     }
     if (builder.bindValueUpdatesProperty) {
-      builder.bindProperty.asInstanceOf[StandardProperty[T]] bind property
+      builder.bindProperty.asInstanceOf[Property[T]] bind property
     }
     None
   } else {
@@ -119,7 +119,7 @@ class StandardVisual[T](builder: VisualBuilder[T]) extends Visual[T]
       case Some(d) => property := d
       case None => // Leave it alone
     }
-    property.fireChanged()
+    Property.fireChanged(property)
     updateEditing()
   }
 

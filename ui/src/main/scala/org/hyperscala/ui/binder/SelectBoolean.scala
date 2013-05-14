@@ -10,18 +10,20 @@ import language.reflectiveCalls
  */
 class SelectBoolean(trueString: String = "Yes", falseString: String = "No") extends Binder[tag.Select, Boolean] {
   def bind(select: tag.Select) = {
-    select.event.change := JavaScriptEvent()
+    select.changeEvent := JavaScriptEvent()
     select.contents.clear()
     select.contents += new tag.Option(value = "true", content = trueString, selected = valueProperty())
     select.contents += new tag.Option(value = "false", content = falseString, selected = !valueProperty())
 
-    select.value.onChange {
-      val v = select.value()
-      valueProperty := v.toBoolean
+    select.value.change.on {
+      case evt => {
+        val v = select.value()
+        valueProperty := v.toBoolean
+      }
     }
 
-    valueProperty.onChange {
-      select.value := valueProperty().toString
+    valueProperty.change.on {
+      case evt => select.value := valueProperty().toString
     }
   }
 }

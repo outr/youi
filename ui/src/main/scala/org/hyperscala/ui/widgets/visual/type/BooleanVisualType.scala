@@ -1,7 +1,7 @@
 package org.hyperscala.ui.widgets.visual.`type`
 
 import org.hyperscala.ui.widgets.visual.VisualBuilder
-import org.powerscala.property.StandardProperty
+import org.powerscala.property.Property
 import org.hyperscala.ui.widgets.ListSelect
 import org.hyperscala.web.site.Webpage
 import org.hyperscala.event.JavaScriptEvent
@@ -15,18 +15,18 @@ import language.reflectiveCalls
 object BooleanVisualType extends VisualType[Boolean] {
   def valid(details: VisualBuilder[_]) = details.clazz == classOf[Boolean]
 
-  def create(property: StandardProperty[Boolean], details: VisualBuilder[Boolean]) = {
+  def create(property: Property[Boolean], details: VisualBuilder[Boolean]) = {
     new ListSelect[Boolean](List(true, false)) {
       Webpage().require(Realtime)
 
-      event.change := JavaScriptEvent()
+      changeEvent := JavaScriptEvent()
 
-      property.onChange {
-        updateSelect()
+      property.change.on {
+        case evt => updateSelect()
       }
 
-      selected.onChange {
-        updateProperty()
+      selected.change.on {
+        case evt => updateProperty()
       }
 
       override def toString(item: Boolean) = item match {

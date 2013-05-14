@@ -8,5 +8,9 @@ import org.hyperscala.javascript.{JavaScriptString, JavaScriptContent}
 object JavaScriptContentPersistence extends ValuePersistence[JavaScriptContent] {
   def fromString(s: String, clazz: Class[_]) = JavaScriptString(s)
 
-  def toString(t: JavaScriptContent, clazz: Class[_]) = t.content
+  def toString(t: JavaScriptContent, clazz: Class[_]) = if (t != null) {
+    t.content
+  } else {
+    ""
+  }
 }

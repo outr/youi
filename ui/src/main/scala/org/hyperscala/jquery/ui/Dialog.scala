@@ -12,6 +12,7 @@ import org.hyperscala.jquery.JavaScriptCaller
 import org.hyperscala.Message
 
 import language.reflectiveCalls
+import org.powerscala.hierarchy.event.StandardHierarchyEventProcessor
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -26,27 +27,33 @@ trait Dialog extends HTMLTag with JavaScriptCaller {
 
   private var _open = false
 
+  private var generated = false
+
   val dialog = new {
-    val autoOpen = new StandardProperty[Boolean]("autoOpen", true) with DialogProperty
-    val buttons = new StandardProperty[DialogButtons]("buttons", null) with DialogProperty
-    val closeOnEscape = new StandardProperty[Boolean]("closeOnEscape", true) with DialogProperty
-    val closeText = new StandardProperty[String]("closeText", "close") with DialogProperty
-    val dialogClass = new StandardProperty[String]("dialogClass", "") with DialogProperty
-    val draggable = new StandardProperty[Boolean]("draggable", true) with DialogProperty
-    val height = new StandardProperty[Int]("height", -1) with DialogProperty
-    val hide = new StandardProperty[EffectInstance]("hide", null) with DialogProperty
-    val maxHeight = new StandardProperty[Int]("maxHeight", -1) with DialogProperty
-    val maxWidth = new StandardProperty[Int]("maxWidth", -1) with DialogProperty
-    val minHeight = new StandardProperty[Int]("minHeight", 150) with DialogProperty
-    val minWidth = new StandardProperty[Int]("minWidth", 150) with DialogProperty
-    val modal = new StandardProperty[Boolean]("modal", false) with DialogProperty
-    val position = new StandardProperty[String]("position", "{ my: 'center', at: 'center', of: 'window', collision: 'none' }") with DialogProperty
-    val resizable = new StandardProperty[Boolean]("resizable", true) with DialogProperty
-    val show = new StandardProperty[EffectInstance]("show", null) with DialogProperty
-    val stack = new StandardProperty[Boolean]("stack", true) with DialogProperty
-    val title = new StandardProperty[String]("title", getClass.getSimpleName) with DialogProperty
-    val width = new StandardProperty[Int]("width", 300) with DialogProperty
-    val zIndex = new StandardProperty[Int]("zIndex", 1000) with DialogProperty
+    val buttonEvent = new StandardHierarchyEventProcessor[ButtonClicked]("buttonEvent")
+
+    val autoOpen = new DialogProperty[Boolean]("autoOpen", default = Some(true))
+    val buttons = new DialogProperty[DialogButtons]("buttons", default = Some(null))
+    val closeOnEscape = new DialogProperty[Boolean]("closeOnEscape", default = Some(true))
+    val closeText = new DialogProperty[String]("closeText", default = Some("close"))
+    val dialogClass = new DialogProperty[String]("dialogClass", default = Some(""))
+    val draggable = new DialogProperty[Boolean]("draggable", default = Some(true))
+    val height = new DialogProperty[Int]("height", default = Some(-1))
+    val hide = new DialogProperty[EffectInstance]("hide", default = Some(null))
+    val maxHeight = new DialogProperty[Int]("maxHeight", default = Some(-1))
+    val maxWidth = new DialogProperty[Int]("maxWidth", default = Some(-1))
+    val minHeight = new DialogProperty[Int]("minHeight", default = Some(150))
+    val minWidth = new DialogProperty[Int]("minWidth", default = Some(150))
+    val modal = new DialogProperty[Boolean]("modal", default = Some(false))
+    val position = new DialogProperty[String]("position", default = Some("{ my: 'center', at: 'center', of: 'window', collision: 'none' }"))
+    val resizable = new DialogProperty[Boolean]("resizable", default = Some(true))
+    val show = new DialogProperty[EffectInstance]("show", default = Some(null))
+    val stack = new DialogProperty[Boolean]("stack", default = Some(true))
+    val title = new DialogProperty[String]("title", default = Some(getClass.getSimpleName))
+    val width = new DialogProperty[Int]("width", default = Some(300))
+    val zIndex = new DialogProperty[Int]("zIndex", default = Some(1000))
+
+    val properties = List(autoOpen, buttons, closeOnEscape, closeText, dialogClass, draggable, height, hide, maxHeight, maxWidth, minHeight, minWidth, modal, position, resizable, show, stack, title, width, zIndex)
 
     def close() = {
       injectScript("$('#%s').dialog('close');".format(id()))
@@ -72,14 +79,12 @@ trait Dialog extends HTMLTag with JavaScriptCaller {
 
     // TODO: hook up events
 
-    Listenable.listenTo(autoOpen, buttons, closeOnEscape, closeText, dialogClass, draggable, height, hide, maxHeight, maxWidth, minHeight, minWidth, modal, position, resizable, show, stack, title, width, zIndex).synchronous {
-      case evt: PropertyChangeEvent if (generated) => {   // Send changes dynamically after page generated
-        injectScript("$('#%s').dialog('option', '%s', %s);".format(id(), evt.property.name(), value2String(evt.newValue)))
+    Listenable.listenTo[PropertyChangeEvent[_], Unit, Unit]("change", properties: _*)() {
+      case evt => if (generated) {
+        injectScript("$('#%s').dialog('option', '%s', %s);".format(id(), evt.property.asInstanceOf[DialogProperty[_]].name, value2String(evt.newValue)))
       }
     }
   }
-
-  private var generated = false
 
   override protected def before() = {
     super.before()
@@ -90,8 +95,8 @@ trait Dialog extends HTMLTag with JavaScriptCaller {
   private def generateScript() = {
     generated = true
     _open = dialog.autoOpen()
-    val options = properties.collect {
-      case p: StandardProperty[_] if (p.modified && p.isInstanceOf[DialogProperty]) => "%s: %s".format(p.name(), value2String(p()))
+    val options = dialog.properties.collect {
+      case p: DialogProperty[_] if (p.modified && p.isInstanceOf[DialogProperty[_]]) => "%s: %s".format(p.name, value2String(p()))
     }.mkString(",\n    ")
     """
       |$(function() {
@@ -108,11 +113,13 @@ trait Dialog extends HTMLTag with JavaScriptCaller {
   }
 
   override def receive(event: String, message: Message) = event match {
-    case "buttonClicked" => fire(ButtonClicked(message[String]("name")))
+    case "buttonClicked" => dialog.buttonEvent.fire(ButtonClicked(message[String]("name")))
     case _ => super.receive(event, message)
   }
 }
 
-trait DialogProperty
+class DialogProperty[T](val name: String, default: Option[T])(implicit listenable: Listenable, manifest: Manifest[T]) extends Property[T](default = default) {
+  def modified = value != default.getOrElse(null)
+}
 
 case class DialogButtons(names: String*)

@@ -16,7 +16,7 @@ import language.reflectiveCalls
 abstract class MultiSelect[T](implicit manifest: Manifest[T]) extends tag.Div {
   Webpage().require(Realtime)
 
-  val selected = Property[List[T]]("selected", Nil)
+  val selected = Property[List[T]](default = Some(Nil))
 
   def isSelected(t: T) = selected().contains(t)
 
@@ -29,8 +29,8 @@ abstract class MultiSelect[T](implicit manifest: Manifest[T]) extends tag.Div {
     super.initialize()
 
     refresh()
-    selected.onChange {
-      updateUIFromSelected()
+    selected.change.on {
+      case evt => updateUIFromSelected()
     }
   }
 
@@ -75,10 +75,10 @@ trait Selectable[T] extends BodyChild {
 
 class DefaultSelectable[T](multiSelect: MultiSelect[T], val value: T, checked: Boolean) extends tag.Label with Selectable[T] {
   val input = new tag.Input(inputType = InputType.CheckBox, value = multiSelect.value(value), checked = checked) {
-    event.change := JavaScriptEvent()
+    changeEvent := JavaScriptEvent()
 
-    checked.onChange {
-      multiSelect.updateSelectedFromUI()
+    checked.change.on {
+      case evt => multiSelect.updateSelectedFromUI()
     }
   }
   contents += input

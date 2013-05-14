@@ -5,13 +5,13 @@ package org.hyperscala.event
  */
 import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.html.HTMLTag
-import org.powerscala.event.Event
 import org.hyperscala.Page
+import org.hyperscala.html.attributes.Method
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-class JavaScriptEvent(val tag: HTMLTag) extends Event
+class JavaScriptEvent(val tag: HTMLTag)
 
 object JavaScriptEvent {
   def apply(confirmation: String = null,
@@ -181,7 +181,7 @@ class InputEvent(tag: HTMLTag) extends JavaScriptEvent(tag)
 class InvalidEvent(tag: HTMLTag) extends JavaScriptEvent(tag)
 class ResetEvent(tag: HTMLTag) extends JavaScriptEvent(tag)
 class SelectEvent(tag: HTMLTag) extends JavaScriptEvent(tag)
-class SubmitEvent(tag: HTMLTag) extends JavaScriptEvent(tag)
+class SubmitEvent(tag: HTMLTag, method: Method = Method.Post) extends JavaScriptEvent(tag)
 class KeyDownEvent(tag: HTMLTag,
                    val char: Option[Char],
                    val keyCode: Int,

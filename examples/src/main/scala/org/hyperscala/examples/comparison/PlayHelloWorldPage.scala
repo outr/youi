@@ -4,7 +4,7 @@ import org.hyperscala.html._
 import org.hyperscala.web.site.Webpage
 import org.hyperscala.ui.validation._
 import org.hyperscala.realtime.Realtime
-import org.hyperscala.event.{ClickEvent, JavaScriptEvent}
+import org.hyperscala.event.JavaScriptEvent
 import org.hyperscala.css.attributes.Display
 import org.powerscala.Color
 import org.hyperscala.ui.dynamic.{DynamicContent, DynamicString}
@@ -37,8 +37,8 @@ class PlayHelloWorldPage extends Webpage {
   content.contents += results
   body.contents += main
 
-  submitButton.listeners.synchronous {
-    case evt: ClickEvent => if (configuration.style.display.getOrElse(Display.Block) == Display.None) {
+  submitButton.clickEvent.on {
+    case evt => if (configuration.style.display.getOrElse(Display.Block) == Display.None) {
       showConfigure()
     } else if (ValidatableTag.validateAll(configuration)) {
       showResults()
@@ -48,9 +48,9 @@ class PlayHelloWorldPage extends Webpage {
   def showResults() = {
     title := "Here is the result:"
     header.contents.replaceWith(new tag.A(href = "#", content = "Here is the result:") {
-      event.click := JavaScriptEvent()
-      listeners.synchronous {
-        case evt: ClickEvent => showConfigure()
+      clickEvent := JavaScriptEvent()
+      clickEvent.on {
+        case evt => showConfigure()
       }
     })
     submitButton.value := "Back to the form"

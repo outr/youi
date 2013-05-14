@@ -3,14 +3,16 @@ package org.hyperscala.css
 import attributes._
 import org.powerscala.Color
 import org.hyperscala.{Tag, InclusionMode, PropertyAttribute}
-import org.powerscala.bus.Routing
 import org.hyperscala.event.StylePropertyChangeEvent
+import org.powerscala.hierarchy.event.StandardHierarchyEventProcessor
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */
 class StyleSheetProperty(_name: String, inclusionMode: InclusionMode = InclusionMode.NotEmpty)
                         (implicit tag: Tag) extends PropertyAttribute[StyleSheet](_name, StyleSheet(), inclusionMode)(StyleSheet, tag, implicitly[Manifest[StyleSheet]]) {
+  val styleChange = new StandardHierarchyEventProcessor[StylePropertyChangeEvent]("styleChange")
+
   def alignmentAdjust = get[String](Style.alignmentAdjust)
   def alignmentAdjust_=(v: String) = set(Style.alignmentAdjust, v)
 
@@ -773,12 +775,14 @@ class StyleSheetProperty(_name: String, inclusionMode: InclusionMode = Inclusion
     }
   }
 
-  override def fireChanged(oldValue: StyleSheet, newValue: StyleSheet): Routing = {
-    val style = StyleSheetProperty.styleLocal.get()
-    val oldStyleValue = StyleSheetProperty.oldValueLocal.get()
-    val newStyleValue = StyleSheetProperty.newValueLocal.get()
-    val event = new StylePropertyChangeEvent(newValue, style, oldStyleValue, newStyleValue, this, oldValue, newValue)
-    fire(event)
+  change.on {
+    case evt => {
+      val style = StyleSheetProperty.styleLocal.get()
+      val oldStyleValue = StyleSheetProperty.oldValueLocal.get()
+      val newStyleValue = StyleSheetProperty.newValueLocal.get()
+      val event = new StylePropertyChangeEvent(evt.newValue, style, oldStyleValue, newStyleValue, this, evt.oldValue, evt.newValue)
+      styleChange.fire(event)
+    }
   }
 }
 

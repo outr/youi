@@ -11,13 +11,15 @@ import language.reflectiveCalls
  */
 class InputListString extends Binder[tag.Input, List[String]] {
   def bind(input: tag.Input) = {
-    input.value.onChange {
-      val csv = input.value().split(',').map(s => s.trim).toList
-      valueProperty := csv
+    input.value.change.on {
+      case evt => {
+        val csv = input.value().split(',').map(s => s.trim).toList
+        valueProperty := csv
+      }
     }
-    valueProperty.onChange {
-      input.value := valueProperty().mkString(", ")
+    valueProperty.change.on {
+      case evt => input.value := valueProperty().mkString(", ")
     }
-    input.event.change := JavaScriptEvent()
+    input.changeEvent := JavaScriptEvent()
   }
 }

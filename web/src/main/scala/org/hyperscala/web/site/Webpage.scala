@@ -9,31 +9,33 @@ import org.jboss.netty.handler.codec.http.{HttpHeaders, HttpMethod, HttpRequest,
 import org.hyperscala.html._
 import org.hyperscala.io.HTMLWriter
 import org.jboss.netty.buffer.ChannelBuffer
-import org.powerscala.hierarchy.{Parent, Element, ContainerView}
+import org.powerscala.hierarchy.{MutableChildLike, ContainerView}
 import org.hyperscala.web.session.MapSession
 import org.hyperscala.css.StyleSheet
-import org.powerscala.property.PropertyParent
 import org.powerscala.reflect._
 import org.powerscala.concurrent.Time._
 import org.powerscala.concurrent.WorkQueue
-import org.powerscala.event.Event
 import java.io.IOException
 import org.hyperscala.context.Contextual
 import org.hyperscala.module.ModularPage
 import org.hyperscala.svg.SVGTag
 import java.util.concurrent.atomic.AtomicBoolean
 import org.powerscala.Updatable
+import org.powerscala.hierarchy.event.{ChildRemovedProcessor, ChildAddedProcessor}
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class Webpage extends Page with ModularPage with RequestHandler with Parent with PropertyParent with Temporal with WorkQueue with Contextual {
+class Webpage extends Page with ModularPage with RequestHandler with Temporal with WorkQueue with Contextual {
   WebContext.webpage := this
 
   private val _rendered = new AtomicBoolean(false)
   def rendered = _rendered.get()
 
-  val name = () => getClass.getSimpleName
+  val childAdded = new ChildAddedProcessor
+  val childRemoved = new ChildRemovedProcessor
+
+  val name = getClass.getSimpleName
 
   def defaultTitle = CaseValue.generateLabel(getClass.getSimpleName.replaceAll("\\$", ""))
 
@@ -61,8 +63,9 @@ class Webpage extends Page with ModularPage with RequestHandler with Parent with
       case t => f(t)
     }
     // Now we intercept init to determine when new items are created
-    intercept.init {
+    intercept.init.on {
       case m: Markup if (m.getClass.hasType(manifest.runtimeClass)) => f(m.asInstanceOf[T])
+      case _ => // Ignore
     }
   }
 
@@ -82,7 +85,7 @@ class Webpage extends Page with ModularPage with RequestHandler with Parent with
 
   val contents = List(html)
 
-  Element.assignParent(html, this)
+  MutableChildLike.assignParent(html, this)
 
   def title = head.title
 
@@ -199,10 +202,6 @@ class Webpage extends Page with ModularPage with RequestHandler with Parent with
     }
   }
 
-  def fireLater(event: Event) = {
-    WorkQueue.enqueue(this, () => fire(event))
-  }
-
   def invokeLater(f: => Unit) = {
     WorkQueue.enqueue(this, () => f)
   }
@@ -220,7 +219,6 @@ class Webpage extends Page with ModularPage with RequestHandler with Parent with
     super.dispose()
 
     Website().session.removeByValue(this)
-    bus.clear()
   }
 }
 

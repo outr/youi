@@ -24,7 +24,7 @@ class VisualSearch extends tag.Div {
 
   private val modifying = new ThreadLocal[VisualSearchQuery]
 
-  val query = Property[VisualSearchQuery]("query", VisualSearchQuery())
+  val query = Property[VisualSearchQuery](default = Some(VisualSearchQuery()))
 
   def +=(facet: VisualSearchFacet) = synchronized {
     _facets = (facet :: _facets.reverse).reverse
@@ -55,13 +55,14 @@ class VisualSearch extends tag.Div {
     val instruction = "createVisualSearch('%s', '%s');".format(id(), source)
     Realtime.sendJavaScript(instruction, forId = id(), onlyRealtime = false)
 
-    query.onChange {
-      if (query() != modifying.get()) {   // Only send change to client if not the same information sent from client
+    query.change.on {
+      case evt => {
+        if (query() != modifying.get()) {   // Only send change to client if not the same information sent from client
         val content = "\"%s\"".format(query().query)
-        Realtime.sendJavaScript("setVisualSearchQuery('%s', content);".format(id()), content)
+          Realtime.sendJavaScript("setVisualSearchQuery('%s', content);".format(id()), content)
+        }
+        search(query())
       }
-
-      search(query())
     }
   }
 

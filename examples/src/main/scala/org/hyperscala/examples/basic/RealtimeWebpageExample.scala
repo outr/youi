@@ -2,8 +2,7 @@ package org.hyperscala.examples.basic
 
 import org.hyperscala.html._
 import org.powerscala.Color
-import org.hyperscala.event.{ChangeEvent, ClickEvent, JavaScriptEvent}
-import org.powerscala.event.ActionEvent
+import org.hyperscala.event.JavaScriptEvent
 import org.hyperscala.web.site.Webpage
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.examples.Example
@@ -19,49 +18,45 @@ class RealtimeWebpageExample extends Example {
   var reversed = false
 
   val input = new tag.Input {
-    event.change := JavaScriptEvent()
+    changeEvent := JavaScriptEvent()
 
-    value.onChange {
-      println("Input value changed: %s".format(value()))
-    }
-
-    listeners.synchronous {
-      case evt: ActionEvent => println("Input event: %s".format(evt))
+    value.change.on {
+      case evt => println("Input value changed: %s".format(value()))
     }
   }
   contents += input
 
   val select = new tag.Select(id = "realtimeSelect") {
-    event.change := JavaScriptEvent()
+    changeEvent := JavaScriptEvent()
 
     contents += new tag.Option(value = "uno", content = "One")
     contents += new tag.Option(value = "dos", content = "Two")
     contents += new tag.Option(value = "tres", content = "Three")
 
-    listeners.synchronous {
-      case evt: ChangeEvent => println("Selected: %s".format(selected()))
+    changeEvent.on {
+      case evt => println("Selected: %s".format(selected()))
     }
   }
   contents += select
 
   val textArea = new tag.TextArea {
-    event.change := JavaScriptEvent()
+    changeEvent := JavaScriptEvent()
 
-    listeners.synchronous {
-      case evt: ChangeEvent => println(content())
+    changeEvent.on {
+      case evt => println(content())
     }
   }
   contents += textArea
 
   contents += new tag.Button(content = "Test Button") {
-    event.click := JavaScriptEvent()
+    clickEvent := JavaScriptEvent()
 
-    listeners.synchronous {
-      case evt: ClickEvent => {
+    clickEvent.on {
+      case evt => {
         println("Selected: %s".format(select.selected))
         input.value := "Button clicked %s".format(count)
         contents.replaceWith("Test Button %s".format(count))
-        style.color = Color.values.random
+        style.color = Color.random
         if (count >= 10) {
           reversed = true
         } else if (count <= 0) {

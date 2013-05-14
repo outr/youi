@@ -1,16 +1,22 @@
 package org.hyperscala
 
 import io.HTMLWriter
-import org.powerscala.property.{PropertyParent, StandardProperty}
-import org.powerscala.property.backing.{VariableBacking, Backing}
+import org.powerscala.property.Property
 import persistence.ValuePersistence
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-class PropertyAttribute[T](_name: String, default: T, val inclusion: InclusionMode = InclusionMode.NotEmpty, backing: Backing[T] = new VariableBacking[T])
-                             (implicit persister: ValuePersistence[T], parent: PropertyParent, manifest: Manifest[T])
-                             extends StandardProperty[T](_name, default, backing)(parent, manifest) with XMLAttribute {
+class PropertyAttribute[T](val name: String,
+                           default: T,
+                           val inclusion: InclusionMode = InclusionMode.NotEmpty)
+                          (implicit persister: ValuePersistence[T], parent: Markup, manifest: Manifest[T])
+                           extends Property[T](default = Some(default))(parent, manifest) with XMLAttribute {
+  parent match {
+    case tag: Tag => tag.addAttribute(this)
+    case _ => // Parent is not a tag
+  }
+
   Page() match {
     case null => // May not be part of a page
     case page => page.intercept.initAttribute.fire(this)   // Fire the initialization to be intercepted
@@ -22,20 +28,22 @@ class PropertyAttribute[T](_name: String, default: T, val inclusion: InclusionMo
   // TODO: remove this
   def attributeValue_=(value: String) = this := persister.fromString(value, manifest.runtimeClass)
 
+  def modified = value != default
+
   def shouldRender = include
 
   def write(markup: Markup, writer: HTMLWriter) = if (shouldRender) {
     Page() match {
-      case null => writer.write(" %s=\"%s\"".format(name(), attributeValue))
-      case page => page.intercept.renderAttribute.fire(this) match {
-        case Some(pa) => writer.write(" %s=\"%s\"".format(pa.name(), pa.attributeValue))
-        case None => // Told not to render by intercept
+      case null => writer.write(" %s=\"%s\"".format(name, attributeValue))
+      case page => page.intercept.renderAttribute.fire(PropertyAttribute.this) match {
+        case Some(pa) if (pa() != null) => writer.write(" %s=\"%s\"".format(pa.name, persister.toString(pa().asInstanceOf[T], manifest.runtimeClass)))
+        case _ => // Told not to render by intercept
       }
     }
   }
 
-  def read(markup: Markup, value: String) = {
-    attributeValue = value
+  def read(markup: Markup, newValue: String) = {
+    value = persister.fromString(newValue, manifest.runtimeClass)
   }
 
   private def include = inclusion match {
@@ -47,7 +55,7 @@ class PropertyAttribute[T](_name: String, default: T, val inclusion: InclusionMo
 }
 
 // TODO: migrate to powerscala
-trait LazyProperty[T] extends StandardProperty[T] {
+/*trait LazyProperty[T] extends Property[T] {
   private var useLazy = true
   protected def lazyValue: T
 
@@ -76,11 +84,11 @@ trait LazyProperty[T] extends StandardProperty[T] {
    * Called when a value has been assigned to this LazyProperty and is no longer lazy.
    */
   def lazyLoaded(): Unit = {}
-}
+}*/
 
 object PropertyAttribute {
-  def apply[T](name: String, default: T, inclusion: InclusionMode = InclusionMode.NotEmpty, backing: Backing[T] = new VariableBacking[T])
-              (implicit persister: ValuePersistence[T], parent: PropertyParent, manifest: Manifest[T]) = {
-    new PropertyAttribute[T](name, default, inclusion, backing)(persister, parent, manifest)
+  def apply[T](name: String, default: T, inclusion: InclusionMode = InclusionMode.NotEmpty)
+              (implicit persister: ValuePersistence[T], parent: Markup, manifest: Manifest[T]) = {
+    new PropertyAttribute[T](name, default, inclusion)(persister, parent, manifest)
   }
 }

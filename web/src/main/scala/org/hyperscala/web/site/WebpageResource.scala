@@ -1,12 +1,10 @@
 package org.hyperscala.web.site
 
-import org.powerscala.property.StandardProperty
+import org.powerscala.property.Property
 import org.hyperscala.web.Scope
 import org.jboss.netty.handler.codec.http.{HttpResponseStatus, HttpRequest}
 import com.outr.webcommunicator.netty._
 import com.outr.webcommunicator.netty.handler.RequestHandler
-import org.powerscala.property.event.PropertyChangingEvent
-import org.powerscala.bus.Routing
 import org.hyperscala.Unique
 import org.jboss.netty.channel.ChannelHandlerContext
 import org.powerscala.log.Logging
@@ -21,11 +19,14 @@ class WebpageResource(autoRegister: Boolean = true) extends MutableWebResource()
 
   protected var _link: String = null
 
-  val id = new StandardProperty[String]("id", Unique())
+  val id = new Property[String](default = Some(Unique()))
   def link = _link
-  val scope = new StandardProperty[Scope]("scope", Scope.Request)
-  scope.listeners.synchronous {
-    case evt: PropertyChangingEvent if (evt.newValue == null) => Routing.Stop
+  val scope = new Property[Scope](default = Some(Scope.Request))
+  scope.changing.on {     // Scope should never be allowed to be set to null
+    case evt => evt match {
+      case null => None
+      case _ => Some(evt)
+    }
   }
   loader := load _
 

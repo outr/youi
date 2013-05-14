@@ -5,7 +5,7 @@ import org.powerscala.Language
 import org.hyperscala.web.site.Webpage
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.jquery.ui.{AutocompleteResult, Autocomplete}
-import org.hyperscala.event.{ClickEvent, ChangeEvent, JavaScriptEvent}
+import org.hyperscala.event.JavaScriptEvent
 import org.hyperscala.examples.Example
 import language.reflectiveCalls
 
@@ -19,29 +19,29 @@ class AutoCompleteExample extends Example {
   contents += new tag.Div {
     style.paddingAll = 25.px
     val input = new Autocomplete {
-      event.change := JavaScriptEvent()
+      changeEvent := JavaScriptEvent()
 
       autocomplete.search := ((query: String) => {
         val v = query.toLowerCase
         Language.values.collect {
-          case l if (l.name().toLowerCase.contains(v)) => l
-        }.slice(0, 10).map(l => AutocompleteResult(l.name(), l.name()))
+          case l if (l.name.toLowerCase.contains(v)) => l
+        }.slice(0, 10).map(l => AutocompleteResult(l.name, l.name))
       })
       autocomplete.autoFocus := true
       autocomplete.multiple := true
 
-      listeners.synchronous {
-        case evt: ChangeEvent => println("Input changed to: %s".format(value()))
+      changeEvent.on {
+        case evt => println("Input changed to: %s".format(value()))
       }
     }
 
     contents += input
 
     contents += new tag.Button(content = "Test") {
-      event.click := JavaScriptEvent()
+      clickEvent := JavaScriptEvent()
 
-      listeners.synchronous {
-        case evt: ClickEvent => {
+      clickEvent.on {
+        case evt => {
           println("Clicked! - %s".format(input.autocomplete.selected()))
           input.value := "testing"
         }

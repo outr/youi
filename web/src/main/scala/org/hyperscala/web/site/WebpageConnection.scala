@@ -14,10 +14,10 @@ import org.hyperscala.javascript.JavaScriptContent
 
 import org.powerscala.json._
 import scala.Some
-import org.powerscala.hierarchy.event.ChildRemovedEvent
-import org.powerscala.hierarchy.event.ChildAddedEvent
+import org.powerscala.hierarchy.event.{Descendants, ChildRemovedEvent, ChildAddedEvent}
 import svg.{Svg, SVGTag}
 import util.parsing.json.JSON
+import org.powerscala.hierarchy.ChildLike
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -36,28 +36,33 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
 
   def initializePage() = {
     // Listen for changes
-    page.listeners.synchronous.filter.descendant() {
-      case evt: ChildAddedEvent => childAdded(evt)
-      case evt: ChildRemovedEvent => childRemoved(evt)
+    page.childAdded.listen(Descendants) {
+      case evt => childAdded(evt)
     }
-    page.intercept.update {
+    page.childRemoved.listen(Descendants) {
+      case evt => childRemoved(evt)
+    }
+    page.intercept.update.on {
       case page if (communicatorReceiver != null || communicatorSender != null) => {
         page.asInstanceOf[Webpage].checkIn()
       }
+      case _ => // Ignore
     }
-    page.listeners.synchronous.filter(evt => true) {    // Accept all events on this pages' bus
-      case evt: PropertyChangeEvent if (FormField.changingProperty == evt.property && FormField.changingValue == evt.newValue) => {
+    page.listen[PropertyChangeEvent[_], Unit, Unit]("change", Descendants) {
+      case evt if (FormField.changingProperty == evt.property && FormField.changingValue == evt.newValue) => {
         // Ignore a change initialized by this connector (avoid recursive changes)
         debug("Ignoring change being applied: %s".format(FormField.changingValue))
       }
-      case evt: StylePropertyChangeEvent => {
-        styleChanged(evt.property.parent.asInstanceOf[HTMLTag], evt.styleSheet, evt.style, evt.newStyleValue)
-      }
-      case evt: PropertyChangeEvent => evt.property match {
-        case property: PropertyAttribute[_] => property.parent match {
+      case evt => evt.property match {
+        case property: PropertyAttribute[_] => ChildLike.parentOf(property) match {
           case tag: IdentifiableTag => propertyChanged(tag, property, evt.oldValue, evt.newValue)
         }
         case _ => // Ignore other changes
+      }
+    }
+    page.listen[StylePropertyChangeEvent, Unit, Unit]("styleChange", Descendants) {
+      case evt => {
+        styleChanged(ChildLike.parentOf(evt.property).asInstanceOf[HTMLTag], evt.styleSheet, evt.style, evt.newStyleValue)
       }
     }
   }
@@ -75,7 +80,7 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
   }
 
   def propertyChanged(t: IdentifiableTag, property: PropertyAttribute[_], oldValue: Any, newValue: Any) = {
-    debug("propertyChanged: %s.%s from %s to %s".format(t.xmlLabel, property.name(), oldValue, newValue))
+    debug("propertyChanged: %s.%s from %s to %s".format(t.xmlLabel, property.name, oldValue, newValue))
     if (t.root[Webpage].nonEmpty && !property.isInstanceOf[StyleSheetProperty] && !t.isInstanceOf[tag.Text]) {
       if (property == t.id && oldValue == null) {
         // Ignore initial id change as it is sent when added
@@ -88,8 +93,8 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
               case _ => send(JavaScriptMessage("$('#%s').val(content);".format(t.id()), property.attributeValue))
             }
             case input: tag.Input if (property == input.value) => send(JavaScriptMessage("$('#%s').val(content);".format(t.id()), property.attributeValue))
-            case _ if (property() == false) => send(JavaScriptMessage("$('#%s').removeAttr('%s');".format(t.id(), property.name())))
-            case _ => send(JavaScriptMessage("$('#%s').attr('%s', content);".format(t.id(), property.name()), property.attributeValue))
+            case _ if (property() == false) => send(JavaScriptMessage("$('#%s').removeAttr('%s');".format(t.id(), property.name)))
+            case _ => send(JavaScriptMessage("$('#%s').attr('%s', content);".format(t.id(), property.name), property.attributeValue))
           }
           case None => // Attribute shouldn't render so we ignore it
         }

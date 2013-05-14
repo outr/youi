@@ -12,5 +12,5 @@ class StylePropertyChangeEvent(val styleSheet: StyleSheet,
                                val oldStyleValue: AnyRef,
                                val newStyleValue: AnyRef,
                                property: Property[StyleSheet],
-                               oldValue: Any,
-                               newValue: Any) extends PropertyChangeEvent(property, oldValue, newValue)
+                               oldValue: StyleSheet,
+                               newValue: StyleSheet) extends PropertyChangeEvent[StyleSheet](property, oldValue, newValue)

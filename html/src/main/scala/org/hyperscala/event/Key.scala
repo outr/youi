@@ -1,11 +1,11 @@
 package org.hyperscala.event
 
-import org.powerscala.{Enumerated, EnumEntry}
+import org.powerscala.enum.{Enumerated, EnumEntry}
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-sealed class Key(val code: Int, val description: String) extends EnumEntry[Key]
+sealed class Key(val code: Int, val description: String) extends EnumEntry
 
 object Key extends Enumerated[Key] {
   val Cancel = new Key(3, "Cancel key")

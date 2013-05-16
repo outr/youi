@@ -9,7 +9,7 @@ import org.jboss.netty.handler.codec.http.{HttpHeaders, HttpMethod, HttpRequest,
 import org.hyperscala.html._
 import org.hyperscala.io.HTMLWriter
 import org.jboss.netty.buffer.ChannelBuffer
-import org.powerscala.hierarchy.{MutableChildLike, ContainerView}
+import org.powerscala.hierarchy.{ParentLike, MutableChildLike, ContainerView}
 import org.hyperscala.web.session.MapSession
 import org.hyperscala.css.StyleSheet
 import org.powerscala.reflect._
@@ -21,12 +21,12 @@ import org.hyperscala.module.ModularPage
 import org.hyperscala.svg.SVGTag
 import java.util.concurrent.atomic.AtomicBoolean
 import org.powerscala.Updatable
-import org.powerscala.hierarchy.event.{ChildRemovedProcessor, ChildAddedProcessor}
+import org.powerscala.hierarchy.event.{StandardHierarchyEventProcessor, ChildRemovedProcessor, ChildAddedProcessor}
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class Webpage extends Page with ModularPage with RequestHandler with Temporal with WorkQueue with Contextual {
+class Webpage extends Page with ModularPage with RequestHandler with Temporal with WorkQueue with Contextual with ParentLike[tag.HTML] {
   WebContext.webpage := this
 
   private val _rendered = new AtomicBoolean(false)
@@ -34,6 +34,9 @@ class Webpage extends Page with ModularPage with RequestHandler with Temporal wi
 
   val childAdded = new ChildAddedProcessor
   val childRemoved = new ChildRemovedProcessor
+
+  val pageLoadingEvent = new StandardHierarchyEventProcessor[Webpage]("pageLoading")
+  val pageLoadedEvent = new StandardHierarchyEventProcessor[Webpage]("pageLoaded")
 
   val name = getClass.getSimpleName
 
@@ -86,6 +89,8 @@ class Webpage extends Page with ModularPage with RequestHandler with Temporal wi
   val contents = List(html)
 
   MutableChildLike.assignParent(html, this)
+
+  protected lazy val hierarchicalChildren = List(html)
 
   def title = head.title
 
@@ -168,7 +173,9 @@ class Webpage extends Page with ModularPage with RequestHandler with Temporal wi
   /**
    * Called before the page is (re)loaded.
    */
-  def pageLoading() = {}
+  def pageLoading() = {
+    pageLoadingEvent.fire(this)
+  }
 
   /**
    * Called after the page is (re)loaded.
@@ -179,6 +186,7 @@ class Webpage extends Page with ModularPage with RequestHandler with Temporal wi
       case tag: SVGTag => tag.rendered()
     }
     _rendered.set(true)
+    pageLoadedEvent.fire(this)
   }
 
   /**

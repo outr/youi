@@ -9,6 +9,7 @@ import org.hyperscala.realtime.Realtime
 import org.hyperscala.event.JavaScriptEvent
 
 import language.reflectiveCalls
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -54,16 +55,26 @@ abstract class MultiSelect[T](implicit manifest: Manifest[T]) extends tag.Div {
     insertEntries(entries)
   }
 
-  def updateUIFromSelected() = {
-    byTag[Selectable[T]].foreach {
-      case s => s.selected = isSelected(s.value)
+  private val updating = new AtomicBoolean(false)
+
+  def updateUIFromSelected() = if (updating.compareAndSet(false, true)) {
+    try {
+      byTag[Selectable[T]].foreach {
+        case s => s.selected = isSelected(s.value)
+      }
+    } finally {
+      updating.set(false)
     }
   }
 
-  protected[ui] def updateSelectedFromUI() = {
-    selected := byTag[Selectable[T]].collect {
-      case s if (s.selected) => s.value
-    }.toList
+  protected[ui] def updateSelectedFromUI() = if (updating.compareAndSet(false, true)) {
+    try {
+      selected := byTag[Selectable[T]].collect {
+        case s if (s.selected) => s.value
+      }.toList
+    } finally {
+      updating.set(false)
+    }
   }
 }
 

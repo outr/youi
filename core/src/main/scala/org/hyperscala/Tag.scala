@@ -100,9 +100,11 @@ trait Tag extends Markup with Storage[Any] {
       }
       case None => {
         val attributeName = a.getName match {
+          case "type" if (List("link", "script").contains(xmlLabel)) => "mimeType"
           case "type" => s"${xmlLabel}Type"
           case "class" => "clazz"
           case "for" => "forElement"
+          case "title" => "titleText"
           case s => s
         }
         attributeFields.get(attributeName.toLowerCase) match {

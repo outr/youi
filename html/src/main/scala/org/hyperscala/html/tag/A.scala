@@ -48,10 +48,10 @@ class A extends Container[BodyChild] with BodyChild with HTMLTag {
     if (content != null) contents += content
   }
 
-  val href = PropertyAttribute[String]("href", null)
-  val hrefLang = PropertyAttribute[String]("hreflang", null)
-  val media = PropertyAttribute[String]("media", null)
-  val mimeType = PropertyAttribute[String]("type", null)
-  val rel = PropertyAttribute[Relationship]("rel", null)
-  val target = PropertyAttribute[Target]("target", null)
+  lazy val href = PropertyAttribute[String]("href", null)
+  lazy val hrefLang = PropertyAttribute[String]("hreflang", null)
+  lazy val media = PropertyAttribute[String]("media", null)
+  lazy val mimeType = PropertyAttribute[String]("type", null)
+  lazy val rel = PropertyAttribute[Relationship]("rel", null)
+  lazy val target = PropertyAttribute[Target]("target", null)
 }

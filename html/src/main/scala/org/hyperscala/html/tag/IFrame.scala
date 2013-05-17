@@ -48,10 +48,10 @@ class IFrame extends Container[BodyChild] with BodyChild with HTMLTag {
     if (content != null) contents += content
   }
 
-  val height = PropertyAttribute[String]("height", null)
-  val sandbox = PropertyAttribute[String]("sandbox", null)
-  val seamless = PropertyAttribute[String]("seamless", null)
-  val src = PropertyAttribute[String]("src", null)
-  val srcDoc = PropertyAttribute[String]("srcdoc", null)
-  val width = PropertyAttribute[String]("width", null)
+  lazy val height = PropertyAttribute[String]("height", null)
+  lazy val sandbox = PropertyAttribute[String]("sandbox", null)
+  lazy val seamless = PropertyAttribute[String]("seamless", null)
+  lazy val src = PropertyAttribute[String]("src", null)
+  lazy val srcDoc = PropertyAttribute[String]("srcdoc", null)
+  lazy val width = PropertyAttribute[String]("width", null)
 }

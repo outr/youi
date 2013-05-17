@@ -37,5 +37,5 @@ class Table extends Container[BodyChild] with BodyChild with HTMLTag {
     if (content != null) contents += content
   }
 
-  val border = PropertyAttribute[String]("border", null)
+  lazy val border = PropertyAttribute[String]("border", null)
 }

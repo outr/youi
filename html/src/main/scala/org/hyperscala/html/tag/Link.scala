@@ -47,10 +47,10 @@ class Link extends Textual with BodyChild with HeadChild with HTMLTag {
     up(this.content, content)
   }
 
-  val href = PropertyAttribute[String]("href", null)
-  val hrefLang = PropertyAttribute[String]("hreflang", null)
-  val media = PropertyAttribute[String]("media", null)
-  val mimeType = PropertyAttribute[String]("type", null)
-  val rel = PropertyAttribute[String]("rel", null)
-  val sizes = PropertyAttribute[String]("sizes", null)
+  lazy val href = PropertyAttribute[String]("href", null)
+  lazy val hrefLang = PropertyAttribute[String]("hreflang", null)
+  lazy val media = PropertyAttribute[String]("media", null)
+  lazy val mimeType = PropertyAttribute[String]("type", null)
+  lazy val rel = PropertyAttribute[String]("rel", null)
+  lazy val sizes = PropertyAttribute[String]("sizes", null)
 }

@@ -41,7 +41,7 @@ class Style extends Textual with BodyChild with HeadChild with HTMLTag {
     up(this.content, content)
   }
 
-  val mimeType = PropertyAttribute[String]("type", null)
-  val media = PropertyAttribute[String]("media", null)
-  val scoped = PropertyAttribute[Boolean]("scoped", false)
+  lazy val mimeType = PropertyAttribute[String]("type", null)
+  lazy val media = PropertyAttribute[String]("media", null)
+  lazy val scoped = PropertyAttribute[Boolean]("scoped", false)
 }

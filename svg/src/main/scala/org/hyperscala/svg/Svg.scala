@@ -60,16 +60,16 @@ class Svg extends Container[SVGTag] with BodyChild with HTMLTag {
     if (content != null) contents += content
   }
 
-  val x = PropertyAttribute[Double]("x", 0.0)
-  val y = PropertyAttribute[Double]("y", 0.0)
-  val width = PropertyAttribute[Length]("width", 100.pct)
-  val height = PropertyAttribute[Length]("height", null)
-  val viewBox = PropertyAttribute[ViewBox]("viewBox", null)
-  val version = PropertyAttribute[String]("version", "1.1", inclusion = InclusionMode.Always)
-  val baseProfile = PropertyAttribute[String]("baseProfile", null)
-  val preserveAspectRatio = PropertyAttribute[String]("preserveAspectRatio", null)
-  val contentScriptType = PropertyAttribute[String]("contentScriptType", null)
-  val contentStyleType = PropertyAttribute[String]("contentStyleType", null)
-  val zoomAndPan = PropertyAttribute[String]("zoomAndPan", null)
-  val xmlns = PropertyAttribute[String]("xmlns", "http://www.w3.org/2000/svg", inclusion = InclusionMode.Always)
+  lazy val x = PropertyAttribute[Double]("x", 0.0)
+  lazy val y = PropertyAttribute[Double]("y", 0.0)
+  lazy val width = PropertyAttribute[Length]("width", 100.pct)
+  lazy val height = PropertyAttribute[Length]("height", null)
+  lazy val viewBox = PropertyAttribute[ViewBox]("viewBox", null)
+  lazy val version = PropertyAttribute[String]("version", "1.1", inclusion = InclusionMode.Always)
+  lazy val baseProfile = PropertyAttribute[String]("baseProfile", null)
+  lazy val preserveAspectRatio = PropertyAttribute[String]("preserveAspectRatio", null)
+  lazy val contentScriptType = PropertyAttribute[String]("contentScriptType", null)
+  lazy val contentStyleType = PropertyAttribute[String]("contentStyleType", null)
+  lazy val zoomAndPan = PropertyAttribute[String]("zoomAndPan", null)
+  lazy val xmlns = PropertyAttribute[String]("xmlns", "http://www.w3.org/2000/svg", inclusion = InclusionMode.Always)
 }

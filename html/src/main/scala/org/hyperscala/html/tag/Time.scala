@@ -38,7 +38,7 @@ class Time extends Container[BodyChild] with BodyChild with HTMLTag {
     if (content != null) contents += content
   }
 
-  val dateTime = PropertyAttribute[String]("datetime", null)
+  lazy val dateTime = PropertyAttribute[String]("datetime", null)
 }
 
 object Time {

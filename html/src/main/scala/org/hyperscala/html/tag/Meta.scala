@@ -39,7 +39,7 @@ class Meta extends BodyChild with HeadChild with HTMLTag {
     up(this.httpEquiv, httpEquiv)
   }
 
-  val charset = PropertyAttribute[String]("charset", null)
-  val content = PropertyAttribute[String]("content", null)
-  val httpEquiv = PropertyAttribute[String]("http-equiv", null)
+  lazy val charset = PropertyAttribute[String]("charset", null)
+  lazy val content = PropertyAttribute[String]("content", null)
+  lazy val httpEquiv = PropertyAttribute[String]("http-equiv", null)
 }

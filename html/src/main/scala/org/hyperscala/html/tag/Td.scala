@@ -41,7 +41,7 @@ class Td extends Container[BodyChild] with BodyChild with HTMLTag {
     if (content != null) contents += content
   }
 
-  val colSpan = PropertyAttribute[String]("colspan", null)
-  val headers = PropertyAttribute[String]("headers", null)
-  val rowSpan = PropertyAttribute[String]("rowspan", null)
+  lazy val colSpan = PropertyAttribute[String]("colspan", null)
+  lazy val headers = PropertyAttribute[String]("headers", null)
+  lazy val rowSpan = PropertyAttribute[String]("rowspan", null)
 }

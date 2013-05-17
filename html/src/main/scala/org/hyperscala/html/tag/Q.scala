@@ -37,5 +37,5 @@ class Q extends Container[BodyChild] with BodyChild with HTMLTag {
     if (content != null) contents += content
   }
 
-  val cite = PropertyAttribute[String]("cite", null)
+  lazy val cite = PropertyAttribute[String]("cite", null)
 }

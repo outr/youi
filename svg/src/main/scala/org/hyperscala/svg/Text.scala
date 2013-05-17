@@ -9,11 +9,11 @@ import org.hyperscala.{PropertyAttribute, Textual}
 class Text extends Shape with Textual {
   lazy val xmlLabel = "text"
 
-  val x = PropertyAttribute[Double]("x", 0.0)
-  val y = PropertyAttribute[Double]("y", 0.0)
-  val dx = PropertyAttribute[List[Double]]("dx", Nil)
-  val dy = PropertyAttribute[List[Double]]("dy", Nil)
-  val rotate = PropertyAttribute[List[Double]]("rotate", Nil)
-  val textLength = PropertyAttribute[String]("textLength", null)
-  val lengthAdjust = PropertyAttribute[String]("lengthAdjust", null)
+  lazy val x = PropertyAttribute[Double]("x", 0.0)
+  lazy val y = PropertyAttribute[Double]("y", 0.0)
+  lazy val dx = PropertyAttribute[List[Double]]("dx", Nil)
+  lazy val dy = PropertyAttribute[List[Double]]("dy", Nil)
+  lazy val rotate = PropertyAttribute[List[Double]]("rotate", Nil)
+  lazy val textLength = PropertyAttribute[String]("textLength", null)
+  lazy val lengthAdjust = PropertyAttribute[String]("lengthAdjust", null)
 }

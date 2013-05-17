@@ -8,7 +8,7 @@ import persistence.StringPersistence
  * @author Matt Hicks <mhicks@powerscala.org>
  */
 trait Textual extends Markup {
-  val content = PropertyAttribute[String]("content", null, inclusion = InclusionMode.Exclude)(StringPersistence, this, implicitly[Manifest[String]])
+  lazy val content = PropertyAttribute[String]("content", null, inclusion = InclusionMode.Exclude)(StringPersistence, this, implicitly[Manifest[String]])
 
   private val children = List(new TextualChild(this))
   override def xmlChildren = if (content() == null || content() == "") {

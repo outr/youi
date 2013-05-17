@@ -11,7 +11,7 @@ import org.powerscala.hierarchy.event.StandardHierarchyEventProcessor
  */
 class StyleSheetProperty(_name: String, inclusionMode: InclusionMode = InclusionMode.NotEmpty)
                         (implicit tag: Tag) extends PropertyAttribute[StyleSheet](_name, StyleSheet(), inclusionMode)(StyleSheet, tag, implicitly[Manifest[StyleSheet]]) {
-  val styleChange = new StandardHierarchyEventProcessor[StylePropertyChangeEvent]("styleChange")
+  lazy val styleChange = new StandardHierarchyEventProcessor[StylePropertyChangeEvent]("styleChange")
 
   def alignmentAdjust = get[String](Style.alignmentAdjust)
   def alignmentAdjust_=(v: String) = set(Style.alignmentAdjust, v)

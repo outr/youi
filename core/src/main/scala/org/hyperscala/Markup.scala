@@ -15,7 +15,7 @@ trait Markup extends XMLContent with Listenable with Logging {
   private val _initialized = new AtomicBoolean(false)
 
   def xmlLabel: String
-  def xmlAttributes: Seq[XMLAttribute]
+  def xmlAttributes: Iterable[XMLAttribute]
   def xmlChildren: Seq[XMLContent] = Nil
   /**
    * True if tag should never be self-closing even if there are no children.
@@ -72,7 +72,7 @@ trait Markup extends XMLContent with Listenable with Logging {
   }
 
   @tailrec
-  private def writeAttributes(writer: HTMLWriter, attributes: Seq[XMLAttribute]): Unit = {
+  private def writeAttributes(writer: HTMLWriter, attributes: Iterable[XMLAttribute]): Unit = {
     if (attributes.nonEmpty) {
       writeAttribute(writer, attributes.head)
       writeAttributes(writer, attributes.tail)
@@ -155,15 +155,7 @@ trait Markup extends XMLContent with Listenable with Logging {
     }
   }
 
-  protected def attributeFromXML(a: Attribute): Boolean = {
-    xmlAttributes.find(xmla => xmla.name == a.getName) match {
-      case Some(xmla) => {
-        xmla.read(this, a.getValue)
-        true
-      }
-      case None => false
-    }
-  }
+  protected def attributeFromXML(a: Attribute): Boolean
 
   protected def unsupportedAttribute(name: String, value: String) = {
     if (Markup.UnsupportedAttributeException) {

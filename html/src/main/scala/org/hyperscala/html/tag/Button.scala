@@ -56,14 +56,14 @@ class Button extends Container[BodyChild] with BodyChild with HTMLTag with FormF
     if (content != null) contents += content
   }
 
-  val autoFocus = PropertyAttribute[Boolean]("autofocus", false)
-  val buttonType = PropertyAttribute[ButtonType]("type", null)
-  val disabled = PropertyAttribute[Boolean]("disabled", false)
-  val form = PropertyAttribute[String]("form", null)
-  val formAction = PropertyAttribute[String]("formaction", null)
-  val formEncType = PropertyAttribute[String]("formenctype", null)
-  val formMethod = PropertyAttribute[Method]("formmethod", null)
-  val formNoValidate = PropertyAttribute[Boolean]("formnovalidate", false)
-  val formTarget = PropertyAttribute[Target]("formtarget", null)
-  val value = PropertyAttribute[String]("value", null)
+  lazy val autoFocus = PropertyAttribute[Boolean]("autofocus", false)
+  lazy val buttonType = PropertyAttribute[ButtonType]("type", null)
+  lazy val disabled = PropertyAttribute[Boolean]("disabled", false)
+  lazy val form = PropertyAttribute[String]("form", null)
+  lazy val formAction = PropertyAttribute[String]("formaction", null)
+  lazy val formEncType = PropertyAttribute[String]("formenctype", null)
+  lazy val formMethod = PropertyAttribute[Method]("formmethod", null)
+  lazy val formNoValidate = PropertyAttribute[Boolean]("formnovalidate", false)
+  lazy val formTarget = PropertyAttribute[Target]("formtarget", null)
+  lazy val value = PropertyAttribute[String]("value", null)
 }

@@ -10,5 +10,5 @@ import org.hyperscala.css.attributes.Length
 class Stop extends SVGTag with Presentation {
   lazy val xmlLabel = "stop"
 
-  val offset = PropertyAttribute[Length]("offset", null)
+  lazy val offset = PropertyAttribute[Length]("offset", null)
 }

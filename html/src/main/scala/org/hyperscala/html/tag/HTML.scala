@@ -41,8 +41,8 @@ class HTML extends Container[HTMLChild] with HTMLTag {
     if (content != null) contents += content
   }
 
-  val manifest = PropertyAttribute[String]("manifest", null)
-  val xmlns = PropertyAttribute[String]("xmlns", null)
+  lazy val manifest = PropertyAttribute[String]("manifest", null)
+  lazy val xmlns = PropertyAttribute[String]("xmlns", null)
 
   def head = synchronized {
     contents.collectFirst {

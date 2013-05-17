@@ -53,13 +53,13 @@ class Area extends Container[BodyChild] with BodyChild with HTMLTag {
     if (content != null) contents += content
   }
 
-  val alt = PropertyAttribute[String]("alt", null)
-  val coords = PropertyAttribute[String]("coords", null)
-  val href = PropertyAttribute[String]("href", null)
-  val hrefLang = PropertyAttribute[String]("hreflang", null)
-  val media = PropertyAttribute[String]("media", null)
-  val mimeType = PropertyAttribute[String]("type", null)
-  val rel = PropertyAttribute[String]("rel", null)
-  val shape = PropertyAttribute[String]("shape", null)
-  val target = PropertyAttribute[String]("target", null)
+  lazy val alt = PropertyAttribute[String]("alt", null)
+  lazy val coords = PropertyAttribute[String]("coords", null)
+  lazy val href = PropertyAttribute[String]("href", null)
+  lazy val hrefLang = PropertyAttribute[String]("hreflang", null)
+  lazy val media = PropertyAttribute[String]("media", null)
+  lazy val mimeType = PropertyAttribute[String]("type", null)
+  lazy val rel = PropertyAttribute[String]("rel", null)
+  lazy val shape = PropertyAttribute[String]("shape", null)
+  lazy val target = PropertyAttribute[String]("target", null)
 }

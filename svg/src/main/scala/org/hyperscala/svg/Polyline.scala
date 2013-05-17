@@ -10,5 +10,5 @@ import org.hyperscala.PropertyAttribute
 class Polyline extends Shape {
   lazy val xmlLabel = "polyline"
 
-  val points = PropertyAttribute[List[Point]]("points", Nil)
+  lazy val points = PropertyAttribute[List[Point]]("points", Nil)
 }

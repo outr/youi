@@ -15,7 +15,7 @@ class StyleSheet extends PropertyParent {
   implicit val stringPersistence = StringPersistence
   implicit val thisStyleSheet = this
 
-  val name = PropertyAttribute[String]("name", null)
+  lazy val name = PropertyAttribute[String]("name", null)
   def parent = null
 
 %s

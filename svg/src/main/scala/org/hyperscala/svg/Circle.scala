@@ -27,7 +27,7 @@ class Circle extends Shape {
     up(this.r, r)
   }
 
-  val cx = PropertyAttribute[Double]("cx", 0.0)
-  val cy = PropertyAttribute[Double]("cy", 0.0)
-  val r = PropertyAttribute[Double]("r", 0.0)
+  lazy val cx = PropertyAttribute[Double]("cx", 0.0)
+  lazy val cy = PropertyAttribute[Double]("cy", 0.0)
+  lazy val r = PropertyAttribute[Double]("r", 0.0)
 }

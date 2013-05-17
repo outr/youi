@@ -49,12 +49,12 @@ class Img extends Container[BodyChild] with BodyChild with HTMLTag {
     if (content != null) contents += content
   }
 
-  val alt = PropertyAttribute[String]("alt", null)
-  val height = PropertyAttribute[String]("height", null)
-  val isMap = PropertyAttribute[String]("ismap", null)
-  val src = PropertyAttribute[String]("src", null)
-  val useMap = PropertyAttribute[String]("usemap", null)
-  val width = PropertyAttribute[String]("width", null)
+  lazy val alt = PropertyAttribute[String]("alt", null)
+  lazy val height = PropertyAttribute[String]("height", null)
+  lazy val isMap = PropertyAttribute[String]("ismap", null)
+  lazy val src = PropertyAttribute[String]("src", null)
+  lazy val useMap = PropertyAttribute[String]("usemap", null)
+  lazy val width = PropertyAttribute[String]("width", null)
 
   override protected def attributeFromXML(a: Attribute) = {
     if (a.getName == "align") {

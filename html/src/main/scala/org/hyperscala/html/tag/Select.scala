@@ -49,11 +49,11 @@ class Select extends Container[Option] with BodyChild with HTMLTag with FormFiel
     if (content != null) contents += content
   }
 
-  val autoFocus = PropertyAttribute[Boolean]("autofocus", false)
-  val disabled = PropertyAttribute[Boolean]("disabled", false)
-  val form = PropertyAttribute[String]("form", null)
-  val multiple = PropertyAttribute[Boolean]("multiple", false)
-  val size = PropertyAttribute[Int]("size", -1)
+  lazy val autoFocus = PropertyAttribute[Boolean]("autofocus", false)
+  lazy val disabled = PropertyAttribute[Boolean]("disabled", false)
+  lazy val form = PropertyAttribute[String]("form", null)
+  lazy val multiple = PropertyAttribute[Boolean]("multiple", false)
+  lazy val size = PropertyAttribute[Int]("size", -1)
 
   val selected = new Property[List[String]](default = Some(Nil)) with ListProperty[String]
   val value = Property[String]()

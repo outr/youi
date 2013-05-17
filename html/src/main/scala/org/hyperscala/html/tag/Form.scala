@@ -49,13 +49,13 @@ class Form extends Container[BodyChild] with BodyChild with HTMLTag {
     if (content != null) contents += content
   }
 
-  val acceptCharset = PropertyAttribute[String]("acceptcharset", null)
-  val action = PropertyAttribute[String]("action", null)
-  val autoComplete = PropertyAttribute[AutoComplete]("autocomplete", null)
-  val encType = PropertyAttribute[String]("enctype", null)
-  val method = PropertyAttribute[String]("method", null)
-  val noValidate = PropertyAttribute[String]("novalidate", null)
-  val target = PropertyAttribute[Target]("target", null)
+  lazy val acceptCharset = PropertyAttribute[String]("acceptcharset", null)
+  lazy val action = PropertyAttribute[String]("action", null)
+  lazy val autoComplete = PropertyAttribute[AutoComplete]("autocomplete", null)
+  lazy val encType = PropertyAttribute[String]("enctype", null)
+  lazy val method = PropertyAttribute[String]("method", null)
+  lazy val noValidate = PropertyAttribute[String]("novalidate", null)
+  lazy val target = PropertyAttribute[Target]("target", null)
 
   override def receive(event: String, message: Message) = event match {
     case "change" => {

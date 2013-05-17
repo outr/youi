@@ -58,16 +58,16 @@ class TextArea extends Textual with BodyChild with HTMLTag with FormField {
     up(this.content, content)
   }
 
-  val autoFocus = PropertyAttribute[Boolean]("autofocus", false)
-  val cols = PropertyAttribute[Int]("cols", -1)
-  val disabled = PropertyAttribute[Boolean]("disabled", false)
-  val form = PropertyAttribute[String]("form", null)
-  val maxLength = PropertyAttribute[Int]("maxlength", -1)
-  val placeHolder = PropertyAttribute[String]("placeholder", null)
-  val readOnly = PropertyAttribute[String]("readonly", null)
-  val required = PropertyAttribute[String]("required", null)
-  val rows = PropertyAttribute[Int]("rows", -1)
-  val wrap = PropertyAttribute[TextAreaWrap]("wrap", null)
+  lazy val autoFocus = PropertyAttribute[Boolean]("autofocus", false)
+  lazy val cols = PropertyAttribute[Int]("cols", -1)
+  lazy val disabled = PropertyAttribute[Boolean]("disabled", false)
+  lazy val form = PropertyAttribute[String]("form", null)
+  lazy val maxLength = PropertyAttribute[Int]("maxlength", -1)
+  lazy val placeHolder = PropertyAttribute[String]("placeholder", null)
+  lazy val readOnly = PropertyAttribute[String]("readonly", null)
+  lazy val required = PropertyAttribute[String]("required", null)
+  lazy val rows = PropertyAttribute[Int]("rows", -1)
+  lazy val wrap = PropertyAttribute[TextAreaWrap]("wrap", null)
 
   override def formValue = content
 }

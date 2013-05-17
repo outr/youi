@@ -9,7 +9,7 @@ import org.hyperscala.PropertyAttribute
 trait ConditionalProcessing {
   this: SVGTag =>
 
-  val requiredFeatures = PropertyAttribute[List[String]]("requiredFeatures", Nil)
-  val requiredExtensions = PropertyAttribute[List[String]]("requiredExtensions", Nil)
-  val systemLanguage = PropertyAttribute[List[String]]("systemLanguage", Nil)
+  lazy val requiredFeatures = PropertyAttribute[List[String]]("requiredFeatures", Nil)
+  lazy val requiredExtensions = PropertyAttribute[List[String]]("requiredExtensions", Nil)
+  lazy val systemLanguage = PropertyAttribute[List[String]]("systemLanguage", Nil)
 }

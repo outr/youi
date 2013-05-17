@@ -43,10 +43,10 @@ class Option extends Textual with BodyChild with HTMLTag {
     up(this.content, content)
   }
 
-  val disabled = PropertyAttribute[Boolean]("disabled", false)
-  val label = PropertyAttribute[String]("label", null)
-  val selected = PropertyAttribute[Boolean]("selected", false)
-  val value = PropertyAttribute[String]("value", null)
+  lazy val disabled = PropertyAttribute[Boolean]("disabled", false)
+  lazy val label = PropertyAttribute[String]("label", null)
+  lazy val selected = PropertyAttribute[Boolean]("selected", false)
+  lazy val value = PropertyAttribute[String]("value", null)
 
   selected.change.on {
     case evt => {

@@ -10,13 +10,13 @@ import org.hyperscala.svg.event.processor._
  * @author Matt Hicks <mhicks@outr.com>
  */
 trait SVGTag extends IdentifiableTag {
-  val xmlBase = PropertyAttribute[String]("xml:base", null)
-  val xmlLang = PropertyAttribute[String]("xml:lang", null)
-  val xmlSpace = PropertyAttribute[XMLSpace]("xml:space", null)
-  val clazz = PropertyAttribute[List[String]]("class", Nil)
-  val style = PropertyAttribute[String]("style", null)
-  val externalResourcesRequired = PropertyAttribute[Boolean]("externalResourcesRequired", false)
-  val transform = PropertyAttribute[List[Transform]]("transform", Nil)
+  lazy val xmlBase = PropertyAttribute[String]("xml:base", null)
+  lazy val xmlLang = PropertyAttribute[String]("xml:lang", null)
+  lazy val xmlSpace = PropertyAttribute[XMLSpace]("xml:space", null)
+  lazy val clazz = PropertyAttribute[List[String]]("class", Nil)
+  lazy val style = PropertyAttribute[String]("style", null)
+  lazy val externalResourcesRequired = PropertyAttribute[Boolean]("externalResourcesRequired", false)
+  lazy val transform = PropertyAttribute[List[Transform]]("transform", Nil)
 
   val focusInEvent = new SVGFocusInEventProcessor()
   val focusOutEvent = new SVGFocusOutEventProcessor()

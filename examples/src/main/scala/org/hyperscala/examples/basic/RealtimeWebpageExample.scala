@@ -64,7 +64,7 @@ class RealtimeWebpageExample extends Example {
         }
         if (reversed) {
           count -= 1
-          RealtimeWebpageExample.this.contents -= contents.last
+          RealtimeWebpageExample.this.contents -= RealtimeWebpageExample.this.contents.last
         } else {
           count += 1
           RealtimeWebpageExample.this.contents += new tag.Div {

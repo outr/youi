@@ -10,5 +10,5 @@ import org.hyperscala.PropertyAttribute
 class Polygon extends Shape {
   lazy val xmlLabel = "polygon"
 
-  val points = PropertyAttribute[List[Point]]("points", Nil)
+  lazy val points = PropertyAttribute[List[Point]]("points", Nil)
 }

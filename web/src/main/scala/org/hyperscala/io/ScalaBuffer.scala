@@ -45,7 +45,7 @@ abstract class ScalaBuffer {
             case true => "(%s)".format(attributes)
             case false => ""
           }
-          val style = StyleSheet.toString(tag.style(), classOf[StyleSheet])
+          val style = StyleSheet.toString(tag.style(), "style", classOf[StyleSheet])
           val children = tag match {
             case container: Container[_] if (container.contents.nonEmpty) => true
             case _ if (style.trim.nonEmpty) => true

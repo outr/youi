@@ -18,9 +18,9 @@ object Paint extends ValuePersistence[Paint] {
   def IRI(iri: String) = PaintIRI(iri)
   def Ref(tag: SVGTag) = IRI("#%s".format(tag.identity))
 
-  def fromString(s: String, clazz: Class[_]) = throw new UnsupportedOperationException("Paint reading not supported")
+  def fromString(s: String, name: String, clazz: Class[_]) = throw new UnsupportedOperationException("Paint reading not supported")
 
-  def toString(t: Paint, clazz: Class[_]) = t.value
+  def toString(t: Paint, name: String, clazz: Class[_]) = t.value
 }
 
 object PaintNone extends Paint {

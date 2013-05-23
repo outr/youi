@@ -14,5 +14,5 @@ class Image extends Shape {
   lazy val width = PropertyAttribute[Double]("width", 0.0)
   lazy val height = PropertyAttribute[Double]("height", 0.0)
   lazy val href = PropertyAttribute[String]("xlink:href", null)
-  lazy val preserveAspectRatio = PropertyAttribute[Boolean]("preserveAspectRatio", true)
+  lazy val preserveAspectRatio = PropertyAttribute[String]("preserveAspectRatio", null)
 }

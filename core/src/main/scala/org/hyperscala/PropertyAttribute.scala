@@ -9,7 +9,7 @@ import persistence.ValuePersistence
  */
 class PropertyAttribute[T](val name: String,
                            default: T,
-                           val inclusion: InclusionMode = InclusionMode.NotEmpty)
+                           var inclusion: InclusionMode = InclusionMode.NotEmpty)
                           (implicit persister: ValuePersistence[T], parent: Markup, manifest: Manifest[T])
                            extends Property[T](default = Some(default))(parent, manifest) with XMLAttribute {
   parent match {
@@ -23,10 +23,10 @@ class PropertyAttribute[T](val name: String,
   }
 
   // TODO: remove this
-  def attributeValue = persister.toString(value, manifest.runtimeClass)
+  def attributeValue = persister.toString(value, name, manifest.runtimeClass)
 
   // TODO: remove this
-  def attributeValue_=(value: String) = this := persister.fromString(value, manifest.runtimeClass)
+  def attributeValue_=(value: String) = this := persister.fromString(value, name, manifest.runtimeClass)
 
   def modified = value != default
 
@@ -36,20 +36,20 @@ class PropertyAttribute[T](val name: String,
     Page() match {
       case null => writer.write(" %s=\"%s\"".format(name, attributeValue))
       case page => page.intercept.renderAttribute.fire(PropertyAttribute.this) match {
-        case Some(pa) if (pa() != null) => writer.write(" %s=\"%s\"".format(pa.name, persister.toString(pa().asInstanceOf[T], manifest.runtimeClass)))
+        case Some(pa) if (pa() != null) => writer.write(" %s=\"%s\"".format(pa.name, persister.toString(pa().asInstanceOf[T], pa.name, manifest.runtimeClass)))
         case _ => // Told not to render by intercept
       }
     }
   }
 
   def read(markup: Markup, newValue: String) = {
-    value = persister.fromString(newValue, manifest.runtimeClass)
+    value = persister.fromString(newValue, name, manifest.runtimeClass)
   }
 
   private def include = inclusion match {
     case InclusionMode.Always => true
     case InclusionMode.Exclude => false
-    case InclusionMode.NotEmpty => modified && (value == true || (attributeValue != null && attributeValue.length > 0))
+    case InclusionMode.NotEmpty => modified && (attributeValue != null && attributeValue.length > 0)
     case InclusionMode.Modified => modified
   }
 }

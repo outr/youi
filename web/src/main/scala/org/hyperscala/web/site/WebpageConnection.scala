@@ -93,7 +93,19 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
               case _ => send(JavaScriptMessage("$('#%s').val(content);".format(t.id()), property.attributeValue))
             }
             case input: tag.Input if (property.name == "value") => send(JavaScriptMessage("$('#%s').val(content);".format(t.id()), property.attributeValue))
+            case option: tag.Option if (property.name == "selected") => {
+              if (option.selected()) {
+                val select = option.parent.asInstanceOf[tag.Select]
+                if (select.multiple()) {
+                  throw new RuntimeException("Multiple Select Currently not supported!")
+                } else {
+                  send(JavaScriptMessage(s"$$('#${select.identity}').val(content);", content = option.value()))
+                }
+              }
+            }
+//            case option: tag.Option if (property.name == "selected") => if (property() == true) send(JavaScriptMessage(s"$$('#${t.id()}').attr('${property.name}', ${property()});"))
             case _ if (property() == false) => send(JavaScriptMessage("$('#%s').removeAttr('%s');".format(t.id(), property.name)))
+//            case _ if (property() == true) => send(JavaScriptMessage(s"$$('#${t.id()}').attr('${property.name}', '${property.name}');"))
             case _ => send(JavaScriptMessage("$('#%s').attr('%s', content);".format(t.id(), property.name), property.attributeValue))
           }
           case None => // Attribute shouldn't render so we ignore it
@@ -111,7 +123,7 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
     } else {
       val anyStyle = style.asInstanceOf[Style[AnyRef]]
       val styleName = anyStyle.cssName
-      val styleValue = anyStyle.persistence.toString(value, value.getClass)
+      val styleValue = anyStyle.persistence.toString(value, styleName, value.getClass)
       send(JavaScriptMessage("$('#%s').css('%s', content);".format(tagId, styleName), styleValue))
     }
   }

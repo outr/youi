@@ -7,7 +7,7 @@ import org.powerscala.Language
  */
 // TODO: use ISO codes instead
 object LanguagePersistence extends ValuePersistence[Language] {
-  def fromString(s: String, clazz: Class[_]) = Language(s)
+  def fromString(s: String, name: String, clazz: Class[_]) = Language(s)
 
-  def toString(t: Language, clazz: Class[_]) = t.name
+  def toString(t: Language, name: String, clazz: Class[_]) = t.name
 }

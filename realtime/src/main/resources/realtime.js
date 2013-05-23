@@ -93,7 +93,16 @@ function jsFireChange(element) {
     if (element.is('input') && (element.prop('type') == 'checkbox' || element.prop('type') == 'radio')) {
         value = element.prop('checked');
     } else if (element.is('form')) {        // Send form data via change event
-        value = element.serialize();
+        var formData = element.serializeForm();
+        value = '';
+        jQuery.each(formData, function(k, v) {
+            if (value != '') {
+                value += '&';
+            }
+            value += k;
+            value += '=';
+            value += v;
+        });
     }
     communicator.send('change', id, {
         value: value
@@ -223,3 +232,31 @@ $(document).ready(function() {
         }
     });
 });
+
+jQuery.fn.serializeForm = function() {
+    // Create an object to hold the data
+    var formParams = {};
+
+    // Iterate over the selector results
+    this.each(function() {
+        // Iterate over each child form element of this
+        jQuery('input, select, textarea', this).each(function() {
+            var jObject = jQuery(this);
+            var id = jObject.attr('id');
+            if (id != null && id != '') {       // Only add elements with an id
+                var data = jObject.val();
+                var type = jObject.attr('type');
+                if ('checkbox' == type) {
+                    formParams[id] = this.checked ? 'true' : 'false';
+                } else if ('radio' == 'type') {
+                    formParams[id] = data;
+                } else if (formParams[id] === undefined) {
+                    formParams[id] = encodeURIComponent(data);
+                } else {        // Append
+                    formParams[id] += ',' + encodeURIComponent(data);
+                }
+            }
+        });
+    });
+    return formParams;
+};

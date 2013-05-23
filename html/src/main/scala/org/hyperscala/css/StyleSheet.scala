@@ -754,7 +754,7 @@ class StyleSheet private(val map: Map[Style[_], AnyRef] = Map.empty) {
 
   override def toString = {
     map.collect {
-      case (style, value) => "%s: %s".format(style.cssName, style.persistence.asInstanceOf[ValuePersistence[AnyRef]].toString(value, value.getClass))
+      case (style, value) => "%s: %s".format(style.cssName, style.persistence.asInstanceOf[ValuePersistence[AnyRef]].toString(value, style.cssName, value.getClass))
     }.mkString("; ")
   }
 }
@@ -768,14 +768,14 @@ object StyleSheet extends ValuePersistence[StyleSheet] with Logging {
     var ss = apply()
     css.split(";").map(s => s.split(":")).map(a => a(0).trim -> a(1).trim).foreach {
       case (key, value) => Style.byCSSName(key) match {
-        case Some(style) => ss = ss.set[AnyRef](style.asInstanceOf[Style[AnyRef]], style.persistence.fromString(value, style.manifest.runtimeClass).asInstanceOf[AnyRef])
+        case Some(style) => ss = ss.set[AnyRef](style.asInstanceOf[Style[AnyRef]], style.persistence.fromString(value, key, style.manifest.runtimeClass).asInstanceOf[AnyRef])
         case None => warn("Unable to find style by css name '%s' with value '%s'.".format(key, value))
       }
     }
     ss
   }
 
-  def fromString(css: String, clazz: Class[_]) = apply(css)
+  def fromString(css: String, name: String, clazz: Class[_]) = apply(css)
 
-  def toString(ss: StyleSheet, clazz: Class[_]) = ss.toString
+  def toString(ss: StyleSheet, name: String, clazz: Class[_]) = ss.toString
 }

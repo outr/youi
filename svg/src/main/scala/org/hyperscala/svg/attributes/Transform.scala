@@ -74,7 +74,7 @@ case class SkewY(angle: Double) extends Transform {
 }
 
 object ListTransformPersistence extends ValuePersistence[List[Transform]] {
-  def fromString(s: String, clazz: Class[_]): List[Transform] = Transform.parse(s)
+  def fromString(s: String, name: String, clazz: Class[_]): List[Transform] = Transform.parse(s)
 
-  def toString(t: List[Transform], clazz: Class[_]): String = t.map(t => t.value).mkString(", ")
+  def toString(t: List[Transform], name: String, clazz: Class[_]): String = t.map(t => t.value).mkString(", ")
 }

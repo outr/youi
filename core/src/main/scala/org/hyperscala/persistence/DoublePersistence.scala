@@ -4,7 +4,7 @@ package org.hyperscala.persistence
  * @author Matt Hicks <mhicks@powerscala.org>
  */
 object DoublePersistence extends ValuePersistence[Double] {
-  def fromString(s: String, clazz: Class[_]) = s.collect {
+  def fromString(s: String, name: String, clazz: Class[_]) = s.collect {
     case c if (c.isDigit || c == '.') => c
   } match {
     case "" => 0.0
@@ -15,5 +15,5 @@ object DoublePersistence extends ValuePersistence[Double] {
     }
   }
 
-  def toString(t: Double, clazz: Class[_]) = t.toString
+  def toString(t: Double, name: String, clazz: Class[_]) = t.toString
 }

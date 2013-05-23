@@ -21,7 +21,6 @@ class Autocomplete extends tag.Input {
   val autocomplete = Autocompletified(this)
 }
 
-// TODO: re-test now that input.value change is fixed on realtime
 class Autocompletified private(input: FormField) {
   input.identity
 

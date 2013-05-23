@@ -22,6 +22,7 @@ object JavaScriptEvent {
     Page().require("realtime")
 
     val b = new StringBuilder
+    b.append("try { ")
     if (confirmation != null) {
       b.append("if (confirm('%s')) { ".format(confirmation))
     }
@@ -38,6 +39,7 @@ object JavaScriptEvent {
     if (preventDefault) {
       b.append("return false;")
     }
+    b.append(" } catch(err) { alert('An error occurred: ' + err.message); }")
     JavaScriptString(b.toString())
   }
 

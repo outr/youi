@@ -17,7 +17,6 @@ object PageTimer extends Module with Logging {
 
   def load() = {
     val page = Webpage()
-    info(s"${page.getClass} requested.")
     page.store("pageLoadingStart") = System.currentTimeMillis()
     page.pageLoadedEvent.on {
       case webpage => {

@@ -88,6 +88,13 @@ class Select extends Container[Option] with BodyChild with HTMLTag with FormFiel
     }
   }
 
+  // TODO: implement this to listen to selection change
+//  listen[PropertyChangeEvent[_], Unit, Unit]("change", Descendants) {
+//    case evt => evt.property match {
+//      case pa: PropertyAttribute if (pa.name == "selected")
+//    }
+//  }
+
   protected def selectedValues = selected() match {   // Support for multiple or single selection
     case Nil => Nil
     case v if (!multiple() && v.size > 1) => List(v.head)

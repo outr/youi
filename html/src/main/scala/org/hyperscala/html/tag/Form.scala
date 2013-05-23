@@ -2,9 +2,10 @@ package org.hyperscala.html.tag
 
 import org.hyperscala._
 import css.StyleSheet
-import html.{FormField, HTMLTag}
+import html.HTMLTag
 import org.hyperscala.html.attributes._
 import org.hyperscala.html.constraints._
+import java.net.URLDecoder
 
 /**
  * NOTE: This file has been generated. Do not modify directly!
@@ -64,11 +65,11 @@ class Form extends Container[BodyChild] with BodyChild with HTMLTag {
         v.split('&').foreach {
           case pair => {
             val split = pair.indexOf('=')
-            val key = pair.substring(0, split)
-            val value = pair.substring(split + 1)
-            byName[FormField](key).headOption match {
-              case Some(f) => f.value := value
-              case None => warn("Unable to find %s by name.".format(key))
+            val key = URLDecoder.decode(pair.substring(0, split), "UTF-8")
+            val value = URLDecoder.decode(pair.substring(split + 1), "UTF-8")
+            byId[IdentifiableTag](key) match {
+              case Some(f) => f.receive("change", Message(null, collection.immutable.Map("value" -> value)))
+              case None => warn(s"Unable to find $key by id with value of: $value")
             }
           }
         }

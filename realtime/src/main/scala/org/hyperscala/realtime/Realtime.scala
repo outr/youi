@@ -162,7 +162,9 @@ object Realtime extends Module {
   def connectForm() = {
     Webpage().live[FormField] {
       case field => {
-        field.changeEvent := JavaScriptEvent(preventDefault = false)
+        if (field.changeEvent() == null) {
+          field.changeEvent := JavaScriptEvent(preventDefault = false)
+        }
         field match {
           case i: tag.Input => if (field.clickEvent() == null) {
             field.clickEvent := JavaScriptEvent(preventDefault = false)

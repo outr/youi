@@ -29,14 +29,15 @@ class RealtimeWebpageExample extends Example {
   val select = new tag.Select(id = "realtimeSelect") {
     changeEvent := JavaScriptEvent()
 
-    contents += new tag.Option(value = "uno", content = "One")
-    contents += new tag.Option(value = "dos", content = "Two")
-    contents += new tag.Option(value = "tres", content = "Three")
+    contents += new tag.Option(id = "first", value = "uno", content = "One")
+    contents += new tag.Option(id = "second", value = "dos", content = "Two")
+    contents += new tag.Option(id = "third", value = "tres", content = "Three")
 
     changeEvent.on {
       case evt => println("Selected: %s".format(selected()))
     }
   }
+  select.value := "dos"
   contents += select
 
   val textArea = new tag.TextArea {
@@ -53,7 +54,14 @@ class RealtimeWebpageExample extends Example {
 
     clickEvent.on {
       case evt => {
-        println("Selected: %s".format(select.selected))
+        val selected = select.value()
+        val newSelection = if (selected == "uno") {
+          "dos"
+        } else {
+          "uno"
+        }
+        println(s"Selected: $selected, switching to $newSelection")
+        select.value := newSelection
         input.value := "Button clicked %s".format(count)
         contents.replaceWith("Test Button %s".format(count))
         style.color = Color.random

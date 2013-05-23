@@ -106,8 +106,8 @@ object JavaScriptCombiner extends URLWebResource with RequestHandler with Module
         info(s"Attempting load JavaScript from URL: $url.")
         val js = IO.copy(javaURL)
         scriptCache += uri -> js
-        js
         info(s"$url loaded successfully.")
+        js
       }
     }
   }

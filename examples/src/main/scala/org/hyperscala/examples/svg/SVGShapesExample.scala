@@ -5,7 +5,7 @@ import org.hyperscala.examples.Example
 import org.hyperscala.svg
 import org.hyperscala.svg._
 import org.powerscala.Color
-import svg.attributes.{Paint, Transform, ViewBox, Point}
+import org.hyperscala.svg.attributes._
 import org.hyperscala.html._
 
 /**
@@ -28,6 +28,21 @@ class SVGShapesExample extends Example {
       style := "stop-color:rgb(255,0,0);stop-opacity:1"
     }
   }
+  val pattern = new svg.Pattern {
+    id := "trianglePattern"
+    x := 0.0
+    y := 0.0
+    width := 100.px
+    height := 100.px
+    viewBox := ViewBox(0.0, 0.0, 10.0, 10.0)
+    patternUnits := PatternUnits.UserSpaceOnUse
+
+    contents += new svg.Path {
+      d := "M 0 0 L 7 0 L 3.5 7 z"
+      fill := Color.Red
+      stroke := Color.Blue
+    }
+  }
 
   contents += new svg.Svg {
     width := 800.px
@@ -36,6 +51,7 @@ class SVGShapesExample extends Example {
 
     contents += new svg.Defs {
       contents += gradient
+      contents += pattern
     }
 
     contents += new svg.Polygon {
@@ -106,6 +122,15 @@ class SVGShapesExample extends Example {
         strokeWidth := 10.0
         stroke := Color.Green
       }
+    }
+    contents += new svg.Ellipse {
+      fill := Paint.Ref(pattern)
+      stroke := Color.Black
+      strokeWidth := 5
+      cx := 400.0
+      cy := 300.0
+      rx := 350.px
+      ry := 150.px
     }
   }
 }

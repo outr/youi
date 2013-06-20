@@ -16,7 +16,7 @@ object HyperScalaBuild extends Build {
   val htmlcleaner = "net.sourceforge.htmlcleaner" % "htmlcleaner" % "2.2"
   val akkaActors = "com.typesafe.akka" % "akka-actor_2.10" % "2.1.2"
 
-  val specs2 = "org.specs2" %% "specs2" % "1.11" % "test"
+  val scalaTest = "org.scalatest" % "scalatest_2.10" % "1.9.1" % "test"
 
   val webcommunicator = "com.outr.webcommunicator" %% "webcommunicator" % "1.0.4-SNAPSHOT"
 
@@ -31,7 +31,7 @@ object HyperScalaBuild extends Build {
       jdom,
       htmlcleaner,
       akkaActors,
-      specs2
+      scalaTest
     ),
     scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature"),
     resolvers ++= Seq("Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/",

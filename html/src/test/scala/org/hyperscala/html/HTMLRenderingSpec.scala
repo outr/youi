@@ -1,18 +1,19 @@
 package org.hyperscala.html
 
 import attributes.ContentEditable
-import org.specs2.mutable._
 import org.jdom2.Element
 import org.hyperscala.css.StyleSheet
 import org.hyperscala.css.attributes.Display
 import org.jdom2.input.SAXBuilder
 import java.io.StringReader
 import tag.{Head, HTML, Body, Title}
+import org.scalatest.WordSpec
+import org.scalatest.matchers.ShouldMatchers
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-class HTMLRenderingSpec extends Specification {
+class HTMLRenderingSpec extends WordSpec with ShouldMatchers {
   val builder = new SAXBuilder()
 
   "HTML element" should {
@@ -20,11 +21,11 @@ class HTMLRenderingSpec extends Specification {
       val html = new HTML()
       html.name := "testing"
       val out = html.outputString
-      out must_==("<html name=\"testing\"/>")
+      out should equal("<html name=\"testing\"/>")
     }
     "have correct parent for attributes" in {
       val html = new HTML()
-      html.name.parent must_==(html)
+      html.name.parent should equal(html)
     }
     "load properly with one attribute set" in {
       val html = new HTML()
@@ -32,21 +33,21 @@ class HTMLRenderingSpec extends Specification {
       element.setAttribute("name", "testing")
       html.read(element)
       val out = html.outputString
-      out must_==("<html name=\"testing\"/>")
+      out should equal("<html name=\"testing\"/>")
     }
     "load properly with an enum attribute set" in {
       val html = new HTML {
         contentEditable := ContentEditable.Inherit
       }
       val out = html.outputString
-      out must_==("<html contenteditable=\"inherit\"/>")
+      out should equal("<html contenteditable=\"inherit\"/>")
     }
     "properly add Head tag" in {
       val html = new HTML {
         contents += new Head
       }
       val out = html.outputString
-      out must_==("<html><head/></html>")
+      out should equal("<html><head/></html>")
     }
   }
   "DOM building" should {
@@ -60,39 +61,39 @@ class HTMLRenderingSpec extends Specification {
         }
       }
       val out = html.outputString
-      out must_==("<html><head><title>Test Title</title></head><body>Test Body</body></html>")
+      out should equal("<html><head><title>Test Title</title></head><body>Test Body</body></html>")
     }
   }
   "Attributes" should {
     "show properly when Boolean true" in {
       val html = new HTML(hidden = true)
       val out = html.outputString
-      out must_==("<html hidden=\"\"/>")
+      out should equal("<html hidden=\"\"/>")
     }
     "show properly when Boolean false" in {
       val html = new HTML(hidden = false)
       val out = html.outputString
-      out must_==("<html/>")
+      out should equal("<html/>")
     }
     "show properly when Char" in {
       val html = new HTML(accessKey = 'T')
       val out = html.outputString
-      out must_==("<html accesskey=\"T\"/>")
+      out should equal("<html accesskey=\"T\"/>")
     }
     "show properly when Int" in {
       val html = new HTML(tabIndex = 5)
       val out = html.outputString
-      out must_==("<html tabindex=\"5\"/>")
+      out should equal("<html tabindex=\"5\"/>")
     }
     "show properly when List[String]" in {
       val html = new HTML(clazz = List("one", "two", "three"))
       val out = html.outputString
-      out must_==("<html class=\"one two three\"/>")
+      out should equal("<html class=\"one two three\"/>")
     }
     "show properly when EnumEntry" in {
       val html = new HTML(contentEditable = ContentEditable.True)
       val out = html.outputString
-      out must_==("<html contenteditable=\"true\"/>")
+      out should equal("<html contenteditable=\"true\"/>")
     }
     "show properly when CSS" in {
 //      val css = new StyleSheet {
@@ -102,7 +103,7 @@ class HTMLRenderingSpec extends Specification {
       val css = StyleSheet().fontFace("Arial").display(Display.Inline)
       val html = new HTML(style = css)
       val out = html.outputString
-      out must_==("<html style=\"display: inline; font-face: Arial\"/>")
+      out should equal("<html style=\"display: inline; font-face: Arial\"/>")
     }
   }
   "DOM deserialization" should {
@@ -112,14 +113,14 @@ class HTMLRenderingSpec extends Specification {
       val document = builder.build(new StringReader(content))
       html.read(document.getRootElement)
       val out = html.outputString
-      out must_==(content)
+      out should equal(content)
     }
     "properly deserialize a basic HTML page with CSS" in {
       val content = "<html><head><title>Test Title</title></head><body><h1 style=\"display: none\">Test Body</h1></body></html>"
       val html = new HTML
       html.read(builder.build(new StringReader(content)).getRootElement)
       val out = html.outputString
-      out must_==(content)
+      out should equal(content)
     }
   }
 }

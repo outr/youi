@@ -21,7 +21,7 @@ class Autocomplete extends tag.Input {
   val autocomplete = Autocompletified(this)
 }
 
-class Autocompletified private(input: FormField) {
+class Autocompletified private(val input: FormField) {
   input.identity
 
   private lazy val handler = new AutocompleteSearchHandler(this)

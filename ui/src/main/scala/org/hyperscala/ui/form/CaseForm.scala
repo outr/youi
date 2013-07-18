@@ -15,6 +15,10 @@ import org.hyperscala.ui.convert.Converter
 class CaseForm[T](val form: tag.Form)(implicit manifest: Manifest[T]) {
   val property = Property[T]()
 
+  property.change.on {
+    case evt => refreshFormFromProperty()
+  }
+
   private val clazz: EnhancedClass = manifest.runtimeClass
   private var fieldMap = createCaseFields()
   private var validators = List.empty[() => Option[String]]

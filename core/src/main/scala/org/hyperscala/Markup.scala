@@ -109,10 +109,19 @@ trait Markup extends XMLContent with Listenable with Logging {
     }
   }
 
-  def onInit(f: => Unit) = Page().intercept.init.on {
-    case markup => if (markup == Markup.this) {
-      f
+  /**
+   * Invokes the supplied function upon init or immediately if this Markup has already been initialized.
+   *
+   * @param f represents the function to be called upon init
+   */
+  def onInit(f: => Unit): Unit = if (!initialized) {
+    Page().intercept.init.on {
+      case markup => if (markup == Markup.this) {
+        f
+      }
     }
+  } else {
+    f
   }
 
   def onBeforeRender(f: => Unit) = Page().intercept.beforeRender.on {

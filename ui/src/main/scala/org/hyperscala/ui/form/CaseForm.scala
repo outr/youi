@@ -12,7 +12,7 @@ import org.hyperscala.ui.convert.Converter
  *
  * @author Matt Hicks <matt@outr.com>
  */
-abstract class CaseForm[T](val form: tag.Form)(implicit manifest: Manifest[T]) {
+class CaseForm[T](val form: tag.Form)(implicit manifest: Manifest[T]) {
   val property = Property[T]()
 
   private val clazz: EnhancedClass = manifest.runtimeClass
@@ -38,7 +38,7 @@ abstract class CaseForm[T](val form: tag.Form)(implicit manifest: Manifest[T]) {
   def update[V](name: String)(updateFunction: CaseFormField[V] => CaseFormField[V]) = synchronized {
     val f = field(name)
     val updated = updateFunction(f.asInstanceOf[CaseFormField[V]])
-    fieldMap += updated.name -> updated
+    fieldMap += updated.name -> updated.asInstanceOf[CaseFormField[Any]]
   }
 
   /**
@@ -62,14 +62,14 @@ abstract class CaseForm[T](val form: tag.Form)(implicit manifest: Manifest[T]) {
   def errors(messages: String*) = {}
 
   /**
-   * Creates a validator for the supplied fields (may be empty) and returns an error message if validation failed
+   * Adds a validator for the supplied fields (may be empty) and returns an error message if validation failed
    * or None.
    *
    * @param fields the fields the validation is applied to. May be None.
    * @param f the validator function
    */
   def validator(fields: String*)(f: () => Option[String]) = synchronized {
-    val caseFields = fields.map(name => field[_](name))
+    val caseFields = fields.map(name => field[Any](name))
     val v = () => {
       val result = f()
 
@@ -117,7 +117,7 @@ abstract class CaseForm[T](val form: tag.Form)(implicit manifest: Manifest[T]) {
 
   def refreshFormFromProperty() = if (refreshing.compareAndSet(false, true)) {
     try {
-      val p = property()
+      val p = property().asInstanceOf[AnyRef]
       fieldMap.values.foreach(cff => cff.updateValueFromCaseClass(p))
     } finally {
       refreshing.set(false)
@@ -129,8 +129,8 @@ abstract class CaseForm[T](val form: tag.Form)(implicit manifest: Manifest[T]) {
       case cv => {
         val name = cv.name
         val field = form.byId[FormField](name).getOrElse(throw new RuntimeException(s"Unable to find $name in $clazz"))
-        val converter = Converter(cv.valueType.javaClass)
-        name -> CaseFormField(name, field, converter, cv)
+        val converter = Converter[Any](cv.valueType.javaClass.asInstanceOf[Class[Any]])
+        name -> CaseFormField[Any](name, field, converter, cv)
       }
     }.toMap
   }
@@ -147,7 +147,7 @@ case class CaseFormField[V](name: String, field: FormField, converter: Option[Co
     case None => // No converter
   }
 
-  def updateValueFromCaseClass(cc: Any) = {
+  def updateValueFromCaseClass(cc: AnyRef) = {
     val v = caseValue[V](cc)
     value = v
   }

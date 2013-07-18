@@ -9,7 +9,7 @@ class DoubleConverter(pre: String = "", post: String = "") extends Converter[Dou
   def string2Value(s: String): Option[Double] = DoubleConverter.string2Value(s)
 }
 
-object DoubleConverter extends DoubleConverter() {
+object DoubleConverter extends DoubleConverter(pre = "", post = "") {
   val Regex = """(\d+([.]\d+)?)""".r
 
   override def string2Value(s: String) = s match {

@@ -9,4 +9,4 @@ class IntConverter(pre: String = "", post: String = "") extends Converter[Int] {
   def string2Value(s: String) = DoubleConverter.string2Value(s).map(d => math.round(d).toInt)
 }
 
-object IntConverter extends IntConverter()
+object IntConverter extends IntConverter(pre = "", post = "")

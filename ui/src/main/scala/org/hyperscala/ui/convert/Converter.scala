@@ -20,5 +20,5 @@ object Converter {
     map += clazz -> converter
   }
 
-  def apply[V](clazz: Class[V]) = map.get(clazz)
+  def apply[V](clazz: Class[V]) = map.get(clazz).asInstanceOf[Option[Converter[V]]]
 }

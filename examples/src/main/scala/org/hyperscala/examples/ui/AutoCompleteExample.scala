@@ -24,7 +24,7 @@ class AutoCompleteExample extends Example {
       autocomplete.search := ((query: String) => {
         val v = query.toLowerCase
         Language.values.collect {
-          case l if (l.name.toLowerCase.contains(v)) => l
+          case l if l.name.toLowerCase.contains(v) => l
         }.slice(0, 10).map(l => AutocompleteResult(l.name, l.name))
       })
       autocomplete.autoFocus := true

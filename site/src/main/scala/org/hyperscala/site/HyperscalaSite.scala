@@ -53,6 +53,7 @@ object HyperscalaSite extends Website[MapSession] {
     val dynamicURL = WebpageResource("/example/dynamic_url.html", new HyperscalaExample(new DynamicURLExample), Scope.Page)
     val multiSelect = WebpageResource("/example/multi_select.html", new HyperscalaExample(new MultiSelectExample), Scope.Page)
     val select2 = WebpageResource("/example/select2.html", new HyperscalaExample(new Select2Example), Scope.Page)
+    val caseForm = WebpageResource("/example/case_form.html", new HyperscalaExample(new CaseFormExample), Scope.Page)
     val jsCombiner = WebpageResource("/example/js_combiner.html", new HyperscalaExample(new JavaScriptCombinerExample), Scope.Request)
     val jQueryEvents = WebpageResource("/example/jquery_events.html", new HyperscalaExample(new jQueryEventsExample), Scope.Request)
     val svg = new {

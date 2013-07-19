@@ -36,7 +36,7 @@ class PropertyAttribute[T](val name: String,
     Page() match {
       case null => writer.write(" %s=\"%s\"".format(name, attributeValue))
       case page => page.intercept.renderAttribute.fire(PropertyAttribute.this) match {
-        case Some(pa) if (pa() != null) => writer.write(" %s=\"%s\"".format(pa.name, persister.toString(pa().asInstanceOf[T], pa.name, manifest.runtimeClass)))
+        case Some(pa) if pa() != null => writer.write(" %s=\"%s\"".format(pa.name, persister.toString(pa().asInstanceOf[T], pa.name, manifest.runtimeClass)))
         case _ => // Told not to render by intercept
       }
     }

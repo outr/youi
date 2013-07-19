@@ -13,7 +13,7 @@ object DoubleConverter extends DoubleConverter(pre = "", post = "") {
   val Regex = """(\d+([.]\d+)?)""".r
 
   override def string2Value(s: String) = s match {
-    case DoubleConverter.Regex(d) => try {
+    case DoubleConverter.Regex(d, extra) => try {
       Some(d.toDouble)
     } catch {
       case t: Throwable => None

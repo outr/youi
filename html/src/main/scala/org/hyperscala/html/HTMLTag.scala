@@ -6,7 +6,7 @@ import io.HTMLWriter
 import org.hyperscala.html.tag._
 import org.hyperscala.css.{StyleSheet, StyleSheetProperty}
 import scala.collection.{Map => ScalaMap}
-import org.powerscala.property.Property
+import org.powerscala.property.{ListProperty, Property}
 import org.hyperscala.event._
 import org.hyperscala.event.processor._
 
@@ -16,7 +16,7 @@ import org.hyperscala.event.processor._
  */
 trait HTMLTag extends IdentifiableTag {
   lazy val accessKey = PropertyAttribute[Char]("accesskey", -1.toChar)
-  lazy val clazz = PropertyAttribute[List[String]]("class", Nil)
+  lazy val clazz = new PropertyAttribute[List[String]]("class", Nil) with ListProperty[String]
   lazy val contentEditable = PropertyAttribute[ContentEditable]("contenteditable", null)
   lazy val contextMenu = PropertyAttribute[String]("contextmenu", null)
   lazy val dir = PropertyAttribute[Direction]("dir", null)

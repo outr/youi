@@ -6,22 +6,43 @@ import org.hyperscala.html._
 import java.util.concurrent.atomic.AtomicBoolean
 import org.powerscala.reflect._
 import org.hyperscala.ui.convert.Converter
+import org.powerscala.log.Logging
+import org.hyperscala.ui.form.error.ErrorSupport
+import org.hyperscala.web.site.Webpage
+import org.hyperscala.ui.BusyDialog
 
 /**
  * CaseForm allows convenient wrapping around an HTML Form to easier access and validate the fields within.
  *
  * @author Matt Hicks <matt@outr.com>
  */
-class CaseForm[T](val form: tag.Form)(implicit manifest: Manifest[T]) {
+abstract class CaseForm[T](val form: tag.Form,
+                           errorSupport: ErrorSupport,
+                           realTime: Boolean = false)(implicit manifest: Manifest[T]) extends Logging {
+  Webpage().require(BusyDialog)
+
   val property = Property[T]()
+
+  def processingLabel = "Processing..."
 
   property.change.on {
     case evt => refreshFormFromProperty()
   }
+  form.submitEvent.on {
+    case evt => if (validate()) {
+      submitForm()
+    }
+  }
+
+  private def submitForm() = {
+    BusyDialog(processingLabel) {
+      submit()
+    }
+  }
 
   private val clazz: EnhancedClass = manifest.runtimeClass
   private var fieldMap = createCaseFields()
-  private var validators = List.empty[() => Option[String]]
+  private var validators = List.empty[() => ValidationResponse]
 
   /**
    * Retrieve the CaseFormField by field name.
@@ -46,45 +67,38 @@ class CaseForm[T](val form: tag.Form)(implicit manifest: Manifest[T]) {
   }
 
   /**
-   * Clears the errors from the display.
-   */
-  def clearErrors() = {}
-
-  /**
-   * Called during validation if there is an error on a specific field.
-   *
-   * @param field CaseFormField the error occurred on
-   * @param error the error message
-   */
-  def fieldError(field: CaseFormField[_], error: String) = {}
-
-  /**
-   * Called after validation completes to display error messages.
-   *
-   * @param messages the error messages that should be displayed
-   */
-  def errors(messages: String*) = {}
-
-  /**
    * Adds a validator for the supplied fields (may be empty) and returns an error message if validation failed
    * or None.
    *
    * @param fields the fields the validation is applied to. May be None.
    * @param f the validator function
    */
-  def validator(fields: String*)(f: () => Option[String]) = synchronized {
+  def validator(fields: String*)(f: => Option[String]) = synchronized {
     val caseFields = fields.map(name => field[Any](name))
     val v = () => {
-      val result = f()
+      val result: Option[String] = f
 
       result match {
-        case Some(error) => caseFields.foreach(cf => fieldError(cf, error))
-        case None => // No error
+        case Some(error) => ValidationResponse(error, caseFields.map(cf => cf.field): _*)
+        case None => ValidationResponse.Valid
       }
-
-      result
     }
     validators = (v :: validators.reverse).reverse
+  }
+
+  /**
+   * Receives the value of the field during validation.
+   *
+   * @param field to validate against
+   * @param f the validation function returns Some(errorMessage) or None if validation passed
+   * @tparam V the type of the value expected from field
+   */
+  def fieldValidator[V](field: String)(f: V => Option[String]) = synchronized {
+    val caseValue = clazz.caseValue(field).getOrElse(throw new NullPointerException(s"No field found for $field"))
+    validator(field) {
+      val value = caseValue[V](property().asInstanceOf[AnyRef])
+      f(value)
+    }
   }
 
   /**
@@ -93,15 +107,21 @@ class CaseForm[T](val form: tag.Form)(implicit manifest: Manifest[T]) {
    * @return true if no validation errors occurred
    */
   def validate() = {
-    clearErrors()
+    errorSupport.clear()
 
-    validators.map(v => v()).flatten match {
-      case Nil => true
-      case messages => {
-        errors(messages: _*)
-        false
+    refreshPropertyFromForm()
+
+    var validated = true
+    validators.map(v => v()).collect {
+      case response if response.error != null => {
+        errorSupport.add(response.error, response.fields: _*)
+        validated = false
       }
     }
+
+    errorSupport.display()
+
+    validated
   }
 
   private val refreshing = new AtomicBoolean(false)
@@ -128,16 +148,38 @@ class CaseForm[T](val form: tag.Form)(implicit manifest: Manifest[T]) {
     }
   }
 
-  private def createCaseFields() = {
+  /**
+   * Invoked upon successful validation upon form submit or after field changes (if realTime is true).
+   */
+  def submit(): Unit
+
+  private def createCaseFields(): Map[String, CaseFormField[Any]] = {
     clazz.caseValues.map {
       case cv => {
         val name = cv.name
-        val field = form.byId[FormField](name).getOrElse(throw new RuntimeException(s"Unable to find $name in $clazz"))
+        val field = form.byId[FormField](name).getOrElse(throw new RuntimeException(s"Unable to find FormField with id of '$name' in $clazz"))
+        field.value.change.on {   // TODO: verify against all FormFields that changes actually fire
+          case evt => {
+            val validated = validate()    // Runs validations every time a value changes
+            if (validated && realTime) {
+              submitForm()
+            }
+          }
+        }
         val converter = Converter[Any](cv.valueType.javaClass.asInstanceOf[Class[Any]])
+        if (converter.isEmpty) {
+          warn(s"Unable to find acceptable converter for ${cv.valueType} ($name)")
+        }
         name -> CaseFormField[Any](name, field, converter, cv)
       }
     }.toMap
   }
+}
+
+case class ValidationResponse(error: String, fields: FormField*)
+
+object ValidationResponse {
+  val Valid = ValidationResponse(null)
 }
 
 case class CaseFormField[V](name: String, field: FormField, converter: Option[Converter[V]], caseValue: CaseValue) {

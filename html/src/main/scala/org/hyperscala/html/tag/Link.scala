@@ -50,7 +50,7 @@ class Link extends Textual with BodyChild with HeadChild with HTMLTag {
   lazy val href = PropertyAttribute[String]("href", null)
   lazy val hrefLang = PropertyAttribute[String]("hreflang", null)
   lazy val media = PropertyAttribute[String]("media", null)
-  lazy val mimeType = PropertyAttribute[String]("type", null)
-  lazy val rel = PropertyAttribute[String]("rel", null)
+  val mimeType = PropertyAttribute[String]("type", "text/css", inclusion = InclusionMode.Always)
+  val rel = PropertyAttribute[String]("rel", "stylesheet", inclusion = InclusionMode.Always)
   lazy val sizes = PropertyAttribute[String]("sizes", null)
 }

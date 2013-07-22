@@ -13,7 +13,7 @@ import org.hyperscala.realtime.Realtime
 class RichEditor extends tag.Div {
   Webpage().require(CKEditor)
 
-  val textArea = new tag.TextArea(id = Unique(), style = style()) {
+  val textArea = new tag.TextArea(id = Unique(), style = style) {
     content.change.on {
       case evt => {
         // TODO: avoid sending back what we receive from the client

@@ -9,7 +9,7 @@ import org.powerscala.property.event.PropertyChangeEvent
 import org.hyperscala._
 import event.StylePropertyChangeEvent
 import html.FormField
-import css.{StyleSheetProperty, Style, StyleSheet}
+import org.hyperscala.css.{StyleSheetBase, StyleSheetAttribute, Style}
 import org.hyperscala.javascript.JavaScriptContent
 
 import org.powerscala.json._
@@ -43,21 +43,24 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
       case evt => childRemoved(evt)
     }
     page.intercept.update.on {
-      case page if (communicatorReceiver != null || communicatorSender != null) => {
+      case page if communicatorReceiver != null || communicatorSender != null => {
         page.asInstanceOf[Webpage].checkIn()
       }
       case _ => // Ignore
     }
     page.listen[PropertyChangeEvent[_], Unit, Unit]("change", Descendants) {
-      case evt if (FormField.changingProperty == evt.property && FormField.changingValue == evt.newValue) => {
+      case evt if FormField.changingProperty == evt.property && FormField.changingValue == evt.newValue => {
         // Ignore a change initialized by this connector (avoid recursive changes)
         debug("Ignoring change being applied: %s".format(FormField.changingValue))
       }
       case evt => evt.property match {
         case property: PropertyAttribute[_] => ChildLike.parentOf(property) match {
-          case tag: IdentifiableTag => propertyChanged(tag, property, evt.oldValue, evt.newValue)
+          case tag: IdentifiableTag => property match {
+            case ssa: StyleSheetAttribute[_] => styleChanged(tag.asInstanceOf[HTMLTag], ssa.ss, ssa.style, evt.newValue.asInstanceOf[AnyRef])
+            case _ => propertyChanged(tag, property, evt.oldValue, evt.newValue)
+          }
         }
-        case _ => // Ignore other changes
+        case _ => // Ignore others
       }
     }
     page.listen[StylePropertyChangeEvent, Unit, Unit]("styleChange", Descendants) {
@@ -81,7 +84,7 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
 
   def propertyChanged(t: IdentifiableTag, property: PropertyAttribute[_], oldValue: Any, newValue: Any) = {
     debug("propertyChanged: %s.%s from %s to %s".format(t.xmlLabel, property.name, oldValue, newValue))
-    if (t.root[Webpage].nonEmpty && !property.isInstanceOf[StyleSheetProperty] && !t.isInstanceOf[tag.Text]) {
+    if (t.root[Webpage].nonEmpty && !property.isInstanceOf[StyleSheetAttribute[_]] && !t.isInstanceOf[tag.Text]) {
       if (property == t.id && oldValue == null) {
         // Ignore initial id change as it is sent when added
       } else {
@@ -114,11 +117,11 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
     }
   }
 
-  def styleChanged(tag: HTMLTag, ss: StyleSheet, style: Style[_], value: AnyRef): Unit = {
+  def styleChanged(tag: HTMLTag, ss: StyleSheetBase, style: Style[_], value: AnyRef): Unit = {
     val tagId = tag.id()
     if (style == null) {    // StyleSheet assigned, so we need to send everything
-      ss.map.foreach {
-        case (s, v) => styleChanged(tag, ss, s, v)
+      ss.attributes.foreach {
+        case (s, v) => styleChanged(tag, ss, v.style, v)
       }
     } else {
       val anyStyle = style.asInstanceOf[Style[AnyRef]]

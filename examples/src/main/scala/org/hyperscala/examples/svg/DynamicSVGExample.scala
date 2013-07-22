@@ -23,7 +23,7 @@ class DynamicSVGExample extends Example {
   val canvasHeight = 400
 
   val canvas = new svg.Svg(id = "canvas", width = canvasWidth.px, height = canvasHeight.px) {
-    style.backgroundColor = Color.Yellow
+    style.backgroundColor := Color.Yellow
   }
   contents += canvas
 

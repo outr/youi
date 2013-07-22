@@ -16,8 +16,8 @@ class MultiSelectExample extends Example {
   Webpage().require(Gritter)
 
   val select = new MultiSelect[Int] {
-    style.height = 100.px
-    style.overflow = Overflow.Auto
+    style.height := 100.px
+    style.overflow := Overflow.Auto
 
     val availableValues = List(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
 
@@ -38,7 +38,7 @@ class MultiSelectExample extends Example {
 
     override def createEntry(t: Int, checked: Boolean): Selectable[Int] = {
       val e = super.createEntry(t, checked)
-      e.style.display = Display.Block
+      e.style.display := Display.Block
       e
     }
   }

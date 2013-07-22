@@ -15,7 +15,7 @@ class FormExample extends Example {
   Webpage().require(jQuery172)
 
   val messages = new Div {
-    style.paddingBottom = 10.px
+    style.paddingBottom := 10.px
   }
   contents += messages
 

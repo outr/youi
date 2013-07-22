@@ -64,7 +64,7 @@ class RealtimeWebpageExample extends Example {
         select.value := newSelection
         input.value := "Button clicked %s".format(count)
         contents.replaceWith("Test Button %s".format(count))
-        style.color = Color.random
+        style.color := Color.random
         if (count >= 10) {
           reversed = true
         } else if (count <= 0) {

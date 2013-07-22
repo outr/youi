@@ -19,7 +19,7 @@ import language.reflectiveCalls
 class VisualExample extends Example {
   Webpage().require(Realtime)
 
-  Webpage().body.style.fontFamily = "sans-serif"
+  Webpage().body.style.fontFamily := "sans-serif"
 
   val property = Property[TestPerson](default = Some(new TestPerson(name = "John Doe", age = 21)))
   property.change.on {
@@ -67,7 +67,7 @@ class VisualExample extends Example {
   contents.addAll(stringVisual, bindingVisual, enumVisual, booleanVisual, dateVisual, enumsVisual, stringsVisual, caseClassesVisual)
 
   contents += new tag.Div {
-    style.clear = Clear.Both
+    style.clear := Clear.Both
 
     contents += new tag.Button(content = "Toggle Editing") {
       clickEvent := JavaScriptEvent()

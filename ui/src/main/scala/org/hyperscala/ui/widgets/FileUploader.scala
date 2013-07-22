@@ -41,7 +41,7 @@ abstract class FileUploader extends tag.Div {
   Website().registerSession(WebpageResource(uploadPath, handler, Scope.Request))
 
   val iFrame = new tag.IFrame(id = "iframe%s".format(uid), name = Unique(), src = "about:blank") {
-    style.display = Display.None
+    style.display := Display.None
   }
   val uploadForm = new tag.Form(id = "form%s".format(uid), action = uploadPath, encType = "multipart/form-data", method = "post", target = Target(iFrame.name()))
   val inputId = "file%s".format(uid)

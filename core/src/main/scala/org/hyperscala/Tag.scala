@@ -12,24 +12,12 @@ import org.powerscala.reflect._
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-trait Tag extends Markup with Storage[Any] {
+trait Tag extends Markup with Storage[Any] with AttributeContainer[PropertyAttribute[_]] {
   implicit val thisTag = this
 
   implicit val booleanPersistence = BooleanPersistence
   implicit val stringPersistence = StringPersistence
 
-  private var _attributes: Map[String, PropertyAttribute[_]] = _
-  def addAttribute(attribute: PropertyAttribute[_]) = synchronized {
-    if (_attributes == null) {
-      _attributes = Map.empty
-    }
-    _attributes += attribute.name -> attribute
-  }
-  def getAttribute[T](name: String) = if (_attributes != null) {
-    _attributes.get(name).asInstanceOf[Option[PropertyAttribute[T]]]
-  } else {
-    None
-  }
   def xmlAttributes = _attributes match {
     case null => Nil
     case _ => _attributes.values
@@ -100,7 +88,7 @@ trait Tag extends Markup with Storage[Any] {
       }
       case None => {
         val attributeName = a.getName match {
-          case "type" if (List("link", "script").contains(xmlLabel)) => "mimeType"
+          case "type" if List("link", "script").contains(xmlLabel) => "mimeType"
           case "type" => s"${xmlLabel}Type"
           case "class" => "clazz"
           case "for" => "forElement"

@@ -55,6 +55,7 @@ trait Markup extends XMLContent with Listenable with Logging {
     writer.write("<")
     writer.write(xmlLabel)
     writeAttributes(writer, xmlAttributes)
+    writeExtra(writer)
     val children = xmlChildren
     if (xmlExpanded || children.nonEmpty) {
       writer.write(">")
@@ -82,6 +83,8 @@ trait Markup extends XMLContent with Listenable with Logging {
   protected def writeAttribute(writer: HTMLWriter, attribute: XMLAttribute): Unit = {
     attribute.write(this, writer)
   }
+
+  protected def writeExtra(writer: HTMLWriter): Unit = {}
 
   @tailrec
   private def writeChildren(writer: HTMLWriter, children: Seq[XMLContent]): Unit = {
@@ -157,10 +160,14 @@ trait Markup extends XMLContent with Listenable with Logging {
   private def attributesFromXML(attributes: Seq[Attribute]): Unit = {
     if (attributes.nonEmpty) {
       val a = attributes.head
-      if (!attributeFromXML(a)) {
-        unsupportedAttribute(a.getName, a.getValue)
-      }
+      applyAttribute(a)
       attributesFromXML(attributes.tail)
+    }
+  }
+
+  protected def applyAttribute(a: Attribute) = {
+    if (!attributeFromXML(a)) {
+      unsupportedAttribute(a.getName, a.getValue)
     }
   }
 

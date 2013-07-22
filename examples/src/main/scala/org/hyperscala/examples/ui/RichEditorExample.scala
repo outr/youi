@@ -13,7 +13,7 @@ import language.reflectiveCalls
  */
 class RichEditorExample extends Example {
   val editor = new RichEditor {
-    style.width = 500.px
+    style.width := 500.px
     content.change.on {
       case evt => println("Event: %s / %s".format(evt, content()))
     }
@@ -27,7 +27,7 @@ class RichEditorExample extends Example {
           contents += new tag.B(content = "This")
           contents += " is "
           contents += new tag.I(content = "testing") {
-            style.color = Color.Red
+            style.color := Color.Red
           }
           contents += " content!"
         }.outputString

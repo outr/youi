@@ -1,7 +1,6 @@
 package org.hyperscala
 
 import css.attributes._
-import css.StyleSheet
 import html.attributes._
 
 /**
@@ -38,7 +37,7 @@ package object persistence {
   implicit val positionPersistence = Position
   implicit val relationshipPersistence = Relationship
   implicit val resourcePersistence = Resource
-  implicit val styleSheetPersistence = StyleSheet
+//  implicit val styleSheetPersistence = TagStyleSheet
   implicit val targetPersistence = Target
   implicit val textAreaWrapPersistence = TextAreaWrap
   implicit val whiteSpacePersistence = WhiteSpace

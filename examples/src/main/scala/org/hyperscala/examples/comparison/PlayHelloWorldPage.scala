@@ -31,6 +31,7 @@ class PlayHelloWorldPage extends Webpage {
   val submitButton = main.load[tag.Input]("submit")
 
   val configuration = new PlayHelloWorldConfiguration(this)
+  configuration.style.display := Display.Block
   content.contents += configuration
 
   val results = new tag.Div(id = "results")
@@ -38,7 +39,7 @@ class PlayHelloWorldPage extends Webpage {
   body.contents += main
 
   submitButton.clickEvent.on {
-    case evt => if (configuration.style.display.getOrElse(Display.Block) == Display.None) {
+    case evt => if (configuration.style.display() == Display.None) {
       showConfigure()
     } else if (ValidatableTag.validateAll(configuration)) {
       showResults()
@@ -55,18 +56,18 @@ class PlayHelloWorldPage extends Webpage {
     })
     submitButton.value := "Back to the form"
 
-    configuration.style.display = Display.None
-    results.style.display = Display.Block
+    configuration.style.display := Display.None
+    results.style.display := Display.Block
 
     val resultName = configuration.nameInput.value()
     val repeat = configuration.repeatInput.value().toInt
     results.contents.replaceWith(new tag.Ul {
-      style.color = configuration.colorSelect.value() match {
+      style.color := (configuration.colorSelect.value() match {
         case "red" => Color.Red
         case "green" => Color.Green
         case "blue" => Color.Blue
         case _ => Color.Black
-      }
+      })
 
       (0 until repeat).foreach {
         case index => contents += new tag.Li(content = resultName)
@@ -79,8 +80,8 @@ class PlayHelloWorldPage extends Webpage {
     header.contents.replaceWith(new tag.A(href = "#", content = "The 'helloworld' application"))
     submitButton.value := "Submit Query"
 
-    configuration.style.display = Display.Block
-    results.style.display = Display.None
+    configuration.style.display := Display.Block
+    results.style.display := Display.None
   }
 }
 

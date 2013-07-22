@@ -12,7 +12,7 @@ import org.hyperscala.examples.Example
  */
 class VisualizeAdvancedExample extends Example {
   val messages = new tag.Div {
-    style.paddingBottom = 10.px
+    style.paddingBottom := 10.px
   }
   contents += messages
 

@@ -23,7 +23,7 @@ trait Dialog extends HTMLTag with JavaScriptCaller {
   Webpage().require(Realtime)
   Webpage().require(jQueryUI, jQueryUI191)
 
-  style.display = Display.None
+  style.display := Display.None
 
   private var _open = false
 

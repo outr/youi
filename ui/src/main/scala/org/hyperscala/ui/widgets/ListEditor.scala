@@ -27,11 +27,11 @@ trait ListEditor[T] extends tag.Div {
 
   val listDiv = new tag.Div
   val editorDiv = new tag.Div {
-    style.clear = Clear.Both
-    style.float = Float.Left
+    style.clear := Clear.Both
+    style.float := Float.Left
   }
   val editorButtons = new tag.Div {
-    style.float = Float.Left
+    style.float := Float.Left
   }
   val editor = createEditor()
 

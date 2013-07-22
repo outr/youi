@@ -14,10 +14,13 @@ import language.reflectiveCalls
  */
 class AutoCompleteExample extends Example {
   Webpage().require(Realtime)
-  Webpage().body.style.fontFamily = "Arial, sans-serif"
+  Webpage().body.style.fontFamily := "Arial, sans-serif"
 
   contents += new tag.Div {
-    style.paddingAll = 25.px
+    style.paddingTop := 25.px
+    style.paddingBottom := 25.px
+    style.paddingLeft := 25.px
+    style.paddingRight := 25.px
     val input = new Autocomplete {
       changeEvent := JavaScriptEvent()
 

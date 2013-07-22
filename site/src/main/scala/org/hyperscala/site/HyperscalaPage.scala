@@ -28,11 +28,11 @@ class HyperscalaPage extends Webpage with FormSupport {
   }
   val middle = new tag.Div(id = "middle") {
     contents += new tag.Img(src = "/images/hyperscala.png") {
-      style.float = Float.Left
+      style.float := Float.Left
     }
     if (sourceURL != null) {
       contents += new tag.A(href = sourceURL, target = Target.Blank, content = "View Source") {
-        style.float = Float.Right
+        style.float := Float.Right
       }
     }
     contents += new Bar {
@@ -44,11 +44,11 @@ class HyperscalaPage extends Webpage with FormSupport {
     contents += main
     contents += new Bar {
       contents += new tag.I {
-        style.float = Float.Right
-        style.color = Color.White
-        style.paddingTop = 3.px
-        style.paddingRight = 30.px
-        style.fontSize = FontSize.Small
+        style.float := Float.Right
+        style.color := Color.White
+        style.paddingTop := 3.px
+        style.paddingRight := 30.px
+        style.fontSize := FontSize.Small
         contents += "&copy;2013 Hyperscala.org"
       }
     }
@@ -61,11 +61,11 @@ class HyperscalaPage extends Webpage with FormSupport {
 }
 
 class Bar extends Div {
-  style.backgroundColor = Color.Black
-  style.opacity = Opacity(0.5)
-  style.borderRadius = 10.px
-  style.height = 25.px
-  style.clear = Clear.Both
+  style.backgroundColor := Color.Black
+  style.opacity := Opacity(0.5)
+  style.borderRadius := 10.px
+  style.height := 25.px
+  style.clear := Clear.Both
 }
 
 case class MenuItem(itemName: String, url: String = "#") extends tag.Div(clazz = List("menuItem")) {

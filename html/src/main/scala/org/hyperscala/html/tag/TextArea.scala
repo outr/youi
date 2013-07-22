@@ -1,7 +1,7 @@
 package org.hyperscala.html.tag
 
 import org.hyperscala._
-import css.StyleSheet
+import org.hyperscala.css.StyleSheetBase
 import html.{FormField, HTMLTag}
 import org.hyperscala.html.attributes._
 import org.hyperscala.html.constraints._
@@ -29,7 +29,7 @@ class TextArea extends Textual with BodyChild with HTMLTag with FormField {
            lang: String = null,
            role: String = null,
            spellCheck: java.lang.Boolean = null,
-           style: StyleSheet = null,
+           style: StyleSheetBase = null,
            tabIndex: java.lang.Integer = null,
            titleText: String = null,
            autoFocus: java.lang.Boolean = null,

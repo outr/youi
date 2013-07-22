@@ -18,7 +18,7 @@ class ChatExample extends Webpage {
 
   val nickname = new Property[String]
 
-  body.style.fontFamily = "Helvetica, sans-serif"
+  body.style.fontFamily := "Helvetica, sans-serif"
 
   val chatMain = DynamicContent.url(ChatExample.Main, null)
 

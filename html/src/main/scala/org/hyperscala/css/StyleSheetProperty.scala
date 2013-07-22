@@ -1,15 +1,11 @@
 package org.hyperscala.css
 
-import attributes._
-import org.powerscala.Color
-import org.hyperscala.{Tag, InclusionMode, PropertyAttribute}
-import org.hyperscala.event.StylePropertyChangeEvent
-import org.powerscala.hierarchy.event.StandardHierarchyEventProcessor
+
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */
-class StyleSheetProperty(_name: String, inclusionMode: InclusionMode = InclusionMode.NotEmpty)
+/*class StyleSheetProperty(_name: String, inclusionMode: InclusionMode = InclusionMode.NotEmpty)
                         (implicit tag: Tag) extends PropertyAttribute[StyleSheet](_name, StyleSheet(), inclusionMode)(StyleSheet, tag, implicitly[Manifest[StyleSheet]]) {
   lazy val styleChange = new StandardHierarchyEventProcessor[StylePropertyChangeEvent]("styleChange")
 
@@ -790,4 +786,4 @@ object StyleSheetProperty {
   private val styleLocal = new ThreadLocal[Style[_]]
   private val oldValueLocal = new ThreadLocal[AnyRef]
   private val newValueLocal = new ThreadLocal[AnyRef]
-}
+}*/

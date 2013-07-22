@@ -4,11 +4,12 @@ import attributes._
 import org.hyperscala._
 import io.HTMLWriter
 import org.hyperscala.html.tag._
-import org.hyperscala.css.{StyleSheet, StyleSheetProperty}
+import org.hyperscala.css.{StyleSheetBase, TagStyleSheet}
 import scala.collection.{Map => ScalaMap}
 import org.powerscala.property.{ListProperty, Property}
 import org.hyperscala.event._
 import org.hyperscala.event.processor._
+import org.jdom2.Attribute
 
 /**
  * NOTE: This file has been generated. Do not modify directly!
@@ -112,7 +113,7 @@ trait HTMLTag extends IdentifiableTag {
            lang: String = null,
            role: String = null,
            spellCheck: java.lang.Boolean = null,
-           style: StyleSheet = null,
+           style: StyleSheetBase = null,
            tabIndex: java.lang.Integer = null,
            titleText: String = null) = {
     up(this.name, name)
@@ -128,27 +129,17 @@ trait HTMLTag extends IdentifiableTag {
     up(this.lang, lang)
     up(this.role, role)
     up(this.spellCheck, spellCheck)
-    up(this.style, style)
     up(this.tabIndex, tabIndex)
     up(this.titleText, titleText)
+
+    if (style != null) {
+      this.style(style)
+    }
   }
 
-  // TODO: add back selectors
-  lazy val style = new StyleSheetProperty("style", InclusionMode.NotEmpty)(this) {
-//    val link = new StyleSheetProperty("link", InclusionMode.Exclude)(HTMLTag.this)
-//    val visited = new StyleSheetProperty("visited", InclusionMode.Exclude)(HTMLTag.this)
-//    val active = new StyleSheetProperty("active", InclusionMode.Exclude)(HTMLTag.this)
-//    val hover = new StyleSheetProperty("hover", InclusionMode.Exclude)(HTMLTag.this)
-//    val focus = new StyleSheetProperty("focus", InclusionMode.Exclude)(HTMLTag.this)
-//    val empty = new StyleSheetProperty("empty", InclusionMode.Exclude)(HTMLTag.this)
-//    val target = new StyleSheetProperty("target", InclusionMode.Exclude)(HTMLTag.this)
-//    val checked = new StyleSheetProperty("checked", InclusionMode.Exclude)(HTMLTag.this)
-//    val enabled = new StyleSheetProperty("enabled", InclusionMode.Exclude)(HTMLTag.this)
-//    val disabled = new StyleSheetProperty("disabled", InclusionMode.Exclude)(HTMLTag.this)
-
-    // TODO: add support for custom selectors
-//    val selectors: List[StyleProperty] = List(this, link, visited, active, hover, focus, empty, target, checked, enabled, disabled)
-  }
+  private[hyperscala] var _styleDefined = false
+  lazy val style = new TagStyleSheet(this)
+  def isStyleDefined = _styleDefined
 
   protected def generateChildFromTagName(name: String): XMLContent = {
     HTMLTag.create(name)
@@ -168,7 +159,7 @@ trait HTMLTag extends IdentifiableTag {
 
   def byName[T <: HTMLTag](name: String)(implicit manifest: Manifest[T]) = {
     byTag[T].collect {
-      case t if (t.name() == name) => t
+      case t if t.name() == name => t
     }
   }
 
@@ -178,6 +169,21 @@ trait HTMLTag extends IdentifiableTag {
     val htmlWriter = HTMLWriter(writer)
     write(htmlWriter)
     b.toString()
+  }
+
+  override protected def writeExtra(writer: HTMLWriter) = {
+    super.writeExtra(writer)
+
+    if (isStyleDefined) {
+      writer.write(" style=\"")
+      writer.write(style.toString)
+      writer.write("\"")
+    }
+  }
+
+  override protected def applyAttribute(a: Attribute) = a.getName match {
+    case "style" => style(a.getValue)
+    case _ => super.applyAttribute(a)
   }
 
   def formValue: Property[String] = {

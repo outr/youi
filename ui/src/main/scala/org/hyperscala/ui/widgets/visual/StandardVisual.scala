@@ -44,28 +44,30 @@ class StandardVisual[T](builder: VisualBuilder[T]) extends Visual[T]
   }
 
   val errorContainer = new tag.Span {
-    style.display = Display.Block
-    style.color = Color.immutable("#c00")
-    style.fontSize = FontSize.Percent(80)
-    style.fontStyle = "normal"
-    style.float = Float.Left
-    style.paddingAll = 2.px
-    style.paddingLeft = 5.px
+    style.display := Display.Block
+    style.color := Color.immutable("#c00")
+    style.fontSize := FontSize.Percent(80)
+    style.fontStyle := "normal"
+    style.float := Float.Left
+    style.paddingTop := 2.px
+    style.paddingBottom := 2.px
+    style.paddingRight := 2.px
+    style.paddingLeft := 5.px
   }
   val labelContainer = new tag.Label(content = builder.label) {
-    style.float = Float.Left
-    style.textAlign = Alignment.Right
-    style.paddingRight = 5.px
+    style.float := Float.Left
+    style.textAlign := Alignment.Right
+    style.paddingRight := 5.px
     if (builder.isRequired) {
       contents += new tag.Div(content = "*") {
-        style.float = Float.Right
-        style.paddingLeft = 5.px
-        style.color = Color.immutable("#c00")
+        style.float := Float.Right
+        style.paddingLeft := 5.px
+        style.color := Color.immutable("#c00")
       }
     }
   }
   val readContainer = new tag.Div {
-    style.float = Float.Left
+    style.float := Float.Left
   }
   val editor = builder.visualType match {
     case Some(visualType) => visualType.create(property, builder)
@@ -78,7 +80,7 @@ class StandardVisual[T](builder: VisualBuilder[T]) extends Visual[T]
     editor.name := editor.id()
   }
   labelContainer.forElement := editor.name()
-  editor.style.float = Float.Left
+  editor.style.float := Float.Left
 
   setup()
 
@@ -103,7 +105,7 @@ class StandardVisual[T](builder: VisualBuilder[T]) extends Visual[T]
   }
 
   def setup() = {
-    style.clear = Clear.Left
+    style.clear := Clear.Left
 
     if (builder.labeled) {
       contents += labelContainer
@@ -125,11 +127,11 @@ class StandardVisual[T](builder: VisualBuilder[T]) extends Visual[T]
 
   def updateEditing() = {
     if (editing()) {
-      readContainer.style.display = Display.None
-      editor.style.display = Display.Block
+      readContainer.style.display := Display.None
+      editor.style.display := Display.Block
     } else {
-      readContainer.style.display = Display.Block
-      editor.style.display = Display.None
+      readContainer.style.display := Display.Block
+      editor.style.display := Display.None
     }
   }
 

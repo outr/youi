@@ -5,7 +5,7 @@ import org.powerscala.Version
 import java.util
 import org.hyperscala.html.HTMLTag
 import org.hyperscala.html.tag.Style
-import org.hyperscala.css.StyleSheetProperty
+import org.hyperscala.css.StyleSheetAttribute
 import org.hyperscala.module._
 
 /**
@@ -22,7 +22,7 @@ object HeadStyle extends Module {
     val page = Webpage()
     val map = page.store.getOrSet("headStyleMap", new util.WeakHashMap[HTMLTag, HeadStyleTag]())
     page.intercept.renderAttribute.on {
-      case ssa: StyleSheetProperty => None
+      case ssa: StyleSheetAttribute[_] => None
       case p => Some(p)
     }
 //    page.intercept.initStyle {
@@ -43,7 +43,7 @@ class HeadStyleTag(page: Webpage, tag: HTMLTag) {
 
   // TODO: support id changing
 
-  var listening: List[StyleSheetProperty] = Nil
+  var listening: List[StyleSheetAttribute[_]] = Nil
 
   updateStyle()
 

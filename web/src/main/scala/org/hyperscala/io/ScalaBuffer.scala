@@ -4,7 +4,7 @@ import org.hyperscala.web.site.Webpage
 import org.hyperscala.html.HTMLTag
 import org.hyperscala.{PropertyAttribute, Container}
 import org.hyperscala.html.tag.{Text, Title}
-import org.hyperscala.css.{StyleSheetProperty, StyleSheet}
+import org.hyperscala.css.StyleSheetAttribute
 import org.hyperscala.javascript.{EventProperty, JavaScriptString}
 import org.hyperscala.css.attributes.Length
 import org.powerscala.enum.EnumEntry
@@ -34,10 +34,10 @@ abstract class ScalaBuffer {
     if (tag.render) {
       tag match {
         case title: Title => writeLine("title := \"%s\"".format(title.content()))
-        case text: Text if (text.content() != null && text.content().trim.length > 0) => writeLine("contents += %s".format(createWrappedString(text.content())), prefix)
+        case text: Text if text.content() != null && text.content().trim.length > 0 => writeLine("contents += %s".format(createWrappedString(text.content())), prefix)
         case _ => {
           val attributes = tag.xmlAttributes.collect {
-            case a: PropertyAttribute[_] if (a.shouldRender && !a.isInstanceOf[EventProperty] && !a.isInstanceOf[StyleSheetProperty] && a() != null) => {
+            case a: PropertyAttribute[_] if a.shouldRender && !a.isInstanceOf[EventProperty] && !a.isInstanceOf[StyleSheetAttribute[_]] && a() != null => {
               "%s = %s".format(namify(tag, a), valuify(tag, a.name, a()))
             }
           }.mkString(", ")
@@ -45,10 +45,10 @@ abstract class ScalaBuffer {
             case true => "(%s)".format(attributes)
             case false => ""
           }
-          val style = StyleSheet.toString(tag.style(), "style", classOf[StyleSheet])
+          val style = tag.style.toString
           val children = tag match {
-            case container: Container[_] if (container.contents.nonEmpty) => true
-            case _ if (style.trim.nonEmpty) => true
+            case container: Container[_] if container.contents.nonEmpty => true
+            case _ if style.trim.nonEmpty => true
             case _ => false
           }
           val opening = if (children) {

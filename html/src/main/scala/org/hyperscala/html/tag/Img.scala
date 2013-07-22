@@ -59,8 +59,8 @@ class Img extends Container[BodyChild] with BodyChild with HTMLTag {
   override protected def attributeFromXML(a: Attribute) = {
     if (a.getName == "align") {
       a.getValue.trim.toLowerCase match {
-        case "left" => style.float = Float.Left
-        case "right" => style.float = Float.Right
+        case "left" => style.float := Float.Left
+        case "right" => style.float := Float.Right
       }
       true
     } else {

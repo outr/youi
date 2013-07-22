@@ -51,7 +51,7 @@ object BusyDialog extends Module {
       dialog.height := 120
       dialog.resizable := false
       contents += new tag.Img(src = "/images/indeterminate_progress01.gif", width = "200", height = "40") {
-        style.marginLeft = 40.px
+        style.marginLeft := 40.px
       }
     }
   }

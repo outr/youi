@@ -40,6 +40,6 @@ class StyleSheetAttribute[T](val style: Style[T],
 object StyleSheetAttribute {
   def markup(ss: StyleSheetBase) = ss match {
     case tss: TagStyleSheet => tss.tag
-    case _ => null
+    case _ => ss
   }
 }

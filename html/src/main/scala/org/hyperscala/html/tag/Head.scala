@@ -1,7 +1,7 @@
 package org.hyperscala.html.tag
 
 import org.hyperscala._
-import css.StyleSheet
+import org.hyperscala.css.{StyleSheetSelector, StyleSheet}
 import html.HTMLTag
 import javascript.JavaScriptContent
 import org.hyperscala.html.attributes._
@@ -70,6 +70,13 @@ class Head extends Container[HeadChild] with HTMLChild with HTMLTag {
       }
       temporalScripts = Nil
     }
+  }
+
+  def selector(selectors: StyleSheetSelector*) = {
+    val style = new Style
+    val styleSheet = new StyleSheet(style, selectors.toList)
+    contents += style
+    styleSheet
   }
 
   def injectScript(content: JavaScriptContent, temporal: Boolean = false) = {

@@ -2,17 +2,36 @@ package org.hyperscala.css
 
 import org.powerscala.log.Logging
 import org.powerscala.event.Listenable
-import org.hyperscala.html.HTMLTag
+import org.hyperscala.html._
 import org.hyperscala.AttributeContainer
 import org.powerscala.reflect._
+import org.powerscala.hierarchy.ChildLike
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class StyleSheet extends StyleSheetBase {
-  // TODO: implement with selector support
-
+class StyleSheet(val hierarchicalParent: tag.Style,
+                 val selectors: List[StyleSheetSelector]) extends StyleSheetBase with ChildLike[Listenable] {
   protected def fieldsMap = StyleSheet.fieldsMap
+
+  hierarchicalParent.onBeforeRender {   // Update the <style> before render
+    hierarchicalParent.content := toString
+  }
+
+  def selectorString = StyleSheetSelector.toString(selectors, "selectors", classOf[List[StyleSheetSelector]])
+
+  override def toString = {
+    val b = new StringBuilder
+    b.append("\n      ")
+    b.append(selectorString)
+    b.append(" {\n")
+    val css = attributes.values.collect {
+      case ssa if ssa.shouldRender => s"        ${ssa.style.cssName}: ${ssa.valueString}"
+    }.mkString(";\n")
+    b.append(css)
+    b.append(";\n      }\n    ")
+    b.toString()
+  }
 }
 
 object StyleSheet {

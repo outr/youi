@@ -7,9 +7,8 @@ import org.hyperscala.html.{tag, HTMLTag}
 
 import org.powerscala.property.event.PropertyChangeEvent
 import org.hyperscala._
-import event.StylePropertyChangeEvent
 import html.FormField
-import org.hyperscala.css.{StyleSheetBase, StyleSheetAttribute, Style}
+import org.hyperscala.css.{StyleSheet, StyleSheetAttribute, Style}
 import org.hyperscala.javascript.JavaScriptContent
 
 import org.powerscala.json._
@@ -56,16 +55,15 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
       case evt => evt.property match {
         case property: PropertyAttribute[_] => ChildLike.parentOf(property) match {
           case tag: IdentifiableTag => property match {
-            case ssa: StyleSheetAttribute[_] => styleChanged(tag.asInstanceOf[HTMLTag], ssa.ss, ssa.style, evt.newValue.asInstanceOf[AnyRef])
+            case ssa: StyleSheetAttribute[_] => styleChanged(s"#${tag.identity}", ssa.style, evt.newValue.asInstanceOf[AnyRef])
             case _ => propertyChanged(tag, property, evt.oldValue, evt.newValue)
+          }
+          case styleSheet: StyleSheet => {
+            val ssa = property.asInstanceOf[StyleSheetAttribute[_]]
+            styleChanged(styleSheet.selectorString, ssa.style, evt.newValue.asInstanceOf[AnyRef])
           }
         }
         case _ => // Ignore others
-      }
-    }
-    page.listen[StylePropertyChangeEvent, Unit, Unit]("styleChange", Descendants) {
-      case evt => {
-        styleChanged(ChildLike.parentOf(evt.property).asInstanceOf[HTMLTag], evt.styleSheet, evt.style, evt.newStyleValue)
       }
     }
   }
@@ -117,18 +115,11 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
     }
   }
 
-  def styleChanged(tag: HTMLTag, ss: StyleSheetBase, style: Style[_], value: AnyRef): Unit = {
-    val tagId = tag.id()
-    if (style == null) {    // StyleSheet assigned, so we need to send everything
-      ss.attributes.foreach {
-        case (s, v) => styleChanged(tag, ss, v.style, v)
-      }
-    } else {
-      val anyStyle = style.asInstanceOf[Style[AnyRef]]
-      val styleName = anyStyle.cssName
-      val styleValue = anyStyle.persistence.toString(value, styleName, value.getClass)
-      send(JavaScriptMessage("$('#%s').css('%s', content);".format(tagId, styleName), styleValue))
-    }
+  def styleChanged(selector: String, style: Style[_], value: AnyRef): Unit = {
+    val anyStyle = style.asInstanceOf[Style[AnyRef]]
+    val cssName = style.cssName
+    val cssValue = anyStyle.persistence.toString(value, cssName, value.getClass)
+    send(JavaScriptMessage("$('%s').css('%s', content);".format(selector, cssName), cssValue))
   }
 
   def childAdded(evt: ChildAddedEvent) = {

@@ -3,6 +3,7 @@ package org.hyperscala
 import io.HTMLWriter
 import org.powerscala.property.Property
 import persistence.ValuePersistence
+import org.powerscala.event.Listenable
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -10,7 +11,7 @@ import persistence.ValuePersistence
 class PropertyAttribute[T](val name: String,
                            default: T,
                            var inclusion: InclusionMode = InclusionMode.NotEmpty)
-                          (implicit persister: ValuePersistence[T], parent: Markup, manifest: Manifest[T])
+                          (implicit persister: ValuePersistence[T], parent: Listenable, manifest: Manifest[T])
                            extends Property[T](default = Some(default))(parent, manifest) with XMLAttribute {
   parent match {
     case tag: Tag => tag.addAttribute(this)

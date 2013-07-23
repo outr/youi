@@ -6,19 +6,20 @@ import org.hyperscala.html._
 import org.hyperscala.AttributeContainer
 import org.powerscala.reflect._
 import org.powerscala.hierarchy.ChildLike
+import org.hyperscala.selector.Selector
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
 class StyleSheet(val hierarchicalParent: tag.Style,
-                 val selectors: List[StyleSheetSelector]) extends StyleSheetBase with ChildLike[Listenable] {
+                 val selectors: List[Selector]) extends StyleSheetBase with ChildLike[Listenable] {
   protected def fieldsMap = StyleSheet.fieldsMap
 
   hierarchicalParent.onBeforeRender {   // Update the <style> before render
     hierarchicalParent.content := toString
   }
 
-  def selectorString = StyleSheetSelector.toString(selectors, "selectors", classOf[List[StyleSheetSelector]])
+  def selectorString = Selector.toString(selectors, "selectors", classOf[List[Selector]])
 
   override def toString = {
     val b = new StringBuilder

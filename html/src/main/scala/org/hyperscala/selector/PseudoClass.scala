@@ -1,4 +1,4 @@
-package org.hyperscala.css
+package org.hyperscala.selector
 
 import org.powerscala.enum.{Enumerated, EnumEntry}
 

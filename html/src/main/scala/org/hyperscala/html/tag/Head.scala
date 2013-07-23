@@ -1,12 +1,13 @@
 package org.hyperscala.html.tag
 
 import org.hyperscala._
-import org.hyperscala.css.{StyleSheetSelector, StyleSheet}
+import org.hyperscala.css.StyleSheet
 import html.HTMLTag
 import javascript.JavaScriptContent
 import org.hyperscala.html.attributes._
 import org.hyperscala.html.constraints._
 import scala.Some
+import org.hyperscala.selector.Selector
 
 /**
  * NOTE: This file has been generated. Do not modify directly!
@@ -72,7 +73,7 @@ class Head extends Container[HeadChild] with HTMLChild with HTMLTag {
     }
   }
 
-  def selector(selectors: StyleSheetSelector*) = {
+  def selector(selectors: Selector*) = {
     val style = new Style
     val styleSheet = new StyleSheet(style, selectors.toList)
     contents += style

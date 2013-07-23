@@ -11,4 +11,4 @@ Statically typed bare-metal HTML, CSS, and JavaScript framework for Scala.
 
 [An Introduction to Hyperscala](http://www.matthicks.com/2013/01/hyperscala-introduction.html)
 
-[ScalaDocs](http://build.sgine.org/job/powerscala/javadoc)
+[ScalaDocs](http://build.sgine.org/job/hyperscala/javadoc)

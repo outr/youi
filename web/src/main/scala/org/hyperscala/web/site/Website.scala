@@ -18,6 +18,7 @@ import org.powerscala.log.Logging
 import com.outr.webcommunicator.URL
 
 import language.reflectiveCalls
+import org.hyperscala.web.Scope
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -76,7 +77,7 @@ trait Website[S <: Session] extends NettyCommunicatorManager[WebpageConnection] 
     def valuesByType[T](implicit manifest: Manifest[T]) = {
       values.flatMap {
         case session => session.values.collect {
-          case v if (v.getClass.hasType(manifest.runtimeClass)) => v.asInstanceOf[T]
+          case v if v.getClass.hasType(manifest.runtimeClass) => v.asInstanceOf[T]
         }
       }
     }
@@ -110,6 +111,10 @@ trait Website[S <: Session] extends NettyCommunicatorManager[WebpageConnection] 
     val delta = fromNanos(currentUpdate - lastUpdate)
     update(delta)
     lastUpdate = currentUpdate
+  }
+
+  def page(pageCreator: Webpage, path: String, scope: Scope, pre: (HttpRequest => RequestResult)*) = {
+    WebpageResource(path, pageCreator, scope, pre: _*)
   }
 
   Runtime.getRuntime.addShutdownHook(new Thread() {     // Make sure we dispose at shutdown

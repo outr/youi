@@ -2,7 +2,6 @@ package org.hyperscala.html
 
 import attributes.ContentEditable
 import org.jdom2.Element
-import org.hyperscala.css.StyleSheet
 import org.hyperscala.css.attributes.Display
 import org.jdom2.input.SAXBuilder
 import java.io.StringReader
@@ -100,8 +99,10 @@ class HTMLRenderingSpec extends WordSpec with ShouldMatchers {
 //        font.face := "Arial"
 //        display := Display.Inline
 //      }
-      val css = StyleSheet().fontFace("Arial").display(Display.Inline)
-      val html = new HTML(style = css)
+      val html = new HTML {
+        style.fontFace := "Arial"
+        style.display := Display.Inline
+      }
       val out = html.outputString
       out should equal("<html style=\"display: inline; font-face: Arial\"/>")
     }

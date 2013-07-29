@@ -74,7 +74,7 @@ object HyperScalaBuild extends Build {
 
   lazy val root = Project("root", file("."), settings = unidocSettings ++ createSettings("hyperscala-root"))
     .settings(publishArtifact in Compile := false, publishArtifact in Test := false)
-    .aggregate(core, html, javascript, svg, web, jquery, realtime, ui, generator, examples, site)
+    .aggregate(core, html, javascript, svg, web, jquery, realtime, ui, generator, examples, hello, site)
   lazy val core = Project("core", file("core"), settings = createSettings("hyperscala-core"))
   lazy val html = Project("html", file("html"), settings = createSettings("hyperscala-html"))
     .dependsOn(core)
@@ -97,6 +97,8 @@ object HyperScalaBuild extends Build {
   // Examples and Site
   lazy val examples = Project("examples", file("examples"), settings = createSettings("hyperscala-examples"))
     .dependsOn(web, ui)
+  lazy val hello = Project("hello", file("hello"), settings = createSettings("hyperscala-hello"))
+    .dependsOn(web)
   lazy val site = Project("site", file("site"), settings = createSettings("hyperscala-site"))
     .settings(jarName in assembly <<= version {
       (v: String) => "hyperscala-%s.jar".format(v)

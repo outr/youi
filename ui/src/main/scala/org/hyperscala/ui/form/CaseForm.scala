@@ -184,7 +184,7 @@ object ValidationResponse {
 
 case class CaseFormField[V](name: String, field: FormField, converter: Option[Converter[V]], caseValue: CaseValue) {
   def value = converter match {
-    case Some(c) => c.string2Value(field.value())
+    case Some(c) => c.string2Value(field.value(), caseValue.valueType)
     case None => None
   }
 

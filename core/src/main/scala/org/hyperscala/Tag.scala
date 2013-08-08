@@ -8,6 +8,7 @@ import org.powerscala.hierarchy.event.StandardHierarchyEventProcessor
 import org.jdom2.Attribute
 
 import org.powerscala.reflect._
+import org.powerscala.property.PropertyLike
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -18,10 +19,7 @@ trait Tag extends Markup with Storage[Any] with AttributeContainer[PropertyAttri
   implicit val booleanPersistence = BooleanPersistence
   implicit val stringPersistence = StringPersistence
 
-  def xmlAttributes = _attributes match {
-    case null => Nil
-    case _ => _attributes.values
-  }
+  def xmlAttributes = attributes.values
 
   lazy val tagCreated = new StandardHierarchyEventProcessor[TagCreated]("tagCreated")
 
@@ -82,29 +80,62 @@ trait Tag extends Markup with Storage[Any] with AttributeContainer[PropertyAttri
 
   protected def attributeFromXML(a: Attribute): Boolean = {
     getAttribute(a.getName) match {
-      case Some(propertyAttribute) => {
+      case Some(propertyAttribute) => {   // Found the attribute property
         propertyAttribute.read(this, a.getValue)
         true
       }
-      case None => {
+      case None => {                      // Attribute not found
         val attributeName = a.getName match {
           case "type" if List("link", "script").contains(xmlLabel) => "mimeType"
           case "type" => s"${xmlLabel}Type"
           case "class" => "clazz"
           case "for" => "forElement"
           case "title" => "titleText"
+          case s if s.startsWith("on") => s.substring(2) + "Event"
           case s => s
         }
         attributeFields.get(attributeName.toLowerCase) match {
           case Some(field) => {
-            val propertyAttribute = field[PropertyAttribute[_]](this, computeIfLazy = true)
-            propertyAttribute.read(this, a.getValue)
+            field[PropertyLike[_]](this, computeIfLazy = true)    // Make sure it's loaded if it's lazy
+            getAttribute(a.getName) match {
+              case Some(propertyAttribute) => {   // Found the attribute property
+                propertyAttribute.read(this, a.getValue)
+                true
+              }
+              case None => false
+            }
+          }
+          case None if attributeName.startsWith("data-") => {
+            createAttribute[String](attributeName, a.getValue)
             true
           }
           case None => false
         }
       }
     }
+  }
+
+  def dataAttribute(name: String) = getAttribute(s"data-$name") match {
+    case Some(propertyAttribute) => propertyAttribute.asInstanceOf[PropertyAttribute[String]]
+    case None => createAttribute[String](s"data-$name", null)
+  }
+
+  def data(name: String) = getAttribute(s"data-$name").map(pa => pa.asInstanceOf[PropertyAttribute[String]].value)
+
+  def data(name: String, value: String) = dataAttribute(name).value = value
+
+  def attribute[T](name: String, create: Boolean = false)(implicit persister: ValuePersistence[T], manifest: Manifest[T]) = getAttribute(name) match {
+    case Some(propertyAttribute) => Some(propertyAttribute.asInstanceOf[PropertyAttribute[T]])
+    case None => if (create) {
+      Some(createAttribute[T](name, manifest.runtimeClass.defaultForType[T]))
+    } else {
+      None
+    }
+  }
+
+  private def createAttribute[T](name: String, value: T, inclusionMode: InclusionMode = InclusionMode.NotEmpty)
+                        (implicit persister: ValuePersistence[T], manifest: Manifest[T]) = {
+    PropertyAttribute[T](name, value, inclusionMode)
   }
 
   def byId[T <: Tag](id: String)(implicit manifest: Manifest[T]) = TypeFilteredIterator[T](ParentLike.descendants(this)).find {
@@ -129,7 +160,7 @@ object Tag {
     map.get(tag.xmlLabel) match {
       case Some(fieldsMap) => fieldsMap
       case None => {
-        val fieldsMap = tag.getClass.fields.filter(f => f.returnType.hasType(classOf[PropertyAttribute[_]])).map(f => f.name.toLowerCase -> f).toMap
+        val fieldsMap = tag.getClass.fields.filter(f => f.returnType.hasType(classOf[PropertyLike[_]])).map(f => f.name.toLowerCase -> f).toMap
         map += tag.xmlLabel -> fieldsMap
         fieldsMap
       }

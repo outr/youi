@@ -23,10 +23,7 @@ class PropertyAttribute[T](val name: String,
     case page => page.intercept.initAttribute.fire(this)   // Fire the initialization to be intercepted
   }
 
-  // TODO: remove this
   def attributeValue = persister.toString(value, name, manifest.runtimeClass)
-
-  // TODO: remove this
   def attributeValue_=(value: String) = this := persister.fromString(value, name, manifest.runtimeClass)
 
   def modified = value != default
@@ -55,38 +52,6 @@ class PropertyAttribute[T](val name: String,
     case InclusionMode.ModifiedAndNotEmpty => modified && attributeValue != null && attributeValue.nonEmpty
   }
 }
-
-// TODO: migrate to powerscala
-/*trait LazyProperty[T] extends Property[T] {
-  private var useLazy = true
-  protected def lazyValue: T
-
-  /**
-   * true if the lazy property has already been loaded
-   */
-  def loaded = !useLazy
-
-  override def apply() = {
-    if (useLazy) {
-      apply(lazyValue)
-    }
-    super.apply()
-  }
-
-  override def apply(v: T) = {
-    val firstLoad = useLazy
-    useLazy = false
-    super.apply(v)
-    if (firstLoad) {
-      lazyLoaded()
-    }
-  }
-
-  /**
-   * Called when a value has been assigned to this LazyProperty and is no longer lazy.
-   */
-  def lazyLoaded(): Unit = {}
-}*/
 
 object PropertyAttribute {
   def apply[T](name: String, default: T, inclusion: InclusionMode = InclusionMode.ModifiedAndNotEmpty)

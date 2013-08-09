@@ -2,7 +2,7 @@ package org.hyperscala.html.tag
 
 import org.hyperscala._
 import org.hyperscala.css.StyleSheet
-import html.HTMLTag
+import org.hyperscala.html.{StyleSpaces, HTMLTag}
 import javascript.JavaScriptContent
 import org.hyperscala.html.attributes._
 import org.hyperscala.html.constraints._
@@ -70,6 +70,17 @@ class Head extends Container[HeadChild] with HTMLChild with HTMLTag {
         case script => contents -= script
       }
       temporalScripts = Nil
+    }
+  }
+
+  def styleSpaces = synchronized {
+    byTag[StyleSpaces].headOption match {
+      case Some(styleSpaces) => styleSpaces
+      case None => {
+        val styleSpaces = new StyleSpaces
+        contents += styleSpaces
+        styleSpaces
+      }
     }
   }
 

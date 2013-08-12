@@ -13,6 +13,7 @@ import org.jboss.netty.channel.{MessageEvent, ChannelHandlerContext}
 import org.jboss.netty.handler.codec.http.HttpRequest
 import org.hyperscala.event.EventReceived
 import java.util.concurrent.atomic.AtomicBoolean
+import org.powerscala.Storage
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -215,11 +216,11 @@ class Autocompletified private(val input: FormField) {
 
 object Autocompletified {
   def apply(input: FormField) = input.synchronized {
-    input.get[Autocompletified]("autocompletified") match {
+    Storage.get[Autocompletified](input, "autocompletified") match {
       case Some(a) => a
       case None => {
         val a = new Autocompletified(input)
-        input("autocompletified") = a
+        Storage.set(input, "autocompletified", a)
         a
       }
     }

@@ -85,9 +85,8 @@ class Head extends Container[HeadChild] with HTMLChild with HTMLTag {
   }
 
   def selector(selectors: Selector*) = {
-    val style = new Style
-    val styleSheet = new StyleSheet(style, selectors.toList)
-    contents += style
+    val styleSheet = new StyleSheet(styleSpaces, selectors.toList)
+    styleSpaces(styleSheet) = styleSheet
     styleSheet
   }
 
@@ -105,7 +104,7 @@ class Head extends Container[HeadChild] with HTMLChild with HTMLTag {
 
   def meta(name: String, content: String) = {
     contents.collectFirst {
-      case m: Meta if (m.name() == name) => m
+      case m: Meta if m.name() == name => m
     } match {
       case Some(m) => m.content := content
       case None => contents += new Meta(name = name, content = content)
@@ -114,7 +113,7 @@ class Head extends Container[HeadChild] with HTMLChild with HTMLTag {
 
   def charset(charset: String = "UTF-8") = {
     contents.collectFirst {
-      case m: Meta if (m.charset() != null && m.charset().nonEmpty) => m
+      case m: Meta if m.charset() != null && m.charset().nonEmpty => m
     } match {
       case Some(m) => m.charset := charset
       case None => contents += new Meta(charset = charset)

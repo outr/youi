@@ -3,17 +3,17 @@ package org.hyperscala.html
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-trait Spaces[T] {
-  private var spaces = Map.empty[String, T]
+trait Spaces[K, V] {
+  private var spaces = Map.empty[K, V]
 
-  def get(key: String) = spaces.get(key)
-  def apply(key: String) = spaces(key)
+  def get(key: K) = spaces.get(key)
+  def apply(key: K) = spaces(key)
 
-  def update(key: String, value: T) = synchronized {
+  def update(key: K, value: V) = synchronized {
     spaces += key -> value
   }
 
-  protected def modified(key: String, value: T): Unit = {}
+  protected def modified(key: K, value: V): Unit = {}
 
   def map = spaces
 }

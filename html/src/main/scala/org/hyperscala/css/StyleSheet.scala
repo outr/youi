@@ -15,10 +15,6 @@ class StyleSheet(val hierarchicalParent: tag.Style,
                  val selectors: List[Selector]) extends StyleSheetBase with ChildLike[Listenable] {
   protected def fieldsMap = StyleSheet.fieldsMap
 
-  hierarchicalParent.onBeforeRender {   // Update the <style> before render
-    hierarchicalParent.content := toString
-  }
-
   def selectorString = Selector.toString(selectors, "selectors", classOf[List[Selector]])
 
   override def toString = {
@@ -37,6 +33,17 @@ class StyleSheet(val hierarchicalParent: tag.Style,
 
 object StyleSheet {
   lazy val fieldsMap = classOf[StyleSheet].fields.filter(f => f.returnType.hasType(classOf[StyleSheetAttribute[_]])).map(f => f.name.toLowerCase -> f).toMap
+}
+
+// TODO: remove in favor of StyleSheet with property in HTMLTag
+class TagStyleSheet(val tag: HTMLTag) extends StyleSheetBase {
+  tag._styleDefined = true
+
+  protected def fieldsMap = TagStyleSheet.fieldsMap
+}
+
+object TagStyleSheet {
+  lazy val fieldsMap = classOf[TagStyleSheet].fields.filter(f => f.returnType.hasType(classOf[StyleSheetAttribute[_]])).map(f => f.name -> f).toMap
 }
 
 trait StyleSheetBase extends Logging with Listenable with AttributeContainer[StyleSheetAttribute[_]] {
@@ -318,14 +325,4 @@ trait StyleSheetBase extends Logging with Listenable with AttributeContainer[Sty
   }
 
   protected def fieldsMap: Map[String, EnhancedField]
-}
-
-class TagStyleSheet(val tag: HTMLTag) extends StyleSheetBase {
-  tag._styleDefined = true
-
-  protected def fieldsMap = TagStyleSheet.fieldsMap
-}
-
-object TagStyleSheet {
-  lazy val fieldsMap = classOf[TagStyleSheet].fields.filter(f => f.returnType.hasType(classOf[StyleSheetAttribute[_]])).map(f => f.name -> f).toMap
 }

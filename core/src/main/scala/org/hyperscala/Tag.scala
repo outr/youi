@@ -13,7 +13,7 @@ import org.powerscala.property.PropertyLike
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-trait Tag extends Markup with Storage[Any] with AttributeContainer[PropertyAttribute[_]] {
+trait Tag extends Markup with AttributeContainer[PropertyAttribute[_]] {
   implicit val thisTag = this
 
   implicit val booleanPersistence = BooleanPersistence

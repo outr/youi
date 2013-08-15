@@ -18,7 +18,6 @@ import org.powerscala.concurrent.WorkQueue
 import java.io.IOException
 import org.hyperscala.context.Contextual
 import org.hyperscala.module.ModularPage
-import org.hyperscala.svg.SVGTag
 import java.util.concurrent.atomic.AtomicBoolean
 import org.powerscala.Updatable
 import org.powerscala.hierarchy.event.{StandardHierarchyEventProcessor, ChildRemovedProcessor, ChildAddedProcessor}
@@ -182,8 +181,7 @@ class Webpage extends Page with ModularPage with RequestHandler with Temporal wi
    */
   def pageLoaded() = {
     view.foreach {
-      case tag: HTMLTag => tag.rendered()
-      case tag: SVGTag => tag.rendered()
+      case tag => Markup.rendered(tag)
     }
     _rendered.set(true)
     pageLoadedEvent.fire(this)

@@ -3,6 +3,7 @@ package org.hyperscala.javascript
 import org.hyperscala.XMLContent
 import org.jdom2.{Text, Content}
 import org.hyperscala.io.HTMLWriter
+import org.powerscala.Color
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -23,12 +24,13 @@ object JavaScriptContent {
     case js: JavaScriptContent => js.content
     case s: String => "'%s'".format(s.replaceAll("\n", " ").replaceAll("\r", " ").replaceAll("'", "\\\\'"))
     case l: List[_] => l.map(toJS).mkString("[", ", ", "]")
+    case c: Color => s"'${c.hex.rgb}'"
     case _ => v.toString
   }
 
   def options(options: JSOption*) = {
     options.collect {
-      case o if (o.value.isDefined) => s"${o.name}: ${toJS(o.value.get)}"
+      case o if o.value.isDefined => s"${o.name}: ${toJS(o.value.get)}"
     }.mkString("{ ", ", ", " }")
   }
 

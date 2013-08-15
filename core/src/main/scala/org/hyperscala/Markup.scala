@@ -13,6 +13,7 @@ import org.powerscala.event.{Intercept, Listenable}
  */
 trait Markup extends XMLContent with Listenable with Logging {
   private val _initialized = new AtomicBoolean(false)
+  private val _rendered = new AtomicBoolean(false)
 
   def xmlLabel: String
   def xmlAttributes: Iterable[XMLAttribute]
@@ -28,6 +29,11 @@ trait Markup extends XMLContent with Listenable with Logging {
    * true if this Markup has been initialized.
    */
   def initialized = _initialized.get()
+
+  /**
+   * true if this Markup has been rendered.
+   */
+  def rendered = _rendered.get()
 
   /**
    * Iterate over everything
@@ -127,21 +133,40 @@ trait Markup extends XMLContent with Listenable with Logging {
     f
   }
 
-  def onBeforeRender(f: => Unit) = Page().intercept.beforeRender.on {
-    case markup => {
-      if (markup == Markup.this) {
+  /**
+   * Invokes the function before rendering of this markup. If the markup is already rendered then the function is
+   * invoked immediately.
+   */
+  def onBeforeRender(f: => Unit) = if (rendered) {
+    f
+  } else {
+    Page().intercept.beforeRender.on {
+      case markup => {
+        if (markup == Markup.this) {
+          f
+        }
+        Intercept.Continue
+      }
+    }
+  }
+
+  /**
+   * Invokes the function before rendering of this markup. If the markup is already rendered then the function is
+   * invoked immediately.
+   */
+  def onAfterRender(f: => Unit) = if (rendered) {
+    f
+  } else {
+    Page().intercept.afterRender.on {
+      case markup => if (markup == Markup.this) {
         f
       }
-      Intercept.Continue
     }
   }
 
-  def onAfterRender(f: => Unit) = Page().intercept.afterRender.on {
-    case markup => if (markup == Markup.this) {
-      f
-    }
-  }
-
+  /**
+   * Invoked immediately before writing this markup out.
+   */
   protected def before(): Unit = {
     Page() match {
       case null => // May not be part of a page
@@ -149,11 +174,12 @@ trait Markup extends XMLContent with Listenable with Logging {
     }
   }
 
-  protected def after(): Unit = {
-    Page() match {
-      case null => // May not be part of a page
-      case page => page.intercept.afterRender.fire(this)
-    }
+  /**
+   * Invoked immediately after writing this markup out.
+   */
+  protected def after(): Unit = Page() match {
+    case null => // May not be part of a page
+    case page => page.intercept.afterRender.fire(this)
   }
 
   @tailrec
@@ -184,4 +210,6 @@ trait Markup extends XMLContent with Listenable with Logging {
 
 object Markup {
   var UnsupportedAttributeException = true
+
+  def rendered(markup: Markup) = markup._rendered.set(true)
 }

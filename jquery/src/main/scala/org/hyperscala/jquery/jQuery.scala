@@ -3,7 +3,7 @@ package org.hyperscala.jquery
 import org.hyperscala.module._
 import org.hyperscala.html._
 import org.hyperscala.web.site.Webpage
-import org.hyperscala.javascript.JavaScriptString
+import org.hyperscala.javascript.{JavaScriptContent, JavaScriptString}
 import org.hyperscala.jquery.dsl.jQueryDSL
 
 /**
@@ -27,10 +27,35 @@ object jQuery extends Interface with jQueryDSL {
 
   def submit(tag: HTMLTag) = call(tag, "submit()")
 
+  def call(t: HTMLTag, functionName: String, values: Map[String, Any]): Unit = {
+    val function = if (values.nonEmpty) {
+      val body = values.map {
+        case (key, value) => s"\t$key: ${JavaScriptContent.toJS(value)}"
+      }.mkString(",\n")
+      s"$functionName({\n$body\n});"
+    } else {
+      s"$functionName();"
+    }
+    call(t, function)
+  }
+
+  def options(t: HTMLTag, functionName: String, values: Map[String, String], waitForResults: Boolean = true) = {
+    values.foreach {
+      case (key, value) => {    // TODO: see if there is a more efficient way to set multiple options at once
+        option(t, functionName, key, value, waitForResults = waitForResults)
+      }
+    }
+  }
+
+  def option(t: HTMLTag, functionName: String, key: String, value: Any, waitForResults: Boolean = true) = {
+    val function = s"$functionName('option', '$key', ${JavaScriptContent.toJS(value)})"
+    call(t, function)
+  }
+
   def call(t: HTMLTag, function: String): Unit = call("#%s".format(t.identity), function)
 
-  def call(selector: String, function: String): Unit = {
-    Webpage().body.contents += new tag.Script(content = new JavaScriptString(
+  def call(selector: String, function: String, waitForResults: Boolean = true): Unit = {
+    val content = if (waitForResults) {
       """
         |var callFunction = function() {
         |  if ($('%1$s').length == 0) {
@@ -40,6 +65,10 @@ object jQuery extends Interface with jQueryDSL {
         |  }
         |}
         |callFunction();
-      """.stripMargin.format(selector, function)))
+      """.stripMargin.format(selector, function)
+    } else {
+      s"$$('$selector').$function;"
+    }
+    Webpage().body.contents += new tag.Script(content = new JavaScriptString(content))
   }
 }

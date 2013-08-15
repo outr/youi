@@ -53,8 +53,6 @@ trait SVGTag extends IdentifiableTag {
     b.toString()
   }
 
-  def rendered() = {}
-
   override def receive(event: String, message: Message) = event match {
     case "svgMouseEvent" => {
       val eventType = message[String]("event")

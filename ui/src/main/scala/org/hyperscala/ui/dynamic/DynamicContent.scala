@@ -167,7 +167,7 @@ object DynamicContent {
   private def load(dynamicString: DynamicString, cache: Boolean = true) = synchronized {
     val content = dynamicString.content
     contents.get(content) match {
-      case Some(dhtml) if (dhtml == content) => dhtml
+      case Some(dhtml) if dhtml == content => dhtml
       case _ => {
         val dhtml = new DynamicHTML(content)
         if (cache) {
@@ -180,6 +180,9 @@ object DynamicContent {
 
   def extract(content: String, id: String) = {
     val idIndex = content.indexOf("id=\"%s\"".format(id))
+    if (idIndex == -1) {
+      throw new RuntimeException(s"Unable to find $id in DynamicContent")
+    }
     val begin = content.lastIndexOf('<', idIndex)
     val end = findCloseIndex(begin, content)
     (content.substring(begin, end), begin, end)
@@ -261,7 +264,7 @@ class DynamicHTML(content: String) {
 
   def extract(id: String) = synchronized {
     _blocks.collectFirst {
-      case dhb: DynamicHTMLBlock if (dhb.id == id) => dhb
+      case dhb: DynamicHTMLBlock if dhb.id == id => dhb
     }.headOption match {
       case Some(dhb) => dhb
       case None => findBlockWithId(id) match {

@@ -163,6 +163,12 @@ trait HTMLTag extends IdentifiableTag {
     }
   }
 
+  def byClass[T <: HTMLTag](className: String)(implicit manifest: Manifest[T]) = {
+    byTag[T].collect {
+      case t if t.clazz().contains(className) => t
+    }
+  }
+
   def outputString = {
     val b = new StringBuilder
     val writer: String => Unit = (s: String) => b.append(s)

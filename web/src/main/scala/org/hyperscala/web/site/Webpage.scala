@@ -115,7 +115,12 @@ class Webpage extends Page with ModularPage with RequestHandler with Temporal wi
     case tag: HTMLTag if tag.style == ss => tag   // TODO: re-evaluate the necessity of this
   }
 
+  def logRequests = true
+
   def apply(webapp: NettyWebapp, context: ChannelHandlerContext, event: MessageEvent) = {
+    if (logRequests) {
+      info(s"$getClass - URL: $url, Remote: $remoteAddress")
+    }
     val request = event.getMessage.asInstanceOf[HttpRequest]
     if (request.getMethod == HttpMethod.POST) {
       processPost(request.getContent)

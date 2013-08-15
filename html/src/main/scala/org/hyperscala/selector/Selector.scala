@@ -13,6 +13,7 @@ trait Selector {
 
 object Selector extends ValuePersistence[List[Selector]] {
   def all = AllSelector
+  def clazz(className: String) = ClassSelector(className)
   def element[T <: HTMLTag](implicit manifest: Manifest[T]) = {
     ElementSelector(HTMLTagType.byClass(manifest.runtimeClass.asInstanceOf[Class[T]]).get)
   }
@@ -35,6 +36,10 @@ object Selector extends ValuePersistence[List[Selector]] {
 
 object AllSelector extends Selector {
   val value = "*"
+}
+
+case class ClassSelector(className: String) extends Selector {
+  def value = s".$className"
 }
 
 case class ElementSelector[T <: HTMLTag](tagType: HTMLTagType[T]) extends Selector {

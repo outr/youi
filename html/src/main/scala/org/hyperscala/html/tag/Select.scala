@@ -88,6 +88,33 @@ class Select extends Container[Option] with BodyChild with HTMLTag with FormFiel
     }
   }
 
+  childAdded.on {
+    case evt => updateSelected()
+  }
+
+  childRemoved.on {
+    case evt => updateSelected()
+  }
+
+  private def updateSelected() = if (contents.nonEmpty) {
+    val selection = contents.collect {
+      case o if o.selected() => o.value()
+    }
+    if (selection.nonEmpty) {   // Found selected items
+      val list = if (multiple()) {
+        selection.toList
+      } else {
+        List(selection.head)
+      }
+      selected := list
+    } else {                    // Nothing explicitly selected - set the first item selected
+      val o = contents.head
+      selected := List(o.value())
+    }
+  } else {
+    value := null
+  }
+
   // TODO: implement this to listen to selection change
 //  listen[PropertyChangeEvent[_], Unit, Unit]("change", Descendants) {
 //    case evt => evt.property match {
@@ -97,7 +124,7 @@ class Select extends Container[Option] with BodyChild with HTMLTag with FormFiel
 
   protected def selectedValues = selected() match {   // Support for multiple or single selection
     case Nil => Nil
-    case v if (!multiple() && v.size > 1) => List(v.head)
+    case v if !multiple() && v.size > 1 => List(v.head)
     case v => v
   }
 

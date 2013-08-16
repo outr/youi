@@ -16,6 +16,7 @@ import org.hyperscala.jquery.jQuery
 import org.hyperscala.event.JavaScriptEvent
 
 import language.reflectiveCalls
+import org.hyperscala.jquery.stylesheet.jQueryStyleSheet
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -27,7 +28,7 @@ object Realtime extends Module {
 
   def version = Version(1)
 
-  override def dependencies = List(InterfaceWithDefault(jQuery, jQuery.Latest), IdentifyTags)
+  override def dependencies = List(InterfaceWithDefault(jQuery, jQuery.Latest), jQueryStyleSheet, IdentifyTags)
 
   def init() = {
     Website().register("/js/communicator.js", "communicator.js")

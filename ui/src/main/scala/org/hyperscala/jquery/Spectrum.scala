@@ -177,7 +177,7 @@ class Spectrum private(val tag: Input) extends jQueryComponent {
   val palette = property[List[Color]]("palette", Nil)
 
   color.bindTo(tag.value)(s => colorFromValue())
-  tag.value.bindTo(color)(c => c.hex.rgb)
+  tag.value.bindTo(color)(c => if (c != null) c.hex.rgb else null)
 
   private def colorFromValue() = tag.value() match {
     case null | "" => Color.Black

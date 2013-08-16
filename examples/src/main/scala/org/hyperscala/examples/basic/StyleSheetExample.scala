@@ -21,6 +21,9 @@ class StyleSheetExample extends Webpage {
   buttonStyle.color := Color.Blue
   buttonStyle.fontSize := 18.pt
 
+  val colorButtonStyle = head.selector(id("colorButton"))
+  colorButtonStyle.color := Color.Red
+
   val h1HoverStyle = head.selector(pseudo(element[tag.H1], PseudoClass.hover))
   h1HoverStyle.fontSize := 28.pt
 
@@ -31,11 +34,15 @@ class StyleSheetExample extends Webpage {
   }
   body.contents += h1
 
-  val b = new tag.Button(content = "Change Color") {
+  val b = new tag.Button(id = "colorButton", content = "Change Color") {
     clickEvent.on {
       case evt => {
         h1.style.color := Color.random
-        buttonStyle.color := Color.random
+        if (colorButtonStyle.color() != null) {
+          colorButtonStyle.color := null
+        } else {
+          colorButtonStyle.color := Color.random
+        }
       }
     }
   }

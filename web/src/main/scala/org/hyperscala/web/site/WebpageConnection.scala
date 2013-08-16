@@ -60,7 +60,7 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
           }
           case styleSheet: StyleSheet => {
             val ssa = property.asInstanceOf[StyleSheetAttribute[_]]
-            styleChanged(styleSheet.selectorString, ssa.style, evt.newValue.asInstanceOf[AnyRef])
+            styleSheetChanged(styleSheet.selectorString, ssa.style, evt.newValue.asInstanceOf[AnyRef])
           }
         }
         case _ => // Ignore others
@@ -88,13 +88,13 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
       } else {
         Page().intercept.renderAttribute.fire(property) match {
           case Some(pa) => t match {
-            case title: tag.Title if (property.name == "content") => send(JavaScriptMessage("document.title = content;", property.attributeValue))
-            case textual: Textual if (property.name == "content") => textual match {
+            case title: tag.Title if property.name == "content" => send(JavaScriptMessage("document.title = content;", property.attributeValue))
+            case textual: Textual if property.name == "content" => textual match {
               case option: tag.Option => send(JavaScriptMessage("$('#%s').html(content);".format(t.id()), property.attributeValue))
               case _ => send(JavaScriptMessage("$('#%s').val(content);".format(t.id()), property.attributeValue))
             }
-            case input: tag.Input if (property.name == "value") => send(JavaScriptMessage("$('#%s').val(content);".format(t.id()), property.attributeValue))
-            case option: tag.Option if (property.name == "selected") => {
+            case input: tag.Input if property.name == "value" => send(JavaScriptMessage("$('#%s').val(content);".format(t.id()), property.attributeValue))
+            case option: tag.Option if property.name == "selected" => {
               if (option.selected()) {
                 val select = option.parent.asInstanceOf[tag.Select]
                 if (select.multiple()) {
@@ -105,7 +105,7 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
               }
             }
 //            case option: tag.Option if (property.name == "selected") => if (property() == true) send(JavaScriptMessage(s"$$('#${t.id()}').attr('${property.name}', ${property()});"))
-            case _ if (property() == false) => send(JavaScriptMessage("$('#%s').removeAttr('%s');".format(t.id(), property.name)))
+            case _ if property() == false => send(JavaScriptMessage("$('#%s').removeAttr('%s');".format(t.id(), property.name)))
 //            case _ if (property() == true) => send(JavaScriptMessage(s"$$('#${t.id()}').attr('${property.name}', '${property.name}');"))
             case _ => send(JavaScriptMessage("$('#%s').attr('%s', content);".format(t.id(), property.name), property.attributeValue))
           }
@@ -122,6 +122,16 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
     send(JavaScriptMessage("$('%s').css('%s', content);".format(selector, cssName), cssValue))
   }
 
+  def styleSheetChanged(selector: String, style: Style[_], value: AnyRef): Unit = {
+    val anyStyle = style.asInstanceOf[Style[AnyRef]]
+    val cssName = style.cssName
+    val cssValue = value match {
+      case null => ""
+      case _ => anyStyle.persistence.toString(value, cssName, value.getClass)
+    }
+    send(JavaScriptMessage(s"$$.stylesheet('$selector', '$cssName', content)", cssValue))
+  }
+
   def childAdded(evt: ChildAddedEvent) = {
     val parent = evt.parent.asInstanceOf[IdentifiableTag with Container[IdentifiableTag]]
     evt.child match {
@@ -132,7 +142,7 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
 
         val index = parent.contents.indexOf(child)
         val variable = child match {
-          case tag: SVGTag if (!tag.isInstanceOf[Svg]) => "parseSVG(content)"
+          case tag: SVGTag if !tag.isInstanceOf[Svg] => "parseSVG(content)"
           case _ => "content"
         }
         val instruction = if (index == parent.contents.length - 1) {    // Append to the end

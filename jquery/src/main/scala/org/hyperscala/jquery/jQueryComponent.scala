@@ -22,10 +22,14 @@ trait jQueryComponent {
     val p = Property[T](default = Option(default))
     p.change.on {
       case evt => if (tag.rendered) {
-        jQuery.call(tag, functionName, Map(name -> evt.newValue))
+        propertyChanged(name, evt.newValue, p)
       }
     }
     values += name -> p
     p
+  }
+
+  def propertyChanged[T](name: String, value: T, property: Property[T]) = {
+    jQuery.option(tag, functionName, name, value)
   }
 }

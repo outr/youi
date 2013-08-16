@@ -17,21 +17,26 @@ class SpectrumExample extends Example {
   Webpage().require(Spectrum)
   Webpage().require(Realtime)
 
-  val colorPicker = new tag.Input(id = "color") {
-    changeEvent := JavaScriptEvent()
-    changeEvent.on {
-      case evt => println(s"Color changed: ${value()}")
-    }
-  }
+  val colorPicker = new tag.Input(id = "color")
   contents += colorPicker
 
-  Spectrum(colorPicker)
+  val spectrum = Spectrum(colorPicker)
+  spectrum.clickoutFiresChange := true
+  spectrum.color.change.on {
+    case evt => println(s"color changed from ${evt.oldValue} to ${evt.newValue}")
+  }
 
-  val button = new tag.Button(id = "button", content = "Set to Red") {
+  contents += new tag.Button(id = "button", content = "Set to Red") {
     clickEvent.on {
       case evt => colorPicker.color := Color.Red
     }
     clickEvent := JavaScriptEvent()
   }
-  contents += button
+
+  contents += new tag.Button(id = "button2", content = "Toggle Show Input") {
+    clickEvent.on {
+      case evt => spectrum.showInput := !spectrum.showInput()
+    }
+    clickEvent := JavaScriptEvent()
+  }
 }

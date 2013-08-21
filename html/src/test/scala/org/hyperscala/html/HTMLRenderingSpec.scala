@@ -20,7 +20,7 @@ class HTMLRenderingSpec extends WordSpec with ShouldMatchers {
       val html = new HTML()
       html.name := "testing"
       val out = html.outputString
-      out should equal("<html name=\"testing\"/>")
+      out should equal("\n<html name=\"testing\"></html>")
     }
     "have correct parent for attributes" in {
       val html = new HTML()
@@ -32,21 +32,21 @@ class HTMLRenderingSpec extends WordSpec with ShouldMatchers {
       element.setAttribute("name", "testing")
       html.read(element)
       val out = html.outputString
-      out should equal("<html name=\"testing\"/>")
+      out should equal("\n<html name=\"testing\"></html>")
     }
     "load properly with an enum attribute set" in {
       val html = new HTML {
         contentEditable := ContentEditable.Inherit
       }
       val out = html.outputString
-      out should equal("<html contenteditable=\"inherit\"/>")
+      out should equal("\n<html contenteditable=\"inherit\"></html>")
     }
     "properly add Head tag" in {
       val html = new HTML {
         contents += new Head
       }
       val out = html.outputString
-      out should equal("<html><head/></html>")
+      out should equal("\n<html>\n  <head></head>\n</html>")
     }
   }
   "DOM building" should {

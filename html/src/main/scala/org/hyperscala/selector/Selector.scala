@@ -32,6 +32,37 @@ object Selector extends ValuePersistence[List[Selector]] {
   def toString(t: List[Selector], name: String, clazz: Class[_]) = {
     t.map(sss => sss.value).mkString(", ")
   }
+
+  private val AllSelectorRegex = """[*](.*)""".r
+  private val ClassSelectorRegex = """[.](\w*)(.*)""".r
+  private val ElementSelectorRegex = """(\w*)(.*)""".r
+  private val IdSelectorRegex = """[#](\w*)(.*)""".r
+  private val ChildSelectorRegex = """[ ]*[>][ ]*(.*)""".r
+  private val PseudoSelectorRegex = """[ ]*[:][ ]*(\w*)(.*)""".r
+  private val PrecedingSelectorRegex = """[ ]*[+][ ]*(.*)""".r
+  private val DescendantSelectorRegex = """[ ]*(.*)""".r
+
+  def apply(selectorString: String, parent: Selector = null): Selector = {
+    val (selector, more) = parent match {
+      case null => selectorString match {
+        case AllSelectorRegex(s) => AllSelector -> s
+        case ClassSelectorRegex(className, s) => ClassSelector(className) -> s
+        case IdSelectorRegex(id, s) => IdSelector(id) -> s
+        case ElementSelectorRegex(element, s) if HTMLTagType(element) != null => ElementSelector(HTMLTagType(element)) -> s
+      }
+      case _ => selectorString match {
+        case ChildSelectorRegex(s) => ChildSelector(parent, apply(s)) -> ""
+        case PseudoSelectorRegex(pseudo, s) => PseudoClassSelector(parent, PseudoClass(pseudo)) -> s
+        case PrecedingSelectorRegex(s) => PrecedingSelector(parent, apply(s)) -> ""
+        case DescendantSelectorRegex(s) => DescendantSelector(parent, apply(s)) -> ""
+      }
+    }
+    if (more.trim.nonEmpty) {
+      apply(more, selector)
+    } else {
+      selector
+    }
+  }
 }
 
 object AllSelector extends Selector {

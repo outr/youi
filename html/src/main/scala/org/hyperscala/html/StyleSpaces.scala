@@ -5,7 +5,7 @@ import org.hyperscala.css.StyleSheet
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class StyleSpaces extends tag.Style(id = "style_spaces") with Spaces[StyleSheet, StyleSheet] {
+class StyleSpaces extends tag.Style(id = "style_spaces") with Spaces[String, StyleSheet] {
   override protected def before() = {
     super.before()
 

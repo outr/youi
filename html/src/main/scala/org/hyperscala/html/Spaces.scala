@@ -16,4 +16,5 @@ trait Spaces[K, V] {
   protected def modified(key: K, value: V): Unit = {}
 
   def map = spaces
+  def values = spaces.values
 }

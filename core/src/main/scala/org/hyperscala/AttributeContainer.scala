@@ -18,7 +18,7 @@ trait AttributeContainer[A <: PropertyAttribute[_]] {
     None
   }
 
-  def attributes = if (_attributes != null) {
+  def attributes: Map[String, A] = if (_attributes != null) {
     _attributes
   } else {
     Map.empty

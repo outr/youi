@@ -7,6 +7,7 @@ import org.hyperscala.AttributeContainer
 import org.powerscala.reflect._
 import org.powerscala.hierarchy.ChildLike
 import org.hyperscala.selector.Selector
+import org.hyperscala.css.attributes.Length
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -32,7 +33,7 @@ class StyleSheet(val hierarchicalParent: tag.Style,
 }
 
 object StyleSheet {
-  lazy val fieldsMap = classOf[StyleSheet].fields.filter(f => f.returnType.hasType(classOf[StyleSheetAttribute[_]])).map(f => f.name.toLowerCase -> f).toMap
+  lazy val fieldsMap = classOf[StyleSheet].fields.filter(f => f.returnType.hasType(classOf[StyleSheetAttribute[_]])).map(f => f.name -> f).toMap
 }
 
 // TODO: remove in favor of StyleSheet with property in HTMLTag
@@ -192,6 +193,12 @@ trait StyleSheetBase extends Logging with Listenable with AttributeContainer[Sty
   lazy val marginLeft = new StyleSheetAttribute(Style.marginLeft)
   lazy val marginRight = new StyleSheetAttribute(Style.marginRight)
   lazy val marginTop = new StyleSheetAttribute(Style.marginTop)
+  def marginAll(length: Length) = {
+    marginTop := length
+    marginBottom := length
+    marginLeft := length
+    marginRight := length
+  }
   lazy val mark = new StyleSheetAttribute(Style.mark)
   lazy val markAfter = new StyleSheetAttribute(Style.markAfter)
   lazy val markBefore = new StyleSheetAttribute(Style.markBefore)
@@ -226,6 +233,12 @@ trait StyleSheetBase extends Logging with Listenable with AttributeContainer[Sty
   lazy val paddingLeft = new StyleSheetAttribute(Style.paddingLeft)
   lazy val paddingRight = new StyleSheetAttribute(Style.paddingRight)
   lazy val paddingTop = new StyleSheetAttribute(Style.paddingTop)
+  def paddingAll(length: Length) = {
+    paddingTop := length
+    paddingBottom := length
+    paddingLeft := length
+    paddingRight := length
+  }
   lazy val page = new StyleSheetAttribute(Style.page)
   lazy val pageBreakAfter = new StyleSheetAttribute(Style.pageBreakAfter)
   lazy val pageBreakBefore = new StyleSheetAttribute(Style.pageBreakBefore)
@@ -303,8 +316,15 @@ trait StyleSheetBase extends Logging with Listenable with AttributeContainer[Sty
     }
   }
 
-  def apply(ss: StyleSheetBase) = {
-    ss.attributes.values.foreach {
+  def apply(ss: StyleSheetBase, append: Boolean = true) = {
+    if (!append) {      // Clear unspecified attributes
+      attributes.foreach {
+        case (key, ssa) => if (!ss.attributes.contains(key)) {
+          ssa.asInstanceOf[StyleSheetAttribute[AnyRef]] := null
+        }
+      }
+    }
+    ss.attributes.values.foreach {              // Apply the attributes from ss to this stylesheet
       case ssa => update(ssa.style, ssa())
     }
   }

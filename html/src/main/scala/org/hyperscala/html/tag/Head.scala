@@ -84,10 +84,23 @@ class Head extends Container[HeadChild] with HTMLChild with HTMLTag {
     }
   }
 
-  def selector(selectors: Selector*) = {
-    val styleSheet = new StyleSheet(styleSpaces, selectors.toList)
-    styleSpaces(styleSheet) = styleSheet
-    styleSheet
+  /**
+   * Gets or creates a StyleSheet for the selectors provided. If a StyleSheet already exists for the supplied selector
+   * it will be returned instead of creating a new StyleSheet.
+   *
+   * @param selectors for the requested StyleSheet
+   * @return StyleSheet
+   */
+  def selector(selectors: Selector*) = synchronized {
+    val selectorString = Selector.toString(selectors.toList, "selectors", classOf[List[Selector]])
+    styleSpaces.get(selectorString) match {
+      case Some(styleSheet) => styleSheet
+      case None => {
+        val styleSheet = new StyleSheet(styleSpaces, selectors.toList)
+        styleSpaces(selectorString) = styleSheet
+        styleSheet
+      }
+    }
   }
 
   def injectScript(content: JavaScriptContent, temporal: Boolean = false) = {

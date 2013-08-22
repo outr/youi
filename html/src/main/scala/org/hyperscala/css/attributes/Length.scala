@@ -35,8 +35,14 @@ object Length extends Enumerated[Length] with EnumEntryPersistence[Length] {
   def Centimeters(v: Int) = Length("%scm".format(v))
   def Percent(v: Int) = Length(v + "%")
 
-  override def apply(name: String) = super.apply(name) match {
-    case null => new Length(name)
-    case v => v
+  private val NumberRegex = """(\d+)""".r
+
+  override def apply(name: String): Length = name match {
+    case null => null
+    case NumberRegex(n) => Pixels(n.toInt)
+    case _ => super.apply(name) match {
+      case null => new Length(name)
+      case v => v
+    }
   }
 }

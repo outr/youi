@@ -1,21 +1,24 @@
 package org.hyperscala.css.attributes
 
-import org.powerscala.enum.{Enumerated, EnumEntry}
-import org.hyperscala.persistence.EnumEntryPersistence
+import org.hyperscala.persistence.ValuePersistence
 import org.hyperscala.AttributeValue
 
 /**
  * NOTE: This file has been generated. Do not modify directly!
  * @author Matt Hicks <mhicks@hyperscala.org>
  */
-class Opacity(val value: String) extends EnumEntry with AttributeValue
+class Opacity(val n: Double) extends AttributeValue with NumericValue {
+  def value = n.toString
+}
 
-object Opacity extends Enumerated[Opacity] with EnumEntryPersistence[Opacity] {
-  val Inherit = new Opacity("inherit")
-  def apply(v: Double): Opacity = Opacity(v.toString)
+object Opacity extends ValuePersistence[Opacity] {
+  def apply(v: Double) = new Opacity(v)
 
-  override def apply(name: String) = super.apply(name) match {
-    case null => new Opacity(name)
-    case v => v
+  def fromString(s: String, name: String, clazz: Class[_]) = try {
+    apply(s.toDouble)
+  } catch {
+    case t: Throwable => null
   }
+
+  def toString(t: Opacity, name: String, clazz: Class[_]) = if (t != null) t.value else null
 }

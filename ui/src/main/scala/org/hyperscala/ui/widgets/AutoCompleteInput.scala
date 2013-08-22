@@ -5,7 +5,7 @@ import org.hyperscala.Unique
 
 import org.powerscala.property._
 import org.powerscala.Color
-import org.hyperscala.css.attributes.{Display, Position}
+import org.hyperscala.css.attributes.{LineStyle, Display, Position}
 
 import scala.math._
 import org.hyperscala.event._
@@ -132,7 +132,7 @@ abstract class AutoCompleteInput[T](id: String = Unique(), default: T)(implicit 
     style.position := Position.Absolute
     style.backgroundColor := Color.White
     style.borderColor := Color.LightGray
-    style.borderStyle := "solid"
+    style.borderStyle := LineStyle.Solid
     style.borderWidth := 1.px
   }
 

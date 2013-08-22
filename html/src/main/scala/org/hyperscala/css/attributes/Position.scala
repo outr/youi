@@ -8,7 +8,7 @@ import org.hyperscala.AttributeValue
  * NOTE: This file has been generated. Do not modify directly!
  * @author Matt Hicks <mhicks@hyperscala.org>
  */
-sealed class Position(val value: String) extends EnumEntry with AttributeValue
+class Position private(val value: String) extends EnumEntry with AttributeValue
 
 object Position extends Enumerated[Position] with EnumEntryPersistence[Position] {
   val Static = new Position("static")

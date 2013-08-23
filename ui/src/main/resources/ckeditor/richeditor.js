@@ -1,24 +1,37 @@
-function createRichEditor(id) {
-    CKEDITOR.replace(id);
-    var lastValue;
+function createRichEditor(id, updateFrequency) {
+    var intervalId;
 
-    var editor = CKEDITOR.instances[id];
-    var editable = null;
-    editor.on('instanceReady', function() {
-        editable = editor.editable();
-        editable.on('blur', function() {
-            var value = editor.getData();
-            if (value != lastValue) {
-                communicator.send('change', id, {
-                    value: value
-                });
-                communicator.send('event', id, {
-                    event: 'change'
-                });
-                lastValue = value;
+    CKEDITOR.replace(document.getElementById(id), {
+        on: {
+            focus: function() {
+                if (updateFrequency > 0) {
+                    intervalId = setInterval(function() {
+                        validateRichEditor(id);
+                    }, updateFrequency);
+                }
+            },
+            blur: function() {
+                if (updateFrequency > 0) {
+                    clearInterval(intervalId);
+                }
+                validateRichEditor(id);
             }
-        });
+        }
     });
+    setTimeout(function() {
+
+    }, updateFrequency);
+}
+
+function validateRichEditor(id) {
+    var editor = CKEDITOR.instances[id];
+    if (editor.checkDirty()) {
+        var value = editor.getData();
+        communicator.send('editorChanged', id, {
+            value: value
+        });
+        editor.resetDirty();
+    }
 }
 
 function updateRichEditor(id, value) {

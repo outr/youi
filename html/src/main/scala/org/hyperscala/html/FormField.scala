@@ -1,14 +1,14 @@
 package org.hyperscala.html
 
 import constraints.BodyChild
-import org.hyperscala.{Message, PropertyAttribute}
+import org.hyperscala.Message
 import org.powerscala.property.Property
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
 trait FormField extends BodyChild {
-  def disabled: PropertyAttribute[Boolean]
+  def disabled: Property[Boolean]
   def value: Property[String]
 
   override def receive(event: String, message: Message) = event match {

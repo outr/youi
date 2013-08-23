@@ -1,34 +1,61 @@
 package org.hyperscala.ui.widgets
 
 import org.hyperscala.html._
-import org.hyperscala.Unique
+import org.hyperscala.Message
 import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.web.site.Webpage
-import org.hyperscala.event.ChangeEvent
 import org.hyperscala.realtime.Realtime
+import org.powerscala.property.Property
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class RichEditor extends tag.Div {
+class RichEditor extends tag.Div with FormField {
   Webpage().require(CKEditor)
 
-  val textArea = new tag.TextArea(id = Unique(), style = style) {
-    content.change.on {
-      case evt => {
-        // TODO: avoid sending back what we receive from the client
-        // TODO: this would be much easier if textarea was still hearing changes in browser!!!
-        Realtime.sendJavaScript("updateRichEditor('%s', content);".format(id()), content())
-      }
+  private val _changing = new AtomicBoolean(false)
+
+  val disabled = Property[Boolean](default = Some(false))
+  val value = Property[String](default = Some(""))
+
+  protected def validateFrequency = 5000
+
+  private def editorId = identity
+
+  value.change.on {
+    case evt => if (!_changing.get()) {
+      Realtime.sendJavaScript(s"updateRichEditor('$editorId', content);", evt.newValue, onlyRealtime = false)
     }
   }
-  val content = textArea.content
-  textArea.changeEvent.on {    // Refire change events to the RichEditor
-    case evt => RichEditor.this.fire(new ChangeEvent(evt.tag))
+
+  contents += new tag.Script {
+    contents += JavaScriptString(s"createRichEditor('$editorId', $validateFrequency);")
   }
 
-  contents += textArea
-  contents += new tag.Script {
-    contents += JavaScriptString("createRichEditor('%s');".format(textArea.id()))
+  onInit {
+    changeValue(outputString)
+  }
+
+  override def receive(event: String, message: Message) = event match {
+    case "editorChanged" => {
+      val content = message[String]("value")
+      changeValue(content)
+    }
+    case _ => super.receive(event, message)
+  }
+
+  /**
+   * Changes 'value' without triggering an event back to the client.
+   *
+   * @param content to set value to
+   */
+  private def changeValue(content: String) = {
+    _changing.set(true)
+    try {
+      value := content
+    } finally {
+      _changing.set(false)
+    }
   }
 }

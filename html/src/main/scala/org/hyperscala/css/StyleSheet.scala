@@ -8,6 +8,8 @@ import org.powerscala.reflect._
 import org.powerscala.hierarchy.ChildLike
 import org.hyperscala.selector.Selector
 import org.hyperscala.css.attributes.Length
+import org.hyperscala.css.extra._
+import scala.Some
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -69,8 +71,16 @@ trait StyleSheetBase extends Logging with Listenable with AttributeContainer[Sty
   lazy val backgroundImage = new StyleSheetAttribute(Style.backgroundImage)
   lazy val backgroundOrigin = new StyleSheetAttribute(Style.backgroundOrigin)
   lazy val backgroundPosition = new StyleSheetAttribute(Style.backgroundPosition)
+  lazy val backgroundPositionOffsetX = new BackgroundPositionXOffset(this)
+  lazy val backgroundPositionOffsetY = new BackgroundPositionYOffset(this)
+  lazy val backgroundPositionHorizontal = new BackgroundPositionHorizontal(this)
+  lazy val backgroundPositionVertical = new BackgroundPositionVertical(this)
   lazy val backgroundRepeat = new StyleSheetAttribute(Style.backgroundRepeat)
+  lazy val backgroundRepeatHorizontal = new BackgroundRepeatHorizontal(this)
+  lazy val backgroundRepeatVertical = new BackgroundRepeatVertical(this)
   lazy val backgroundSize = new StyleSheetAttribute(Style.backgroundSize)
+  lazy val backgroundSizeHorizontal = new BackgroundSizeHorizontal(this)
+  lazy val backgroundSizeVertical = new BackgroundSizeVertical(this)
   lazy val baselineShift = new StyleSheetAttribute(Style.baselineShift)
   lazy val bookmarkLabel = new StyleSheetAttribute(Style.bookmarkLabel)
   lazy val bookmarkLevel = new StyleSheetAttribute(Style.bookmarkLevel)

@@ -10,7 +10,11 @@ import org.hyperscala.selector.Selector
 package object persistence {
   implicit val stringPersistence = StringPersistence
   implicit val alignmentPersistence = Alignment
+  implicit val attachmentPersistence = Attachment
   implicit val autoCompletePersistence = AutoComplete
+  implicit val backgroundPosition = BackgroundPosition
+  implicit val backgroundRepeat = BackgroundRepeat
+  implicit val backgroundSize = BackgroundSize
   implicit val booleanPersistence = BooleanPersistence
   implicit val buttonTypePersistence = ButtonType
   implicit val charPersistence = CharPersistence
@@ -35,6 +39,7 @@ package object persistence {
   implicit val listDoublePersistence = ListDoublePersistence
   implicit val methodPersistence = Method
   implicit val opacityPersistence = Opacity
+  implicit val originPersistence = Origin
   implicit val overflowPersistence = Overflow
   implicit val positionPersistence = Position
   implicit val rectPersistence = Rect

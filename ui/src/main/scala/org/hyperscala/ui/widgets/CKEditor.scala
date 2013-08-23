@@ -13,7 +13,7 @@ import org.hyperscala.realtime.Realtime
 object CKEditor extends Module {
   def name = "ckeditor"
 
-  def version = Version(4, 0, 1)
+  def version = Version(4, 2, 0)
 
   override def dependencies = List(Realtime)
 

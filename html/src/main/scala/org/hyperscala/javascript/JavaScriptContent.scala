@@ -22,7 +22,7 @@ object JavaScriptContent {
   def toJS(v: Any): String = v match {
     case null => "null"
     case js: JavaScriptContent => js.content
-    case s: String => "'%s'".format(s.replaceAll("\n", " ").replaceAll("\r", " ").replaceAll("'", "\\\\'"))
+    case s: String => "'%s'".format(s.replaceAll("\n", " ").replaceAll("\r", " ").replaceAll("'", """\\\\'"""))
     case l: List[_] => l.map(toJS).mkString("[", ", ", "]")
     case c: Color => s"'${c.hex.rgb}'"
     case _ => v.toString

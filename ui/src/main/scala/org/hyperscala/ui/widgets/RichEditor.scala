@@ -19,7 +19,7 @@ class RichEditor extends tag.Div with FormField {
   val disabled = Property[Boolean](default = Some(false))
   val value = Property[String](default = Some(""))
 
-  protected def validateFrequency = 5000
+  protected def validateFrequency = 1000
 
   private def editorId = identity
 
@@ -34,7 +34,9 @@ class RichEditor extends tag.Div with FormField {
   }
 
   onInit {
-    changeValue(outputString)
+    if (value() == "") {
+      changeValue(contents.tail.map(c => c.outputString).mkString(" "))
+    }
   }
 
   override def receive(event: String, message: Message) = event match {

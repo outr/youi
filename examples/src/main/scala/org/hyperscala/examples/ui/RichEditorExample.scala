@@ -14,9 +14,9 @@ import language.reflectiveCalls
 class RichEditorExample extends Example {
   val editor = new RichEditor {
     style.width := 500.px
-    contents += new tag.H1(content = "Hello World!")
+    value := "Testing"
     value.change.on {
-      case evt => println("Event: %s / %s".format(evt, value()))
+      case evt => println(s"Value changed to [${evt.newValue}]")
     }
   }
   val modify = new tag.Button(content = "Modify") {

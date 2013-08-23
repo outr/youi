@@ -3,7 +3,7 @@ package org.hyperscala.realtime
 import org.hyperscala.web.site.{WebpageConnection, Webpage, Website}
 
 import org.hyperscala.html._
-import org.hyperscala.javascript.{JavaScriptString, JavaScriptContent}
+import org.hyperscala.javascript.JavaScriptContent
 import java.util.UUID
 import annotation.tailrec
 
@@ -98,27 +98,34 @@ object Realtime extends Module {
 
   def sendJavaScript(instruction: String, content: String = null, forId: String = null, head: Boolean = true, onlyRealtime: Boolean = true, delay: Int = 0) = {
     val i = wrapInDelay(instruction, delay)
-    if (Webpage().rendered) {
-      Webpage().require(this)
-
-      if (forId != null) {
-        if (content != null) {
-          throw new RuntimeException("forId not supported with non-null content")
+    Webpage().require(this)
+    val sendFunction = new Function0[Unit] {
+      def apply() = {
+        if (forId != null) {
+          if (content != null) {
+            throw new RuntimeException("forId not supported with non-null content")
+          }
+          broadcast("eval", JavaScriptMessage(wrapInInvokeForId(forId, i), content))
+        } else {
+          broadcast("eval", JavaScriptMessage(i, content))
         }
-        broadcast("eval", JavaScriptMessage(wrapInInvokeForId(forId, i), content))
-      } else {
-        broadcast("eval", JavaScriptMessage(i, content))
       }
+    }
+    if (Webpage().rendered) {
+      sendFunction()
     } else if (!onlyRealtime) {
-      val script = i.replaceAll("content", content)
-      val s = new tag.Script {
-        contents += JavaScriptString(if (forId != null) wrapInInvokeForId(forId, script) else script)
+      Webpage().body.onAfterRender {
+        sendFunction()
       }
-      if (head) {
-        Webpage().head.contents += s
-      } else {
-        Webpage().body.contents += s
-      }
+//      val script = i.replaceAll("content", JavaScriptContent.toJS(content))
+//      val s = new tag.Script {
+//        contents += JavaScriptString(if (forId != null) wrapInInvokeForId(forId, script) else script)
+//      }
+//      if (head) {
+//        Webpage().head.contents += s
+//      } else {
+//        Webpage().body.contents += s
+//      }
     }
   }
 

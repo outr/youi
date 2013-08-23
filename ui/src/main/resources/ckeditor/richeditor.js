@@ -1,3 +1,5 @@
+window.richEditors = {};
+
 function createRichEditor(id, updateFrequency) {
     var intervalId;
 
@@ -15,6 +17,9 @@ function createRichEditor(id, updateFrequency) {
                     clearInterval(intervalId);
                 }
                 validateRichEditor(id);
+            },
+            instanceReady: function() {
+                window.richEditors[id] = this;
             }
         }
     });
@@ -35,7 +40,14 @@ function validateRichEditor(id) {
 }
 
 function updateRichEditor(id, value) {
-    var editor = CKEDITOR.instances[id];
-    var editable = editor.editable();
-    editable.setHtml(value);
+    var editor = window.richEditors[id];
+    if (editor != null) {                   // Found the editor
+        var editable = editor.editable();
+        editable.setHtml(value);
+        editor.resetDirty();
+    } else {                                // Wait until the editor instance has initialized
+        setTimeout(function() {
+            updateRichEditor(id, value);
+        }, 100);
+    }
 }

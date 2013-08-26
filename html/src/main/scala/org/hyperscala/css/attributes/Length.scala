@@ -29,13 +29,13 @@ class Length(val value: String) extends EnumEntry with AttributeValue {
 }
 
 object Length extends Enumerated[Length] with EnumEntryPersistence[Length] {
+  val NumberRegex = """(\d+)""".r
+
   val Auto = new Length("auto")
   val Inherit = new Length("inherit")
   def Pixels(v: Int) = Length("%spx".format(v))
   def Centimeters(v: Int) = Length("%scm".format(v))
   def Percent(v: Int) = Length(v + "%")
-
-  private val NumberRegex = """(\d+)""".r
 
   override def apply(name: String): Length = name match {
     case null => null

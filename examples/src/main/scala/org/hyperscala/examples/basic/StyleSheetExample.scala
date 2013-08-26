@@ -6,6 +6,7 @@ import org.powerscala.Color
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.selector._
 import org.hyperscala.selector.Selector._
+import org.hyperscala.css.attributes.Decoration
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -29,7 +30,7 @@ class StyleSheetExample extends Webpage {
 
   val h1 = new tag.H1(content = "Colored Red") {
     style.color := Color.Red
-    style.textDecoration := "underline"
+    style.textDecoration := Decoration.Underline
     style.textDecoration.important := false
   }
   body.contents += h1

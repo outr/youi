@@ -47,7 +47,7 @@ class StandardVisual[T](builder: VisualBuilder[T]) extends Visual[T]
     style.display := Display.Block
     style.color := Color.immutable("#c00")
     style.fontSize := FontSize.Percent(80)
-    style.fontStyle := "normal"
+    style.fontStyle := FontStyle.Normal
     style.float := Float.Left
     style.paddingTop := 2.px
     style.paddingBottom := 2.px

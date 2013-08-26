@@ -21,6 +21,7 @@ package object persistence {
   implicit val clearPersistence = Clear
   implicit val colorPersistence = ColorPersistence
   implicit val contentEditablePersistence = ContentEditable
+  implicit val decorationPersistence = Decoration
   implicit val directionPersistence = Direction
   implicit val displayPersistence = Display
   implicit val doublePersistence = DoublePersistence
@@ -28,6 +29,9 @@ package object persistence {
   implicit val dropZonePersistence = DropZone
   implicit val floatPersistence = Float
   implicit val fontSizePersistence = FontSize
+  implicit val fontStylePersistence = FontStyle
+  implicit val fontVariantPersistence = FontVariant
+  implicit val fontWeightPersistence = FontWeight
   implicit val javaScriptContentPersistence = JavaScriptContentPersistence
   implicit val inputTypePersistence = InputType
   implicit val intPersistence = IntPersistence
@@ -49,6 +53,9 @@ package object persistence {
   implicit val selectorPersistence = Selector
   implicit val targetPersistence = Target
   implicit val textAreaWrapPersistence = TextAreaWrap
+  implicit val textClipPersistence = TextClip
+  implicit val textShadowPersistence = TextShadow
+  implicit val textTransformPersistence = TextTransform
   implicit val visibilityPersistence = Visibility
   implicit val whiteSpacePersistence = WhiteSpace
 }

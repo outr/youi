@@ -26,8 +26,12 @@ object FontSize extends Enumerated[FontSize] with EnumEntryPersistence[FontSize]
   def Percent(v: Int) = new FontSize(v + "%")
   def Points(v: Int) = new FontSize("%spt".format(v))
 
-  override def apply(name: String) = super.apply(name) match {
-    case null => new FontSize(name)
-    case v => v
+  override def apply(name: String): FontSize = name match {
+    case null => null
+    case Length.NumberRegex(n) => Pixels(n.toInt)
+    case _ => super.apply(name) match {
+      case null => new FontSize(name)
+      case v => v
+    }
   }
 }

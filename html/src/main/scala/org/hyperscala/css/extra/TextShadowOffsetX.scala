@@ -1,0 +1,30 @@
+package org.hyperscala.css.extra
+
+import org.powerscala.property.{DerivedProperty, Property}
+import org.hyperscala.css.attributes._
+import org.hyperscala.css.StyleSheetBase
+import org.powerscala.event.Listenable
+
+/**
+ * @author Matt Hicks <matt@outr.com>
+ */
+class TextShadowOffsetX(ss: StyleSheetBase) extends Property[Length]()(ss, implicitly[Manifest[Length]]) with DerivedProperty[Length, TextShadow] {
+  implicit def styleSheetListenable: Listenable = ss
+
+  def other = ss.textShadow
+
+  def fromT(value: Length) = {
+    val ts = other.value
+    if (ts == null) {
+      TextShadow(offsetX = value)
+    } else {
+      ts.copy(offsetX = value)
+    }
+  }
+
+  def fromO(value: TextShadow) = if (value == null) {
+    null
+  } else {
+    value.offsetX
+  }
+}

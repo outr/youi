@@ -180,7 +180,7 @@ class Spectrum private(val tag: Input) extends jQueryComponent {
   tag.value.bindTo(color)(c => if (c != null) c.hex.rgb else null)
 
   private def colorFromValue() = tag.value() match {
-    case null | "" => Color.Black
+    case null | "" => null
     case s => Color(s)
   }
 

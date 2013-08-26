@@ -45,7 +45,7 @@ object Style extends Enumerated[Style[_]] {
   val borderBottomRightRadius = new Style[Length]("border-bottom-right-radius")
   val borderBottomStyle = new Style[LineStyle]("border-bottom-style")
   val borderBottomWidth = new Style[Length]("border-bottom-width")
-  val borderCollapse = new Style[String]("border-collapse")
+  val borderCollapse = new Style[BorderCollapse]("border-collapse")
   val borderColor = new Style[Color]("border-color")
   val borderImage = new Style[String]("border-image")
   val borderImageOutset = new Style[String]("border-image-outset")

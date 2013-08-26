@@ -10,6 +10,7 @@ import org.powerscala.property.{ListProperty, Property}
 import org.hyperscala.event._
 import org.hyperscala.event.processor._
 import org.jdom2.Attribute
+import org.hyperscala.selector.Selector
 
 /**
  * NOTE: This file has been generated. Do not modify directly!
@@ -166,6 +167,12 @@ trait HTMLTag extends IdentifiableTag {
   def byClass[T <: HTMLTag](className: String)(implicit manifest: Manifest[T]) = {
     byTag[T].collect {
       case t if t.clazz().contains(className) => t
+    }
+  }
+
+  def bySelector[T <: HTMLTag](selector: Selector)(implicit manifest: Manifest[T]) = {
+    byTag[T].collect {
+      case t if selector.matches(t) => t
     }
   }
 

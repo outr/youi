@@ -9,6 +9,8 @@ import org.hyperscala.html.HTMLTagType
  */
 trait Selector {
   def value: String
+
+  def matches(t: HTMLTag): Boolean
 }
 
 object Selector extends ValuePersistence[List[Selector]] {
@@ -26,6 +28,7 @@ object Selector extends ValuePersistence[List[Selector]] {
     AttributeSelector(selector, attribute, matcher, attributeValue)
   }
   def id(id: String) = IdSelector(id)
+  def multiple(selectors: Selector*) = MultipleSelector(selectors.toList)
 
   def fromString(s: String, name: String, clazz: Class[_]) = throw new UnsupportedOperationException("Not supported")
 
@@ -67,40 +70,67 @@ object Selector extends ValuePersistence[List[Selector]] {
 
 object AllSelector extends Selector {
   val value = "*"
+
+  def matches(t: HTMLTag) = true
 }
 
 case class ClassSelector(className: String) extends Selector {
   def value = s".$className"
+
+  def matches(t: HTMLTag) = t.clazz().contains(className)
 }
 
 case class ElementSelector[T <: HTMLTag](tagType: HTMLTagType[T]) extends Selector {
   def value = tagType.htmlName
+
+  def matches(t: HTMLTag) = tagType.clazz.isAssignableFrom(t.getClass)    // TODO: verify this works
 }
 
 case class DescendantSelector(parent: Selector, child: Selector) extends Selector {
   def value = s"${parent.value} ${child.value}"
+
+  // TODO: fix matching support
+  def matches(t: HTMLTag) = t.parent != null && parent.matches(t.parent.asInstanceOf[HTMLTag]) && child.matches(t)
 }
 
 case class ChildSelector(parent: Selector, child: Selector) extends Selector {
   def value = s"${parent.value} > ${child.value}"
+
+  def matches(t: HTMLTag) = t.parent != null && parent.matches(t.parent.asInstanceOf[HTMLTag]) && child.matches(t)
 }
 
 case class PseudoClassSelector(selector: Selector, clazz: PseudoClass) extends Selector {
   def value = s"${selector.value}:${clazz.value}"
+
+  def matches(t: HTMLTag) = selector.matches(t)
 }
 
 case class PrecedingSelector(selector: Selector, sibling: Selector) extends Selector {
   def value = s"${selector.value} + ${sibling.value}"
+
+  def matches(t: HTMLTag) = throw new NotImplementedError("Matching support not implemented for this selector")
 }
 
 case class AttributeExistsSelector(selector: Selector, attribute: String) extends Selector {
   def value = s"${selector.value}[$attribute]"
+
+  def matches(t: HTMLTag) = throw new NotImplementedError("Matching support not implemented for this selector")
 }
 
 case class AttributeSelector(selector: Selector, attribute: String, matcher: AttributeMatcher, attributeValue: String) extends Selector {
   def value = "%s[%s%s\"%s\"]".format(selector.value, attribute, matcher.value, attributeValue)
+
+  def matches(t: HTMLTag) = throw new NotImplementedError("Matching support not implemented for this selector")
 }
 
 case class IdSelector(id: String) extends Selector {
   def value = s"#$id"
+
+  def matches(t: HTMLTag) = t.id() == id
+}
+
+case class MultipleSelector(selectors: List[Selector]) extends Selector {
+  def value = selectors.map(s => s.value).mkString(", ")
+
+  def matches(t: HTMLTag) = selectors.find(s => s.matches(t)).nonEmpty
 }

@@ -16,6 +16,7 @@ package object persistence {
   implicit val backgroundRepeat = BackgroundRepeat
   implicit val backgroundSize = BackgroundSize
   implicit val booleanPersistence = BooleanPersistence
+  implicit val borderCollapsePersistence = BorderCollapse
   implicit val buttonTypePersistence = ButtonType
   implicit val charPersistence = CharPersistence
   implicit val clearPersistence = Clear

@@ -18,36 +18,38 @@ abstract class SelectWrapper[T](val select: tag.Select)(implicit manifest: Manif
 
   implicit val thisParent: Listenable = null
 
-  val values = new Property[List[T]] with ListProperty[T]
+  val values = new Property[List[T]](default = Some(Nil)) with ListProperty[T]
   val selected = Property[T]()
 
-  // Convert existing values in Select to List[T]
-  values := select.contents.map(o => value2T(o.value())).toList
+  select.contents.clear()      // Clear out existing options
 
-  // Determine selected value from Select
-  selected := value2T(select.value())
-
-  // Add listeners to synchronize changes between wrapper and Select
-  select.value.change.on {      // Update the wrapper selected when Select changes value
-    case evt => selected := value2T(evt.newValue)
-  }
-  selected.change.on {          // Update the Select when wrapper selected changes
-    case evt => select.value := t2Value(evt.newValue)
-  }
-  values.change.on {            // Update the options list when values changed
-    case evt => updateOptions()
-  }
-
-  private def updateOptions() = {   // Invoked when values is changed in order to update the Options on Select
-    val previouslySelected = selected()
-    select.contents.clear()
-    values().foreach {
-      case t => select.contents += new tag.Option(value = t2Value(t), content = t2Content(t))
+  values.change.on {
+    case evt => {
+      val previousSelected = selected()
+      select.contents.clear()
+      evt.newValue.map(t => new OptionWrapper(t)).foreach {
+        case o => select.contents += o
+      }
+      selected := previousSelected
     }
-    select.value := t2Value(previouslySelected)
+  }
+  selected.change.on {
+    case evt => select.selectedOptions.value = optionByValue(evt.newValue) match {
+      case Some(o) => List(o)
+      case None => Nil
+    }
+  }
+  select.selectedOptions.change.on {
+    case evt => selected := evt.newValue.asInstanceOf[List[OptionWrapper]].map(o => o.t).headOption.getOrElse(null.asInstanceOf[T])
   }
 
-  def value2T(value: String): T
-  def t2Value(t: T): String
-  def t2Content(t: T): String
+  protected def t2Value(t: T): String
+  protected def t2Content(t: T): String
+
+  def optionByValue(value: T) = select.byTag[OptionWrapper].find(o => o.t == value)
+
+  class OptionWrapper(val t: T) extends tag.Option {
+    value := t2Value(t)
+    content := t2Content(t)
+  }
 }

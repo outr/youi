@@ -20,8 +20,6 @@ class SelectWrapperExample extends Example {
   contents += select
 
   val wrapper = new SelectWrapper[Country](select) {
-    def value2T(value: String) = if (value != null && value.nonEmpty) Country(value) else null
-
     def t2Value(t: Country) = if (t != null) t.name else ""
 
     def t2Content(t: Country) = if (t != null) t.fullName else "--- Select one ---"

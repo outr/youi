@@ -5,7 +5,8 @@ import css.StyleSheet
 import html.{FormField, HTMLTag}
 import org.hyperscala.html.attributes._
 import org.hyperscala.html.constraints._
-import org.powerscala.property.{ListProperty, Property}
+import org.powerscala.property.{SetProperty, ListProperty, Property}
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * NOTE: This file has been generated. Do not modify directly!
@@ -55,65 +56,103 @@ class Select extends Container[Option] with BodyChild with HTMLTag with FormFiel
   lazy val multiple = PropertyAttribute[Boolean]("multiple", false)
   lazy val size = PropertyAttribute[Int]("size", -1)
 
+  val selectedOptions = new Property[List[Option]](default = Some(Nil)) with ListProperty[Option]
   val selected = new Property[List[String]](default = Some(Nil)) with ListProperty[String]
   val value = Property[String]()
-  def selectedOptions = selected().map(value => optionByValue(value).getOrElse(throw new NullPointerException("Unable to find option by value: %s".format(value))))
+
+  childAdded.on {
+    case evt => evt.child match {
+      case o: Option => updateOption(o)
+    }
+  }
+  childRemoved.on {
+    case evt => evt.child match {
+      case o: Option => updateOption(o)
+    }
+  }
+  private val selectedOptionsChanging = new AtomicBoolean(false)
+  selectedOptions.change.on {
+    case evt => {
+      selectedOptionsChanging.set(true)
+      try {
+        selected := evt.newValue.map(o => o.value())
+        contents.foreach {
+          case o => o.selected := evt.newValue.contains(o)
+        }
+      } finally {
+        selectedOptionsChanging.set(false)
+      }
+    }
+  }
+  selected.change.on {
+    case evt => if (!selectedOptionsChanging.get()) {
+      selectedOptions := evt.newValue.map(s => optionByValue(s)).flatten
+    }
+  }
+  value.change.on {       // Updated selected options
+    case evt => if (!selectedOptionsChanging.get()) {
+      selectedOptions := List(scala.Option(evt.newValue)).flatten.map(s => optionByValue(s)).flatten
+    }
+  }
+
+  protected[html] def updateOption(o: Option) = if (!selectedOptionsChanging.get()) {
+    if (o.selected()) {
+      if (!selectedOptions.contains(o)) {
+        selectedOptions += o
+      }
+    } else {
+      if (selectedOptions.contains(o)) {
+        selectedOptions -= o
+      }
+    }
+  }
 
   def optionByValue(value: String) = contents.find(o => o.value() == value)
 
-  selected.change.on {
-    case evt => {
-      val values = selectedValues
-      val selected = values.map {
-        case v => contents.find(o => o.value() == v || (o.value() == null && o.content == v))
-      }.flatten
-      contents.foreach {                // Select the values
-        case option => option.selected := selected.contains(option)
-      }
-      value := values.mkString("|")
-    }
-  }
-
-  value.change.on {
-    case evt => {
-      val values = selectedValues
-      val v = values.mkString("|")
-      if (value() != v) {
-        if (value() == null) {
-          selected := Nil
-        } else {
-          selected := value().split('|').toList // Set the selected values from value string
-        }
-      }
-    }
-  }
-
-  childAdded.on {
-    case evt => updateSelected()
-  }
-
-  childRemoved.on {
-    case evt => updateSelected()
-  }
-
-  private def updateSelected() = if (contents.nonEmpty) {
-    val selection = contents.collect {
-      case o if o.selected() => o.value()
-    }
-    if (selection.nonEmpty) {   // Found selected items
-      val list = if (multiple()) {
-        selection.toList
-      } else {
-        List(selection.head)
-      }
-      selected := list
-    } else {                    // Nothing explicitly selected - set the first item selected
-      val o = contents.head
-      selected := List(o.value())
-    }
-  } else {
-    value := null
-  }
+//  selected.change.on {
+//    case evt => {
+//      val values = selectedValues
+//      val selected = values.map {
+//        case v => contents.find(o => o.value() == v || (o.value() == null && o.content == v))
+//      }.flatten
+//      contents.foreach {                // Select the values
+//        case option => option.selected := selected.contains(option)
+//      }
+//      value := values.mkString("|")
+//    }
+//  }
+//
+//  value.change.on {
+//    case evt => {
+//      val values = selectedValues
+//      val v = values.mkString("|")
+//      if (value() != v) {
+//        if (value() == null) {
+//          selected := Nil
+//        } else {
+//          selected := value().split('|').toList // Set the selected values from value string
+//        }
+//      }
+//    }
+//  }
+//  private def updateSelected() = if (contents.nonEmpty) {
+//    val selection = contents.collect {
+//      case o if o.selected() => o.value()
+//    }
+//    if (selection.nonEmpty) {   // Found selected items
+//      val list = if (multiple()) {
+//        selection.toList
+//      } else {
+//        List(selection.head)
+//      }
+//      selected := list
+//    } else {                    // Nothing explicitly selected - set the first item selected
+//      val o = contents.head
+//      selected := List(o.value())
+//    }
+//  } else {
+//    value := null
+//  }
 
   // TODO: implement this to listen to selection change
 //  listen[PropertyChangeEvent[_], Unit, Unit]("change", Descendants) {
@@ -121,12 +160,12 @@ class Select extends Container[Option] with BodyChild with HTMLTag with FormFiel
 //      case pa: PropertyAttribute if (pa.name == "selected")
 //    }
 //  }
-
-  protected def selectedValues = selected() match {   // Support for multiple or single selection
-    case Nil => Nil
-    case v if !multiple() && v.size > 1 => List(v.head)
-    case v => v
-  }
+//
+//  protected def selectedValues = selected() match {   // Support for multiple or single selection
+//    case Nil => Nil
+//    case v if !multiple() && v.size > 1 => List(v.head)
+//    case v => v
+//  }
 
   override def formValue = value
 }

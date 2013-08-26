@@ -19,7 +19,7 @@ class ListSelect[T](values: Seq[T], nullAllowed: Boolean = false)(implicit manif
       if (!changing) {
         var break = false
         val selection = selected().map {
-          case null if (!nullAllowed) => select.contents.headOption match {
+          case null if !nullAllowed => select.contents.headOption match {
             case Some(first) => toString(first.asInstanceOf[ListSelectItem[T]].item)
             case None => {
               break = true
@@ -38,7 +38,7 @@ class ListSelect[T](values: Seq[T], nullAllowed: Boolean = false)(implicit manif
     case evt => {
       changing = true
       try {
-        selected := select.selectedOptions.map(o => o.asInstanceOf[ListSelectItem[T]].item).filterNot(t => t == null)
+        selected := select.selectedOptions().map(o => o.asInstanceOf[ListSelectItem[T]].item).filterNot(t => t == null)
       } catch {
         case t: Throwable => {
           t.printStackTrace()

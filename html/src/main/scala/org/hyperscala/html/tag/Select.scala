@@ -7,6 +7,9 @@ import org.hyperscala.html.attributes._
 import org.hyperscala.html.constraints._
 import org.powerscala.property.{SetProperty, ListProperty, Property}
 import java.util.concurrent.atomic.AtomicBoolean
+import org.powerscala.property.event.PropertyChangeEvent
+import org.powerscala.event.{ListenerWrapper, ListenMode}
+import org.powerscala.Storage
 
 /**
  * NOTE: This file has been generated. Do not modify directly!
@@ -60,51 +63,72 @@ class Select extends Container[Option] with BodyChild with HTMLTag with FormFiel
   val selected = new Property[List[String]](default = Some(Nil)) with ListProperty[String]
   val value = Property[String]()
 
-  childAdded.on {
-    case evt => evt.child match {
-      case o: Option => updateOption(o)
+  private val changeListener = (evt: PropertyChangeEvent[Boolean]) => {
+    updateSelectionFromOptions()
+  }
+
+  private def tryUpdating(f: => Unit) = if (updating.compareAndSet(false, true)) {
+    try {
+      f
+    } finally {
+      updating.set(false)
     }
   }
-  childRemoved.on {
-    case evt => evt.child match {
-      case o: Option => updateOption(o)
-    }
-  }
-  private val selectedOptionsChanging = new AtomicBoolean(false)
+
   selectedOptions.change.on {
     case evt => {
-      selectedOptionsChanging.set(true)
-      try {
+      updateOptionsFromSelection()
+      tryUpdating {
         selected := evt.newValue.map(o => o.value())
-        contents.foreach {
-          case o => o.selected := evt.newValue.contains(o)
-        }
-      } finally {
-        selectedOptionsChanging.set(false)
+        value := selected().mkString("|")
       }
     }
   }
   selected.change.on {
-    case evt => if (!selectedOptionsChanging.get()) {
+    case evt => if (!updating.get()) {
       selectedOptions := evt.newValue.map(s => optionByValue(s)).flatten
     }
   }
-  value.change.on {       // Updated selected options
-    case evt => if (!selectedOptionsChanging.get()) {
-      selectedOptions := List(scala.Option(evt.newValue)).flatten.map(s => optionByValue(s)).flatten
+  value.change.on {
+    case evt => if (!updating.get()) {
+      selected := evt.newValue.split('|').toList
+    }
+  }
+  childAdded.on {
+    case evt => evt.child match {
+      case o: Option => {
+//        Storage.set(o, "changeListener", o.selected.change.on(changeListener))
+        updateSelectionFromOptions()
+      }
+    }
+  }
+  childRemoved.on {
+    case evt => evt.child match {
+      case o: Option => {
+//        o.selected.change.remove(Storage.getAndSet[ListenerWrapper[PropertyChangeEvent[Boolean], Unit, Unit]](o, "changeListener", null).getOrElse(throw new RuntimeException("Unable to find change listener!")))
+        updateSelectionFromOptions()
+      }
     }
   }
 
-  protected[html] def updateOption(o: Option) = if (!selectedOptionsChanging.get()) {
-    if (o.selected()) {
-      if (!selectedOptions.contains(o)) {
-        selectedOptions += o
-      }
-    } else {
-      if (selectedOptions.contains(o)) {
-        selectedOptions -= o
-      }
+  private val updating = new AtomicBoolean(false)
+
+  private def updateSelectionFromOptions() = tryUpdating {
+    println("updateSelectionFromOptions")
+    val options = contents.collect {
+      case o if o.selected() => o
+    }.toList
+    selectedOptions := options
+    println("\tupdateSelecitonFromOptions finished")
+  }
+
+  private def updateOptionsFromSelection() = tryUpdating {
+    println("updateOptionsFromSelection")
+    val selected = selectedOptions()
+    contents.foreach {
+      case o => o.selected := selected.contains(o)
     }
+    println("\tupdateOptionsFromSelection finished")
   }
 
   def optionByValue(value: String) = contents.find(o => o.value() == value)

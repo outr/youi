@@ -34,11 +34,15 @@ class RealtimeWebpageExample extends Example {
     contents += new tag.Option(id = "third", value = "tres", content = "Three")
 
     changeEvent.on {
-      case evt => println("Selected: %s".format(selected()))
+      case evt => printSelected()
     }
   }
   select.value := "dos"
+  printSelected()
+
   contents += select
+
+  def printSelected(): Unit = println(s"Options: ${select.selectedOptions()}, Selected: ${select.selected()}, Value: ${select.value()}")
 
   val textArea = new tag.TextArea {
     changeEvent := JavaScriptEvent()

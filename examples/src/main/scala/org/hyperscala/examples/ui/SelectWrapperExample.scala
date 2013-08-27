@@ -38,4 +38,10 @@ class SelectWrapperExample extends Example {
       case evt => wrapper.selected := Country.US
     }
   }
+  contents += new tag.Button(content = "Repopulate") {
+    clickEvent := JavaScriptEvent()
+    clickEvent.on {
+      case evt => wrapper.values := Country.values
+    }
+  }
 }

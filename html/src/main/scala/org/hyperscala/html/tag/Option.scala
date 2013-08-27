@@ -47,4 +47,11 @@ class Option extends Textual with BodyChild with HTMLTag {
   lazy val label = PropertyAttribute[String]("label", null)
   lazy val selected = PropertyAttribute[Boolean]("selected", false)
   lazy val value = PropertyAttribute[String]("value", null)
+
+  selected.change.on {
+    case evt => parent match {
+      case select: Select => select.updateSelectionFromOptions()
+      case _ => // No parent assigned
+    }
+  }
 }

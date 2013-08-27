@@ -10,18 +10,18 @@ import org.powerscala.property.Property
  * @author Matt Hicks <matt@outr.com>
  */
 trait jQueryComponent {
-  protected def tag: HTMLTag
+  protected def html: HTMLTag
   protected def functionName: String
   private var values = Map.empty[String, () => Any]
 
-  tag.onBeforeRender {
-    jQuery.call(tag, functionName, values.map(t => t._1 -> t._2()))
+  html.onBeforeRender {
+    jQuery.call(html, functionName, values.map(t => t._1 -> t._2()))
   }
 
-  def property[T](name: String, default: T)(implicit manifest: Manifest[T]) = synchronized {
+  protected def property[T](name: String, default: T)(implicit manifest: Manifest[T]) = synchronized {
     val p = Property[T](default = Option(default))
     p.change.on {
-      case evt => if (tag.rendered) {
+      case evt => if (html.rendered) {
         propertyChanged(name, evt.newValue, p)
       }
     }
@@ -29,7 +29,15 @@ trait jQueryComponent {
     p
   }
 
-  def propertyChanged[T](name: String, value: T, property: Property[T]) = {
-    jQuery.option(tag, functionName, name, value)
+  protected def propertyChanged[T](name: String, value: T, property: Property[T]) = {
+    jQuery.option(html, functionName, name, value)
+  }
+
+  def option(key: String, value: Any) = {
+    if (html.rendered) {
+      jQuery.option(html, functionName, key, value)
+    } else {
+      values += key -> (() => value)
+    }
   }
 }

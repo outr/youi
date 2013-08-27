@@ -49,11 +49,11 @@ object Spectrum extends Module with JavaScriptCaller with StorageComponent[Spect
   protected def create(t: Input) = new Spectrum(t)
 }
 
-class Spectrum private(val tag: Input) extends jQueryComponent {
+class Spectrum private(val html: Input) extends jQueryComponent {
   def functionName = "spectrum"
 
-  if (tag.changeEvent() == null) {
-    tag.changeEvent := JavaScriptEvent()
+  if (html.changeEvent() == null) {
+    html.changeEvent := JavaScriptEvent()
   }
 
   /**
@@ -176,16 +176,16 @@ class Spectrum private(val tag: Input) extends jQueryComponent {
    */
   val palette = property[List[Color]]("palette", Nil)
 
-  color.bindTo(tag.value)(s => colorFromValue())
-  tag.value.bindTo(color)(c => if (c != null) c.hex.rgb else null)
+  color.bindTo(html.value)(s => colorFromValue())
+  html.value.bindTo(color)(c => if (c != null) c.hex.rgb else null)
 
-  private def colorFromValue() = tag.value() match {
+  private def colorFromValue() = html.value() match {
     case null | "" => null
     case s => Color(s)
   }
 
   override def propertyChanged[T](name: String, value: T, property: Property[T]) = name match {
-    case "color" => jQuery.call(tag, s"spectrum('set', ${JavaScriptContent.toJS(value)})")
+    case "color" => jQuery.call(html, s"spectrum('set', ${JavaScriptContent.toJS(value)})")
     case _ => super.propertyChanged(name, value, property)
   }
 }

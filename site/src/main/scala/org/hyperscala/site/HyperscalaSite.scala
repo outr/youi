@@ -43,6 +43,7 @@ object HyperscalaSite extends Website[MapSession] {
     val nivoSlider = WebpageResource("/example/nivoslider.html", new HyperscalaExample(new NivoSliderExample), Scope.Page)
     val gritter = WebpageResource("/example/gritter.html", new HyperscalaExample(new GritterExample), Scope.Page)
     val spectrum = WebpageResource("/example/spectrum.html", new HyperscalaExample(new SpectrumExample), Scope.Page)
+    val colorPicker = WebpageResource("/example/colorpicker.html", new HyperscalaExample(new ColorPickerExample), Scope.Page)
     val visualSearch = WebpageResource("/example/visualsearch.html", new HyperscalaExample(new VisualSearchExample), Scope.Page)
     val dialog = WebpageResource("/example/dialog.html", new HyperscalaExample(new DialogExample), Scope.Page)
     val confirmDialog = WebpageResource("/example/confirm_dialog.html", new HyperscalaExample(new ConfirmDialogExample), Scope.Page)

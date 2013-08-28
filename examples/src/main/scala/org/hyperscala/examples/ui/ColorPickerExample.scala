@@ -32,4 +32,10 @@ class ColorPickerExample extends Example {
     }
     clickEvent := JavaScriptEvent()
   }
+  contents += new tag.Button(id = "button2", content = "Set to null") {
+    clickEvent.on {
+      case evt => colorPicker.color := null
+    }
+    clickEvent := JavaScriptEvent()
+  }
 }

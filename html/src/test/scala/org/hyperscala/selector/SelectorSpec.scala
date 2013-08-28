@@ -55,7 +55,7 @@ class SelectorSpec extends WordSpec with ShouldMatchers {
 
         selector.value should equal("div:hover")
         cs.selector.value should equal("div")
-        cs.clazz should equal(PseudoClass.hover)
+        cs.clazz should equal(PseudoClass.Hover)
       }
       "support simple preceding selector" in {
         val selector = Selector("div + button")

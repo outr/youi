@@ -17,11 +17,12 @@ import org.powerscala.hierarchy.event.StandardHierarchyEventProcessor
 /**
  * @author Matt Hicks <matt@outr.com>
  */
+// TODO: convert to using jQueryComponent
 trait Dialog extends HTMLTag with JavaScriptCaller {
   identity    // Make sure it has an id
 
   Webpage().require(Realtime)
-  Webpage().require(jQueryUI, jQueryUI191)
+  Webpage().require(jQueryUI.LatestWithDefault)
 
   style.display := Display.None
 
@@ -48,12 +49,10 @@ trait Dialog extends HTMLTag with JavaScriptCaller {
     val position = new DialogProperty[String]("position", default = Some("{ my: 'center', at: 'center', of: 'window', collision: 'none' }"))
     val resizable = new DialogProperty[Boolean]("resizable", default = Some(true))
     val show = new DialogProperty[EffectInstance]("show", default = Some(null))
-    val stack = new DialogProperty[Boolean]("stack", default = Some(true))
     val title = new DialogProperty[String]("title", default = Some(getClass.getSimpleName))
     val width = new DialogProperty[Int]("width", default = Some(300))
-    val zIndex = new DialogProperty[Int]("zIndex", default = Some(1000))
 
-    val properties = List(autoOpen, buttons, closeOnEscape, closeText, dialogClass, draggable, height, hide, maxHeight, maxWidth, minHeight, minWidth, modal, position, resizable, show, stack, title, width, zIndex)
+    val properties = List(autoOpen, buttons, closeOnEscape, closeText, dialogClass, draggable, height, hide, maxHeight, maxWidth, minHeight, minWidth, modal, position, resizable, show, title, width)
 
     def close() = {
       injectScript("$('#%s').dialog('close');".format(id()))
@@ -96,7 +95,7 @@ trait Dialog extends HTMLTag with JavaScriptCaller {
     generated = true
     _open = dialog.autoOpen()
     val options = dialog.properties.collect {
-      case p: DialogProperty[_] if (p.modified && p.isInstanceOf[DialogProperty[_]]) => "%s: %s".format(p.name, value2String(p()))
+      case p: DialogProperty[_] if p.modified && p.isInstanceOf[DialogProperty[_]] => "%s: %s".format(p.name, value2String(p()))
     }.mkString(",\n    ")
     """
       |$(function() {

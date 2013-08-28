@@ -10,6 +10,7 @@ import org.hyperscala.selector.Selector
 import org.hyperscala.css.attributes.Length
 import org.hyperscala.css.extra._
 import scala.Some
+import org.hyperscala.html.tag.Head
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -36,6 +37,16 @@ class StyleSheet(val hierarchicalParent: tag.Style,
 
 object StyleSheet {
   lazy val fieldsMap = classOf[StyleSheet].fields.filter(f => f.returnType.hasType(classOf[StyleSheetAttribute[_]])).map(f => f.name -> f).toMap
+
+  def styles2Selectors(head: Head, root: HTMLTag) = {
+    root.byTag[HTMLTag].foreach {
+      case e => if (e.isStyleDefined) {
+        val styleSheet = head.selector(Selector.id(e.identity))
+        styleSheet(e.style, append = true)
+        e.style.clearStyle()
+      }
+    }
+  }
 }
 
 // TODO: remove in favor of StyleSheet with property in HTMLTag
@@ -340,6 +351,12 @@ trait StyleSheetBase extends Logging with Listenable with AttributeContainer[Sty
     }
     ss.attributes.values.foreach {              // Apply the attributes from ss to this stylesheet
       case ssa => update(ssa.style, ssa())
+    }
+  }
+
+  def clearStyle() = {
+    attributes.foreach {
+      case (key, ssa) => ssa.asInstanceOf[StyleSheetAttribute[AnyRef]] := null
     }
   }
 

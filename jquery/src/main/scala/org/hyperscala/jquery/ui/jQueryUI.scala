@@ -9,7 +9,7 @@ import org.hyperscala.web.site.Webpage
  * @author Matt Hicks <matt@outr.com>
  */
 object jQueryUI extends Interface {
-  def Latest = jQueryUI1101
+  def Latest = jQueryUI1103
   lazy val LatestWithDefault = InterfaceWithDefault(jQueryUI, Latest)
 
   def name = "jquery-ui"

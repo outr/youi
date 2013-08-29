@@ -28,7 +28,7 @@ class DialogExample extends Example {
     clickEvent := JavaScriptEvent()
 
     clickEvent.on {
-      case evt => myDialog.open()
+      case evt => myDialog.toggleOpen()
     }
   }
 }

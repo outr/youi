@@ -71,4 +71,10 @@ object jQuery extends Interface with jQueryDSL {
     }
     Webpage().body.contents += new tag.Script(content = new JavaScriptString(content))
   }
+
+  def on(t: HTMLTag, eventType: String, function: JavaScriptContent): Unit = on(s"#${t.identity}", eventType, function)
+
+  def on(selector: String, eventType: String, function: JavaScriptContent) = {
+    call(selector, s"on('$eventType', ${function.content}")
+  }
 }

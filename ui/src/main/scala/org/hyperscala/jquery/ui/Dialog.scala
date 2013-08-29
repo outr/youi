@@ -55,8 +55,24 @@ class Dialog private(val html: HTMLTag) extends jQueryComponent {
 
   val isOpen = Property[Boolean](default = Option(false))
 
-  def open() = call("open")
-  def close() = call("close")
+  def open() = {
+    call("open")
+    isOpen := true
+  }
+  def close() = {
+    call("close")
+    isOpen := false
+  }
+
+  val openEvent = event("open")
+  val closeEvent = event("close")
+
+  openEvent.on {
+    case evt => isOpen := true
+  }
+  closeEvent.on {
+    case evt => isOpen := false
+  }
 
   def toggleOpen() = if (isOpen()) {
     close()

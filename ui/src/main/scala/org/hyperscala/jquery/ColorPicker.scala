@@ -56,7 +56,7 @@ class ColorPicker private(val html: tag.Input) extends jQueryComponent {
   def functionName = "colorpicker"
 
   // Make sure events fire back to server upon select
-  option("ok", ColorPicker.OkFunction)
+  on("ok", ColorPicker.OkFunction)
   html.eventReceived.on {
     case evt if evt.event == "colorSelected" => {
       val value = evt.message[String]("value")

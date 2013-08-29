@@ -2,6 +2,10 @@ package org.hyperscala.jquery
 
 import org.hyperscala.html.HTMLTag
 import org.powerscala.property.Property
+import org.hyperscala.javascript.{JavaScriptContent, JavaScriptString}
+import org.powerscala.hierarchy.event.StandardHierarchyEventProcessor
+import org.powerscala.event.processor.UnitProcessor
+import org.powerscala.event.{ListenMode, Intercept}
 
 /**
  * jQueryComponent trait works to provide easier access to making calls to jQuery for extensions like autocomplete and
@@ -48,4 +52,35 @@ trait jQueryComponent {
   def call(function: String) = {
     jQuery.call(html, s"$functionName('$function')")
   }
+
+  def on(eventType: String, function: JavaScriptContent) = {
+    if (html.rendered) {
+      jQuery.on(html, eventType, function)
+    } else {
+      values += eventType -> (() => function)
+    }
+  }
+
+  def event(eventType: String) = {
+    on(eventType, JavaScriptString(
+      s"""function() {
+        | var id = $$(this).attr('id');
+        | communicator.send('$eventType', id, {});
+        |}
+      """.stripMargin))
+    val processor = new UnitProcessor[jQueryEvent](eventType)(html, implicitly[Manifest[jQueryEvent]])
+    html.eventReceived.on {
+      case evt if evt.event == eventType => {
+        processor.fire(jQueryEvent, ListenMode.Standard)
+
+        Intercept.Stop
+      }
+      case _ => Intercept.Continue
+    }
+    processor
+  }
 }
+
+class jQueryEvent
+
+object jQueryEvent extends jQueryEvent

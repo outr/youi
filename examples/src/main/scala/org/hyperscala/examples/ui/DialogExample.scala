@@ -14,21 +14,21 @@ import language.reflectiveCalls
 class DialogExample extends Example {
   Webpage().require(jQueryUI.Latest)
 
-  val myDialog = new tag.Div(id = "dialog", titleText = "Dialog Example") with Dialog {
-    dialog.title := "Hello World"
-    dialog.autoOpen := false
-    dialog.hide := Effect.Explode(duration = 1500, easing = Easing.EaseInBounce)
-    dialog.show := Effect.Fold
-
+  val myDiv = new tag.Div(id = "dialog", titleText = "Dialog Example") {
     contents += new tag.P(content = "This is the default dialog which is useful for displaying information. The dialog window can be moved, resized and closed with the 'x' icon.")
   }
-  contents += myDialog
+  val myDialog = Dialog(myDiv)
+  myDialog.title := "Hello World"
+  myDialog.autoOpen := false
+  myDialog.hide := Effect.Explode(duration = 1500, easing = Easing.EaseInBounce)
+  myDialog.show := Effect.Fold
+  contents += myDiv
 
   contents += new tag.Button(content = "Toggle Dialog Visible") {
     clickEvent := JavaScriptEvent()
 
     clickEvent.on {
-      case evt => myDialog.dialog.toggleOpen()
+      case evt => myDialog.open()
     }
   }
 }

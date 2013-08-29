@@ -18,19 +18,23 @@ trait jQueryComponent {
     jQuery.call(html, functionName, values.map(t => t._1 -> t._2()))
   }
 
-  protected def property[T](name: String, default: T)(implicit manifest: Manifest[T]) = synchronized {
+  protected def property[T](name: String, default: T, includeDefault: Boolean = false)(implicit manifest: Manifest[T]) = synchronized {
     val p = Property[T](default = Option(default))
     p.change.on {
-      case evt => if (html.rendered) {
-        propertyChanged(name, evt.newValue, p)
-      }
+      case evt => propertyChanged(name, evt.newValue, p)
     }
-    values += name -> p
+    if (includeDefault) {
+      values += name -> p
+    }
     p
   }
 
   protected def propertyChanged[T](name: String, value: T, property: Property[T]) = {
-    jQuery.option(html, functionName, name, value)
+    if (html.rendered) {
+      jQuery.option(html, functionName, name, value)
+    } else {
+      values += name -> property
+    }
   }
 
   def option(key: String, value: Any) = {
@@ -39,5 +43,9 @@ trait jQueryComponent {
     } else {
       values += key -> (() => value)
     }
+  }
+
+  def call(function: String) = {
+    jQuery.call(html, s"$functionName('$function')")
   }
 }

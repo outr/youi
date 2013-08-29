@@ -43,25 +43,28 @@ object BusyDialog extends Module {
   def isDisabled = Webpage().store.getOrElse("BusyDialog.disabled", false)
 
   def load() = {
-    Webpage().body.contents += new tag.Div(id = "busyDialog") with Dialog {
-      dialog.autoOpen := false
-      dialog.closeOnEscape := false
-      dialog.modal := true
-      dialog.width := 320
-      dialog.height := 120
-      dialog.resizable := false
+    val div = new tag.Div(id = "busyDialog") {
       contents += new tag.Img(src = "/images/indeterminate_progress01.gif", width = "200", height = "40") {
         style.marginLeft := 40.px
       }
     }
+    val dialog = Dialog(div)
+    dialog.autoOpen := false
+    dialog.closeOnEscape := false
+    dialog.modal := true
+    dialog.width := 320
+    dialog.height := 120
+    dialog.resizable := false
+
+    Webpage().body.contents += div
   }
 
   def show(title: String) = if (!isDisabled) {
     Webpage().body.byId[tag.Div with Dialog]("busyDialog") match {
       case Some(window) => {
-        window.dialog.title := title
-        if (!window.dialog.isOpen) {
-          window.dialog.open()
+        Dialog(window).title := title
+        if (!Dialog(window).isOpen()) {
+          Dialog(window).open()
         }
       }
       case None => // Page probably not loaded yet
@@ -69,10 +72,10 @@ object BusyDialog extends Module {
   }
 
   def hide() = if (!isDisabled) {
-    Webpage().body.byId[tag.Div with Dialog]("busyDialog") match {
+    Webpage().body.byId[tag.Div]("busyDialog") match {
       case Some(window) => {
-        if (window.dialog.isOpen) {
-          window.dialog.close()
+        if (Dialog(window).isOpen()) {
+          Dialog(window).close()
         }
       }
       case None => // Page probably not loaded yet

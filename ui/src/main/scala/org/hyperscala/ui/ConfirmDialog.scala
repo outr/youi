@@ -2,7 +2,7 @@ package org.hyperscala.ui
 
 import org.hyperscala.html._
 import constraints.BodyChild
-import org.hyperscala.jquery.ui.{DialogButtons, Dialog}
+import org.hyperscala.jquery.ui.Dialog
 import org.hyperscala.web.site.Webpage
 import language.reflectiveCalls
 
@@ -11,7 +11,7 @@ import language.reflectiveCalls
  *
  * @author Matt Hicks <matt@outr.com>
  */
-abstract class ConfirmDialog extends tag.Div with Dialog {
+abstract class ConfirmDialog extends tag.Div {
   /**
    * Body of this dialog.
    */
@@ -26,7 +26,9 @@ abstract class ConfirmDialog extends tag.Div with Dialog {
   def confirm(result: Boolean): Unit
   def singleUse = true
 
-  dialog.buttons := DialogButtons(accept, cancel)
+  val dialog = Dialog(this)
+
+  dialog.buttons := List(accept, cancel)
 
   contents += body
 

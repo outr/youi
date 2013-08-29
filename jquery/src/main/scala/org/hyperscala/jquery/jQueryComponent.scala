@@ -5,7 +5,7 @@ import org.powerscala.property.Property
 import org.hyperscala.javascript.{JavaScriptContent, JavaScriptString}
 import org.powerscala.hierarchy.event.StandardHierarchyEventProcessor
 import org.powerscala.event.processor.UnitProcessor
-import org.powerscala.event.{ListenMode, Intercept}
+import org.powerscala.event.{Listenable, ListenMode, Intercept}
 
 /**
  * jQueryComponent trait works to provide easier access to making calls to jQuery for extensions like autocomplete and
@@ -22,22 +22,26 @@ trait jQueryComponent {
     jQuery.call(html, functionName, values.map(t => t._1 -> t._2()))
   }
 
-  protected def property[T](name: String, default: T, includeDefault: Boolean = false)(implicit manifest: Manifest[T]) = synchronized {
-    val p = Property[T](default = Option(default))
+  protected def property[T](name: String,
+                            default: T,
+                            includeDefault: Boolean = false,
+                            toJS: T => JavaScriptContent = (t: T) => JavaScriptString(JavaScriptContent.toJS(t)))
+                           (implicit manifest: Manifest[T]) = synchronized {
+    val p = new jQueryProperty[T](toJS, default = Option(default))(html, manifest)
     p.change.on {
-      case evt => propertyChanged(name, evt.newValue, p)
+      case evt => propertyChanged[T](name, p)
     }
     if (includeDefault) {
-      values += name -> p
+      values += name -> p.js
     }
     p
   }
 
-  protected def propertyChanged[T](name: String, value: T, property: Property[T]) = {
+  protected def propertyChanged[T](name: String, property: jQueryProperty[T]) = {
     if (html.rendered) {
-      jQuery.option(html, functionName, name, value)
+      jQuery.option(html, functionName, name, property.js())
     } else {
-      values += name -> property
+      values += name -> property.js
     }
   }
 
@@ -84,3 +88,8 @@ trait jQueryComponent {
 class jQueryEvent
 
 object jQueryEvent extends jQueryEvent
+
+class jQueryProperty[T](toJS: T => JavaScriptContent, default: Option[T])
+                       (implicit parent: Listenable, manifest: Manifest[T]) extends Property[T](default = default)(parent, manifest) {
+  val js = () => toJS(value)
+}

@@ -9,8 +9,6 @@ import org.hyperscala.html.tag
 import scala.language.implicitConversions
 import org.hyperscala.html.tag.Input
 import org.hyperscala.event.JavaScriptEvent
-import org.powerscala.property.Property
-import org.hyperscala.javascript.JavaScriptContent
 
 /**
  * Spectrum is a wrapper around the the jQuery Colorpicker found here: http://bgrins.github.io/spectrum/
@@ -184,8 +182,8 @@ class Spectrum private(val html: Input) extends jQueryComponent {
     case s => Color(s)
   }
 
-  override def propertyChanged[T](name: String, value: T, property: Property[T]) = name match {
-    case "color" => jQuery.call(html, s"spectrum('set', ${JavaScriptContent.toJS(value)})")
-    case _ => super.propertyChanged(name, value, property)
+  override def propertyChanged[T](name: String, property: jQueryProperty[T]) = name match {
+    case "color" => jQuery.call(html, s"spectrum('set', ${property.js()})")
+    case _ => super.propertyChanged(name, property)
   }
 }

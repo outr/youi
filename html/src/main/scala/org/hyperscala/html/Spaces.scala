@@ -8,6 +8,11 @@ trait Spaces[K, V] {
 
   def get(key: K) = spaces.get(key)
   def apply(key: K) = spaces(key)
+  def remove(key: K): Option[V] = synchronized {
+    val option = get(key)
+    spaces -= key
+    option
+  }
 
   def update(key: K, value: V) = synchronized {
     spaces += key -> value

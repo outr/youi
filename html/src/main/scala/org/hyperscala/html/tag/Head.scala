@@ -77,7 +77,7 @@ class Head extends Container[HeadChild] with HTMLChild with HTMLTag {
     byTag[StyleSpaces].headOption match {
       case Some(styleSpaces) => styleSpaces
       case None => {
-        val styleSpaces = new StyleSpaces
+        val styleSpaces = new StyleSpaces(this)
         contents += styleSpaces
         styleSpaces
       }
@@ -101,6 +101,11 @@ class Head extends Container[HeadChild] with HTMLChild with HTMLTag {
         styleSheet
       }
     }
+  }
+
+  def deleteSelector(selectors: Selector*) = synchronized {
+    val selectorString = Selector.toString(selectors.toList, "selectors", classOf[List[Selector]])
+    styleSpaces.remove(selectorString)
   }
 
   def injectScript(content: JavaScriptContent, temporal: Boolean = false) = {

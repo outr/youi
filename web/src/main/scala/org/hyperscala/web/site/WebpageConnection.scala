@@ -47,6 +47,9 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
       }
       case _ => // Ignore
     }
+    page.head.styleSpaces.removedEvent.on {
+      case evt => styleSheetRemoved(evt.styleSheet)
+    }
     page.listen[PropertyChangeEvent[_], Unit, Unit]("change", Descendants) {
       case evt if FormField.changingProperty == evt.property && FormField.changingValue == evt.newValue => {
         // Ignore a change initialized by this connector (avoid recursive changes)
@@ -94,6 +97,7 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
               case _ => send(JavaScriptMessage("$('#%s').val(content);".format(t.id()), property.attributeValue))
             }
             case input: tag.Input if property.name == "value" => send(JavaScriptMessage("$('#%s').val(content);".format(t.id()), property.attributeValue))
+            case input: tag.Input if property.name == "checked" => send(JavaScriptMessage(s"$$('#${t.identity}').prop('checked', ${property()});"))
             case option: tag.Option if property.name == "selected" => {
               if (option.selected()) {
                 val select = option.parent.asInstanceOf[tag.Select]
@@ -130,6 +134,11 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
       case _ => anyStyle.persistence.toString(value, cssName, value.getClass)
     }
     send(JavaScriptMessage(s"$$.stylesheet('$selector', '$cssName', content)", cssValue))
+  }
+
+  def styleSheetRemoved(styleSheet: StyleSheet) = {
+    val selector = styleSheet.selectorString
+    send(JavaScriptMessage(s"$$.stylesheet('$selector').css(null)"))
   }
 
   def childAdded(evt: ChildAddedEvent) = {

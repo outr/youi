@@ -47,8 +47,8 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
       }
       case _ => // Ignore
     }
-    page.head.styleSpaces.removedEvent.on {
-      case evt => styleSheetRemoved(evt.styleSheet)
+    page.head.styleSpaces.removed.on {
+      case evt => styleSheetRemoved(evt.value)
     }
     page.listen[PropertyChangeEvent[_], Unit, Unit]("change", Descendants) {
       case evt if FormField.changingProperty == evt.property && FormField.changingValue == evt.newValue => {

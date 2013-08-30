@@ -299,5 +299,7 @@ trait HTMLTag extends IdentifiableTag {
 }
 
 object HTMLTag {
-  def create(tagName: String) = HTMLTagType(tagName).create()
+  def create(tagName: String) = {
+    HTMLTagType.get(tagName).getOrElse(throw new UnsupportedOperationException(s"Unknown tag: $tagName")).create()
+  }
 }

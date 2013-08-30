@@ -141,7 +141,7 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
     send(JavaScriptMessage(s"$$.stylesheet('$selector').css(null)"))
   }
 
-  def childAdded(evt: ChildAddedEvent) = {
+  def childAdded(evt: ChildAddedEvent) = if (!WebpageConnection.ignoringStructureChanges) {
     val parent = evt.parent.asInstanceOf[IdentifiableTag with Container[IdentifiableTag]]
     evt.child match {
       case child: IdentifiableTag => {
@@ -170,7 +170,7 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
     }
   }
 
-  def childRemoved(evt: ChildRemovedEvent) = evt.child match {
+  def childRemoved(evt: ChildRemovedEvent) = if (!WebpageConnection.ignoringStructureChanges) evt.child match {
     case text: tag.Text => {
       val parent = evt.parent.asInstanceOf[HTMLTag with Container[HTMLTag]]
       val index = parent.contents.indexOf(text)
@@ -190,6 +190,24 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
     debug("Sending event: %s, message: %s".format(event, message))
     super.send(event, message)
   }
+}
+
+object WebpageConnection {
+  private val _ignoringStructureChanges = new ThreadLocal[Boolean] {
+    override def initialValue() = false
+  }
+  def ignoreStructureChanges[T](f: => T): T = {     // TODO: verify this will work with multiple connections to the same page
+    val set = _ignoringStructureChanges.get()
+    _ignoringStructureChanges.set(true)
+    try {
+      f
+    } finally {
+      if (!set) {
+        _ignoringStructureChanges.set(false)
+      }
+    }
+  }
+  def ignoringStructureChanges = _ignoringStructureChanges.get()
 }
 
 case class JavaScriptMessage(instruction: String, content: String = null)

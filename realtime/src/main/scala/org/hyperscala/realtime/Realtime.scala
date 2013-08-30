@@ -28,7 +28,7 @@ object Realtime extends Module {
 
   def version = Version(1)
 
-  override def dependencies = List(InterfaceWithDefault(jQuery, jQuery.Latest), jQueryStyleSheet, IdentifyTags)
+  override def dependencies = List(jQuery.LatestWithDefault, jQueryStyleSheet, IdentifyTags)
 
   def init() = {
     Website().register("/js/communicator.js", "communicator.js")

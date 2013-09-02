@@ -2,13 +2,12 @@ package org.hyperscala.css.extra
 
 import org.powerscala.property.{DerivedProperty, Property}
 import org.hyperscala.css.attributes._
-import org.hyperscala.css.StyleSheetBase
-import org.powerscala.event.Listenable
+import org.hyperscala.css.StyleSheet
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class BackgroundPositionHorizontal(ss: StyleSheetBase) extends Property[Horizontal]()(ss, implicitly[Manifest[Horizontal]]) with DerivedProperty[Horizontal, BackgroundPosition] {
+class BackgroundPositionHorizontal(ss: StyleSheet) extends Property[Horizontal]()(ss, implicitly[Manifest[Horizontal]]) with DerivedProperty[Horizontal, BackgroundPosition] {
   def other = ss.backgroundPosition
 
   def fromT(value: Horizontal) = {

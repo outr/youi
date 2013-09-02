@@ -4,7 +4,7 @@ import attributes._
 import org.hyperscala._
 import io.HTMLWriter
 import org.hyperscala.html.tag._
-import org.hyperscala.css.{StyleSheetBase, TagStyleSheet}
+import org.hyperscala.css.StyleSheet
 import scala.collection.{Map => ScalaMap}
 import org.powerscala.property.{ListProperty, Property}
 import org.hyperscala.event._
@@ -114,7 +114,7 @@ trait HTMLTag extends IdentifiableTag {
            lang: String = null,
            role: String = null,
            spellCheck: java.lang.Boolean = null,
-           style: StyleSheetBase = null,
+           style: StyleSheet = null,
            tabIndex: java.lang.Integer = null,
            titleText: String = null) = {
     up(this.name, name)
@@ -140,7 +140,7 @@ trait HTMLTag extends IdentifiableTag {
 
   private[html] var _styleDefined = false
   def isStyleDefined = _styleDefined
-  lazy val styleProperty = Property[StyleSheetBase](default = scala.Option(HTMLTag.createStyle(this)))
+  lazy val styleProperty = Property[StyleSheet](default = scala.Option(HTMLTag.createStyle(this)))
   def style = styleProperty()
 
   protected def generateChildFromTagName(name: String): XMLContent = {
@@ -207,7 +207,7 @@ trait HTMLTag extends IdentifiableTag {
   override protected def writeExtra(writer: HTMLWriter) = {
     super.writeExtra(writer)
 
-    if (isStyleDefined) {
+    if (isStyleDefined && style.selector == null) {
       writer.write(" style=\"")
       writer.write(style.toString)
       writer.write("\"")
@@ -322,7 +322,7 @@ object HTMLTag {
   // TODO: add support to switch to StyleSheet instead
   def createStyle(t: HTMLTag) = {
     t._styleDefined = true
-    new TagStyleSheet(t)
+    new StyleSheet(t, null)
   }
 
   def create(tagName: String) = {

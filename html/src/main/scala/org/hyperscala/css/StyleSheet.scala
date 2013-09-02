@@ -15,50 +15,12 @@ import org.hyperscala.html.tag.Head
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class StyleSheet(val hierarchicalParent: tag.Style,
-                 val selector: Selector) extends StyleSheetBase with ChildLike[Listenable] {
+class StyleSheet(val hierarchicalParent: Listenable,
+                 val selector: Selector) extends Logging with Listenable with AttributeContainer[StyleSheetAttribute[_]] with ChildLike[Listenable] {
   protected def fieldsMap = StyleSheet.fieldsMap
 
   def selectorString = selector.value
 
-  override def toString = {
-    val b = new StringBuilder
-    b.append("\n      ")
-    b.append(selectorString)
-    b.append(" {\n")
-    val css = attributes.values.collect {
-      case ssa if ssa.shouldRender => s"        ${ssa.style.cssName}: ${ssa.valueString}"
-    }.mkString(";\n")
-    b.append(css)
-    b.append(";\n      }\n    ")
-    b.toString()
-  }
-}
-
-object StyleSheet {
-  lazy val fieldsMap = classOf[StyleSheet].fields.filter(f => f.returnType.hasType(classOf[StyleSheetAttribute[_]])).map(f => f.name -> f).toMap
-
-  def styles2Selectors(head: Head, root: HTMLTag) = {
-    root.byTag[HTMLTag].foreach {
-      case e => if (e.isStyleDefined) {
-        val styleSheet = head.selector(Selector.id(e.identity))
-        styleSheet(e.style, append = true)
-        e.style.clearStyle()
-      }
-    }
-  }
-}
-
-// TODO: remove in favor of StyleSheet with property in HTMLTag
-class TagStyleSheet(val tag: HTMLTag) extends StyleSheetBase {
-  protected def fieldsMap = TagStyleSheet.fieldsMap
-}
-
-object TagStyleSheet {
-  lazy val fieldsMap = classOf[TagStyleSheet].fields.filter(f => f.returnType.hasType(classOf[StyleSheetAttribute[_]])).map(f => f.name -> f).toMap
-}
-
-trait StyleSheetBase extends Logging with Listenable with AttributeContainer[StyleSheetAttribute[_]] {
   implicit val thisStyleSheet = this
 
   lazy val alignmentAdjust = new StyleSheetAttribute(Style.alignmentAdjust)
@@ -339,7 +301,7 @@ trait StyleSheetBase extends Logging with Listenable with AttributeContainer[Sty
     }
   }
 
-  def apply(ss: StyleSheetBase, append: Boolean = true) = {
+  def apply(ss: StyleSheet, append: Boolean = true) = {
     if (!append) {      // Clear unspecified attributes
       attributes.foreach {
         case (key, ssa) => if (!ss.attributes.contains(key)) {
@@ -358,9 +320,22 @@ trait StyleSheetBase extends Logging with Listenable with AttributeContainer[Sty
     }
   }
 
-  override def toString = attributes.values.collect {
-    case ssa if ssa.shouldRender => s"${ssa.style.cssName}: ${ssa.valueString}"
-  }.mkString("; ")
+  override def toString = if (selector != null) {
+    val b = new StringBuilder
+    b.append("\n      ")
+    b.append(selectorString)
+    b.append(" {\n")
+    val css = attributes.values.collect {
+      case ssa if ssa.shouldRender => s"        ${ssa.style.cssName}: ${ssa.valueString}"
+    }.mkString(";\n")
+    b.append(css)
+    b.append(";\n      }\n    ")
+    b.toString()
+  } else {
+    attributes.values.collect {
+      case ssa if ssa.shouldRender => s"${ssa.style.cssName}: ${ssa.valueString}"
+    }.mkString("; ")
+  }
 
   def update[T](style: Style[T], value: T) = {
     val a = getAttribute(style.name) match {
@@ -372,6 +347,18 @@ trait StyleSheetBase extends Logging with Listenable with AttributeContainer[Sty
     }
     a.value = value
   }
+}
 
-  protected def fieldsMap: Map[String, EnhancedField]
+object StyleSheet {
+  lazy val fieldsMap = classOf[StyleSheet].fields.filter(f => f.returnType.hasType(classOf[StyleSheetAttribute[_]])).map(f => f.name -> f).toMap
+
+  def styles2Selectors(head: Head, root: HTMLTag) = {
+    root.byTag[HTMLTag].foreach {
+      case e => if (e.isStyleDefined) {
+        val styleSheet = head.selector(Selector.id(e.identity))
+        styleSheet(e.style, append = true)
+        e.style.clearStyle()
+      }
+    }
+  }
 }

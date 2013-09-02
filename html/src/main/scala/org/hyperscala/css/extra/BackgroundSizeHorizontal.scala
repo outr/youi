@@ -2,13 +2,13 @@ package org.hyperscala.css.extra
 
 import org.powerscala.property.{DerivedProperty, Property}
 import org.hyperscala.css.attributes._
-import org.hyperscala.css.StyleSheetBase
+import org.hyperscala.css.StyleSheet
 import org.powerscala.event.Listenable
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class BackgroundSizeHorizontal(ss: StyleSheetBase) extends Property[Length]()(ss, implicitly[Manifest[Length]]) with DerivedProperty[Length, BackgroundSize] {
+class BackgroundSizeHorizontal(ss: StyleSheet) extends Property[Length]()(ss, implicitly[Manifest[Length]]) with DerivedProperty[Length, BackgroundSize] {
   implicit def styleSheetListenable: Listenable = ss
 
   def other = ss.backgroundSize

@@ -9,11 +9,11 @@ import org.hyperscala.io.HTMLWriter
  */
 class StyleSheetAttribute[T](val style: Style[T],
                              inclusion: InclusionMode = InclusionMode.NotEmpty)
-                            (implicit val ss: StyleSheetBase, manifest: Manifest[T])
+                            (implicit val ss: StyleSheet, manifest: Manifest[T])
                             extends PropertyAttribute[T](style.cssName,
                                                          null.asInstanceOf[T],
                                                          inclusion)(style.persistence,
-                                                                    StyleSheetAttribute.markup(ss),
+                                                                    ss,
                                                                     manifest) {
   private var _importantInitialized = false
   lazy val important = new Property[Boolean](default = Some(true)) {
@@ -33,12 +33,5 @@ class StyleSheetAttribute[T](val style: Style[T],
     } else {
       vs
     }
-  }
-}
-
-object StyleSheetAttribute {
-  def markup(ss: StyleSheetBase) = ss match {
-    case tss: TagStyleSheet => tss.tag
-    case _ => ss
   }
 }

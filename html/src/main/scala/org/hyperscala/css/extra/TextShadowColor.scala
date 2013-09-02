@@ -2,14 +2,14 @@ package org.hyperscala.css.extra
 
 import org.powerscala.property.{DerivedProperty, Property}
 import org.hyperscala.css.attributes._
-import org.hyperscala.css.StyleSheetBase
+import org.hyperscala.css.StyleSheet
 import org.powerscala.event.Listenable
 import org.powerscala.Color
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class TextShadowColor(ss: StyleSheetBase) extends Property[Color]()(ss, implicitly[Manifest[Color]]) with DerivedProperty[Color, TextShadow] {
+class TextShadowColor(ss: StyleSheet) extends Property[Color]()(ss, implicitly[Manifest[Color]]) with DerivedProperty[Color, TextShadow] {
   implicit def styleSheetListenable: Listenable = ss
 
   def other = ss.textShadow

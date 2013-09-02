@@ -3,11 +3,10 @@ package org.hyperscala.web.site
 import com.outr.webcommunicator.Communicator
 import java.util.UUID
 import org.powerscala.log.Logging
-import org.hyperscala.html.{tag, HTMLTag}
+import org.hyperscala.html.{StyleSpaces, tag, HTMLTag, FormField}
 
 import org.powerscala.property.event.PropertyChangeEvent
 import org.hyperscala._
-import html.FormField
 import org.hyperscala.css.{StyleSheet, StyleSheetAttribute, Style}
 import org.hyperscala.javascript.JavaScriptContent
 
@@ -57,13 +56,13 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
       }
       case evt => evt.property match {
         case property: PropertyAttribute[_] => ChildLike.parentOf(property) match {
-          case tag: IdentifiableTag => property match {
-            case ssa: StyleSheetAttribute[_] => styleChanged(s"#${tag.identity}", ssa.style, evt.newValue.asInstanceOf[AnyRef])
-            case _ => propertyChanged(tag, property, evt.oldValue, evt.newValue)
-          }
+          case tag: IdentifiableTag => propertyChanged(tag, property, evt.oldValue, evt.newValue)
           case styleSheet: StyleSheet => {
             val ssa = property.asInstanceOf[StyleSheetAttribute[_]]
-            styleSheetChanged(styleSheet.selectorString, ssa.style, evt.newValue.asInstanceOf[AnyRef])
+            styleSheet.hierarchicalParent match {
+              case styleSpaces: StyleSpaces => styleSheetChanged(styleSheet.selectorString, ssa.style, evt.newValue.asInstanceOf[AnyRef])
+              case tag: IdentifiableTag => styleChanged(s"#${tag.identity}", ssa.style, evt.newValue.asInstanceOf[AnyRef])
+            }
           }
         }
         case _ => // Ignore others

@@ -51,8 +51,6 @@ object StyleSheet {
 
 // TODO: remove in favor of StyleSheet with property in HTMLTag
 class TagStyleSheet(val tag: HTMLTag) extends StyleSheetBase {
-  tag._styleDefined = true
-
   protected def fieldsMap = TagStyleSheet.fieldsMap
 }
 

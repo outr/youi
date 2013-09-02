@@ -134,13 +134,14 @@ trait HTMLTag extends IdentifiableTag {
     up(this.titleText, titleText)
 
     if (style != null) {
-      this.style(style)
+      styleProperty := style
     }
   }
 
-  private[hyperscala] var _styleDefined = false
-  lazy val style = new TagStyleSheet(this)
+  private[html] var _styleDefined = false
   def isStyleDefined = _styleDefined
+  lazy val styleProperty = Property[StyleSheetBase](default = scala.Option(HTMLTag.createStyle(this)))
+  def style = styleProperty()
 
   protected def generateChildFromTagName(name: String): XMLContent = {
     HTMLTag.create(name)
@@ -318,6 +319,12 @@ trait HTMLTag extends IdentifiableTag {
 }
 
 object HTMLTag {
+  // TODO: add support to switch to StyleSheet instead
+  def createStyle(t: HTMLTag) = {
+    t._styleDefined = true
+    new TagStyleSheet(t)
+  }
+
   def create(tagName: String) = {
     HTMLTagType.get(tagName).getOrElse(throw new UnsupportedOperationException(s"Unknown tag: $tagName")).create()
   }

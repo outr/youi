@@ -10,7 +10,7 @@ import org.powerscala.property.{ListProperty, Property}
 import org.hyperscala.event._
 import org.hyperscala.event.processor._
 import org.jdom2.Attribute
-import org.hyperscala.selector.Selector
+import org.hyperscala.selector.{TagIdSelector, Selector}
 
 /**
  * NOTE: This file has been generated. Do not modify directly!
@@ -140,7 +140,7 @@ trait HTMLTag extends IdentifiableTag {
 
   private[html] var _styleDefined = false
   def isStyleDefined = _styleDefined
-  lazy val styleProperty = Property[StyleSheet](default = scala.Option(HTMLTag.createStyle(this)))
+  lazy val styleProperty = Property[StyleSheet](default = scala.Option(HTMLTag.styleCreator()(this)))
   def style = styleProperty()
 
   protected def generateChildFromTagName(name: String): XMLContent = {
@@ -319,11 +319,26 @@ trait HTMLTag extends IdentifiableTag {
 }
 
 object HTMLTag {
-  // TODO: add support to switch to StyleSheet instead
-  def createStyle(t: HTMLTag) = {
+  /**
+   * Creates inline CSS in the tag.
+   */
+  val InlineStyleCreator = (t: HTMLTag) => {
     t._styleDefined = true
     new StyleSheet(t, null)
   }
+  /**
+   * Creates a selector in Head that contains the style data.
+   */
+  val SelectorStyleCreator = (t: HTMLTag) => {
+    t.page.head.selector(TagIdSelector(t))
+  }
+
+  /**
+   * The style creator function to use when creating default styles for HTMLTags.
+   *
+   * Defaults to InlineStyleCreator.
+   */
+  val styleCreator = Property[HTMLTag => StyleSheet](default = Option(InlineStyleCreator))
 
   def create(tagName: String) = {
     HTMLTagType.get(tagName).getOrElse(throw new UnsupportedOperationException(s"Unknown tag: $tagName")).create()

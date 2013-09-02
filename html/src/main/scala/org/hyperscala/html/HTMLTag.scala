@@ -338,7 +338,7 @@ object HTMLTag {
    *
    * Defaults to InlineStyleCreator.
    */
-  val styleCreator = Property[HTMLTag => StyleSheet](default = Option(InlineStyleCreator))
+  val styleCreator = Property[HTMLTag => StyleSheet](default = scala.Option(InlineStyleCreator))
 
   def create(tagName: String) = {
     HTMLTagType.get(tagName).getOrElse(throw new UnsupportedOperationException(s"Unknown tag: $tagName")).create()

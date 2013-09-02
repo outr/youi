@@ -3,6 +3,7 @@ package org.hyperscala.selector
 import org.hyperscala.persistence.ValuePersistence
 import org.hyperscala.html.HTMLTag
 import org.hyperscala.html.HTMLTagType
+import org.hyperscala.IdentifiableTag
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -132,7 +133,7 @@ case class IdSelector(id: String) extends Selector {
   def matches(t: HTMLTag) = t.id() == id
 }
 
-case class TagIdSelector(tag: HTMLTag) extends Selector {
+case class TagIdSelector(tag: IdentifiableTag) extends Selector {
   def value = s"#${tag.identity}"
 
   def matches(t: HTMLTag) = tag.identity == t.id()

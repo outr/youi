@@ -8,9 +8,8 @@ import org.hyperscala.io.HTMLWriter
  * @author Matt Hicks <matt@outr.com>
  */
 class StyleSheetAttribute[T](val style: Style[T],
-                                       inclusion: InclusionMode = InclusionMode.NotEmpty)
-                                      (implicit val ss: StyleSheetBase,
-                                                manifest: Manifest[T])
+                             inclusion: InclusionMode = InclusionMode.NotEmpty)
+                            (implicit val ss: StyleSheetBase, manifest: Manifest[T])
                             extends PropertyAttribute[T](style.cssName,
                                                          null.asInstanceOf[T],
                                                          inclusion)(style.persistence,

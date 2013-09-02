@@ -132,6 +132,12 @@ case class IdSelector(id: String) extends Selector {
   def matches(t: HTMLTag) = t.id() == id
 }
 
+case class TagIdSelector(tag: HTMLTag) extends Selector {
+  def value = s"#${tag.identity}"
+
+  def matches(t: HTMLTag) = tag.identity == t.id()
+}
+
 case class MultipleSelector(selectors: List[Selector]) extends Selector {
   def value = selectors.map(s => s.value).mkString(", ")
 

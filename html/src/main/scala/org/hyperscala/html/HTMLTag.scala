@@ -167,14 +167,13 @@ trait HTMLTag extends IdentifiableTag {
    * Returns all defined styles for this tag.
    */
   def allStyles = {
-//    page.head.styleSpaces.map.collect {
-//      case (selector, styleSheet) if styleSheet.sele
-//    }
-    val classStyles = clazz().map(name => page.head.selector(Selector.clazz(name)))
+    val selectorStyles = page.head.styleSpaces.values.collect {
+      case styleSheet if styleSheet.selector.matches(this) => styleSheet
+    }.toList
     if (isStyleDefined) {
-      style :: classStyles
+      style :: selectorStyles
     } else {
-      classStyles
+      selectorStyles
     }
   }
 

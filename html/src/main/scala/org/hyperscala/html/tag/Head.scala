@@ -85,26 +85,26 @@ class Head extends Container[HeadChild] with HTMLChild with HTMLTag {
   }
 
   /**
-   * Gets or creates a StyleSheet for the selectors provided. If a StyleSheet already exists for the supplied selector
+   * Gets or creates a StyleSheet for the selector provided. If a StyleSheet already exists for the supplied selector
    * it will be returned instead of creating a new StyleSheet.
    *
-   * @param selectors for the requested StyleSheet
+   * @param selector for the requested StyleSheet
    * @return StyleSheet
    */
-  def selector(selectors: Selector*) = synchronized {
-    val selectorString = Selector.toString(selectors.toList, "selectors", classOf[List[Selector]])
+  def selector(selector: Selector) = synchronized {
+    val selectorString = selector.value
     styleSpaces.get(selectorString) match {
       case Some(styleSheet) => styleSheet
       case None => {
-        val styleSheet = new StyleSheet(styleSpaces, selectors.toList)
+        val styleSheet = new StyleSheet(styleSpaces, selector)
         styleSpaces(selectorString) = styleSheet
         styleSheet
       }
     }
   }
 
-  def deleteSelector(selectors: Selector*) = synchronized {
-    val selectorString = Selector.toString(selectors.toList, "selectors", classOf[List[Selector]])
+  def deleteSelector(selector: Selector) = synchronized {
+    val selectorString = selector.value
     styleSpaces.remove(selectorString)
   }
 

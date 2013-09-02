@@ -16,10 +16,10 @@ import org.hyperscala.html.tag.Head
  * @author Matt Hicks <matt@outr.com>
  */
 class StyleSheet(val hierarchicalParent: tag.Style,
-                 val selectors: List[Selector]) extends StyleSheetBase with ChildLike[Listenable] {
+                 val selector: Selector) extends StyleSheetBase with ChildLike[Listenable] {
   protected def fieldsMap = StyleSheet.fieldsMap
 
-  def selectorString = Selector.toString(selectors, "selectors", classOf[List[Selector]])
+  def selectorString = selector.value
 
   override def toString = {
     val b = new StringBuilder

@@ -50,7 +50,7 @@ class StyleSheetExample extends Webpage {
   body.contents += b
   body.contents += new tag.Button(id = "removeButton", content = "Remove Hover Style") {
     clickEvent.on {
-      case evt => head.deleteSelector(h1HoverStyle.selectors: _*)
+      case evt => head.deleteSelector(h1HoverStyle.selector)
     }
   }
 

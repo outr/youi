@@ -158,6 +158,26 @@ trait HTMLTag extends IdentifiableTag {
     }
   }
 
+  /**
+   * Returns a reference to the HTMLPage associated with this element.
+   */
+  def page = HTMLPage()
+
+  /**
+   * Returns all defined styles for this tag.
+   */
+  def allStyles = {
+//    page.head.styleSpaces.map.collect {
+//      case (selector, styleSheet) if styleSheet.sele
+//    }
+    val classStyles = clazz().map(name => page.head.selector(Selector.clazz(name)))
+    if (isStyleDefined) {
+      style :: classStyles
+    } else {
+      classStyles
+    }
+  }
+
   def byName[T <: HTMLTag](name: String)(implicit manifest: Manifest[T]) = {
     byTag[T].collect {
       case t if t.name() == name => t

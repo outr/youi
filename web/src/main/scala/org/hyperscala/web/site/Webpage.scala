@@ -1,6 +1,6 @@
 package org.hyperscala.web.site
 
-import org.hyperscala.{Markup, Tag, Page}
+import org.hyperscala.{Markup, Tag}
 import com.outr.webcommunicator.netty.handler.RequestHandler
 import com.outr.webcommunicator.netty.{ChannelStringWriter, NettyWebapp}
 import org.jboss.netty.channel.{ChannelFutureListener, MessageEvent, ChannelHandlerContext}
@@ -25,7 +25,7 @@ import org.powerscala.hierarchy.event.{StandardHierarchyEventProcessor, ChildRem
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class Webpage extends Page with ModularPage with RequestHandler with Temporal with WorkQueue with Contextual with ParentLike[tag.HTML] {
+class Webpage extends HTMLPage with ModularPage with RequestHandler with Temporal with WorkQueue with Contextual with ParentLike[tag.HTML] {
   WebContext.webpage := this
 
   private val _rendered = new AtomicBoolean(false)

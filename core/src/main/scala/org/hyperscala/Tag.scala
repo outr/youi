@@ -8,7 +8,8 @@ import org.powerscala.hierarchy.event.StandardHierarchyEventProcessor
 import org.jdom2.Attribute
 
 import org.powerscala.reflect._
-import org.powerscala.property.PropertyLike
+import org.powerscala.property.{Property, PropertyLike}
+import org.powerscala.event.Listenable
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -114,6 +115,30 @@ trait Tag extends Markup with AttributeContainer[PropertyAttribute[_]] {
     }
   }
 
+  /**
+   * Creates a type-safe wrapper around a data attribute by name.
+   *
+   * @param name the name of the data attribute (data-<name>)
+   * @param initial the initial value to be applied to the data wrapper. This will be applied to the underlying attribute.
+   * @param converter the converter to convert T to String
+   * @param parent the parent Listenable
+   * @param manifest Manifest[T]
+   * @tparam T the type of the data for the property wrapper
+   * @return created Property wrapper
+   */
+  def dataWrapper[T](name: String, initial: T)(converter: T => String)(implicit parent: Listenable = null, manifest: Manifest[T]) = {
+    val attribute = dataAttribute(name)
+    attribute := converter(initial)
+    val property = Property[T](default = Option(initial))
+    property.change.on {
+      case evt => attribute := converter(evt.newValue)
+    }
+    property
+  }
+
+  /**
+   * Gets or creates a data attribute (data-<name>) and returns the property attribute.
+   */
   def dataAttribute(name: String) = getAttribute(s"data-$name") match {
     case Some(propertyAttribute) => propertyAttribute.asInstanceOf[PropertyAttribute[String]]
     case None => createAttribute[String](s"data-$name", null)

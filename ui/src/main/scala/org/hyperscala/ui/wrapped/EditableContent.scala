@@ -70,6 +70,15 @@ class EditableContent private(t: HTMLTag with Container[BodyChild]) {
   }
 
   /**
+   * Determines whether selection events that occur on the client should propagate back to the server immediately.
+   *
+   * Defaults to false.
+   */
+  val realtimeSelection = t.dataWrapper[Boolean]("realtime-selection", false) {
+    case b => b.toString
+  }
+
+  /**
    * Changes the document background color. In styleWithCss mode, it affects the background color of the containing
    * block instead. This requires a color value string to be passed in as a value argument.
    * (Internet Explorer uses this to set text background color.)

@@ -78,40 +78,39 @@ trait Tag extends Markup with AttributeContainer[PropertyAttribute[_]] {
 
   private lazy val attributeFields = Tag.attributeFields(this)
 
+  override def getAttribute(name: String) = {
+    val option = super.getAttribute(name)
+    if (option.isDefined) {
+      option
+    } else if (name.startsWith("data-")) {
+      Some(createAttribute[String](name, null))
+    } else {
+      val attributeName = name match {
+        case "type" if List("link", "script").contains(xmlLabel) => "mimeType"
+        case "type" => s"${xmlLabel}Type"
+        case "class" => "clazz"
+        case "for" => "forElement"
+        case "title" => "titleText"
+        case s if s.startsWith("on") => s.substring(2) + "Event"
+        case s => s
+      }
+      attributeFields.get(attributeName.toLowerCase) match {
+        case Some(field) => {
+          field[PropertyLike[_]](this, computeIfLazy = true)    // Make sure it's loaded if it's lazy
+          super.getAttribute(name)
+        }
+        case None => None
+      }
+    }
+  }
+
   protected def attributeFromXML(a: Attribute): Boolean = {
     getAttribute(a.getName) match {
       case Some(propertyAttribute) => {   // Found the attribute property
         propertyAttribute.read(this, a.getValue)
         true
       }
-      case None => {                      // Attribute not found
-        val attributeName = a.getName match {
-          case "type" if List("link", "script").contains(xmlLabel) => "mimeType"
-          case "type" => s"${xmlLabel}Type"
-          case "class" => "clazz"
-          case "for" => "forElement"
-          case "title" => "titleText"
-          case s if s.startsWith("on") => s.substring(2) + "Event"
-          case s => s
-        }
-        attributeFields.get(attributeName.toLowerCase) match {
-          case Some(field) => {
-            field[PropertyLike[_]](this, computeIfLazy = true)    // Make sure it's loaded if it's lazy
-            getAttribute(a.getName) match {
-              case Some(propertyAttribute) => {   // Found the attribute property
-                propertyAttribute.read(this, a.getValue)
-                true
-              }
-              case None => false
-            }
-          }
-          case None if attributeName.startsWith("data-") => {
-            createAttribute[String](attributeName, a.getValue)
-            true
-          }
-          case None => false
-        }
-      }
+      case None => false
     }
   }
 

@@ -59,4 +59,5 @@ package object persistence {
   implicit val textTransformPersistence = TextTransform
   implicit val visibilityPersistence = Visibility
   implicit val whiteSpacePersistence = WhiteSpace
+  implicit val zIndexPersistence = ZIndex
 }

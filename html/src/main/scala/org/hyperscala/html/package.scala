@@ -17,6 +17,7 @@ package object html {
   implicit def int2FontSizeInt(i: Int) = FontSizeInt(i)
   implicit def double2FontSizeInt(d: Double) = FontSizeInt(round(d).toInt)
   implicit def l2Fs(l: Length) = FontSize(l.value)
+  implicit def int2ZIndex(i: Int) = ZIndex.Numeric(i)
 
   implicit def it2Rit[T <: IdentifiableTag](t: T) = ReIdentifiable[T](t)
 }

@@ -256,7 +256,7 @@ object Style extends Enumerated[Style[_]] {
   val wordBreak = new Style[String]("word-break")
   val wordSpacing = new Style[String]("word-spacing")
   val wordWrap = new Style[String]("word-wrap")
-  val zIndex = new Style[String]("z-index")
+  val zIndex = new Style[ZIndex]("z-index")
 
   def byCSSName(name: String) = values.find(s => s.cssName == name)
 }

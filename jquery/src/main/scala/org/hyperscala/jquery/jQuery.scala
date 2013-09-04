@@ -4,12 +4,11 @@ import org.hyperscala.module._
 import org.hyperscala.html._
 import org.hyperscala.web.site.Webpage
 import org.hyperscala.javascript.{JavaScriptContent, JavaScriptString}
-import org.hyperscala.jquery.dsl.jQueryDSL
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-object jQuery extends Interface with jQueryDSL {
+object jQuery extends Interface {
   def Latest = jQuery191
   val LatestWithDefault = InterfaceWithDefault(jQuery, Latest)
 

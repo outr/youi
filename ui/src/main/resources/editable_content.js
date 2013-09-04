@@ -54,7 +54,7 @@ function validateEditableContent() {
     var current = editableContent.html();
     if (editableContentStored != current) {
         communicator.send('htmlChanged', editableContent.attr('id'), {
-            html: updated
+            html: current
         });
         editableContentStored = current;
     }
@@ -118,14 +118,18 @@ function getLinked(element) {
 }
 
 function actualIndex(element, offset) {
-    var previous = element.previousSibling;
-    if (previous != null) {
-        if (previous.textContent != null) {
-            offset += previous.textContent.length;
+    if (element != null) {
+        var previous = element.previousSibling;
+        if (previous != null) {
+            if (previous.textContent != null) {
+                offset += previous.textContent.length;
+            }
+            return actualIndex(previous, offset);
+        } else if (element.parentNode != editableContent.get(0)) {
+            return actualIndex(element.parentNode, offset);
+        } else {
+            return offset;
         }
-        return actualIndex(previous, offset);
-    } else if (element.parentNode != editableContent.get(0)) {
-        return actualIndex(element.parentNode, offset);
     } else {
         return offset;
     }

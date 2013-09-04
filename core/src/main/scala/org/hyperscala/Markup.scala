@@ -93,7 +93,7 @@ trait Markup extends XMLContent with Listenable with Logging {
   protected def writeExtra(writer: HTMLWriter): Unit = {}
 
   @tailrec
-  private def writeChildren(writer: HTMLWriter, children: Seq[XMLContent]): Unit = {
+  protected final def writeChildren(writer: HTMLWriter, children: Seq[XMLContent]): Unit = {
     if (children.nonEmpty) {
       writeChild(writer, children.head)
       writeChildren(writer, children.tail)

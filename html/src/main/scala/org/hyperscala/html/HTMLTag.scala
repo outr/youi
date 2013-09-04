@@ -204,6 +204,15 @@ trait HTMLTag extends IdentifiableTag {
     b.toString()
   }
 
+  def innerHTML = {
+    val b = new StringBuilder
+    val writer: String => Unit = (s: String) => b.append(s)
+    val htmlWriter = HTMLWriter(writer)
+    val children = xmlChildren
+    writeChildren(htmlWriter, children)
+    b.toString()
+  }
+
   override protected def writeExtra(writer: HTMLWriter) = {
     super.writeExtra(writer)
 

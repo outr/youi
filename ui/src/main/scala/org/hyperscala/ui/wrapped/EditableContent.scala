@@ -1,6 +1,6 @@
 package org.hyperscala.ui.wrapped
 
-import org.powerscala.{Color, Version, StorageComponent}
+import org.powerscala.{Storage, Color, Version, StorageComponent}
 import org.hyperscala.html.{tag, HTMLTag}
 import org.hyperscala.web.site.{WebpageConnection, Website, Webpage}
 import org.hyperscala.realtime.Realtime
@@ -46,6 +46,9 @@ object EditableContent extends Module with StorageComponent[EditableContent, HTM
 
 class EditableContent private(t: HTMLTag with Container[BodyChild]) {
   val contentChanged = new UnitProcessor[ContentChanged]("contentChanged")(t, implicitly[Manifest[ContentChanged]])
+  val selectionChanged = new UnitProcessor[SelectionChanged]("selectionChanged")(t, implicitly[Manifest[SelectionChanged]])
+
+  private val selection = new Storage[Any] {}
 
   init()
 
@@ -65,6 +68,18 @@ class EditableContent private(t: HTMLTag with Container[BodyChild]) {
         contentChanged.fire(ContentChanged(xml, htmlString))
         Intercept.Stop
       }
+      case evt if evt.event == "selectionChanged" => {
+        evt.message.map.foreach {   // Update all changed values
+          case (key, value) => selection(key) = value
+        }
+        selectionChanged.fire(SelectionChanged(
+          selectedText.getOrElse(null),
+          selectedHTML.getOrElse(null),
+          selectedStartOffset.getOrElse(-1),
+          selectedEndOffset.getOrElse(-1)
+        ))
+        Intercept.Stop
+      }
       case _ => Intercept.Continue
     }
   }
@@ -79,6 +94,36 @@ class EditableContent private(t: HTMLTag with Container[BodyChild]) {
   }
 
   /**
+   * Determines whether content changes that occur on the client should propagate back to the server immediately.
+   * If this is set to false, changes propagate back upon blur.
+   *
+   * Defaults to false.
+   */
+  val realtimeContent = t.dataWrapper[Boolean]("realtime-content", false) {
+    case b => b.toString
+  }
+
+  /**
+   * The currently selected text without formatting. This only works if realtimeSelection is set to true.
+   */
+  def selectedText = selection.get[String]("text")
+
+  /**
+   * The current selected HTML. This only works if realtimeSelection is set to true.
+   */
+  def selectedHTML = selection.get[String]("html")
+
+  /**
+   * The current selected start offset. This only works if realtimeSelection is set to true.
+   */
+  def selectedStartOffset = selection.get[Double]("startOffset").map(d => d.toInt)
+
+  /**
+   * The current selected end offset. This only works if realtimeSelection is set to true.
+   */
+  def selectedEndOffset = selection.get[Double]("endOffset").map(d => d.toInt)
+
+  /**
    * Changes the document background color. In styleWithCss mode, it affects the background color of the containing
    * block instead. This requires a color value string to be passed in as a value argument.
    * (Internet Explorer uses this to set text background color.)
@@ -88,10 +133,20 @@ class EditableContent private(t: HTMLTag with Container[BodyChild]) {
   def backColor(color: Color) = execCommand("backColor", color)
 
   /**
+   * The current selected backColor. This only works if realtimeSelection is set to true.
+   */
+  def backColor = selection.get[String]("backColor").map(s => Color(s))
+
+  /**
    * Toggles bold on/off for the selection or at the insertion point. (Internet Explorer uses the STRONG tag instead
    * of B.)
    */
   def bold() = execCommand("bold")
+
+  /**
+   * The current selected bold state. This only works if realtimeSelection is set to true.
+   */
+  def isBold = selection.get[Boolean]("bold")
 
   /**
    * Makes the content document either read-only or editable. This requires a boolean true/false to be passed in as a
@@ -114,6 +169,11 @@ class EditableContent private(t: HTMLTag with Container[BodyChild]) {
    * @param link to create
    */
   def createLink(link: String) = execCommand("createLink", link)
+
+  /**
+   * The current selected link value. This only works if realtimeSelection is set to true.
+   */
+  def link = selection.get[String]("createLink")
 
   /**
    * Cuts the current selection and copies it to the clipboard. Clipboard capability must be enabled in the user.js
@@ -152,6 +212,11 @@ class EditableContent private(t: HTMLTag with Container[BodyChild]) {
   def fontName(name: String) = execCommand("fontName", name)
 
   /**
+   * The current selected font name. This only works if realtimeSelection is set to true.
+   */
+  def fontName = selection.get[String]("fontName")
+
+  /**
    * Changes the font size for the selection or at the insertion point. This requires an HTML font size (1-7) to be
    * passed in as a value argument.
    *
@@ -160,12 +225,22 @@ class EditableContent private(t: HTMLTag with Container[BodyChild]) {
   def fontSize(size: Int) = execCommand("fontSize", size)
 
   /**
+   * The current selected font size. This only works if realtimeSelection is set to true.
+   */
+  def fontSize = selection.get[Int]("fontSize")
+
+  /**
    * Changes a font color for the selection or at the insertion point. This requires a color value string to be passed
    * in as a value argument.
    *
    * @param color to set the foreground to
    */
   def foreColor(color: Color) = execCommand("foreColor", color)
+
+  /**
+   * The current selected foreground color. This only works if realtimeSelection is set to true.
+   */
+  def foreColor = selection.get[String]("foreColor").map(s => Color(s))
 
   /**
    * Adds an HTML block-style tag around the line containing the current selection, replacing the block element
@@ -199,6 +274,11 @@ class EditableContent private(t: HTMLTag with Container[BodyChild]) {
    * @param color to highlight the background upon selection
    */
   def hiliteColor(color: Color) = execCommand("hiliteColor", color)
+
+  /**
+   * The current selected selection background color. This only works if realtimeSelection is set to true.
+   */
+  def hiliteColor = selection.get[String]("hiliteColor").map(s => Color(s))
 
   /**
    * Adds a BIG tag around the selection or at the insertion point. (Not supported by Internet Explorer.)
@@ -269,9 +349,19 @@ class EditableContent private(t: HTMLTag with Container[BodyChild]) {
   def italic() = execCommand("italic")
 
   /**
+   * The current selected italic state. This only works if realtimeSelection is set to true.
+   */
+  def isItalic = selection.get[Boolean]("italic")
+
+  /**
    * Centers the selection or insertion point.
    */
   def justifyCenter() = execCommand("justifyCenter")
+
+  /**
+   * The current selected justify center state. This only works if realtimeSelection is set to true.
+   */
+  def isJustifyCenter = selection.get[Boolean]("justifyCenter")
 
   /**
    * Justifies the selection or insertion point.
@@ -279,14 +369,29 @@ class EditableContent private(t: HTMLTag with Container[BodyChild]) {
   def justifyFull() = execCommand("justifyFull")
 
   /**
+   * The current selected justify full state. This only works if realtimeSelection is set to true.
+   */
+  def isJustifyFull = selection.get[Boolean]("justifyFull")
+
+  /**
    * Justifies the selection or insertion point to the left.
    */
   def justifyLeft() = execCommand("justifyLeft")
 
   /**
+   * The current selected justify left state. This only works if realtimeSelection is set to true.
+   */
+  def isJustifyLeft = selection.get[Boolean]("justifyLeft")
+
+  /**
    * Right-justifies the selection or the insertion point.
    */
   def justifyRight() = execCommand("justifyRight")
+
+  /**
+   * The current selected justify right state. This only works if realtimeSelection is set to true.
+   */
+  def isJustifyRight = selection.get[Boolean]("justifyRight")
 
   /**
    * Outdents the line containing the selection or insertion point.
@@ -320,9 +425,19 @@ class EditableContent private(t: HTMLTag with Container[BodyChild]) {
   def strikeThrough() = execCommand("strikeThrough")
 
   /**
+   * The current selected strike-through state. This only works if realtimeSelection is set to true.
+   */
+  def isStrikeThrough = selection.get[Boolean]("strikeThrough")
+
+  /**
    * Toggles subscript on/off for the selection or at the insertion point.
    */
   def subscript() = execCommand("subscript")
+
+  /**
+   * The current selected subscript state. This only works if realtimeSelection is set to true.
+   */
+  def isSubscript = selection.get[Boolean]("subscript")
 
   /**
    * Toggles superscript on/off for the selection or at the insertion point.
@@ -330,9 +445,19 @@ class EditableContent private(t: HTMLTag with Container[BodyChild]) {
   def superscript() = execCommand("superscript")
 
   /**
+   * The current selected superscript state. This only works if realtimeSelection is set to true.
+   */
+  def isSuperscript = selection.get[Boolean]("superscript")
+
+  /**
    * Toggles underline on/off for the selection or at the insertion point.
    */
   def underline() = execCommand("underline")
+
+  /**
+   * The current selected underline state. This only works if realtimeSelection is set to true.
+   */
+  def isUnderline = selection.get[Boolean]("underline")
 
   /**
    * Undoes the last executed command.
@@ -357,3 +482,5 @@ class EditableContent private(t: HTMLTag with Container[BodyChild]) {
 }
 
 case class ContentChanged(xml: Element, htmlString: String)
+
+case class SelectionChanged(text: String, html: String, startOffset: Int, endOffset: Int)

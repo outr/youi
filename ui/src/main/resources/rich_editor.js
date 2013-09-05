@@ -6,7 +6,8 @@ function createRichEditor(id, updateFrequency) {
     CKEDITOR.replace(document.getElementById(id), {
         on: {
             configLoaded: function() {
-                this.config.removePlugins = 'toolbar, elementspath';
+//                this.config.removePlugins = 'toolbar, elementspath, resize, contextmenu, liststyle, tabletools';
+                this.config.disableNativeSpellChecker = false;
                 this.config.allowedContent = true;
             },
             focus: function() {

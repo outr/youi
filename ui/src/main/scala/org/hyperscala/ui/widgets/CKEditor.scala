@@ -22,8 +22,6 @@ object CKEditor extends Module {
   }
 
   def load() = {
-    val page = Webpage()
-    page.head.contents += new tag.Script(mimeType = "text/javascript", src = "/cke/ckeditor.js")
-    page.head.contents += new tag.Script(mimeType = "text/javascript", src = "/cke/richeditor.js")
+    Webpage().head.contents += new tag.Script(mimeType = "text/javascript", src = "/cke/ckeditor.js")
   }
 }

@@ -4,7 +4,6 @@ import org.hyperscala.html._
 import org.hyperscala.ui.widgets.RichEditor
 
 import org.hyperscala.event.JavaScriptEvent
-import org.powerscala.Color
 import org.hyperscala.examples.Example
 import language.reflectiveCalls
 
@@ -12,26 +11,28 @@ import language.reflectiveCalls
  * @author Matt Hicks <matt@outr.com>
  */
 class RichEditorExample extends Example {
-  val editor = new RichEditor {
+  val div = new tag.Div(id = "editable") {
     style.width := 500.px
-    value := "Testing"
-    value.change.on {
-      case evt => println(s"Value changed to [${evt.newValue}]")
-    }
+    contents += new tag.H1(content = "Hello World!")
+    contents += new tag.Br
+    contents += new tag.B(content = "Some")
+    contents += " text!"
   }
+
+  val editor = RichEditor(div)
   val modify = new tag.Button(content = "Modify") {
     clickEvent := JavaScriptEvent()
 
     clickEvent.on {
       case evt => {
-        editor.value := new tag.P {
-          contents += new tag.B(content = "This")
-          contents += " is "
-          contents += new tag.I(content = "testing") {
-            style.color := Color.Red
-          }
-          contents += " content!"
-        }.outputString
+//        editor.value := new tag.P {
+//          contents += new tag.B(content = "This")
+//          contents += " is "
+//          contents += new tag.I(content = "testing") {
+//            style.color := Color.Red
+//          }
+//          contents += " content!"
+//        }.outputString
       }
     }
   }
@@ -40,12 +41,12 @@ class RichEditorExample extends Example {
 
     clickEvent.on {
       case evt => {
-        println("Editor Content: %s".format(editor.value()))
+//        println("Editor Content: %s".format(editor.value()))
       }
     }
   }
 
-  contents += editor
+  contents += div
   contents += modify
   contents += check
 }

@@ -1,17 +1,42 @@
 package org.hyperscala.ui.widgets
 
 import org.hyperscala.html._
-import org.hyperscala.Message
-import org.hyperscala.javascript.JavaScriptString
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.site.{Website, Webpage}
 import org.hyperscala.realtime.Realtime
-import org.powerscala.property.Property
-import java.util.concurrent.atomic.AtomicBoolean
+import org.hyperscala.module.Module
+import org.powerscala.{Version, StorageComponent}
+import org.hyperscala.jquery.jQuery
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class RichEditor extends tag.Div with FormField {
+object RichEditor extends Module with StorageComponent[RichEditor, HTMLTag] {
+  def name = "RichEditor"
+  def version = Version(2)
+
+  override def dependencies = List(jQuery.LatestWithDefault, Realtime, CKEditor)
+
+  def init() = {
+    Website().register("/js/rich_editor.js", "rich_editor.js")
+  }
+
+  def load() = {
+    Webpage().head.contents += new tag.Script(mimeType = "text/javascript", src = "/js/rich_editor.js")
+  }
+
+  override def apply(t: HTMLTag) = {
+    Webpage().require(this)
+    super.apply(t)
+  }
+
+  protected def create(t: HTMLTag) = new RichEditor(t)
+}
+
+class RichEditor private(t: HTMLTag) {
+
+}
+
+/*class RichEditor extends tag.Div with FormField {
   Webpage().require(CKEditor)
 
   private val _changing = new AtomicBoolean(false)
@@ -60,4 +85,4 @@ class RichEditor extends tag.Div with FormField {
       _changing.set(false)
     }
   }
-}
+}*/

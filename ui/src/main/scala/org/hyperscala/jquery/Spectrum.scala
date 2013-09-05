@@ -9,6 +9,7 @@ import org.hyperscala.html.tag
 import scala.language.implicitConversions
 import org.hyperscala.html.tag.Input
 import org.hyperscala.event.JavaScriptEvent
+import org.hyperscala.javascript.JavaScriptContent
 
 /**
  * Spectrum is a wrapper around the the jQuery Colorpicker found here: http://bgrins.github.io/spectrum/
@@ -47,11 +48,11 @@ object Spectrum extends Module with JavaScriptCaller with StorageComponent[Spect
   protected def create(t: Input) = new Spectrum(t)
 }
 
-class Spectrum private(val html: Input) extends jQueryComponent {
+class Spectrum private(val wrapped: Input) extends jQueryComponent {
   def functionName = "spectrum"
 
-  if (html.changeEvent() == null) {
-    html.changeEvent := JavaScriptEvent()
+  if (wrapped.changeEvent() == null) {
+    wrapped.changeEvent := JavaScriptEvent()
   }
 
   /**
@@ -166,7 +167,7 @@ class Spectrum private(val html: Input) extends jQueryComponent {
    *
    * Defaults to "name".
    */
-  val preferredFormat = property("preferredFormat", "name")
+  val preferredFormat = property("preferredFormat", "name", includeDefault = true)
   /**
    * The color palette to use.
    *
@@ -174,16 +175,19 @@ class Spectrum private(val html: Input) extends jQueryComponent {
    */
   val palette = property[List[Color]]("palette", Nil)
 
-  color.bindTo(html.value)(s => colorFromValue())
-  html.value.bindTo(color)(c => if (c != null) c.hex.rgb else null)
+  color.bindTo(wrapped.value)(s => colorFromValue())
+  wrapped.value.bindTo(color)(c => if (c != null) c.hex.rgb else null)
 
-  private def colorFromValue() = html.value() match {
-    case null | "" => null
-    case s => Color(s)
+  private def colorFromValue() = {
+    println(s"wrapped: ${wrapped.value()}")
+    wrapped.value() match {
+      case null | "" => null
+      case s => Color(s)
+    }
   }
 
-  override def propertyChanged[T](name: String, property: jQueryProperty[T]) = name match {
-    case "color" => jQuery.call(html, s"spectrum('set', ${property.js()})")
-    case _ => super.propertyChanged(name, property)
+  override def option(key: String, value: Any) = key match {
+    case "color" => jQuery.call(wrapped, s"spectrum('set', ${JavaScriptContent.toJS(value)})")
+    case _ => super.option(key, value)
   }
 }

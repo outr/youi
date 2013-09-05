@@ -52,12 +52,12 @@ object ColorPicker extends Module with JavaScriptCaller with StorageComponent[Co
   protected def create(t: Input) = new ColorPicker(t)
 }
 
-class ColorPicker private(val html: tag.Input) extends jQueryComponent {
+class ColorPicker private(val wrapped: tag.Input) extends jQueryComponent {
   def functionName = "colorpicker"
 
   // Make sure events fire back to server upon select
   on("ok", ColorPicker.OkFunction)
-  html.eventReceived.on {
+  wrapped.eventReceived.on {
     case evt if evt.event == "colorSelected" => {
       val value = evt.message[String]("value")
       if (value != null && value.trim.nonEmpty) {
@@ -72,8 +72,8 @@ class ColorPicker private(val html: tag.Input) extends jQueryComponent {
   }
   option("colorFormat", "#HEX")
 
-  if (html.changeEvent() == null) {
-    html.changeEvent := JavaScriptEvent()
+  if (wrapped.changeEvent() == null) {
+    wrapped.changeEvent := JavaScriptEvent()
   }
 
   /**
@@ -255,10 +255,10 @@ class ColorPicker private(val html: tag.Input) extends jQueryComponent {
    */
   val title = property("title", null)
 
-  color.bindTo(html.value)(s => colorFromValue())
-  html.value.bindTo(color)(c => if (c != null) c.hex.rgb else null)
+  color.bindTo(wrapped.value)(s => colorFromValue())
+  wrapped.value.bindTo(color)(c => if (c != null) c.hex.rgb else null)
 
-  private def colorFromValue() = html.value() match {
+  private def colorFromValue() = wrapped.value() match {
     case null | "" => null
     case s => Color(s)
   }

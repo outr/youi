@@ -35,12 +35,12 @@ object Dialog extends JavaScriptCaller with StorageComponent[Dialog, HTMLTag] {
   }
 }
 
-class Dialog private(val html: HTMLTag) extends jQueryComponent {
+class Dialog private(val wrapped: HTMLTag) extends jQueryComponent {
   def functionName = "dialog"
 
-  html.style.display := Display.None    // Keep the tag from appearing before it's ready.
+  wrapped.style.display := Display.None    // Keep the tag from appearing before it's ready.
 
-  implicit def listenable: Listenable = html
+  implicit def listenable: Listenable = wrapped
 
   val autoOpen = property("autoOpen", true)
   val buttons = property[List[String]]("buttons", null, toJS = Dialog.buttonsConverter)
@@ -75,7 +75,7 @@ class Dialog private(val html: HTMLTag) extends jQueryComponent {
   val openEvent = event("open")
   val closeEvent = event("close")
   val buttonEvent = new StandardHierarchyEventProcessor[ButtonClicked]("buttonEvent")
-  html.eventReceived.on {
+  wrapped.eventReceived.on {
     case evt if evt.event == "buttonClicked" => {
       buttonEvent.fire(ButtonClicked(evt.message[String]("name")))
       Intercept.Stop

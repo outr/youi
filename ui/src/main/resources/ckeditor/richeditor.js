@@ -5,6 +5,10 @@ function createRichEditor(id, updateFrequency) {
 
     CKEDITOR.replace(document.getElementById(id), {
         on: {
+            configLoaded: function() {
+                this.config.removePlugins = 'toolbar, elementspath';
+                this.config.allowedContent = true;
+            },
             focus: function() {
                 if (updateFrequency > 0) {
                     intervalId = setInterval(function() {

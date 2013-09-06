@@ -4,6 +4,7 @@ import event.EventReceived
 import org.powerscala.reflect._
 import org.hyperscala.event.processor.EventReceivedProcessor
 import org.powerscala.event.Intercept
+import org.hyperscala.io.HTMLWriter
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
@@ -46,13 +47,48 @@ trait IdentifiableTag extends Tag {
       Intercept.Continue
     }
   }
+
+  override protected def writeAttribute(writer: HTMLWriter, attribute: XMLAttribute) {
+    if (attribute.name != "id" || !IdentifiableTag.ignoreIds) {   // Don't write ids if ignoreIds is true
+      super.writeAttribute(writer, attribute)
+    }
+  }
 }
 
 object IdentifiableTag {
+  private val _ignoreIds = new ThreadLocal[Boolean] {
+    override def initialValue() = false
+  }
+
   def reId[T <: IdentifiableTag](t: T, newId: String = Unique()) = {
     t.id := newId
     t
   }
+
+  /**
+   * Writing HTML within this block will ignore ids.
+   *
+   * @param f the function to ignore ids within
+   * @tparam T the return type
+   * @return T
+   */
+  def ignoreIds[T](f: => T): T = {
+    ignoreIdsStart()
+    try {
+      f
+    } finally {
+      ignoreIdsStop()
+    }
+  }
+
+  def ignoreIdsStart() = _ignoreIds.set(true)
+
+  def ignoreIdsStop() = _ignoreIds.set(false)
+
+  /**
+   * Are we currently ignoring ids?
+   */
+  def ignoreIds = _ignoreIds.get()
 }
 
 case class Message(content: String, map: Map[String, Any]) {

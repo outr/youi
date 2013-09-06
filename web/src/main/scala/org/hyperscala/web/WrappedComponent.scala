@@ -35,7 +35,9 @@ trait WrappedComponent[Tag <: HTMLTag] {
                            (implicit manifest: Manifest[T]) = synchronized {
     val p = new JavaScriptProperty[T](toJS, default = Option(default))(wrapped, manifest)
     p.change.on {
-      case evt => option(name, p.js())
+      case evt => if (!p.isChanging) {
+        option(name, p.js())
+      }
     }
     if (includeDefault) {
       option(name, p.js())
@@ -46,5 +48,18 @@ trait WrappedComponent[Tag <: HTMLTag] {
 
 class JavaScriptProperty[T](toJS: T => JavaScriptContent, default: Option[T])
                        (implicit parent: Listenable, manifest: Manifest[T]) extends Property[T](default = default)(parent, manifest) {
+  private var _changing = false
+
+  def isChanging = _changing
+
+  def applyChange(value: T) = synchronized {
+    _changing = true
+    try {
+      apply(value)
+    } finally {
+      _changing = false
+    }
+  }
+
   val js = () => toJS(value)
 }

@@ -99,6 +99,8 @@ object HyperScalaBuild extends Build {
     .dependsOn(web, ui)
   lazy val hello = Project("hello", file("hello"), settings = createSettings("hyperscala-hello"))
     .dependsOn(web)
+  lazy val numberGuess = Project("numberguess", file("numberguess"), settings = createSettings("hyperscala-numberguess"))
+    .dependsOn(ui)
   lazy val site = Project("site", file("site"), settings = createSettings("hyperscala-site"))
     .settings(jarName in assembly <<= version {
       (v: String) => "hyperscala-%s.jar".format(v)

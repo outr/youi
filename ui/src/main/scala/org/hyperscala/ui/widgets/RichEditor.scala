@@ -11,6 +11,7 @@ import org.powerscala.event.Intercept
 import org.powerscala.property.Property
 import org.hyperscala.javascript.{JSFunction1, JavaScriptContent}
 import org.hyperscala.IdentifiableTag
+import org.hyperscala.selector.Selector
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -38,6 +39,11 @@ object RichEditor extends Module with StorageComponent[RichEditor, HTMLTag] {
 }
 
 class RichEditor private(val wrapped: HTMLTag) extends WrappedComponent[HTMLTag] {
+  /**
+   * StyleSheet bound to the generated editor.
+   */
+  lazy val style = wrapped.page.head.selector(Selector.id(s"cke_${wrapped.identity}"))
+
   /**
    * The frequency at which the content is validated for changes in milliseconds. If this is set to 0 the content
    * will only be validated upon blur.

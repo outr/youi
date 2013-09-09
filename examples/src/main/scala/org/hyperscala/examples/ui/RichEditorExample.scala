@@ -9,6 +9,7 @@ import language.reflectiveCalls
 import org.powerscala.Color
 import org.hyperscala.realtime.dsl._
 import org.hyperscala.selector.Selector
+import org.hyperscala.css.attributes.Position
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -102,6 +103,17 @@ class RichEditorExample extends Example {
 
     clickEvent.on {
       case evt => editor.subscript()
+    }
+  }
+  contents += new tag.Button(id = "reposition", content = "Reposition Editor") {
+    clickEvent := JavaScriptEvent()
+
+    clickEvent.on {
+      case evt => {
+        editor.style.position := Position.Absolute
+        editor.style.left := 50.px
+        editor.style.top := 50.px
+      }
     }
   }
 }

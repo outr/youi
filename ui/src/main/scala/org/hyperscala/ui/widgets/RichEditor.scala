@@ -1,7 +1,7 @@
 package org.hyperscala.ui.widgets
 
 import org.hyperscala.html._
-import org.hyperscala.web.site.{Website, Webpage}
+import org.hyperscala.web.site.{WebpageConnection, Website, Webpage}
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.module.Module
 import org.powerscala.{Version, StorageComponent}
@@ -10,13 +10,24 @@ import org.hyperscala.web.WrappedComponent
 import org.powerscala.event.Intercept
 import org.powerscala.property.Property
 import org.hyperscala.javascript.{JSFunction1, JavaScriptContent}
-import org.hyperscala.IdentifiableTag
-import org.hyperscala.selector.Selector
+import org.hyperscala.{Container, IdentifiableTag}
+import org.hyperscala.html.attributes.ContentEditable
+import org.hyperscala.io.HTMLToScala
+import org.hyperscala.css.Style
+import org.hyperscala.css.attributes.FontSize
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
 object RichEditor extends Module with StorageComponent[RichEditor, HTMLTag] {
+  val BoldStyle = RichEditorStyle("strong", overrides = List(Override("b")))
+  val ItalicStyle = RichEditorStyle("em", overrides = List(Override("i")))
+  val UnderlineStyle = RichEditorStyle("u")
+  val StrikeStyle = RichEditorStyle("s", overrides = List(Override("strike")))
+  val SubscriptStyle = RichEditorStyle("sub")
+  val SuperscriptStyle = RichEditorStyle("sup")
+  def FontSizeStyle(size: FontSize) = RichEditorStyle("span", styles = Map("font-size" -> size), overrides = List(Override("font", Map("size" -> null))))
+
   def name = "RichEditor"
   def version = Version(2)
 
@@ -39,10 +50,18 @@ object RichEditor extends Module with StorageComponent[RichEditor, HTMLTag] {
 }
 
 class RichEditor private(val wrapped: HTMLTag) extends WrappedComponent[HTMLTag] {
+  import RichEditor._
+
   /**
-   * StyleSheet bound to the generated editor.
+   * Whether this editor should be inlined (use contenteditable) or the standard ckeditor. If using the standard
+   * ckeditor an iframe will be used for the content and the toolbar will appear above the editor. When inlined the
+   * content will be edited directly and the toolbar will float when editing.
+   *
+   * This property will not do anything after the editor has been instantiated.
+   *
+   * Defaults to true.
    */
-  lazy val style = wrapped.page.head.selector(Selector.id(s"cke_${wrapped.identity}"))
+  val inline = Property[Boolean](default = Some(true))
 
   /**
    * The frequency at which the content is validated for changes in milliseconds. If this is set to 0 the content
@@ -81,18 +100,58 @@ class RichEditor private(val wrapped: HTMLTag) extends WrappedComponent[HTMLTag]
   val showToolbar = property[Boolean]("showToolbar", false)
 
   /**
-   * Defines whether the path navigation in the bottom bar should be displayed.
+   * Defines whether the path navigation in the bottom bar should be displayed. This is only applicable when not
+   * inline.
    *
    * Defaults to true.
    */
   val showPath = property[Boolean]("showPath", true)
 
   /**
-   * Defines whether the resizer in the bottom bar should be displayed.
+   * Defines whether the resizer in the bottom bar should be displayed. This is only applicable when not inline.
    *
    * Defaults to true.
    */
   val showResizer = property[Boolean]("showResizer", true)
+
+  val showSaveButton = property[Boolean]("showToolbarButtonsave", true)
+  val showNewPageButton = property[Boolean]("showToolbarButtonnewpage", true)
+  val showPreviewButton = property[Boolean]("showToolbarButtonpreview", true)
+  val showPrintButton = property[Boolean]("showToolbarButtonprint", true)
+  val showTemplatesButton = property[Boolean]("showToolbarButtontemplates", true)
+  val showCutButton = property[Boolean]("showToolbarButtoncut", true)
+  val showCopyButton = property[Boolean]("showToolbarButtoncopy", true)
+  val showPasteButton = property[Boolean]("showToolbarButtonpaste", true)
+  val showPasteTextButton = property[Boolean]("showToolbarButtonpastetext", true)
+  val showPasteFromWordButton = property[Boolean]("showToolbarButtonpastefromword", true)
+  val showUndoButton = property[Boolean]("showToolbarButtonundo", true)
+  val showRedoButton = property[Boolean]("showToolbarButtonredo", true)
+  val showFindButton = property[Boolean]("showToolbarButtonfind", true)
+  val showReplaceButton = property[Boolean]("showToolbarButtonreplace", true)
+  val showSelectAllButton = property[Boolean]("showToolbarButtonselectall", true)
+  val showSpellCheckButton = property[Boolean]("showToolbarButtonscayt", true)
+  val showFormButton = property[Boolean]("showToolbarButtonform", true)
+  val showCheckBoxButton = property[Boolean]("showToolbarButtoncheckbox", true)
+  val showRadioButton = property[Boolean]("showToolbarButtonradio", true)
+  val showTextFieldButton = property[Boolean]("showToolbarButtontextfield", true)
+  val showTextAreaButton = property[Boolean]("showToolbarButtontextarea", true)
+  val showSelectButton = property[Boolean]("showToolbarButtonselect", true)
+  val showButtonButton = property[Boolean]("showToolbarButtonbutton", true)
+  val showImageButtonButton = property[Boolean]("showToolbarButtonimagebutton", true)
+  val showHiddenFieldButton = property[Boolean]("showToolbarButtonhiddenfield", true)
+  val showAboutButton = property[Boolean]("showToolbarButtonabout", true)
+
+  def showFormButtons(visible: Boolean) = {
+    showFormButton := false
+    showCheckBoxButton := false
+    showRadioButton := false
+    showTextFieldButton := false
+    showTextAreaButton := false
+    showSelectButton := false
+    showButtonButton := false
+    showImageButtonButton := false
+    showHiddenFieldButton := false
+  }
 
   /**
    * Toggles the visibility of the context menu.
@@ -110,6 +169,20 @@ class RichEditor private(val wrapped: HTMLTag) extends WrappedComponent[HTMLTag]
   def a11yHelp() = execCommand("a11yHelp")
 
   /**
+   * Applies the specified font size to the selected content.
+   *
+   * @param size represents the size to apply to the selection.
+   */
+  def fontSize(size: FontSize) = execApplyStyle(FontSizeStyle(size))
+
+  /**
+   * Invokes the supplied action when the value of the font-size changes in the selectoin.
+   *
+   * @param action the action function that is called when font-size changes with the size as a String or null.
+   */
+  def onFontSize(action: JSFunction1[String, Unit]) = onStyleValueChange(action, Style.fontSize)
+
+  /**
    * Toggles bold state on the selected content.
    */
   def bold() = execCommand("bold")
@@ -119,7 +192,7 @@ class RichEditor private(val wrapped: HTMLTag) extends WrappedComponent[HTMLTag]
    *
    * @param action the action to invoke taking a Boolean of the current status.
    */
-  def onBold(action: JSFunction1[Boolean, Unit]) = onStyleChange(action, "strong", "b")
+  def onBold(action: JSFunction1[Boolean, Unit]) = onStyleChange(action, BoldStyle)
 
   /**
    * Toggles italic state on the selected content.
@@ -131,7 +204,7 @@ class RichEditor private(val wrapped: HTMLTag) extends WrappedComponent[HTMLTag]
    *
    * @param action the action to invoke taking a Boolean of the current status.
    */
-  def onItalic(action: JSFunction1[Boolean, Unit]) = onStyleChange(action, "em", "i")
+  def onItalic(action: JSFunction1[Boolean, Unit]) = onStyleChange(action, ItalicStyle)
 
   /**
    * Toggles the underline state on the selected content.
@@ -143,7 +216,7 @@ class RichEditor private(val wrapped: HTMLTag) extends WrappedComponent[HTMLTag]
    *
    * @param action the action to invoke taking a Boolean of the current status.
    */
-  def onUnderline(action: JSFunction1[Boolean, Unit]) = onStyleChange(action, "u")
+  def onUnderline(action: JSFunction1[Boolean, Unit]) = onStyleChange(action, UnderlineStyle)
 
   /**
    * Toggles the strike-through state on the selected content.
@@ -155,7 +228,7 @@ class RichEditor private(val wrapped: HTMLTag) extends WrappedComponent[HTMLTag]
    *
    * @param action the action to invoke taking a Boolean of the current status.
    */
-  def onStrike(action: JSFunction1[Boolean, Unit]) = onStyleChange(action, "s", "strike")
+  def onStrike(action: JSFunction1[Boolean, Unit]) = onStyleChange(action, StrikeStyle)
 
   /**
    * Toggles the subscript state on the selected content.
@@ -167,7 +240,7 @@ class RichEditor private(val wrapped: HTMLTag) extends WrappedComponent[HTMLTag]
    *
    * @param action the action to invoke taking a Boolean of the current status.
    */
-  def onSubscript(action: JSFunction1[Boolean, Unit]) = onStyleChange(action, "sub")
+  def onSubscript(action: JSFunction1[Boolean, Unit]) = onStyleChange(action, SubscriptStyle)
 
   /**
    * Toggles the superscript state on the selected content.
@@ -179,7 +252,7 @@ class RichEditor private(val wrapped: HTMLTag) extends WrappedComponent[HTMLTag]
    *
    * @param action the action to invoke taking a Boolean of the current status.
    */
-  def onSuperscript(action: JSFunction1[Boolean, Unit]) = onStyleChange(action, "sup")
+  def onSuperscript(action: JSFunction1[Boolean, Unit]) = onStyleChange(action, SuperscriptStyle)
 
   /**
    * Specifies the content within the selected range should represent language left-to-right.
@@ -535,6 +608,9 @@ class RichEditor private(val wrapped: HTMLTag) extends WrappedComponent[HTMLTag]
   init()
 
   private def init() = {
+    if (inline()) {
+      wrapped.contentEditable := ContentEditable.True
+    }
     wrapped.eventReceived.on {
       case evt => if (evt.event == "editorChanged") {
         val content = evt.message[String]("value")
@@ -547,14 +623,27 @@ class RichEditor private(val wrapped: HTMLTag) extends WrappedComponent[HTMLTag]
     }
     html.change.on {
       case evt => if (updateWrapped()) {
-        println("Need to update wrapped tag!!!")
-        // TODO: implement
+        update(fireChanges = false)
+      }
+    }
+  }
+
+  /**
+   * Updates the HTML content of the wrapped component with the contents of the editor.
+   */
+  def update(fireChanges: Boolean) = {
+    val f = () => HTMLToScala.replaceChildren(wrapped.asInstanceOf[HTMLTag with Container[HTMLTag]], html())
+    if (fireChanges) {
+      f()
+    } else {
+      WebpageConnection.ignoreStructureChanges {
+        f()
       }
     }
   }
 
   protected def initializeComponent(values: Map[String, Any]) = {
-    Realtime.sendJavaScript(s"createRichEditor('${wrapped.identity}');", onlyRealtime = false)
+    Realtime.sendJavaScript(s"createRichEditor('${wrapped.identity}', ${inline()});", onlyRealtime = false)
     values.foreach {
       case (key, value) => modify(key, value)
     }
@@ -575,17 +664,43 @@ class RichEditor private(val wrapped: HTMLTag) extends WrappedComponent[HTMLTag]
     Realtime.sendJavaScript(s"richEditorExecCommand('${wrapped.identity}', '$command', ${JavaScriptContent.toJS(value)});")
   }
 
+  def execApplyStyle(style: RichEditorStyle) = {
+    val js = s"richEditorApplyStyle('${wrapped.identity}', ${style.toJSString});"
+    Realtime.sendJavaScript(js)
+  }
+
+  def execRemoveStyle(style: RichEditorStyle) = {
+    val js = s"richEditorRemoveStyle('${wrapped.identity}', ${style.toJSString});"
+    Realtime.sendJavaScript(js)
+  }
+
+  def execToggleStyle(style: RichEditorStyle) = {
+    val js = s"richEditorToggleStyle('${wrapped.identity}', ${style.toJSString});"
+    Realtime.sendJavaScript(js)
+  }
+
   /**
-   * Invokes the supplied action when the state of the supplied element changes on the current selection.
+   * Invokes the supplied action when the state of the supplied style changes on the current selection.
    *
    * For example, passing "b" as the element invokes action when the selection status of being wrapped in a bold tag
    * changes.
    *
    * @param action the JavaScript action to take when the state changes
-   * @param element the element to monitor the state of in the selection.
+   * @param style the style to listen to
    */
-  def onStyleChange(action: JSFunction1[Boolean, Unit], element: String, overrides: String = null): Unit = {
-    Realtime.sendJavaScript(s"richEditorAttachStyleStateChange('${wrapped.identity}', '$element', ${JavaScriptContent.toJS(overrides)}, ${action.content});",
+  def onStyleChange(action: JSFunction1[Boolean, Unit], style: RichEditorStyle): Unit = {
+    Realtime.sendJavaScript(s"richEditorAttachStyleStateChange('${wrapped.identity}', ${style.toJSString}, ${action.content});",
+      onlyRealtime = false)
+  }
+
+  /**
+   * Invokes the supplied action when the state of the supplied css style changes on the current selection.
+   *
+   * @param action the JavaScript action to take when the state changes
+   * @param cssStyle the Style to listen to
+   */
+  def onStyleValueChange(action: JSFunction1[String, Unit], cssStyle: Style[_]): Unit = {
+    Realtime.sendJavaScript(s"richEditorAttachStyleValueChange('${wrapped.identity}', '${cssStyle.cssName}', ${action.content});",
       onlyRealtime = false)
   }
 
@@ -605,3 +720,28 @@ class RichEditor private(val wrapped: HTMLTag) extends WrappedComponent[HTMLTag]
     Realtime.sendJavaScript(s, onlyRealtime = onlyRealtime)
   }
 }
+
+case class RichEditorStyle(element: String,
+                           styles: Map[String, Any] = Map.empty,
+                           attributes: Map[String, Any] = Map.empty,
+                           overrides: List[Override] = Nil) {
+  def toJSString = {
+    val styleString = styles.map {
+      case (key, value) => s"'$key': ${JavaScriptContent.toJS(value)}"
+    }.mkString(", ")
+    val attributesString = attributes.map {
+      case (key, value) => s"'$key': ${JavaScriptContent.toJS(value)}"
+    }.mkString(", ")
+    val overridesString = overrides.map {
+      case o => {
+        val attributes = o.attributes.map {
+          case (key, value) => s"'$key': ${JavaScriptContent.toJS(value)}"
+        }.mkString(", ")
+        s"{ element: '${o.element}', attributes: {$attributes} }"
+      }
+    }.mkString(", ")
+    s"new CKEDITOR.style({element: '$element', styles: {$styleString}, attributes: {$attributesString}, overrides: [$overridesString]})"
+  }
+}
+
+case class Override(element: String, attributes: Map[String, String] = Map.empty)

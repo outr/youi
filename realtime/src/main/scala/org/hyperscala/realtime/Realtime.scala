@@ -96,7 +96,7 @@ object Realtime extends Module {
     instruction
   }
 
-  def sendJavaScript(instruction: String, content: String = null, forId: String = null, head: Boolean = true, onlyRealtime: Boolean = true, delay: Int = 0) = {
+  def sendJavaScript(instruction: String, content: String = null, forId: String = null, head: Boolean = true, onlyRealtime: Boolean = true, delay: Int = 0): Unit = {
     val i = wrapInDelay(instruction, delay)
     Webpage().require(this)
     val sendFunction = new Function0[Unit] {
@@ -117,15 +117,6 @@ object Realtime extends Module {
       Webpage().body.onAfterRender {
         sendFunction()
       }
-//      val script = i.replaceAll("content", JavaScriptContent.toJS(content))
-//      val s = new tag.Script {
-//        contents += JavaScriptString(if (forId != null) wrapInInvokeForId(forId, script) else script)
-//      }
-//      if (head) {
-//        Webpage().head.contents += s
-//      } else {
-//        Webpage().body.contents += s
-//      }
     }
   }
 

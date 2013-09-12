@@ -1,6 +1,6 @@
 package org.hyperscala.javascript
 
-import org.hyperscala.XMLContent
+import org.hyperscala.{AttributeValue, XMLContent}
 import org.jdom2.{Text, Content}
 import org.hyperscala.io.HTMLWriter
 import org.powerscala.Color
@@ -21,6 +21,7 @@ trait JavaScriptContent extends XMLContent {
 object JavaScriptContent {
   def toJS(v: Any): String = v match {
     case null => "null"
+    case a: AttributeValue => s"'${a.value}'"
     case js: JavaScriptContent => js.content
     case s: String => "'%s'".format(s.replaceAll("\n", " ").replaceAll("\r", " ").replaceAll("'", """\\\'"""))
     case l: List[_] => l.map(toJS).mkString("[", ", ", "]")

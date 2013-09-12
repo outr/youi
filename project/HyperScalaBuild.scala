@@ -70,7 +70,7 @@ object HyperScalaBuild extends Build {
       </developers>
   )
 
-  private def createSettings(_name: String) = baseSettings ++ assemblySettings ++ Revolver.settings ++ Seq(name := _name)
+  private def createSettings(_name: String) = baseSettings ++ assemblySettings ++ Seq(name := _name)
 
   lazy val root = Project("root", file("."), settings = unidocSettings ++ createSettings("hyperscala-root"))
     .settings(publishArtifact in Compile := false, publishArtifact in Test := false)
@@ -101,7 +101,7 @@ object HyperScalaBuild extends Build {
     .dependsOn(web)
   lazy val numberGuess = Project("numberguess", file("numberguess"), settings = createSettings("hyperscala-numberguess"))
     .dependsOn(ui)
-  lazy val site = Project("site", file("site"), settings = createSettings("hyperscala-site"))
+  lazy val site = Project("site", file("site"), settings = createSettings("hyperscala-site") ++ Revolver.settings)
     .settings(jarName in assembly <<= version {
       (v: String) => "hyperscala-%s.jar".format(v)
     }, mergeStrategy in assembly <<= (mergeStrategy in assembly) {

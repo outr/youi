@@ -29,6 +29,7 @@ object Selector extends ValuePersistence[List[Selector]] {
     AttributeSelector(selector, attribute, matcher, attributeValue)
   }
   def id(id: String) = IdSelector(id)
+  def id(t: HTMLTag) = TagIdSelector(t)
   def multiple(selectors: Selector*) = MultipleSelector(selectors.toList)
 
   def fromString(s: String, name: String, clazz: Class[_]) = throw new UnsupportedOperationException("Not supported")

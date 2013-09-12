@@ -17,4 +17,6 @@ package object dsl {
   }
 
   def addClass(selector: Selector, className: String) = AddClassJavaScriptFunction(selector, className)
+
+  def setValue(selector: Selector) = SetValueJavaScriptFunction(selector)
 }

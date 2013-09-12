@@ -4,7 +4,7 @@ import org.hyperscala.html._
 import org.jdom2.input.SAXBuilder
 import java.io.{FileWriter, File, StringReader}
 import org.htmlcleaner.{PrettyXmlSerializer, HtmlCleaner}
-import org.hyperscala.Markup
+import org.hyperscala.{Container, Markup}
 import org.hyperscala.web.site.Webpage
 import swing.FileChooser
 import java.util.prefs.Preferences
@@ -18,6 +18,13 @@ object HTMLToScala {
   lazy val TagTemplate = IO.copy(getClass.getClassLoader.getResource("tag.template"))
 
   val builder = new SAXBuilder()
+
+  def replaceChildren(parent: HTMLTag with Container[HTMLTag], htmlString: String) = {
+    val xml = HTMLToScala.toXML(htmlString, clean = true)
+    val body = xml.getChild("body")
+    parent.contents.clear()                            // Remove all contents
+    parent.read(body)                                  // Read the new data back in
+  }
 
   def toScala(page: Webpage, packageName: String, className: String) = {
     val b = new ScalaWebpageBuffer(packageName, className, page)

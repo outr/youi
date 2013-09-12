@@ -48,6 +48,8 @@ object BusyDialog extends Module {
         style.marginLeft := 40.px
       }
     }
+    Webpage().body.contents += div
+
     val dialog = Dialog(div)
     dialog.autoOpen := false
     dialog.closeOnEscape := false
@@ -55,8 +57,6 @@ object BusyDialog extends Module {
     dialog.width := 320
     dialog.height := 120
     dialog.resizable := false
-
-    Webpage().body.contents += div
   }
 
   def show(title: String) = if (!isDisabled) {

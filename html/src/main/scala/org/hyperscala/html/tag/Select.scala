@@ -87,7 +87,11 @@ class Select extends Container[Option] with BodyChild with HTMLTag with FormFiel
   }
   value.change.on {
     case evt => if (!updating.get()) {
-      selected := evt.newValue.split('|').toList
+      if (evt.newValue != null) {
+        selected := evt.newValue.split('|').toList
+      } else {
+        selected := Nil
+      }
     }
   }
   childAdded.on {

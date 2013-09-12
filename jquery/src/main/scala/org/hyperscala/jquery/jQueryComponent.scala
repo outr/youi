@@ -38,15 +38,16 @@ trait jQueryComponent extends WrappedComponent[HTMLTag] {
   }
 
   def event(eventType: String) = {
+    val localizedEventType = s"$eventType.${getClass.getSimpleName}"
     on(eventType, JavaScriptString(
       s"""function() {
         | var id = $$(this).attr('id');
-        | communicator.send('$eventType', id, {});
+        | communicator.send('$localizedEventType', id, {});
         |}
       """.stripMargin))
-    val processor = new UnitProcessor[jQueryEvent](eventType)(wrapped, implicitly[Manifest[jQueryEvent]])
+    val processor = new UnitProcessor[jQueryEvent](localizedEventType)(wrapped, implicitly[Manifest[jQueryEvent]])
     wrapped.eventReceived.on {
-      case evt if evt.event == eventType => {
+      case evt if evt.event == localizedEventType => {
         processor.fire(jQueryEvent, ListenMode.Standard)
 
         Intercept.Stop

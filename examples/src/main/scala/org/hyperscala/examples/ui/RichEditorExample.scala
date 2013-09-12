@@ -27,15 +27,17 @@ class RichEditorExample extends Example {
   }
 
   val editor = RichEditor(div)
-  editor.showToolbar := false
+  editor.showToolbar := true
   editor.showPath := false
   editor.showResizer := false
+  editor.showFormButtons(false)
   editor.onBold(addClass(Selector.id("boldToggle"), "active"))
   editor.onItalic(addClass(Selector.id("italicToggle"), "active"))
   editor.onUnderline(addClass(Selector.id("underlineToggle"), "active"))
   editor.onStrike(addClass(Selector.id("strikeToggle"), "active"))
   editor.onSuperscript(addClass(Selector.id("superscriptToggle"), "active"))
   editor.onSubscript(addClass(Selector.id("subscriptToggle"), "active"))
+  editor.onFontSize(setValue(Selector.id("fontSize")))
 
   contents += div
   contents += new tag.Button(content = "Modify") {
@@ -110,10 +112,48 @@ class RichEditorExample extends Example {
 
     clickEvent.on {
       case evt => {
-        editor.style.position := Position.Absolute
-        editor.style.left := 50.px
-        editor.style.top := 50.px
+        div.style.position := Position.Absolute
+        div.style.left := 50.px
+        div.style.top := 50.px
       }
     }
   }
+  contents += new tag.Button(id = "toggleNewPage", content = "Toggle New Page Button") {
+    clickEvent := JavaScriptEvent()
+
+    clickEvent.on {
+      case evt => {
+        editor.showNewPageButton := !editor.showNewPageButton()
+      }
+    }
+  }
+
+  contents += new tag.Button(id = "setFontSize36", content = "Set Font Size to 36pt") {
+    clickEvent := JavaScriptEvent()
+
+    clickEvent.on {
+      case evt => {
+        editor.fontSize(36.pt)
+      }
+    }
+  }
+  contents += new tag.Button(id = "setFontSize72", content = "Set Font Size to 72pt") {
+    clickEvent := JavaScriptEvent()
+
+    clickEvent.on {
+      case evt => {
+        editor.fontSize(72.pt)
+      }
+    }
+  }
+  contents += new tag.Button(id = "setFontSizeNull", content = "Set Font Size to null") {
+    clickEvent := JavaScriptEvent()
+
+    clickEvent.on {
+      case evt => {
+        editor.fontSize(null)
+      }
+    }
+  }
+  contents += new tag.Input(id = "fontSize")
 }

@@ -1,36 +1,52 @@
 window.richEditors = {};
 window.richEditorOptions = {};
 
-var intervalId;
+CKEDITOR.disableAutoInline = true;
 
-function createRichEditor(id) {
-    CKEDITOR.replace(document.getElementById(id), {
-        on: {
-            configLoaded: function() {
-                this.config.disableNativeSpellChecker = false;
-            },
-            focus: function() {
-                var options = window.richEditorOptions[id];
-                options.focused = true;
-                updateRichEditorUpdateFrequency(id, options);
-            },
-            blur: function() {
-                var options = window.richEditorOptions[id];
-                options.focused = false;
-            },
-            instanceReady: function() {
-                window.richEditors[id] = this;
-                var options = {
-                    updateFrequency: 1000,
-                    showToolbar: false,
-                    showPath: true,
-                    showResizer: true
-                };
-                window.richEditorOptions[id] = options;
-                updateRichEditorControlsVisibility(id, options);
+function createRichEditor(id, inline) {
+    var element = document.getElementById(id);
+    if (element == null) {
+        setTimeout(function () {
+            createRichEditor(id, inline);
+        }, 100);
+    } else {
+        var configuration = {
+            on: {
+                configLoaded: function() {
+                    this.config.disableNativeSpellChecker = false;
+                },
+                focus: function() {
+                    var options = window.richEditorOptions[id];
+                    options.focused = true;
+                    updateRichEditorUpdateFrequency(id, options);
+                },
+                blur: function() {
+                    var options = window.richEditorOptions[id];
+                    options.focused = false;
+                },
+                instanceReady: function() {
+                    window.richEditors[id] = this;
+                    var options = {
+                        updateFrequency: 1000,
+                        showToolbar: false,
+                        showPath: true,
+                        showResizer: true
+                    };
+                    window.richEditorOptions[id] = options;
+                    updateRichEditorControlsVisibility(id, options);
+                },
+                selectionChange: function(ev) {
+                    var options = window.richEditorOptions[id];
+                    options.selectionPath = ev.data.path;
+                }
             }
+        };
+        if (inline) {
+            CKEDITOR.inline(element, configuration);
+        } else {
+            CKEDITOR.replace(element, configuration);
         }
-    });
+    }
 }
 
 function richEditorOption(id, key, value) {
@@ -53,9 +69,20 @@ function richEditorOption(id, key, value) {
             updateRichEditorControlsVisibility(id, options);
         } else if (key == 'showResizer') {
             updateRichEditorControlsVisibility(id, options);
+        } else if (key.indexOf('showToolbarButton') == 0) {
+            updateRichEditorToolbarButton(id, key.substring(17), value)
         } else {
             console.log('Unknown rich editor option: ' + key + '=' + value);
         }
+    }
+}
+
+function updateRichEditorToolbarButton(id, name, value) {
+    var selector = $('#cke_' + id + ' .cke_button__' + name);
+    if (value) {
+        selector.show();
+    } else {
+        selector.hide();
     }
 }
 
@@ -125,10 +152,9 @@ function richEditorExecCommand(id, command, data) {
     }
 }
 
-function richEditorAttachStyleStateChange(id, element, overrides, f) {
+function richEditorAttachStyleStateChange(id, style, f) {
     invokeAfterRichEditorInit(id, function() {
         var editor = window.richEditors[id];
-        var style = new CKEDITOR.style({ element: element, overrides: overrides });
         var lastState = null;
         editor.attachStyleStateChange(style, function(state) {
             var newState = state == CKEDITOR.TRISTATE_ON;
@@ -138,6 +164,83 @@ function richEditorAttachStyleStateChange(id, element, overrides, f) {
             }
         });
     });
+}
+
+function richEditorAttachStyleValueChange(id, cssName, f) {
+    invokeAfterRichEditorInit(id, function() {
+        var editor = window.richEditors[id];
+        var lastValue = null;
+        editor.on('selectionChange', function() {
+            var newValue = richEditorGetStyle(id, cssName);
+            if (newValue != lastValue) {
+                f(newValue);
+                lastValue = newValue;
+            }
+        });
+    });
+}
+
+function richEditorGetStyle(id, cssName) {
+    var editor = window.richEditors[id];
+    var options = window.richEditorOptions[id];
+    if (editor != null && options != null && options.selectionPath != null) {
+        var elements = options.selectionPath.elements;
+        for (var i = 0; i < elements.length; i++) {
+            var element = elements[i];
+            var cssValue = element.getStyle(cssName);
+            if (cssValue != '') {
+                return cssValue;
+            }
+        }
+    }
+    return null;
+}
+
+function richEditorApplyStyle(id, style) {
+    invokeAfterRichEditorInit(id, function() {
+        var editor = window.richEditors[id];
+        editor['applyStyle'](style);
+    });
+}
+
+function richEditorRemoveStyle(id, style) {
+    invokeAfterRichEditorInit(id, function() {
+        var editor = window.richEditors[id];
+        editor['removeStyle'](style);
+    });
+}
+
+function richEditorToggleStyle(id, style) {
+    invokeAfterRichEditorInit(id, function() {
+        var editor = window.richEditors[id];
+        if (richEditorCheckStyle(id, style)) {
+            editor['removeStyle'](style);
+        } else {
+            editor['applyStyle'](style);
+        }
+    });
+}
+
+/**
+ * Checks the current selection status of the applied style.
+ *
+ * @param id the editor id
+ * @param style the style to match against
+ * @returns {boolean}
+ */
+function richEditorCheckStyle(id, style) {
+    var editor = window.richEditors[id];
+    var options = window.richEditorOptions[id];
+    if (editor != null && options != null && options.selectionPath != null) {
+        var elements = options.selectionPath.elements;
+        for (var i = 0; i < elements.length; i++) {
+            var element = elements[i];
+            if (style.checkElementMatch(element, true)) {
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 function invokeAfterRichEditorInit(id, f) {

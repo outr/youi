@@ -48,6 +48,7 @@ object HyperscalaSite extends Website[MapSession] {
     val visualSearch = WebpageResource("/example/visualsearch.html", new HyperscalaExample(new VisualSearchExample), Scope.Page)
     val dialog = WebpageResource("/example/dialog.html", new HyperscalaExample(new DialogExample), Scope.Page)
     val draggable = WebpageResource("/example/draggable.html", new HyperscalaExample(new DraggableExample), Scope.Page)
+    val droppable = WebpageResource("/example/droppable.html", new HyperscalaExample(new DroppableExample), Scope.Page)
     val confirmDialog = WebpageResource("/example/confirm_dialog.html", new HyperscalaExample(new ConfirmDialogExample), Scope.Page)
     val dynamic = WebpageResource("/example/dynamic.html", new HyperscalaExample(new DynamicContentExample), Scope.Page)
     val dynamicPage = WebpageResource("/example/dynamic_page.html", new DynamicPageExample, Scope.Page)

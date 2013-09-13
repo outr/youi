@@ -7,6 +7,7 @@ import org.powerscala.hierarchy.event.StandardHierarchyEventProcessor
 import org.powerscala.event.processor.UnitProcessor
 import org.powerscala.event.{Listenable, ListenMode, Intercept}
 import org.hyperscala.web.WrappedComponent
+import org.hyperscala.event.EventReceived
 
 /**
  * jQueryComponent trait works to provide easier access to making calls to jQuery for extensions like autocomplete and
@@ -37,19 +38,22 @@ trait jQueryComponent extends WrappedComponent[HTMLTag] {
     }
   }
 
-  def event(eventType: String) = {
+  def event(eventType: String): UnitProcessor[jQueryEvent] = event(eventType, jQueryEvent.EmptyMapper)
+
+  def event[Event](eventType: String, mapper: JSMapper[Event])(implicit manifest: Manifest[Event]) = {
     val localizedEventType = s"$eventType.${getClass.getSimpleName}"
-    on(eventType, JavaScriptString(
-      s"""function() {
-        | var id = $$(this).attr('id');
-        | communicator.send('$localizedEventType', id, {});
-        |}
-      """.stripMargin))
-    val processor = new UnitProcessor[jQueryEvent](localizedEventType)(wrapped, implicitly[Manifest[jQueryEvent]])
+    val b = new StringBuilder
+    b.append("function(")
+    b.append(mapper.variables.mkString(", "))
+    b.append(") {\r\n")
+    b.append("\tvar id = $(this).attr('id');\r\n")
+    b.append(s"\tcommunicator.send('$localizedEventType', id, ${mapper.variables2JSON.content});\r\n")
+    b.append("}")
+    on(eventType, JavaScriptString(b.toString()))
+    val processor = new UnitProcessor[Event](localizedEventType)(wrapped, manifest)
     wrapped.eventReceived.on {
       case evt if evt.event == localizedEventType => {
-        processor.fire(jQueryEvent, ListenMode.Standard)
-
+        processor.fire(mapper.converter(evt))
         Intercept.Stop
       }
       case _ => Intercept.Continue
@@ -60,4 +64,8 @@ trait jQueryComponent extends WrappedComponent[HTMLTag] {
 
 class jQueryEvent
 
-object jQueryEvent extends jQueryEvent
+object jQueryEvent extends jQueryEvent {
+  val EmptyMapper = JSMapper[jQueryEvent](Nil, JavaScriptString("{}"), (evt: EventReceived) => jQueryEvent)
+}
+
+case class JSMapper[Event](variables: List[String], variables2JSON: JavaScriptContent, converter: EventReceived => Event)

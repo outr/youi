@@ -27,12 +27,12 @@ class Droppable private(val wrapped: HTMLTag) extends jQueryComponent {
   def disable() = call("disable")
   def enable() = call("enable")
 
-  val activateEvent = event("activate")
-  val createEvent = event("create")
-  val deactivateEvent = event("deactivate")
-  val dropEvent = event[DropEvent]("drop", DropEvent.Mapper)
-  val out = event("out")
-  val over = event("over")
+  lazy val activateEvent = event("activate")
+  lazy val createEvent = event("create")
+  lazy val deactivateEvent = event("deactivate")
+  lazy val dropEvent = event[DropEvent]("drop", DropEvent.Mapper)
+  lazy val out = event("out")
+  lazy val over = event("over")
 }
 
 object Droppable extends StorageComponent[Droppable, HTMLTag] {

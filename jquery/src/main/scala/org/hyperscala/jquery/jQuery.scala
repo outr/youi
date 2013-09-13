@@ -74,6 +74,6 @@ object jQuery extends Interface {
   def on(t: HTMLTag, eventType: String, function: JavaScriptContent): Unit = on(s"#${t.identity}", eventType, function)
 
   def on(selector: String, eventType: String, function: JavaScriptContent) = {
-    call(selector, s"on('$eventType', ${function.content}")
+    call(selector, s"on('$eventType', ${function.content})")
   }
 }

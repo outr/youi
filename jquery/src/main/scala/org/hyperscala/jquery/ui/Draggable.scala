@@ -45,10 +45,10 @@ class Draggable private(val wrapped: HTMLTag) extends jQueryComponent {
   def disable() = call("disable")
   def enable() = call("enable")
 
-  val createEvent = event("create")
-  val dragEvent = event("drag")
-  val startEvent = event("start")
-  val stopEvent = event("stop")
+  lazy val createEvent = event("create")
+  lazy val dragEvent = event("drag")
+  lazy val startEvent = event("start")
+  lazy val stopEvent = event("stop")
 }
 
 object Draggable extends StorageComponent[Draggable, HTMLTag] {

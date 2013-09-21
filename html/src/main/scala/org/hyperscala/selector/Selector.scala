@@ -114,13 +114,21 @@ case class PrecedingSelector(selector: Selector, sibling: Selector) extends Sele
 }
 
 case class AttributeExistsSelector(selector: Selector, attribute: String) extends Selector {
-  def value = s"${selector.value}[$attribute]"
+  def value = if (selector != null) {
+    s"${selector.value}[$attribute]"
+  } else {
+    s"[$attribute]"
+  }
 
   def matches(t: HTMLTag) = t.attributes.contains(attribute)
 }
 
 case class AttributeSelector(selector: Selector, attribute: String, matcher: AttributeMatcher, attributeValue: String) extends Selector {
-  def value = "%s[%s%s\"%s\"]".format(selector.value, attribute, matcher.value, attributeValue)
+  def value = if (selector != null) {
+    s"""${selector.value}[$attribute${matcher.value}"$attributeValue"]"""
+  } else {
+    s"""[$attribute${matcher.value}"$attributeValue"]"""
+  }
 
   def matches(t: HTMLTag) = t.attributes.get(attribute) match {
     case Some(a) => a.attributeValue == attributeValue

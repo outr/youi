@@ -12,6 +12,7 @@ class HyperscalaDocumentation extends HyperscalaPage {
     l("Hyperscala: Getting Started", "http://www.matthicks.com/2013/01/hyperscala-getting-started.html")
     l("Hyperscala: Chat Example", "http://www.matthicks.com/2013/01/hyperscala-chat-example.html")
     l("Hyperscala: Why Not Play?", "http://www.matthicks.com/2013/01/hyperscala-why-not-play.html")
+    l("API Documentation", "http://build.sgine.org/job/hyperscala/javadoc/")
 
     def l(title: String, link: String) = contents += new tag.Li {
       contents += new tag.A(href = link, content = title)

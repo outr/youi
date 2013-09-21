@@ -71,6 +71,9 @@ object Realtime extends Module {
 
   def broadcast(event: String, message: Any, page: Webpage = Webpage()) = synchronized {
     val connections = getConnections(page)
+    if (connections.isEmpty) {
+      throw new RuntimeException(s"Unable to send $event, no connections established!")
+    }
     val content = message match {
       case s: String => s
       case other => generate(other)

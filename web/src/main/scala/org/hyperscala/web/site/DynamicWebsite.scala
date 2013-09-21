@@ -16,7 +16,11 @@ trait DynamicWebsite {
 
   private def registerMethod(em: EnhancedMethod) = {
     val path = s"/${em.name}.html"
-    WebpageResource(path, em[Webpage](this), Scope.Page)
+    val resource = WebpageResource(path, em[Webpage](this), Scope.Page)
+    if (em.name == "index") {
+      resource.matchers += resource.matches("/")
+    }
+    resource
   }
 }
 

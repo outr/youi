@@ -13,7 +13,7 @@ class RealtimeDSLExample extends Example {
   val input = new tag.Input(id = "my_input")
   contents += input
 
-  $(input).keyup(onKey(Key.Escape) {
+  $(input).keyUp(onKey(Key.Escape) {
     println("Escape was pressed!")
   })
 }

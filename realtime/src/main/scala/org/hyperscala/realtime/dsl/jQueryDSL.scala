@@ -1,14 +1,18 @@
 package org.hyperscala.realtime.dsl
 
-import org.hyperscala.selector.{TagIdSelector, Selector}
-import org.hyperscala.javascript.{JSFunction1, JavaScriptString, JavaScriptContent}
-import org.hyperscala.event.KeyUpEvent
+import org.hyperscala.selector.Selector
+import org.hyperscala.javascript.{JSFunction1, JavaScriptContent}
+import org.hyperscala.event._
 import org.hyperscala.realtime.Realtime
-import org.hyperscala.{Message, Unique}
+import org.hyperscala.Unique
 import org.hyperscala.web.site.Webpage
 
 import org.hyperscala.html._
 import org.hyperscala.css.attributes.Display
+import org.hyperscala.selector.TagIdSelector
+import org.hyperscala.javascript.JavaScriptString
+import org.hyperscala.Message
+import scala.Some
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -50,7 +54,19 @@ class CallbackStore extends tag.Div(id = "jquerydsl_callbackstore") {
 case class jQuerySelector(selector: Selector) {
   lazy val select = s"$$('${selector.value}')"
 
-  def keyup(f: JSFunction1[KeyUpEvent, Boolean]) = {
+  def keyDown(f: JSFunction1[KeyboardEvent, Boolean]) = {
+    val instruction = s"$select.keydown(${f.content});"
+    Realtime.sendJavaScript(instruction, onlyRealtime = false)
+    this
+  }
+
+  def keyPress(f: JSFunction1[KeyboardEvent, Boolean]) = {
+    val instruction = s"$select.keypress(${f.content});"
+    Realtime.sendJavaScript(instruction, onlyRealtime = false)
+    this
+  }
+
+  def keyUp(f: JSFunction1[KeyboardEvent, Boolean]) = {
     val instruction = s"$select.keyup(${f.content});"
     Realtime.sendJavaScript(instruction, onlyRealtime = false)
     this

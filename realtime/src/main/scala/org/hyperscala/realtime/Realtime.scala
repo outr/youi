@@ -17,6 +17,7 @@ import org.hyperscala.event.JavaScriptEvent
 
 import language.reflectiveCalls
 import org.hyperscala.jquery.stylesheet.jQueryStyleSheet
+import org.hyperscala.Container
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -62,6 +63,11 @@ object Realtime extends Module {
       page.store(connectionsKey) = updated
     }
     connections
+  }
+
+  def existing[T <: HTMLTag](parent: Container[T], creator: => T) = WebpageConnection.ignoreStructureChanges {
+    val element: T = creator
+    parent.contents += element
   }
 
   def addConnection(page: Webpage, connection: WebpageConnection) = synchronized {

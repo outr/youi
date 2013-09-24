@@ -15,6 +15,8 @@ import org.hyperscala.html.attributes.ContentEditable
 import org.hyperscala.io.HTMLToScala
 import org.hyperscala.css.Style
 import org.hyperscala.css.attributes.FontSize
+import org.hyperscala.ui.clipboard.{ClipType, Clipboard}
+import org.powerscala.enum.{Enumerated, EnumEntry}
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -51,6 +53,29 @@ object RichEditor extends Module with StorageComponent[RichEditor, HTMLTag] {
 
 class RichEditor private(val wrapped: HTMLTag) extends WrappedComponent[HTMLTag] {
   import RichEditor._
+
+  /**
+   * Configures the Clipboard module to integrate with this editor.
+   */
+  def enableClipboard() = {
+    Webpage().require(Clipboard)
+
+    Clipboard.connect(wrapped)
+    Clipboard().configureDefaultHandling()
+
+    Clipboard().clientEvent.on {
+      case evt => if (evt.element.getOrElse(null) == wrapped) {
+        evt.clipType match {
+          case ClipType.Cut => delete()
+          case ClipType.Copy => // Default handling will take care of this
+          case ClipType.Paste => Clipboard().headOption match {
+            case Some(entry) => insert(entry.value.toString, InsertMode.HTML)
+            case None => // Nothing in the clipboard to paste
+          }
+        }
+      }
+    }
+  }
 
   /**
    * Whether this editor should be inlined (use contenteditable) or the standard ckeditor. If using the standard
@@ -603,6 +628,11 @@ class RichEditor private(val wrapped: HTMLTag) extends WrappedComponent[HTMLTag]
 
   def accessNextSpace() = execCommand("accessNextSpace")
 
+  /**
+   * Deletes the current selection
+   */
+  def delete() = execCommand("delete")
+
   // TODO: getCommand('bold').state - 0 = disabled, 1 = true, 2 = false
 
   init()
@@ -651,6 +681,16 @@ class RichEditor private(val wrapped: HTMLTag) extends WrappedComponent[HTMLTag]
 
   protected def modify(key: String, value: Any) = {
     Realtime.sendJavaScript(s"richEditorOption('${wrapped.identity}', '$key', ${JavaScriptContent.toJS(value)});", onlyRealtime = false)
+  }
+
+  /**
+   * Inserts the supplied content at the current selection. The selected text will be replaced with this content.
+   *
+   * @param content the HTML content to insert.
+   * @param mode the insertion mode to use.
+   */
+  def insert(content: String, mode: InsertMode) = {
+    Realtime.sendJavaScript(s"richEditorInsert('${wrapped.identity}', '${mode.value}', content);", onlyRealtime = false, content = content)
   }
 
   /**
@@ -745,3 +785,11 @@ case class RichEditorStyle(element: String,
 }
 
 case class Override(element: String, attributes: Map[String, String] = Map.empty)
+
+class InsertMode private(val value: String) extends EnumEntry
+
+object InsertMode extends Enumerated[InsertMode] {
+  val HTML = new InsertMode("html")
+  val UnfilteredHTML = new InsertMode("unfiltered_html")
+  val Text = new InsertMode("text")
+}

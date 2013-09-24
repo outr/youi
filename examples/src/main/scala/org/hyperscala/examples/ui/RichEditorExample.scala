@@ -27,7 +27,7 @@ class RichEditorExample extends Example {
   }
 
   val editor = RichEditor(div)
-  editor.showToolbar := true
+  editor.showToolbar := false
   editor.showPath := false
   editor.showResizer := false
   editor.showFormButtons(false)
@@ -38,6 +38,7 @@ class RichEditorExample extends Example {
   editor.onSuperscript(addClass(Selector.id("superscriptToggle"), "active"))
   editor.onSubscript(addClass(Selector.id("subscriptToggle"), "active"))
   editor.onFontSize(setValue(Selector.id("fontSize")))
+  editor.enableClipboard()    // Enable use of Clipboard module
 
   contents += div
   contents += new tag.Button(content = "Modify") {

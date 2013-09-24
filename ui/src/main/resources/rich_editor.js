@@ -148,8 +148,21 @@ function updateRichEditor(id, value) {
 function richEditorExecCommand(id, command, data) {
     var editor = window.richEditors[id];
     if (editor != null) {
-        editor.execCommand(command, data);
+        if (command == 'delete') {
+            var range = editor.getSelection().getRanges()[0];
+            range.deleteContents()
+            range.select();
+        } else {
+            editor.execCommand(command, data);
+        }
     }
+}
+
+function richEditorInsert(id, mode, content) {
+    invokeAfterRichEditorInit(id, function() {
+        var editor = window.richEditors[id];
+        editor.insertHtml(content, mode);
+    });
 }
 
 function richEditorAttachStyleStateChange(id, style, f) {

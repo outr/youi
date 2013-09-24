@@ -9,6 +9,9 @@ import org.hyperscala.web.site.Webpage
 import swing.FileChooser
 import java.util.prefs.Preferences
 import org.powerscala.IO
+import org.jdom2.xpath.XPathFactory
+import org.jdom2.filter.Filters
+import scala.collection.JavaConversions._
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -65,10 +68,17 @@ object HTMLToScala {
     page
   }
 
-  def toHTML(source: String, clean: Boolean) = {
+  def toHTML(source: String, clean: Boolean, rootId: String = null) = {
     val xml = toXML(source, clean)
-    val root = HTMLTag.create(xml.getName)
-    root.read(xml)
+    val element = if (rootId != null) {
+      val query = s"//*[@id='$rootId']"
+      val expression = XPathFactory.instance().compile(query, Filters.element())
+      expression.evaluate(xml).head
+    } else {
+      xml
+    }
+    val root = HTMLTag.create(element.getName)
+    root.read(element)
     root
   }
 

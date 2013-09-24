@@ -24,7 +24,6 @@ class DropReceiverExample extends Example {
   contents += dropDiv
 
   val dropReceiver = DropReceiver(dropDiv)
-  dropReceiver.receiveTypes := List("text/html")
   dropReceiver.dropped.on {
     case evt => println(s"Dropped: $evt")
   }

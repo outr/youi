@@ -46,7 +46,7 @@ class DropReceiver private(val wrapped: HTMLTag) extends WrappedComponent[HTMLTa
   /**
    * Receive Types defines the types of data that is acceptable during a drop.
    *
-   * Defaults to List("text/plain", "text/html")
+   * Defaults to List("text/plain", "text/html", "text/uri-list")
    */
   val receiveTypes = wrapped.dataWrapper[List[String]]("receive-types", List("text/plain", "text/html", "text/uri-list")) {
     case list => list.mkString(", ")
@@ -77,6 +77,8 @@ object DropReceiver extends Module with StorageComponent[DropReceiver, HTMLTag] 
   protected def create(t: HTMLTag) = new DropReceiver(t)
 }
 
-case class DropReceived(types: List[String], data: List[DropData])
+case class DropReceived(types: List[String], data: List[DropData]) {
+  def get(mimeType: String) = data.find(dd => dd.mimeType == mimeType).map(dd => dd.data)
+}
 
 case class DropData(mimeType: String, data: String)

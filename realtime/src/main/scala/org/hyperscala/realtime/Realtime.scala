@@ -17,7 +17,7 @@ import org.hyperscala.event.JavaScriptEvent
 
 import language.reflectiveCalls
 import org.hyperscala.jquery.stylesheet.jQueryStyleSheet
-import org.hyperscala.Container
+import org.hyperscala.{Markup, Container}
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -65,9 +65,14 @@ object Realtime extends Module {
     connections
   }
 
-  def existing[T <: HTMLTag](parent: Container[T], creator: => T) = WebpageConnection.ignoreStructureChanges {
+  def existing[T <: HTMLTag](parent: Container[_], creator: => T) = WebpageConnection.ignoreStructureChanges {
     val element: T = creator
-    parent.contents += element
+    if (element.id() == null || element.id() == "") {
+      throw new RuntimeException("The created element must have an existing ID supplied for referencing!")
+    }
+    parent.asInstanceOf[Container[T]].contents += element
+    Markup.rendered(element)      // Mark the element as rendered so it doesn't wait for it
+    element
   }
 
   def addConnection(page: Webpage, connection: WebpageConnection) = synchronized {

@@ -66,6 +66,7 @@ object HyperscalaSite extends Website[MapSession] {
     val jQueryEvents = WebpageResource("/example/jquery_events.html", new HyperscalaExample(new jQueryEventsExample), Scope.Request)
     val selectWrapper = WebpageResource("/example/select_wrapper.html", new HyperscalaExample(new SelectWrapperExample), Scope.Page)
     val dsl = WebpageResource("/example/dsl.html", new HyperscalaExample(new RealtimeDSLExample), Scope.Page)
+    val history = WebpageResource("/example/history.html", new HyperscalaExample(new HistoryExample), Scope.Page)
     val svg = new {
       val basic = WebpageResource("/example/svg/basic.html", new HyperscalaExample(new BasicSVGExample), Scope.Page)
       val shapes = WebpageResource("/example/svg/shapes.html", new HyperscalaExample(new SVGShapesExample), Scope.Page)

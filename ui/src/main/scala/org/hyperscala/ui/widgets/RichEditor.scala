@@ -68,9 +68,13 @@ class RichEditor private(val wrapped: HTMLTag) extends WrappedComponent[HTMLTag]
         evt.clipType match {
           case ClipType.Cut => delete()
           case ClipType.Copy => // Default handling will take care of this
-          case ClipType.Paste => Clipboard().headOption match {
-            case Some(entry) => insert(entry.value.toString, InsertMode.HTML)
-            case None => // Nothing in the clipboard to paste
+          case ClipType.Paste => {
+            Clipboard().headOption match {
+              case Some(entry) => {
+                insert(entry.value.toString, InsertMode.UnfilteredHTML)
+              }
+              case None => // Nothing in the clipboard to paste
+            }
           }
         }
       }

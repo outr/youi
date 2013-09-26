@@ -292,13 +292,20 @@ class StyleSheet(val hierarchicalParent: Listenable,
   lazy val wordWrap = new StyleSheetAttribute(Style.wordWrap)
   lazy val zIndex = new StyleSheetAttribute(Style.zIndex)
 
-  def apply(css: String) = {
-    css.split(";").map(s => s.split(":")).map(a => a(0).trim -> a(1).trim).foreach {
+  def apply(css: String) = try {
+    css.split(";").map(s => s.trim()).collect {
+      case s if s.nonEmpty => {
+        val a = s.split(":")
+        a(0).trim -> a(1).trim
+      }
+    }.foreach {
       case (key, value) => Style.byCSSName(key) match {
         case Some(style) => update[AnyRef](style.asInstanceOf[Style[AnyRef]], style.persistence.fromString(value, key, style.manifest.runtimeClass).asInstanceOf[AnyRef])
         case None => warn("Unable to find style by css name '%s' with value '%s'.".format(key, value))
       }
     }
+  } catch {
+    case t: Throwable => throw new RuntimeException(s"Failed to parse CSS: [$css].", t)
   }
 
   def apply(ss: StyleSheet, append: Boolean = true) = {

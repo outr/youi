@@ -16,6 +16,7 @@ import org.powerscala.hierarchy.event.{Descendants, ChildRemovedEvent, ChildAdde
 import svg.{Svg, SVGTag}
 import util.parsing.json.JSON
 import org.powerscala.hierarchy.ChildLike
+import org.powerscala.property.Property
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -53,6 +54,11 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
       case evt if FormField.changingProperty == evt.property && FormField.changingValue == evt.newValue => {
         // Ignore a change initialized by this connector (avoid recursive changes)
         debug("Ignoring change being applied: %s".format(FormField.changingValue))
+      }
+      case evt if WebpageConnection._ignoringChangeProperty.get() == evt.property && WebpageConnection._ignoringChangeValue.get() == evt.newValue => {
+        WebpageConnection._ignoringChangeProperty.remove()
+        WebpageConnection._ignoringChangeValue.remove()
+        debug(s"Ignoring change to property! ${evt.newValue}")
       }
       case evt => evt.property match {
         case property: PropertyAttribute[_] => ChildLike.parentOf(property) match {
@@ -192,6 +198,8 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
 }
 
 object WebpageConnection {
+  private val _ignoringChangeProperty = new ThreadLocal[Property[_]]
+  private val _ignoringChangeValue = new ThreadLocal[Any]
   private val _ignoringStructureChanges = new ThreadLocal[Boolean] {
     override def initialValue() = false
   }
@@ -207,6 +215,16 @@ object WebpageConnection {
     }
   }
   def ignoringStructureChanges = _ignoringStructureChanges.get()
+  def ignoringChange[T](property: Property[T], value: T) = {
+    _ignoringChangeProperty.set(property)
+    _ignoringChangeValue.set(value)
+    try {
+      property := value
+    } finally {
+      _ignoringChangeProperty.remove()
+      _ignoringChangeValue.remove()
+    }
+  }
 }
 
 case class JavaScriptMessage(instruction: String, content: String = null)

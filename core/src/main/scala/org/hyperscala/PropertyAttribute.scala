@@ -11,7 +11,7 @@ import org.powerscala.event.Listenable
 class PropertyAttribute[T](val name: String,
                            default: T,
                            var inclusion: InclusionMode = InclusionMode.ModifiedAndNotEmpty)
-                          (implicit persister: ValuePersistence[T], parent: Listenable, manifest: Manifest[T])
+                          (implicit val persister: ValuePersistence[T], parent: Listenable, manifest: Manifest[T])
                            extends Property[T](default = Some(default))(parent, manifest) with XMLAttribute {
   parent match {
     case tag: Tag => tag.addAttribute(this)

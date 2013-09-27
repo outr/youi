@@ -1,8 +1,10 @@
 package org.hyperscala.realtime
 
 import org.hyperscala.event.{KeyboardEvent, Key}
-import org.hyperscala.javascript.{JavaScriptString, JSFunction1}
+import org.hyperscala.javascript.{JSFunction0, JavaScriptString, JSFunction1}
 import org.hyperscala.selector.{StringSelector, Selector}
+import org.hyperscala.css.StyleSheetAttribute
+import org.hyperscala.PropertyAttribute
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -41,6 +43,16 @@ package object dsl {
     checkConditional(shiftKey, "shiftKey")
     conditional.append(")")
     new JavaScriptString(s"function(e) { ${conditional.toString()} { ${callback.content} return ${!stopPropagation}; } }") with JSFunction1[KeyboardEvent, Boolean]
+  }
+
+  def onCSS[T](selector: Selector, attribute: StyleSheetAttribute[T]) = {
+    val key = attribute.name
+    new JavaScriptString(s"function() { return $$('${selector.value}').css('$key'); }") with JSFunction0[T]
+  }
+
+  def onAttribute[T](selector: Selector, attribute: PropertyAttribute[T]) = {
+    val key = attribute.name
+    new JavaScriptString(s"function() { return $$('${selector.value}').attr('$key'); }") with JSFunction0[T]
   }
 
   def addClass(selector: Selector, className: String) = AddClassJavaScriptFunction(selector, className)

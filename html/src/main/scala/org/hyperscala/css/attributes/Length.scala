@@ -24,7 +24,7 @@ class Length(val value: String) extends EnumEntry with AttributeValue {
   override def toString() = if (name != null) {
     super.toString()
   } else {
-    "Length(%s)".format(value)
+    value
   }
 }
 

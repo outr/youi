@@ -2,7 +2,7 @@ package org.hyperscala.realtime
 
 import org.hyperscala.event.{KeyboardEvent, Key}
 import org.hyperscala.javascript.{JavaScriptString, JSFunction1}
-import org.hyperscala.selector.Selector
+import org.hyperscala.selector.{StringSelector, Selector}
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -10,20 +10,30 @@ import org.hyperscala.selector.Selector
 package object dsl {
   def $ = jQueryDSL
 
+  val window = StringSelector("window")
+  val body = StringSelector("body")
+
   def onKey(key: Key,
-            altKey: Boolean = false,
-            ctrlKey: Boolean = false,
-            metaKey: Boolean = false,
-            shiftKey: Boolean = false,
+            altKey: Option[Boolean] = None,
+            ctrlKey: Option[Boolean] = None,
+            metaKey: Option[Boolean] = None,
+            shiftKey: Option[Boolean] = None,
             stopPropagation: Boolean = false)(f: => Unit): JSFunction1[KeyboardEvent, Boolean] = {
     val store = jQueryDSL.callbackStore
     val callback = store.createCallback(() => f)
     val conditional = new StringBuilder
     conditional.append("if (e.keyCode == ")
     conditional.append(key.code)
-    def checkConditional(check: Boolean, name: String) = if (check) {
-      conditional.append(" && e.")
-      conditional.append(name)
+    def checkConditional(checkOption: Option[Boolean], name: String) = checkOption match {
+      case Some(check) => {
+        conditional.append(" && ")
+        if (!check) {
+          conditional.append("!")
+        }
+        conditional.append("e.")
+        conditional.append(name)
+      }
+      case None => // Don't add anything, we don't care
     }
     checkConditional(altKey, "altKey")
     checkConditional(ctrlKey, "ctrlKey")

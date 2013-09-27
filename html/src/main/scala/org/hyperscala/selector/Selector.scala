@@ -76,6 +76,10 @@ object AllSelector extends Selector {
   def matches(t: HTMLTag) = true
 }
 
+case class StringSelector(value: String) extends Selector {
+  def matches(t: HTMLTag) = false
+}
+
 case class ClassSelector(className: String) extends Selector {
   def value = s".$className"
 

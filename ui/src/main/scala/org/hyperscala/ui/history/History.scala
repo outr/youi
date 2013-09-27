@@ -8,10 +8,12 @@ import scala.collection.immutable.Queue
 import org.powerscala.event.processor.UnitProcessor
 import org.powerscala.concurrent.AtomicInt
 import org.hyperscala.realtime.Realtime
-import org.hyperscala.html.{tag, HTMLTag}
-import org.hyperscala.jquery.jQueryComponent
+
+import org.hyperscala.realtime.dsl._
 
 import scala.language.postfixOps
+import org.hyperscala.event.Key
+import org.powerscala.enum.{Enumerated, EnumEntry}
 
 /**
  * History module provides history management functionality to a webpage.
@@ -24,22 +26,18 @@ object History extends Module {
    */
   val WebpageInstanceCreator = () => new HistoryInstance
   /**
-   * Stores the HistoryInstance in the session.
+   * Stores the HistoryInstance in the session so each webpage has a persistent instance.
    */
-  val SessionInstanceCreator = () => Website().session.getOrSet("history_module", new HistoryInstance)
+  val SessionInstanceCreator = () => Website().session.getOrSet(s"${Webpage().getClass.getName}.history_module", new HistoryInstance)
 
   val name = "history"
   val version = Version(1)
 
   override def dependencies = List(Realtime)
 
-  def init() = {
-    Website().register("/js/history.js", "history.js")
-  }
+  def init() = {}
 
-  def load() = {
-    Webpage().head.contents += new tag.Script(mimeType = "text/javascript", src = "/js/history.js")
-  }
+  def load() = apply()
 
   /**
    * Creates new HistoryInstances. This can be overridden to pre-populate or share instances across multiple pages.
@@ -51,16 +49,27 @@ object History extends Module {
   def apply() = Webpage().store.getOrSet("history_module", creator())
 }
 
-class History private(val wrapped: HTMLTag) extends jQueryComponent {
-  protected def functionName = "history"
-}
-
 class HistoryInstance extends Listenable {
   private var undos = Queue.empty[HistoryEntry]
   private var redos = Queue.empty[HistoryEntry]
   private val changing = new AtomicInt(0)
 
   val added = new UnitProcessor[HistoryEntry]("history_added")
+  val stateChanged = new UnitProcessor[HistoryStateChange]("history_state_change")
+
+  // Configure key bindings on page
+  $(body).keyDown(onKey(Key.Z, shiftKey = Some(false), ctrlKey = Some(true), stopPropagation = true) {
+    undo()
+  })
+  $(body).keyDown(onKey(Key.Z, shiftKey = Some(true), ctrlKey = Some(true), stopPropagation = true) {
+    redo()
+  })
+  $(body).keyDown(onKey(Key.Y, ctrlKey = Some(true), stopPropagation = true) {
+    redo()
+  })
+
+  def undoList = undos.toList
+  def redoList = redos.toList
 
   /**
    * Returns true if the history state is currently being modified (undoing or redoing).
@@ -73,7 +82,7 @@ class HistoryInstance extends Listenable {
    * @param entry the history entry to add
    * @param callRedo if set to true the redo method will be invoked on the entry before it is added (defaults to false)
    */
-  def +=(entry: HistoryEntry, callRedo: Boolean = false) = synchronized {
+  def add(entry: HistoryEntry, callRedo: Boolean = false) = synchronized {
     if (!isChanging) {
       cut()                                     // Clear out any redo history before add an entry
       val newEntry = previous() match {         // Allows merging with the previous history entry
@@ -112,6 +121,7 @@ class HistoryInstance extends Listenable {
           entry.undo()            // Undo the entry
           undos = undos.tail      // Remove it from the undos queue
           redos = entry +: redos  // Add it to the redos queue
+          stateChanged.fire(HistoryStateChange.Undo)
           true
         }
         case None => false
@@ -131,6 +141,7 @@ class HistoryInstance extends Listenable {
           entry.redo()            // Redo the entry
           redos = redos.tail      // Remove it from the redos queue
           undos = entry +: undos  // Add it to the undos queue
+          stateChanged.fire(HistoryStateChange.Redo)
           true
         }
         case None => false
@@ -182,12 +193,21 @@ class HistoryInstance extends Listenable {
   def cut() = synchronized {
     redos = Queue.empty
   }
+
+  /**
+   * Clears all undo and redo history.
+   */
+  def clear() = synchronized {
+    undos = Queue.empty
+    redos = Queue.empty
+    stateChanged.fire(HistoryStateChange.Clear)
+  }
 }
 
-trait HistoryEntry {
-  def description: String
-  def time: Long
-  def undo(): Unit
-  def redo(): Unit
-  def mergeWithPrevious(previous: HistoryEntry): Option[HistoryEntry]
+class HistoryStateChange private() extends EnumEntry
+
+object HistoryStateChange extends Enumerated[HistoryStateChange] {
+  val Undo = new HistoryStateChange
+  val Redo = new HistoryStateChange
+  val Clear = new HistoryStateChange
 }

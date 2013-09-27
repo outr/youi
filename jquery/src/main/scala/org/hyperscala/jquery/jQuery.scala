@@ -4,6 +4,7 @@ import org.hyperscala.module._
 import org.hyperscala.html._
 import org.hyperscala.web.site.Webpage
 import org.hyperscala.javascript.{JavaScriptContent, JavaScriptString}
+import org.hyperscala.Unique
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -54,17 +55,18 @@ object jQuery extends Interface {
   def call(t: HTMLTag, function: String): Unit = call("#%s".format(t.identity), function)
 
   def call(selector: String, function: String, waitForResults: Boolean = true): Unit = {
+    val unique = Unique()
     val content = if (waitForResults) {
       """
-        |var callFunction = function() {
+        |var callFunction%3$s = function() {
         |  if ($('%1$s').length == 0) {
-        |    setTimeout(callFunction, 10);
+        |    setTimeout(callFunction%3$s, 10);
         |  } else {
         |    $('%1$s').%2$s;
         |  }
         |}
-        |callFunction();
-      """.stripMargin.format(selector, function)
+        |callFunction%3$s();
+      """.stripMargin.format(selector, function, unique)
     } else {
       s"$$('$selector').$function;"
     }

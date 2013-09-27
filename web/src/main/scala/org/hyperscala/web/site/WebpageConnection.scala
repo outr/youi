@@ -159,17 +159,22 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
           case tag: SVGTag if !tag.isInstanceOf[Svg] => "parseSVG(content)"
           case _ => "content"
         }
-        val instruction = if (index == parent.contents.length - 1) {    // Append to the end
-          "$('#%s').append(%s);".format(parent.id(), variable)
-        } else if (index == 0) {                                   // Append before
-        val after = parent.contents(1)
-          "$('#%s').before(%s);".format(after.id(), variable)
-        } else {
-          val before = parent.contents(index - 1)
-          "$('#%s').after(%s);".format(before.id(), variable)
+        child match {
+          case t: tag.Script => send(JavaScriptMessage(t.contents.map(c => c.content).mkString("\r\n")))
+          case _ => {
+            val instruction = if (index == parent.contents.length - 1) {    // Append to the end
+              "$('#%s').append(%s);".format(parent.id(), variable)
+            } else if (index == 0) {                                   // Append before
+            val after = parent.contents(1)
+              "$('#%s').before(%s);".format(after.id(), variable)
+            } else {
+              val before = parent.contents(index - 1)
+              "$('#%s').after(%s);".format(before.id(), variable)
+            }
+            val content = child.outputString
+            send(JavaScriptMessage(instruction, content))
+          }
         }
-        val content = child.outputString
-        send(JavaScriptMessage(instruction, content))
       }
       case js: JavaScriptContent => send(JavaScriptMessage(js.content))
     }
@@ -192,7 +197,7 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
   }
 
   override def send(event: String, message: String) {
-    debug("Sending event: %s, message: %s".format(event, message))
+    debug(s"Sending event: $event, message: message")
     super.send(event, message)
   }
 }

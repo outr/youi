@@ -163,16 +163,20 @@ function jsEventHandler(e, data, fireChange, onlyLast) {
 var logEvals = false;
 
 function jsEval(message) {
-    var json = jQuery.parseJSON(message);
-    var content = json['content'];
-    var instruction = json['instruction'];
-    if (logEvals) {
-        log('Instruction: ' + instruction + ', Content: ' + content);
-    }
     try {
-        eval(instruction);
-    } catch(err) {
-        log('Error occurred (' + err.message + ') while attempting to evaluate instruction: [' + instruction + '] with content: [' + content + '].')
+        var json = jQuery.parseJSON(message);
+        var content = json['content'];
+        var instruction = json['instruction'];
+        if (logEvals) {
+            log('Instruction: ' + instruction + ', Content: ' + content);
+        }
+        try {
+            eval(instruction);
+        } catch(err) {
+            log('Error occurred (' + err.message + ') while attempting to evaluate instruction: [' + instruction + '] with content: [' + content + '].')
+        }
+    } catch(err2) {
+        log('Error occurred (' + err.message + ') in jsEval: [' + message + ']');
     }
 }
 

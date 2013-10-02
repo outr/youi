@@ -47,7 +47,10 @@ object Realtime extends Module {
         val connection = Website().create(id)
         connection.page = page
         Realtime.addConnection(page, connection)
-        "connectRealtime('%s', %s);".format(id.toString, debug)
+        s"""$$(document).ready(function() {
+          |   connectRealtime('${id.toString}', $debug);
+          |});
+        """.stripMargin
       }
 
       protected def content_=(content: String) {}

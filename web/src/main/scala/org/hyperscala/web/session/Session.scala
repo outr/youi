@@ -8,6 +8,7 @@ import org.hyperscala.web.site._
 import scala.Some
 import org.hyperscala.context.Contextual
 import org.powerscala.log.Logging
+import org.powerscala.property.Property
 
 
 /**
@@ -73,6 +74,14 @@ trait Session extends Temporal with Listenable with WorkQueue {
   def values: Iterable[Any]
 
   def clear(): Unit
+
+  def property[T](key: Any, default: T)(implicit manifest: Manifest[T]) = {
+    val p = Property[T](default = Option(default))(this, manifest)
+    p.change.on {
+      case evt => update(key, evt.newValue)
+    }
+    p
+  }
 
   def invokeLater(f: => Unit) = {
     WorkQueue.enqueue(this, () => f)

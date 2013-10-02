@@ -34,6 +34,7 @@ $(document).on('drop', 'input, textarea', function() {
 var host = document.location.host;
 
 var communicator = new Communicator();
+window.communicator = communicator;
 // TODO: handle customization
 communicator.webSocketURL = 'ws://' + host + '/websocket';
 communicator.pollingURL = 'http://' + host + '/ajax/polling';
@@ -171,7 +172,9 @@ function jsEval(message) {
             log('Instruction: ' + instruction + ', Content: ' + content);
         }
         try {
-            eval(instruction);
+            jQuery(document).ready(function() {     // Wait until the page is ready
+                eval(instruction);
+            });
         } catch(err) {
             log('Error occurred (' + err.message + ') while attempting to evaluate instruction: [' + instruction + '] with content: [' + content + '].')
         }
@@ -309,5 +312,6 @@ function delayedGroupSend(groupId) {
     if (group != null) {
         communicator.send(group.event, group.id, group.message);
         group.timeoutId = null;             // Remove the timeout id so we know it has run
+        group.lastSend = (new Date).getTime();
     }
 }

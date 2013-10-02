@@ -127,7 +127,7 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
   def styleChanged(selector: String, style: Style[_], value: AnyRef): Unit = {
     val anyStyle = style.asInstanceOf[Style[AnyRef]]
     val cssName = style.cssName
-    val cssValue = anyStyle.persistence.toString(value, cssName, value.getClass)
+    val cssValue = if (value != null) anyStyle.persistence.toString(value, cssName, value.getClass) else null
     send(JavaScriptMessage("$('%s').css('%s', content);".format(selector, cssName), cssValue))
   }
 

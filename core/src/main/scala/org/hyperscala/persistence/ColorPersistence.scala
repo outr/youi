@@ -8,5 +8,9 @@ import org.powerscala.Color
 object ColorPersistence extends ValuePersistence[Color] {
   def fromString(s: String, name: String, clazz: Class[_]) = Color(s)
 
-  def toString(t: Color, name: String, clazz: Class[_]) = if (t != null) t.hex.rgb else null
+  def toString(t: Color, name: String, clazz: Class[_]) = t match {
+    case null => null
+    case _ if t.alpha != 1.0 => s"rgba(${t.int.rgba})"
+    case _ => t.hex.rgb
+  }
 }

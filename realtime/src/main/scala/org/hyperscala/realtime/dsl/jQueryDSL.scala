@@ -1,7 +1,7 @@
 package org.hyperscala.realtime.dsl
 
 import org.hyperscala.selector.Selector
-import org.hyperscala.javascript.{JSFunction1, JavaScriptContent}
+import org.hyperscala.javascript.{JSFunction0, JSFunction1, JavaScriptContent, JavaScriptString}
 import org.hyperscala.event._
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.Unique
@@ -10,9 +10,9 @@ import org.hyperscala.web.site.Webpage
 import org.hyperscala.html._
 import org.hyperscala.css.attributes.Display
 import org.hyperscala.selector.TagIdSelector
-import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.Message
 import scala.Some
+import org.hyperscala.css.Style
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -53,6 +53,10 @@ class CallbackStore extends tag.Div(id = "jquerydsl_callbackstore") {
 
 case class jQuerySelector(selector: Selector) {
   lazy val select = s"$$('${selector.value}')"
+
+  def css[S](style: Style[S], jsFunction: JSFunction0[S]) = {
+
+  }
 
   def keyDown(f: JSFunction1[KeyboardEvent, Boolean]) = {
     val instruction = s"$select.keydown(${f.content});"

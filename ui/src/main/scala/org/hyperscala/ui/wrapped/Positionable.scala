@@ -3,10 +3,9 @@ package org.hyperscala.ui.wrapped
 import org.hyperscala.module.Module
 import org.powerscala.{StorageComponent, Version}
 import org.hyperscala.html.{tag, HTMLTag}
-import org.powerscala.event.Listenable
-import org.hyperscala.jquery.jQuery
-import org.hyperscala.realtime.Realtime
+import org.hyperscala.jquery.{jQueryComponent, jQuery}
 import org.hyperscala.web.site.{Webpage, Website}
+import org.hyperscala.javascript.{JSFunction1, JavaScriptString}
 
 /**
  * Positionable wraps existing elements to allow them to position an element relative to an
@@ -18,7 +17,7 @@ object Positionable extends Module with StorageComponent[Positionable, HTMLTag] 
   val name = "positionable"
   val version = Version(1)
 
-  override def dependencies = List(jQuery.LatestWithDefault, Realtime)
+  override def dependencies = List(jQuery.LatestWithDefault)
 
   def init() = {
     Website().register("/js/positionable.js", "positionable.js")
@@ -34,13 +33,19 @@ object Positionable extends Module with StorageComponent[Positionable, HTMLTag] 
   }
 
   protected def create(t: HTMLTag) = new Positionable(t)
+
+  private val f2js = (frequency: Double) => JavaScriptString(s"${(frequency * 1000.0).toInt}")
+  private val p2js = (list: List[JSFunction1[Changes, Unit]]) => {
+    JavaScriptString(list.map(f => f.content).mkString("[", ", ", "]"))
+  }
 }
 
-class Positionable private(val wrapped: HTMLTag) extends Listenable {
-  wrapped.clazz += "positionable"
+class Positionable private(val wrapped: HTMLTag) extends jQueryComponent {
+  protected def functionName = "positionable"
 
-//  val x = wrapped.dataWrapper[Int]("positionable-x", 0)
-//  val y = wrapped.dataWrapper[Int]("positionable-y", 0)
-  // TODO: introduce Updatable Module to allow adding and removing JS functions to be called periodically on an element
-  // TODO: introduce Batching Module to send updates to server in batches delayed by a few milliseconds and allow overlapping
+  val frequency = property[Double]("frequency", 0.1, toJS = Positionable.f2js)
+  val positioning = property[List[JSFunction1[Changes, Unit]]]("positioning", Nil, toJS = Positionable.p2js)
+  val sendChanges = property[Boolean]("sendChanges", false)
 }
+
+case class Changes(attributes: Map[String, Any], style: Map[String, Any])

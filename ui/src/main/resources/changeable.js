@@ -1,9 +1,9 @@
 (function($) {
-    var dataKey = 'positionable_settings';
+    var dataKey = 'changeable_settings';
     var methods = {
         init: function(options) {
             var settings = $.extend({
-                positioning: [],
+                changing: [],
                 frequency: 100,
                 sendChanges: false
             }, options);
@@ -35,31 +35,31 @@
         updated: function(key, value) {
             var $this = $(this);
             var data = $this.data(dataKey);
-            if (key == 'positioning') {
+            if (key == 'changing') {
                 if (data['timerId'] == null && value.length > 0) {
                     methods.refreshInterval($this);     // Initialize the updates if it hasn't already been done
                 } else if (data['timerId'] != null && value.length == 0) {
                     methods.cancelInterval($this);      // Stop updates if it is updating
                 }
             } else if (key == 'frequency') {
-                if (data['positioning'].length == 0) {
-                    methods.cancelInterval($this);          // Stop updates if nothing to position
+                if (data['changing'].length == 0) {
+                    methods.cancelInterval($this);          // Stop updates if nothing to change
                 } else {
-                    methods.refreshInterval($this);         // Refresh the interval if there are things to position
+                    methods.refreshInterval($this);         // Refresh the interval if there are things to change
                 }
             } else if (key == 'timerId') {
                 // Ignore
             } else if (key == 'sendChanges') {
                 // Ignore
             } else {
-                console.log('Unknown option for positionable: ' + key);
+                console.log('Unknown option for changeable: ' + key);
             }
         },
         refreshInterval: function($this) {
             methods.cancelInterval($this);
             var data = $this.data(dataKey);
             data['timerId'] = setInterval(function() {
-                methods.updatePositionable($this);
+                methods.updateChangeable($this);
             }, data['frequency']);
         },
         cancelInterval: function($this) {
@@ -69,9 +69,9 @@
                 data['timerId'] = clearInterval(previousId);
             }
         },
-        updatePositionable: function($this) {
+        updateChangeable: function($this) {
             var data = $this.data(dataKey);
-            var positioning = data['positioning'];
+            var changing = data['changing'];
             var changes = {
                 attributes: {
                     get: function(name) {
@@ -90,8 +90,8 @@
                     }
                 }
             };
-            for (var index = 0; index < positioning.length; index++) {
-                var f = positioning[index];
+            for (var index = 0; index < changing.length; index++) {
+                var f = changing[index];
                 f(changes);
             }
             var changed = {
@@ -120,18 +120,18 @@
                 }
             });
             if (hasChanges && data.sendChanges) {
-                communicator.send('positioningChanges', $this.attr('id'), changed);
+                communicator.send('changeableChanges', $this.attr('id'), changed);
             }
         }
     };
 
-    $.fn.positionable = function(method) {
+    $.fn.changeable = function(method) {
         if (methods[method]) {
             return methods[method].apply(this, Array.prototype.slice.call(arguments, 1));
         } else if (typeof method === 'object' || !method) {
             return methods.init.apply(this, arguments);
         } else {
-            $.error('Method ' + method + ' does not exist on jQuery.positionable');
+            $.error('Method ' + method + ' does not exist on jQuery.changeable');
             return this;
         }
     };

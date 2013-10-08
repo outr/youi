@@ -68,7 +68,8 @@ object HyperscalaSite extends Website[MapSession] {
     val dsl = WebpageResource("/example/dsl.html", new HyperscalaExample(new RealtimeDSLExample), Scope.Page)
     val history = WebpageResource("/example/history.html", new HyperscalaExample(new HistoryExample), Scope.Page)
     val monitor = WebpageResource("/example/monitor.html", new HyperscalaExample(new MonitorExample), Scope.Page)
-    val positionable = WebpageResource("/example/positionable.html", new HyperscalaExample(new PositionableExample), Scope.Page)
+    val changeable = WebpageResource("/example/changeable.html", new HyperscalaExample(new ChangeableExample), Scope.Page)
+    val jsrequest = WebpageResource("/example/jsrequest.html", new HyperscalaExample(new JSRequestExample), Scope.Page)
     val svg = new {
       val basic = WebpageResource("/example/svg/basic.html", new HyperscalaExample(new BasicSVGExample), Scope.Page)
       val shapes = WebpageResource("/example/svg/shapes.html", new HyperscalaExample(new SVGShapesExample), Scope.Page)

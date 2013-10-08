@@ -79,7 +79,11 @@ class WebpageConnection(val id: UUID) extends Communicator with Logging {
   def receive(event: String, id: String, message: String) = WebContext.contextualize(page) {
     try {
       val map = JSON.parseFull(message).getOrElse(throw new RuntimeException("Failed to parse: %s".format(message))).asInstanceOf[Map[String, Any]]
-      page.html.byId[IdentifiableTag](id) match {
+      val t = id match {
+        case null => Some(page.body)      // If id is null we reference body
+        case _ => page.html.byId[IdentifiableTag](id)
+      }
+      t match {
         case Some(tag) => tag.receive(event, Message(message, map))
         case None => warn("Unable to find tag by id: %s to fire event: %s for message: %s".format(id, event, message))
       }

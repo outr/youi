@@ -7,11 +7,10 @@ import org.hyperscala.examples.Example
 import language.reflectiveCalls
 import org.hyperscala.realtime.Realtime
 import org.powerscala.Color
-import org.hyperscala.ui.wrapped.{Changes, Positionable}
+import org.hyperscala.ui.wrapped.{Positioning, Positionable}
 import org.hyperscala.css.attributes.Position
-import org.hyperscala.javascript.{JSFunction1, JavaScriptString}
-
-import org.hyperscala.realtime.dsl._
+import org.hyperscala.javascript.dsl._
+import org.hyperscala.jquery.dsl._
 import org.hyperscala.css.Style
 
 /**
@@ -29,18 +28,9 @@ class PositionableExample extends Example {
   div.style.backgroundColor := Color.LightBlue
   contents += div
 
-  val centered = new JavaScriptString(
-    """
-      |function(changes) {
-      | var div = $('#myDiv');
-      | var x = (window.innerWidth / 2) - (div.width() / 2);
-      | changes.style.left = x + 'px';
-      |}
-    """.stripMargin) with JSFunction1[Changes, Unit]
-
   val positionable = Positionable(div)
   positionable.frequency := 1.0
-  val centerHorizontally = $(div).css(Style.left, null)
-  // val centerHorizontally = $(div).css(Style.left, ((window.innerWidth / 2) - ($(div).width() / 2)) + "px")
-  positionable.positioning := List(centered)
+  val centerHorizontally = ((window.innerWidth - $(div).width()) / 2) + "px"
+  val centerVertically = ((window.innerHeight - $(div).height()) / 2) + "px"
+  positionable.positioning := List(Positioning(Style.left, centerHorizontally), Positioning(Style.top, centerVertically))
 }

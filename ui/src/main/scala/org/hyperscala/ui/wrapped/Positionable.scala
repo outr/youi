@@ -6,6 +6,8 @@ import org.hyperscala.html.{tag, HTMLTag}
 import org.hyperscala.jquery.{jQueryComponent, jQuery}
 import org.hyperscala.web.site.{Webpage, Website}
 import org.hyperscala.javascript.{JSFunction1, JavaScriptString}
+import org.hyperscala.css.Style
+import org.hyperscala.javascript.dsl.Statement
 
 /**
  * Positionable wraps existing elements to allow them to position an element relative to an
@@ -35,7 +37,7 @@ object Positionable extends Module with StorageComponent[Positionable, HTMLTag] 
   protected def create(t: HTMLTag) = new Positionable(t)
 
   private val f2js = (frequency: Double) => JavaScriptString(s"${(frequency * 1000.0).toInt}")
-  private val p2js = (list: List[JSFunction1[Changes, Unit]]) => {
+  private val p2js = (list: List[Positioning]) => {
     JavaScriptString(list.map(f => f.content).mkString("[", ", ", "]"))
   }
 }
@@ -44,8 +46,19 @@ class Positionable private(val wrapped: HTMLTag) extends jQueryComponent {
   protected def functionName = "positionable"
 
   val frequency = property[Double]("frequency", 0.1, toJS = Positionable.f2js)
-  val positioning = property[List[JSFunction1[Changes, Unit]]]("positioning", Nil, toJS = Positionable.p2js)
+  val positioning = property[List[Positioning]]("positioning", Nil, toJS = Positionable.p2js)
   val sendChanges = property[Boolean]("sendChanges", false)
+}
+
+trait Positioning extends JSFunction1[Changes, Unit]
+
+object Positioning {
+  def apply[T](style: Style[T], statement: Statement) = new JavaScriptString(
+    s"""
+      |function(changes) {
+      | changes.style.${style.cssName} = ${statement.content}
+      |}
+    """.stripMargin) with Positioning
 }
 
 case class Changes(attributes: Map[String, Any], style: Map[String, Any])

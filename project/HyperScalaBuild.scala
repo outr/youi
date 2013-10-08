@@ -85,7 +85,7 @@ object HyperScalaBuild extends Build {
   lazy val javascript = Project("javascript", file("javascript"), settings = createSettings("hyperscala-javascript"))
     .dependsOn(html)
   lazy val web = Project("web", file("web"), settings = createSettings("hyperscala-web"))
-    .dependsOn(html, svg)
+    .dependsOn(html, javascript, svg)
     .settings(libraryDependencies ++= Seq(webcommunicator))
     .settings(libraryDependencies <+= scalaVersion { "org.scala-lang" % "scala-swing" % _ })
   lazy val jquery = Project("jquery", file("jquery"), settings = createSettings("hyperscala-jquery"))

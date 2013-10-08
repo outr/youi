@@ -27,7 +27,7 @@ class HyperscalaPage extends Webpage with FormSupport {
     WindowSized.heightAlgorithm("main", "windowHeight - 235")
   }
   val middle = new tag.Div(id = "middle") {
-    contents += new tag.Img(src = "/images/hyperscala.png") {
+    contents += new tag.Img(id = "logo", src = "/images/hyperscala.png") {
       style.float := Float.Left
     }
     if (sourceURL != null) {

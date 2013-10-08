@@ -1,6 +1,7 @@
 package org.hyperscala.javascript
 
 import scala.language.implicitConversions
+import org.hyperscala.css.attributes.Length
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -15,4 +16,6 @@ package object dsl {
         |}
       """.stripMargin
   }
+  implicit def s2LengthStatement(s: String) = TypedStatement[Length](s)
+  implicit def l2LengthStatement(l: Length) = TypedStatement[Length](s"'${l.value}'")
 }

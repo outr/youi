@@ -28,6 +28,7 @@ object HyperscalaSite extends Website[MapSession] {
     val hello = WebpageResource("/example/hello.html", new HyperscalaExample(new HelloWorldPage), Scope.Request)
 //    val numberGuess = WebpageResource("/example/number_guess.html", new HyperscalaExample(new NumberGuess), Scope.Page)
     val style = WebpageResource("/example/style.html", new StyleSheetExample, Scope.Request)
+    val userAgent = WebpageResource("/example/user_agent.html", new HyperscalaExample(new UserAgentExample), Scope.Request)
     val large = WebpageResource("/example/large.html", new LargePageExample, Scope.Request)
     val static = WebpageResource("/example/static.html", new HyperscalaExample(new StaticHTMLExample), Scope.Request)
     val form = WebpageResource("/example/form.html", new HyperscalaExample(new FormExample), Scope.Session)

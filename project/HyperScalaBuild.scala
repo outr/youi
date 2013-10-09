@@ -18,6 +18,7 @@ object HyperScalaBuild extends Build {
 
   val htmlcleaner = "net.sourceforge.htmlcleaner" % "htmlcleaner" % "2.2"
   val akkaActors = "com.typesafe.akka" % "akka-actor_2.10" % "2.1.2"
+  val uaDetector = "net.sf.uadetector" % "uadetector-resources" % "2013.09"
 
   val scalaTest = "org.scalatest" % "scalatest_2.10" % "1.9.1" % "test"
 
@@ -86,8 +87,8 @@ object HyperScalaBuild extends Build {
     .dependsOn(html)
   lazy val web = Project("web", file("web"), settings = createSettings("hyperscala-web"))
     .dependsOn(html, javascript, svg)
-    .settings(libraryDependencies ++= Seq(webcommunicator))
-    .settings(libraryDependencies <+= scalaVersion { "org.scala-lang" % "scala-swing" % _ })
+    .settings(libraryDependencies ++= Seq(webcommunicator, uaDetector))
+    .settings(libraryDependencies <+= scalaVersion { "org.scala-lang" % "scala-swing" % })
   lazy val jquery = Project("jquery", file("jquery"), settings = createSettings("hyperscala-jquery"))
     .dependsOn(web)
   lazy val realtime = Project("realtime", file("realtime"), settings = createSettings("hyperscala-realtime"))

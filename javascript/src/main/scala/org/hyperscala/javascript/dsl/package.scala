@@ -18,4 +18,6 @@ package object dsl {
   }
   implicit def s2LengthStatement(s: String) = TypedStatement[Length](s)
   implicit def l2LengthStatement(l: Length) = TypedStatement[Length](s"'${l.value}'")
+
+  def parseInt(s: Statement) = NumericStatement(s"parseInt(${s.content})")
 }

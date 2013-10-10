@@ -6,7 +6,13 @@ import org.powerscala.enum.{EnumEntry, Enumerated}
  * @author Matt Hicks <matt@outr.com>
  */
 class OperatingSystemFamily(val friendlyName: String) extends EnumEntry {
-   override def toString() = friendlyName
+  import OperatingSystemFamily._
+
+  lazy val apple = this == OSX || this == MacOS || this == iOS
+  lazy val windows = this == Windows
+  lazy val nix = List(AIX, BSD, HPUX, IRIX, Linux, Solaris).contains(this)
+
+  override def toString() = friendlyName
 }
 
 object OperatingSystemFamily extends Enumerated[OperatingSystemFamily] {

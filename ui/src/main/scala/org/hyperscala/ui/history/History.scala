@@ -14,6 +14,7 @@ import org.hyperscala.realtime.dsl._
 import scala.language.postfixOps
 import org.hyperscala.event.Key
 import org.powerscala.enum.{Enumerated, EnumEntry}
+import org.hyperscala.web.module.useragent.UserAgent
 
 /**
  * History module provides history management functionality to a webpage.
@@ -58,15 +59,27 @@ class HistoryInstance extends Listenable {
   val stateChanged = new UnitProcessor[HistoryStateChange]("history_state_change")
 
   // Configure key bindings on page
-  $(body).keyDown(onKey(Key.Z, shiftKey = Some(false), ctrlKey = Some(true), stopPropagation = true) {
-    undo()
-  })
-  $(body).keyDown(onKey(Key.Z, shiftKey = Some(true), ctrlKey = Some(true), stopPropagation = true) {
-    redo()
-  })
-  $(body).keyDown(onKey(Key.Y, ctrlKey = Some(true), stopPropagation = true) {
-    redo()
-  })
+  if (UserAgent().os.family.apple) {
+    $(body).keyDown(onKey(Key.Z, shiftKey = Some(false), metaKey = Some(true), stopPropagation = true) {
+      undo()
+    })
+    $(body).keyDown(onKey(Key.Z, shiftKey = Some(true), metaKey = Some(true), stopPropagation = true) {
+      redo()
+    })
+    $(body).keyDown(onKey(Key.Y, ctrlKey = Some(true), stopPropagation = true) {
+      redo()
+    })
+  } else {
+    $(body).keyDown(onKey(Key.Z, shiftKey = Some(false), ctrlKey = Some(true), stopPropagation = true) {
+      undo()
+    })
+    $(body).keyDown(onKey(Key.Z, shiftKey = Some(true), ctrlKey = Some(true), stopPropagation = true) {
+      redo()
+    })
+    $(body).keyDown(onKey(Key.Y, ctrlKey = Some(true), stopPropagation = true) {
+      redo()
+    })
+  }
 
   def undoList = undos.toList
   def redoList = redos.toList

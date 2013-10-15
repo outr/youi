@@ -1,7 +1,7 @@
 resolvers += Resolver.url("artifactory", url("http://scalasbt.artifactoryonline.com/scalasbt/sbt-plugin-releases"))(Resolver.ivyStylePatterns)
 
-addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.8.5")
+addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.10.0")
 
-addSbtPlugin("io.spray" % "sbt-revolver" % "0.6.2")
+addSbtPlugin("io.spray" % "sbt-revolver" % "0.7.1")
 
-addSbtPlugin("com.eed3si9n" % "sbt-unidoc" % "0.1.1")
+addSbtPlugin("com.eed3si9n" % "sbt-unidoc" % "0.3.0")

@@ -9,7 +9,7 @@ import sbtassembly.Plugin._
 import AssemblyKeys._
 
 object HyperScalaBuild extends Build {
-  val powerScalaVersion = "1.6.2-SNAPSHOT"
+  val powerScalaVersion = "1.6.2"
   val powerScalaReflect = "org.powerscala" %% "powerscala-reflect" % powerScalaVersion
   val powerScalaHierarchy = "org.powerscala" %% "powerscala-hierarchy" % powerScalaVersion
   val powerScalaProperty = "org.powerscala" %% "powerscala-property" % powerScalaVersion
@@ -22,12 +22,12 @@ object HyperScalaBuild extends Build {
 
   val scalaTest = "org.scalatest" % "scalatest_2.10" % "1.9.1" % "test"
 
-  val webcommunicator = "com.outr.webcommunicator" %% "webcommunicator" % "1.0.6-SNAPSHOT"
+  val webcommunicator = "com.outr.webcommunicator" %% "webcommunicator" % "1.0.5"
 
   val baseSettings = Defaults.defaultSettings ++ Seq(
-    version := "0.8.2-SNAPSHOT",
+    version := "0.8.2",
     organization := "org.hyperscala",
-    scalaVersion := "2.10.2",
+    scalaVersion := "2.10.3",
     libraryDependencies ++= Seq(
       powerScalaReflect,
       powerScalaHierarchy,
@@ -105,9 +105,7 @@ object HyperScalaBuild extends Build {
   lazy val numberGuess = Project("numberguess", file("numberguess"), settings = createSettings("hyperscala-numberguess"))
     .dependsOn(ui)
   lazy val site = Project("site", file("site"), settings = createSettings("hyperscala-site") ++ Revolver.settings)
-    .settings(jarName in assembly <<= version {
-      (v: String) => "hyperscala-%s.jar".format(v)
-    }, mergeStrategy in assembly <<= (mergeStrategy in assembly) {
+    .settings(jarName in assembly := s"hyperscala-${version.value}.jar", mergeStrategy in assembly <<= (mergeStrategy in assembly) {
       case old => {
         case PathList("META-INF", "jdom-info.xml") => MergeStrategy.first
         case x => old(x)

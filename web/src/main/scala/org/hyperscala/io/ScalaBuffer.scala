@@ -1,6 +1,6 @@
 package org.hyperscala.io
 
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.Webpage
 import org.hyperscala.html.HTMLTag
 import org.hyperscala.{PropertyAttribute, Container}
 import org.hyperscala.html.tag.{Text, Title}

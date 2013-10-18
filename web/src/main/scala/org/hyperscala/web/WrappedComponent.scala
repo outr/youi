@@ -1,7 +1,7 @@
 package org.hyperscala.web
 
 import org.hyperscala.html.HTMLTag
-import org.powerscala.Storage
+import org.powerscala.MappedStorage
 import org.hyperscala.javascript.{JavaScriptString, JavaScriptContent}
 import org.powerscala.event.Listenable
 import org.powerscala.property.Property
@@ -10,7 +10,7 @@ import org.powerscala.property.Property
  * @author Matt Hicks <matt@outr.com>
  */
 trait WrappedComponent[Tag <: HTMLTag] {
-  private val storage = new Storage[Any] {}
+  private val storage = new MappedStorage[String, Any] {}
 
   protected def wrapped: Tag
   protected def initializeComponent(values: Map[String, Any]): Unit

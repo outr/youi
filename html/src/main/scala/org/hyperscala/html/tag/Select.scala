@@ -5,11 +5,8 @@ import css.StyleSheet
 import html.{FormField, HTMLTag}
 import org.hyperscala.html.attributes._
 import org.hyperscala.html.constraints._
-import org.powerscala.property.{SetProperty, ListProperty, Property}
+import org.powerscala.property.{ListProperty, Property}
 import java.util.concurrent.atomic.AtomicBoolean
-import org.powerscala.property.event.PropertyChangeEvent
-import org.powerscala.event.{ListenerWrapper, ListenMode}
-import org.powerscala.Storage
 
 /**
  * NOTE: This file has been generated. Do not modify directly!

@@ -1,6 +1,5 @@
 package org.hyperscala.web.useragent
 
-import org.hyperscala.web.module.useragent.BrowserFamily
 import org.powerscala.Version
 
 /**

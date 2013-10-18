@@ -1,7 +1,7 @@
 package org.hyperscala
 
 import org.powerscala.hierarchy.event.{DescendantProcessor, AncestorProcessor, StandardHierarchyEventProcessor}
-import org.powerscala.event.processor.{ModifiableProcessor, InterceptProcessor}
+import org.powerscala.event.processor.{ModifiableOptionProcessor, InterceptProcessor}
 import org.powerscala.event.{Listenable, Intercept}
 import org.powerscala.hierarchy.ChildLike
 
@@ -41,6 +41,6 @@ class MarkupIntercepting(parentInterceptor: MarkupIntercepting) extends Listenab
 }
 
 class RenderAttributeProcessor(implicit listenable: Listenable)
-  extends ModifiableProcessor[PropertyAttribute[_]]("renderAttribute")
+  extends ModifiableOptionProcessor[PropertyAttribute[_]]("renderAttribute")
   with AncestorProcessor[PropertyAttribute[_], Option[PropertyAttribute[_]], Option[PropertyAttribute[_]]]
   with DescendantProcessor[PropertyAttribute[_], Option[PropertyAttribute[_]], Option[PropertyAttribute[_]]]

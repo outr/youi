@@ -9,23 +9,10 @@ import sbtassembly.Plugin._
 import AssemblyKeys._
 
 object HyperScalaBuild extends Build {
-  val powerScalaVersion = "1.6.2"
-  val powerScalaReflect = "org.powerscala" %% "powerscala-reflect" % powerScalaVersion
-  val powerScalaHierarchy = "org.powerscala" %% "powerscala-hierarchy" % powerScalaVersion
-  val powerScalaProperty = "org.powerscala" %% "powerscala-property" % powerScalaVersion
-  val jdom = "org.jdom" % "jdom2" % "2.0.4"
-  val jaxen = "jaxen" % "jaxen" % "1.1.4"
-
-  val htmlcleaner = "net.sourceforge.htmlcleaner" % "htmlcleaner" % "2.2"
-  val akkaActors = "com.typesafe.akka" % "akka-actor_2.10" % "2.1.2"
-  val uaDetector = "net.sf.uadetector" % "uadetector-resources" % "2013.09"
-
-  val scalaTest = "org.scalatest" % "scalatest_2.10" % "1.9.1" % "test"
-
-  val webcommunicator = "com.outr.webcommunicator" %% "webcommunicator" % "1.0.5"
+  import Dependencies._
 
   val baseSettings = Defaults.defaultSettings ++ Seq(
-    version := "0.8.2",
+    version := "0.8.3-SNAPSHOT",
     organization := "org.hyperscala",
     scalaVersion := "2.10.3",
     libraryDependencies ++= Seq(
@@ -87,12 +74,13 @@ object HyperScalaBuild extends Build {
     .dependsOn(html)
   lazy val web = Project("web", file("web"), settings = createSettings("hyperscala-web"))
     .dependsOn(html, javascript, svg)
-    .settings(libraryDependencies ++= Seq(webcommunicator, uaDetector))
+    .settings(libraryDependencies ++= Seq(outrNetCore, uaDetector))
     .settings(libraryDependencies <+= scalaVersion { "org.scala-lang" % "scala-swing" % })
   lazy val jquery = Project("jquery", file("jquery"), settings = createSettings("hyperscala-jquery"))
     .dependsOn(web)
   lazy val realtime = Project("realtime", file("realtime"), settings = createSettings("hyperscala-realtime"))
     .dependsOn(web, jquery)
+    .settings(libraryDependencies ++= Seq(outrNetCommunicatorClient, outrNetCommunicatorServer))
   lazy val ui = Project("ui", file("ui"), settings = createSettings("hyperscala-ui"))
     .dependsOn(web, realtime, jquery)
   lazy val generator = Project("generator", file("generator"), settings = createSettings("hyperscala-generator"))
@@ -100,6 +88,7 @@ object HyperScalaBuild extends Build {
   // Examples and Site
   lazy val examples = Project("examples", file("examples"), settings = createSettings("hyperscala-examples"))
     .dependsOn(web, ui)
+    .settings(libraryDependencies ++= Seq(outrNetServlet))
   lazy val hello = Project("hello", file("hello"), settings = createSettings("hyperscala-hello"))
     .dependsOn(web)
   lazy val numberGuess = Project("numberguess", file("numberguess"), settings = createSettings("hyperscala-numberguess"))

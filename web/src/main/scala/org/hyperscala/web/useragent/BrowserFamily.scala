@@ -1,4 +1,4 @@
-package org.hyperscala.web.module.useragent
+package org.hyperscala.web.useragent
 
 import org.powerscala.enum.{EnumEntry, Enumerated}
 

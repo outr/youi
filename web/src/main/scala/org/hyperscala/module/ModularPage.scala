@@ -2,7 +2,7 @@ package org.hyperscala.module
 
 import org.hyperscala.html._
 import org.hyperscala.Page
-import org.hyperscala.web.site.Website
+import org.hyperscala.web.Website
 import java.util.concurrent.atomic.AtomicBoolean
 import org.powerscala.event.Intercept
 import org.powerscala.event.processor.{EventToken, TokenProcessor}

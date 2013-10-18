@@ -1,10 +1,9 @@
-package org.hyperscala.web.module.useragent
+package org.hyperscala.web.useragent
 
 import org.powerscala.Version
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.{Website, Webpage}
 import net.sf.uadetector.service.UADetectorServiceFactory
 import net.sf.uadetector.{UserAgentType, VersionNumber, ReadableUserAgent}
-import org.hyperscala.web.useragent.{OperatingSystem, OperatingSystemFamily, Browser}
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -27,7 +26,7 @@ object UserAgent {
 }
 
 class UserAgent private() {
-  val userAgent = Webpage().headers.getOrElse("User-Agent", throw new NullPointerException(s"User-Agent was not supplied: ${Webpage().headers.keySet}"))
+  val userAgent = Website().request.headers.UserAgent.getOrElse(throw new NullPointerException(s"User-Agent was not supplied: ${Website().request.headers.values.keySet}"))
   val agent = UserAgent.parse(userAgent)
 
   val browser = Browser(

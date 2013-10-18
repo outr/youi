@@ -1,6 +1,6 @@
 package org.hyperscala.web.module
 
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.Webpage
 import org.hyperscala.html.HTMLTag
 import org.hyperscala.{IdentifiableTag, Unique}
 import org.powerscala.Version
@@ -18,9 +18,9 @@ object IdentifyTags extends Module {
 
   def load() = {
     val page = Webpage()
-    page.view.foreach {
-      case tag: IdentifiableTag => if (tag.id() == null) {
-        tag.id := Unique()
+    page.html.byTag[IdentifiableTag].foreach {
+      case t => if (t.id() == null) {
+        t.identity
       }
     }
     page.intercept.init.on {

@@ -5,13 +5,13 @@ import org.jdom2.input.SAXBuilder
 import java.io.{FileWriter, File, StringReader}
 import org.htmlcleaner.{PrettyXmlSerializer, HtmlCleaner}
 import org.hyperscala.{Container, Markup}
-import org.hyperscala.web.site.Webpage
 import swing.FileChooser
 import java.util.prefs.Preferences
 import org.powerscala.IO
 import org.jdom2.xpath.XPathFactory
 import org.jdom2.filter.Filters
 import scala.collection.JavaConversions._
+import org.hyperscala.web.Webpage
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>

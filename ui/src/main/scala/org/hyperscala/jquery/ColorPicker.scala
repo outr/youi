@@ -4,8 +4,7 @@ import org.hyperscala.module.Module
 import org.powerscala.{Color, Version, StorageComponent}
 
 import org.hyperscala.html._
-import org.hyperscala.web.site.{Webpage, Website}
-import com.outr.webcommunicator.netty.handler.PathHandler
+import org.hyperscala.web.{Webpage, Website}
 import org.hyperscala.html.tag.Input
 import org.hyperscala.event.JavaScriptEvent
 import org.hyperscala.jquery.ui.jQueryUI

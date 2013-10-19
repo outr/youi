@@ -1,6 +1,6 @@
 package org.hyperscala.examples.basic
 
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.Webpage
 import org.hyperscala.ui.module.PageTimer
 import org.powerscala.{Language, Country}
 

@@ -1,14 +1,11 @@
 package org.hyperscala.ui.widgets
 
-import com.outr.webcommunicator.netty.handler.{RequestHandler, UploadHandler}
-import org.jboss.netty.channel.ChannelHandlerContext
-import org.jboss.netty.handler.codec.http.multipart.{Attribute, FileUpload}
 
 import org.hyperscala.html._
 import attributes.{InputType, Target}
 import org.hyperscala.Unique
 import org.hyperscala.event.JavaScriptEvent
-import org.hyperscala.web.site.{Webpage, WebpageResource, Website}
+import org.hyperscala.web.{Webpage, Website}
 import org.hyperscala.web.Scope
 import org.hyperscala.css.attributes.Display
 import org.hyperscala.realtime.Realtime

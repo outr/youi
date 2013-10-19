@@ -5,7 +5,7 @@ import org.powerscala.{Version, StorageComponent}
 import org.hyperscala.html._
 import org.hyperscala.jquery.jQuery
 import org.hyperscala.realtime.Realtime
-import org.hyperscala.web.site.{Webpage, Website}
+import org.hyperscala.web.{Webpage, Website}
 import org.hyperscala.web.WrappedComponent
 import org.powerscala.event.processor.UnitProcessor
 import org.powerscala.event.{Intercept, Listenable}

@@ -2,7 +2,7 @@ package org.hyperscala.ui.history
 
 import org.hyperscala.module.Module
 import org.powerscala.Version
-import org.hyperscala.web.site.{Webpage, Website}
+import org.hyperscala.web.{Webpage, Website}
 import org.powerscala.event.Listenable
 import scala.collection.immutable.Queue
 import org.powerscala.event.processor.UnitProcessor
@@ -14,7 +14,6 @@ import org.hyperscala.realtime.dsl._
 import scala.language.postfixOps
 import org.hyperscala.event.Key
 import org.powerscala.enum.{Enumerated, EnumEntry}
-import org.hyperscala.web.module.useragent.UserAgent
 
 /**
  * History module provides history management functionality to a webpage.

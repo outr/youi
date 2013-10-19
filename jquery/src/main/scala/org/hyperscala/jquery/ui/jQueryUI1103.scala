@@ -1,10 +1,9 @@
 package org.hyperscala.jquery.ui
 
-import org.hyperscala.web.site.{Website, Webpage}
+import org.hyperscala.web.{Website, Webpage}
 import org.hyperscala.html._
 import org.powerscala.Version
 import org.hyperscala.module._
-import com.outr.webcommunicator.netty.handler.PathHandler
 import org.hyperscala.jquery.jQuery
 import org.powerscala.property.Property
 
@@ -22,7 +21,7 @@ object jQueryUI1103 extends Module {
   override def dependencies = List(InterfaceWithDefault(jQuery, jQuery.Latest))
 
   def init() = {
-    Website().register(PathHandler("/jquery-ui-1.10.3/", "jquery-ui-1.10.3/"))
+    Website().addClassPath("/jquery-ui-1.10.3/", "jquery-ui-1.10.3/")
   }
 
   def themeCSS = {

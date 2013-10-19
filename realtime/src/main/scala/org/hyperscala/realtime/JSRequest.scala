@@ -2,7 +2,7 @@ package org.hyperscala.realtime
 
 import org.hyperscala.module.Module
 import org.powerscala.Version
-import org.hyperscala.web.site.{Webpage, Website}
+import org.hyperscala.web.{Webpage, Website}
 import org.hyperscala.html._
 import org.hyperscala.javascript.JSFunction0
 import org.powerscala.event.Intercept

@@ -2,7 +2,7 @@ package org.hyperscala.jquery
 
 import org.hyperscala.module._
 import org.hyperscala.html._
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.Webpage
 import org.hyperscala.javascript.{JavaScriptContent, JavaScriptString}
 import org.hyperscala.Unique
 

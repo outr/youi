@@ -4,7 +4,7 @@ import org.hyperscala.html._
 import attributes.{ButtonType, InputType}
 
 import tag._
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.Webpage
 import org.hyperscala.jquery.jQuery172
 import org.hyperscala.examples.Example
 

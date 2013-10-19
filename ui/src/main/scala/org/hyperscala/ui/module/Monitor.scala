@@ -3,8 +3,8 @@ package org.hyperscala.ui.module
 import org.hyperscala.module.Module
 import org.powerscala.Version
 import org.hyperscala.realtime.Realtime
-import org.hyperscala.web.site.{WebpageConnection, Webpage, Website}
-import org.hyperscala.html.{FormField, HTMLTag, tag}
+import org.hyperscala.web.{Webpage, Website}
+import org.hyperscala.html.{HTMLTag, tag}
 import org.hyperscala.javascript.JSFunction0
 import org.powerscala.property.Property
 import org.hyperscala.{PropertyAttribute, Message, Unique}

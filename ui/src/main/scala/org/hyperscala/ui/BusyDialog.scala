@@ -3,7 +3,7 @@ package org.hyperscala.ui
 import org.hyperscala.html._
 import org.hyperscala.module.Module
 import org.powerscala.Version
-import org.hyperscala.web.site.{Website, Webpage}
+import org.hyperscala.web.{Website, Webpage}
 import org.hyperscala.jquery.ui.Dialog
 import org.hyperscala.realtime.Realtime
 import language.reflectiveCalls

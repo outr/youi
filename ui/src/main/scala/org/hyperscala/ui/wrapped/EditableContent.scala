@@ -2,11 +2,11 @@ package org.hyperscala.ui.wrapped
 
 import org.powerscala.{Storage, Color, Version, StorageComponent}
 import org.hyperscala.html.{tag, HTMLTag}
-import org.hyperscala.web.site.{WebpageConnection, Website, Webpage}
+import org.hyperscala.web.{Website, Webpage}
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.html.attributes.ContentEditable
 import org.hyperscala.javascript.JavaScriptContent
-import org.hyperscala.module.{Interface, Module}
+import org.hyperscala.module.Module
 import org.hyperscala.jquery.jQuery
 import org.powerscala.event.Intercept
 import org.hyperscala.io.HTMLToScala

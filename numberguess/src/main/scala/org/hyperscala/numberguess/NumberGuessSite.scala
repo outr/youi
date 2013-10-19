@@ -1,6 +1,6 @@
 package org.hyperscala.numberguess
 
-import org.hyperscala.web.site.{DynamicWebsite, BasicWebsite}
+import org.hyperscala.web.BasicWebsite
 
 /**
  * NumberGuessSite is the entry point for several implementations of NumberGuess to show the different ways an

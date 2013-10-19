@@ -2,7 +2,7 @@ package org.hyperscala.jquery.ui
 
 import event.ButtonClicked
 import org.hyperscala.html._
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.Webpage
 import org.powerscala.property._
 import org.powerscala.event.{Intercept, Listenable}
 import org.hyperscala.realtime.Realtime

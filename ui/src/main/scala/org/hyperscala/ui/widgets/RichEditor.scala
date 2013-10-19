@@ -1,7 +1,7 @@
 package org.hyperscala.ui.widgets
 
 import org.hyperscala.html._
-import org.hyperscala.web.site.{WebpageConnection, Website, Webpage}
+import org.hyperscala.web.{Website, Webpage}
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.module.Module
 import org.powerscala.{Version, StorageComponent}

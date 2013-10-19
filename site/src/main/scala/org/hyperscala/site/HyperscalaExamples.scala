@@ -2,7 +2,6 @@ package org.hyperscala.site
 
 import org.hyperscala.html._
 import org.powerscala.reflect._
-import org.hyperscala.web.site.WebpageResource
 
 /**
  * @author Matt Hicks <matt@outr.com>

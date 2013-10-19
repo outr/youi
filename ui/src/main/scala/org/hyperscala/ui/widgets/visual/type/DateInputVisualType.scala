@@ -7,7 +7,7 @@ import org.powerscala.property.Property
 
 import org.hyperscala.html._
 import org.hyperscala.javascript.JavaScriptString
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.Webpage
 import org.hyperscala.jquery.ui.jQueryUI
 
 /**

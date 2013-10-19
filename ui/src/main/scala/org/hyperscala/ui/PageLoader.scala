@@ -1,6 +1,6 @@
 package org.hyperscala.ui
 
-import org.hyperscala.web.site.{Website, WebContext, Webpage}
+import org.hyperscala.web.{Website, Webpage}
 import org.hyperscala.Unique
 import org.hyperscala.realtime.Realtime
 

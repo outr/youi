@@ -3,7 +3,7 @@ package org.hyperscala.ui.widgets.visual.`type`
 import org.powerscala.property.Property
 import org.hyperscala.ui.widgets.visual.{Stringify, VisualBuilder}
 import org.hyperscala.html.tag
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.Webpage
 import org.hyperscala.html.attributes.InputType
 import org.hyperscala.event.JavaScriptEvent
 import org.hyperscala.html.constraints.BodyChild

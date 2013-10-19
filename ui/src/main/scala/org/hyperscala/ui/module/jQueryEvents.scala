@@ -3,7 +3,7 @@ package org.hyperscala.ui.module
 import org.hyperscala.module.Module
 import org.powerscala.Version
 import org.hyperscala.jquery.jQuery
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.Webpage
 import org.hyperscala.javascript.{JavaScriptString, EventProperty}
 
 import org.hyperscala.html._

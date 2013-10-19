@@ -1,7 +1,7 @@
 package org.hyperscala.examples.ui
 
 import org.hyperscala.html._
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.Webpage
 import org.hyperscala.jquery.Spectrum
 import org.hyperscala.jquery.Spectrum._
 import org.hyperscala.examples.Example

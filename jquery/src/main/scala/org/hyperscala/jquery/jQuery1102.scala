@@ -1,7 +1,7 @@
 package org.hyperscala.jquery
 
 import org.hyperscala.html.tag
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.Webpage
 import org.powerscala.Version
 import org.hyperscala.module._
 

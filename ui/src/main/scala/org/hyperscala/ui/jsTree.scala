@@ -2,10 +2,9 @@ package org.hyperscala.ui
 
 import org.hyperscala.module.Module
 import org.powerscala.Version
-import org.hyperscala.web.site.{Webpage, Website}
+import org.hyperscala.web.{Webpage, Website}
 import org.hyperscala.html._
 import org.hyperscala.jquery.jQuery
-import com.outr.webcommunicator.netty.handler.PathHandler
 import scala.collection.mutable.ListBuffer
 
 /**

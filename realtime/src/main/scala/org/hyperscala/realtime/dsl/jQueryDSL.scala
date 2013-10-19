@@ -5,7 +5,7 @@ import org.hyperscala.javascript.{JSFunction0, JSFunction1, JavaScriptContent, J
 import org.hyperscala.event._
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.Unique
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.Webpage
 
 import org.hyperscala.html._
 import org.hyperscala.css.attributes.Display

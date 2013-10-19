@@ -1,7 +1,7 @@
 package org.hyperscala.examples.comparison
 
 import org.hyperscala.html._
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.Webpage
 import org.hyperscala.ui.validation._
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.event.JavaScriptEvent

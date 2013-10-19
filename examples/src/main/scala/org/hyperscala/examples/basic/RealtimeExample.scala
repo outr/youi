@@ -1,6 +1,6 @@
 package org.hyperscala.examples.basic
 
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.Webpage
 import org.hyperscala.html._
 import org.hyperscala.event.JavaScriptEvent
 import org.hyperscala.realtime.Realtime

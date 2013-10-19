@@ -2,7 +2,7 @@ package org.hyperscala.examples.ui
 
 import org.hyperscala.html._
 import org.hyperscala.event.JavaScriptEvent
-import org.hyperscala.web.site.{SessionContextualizable, Website, Webpage}
+import org.hyperscala.web.{Website, Webpage}
 import org.powerscala.property.Property
 import annotation.tailrec
 import org.hyperscala.jquery.jQuery

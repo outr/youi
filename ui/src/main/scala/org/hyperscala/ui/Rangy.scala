@@ -2,8 +2,7 @@ package org.hyperscala.ui
 
 import org.hyperscala.module.Module
 import org.powerscala.Version
-import org.hyperscala.web.site.{Webpage, Website}
-import com.outr.webcommunicator.netty.handler.PathHandler
+import org.hyperscala.web.{Webpage, Website}
 import org.hyperscala.html.tag
 import org.hyperscala.jquery.jQuery
 

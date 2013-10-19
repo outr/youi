@@ -2,8 +2,7 @@ package org.hyperscala.ui.widgets
 
 import org.hyperscala.module.Module
 import org.powerscala.Version
-import org.hyperscala.web.site.{Webpage, Website}
-import com.outr.webcommunicator.netty.handler.PathHandler
+import org.hyperscala.web.{Webpage, Website}
 import org.hyperscala.html._
 import org.hyperscala.html.constraints.BodyChild
 import org.hyperscala.html.attributes.InputType

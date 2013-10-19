@@ -2,15 +2,11 @@ package org.hyperscala.jquery.ui
 
 import org.hyperscala.html._
 import org.hyperscala.realtime.Realtime
-import org.hyperscala.web.site.{WebpageResource, Website, Webpage}
+import org.hyperscala.web.{Website, Webpage}
 import org.powerscala.property.Property
 import org.powerscala.event.Intercept
 import org.powerscala.property.event.PropertyChangeEvent
 import org.hyperscala.web.Scope
-import com.outr.webcommunicator.netty.handler.RequestHandler
-import com.outr.webcommunicator.netty._
-import org.jboss.netty.channel.{MessageEvent, ChannelHandlerContext}
-import org.jboss.netty.handler.codec.http.HttpRequest
 import org.hyperscala.event.EventReceived
 import java.util.concurrent.atomic.AtomicBoolean
 import org.powerscala.Storage

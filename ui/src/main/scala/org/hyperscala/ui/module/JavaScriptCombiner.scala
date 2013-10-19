@@ -2,14 +2,9 @@ package org.hyperscala.ui.module
 
 import org.hyperscala.module.Module
 import org.powerscala.{IO, Version}
-import org.hyperscala.web.site.{Website, Webpage}
+import org.hyperscala.web.{Website, Webpage}
 
 import org.hyperscala.html._
-import com.outr.webcommunicator.URL
-import com.outr.webcommunicator.netty._
-import com.outr.webcommunicator.netty.handler.RequestHandler
-import org.jboss.netty.handler.codec.http.HttpRequest
-import org.jboss.netty.channel.{MessageEvent, ChannelHandlerContext}
 
 /**
  * @author Matt Hicks <matt@outr.com>

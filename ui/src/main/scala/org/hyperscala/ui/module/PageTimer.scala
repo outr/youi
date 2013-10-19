@@ -2,7 +2,7 @@ package org.hyperscala.ui.module
 
 import org.hyperscala.module.Module
 import org.powerscala.Version
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.Webpage
 import org.powerscala.log.Logging
 
 /**

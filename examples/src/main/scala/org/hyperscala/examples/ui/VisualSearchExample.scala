@@ -1,6 +1,6 @@
 package org.hyperscala.examples.ui
 
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.Webpage
 import org.hyperscala.ui.widgets._
 import org.powerscala.{Country, Language}
 import org.hyperscala.jquery.Gritter

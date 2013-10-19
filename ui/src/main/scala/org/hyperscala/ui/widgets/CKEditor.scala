@@ -2,9 +2,8 @@ package org.hyperscala.ui.widgets
 
 import org.hyperscala.module._
 import org.powerscala.Version
-import org.hyperscala.web.site.{Website, Webpage}
+import org.hyperscala.web.{Website, Webpage}
 import org.hyperscala.html.tag
-import com.outr.webcommunicator.netty.handler.PathHandler
 import org.hyperscala.realtime.Realtime
 
 /**

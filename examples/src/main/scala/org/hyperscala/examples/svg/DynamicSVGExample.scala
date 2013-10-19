@@ -5,7 +5,7 @@ import org.hyperscala.svg
 import org.hyperscala.svg._
 import org.powerscala.Color
 import org.hyperscala.html._
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.Webpage
 import org.hyperscala.realtime.Realtime
 import util.Random
 import org.hyperscala.event.JavaScriptEvent

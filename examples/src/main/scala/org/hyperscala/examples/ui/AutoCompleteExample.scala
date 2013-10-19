@@ -2,7 +2,7 @@ package org.hyperscala.examples.ui
 
 import org.hyperscala.html._
 import org.powerscala.Language
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.Webpage
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.jquery.ui.{AutocompleteResult, Autocomplete}
 import org.hyperscala.event.JavaScriptEvent

@@ -2,7 +2,7 @@ package org.hyperscala.examples.ui
 
 import org.hyperscala.html._
 import org.hyperscala.examples.Example
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.Webpage
 import org.hyperscala.ui.module.DynamicURL
 import org.hyperscala.event.JavaScriptEvent
 

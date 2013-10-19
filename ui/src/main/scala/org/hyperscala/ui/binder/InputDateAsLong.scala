@@ -2,7 +2,7 @@ package org.hyperscala.ui.binder
 
 import org.hyperscala.html._
 import org.hyperscala.event.JavaScriptEvent
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.Webpage
 import java.text.SimpleDateFormat
 import java.util.Date
 import org.hyperscala.jquery.ui.jQueryUI

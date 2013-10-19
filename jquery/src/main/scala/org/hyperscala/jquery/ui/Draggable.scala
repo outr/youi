@@ -3,7 +3,7 @@ package org.hyperscala.jquery.ui
 import org.hyperscala.jquery.jQueryComponent
 import org.hyperscala.html.HTMLTag
 import org.powerscala.StorageComponent
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.Webpage
 import org.hyperscala.selector.Selector
 
 /**

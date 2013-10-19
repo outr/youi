@@ -4,7 +4,7 @@ import org.hyperscala.html._
 import attributes.InputType
 import constraints.BodyChild
 import org.powerscala.property.Property
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.Webpage
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.event.JavaScriptEvent
 

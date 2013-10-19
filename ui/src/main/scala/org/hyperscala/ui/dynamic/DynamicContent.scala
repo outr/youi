@@ -9,7 +9,7 @@ import org.jdom2.input.{JDOMParseException, SAXBuilder}
 import java.io.{File, StringReader}
 import annotation.tailrec
 import org.powerscala.property.{CaseClassBinding, Property}
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.Webpage
 import org.hyperscala.realtime.Realtime
 import java.net.URL
 import org.hyperscala.html.tag.Text

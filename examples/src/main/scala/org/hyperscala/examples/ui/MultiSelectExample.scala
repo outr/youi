@@ -5,7 +5,7 @@ import org.hyperscala.examples.Example
 import org.hyperscala.ui.widgets.{Selectable, MultiSelect}
 import org.hyperscala.event.JavaScriptEvent
 import org.hyperscala.jquery.Gritter
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.Webpage
 import org.hyperscala.css.attributes._
 import language.reflectiveCalls
 

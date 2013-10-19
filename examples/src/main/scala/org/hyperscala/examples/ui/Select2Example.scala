@@ -3,7 +3,7 @@ package org.hyperscala.examples.ui
 import org.hyperscala.html._
 
 import org.hyperscala.examples.Example
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.Webpage
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.ui.widgets.Select2
 import org.hyperscala.javascript.JavaScriptString

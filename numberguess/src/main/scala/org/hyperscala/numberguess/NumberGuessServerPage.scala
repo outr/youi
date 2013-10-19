@@ -1,6 +1,6 @@
 package org.hyperscala.numberguess
 
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.Webpage
 import org.hyperscala.html._
 import org.hyperscala.html.attributes.{ButtonType, InputType}
 import org.hyperscala.realtime.Realtime

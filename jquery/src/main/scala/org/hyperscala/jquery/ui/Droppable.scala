@@ -4,7 +4,7 @@ import org.hyperscala.html.HTMLTag
 import org.hyperscala.jquery.{JSMapper, jQueryComponent}
 import org.hyperscala.selector.Selector
 import org.powerscala.StorageComponent
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.Webpage
 import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.event.EventReceived
 

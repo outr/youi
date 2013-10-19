@@ -4,7 +4,7 @@ import org.hyperscala.module.Module
 import org.powerscala.{StorageComponent, Version}
 import org.hyperscala.html.{tag, HTMLTag}
 import org.hyperscala.jquery.{jQueryComponent, jQuery}
-import org.hyperscala.web.site.{Webpage, Website}
+import org.hyperscala.web.{Webpage, Website}
 import org.hyperscala.javascript.{JSFunction1, JavaScriptString}
 import org.hyperscala.css.Style
 import org.hyperscala.javascript.dsl.Statement

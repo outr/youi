@@ -1,7 +1,7 @@
 package org.hyperscala.examples.basic
 
 import org.hyperscala.html._
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.Webpage
 import org.powerscala.Color
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.selector._

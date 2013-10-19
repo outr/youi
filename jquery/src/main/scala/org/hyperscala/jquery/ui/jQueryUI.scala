@@ -3,7 +3,7 @@ package org.hyperscala.jquery.ui
 import org.hyperscala.module._
 import org.hyperscala.html.HTMLTag
 import org.hyperscala.jquery.jQuery
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.Webpage
 
 /**
  * @author Matt Hicks <matt@outr.com>

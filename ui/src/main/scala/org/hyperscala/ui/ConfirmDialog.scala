@@ -3,7 +3,7 @@ package org.hyperscala.ui
 import org.hyperscala.html._
 import constraints.BodyChild
 import org.hyperscala.jquery.ui.Dialog
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.Webpage
 import language.reflectiveCalls
 
 /**

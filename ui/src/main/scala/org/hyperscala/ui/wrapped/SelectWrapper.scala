@@ -3,7 +3,7 @@ package org.hyperscala.ui.wrapped
 import org.hyperscala.html._
 import org.powerscala.property.{ListProperty, Property}
 import org.powerscala.event.Listenable
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.Webpage
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.event.JavaScriptEvent
 

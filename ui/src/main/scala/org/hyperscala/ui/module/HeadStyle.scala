@@ -1,6 +1,6 @@
 package org.hyperscala.ui.module
 
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.Webpage
 import org.powerscala.Version
 import java.util
 import org.hyperscala.html.HTMLTag

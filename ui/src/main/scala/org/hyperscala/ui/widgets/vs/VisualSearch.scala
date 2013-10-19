@@ -2,8 +2,7 @@ package org.hyperscala.ui.widgets.vs
 
 import org.hyperscala.html._
 import org.hyperscala.module.Module
-import org.hyperscala.web.site.{WebpageResource, Webpage, Website}
-import com.outr.webcommunicator.netty.handler.PathHandler
+import org.hyperscala.web.{Webpage, Website}
 import org.hyperscala.jquery.jQuery
 import org.hyperscala.jquery.ui.jQueryUI
 import org.hyperscala.realtime.Realtime

@@ -1,11 +1,10 @@
 package org.hyperscala.ui.widgets
 
 import org.hyperscala.module._
-import org.hyperscala.web.site.{Website, Webpage}
+import org.hyperscala.web.{Website, Webpage}
 import org.powerscala.Version
 
 import org.hyperscala.html._
-import com.outr.webcommunicator.netty.handler.PathHandler
 import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.jquery.jQuery
 

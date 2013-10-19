@@ -2,7 +2,7 @@ package org.hyperscala.ui.clipboard
 
 import org.hyperscala.module.Module
 import org.powerscala.Version
-import org.hyperscala.web.site.{Website, Webpage}
+import org.hyperscala.web.{Website, Webpage}
 import org.hyperscala.html._
 import org.hyperscala.jquery.jQuery
 import org.hyperscala.realtime.Realtime

@@ -2,8 +2,7 @@ package org.hyperscala.jquery
 
 import org.powerscala.{StorageComponent, Color, Version}
 import org.hyperscala.module.{Module, InterfaceWithDefault}
-import org.hyperscala.web.site.{Webpage, Website}
-import com.outr.webcommunicator.netty.handler.PathHandler
+import org.hyperscala.web.{Webpage, Website}
 import org.hyperscala.html.tag
 
 import scala.language.implicitConversions

@@ -4,7 +4,7 @@ import org.powerscala.property.Property
 import org.hyperscala.html._
 import org.hyperscala.ui.widgets.visual.VisualBuilder
 import org.hyperscala.event.JavaScriptEvent
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.Webpage
 import org.hyperscala.realtime.Realtime
 
 import language.reflectiveCalls

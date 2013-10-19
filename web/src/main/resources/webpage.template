@@ -5,7 +5,7 @@ import org.powerscala.property._
 import org.hyperscala.html._
 import org.hyperscala.html.attributes._
 import org.hyperscala.css.attributes._
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.Webpage
 import org.hyperscala.javascript.JavaScriptString
 
 class %s extends Webpage {

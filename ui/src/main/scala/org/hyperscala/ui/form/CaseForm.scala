@@ -8,7 +8,7 @@ import org.powerscala.reflect._
 import org.hyperscala.ui.convert.Converter
 import org.powerscala.log.Logging
 import org.hyperscala.ui.form.error.ErrorSupport
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.Webpage
 import org.hyperscala.ui.BusyDialog
 
 /**

@@ -2,7 +2,7 @@ package org.hyperscala.ui.module
 
 import org.hyperscala.module.Module
 import org.powerscala.Version
-import org.hyperscala.web.site.{Webpage, Website}
+import org.hyperscala.web.{Webpage, Website}
 import org.hyperscala.html._
 import org.hyperscala.realtime.Realtime
 import org.powerscala.property.Property

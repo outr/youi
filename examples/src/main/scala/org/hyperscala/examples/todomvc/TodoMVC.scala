@@ -3,7 +3,7 @@ package org.hyperscala.examples.todomvc
 import org.hyperscala.html._
 import attributes.InputType
 import tag._
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.Webpage
 
 object TodoMVC extends Webpage {
   title := "Webframework - TodoMVC"

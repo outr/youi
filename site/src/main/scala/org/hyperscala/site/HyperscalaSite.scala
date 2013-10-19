@@ -1,13 +1,11 @@
 package org.hyperscala.site
 
-import org.hyperscala.web.site.{Website, WebpageResource}
-import org.hyperscala.web.session.MapSession
+import org.hyperscala.web.Website
 import org.hyperscala.examples.helloworld.HelloWorldPage
 import org.hyperscala.web.Scope
 import org.hyperscala.examples.basic._
 import org.hyperscala.examples.ui._
 import org.hyperscala.examples.todomvc.TodoMVC
-import com.outr.webcommunicator.netty.handler.PathHandler
 import org.hyperscala.examples.svg.{DynamicSVGExample, SVGShapesExample, BasicSVGExample}
 import org.hyperscala.examples.comparison.PlayHelloWorldPage
 

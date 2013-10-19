@@ -7,7 +7,7 @@ import org.hyperscala.ui.widgets.visual.VisualBuilder
 import org.powerscala.reflect._
 import org.hyperscala.ui.widgets.ListSelect
 import org.hyperscala.event.JavaScriptEvent
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.Webpage
 import org.hyperscala.realtime.Realtime
 
 import language.reflectiveCalls

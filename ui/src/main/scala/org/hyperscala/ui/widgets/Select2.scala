@@ -3,8 +3,7 @@ package org.hyperscala.ui.widgets
 import org.hyperscala.module.Module
 import org.powerscala.Version
 import org.hyperscala.jquery.jQuery
-import org.hyperscala.web.site.{Webpage, Website}
-import com.outr.webcommunicator.netty.handler.PathHandler
+import org.hyperscala.web.{Webpage, Website}
 import org.hyperscala.html._
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.javascript.{JavaScriptString, JavaScriptContent}

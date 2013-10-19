@@ -1,6 +1,6 @@
 package org.hyperscala.realtime
 
-import org.hyperscala.web.site.{WebpageConnection, Webpage, Website}
+import org.hyperscala.web.{Webpage, Website}
 
 import org.hyperscala.html._
 import org.hyperscala.javascript.JavaScriptContent
@@ -9,7 +9,6 @@ import annotation.tailrec
 
 import org.powerscala.json._
 import org.hyperscala.web.module.IdentifyTags
-import org.hyperscala.web.site.JavaScriptMessage
 import org.powerscala.Version
 import org.hyperscala.module._
 import org.hyperscala.jquery.jQuery

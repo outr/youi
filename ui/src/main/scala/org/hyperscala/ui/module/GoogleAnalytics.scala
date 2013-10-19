@@ -4,7 +4,7 @@ import org.hyperscala.module.Module
 import org.powerscala.Version
 import org.hyperscala.html.tag.Script
 import org.hyperscala.javascript.JavaScriptString
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.Webpage
 
 /**
  * @author Matt Hicks <matt@outr.com>

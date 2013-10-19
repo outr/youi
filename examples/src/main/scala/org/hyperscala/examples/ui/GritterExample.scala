@@ -1,7 +1,7 @@
 package org.hyperscala.examples.ui
 
 import org.hyperscala.html._
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.Webpage
 import org.hyperscala.jquery.Gritter
 import org.hyperscala.event.JavaScriptEvent
 import org.hyperscala.examples.Example

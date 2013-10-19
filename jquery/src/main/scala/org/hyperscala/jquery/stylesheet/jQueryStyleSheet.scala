@@ -1,10 +1,9 @@
 package org.hyperscala.jquery.stylesheet
 
-import org.hyperscala.web.site.{Website, Webpage}
+import org.hyperscala.web.{Website, Webpage}
 import org.hyperscala.html._
 import org.powerscala.Version
 import org.hyperscala.module._
-import com.outr.webcommunicator.netty.handler.PathHandler
 import org.hyperscala.jquery.jQuery
 
 /**
@@ -18,7 +17,7 @@ object jQueryStyleSheet extends Module {
   override def dependencies = List(InterfaceWithDefault(jQuery, jQuery.Latest))
 
   def init() = {
-    Website().register(PathHandler("/jquery-stylesheet/", "jquery-stylesheet/"))
+    Website().addClassPath("/jquery-stylesheet/", "jquery-stylesheet/")
   }
 
   def load() = {

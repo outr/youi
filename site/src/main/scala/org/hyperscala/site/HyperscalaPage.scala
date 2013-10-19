@@ -6,9 +6,8 @@ import org.hyperscala.html._
 import attributes.Target
 import org.hyperscala.css.attributes._
 import tag._
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.Webpage
 import org.hyperscala.ui.WindowSized
-import org.hyperscala.web.FormSupport
 import language.reflectiveCalls
 
 /**

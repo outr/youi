@@ -1,6 +1,6 @@
 package org.hyperscala.examples.ui
 
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.Webpage
 
 import org.hyperscala.html._
 import org.hyperscala.examples.Example

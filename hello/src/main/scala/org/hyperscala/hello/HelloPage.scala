@@ -1,6 +1,6 @@
 package org.hyperscala.hello
 
-import org.hyperscala.web.site.Webpage
+import org.hyperscala.web.Webpage
 import org.hyperscala.html._
 
 /**

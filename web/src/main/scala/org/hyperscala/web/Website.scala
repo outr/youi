@@ -20,7 +20,10 @@ trait Website[S <: Session] extends WebApplication[S] {
   def init() = {
   }
 
-  def page(creator: => Webpage, scope: Scope, uris: String*)
+  def page(creator: => Webpage, scope: Scope, uris: String*) = {
+    val handler = new WebpageHandler(() => creator, scope)
+    addHandler(handler, uris: _*)
+  }
 
   override def dispose() = {
     super.dispose()

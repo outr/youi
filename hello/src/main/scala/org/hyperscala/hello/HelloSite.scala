@@ -1,6 +1,6 @@
 package org.hyperscala.hello
 
-import org.hyperscala.web.site.{DynamicWebsite, BasicWebsite}
+import org.hyperscala.web.{StaticWebsite, BasicWebsite}
 
 /**
  * HelloSite is the starting point of our application. It is responsible for all resource management and web pages.
@@ -9,6 +9,6 @@ import org.hyperscala.web.site.{DynamicWebsite, BasicWebsite}
  *
  * @author Matt Hicks <matt@outr.com>
  */
-object HelloSite extends BasicWebsite with DynamicWebsite {
-  def hello = new HelloPage
+object HelloSite extends BasicWebsite with StaticWebsite {
+  def index = new HelloPage
 }

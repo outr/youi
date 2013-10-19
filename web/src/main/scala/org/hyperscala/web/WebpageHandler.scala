@@ -45,3 +45,7 @@ class WebpageHandler(pageCreator: () => Webpage, scope: Scope) extends HttpHandl
     Website().pages(page.pageId) = page         // All pages are stored at least by their id
   }
 }
+
+object WebpageHandler {
+  def pageById[W <: Webpage](pageId: String) = Website().pages[W](pageId)
+}

@@ -16,7 +16,7 @@ object Rangy extends Module {
   override def dependencies = List(jQuery.LatestWithDefault)
 
   def init() = {
-    Website().register(PathHandler("/rangy-1.2.3/", "rangy-1.2.3/"))
+    Website().addClassPath("/rangy-1.2.3/", "rangy-1.2.3/")
   }
 
   def load() = {

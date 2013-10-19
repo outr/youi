@@ -45,7 +45,7 @@ object CSSTree extends Module {
   val version = Version(1)
 
   def init() = {
-    Website().register(PathHandler("/csstree/", "csstree/"))
+    Website().addClassPath("/csstree/", "csstree/")
   }
 
   def load() = {

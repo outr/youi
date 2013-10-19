@@ -17,7 +17,7 @@ object CKEditor extends Module {
   override def dependencies = List(Realtime)
 
   def init() = {
-    Website().register(PathHandler("/cke/", "ckeditor/"))
+    Website().addClassPath("/cke/", "ckeditor/")
   }
 
   def load() = {

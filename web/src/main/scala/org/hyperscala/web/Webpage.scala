@@ -11,8 +11,9 @@ import com.outr.net.http.response.{HttpResponseStatus, HttpResponse}
 import org.hyperscala.{Markup, Unique}
 import org.powerscala.MapStorage
 import java.io.OutputStream
-import org.powerscala.hierarchy.event.StandardHierarchyEventProcessor
+import org.powerscala.hierarchy.event.{ChildRemovedProcessor, ChildAddedProcessor, StandardHierarchyEventProcessor}
 import java.util.concurrent.atomic.AtomicBoolean
+import org.powerscala.reflect._
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -26,6 +27,8 @@ class Webpage extends HttpHandler with HTMLPage with ModularPage with Temporal w
   val pageId = Unique()
   val store = new MapStorage[Any, Any]
 
+  val childAdded = new ChildAddedProcessor
+  val childRemoved = new ChildRemovedProcessor
   val pageLoadingEvent = new StandardHierarchyEventProcessor[Webpage]("pageLoading")
   val pageLoadedEvent = new StandardHierarchyEventProcessor[Webpage]("pageLoaded")
 
@@ -74,6 +77,25 @@ class Webpage extends HttpHandler with HTMLPage with ModularPage with Temporal w
     html.byTag[HTMLTag].foreach(Markup.rendered)
     _rendered.set(true)
     pageLoadedEvent.fire(this)
+  }
+
+  /**
+   * Invokes the supplied function on all matching tags immediately and invokes on all new tags created at init time.
+   *
+   * @param f the function to invoke
+   * @param manifest defines the erasured generic type of the matching T
+   * @tparam T the filtered tag type to apply to the function
+   */
+  def live[T <: HTMLTag](f: T => Unit)(implicit manifest: Manifest[T]) = {
+    // First we walk through the hierarchical structure
+    html.byTag[T](manifest).foreach {
+      case t => f(t)
+    }
+    // Now we intercept init to determine when new items are created
+    intercept.init.on {
+      case m: Markup if m.getClass.hasType(manifest.runtimeClass) => f(m.asInstanceOf[T])
+      case _ => // Ignore
+    }
   }
 
   def dispose() = {

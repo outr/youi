@@ -34,7 +34,7 @@ object ColorPicker extends Module with JavaScriptCaller with StorageComponent[Co
   override def dependencies = List(jQuery.LatestWithDefault, jQueryUI.LatestWithDefault)
 
   def init() = {
-    Website().register(PathHandler("/colorpicker-1.0.4/", "colorpicker-1.0.4/"))
+    Website().addClassPath("/colorpicker-1.0.4/", "colorpicker-1.0.4/")
   }
 
   def load() = {

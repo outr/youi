@@ -212,7 +212,7 @@ class Autocompletified private(val input: FormField) {
 
 object Autocompletified {
   def apply(input: FormField) = input.synchronized {
-    Storage.get[Autocompletified](input, "autocompletified") match {
+    Storage.get[String, Autocompletified](input, "autocompletified") match {
       case Some(a) => a
       case None => {
         val a = new Autocompletified(input)

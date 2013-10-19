@@ -49,7 +49,7 @@ object Select2 extends Module {
   override def dependencies = List(jQuery.LatestWithDefault)
 
   def init() = {
-    Website().register(PathHandler("/select2/", "select2/"))
+    Website().addClassPath("/select2/", "select2/")
   }
 
   def load() = {

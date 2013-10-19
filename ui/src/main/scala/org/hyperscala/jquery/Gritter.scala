@@ -18,7 +18,7 @@ object Gritter extends Module with JavaScriptCaller {
   override def dependencies = List(InterfaceWithDefault(jQuery, jQuery.Latest), Realtime)
 
   def init() = {
-    Website().register(PathHandler("/gritter/", "gritter/"))
+    Website().addClassPath("/gritter/", "gritter/")
   }
 
   def load() = {

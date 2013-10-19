@@ -68,7 +68,7 @@ object NivoSlider extends Module {
   override def dependencies = List(InterfaceWithDefault(jQuery, jQuery.Latest))
 
   def init() = {
-    Website().register(PathHandler("/nivo-slider/", "nivo-slider/"))
+    Website().addClassPath("/nivo-slider/", "nivo-slider/")
   }
 
   def load() = {

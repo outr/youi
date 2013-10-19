@@ -30,7 +30,7 @@ object Spectrum extends Module with JavaScriptCaller with StorageComponent[Spect
   override def dependencies = List(InterfaceWithDefault(jQuery, jQuery.Latest))
 
   def init() = {
-    Website().register(PathHandler("/spectrum/", "spectrum/"))
+    Website().addClassPath("/spectrum/", "spectrum/")
   }
 
   def load() = {

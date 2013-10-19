@@ -1,89 +1,93 @@
 package org.hyperscala.realtime
 
-import org.hyperscala.web.{Webpage, Website}
+import org.hyperscala.web.{WebpageHandler, Webpage, Website}
 
 import org.hyperscala.html._
-import org.hyperscala.javascript.JavaScriptContent
-import java.util.UUID
 import annotation.tailrec
 
 import org.powerscala.json._
 import org.hyperscala.web.module.IdentifyTags
-import org.powerscala.Version
+import org.powerscala.{Priority, Version}
 import org.hyperscala.module._
 import org.hyperscala.jquery.jQuery
 import org.hyperscala.event.JavaScriptEvent
 
 import language.reflectiveCalls
 import org.hyperscala.jquery.stylesheet.jQueryStyleSheet
-import org.hyperscala.{Markup, Container}
+import com.outr.net.communicator.server.{Message, Connection, Communicator}
+import org.powerscala.event.Listener
+import org.powerscala.event.processor.EventProcessor
+import org.powerscala.log.Logging
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-object Realtime extends Module {
-  var debug = false
-
+object Realtime extends Module with Logging {
   def name = "realtime"
 
-  def version = Version(1)
+  def version = Version(1, 1)
 
   override def dependencies = List(jQuery.LatestWithDefault, jQueryStyleSheet, IdentifyTags)
 
-  def init() = {
-    Website().register("/js/communicator.js", "communicator.js")
-    Website().register("/js/realtime.js", "realtime.js")
-  }
-
-  def load() = {
-    val page = Webpage()
-    // Configure JavaScript on page
-    page.head.contents += new tag.Script(src = "/js/communicator.js")
-    page.head.contents += new tag.Script(src = "/js/realtime.js")
-    page.head.contents += new tag.Script(content = new JavaScriptContent {
-      def content = {   // Every page request we create a new connection
-        val id = UUID.randomUUID()
-        val connection = Website().create(id)
-        connection.page = page
-        Realtime.addConnection(page, connection)
-        s"""$$(document).ready(function() {
-          |   connectRealtime('${id.toString}', $debug);
-          |});
-        """.stripMargin
-      }
-
-      protected def content_=(content: String) {}
-    })
-  }
-
   private val connectionsKey = "webpageConnections"
 
-  def getConnections(page: Webpage) = synchronized {
-    val connections = page.store.getOrElse[List[WebpageConnection]](connectionsKey, Nil)
-    val updated = connections.filterNot(c => c.disposed)
-    if (updated != connections) {
-      page.store(connectionsKey) = updated
+  private val messageReceivedListener = new Listener[Message, Unit] {
+    val name = "received"
+    val eventClass = classOf[Message]
+    val priority = Priority.Normal
+    val modes = EventProcessor.DefaultModes
+
+    def receive(event: Message) = {
+      info(s"Received message: $event")
     }
-    connections
   }
 
-  def existing[T <: HTMLTag](parent: Container[_], creator: => T) = WebpageConnection.ignoreStructureChanges {
-    val element: T = creator
-    if (element.id() == null || element.id() == "") {
-      throw new RuntimeException("The created element must have an existing ID supplied for referencing!")
+  def init() = {
+    // Configure communicator resources
+    Communicator.configure(Website())
+    // Register realtime.js to actually establish the connection
+    Website().register("/js/realtime.js", "realtime.js")
+    // Listen for connections
+    Communicator.created.on {
+      case (connection, data) => {
+        val pageId = data.asInstanceOf[Map[String, String]]("pageId")
+        created(connection, pageId)
+      }
     }
-    parent.asInstanceOf[Container[T]].contents += element
-    Markup.rendered(element)      // Mark the element as rendered so it doesn't wait for it
-    element
+    Communicator.received.on {
+      case (connection, message) => received(connection, message)
+    }
+    Communicator.disposed.on {
+      case connection => disposed(connection)
+    }
   }
 
-  def addConnection(page: Webpage, connection: WebpageConnection) = synchronized {
-    val connections = page.store.getOrElse[List[WebpageConnection]](connectionsKey, Nil).filterNot(c => c.disposed)
-    page.store(connectionsKey) = connection :: connections
+  def load() = {}
+
+  private def created(connection: Connection, pageId: String) = {
+    connection.received.add(messageReceivedListener)
+    val page = WebpageHandler.pageById[Webpage](pageId)
+    val realtime = RealtimePage(page)             // Get reference to RealtimePage
+    realtime.connectionCreated(connection)        // Notify the RealtimePage that a connection was created
+    connection.store("page") = page               // Assign the page to the connection
+  }
+
+  private def received(connection: Connection, message: Message) = {
+    val page = connection.store[Webpage]("page")
+    val realtime = RealtimePage(page)
+    realtime.received(connection, message)
+  }
+
+  private def disposed(connection: Connection) = {
+    connection.received.remove(messageReceivedListener)
+    val page = connection.store[Webpage]("page")    // Load the page from the connection
+    val realtime = RealtimePage(page)               // Get a reference to RealtimePage
+    realtime.connectionDisposed(connection)         // Notify the RealtimePage that a connection was disposed
   }
 
   def broadcast(event: String, message: Any, page: Webpage = Webpage()) = synchronized {
-    val connections = getConnections(page)
+    val realtime = RealtimePage(page)
+    val connections = realtime.connections
     if (connections.isEmpty) {
       throw new RuntimeException(s"Unable to send $event, no connections established!")
     }
@@ -145,7 +149,7 @@ object Realtime extends Module {
   }
 
   @tailrec
-  private def sendRecursive(page: Webpage, event: String, message: String, connections: List[WebpageConnection]): Unit = {
+  private def sendRecursive(page: Webpage, event: String, message: String, connections: List[Connection]): Unit = {
     if (connections.nonEmpty) {
       val c = connections.head
       c.send(event, message)
@@ -207,3 +211,5 @@ object Realtime extends Module {
     }
   }
 }
+
+case class JavaScriptMessage(instruction: String, content: String = null)

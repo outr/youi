@@ -22,7 +22,7 @@ object jsTree extends Module {
   override val dependencies = List(jQuery.LatestWithDefault)
 
   def init() = {
-    Website().register(PathHandler("/js/jstree/", "jstree/"))
+    Website().addClassPath("/js/jstree/", "jstree/")
   }
 
   def load() = Webpage().head.contents += new tag.Script(mimeType = "text/javascript", src = "/js/jstree/jquery.jstree.js")

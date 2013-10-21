@@ -1,6 +1,7 @@
 package org.hyperscala.numberguess
 
-import org.hyperscala.web.BasicWebsite
+import org.hyperscala.web.{StaticWebsite, BasicWebsite}
+import com.outr.net.http.jetty.JettyApplication
 
 /**
  * NumberGuessSite is the entry point for several implementations of NumberGuess to show the different ways an
@@ -8,6 +9,6 @@ import org.hyperscala.web.BasicWebsite
  *
  * @author Matt Hicks <matt@outr.com>
  */
-object NumberGuessSite extends BasicWebsite with DynamicWebsite {
+object NumberGuessSite extends BasicWebsite with StaticWebsite with JettyApplication {
   def numberGuessServer = new NumberGuessServerPage
 }

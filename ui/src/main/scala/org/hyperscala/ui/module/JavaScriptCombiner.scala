@@ -1,14 +1,10 @@
 package org.hyperscala.ui.module
 
-import org.hyperscala.module.Module
-import org.powerscala.{IO, Version}
-import org.hyperscala.web.{Website, Webpage}
-
-import org.hyperscala.html._
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
+/*
 object JavaScriptCombiner extends URLWebResource with RequestHandler with Module {
   val name = "javaScriptCombiner"
   val version = Version(1)
@@ -106,4 +102,4 @@ object JavaScriptCombiner extends URLWebResource with RequestHandler with Module
       }
     }
   }
-}
+}*/

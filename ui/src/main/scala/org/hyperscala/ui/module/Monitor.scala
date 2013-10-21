@@ -2,7 +2,7 @@ package org.hyperscala.ui.module
 
 import org.hyperscala.module.Module
 import org.powerscala.Version
-import org.hyperscala.realtime.Realtime
+import org.hyperscala.realtime.{RealtimePage, Realtime}
 import org.hyperscala.web.{Webpage, Website}
 import org.hyperscala.html.{HTMLTag, tag}
 import org.hyperscala.javascript.JSFunction0
@@ -63,7 +63,7 @@ object Monitor extends Module {
     val monitor = create[T](frequency, function)(attribute.manifest, attribute.persister)
     val property = monitor.property
     property.change.on {
-      case evt => WebpageConnection.ignoringChange(attribute, property())
+      case evt => RealtimePage.ignoringChange(attribute, property())
     }
     monitor
   }

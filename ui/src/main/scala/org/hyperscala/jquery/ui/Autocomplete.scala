@@ -2,11 +2,10 @@ package org.hyperscala.jquery.ui
 
 import org.hyperscala.html._
 import org.hyperscala.realtime.Realtime
-import org.hyperscala.web.{Website, Webpage}
+import org.hyperscala.web.Webpage
 import org.powerscala.property.Property
 import org.powerscala.event.Intercept
 import org.powerscala.property.event.PropertyChangeEvent
-import org.hyperscala.web.Scope
 import org.hyperscala.event.EventReceived
 import java.util.concurrent.atomic.AtomicBoolean
 import org.powerscala.Storage
@@ -19,9 +18,11 @@ class Autocomplete extends tag.Input {
 }
 
 class Autocompletified private(val input: FormField) {
+  throw new RuntimeException("Autocompletified is broken!")
+
   input.identity
 
-  private lazy val handler = new AutocompleteSearchHandler(this)
+//  private lazy val handler = new AutocompleteSearchHandler(this)
   private val changing = new AtomicBoolean(false)
 
   Webpage().require(jQueryUI, jQueryUI.Latest)
@@ -101,7 +102,7 @@ class Autocompletified private(val input: FormField) {
 
   private def autoCompletify() = {
     val source = "/autocomplete/%s".format(input.identity)
-    Website().registerSession(WebpageResource(source, handler, Scope.Request))
+//    Website().registerSession(WebpageResource(source, handler, Scope.Request))
     // TODO: extract this into its own Module + .js file
     val appendId = appendTo() match {
       case null => null
@@ -233,7 +234,7 @@ object Autocompletified {
   }
 }
 
-class AutocompleteSearchHandler(autocompletified: Autocompletified) extends RequestHandler {
+/*class AutocompleteSearchHandler(autocompletified: Autocompletified) extends RequestHandler {
   def apply(webapp: NettyWebapp, context: ChannelHandlerContext, event: MessageEvent) = event.getMessage match {
     case request: HttpRequest => {
       val term = request2URL(request).parameters("term").head
@@ -241,6 +242,6 @@ class AutocompleteSearchHandler(autocompletified: Autocompletified) extends Requ
       RequestHandler.streamString(results, context, request, "text/plain")
     }
   }
-}
+}*/
 
 case class AutocompleteResult(label: String, value: String, category: String = "")

@@ -89,12 +89,15 @@ object HyperScalaBuild extends Build {
   lazy val examples = Project("examples", file("examples"), settings = createSettings("hyperscala-examples"))
     .dependsOn(web, ui)
     .settings(libraryDependencies ++= Seq(outrNetServlet))
-  lazy val hello = Project("hello", file("hello"), settings = createSettings("hyperscala-hello") ++ com.earldouglas.xsbtwebplugin.WebPlugin.webSettings)
+  lazy val hello = Project("hello", file("hello"), settings = createSettings("hyperscala-hello") ++ Revolver.settings ++ com.earldouglas.xsbtwebplugin.WebPlugin.webSettings)
     .dependsOn(web)
-    .settings(libraryDependencies ++= Seq(jettyWebapp, servlet, outrNetServlet))
-  lazy val numberGuess = Project("numberguess", file("numberguess"), settings = createSettings("hyperscala-numberguess"))
+    .settings(libraryDependencies ++= Seq(jettyWebapp, outrNetServlet, outrNetJetty))
+    .settings(mainClass := Some("org.hyperscala.hello.HelloSite"))
+  lazy val numberGuess = Project("numberguess", file("numberguess"), settings = createSettings("hyperscala-numberguess") ++ Revolver.settings ++ com.earldouglas.xsbtwebplugin.WebPlugin.webSettings)
     .dependsOn(ui)
-  lazy val site = Project("site", file("site"), settings = createSettings("hyperscala-site") ++ Revolver.settings)
+    .settings(libraryDependencies ++= Seq(jettyWebapp, outrNetServlet, outrNetJetty))
+    .settings(mainClass := Some("org.hyperscala.numberguess.NumberGuessSite"))
+  lazy val site = Project("site", file("site"), settings = createSettings("hyperscala-site") ++ Revolver.settings ++ com.earldouglas.xsbtwebplugin.WebPlugin.webSettings)
     .settings(jarName in assembly := s"hyperscala-${version.value}.jar", mergeStrategy in assembly <<= (mergeStrategy in assembly) {
       case old => {
         case PathList("META-INF", "jdom-info.xml") => MergeStrategy.first
@@ -102,5 +105,6 @@ object HyperScalaBuild extends Build {
       }
     }, mainClass in assembly := Some("org.hyperscala.site.HyperscalaSite"))
     .settings(mainClass := Some("org.hyperscala.site.HyperscalaSite"))
+    .settings(libraryDependencies ++= Seq(jettyWebapp, outrNetServlet, outrNetJetty))
     .dependsOn(examples)
 }

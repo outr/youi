@@ -5,8 +5,7 @@ import org.hyperscala.html._
 import attributes.{InputType, Target}
 import org.hyperscala.Unique
 import org.hyperscala.event.JavaScriptEvent
-import org.hyperscala.web.{Webpage, Website}
-import org.hyperscala.web.Scope
+import org.hyperscala.web.Webpage
 import org.hyperscala.css.attributes.Display
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.ui.BusyDialog
@@ -17,12 +16,13 @@ import language.reflectiveCalls
  * @author Matt Hicks <mhicks@outr.com>
  */
 abstract class FileUploader extends tag.Div {
+  throw new RuntimeException("FileUploader is broken!")
   Webpage().require(BusyDialog)
 
   def uploadTitle = "Uploading file..."
   def processingTitle = "Processing file..."
 
-  def uploaded(upload: FileUpload): Unit
+//  def uploaded(upload: FileUpload): Unit
 
   def finished() = {
     uploadForm.contents -= _input
@@ -34,8 +34,8 @@ abstract class FileUploader extends tag.Div {
   val uid = identity
   val uploadPath = "/file_upload/%s.html".format(uid)
 
-  val handler = new FileUploadHandler(this)
-  Website().registerSession(WebpageResource(uploadPath, handler, Scope.Request))
+//  val handler = new FileUploadHandler(this)
+//  Website().registerSession(WebpageResource(uploadPath, handler, Scope.Request))
 
   val iFrame = new tag.IFrame(id = "iframe%s".format(uid), name = Unique(), src = "about:blank") {
     style.display := Display.None
@@ -62,6 +62,7 @@ abstract class FileUploader extends tag.Div {
   contents += iFrame
 }
 
+/*
 class FileUploadHandler(uploader: FileUploader) extends UploadHandler {
   override def minimumFileSize = 0L
 
@@ -83,4 +84,4 @@ class FileUploadHandler(uploader: FileUploader) extends UploadHandler {
       }
     }
   }
-}
+}*/

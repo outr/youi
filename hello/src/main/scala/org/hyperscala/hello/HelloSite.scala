@@ -1,6 +1,7 @@
 package org.hyperscala.hello
 
 import org.hyperscala.web.{StaticWebsite, BasicWebsite}
+import com.outr.net.http.jetty.JettyApplication
 
 /**
  * HelloSite is the starting point of our application. It is responsible for all resource management and web pages.
@@ -9,6 +10,6 @@ import org.hyperscala.web.{StaticWebsite, BasicWebsite}
  *
  * @author Matt Hicks <matt@outr.com>
  */
-object HelloSite extends BasicWebsite with StaticWebsite {
+object HelloSite extends BasicWebsite with StaticWebsite with JettyApplication {
   def index = new HelloPage
 }

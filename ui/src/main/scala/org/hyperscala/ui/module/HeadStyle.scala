@@ -31,9 +31,8 @@ object HeadStyle extends Module {
 //        case hst => hst.updateStyle()
 //      }
 //    }
-    page.view.foreach {
-      case tag: HTMLTag => map.put(tag, new HeadStyleTag(page, tag))
-      case _ =>
+    page.html.byTag[HTMLTag].foreach {
+      case t => map.put(t, new HeadStyleTag(page, t))
     }
   }
 }

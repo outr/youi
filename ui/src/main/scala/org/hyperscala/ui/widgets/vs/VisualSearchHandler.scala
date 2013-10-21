@@ -1,14 +1,9 @@
 package org.hyperscala.ui.widgets.vs
 
-import com.outr.webcommunicator.netty.handler.RequestHandler
-import com.outr.webcommunicator.netty._
-import org.jboss.netty.channel.{MessageEvent, ChannelHandlerContext}
-import org.jboss.netty.handler.codec.http.HttpRequest
-import scala.Some
-
 /**
  * @author Matt Hicks <matt@outr.com>
  */
+/*
 class VisualSearchHandler(visualSearch: VisualSearch) extends RequestHandler {
   def apply(webapp: NettyWebapp, context: ChannelHandlerContext, event: MessageEvent) = event.getMessage match {
     case request: HttpRequest => {
@@ -42,3 +37,4 @@ class VisualSearchHandler(visualSearch: VisualSearch) extends RequestHandler {
     }
   }
 }
+*/

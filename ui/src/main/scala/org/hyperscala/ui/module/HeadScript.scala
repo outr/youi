@@ -1,7 +1,7 @@
 package org.hyperscala.ui.module
 
 import org.hyperscala.web.Webpage
-import org.powerscala.Version
+import org.powerscala.{Priority, Version}
 import org.hyperscala.html.HTMLTag
 import org.hyperscala.html.tag.Script
 import org.powerscala.property.event.PropertyChangeEvent
@@ -33,9 +33,8 @@ object HeadScript extends Module {
       case tag: HTMLTag => new HeadScriptTag(page, tag)
     }
 
-    page.view.foreach {
-      case tag: HTMLTag => new HeadScriptTag(page, tag)
-      case _ =>
+    page.html.byTag[HTMLTag].foreach {
+      case t => new HeadScriptTag(page, t)
     }
   }
 }
@@ -45,7 +44,7 @@ class HeadScriptTag(page: Webpage, tag: HTMLTag) {
 
   // TODO: support id changing
 
-  tag.listen[PropertyChangeEvent[_], Unit, Unit]("change", Descendants) {
+  tag.listen[PropertyChangeEvent[_], Unit, Unit]("change", Priority.Normal, Descendants) {
     case evt => if (evt.property.isInstanceOf[EventProperty] && evt.property.parent == tag) {
       updateScript()
     }

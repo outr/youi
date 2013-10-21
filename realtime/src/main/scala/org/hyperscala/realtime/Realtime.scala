@@ -62,7 +62,13 @@ object Realtime extends Module with Logging {
     }
   }
 
-  def load() = {}
+  def load() = {
+    val page = Webpage()
+    page.head.contents += new tag.Script(src = "/GWTCommunicator/GWTCommunicator.nocache.js")
+    page.head.contents += new tag.Script(src = "/communicator.js")
+    page.head.contents += new tag.Link(href = "/communicator.css")
+    page.head.contents += new tag.Script(src = "/js/realtime.js")
+  }
 
   private def created(connection: Connection, pageId: String) = {
     connection.received.add(messageReceivedListener)

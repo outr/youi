@@ -2,11 +2,10 @@ package org.hyperscala.ui.widgets.vs
 
 import org.hyperscala.html._
 import org.hyperscala.module.Module
-import org.hyperscala.web.{Webpage, Website}
+import org.hyperscala.web.Webpage
 import org.hyperscala.jquery.jQuery
 import org.hyperscala.jquery.ui.jQueryUI
 import org.hyperscala.realtime.Realtime
-import org.hyperscala.web.Scope
 import org.powerscala.property._
 import org.powerscala.Version
 import org.hyperscala.Message
@@ -15,7 +14,7 @@ import org.hyperscala.Message
  * @author Matt Hicks <matt@outr.com>
  */
 class VisualSearch extends tag.Div {
-  private lazy val handler = new VisualSearchHandler(this)
+//  private lazy val handler = new VisualSearchHandler(this)
   private var _facets = List.empty[VisualSearchFacet]
 
   Webpage().require(VisualSearch)
@@ -50,7 +49,7 @@ class VisualSearch extends tag.Div {
     super.initialize()
 
     val source = "/visualsearch/%s".format(id())
-    Website().registerSession(WebpageResource(source, handler, Scope.Request))
+//    Website().registerSession(WebpageResource(source, handler, Scope.Request))
     val instruction = "createVisualSearch('%s', '%s');".format(id(), source)
     Realtime.sendJavaScript(instruction, forId = id(), onlyRealtime = false)
 
@@ -91,10 +90,11 @@ object VisualSearch extends Module {
   val basePath = "/visualsearch-0.4.0/"
 
   def init() = {
-    Website().register(PathHandler(basePath, "visualsearch/0.4.0/"))
+//    Website().register(PathHandler(basePath, "visualsearch/0.4.0/"))
   }
 
   def load() = {
+    throw new RuntimeException("VisualSearch is broken!")
     val page = Webpage()
     // TODO: extract underscore and backbone as modules
     page.head.contents += new tag.Link(href = "%slib/css/reset.css".format(basePath), rel = "stylesheet")

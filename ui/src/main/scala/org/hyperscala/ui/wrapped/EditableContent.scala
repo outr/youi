@@ -1,9 +1,9 @@
 package org.hyperscala.ui.wrapped
 
-import org.powerscala.{Storage, Color, Version, StorageComponent}
+import org.powerscala._
 import org.hyperscala.html.{tag, HTMLTag}
 import org.hyperscala.web.{Website, Webpage}
-import org.hyperscala.realtime.Realtime
+import org.hyperscala.realtime.{RealtimePage, Realtime}
 import org.hyperscala.html.attributes.ContentEditable
 import org.hyperscala.javascript.JavaScriptContent
 import org.hyperscala.module.Module
@@ -48,7 +48,7 @@ class EditableContent private(t: HTMLTag with Container[BodyChild]) {
   val contentChanged = new UnitProcessor[ContentChanged]("contentChanged")(t, implicitly[Manifest[ContentChanged]])
   val selectionChanged = new UnitProcessor[SelectionChanged]("selectionChanged")(t, implicitly[Manifest[SelectionChanged]])
 
-  private val selection = new Storage[Any] {}
+  private val selection = new MappedStorage[String, Any] {}
 
   init()
 
@@ -61,7 +61,7 @@ class EditableContent private(t: HTMLTag with Container[BodyChild]) {
         val htmlString = evt.message[String]("html")
         val xml = HTMLToScala.toXML(htmlString, clean = true)
         val body = xml.getChild("body")
-        WebpageConnection.ignoreStructureChanges {      // Keep WebpageConnection from sending the changes to the client
+        RealtimePage.ignoreStructureChanges {      // Keep WebpageConnection from sending the changes to the client
           t.contents.clear()                            // Remove all contents
           t.read(body)                                  // Read the new data back in
         }

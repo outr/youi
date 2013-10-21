@@ -14,6 +14,7 @@ import org.hyperscala.realtime.dsl._
 import scala.language.postfixOps
 import org.hyperscala.event.Key
 import org.powerscala.enum.{Enumerated, EnumEntry}
+import org.hyperscala.web.useragent.UserAgent
 
 /**
  * History module provides history management functionality to a webpage.

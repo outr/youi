@@ -232,7 +232,7 @@ trait HTMLTag extends IdentifiableTag {
     throw new UnsupportedOperationException("%s doesn't support updating value!".format(xmlLabel))
   }
 
-  override def receive(event: String, message: Message) = event match {
+  override def receive(event: String, message: ResponseMessage) = event match {
     case "event" => {     // Applies general JavaScript event from client
       val evt = JavaScriptEvent.create(this, message[String]("event"))
       fire(evt)

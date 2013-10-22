@@ -1,7 +1,7 @@
 package org.hyperscala.html
 
 import constraints.BodyChild
-import org.hyperscala.Message
+import org.hyperscala.ResponseMessage
 import org.powerscala.property.Property
 
 /**
@@ -11,7 +11,7 @@ trait FormField extends BodyChild {
   def disabled: Property[Boolean]
   def value: Property[String]
 
-  override def receive(event: String, message: Message) = event match {
+  override def receive(event: String, message: ResponseMessage) = event match {
     case "change" => {
       val v = message[String]("value")
       FormField._changingProperty.set(value)

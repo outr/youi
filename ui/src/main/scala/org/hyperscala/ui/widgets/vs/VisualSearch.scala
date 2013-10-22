@@ -8,7 +8,7 @@ import org.hyperscala.jquery.ui.jQueryUI
 import org.hyperscala.realtime.Realtime
 import org.powerscala.property._
 import org.powerscala.Version
-import org.hyperscala.Message
+import org.hyperscala.ResponseMessage
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -64,7 +64,7 @@ class VisualSearch extends tag.Div {
     }
   }
 
-  override def receive(event: String, message: Message) = event match {
+  override def receive(event: String, message: ResponseMessage) = event match {
     case "search" => {
       val searchFacets = message.map("facets").asInstanceOf[List[Map[String, String]]]
       val q = message.map("query").asInstanceOf[String]

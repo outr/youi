@@ -7,7 +7,7 @@ import org.hyperscala.web.{Webpage, Website}
 import org.hyperscala.html.{HTMLTag, tag}
 import org.hyperscala.javascript.JSFunction0
 import org.powerscala.property.Property
-import org.hyperscala.{PropertyAttribute, Message, Unique}
+import org.hyperscala.{PropertyAttribute, ResponseMessage, Unique}
 import org.hyperscala.persistence.ValuePersistence
 import org.hyperscala.css.StyleSheetAttribute
 
@@ -89,7 +89,7 @@ object Monitor extends Module {
       map -= id
     }
 
-    override def receive(event: String, message: Message) = event match {
+    override def receive(event: String, message: ResponseMessage) = event match {
       case "monitored" => {
         val id = message[String]("id")
         map.get(id) match {
@@ -106,7 +106,7 @@ class Monitor[T] private(val id: String, val frequency: Double, val evaluator: J
                         (implicit manifest: Manifest[T], converter: ValuePersistence[T]) {
   val property = Property[T](default = None)
 
-  def receive(message: Message) = {
+  def receive(message: ResponseMessage) = {
     val value = message[String]("value")
     property := converter.fromString(value, null, manifest.runtimeClass)
   }

@@ -1,6 +1,6 @@
 package org.hyperscala.event
 
-import org.hyperscala.Message
+import org.hyperscala.ResponseMessage
 
 /**
  * EventReceived is fired on an IdentifiableTag if no other internal receiving support is found.
@@ -9,4 +9,4 @@ import org.hyperscala.Message
  *
  * @author Matt Hicks <matt@outr.com>
  */
-case class EventReceived(event: String, message: Message)
+case class EventReceived(event: String, message: ResponseMessage)

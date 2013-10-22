@@ -10,6 +10,7 @@ import org.powerscala.property.event.PropertyChangeEvent
 import org.powerscala.log.Logging
 import org.hyperscala.css.StyleSheet
 import org.powerscala.property.Property
+import org.hyperscala.{ResponseMessage, IdentifiableTag}
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -46,9 +47,25 @@ class RealtimePage private(page: Webpage) extends Logging {
     _connections = connection :: _connections
   }
 
-  protected[realtime] def received(connection: Connection, message: Message) = synchronized {
-    val event = message.event
-    info(s"Received: $event - $message")
+  protected[realtime] def received(connection: Connection, message: Message) = if (message.event == "realtime") {
+    synchronized {
+      Webpage.updateContext(page)     // Contextualize
+
+      val content = message.data.asInstanceOf[Map[String, Any]]
+      val id = content("id").asInstanceOf[String]
+      val eventType = content("eventType").asInstanceOf[String]
+
+      info(s"Received: $id, $eventType - $content")
+
+      val t = id match {
+        case null => Some(page.body)
+        case _ => page.html.byId[IdentifiableTag](id)
+      }
+      t match {
+        case Some(element) => element.receive(eventType, ResponseMessage(content))
+        case None => warn(s"Unable to find tag by id: $id to fire event: $eventType for message: $content")
+      }
+    }
   }
 
   protected[realtime] def connectionDisposed(connection: Connection) = synchronized {

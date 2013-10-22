@@ -10,7 +10,7 @@ import org.hyperscala.web.Webpage
 import org.hyperscala.html._
 import org.hyperscala.css.attributes.Display
 import org.hyperscala.selector.TagIdSelector
-import org.hyperscala.Message
+import org.hyperscala.ResponseMessage
 import scala.Some
 import org.hyperscala.css.Style
 
@@ -42,7 +42,7 @@ class CallbackStore extends tag.Div(id = "jquerydsl_callbackstore") {
     JavaScriptString(s"communicator.send('call', 'jquerydsl_callbackstore', { id: '$id' });")
   }
 
-  override def receive(event: String, message: Message) = event match {
+  override def receive(event: String, message: ResponseMessage) = event match {
     case "call" => map.get(message[String]("id")) match {
       case Some(f) => f()
       case None => warn(s"Unable to find match for call: $message")

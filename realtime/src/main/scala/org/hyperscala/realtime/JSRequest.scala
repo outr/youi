@@ -6,7 +6,7 @@ import org.hyperscala.web.{Webpage, Website}
 import org.hyperscala.html._
 import org.hyperscala.javascript.JSFunction0
 import org.powerscala.event.Intercept
-import org.hyperscala.{Message, Unique}
+import org.hyperscala.{ResponseMessage, Unique}
 import org.powerscala.log.Logging
 import org.powerscala.reflect._
 
@@ -64,7 +64,7 @@ object JSRequest extends Module with Logging {
   }
 
   case class JSHandler[T](f: List[T] => Unit, clazz: EnhancedClass) {
-    def process(message: Message) = {
+    def process(message: ResponseMessage) = {
       val responseList = message[List[Any]]("responses")
       val responses = responseList.map(r => clazz.convertTo[T](clazz.simpleName, r))
       f(responses)

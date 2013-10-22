@@ -8,7 +8,7 @@ import org.hyperscala.jquery.jQuery
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.ui.Rangy
 import org.hyperscala.css.attributes.Display
-import org.hyperscala.Message
+import org.hyperscala.ResponseMessage
 import org.powerscala.enum.{Enumerated, EnumEntry}
 import org.powerscala.event.processor.UnitProcessor
 import org.powerscala.event.Listenable
@@ -105,7 +105,7 @@ class ClipboardInstance extends Listenable {
   private val hiddenDiv = new tag.Div(id = "clipboard_instance") {
     style.display := Display.None
 
-    override def receive(event: String, message: Message) = event match {
+    override def receive(event: String, message: ResponseMessage) = event match {
       case "cut" => fireClipEvent(ClipType.Cut, message)
       case "copy" => fireClipEvent(ClipType.Copy, message)
       case "paste" => fireClipEvent(ClipType.Paste, message)
@@ -130,7 +130,7 @@ class ClipboardInstance extends Listenable {
 
   def list = _list
 
-  private def fireClipEvent(clipType: ClipType, message: Message) = {
+  private def fireClipEvent(clipType: ClipType, message: ResponseMessage) = {
     val element = Webpage().html.byId[HTMLTag](message[String]("id"))
     val mouseX = message[Int]("mouseX")
     val mouseY = message[Int]("mouseY")

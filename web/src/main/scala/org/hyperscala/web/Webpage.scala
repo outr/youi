@@ -105,4 +105,6 @@ class Webpage extends HttpHandler with HTMLPage with ModularPage with Temporal w
 
 object Webpage {
   def apply() = Website().requestContext[Webpage]("webpage")
+
+  def updateContext(webpage: Webpage) = Website().requestContext("webpage") = webpage
 }

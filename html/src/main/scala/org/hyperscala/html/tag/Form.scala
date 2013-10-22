@@ -58,7 +58,7 @@ class Form extends Container[BodyChild] with BodyChild with HTMLTag {
   lazy val noValidate = PropertyAttribute[String]("novalidate", null)
   lazy val target = PropertyAttribute[Target]("target", null)
 
-  override def receive(event: String, message: Message) = event match {
+  override def receive(event: String, message: ResponseMessage) = event match {
     case "change" => {
       val v = message[String]("value")
       if (v.nonEmpty) {
@@ -68,7 +68,7 @@ class Form extends Container[BodyChild] with BodyChild with HTMLTag {
             val key = URLDecoder.decode(pair.substring(0, split), "UTF-8")
             val value = URLDecoder.decode(pair.substring(split + 1), "UTF-8")
             byId[IdentifiableTag](key) match {
-              case Some(f) => f.receive("change", Message(null, collection.immutable.Map("value" -> value)))
+              case Some(f) => f.receive("change", ResponseMessage(collection.immutable.Map("value" -> value)))
               case None => warn(s"Unable to find $key by id with value of: $value")
             }
           }

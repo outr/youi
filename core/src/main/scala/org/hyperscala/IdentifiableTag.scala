@@ -26,7 +26,7 @@ trait IdentifiableTag extends Tag {
     case value => value
   }
 
-  def receive(event: String, message: Message): Unit = {
+  def receive(event: String, message: ResponseMessage): Unit = {
     eventReceived.fire(EventReceived(event, message)) match {
       case Intercept.Stop => // Handled
       case _ => warn("IdentifiableTag.receive: Unhandled inbound message. Event: %s, Tag: %s (%s), Message: %s".format(event, getClass.getName, xmlLabel, message))
@@ -39,7 +39,7 @@ trait IdentifiableTag extends Tag {
    * @param event the name of the event being received
    * @param f the function to receive the message
    */
-  def handle(event: String)(f: Message => Unit): Unit = eventReceived.on {
+  def handle(event: String)(f: ResponseMessage => Unit): Unit = eventReceived.on {
     case evt => if (evt.event == event) {
       f(evt.message)
       Intercept.Stop
@@ -91,7 +91,7 @@ object IdentifiableTag {
   def ignoreIds = _ignoreIds.get()
 }
 
-case class Message(content: String, map: Map[String, Any]) {
+case class ResponseMessage(map: Map[String, Any]) {
   def apply[T](key: String)(implicit manifest: Manifest[T]) = convert[T](manifest, map(key))
   def get[T](key: String)(implicit manifest: Manifest[T]) = map.get(key).map(v => convert[T](manifest, v))
   def getOrElse[T](key: String, f: => T)(implicit manifest: Manifest[T]) = convert[T](manifest, map.getOrElse(key, f))

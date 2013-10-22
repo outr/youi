@@ -233,8 +233,8 @@ trait HTMLTag extends IdentifiableTag {
   }
 
   override def receive(event: String, message: ResponseMessage) = event match {
-    case "event" => {     // Applies general JavaScript event from client
-      val evt = JavaScriptEvent.create(this, message[String]("event"))
+    case JavaScriptEvent(creator) => {
+      val evt = creator(this)
       fire(evt)
     }
     case "keyEvent" => {  // Fires key events on this tag

@@ -58,11 +58,18 @@ function realtimeEvent(event, data, confirmation, preventDefault, fireChange, on
 
             if ('keydown, keypress, keyup'.indexOf(eventType) != -1) {
                 realtimeUpdateKeyEvent(event, content);
+            } else if (eventType == 'change') {
+                content.value = realtimeChangeEventValue(element);
             }
 
             var f = function() {
-                if (eventType == 'change' || fireChange) {
-                    realtimeFireChangeEvent(element);
+                if (fireChange) {
+                    var changeContent = {
+                        id: id,
+                        eventType: 'change',
+                        value: realtimeChangeEventValue(element)
+                    };
+                    communicator.send('realtime', changeContent);
                 }
                 communicator.send('realtime', content);
             };
@@ -84,11 +91,11 @@ function realtimeEvent(event, data, confirmation, preventDefault, fireChange, on
 }
 
 /**
- * Fires a change event to the server for the supplied element.
+ * Retrieves the value for a change event for the supplied element.
  *
  * @param element
  */
-function realtimeFireChangeEvent(element) {
+function realtimeChangeEventValue(element) {
     var id = element.attr('id');
     var value = element.val();
     if (element.is('input') && (element.prop('type') == 'checkbox' || element.prop('type') == 'radio')) {
@@ -105,11 +112,7 @@ function realtimeFireChangeEvent(element) {
             value += v;
         });
     }
-    communicator.send('realtime', {
-        id: id,
-        eventType: 'change',
-        value: value
-    })
+    return value;
 }
 
 /**

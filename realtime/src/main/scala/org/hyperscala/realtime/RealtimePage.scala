@@ -1,16 +1,24 @@
 package org.hyperscala.realtime
 
 import org.hyperscala.web.Webpage
-import org.hyperscala.html.tag
-import org.hyperscala.javascript.JavaScriptString
-import com.outr.net.communicator.server.{Message, Connection}
-import org.powerscala.hierarchy.event.{ChildAddedEvent, ChildRemovedEvent, Descendants}
+import org.hyperscala.html.{StyleSpaces, FormField, HTMLTag, tag}
+import org.hyperscala.javascript.JavaScriptContent
+import com.outr.net.communicator.server.Connection
+import org.powerscala.hierarchy.event.Descendants
 import org.powerscala.Priority
-import org.powerscala.property.event.PropertyChangeEvent
 import org.powerscala.log.Logging
-import org.hyperscala.css.StyleSheet
+import org.hyperscala.css.{Style, StyleSheetAttribute, StyleSheet}
 import org.powerscala.property.Property
-import org.hyperscala.{ResponseMessage, IdentifiableTag}
+import org.hyperscala._
+import org.hyperscala.svg.{Svg, SVGTag}
+import org.powerscala.json._
+import org.powerscala.property.event.PropertyChangeEvent
+import org.powerscala.hierarchy.event.ChildAddedEvent
+import com.outr.net.communicator.server.Message
+import org.hyperscala.javascript.JavaScriptString
+import org.hyperscala.ResponseMessage
+import org.powerscala.hierarchy.event.ChildRemovedEvent
+import org.powerscala.hierarchy.ChildLike
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -41,7 +49,6 @@ class RealtimePage private(page: Webpage) extends Logging {
   }
 
   // TODO: handle checkins to keep page alive
-  // TODO: utilize ignore values in companion
 
   protected[realtime] def connectionCreated(connection: Connection) = synchronized {
     _connections = connection :: _connections
@@ -72,20 +79,145 @@ class RealtimePage private(page: Webpage) extends Logging {
     _connections = _connections.filterNot(c => c == connection)
   }
 
-  private def childAdded(evt: ChildAddedEvent) = {
-    info(s"childAdded: $evt")
+  private def childAdded(evt: ChildAddedEvent) = synchronized {
+    if (!RealtimePage.ignoringStructureChanges) {
+      val parent = evt.parent.asInstanceOf[IdentifiableTag with Container[IdentifiableTag]]
+      evt.child match {
+        case child: IdentifiableTag => {
+          // Verifies the parent and child have an id
+          parent.identity
+          child.identity
+
+          val index = parent.contents.indexOf(child)
+          val variable = child match {
+            case tag: SVGTag if !tag.isInstanceOf[Svg] => "parseSVG(content)"
+            case _ => "content"
+          }
+          child match {
+            case t: tag.Script => send(JavaScriptMessage(t.contents.map(c => c.content).mkString("\r\n")))
+            case _ => {
+              val instruction = if (index == parent.contents.length - 1) {    // Append to the end
+                "$('#%s').append(%s);".format(parent.id(), variable)
+              } else if (index == 0) {                                   // Append before
+              val after = parent.contents(1)
+                "$('#%s').before(%s);".format(after.id(), variable)
+              } else {
+                val before = parent.contents(index - 1)
+                "$('#%s').after(%s);".format(before.id(), variable)
+              }
+              val content = child.outputString
+              send(JavaScriptMessage(instruction, content))
+            }
+          }
+        }
+        case js: JavaScriptContent => send(JavaScriptMessage(js.content))
+      }
+    }
   }
 
-  private def childRemoved(evt: ChildRemovedEvent) = {
-    info(s"childRemoved: $evt")
+  private def childRemoved(evt: ChildRemovedEvent) = synchronized {
+    if (!RealtimePage.ignoringStructureChanges) evt.child match {
+      case text: tag.Text => {
+        val parent = evt.parent.asInstanceOf[HTMLTag with Container[HTMLTag]]
+        val index = parent.contents.indexOf(text)
+        val instruction = "$('#%s').contents().eq(%s).remove();".format(parent.id(), index)
+        send(JavaScriptMessage(instruction))
+      }
+      case tag: IdentifiableTag => send(JavaScriptMessage("$('#%s').remove();".format(tag.id())))
+      case js: JavaScriptContent => // TODO: evaluate? - Previously nothing was needed here
+    }
   }
 
-  private def styleSheetRemoved(styleSheet: StyleSheet) = {
-    info(s"styleSheetRemoved: $styleSheet")
+  private def styleSheetRemoved(styleSheet: StyleSheet) = synchronized {
+    val selector = styleSheet.selectorString
+    send(JavaScriptMessage(s"$$.stylesheet('$selector').css(null)"))
   }
 
-  private def propertyChanged(evt: PropertyChangeEvent[_]) = {
-    info(s"propertyChanged: $evt")
+  private def propertyChanged(evt: PropertyChangeEvent[_]) = synchronized {
+    if (FormField.changingProperty == evt.property && FormField.changingValue == evt.newValue) {
+      // Ignore a change initialized by this connector (avoid recursive changes)
+      debug("Ignoring change being applied: %s".format(FormField.changingValue))
+    } else if (RealtimePage._ignoringChangeProperty.get() == evt.property && RealtimePage._ignoringChangeValue.get() == evt.newValue) {
+      RealtimePage._ignoringChangeProperty.remove()
+      RealtimePage._ignoringChangeValue.remove()
+      debug(s"Ignoring change to property! ${evt.newValue}")
+    } else {
+      evt.property match {
+        case property: PropertyAttribute[_] => ChildLike.parentOf(property) match {
+          case t: IdentifiableTag => tagPropertyChanged(t, property, evt.oldValue, evt.newValue)
+          case styleSheet: StyleSheet => {
+            val ssa = property.asInstanceOf[StyleSheetAttribute[_]]
+            styleSheet.hierarchicalParent match {
+              case styleSpaces: StyleSpaces => styleSheetChanged(styleSheet.selectorString, ssa.style, evt.newValue.asInstanceOf[AnyRef])
+              case t: IdentifiableTag => styleChanged(s"#${t.identity}", ssa.style, evt.newValue.asInstanceOf[AnyRef])
+            }
+          }
+        }
+        case _ => // Ignore non-PropertyAttributes
+      }
+    }
+  }
+
+  private def tagPropertyChanged(t: IdentifiableTag, property: PropertyAttribute[_], oldValue: Any, newValue: Any) = {
+    debug("propertyChanged: %s.%s from %s to %s".format(t.xmlLabel, property.name, oldValue, newValue))
+    if (t.root[Webpage].nonEmpty && !property.isInstanceOf[StyleSheetAttribute[_]] && !t.isInstanceOf[tag.Text]) {
+      if (property == t.id && oldValue == null) {
+        // Ignore initial id change as it is sent when added
+      } else {
+        Page().intercept.renderAttribute.fire(property) match {
+          case Some(pa) => t match {
+            case title: tag.Title if property.name == "content" => send(JavaScriptMessage("document.title = content;", property.attributeValue))
+            case textual: Textual if property.name == "content" => textual match {
+              case option: tag.Option => send(JavaScriptMessage("$('#%s').html(content);".format(t.id()), property.attributeValue))
+              case _ => send(JavaScriptMessage("$('#%s').val(content);".format(t.id()), property.attributeValue))
+            }
+            case input: tag.Input if property.name == "value" => send(JavaScriptMessage("$('#%s').val(content);".format(t.id()), property.attributeValue))
+            case input: tag.Input if property.name == "checked" => send(JavaScriptMessage(s"$$('#${t.identity}').prop('checked', ${property()});"))
+            case option: tag.Option if property.name == "selected" => {
+              if (option.selected()) {
+                val select = option.parent.asInstanceOf[tag.Select]
+                if (select.multiple()) {
+                  throw new RuntimeException("Multiple Select Currently not supported!")
+                } else {
+                  send(JavaScriptMessage(s"$$('#${select.identity}').val(content);", content = option.value()))
+                }
+              }
+            }
+            //            case option: tag.Option if (property.name == "selected") => if (property() == true) send(JavaScriptMessage(s"$$('#${t.id()}').attr('${property.name}', ${property()});"))
+            case _ if property() == false => send(JavaScriptMessage("$('#%s').removeAttr('%s');".format(t.id(), property.name)))
+            //            case _ if (property() == true) => send(JavaScriptMessage(s"$$('#${t.id()}').attr('${property.name}', '${property.name}');"))
+            case _ => send(JavaScriptMessage("$('#%s').attr('%s', content);".format(t.id(), property.name), property.attributeValue))
+          }
+          case None => // Attribute shouldn't render so we ignore it
+        }
+      }
+    }
+  }
+
+  private def styleSheetChanged(selector: String, style: Style[_], value: AnyRef) = {
+    val anyStyle = style.asInstanceOf[Style[AnyRef]]
+    val cssName = style.cssName
+    val cssValue = value match {
+      case null => ""
+      case _ => anyStyle.persistence.toString(value, cssName, value.getClass)
+    }
+    send(JavaScriptMessage(s"$$.stylesheet('$selector', '$cssName', content)", cssValue))
+  }
+
+  private def styleChanged(selector: String, style: Style[_], value: AnyRef) = {
+    val anyStyle = style.asInstanceOf[Style[AnyRef]]
+    val cssName = style.cssName
+    val cssValue = if (value != null) anyStyle.persistence.toString(value, cssName, value.getClass) else null
+    send(JavaScriptMessage("$('%s').css('%s', content);".format(selector, cssName), cssValue))
+  }
+
+  def send(js: JavaScriptMessage): Unit = {
+    val message = generate(js)
+    send("eval", message)
+  }
+
+  def send(event: String, data: Any) = connections.foreach {
+    case connection => connection.send(event, data)
   }
 }
 

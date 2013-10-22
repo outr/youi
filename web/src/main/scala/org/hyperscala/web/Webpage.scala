@@ -4,7 +4,7 @@ import org.hyperscala.html._
 import org.hyperscala.module.ModularPage
 import org.powerscala.concurrent.Temporal
 import org.powerscala.concurrent.Time._
-import org.powerscala.hierarchy.ParentLike
+import org.powerscala.hierarchy.{MutableChildLike, ParentLike}
 import com.outr.net.http.HttpHandler
 import com.outr.net.http.request.HttpRequest
 import com.outr.net.http.response.{HttpResponseStatus, HttpResponse}
@@ -39,6 +39,8 @@ class Webpage extends HttpHandler with HTMLPage with ModularPage with Temporal w
 
   def head = html.head
   def body = html.body
+
+  MutableChildLike.assignParent(html, this)
 
   protected lazy val hierarchicalChildren = List(html)
 

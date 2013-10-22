@@ -4,7 +4,6 @@ import org.hyperscala.web.Webpage
 
 import org.hyperscala.html._
 import org.hyperscala.jquery.ui._
-import org.hyperscala.event.JavaScriptEvent
 import org.hyperscala.examples.Example
 import language.reflectiveCalls
 
@@ -25,7 +24,7 @@ class DialogExample extends Example {
   contents += myDiv
 
   contents += new tag.Button(content = "Toggle Dialog Visible") {
-    clickEvent := JavaScriptEvent()
+    clickEvent := RealtimeEvent()
 
     clickEvent.on {
       case evt => myDialog.toggleOpen()

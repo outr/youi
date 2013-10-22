@@ -6,7 +6,6 @@ import org.powerscala.property.Property
 import org.hyperscala.ui.binder._
 import org.hyperscala.ui.dynamic.{DynamicContent, DynamicString}
 import org.hyperscala.examples.Example
-import org.hyperscala.event.JavaScriptEvent
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
@@ -27,7 +26,7 @@ class SimpleDynamicForm extends DynamicContent(null) {
   val nameInput = bind[tag.Input, String]("i1", person, "name")
   val ageInput = bind[tag.Input, Int]("i2", person, "age")
   val button = load[tag.Button]("b1")
-  button.clickEvent := JavaScriptEvent()
+  button.clickEvent := RealtimeEvent()
   button.clickEvent.on {
     case evt => person := Person("Test User", 987)
   }

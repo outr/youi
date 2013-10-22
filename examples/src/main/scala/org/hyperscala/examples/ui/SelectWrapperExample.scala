@@ -6,7 +6,6 @@ import org.hyperscala.ui.wrapped.SelectWrapper
 import org.powerscala.Country
 
 import scala.language.implicitConversions
-import org.hyperscala.event.JavaScriptEvent
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -33,13 +32,13 @@ class SelectWrapperExample extends Example {
   contents += new tag.Br
 
   contents += new tag.Button(content = "Select USA") {
-    clickEvent := JavaScriptEvent()
+    clickEvent := RealtimeEvent()
     clickEvent.on {
       case evt => wrapper.selected := Country.US
     }
   }
   contents += new tag.Button(content = "Repopulate") {
-    clickEvent := JavaScriptEvent()
+    clickEvent := RealtimeEvent()
     clickEvent.on {
       case evt => wrapper.values := Country.values
     }

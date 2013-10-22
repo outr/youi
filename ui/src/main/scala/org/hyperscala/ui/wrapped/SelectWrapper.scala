@@ -4,8 +4,7 @@ import org.hyperscala.html._
 import org.powerscala.property.{ListProperty, Property}
 import org.powerscala.event.Listenable
 import org.hyperscala.web.Webpage
-import org.hyperscala.realtime.Realtime
-import org.hyperscala.event.JavaScriptEvent
+import org.hyperscala.realtime.{RealtimeEvent, Realtime}
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -13,7 +12,7 @@ import org.hyperscala.event.JavaScriptEvent
 abstract class SelectWrapper[T](val select: tag.Select)(implicit manifest: Manifest[T]) {
   Webpage().require(Realtime)
   if (select.changeEvent() == null) {
-    select.changeEvent := JavaScriptEvent()
+    select.changeEvent := RealtimeEvent()
   }
 
   implicit val thisParent: Listenable = null

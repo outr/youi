@@ -5,7 +5,6 @@ import org.powerscala.Language
 import org.hyperscala.web.Webpage
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.jquery.ui.{AutocompleteResult, Autocomplete}
-import org.hyperscala.event.JavaScriptEvent
 import org.hyperscala.examples.Example
 import language.reflectiveCalls
 
@@ -22,7 +21,7 @@ class AutoCompleteExample extends Example {
     style.paddingLeft := 25.px
     style.paddingRight := 25.px
     val input = new Autocomplete {
-      changeEvent := JavaScriptEvent()
+      changeEvent := RealtimeEvent()
 
       autocomplete.search := ((query: String) => {
         val v = query.toLowerCase
@@ -41,7 +40,7 @@ class AutoCompleteExample extends Example {
     contents += input
 
     contents += new tag.Button(content = "Test") {
-      clickEvent := JavaScriptEvent()
+      clickEvent := RealtimeEvent()
 
       clickEvent.on {
         case evt => {

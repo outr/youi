@@ -6,9 +6,8 @@ import org.hyperscala.ui.widgets.visual.VisualBuilder
 
 import org.powerscala.reflect._
 import org.hyperscala.ui.widgets.ListSelect
-import org.hyperscala.event.JavaScriptEvent
 import org.hyperscala.web.Webpage
-import org.hyperscala.realtime.Realtime
+import org.hyperscala.realtime.{RealtimeEvent, Realtime}
 
 import language.reflectiveCalls
 
@@ -24,7 +23,7 @@ object EnumEntryVisualType extends VisualType[EnumEntry] {
     val list = new ListSelect[Any](enumerated.values, nullAllowed = nullAllowed) {
       Webpage().require(Realtime)
 
-      changeEvent := JavaScriptEvent()
+      changeEvent := RealtimeEvent()
 
       property.change.on {
         case evt => updateSelect()

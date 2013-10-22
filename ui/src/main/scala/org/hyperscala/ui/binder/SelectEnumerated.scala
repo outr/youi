@@ -2,9 +2,9 @@ package org.hyperscala.ui.binder
 
 import org.powerscala.enum.{Enumerated, EnumEntry}
 import org.hyperscala.html._
-import org.hyperscala.event.JavaScriptEvent
 import org.hyperscala.ui.dynamic.Binder
 import language.reflectiveCalls
+import org.hyperscala.realtime.RealtimeEvent
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
@@ -14,7 +14,7 @@ class SelectEnumerated[E <: EnumEntry](enumerated: Enumerated[E],
                                           nullDisplay: String = "-- Please Select an Option --")
                                          (implicit manifest: Manifest[E]) extends Binder[tag.Select, E]()(manifest) {
   def bind(select: tag.Select) = {
-    select.changeEvent := JavaScriptEvent()
+    select.changeEvent := RealtimeEvent()
     select.contents.clear()
     if (nullAllowed) {
       select.contents += new tag.Option(value = "null", content = nullDisplay)

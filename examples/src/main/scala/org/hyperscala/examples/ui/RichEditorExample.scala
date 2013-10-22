@@ -3,7 +3,6 @@ package org.hyperscala.examples.ui
 import org.hyperscala.html._
 import org.hyperscala.ui.widgets.RichEditor
 
-import org.hyperscala.event.JavaScriptEvent
 import org.hyperscala.examples.Example
 import language.reflectiveCalls
 import org.powerscala.Color
@@ -42,7 +41,7 @@ class RichEditorExample extends Example {
 
   contents += div
   contents += new tag.Button(content = "Modify") {
-    clickEvent := JavaScriptEvent()
+    clickEvent := RealtimeEvent()
 
     clickEvent.on {
       case evt => {
@@ -58,7 +57,7 @@ class RichEditorExample extends Example {
     }
   }
   contents += new tag.Button(content = "Check") {
-    clickEvent := JavaScriptEvent()
+    clickEvent := RealtimeEvent()
 
     clickEvent.on {
       case evt => {
@@ -67,49 +66,49 @@ class RichEditorExample extends Example {
     }
   }
   contents += new tag.Button(id = "boldToggle", content = "Bold") {
-    clickEvent := JavaScriptEvent()
+    clickEvent := RealtimeEvent()
 
     clickEvent.on {
       case evt => editor.bold()
     }
   }
   contents += new tag.Button(id = "italicToggle", content = "Italics") {
-    clickEvent := JavaScriptEvent()
+    clickEvent := RealtimeEvent()
 
     clickEvent.on {
       case evt => editor.italic()
     }
   }
   contents += new tag.Button(id = "underlineToggle", content = "Underline") {
-    clickEvent := JavaScriptEvent()
+    clickEvent := RealtimeEvent()
 
     clickEvent.on {
       case evt => editor.underline()
     }
   }
   contents += new tag.Button(id = "strikeToggle", content = "Strike") {
-    clickEvent := JavaScriptEvent()
+    clickEvent := RealtimeEvent()
 
     clickEvent.on {
       case evt => editor.strike()
     }
   }
   contents += new tag.Button(id = "superscriptToggle", content = "Superscript") {
-    clickEvent := JavaScriptEvent()
+    clickEvent := RealtimeEvent()
 
     clickEvent.on {
       case evt => editor.superscript()
     }
   }
   contents += new tag.Button(id = "subscriptToggle", content = "Subscript") {
-    clickEvent := JavaScriptEvent()
+    clickEvent := RealtimeEvent()
 
     clickEvent.on {
       case evt => editor.subscript()
     }
   }
   contents += new tag.Button(id = "reposition", content = "Reposition Editor") {
-    clickEvent := JavaScriptEvent()
+    clickEvent := RealtimeEvent()
 
     clickEvent.on {
       case evt => {
@@ -120,7 +119,7 @@ class RichEditorExample extends Example {
     }
   }
   contents += new tag.Button(id = "toggleNewPage", content = "Toggle New Page Button") {
-    clickEvent := JavaScriptEvent()
+    clickEvent := RealtimeEvent()
 
     clickEvent.on {
       case evt => {
@@ -130,7 +129,7 @@ class RichEditorExample extends Example {
   }
 
   contents += new tag.Button(id = "setFontSize36", content = "Set Font Size to 36pt") {
-    clickEvent := JavaScriptEvent()
+    clickEvent := RealtimeEvent()
 
     clickEvent.on {
       case evt => {
@@ -139,7 +138,7 @@ class RichEditorExample extends Example {
     }
   }
   contents += new tag.Button(id = "setFontSize72", content = "Set Font Size to 72pt") {
-    clickEvent := JavaScriptEvent()
+    clickEvent := RealtimeEvent()
 
     clickEvent.on {
       case evt => {
@@ -148,7 +147,7 @@ class RichEditorExample extends Example {
     }
   }
   contents += new tag.Button(id = "setFontSizeNull", content = "Set Font Size to null") {
-    clickEvent := JavaScriptEvent()
+    clickEvent := RealtimeEvent()
 
     clickEvent.on {
       case evt => {

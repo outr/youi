@@ -4,7 +4,6 @@ import org.hyperscala.web.Webpage
 import org.hyperscala.ui.PageChangeWarning
 
 import org.hyperscala.html._
-import org.hyperscala.event.JavaScriptEvent
 import org.hyperscala.examples.Example
 import language.reflectiveCalls
 import language.reflectiveCalls
@@ -18,7 +17,7 @@ class PageChangeWarningExample extends Example {
   contents += new tag.Div {
     contents += new tag.A(href = "http://www.google.com", content = "Leave the Page")
     contents += new tag.Button(content = "Set Warning") {
-      clickEvent := JavaScriptEvent()
+      clickEvent := RealtimeEvent()
 
       clickEvent.on {
         case evt => PageChangeWarning.warn("There are unsaved changes.")
@@ -26,7 +25,7 @@ class PageChangeWarningExample extends Example {
     }
 
     contents += new tag.Button(content = "Clear Warning") {
-      clickEvent := JavaScriptEvent()
+      clickEvent := RealtimeEvent()
 
       clickEvent.on {
         case evt => PageChangeWarning.warn(null)

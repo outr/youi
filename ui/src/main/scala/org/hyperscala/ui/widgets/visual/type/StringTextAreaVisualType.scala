@@ -3,9 +3,8 @@ package org.hyperscala.ui.widgets.visual.`type`
 import org.powerscala.property.Property
 import org.hyperscala.html._
 import org.hyperscala.ui.widgets.visual.VisualBuilder
-import org.hyperscala.event.JavaScriptEvent
 import org.hyperscala.web.Webpage
-import org.hyperscala.realtime.Realtime
+import org.hyperscala.realtime.{RealtimeEvent, Realtime}
 
 import language.reflectiveCalls
 
@@ -18,7 +17,7 @@ object StringTextAreaVisualType extends VisualType[String] {
   def create(property: Property[String], details: VisualBuilder[String]) = new tag.TextArea {
     Webpage().require(Realtime)
 
-    changeEvent := JavaScriptEvent()
+    changeEvent := RealtimeEvent()
 
     property.change.on {
       case evt => updateInput()

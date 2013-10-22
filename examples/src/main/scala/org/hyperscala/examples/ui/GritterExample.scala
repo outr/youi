@@ -3,7 +3,6 @@ package org.hyperscala.examples.ui
 import org.hyperscala.html._
 import org.hyperscala.web.Webpage
 import org.hyperscala.jquery.Gritter
-import org.hyperscala.event.JavaScriptEvent
 import org.hyperscala.examples.Example
 import language.reflectiveCalls
 
@@ -14,7 +13,7 @@ class GritterExample extends Example {
   Webpage().require(Gritter)
 
   contents += new tag.Button(content = "Show Message") {
-    clickEvent := JavaScriptEvent()
+    clickEvent := RealtimeEvent()
 
     clickEvent.on {
       case evt => {

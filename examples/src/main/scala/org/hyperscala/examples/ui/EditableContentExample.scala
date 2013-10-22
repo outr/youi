@@ -2,7 +2,6 @@ package org.hyperscala.examples.ui
 
 import org.hyperscala.html._
 
-import org.hyperscala.event.JavaScriptEvent
 import org.hyperscala.examples.Example
 import language.reflectiveCalls
 import org.hyperscala.ui.wrapped.EditableContent
@@ -28,19 +27,19 @@ class EditableContentExample extends Example {
 
   contents += div
   contents += new tag.Button(content = "Toggle Bold") {
-    clickEvent := JavaScriptEvent()
+    clickEvent := RealtimeEvent()
     clickEvent.on {
       case evt => editable.bold()
     }
   }
   contents += new tag.Button(content = "Random Background Color") {
-    clickEvent := JavaScriptEvent()
+    clickEvent := RealtimeEvent()
     clickEvent.on {
       case evt => editable.backColor(Color.random)
     }
   }
   contents += new tag.Button(content = "Dump Info") {
-    clickEvent := JavaScriptEvent()
+    clickEvent := RealtimeEvent()
     clickEvent.on {
       case evt => {
         println(s"Text: ${editable.selectedText}")

@@ -7,8 +7,8 @@ import org.hyperscala.html.tag
 
 import scala.language.implicitConversions
 import org.hyperscala.html.tag.Input
-import org.hyperscala.event.JavaScriptEvent
 import org.hyperscala.javascript.JavaScriptContent
+import org.hyperscala.realtime.RealtimeEvent
 
 /**
  * Spectrum is a wrapper around the the jQuery Colorpicker found here: http://bgrins.github.io/spectrum/
@@ -51,7 +51,7 @@ class Spectrum private(val wrapped: Input) extends jQueryComponent {
   def functionName = "spectrum"
 
   if (wrapped.changeEvent() == null) {
-    wrapped.changeEvent := JavaScriptEvent()
+    wrapped.changeEvent := RealtimeEvent()
   }
 
   /**

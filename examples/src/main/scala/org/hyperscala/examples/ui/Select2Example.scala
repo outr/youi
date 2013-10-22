@@ -7,7 +7,6 @@ import org.hyperscala.web.Webpage
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.ui.widgets.Select2
 import org.hyperscala.javascript.JavaScriptString
-import org.hyperscala.event.JavaScriptEvent
 import org.hyperscala.jquery.Gritter
 
 import language.reflectiveCalls
@@ -24,7 +23,7 @@ class Select2Example extends Example {
     contents += new tag.Option(value = "orange", content = "Orange")
     contents += new tag.Option(value = "banana", content = "Banana")
 
-    changeEvent := JavaScriptEvent()
+    changeEvent := RealtimeEvent()
     value.change.on {
       case evt => Gritter.add("Selection Changed", s"Value changed to ${value()}")
     }
@@ -32,7 +31,7 @@ class Select2Example extends Example {
   contents += select
 
   contents += new tag.Button(content = "Add Grape") {
-    clickEvent := JavaScriptEvent()
+    clickEvent := RealtimeEvent()
     clickEvent.on {
       case evt => {
         select.contents += new tag.Option(value = "grape", content = "Grape")

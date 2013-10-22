@@ -2,9 +2,9 @@ package org.hyperscala.ui
 
 import dynamic.Binder
 import org.hyperscala.html._
-import org.hyperscala.event.JavaScriptEvent
 
 import language.reflectiveCalls
+import org.hyperscala.realtime.RealtimeEvent
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
@@ -15,7 +15,7 @@ package object binder {
       input.value bind valueProperty
       valueProperty bind input.value
 
-      input.changeEvent := JavaScriptEvent()
+      input.changeEvent := RealtimeEvent()
     }
   }
 
@@ -23,7 +23,7 @@ package object binder {
     def bind(textArea: tag.TextArea) = {
       textArea.content bind valueProperty
       valueProperty bind textArea.content
-      textArea.changeEvent := JavaScriptEvent()
+      textArea.changeEvent := RealtimeEvent()
     }
   }
 
@@ -43,7 +43,7 @@ package object binder {
       valueProperty.change.on {
         case evt => input.value := valueProperty().toString
       }
-      input.changeEvent := JavaScriptEvent()
+      input.changeEvent := RealtimeEvent()
     }
   }
 

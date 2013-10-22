@@ -7,17 +7,16 @@ import annotation.tailrec
 
 import org.powerscala.json._
 import org.hyperscala.web.module.IdentifyTags
-import org.powerscala.{Priority, Version}
+import org.powerscala.Version
 import org.hyperscala.module._
 import org.hyperscala.jquery.jQuery
-import org.hyperscala.event.JavaScriptEvent
 
 import language.reflectiveCalls
 import org.hyperscala.jquery.stylesheet.jQueryStyleSheet
 import com.outr.net.communicator.server.{Message, Connection, Communicator}
-import org.powerscala.event.Listener
-import org.powerscala.event.processor.EventProcessor
 import org.powerscala.log.Logging
+import org.hyperscala.javascript.JavaScriptString
+import org.hyperscala.html.attributes.InputType
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -30,17 +29,6 @@ object Realtime extends Module with Logging {
   override def dependencies = List(jQuery.LatestWithDefault, jQueryStyleSheet, IdentifyTags)
 
   private val connectionsKey = "webpageConnections"
-
-  private val messageReceivedListener = new Listener[Message, Unit] {
-    val name = "received"
-    val eventClass = classOf[Message]
-    val priority = Priority.Normal
-    val modes = EventProcessor.DefaultModes
-
-    def receive(event: Message) = {
-      info(s"Received message: $event")
-    }
-  }
 
   def init() = {
     // Configure communicator resources
@@ -68,10 +56,10 @@ object Realtime extends Module with Logging {
     page.head.contents += new tag.Script(src = "/communicator.js")
     page.head.contents += new tag.Link(href = "/communicator.css")
     page.head.contents += new tag.Script(src = "/js/realtime.js")
+    page.head.contents += new tag.Script(content = JavaScriptString(s"connectRealtime('${page.pageId}');"))
   }
 
   private def created(connection: Connection, pageId: String) = {
-    connection.received.add(messageReceivedListener)
     val page = WebpageHandler.pageById[Webpage](pageId)
     val realtime = RealtimePage(page)             // Get reference to RealtimePage
     realtime.connectionCreated(connection)        // Notify the RealtimePage that a connection was created
@@ -85,7 +73,6 @@ object Realtime extends Module with Logging {
   }
 
   private def disposed(connection: Connection) = {
-    connection.received.remove(messageReceivedListener)
     val page = connection.store[Webpage]("page")    // Load the page from the connection
     val realtime = RealtimePage(page)               // Get a reference to RealtimePage
     realtime.connectionDisposed(connection)         // Notify the RealtimePage that a connection was disposed
@@ -169,15 +156,15 @@ object Realtime extends Module with Logging {
   def connectStandard() = {
     Webpage().live[FormField] {
       case field => {
-        field.changeEvent := JavaScriptEvent()
+        field.changeEvent := RealtimeEvent()
         field match {
-          case i: tag.Input => field.clickEvent := JavaScriptEvent()
+          case i: tag.Input => field.clickEvent := RealtimeEvent()
           case _ => // Not an input
         }
       }
     }
     Webpage().live[tag.Button] {
-      case b => b.clickEvent := JavaScriptEvent()
+      case b => b.clickEvent := RealtimeEvent()
     }
   }
 
@@ -188,22 +175,24 @@ object Realtime extends Module with Logging {
     Webpage().live[FormField] {
       case field => {
         if (field.changeEvent() == null) {
-          field.changeEvent := JavaScriptEvent(preventDefault = false)
+          field.changeEvent := RealtimeEvent(preventDefault = false)
         }
         field match {
-          case i: tag.Input => if (field.clickEvent() == null) {
-            field.clickEvent := JavaScriptEvent(preventDefault = false)
+          case i: tag.Input if i.inputType() == InputType.Button => {
+            if (field.clickEvent() == null) {
+              field.clickEvent := RealtimeEvent(preventDefault = false)
+            }
           }
-          case _ => // Not an input
+          case _ => // Not a button input
         }
       }
     }
     Webpage().live[tag.Button] {
-      case b => if (b.clickEvent() == null) b.clickEvent := JavaScriptEvent(preventDefault = false)
+      case b => if (b.clickEvent() == null) b.clickEvent := RealtimeEvent(preventDefault = false)
     }
     Webpage().live[tag.Form] {
       case f => {
-        if (f.submitEvent() == null) f.submitEvent := JavaScriptEvent()
+        if (f.submitEvent() == null) f.submitEvent := RealtimeEvent()
       }
     }
   }
@@ -213,7 +202,7 @@ object Realtime extends Module with Logging {
    */
   def connectPost() = {
     Webpage().live[tag.Form] {
-      case f => if (f.submitEvent() == null) f.submitEvent := JavaScriptEvent(fireChange = true)
+      case f => if (f.submitEvent() == null) f.submitEvent := RealtimeEvent(fireChange = true)
     }
   }
 }

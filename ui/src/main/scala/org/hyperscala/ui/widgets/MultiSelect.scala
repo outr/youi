@@ -5,8 +5,7 @@ import attributes.InputType
 import constraints.BodyChild
 import org.powerscala.property.Property
 import org.hyperscala.web.Webpage
-import org.hyperscala.realtime.Realtime
-import org.hyperscala.event.JavaScriptEvent
+import org.hyperscala.realtime.{RealtimeEvent, Realtime}
 
 import language.reflectiveCalls
 import java.util.concurrent.atomic.AtomicBoolean
@@ -86,7 +85,7 @@ trait Selectable[T] extends BodyChild {
 
 class DefaultSelectable[T](multiSelect: MultiSelect[T], val value: T, checked: Boolean) extends tag.Label with Selectable[T] {
   val input = new tag.Input(inputType = InputType.CheckBox, value = multiSelect.value(value), checked = checked) {
-    changeEvent := JavaScriptEvent()
+    changeEvent := RealtimeEvent()
 
     checked.change.on {
       case evt => multiSelect.updateSelectedFromUI()

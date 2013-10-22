@@ -3,7 +3,6 @@ package org.hyperscala.examples.ui
 import org.hyperscala.html._
 import org.hyperscala.examples.Example
 import org.hyperscala.ui.widgets.{Selectable, MultiSelect}
-import org.hyperscala.event.JavaScriptEvent
 import org.hyperscala.jquery.Gritter
 import org.hyperscala.web.Webpage
 import org.hyperscala.css.attributes._
@@ -47,7 +46,7 @@ class MultiSelectExample extends Example {
   select.selected := List(3, 4)
 
   contents += new tag.Button(content = "Select 1 and 5") {
-    clickEvent := JavaScriptEvent()
+    clickEvent := RealtimeEvent()
 
     clickEvent.on {
       case evt => select.selected := List(1, 5)
@@ -55,7 +54,7 @@ class MultiSelectExample extends Example {
   }
 
   contents += new tag.Button(content = "Output Selected") {
-    clickEvent := JavaScriptEvent()
+    clickEvent := RealtimeEvent()
 
     clickEvent.on {
       case evt => Gritter.add("Selected Items", select.selected().mkString(", "))

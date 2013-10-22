@@ -3,9 +3,7 @@ package org.hyperscala.event
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.html.HTMLTag
-import org.hyperscala.Page
 import org.hyperscala.html.attributes.Method
 
 /**
@@ -14,35 +12,6 @@ import org.hyperscala.html.attributes.Method
 class JavaScriptEvent(val tag: HTMLTag)
 
 object JavaScriptEvent {
-  def apply(confirmation: String = null,
-            preventDefault: Boolean = true,
-            fireChange: Boolean = false,
-            onlyLast: Boolean = true,
-            delay: Int = 0) = {
-    Page().require("realtime")
-
-    val b = new StringBuilder
-    b.append("try { ")
-    if (confirmation != null) {
-      b.append("if (confirm('%s')) { ".format(confirmation))
-    }
-    if (delay != 0) {
-      b.append("setTimeout(function() { ")
-    }
-    b.append("jsEventHandler(event, (typeof data === 'undefined') ? null : data, %s, %s);".format(fireChange, onlyLast))
-    if (delay != 0) {
-      b.append(" }, %s); ".format(delay))
-    }
-    if (confirmation != null) {
-      b.append(" } ")
-    }
-    if (preventDefault) {
-      b.append("return false;")
-    }
-    b.append(" } catch(err) { alert('An error occurred: ' + err.message); }")
-    JavaScriptString(b.toString())
-  }
-
   def create(tag: HTMLTag, eventType: String) = {
     eventType match {
       case "afterprint" => new AfterPrintEvent(tag)

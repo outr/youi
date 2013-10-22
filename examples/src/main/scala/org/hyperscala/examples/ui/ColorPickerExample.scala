@@ -8,7 +8,6 @@ import org.hyperscala.examples.Example
 import language.reflectiveCalls
 import org.hyperscala.realtime.Realtime
 import org.powerscala.Color
-import org.hyperscala.event.JavaScriptEvent
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -30,12 +29,12 @@ class ColorPickerExample extends Example {
     clickEvent.on {
       case evt => colorPicker.color := Color.Red
     }
-    clickEvent := JavaScriptEvent()
+    clickEvent := RealtimeEvent()
   }
   contents += new tag.Button(id = "button2", content = "Set to null") {
     clickEvent.on {
       case evt => colorPicker.color := null
     }
-    clickEvent := JavaScriptEvent()
+    clickEvent := RealtimeEvent()
   }
 }

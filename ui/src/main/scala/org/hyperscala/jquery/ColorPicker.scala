@@ -6,12 +6,12 @@ import org.powerscala.{Color, Version, StorageComponent}
 import org.hyperscala.html._
 import org.hyperscala.web.{Webpage, Website}
 import org.hyperscala.html.tag.Input
-import org.hyperscala.event.JavaScriptEvent
 import org.hyperscala.jquery.ui.jQueryUI
 import org.hyperscala.javascript.JavaScriptString
 
 import scala.language.implicitConversions
 import org.powerscala.event.Intercept
+import org.hyperscala.realtime.RealtimeEvent
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -72,7 +72,7 @@ class ColorPicker private(val wrapped: tag.Input) extends jQueryComponent {
   option("colorFormat", "#HEX")
 
   if (wrapped.changeEvent() == null) {
-    wrapped.changeEvent := JavaScriptEvent()
+    wrapped.changeEvent := RealtimeEvent()
   }
 
   /**

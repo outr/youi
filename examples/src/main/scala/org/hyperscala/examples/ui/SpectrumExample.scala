@@ -8,7 +8,6 @@ import org.hyperscala.examples.Example
 import language.reflectiveCalls
 import org.hyperscala.realtime.Realtime
 import org.powerscala.Color
-import org.hyperscala.event.JavaScriptEvent
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -30,13 +29,13 @@ class SpectrumExample extends Example {
     clickEvent.on {
       case evt => colorPicker.color := Color.Red
     }
-    clickEvent := JavaScriptEvent()
+    clickEvent := RealtimeEvent()
   }
 
   contents += new tag.Button(id = "button2", content = "Toggle Show Input") {
     clickEvent.on {
       case evt => spectrum.showInput := !spectrum.showInput()
     }
-    clickEvent := JavaScriptEvent()
+    clickEvent := RealtimeEvent()
   }
 }

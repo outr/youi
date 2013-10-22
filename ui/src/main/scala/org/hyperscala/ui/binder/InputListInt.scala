@@ -1,9 +1,9 @@
 package org.hyperscala.ui.binder
 
 import org.hyperscala.html.tag
-import org.hyperscala.event.JavaScriptEvent
 import org.hyperscala.ui.dynamic.Binder
 import language.reflectiveCalls
+import org.hyperscala.realtime.RealtimeEvent
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
@@ -19,7 +19,7 @@ class InputListInt extends Binder[tag.Input, List[Int]] {
     valueProperty.change.on {
       case evt => input.value := valueProperty().mkString(", ")
     }
-    input.changeEvent := JavaScriptEvent()
+    input.changeEvent := RealtimeEvent()
   }
 
   private def intOption(s: String) = try {

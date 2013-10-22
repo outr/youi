@@ -6,7 +6,6 @@ import language.reflectiveCalls
 import org.powerscala.Color
 import org.hyperscala.css.attributes.LineStyle
 import org.hyperscala.ui.history.{HistoryEntry, History}
-import org.hyperscala.event.JavaScriptEvent
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -24,7 +23,7 @@ class HistoryExample extends Example {
   }
   contents += div
   contents += new tag.Button(id = "backgroundChanger", content = "Randomize Background Color") {
-    clickEvent := JavaScriptEvent()
+    clickEvent := RealtimeEvent()
     clickEvent.on {
       case evt => {
         val color = Color.random
@@ -34,13 +33,13 @@ class HistoryExample extends Example {
     }
   }
   contents += new tag.Button(content = "Undo") {
-    clickEvent := JavaScriptEvent()
+    clickEvent := RealtimeEvent()
     clickEvent.on {
       case evt => History().undo()
     }
   }
   contents += new tag.Button(content = "Redo") {
-    clickEvent := JavaScriptEvent()
+    clickEvent := RealtimeEvent()
     clickEvent.on {
       case evt => History().redo()
     }

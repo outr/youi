@@ -4,7 +4,6 @@ import org.hyperscala.html._
 import org.hyperscala.web.Webpage
 import org.hyperscala.ui.validation._
 import org.hyperscala.realtime.Realtime
-import org.hyperscala.event.JavaScriptEvent
 import org.hyperscala.css.attributes.Display
 import org.powerscala.Color
 import org.hyperscala.ui.dynamic.{DynamicContent, DynamicString}
@@ -49,7 +48,7 @@ class PlayHelloWorldPage extends Webpage {
   def showResults() = {
     title := "Here is the result:"
     header.contents.replaceWith(new tag.A(href = "#", content = "Here is the result:") {
-      clickEvent := JavaScriptEvent()
+      clickEvent := RealtimeEvent()
       clickEvent.on {
         case evt => showConfigure()
       }

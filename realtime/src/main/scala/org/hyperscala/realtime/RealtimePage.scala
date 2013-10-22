@@ -48,7 +48,7 @@ class RealtimePage private(page: Webpage) extends Logging {
 
   protected[realtime] def received(connection: Connection, message: Message) = synchronized {
     val event = message.event
-    info(s"Received: $message")
+    info(s"Received: $event - $message")
   }
 
   protected[realtime] def connectionDisposed(connection: Connection) = synchronized {

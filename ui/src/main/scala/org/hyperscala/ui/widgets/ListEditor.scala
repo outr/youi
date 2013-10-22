@@ -4,10 +4,10 @@ import org.hyperscala.html._
 import org.powerscala.property._
 import org.hyperscala.html.constraints.BodyChild
 import org.hyperscala.css.attributes._
-import org.hyperscala.event.JavaScriptEvent
 import org.powerscala.reflect._
 
 import language.reflectiveCalls
+import org.hyperscala.realtime.RealtimeEvent
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -60,7 +60,7 @@ trait ListEditor[T] extends tag.Div {
     editorDiv.contents += editor
 
     editorButtons.contents += new tag.Button(content = "Add") {
-      clickEvent := JavaScriptEvent()
+      clickEvent := RealtimeEvent()
 
       clickEvent.on {
         case evt => addCurrent()
@@ -121,7 +121,7 @@ trait ListEditorItem[T] extends BodyChild {
 class DefaultListEditorItem[T](val value: T, editor: ListEditor[T]) extends tag.Div with ListEditorItem[T] {
   contents += value.toString
   contents += new tag.Button(content = "Delete") {
-    clickEvent := JavaScriptEvent()
+    clickEvent := RealtimeEvent()
 
     clickEvent.on {
       case evt => delete()

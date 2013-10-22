@@ -4,7 +4,6 @@ import org.hyperscala.html._
 import org.hyperscala.examples.Example
 import org.hyperscala.web.Webpage
 import org.hyperscala.ui.module.DynamicURL
-import org.hyperscala.event.JavaScriptEvent
 
 //import org.powerscala.convert.string._
 import language.reflectiveCalls
@@ -33,7 +32,7 @@ class DynamicURLExample extends Example {
   }
 
   contents += new tag.Button(content = "Set Hash") {
-    clickEvent := JavaScriptEvent()
+    clickEvent := RealtimeEvent()
 
     clickEvent.on {
       case evt => {

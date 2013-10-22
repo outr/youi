@@ -8,7 +8,6 @@ import org.hyperscala.html._
 import org.hyperscala.web.Webpage
 import org.hyperscala.realtime.Realtime
 import util.Random
-import org.hyperscala.event.JavaScriptEvent
 
 import language.reflectiveCalls
 
@@ -28,7 +27,7 @@ class DynamicSVGExample extends Example {
   contents += canvas
 
   contents += new tag.Button(content = "Add Circle") {
-    clickEvent := JavaScriptEvent()
+    clickEvent := RealtimeEvent()
     clickEvent.on {
       case evt => addCircle()
     }

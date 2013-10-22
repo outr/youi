@@ -5,7 +5,6 @@ import org.hyperscala.ui.widgets.visual.Visual
 import org.hyperscala.css.attributes._
 
 import org.powerscala.property._
-import org.hyperscala.event.JavaScriptEvent
 import org.powerscala.Country
 import org.hyperscala.ui.widgets.visual.`type`.DateInputVisualType
 import org.hyperscala.web.Webpage
@@ -70,7 +69,7 @@ class VisualExample extends Example {
     style.clear := Clear.Both
 
     contents += new tag.Button(content = "Toggle Editing") {
-      clickEvent := JavaScriptEvent()
+      clickEvent := RealtimeEvent()
 
       clickEvent.on {
         case evt => {
@@ -80,7 +79,7 @@ class VisualExample extends Example {
     }
 
     contents += new tag.Button(content = "Set Value") {
-      clickEvent := JavaScriptEvent()
+      clickEvent := RealtimeEvent()
 
       clickEvent.on {
         case evt => {

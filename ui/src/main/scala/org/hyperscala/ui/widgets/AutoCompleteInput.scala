@@ -12,6 +12,7 @@ import org.hyperscala.event._
 import scala.Some
 
 import language.reflectiveCalls
+import org.hyperscala.realtime.RealtimeEvent
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -101,8 +102,8 @@ abstract class AutoCompleteInput[T](id: String = Unique(), default: T)(implicit 
     style.width := 100.pct
     style.height := 100.pct
 
-    keyUpEvent := JavaScriptEvent(fireChange = true, preventDefault = true, onlyLast = true)
-    blurEvent := JavaScriptEvent(preventDefault = false, delay = 100)
+    keyUpEvent := RealtimeEvent(fireChange = true, preventDefault = true, onlyLast = true)
+    blurEvent := RealtimeEvent(preventDefault = false, delay = 100)
 
     blurEvent.on {
       case evt => {
@@ -203,9 +204,9 @@ class BasicResult[T](val result: T, query: String, input: AutoCompleteInput[T]) 
   style.paddingBottom := 5.px
   style.cursor := "pointer"
 
-  mouseOverEvent := JavaScriptEvent()
-  mouseOutEvent := JavaScriptEvent()
-  clickEvent := JavaScriptEvent()
+  mouseOverEvent := RealtimeEvent()
+  mouseOutEvent := RealtimeEvent()
+  clickEvent := RealtimeEvent()
 
   mouseOverEvent.on {
     case evt => {

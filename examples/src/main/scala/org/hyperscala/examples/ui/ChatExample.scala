@@ -1,7 +1,6 @@
 package org.hyperscala.examples.ui
 
 import org.hyperscala.html._
-import org.hyperscala.event.JavaScriptEvent
 import org.hyperscala.web.{Website, Webpage}
 import org.powerscala.property.Property
 import annotation.tailrec
@@ -27,9 +26,9 @@ class ChatExample extends Webpage {
   val submit = chatMain.load[tag.Button]("submit")
   val messages = chatMain.load[tag.Div]("messages")
 
-  chatName.changeEvent := JavaScriptEvent()
-  message.changeEvent := JavaScriptEvent()
-  submit.clickEvent := JavaScriptEvent()
+  chatName.changeEvent := RealtimeEvent()
+  message.changeEvent := RealtimeEvent()
+  submit.clickEvent := RealtimeEvent()
 
   chatName.changeEvent.on {
     case evt => updateNickname()

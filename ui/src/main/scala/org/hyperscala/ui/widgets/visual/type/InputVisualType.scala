@@ -5,9 +5,8 @@ import org.hyperscala.ui.widgets.visual.{Stringify, VisualBuilder}
 import org.hyperscala.html.tag
 import org.hyperscala.web.Webpage
 import org.hyperscala.html.attributes.InputType
-import org.hyperscala.event.JavaScriptEvent
 import org.hyperscala.html.constraints.BodyChild
-import org.hyperscala.realtime.Realtime
+import org.hyperscala.realtime.{RealtimeEvent, Realtime}
 
 import language.reflectiveCalls
 
@@ -26,7 +25,7 @@ trait InputVisualType[T] extends VisualType[T] with Stringify[T] {
       inputType := InputType.Text
     }
 
-    changeEvent := JavaScriptEvent()
+    changeEvent := RealtimeEvent()
 
     property.change.on {
       case evt => updateInput()

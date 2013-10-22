@@ -2,9 +2,9 @@ package org.hyperscala.ui.binder
 
 import language.reflectiveCalls
 import org.hyperscala.html._
-import org.hyperscala.event.JavaScriptEvent
 import java.text.NumberFormat
 import org.hyperscala.ui.dynamic.Binder
+import org.hyperscala.realtime.RealtimeEvent
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
@@ -42,6 +42,6 @@ class InputCurrencyAsLong extends Binder[tag.Input, Long] {
       }
     }
 
-    input.changeEvent := JavaScriptEvent()
+    input.changeEvent := RealtimeEvent()
   }
 }

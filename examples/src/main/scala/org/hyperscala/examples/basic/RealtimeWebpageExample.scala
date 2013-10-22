@@ -2,7 +2,6 @@ package org.hyperscala.examples.basic
 
 import org.hyperscala.html._
 import org.powerscala.Color
-import org.hyperscala.event.JavaScriptEvent
 import org.hyperscala.web.Webpage
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.examples.Example
@@ -18,7 +17,7 @@ class RealtimeWebpageExample extends Example {
   var reversed = false
 
   val input = new tag.Input {
-    changeEvent := JavaScriptEvent()
+    changeEvent := RealtimeEvent()
 
     value.change.on {
       case evt => println("Input value changed: %s".format(value()))
@@ -27,7 +26,7 @@ class RealtimeWebpageExample extends Example {
   contents += input
 
   val select = new tag.Select(id = "realtimeSelect") {
-    changeEvent := JavaScriptEvent()
+    changeEvent := RealtimeEvent()
 
     contents += new tag.Option(id = "first", value = "uno", content = "One")
     contents += new tag.Option(id = "second", value = "dos", content = "Two")
@@ -45,7 +44,7 @@ class RealtimeWebpageExample extends Example {
   def printSelected(): Unit = println(s"Options: ${select.selectedOptions()}, Selected: ${select.selected()}, Value: ${select.value()}")
 
   val textArea = new tag.TextArea {
-    changeEvent := JavaScriptEvent()
+    changeEvent := RealtimeEvent()
 
     changeEvent.on {
       case evt => println(content())
@@ -54,7 +53,7 @@ class RealtimeWebpageExample extends Example {
   contents += textArea
 
   contents += new tag.Button(content = "Test Button") {
-    clickEvent := JavaScriptEvent()
+    clickEvent := RealtimeEvent()
 
     clickEvent.on {
       case evt => {

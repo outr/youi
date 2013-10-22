@@ -4,10 +4,9 @@ package org.hyperscala.ui.widgets
 import org.hyperscala.html._
 import attributes.{InputType, Target}
 import org.hyperscala.Unique
-import org.hyperscala.event.JavaScriptEvent
 import org.hyperscala.web.Webpage
 import org.hyperscala.css.attributes.Display
-import org.hyperscala.realtime.Realtime
+import org.hyperscala.realtime.{RealtimeEvent, Realtime}
 import org.hyperscala.ui.BusyDialog
 
 import language.reflectiveCalls
@@ -47,7 +46,7 @@ abstract class FileUploader extends tag.Div {
 
   protected def createInput() = {
     new tag.Input(id = inputId, name = "file", inputType = InputType.File, size = 20) {
-      changeEvent := JavaScriptEvent()
+      changeEvent := RealtimeEvent()
       changeEvent.on {
         case evt => {
           BusyDialog.show(uploadTitle)

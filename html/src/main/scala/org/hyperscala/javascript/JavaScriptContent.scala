@@ -4,11 +4,12 @@ import org.hyperscala.{AttributeValue, XMLContent}
 import org.jdom2.{Text, Content}
 import org.hyperscala.io.HTMLWriter
 import org.powerscala.Color
+import org.powerscala.json.Jsonify
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-trait JavaScriptContent extends XMLContent {
+trait JavaScriptContent extends XMLContent with Jsonify {
   def content: String
 
   def write(writer: HTMLWriter) = writer.write(content)
@@ -16,6 +17,10 @@ trait JavaScriptContent extends XMLContent {
   def read(content: Content): Unit = throw new UnsupportedOperationException("JavaScriptContent does not support loading. Use JavaScriptString instead.")
 
   def +(js: JavaScriptContent) = JavaScriptString("%s\n\n%s".format(content, js.content))
+
+  def parseJson(map: Map[String, Any]) = JavaScriptString(map("content").asInstanceOf[String])
+
+  def generate() = content
 }
 
 object JavaScriptContent {

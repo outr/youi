@@ -11,7 +11,6 @@ import org.hyperscala.css.{Style, StyleSheetAttribute, StyleSheet}
 import org.powerscala.property.Property
 import org.hyperscala._
 import org.hyperscala.svg.{Svg, SVGTag}
-import org.powerscala.json._
 import org.powerscala.property.event.PropertyChangeEvent
 import org.powerscala.hierarchy.event.ChildAddedEvent
 import com.outr.net.communicator.server.Message
@@ -61,8 +60,6 @@ class RealtimePage private(page: Webpage) extends Logging {
       val content = message.data.asInstanceOf[Map[String, Any]]
       val id = content("id").asInstanceOf[String]
       val eventType = content("eventType").asInstanceOf[String]
-
-      info(s"Received: $id, $eventType - $content")
 
       val t = id match {
         case null => Some(page.body)
@@ -212,7 +209,7 @@ class RealtimePage private(page: Webpage) extends Logging {
   }
 
   def send(js: JavaScriptMessage): Unit = {
-    val message = generate(js)
+    val message = Map("instruction" -> js.instruction, "content" -> js.content)
     send("eval", message)
   }
 

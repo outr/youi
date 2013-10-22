@@ -7,7 +7,6 @@ import org.hyperscala.realtime.Realtime
 import scala.util.Random
 import org.hyperscala.ui.wrapped.WrappedInput
 import org.hyperscala.jquery.jQuery
-import org.powerscala.Color
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -46,8 +45,6 @@ class NumberGuessServerPage extends Webpage {
   reset()
 
   def guess(): Unit = {
-    guessButton.style.backgroundColor := Color.random
-
     val g = number.property()
     guesses += 1
     if (g < 0 || g > 100) {

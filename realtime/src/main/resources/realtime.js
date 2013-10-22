@@ -18,8 +18,8 @@ function connectRealtime(pageId) {
             error: function(err) {
                 console.log('Error occurred: ' + err);
             },
-            received: function(msg) {
-                console.log('Received: ' + JSON.stringify(msg));
+            eval: function(msg) {
+                realtimeEvaluate(msg);
             }
         }
     });
@@ -131,4 +131,20 @@ function realtimeUpdateKeyEvent(event, content) {
     content.metaKey = event.metaKey;
     content.repeat = event.repeat;
     content.shiftKey = event.shiftKey;
+}
+
+function realtimeEvaluate(json) {
+    try {
+        var content = json['content'];
+        var instruction = json['instruction'];
+
+        eval(instruction);
+    } catch(err) {
+        log('Error occurred (' + err.message + ') while attempting to evaluate instruction: [' + instruction + '] with content: [' + content + '].')
+    }
+}
+
+function log(msg) {
+    var message = new Date().toLocaleString() + ': ' + msg;
+    console.log(message);
 }

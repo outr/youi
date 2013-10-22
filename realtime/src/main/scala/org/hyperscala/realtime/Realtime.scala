@@ -56,7 +56,7 @@ object Realtime extends Module with Logging {
     page.head.contents += new tag.Script(src = "/communicator.js")
     page.head.contents += new tag.Link(href = "/communicator.css")
     page.head.contents += new tag.Script(src = "/js/realtime.js")
-    page.head.contents += new tag.Script(content = JavaScriptString(s"connectRealtime('${page.pageId}');"))
+    page.head.contents += new tag.Script(content = JavaScriptString(s"jQuery(document).ready(function() { connectRealtime('${page.pageId}'); });"))
   }
 
   private def created(connection: Connection, pageId: String) = {

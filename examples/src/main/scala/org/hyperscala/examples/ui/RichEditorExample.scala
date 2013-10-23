@@ -9,6 +9,7 @@ import org.powerscala.Color
 import org.hyperscala.realtime.dsl._
 import org.hyperscala.selector.Selector
 import org.hyperscala.css.attributes.Position
+import org.hyperscala.realtime.RealtimeEvent
 
 /**
  * @author Matt Hicks <matt@outr.com>

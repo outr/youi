@@ -7,6 +7,7 @@ import org.hyperscala.html._
 import org.hyperscala.examples.Example
 import language.reflectiveCalls
 import language.reflectiveCalls
+import org.hyperscala.realtime.RealtimeEvent
 
 /**
  * @author Matt Hicks <mhicks@outr.com>

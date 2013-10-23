@@ -9,12 +9,15 @@ import tag._
 import org.hyperscala.web.Webpage
 import org.hyperscala.ui.WindowSized
 import language.reflectiveCalls
+import org.hyperscala.web.module.FormSupport
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-class HyperscalaPage extends Webpage with FormSupport {
+class HyperscalaPage extends Webpage {
   def site = HyperscalaSite
+
+  require(FormSupport)
 
   title := "Hyperscala - Statically typed bare-metal HTML, CSS, and JavaScript framework for Scala."
 

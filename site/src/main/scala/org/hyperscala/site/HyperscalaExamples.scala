@@ -2,6 +2,7 @@ package org.hyperscala.site
 
 import org.hyperscala.html._
 import org.powerscala.reflect._
+import org.hyperscala.web.WebpageHandler
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -18,10 +19,10 @@ class HyperscalaExamples extends HyperscalaPage {
     }
   }
 
-  def examples(pre: String = null, o: AnyRef): List[(String, WebpageResource)] = {
+  def examples(pre: String = null, o: AnyRef): List[(String, WebpageHandler)] = {
     o.getClass.methods.collect {
-      case m if (m.returnType.`type`.hasType(classOf[WebpageResource])) => List((name(pre, m), m.invoke[WebpageResource](o)))
-      case m if (m.name == "svg") => examples("SVG ", m.invoke[AnyRef](o))
+      case m if m.returnType.`type`.hasType(classOf[WebpageHandler]) => List((name(pre, m), m.invoke[WebpageHandler](o)))
+      case m if m.name == "svg" => examples("SVG ", m.invoke[AnyRef](o))
     }.flatten
   }
 

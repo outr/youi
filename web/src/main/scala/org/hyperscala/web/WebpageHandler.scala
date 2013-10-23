@@ -8,8 +8,10 @@ import org.hyperscala.Unique
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class WebpageHandler(pageCreator: () => Webpage, scope: Scope) extends HttpHandler {
+class WebpageHandler(pageCreator: () => Webpage, scope: Scope, val uris: List[String]) extends HttpHandler {
   val id = Unique()
+
+  def link = uris.head
 
   def onReceive(request: HttpRequest, response: HttpResponse) = if (response.status == HttpResponseStatus.NotFound) {
     val page = load(request) match {
@@ -28,24 +30,24 @@ class WebpageHandler(pageCreator: () => Webpage, scope: Scope) extends HttpHandl
   def load(request: HttpRequest) = scope match {
     case Scope.Request => None
     case Scope.Page => request.url.parameters.getFirst("pageId") match {
-      case Some(pageId) => Website().pages.get(pageId)
+      case Some(pageId) => Website()._pages.get(pageId)
       case None => None
     }
-    case Scope.Session => Website().pages.get(Website().session.id)
-    case Scope.Application => Website().pages.get(id)
+    case Scope.Session => Website()._pages.get(Website().session.id)
+    case Scope.Application => Website()._pages.get(id)
   }
 
   def cache(page: Webpage) = {
     scope match {
       case Scope.Request => // Nothing to do
       case Scope.Page => // Nothing to do
-      case Scope.Session => Website().pages(Website().session.id) = page
-      case Scope.Application => Website().pages(id) = page
+      case Scope.Session => Website()._pages(Website().session.id) = page
+      case Scope.Application => Website()._pages(id) = page
     }
-    Website().pages(page.pageId) = page         // All pages are stored at least by their id
+    Website()._pages(page.pageId) = page         // All pages are stored at least by their id
   }
 }
 
 object WebpageHandler {
-  def pageById[W <: Webpage](pageId: String) = Website().pages[W](pageId)
+  def pageById[W <: Webpage](pageId: String) = Website()._pages[W](pageId)
 }

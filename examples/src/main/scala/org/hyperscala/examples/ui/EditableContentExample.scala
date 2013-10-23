@@ -6,6 +6,7 @@ import org.hyperscala.examples.Example
 import language.reflectiveCalls
 import org.hyperscala.ui.wrapped.EditableContent
 import org.powerscala.Color
+import org.hyperscala.realtime.RealtimeEvent
 
 /**
  * @author Matt Hicks <matt@outr.com>

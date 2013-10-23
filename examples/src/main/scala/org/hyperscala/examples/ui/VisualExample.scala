@@ -8,7 +8,7 @@ import org.powerscala.property._
 import org.powerscala.Country
 import org.hyperscala.ui.widgets.visual.`type`.DateInputVisualType
 import org.hyperscala.web.Webpage
-import org.hyperscala.realtime.Realtime
+import org.hyperscala.realtime.{RealtimeEvent, Realtime}
 import org.hyperscala.examples.Example
 import language.reflectiveCalls
 

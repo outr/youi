@@ -6,6 +6,7 @@ import language.reflectiveCalls
 import org.powerscala.Color
 import org.hyperscala.css.attributes.LineStyle
 import org.hyperscala.ui.history.{HistoryEntry, History}
+import org.hyperscala.realtime.RealtimeEvent
 
 /**
  * @author Matt Hicks <matt@outr.com>

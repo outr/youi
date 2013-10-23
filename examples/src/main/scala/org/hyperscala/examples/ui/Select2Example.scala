@@ -4,7 +4,7 @@ import org.hyperscala.html._
 
 import org.hyperscala.examples.Example
 import org.hyperscala.web.Webpage
-import org.hyperscala.realtime.Realtime
+import org.hyperscala.realtime.{RealtimeEvent, Realtime}
 import org.hyperscala.ui.widgets.Select2
 import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.jquery.Gritter

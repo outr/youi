@@ -3,7 +3,7 @@ package org.hyperscala.examples.ui
 import org.hyperscala.html._
 import org.hyperscala.web.Webpage
 import org.hyperscala.ui.{PageLoader, BusyDialog}
-import org.hyperscala.realtime.Realtime
+import org.hyperscala.realtime.{RealtimeEvent, Realtime}
 import language.reflectiveCalls
 
 /**

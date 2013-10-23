@@ -7,6 +7,7 @@ import org.hyperscala.jquery.Gritter
 import org.hyperscala.web.Webpage
 import org.hyperscala.css.attributes._
 import language.reflectiveCalls
+import org.hyperscala.realtime.RealtimeEvent
 
 /**
  * @author Matt Hicks <matt@outr.com>

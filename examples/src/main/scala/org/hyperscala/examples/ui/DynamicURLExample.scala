@@ -4,6 +4,7 @@ import org.hyperscala.html._
 import org.hyperscala.examples.Example
 import org.hyperscala.web.Webpage
 import org.hyperscala.ui.module.DynamicURL
+import org.hyperscala.realtime.RealtimeEvent
 
 //import org.powerscala.convert.string._
 import language.reflectiveCalls

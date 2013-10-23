@@ -3,7 +3,7 @@ package org.hyperscala.examples.ui
 import org.hyperscala.html._
 import org.powerscala.Language
 import org.hyperscala.web.Webpage
-import org.hyperscala.realtime.Realtime
+import org.hyperscala.realtime.{RealtimeEvent, Realtime}
 import org.hyperscala.jquery.ui.{AutocompleteResult, Autocomplete}
 import org.hyperscala.examples.Example
 import language.reflectiveCalls

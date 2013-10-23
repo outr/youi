@@ -8,7 +8,7 @@ import org.powerscala.hierarchy.{MutableChildLike, ParentLike}
 import com.outr.net.http.HttpHandler
 import com.outr.net.http.request.HttpRequest
 import com.outr.net.http.response.{HttpResponseStatus, HttpResponse}
-import org.hyperscala.{Page, Markup, Unique}
+import org.hyperscala.{Tag, Page, Markup, Unique}
 import org.powerscala.MapStorage
 import java.io.OutputStream
 import org.powerscala.hierarchy.event.{ChildRemovedProcessor, ChildAddedProcessor, StandardHierarchyEventProcessor}
@@ -32,6 +32,8 @@ class Webpage extends HttpHandler with HTMLPage with ModularPage with Temporal w
   val pageLoadingEvent = new StandardHierarchyEventProcessor[Webpage]("pageLoading")
   val pageLoadedEvent = new StandardHierarchyEventProcessor[Webpage]("pageLoaded")
 
+  def defaultTitle = CaseValue.generateLabel(getClass.getSimpleName.replaceAll("\\$", ""))
+
   val doctype = "<!DOCTYPE html>\r\n"
   private lazy val basicHTML = new tag.HTML
 
@@ -43,6 +45,20 @@ class Webpage extends HttpHandler with HTMLPage with ModularPage with Temporal w
   MutableChildLike.assignParent(html, this)
 
   protected lazy val hierarchicalChildren = List(html)
+
+  def title = head.title
+
+  title := defaultTitle
+  head.meta("generator", "Hyperscala")
+  head.charset("UTF-8")
+
+  def byName[T <: HTMLTag](name: String)(implicit manifest: Manifest[T]) = html.byName[T](name)(manifest)
+
+  def byTag[T <: HTMLTag](implicit manifest: Manifest[T]) = html.byTag[T](manifest)
+
+  def byId[T <: Tag](id: String)(implicit manifest: Manifest[T]) = html.byId[T](id)(manifest)
+
+  def getById[T <: Tag](id: String)(implicit manifest: Manifest[T]) = html.getById[T](id)(manifest)
 
   def onReceive(request: HttpRequest, response: HttpResponse) = {
     val status = HttpResponseStatus.OK
@@ -101,7 +117,7 @@ class Webpage extends HttpHandler with HTMLPage with ModularPage with Temporal w
   }
 
   def dispose() = {
-    Website().pages.remove(pageId)
+    Website()._pages.remove(pageId)
   }
 }
 
@@ -111,5 +127,15 @@ object Webpage {
   def updateContext(webpage: Webpage) = {
     Page.instance.set(webpage)
     Website().requestContext("webpage") = webpage
+  }
+
+  def contextualize[T](webpage: Webpage)(f: => T) = {
+    val previous = Website().requestContext[Webpage]("webpage")
+    updateContext(webpage)
+    try {
+      f
+    } finally {
+      updateContext(previous)
+    }
   }
 }

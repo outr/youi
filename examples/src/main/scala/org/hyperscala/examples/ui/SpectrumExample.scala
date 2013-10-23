@@ -6,7 +6,7 @@ import org.hyperscala.jquery.Spectrum
 import org.hyperscala.jquery.Spectrum._
 import org.hyperscala.examples.Example
 import language.reflectiveCalls
-import org.hyperscala.realtime.Realtime
+import org.hyperscala.realtime.{RealtimeEvent, Realtime}
 import org.powerscala.Color
 
 /**

@@ -5,7 +5,7 @@ import org.hyperscala.web.{Website, Webpage}
 import org.powerscala.property.Property
 import annotation.tailrec
 import org.hyperscala.jquery.jQuery
-import org.hyperscala.realtime.Realtime
+import org.hyperscala.realtime.{RealtimeEvent, Realtime}
 import org.hyperscala.ui.dynamic.{DynamicContent, DynamicString}
 import language.reflectiveCalls
 
@@ -66,8 +66,6 @@ object ChatExample {
   val Main = getClass.getClassLoader.getResource("chat.html")
   val Entry = getClass.getClassLoader.getResource("chat_entry.html")
 
-  val pages = new SessionContextualizable[ChatExample]
-
   private var history = List.empty[(String, String)]
 
   def instances = Website().sessions.valuesByType[ChatExample].toList
@@ -84,8 +82,10 @@ object ChatExample {
     }
   }
   def sendMessage(nickname: String, message: String) = synchronized {
-    pages.contextualize {
-      case chat => chat.messages.contents += new ChatEntry(nickname, message)
+    Website().pages[ChatExample].foreach {
+      case chat => Webpage.contextualize(chat) {
+        chat.messages.contents += new ChatEntry(nickname, message)
+      }
     }
     history = (nickname, message) :: history
   }

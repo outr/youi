@@ -6,6 +6,7 @@ import org.powerscala.property.Property
 import org.hyperscala.ui.binder._
 import org.hyperscala.ui.dynamic.{DynamicContent, DynamicString}
 import org.hyperscala.examples.Example
+import org.hyperscala.realtime.RealtimeEvent
 
 /**
  * @author Matt Hicks <mhicks@outr.com>

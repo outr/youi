@@ -2,7 +2,7 @@ package org.hyperscala.examples.basic
 
 import org.hyperscala.html._
 import org.hyperscala.examples.Example
-import org.hyperscala.web.module.useragent.UserAgent
+import org.hyperscala.web.useragent.UserAgent
 
 /**
  * @author Matt Hicks <mhicks@outr.com>

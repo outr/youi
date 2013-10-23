@@ -6,6 +6,7 @@ import org.hyperscala.ui.wrapped.SelectWrapper
 import org.powerscala.Country
 
 import scala.language.implicitConversions
+import org.hyperscala.realtime.RealtimeEvent
 
 /**
  * @author Matt Hicks <matt@outr.com>

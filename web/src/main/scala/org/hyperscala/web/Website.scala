@@ -3,6 +3,7 @@ package org.hyperscala.web
 import com.outr.net.http.{HttpApplication, WebApplication}
 import org.powerscala.MapStorage
 import com.outr.net.http.session.Session
+import org.powerscala.reflect._
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -15,14 +16,22 @@ trait Website[S <: Session] extends WebApplication[S] {
   /**
    * Keeps a reference to all currently loaded pages referenced by id.
    */
-  val pages = new MapStorage[String, Webpage]
+  private[web] val _pages = new MapStorage[String, Webpage]
+  /**
+   * Access to all currently loaded pages.
+   */
+  lazy val pages = new Pages[S](this)
 
   def init() = {
   }
 
   def page(creator: => Webpage, scope: Scope, uris: String*) = {
-    val handler = new WebpageHandler(() => creator, scope)
+    if (uris.isEmpty) {
+      throw new RuntimeException("Page must have at least one URI associated!")
+    }
+    val handler = new WebpageHandler(() => creator, scope, uris.toList)
     addHandler(handler, uris: _*)
+    handler
   }
 
   override def dispose() = {
@@ -34,7 +43,7 @@ trait Website[S <: Session] extends WebApplication[S] {
   override def update(delta: Double) = {
     super.update(delta)
 
-    pages.map.values.toSet[Webpage].foreach {      // TODO: is there a better way to avoid updating duplicates of the same page?
+    _pages.map.values.toSet[Webpage].foreach {      // TODO: is there a better way to avoid updating duplicates of the same page?
       case page => page.update(delta)
     }
   }
@@ -42,4 +51,12 @@ trait Website[S <: Session] extends WebApplication[S] {
 
 object Website {
   def apply() = HttpApplication().asInstanceOf[Website[Session]]
+}
+
+class Pages[S <: Session](website: Website[S]) extends Iterable[Webpage] {
+  def iterator = website._pages.values.iterator
+
+  def apply[W <: Webpage](implicit manifest: Manifest[W]) = iterator.collect {
+    case w if w.getClass.hasType(manifest.runtimeClass) => w.asInstanceOf[W]
+  }
 }

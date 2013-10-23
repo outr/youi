@@ -2,7 +2,7 @@ package org.hyperscala.examples.basic
 
 import org.hyperscala.web.Webpage
 import org.hyperscala.html._
-import org.hyperscala.realtime.Realtime
+import org.hyperscala.realtime.{RealtimeEvent, Realtime}
 import language.reflectiveCalls
 
 /**

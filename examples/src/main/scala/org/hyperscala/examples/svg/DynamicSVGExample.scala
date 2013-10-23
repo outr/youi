@@ -6,7 +6,7 @@ import org.hyperscala.svg._
 import org.powerscala.Color
 import org.hyperscala.html._
 import org.hyperscala.web.Webpage
-import org.hyperscala.realtime.Realtime
+import org.hyperscala.realtime.{RealtimeEvent, Realtime}
 import util.Random
 
 import language.reflectiveCalls

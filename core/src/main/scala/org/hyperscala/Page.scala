@@ -9,8 +9,6 @@ import org.powerscala.log.Logging
  * @author Matt Hicks <mhicks@powerscala.org>
  */
 trait Page extends Listenable with Updatable with Logging {
-  Page.instance.set(this)
-
   protected def parentIntercept: MarkupIntercepting = null
 
   val intercept = new MarkupIntercepting(parentIntercept)

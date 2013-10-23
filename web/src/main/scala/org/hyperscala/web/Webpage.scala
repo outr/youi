@@ -8,7 +8,7 @@ import org.powerscala.hierarchy.{MutableChildLike, ParentLike}
 import com.outr.net.http.HttpHandler
 import com.outr.net.http.request.HttpRequest
 import com.outr.net.http.response.{HttpResponseStatus, HttpResponse}
-import org.hyperscala.{Markup, Unique}
+import org.hyperscala.{Page, Markup, Unique}
 import org.powerscala.MapStorage
 import java.io.OutputStream
 import org.powerscala.hierarchy.event.{ChildRemovedProcessor, ChildAddedProcessor, StandardHierarchyEventProcessor}
@@ -19,7 +19,7 @@ import org.powerscala.reflect._
  * @author Matt Hicks <matt@outr.com>
  */
 class Webpage extends HttpHandler with HTMLPage with ModularPage with Temporal with ParentLike[tag.HTML] {
-  Website().requestContext("webpage") = this
+  Webpage.updateContext(this)
 
   private val _rendered = new AtomicBoolean(false)
   def rendered = _rendered.get()
@@ -108,5 +108,8 @@ class Webpage extends HttpHandler with HTMLPage with ModularPage with Temporal w
 object Webpage {
   def apply() = Website().requestContext[Webpage]("webpage")
 
-  def updateContext(webpage: Webpage) = Website().requestContext("webpage") = webpage
+  def updateContext(webpage: Webpage) = {
+    Page.instance.set(webpage)
+    Website().requestContext("webpage") = webpage
+  }
 }

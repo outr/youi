@@ -2,13 +2,18 @@ package org.hyperscala.jquery.ui
 
 import org.hyperscala.html._
 import org.hyperscala.realtime.Realtime
-import org.hyperscala.web.Webpage
+import org.hyperscala.web.{Website, Webpage}
 import org.powerscala.property.Property
 import org.powerscala.event.Intercept
 import org.powerscala.property.event.PropertyChangeEvent
 import org.hyperscala.event.EventReceived
 import java.util.concurrent.atomic.AtomicBoolean
-import org.powerscala.Storage
+import org.powerscala.{Version, Storage}
+import org.hyperscala.module.Module
+import com.outr.net.http.HttpHandler
+import com.outr.net.http.request.HttpRequest
+import com.outr.net.http.response.{HttpResponseStatus, HttpResponse}
+import com.outr.net.http.content.StringContent
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -25,7 +30,7 @@ class Autocompletified private(val input: FormField) {
 //  private lazy val handler = new AutocompleteSearchHandler(this)
   private val changing = new AtomicBoolean(false)
 
-  Webpage().require(jQueryUI, jQueryUI.Latest)
+  Webpage().require(Autocomplete)
 
   private implicit val thisInput = input
 
@@ -102,7 +107,6 @@ class Autocompletified private(val input: FormField) {
 
   private def autoCompletify() = {
     val source = "/autocomplete/%s".format(input.identity)
-//    Website().registerSession(WebpageResource(source, handler, Scope.Request))
     // TODO: extract this into its own Module + .js file
     val appendId = appendTo() match {
       case null => null
@@ -170,7 +174,7 @@ class Autocompletified private(val input: FormField) {
         |    return $('<li></li>').data('item.autocomplete', item).append($('<a></a>').html(item.label)).appendTo(ul);
         |  };
         |});
-      """.stripMargin.format(input.id(), source, autoFocus(), delay(), appendId, disabled(), minLength(), multiple()), onlyRealtime = false, forId = input.id())
+      """.stripMargin.format(input.id(), source, autoFocus(), delay(), appendId, disabled(), minLength(), multiple()), onlyRealtime = false, selector = s"#${input.id()}")
     autoFocus.change.on {
       case evt => sendChanges(evt)
     }
@@ -204,10 +208,10 @@ class Autocompletified private(val input: FormField) {
   }
 
   private def sendChanges(evt: PropertyChangeEvent[_]) = evt.property match {
-    case p if (p == autoFocus) => Realtime.sendJavaScript("$('#%s').autocomplete('option', 'autoFocus', %s);".format(input.id(), autoFocus()))
-    case p if (p == delay) => Realtime.sendJavaScript("$('#%s').autocomplete('option', 'delay', %s);".format(input.id(), delay()))
-    case p if (p == disabled) => Realtime.sendJavaScript("$('#%s').autocomplete('option', 'disabled', %s);".format(input.id(), disabled()))
-    case p if (p == minLength) => Realtime.sendJavaScript("$('#%s').autocomplete('option', 'minLength', %s);".format(input.id(), minLength()))
+    case p if p == autoFocus => Realtime.sendJavaScript("$('#%s').autocomplete('option', 'autoFocus', %s);".format(input.id(), autoFocus()))
+    case p if p == delay => Realtime.sendJavaScript("$('#%s').autocomplete('option', 'delay', %s);".format(input.id(), delay()))
+    case p if p == disabled => Realtime.sendJavaScript("$('#%s').autocomplete('option', 'disabled', %s);".format(input.id(), disabled()))
+    case p if p == minLength => Realtime.sendJavaScript("$('#%s').autocomplete('option', 'minLength', %s);".format(input.id(), minLength()))
   }
 }
 
@@ -231,6 +235,33 @@ object Autocompletified {
       | "category": "%s"
       |}
     """.stripMargin.format(r.label, r.value, r.category)
+  }
+}
+
+object Autocomplete extends Module with HttpHandler {
+  val name = "autocomplete"
+  val version = Version(1)
+
+  override def dependencies = List(jQueryUI.LatestWithDefault)
+
+  def init() = {
+    Website().addHandler(this, "/autocomplete/request")
+  }
+
+  def load() = {}
+
+  def onReceive(request: HttpRequest, response: HttpResponse) = {
+    val pageId = request.url.parameters.first("pageId")
+    val fieldId = request.url.parameters.first("fieldId")
+    val term = request.url.parameters.first("term")
+
+    val page = Website().pages.byId[Webpage](pageId).getOrElse(throw new NullPointerException(s"Cannot find page by id: $pageId"))
+    Webpage.contextualize(page) {
+      val input = page.getById[FormField](fieldId)
+      val autocompletified = Autocompletified(input)
+      val results = autocompletified.submit(term).map(Autocompletified.Result2JSON).mkString("[", ", ", "]")
+      response.copy(content = StringContent(results, "text/plain"), status = HttpResponseStatus.OK)
+    }
   }
 }
 

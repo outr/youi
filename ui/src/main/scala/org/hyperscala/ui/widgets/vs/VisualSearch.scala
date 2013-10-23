@@ -51,7 +51,7 @@ class VisualSearch extends tag.Div {
     val source = "/visualsearch/%s".format(id())
 //    Website().registerSession(WebpageResource(source, handler, Scope.Request))
     val instruction = "createVisualSearch('%s', '%s');".format(id(), source)
-    Realtime.sendJavaScript(instruction, forId = id(), onlyRealtime = false)
+    Realtime.sendJavaScript(instruction, selector = s"#${id()}", onlyRealtime = false)
 
     query.change.on {
       case evt => {

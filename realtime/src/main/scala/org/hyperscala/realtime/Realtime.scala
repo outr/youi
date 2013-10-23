@@ -3,7 +3,6 @@ package org.hyperscala.realtime
 import org.hyperscala.web.{WebpageHandler, Webpage, Website}
 
 import org.hyperscala.html._
-import annotation.tailrec
 
 import org.powerscala.json._
 import org.hyperscala.web.module.IdentifyTags
@@ -17,6 +16,8 @@ import com.outr.net.communicator.server.{Message, Connection, Communicator}
 import org.powerscala.log.Logging
 import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.html.attributes.InputType
+import org.hyperscala.javascript.dsl.Statement
+import org.hyperscala.selector.Selector
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -27,8 +28,6 @@ object Realtime extends Module with Logging {
   def version = Version(1, 1)
 
   override def dependencies = List(jQuery.LatestWithDefault, jQueryStyleSheet, IdentifyTags)
-
-  private val connectionsKey = "webpageConnections"
 
   def init() = {
     // Configure communicator resources
@@ -78,76 +77,43 @@ object Realtime extends Module with Logging {
     realtime.connectionDisposed(connection)         // Notify the RealtimePage that a connection was disposed
   }
 
-  def broadcast(event: String, message: Any, page: Webpage = Webpage()) = synchronized {
+  def broadcast(event: String, message: Any, sendWhenConnected: Boolean, page: Webpage = Webpage()) = synchronized {
     val realtime = RealtimePage(page)
-    val connections = realtime.connections
-    if (connections.isEmpty) {
-      throw new RuntimeException(s"Unable to send $event, no connections established!")
-    }
     val content = message match {
       case s: String => s
       case other => generate(other)
     }
-    sendRecursive(page, event, content, connections)
+    realtime.send(event, content, sendWhenConnected = sendWhenConnected)
   }
 
-  private def wrapInInvokeForId(id: String, instruction: String) = {
-    """
-      |invokeForId('%s', function() {
-      | %s
-      |});
-    """.stripMargin.format(id, instruction)
-  }
-
-  private def wrapInDelay(instruction: String, delay: Int) = if (delay > 0) {
-    """
-      |setTimeout(function() {
-      | %s
-      |}, %s);
-    """.stripMargin.format(instruction, delay)
-  } else {
-    instruction
-  }
-
-  def sendJavaScript(instruction: String, content: String = null, forId: String = null, head: Boolean = true, onlyRealtime: Boolean = true, delay: Int = 0): Unit = {
-    val i = wrapInDelay(instruction, delay)
-    Webpage().require(this)
-    val sendFunction = new Function0[Unit] {
-      def apply() = {
-        if (forId != null) {
-          if (content != null) {
-            throw new RuntimeException("forId not supported with non-null content")
-          }
-          broadcast("eval", JavaScriptMessage(wrapInInvokeForId(forId, i), content))
-        } else {
-          broadcast("eval", JavaScriptMessage(i, content))
-        }
-      }
-    }
-    if (Webpage().rendered) {
-      sendFunction()
-    } else if (!onlyRealtime) {
-      Webpage().body.onAfterRender {
-        sendFunction()
-      }
-    }
+  /**
+   * Sends JavaScript to the client.
+   *
+   * @param instruction the instruction to evaluate on the client
+   * @param content optionally contains raw content and can be referenced by name in instruction
+   * @param selector optionally specifies a selector that must be non-empty before the instruction will be invoked
+   * @param onlyRealtime if true the JavaScript will only be sent if the page has already completed rendering (default: true)
+   * @param delay optionally specifies a delay before the instruction is invoked
+   */
+  def sendJavaScript(instruction: String, content: String = null, selector: String = null, onlyRealtime: Boolean = true, delay: Int = 0): Unit = {
+    broadcast("eval", JavaScriptMessage(instruction, content, selector, delay), sendWhenConnected = !onlyRealtime)
   }
 
   def sendRedirect(url: String) = {
-    sendJavaScript("window.location.href = content;", url)
+    sendJavaScript("window.location.href = content;", url, onlyRealtime = false)
+  }
+
+  def send(statement: Statement, selector: Selector = null, onlyRealtime: Boolean = false) = {
+    val selectorContent = if (selector != null) {
+      selector.value
+    } else {
+      null
+    }
+    Realtime.sendJavaScript(statement.content, selector = selectorContent, onlyRealtime = onlyRealtime)
   }
 
   def reload(fresh: Boolean = false) = {
     sendJavaScript("location.reload(%s);".format(fresh))
-  }
-
-  @tailrec
-  private def sendRecursive(page: Webpage, event: String, message: String, connections: List[Connection]): Unit = {
-    if (connections.nonEmpty) {
-      val c = connections.head
-      c.send(event, message)
-      sendRecursive(page, event, message, connections.tail)
-    }
   }
 
   /**
@@ -207,4 +173,4 @@ object Realtime extends Module with Logging {
   }
 }
 
-case class JavaScriptMessage(instruction: String, content: String = null)
+case class JavaScriptMessage(instruction: String, content: String = null, selector: String = null, delay: Int = 0)

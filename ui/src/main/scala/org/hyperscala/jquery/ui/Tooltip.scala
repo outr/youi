@@ -2,7 +2,8 @@ package org.hyperscala.jquery.ui
 
 import org.hyperscala.html._
 import org.hyperscala.web.Webpage
-import org.hyperscala.jquery.jQuery
+import org.hyperscala.jquery.dsl._
+import org.hyperscala.realtime.Realtime
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -22,6 +23,6 @@ trait Tooltip extends HTMLTag {
 object Tooltip {
   def apply(t: HTMLTag) = {
     Webpage().require(jQueryUI, jQueryUI.Latest)
-    jQuery.call(t, "tooltip()")
+    Realtime.send($(t).call("tooltip()"))
   }
 }

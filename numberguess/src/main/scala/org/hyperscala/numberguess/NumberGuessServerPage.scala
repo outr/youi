@@ -6,7 +6,7 @@ import org.hyperscala.html.attributes.{ButtonType, InputType}
 import org.hyperscala.realtime.Realtime
 import scala.util.Random
 import org.hyperscala.ui.wrapped.WrappedInput
-import org.hyperscala.jquery.jQuery
+import org.hyperscala.jquery.dsl._
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -56,8 +56,8 @@ class NumberGuessServerPage extends Webpage {
     } else {
       solved()
     }
-    jQuery.focus(input)
-    jQuery.select(input)
+    Realtime.send($(input).focus())
+    Realtime.send($(input).select())
   }
 
   def reset(): Unit = {

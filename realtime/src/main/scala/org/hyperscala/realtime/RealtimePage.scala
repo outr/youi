@@ -18,6 +18,7 @@ import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.ResponseMessage
 import org.powerscala.hierarchy.event.ChildRemovedEvent
 import org.powerscala.hierarchy.ChildLike
+import scala.annotation.tailrec
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -49,8 +50,37 @@ class RealtimePage private(page: Webpage) extends Logging {
 
   // TODO: handle checkins to keep page alive
 
+  private var backlog = List.empty[(String, String)]
+
+  def send(event: String, message: String, sendWhenConnected: Boolean) = synchronized {
+    if (connections.isEmpty) {
+      if (sendWhenConnected) {
+        backlog = event -> message :: backlog
+      }
+    } else {
+      sendRecursive(event, message, connections)
+    }
+  }
+
+  private def sendBacklog() = if (backlog.nonEmpty) {
+    backlog.reverse.foreach {
+      case (event, message) => sendRecursive(event, message, connections)
+    }
+    backlog = Nil
+  }
+
+  @tailrec
+  private def sendRecursive(event: String, message: String, connections: List[Connection]): Unit = {
+    if (connections.nonEmpty) {
+      val c = connections.head
+      c.send(event, message)
+      sendRecursive(event, message, connections.tail)
+    }
+  }
+
   protected[realtime] def connectionCreated(connection: Connection) = synchronized {
     _connections = connection :: _connections
+    sendBacklog()
   }
 
   protected[realtime] def received(connection: Connection, message: Message) = if (message.event == "realtime") {
@@ -208,12 +238,12 @@ class RealtimePage private(page: Webpage) extends Logging {
     send(JavaScriptMessage("$('%s').css('%s', content);".format(selector, cssName), cssValue))
   }
 
-  def send(js: JavaScriptMessage): Unit = {
+  private def send(js: JavaScriptMessage): Unit = {
     val message = Map("instruction" -> js.instruction, "content" -> js.content)
     send("eval", message)
   }
 
-  def send(event: String, data: Any) = connections.foreach {
+  private def send(event: String, data: Any) = connections.foreach {
     case connection => connection.send(event, data)
   }
 }

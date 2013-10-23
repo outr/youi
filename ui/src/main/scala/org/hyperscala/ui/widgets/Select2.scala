@@ -31,7 +31,7 @@ object Select2 extends Module {
       JSOption("formatSelection", formatSelection),
       JSOption("escapeMarkup", escapeMarkup)
     )
-    Realtime.sendJavaScript("$('#%s').select2(%s);".format(id, options), forId = id, onlyRealtime = false)
+    Realtime.sendJavaScript("$('#%s').select2(%s);".format(id, options), selector = s"#$id", onlyRealtime = false)
   }
 
   def enable(select: tag.Select) = {

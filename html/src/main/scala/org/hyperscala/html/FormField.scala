@@ -21,6 +21,7 @@ trait FormField extends BodyChild {
       } finally {
         FormField.clear()
       }
+      super.receive(event, message)
     }
     case _ => super.receive(event, message)
   }

@@ -43,7 +43,7 @@ trait Website[S <: Session] extends WebApplication[S] {
   override def update(delta: Double) = {
     super.update(delta)
 
-    _pages.map.values.toSet[Webpage].foreach {      // TODO: is there a better way to avoid updating duplicates of the same page?
+    pages.foreach {      // TODO: is there a better way to avoid updating duplicates of the same page?
       case page => page.update(delta)
     }
   }
@@ -54,7 +54,9 @@ object Website {
 }
 
 class Pages[S <: Session](website: Website[S]) extends Iterable[Webpage] {
-  def iterator = website._pages.values.iterator
+  def byId[W <: Webpage](pageId: String) = website._pages.get[W](pageId)
+
+  def iterator = website._pages.values.toSet[Webpage].iterator
 
   def apply[W <: Webpage](implicit manifest: Manifest[W]) = iterator.collect {
     case w if w.getClass.hasType(manifest.runtimeClass) => w.asInstanceOf[W]

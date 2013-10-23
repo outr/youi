@@ -8,7 +8,8 @@ import org.hyperscala.html.tag
 import scala.language.implicitConversions
 import org.hyperscala.html.tag.Input
 import org.hyperscala.javascript.JavaScriptContent
-import org.hyperscala.realtime.RealtimeEvent
+import org.hyperscala.realtime.{Realtime, RealtimeEvent}
+import org.hyperscala.jquery.dsl._
 
 /**
  * Spectrum is a wrapper around the the jQuery Colorpicker found here: http://bgrins.github.io/spectrum/
@@ -186,7 +187,7 @@ class Spectrum private(val wrapped: Input) extends jQueryComponent {
   }
 
   override def option(key: String, value: Any) = key match {
-    case "color" => jQuery.call(wrapped, s"spectrum('set', ${JavaScriptContent.toJS(value)})")
+    case "color" => Realtime.send($(wrapped).call(s"spectrum('set', ${JavaScriptContent.toJS(value)}"))
     case _ => super.option(key, value)
   }
 }

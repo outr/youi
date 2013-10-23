@@ -21,7 +21,7 @@ object jQueryUI1103 extends Module {
   override def dependencies = List(InterfaceWithDefault(jQuery, jQuery.Latest))
 
   def init() = {
-    Website().addClassPath("/jquery-ui-1.10.3/", "jquery-ui-1.10.3/")
+    Website().addClassPath("/jquery-ui-1.10.3", "jquery-ui-1.10.3")
   }
 
   def themeCSS = {

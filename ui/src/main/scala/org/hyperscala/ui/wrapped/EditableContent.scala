@@ -55,7 +55,7 @@ class EditableContent private(t: HTMLTag with Container[BodyChild]) {
   private def init() = {
     t.contentEditable := ContentEditable.True
 
-    Realtime.sendJavaScript(s"initEditableContent('${t.identity}');", forId = t.identity, onlyRealtime = false)
+    Realtime.sendJavaScript(s"initEditableContent('${t.identity}');", selector = s"#${t.identity}", onlyRealtime = false)
     t.eventReceived.on {
       case evt if evt.event == "htmlChanged" => {
         val htmlString = evt.message[String]("html")

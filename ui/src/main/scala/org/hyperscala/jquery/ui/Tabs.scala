@@ -18,7 +18,7 @@ class Tabs extends tag.Div {
   contents += navigation
 
   onInit {
-    Realtime.sendJavaScript("$('#%s').tabs();".format(id()), forId = identity, onlyRealtime = false)
+    Realtime.sendJavaScript("$('#%s').tabs();".format(id()), selector = s"#$identity", onlyRealtime = false)
   }
 
   def addTab[T <: tag.Div](label: String)(f: => T) = {

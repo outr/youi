@@ -1,13 +1,14 @@
 package org.hyperscala.jquery
 
 import org.hyperscala.html.HTMLTag
-import org.powerscala.property.Property
 import org.hyperscala.javascript.{JavaScriptContent, JavaScriptString}
-import org.powerscala.hierarchy.event.StandardHierarchyEventProcessor
 import org.powerscala.event.processor.UnitProcessor
-import org.powerscala.event.{Listenable, ListenMode, Intercept}
+import org.powerscala.event.Intercept
 import org.hyperscala.web.WrappedComponent
 import org.hyperscala.event.EventReceived
+import org.hyperscala.jquery.dsl._
+import org.hyperscala.realtime.Realtime
+import org.hyperscala.javascript.dsl.Statement
 
 /**
  * jQueryComponent trait works to provide easier access to making calls to jQuery for extensions like autocomplete and
@@ -16,23 +17,27 @@ import org.hyperscala.event.EventReceived
  * @author Matt Hicks <matt@outr.com>
  */
 trait jQueryComponent extends WrappedComponent[HTMLTag] {
+  lazy val selector = $(wrapped)
+
   protected def functionName: String
 
+  private def send(statement: Statement) = Realtime.send(statement, selector.selector)
+
   protected def initializeComponent(values: Map[String, Any]) = {
-    jQuery.call(wrapped, functionName, values)
+    send(selector.call(functionName, values))
   }
 
   protected def modify(key: String, value: Any) = {
-    jQuery.option(wrapped, functionName, key, value)
+    send(selector.option(functionName, key, value))
   }
 
   def call(function: String) = {
-    jQuery.call(wrapped, s"$functionName('$function')")
+    send(selector.call(s"$functionName('$function')"))
   }
 
   def on(eventType: String, function: JavaScriptContent) = {
     if (wrapped.rendered) {
-      jQuery.on(wrapped, eventType, function)
+      send(selector.on(eventType, function))
     } else {
       option(eventType, function)
     }

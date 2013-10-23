@@ -5,10 +5,10 @@ import org.hyperscala.web.Webpage
 import java.text.SimpleDateFormat
 import java.util.Date
 import org.hyperscala.jquery.ui.jQueryUI
-import org.hyperscala.jquery.jQuery
 import org.hyperscala.ui.dynamic.Binder
 import language.reflectiveCalls
-import org.hyperscala.realtime.RealtimeEvent
+import org.hyperscala.realtime.{Realtime, RealtimeEvent}
+import org.hyperscala.jquery.dsl._
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
@@ -37,7 +37,7 @@ class InputDateAsLong(format: String = "MM/dd/yyyy") extends Binder[tag.Input, L
       }
     }
 
-    jQuery.call(input.id(), "datepicker()")
+    Realtime.send($(input).call("datepicker()"))
 
     input.changeEvent := RealtimeEvent()
 //    Webpage().body.contents += new tag.Script {

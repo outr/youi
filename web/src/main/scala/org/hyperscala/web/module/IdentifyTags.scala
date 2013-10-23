@@ -17,6 +17,7 @@ object IdentifyTags extends Module {
   def init() = {}
 
   def load() = {
+    // TODO: only apply to body, not head
     val page = Webpage()
     page.html.byTag[IdentifiableTag].foreach {
       case t => if (t.id() == null) {

@@ -6,6 +6,8 @@ import org.hyperscala.web.{Webpage, Website}
 import org.hyperscala.html._
 import org.hyperscala.jquery.jQuery
 import scala.collection.mutable.ListBuffer
+import org.hyperscala.jquery.dsl._
+import org.hyperscala.realtime.Realtime
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -48,7 +50,7 @@ object jsTree extends Module {
         |%s
         |})
       """.stripMargin.trim.format(attributes.map(s => "\t\t%s".format(s)).mkString(",\r\n"))
-    jQuery.call(t, js)
+    Realtime.send($(t).call(js))
   }
 
   case class Type(name: String,

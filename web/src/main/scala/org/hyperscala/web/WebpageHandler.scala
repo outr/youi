@@ -27,7 +27,7 @@ class WebpageHandler(pageCreator: () => Webpage, scope: Scope, val uris: List[St
     response
   }
 
-  def load(request: HttpRequest) = scope match {
+  def load(request: HttpRequest): Option[Webpage] = scope match {
     case Scope.Request => None
     case Scope.Page => request.url.parameters.getFirst("pageId") match {
       case Some(pageId) => Website()._pages.get(pageId)

@@ -131,9 +131,10 @@ class Input extends BodyChild with HTMLTag with FormField {
   override def formValue = value
 
   override def receive(event: String, message: ResponseMessage) = event match {
-    case "change" if (inputType() == InputType.CheckBox || inputType() == InputType.Radio) => {
+    case "change" if inputType() == InputType.CheckBox || inputType() == InputType.Radio => {
       val v = message[Boolean]("value")
       checked := v
+      super.receive(event, message)
     }
     case _ => super.receive(event, message)
   }

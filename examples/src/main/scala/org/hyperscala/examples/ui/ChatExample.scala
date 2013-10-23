@@ -4,10 +4,10 @@ import org.hyperscala.html._
 import org.hyperscala.web.{Website, Webpage}
 import org.powerscala.property.Property
 import annotation.tailrec
-import org.hyperscala.jquery.jQuery
 import org.hyperscala.realtime.{RealtimeEvent, Realtime}
 import org.hyperscala.ui.dynamic.{DynamicContent, DynamicString}
 import language.reflectiveCalls
+import org.hyperscala.jquery.dsl._
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
@@ -47,7 +47,7 @@ class ChatExample extends Webpage {
   def sendMessage() = {
     ChatExample.sendMessage(nickname(), message.value())
     message.value := ""
-    jQuery.focus(message)
+    Realtime.send($(message).focus())
   }
 
   def updateNickname() = {

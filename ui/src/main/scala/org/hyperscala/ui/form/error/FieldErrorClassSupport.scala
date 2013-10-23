@@ -3,6 +3,8 @@ package org.hyperscala.ui.form.error
 import org.hyperscala.html.HTMLTag
 import org.hyperscala.jquery.jQuery
 import org.hyperscala.web.Webpage
+import org.hyperscala.jquery.dsl._
+import org.hyperscala.realtime.Realtime
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -31,7 +33,7 @@ trait FieldErrorClassSupport extends ErrorSupport {
         if (!t.clazz().contains(className)) {
           t.clazz += className
           if (currentFields.isEmpty) {
-            jQuery.focus(t)
+            Realtime.send($(t).focus())
           }
           currentFields = t :: currentFields
         }

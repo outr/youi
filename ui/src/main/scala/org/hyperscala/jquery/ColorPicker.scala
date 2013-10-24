@@ -22,7 +22,7 @@ object ColorPicker extends Module with JavaScriptCaller with StorageComponent[Co
   private val OkFunction = JavaScriptString(
     """function(event, color) {
       | var id = $(this).attr('id');
-      | communicator.send('colorSelected', id, {
+      | realtimeSend(id, 'colorSelected', {
       |   value: color.formatted
       | });
       |}

@@ -39,7 +39,7 @@ class CallbackStore extends tag.Div(id = "jquerydsl_callbackstore") {
   def createCallback(f: () => Unit) = synchronized {
     val id = Unique()
     map += id -> f
-    JavaScriptString(s"communicator.send('call', 'jquerydsl_callbackstore', { id: '$id' });")
+    JavaScriptString(s"realtimeSend('jquerydsl_callbackstore', 'call', { id: '$id' });")
   }
 
   override def receive(event: String, message: ResponseMessage) = event match {

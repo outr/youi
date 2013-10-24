@@ -130,7 +130,7 @@ object Webpage {
   }
 
   def contextualize[T](webpage: Webpage)(f: => T) = {
-    val previous = Website().requestContext[Webpage]("webpage")
+    val previous = Website().requestContext.getOrElse[Webpage]("webpage", null)
     updateContext(webpage)
     try {
       f

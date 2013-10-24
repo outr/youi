@@ -14,7 +14,6 @@ import org.hyperscala.svg.{Svg, SVGTag}
 import org.powerscala.property.event.PropertyChangeEvent
 import org.powerscala.hierarchy.event.ChildAddedEvent
 import com.outr.net.communicator.server.Message
-import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.ResponseMessage
 import org.powerscala.hierarchy.event.ChildRemovedEvent
 import org.powerscala.hierarchy.ChildLike
@@ -26,13 +25,6 @@ import scala.annotation.tailrec
 class RealtimePage private(page: Webpage) extends Logging {
   private var _connections = List.empty[Connection]
   def connections = _connections
-
-  // Configure JavaScript on page
-  page.head.contents += new tag.Script(src = "/GWTCommunicator/GWTCommunicator.nocache.js")
-  page.head.contents += new tag.Script(src = "/communicator.js")
-  page.head.contents += new tag.Link(href = "/communicator.css")
-  page.head.contents += new tag.Script(src = "/js/realtime.js")
-  page.head.contents += new tag.Script(content = JavaScriptString(s"connectRealtime('${page.pageId}');"))
 
   // Configure Listeners
   page.childAdded.listen(Priority.Normal, Descendants) {
@@ -80,6 +72,9 @@ class RealtimePage private(page: Webpage) extends Logging {
 
   protected[realtime] def connectionCreated(connection: Connection) = synchronized {
     _connections = connection :: _connections
+  }
+
+  protected[realtime] def connectionConnected(connection: Connection) = synchronized {
     sendBacklog()
   }
 
@@ -277,7 +272,12 @@ object RealtimePage {
     }
   }
 
-  def apply(page: Webpage) = page.synchronized {
-    page.store.getOrSet("realtime", new RealtimePage(page))
+  def apply(page: Webpage) = {
+    if (page == null) {
+      throw new NullPointerException("Page cannot be null!")
+    }
+    page.synchronized {
+      page.store.getOrSet("realtime", new RealtimePage(page))
+    }
   }
 }

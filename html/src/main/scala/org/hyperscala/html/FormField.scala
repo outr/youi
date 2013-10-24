@@ -13,13 +13,15 @@ trait FormField extends BodyChild {
 
   override def receive(event: String, message: ResponseMessage) = event match {
     case "change" => {
-      val v = message[String]("value")
-      FormField._changingProperty.set(value)
-      FormField._changingValue.set(v)
-      try {
-        value := v
-      } finally {
-        FormField.clear()
+      if (message.map.contains("value")) {
+        val v = message[String]("value")
+        FormField._changingProperty.set(value)
+        FormField._changingValue.set(v)
+        try {
+          value := v
+        } finally {
+          FormField.clear()
+        }
       }
       super.receive(event, message)
     }

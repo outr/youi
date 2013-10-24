@@ -50,7 +50,7 @@ class Script extends Container[JavaScriptContent] with BodyChild with HeadChild 
   lazy val async = PropertyAttribute[String]("async", null)
   lazy val charSet = PropertyAttribute[String]("charset", null)
   lazy val defer = PropertyAttribute[String]("defer", null)
-  lazy val mimeType = PropertyAttribute[String]("type", null)
+  lazy val mimeType = PropertyAttribute[String]("type", "text/javascript", inclusion = InclusionMode.Always)
   lazy val src = PropertyAttribute[String]("src", null)
 
   override protected def processText(text: String) = {

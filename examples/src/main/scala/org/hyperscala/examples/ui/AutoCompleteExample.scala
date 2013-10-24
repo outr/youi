@@ -3,7 +3,7 @@ package org.hyperscala.examples.ui
 import org.hyperscala.html._
 import org.powerscala.Language
 import org.hyperscala.web.Webpage
-import org.hyperscala.realtime.{RealtimeEvent, Realtime}
+import org.hyperscala.realtime.RealtimeEvent
 import org.hyperscala.jquery.ui.{AutocompleteResult, Autocomplete}
 import org.hyperscala.examples.Example
 import language.reflectiveCalls
@@ -12,7 +12,7 @@ import language.reflectiveCalls
  * @author Matt Hicks <mhicks@powerscala.org>
  */
 class AutoCompleteExample extends Example {
-  Webpage().require(Realtime)
+  Webpage().require(Autocomplete)
   Webpage().body.style.fontFamily := "Arial, sans-serif"
 
   contents += new tag.Div {
@@ -30,7 +30,6 @@ class AutoCompleteExample extends Example {
         }.slice(0, 10).map(l => AutocompleteResult(l.name, l.name))
       })
       autocomplete.autoFocus := true
-      autocomplete.multiple := true
 
       changeEvent.on {
         case evt => println("Input changed to: %s".format(value()))

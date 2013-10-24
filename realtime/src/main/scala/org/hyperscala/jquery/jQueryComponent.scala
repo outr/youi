@@ -52,7 +52,7 @@ trait jQueryComponent extends WrappedComponent[HTMLTag] {
     b.append(mapper.variables.mkString(", "))
     b.append(") {\r\n")
     b.append("\tvar id = $(this).attr('id');\r\n")
-    b.append(s"\tcommunicator.send('$localizedEventType', id, ${mapper.variables2JSON.content});\r\n")
+    b.append(s"\trealtimeSend(id, '$localizedEventType', ${mapper.variables2JSON.content});\r\n")
     b.append("}")
     on(eventType, JavaScriptString(b.toString()))
     val processor = new UnitProcessor[Event](localizedEventType)(wrapped, manifest)

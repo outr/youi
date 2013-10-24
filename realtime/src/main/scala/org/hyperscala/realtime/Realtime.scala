@@ -44,6 +44,11 @@ object Realtime extends Module with Logging {
         created(connection, pageId)
       }
     }
+    Communicator.connected.on {
+      case (connection, data) => {
+        connected(connection)
+      }
+    }
     Communicator.received.on {
       case (connection, message) => received(connection, message)
     }
@@ -68,6 +73,12 @@ object Realtime extends Module with Logging {
     connection.store("page") = page               // Assign the page to the connection
   }
 
+  private def connected(connection: Connection) = {
+    val page = connection.store[Webpage]("page")
+    val realtime = RealtimePage(page)
+    realtime.connectionConnected(connection)
+  }
+
   private def received(connection: Connection, message: Message) = {
     val page = connection.store[Webpage]("page")
     val realtime = RealtimePage(page)
@@ -84,7 +95,7 @@ object Realtime extends Module with Logging {
     val realtime = RealtimePage(page)
     val content = message match {
       case s: String => s
-      case other => generate(other)
+      case other => generate(other, specifyClassName = false)
     }
     realtime.send(event, content, sendWhenConnected = sendWhenConnected)
   }

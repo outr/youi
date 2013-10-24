@@ -24,11 +24,9 @@ class Autocomplete extends tag.Input {
 
 class Autocompletified private(val input: FormField) {
   input.identity
-
-//  private lazy val handler = new AutocompleteSearchHandler(this)
-  private val changing = new AtomicBoolean(false)
-
   Webpage().require(Autocomplete)
+
+  private val changing = new AtomicBoolean(false)
 
   private implicit val thisInput = input
 
@@ -104,75 +102,11 @@ class Autocompletified private(val input: FormField) {
   }
 
   private def autoCompletify() = {
-    val source = "/autocomplete/%s".format(input.identity)
-    // TODO: extract this into its own Module + .js file
     val appendId = appendTo() match {
       case null => null
-      case t => t.id()
+      case t => s"'t.id()'"
     }
-    Realtime.sendJavaScript(
-      """
-        |function split(v) {
-        | return v.split(/,\s*/);
-        |}
-        |
-        |function extractLast(term) {
-        | return split(term).pop();
-        |}
-        |
-        |var %1$sAutocompleteMultiple = %7$s;
-        |
-        |$(function() {
-        |  $('#%1$s').autocomplete({
-        |    source: function(request, response) {
-        |     var searchTerm = request.term;
-        |     if (%1$sAutocompleteMultiple) {
-        |       searchTerm = extractLast(searchTerm);
-        |     }
-        |     $.getJSON('%2$s', {
-        |       term: searchTerm
-        |     }, response);
-        |    },
-        |    search: function() {
-        |     if (%1$sAutocompleteMultiple) {
-        |       var term = extractLast(this.value);
-        |       if (term.length < $(this).autocomplete('option', 'minLength')) {
-        |         return false;
-        |       }
-        |     }
-        |    },
-        |    focus: function() {
-        |     if (%1$sAutocompleteMultiple) {
-        |       return false;
-        |     }
-        |    },
-        |    select: function(event, ui) {
-        |     if (%1$sAutocompleteMultiple) {
-        |       var terms = split(this.value);
-        |       terms.pop();
-        |       terms.push(ui.item.value);
-        |       jsFire($(this), 'autocompleteMultiSelect', {
-        |         values: terms
-        |       });
-        |       terms.push('');
-        |       this.value = terms.join(', ');
-        |       return false;
-        |     }
-        |     jsFire($(this), 'autocompleteSelect', {
-        |       value: ui.item.value
-        |     });
-        |    },
-        |    autoFocus: %3$s,
-        |    delay: %4$s,
-        |    appendTo: %5$s,
-        |    disabled: %6$s,
-        |    minLength: %7$s,
-        |    change: function() { jsFireChange($('#%1$s')); jsFireGenericEvent($('#%1$s'), 'change'); }
-        |  }).data('ui-autocomplete')._renderItem = function(ul, item) {
-        |    return $('<li></li>').data('item.autocomplete', item).append($('<a></a>').html(item.label)).appendTo(ul);
-        |  };
-        |});
-      """.stripMargin.format(input.id(), source, autoFocus(), delay(), appendId, disabled(), minLength(), multiple()), onlyRealtime = false, selector = s"#${input.id()}")
+    Realtime.sendJavaScript(s"autocompletify('${Webpage().pageId}', '${input.id()}', ${multiple()}, ${autoFocus()}, ${delay()}, $appendId, ${disabled()}, ${minLength()})", onlyRealtime = false)
     autoFocus.change.on {
       case evt => sendChanges(evt)
     }
@@ -186,12 +120,12 @@ class Autocompletified private(val input: FormField) {
       case evt => sendChanges(evt)
     }
     input.eventReceived.on {
-      case EventReceived(event, message) if (event == "autocompleteSelect") => {
+      case EventReceived(event, message) if event == "autocompleteSelect" => {
         val value = message.map("value").asInstanceOf[String]
         selected := List(value)
         Intercept.Stop
       }
-      case EventReceived(event, message) if (event == "autocompleteMultiSelect") => {
+      case EventReceived(event, message) if event == "autocompleteMultiSelect" => {
         val values = message.map("values").asInstanceOf[List[String]]
         selected := values
         Intercept.Stop
@@ -240,13 +174,16 @@ object Autocomplete extends Module with HttpHandler {
   val name = "autocomplete"
   val version = Version(1)
 
-  override def dependencies = List(jQueryUI.LatestWithDefault)
+  override def dependencies = List(jQueryUI.LatestWithDefault, Realtime)
 
   def init() = {
     Website().addHandler(this, "/autocomplete/request")
+    Website().register("/js/autocomplete.js", "autocomplete.js")
   }
 
-  def load() = {}
+  def load() = {
+    Webpage().head.contents += new tag.Script(src = "/js/autocomplete.js")
+  }
 
   def onReceive(request: HttpRequest, response: HttpResponse) = {
     val pageId = request.url.parameters.first("pageId")
@@ -262,15 +199,5 @@ object Autocomplete extends Module with HttpHandler {
     }
   }
 }
-
-/*class AutocompleteSearchHandler(autocompletified: Autocompletified) extends RequestHandler {
-  def apply(webapp: NettyWebapp, context: ChannelHandlerContext, event: MessageEvent) = event.getMessage match {
-    case request: HttpRequest => {
-      val term = request2URL(request).parameters("term").head
-      val results = autocompletified.submit(term).map(Autocompletified.Result2JSON).mkString("[", ", ", "]")
-      RequestHandler.streamString(results, context, request, "text/plain")
-    }
-  }
-}*/
 
 case class AutocompleteResult(label: String, value: String, category: String = "")

@@ -13,8 +13,8 @@ var monitor = {
         var entry = monitor.entries[id];
         var result = entry.evaluator();
         if (result != entry.lastValue) {
-            communicator.send('monitored', 'realtime_monitor', {
-                id: id,
+            realtimeSend('realtime_monitor', 'monitored', {
+                elementId: id,
                 value: result
             });
             entry.lastValue = result;

@@ -38,8 +38,8 @@ class CaseFormExample extends Example {
     property := CaseFormExampleEntry("John Doe", 123)
 
     def submit() = {
-      Thread.sleep(5000)
-      println("Submit!")
+      Thread.sleep(1000)
+      println(s"Submit! ${property()}")
     }
   }
 

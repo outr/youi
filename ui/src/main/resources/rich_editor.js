@@ -130,7 +130,7 @@ function validateRichEditor(id) {
     var editor = CKEDITOR.instances[id];
     if (editor.checkDirty()) {
         var value = editor.getData();
-        communicator.send('editorChanged', id, {
+        realtimeSend(id, 'editorChanged', {
             value: value
         });
         editor.resetDirty();

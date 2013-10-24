@@ -4,8 +4,7 @@ function jsRequest(id, requests) {
         var request = requests[index];
         response[index] = request();
     }
-    communicator.send('jsresponse', null, {
-        id: id,
+    realtimeSend(id, 'jsresponse', {
         responses: response
     });
 }

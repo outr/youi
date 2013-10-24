@@ -53,7 +53,7 @@ function monitorEditableContent() {
 function validateEditableContent() {
     var current = editableContent.html();
     if (editableContentStored != current) {
-        communicator.send('htmlChanged', editableContent.attr('id'), {
+        realtimeSend(editableContent.attr('id'), 'htmlChanged', {
             html: current
         });
         editableContentStored = current;
@@ -96,7 +96,7 @@ function validateEditableSelection() {
         verifyContent(obj, 'superscript', document.queryCommandState('superscript'));
         verifyContent(obj, 'underline', document.queryCommandState('underline'));
 
-        communicator.send('selectionChanged', editableContent.attr('id'), obj);
+        realtimeSend(editableContent.attr('id'), 'selectionChanged', obj);
         editableSelectionStored = current;
     }
 }

@@ -28,7 +28,7 @@ function createDropReceiver(id) {
             }
         }
         // TODO: add support for files
-        communicator.send('dropped', id, {
+        realtimeSend(id, 'dropped', {
             types: types,
             data: data
         });

@@ -68,12 +68,9 @@ function realtimeEvent(event, data, confirmation, preventDefault, fireChange, on
 
             var f = function() {
                 if (fireChange) {
-                    var changeContent = {
-                        id: id,
-                        eventType: 'change',
+                    realtimeSend(id, 'change', {
                         value: realtimeChangeEventValue(element)
-                    };
-                    communicator.send('realtime', changeContent);
+                    })
                 }
                 communicator.send('realtime', content);
             };
@@ -92,6 +89,15 @@ function realtimeEvent(event, data, confirmation, preventDefault, fireChange, on
         // TODO: add support to send errors to the server (if possible)
         alert('An error occurred: ' + err.message);
     }
+}
+
+function realtimeSend(id, eventType, content) {
+    var data = {
+        id: id,
+        eventType: eventType
+    };
+    jQuery.extend(data, content);
+    communicator.send('realtime', data);
 }
 
 /**

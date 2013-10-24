@@ -120,7 +120,7 @@
                 }
             });
             if (hasChanges && data.sendChanges) {
-                communicator.send('changeableChanges', $this.attr('id'), changed);
+                realtimeSend($this.attr('id'), 'changeableChanges', changed)
             }
         }
     };

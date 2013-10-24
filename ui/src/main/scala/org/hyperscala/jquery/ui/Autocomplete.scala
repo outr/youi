@@ -23,8 +23,6 @@ class Autocomplete extends tag.Input {
 }
 
 class Autocompletified private(val input: FormField) {
-  throw new RuntimeException("Autocompletified is broken!")
-
   input.identity
 
 //  private lazy val handler = new AutocompleteSearchHandler(this)

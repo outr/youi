@@ -35,8 +35,8 @@ $(document).ready(function() {
         if (current.is('input') || current.is('textarea')) {
             selected = current.getSelection().text;
         }
-        communicator.send(eventType, 'clipboard_instance', {
-            id: current.attr('id'),
+        realtimeSend('clipboard_instance', eventType, {
+            eventId: current.attr('id'),
             selected: selected,
             mouseX: mouseX,
             mouseY: mouseY

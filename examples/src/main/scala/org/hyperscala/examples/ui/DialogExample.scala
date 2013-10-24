@@ -14,7 +14,7 @@ import org.hyperscala.realtime.RealtimeEvent
 class DialogExample extends Example {
   Webpage().require(jQueryUI.Latest)
 
-  val myDiv = new tag.Div(id = "dialog", titleText = "Dialog Example") {
+  val myDiv = new tag.Div(id = "myDiv", titleText = "Dialog Example") {
     contents += new tag.P(content = "This is the default dialog which is useful for displaying information. The dialog window can be moved, resized and closed with the 'x' icon.")
   }
   val myDialog = Dialog(myDiv)

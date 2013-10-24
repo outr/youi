@@ -5,8 +5,9 @@ var communicator = new Communicator();
  * communication to occur.
  *
  * @param pageId
+ * @param debug
  */
-function connectRealtime(pageId) {
+function connectRealtime(pageId, debug) {
     communicator.connect({
         createData: {
             pageId: pageId
@@ -19,7 +20,10 @@ function connectRealtime(pageId) {
                 console.log('Error occurred: ' + err);
             },
             eval: function(msg) {
-                realtimeEvaluate(msg);
+                if (typeof msg == 'string') {           // Parse to JSON if it isn't already
+                    msg = jQuery.parseJSON(msg);
+                }
+                realtimeEvaluate(msg, debug);
             }
         }
     });
@@ -133,7 +137,7 @@ function realtimeUpdateKeyEvent(event, content) {
     content.shiftKey = event.shiftKey;
 }
 
-function realtimeEvaluate(json) {
+function realtimeEvaluate(json, debug) {
     var content = json['content'];
     var instruction = json['instruction'];
     var selector = json['selector'];
@@ -141,19 +145,25 @@ function realtimeEvaluate(json) {
     if (delay > 0) {                                // Handle delay if specified
         json['delay'] = 0;
         setTimeout(function() {
-            realtimeEvaluate(json);
+            realtimeEvaluate(json, debug);
         }, delay);
     } else if (selector != null) {
         if ($(selector).length == 0) {              // Selector returned empty, wait a few milliseconds and check again
+            if (debug) {
+                log('Selector: ' + selector + ' returned empty...waiting...');
+            }
             setTimeout(function() {
-                realtimeEvaluate(json);
+                realtimeEvaluate(json, debug);
             }, 10);
         } else {                                    // Selector has items, call again without selector
             json['selector'] = null;
-            realtimeEvaluate(json);
+            realtimeEvaluate(json, debug);
         }
     } else {
         try {
+            if (debug) {
+                log('evaluating: ' + instruction + ' (content: ' + content + ')');
+            }
             eval(instruction);
         } catch(err) {
             log('Error occurred (' + err.message + ') while attempting to evaluate instruction: [' + instruction + '] with content: [' + content + '].')

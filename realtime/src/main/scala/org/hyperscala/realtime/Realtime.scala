@@ -18,11 +18,14 @@ import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.html.attributes.InputType
 import org.hyperscala.javascript.dsl.Statement
 import org.hyperscala.selector.Selector
+import org.powerscala.property.Property
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
 object Realtime extends Module with Logging {
+  val debug = Property[Boolean]()
+
   def name = "realtime"
 
   def version = Version(1, 1)
@@ -55,7 +58,7 @@ object Realtime extends Module with Logging {
     page.head.contents += new tag.Script(src = "/communicator.js")
     page.head.contents += new tag.Link(href = "/communicator.css")
     page.head.contents += new tag.Script(src = "/js/realtime.js")
-    page.head.contents += new tag.Script(content = JavaScriptString(s"jQuery(document).ready(function() { connectRealtime('${page.pageId}'); });"))
+    page.head.contents += new tag.Script(content = JavaScriptString(s"jQuery(document).ready(function() { connectRealtime('${page.pageId}', ${debug()}); });"))
   }
 
   private def created(connection: Connection, pageId: String) = {

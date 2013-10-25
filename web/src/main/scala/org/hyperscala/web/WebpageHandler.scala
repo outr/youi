@@ -33,7 +33,7 @@ class WebpageHandler(pageCreator: () => Webpage, scope: Scope, val uris: List[St
       case Some(pageId) => Website()._pages.get(pageId)
       case None => None
     }
-    case Scope.Session => Website()._pages.get(Website().session.id)
+    case Scope.Session => Website()._pages.get(sessionId)
     case Scope.Application => Website()._pages.get(id)
   }
 
@@ -41,11 +41,13 @@ class WebpageHandler(pageCreator: () => Webpage, scope: Scope, val uris: List[St
     scope match {
       case Scope.Request => // Nothing to do
       case Scope.Page => // Nothing to do
-      case Scope.Session => Website()._pages(Website().session.id) = page
+      case Scope.Session => Website()._pages(sessionId) = page
       case Scope.Application => Website()._pages(id) = page
     }
     Website()._pages(page.pageId) = page         // All pages are stored at least by their id
   }
+
+  private def sessionId = s"$id.${Website().session.id}"
 }
 
 object WebpageHandler {

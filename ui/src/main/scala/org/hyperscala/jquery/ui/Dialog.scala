@@ -31,7 +31,7 @@ object Dialog extends JavaScriptCaller with StorageComponent[Dialog, HTMLTag] {
   protected def create(tag: HTMLTag) = new Dialog(tag)
 
   private val buttonsConverter = (buttons: List[String]) => {
-    JavaScriptString(buttons.map(b => s"'$b': function() { jsFire($$(this), 'buttonClicked', { 'name': '$b' }); }").mkString("{ ", ", ", " }"))
+    JavaScriptString(buttons.map(b => s"'$b': function() { realtimeSend($$(this).attr('id'), 'buttonClicked', { 'name': '$b' }); }").mkString("{ ", ", ", " }"))
   }
 }
 

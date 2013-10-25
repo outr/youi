@@ -4,6 +4,7 @@ import com.outr.net.http.{HttpApplication, WebApplication}
 import org.powerscala.MapStorage
 import com.outr.net.http.session.Session
 import org.powerscala.reflect._
+import com.outr.net.http.handler.CachedHandler
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -23,6 +24,7 @@ trait Website[S <: Session] extends WebApplication[S] {
   lazy val pages = new Pages[S](this)
 
   def init() = {
+    handlers += CachedHandler     // Add caching support
   }
 
   def page(creator: => Webpage, scope: Scope, uris: String*) = {

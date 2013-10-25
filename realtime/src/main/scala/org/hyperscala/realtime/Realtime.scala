@@ -92,6 +92,7 @@ object Realtime extends Module with Logging {
   }
 
   def broadcast(event: String, message: Any, sendWhenConnected: Boolean, page: Webpage = Webpage()) = synchronized {
+    Webpage().require(this)
     val realtime = RealtimePage(page)
     val content = message match {
       case s: String => s

@@ -11,7 +11,7 @@ function jsFireHashChanged() {
     var hash = window.location.hash;
     if (hash != currentHash) {
         var body = $('body');
-        jsFire(body, 'hashChanged', {
+        realtimeSend(null, 'hashChanged', {
             hash: hash
         });
         currentHash = hash;

@@ -20,7 +20,7 @@ function createVisualSearch(id, url) {
             callbacks  : {
                 search : function(query, searchCollection) {
                     visualSearchCache[facetCacheKey] = null;
-                    jsFire($('#' + id), 'search', {
+                    realtimeSend(id, 'search', {
                         query: query,
                         facets: searchCollection.facets()
                     });

@@ -39,11 +39,11 @@ class CallbackStore extends tag.Div(id = "jquerydsl_callbackstore") {
   def createCallback(f: () => Unit) = synchronized {
     val id = Unique()
     map += id -> f
-    JavaScriptString(s"realtimeSend('jquerydsl_callbackstore', 'call', { id: '$id' });")
+    JavaScriptString(s"realtimeSend('jquerydsl_callbackstore', 'call', { callbackId: '$id' });")
   }
 
   override def receive(event: String, message: ResponseMessage) = event match {
-    case "call" => map.get(message[String]("id")) match {
+    case "call" => map.get(message[String]("callbackId")) match {
       case Some(f) => f()
       case None => warn(s"Unable to find match for call: $message")
     }

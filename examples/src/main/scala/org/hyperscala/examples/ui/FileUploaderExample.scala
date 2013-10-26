@@ -1,15 +1,16 @@
 package org.hyperscala.examples.ui
 
 import org.hyperscala.examples.Example
+import org.hyperscala.ui.widgets.FileUploader
+import java.io.File
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */
 class FileUploaderExample extends Example {
-  throw new RuntimeException("Broken!")
-  /*contents += new FileUploader {
-    def uploaded(upload: FileUpload) = {
-      println("File Uploaded: %s / %s".format(upload.getFilename, upload.getFile.getAbsolutePath))
-    }
-  }*/
+  contents += new FileUploader {
+    def onField(name: String, value: String) = println(s"Field: $name=$value")
+
+    def onFile(filename: String, file: File) = println(s"File: $filename (${file.length()})")
+  }
 }

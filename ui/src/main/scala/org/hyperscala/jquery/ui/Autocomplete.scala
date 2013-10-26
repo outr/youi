@@ -195,7 +195,7 @@ object Autocomplete extends Module with HttpHandler {
       val input = page.getById[FormField](fieldId)
       val autocompletified = Autocompletified(input)
       val results = autocompletified.submit(term).map(Autocompletified.Result2JSON).mkString("[", ", ", "]")
-      response.copy(content = StringContent(results, "text/plain"), status = HttpResponseStatus.OK)
+      response.copy(content = StringContent(results), status = HttpResponseStatus.OK)
     }
   }
 }

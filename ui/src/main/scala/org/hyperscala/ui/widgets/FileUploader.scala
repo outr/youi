@@ -4,43 +4,46 @@ package org.hyperscala.ui.widgets
 import org.hyperscala.html._
 import attributes.{InputType, Target}
 import org.hyperscala.Unique
-import org.hyperscala.web.Webpage
+import org.hyperscala.web.{Website, Webpage}
 import org.hyperscala.css.attributes.Display
 import org.hyperscala.realtime.{RealtimeEvent, Realtime}
 import org.hyperscala.ui.BusyDialog
 
 import language.reflectiveCalls
+import com.outr.net.http.handler.{MultipartSupport, MultipartHandler}
+import com.outr.net.http.request.HttpRequest
+import com.outr.net.http.response.{HttpResponseStatus, HttpResponse}
+import org.hyperscala.module.Module
+import org.powerscala.Version
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */
-abstract class FileUploader extends tag.Div {
-  throw new RuntimeException("FileUploader is broken!")
-  Webpage().require(BusyDialog)
+abstract class FileUploader extends tag.Div with MultipartSupport {
+  Webpage().require(FileUploader)
 
   def uploadTitle = "Uploading file..."
   def processingTitle = "Processing file..."
 
-//  def uploaded(upload: FileUpload): Unit
+  def begin(request: HttpRequest, response: HttpResponse) = {
+    BusyDialog.show(processingTitle)
+  }
 
-  def finished() = {
+  def finish(request: HttpRequest, response: HttpResponse) = {
     uploadForm.contents -= _input
     _input = createInput()
     uploadForm.contents += _input
     BusyDialog.hide()
+
+    response.copy(status = HttpResponseStatus.OK)
   }
 
-  val uid = identity
-  val uploadPath = "/file_upload/%s.html".format(uid)
-
-//  val handler = new FileUploadHandler(this)
-//  Website().registerSession(WebpageResource(uploadPath, handler, Scope.Request))
-
-  val iFrame = new tag.IFrame(id = "iframe%s".format(uid), name = Unique(), src = "about:blank") {
+  val iFrame = new tag.IFrame(id = s"iframe$identity", name = Unique(), src = "about:blank") {
     style.display := Display.None
   }
-  val uploadForm = new tag.Form(id = "form%s".format(uid), action = uploadPath, encType = "multipart/form-data", method = "post", target = Target(iFrame.name()))
-  val inputId = "file%s".format(uid)
+  val uploadPath = s"${FileUploader.Path}?pageId=${Webpage().pageId}&fieldId=$identity"
+  val uploadForm = new tag.Form(id = s"form$identity", action = uploadPath, encType = "multipart/form-data", method = "post", target = Target(iFrame.name()))
+  val inputId = s"file$identity"
   private var _input = createInput()
   def input = _input
 
@@ -61,26 +64,27 @@ abstract class FileUploader extends tag.Div {
   contents += iFrame
 }
 
-/*
-class FileUploadHandler(uploader: FileUploader) extends UploadHandler {
-  override def minimumFileSize = 0L
+object FileUploader extends Module {
+  val Path = "/file_upload"
 
-  private val webpage = Webpage()
-  private var upload: FileUpload = _
+  val name = "fileUploader"
+  val version = Version(1)
 
-  def receivedAttribute(attribute: Attribute) = {}
+  override def dependencies = List(BusyDialog)
 
-  def receivedFileUpload(upload: FileUpload) = this.upload = upload
-
-  def sendResponse(context: ChannelHandlerContext) = {
-    RequestHandler.redirect("about:blank", context)
-    webpage.context {
-      BusyDialog.show(uploader.processingTitle)
-      try {
-        uploader.uploaded(upload)
-      } finally {
-        uploader.finished()
-      }
-    }
+  def init() = {
+    Website().addHandler(FileUploadHandler, Path)
   }
-}*/
+
+  def load() = {}
+}
+
+object FileUploadHandler extends MultipartHandler {
+  def create(request: HttpRequest, response: HttpResponse) = {
+    val pageId = request.url.parameters.first("pageId")
+    val fieldId = request.url.parameters.first("fieldId")
+    val page = Website().pages.byId[Webpage](pageId).getOrElse(throw new NullPointerException(s"Cannot find page by id: $pageId"))
+    Webpage.updateContext(page)
+    page.getById[FileUploader](fieldId)
+  }
+}

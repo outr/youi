@@ -11,11 +11,24 @@ import org.hyperscala.examples.comparison.PlayHelloWorldPage
 import com.outr.net.http.session.MapSession
 import com.outr.net.http.jetty.JettyApplication
 import com.outr.net.http.request.HttpRequest
+import org.powerscala.log.{Level, Logger}
+import java.io.File
+import org.powerscala.log.writer.FileWriter
+import org.powerscala.log.formatter.Formatter
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
 object HyperscalaSite extends Website[MapSession] with JettyApplication {
+  // Setup file logging
+  Logger.configure("root") {
+    case l => {
+      val directory = new File("logs")
+      val writer = new FileWriter(directory, FileWriter.Daily("hyp"), append = true)
+      l.withHandler(Formatter.Default, Level.Info, writer)
+    }
+  }
+
   override def port = 8889
 
   val site = new {

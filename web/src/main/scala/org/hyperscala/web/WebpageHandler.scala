@@ -4,11 +4,12 @@ import com.outr.net.http.HttpHandler
 import com.outr.net.http.request.HttpRequest
 import com.outr.net.http.response.{HttpResponseStatus, HttpResponse}
 import org.hyperscala.Unique
+import org.powerscala.log.Logging
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class WebpageHandler(pageCreator: () => Webpage, scope: Scope, val uris: List[String]) extends HttpHandler {
+class WebpageHandler(pageCreator: () => Webpage, scope: Scope, val uris: List[String]) extends HttpHandler with Logging {
   val id = Unique()
 
   def link = uris.head
@@ -22,6 +23,7 @@ class WebpageHandler(pageCreator: () => Webpage, scope: Scope, val uris: List[St
         p
       }
     }
+    page.checkIn()
     page.onReceive(request, response)
   } else {
     response
@@ -44,6 +46,7 @@ class WebpageHandler(pageCreator: () => Webpage, scope: Scope, val uris: List[St
       case Scope.Session => Website()._pages(sessionId) = page
       case Scope.Application => Website()._pages(id) = page
     }
+    debug(s"Caching page: ${page.pageId}!")
     Website()._pages(page.pageId) = page         // All pages are stored at least by their id
   }
 
@@ -51,5 +54,5 @@ class WebpageHandler(pageCreator: () => Webpage, scope: Scope, val uris: List[St
 }
 
 object WebpageHandler {
-  def pageById[W <: Webpage](pageId: String) = Website()._pages[W](pageId)
+  def pageById[W <: Webpage](pageId: String) = Website()._pages.get[W](pageId)
 }

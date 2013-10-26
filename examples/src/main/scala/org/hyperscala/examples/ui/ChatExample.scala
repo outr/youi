@@ -5,9 +5,10 @@ import org.hyperscala.web.{Website, Webpage}
 import org.powerscala.property.Property
 import annotation.tailrec
 import org.hyperscala.realtime.{RealtimeEvent, Realtime}
-import org.hyperscala.ui.dynamic.{DynamicContent, DynamicString}
+import org.hyperscala.ui.dynamic.{DynamicTagged, DynamicTag, DynamicContent}
 import language.reflectiveCalls
 import org.hyperscala.jquery.dsl._
+import org.hyperscala.Unique
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
@@ -63,6 +64,7 @@ class ChatExample extends Webpage {
 }
 
 object ChatExample {
+  Realtime.debug := true
   val Main = getClass.getClassLoader.getResource("chat.html")
   val Entry = getClass.getClassLoader.getResource("chat_entry.html")
 
@@ -84,19 +86,22 @@ object ChatExample {
   def sendMessage(nickname: String, message: String) = synchronized {
     Website().pages[ChatExample].foreach {
       case chat => Webpage.contextualize(chat) {
-        chat.messages.contents += new ChatEntry(nickname, message)
+        chat.messages.contents.insert(0, new ChatEntry(nickname, message))
       }
     }
-    history = (nickname, message) :: history
+    history = ((nickname, message) :: history).take(20)
   }
-  def chatHistory = history.reverse
+  def chatHistory = history
 }
 
-class ChatEntry(name: String, message: String) extends DynamicContent(null) {
-  def dynamicString = DynamicString.url("chat_entry.html", ChatExample.Entry)
+class ChatEntry(name: String, message: String) extends tag.Div with DynamicTagged[tag.Div] {
+  def dynamicTag = DynamicTag.url("chat_entry.html", ChatExample.Entry)
 
-  val chatName = load[tag.Div]("chatName", reId = true)
-  val chatBody = load[tag.Div]("chatBody", reId = true)
+  val chatName = getById[tag.Div]("chatName")
+  val chatBody = getById[tag.Div]("chatBody")
+
+  chatName.id := Unique()
+  chatBody.id := Unique()
 
   chatName.contents.replaceWith(name)
   chatBody.contents.replaceWith(message)

@@ -101,6 +101,7 @@ object HyperScalaBuild extends Build {
   lazy val site = Project("site", file("site"), settings = createSettings("hyperscala-site") ++ Revolver.settings ++ com.earldouglas.xsbtwebplugin.WebPlugin.webSettings)
     .settings(jarName in assembly := s"hyperscala-${version.value}.jar", mergeStrategy in assembly <<= (mergeStrategy in assembly) {
       case old => {
+        case PathList("about.html") => MergeStrategy.first
         case PathList("META-INF", "jdom-info.xml") => MergeStrategy.first
         case x => old(x)
       }

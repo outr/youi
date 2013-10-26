@@ -34,7 +34,6 @@ class Webpage extends HttpHandler with HTMLPage with ModularPage with Temporal w
 
   def defaultTitle = CaseValue.generateLabel(getClass.getSimpleName.replaceAll("\\$", ""))
 
-  val doctype = "<!DOCTYPE html>\r\n"
   private lazy val basicHTML = new tag.HTML
 
   def html = basicHTML
@@ -81,6 +80,8 @@ class Webpage extends HttpHandler with HTMLPage with ModularPage with Temporal w
    */
   def timeout = 2.minutes
 
+  override def checkIn() = super.checkIn()
+
   /**
    * Called before the page is (re)loaded.
    */
@@ -117,7 +118,7 @@ class Webpage extends HttpHandler with HTMLPage with ModularPage with Temporal w
   }
 
   def dispose() = {
-    Website()._pages.remove(pageId)
+    Website().pages.remove(this)
   }
 }
 

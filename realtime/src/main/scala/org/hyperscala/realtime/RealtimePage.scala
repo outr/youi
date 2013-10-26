@@ -18,6 +18,7 @@ import org.hyperscala.ResponseMessage
 import org.powerscala.hierarchy.event.ChildRemovedEvent
 import org.powerscala.hierarchy.ChildLike
 import scala.annotation.tailrec
+import org.powerscala.event.Listener
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -72,7 +73,12 @@ class RealtimePage private(page: Webpage) extends Logging {
 
   protected[realtime] def connectionCreated(connection: Connection) = synchronized {
     _connections = connection :: _connections
+    heardFromListener = connection.heardFrom.on {
+      case time => page.checkIn()       // Check in with the page to keep it from timing out.
+    }
   }
+
+  private var heardFromListener: Listener[Long, Unit] = _
 
   protected[realtime] def connectionConnected(connection: Connection) = synchronized {
     sendBacklog()
@@ -99,6 +105,7 @@ class RealtimePage private(page: Webpage) extends Logging {
 
   protected[realtime] def connectionDisposed(connection: Connection) = synchronized {
     _connections = _connections.filterNot(c => c == connection)
+    connection.heardFrom -= heardFromListener
   }
 
   private def childAdded(evt: ChildAddedEvent) = synchronized {

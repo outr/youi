@@ -67,10 +67,14 @@ object Realtime extends Module with Logging {
   }
 
   private def created(connection: Connection, pageId: String) = {
-    val page = WebpageHandler.pageById[Webpage](pageId)
-    val realtime = RealtimePage(page)             // Get reference to RealtimePage
-    realtime.connectionCreated(connection)        // Notify the RealtimePage that a connection was created
-    connection.store("page") = page               // Assign the page to the connection
+    WebpageHandler.pageById[Webpage](pageId) match {
+      case Some(page) => {
+        val realtime = RealtimePage(page)             // Get reference to RealtimePage
+        realtime.connectionCreated(connection)        // Notify the RealtimePage that a connection was created
+        connection.store("page") = page               // Assign the page to the connection
+      }
+      case None => warn(s"Unable to find page by id: $pageId (cached page ids: ${Website().pages.ids.mkString(", ")})")
+    }
   }
 
   private def connected(connection: Connection) = {

@@ -14,10 +14,8 @@ import org.hyperscala.web.module.FormSupport
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-class HyperscalaPage extends Webpage {
+class HyperscalaPage extends Webpage with FormSupport {
   def site = HyperscalaSite
-
-  require(FormSupport)
 
   title := "Hyperscala - Statically typed bare-metal HTML, CSS, and JavaScript framework for Scala."
 

@@ -4,7 +4,8 @@ function jsRequest(id, requests) {
         var request = requests[index];
         response[index] = request();
     }
-    realtimeSend(id, 'jsresponse', {
+    realtimeSend(null, 'jsresponse', {
+        responseId: id,
         responses: response
     });
 }

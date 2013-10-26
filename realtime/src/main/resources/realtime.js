@@ -181,3 +181,13 @@ function log(msg) {
     var message = new Date().toLocaleString() + ': ' + msg;
     console.log(message);
 }
+
+// TODO: remove this in favor of a completely new SVG implementation
+function parseSVG(content) {
+    var parser = new DOMParser();
+    parser.async = false;
+    content = content.toString().trim();
+    content = '<svg xmlns=\'http://www.w3.org/2000/svg\'>' + content + '</svg>';
+    var document = parser.parseFromString(content, 'text/xml').documentElement;
+    return document.firstChild;
+}

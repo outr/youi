@@ -5,7 +5,7 @@ function setVisualSearchQuery(id, query) {
     vs.searchBox.value(query);
 }
 
-function createVisualSearch(id, url) {
+function createVisualSearch(pageId, id, url) {
     var facetCacheKey = id + '.facets';
 
     $(document).ready(function() {
@@ -31,6 +31,8 @@ function createVisualSearch(id, url) {
                         callback(cache);
                     } else {
                         $.getJSON(url, {
+                            pageId: pageId,
+                            fieldId: id,
                             requestType: 'facets',
                             r: Math.random()
                         }, function(result) {
@@ -48,6 +50,8 @@ function createVisualSearch(id, url) {
                         searchCallback(searchTerm, cache, exactMatch, callback);
                     } else {
                         $.getJSON(url, {
+                            pageId: pageId,
+                            fieldId: id,
                             requestType: 'values',
                             facet: facet,
                             term: searchTerm,

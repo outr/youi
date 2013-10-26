@@ -42,7 +42,7 @@ package object persistence {
   implicit val listStringPersistence = ListStringPersistence
   implicit val listIntPersistence = ListIntPersistence
   implicit val listDoublePersistence = ListDoublePersistence
-  implicit val methodPersistence = Method
+  implicit val methodPersistence = MethodPersistence
   implicit val opacityPersistence = Opacity
   implicit val originPersistence = Origin
   implicit val overflowPersistence = Overflow

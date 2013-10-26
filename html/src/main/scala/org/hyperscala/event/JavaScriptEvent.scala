@@ -4,7 +4,7 @@ package org.hyperscala.event
  * @author Matt Hicks <matt@outr.com>
  */
 import org.hyperscala.html.HTMLTag
-import org.hyperscala.html.attributes.Method
+import com.outr.net.Method
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>

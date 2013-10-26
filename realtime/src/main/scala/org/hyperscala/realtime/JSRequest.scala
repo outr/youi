@@ -31,7 +31,7 @@ object JSRequest extends Module with Logging {
     Webpage().body.eventReceived.on {
       case evt => evt.event match {
         case "jsresponse" => Webpage().synchronized {
-          val id = evt.message[String]("id")
+          val id = evt.message[String]("responseId")
           Webpage().store.get[JSHandler[_]](id) match {
             case Some(handler) => {
               handler.process(evt.message)

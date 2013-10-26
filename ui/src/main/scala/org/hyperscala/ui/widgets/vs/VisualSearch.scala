@@ -2,19 +2,22 @@ package org.hyperscala.ui.widgets.vs
 
 import org.hyperscala.html._
 import org.hyperscala.module.Module
-import org.hyperscala.web.Webpage
+import org.hyperscala.web.{Website, Webpage}
 import org.hyperscala.jquery.jQuery
 import org.hyperscala.jquery.ui.jQueryUI
 import org.hyperscala.realtime.Realtime
 import org.powerscala.property._
 import org.powerscala.Version
 import org.hyperscala.ResponseMessage
+import com.outr.net.http.HttpHandler
+import com.outr.net.http.request.HttpRequest
+import com.outr.net.http.response.{HttpResponseStatus, HttpResponse}
+import com.outr.net.http.content.StringContent
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
 class VisualSearch extends tag.Div {
-//  private lazy val handler = new VisualSearchHandler(this)
   private var _facets = List.empty[VisualSearchFacet]
 
   Webpage().require(VisualSearch)
@@ -48,9 +51,7 @@ class VisualSearch extends tag.Div {
   override protected def initialize() {
     super.initialize()
 
-    val source = "/visualsearch/%s".format(id())
-//    Website().registerSession(WebpageResource(source, handler, Scope.Request))
-    val instruction = "createVisualSearch('%s', '%s');".format(id(), source)
+    val instruction = s"createVisualSearch('${Webpage().pageId}', '$identity', '${VisualSearch.Path}');"
     Realtime.sendJavaScript(instruction, selector = s"#${id()}", onlyRealtime = false)
 
     query.change.on {
@@ -81,7 +82,9 @@ class VisualSearch extends tag.Div {
   }
 }
 
-object VisualSearch extends Module {
+object VisualSearch extends Module with HttpHandler {
+  val Path = "/visualsearch/search"
+
   val name = "visualsearch"
   val version = Version(0, 4, 0)
 
@@ -90,11 +93,11 @@ object VisualSearch extends Module {
   val basePath = "/visualsearch-0.4.0/"
 
   def init() = {
-//    Website().register(PathHandler(basePath, "visualsearch/0.4.0/"))
+    Website().addHandler(this, Path)
+    Website().addClassPath(basePath, "visualsearch/0.4.0/")
   }
 
   def load() = {
-    throw new RuntimeException("VisualSearch is broken!")
     val page = Webpage()
     // TODO: extract underscore and backbone as modules
     page.head.contents += new tag.Link(href = "%slib/css/reset.css".format(basePath), rel = "stylesheet")
@@ -116,5 +119,39 @@ object VisualSearch extends Module {
     page.head.contents += new tag.Script(mimeType = "text/javascript", src = "%slib/js/utils/inflector.js".format(basePath))
     page.head.contents += new tag.Script(mimeType = "text/javascript", src = "%slib/js/templates/templates.js".format(basePath))
     page.head.contents += new tag.Script(mimeType = "text/javascript", src = "%shyperscala-visualsearch.js".format(basePath))
+  }
+
+  def onReceive(request: HttpRequest, response: HttpResponse) = {
+    val pageId = request.url.parameters.first("pageId")
+    val fieldId = request.url.parameters.first("fieldId")
+
+    val page = Website().pages.byId[Webpage](pageId).getOrElse(throw new NullPointerException(s"Cannot find page by id: $pageId"))
+    Webpage.contextualize(page) {
+      val visualSearch = page.getById[VisualSearch](fieldId)
+      val results = request.url.parameters.first("requestType") match {
+        case "facets" => {
+          visualSearch.facets.collect {
+            case f if f.allowMultiple || !visualSearch.queryHasFacet(f.name) => if (f.category == null) {
+              "\"%s\"".format(f.name)
+            } else {
+              "{\"label\": \"%s\", \"category\": \"%s\"}".format(f.name, f.category)
+            }
+          }.mkString("[", ", ", "]")
+        }
+        case "values" => {
+          val facetName = request.url.parameters.first("facet")
+          val term = request.url.parameters.first("term")
+          visualSearch.facet(facetName) match {
+            case Some(facet) => {
+              val results = facet.search(term, visualSearch)
+              val resultString = results.map(r => "{\"value\": \"%s\", \"label\": \"%s\"}".format(r.value, r.label)).mkString("[", ", ", "]")
+              "{\"resultType\": \"%s\", \"exactMatch\": %s, \"results\": %s}".format(facet.resultType.name, facet.exactMatch, resultString)
+            }
+            case None => "{\"results\": []}"
+          }
+        }
+      }
+      response.copy(content = StringContent(results), status = HttpResponseStatus.OK)
+    }
   }
 }

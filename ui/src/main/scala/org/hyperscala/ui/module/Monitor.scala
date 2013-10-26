@@ -91,10 +91,10 @@ object Monitor extends Module {
 
     override def receive(event: String, message: ResponseMessage) = event match {
       case "monitored" => {
-        val id = message[String]("id")
+        val id = message[String]("elementId")
         map.get(id) match {
           case Some(m) => m.receive(message)
-          case None => warn("Monitor $id doesn't exist!")
+          case None => warn(s"Monitor $id doesn't exist!")
         }
       }
       case _ => super.receive(event, message)

@@ -6,6 +6,7 @@ import html.{FormField, HTMLTag}
 import io.HTMLWriter
 import org.hyperscala.html.attributes._
 import org.hyperscala.html.constraints._
+import com.outr.net.Method
 
 /**
  * NOTE: This file has been generated. Do not modify directly!

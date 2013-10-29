@@ -5,12 +5,15 @@ import org.hyperscala.javascript.{JSFunction0, JavaScriptString, JSFunction1}
 import org.hyperscala.selector.{StringSelector, Selector}
 import org.hyperscala.css.StyleSheetAttribute
 import org.hyperscala.PropertyAttribute
+import org.hyperscala.javascript.dsl.Statement
+
+import scala.language.implicitConversions
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
 package object dsl {
-  def $ = jQueryDSL
+  implicit def statement2RealtimeStatement(statement: Statement) = RealtimeStatement(statement)
 
   val window = StringSelector("window")
   val body = StringSelector("body")
@@ -21,7 +24,7 @@ package object dsl {
             metaKey: Option[Boolean] = None,
             shiftKey: Option[Boolean] = None,
             stopPropagation: Boolean = false)(f: => Unit): JSFunction1[KeyboardEvent, Boolean] = {
-    val store = jQueryDSL.callbackStore
+    val store = CallbackStore()
     val callback = store.createCallback(() => f)
     val conditional = new StringBuilder
     conditional.append("if (e.keyCode == ")

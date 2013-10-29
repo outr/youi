@@ -3,7 +3,8 @@ package org.hyperscala.jquery.dsl
 import org.hyperscala.selector.Selector
 import org.hyperscala.javascript.dsl.{NumericStatement, TypedStatement}
 import org.hyperscala.css.Style
-import org.hyperscala.javascript.JavaScriptContent
+import org.hyperscala.javascript.{JSFunction1, JavaScriptContent}
+import org.hyperscala.event.KeyboardEvent
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -21,6 +22,21 @@ class jQuerySelector(val selector: Selector) extends TypedStatement[Selector] {
 
   def width() = NumericStatement(s"$content.width()")
   def height() = NumericStatement(s"$content.height()")
+
+  def keyDown(f: JSFunction1[KeyboardEvent, Boolean]) = {
+    TypedStatement[Unit](s"$content.keydown(${f.content})")
+  }
+
+  def keyPress(f: JSFunction1[KeyboardEvent, Boolean]) = {
+    TypedStatement[Unit](s"$content.keypress(${f.content})")
+  }
+
+  def keyUp(f: JSFunction1[KeyboardEvent, Boolean]) = {
+    TypedStatement[Unit](s"$content.keyup(${f.content})")
+  }
+
+  def value[T]() = TypedStatement[T](s"$content.val()")
+  def value[T](s: TypedStatement[T]) = TypedStatement[T](s"$content.val(${s.content}})")
 
   def offset() = new jQueryOffset(this)
   def position() = new jQueryPosition(this)

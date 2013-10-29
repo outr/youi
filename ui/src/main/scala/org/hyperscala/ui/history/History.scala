@@ -9,6 +9,7 @@ import org.powerscala.event.processor.UnitProcessor
 import org.powerscala.concurrent.AtomicInt
 import org.hyperscala.realtime.Realtime
 
+import org.hyperscala.jquery.dsl._
 import org.hyperscala.realtime.dsl._
 
 import scala.language.postfixOps
@@ -62,23 +63,23 @@ class HistoryInstance extends Listenable {
   if (UserAgent().os.family.apple) {
     $(body).keyDown(onKey(Key.Z, shiftKey = Some(false), metaKey = Some(true), stopPropagation = true) {
       undo()
-    })
+    }).send()
     $(body).keyDown(onKey(Key.Z, shiftKey = Some(true), metaKey = Some(true), stopPropagation = true) {
       redo()
-    })
+    }).send()
     $(body).keyDown(onKey(Key.Y, ctrlKey = Some(true), stopPropagation = true) {
       redo()
-    })
+    }).send()
   } else {
     $(body).keyDown(onKey(Key.Z, shiftKey = Some(false), ctrlKey = Some(true), stopPropagation = true) {
       undo()
-    })
+    }).send()
     $(body).keyDown(onKey(Key.Z, shiftKey = Some(true), ctrlKey = Some(true), stopPropagation = true) {
       redo()
-    })
+    }).send()
     $(body).keyDown(onKey(Key.Y, ctrlKey = Some(true), stopPropagation = true) {
       redo()
-    })
+    }).send()
   }
 
   def undoList = undos.toList

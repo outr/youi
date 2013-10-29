@@ -6,6 +6,10 @@ import com.outr.net.http.session.Session
 import org.powerscala.reflect._
 import com.outr.net.http.handler.CachedHandler
 import org.powerscala.log.Logging
+import org.powerscala.event.processor.UnitProcessor
+import com.outr.net.http.request.HttpRequest
+import com.outr.net.http.response.{HttpResponseStatus, HttpResponse}
+import com.outr.net.http.content.StringContent
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -15,6 +19,10 @@ trait Website[S <: Session] extends WebApplication[S] {
    * Application stores content that should be persistent throughout the life of the website.
    */
   val application = new MapStorage[Any, Any]
+  /**
+   * Invoked when a page throws an error.
+   */
+  val pageError = new UnitProcessor[(Webpage, Throwable)]("pageError")
   /**
    * Keeps a reference to all currently loaded pages referenced by id.
    */
@@ -26,6 +34,9 @@ trait Website[S <: Session] extends WebApplication[S] {
 
   def init() = {
     handlers += CachedHandler     // Add caching support
+    pageError.on {                // Default logging of errors on a page
+      case (page, t) => error(s"An exception was thrown on ${request.url} (page ${page.getClass.getSimpleName}).", t)
+    }
   }
 
   def page(creator: => Webpage, scope: Scope, uris: String*) = {
@@ -35,6 +46,12 @@ trait Website[S <: Session] extends WebApplication[S] {
     val handler = new WebpageHandler(() => creator, scope, uris.toList)
     addHandler(handler, uris: _*)
     handler
+  }
+
+  def errorPage(request: HttpRequest,
+                response: HttpResponse,
+                status: HttpResponseStatus = HttpResponseStatus.InternalServerError): HttpResponse = {
+    response.copy(status = status, content = StringContent("An error occurred!"))
   }
 
   override def dispose() = {

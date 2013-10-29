@@ -59,7 +59,7 @@ class Webpage extends HttpHandler with HTMLPage with ModularPage with Temporal w
 
   def getById[T <: Tag](id: String)(implicit manifest: Manifest[T]) = html.getById[T](id)(manifest)
 
-  def onReceive(request: HttpRequest, response: HttpResponse) = {
+  def onReceive(request: HttpRequest, response: HttpResponse) = errorSupport {
     val status = HttpResponseStatus.OK
     val content = new HTMLStreamer(html) {
       override def stream(output: OutputStream) = {
@@ -70,8 +70,7 @@ class Webpage extends HttpHandler with HTMLPage with ModularPage with Temporal w
     }
     val headers = response.headers.CacheControl()
     response.copy(content = content, status = status, headers = headers)
-    // TODO: error handling
-  }
+  }.getOrElse(Website().errorPage(request, response, HttpResponseStatus.InternalServerError))
 
   /**
    * The amount of time in seconds this webpage will continue to be cached in memory without any communication.
@@ -96,6 +95,28 @@ class Webpage extends HttpHandler with HTMLPage with ModularPage with Temporal w
     html.byTag[HTMLTag].foreach(Markup.rendered)
     _rendered.set(true)
     pageLoadedEvent.fire(this)
+  }
+
+  /**
+   * Pages should invoke this if an exception has been thrown to allow the webpage to gracefully handle the error.
+   *
+   * @param t the throwable thrown
+   */
+  def pageError(t: Throwable) = Website().pageError.fire(this -> t)
+
+  /**
+   * Error Support wraps the supplied function so if an exception is thrown while invoking it will be properly reported
+   * via the pageError method.
+   *
+   * @param f the function to execute.
+   */
+  def errorSupport[R](f: => R): Option[R] = try {
+    Some(f)
+  } catch {
+    case t: Throwable => {
+      pageError(t)
+      None
+    }
   }
 
   /**

@@ -11,7 +11,7 @@ import org.hyperscala.examples.comparison.PlayHelloWorldPage
 import com.outr.net.http.session.MapSession
 import com.outr.net.http.jetty.JettyApplication
 import com.outr.net.http.request.HttpRequest
-import org.powerscala.log.{Level, Logger}
+import org.powerscala.log.{Logging, Level, Logger}
 import java.io.File
 import org.powerscala.log.writer.FileWriter
 import org.powerscala.log.formatter.Formatter
@@ -28,6 +28,8 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication {
       l.withHandler(Formatter.Default, Level.Info, writer)
     }
   }
+  // Configure System.out and System.err to go to logger
+  Logging.configureSystem()
 
   override def port = 8889
 

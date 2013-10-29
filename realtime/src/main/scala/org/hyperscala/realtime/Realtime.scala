@@ -19,6 +19,7 @@ import org.hyperscala.html.attributes.InputType
 import org.hyperscala.javascript.dsl.Statement
 import org.hyperscala.selector.Selector
 import org.powerscala.property.Property
+import org.hyperscala.{Markup, Container}
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -103,6 +104,27 @@ object Realtime extends Module with Logging {
       case other => generate(other, specifyClassName = false)
     }
     realtime.send(event, content, sendWhenConnected = sendWhenConnected)
+  }
+
+  /**
+   * Declare a created element via 'creator' as "existing". This returns the created element connected to the parent
+   * <i>without</i> sending any realtime communication back to the browser to actually create or add it. This presumes
+   * that on the client the element already exists so should not be created. This can be extremely useful when other
+   * systems or libraries are creating or modifying content on the client independent of your server-side DOM.
+   *
+   * @param parent the parent the existing element is already attached to
+   * @param creator the function to create the element
+   * @tparam T the type of the HTMLTag that already exists
+   * @return existing T
+   */
+  def existing[T <: HTMLTag](parent: Container[_], creator: => T) = RealtimePage.ignoreStructureChanges {
+    val element: T = creator
+    if (element.id() == null || element.id() == "") {
+      throw new RuntimeException("The created element must have an existing ID supplied for referencing!")
+    }
+    parent.asInstanceOf[Container[T]].contents += element
+    Markup.rendered(element)      // Mark the element as rendered so it doesn't wait for it
+    element
   }
 
   /**

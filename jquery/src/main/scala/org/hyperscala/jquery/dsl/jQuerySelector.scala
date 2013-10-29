@@ -1,7 +1,7 @@
 package org.hyperscala.jquery.dsl
 
 import org.hyperscala.selector.Selector
-import org.hyperscala.javascript.dsl.{NumericStatement, TypedStatement}
+import org.hyperscala.javascript.dsl.TypedStatement
 import org.hyperscala.css.Style
 import org.hyperscala.javascript.{JSFunction1, JavaScriptContent}
 import org.hyperscala.event.KeyboardEvent
@@ -20,8 +20,8 @@ class jQuerySelector(val selector: Selector) extends TypedStatement[Selector] {
   def select() = call("select()")
   def submit() = call("submit()")
 
-  def width() = NumericStatement(s"$content.width()")
-  def height() = NumericStatement(s"$content.height()")
+  def width() = TypedStatement[Double](s"$content.width()")
+  def height() = TypedStatement[Double](s"$content.height()")
 
   def keyDown(f: JSFunction1[KeyboardEvent, Boolean]) = {
     TypedStatement[Unit](s"$content.keydown(${f.content})")
@@ -76,11 +76,11 @@ class jQuerySelector(val selector: Selector) extends TypedStatement[Selector] {
 }
 
 class jQueryOffset(jqs: jQuerySelector) {
-  lazy val left = NumericStatement(s"${jqs.content}.offset().left")
-  lazy val top = NumericStatement(s"${jqs.content}.offset().top")
+  lazy val left = TypedStatement[Double](s"${jqs.content}.offset().left")
+  lazy val top = TypedStatement[Double](s"${jqs.content}.offset().top")
 }
 
 class jQueryPosition(jqs: jQuerySelector) {
-  lazy val left = NumericStatement(s"${jqs.content}.position().left")
-  lazy val top = NumericStatement(s"${jqs.content}.position().top")
+  lazy val left = TypedStatement[Double](s"${jqs.content}.position().left")
+  lazy val top = TypedStatement[Double](s"${jqs.content}.position().top")
 }

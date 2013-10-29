@@ -1,12 +1,11 @@
 package org.hyperscala.selector
 
-import org.scalatest.WordSpec
-import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.{Matchers, WordSpec}
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class SelectorSpec extends WordSpec with ShouldMatchers {
+class SelectorSpec extends WordSpec with Matchers {
   "Selector" when {
     "parsing" should {
       "support simple all selector" in {

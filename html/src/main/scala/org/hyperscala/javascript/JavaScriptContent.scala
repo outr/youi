@@ -21,6 +21,8 @@ trait JavaScriptContent extends XMLContent with Jsonify {
   def parseJson(map: Map[String, Any]) = JavaScriptString(map("content").asInstanceOf[String])
 
   def generate() = content
+
+  override def toString = s"${getClass.getSimpleName}(content = $content)"
 }
 
 object JavaScriptContent {

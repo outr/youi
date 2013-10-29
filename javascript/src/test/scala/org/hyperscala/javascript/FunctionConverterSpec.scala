@@ -1,12 +1,11 @@
 package org.hyperscala.javascript
 
-import org.scalatest.WordSpec
-import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.{Matchers, WordSpec}
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-class FunctionConverterSpec extends WordSpec with ShouldMatchers {
+class FunctionConverterSpec extends WordSpec with Matchers {
   "FunctionConverter with different returns" should {
     "properly return Boolean of true" in {
       val script = FunctionConverter.f0("test", () => {

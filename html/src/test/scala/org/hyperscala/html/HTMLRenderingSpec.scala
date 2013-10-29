@@ -6,13 +6,12 @@ import org.hyperscala.css.attributes.Display
 import org.jdom2.input.SAXBuilder
 import java.io.StringReader
 import tag.{Head, HTML, Body, Title}
-import org.scalatest.WordSpec
-import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.{Matchers, WordSpec}
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-class HTMLRenderingSpec extends WordSpec with ShouldMatchers {
+class HTMLRenderingSpec extends WordSpec with Matchers {
   val builder = new SAXBuilder()
 
   "HTML element" should {

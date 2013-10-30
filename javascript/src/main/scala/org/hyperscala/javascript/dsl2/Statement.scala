@@ -35,3 +35,5 @@ case class OperatorStatement[T](left: Statement[_], operator: String, right: Sta
 case class ConstantStatement[T](value: T, sideEffects: Boolean = false) extends Statement[T] {
   def content = JavaScriptContext.toJS(value)
 }
+
+case class ExistingStatement[T](content: String, sideEffects: Boolean = false) extends Statement[T]

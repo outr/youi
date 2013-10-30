@@ -11,5 +11,9 @@ object Test {
       b + 2.0
     }
     println(js.toJS)
+    val f1 = new JSFunction1[Double, Double]("add") {
+      p1 + p2
+    }
+    println(f1.toJS)
   }
 }

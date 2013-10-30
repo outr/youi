@@ -14,12 +14,17 @@ trait JavaScriptContext {
   private lazy val variables = fields.map(f => f[Any](this) -> f).toMap
   private var statements = List.empty[Statement[_]]
 
-  private[dsl2] def variable(v: Any): Option[String] = {
+  def variable(v: Any): Option[String] = {
     variables.get(v).map(f => f.name)
   }
 
+  protected def before(b: StringBuilder) = {}
+  protected def after(b: StringBuilder) = {}
+
   def toJS = {
     val b = new StringBuilder
+
+    before(b)
 
     // Write variables out first
     variables.foreach {
@@ -49,6 +54,8 @@ trait JavaScriptContext {
         }
       }
     }
+
+    after(b)
 
     b.toString()
   }

@@ -40,3 +40,7 @@ case class ConstantStatement[T](value: T, sideEffects: Boolean = false)(implicit
 }
 
 case class ExistingStatement[T](content: String, sideEffects: Boolean = false)(implicit val context: JavaScriptContext) extends Statement[T]
+
+trait DelayedStatement[T] {
+  def toStatement(implicit context: JavaScriptContext): Statement[T]
+}

@@ -32,7 +32,7 @@ case class WrappedStatement[T](pre: String, statement: Statement[_], post: Strin
 }
 
 case class OperatorStatement[T](left: Statement[_], operator: String, right: Statement[_], sideEffects: Boolean = false)(implicit val context: JavaScriptContext) extends Statement[T] {
-  def content = s"(${left.toJS} $operator ${right.toJS})"
+  def content = s"${left.toJS} $operator ${right.toJS}"
 }
 
 case class ConstantStatement[T](value: T, sideEffects: Boolean = false)(implicit val context: JavaScriptContext) extends Statement[T] {

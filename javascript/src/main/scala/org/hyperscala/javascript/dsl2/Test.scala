@@ -16,7 +16,7 @@ object Test {
         p1 + p2
       }
 
-      document.writeln(string2Statement("Hello World! ") + window.innerWidth) // ++ "x" ++ window.innerHeight)
+      document.writeln(s("Hello World! ") + window.innerWidth + "x" + window.innerHeight)
 
       p1 + p2
     }

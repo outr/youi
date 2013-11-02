@@ -8,6 +8,6 @@ import org.hyperscala.html.HTMLTag
 object window extends DelayedStatement[HTMLTag] {
   def toStatement(implicit context: JavaScriptContext) = ExistingStatement[HTMLTag]("window")
 
-  def innerWidth(implicit context: JavaScriptContext) = ExistingStatement[Double]("window.innerWidth")
-  def innerHeight(implicit context: JavaScriptContext) = ExistingStatement[Double]("window.innerHeight")
+  def innerWidth(implicit context: JavaScriptContext = null) = ExistingStatement[Double]("window.innerWidth")
+  def innerHeight(implicit context: JavaScriptContext = null) = ExistingStatement[Double]("window.innerHeight")
 }

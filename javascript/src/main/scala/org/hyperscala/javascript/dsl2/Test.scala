@@ -6,7 +6,8 @@ package org.hyperscala.javascript.dsl2
 object Test {
   def main(args: Array[String]): Unit = {
     val js = new JavaScriptContext {
-      val a = 5.3
+      val a = v(5.3)
+      a := 6.0
       val b = Math.floor(a)
       b + 2.0
     }

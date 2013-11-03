@@ -25,6 +25,10 @@ trait JavaScriptContext {
     variables.foreach {
       case (value, field) => {
         val output = value match {
+          case v: Variable[_] => {
+            v.name = field.name
+            v.content
+          }
           case s: Statement[_] => s.content
           case c: JavaScriptContext => c.toJS(depth + 1)
           case _ => JavaScriptContent.toJS(value)
@@ -39,7 +43,9 @@ trait JavaScriptContext {
     val last = if (stmts.nonEmpty) stmts.last else null
     stmts.foreach {
       case s => variables.get(s) match {
-        case Some(field) => // Already output as variable, no need to write it again
+        case Some(field) => {     // Output statement as field
+
+        }
         case None => {
           val isLast = s eq last
           if (isLast || s.sideEffects) {

@@ -46,18 +46,21 @@ trait DelayedStatement[T] {
 }
 
 class Variable[T](initialValue: Statement[T] = null)(implicit val context: JavaScriptContext) extends Statement[T] {
-  private var _value: Statement[T] = initialValue
+  var name: String = null
 
-  def value = _value
-  def value_=(v: Statement[T]) = _value = v
+  def :=(v: Statement[T]) = OperatorStatement[T](VariableName(this), "=", v, sideEffects = true)
 
-  def :=(v: Statement[T]) = value = v
-
-  def content = if (value != null) {
-    value.content
+  def content = if (initialValue != null) {
+    initialValue.content
   } else {
     null
   }
 
   def sideEffects = true
+}
+
+case class VariableName[T](v: Variable[T])(implicit val context: JavaScriptContext) extends Statement[T] {
+  def content = v.name
+
+  def sideEffects = false
 }

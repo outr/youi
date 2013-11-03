@@ -8,7 +8,7 @@ import scala.collection.immutable.ListMap
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-trait JavaScriptContext {
+abstract class JavaScriptContext extends Statement[JavaScriptContent] {
   implicit val jsContext = this
 
   private lazy val fields = getClass.fields.filterNot(f => f.name.contains("$") || f.name == "jsContext")
@@ -19,21 +19,14 @@ trait JavaScriptContext {
     variables.get(v).map(f => f.name)
   }
 
+  protected def hasReturn = false
+
   protected def before(b: StringBuilder, depth: Int) = {}
   protected def write(b: StringBuilder, depth: Int): Unit = {
     // Write variables out first
     variables.foreach {
-      case (value, field) => {
-        val output = value match {
-          case v: Variable[_] => {
-            v.name = field.name
-            v.content
-          }
-          case s: Statement[_] => s.content
-          case c: JavaScriptContext => c.toJS(depth + 1)
-          case _ => JavaScriptContent.toJS(value)
-        }
-        val line = s"var ${field.name} = $output"
+      case (value, field) => if (!value.isInstanceOf[Statement[_]]) {
+        val line = s"var ${field.name} = ${JavaScriptContent.toJS(value)}"
         writeLine(line, b, depth)
       }
     }
@@ -43,13 +36,22 @@ trait JavaScriptContext {
     val last = if (stmts.nonEmpty) stmts.last else null
     stmts.foreach {
       case s => variables.get(s) match {
-        case Some(field) => {     // Output statement as field
-
+        case Some(field) => {
+          val output = s match {     // Output statement as field
+            case v: Variable[_] => {
+              v.name = field.name
+              v.content
+            }
+            case c: JavaScriptContext => c.toJS(depth + 1)
+            case _ => s.content
+          }
+          val line = s"var ${field.name} = $output"
+          writeLine(line, b, depth)
         }
         case None => {
           val isLast = s eq last
-          if (isLast || s.sideEffects) {
-            val line = if (isLast) {
+          if ((isLast && hasReturn) || s.sideEffects) {
+            val line = if (isLast && hasReturn) {
               s"return ${s.toJS}"
             } else {
               s.toJS
@@ -81,6 +83,12 @@ trait JavaScriptContext {
 
     b.toString()
   }
+
+  def context: JavaScriptContext = null
+
+  def content = toJS()
+
+  def sideEffects = false
 }
 
 object JavaScriptContext {

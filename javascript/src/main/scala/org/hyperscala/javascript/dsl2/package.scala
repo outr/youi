@@ -7,10 +7,12 @@ import scala.language.implicitConversions
  */
 package object dsl2 {
   implicit def string2Statement(s: String)(implicit context: JavaScriptContext = null) = ConstantStatement(s)
+  implicit def int2Statement(i: Int)(implicit context: JavaScriptContext = null) = ConstantStatement(i)
   implicit def double2Statement(d: Double)(implicit context: JavaScriptContext = null) = ConstantStatement(d)
 
   implicit def s2ss(s: Statement[_])(implicit context: JavaScriptContext = null) = ExistingStatement[String](s.toJS)
   implicit def delayed2Statement[T](d: DelayedStatement[T])(implicit context: JavaScriptContext = null) = d.toStatement
 
   def s(s: String)(implicit context: JavaScriptContext = null) = string2Statement(s)
+  def v[T](initialValue: Statement[T] = null)(implicit context: JavaScriptContext = null) = new Variable[T](initialValue)
 }

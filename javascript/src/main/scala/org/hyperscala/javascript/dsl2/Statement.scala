@@ -44,3 +44,20 @@ case class ExistingStatement[T](content: String, sideEffects: Boolean = false)(i
 trait DelayedStatement[T] {
   def toStatement(implicit context: JavaScriptContext): Statement[T]
 }
+
+class Variable[T](initialValue: Statement[T] = null)(implicit val context: JavaScriptContext) extends Statement[T] {
+  private var _value: Statement[T] = initialValue
+
+  def value = _value
+  def value_=(v: Statement[T]) = _value = v
+
+  def :=(v: Statement[T]) = value = v
+
+  def content = if (value != null) {
+    value.content
+  } else {
+    null
+  }
+
+  def sideEffects = true
+}

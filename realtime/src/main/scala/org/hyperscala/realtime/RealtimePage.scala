@@ -1,6 +1,6 @@
 package org.hyperscala.realtime
 
-import org.hyperscala.web.Webpage
+import org.hyperscala.web.{Website, Webpage}
 import org.hyperscala.html.{StyleSpaces, FormField, HTMLTag, tag}
 import org.hyperscala.javascript.JavaScriptContent
 import com.outr.net.communicator.server.Connection
@@ -19,6 +19,7 @@ import org.powerscala.hierarchy.event.ChildRemovedEvent
 import org.powerscala.hierarchy.ChildLike
 import scala.annotation.tailrec
 import org.powerscala.event.Listener
+import org.powerscala.concurrent.Executor
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -97,8 +98,25 @@ class RealtimePage private(page: Webpage) extends Logging {
         case _ => page.html.byId[IdentifiableTag](id)
       }
       t match {
-        case Some(element) => element.receive(eventType, ResponseMessage(content))
+        case Some(element) => asynchronousReceive(element, eventType, ResponseMessage(content))
         case None => warn(s"Unable to find tag by id: $id to fire event: $eventType for message: $content")
+      }
+    }
+  }
+
+  /**
+   * Executes the event in another thread to keep from blocking data receiving.
+   *
+   * @param element the element the event is received for
+   * @param eventType the type of event
+   * @param responseMessage the response message of the event
+   */
+  private def asynchronousReceive(element: IdentifiableTag, eventType: String, responseMessage: ResponseMessage) = {
+    val context = Website().requestContext          // Get the context for the current thread
+    Executor.invoke {
+      Website().contextualize(context) {
+        Page.instance.set(Webpage())
+        element.receive(eventType, responseMessage)
       }
     }
   }
@@ -279,7 +297,7 @@ object RealtimePage {
     }
   }
 
-  def apply(page: Webpage) = {
+  def apply(page: Webpage) = synchronized {
     if (page == null) {
       throw new NullPointerException("Page cannot be null!")
     }

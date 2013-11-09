@@ -34,17 +34,17 @@ trait Website[S <: Session] extends WebApplication[S] {
 
   def init() = {
     handlers += CachedHandler     // Add caching support
+    handlers += ErrorHandler      // Add error handling support - calls errorPage if there's an error with no content
     pageError.on {                // Default logging of errors on a page
       case (page, t) => error(s"An exception was thrown on ${request.url} (page ${page.getClass.getSimpleName}).", t)
     }
   }
 
   def page(creator: => Webpage, scope: Scope, uris: String*) = {
-    if (uris.isEmpty) {
-      throw new RuntimeException("Page must have at least one URI associated!")
-    }
     val handler = new WebpageHandler(() => creator, scope, uris.toList)
-    addHandler(handler, uris: _*)
+    if (uris.nonEmpty) {
+      addHandler(handler, uris: _*)
+    }
     handler
   }
 
@@ -82,6 +82,8 @@ class Pages[S <: Session](website: Website[S]) extends Iterable[Webpage] with Lo
 
   def byId[W <: Webpage](pageId: String) = website._pages.get[W](pageId)
 
+  def bySession(session: Session) = website._pages.values.filter(wp => wp.webpageSession eq session).toList
+
   // TODO: is there a better way to avoid updating duplicates of the same page?
   def iterator = website._pages.values.toSet[Webpage].iterator
 
@@ -91,6 +93,11 @@ class Pages[S <: Session](website: Website[S]) extends Iterable[Webpage] with Lo
       case (id, p) if p eq page => website._pages.remove(id)      // Clear all references of the page
       case _ => // Ignore others
     }
+  }
+
+  def removeBySession(session: Session) = synchronized {
+    // TODO: restrict this to Scopes that don't span sessions (everything but Application)
+    bySession(session).foreach(remove)
   }
 
   def apply[W <: Webpage](implicit manifest: Manifest[W]) = iterator.collect {

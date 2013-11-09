@@ -96,7 +96,7 @@ object Realtime extends Module with Logging {
     realtime.connectionDisposed(connection)         // Notify the RealtimePage that a connection was disposed
   }
 
-  def broadcast(event: String, message: Any, sendWhenConnected: Boolean, page: Webpage = Webpage()) = synchronized {
+  def broadcast(event: String, message: Any, sendWhenConnected: Boolean, page: Webpage = Webpage()) = {
     Webpage().require(this)
     val realtime = RealtimePage(page)
     val content = message match {

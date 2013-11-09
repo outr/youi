@@ -5,16 +5,38 @@ import com.outr.net.http.request.HttpRequest
 import com.outr.net.http.response.{HttpResponseStatus, HttpResponse}
 import org.hyperscala.Unique
 import org.powerscala.log.Logging
+import com.outr.net.http.handler.HandlerProcessor
+import org.powerscala.event.Listenable
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class WebpageHandler(pageCreator: () => Webpage, scope: Scope, val uris: List[String]) extends HttpHandler with Logging {
+class WebpageHandler(pageCreator: () => Webpage, scope: Scope, val uris: List[String]) extends HttpHandler with Logging with Listenable {
+  /**
+   * Allows pre-management of the response before handling by a webpage. If the HttpResponseStatus is not NotFound then
+   * the page will not be referenced to handle it.
+   */
+  val handlers = new HandlerProcessor()
+
   val id = Unique()
 
-  def link = uris.head
+  def link = uris.headOption.getOrElse(null)
 
-  def onReceive(request: HttpRequest, response: HttpResponse) = if (response.status == HttpResponseStatus.NotFound) {
+  final def onReceive(request: HttpRequest, response: HttpResponse) = try {
+    val updatedResponse = handlers.fire(request -> response)
+    if (updatedResponse.status == HttpResponseStatus.NotFound) {
+      handle(request, updatedResponse)
+    } else {
+      updatedResponse
+    }
+  } catch {
+    case t: Throwable => {
+      error(s"Error occurred on URL: ${request.url}.", t)
+      Website().errorPage(request, response)
+    }
+  }
+
+  def handle(request: HttpRequest, response: HttpResponse) = {
     val page = load(request) match {
       case Some(p) => p               // Found page cached, just return it
       case None => {                  // Page not found, create and cache it
@@ -23,10 +45,7 @@ class WebpageHandler(pageCreator: () => Webpage, scope: Scope, val uris: List[St
         p
       }
     }
-    page.checkIn()
-    page.onReceive(request, response)
-  } else {
-    response
+    WebpageHandler.handle(request, response, page)
   }
 
   def load(request: HttpRequest): Option[Webpage] = scope match {
@@ -55,4 +74,9 @@ class WebpageHandler(pageCreator: () => Webpage, scope: Scope, val uris: List[St
 
 object WebpageHandler {
   def pageById[W <: Webpage](pageId: String) = Website()._pages.get[W](pageId)
+
+  def handle(request: HttpRequest, response: HttpResponse, page: Webpage) = {
+    page.checkIn()
+    page.onReceive(request, response)
+  }
 }

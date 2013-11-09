@@ -14,6 +14,7 @@ import java.io.OutputStream
 import org.powerscala.hierarchy.event.{ChildRemovedProcessor, ChildAddedProcessor, StandardHierarchyEventProcessor}
 import java.util.concurrent.atomic.AtomicBoolean
 import org.powerscala.reflect._
+import com.outr.net.http.session.Session
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -26,6 +27,8 @@ class Webpage extends HttpHandler with HTMLPage with ModularPage with Temporal w
 
   val pageId = Unique()
   val store = new MapStorage[Any, Any]
+  store("session") = Website().session
+  def webpageSession = store[Session]("session")
 
   val childAdded = new ChildAddedProcessor
   val childRemoved = new ChildRemovedProcessor

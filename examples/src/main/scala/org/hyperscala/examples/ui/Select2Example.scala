@@ -39,6 +39,14 @@ class Select2Example extends Example {
       }
     }
   }
+  contents += new tag.Button(content = "Select Banana") {
+    clickEvent := RealtimeEvent()
+    clickEvent.on {
+      case evt => {
+        Select2.set(select, "banana")
+      }
+    }
+  }
 
   // Custom formatting to hide 'Orange' and show 'Fruit: ' in front of everything else.
   val formatter = JavaScriptString(

@@ -42,8 +42,6 @@ class RealtimePage private(page: Webpage) extends Logging {
     case evt => propertyChanged(evt)
   }
 
-  // TODO: handle checkins to keep page alive
-
   private var backlog = List.empty[(String, String)]
 
   def send(event: String, message: String, sendWhenConnected: Boolean) = synchronized {

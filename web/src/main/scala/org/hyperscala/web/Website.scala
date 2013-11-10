@@ -48,6 +48,10 @@ trait Website[S <: Session] extends WebApplication[S] {
     handler
   }
 
+  def errorThrown(t: Throwable) = {
+    error(s"Error occurred on URL: ${request.url}.", t)
+  }
+
   def errorPage(request: HttpRequest,
                 response: HttpResponse,
                 status: HttpResponseStatus = HttpResponseStatus.InternalServerError): HttpResponse = {

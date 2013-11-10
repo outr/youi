@@ -31,7 +31,7 @@ class WebpageHandler(pageCreator: () => Webpage, scope: Scope, val uris: List[St
     }
   } catch {
     case t: Throwable => {
-      error(s"Error occurred on URL: ${request.url}.", t)
+      Website().errorThrown(t)
       Website().errorPage(request, response)
     }
   }

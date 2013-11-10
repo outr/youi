@@ -28,7 +28,9 @@ class Webpage extends HttpHandler with HTMLPage with ModularPage with Temporal w
   val pageId = Unique()
   val store = new MapStorage[Any, Any]
   store("session") = Website().session
+  store("request") = Website().request
   def webpageSession = store[Session]("session")
+  def webpageRequest = store[HttpRequest]("request")
 
   val childAdded = new ChildAddedProcessor
   val childRemoved = new ChildRemovedProcessor
@@ -82,7 +84,10 @@ class Webpage extends HttpHandler with HTMLPage with ModularPage with Temporal w
    */
   def timeout = 2.minutes
 
-  override def checkIn() = super.checkIn()
+  override def checkIn() = {
+    webpageSession.checkIn()      // Keep the session alive as well
+    super.checkIn()
+  }
 
   /**
    * Called before the page is (re)loaded.

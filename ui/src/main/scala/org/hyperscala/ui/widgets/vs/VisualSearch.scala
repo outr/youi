@@ -13,6 +13,7 @@ import com.outr.net.http.HttpHandler
 import com.outr.net.http.request.HttpRequest
 import com.outr.net.http.response.{HttpResponseStatus, HttpResponse}
 import com.outr.net.http.content.StringContent
+import org.hyperscala.selector.Selector
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -52,7 +53,7 @@ class VisualSearch extends tag.Div {
     super.initialize()
 
     val instruction = s"createVisualSearch('${Webpage().pageId}', '$identity', '${VisualSearch.Path}');"
-    Realtime.sendJavaScript(instruction, selector = s"#${id()}", onlyRealtime = false)
+    Realtime.sendJavaScript(instruction, selector = Selector.id(id()), onlyRealtime = false)
 
     query.change.on {
       case evt => {

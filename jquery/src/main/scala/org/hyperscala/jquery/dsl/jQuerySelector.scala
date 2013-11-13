@@ -10,7 +10,7 @@ import org.hyperscala.event.KeyboardEvent
  * @author Matt Hicks <matt@outr.com>
  */
 class jQuerySelector(val selector: Selector) extends TypedStatement[Selector] {
-  def content = s"$$('${selector.value}')"
+  def content = s"$$(${selector.content})"
 
   def scrollTop(offset: Int) = call(s"scrollTop($offset)")
 

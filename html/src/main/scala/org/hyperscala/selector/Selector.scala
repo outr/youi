@@ -4,14 +4,22 @@ import org.hyperscala.persistence.ValuePersistence
 import org.hyperscala.html.HTMLTag
 import org.hyperscala.html.HTMLTagType
 import org.hyperscala.IdentifiableTag
+import org.powerscala.json.Jsonify
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-trait Selector {
+trait Selector extends Jsonify {
   def value: String
+  def quoted = true
 
   def matches(t: HTMLTag): Boolean
+
+  def content = if (quoted) s"'$value'" else value
+
+  def parseJson(map: Map[String, Any]) = throw new RuntimeException("Unable to generate Selector from JSON.")
+
+  def generate() = content
 }
 
 object Selector extends ValuePersistence[List[Selector]] {

@@ -10,7 +10,7 @@ case class SetValueJavaScriptFunction(selector: Selector) extends JSFunction1[St
   def content =
     s"""
       |function(value) {
-      | $$('${selector.value}').val(value);
+      | $$(${selector.value}).val(value);
       |}
     """.stripMargin
 }

@@ -64,7 +64,6 @@ class ChatExample extends Webpage {
 }
 
 object ChatExample {
-  Realtime.debug := true
   val Main = getClass.getClassLoader.getResource("chat.html")
   val Entry = getClass.getClassLoader.getResource("chat_entry.html")
 

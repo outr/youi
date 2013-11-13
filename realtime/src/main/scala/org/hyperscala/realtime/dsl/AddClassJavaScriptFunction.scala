@@ -11,9 +11,9 @@ case class AddClassJavaScriptFunction(selector: Selector, className: String) ext
     s"""
       |function(b) {
       | if (b) {
-      |   $$('${selector.value}').addClass('$className');
+      |   $$(${selector.value}).addClass('$className');
       | } else {
-      |   $$('${selector.value}').removeClass('$className');
+      |   $$(${selector.value}).removeClass('$className');
       | }
       |}
     """.stripMargin

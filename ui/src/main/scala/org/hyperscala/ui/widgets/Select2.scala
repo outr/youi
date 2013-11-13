@@ -8,6 +8,7 @@ import org.hyperscala.html._
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.javascript.{JavaScriptString, JavaScriptContent}
 import org.hyperscala.javascript.JavaScriptContent.JSOption
+import org.hyperscala.selector.Selector
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -31,7 +32,7 @@ object Select2 extends Module {
       JSOption("formatSelection", formatSelection),
       JSOption("escapeMarkup", escapeMarkup)
     )
-    Realtime.sendJavaScript("$('#%s').select2(%s);".format(id, options), selector = s"#$id", onlyRealtime = false)
+    Realtime.sendJavaScript("$('#%s').select2(%s);".format(id, options), selector = Selector.id(id), onlyRealtime = false)
   }
 
   def enable(select: tag.Select) = {

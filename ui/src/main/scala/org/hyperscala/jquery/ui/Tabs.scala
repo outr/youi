@@ -4,6 +4,7 @@ import org.hyperscala.html._
 import org.hyperscala.web.Webpage
 import org.hyperscala.Unique
 import org.hyperscala.realtime.Realtime
+import org.hyperscala.selector.Selector
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -18,7 +19,7 @@ class Tabs extends tag.Div {
   contents += navigation
 
   onInit {
-    Realtime.sendJavaScript("$('#%s').tabs();".format(id()), selector = s"#$identity", onlyRealtime = false)
+    Realtime.sendJavaScript("$('#%s').tabs();".format(id()), selector = Selector.id(identity), onlyRealtime = false)
   }
 
   def addTab[T <: tag.Div](label: String)(f: => T) = {

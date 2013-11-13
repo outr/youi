@@ -14,6 +14,7 @@ import org.hyperscala.html.constraints.BodyChild
 import org.hyperscala.Container
 import org.jdom2.Element
 import org.powerscala.event.processor.UnitProcessor
+import org.hyperscala.selector.Selector
 
 /**
  * EditableContent allows easy wrapping around an HTMLTag container to allow the use of HTML5's contentEditable flag
@@ -55,7 +56,7 @@ class EditableContent private(t: HTMLTag with Container[BodyChild]) {
   private def init() = {
     t.contentEditable := ContentEditable.True
 
-    Realtime.sendJavaScript(s"initEditableContent('${t.identity}');", selector = s"#${t.identity}", onlyRealtime = false)
+    Realtime.sendJavaScript(s"initEditableContent('${t.identity}');", selector = Selector.id(t.identity), onlyRealtime = false)
     t.eventReceived.on {
       case evt if evt.event == "htmlChanged" => {
         val htmlString = evt.message[String]("html")

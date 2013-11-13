@@ -20,10 +20,18 @@ function connectRealtime(pageId, debug) {
                 console.log('Error occurred: ' + err);
             },
             eval: function(msg) {
-                if (typeof msg == 'string') {           // Parse to JSON if it isn't already
-                    msg = jQuery.parseJSON(msg);
+                try {
+                    if (typeof msg == 'string') {           // Parse to JSON if it isn't already
+                        msg = jQuery.parseJSON(msg);
+                    }
+                } catch(err) {
+                    log('Unable to parse JSON [' + msg + ']');
                 }
-                realtimeEvaluate(msg, debug);
+                try {
+                    realtimeEvaluate(msg, debug);
+                } catch(err) {
+                    log('Failed to evaluate instruction: ' + msg + ' - ' + err);
+                }
             }
         }
     });
@@ -154,7 +162,7 @@ function realtimeEvaluate(json, debug) {
             realtimeEvaluate(json, debug);
         }, delay);
     } else if (selector != null) {
-        if ($(selector).length == 0) {              // Selector returned empty, wait a few milliseconds and check again
+        if (eval('$(' + selector + ').length') == 0) {              // Selector returned empty, wait a few milliseconds and check again
             if (debug) {
                 log('Selector: ' + selector + ' returned empty...waiting...');
             }

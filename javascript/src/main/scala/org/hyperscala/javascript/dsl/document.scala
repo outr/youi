@@ -9,6 +9,8 @@ import org.hyperscala.selector.Selector
 object document extends Selector {
   def value = "document"
 
+  override def quoted = false
+
   def matches(t: HTMLTag) = false
 
   def getElementById[T <: HTMLTag](id: String) = Element[T](s"document.getElementById('$id')")

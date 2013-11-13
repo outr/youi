@@ -136,7 +136,7 @@ object Realtime extends Module with Logging {
    * @param onlyRealtime if true the JavaScript will only be sent if the page has already completed rendering (default: true)
    * @param delay optionally specifies a delay before the instruction is invoked
    */
-  def sendJavaScript(instruction: String, content: String = null, selector: String = null, onlyRealtime: Boolean = true, delay: Int = 0): Unit = {
+  def sendJavaScript(instruction: String, content: String = null, selector: Selector = null, onlyRealtime: Boolean = true, delay: Int = 0): Unit = {
     broadcast("eval", JavaScriptMessage(instruction, content, selector, delay), sendWhenConnected = !onlyRealtime)
   }
 
@@ -145,12 +145,7 @@ object Realtime extends Module with Logging {
   }
 
   def send(statement: Statement, selector: Selector = null, onlyRealtime: Boolean = false) = {
-    val selectorContent = if (selector != null) {
-      selector.value
-    } else {
-      null
-    }
-    Realtime.sendJavaScript(statement.content, selector = selectorContent, onlyRealtime = onlyRealtime)
+    Realtime.sendJavaScript(statement.content, selector = selector, onlyRealtime = onlyRealtime)
   }
 
   def reload(fresh: Boolean = false) = {
@@ -214,4 +209,4 @@ object Realtime extends Module with Logging {
   }
 }
 
-case class JavaScriptMessage(instruction: String, content: String = null, selector: String = null, delay: Int = 0)
+case class JavaScriptMessage(instruction: String, content: String = null, selector: Selector = null, delay: Int = 0)

@@ -15,7 +15,7 @@ import org.hyperscala.selector.Selector
  */
 object Select2 extends Module {
   val name = "select2"
-  val version = Version(3, 3, 2)
+  val version = Version(3, 4, 5)
   var debug = false
 
   val DontEscapeMarkup = JavaScriptString("function(m) { return m; }")
@@ -50,7 +50,7 @@ object Select2 extends Module {
   override def dependencies = List(jQuery.LatestWithDefault)
 
   def init() = {
-    Website().addClassPath("/select2/", "select2/")
+    Website().addClassPath("/select2/", "select2-3.4.5/")
   }
 
   def load() = {

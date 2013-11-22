@@ -25,9 +25,16 @@ abstract class JavaScriptContext extends Statement[JavaScriptContent] {
   protected def write(b: StringBuilder, depth: Int): Unit = {
     // Write variables out first
     variables.foreach {
-      case (value, field) => if (!value.isInstanceOf[Statement[_]]) {
-        val line = s"var ${field.name} = ${JavaScriptContent.toJS(value)}"
-        writeLine(line, b, depth)
+      case (value, field) => value match {
+        case c: JavaScriptContext => {
+          val line = s"var ${field.name} = ${c.toJS(depth + 1)}"
+          writeLine(line, b, depth)
+        }
+        case s: Statement[_] => // Ignore statements
+        case _ => {
+          val line = s"var ${field.name} = ${JavaScriptContent.toJS(value)}"
+          writeLine(line, b, depth)
+        }
       }
     }
 

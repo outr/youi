@@ -43,6 +43,8 @@ class jQuerySelector(val selector: Selector) extends TypedStatement[Selector] {
 
   def css[S](style: Style[S]) = TypedStatement(s"$content.css('${style.cssName}')")
 
+  def css[S](style: Style[S], value: S) = TypedStatement(s"$content.css('${style.cssName}', ${JavaScriptContent.toJS(value)})")
+
   def call(function: String): TypedStatement[Unit] = TypedStatement[Unit](s"$content.$function")
 
   def call(functionName: String, values: Map[String, Any]): TypedStatement[Unit] = {

@@ -1,14 +1,16 @@
 package org.hyperscala
 
+import scala.collection.immutable.ListMap
+
 /**
  * @author Matt Hicks <matt@outr.com>
  */
 trait AttributeContainer[A <: PropertyAttribute[_]] {
-  protected var _attributes: Map[String, A] = _
+  protected var _attributes: ListMap[String, A] = _
 
   def addAttribute(attribute: A) = synchronized {
     if (_attributes == null) {
-      _attributes = Map.empty
+      _attributes = ListMap.empty
     }
     _attributes += attribute.name -> attribute
   }

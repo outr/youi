@@ -292,6 +292,27 @@ class StyleSheet(val hierarchicalParent: Listenable,
   lazy val wordWrap = new StyleSheetAttribute(Style.wordWrap)
   lazy val zIndex = new StyleSheetAttribute(Style.zIndex)
 
+  /**
+   * Gets or creates the attribute based on the Style. This can be used to create explicit CSS properties.
+   *
+   * @param style the style to lookup the attribute from
+   * @tparam T the type of value
+   * @return StyleSheetAttribute[T]
+   */
+  def apply[T](style: Style[T], default: Option[T]) = synchronized {
+    attributes.get(style.cssName) match {
+      case Some(ssa) => ssa.asInstanceOf[StyleSheetAttribute[T]]
+      case None => {
+        val ssa = new StyleSheetAttribute[T](style)(this, style.manifest)
+        default match {
+          case Some(v) => ssa := v
+          case None => // No default
+        }
+        ssa
+      }
+    }
+  }
+
   def apply(css: String) = try {
     css.split(";").map(s => s.trim()).collect {
       case s if s.nonEmpty => {

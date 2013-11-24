@@ -17,7 +17,7 @@ class ClassValidationHandler(className: String = "error",
     }
     if (response.result == ValidationResult.Error) {
       if (!t.clazz().contains("error")) {
-        t.clazz := "error" :: t.clazz()
+        t.clazz += "error"
       }
       if (errorContainer != null) {
         errorContainer.contents.replaceWith(new tag.Div(content = response.message))

@@ -35,7 +35,7 @@ class CSSBranch(display: BodyChild) extends CSSElement {
 }
 
 class CSSLeaf(display: BodyChild) extends CSSElement {
-  clazz := List("leaf")
+  clazz += "leaf"
 
   contents += display
 }

@@ -15,7 +15,7 @@ class Option extends Textual with BodyChild with HTMLTag {
 
   def this(name: String = null,
            accessKey: java.lang.Character = null,
-           clazz: List[String] = null,
+           clazz: Seq[String] = null,
            contentEditable: ContentEditable = null,
            contextMenu: String = null,
            dir: Direction = null,

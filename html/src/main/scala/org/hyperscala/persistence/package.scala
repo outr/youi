@@ -40,6 +40,7 @@ package object persistence {
   implicit val lengthPersistence = Length
   implicit val lineStylePersistence = LineStyle
   implicit val listStringPersistence = ListStringPersistence
+  implicit val listSetStringPersistence = ListSetStringPersistence
   implicit val listIntPersistence = ListIntPersistence
   implicit val listDoublePersistence = ListDoublePersistence
   implicit val methodPersistence = MethodPersistence
@@ -52,6 +53,7 @@ package object persistence {
   implicit val resourcePersistence = Resource
 //  implicit val styleSheetPersistence = TagStyleSheet
   implicit val selectorPersistence = Selector
+  implicit val setStringPersistence = SetStringPersistence
   implicit val targetPersistence = Target
   implicit val textAreaWrapPersistence = TextAreaWrap
   implicit val textClipPersistence = TextClip

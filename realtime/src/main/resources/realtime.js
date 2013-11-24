@@ -100,6 +100,9 @@ function realtimeEvent(event, data, confirmation, preventDefault, fireChange, on
 }
 
 function realtimeSend(id, eventType, content) {
+    if (typeof content == 'string') {     // Make sure we're sending JSON, not stringified JSON
+        content = jQuery.parseJSON(content);
+    }
     var data = {
         id: id,
         eventType: eventType
@@ -198,6 +201,54 @@ function parseSVG(content) {
     content = '<svg xmlns=\'http://www.w3.org/2000/svg\'>' + content + '</svg>';
     var document = parser.parseFromString(content, 'text/xml').documentElement;
     return document.firstChild;
+}
+
+var realtimeGroup = {};         // Used for grouping
+
+/**
+ * Combines messages of a specific id (only sends the last one) and sends at maximum every timeout.
+ *
+ * @param groupId
+ * @param timeout
+ * @param event
+ * @param id
+ * @param message
+ */
+function groupedSend(groupId, timeout, event, id, message) {
+    var current = (new Date).getTime();
+    var group = realtimeGroup[groupId];
+    if (group == null) {            // Set up group if not already defined
+        group = {
+            lastSend: 0
+        };
+        realtimeGroup[groupId] = group;
+    }
+    group.event = event;
+    group.id = id;
+    group.message = message;
+    if (group.timeoutId == null) {          // Not currently waiting to send something
+        var delay = group.lastSend - current + timeout;
+        if (delay <= 0) {
+            delay = 0;
+        }
+        group.timeoutId = window.setTimeout(function() {
+            delayedGroupSend(groupId);
+        }, delay);
+    }
+}
+
+/**
+ * Called internally by groupedSend when a groupId times out.
+ *
+ * @param groupId
+ */
+function delayedGroupSend(groupId) {
+    var group = realtimeGroup[groupId];
+    if (group != null) {
+        realtimeSend(group.id, group.event, group.message);
+        group.timeoutId = null;             // Remove the timeout id so we know it has run
+        group.lastSend = (new Date).getTime();
+    }
 }
 
 // Support serializing a form

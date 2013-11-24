@@ -6,11 +6,12 @@ import io.HTMLWriter
 import org.hyperscala.html.tag._
 import org.hyperscala.css.StyleSheet
 import scala.collection.{Map => ScalaMap}
-import org.powerscala.property.{ListProperty, Property}
+import org.powerscala.property.{ListSetProperty, Property}
 import org.hyperscala.event._
 import org.hyperscala.event.processor._
 import org.jdom2.Attribute
 import org.hyperscala.selector.{TagIdSelector, Selector}
+import scala.collection.immutable.ListSet
 
 /**
  * NOTE: This file has been generated. Do not modify directly!
@@ -18,7 +19,7 @@ import org.hyperscala.selector.{TagIdSelector, Selector}
  */
 trait HTMLTag extends IdentifiableTag {
   lazy val accessKey = PropertyAttribute[Char]("accesskey", -1.toChar)
-  lazy val clazz = new PropertyAttribute[List[String]]("class", Nil) with ListProperty[String]
+  lazy val clazz = new PropertyAttribute[ListSet[String]]("class", ListSet.empty) with ListSetProperty[String]
   lazy val contentEditable = PropertyAttribute[ContentEditable]("contenteditable", null)
   lazy val contextMenu = PropertyAttribute[String]("contextmenu", null)
   lazy val dir = PropertyAttribute[Direction]("dir", null)
@@ -103,7 +104,7 @@ trait HTMLTag extends IdentifiableTag {
 
   protected def init(name: String = null,
            accessKey: java.lang.Character = null,
-           clazz: List[String] = null,
+           clazz: Seq[String] = null,
            contentEditable: ContentEditable = null,
            contextMenu: String = null,
            dir: Direction = null,
@@ -119,7 +120,9 @@ trait HTMLTag extends IdentifiableTag {
            titleText: String = null) = {
     up(this.name, name)
     up(this.accessKey, accessKey)
-    up(this.clazz, clazz)
+    if (clazz != null) {
+      this.clazz ++= clazz
+    }
     up(this.contentEditable, contentEditable)
     up(this.contextMenu, contextMenu)
     up(this.dir, dir)

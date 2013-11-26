@@ -33,7 +33,7 @@ trait ModularPage {
   }
 
   def require(interface: Interface, default: Module): Unit = interface match {
-    case module: Module => throw new RuntimeException("Requiring with default must not be a Module.")
+    case module: Module => throw new RuntimeException(s"Requiring with default must not be a Module ($interface / $module).")
     case iwd: InterfaceWithDefault => throw new RuntimeException("Requiring with default must not be a InterfaceWithDefault.")
     case _ => require(InterfaceWithDefault(interface, default))
   }

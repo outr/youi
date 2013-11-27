@@ -12,11 +12,17 @@ var bounding = {
         }, frequency);
     },
     check: function(selector) {
-        var entry = bounding.entries[selector];
+        var selectorEntry = bounding.entries[selector];
         var selection = $(selector);
         if (selection.length > 0) {
             selection.each(function() {     // Iterate over each entry
                 var element = $(this);
+                var id = element.attr('id');
+                var entry = selectorEntry[id];
+                if (entry == null) {
+                    entry = {};
+                    selectorEntry[id] = entry;
+                }
 
                 var localX = parseInt(element.css('left'));
                 var localY = parseInt(element.css('top'));
@@ -45,8 +51,9 @@ var bounding = {
                     json.height = height;
                 }
                 if (Object.keys(json).length > 0) {
-                    json.elementId = element.attr('id');
+                    json.elementId = id;
 
+//                    console.log('Sending: ' + JSON.stringify(json));
                     realtimeSend(null, 'bounding', json);
 
                     entry.localX = localX;

@@ -56,7 +56,7 @@ object Bounding extends Module with StorageComponent[Bounding, HTMLTag] with Log
     page.head.contents += new tag.Script(mimeType = "text/javascript", src = "/bounding.js")
   }
 
-  def monitor(selector: Selector, frequency: Double) = {
+  def monitor(selector: Selector, frequency: Double = 0.5) = {
     Realtime.sendJavaScript(s"window.bounding.monitor(${selector.content}, ${Time.millis(frequency)});", onlyRealtime = false)
   }
 

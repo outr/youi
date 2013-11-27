@@ -8,16 +8,16 @@ import org.hyperscala.css.attributes.{Vertical, Horizontal, Position}
 import org.hyperscala.realtime.RealtimeEvent
 import org.hyperscala.ui._
 import org.hyperscala.javascript.JavaScriptString
+import org.hyperscala.selector.Selector
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
 class CoordinatesExample extends Example {
   page.require(WindowSize)
-  page.require(Coordinates)
 
-  val div = new tag.Div(id = "div1", content = new tag.H2(id = "content1", content = "Centered Content"))
-  div.style.position := Position.Absolute
+  val div = new tag.Div(id = "div1", clazz = List("bounding"), content = new tag.H2(id = "content1", content = "Centered Content"))
+  div.style.position := Position.Relative
   div.style.left := 0.px
   div.style.top := 0.px
   div.style.width := 125.px
@@ -27,7 +27,7 @@ class CoordinatesExample extends Example {
   div.style.paddingAll(10.px)
   contents += div
 
-  val div2 = new tag.Div(id = "div2", content = new tag.H2(id = "content2", content = "Right Side of Page"))
+  val div2 = new tag.Div(id = "div2", clazz = List("bounding"), content = new tag.H2(id = "content2", content = "Right Side of Page"))
   div2.style.position := Position.Absolute
   div2.style.width := 125.px
   div2.style.height := 125.px
@@ -51,13 +51,25 @@ class CoordinatesExample extends Example {
   }
   contents += centerDiv
 
-  val converter = new AdjustedConverter(
-    x => x - (WindowSize.width() / 2.0),
-    y => y - (WindowSize.height() / 2.0),
-    x => x + (WindowSize.width() / 2.0),
-    y => y + (WindowSize.height() / 2.0)
-  )
-  val coordinates = new Coordinates(converter)
+  Bounding.monitor(Selector.clazz("bounding"), 0.5)   // Monitor bounding div1 and div2
+
+  val coordinates = new Coordinates {
+    def coordinateX(ct: CoordinatesTag) = ct.b.absoluteX() - (WindowSize.width() / 2.0)
+
+    def coordinateY(ct: CoordinatesTag) = ct.b.absoluteY() - (WindowSize.height() / 2.0)
+
+    def localizeX(ct: CoordinatesTag) = ct.x() + (WindowSize.width() / 2.0)
+
+    def localizeY(ct: CoordinatesTag) = ct.y() + (WindowSize.height() / 2.0)
+
+    override protected def create(t: HTMLTag) = {
+      val ct = super.create(t)
+      WindowSize.width.change and WindowSize.height.change on {   // This coordinate system depends on WindowSize as well
+        case evt => ct.update()
+      }
+      ct
+    }
+  }
 
   val divc = coordinates(div)
   divc.horizontal := Horizontal.Center

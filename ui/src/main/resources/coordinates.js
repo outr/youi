@@ -7,26 +7,20 @@
  */
 function checkCoordinates(id, batch) {
     var element = $('#' + id);
-    var oldLocalX = element.data('local-x');
-    var oldLocalY = element.data('local-y');
-    var oldAbsX = element.data('abs-x');
-    var oldAbsY = element.data('abs-y');
+    var oldX = element.data('x');
+    var oldY = element.data('y');
     var oldWidth = element.data('width');
     var oldHeight = element.data('height');
 
-    var localX = parseInt(element.css('left'));
-    var localY = parseInt(element.css('top'));
-    var absX = element.offset().left;
-    var absY = element.offset().top;
-    var width = element.width();
-    var height = element.height();
+    var x = parseInt(element.css('left'));
+    var y = parseInt(element.css('top'));
+    var width = element.outerWidth();
+    var height = element.outerWidth();
 
-    if (oldLocalX != localX || oldLocalY != localY || oldAbsX != absX || oldAbsY != absY || oldWidth != width || oldHeight != height) {
+    if (oldX != x || oldY != y || oldWidth != width || oldHeight != height) {
         var obj = {
-            localX: localX,
-            localY: localY,
-            absX: absX,
-            absY: absY,
+            x: x,
+            y: y,
             width: width,
             height: height
         };
@@ -37,10 +31,8 @@ function checkCoordinates(id, batch) {
         }
 
         // Update local data to only send on-change
-        element.data('local-x', localX);
-        element.data('local-y', localY);
-        element.data('abs-x', absX);
-        element.data('abs-y', absY);
+        element.data('x', x);
+        element.data('y', y);
         element.data('width', width);
         element.data('height', height);
     }

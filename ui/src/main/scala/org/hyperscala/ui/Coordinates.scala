@@ -28,26 +28,26 @@ class Coordinates(val converter: CoordinateConverter)
 }
 
 trait CoordinateConverter {
-  def coordinatesForX(localX: Double, absoluteX: Double, width: Double): Double
-  def coordinatesForY(localY: Double, absoluteY: Double, height: Double): Double
+  def coordinatesForX(x: Double, width: Double): Double
+  def coordinatesForY(y: Double, height: Double): Double
   def localXFor(ct: CoordinatesTag, x: Double): Int
   def localYFor(ct: CoordinatesTag, y: Double): Int
 }
 
-class AbsoluteAdjustedConverter(adjustToX: Double => Double, adjustToY: Double => Double,
-                                adjustFromX: Double => Double, adjustFromY: Double => Double) extends CoordinateConverter {
-  def coordinatesForX(localX: Double, absoluteX: Double, width: Double) = adjustToX(absoluteX)
-  def coordinatesForY(localY: Double, absoluteY: Double, width: Double) = adjustToY(absoluteY)
+class AdjustedConverter(adjustToX: Double => Double, adjustToY: Double => Double,
+                        adjustFromX: Double => Double, adjustFromY: Double => Double) extends CoordinateConverter {
+  def coordinatesForX(x: Double, width: Double) = adjustToX(x)
+  def coordinatesForY(y: Double, height: Double) = adjustToY(y)
 
   def localXFor(ct: CoordinatesTag, x: Double) = {
     val ax = adjustFromX(x)
     val absX = math.round(ax).toInt
-    ct.support.absolute2LocalX(absX)
+    absX
   }
   def localYFor(ct: CoordinatesTag, y: Double) = {
     val ay = adjustFromY(y)
     val absY = math.round(ay).toInt
-    ct.support.absolute2LocalY(absY)
+    absY
   }
 }
 
@@ -58,8 +58,8 @@ class CoordinatesTag(coordinates: Coordinates, val t: HTMLTag) extends Listenabl
   }
   def isUpdatingCoordinates = updatingCoordinates.get()
 
-  val x = new Property[Double]()
-  val y = new Property[Double]()
+  val x = new Property[Double](default = Some(-1.0))
+  val y = new Property[Double](default = Some(-1.0))
   val manageX = new Property[Boolean](default = Option(false))
   val manageY = new Property[Boolean](default = Option(false))
   val horizontal = new Property[Horizontal](default = Some(Horizontal.Left))
@@ -72,11 +72,14 @@ class CoordinatesTag(coordinates: Coordinates, val t: HTMLTag) extends Listenabl
   WindowSize.width.change and WindowSize.height.change on {
     case evt => if (enabled()) {   // Update the coordinates when the screen resizes
       check()
+      update()
     }
   }
 
-  support.localX.change and support.localY.change and support.absoluteX.change and support.absoluteY.change and support.width.change and support.height.change on {
-    case evt => if (enabled()) update()     // client changed positioning so we need to update the coordinates
+  support.x.change and support.y.change and support.width.change and support.height.change on {
+    case evt => if (enabled()) {
+      update()  // client changed positioning so we need to update the coordinates
+    }
   }
   horizontal.change.on {
     case evt => if (enabled()) update()     // horizontal changed, so we need to update the coordinates
@@ -119,7 +122,7 @@ class CoordinatesTag(coordinates: Coordinates, val t: HTMLTag) extends Listenabl
     updatingCoordinates.set(true)
     try {
       val width = support.width().toDouble
-      val cx = coordinates.converter.coordinatesForX(support.localX(), support.absoluteX(), width)
+      val cx = coordinates.converter.coordinatesForX(support.x(), width)
 
       // Adjust for horizontal
       val mx = horizontal() match {
@@ -137,7 +140,7 @@ class CoordinatesTag(coordinates: Coordinates, val t: HTMLTag) extends Listenabl
     updatingCoordinates.set(true)
     try {
       val height = support.height().toDouble
-      val cy = coordinates.converter.coordinatesForY(support.localY(), support.absoluteY(), height)
+      val cy = coordinates.converter.coordinatesForY(support.y(), height)
 
       // Adjust for vertical
       val my = vertical() match {
@@ -179,43 +182,26 @@ class CoordinatesTag(coordinates: Coordinates, val t: HTMLTag) extends Listenabl
 }
 
 class CoordinatesSupport(t: HTMLTag) extends Listenable {
-  val localX = new Property[Int]()
-  val localY = new Property[Int]()
-  val absoluteX = new Property[Int]()
-  val absoluteY = new Property[Int]()
+  val x = new Property[Int]()
+  val y = new Property[Int]()
   val width = new Property[Int]()
   val height = new Property[Int]()
 
   t.eventReceived.on {
     case evt => if (evt.event == "coordinates") {
-      val lx = evt.message[Int]("localX")
-      val ly = evt.message[Int]("localY")
-      val ax = evt.message[Int]("absX")
-      val ay = evt.message[Int]("absY")
-      val w = evt.message[Int]("width")
-      val h = evt.message[Int]("height")
-      localX := lx
-      localY := ly
-      absoluteX := ax
-      absoluteY := ay
-      width := w
-      height := h
+      val ex = evt.message[Int]("x")
+      val ey = evt.message[Int]("y")
+      val ew = evt.message[Int]("width")
+      val eh = evt.message[Int]("height")
+      x := ex
+      y := ey
+      width := ew
+      height := eh
 
       Intercept.Stop
     } else {
       Intercept.Continue
     }
-  }
-
-  def absolute2LocalX(abs: Int) = {
-    val zero = absoluteX() - localX()
-    println(s"*** absolute2LocalX - AbsoluteX: ${absoluteX()}, LocalX: ${localX()}, Abs: $abs, Zero: $zero, AdjustedLocal: ${abs - zero}")
-    abs - zero
-  }
-
-  def absolute2LocalY(abs: Int) = {
-    val zero = absoluteY() - localY()
-    abs - zero
   }
 
   def check(batch: Boolean = false) = {

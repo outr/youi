@@ -88,6 +88,7 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication {
     val compliance = page(new HyperscalaExample(new ComplianceExample), Scope.Page, "/example/compliance.html")
     val coordinates = page(new HyperscalaExample(new CoordinatesExample), Scope.Page, "/example/coordinates.html")
     val jsrequest = page(new HyperscalaExample(new JSRequestExample), Scope.Page, "/example/jsrequest.html")
+    val bounding = page(new HyperscalaExample(new BoundingExample), Scope.Page, "/example/bounding.html")
     val svg = new {
       val basic = page(new HyperscalaExample(new BasicSVGExample), Scope.Page, "/example/svg/basic.html")
       val shapes = page(new HyperscalaExample(new SVGShapesExample), Scope.Page, "/example/svg/shapes.html")

@@ -1,0 +1,77 @@
+var bounding = {
+    entries: {},
+    monitor: function(selector, frequency) {
+        bounding.remove(selector);         // Make sure this id isn't already being monitored
+
+        var entry = {
+            frequency: frequency
+        };
+        bounding.entries[selector] = bounding;
+        entry.intervalId = setInterval(function() {
+            bounding.check(selector);
+        }, frequency);
+    },
+    check: function(selector) {
+        var entry = bounding.entries[selector];
+        var selection = $(selector);
+        if (selection.length > 0) {
+            selection.each(function() {     // Iterate over each entry
+                var element = $(this);
+
+                var localX = parseInt(element.css('left'));
+                var localY = parseInt(element.css('top'));
+                var absoluteX = element.offset().left;
+                var absoluteY = element.offset().top;
+                var width = element.outerWidth();
+                var height = element.outerHeight();
+
+                var json = {};
+                if (entry.localX != localX) {
+                    json.localX = localX;
+                }
+                if (entry.localY != localY) {
+                    json.localY = localY;
+                }
+                if (entry.absoluteX != absoluteX) {
+                    json.absoluteX = absoluteX;
+                }
+                if (entry.absoluteY != absoluteY) {
+                    json.absoluteY = absoluteY;
+                }
+                if (entry.width != width) {
+                    json.width = width;
+                }
+                if (entry.height != height) {
+                    json.height = height;
+                }
+                if (Object.keys(json).length > 0) {
+                    json.elementId = element.attr('id');
+
+                    realtimeSend(null, 'bounding', json);
+
+                    entry.localX = localX;
+                    entry.localY = localY;
+                    entry.absoluteX = absoluteX;
+                    entry.absoluteY = absoluteY;
+                    entry.width = width;
+                    entry.height = height;
+                }
+            });
+        } else {
+//            console.log('Selector ' + selector + ' has no elements.');
+//            monitor.remove(id);
+        }
+    },
+    remove: function(id) {
+        var entry = bounding.entries[id];
+        if (entry != null) {
+            var intervalId = entry.intervalId;
+            if (intervalId != null) {
+                clearInterval(intervalId);
+            }
+            bounding.entries[id] = null;
+        }
+    }
+};
+
+window.bounding = bounding;

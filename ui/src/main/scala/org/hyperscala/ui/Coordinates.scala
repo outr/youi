@@ -29,6 +29,24 @@ abstract class Coordinates extends Listenable with StorageComponent[CoordinatesT
   }
 }
 
+class CoordinatesOffsetFromCenter(offsetX: Double = 0.0, offsetY: Double = 0.0) extends Coordinates {
+  def coordinateX(ct: CoordinatesTag) = ct.b.absoluteX() - (WindowSize.width() / 2.0)
+
+  def coordinateY(ct: CoordinatesTag) = ct.b.absoluteY() - (WindowSize.height() / 2.0)
+
+  def localizeX(ct: CoordinatesTag) = ct.x() + (WindowSize.width() / 2.0)
+
+  def localizeY(ct: CoordinatesTag) = ct.y() + (WindowSize.height() / 2.0)
+
+  override protected def create(t: HTMLTag) = {
+    val ct = super.create(t)
+    WindowSize.width.change and WindowSize.height.change on {   // This coordinate system depends on WindowSize as well
+      case evt => ct.update()
+    }
+    ct
+  }
+}
+
 class CoordinatesTag(coordinates: Coordinates, val b: Bounding, val t: HTMLTag) extends Listenable {
   private val updatingCoordinates = new ThreadLocal[Boolean] {
     override def initialValue() = false
@@ -42,6 +60,38 @@ class CoordinatesTag(coordinates: Coordinates, val b: Bounding, val t: HTMLTag) 
   val manageX = new Property[Boolean](default = Option(false))
   val manageY = new Property[Boolean](default = Option(false))
   val enabled = new Property[Boolean](default = Some(true))
+
+  def left = horizontal() match {
+    case Horizontal.Left => x()
+    case Horizontal.Center => x() - (b.width() / 2.0)
+    case Horizontal.Right => x() - b.width()
+  }
+  def center = horizontal() match {
+    case Horizontal.Left => x() + (b.width() / 2.0)
+    case Horizontal.Center => x()
+    case Horizontal.Right => x() - (b.width() / 2.0)
+  }
+  def right = horizontal() match {
+    case Horizontal.Left => x() + b.width()
+    case Horizontal.Center => x() + (b.width() / 2.0)
+    case Horizontal.Right => x()
+  }
+
+  def top = vertical() match {
+    case Vertical.Top => y()
+    case Vertical.Middle => y() - (b.height() / 2.0)
+    case Vertical.Bottom => y() - b.height()
+  }
+  def middle = vertical() match {
+    case Vertical.Top => y() + (b.height() / 2.0)
+    case Vertical.Middle => y()
+    case Vertical.Bottom => y() - (b.height() / 2.0)
+  }
+  def bottom = vertical() match {
+    case Vertical.Top => y() + b.height()
+    case Vertical.Middle => y() + (b.height() / 2.0)
+    case Vertical.Bottom => y()
+  }
 
   b.localX.change and b.localY.change and b.absoluteX.change and b.absoluteY.change and b.width.change and b.height.change on {
     case evt => update()

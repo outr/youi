@@ -1,7 +1,7 @@
 package org.hyperscala.ui
 
 import org.hyperscala.module.Module
-import org.powerscala.{StorageComponent, Version}
+import org.powerscala.{Storage, StorageComponent, Version}
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.html.{tag, HTMLTag}
 import org.powerscala.event.{Intercept, Listenable}
@@ -22,7 +22,7 @@ object Bounding extends Module with StorageComponent[Bounding, HTMLTag] with Log
   val name = "bounding"
   val version = Version(1)
 
-  val modified = new UnitProcessor[BoundingEvent]("modified")
+  def modified = Webpage().store.getOrSet("boundingEvents", new UnitProcessor[BoundingEvent]("modified"))
 
   override def dependencies = List(Realtime)
 

@@ -53,23 +53,7 @@ class CoordinatesExample extends Example {
 
   Bounding.monitor(Selector.clazz("bounding"), 0.5)   // Monitor bounding div1 and div2
 
-  val coordinates = new Coordinates {
-    def coordinateX(ct: CoordinatesTag) = ct.b.absoluteX() - (WindowSize.width() / 2.0)
-
-    def coordinateY(ct: CoordinatesTag) = ct.b.absoluteY() - (WindowSize.height() / 2.0)
-
-    def localizeX(ct: CoordinatesTag) = ct.x() + (WindowSize.width() / 2.0)
-
-    def localizeY(ct: CoordinatesTag) = ct.y() + (WindowSize.height() / 2.0)
-
-    override protected def create(t: HTMLTag) = {
-      val ct = super.create(t)
-      WindowSize.width.change and WindowSize.height.change on {   // This coordinate system depends on WindowSize as well
-        case evt => ct.update()
-      }
-      ct
-    }
-  }
+  val coordinates = new CoordinatesOffsetFromCenter()
 
   val divc = coordinates(div)
   divc.horizontal := Horizontal.Center

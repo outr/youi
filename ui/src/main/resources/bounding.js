@@ -25,7 +25,13 @@ var bounding = {
                 }
 
                 var localX = parseInt(element.css('left'));
+                if (isNaN(localX)) {
+                    localX = 0;
+                }
                 var localY = parseInt(element.css('top'));
+                if (isNaN(localY)) {
+                    localY = 0;
+                }
                 var absoluteX = element.offset().left;
                 var absoluteY = element.offset().top;
                 var width = element.outerWidth();

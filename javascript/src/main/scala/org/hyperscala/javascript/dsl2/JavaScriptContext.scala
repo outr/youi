@@ -10,7 +10,7 @@ import org.powerscala.LocalStack
  * @author Matt Hicks <matt@outr.com>
  */
 abstract class JavaScriptContext extends Statement[JavaScriptContent] with DelayedInit {
-  private lazy val fields = getClass.fields.filterNot(f => f.name.contains("$") || f.name == "jsContext")
+  private lazy val fields = getClass.fields.filterNot(f => f.name.contains("$"))
   private lazy val variables = ListMap(fields.map(f => f[Any](this) -> f): _*)
   private var statements = List.empty[Statement[_]]
 
@@ -31,6 +31,17 @@ abstract class JavaScriptContext extends Statement[JavaScriptContent] with Delay
 
   protected def before(b: StringBuilder, depth: Int) = {}
   protected def write(b: StringBuilder, depth: Int): Unit = {
+    // Assign names to variables
+    variables.foreach {
+      case (value, field) => value match {
+        case v: Variable[_] => {
+          v.name = field.name
+          println(s"Assigning variable name: ${v.name} to $field")
+        }
+        case _ => // Ignore
+      }
+    }
+
     // Write variables out first
     variables.foreach {
       case (value, field) => value match {
@@ -53,10 +64,7 @@ abstract class JavaScriptContext extends Statement[JavaScriptContent] with Delay
       case s => variables.get(s) match {
         case Some(field) => {
           val output = s match {     // Output statement as field
-            case v: Variable[_] => {
-              v.name = field.name
-              v.content
-            }
+            case v: Variable[_] => v.content
             case c: JavaScriptContext => c.toJS(depth + 1)
             case _ => s.content
           }

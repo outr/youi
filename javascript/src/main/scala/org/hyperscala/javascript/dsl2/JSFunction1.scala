@@ -3,12 +3,11 @@ package org.hyperscala.javascript.dsl2
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-abstract class JSFunction2[P1, P2, R](name: String)(implicit manifest: Manifest[R]) extends JavaScriptContext {
+abstract class JSFunction1[P1, R](name: String)(implicit manifest: Manifest[R]) extends JavaScriptContext {
   val p1 = ExistingStatement[P1]("p1")
-  val p2 = ExistingStatement[P1]("p2")
 
   override protected def before(b: StringBuilder, depth: Int) = {
-    b.append(s"function(p1, p2) {\r\n")
+    b.append(s"function(p1) {\r\n")
   }
 
   override protected def write(b: StringBuilder, depth: Int) = super.write(b, depth + 1)
@@ -19,11 +18,11 @@ abstract class JSFunction2[P1, P2, R](name: String)(implicit manifest: Manifest[
 
   override def variable(v: Any) = if (v == p1) {
     Some("p1")
-  } else if (v == p2) {
-    Some("p2")
   } else {
     super.variable(v)
   }
 
   override protected def hasReturn = manifest.runtimeClass != Unit.getClass
+
+  def apply(p1: Statement[P1]) = WrappedStatement[R](s"$name(", p1, ")", sideEffects = true)
 }

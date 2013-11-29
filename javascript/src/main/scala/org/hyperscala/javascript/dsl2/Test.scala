@@ -8,7 +8,7 @@ object Test {
     val js = new JavaScriptContext {
       val a = v(5.3)
       a := 6.0
-      val b = Math.floor(a)
+      val b = v(Math.floor(a))
       b += 2.0
     }
     println(js.toJS())

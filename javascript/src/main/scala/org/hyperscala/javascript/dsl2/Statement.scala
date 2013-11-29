@@ -12,14 +12,14 @@ trait Statement[T] {
 
   JavaScriptContext.created(this)
 
-  def +(s: Statement[T]) = OperatorStatement[T](this, "+", s, enclose = true)
-  def +=(s: Statement[T]) = OperatorStatement[T](this, "+=", s, enclose = true, sideEffects = true)
+  def +(s: Statement[T]) = OperatorStatement[T](this, "+", s, enclose = false)
+  def +=(s: Statement[T]) = OperatorStatement[T](this, "+=", s, enclose = false, sideEffects = true)
   def -(s: Statement[T])(implicit ev: T =:= Double) = OperatorStatement[T](this, "-", s, enclose = true)
-  def -=(s: Statement[T])(implicit ev: T =:= Double) = OperatorStatement[T](this, "-=", s, enclose = true, sideEffects = true)
+  def -=(s: Statement[T])(implicit ev: T =:= Double) = OperatorStatement[T](this, "-=", s, enclose = false, sideEffects = true)
   def *(s: Statement[T])(implicit ev: T =:= Double) = OperatorStatement[T](this, "*", s, enclose = true)
-  def *=(s: Statement[T])(implicit ev: T =:= Double) = OperatorStatement[T](this, "*=", s, enclose = true, sideEffects = true)
+  def *=(s: Statement[T])(implicit ev: T =:= Double) = OperatorStatement[T](this, "*=", s, enclose = false, sideEffects = true)
   def /(s: Statement[T])(implicit ev: T =:= Double) = OperatorStatement[T](this, "/", s, enclose = true)
-  def /=(s: Statement[T])(implicit ev: T =:= Double) = OperatorStatement[T](this, "/=", s, enclose = true, sideEffects = true)
+  def /=(s: Statement[T])(implicit ev: T =:= Double) = OperatorStatement[T](this, "/=", s, enclose = false, sideEffects = true)
 
   def toJS = content
 }

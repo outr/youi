@@ -3,17 +3,25 @@ package org.hyperscala.javascript.dsl2
 import org.powerscala.reflect._
 import org.hyperscala.javascript.JavaScriptContent
 import scala.collection.immutable.ListMap
+import org.powerscala.LocalStack
 
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-abstract class JavaScriptContext extends Statement[JavaScriptContent] {
-  implicit val jsContext = this
-
+abstract class JavaScriptContext extends Statement[JavaScriptContent] with DelayedInit {
   private lazy val fields = getClass.fields.filterNot(f => f.name.contains("$") || f.name == "jsContext")
   private lazy val variables = ListMap(fields.map(f => f[Any](this) -> f): _*)
   private var statements = List.empty[Statement[_]]
+
+  def delayedInit(body: => Unit) = {
+    JavaScriptContext.stack.push(this)
+    try {
+      body
+    } finally {
+      JavaScriptContext.stack.pop(this)
+    }
+  }
 
   def variable(v: Any): Option[String] = {
     variables.get(v).map(f => f.name)
@@ -26,10 +34,10 @@ abstract class JavaScriptContext extends Statement[JavaScriptContent] {
     // Write variables out first
     variables.foreach {
       case (value, field) => value match {
-        case c: JavaScriptContext => {
-          val line = s"var ${field.name} = ${c.toJS(depth + 1)}"
-          writeLine(line, b, depth)
-        }
+//        case c: JavaScriptContext => {
+//          val line = s"var ${field.name} = ${c.toJS(depth + 1)}"
+//          writeLine(line, b, depth)
+//        }
         case s: Statement[_] => // Ignore statements
         case _ => {
           val line = s"var ${field.name} = ${JavaScriptContent.toJS(value)}"
@@ -91,24 +99,26 @@ abstract class JavaScriptContext extends Statement[JavaScriptContent] {
     b.toString()
   }
 
-  def context: JavaScriptContext = null
-
   def content = toJS()
 
   def sideEffects = false
 }
 
 object JavaScriptContext {
-  def created(s: Statement[_]) = if (s.context != null) {
-    s.context.statements = s :: s.context.statements
+  private val stack = new LocalStack[JavaScriptContext]
+
+  def current = stack.get()
+
+  def created(s: Statement[_]) = current match {
+    case Some(c) => c.statements = s :: c.statements
+    case None => // Not within a context
   }
 
-  def toJS(v: Any, context: JavaScriptContext) = if (context != null) {
-    context.variable(v) match {
+  def toJS(v: Any) = current match {
+    case Some(c) => c.variable(v) match {
       case Some(name) => name
       case None => JavaScriptContent.toJS(v)
     }
-  } else {
-    JavaScriptContent.toJS(v)
+    case None => JavaScriptContent.toJS(v)
   }
 }

@@ -1,9 +1,13 @@
 package org.hyperscala.javascript.dsl
 
+import org.hyperscala.html.HTMLTag
+
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-object window {
-  lazy val innerWidth = TypedStatement[Double]("window.innerWidth")
-  lazy val innerHeight = TypedStatement[Double]("window.innerHeight")
+object window extends DelayedStatement[HTMLTag] {
+  def toStatement = ExistingStatement[HTMLTag]("window")
+
+  def innerWidth = ExistingStatement[Double]("window.innerWidth")
+  def innerHeight = ExistingStatement[Double]("window.innerHeight")
 }

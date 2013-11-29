@@ -5,9 +5,9 @@ import org.powerscala.{StorageComponent, Version}
 import org.hyperscala.html.{tag, HTMLTag}
 import org.hyperscala.jquery.{jQueryComponent, jQuery}
 import org.hyperscala.web.{Webpage, Website}
-import org.hyperscala.javascript.{JSFunction1, JavaScriptString}
+import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.css.Style
-import org.hyperscala.javascript.dsl.Statement
+import org.hyperscala.javascript.dsl.{JSFunction1, Statement}
 
 /**
  * Changeable wraps existing elements to allow them to change an element relative to an
@@ -37,7 +37,7 @@ object Changeable extends Module with StorageComponent[Changeable, HTMLTag] {
   protected def create(t: HTMLTag) = new Changeable(t)
 
   private val f2js = (frequency: Double) => JavaScriptString(s"${(frequency * 1000.0).toInt}")
-  private val c2js = (list: List[Changing]) => {
+  private val c2js = (list: List[JSFunction1[Changes, Unit]]) => {
     JavaScriptString(list.map(f => f.content).mkString("[", ", ", "]"))
   }
 }
@@ -46,19 +46,12 @@ class Changeable private(val wrapped: HTMLTag) extends jQueryComponent {
   protected def functionName = "changeable"
 
   val frequency = property[Double]("frequency", 0.1, toJS = Changeable.f2js)
-  val changing = property[List[Changing]]("changing", Nil, toJS = Changeable.c2js)
+  val changing = property[List[JSFunction1[Changes, Unit]]]("changing", Nil, toJS = Changeable.c2js)
   val sendChanges = property[Boolean]("sendChanges", false)
 }
 
-trait Changing extends JSFunction1[Changes, Unit]
-
 object Changing {
-  def apply[T](style: Style[T], statement: Statement) = new JavaScriptString(
-    s"""
-      |function(changes) {
-      | changes.style.${style.cssName} = ${statement.content}
-      |}
-    """.stripMargin) with Changing
+  def apply[T](style: Style[T], statement: Statement[_]) = JSFunction1[Changes, Unit](s"changes.style.${style.cssName} = ${statement.content}")
 }
 
 case class Changes(attributes: Map[String, Any], style: Map[String, Any])

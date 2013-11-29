@@ -9,7 +9,7 @@ import org.hyperscala.jquery.jQuery
 import org.hyperscala.web.WrappedComponent
 import org.powerscala.event.Intercept
 import org.powerscala.property.Property
-import org.hyperscala.javascript.{JSFunction1, JavaScriptContent}
+import org.hyperscala.javascript.JavaScriptContent
 import org.hyperscala.{Container, IdentifiableTag}
 import org.hyperscala.html.attributes.ContentEditable
 import org.hyperscala.io.HTMLToScala
@@ -17,6 +17,7 @@ import org.hyperscala.css.Style
 import org.hyperscala.css.attributes.FontSize
 import org.hyperscala.ui.clipboard.{ClipType, Clipboard}
 import org.powerscala.enum.{Enumerated, EnumEntry}
+import org.hyperscala.javascript.dsl.JSFunction1
 
 /**
  * @author Matt Hicks <matt@outr.com>

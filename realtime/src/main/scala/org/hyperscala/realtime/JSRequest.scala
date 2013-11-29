@@ -4,11 +4,11 @@ import org.hyperscala.module.Module
 import org.powerscala.Version
 import org.hyperscala.web.{Webpage, Website}
 import org.hyperscala.html._
-import org.hyperscala.javascript.JSFunction0
 import org.powerscala.event.Intercept
 import org.hyperscala.{ResponseMessage, Unique}
 import org.powerscala.log.Logging
 import org.powerscala.reflect._
+import org.hyperscala.javascript.dsl.JSFunction0
 
 /**
  * JSRequest allows a JavaScript statement to be supplied, it is invoked in the browser, and the result is sent back to

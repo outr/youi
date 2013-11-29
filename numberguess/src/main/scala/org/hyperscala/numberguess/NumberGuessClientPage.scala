@@ -3,7 +3,7 @@ package org.hyperscala.numberguess
 import org.hyperscala.html._
 import org.hyperscala.web.Webpage
 
-import org.hyperscala.javascript.dsl2._
+import org.hyperscala.javascript.dsl._
 
 class NumberGuessClientPage extends Webpage {
 
@@ -20,15 +20,15 @@ object NumberGuessClientPage {
       val guessButton = document.getElementById[tag.Button]("guess")
       val resetButton = document.getElementById[tag.Button]("reset")
 
-      val generateSolution = new JSFunction0[Double]("generateSolution") {
+      val generateSolution = new JSFunction0[Double] {
         Math.floor((Math.random() * 100.0) + 1.0)
       }
 
-      val setMessage = new JSFunction1[String, Unit]("setMessage") {
+      val setMessage = new JSFunction1[String, Unit] {
 //        message.innerHTML := a
       }
 
-      val reset = new JSFunction0[Unit]("reset") {
+      val reset = new JSFunction0[Unit] {
         guesses := 0
         solution := generateSolution()
         setMessage("Guess a number between 0 and 100.")
@@ -37,7 +37,7 @@ object NumberGuessClientPage {
 //        resetButton.disabled := true
       }
 
-      val attempt = new JSFunction0[Unit]("attempt") {
+      val attempt = new JSFunction0[Unit] {
 
       }
 

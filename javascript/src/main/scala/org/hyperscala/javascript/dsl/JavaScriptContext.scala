@@ -1,4 +1,4 @@
-package org.hyperscala.javascript.dsl2
+package org.hyperscala.javascript.dsl
 
 import org.powerscala.reflect._
 import org.hyperscala.javascript.JavaScriptContent
@@ -36,7 +36,11 @@ abstract class JavaScriptContext extends Statement[JavaScriptContent] with Delay
       case (value, field) => value match {
         case v: Variable[_] => {
           v.name = field.name
-          println(s"Assigning variable name: ${v.name} to $field")
+//          println(s"Assigning variable name: ${v.name} to $field")
+        }
+        case f: JSFunction[_] => {
+          f.name = field.name
+//          println(s"Assigning function name: ${f.name} to $field")
         }
         case _ => // Ignore
       }

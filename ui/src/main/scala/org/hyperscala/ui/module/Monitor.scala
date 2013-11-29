@@ -5,13 +5,13 @@ import org.powerscala.Version
 import org.hyperscala.realtime.{RealtimePage, Realtime}
 import org.hyperscala.web.{Webpage, Website}
 import org.hyperscala.html.{HTMLTag, tag}
-import org.hyperscala.javascript.JSFunction0
 import org.powerscala.property.Property
 import org.hyperscala.{PropertyAttribute, ResponseMessage, Unique}
 import org.hyperscala.persistence.ValuePersistence
 import org.hyperscala.css.StyleSheetAttribute
 
 import org.hyperscala.realtime.dsl._
+import org.hyperscala.javascript.dsl.JSFunction0
 
 /**
  * Monitor allows arbitrary JavaScript to be monitored for a changing result at a specific interval and to send that data

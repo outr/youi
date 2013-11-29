@@ -1,11 +1,10 @@
 package org.hyperscala.realtime
 
 import org.hyperscala.event.{KeyboardEvent, Key}
-import org.hyperscala.javascript.{JSFunction0, JavaScriptString, JSFunction1}
 import org.hyperscala.selector.{StringSelector, Selector}
 import org.hyperscala.css.StyleSheetAttribute
 import org.hyperscala.PropertyAttribute
-import org.hyperscala.javascript.dsl.Statement
+import org.hyperscala.javascript.dsl.{JSFunction0, JSFunction1, Statement}
 
 import scala.language.implicitConversions
 
@@ -13,7 +12,7 @@ import scala.language.implicitConversions
  * @author Matt Hicks <matt@outr.com>
  */
 package object dsl {
-  implicit def statement2RealtimeStatement(statement: Statement) = RealtimeStatement(statement)
+  implicit def statement2RealtimeStatement(statement: Statement[_]) = RealtimeStatement(statement)
 
   val window = StringSelector("window")
   val body = StringSelector("body")
@@ -45,20 +44,32 @@ package object dsl {
     checkConditional(metaKey, "metaKey")
     checkConditional(shiftKey, "shiftKey")
     conditional.append(")")
-    new JavaScriptString(s"function(e) { ${conditional.toString()} { ${callback.content} return ${!stopPropagation}; } }") with JSFunction1[KeyboardEvent, Boolean]
+    JSFunction1[KeyboardEvent, Boolean](s"${conditional.toString()} { ${callback.content} return ${!stopPropagation}; }")
   }
 
   def onCSS[T](selector: Selector, attribute: StyleSheetAttribute[T]) = {
     val key = attribute.name
-    new JavaScriptString(s"function() { return $$('${selector.value}').css('$key'); }") with JSFunction0[T]
+    JSFunction0[T](s"return $$('${selector.value}').css('$key');")(attribute.manifest)
   }
 
   def onAttribute[T](selector: Selector, attribute: PropertyAttribute[T]) = {
     val key = attribute.name
-    new JavaScriptString(s"function() { return $$('${selector.value}').attr('$key'); }") with JSFunction0[T]
+    JSFunction0[T](s"return $$('${selector.value}').attr('$key');")(attribute.manifest)
   }
 
-  def addClass(selector: Selector, className: String) = AddClassJavaScriptFunction(selector, className)
+  def addClass(selector: Selector, className: String) = {
+    val js =
+      """
+        |if (b) {
+        | $$(${selector.value}).addClass('$className');
+        |} else {
+        | $$(${selector.value}).removeClass('$className');
+        |}
+      """.stripMargin
+    JSFunction1[Boolean, Unit](js)
+  }
 
-  def setValue(selector: Selector) = SetValueJavaScriptFunction(selector)
+  def setValue(selector: Selector) = {
+    JSFunction1[String, Unit](s"$$(${selector.value}).val(value);")
+  }
 }

@@ -7,7 +7,7 @@ import org.hyperscala.examples.Example
 import language.reflectiveCalls
 import org.hyperscala.realtime.Realtime
 import org.powerscala.Color
-import org.hyperscala.ui.wrapped.{Changing, Changeable}
+import org.hyperscala.ui.wrapped.{Changes, Changing, Changeable}
 import org.hyperscala.css.attributes.Position
 import org.hyperscala.javascript.dsl._
 import org.hyperscala.jquery.dsl._
@@ -31,8 +31,8 @@ class ChangeableExample extends Example {
   div.style.backgroundColor := Color.LightBlue
   contents += div
 
-  var horizontal: Changing = HorizontalCenter
-  var vertical: Changing = VerticalMiddle
+  var horizontal: JSFunction1[Changes, Unit] = HorizontalCenter
+  var vertical: JSFunction1[Changes, Unit] = VerticalMiddle
 
   val changeable = Changeable(div)
   changeable.frequency := 0.1
@@ -82,7 +82,7 @@ class ChangeableExample extends Example {
     }
   }
 
-  def updatePositioning(x: Changing = null, y: Changing = null) = {
+  def updatePositioning(x: JSFunction1[Changes, Unit] = null, y: JSFunction1[Changes, Unit] = null) = {
     if (x != null) {
       horizontal = x
     }

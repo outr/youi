@@ -1,4 +1,4 @@
-package org.hyperscala.javascript.dsl2
+package org.hyperscala.javascript.dsl
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -13,8 +13,8 @@ object Test {
     }
     println(js.toJS())
     val js2 = new JavaScriptContext {
-      val f1 = new JSFunction2[Double, Double, Double]("add") {
-        val f2 = new JSFunction2[String, String, String]("concat") {
+      val f1 = new JSFunction2[Double, Double, Double] {
+        val f2 = new JSFunction2[String, String, String] {
           p1 + p2
         }
 

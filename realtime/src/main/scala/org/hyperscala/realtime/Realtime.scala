@@ -144,7 +144,7 @@ object Realtime extends Module with Logging {
     sendJavaScript("window.location.href = content;", url, onlyRealtime = false)
   }
 
-  def send(statement: Statement, selector: Selector = null, onlyRealtime: Boolean = false) = {
+  def send(statement: Statement[_], selector: Selector = null, onlyRealtime: Boolean = false) = {
     Realtime.sendJavaScript(statement.content, selector = selector, onlyRealtime = onlyRealtime)
   }
 

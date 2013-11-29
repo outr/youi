@@ -21,7 +21,7 @@ trait jQueryComponent extends WrappedComponent[HTMLTag] {
 
   protected def functionName: String
 
-  private def send(statement: Statement) = Realtime.send(statement, selector.selector)
+  private def send(statement: Statement[_]) = Realtime.send(statement, selector.selector)
 
   protected def initializeComponent(values: Map[String, Any]) = {
     send(selector.call(functionName, values))

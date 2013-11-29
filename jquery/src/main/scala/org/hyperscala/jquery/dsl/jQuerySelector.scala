@@ -1,16 +1,17 @@
 package org.hyperscala.jquery.dsl
 
 import org.hyperscala.selector.Selector
-import org.hyperscala.javascript.dsl.TypedStatement
+import org.hyperscala.javascript.dsl.{JSFunction1, WrappedStatement, ExistingStatement, Statement}
 import org.hyperscala.css.Style
-import org.hyperscala.javascript.{JSFunction1, JavaScriptContent}
+import org.hyperscala.javascript.JavaScriptContent
 import org.hyperscala.event.KeyboardEvent
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class jQuerySelector(val selector: Selector) extends TypedStatement[Selector] {
+class jQuerySelector(val selector: Selector) extends Statement[Selector] {
   def content = s"$$(${selector.content})"
+  def sideEffects = false
 
   def scrollTop(offset: Int) = call(s"scrollTop($offset)")
 
@@ -20,34 +21,34 @@ class jQuerySelector(val selector: Selector) extends TypedStatement[Selector] {
   def select() = call("select()")
   def submit() = call("submit()")
 
-  def width() = TypedStatement[Double](s"$content.width()")
-  def height() = TypedStatement[Double](s"$content.height()")
+  def width() = ExistingStatement[Double](s"$content.width()")
+  def height() = ExistingStatement[Double](s"$content.height()")
 
   def keyDown(f: JSFunction1[KeyboardEvent, Boolean]) = {
-    TypedStatement[Unit](s"$content.keydown(${f.content})")
+    WrappedStatement[Unit](s"$content.keydown(", f, ")", sideEffects = true)
   }
 
   def keyPress(f: JSFunction1[KeyboardEvent, Boolean]) = {
-    TypedStatement[Unit](s"$content.keypress(${f.content})")
+    WrappedStatement[Unit](s"$content.keypress(", f, ")", sideEffects = true)
   }
 
   def keyUp(f: JSFunction1[KeyboardEvent, Boolean]) = {
-    TypedStatement[Unit](s"$content.keyup(${f.content})")
+    WrappedStatement[Unit](s"$content.keyp(", f, ")", sideEffects = true)
   }
 
-  def value[T]() = TypedStatement[T](s"$content.val()")
-  def value[T](s: TypedStatement[T]) = TypedStatement[T](s"$content.val(${s.content}})")
+  def value[T]() = ExistingStatement[T](s"$content.val()")
+  def value[T](s: Statement[T]) = WrappedStatement[T](s"$content.val(", s, ")", sideEffects = true)
 
   def offset() = new jQueryOffset(this)
   def position() = new jQueryPosition(this)
 
-  def css[S](style: Style[S]) = TypedStatement(s"$content.css('${style.cssName}')")
+  def css[S](style: Style[S]) = ExistingStatement[S](s"$content.css('${style.cssName}')")
 
-  def css[S](style: Style[S], value: S) = TypedStatement(s"$content.css('${style.cssName}', ${JavaScriptContent.toJS(value)})")
+  def css[S](style: Style[S], value: Statement[S]) = WrappedStatement[S](s"$content.css('${style.cssName}', ", value, ")", sideEffects = true)
 
-  def call(function: String): TypedStatement[Unit] = TypedStatement[Unit](s"$content.$function")
+  def call(function: String): Statement[Unit] = ExistingStatement[Unit](s"$content.$function", sideEffects = true)
 
-  def call(functionName: String, values: Map[String, Any]): TypedStatement[Unit] = {
+  def call(functionName: String, values: Map[String, Any]): Statement[Unit] = {
     val function = if (values.nonEmpty) {
       val body = values.map {
         case (key, value) => s"\t$key: ${JavaScriptContent.toJS(value)}"
@@ -78,11 +79,11 @@ class jQuerySelector(val selector: Selector) extends TypedStatement[Selector] {
 }
 
 class jQueryOffset(jqs: jQuerySelector) {
-  lazy val left = TypedStatement[Double](s"${jqs.content}.offset().left")
-  lazy val top = TypedStatement[Double](s"${jqs.content}.offset().top")
+  lazy val left = ExistingStatement[Double](s"${jqs.content}.offset().left")
+  lazy val top = ExistingStatement[Double](s"${jqs.content}.offset().top")
 }
 
 class jQueryPosition(jqs: jQuerySelector) {
-  lazy val left = TypedStatement[Double](s"${jqs.content}.position().left")
-  lazy val top = TypedStatement[Double](s"${jqs.content}.position().top")
+  lazy val left = ExistingStatement[Double](s"${jqs.content}.position().left")
+  lazy val top = ExistingStatement[Double](s"${jqs.content}.position().top")
 }

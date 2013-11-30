@@ -21,4 +21,6 @@ package object dsl {
 
   def s(s: String) = string2Statement(s)
   def v[T](initialValue: Statement[T] = null) = new Variable[T](initialValue)
+
+  def parseInt[T](s: Statement[T]) = WrappedStatement[Double]("parseInt(", s, ")", sideEffects = false)
 }

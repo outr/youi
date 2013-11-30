@@ -7,6 +7,7 @@ import org.powerscala.event.Listenable
 import org.powerscala.property.Property
 import org.hyperscala.css.attributes._
 import org.hyperscala.Unique
+import org.powerscala.log.Logging
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -18,11 +19,11 @@ abstract class Coordinates extends Listenable with StorageComponent[CoordinatesT
 
   override protected def componentIdentifier = s"coordinates-$id"
 
-  def coordinateX(ct: CoordinatesTag): Double
-  def coordinateY(ct: CoordinatesTag): Double
+  def coordinateX(local: Double, absolute: Double, width: Double): Double
+  def coordinateY(local: Double, absolute: Double, height: Double): Double
 
-  def localizeX(ct: CoordinatesTag): Double
-  def localizeY(ct: CoordinatesTag): Double
+  def localizeX(x: Double, ct: CoordinatesTag): Double
+  def localizeY(y: Double, ct: CoordinatesTag): Double
 
   protected def create(t: HTMLTag) = synchronized {
     new CoordinatesTag(this, Bounding(t), t)
@@ -30,13 +31,13 @@ abstract class Coordinates extends Listenable with StorageComponent[CoordinatesT
 }
 
 class CoordinatesOffsetFromCenter(offsetX: Double = 0.0, offsetY: Double = 0.0) extends Coordinates {
-  def coordinateX(ct: CoordinatesTag) = ct.b.absoluteX() - (WindowSize.width() / 2.0)
+  def coordinateX(local: Double, absolute: Double, width: Double) = absolute - (WindowSize.width() / 2.0)
 
-  def coordinateY(ct: CoordinatesTag) = ct.b.absoluteY() - (WindowSize.height() / 2.0)
+  def coordinateY(local: Double, absolute: Double, height: Double) = absolute - (WindowSize.height() / 2.0)
 
-  def localizeX(ct: CoordinatesTag) = ct.x() + (WindowSize.width() / 2.0)
+  def localizeX(x: Double, ct: CoordinatesTag) = x + (WindowSize.width() / 2.0)
 
-  def localizeY(ct: CoordinatesTag) = ct.y() + (WindowSize.height() / 2.0)
+  def localizeY(y: Double, ct: CoordinatesTag) = y + (WindowSize.height() / 2.0)
 
   override protected def create(t: HTMLTag) = {
     val ct = super.create(t)
@@ -47,7 +48,7 @@ class CoordinatesOffsetFromCenter(offsetX: Double = 0.0, offsetY: Double = 0.0) 
   }
 }
 
-class CoordinatesTag(coordinates: Coordinates, val b: Bounding, val t: HTMLTag) extends Listenable {
+class CoordinatesTag(coordinates: Coordinates, val b: Bounding, val t: HTMLTag) extends Listenable with Logging {
   private val updatingCoordinates = new ThreadLocal[Boolean] {
     override def initialValue() = false
   }
@@ -99,13 +100,11 @@ class CoordinatesTag(coordinates: Coordinates, val b: Bounding, val t: HTMLTag) 
 
   x.change.on {
     case evt => if (!isUpdatingCoordinates) {
-      manageX := true
       update()
     }
   }
   y.change.on {
     case evt => if (!isUpdatingCoordinates) {
-      manageY := true
       update()
     }
   }
@@ -119,23 +118,56 @@ class CoordinatesTag(coordinates: Coordinates, val b: Bounding, val t: HTMLTag) 
     case evt => update()
   }
 
+  update()
+
+  t.data("manage-x") match {      // See if this is already a managed element
+    case Some(v) => {
+      manageX := v == "true"
+      try {
+        x := t.data("x").get.toDouble
+      } catch {
+        case exc: Throwable => warn(s"Unable to set x from data-x: ${t.data("x")}")
+      }
+    }
+    case None => // Ignore
+  }
+
+  t.data("manage-y") match {      // See if this is already a managed element
+    case Some(v) => {
+      manageY := v == "true"
+      try {
+        y := t.data("y").get.toDouble
+      } catch {
+        case exc: Throwable => warn(s"Unable to set y from data-y: ${t.data("y")}")
+      }
+    }
+    case None => // Ignore
+  }
+
   def update() = if (enabled()) {
+    t.data("manage-x", manageX().toString)
+    t.data("manage-y", manageY().toString)
     if (manageX()) {
-      updateElementX()
+      updateElementX(x(), horizontal())
     } else {
       updateCoordinatesX()
     }
     if (manageY()) {
-      updateElementY()
+      updateElementY(y(), vertical())
     } else {
       updateCoordinatesY()
     }
   }
 
+  def set(x: Double, y: Double, horizontal: Horizontal, vertical: Vertical) = {
+    updateElementX(x, horizontal)
+    updateElementY(y, vertical)
+  }
+
   private def updateCoordinatesX() = {
     updatingCoordinates.set(true)
     try {
-      val cx = coordinates.coordinateX(this)
+      val cx = coordinates.coordinateX(b.localX(), b.absoluteX(), b.width())
       val ux = horizontal() match {
         case Horizontal.Left => cx
         case Horizontal.Center => cx + (b.width() / 2.0)
@@ -150,7 +182,7 @@ class CoordinatesTag(coordinates: Coordinates, val b: Bounding, val t: HTMLTag) 
   private def updateCoordinatesY() = {
     updatingCoordinates.set(true)
     try {
-      val cy = coordinates.coordinateY(this)
+      val cy = coordinates.coordinateY(b.localY(), b.absoluteY(), b.height())
       val uy = vertical() match {
         case Vertical.Top => cy
         case Vertical.Middle => cy + (b.height() / 2.0)
@@ -162,35 +194,41 @@ class CoordinatesTag(coordinates: Coordinates, val b: Bounding, val t: HTMLTag) 
     }
   }
 
-  private def updateElementX() = {
-    val lx = math.round(coordinates.localizeX(this)).toInt
-    val ux = horizontal() match {
+  private def updateElementX(x: Double, horizontal: Horizontal) = {
+    t.data("x", x.toString)
+    val lx = math.round(coordinates.localizeX(x, this))
+    val ux = horizontal match {
       case Horizontal.Left => lx
       case Horizontal.Center => lx - (b.width() / 2.0)
       case Horizontal.Right => lx - b.width()
     }
-    val localX = if (t.style.position() == Position.Absolute) {
-      ux
-    } else {
-      val adjustment = b.localX() - b.absoluteX()
-      ux + adjustment
-    }
+//    val localX = if (t.style.position() == Position.Absolute) {
+//      ux
+//    } else {
+//      b.absolute2LocalX(ux)
+////      val adjustment = b.localX() - b.absoluteX()
+////      ux + adjustment
+//    }
+    val localX = b.absolute2LocalX(ux)
     t.style.left(Length.Pixels(math.round(localX).toInt))
   }
 
-  private def updateElementY() = {
-    val ly = math.round(coordinates.localizeY(this)).toInt
-    val uy = vertical() match {
+  private def updateElementY(y: Double, vertical: Vertical) = {
+    t.data("y", y.toString)
+    val ly = math.round(coordinates.localizeY(y, this))
+    val uy = vertical match {
       case Vertical.Top => ly
       case Vertical.Middle => ly - (b.height() / 2.0)
       case Vertical.Bottom => ly - b.height()
     }
-    val localY = if (t.style.position() == Position.Absolute) {
-      uy
-    } else {
-      val adjustment = b.localY() - b.absoluteY()
-      uy + adjustment
-    }
+    val localY = b.absolute2LocalY(uy)
+//    val localY = if (t.style.position() == Position.Absolute) {
+//      uy
+//    } else {
+//      b.absolute2LocalY(uy)
+////      val adjustment = b.localY() - b.absoluteY()
+////      uy + adjustment
+//    }
     t.style.top(Length.Pixels(math.round(localY).toInt))
   }
 }

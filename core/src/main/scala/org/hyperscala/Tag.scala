@@ -2,7 +2,7 @@ package org.hyperscala
 
 import event.TagCreated
 import persistence._
-import org.powerscala.{TypeFilteredIterator, Storage}
+import org.powerscala.TypeFilteredIterator
 import org.powerscala.hierarchy.ParentLike
 import org.powerscala.hierarchy.event.StandardHierarchyEventProcessor
 import org.jdom2.Attribute
@@ -144,7 +144,10 @@ trait Tag extends Markup with AttributeContainer[PropertyAttribute[_]] {
     case None => createAttribute[String](s"data-$name", null)
   }
 
-  def data(name: String) = getAttribute(s"data-$name").map(pa => pa.asInstanceOf[PropertyAttribute[String]].value)
+  def data(name: String) = getAttribute(s"data-$name") match {
+    case Some(pa) => Option(pa.asInstanceOf[PropertyAttribute[String]].value)
+    case None => None
+  }
 
   def data(name: String, value: String) = dataAttribute(name).value = value
 

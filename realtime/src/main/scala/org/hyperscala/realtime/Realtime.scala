@@ -137,7 +137,7 @@ object Realtime extends Module with Logging {
    * @param delay optionally specifies a delay before the instruction is invoked
    */
   def sendJavaScript(instruction: String, content: String = null, selector: Selector = null, onlyRealtime: Boolean = true, delay: Int = 0): Unit = {
-    info(s"sendJavaScript: $instruction")
+    debug(s"sendJavaScript: $instruction")
     broadcast("eval", JavaScriptMessage(instruction, content, selector, delay), sendWhenConnected = !onlyRealtime)
   }
 

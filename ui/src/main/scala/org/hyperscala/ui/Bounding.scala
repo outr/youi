@@ -1,7 +1,7 @@
 package org.hyperscala.ui
 
 import org.hyperscala.module.Module
-import org.powerscala.{Storage, StorageComponent, Version}
+import org.powerscala.{StorageComponent, Version}
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.html.{tag, HTMLTag}
 import org.powerscala.event.{Intercept, Listenable}
@@ -69,12 +69,32 @@ object Bounding extends Module with StorageComponent[Bounding, HTMLTag] with Log
 
 class Bounding(val tag: HTMLTag) extends Listenable {
   // TODO: create ReadableProperty that cannot be modified
-  val localX = Property[Double]()
-  val localY = Property[Double]()
-  val absoluteX = Property[Double]()
-  val absoluteY = Property[Double]()
-  val width = Property[Double]()
-  val height = Property[Double]()
+  val localX = Property[Double](default = Some(0.0))
+  val localY = Property[Double](default = Some(0.0))
+  val absoluteX = Property[Double](default = Some(0.0))
+  val absoluteY = Property[Double](default = Some(0.0))
+  val width = Property[Double](default = Some(0.0))
+  val height = Property[Double](default = Some(0.0))
+
+  def local2AbsoluteX(local: Double) = {
+    val diff = absoluteX() - localX()
+    local + diff
+  }
+
+  def local2AbsoluteY(local: Double) = {
+    val diff = absoluteY() - localY()
+    local + diff
+  }
+
+  def absolute2LocalX(absolute: Double) = {
+    val diff = absoluteX() - localX()
+    absolute - diff
+  }
+
+  def absolute2LocalY(absolute: Double) = {
+    val diff = absoluteY() - localY()
+    absolute - diff
+  }
 
   protected def set(evt: EventReceived, propertyName: String, property: Property[Double]) = evt.message.get[Double](propertyName) match {
     case Some(v) => {

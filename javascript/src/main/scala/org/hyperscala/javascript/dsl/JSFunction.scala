@@ -31,8 +31,8 @@ abstract class JSFunction0[R](implicit val manifest: Manifest[R]) extends JSFunc
 }
 
 object JSFunction0 {
-  def apply[R](content: String)(implicit manifest: Manifest[R]) = new JSFunction0[R] {
-    override def toJS(depth: Int) = content
+  def apply[R](js: String)(implicit manifest: Manifest[R]) = new JSFunction0[R] {
+    override def toJS(depth: Int) = s"return $js"
   }
 }
 

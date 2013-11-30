@@ -33,7 +33,7 @@ class jQuerySelector(val selector: Selector) extends Statement[Selector] {
   }
 
   def keyUp(f: JSFunction1[KeyboardEvent, Boolean]) = {
-    WrappedStatement[Unit](s"$content.keyp(", f, ")", sideEffects = true)
+    WrappedStatement[Unit](s"$content.keyup(", f, ")", sideEffects = true)
   }
 
   def value[T]() = ExistingStatement[T](s"$content.val()")

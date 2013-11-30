@@ -32,7 +32,9 @@ abstract class JSFunction0[R](implicit val manifest: Manifest[R]) extends JSFunc
 
 object JSFunction0 {
   def apply[R](js: String)(implicit manifest: Manifest[R]) = new JSFunction0[R] {
-    override def toJS(depth: Int) = s"return $js"
+    override protected def write(b: StringBuilder, depth: Int) = {
+      writeLine(js, b, depth)
+    }
   }
 }
 
@@ -53,8 +55,10 @@ abstract class JSFunction1[P1, R](implicit val manifest: Manifest[R]) extends JS
 }
 
 object JSFunction1 {
-  def apply[P1, R](content: String)(implicit manifest: Manifest[R]) = new JSFunction1[P1, R] {
-    override def toJS(depth: Int) = content
+  def apply[P1, R](js: String)(implicit manifest: Manifest[R]) = new JSFunction1[P1, R] {
+    override protected def write(b: StringBuilder, depth: Int) = {
+      writeLine(js, b, depth)
+    }
   }
 }
 
@@ -80,7 +84,9 @@ abstract class JSFunction2[P1, P2, R](implicit val manifest: Manifest[R]) extend
 }
 
 object JSFunction2 {
-  def apply[P1, P2, R](content: String)(implicit manifest: Manifest[R]) = new JSFunction2[P1, P2, R] {
-    override def toJS(depth: Int) = content
+  def apply[P1, P2, R](js: String)(implicit manifest: Manifest[R]) = new JSFunction2[P1, P2, R] {
+    override protected def write(b: StringBuilder, depth: Int) = {
+      writeLine(js, b, depth)
+    }
   }
 }

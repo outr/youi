@@ -98,12 +98,12 @@ object ChangeableExample {
   val logo = $("#logo")
 
   val HorizontalLeft = Changing(Style.left, 0.px)
-  val HorizontalCenter = Changing(Style.left, ((window.innerWidth - myDiv.width()) / 2) + "px")
-  val HorizontalRight = Changing(Style.left, (window.innerWidth - myDiv.width()) + "px")
+  val HorizontalCenter = Changing(Style.left, (window.innerWidth - myDiv.width()) / 2)
+  val HorizontalRight = Changing(Style.left, window.innerWidth - myDiv.width())
 
   val VerticalTop = Changing(Style.top, 0.px)
-  val VerticalMiddle = Changing(Style.top, ((window.innerHeight - myDiv.height()) / 2) + "px")
-  val VerticalBottom = Changing(Style.top, (window.innerHeight - myDiv.height()) + "px")
+  val VerticalMiddle = Changing(Style.top, (window.innerHeight - myDiv.height()) / 2)
+  val VerticalBottom = Changing(Style.top, window.innerHeight - myDiv.height())
 
   val VerticalUnderLogo = Changing(Style.top, logo.offset().top + logo.height())
   val HorizontalLeftLogo = Changing(Style.left, logo.offset().left)

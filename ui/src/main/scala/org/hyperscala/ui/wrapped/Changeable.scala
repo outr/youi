@@ -51,7 +51,7 @@ class Changeable private(val wrapped: HTMLTag) extends jQueryComponent {
 }
 
 object Changing {
-  def apply[T](style: Style[T], statement: Statement[_]) = JSFunction1[Changes, Unit](s"changes.style.${style.cssName} = ${statement.content}")
+  def apply[T](style: Style[T], statement: Statement[_]) = JSFunction1[Changes, Unit](s"p1.style.${style.cssName} = ${statement.content}")
 }
 
 case class Changes(attributes: Map[String, Any], style: Map[String, Any])

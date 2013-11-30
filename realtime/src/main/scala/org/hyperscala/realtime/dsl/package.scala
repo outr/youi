@@ -26,7 +26,7 @@ package object dsl {
     val store = CallbackStore()
     val callback = store.createCallback(() => f)
     val conditional = new StringBuilder
-    conditional.append("if (e.keyCode == ")
+    conditional.append("if (p1.keyCode == ")
     conditional.append(key.code)
     def checkConditional(checkOption: Option[Boolean], name: String) = checkOption match {
       case Some(check) => {
@@ -34,7 +34,7 @@ package object dsl {
         if (!check) {
           conditional.append("!")
         }
-        conditional.append("e.")
+        conditional.append("p1.")
         conditional.append(name)
       }
       case None => // Don't add anything, we don't care

@@ -62,6 +62,18 @@ class CoordinatesTag(coordinates: Coordinates, val b: Bounding, val t: HTMLTag) 
   val manageY = new Property[Boolean](default = Option(false))
   val enabled = new Property[Boolean](default = Some(true))
 
+  def apply(horizontal: Horizontal) = horizontal match {
+    case Horizontal.Left => left
+    case Horizontal.Center => center
+    case Horizontal.Right => right
+  }
+
+  def apply(vertical: Vertical) = vertical match {
+    case Vertical.Top => top
+    case Vertical.Middle => middle
+    case Vertical.Bottom => bottom
+  }
+
   def left = horizontal() match {
     case Horizontal.Left => x()
     case Horizontal.Center => x() - (b.width() / 2.0)
@@ -164,31 +176,33 @@ class CoordinatesTag(coordinates: Coordinates, val b: Bounding, val t: HTMLTag) 
     updateElementY(y, vertical)
   }
 
-  private def updateCoordinatesX() = {
-    updatingCoordinates.set(true)
-    try {
-      val cx = coordinates.coordinateX(b.localX(), b.absoluteX(), b.width())
-      val ux = horizontal() match {
-        case Horizontal.Left => cx
-        case Horizontal.Center => cx + (b.width() / 2.0)
-        case Horizontal.Right => cx + b.width()
-      }
-      x := ux
-    } finally {
-      updatingCoordinates.set(false)
+  private def updateCoordinatesX() = doUpdate {
+    val cx = coordinates.coordinateX(b.localX(), b.absoluteX(), b.width())
+    val ux = horizontal() match {
+      case Horizontal.Left => cx
+      case Horizontal.Center => cx + (b.width() / 2.0)
+      case Horizontal.Right => cx + b.width()
     }
+    x := ux
   }
 
-  private def updateCoordinatesY() = {
+  private def updateCoordinatesY() = doUpdate {
+    val cy = coordinates.coordinateY(b.localY(), b.absoluteY(), b.height())
+    val uy = vertical() match {
+      case Vertical.Top => cy
+      case Vertical.Middle => cy + (b.height() / 2.0)
+      case Vertical.Bottom => cy + b.height()
+    }
+    y := uy
+  }
+
+  private def doUpdate[T](f: => T): T = {
+    if (isUpdatingCoordinates) {
+      throw new RuntimeException("Cannot stack updates!")
+    }
     updatingCoordinates.set(true)
     try {
-      val cy = coordinates.coordinateY(b.localY(), b.absoluteY(), b.height())
-      val uy = vertical() match {
-        case Vertical.Top => cy
-        case Vertical.Middle => cy + (b.height() / 2.0)
-        case Vertical.Bottom => cy + b.height()
-      }
-      y := uy
+      f
     } finally {
       updatingCoordinates.set(false)
     }
@@ -196,6 +210,9 @@ class CoordinatesTag(coordinates: Coordinates, val b: Bounding, val t: HTMLTag) 
 
   private def updateElementX(x: Double, horizontal: Horizontal) = {
     t.data("x", x.toString)
+    doUpdate {
+      this.x := x     // TODO: adjust for horizontal
+    }
     val lx = math.round(coordinates.localizeX(x, this))
     val ux = horizontal match {
       case Horizontal.Left => lx
@@ -215,6 +232,9 @@ class CoordinatesTag(coordinates: Coordinates, val b: Bounding, val t: HTMLTag) 
 
   private def updateElementY(y: Double, vertical: Vertical) = {
     t.data("y", y.toString)
+    doUpdate {
+      this.y := y     // TODO: adjust for vertical
+    }
     val ly = math.round(coordinates.localizeY(y, this))
     val uy = vertical match {
       case Vertical.Top => ly

@@ -36,6 +36,22 @@ class CoordinatesExample extends Example {
   div2.style.paddingAll(10.px)
   contents += div2
 
+  val div3 = new tag.Div(id = "div3", clazz = List("bounding"), content = new tag.H2(id = "content3", content = "Floating Div"))
+  div3.style.position := Position.Absolute
+  div3.style.width := 125.px
+  div3.style.height := 125.px
+  div3.style.backgroundColor := Color.Green
+  div3.style.color := Color.White
+  div3.style.paddingAll(10.px)
+
+  contents += new tag.Div {
+    style.position := Position.Relative
+    style.top := 50.px
+    style.left := 0.px
+
+    contents += div3
+  }
+
   val centerDiv = new tag.Div(id = "centerDiv") {
     style.position := Position.Absolute
     style.width := 6.px
@@ -67,6 +83,8 @@ class CoordinatesExample extends Example {
   divc2.horizontal := Horizontal.Right
   divc2.x := 480.0
 
+  val divc3 = coordinates(div3)
+
   contents += new tag.Button(content = "Horizontal.Left") {
     clickEvent := RealtimeEvent()
     clickEvent.on {
@@ -83,6 +101,22 @@ class CoordinatesExample extends Example {
     clickEvent := RealtimeEvent()
     clickEvent.on {
       case evt => divc.horizontal := Horizontal.Right
+    }
+  }
+
+  contents += new tag.Button(content = "Center Float Div") {
+    clickEvent := RealtimeEvent()
+    clickEvent.on {
+      case evt => {
+        divc3.set(0.0, 0.0, Horizontal.Center, Vertical.Middle)
+      }
+    }
+  }
+
+  contents += new tag.Button(content = "Position Information") {
+    clickEvent := RealtimeEvent()
+    clickEvent.on {
+      case evt => println(s"Position of Float: ${divc3.center} x ${divc3.middle}")
     }
   }
 }

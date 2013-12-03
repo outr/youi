@@ -10,18 +10,22 @@ object Test {
       a := 6.0
       val b = v(Math.floor(a))
       b += 2.0
+      end()
     }
     println(js.toJS())
     val js2 = new JavaScriptContext {
       val f1 = new JSFunction2[Double, Double, Double] {
         val f2 = new JSFunction2[String, String, String] {
           p1 + p2
+          end()
         }
 
         document.writeln(s("Hello World! ") + window.innerWidth + "x" + window.innerHeight)
 
-        p1 + p2
+        p1 * p2
+        end()
       }
+      end()
     }
     println(js2.toJS())
   }

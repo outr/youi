@@ -9,19 +9,18 @@ import org.powerscala.LocalStack
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-abstract class JavaScriptContext extends Statement[JavaScriptContent] with DelayedInit {
+abstract class JavaScriptContext extends Statement[JavaScriptContent] {
   private lazy val fields = getClass.fields.filterNot(f => f.name.contains("$"))
   private lazy val variables = ListMap(fields.map(f => f[Any](this) -> f): _*)
   private var statements = List.empty[Statement[_]]
 
-  def delayedInit(body: => Unit) = {
-    JavaScriptContext.stack.push(this)
-    try {
-      body
-    } finally {
-      JavaScriptContext.stack.pop(this)
-    }
-  }
+  JavaScriptContext.stack.push(this)
+
+  /**
+   * Unfortunately because of bugs in getDeclaringClass and DelayedInit this is a necessary evil to be called at the end
+   * of all context blocks to allow proper layering.
+   */
+  def end() = JavaScriptContext.stack.pop(this)
 
   def variable(v: Any): Option[String] = {
     variables.get(v).map(f => f.name)

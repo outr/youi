@@ -4,7 +4,8 @@ import org.hyperscala.event.{KeyboardEvent, Key}
 import org.hyperscala.selector.{StringSelector, Selector}
 import org.hyperscala.css.StyleSheetAttribute
 import org.hyperscala.PropertyAttribute
-import org.hyperscala.javascript.dsl.{JSFunction0, JSFunction1, Statement}
+import org.hyperscala.javascript.dsl._
+import org.hyperscala.jquery.dsl._
 
 import scala.language.implicitConversions
 
@@ -69,11 +70,7 @@ package object dsl {
     JSFunction1[Boolean, Unit](js)
   }
 
-  def setValue(selector: Selector) = {
-    JSFunction1[String, Unit](s"$$(${selector.content}).val(p1);")
+  def setValue(selector: Selector) = new JSFunction1[String, Unit] {
+    $(selector).value(p1)
   }
-
-//  def setValue(selector: Selector) = new JSFunction1[String, Unit] {
-//    $(selector).value(p1)
-//  }
 }

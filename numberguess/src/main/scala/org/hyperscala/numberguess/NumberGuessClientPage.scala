@@ -22,10 +22,12 @@ object NumberGuessClientPage {
 
       val generateSolution = new JSFunction0[Double] {
         Math.floor((Math.random() * 100.0) + 1.0)
+        end()
       }
 
       val setMessage = new JSFunction1[String, Unit] {
 //        message.innerHTML := a
+        end()
       }
 
       val reset = new JSFunction0[Unit] {
@@ -35,13 +37,15 @@ object NumberGuessClientPage {
 //        input.value := ""
 //        guessButton.disabled := false
 //        resetButton.disabled := true
+        end()
       }
 
       val attempt = new JSFunction0[Unit] {
-
+        end()
       }
 
       reset()
+      end()
     }
     println(js.toJS())
   }

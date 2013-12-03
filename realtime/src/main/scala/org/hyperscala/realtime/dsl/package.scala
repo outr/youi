@@ -59,17 +59,21 @@ package object dsl {
 
   def addClass(selector: Selector, className: String) = {
     val js =
-      """
-        |if (b) {
-        | $$(${selector.value}).addClass('$className');
+      s"""
+        |if (p1) {
+        | $$(${selector.content}).addClass('$className');
         |} else {
-        | $$(${selector.value}).removeClass('$className');
+        | $$(${selector.content}).removeClass('$className');
         |}
       """.stripMargin
     JSFunction1[Boolean, Unit](js)
   }
 
   def setValue(selector: Selector) = {
-    JSFunction1[String, Unit](s"$$(${selector.value}).val(value);")
+    JSFunction1[String, Unit](s"$$(${selector.content}).val(p1);")
   }
+
+//  def setValue(selector: Selector) = new JSFunction1[String, Unit] {
+//    $(selector).value(p1)
+//  }
 }

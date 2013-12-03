@@ -14,7 +14,7 @@ import org.hyperscala.{Container, IdentifiableTag}
 import org.hyperscala.html.attributes.ContentEditable
 import org.hyperscala.io.HTMLToScala
 import org.hyperscala.css.Style
-import org.hyperscala.css.attributes.FontSize
+import org.hyperscala.css.attributes.{Length, Alignment, FontSize}
 import org.hyperscala.ui.clipboard.{ClipType, Clipboard}
 import org.powerscala.enum.{Enumerated, EnumEntry}
 import org.hyperscala.javascript.dsl.JSFunction1
@@ -30,6 +30,8 @@ object RichEditor extends Module with StorageComponent[RichEditor, HTMLTag] {
   val SubscriptStyle = RichEditorStyle("sub")
   val SuperscriptStyle = RichEditorStyle("sup")
   def FontSizeStyle(size: FontSize) = RichEditorStyle("span", styles = Map("font-size" -> size), overrides = List(Override("font", Map("size" -> null))))
+  def TextAlignStyle(alignment: Alignment) = RichEditorStyle("span", styles = Map("text-align" -> alignment.value))
+  def LineHeightStyle(length: Length) = RichEditorStyle("span", styles = Map("line-height" -> length.value))
 
   def name = "RichEditor"
   def version = Version(2)
@@ -734,8 +736,8 @@ class RichEditor private(val wrapped: HTMLTag) extends WrappedComponent[HTMLTag]
    * @param style the style to listen to
    */
   def onStyleChange(action: JSFunction1[Boolean, Unit], style: RichEditorStyle): Unit = {
-    Realtime.sendJavaScript(s"richEditorAttachStyleStateChange('${wrapped.identity}', ${style.toJSString}, ${action.content});",
-      onlyRealtime = false)
+    val instruction = s"richEditorAttachStyleStateChange('${wrapped.identity}', ${style.toJSString}, ${action.content});"
+    Realtime.sendJavaScript(instruction, onlyRealtime = false)
   }
 
   /**
@@ -745,8 +747,8 @@ class RichEditor private(val wrapped: HTMLTag) extends WrappedComponent[HTMLTag]
    * @param cssStyle the Style to listen to
    */
   def onStyleValueChange(action: JSFunction1[String, Unit], cssStyle: Style[_]): Unit = {
-    Realtime.sendJavaScript(s"richEditorAttachStyleValueChange('${wrapped.identity}', '${cssStyle.cssName}', ${action.content});",
-      onlyRealtime = false)
+    val instruction = s"richEditorAttachStyleValueChange('${wrapped.identity}', '${cssStyle.cssName}', ${action.content});"
+    Realtime.sendJavaScript(instruction, onlyRealtime = false)
   }
 
   /**

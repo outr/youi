@@ -19,7 +19,7 @@ import org.powerscala.hierarchy.event.ChildRemovedEvent
 import org.powerscala.hierarchy.ChildLike
 import scala.annotation.tailrec
 import org.powerscala.event.Listener
-import org.powerscala.concurrent.Executor
+import akka.actor.{Actor, Props, ActorSystem}
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -27,6 +27,8 @@ import org.powerscala.concurrent.Executor
 class RealtimePage private(page: Webpage) extends Logging {
   private var _connections = List.empty[Connection]
   def connections = _connections
+
+  lazy val actor = RealtimePage.newActor()
 
   // Configure Listeners
   page.childAdded.listen(Priority.Normal, Descendants) {
@@ -111,12 +113,13 @@ class RealtimePage private(page: Webpage) extends Logging {
    */
   private def asynchronousReceive(element: IdentifiableTag, eventType: String, responseMessage: ResponseMessage) = {
     val context = Website().requestContext          // Get the context for the current thread
-    Executor.invoke {
+    val f = () => {
       Website().contextualize(context) {
         Page.instance.set(Webpage())
         element.receive(eventType, responseMessage)
       }
     }
+    actor ! f     // Process receives one at a time via actor
   }
 
   protected[realtime] def connectionDisposed(connection: Connection) = synchronized {
@@ -267,6 +270,10 @@ class RealtimePage private(page: Webpage) extends Logging {
 }
 
 object RealtimePage {
+  System.setProperty("akka.daemonic", "on")
+  private val system = ActorSystem("RealtimePageActorSystem")
+  private def newActor() = system.actorOf(Props[AsynchronousInboundEventActor])
+
   private val _ignoringChangeProperty = new ThreadLocal[Property[_]]
   private val _ignoringChangeValue = new ThreadLocal[Any]
   private val _ignoringStructureChanges = new ThreadLocal[Boolean] {
@@ -302,5 +309,11 @@ object RealtimePage {
     page.synchronized {
       page.store.getOrSet("realtime", new RealtimePage(page))
     }
+  }
+}
+
+class AsynchronousInboundEventActor extends Actor {
+  def receive = {
+    case f: Function0[_] => f()
   }
 }

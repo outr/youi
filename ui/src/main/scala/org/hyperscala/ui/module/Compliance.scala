@@ -19,6 +19,9 @@ class Compliance(t: HTMLTag) {
   val WebkitTransform = new Style[Transform]("-webkit-transform")
   val WebkitTransformOrigin = new Style[Double]("-webkit-transform-origin")
 
+  def scalePercent(v: Int) = scale(v / 100.0)
+  def scalePercent = math.round(scale * 100.0).toInt
+
   def scale(v: Double) = if (UserAgent().browser.family == BrowserFamily.IE) {
     t.style(IEZoom, None) := v
   } else if (UserAgent().browser.family == BrowserFamily.Firefox) {

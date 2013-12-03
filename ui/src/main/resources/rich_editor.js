@@ -151,7 +151,7 @@ function richEditorExecCommand(id, command, data) {
     if (editor != null) {
         if (command == 'delete') {
             var range = editor.getSelection().getRanges()[0];
-            range.deleteContents()
+            range.deleteContents();
             range.select();
         } else {
             editor.execCommand(command, data);
@@ -173,8 +173,12 @@ function richEditorAttachStyleStateChange(id, style, f) {
         editor.attachStyleStateChange(style, function(state) {
             var newState = state == CKEDITOR.TRISTATE_ON;
             if (newState != lastState) {
-                f(newState);
-                lastState = newState;
+                try {
+                    f(newState);
+                    lastState = newState;
+                } catch(err) {
+                    console.log('Error occurred in richEditorAttachStyleStateChange while calling function: ' + err.message);
+                }
             }
         });
     });
@@ -187,8 +191,12 @@ function richEditorAttachStyleValueChange(id, cssName, f) {
         editor.on('selectionChange', function() {
             var newValue = richEditorGetStyle(id, cssName);
             if (newValue != lastValue) {
-                f(newValue);
-                lastValue = newValue;
+                try {
+                    f(newValue);
+                    lastValue = newValue;
+                } catch(err) {
+                    console.log('Error occurred in richEditorAttachStyleValueChange while calling function: ' + err.message + ' (' + f + ')');
+                }
             }
         });
     });

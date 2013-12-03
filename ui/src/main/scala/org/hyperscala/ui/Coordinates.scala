@@ -138,7 +138,7 @@ class CoordinatesTag(coordinates: Coordinates, val b: Bounding, val t: HTMLTag) 
       try {
         x := t.data("x").get.toDouble
       } catch {
-        case exc: Throwable => warn(s"Unable to set x from data-x: ${t.data("x")}")
+        case exc: Throwable => //warn(s"Unable to set x from data-x: ${t.data("x")}")
       }
     }
     case None => // Ignore
@@ -150,7 +150,7 @@ class CoordinatesTag(coordinates: Coordinates, val b: Bounding, val t: HTMLTag) 
       try {
         y := t.data("y").get.toDouble
       } catch {
-        case exc: Throwable => warn(s"Unable to set y from data-y: ${t.data("y")}")
+        case exc: Throwable => //warn(s"Unable to set y from data-y: ${t.data("y")}")
       }
     }
     case None => // Ignore

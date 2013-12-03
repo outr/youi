@@ -12,12 +12,20 @@ import org.powerscala.property.Property
 trait WrappedComponent[Tag <: HTMLTag] {
   private val storage = new MappedStorage[String, Any] {}
 
+  @volatile private var _initialized = false
+  def initialized = _initialized
+
   protected def wrapped: Tag
   protected def initializeComponent(values: Map[String, Any]): Unit
   protected def modify(key: String, value: Any): Unit
 
   wrapped.onBeforeRender {
-    initializeComponent(storage.map)
+    synchronized {
+      if (!_initialized) {
+        initializeComponent(storage.map)
+        _initialized = true
+      }
+    }
   }
 
   def option(key: String, value: Any) = {

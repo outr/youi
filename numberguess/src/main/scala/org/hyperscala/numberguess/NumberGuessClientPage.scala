@@ -34,13 +34,27 @@ object NumberGuessClientPage {
         guesses := 0
         solution := generateSolution()
         setMessage("Guess a number between 0 and 100.")
-//        input.value := ""
-//        guessButton.disabled := false
-//        resetButton.disabled := true
+        input.value = ""
+        guessButton.disabled = false
+        resetButton.disabled = true
         end()
       }
 
       val attempt = new JSFunction0[Unit] {
+//        Try {
+//          val guess = parseInt(input.value)
+//          guesses++
+//          If (guess < solution) {
+//            setMessage("You guessed too low. Try a higher number.")
+//          } ElseIf (guess > solution) {
+//            setMessage("You guessed too high. Try a lower number.")
+//          } Else {
+//            setMessage("You guess it right in " + guesses + " tries.")
+//            guessButton.disabled = true
+//          }
+//        } Catch {
+//          case err => setMessage("Please enter a valid number between 0 and 100!")
+//        }
         end()
       }
 

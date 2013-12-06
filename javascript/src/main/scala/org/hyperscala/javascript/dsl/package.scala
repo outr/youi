@@ -8,6 +8,7 @@ import org.hyperscala.html.HTMLTag
  * @author Matt Hicks <matt@outr.com>
  */
 package object dsl {
+  implicit def boolean2Statement(b: Boolean) = ConstantStatement(b)
   implicit def string2Statement(s: String) = ConstantStatement(s)
   implicit def int2Statement(i: Int) = ConstantStatement(i)
   implicit def double2Statement(d: Double) = ConstantStatement(d)

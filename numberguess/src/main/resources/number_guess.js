@@ -24,7 +24,7 @@ function attempt() {
         if (guess < solution) {
             setMessage('You guessed too low. Try a higher number.');
         } else if (guess > solution) {
-            setMessage('You guess too high. Try a lower number.');
+            setMessage('You guessed too high. Try a lower number.');
         } else {
             setMessage('You guessed it right in ' + guesses + ' tries.');
             guessButton.disabled = true;

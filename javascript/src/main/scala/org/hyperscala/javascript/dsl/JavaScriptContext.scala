@@ -13,6 +13,7 @@ abstract class JavaScriptContext extends Statement[JavaScriptContent] {
   private lazy val fields = getClass.fields.filterNot(f => f.name.contains("$"))
   private lazy val variables = ListMap(fields.map(f => f[Any](this) -> f): _*)
   private var statements = List.empty[Statement[_]]
+  val parentContext = JavaScriptContext.stack.get()
 
   JavaScriptContext.stack.push(this)
 
@@ -23,7 +24,12 @@ abstract class JavaScriptContext extends Statement[JavaScriptContent] {
   def end() = JavaScriptContext.stack.pop(this)
 
   def variable(v: Any): Option[String] = {
-    variables.get(v).map(f => f.name)
+    val variableName = variables.get(v).map(f => f.name)
+    if (variableName.isEmpty && parentContext.nonEmpty) {
+      parentContext.get.variable(v)
+    } else {
+      variableName
+    }
   }
 
   protected def hasReturn = false
@@ -33,14 +39,7 @@ abstract class JavaScriptContext extends Statement[JavaScriptContent] {
     // Assign names to variables
     variables.foreach {
       case (value, field) => value match {
-        case v: Variable[_] => {
-          v.name = field.name
-//          println(s"Assigning variable name: ${v.name} to $field")
-        }
-        case f: JSFunction[_] => {
-          f.name = field.name
-//          println(s"Assigning function name: ${f.name} to $field")
-        }
+        case s: Statement[_] => s.name = field.name
         case _ => // Ignore
       }
     }
@@ -48,10 +47,6 @@ abstract class JavaScriptContext extends Statement[JavaScriptContent] {
     // Write variables out first
     variables.foreach {
       case (value, field) => value match {
-//        case c: JavaScriptContext => {
-//          val line = s"var ${field.name} = ${c.toJS(depth + 1)}"
-//          writeLine(line, b, depth)
-//        }
         case s: Statement[_] => // Ignore statements
         case _ => {
           val line = s"var ${field.name} = ${JavaScriptContent.toJS(value)}"
@@ -76,7 +71,7 @@ abstract class JavaScriptContext extends Statement[JavaScriptContent] {
         }
         case None => {
           val isLast = s eq last
-          if ((isLast && hasReturn) || s.sideEffects) {
+          if ((isLast && hasReturn) || (s.sideEffects && !s.isUsed)) {
             val line = if (isLast && hasReturn) {
               s"return ${s.toJS}"
             } else {
@@ -90,14 +85,15 @@ abstract class JavaScriptContext extends Statement[JavaScriptContent] {
   }
   protected def after(b: StringBuilder, depth: Int) = {}
   protected def tab = "\t"
-  protected def writeLine(line: String, b: StringBuilder, depth: Int, semicolon: Boolean = true) = {
+  protected def writeLine(line: String, b: StringBuilder, depth: Int, semicolon: Boolean = true, lineBreak: Boolean = true) = {
     b.append("".padTo(depth, tab).mkString)
     b.append(line)
-    // TODO: add semicolon support back in for proper JS generation
-//    if (semicolon) {
-//      b.append(';')
-//    }
-    b.append("\r\n")
+    if (semicolon) {
+      b.append(';')
+    }
+    if (lineBreak) {
+      b.append("\r\n")
+    }
   }
 
   def toJS(depth: Int = 0) = {

@@ -4,13 +4,12 @@ package org.hyperscala.javascript.dsl
  * @author Matt Hicks <matt@outr.com>
  */
 trait JSFunction[R] extends JavaScriptContext {
-  var name: String = _
   def manifest: Manifest[R]
 
   override protected def write(b: StringBuilder, depth: Int) = super.write(b, depth + 1)
 
   override protected def after(b: StringBuilder, depth: Int) = {
-    writeLine("}", b, depth - 1, semicolon = false)
+    writeLine("}", b, depth - 1, semicolon = false, lineBreak = false)
   }
 
   override protected def hasReturn = manifest.runtimeClass.getName != "void"

@@ -26,7 +26,7 @@ object NumberGuessClientPage {
       }
 
       val setMessage = new JSFunction1[String, Unit] {
-//        message.innerHTML := a
+        message.innerHTML = p1
         end()
       }
 

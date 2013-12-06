@@ -306,9 +306,7 @@ object RealtimePage {
     if (page == null) {
       throw new NullPointerException("Page cannot be null!")
     }
-    page.synchronized {
-      page.store.getOrSet("realtime", new RealtimePage(page))
-    }
+    page.store.getOrSet("realtime", new RealtimePage(page))
   }
 }
 

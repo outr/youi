@@ -8,11 +8,11 @@ import org.hyperscala.html.HTMLTag
  * @author Matt Hicks <matt@outr.com>
  */
 package object dsl {
-  implicit def boolean2Statement(b: Boolean) = ConstantStatement(b)
-  implicit def string2Statement(s: String) = ConstantStatement(s)
-  implicit def int2Statement(i: Int) = ConstantStatement(i)
-  implicit def double2Statement(d: Double) = ConstantStatement(d)
-  implicit def length2Statement(l: Length) = ConstantStatement(l)
+  implicit def boolean2Statement(b: Boolean) = s(b)
+  implicit def string2Statement(s: String) = this.s(s)
+  implicit def int2Statement(i: Int) = s(i)
+  implicit def double2Statement(d: Double) = s(d)
+  implicit def length2Statement(l: Length) = s(l)
 
   implicit def s2ss(s: Statement[_]) = ExistingStatement[String](s.toJS)
   implicit def delayed2Statement[T](d: DelayedStatement[T]) = d.toStatement
@@ -22,7 +22,7 @@ package object dsl {
   }
   implicit def statement2JSHTMLTag[T <: HTMLTag](s: Statement[T]) = new JSHTMLTag(s)
 
-  def s(s: String) = string2Statement(s)
+  def s[T](t: T) = ConstantStatement[T](t)
   def v[T](initialValue: Statement[T] = null) = new Variable[T](initialValue)
 
   def parseInt[T](s: Statement[T]) = WrappedStatement[Double]("parseInt(", s, ")", sideEffects = false)

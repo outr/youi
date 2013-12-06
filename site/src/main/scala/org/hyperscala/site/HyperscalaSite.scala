@@ -8,13 +8,11 @@ import org.hyperscala.examples.ui._
 import org.hyperscala.examples.todomvc.TodoMVC
 import org.hyperscala.examples.svg.{DynamicSVGExample, SVGShapesExample, BasicSVGExample}
 import org.hyperscala.examples.comparison.PlayHelloWorldPage
-import com.outr.net.http.session.MapSession
-import com.outr.net.http.jetty.JettyApplication
-import com.outr.net.http.request.HttpRequest
 import org.powerscala.log.{Logging, Level, Logger}
 import java.io.File
 import org.powerscala.log.writer.FileWriter
 import org.powerscala.log.formatter.Formatter
+import org.hyperscala.examples.snapsvg.SnapSVGExample
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -94,6 +92,7 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication {
       val shapes = page(new HyperscalaExample(new SVGShapesExample), Scope.Page, "/example/svg/shapes.html")
       val dynamic = page(new HyperscalaExample(new DynamicSVGExample), Scope.Page, "/example/svg/dynamic.html")
     }
+    val snapsvg = page(new HyperscalaExample(new SnapSVGExample), Scope.Page, "/example/snapsvg.html")
     val playComparison = page(new PlayHelloWorldPage, Scope.Page, "/example/comparison/play_hello_world.html")
   }
   val todoMVC = page(TodoMVC, Scope.Session, "/todomvc.html")

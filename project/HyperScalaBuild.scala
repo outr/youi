@@ -77,6 +77,8 @@ object HyperScalaBuild extends Build {
     .dependsOn(html, javascript, svg)
     .settings(libraryDependencies ++= Seq(uaDetector))
     .settings(libraryDependencies <+= scalaVersion { "org.scala-lang" % "scala-swing" % })
+  lazy val snapSVG = Project("snapsvg", file("snapsvg"), settings = createSettings("hyperscala-snapsvg"))
+    .dependsOn(web)
   lazy val jquery = Project("jquery", file("jquery"), settings = createSettings("hyperscala-jquery"))
     .dependsOn(web)
   lazy val realtime = Project("realtime", file("realtime"), settings = createSettings("hyperscala-realtime"))
@@ -88,7 +90,7 @@ object HyperScalaBuild extends Build {
     .settings(publishArtifact := false)
   // Examples and Site
   lazy val examples = Project("examples", file("examples"), settings = createSettings("hyperscala-examples"))
-    .dependsOn(web, ui)
+    .dependsOn(web, ui, snapSVG)
     .settings(libraryDependencies ++= Seq(outrNetServlet))
   lazy val hello = Project("hello", file("hello"), settings = createSettings("hyperscala-hello") ++ Revolver.settings ++ com.earldouglas.xsbtwebplugin.WebPlugin.webSettings)
     .dependsOn(web)

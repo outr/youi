@@ -13,6 +13,9 @@ import java.io.File
 import org.powerscala.log.writer.FileWriter
 import org.powerscala.log.formatter.Formatter
 import org.hyperscala.examples.snapsvg.SnapSVGExample
+import com.outr.net.http.session.MapSession
+import com.outr.net.http.jetty.JettyApplication
+import com.outr.net.http.request.HttpRequest
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -29,7 +32,7 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication {
   // Configure System.out and System.err to go to logger
   Logging.configureSystem()
 
-  override def port = 8889
+  override def defaultPort = 8889
 
   val site = new {
     val about = page(new HyperscalaAbout, Scope.Request, "/about.html", "/")

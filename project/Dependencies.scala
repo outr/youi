@@ -14,6 +14,8 @@ object Dependencies {
   val outrNetCommunicatorClient = "com.outr.net" %% "outrnet-communicator-client" % outrNetVersion
   val outrNetCommunicatorServer = "com.outr.net" %% "outrnet-communicator-server" % outrNetVersion
 
+  val launcher = "com.outr.launcher" %% "launcher" % "1.0.0-SNAPSHOT"
+
 //  val servlet = "org.eclipse.jetty.orbit" % "javax.servlet" % "3.0.0.v201112011016"
   val jettyWebapp = "org.eclipse.jetty" % "jetty-webapp" % "9.0.5.v20130815" % "container"
 

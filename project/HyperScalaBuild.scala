@@ -109,6 +109,6 @@ object HyperScalaBuild extends Build {
       }
     }, mainClass in assembly := Some("org.hyperscala.site.HyperscalaSite"))
     .settings(mainClass := Some("org.hyperscala.site.HyperscalaSite"))
-    .settings(libraryDependencies ++= Seq(jettyWebapp, outrNetServlet, outrNetJetty))
+    .settings(libraryDependencies ++= Seq(jettyWebapp, outrNetServlet, outrNetJetty, launcher))
     .dependsOn(examples)
 }

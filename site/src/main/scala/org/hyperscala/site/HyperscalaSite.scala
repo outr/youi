@@ -16,11 +16,12 @@ import org.hyperscala.examples.snapsvg.SnapSVGExample
 import com.outr.net.http.session.MapSession
 import com.outr.net.http.jetty.JettyApplication
 import com.outr.net.http.request.HttpRequest
+import com.outr.launcher.Launchable
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
  */
-object HyperscalaSite extends Website[MapSession] with JettyApplication {
+object HyperscalaSite extends Website[MapSession] with JettyApplication with Launchable {
   // Setup file logging
   Logger.configure("root") {
     case l => {
@@ -105,4 +106,6 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication {
   addClassPath("/js/", "js/")
 
   protected def createSession(request: HttpRequest, id: String) = new MapSession(id)
+
+  def run() = main(Array.empty)
 }

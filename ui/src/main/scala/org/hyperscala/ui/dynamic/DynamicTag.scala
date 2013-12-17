@@ -51,8 +51,22 @@ object DynamicTag {
     apply[T](name, DynamicString.url("%s.DynamicString".format(name), url, checkLastModified, converter))
   }
 
+  private val conversions = Map(
+    "&nbsp;" -> "&#160;",
+    "&copy;" -> "&#169;"
+  )
+
+  def cleanup(html: String) = {
+    var updated = html
+    conversions.foreach {
+      case (original, replacement) => updated = updated.replaceAll(original, replacement)
+    }
+    updated
+  }
+
   def string2Element(html: String) = {
+    val updated = cleanup(html)
     val builder = new SAXBuilder()
-    builder.build(new StringReader(html)).getRootElement
+    builder.build(new StringReader(updated)).getRootElement
   }
 }

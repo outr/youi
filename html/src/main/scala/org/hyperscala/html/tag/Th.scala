@@ -29,11 +29,19 @@ class Th extends Container[BodyChild] with BodyChild with HTMLTag {
            style: StyleSheet = null,
            tabIndex: java.lang.Integer = null,
            titleText: String = null,
+           colSpan: String = null,
+           headers: String = null,
+           rowSpan: String = null,
            content: BodyChild = null) = {
     this()
     init(name, accessKey, clazz, contentEditable, contextMenu, dir, draggable, dropZone, hidden, id, lang, role, spellCheck, style, tabIndex, titleText)
+    up(this.colSpan, colSpan)
+    up(this.headers, headers)
+    up(this.rowSpan, rowSpan)
     if (content != null) contents += content
   }
 
-
+  lazy val colSpan = PropertyAttribute[String]("colspan", null)
+  lazy val headers = PropertyAttribute[String]("headers", null)
+  lazy val rowSpan = PropertyAttribute[String]("rowspan", null)
 }

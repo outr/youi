@@ -7,6 +7,7 @@ import scala.collection.JavaConversions._
 import java.util.concurrent.atomic.AtomicBoolean
 import org.powerscala.log.Logging
 import org.powerscala.event.{Intercept, Listenable}
+import org.powerscala.event.processor.InterceptProcessor
 
 /**
  * @author Matt Hicks <mhicks@powerscala.org>
@@ -192,7 +193,7 @@ trait Markup extends XMLContent with Listenable with Logging {
   }
 
   protected def applyAttribute(a: Attribute) = {
-    if (!attributeFromXML(a)) {
+    if (!attributeFromXML(a) && Markup.attributeSet.fire(this -> a) == Intercept.Continue) {
       unsupportedAttribute(a.getName, a.getValue)
     }
   }
@@ -208,8 +209,14 @@ trait Markup extends XMLContent with Listenable with Logging {
   }
 }
 
-object Markup {
+object Markup extends Listenable {
   var UnsupportedAttributeException = true
+
+  /**
+   * attribute set is called when an attribute is unable to be derived for setting the value. If Intercept.Stop is
+   * returned then the system will assume the attribute was successfully applied.
+   */
+  val attributeSet = new InterceptProcessor[(Markup, Attribute)]("attributeSet")
 
   def rendered(markup: Markup) = markup._rendered.set(true)
 }

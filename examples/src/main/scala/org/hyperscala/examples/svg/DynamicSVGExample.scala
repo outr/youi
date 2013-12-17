@@ -7,9 +7,9 @@ import org.powerscala.Color
 import org.hyperscala.html._
 import org.hyperscala.web.Webpage
 import org.hyperscala.realtime.{RealtimeEvent, Realtime}
-import util.Random
 
 import language.reflectiveCalls
+import java.util.Random
 
 /**
  * @author Matt Hicks <mhicks@outr.com>

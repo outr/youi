@@ -66,7 +66,7 @@ class WebpageHandler(pageCreator: () => Webpage, scope: Scope, val uris: List[St
       case Scope.Application => Website()._pages(id) = page
     }
     debug(s"Caching page: ${page.pageId}!")
-    Website()._pages(page.pageId) = page         // All pages are stored at least by their id
+    WebpageHandler.cachePage(page)         // All pages are stored at least by their id
   }
 
   private def sessionId = s"$id.${Website().session.id}"
@@ -74,6 +74,8 @@ class WebpageHandler(pageCreator: () => Webpage, scope: Scope, val uris: List[St
 
 object WebpageHandler {
   def pageById[W <: Webpage](pageId: String) = Website()._pages.get[W](pageId)
+
+  def cachePage(page: Webpage) = Website()._pages(page.pageId) = page
 
   def handle(request: HttpRequest, response: HttpResponse, page: Webpage) = {
     page.checkIn()

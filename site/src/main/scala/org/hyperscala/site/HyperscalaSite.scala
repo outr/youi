@@ -92,6 +92,7 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication with Lau
     val framed = page(new HyperscalaExample(new FramedExample), Scope.Page, "/example/framed.html")
     val jsrequest = page(new HyperscalaExample(new JSRequestExample), Scope.Page, "/example/jsrequest.html")
     val bounding = page(new HyperscalaExample(new BoundingExample), Scope.Page, "/example/bounding.html")
+    val jCanvas = page(new HyperscalaExample(new jCanvasExample), Scope.Page, "/example/jcanvas.html")
     val svg = new {
       val basic = page(new HyperscalaExample(new BasicSVGExample), Scope.Page, "/example/svg/basic.html")
       val shapes = page(new HyperscalaExample(new SVGShapesExample), Scope.Page, "/example/svg/shapes.html")

@@ -29,11 +29,16 @@ class Canvas extends Container[BodyChild] with BodyChild with HTMLTag {
            style: StyleSheet = null,
            tabIndex: java.lang.Integer = null,
            titleText: String = null,
+           width: java.lang.Integer = null,
+           height: java.lang.Integer = null,
            content: BodyChild = null) = {
     this()
     init(name, accessKey, clazz, contentEditable, contextMenu, dir, draggable, dropZone, hidden, id, lang, role, spellCheck, style, tabIndex, titleText)
+    up(this.width, width)
+    up(this.height, height)
     if (content != null) contents += content
   }
 
-
+  lazy val width = PropertyAttribute[Int]("width", 300)
+  lazy val height = PropertyAttribute[Int]("height", 150)
 }

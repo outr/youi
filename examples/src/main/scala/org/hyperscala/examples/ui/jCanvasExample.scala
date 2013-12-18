@@ -5,7 +5,7 @@ import org.hyperscala.examples.Example
 import org.hyperscala.html._
 import org.powerscala.Color
 
-import org.hyperscala.jquery._
+import org.hyperscala.jquery.jcanvas._
 import org.hyperscala.jquery.dsl._
 import org.hyperscala.realtime.dsl._
 
@@ -18,5 +18,5 @@ class jCanvasExample extends Example {
   }
   contents += canvas
 
-  $(canvas).drawArc(StrokeStyle(Color.Black), StrokeWidth(5), X(100), Y(100), Radius(50), Start(90), End(180)).send()
+  $(canvas).drawArc(strokeStyle = Color.Black, strokeWidth = 5, x = 100, y = 100, radius = 50, start = 90, end = 180).send()
 }

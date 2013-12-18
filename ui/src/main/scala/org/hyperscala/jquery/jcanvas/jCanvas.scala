@@ -1,11 +1,13 @@
-package org.hyperscala.jquery
+package org.hyperscala.jquery.jcanvas
 
 import org.hyperscala.module.{InterfaceWithDefault, Module}
-import org.powerscala.{Color, Version}
+import org.powerscala.Version
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.web.{Webpage, Website}
 import org.hyperscala.html._
 import org.hyperscala.jquery.dsl.jQuerySelector
+import org.hyperscala.jquery.jQuery
+import org.hyperscala.javascript.dsl.Statement
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -13,12 +15,22 @@ import org.hyperscala.jquery.dsl.jQuerySelector
 class jCanvas(selector: jQuerySelector) {
   Webpage().require(jCanvas)
 
-  def drawArc(properties: ArcProperty*) = {
-    selector.call("drawArc", properties2Map(properties))
+  def drawArc(strokeStyle: StrokeStyle = null,
+              strokeWidth: StrokeWidth = null,
+              x: X = null,
+              y: Y = null,
+              radius: Radius = null,
+              start: Start = null,
+              end: End = null): Statement[Unit] = {
+    drawArc(strokeStyle, strokeWidth, x, y, radius, start, end)
   }
 
-  private def properties2Map(properties: Seq[CanvasProperty]) = {
-    properties.map(cp => propertyName(cp) -> cp.value).toMap
+  def drawArc(properties: ArcProperty*): Statement[Unit] = selector.call("drawArc", properties2Map(properties: _*))
+
+  private def properties2Map(properties: CanvasProperty*) = {
+    properties.collect {
+      case cp if cp != null => propertyName(cp) -> cp.value
+    }.toMap
   }
 
   private def propertyName(property: CanvasProperty) = {
@@ -26,20 +38,6 @@ class jCanvas(selector: jQuerySelector) {
     name.charAt(0).toLower + name.substring(1)
   }
 }
-
-trait CanvasProperty {
-  def value: Any
-}
-
-trait ArcProperty extends CanvasProperty
-
-case class StrokeStyle(value: Color) extends ArcProperty
-case class StrokeWidth(value: Int) extends ArcProperty
-case class X(value: Int) extends ArcProperty
-case class Y(value: Int) extends ArcProperty
-case class Radius(value: Int) extends ArcProperty
-case class Start(value: Int) extends ArcProperty
-case class End(value: Int) extends ArcProperty
 
 object jCanvas extends Module {
   val name = "jcanvas"

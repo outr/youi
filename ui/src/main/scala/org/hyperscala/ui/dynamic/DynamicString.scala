@@ -92,9 +92,11 @@ object DynamicString {
   def dependent(name: String, dynamicString: DynamicString, converter: String => String = defaultConverter) = {
     getOrSet[DynamicString](name, new DependentDynamicString(dynamicString, converter))
   }
-
   def static(name: String, content: String, converter: String => String = defaultConverter) = {
     getOrSet[DynamicString](name, new GeneralDynamicString(contentFunction(content), defaultLastModifyFunction, converter))
+  }
+  def dynamic(name: String, content: String, converter: String => String = defaultConverter) = {
+    getOrSet[DynamicString](name, new GeneralDynamicString(contentFunction(content), () => System.currentTimeMillis(), converter))
   }
   def file(name: String, file: File, converter: String => String = defaultConverter) = {
     getOrSet[DynamicString](name, new GeneralDynamicString(contentFunction(file), lastModifyFunction(file), converter))

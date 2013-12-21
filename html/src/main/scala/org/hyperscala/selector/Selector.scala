@@ -62,6 +62,7 @@ object Selector extends ValuePersistence[List[Selector]] {
         case ClassSelectorRegex(className, s) => ClassSelector(className) -> s
         case IdSelectorRegex(id, s) => IdSelector(id) -> s
         case ElementSelectorRegex(element, s) if HTMLTagType(element) != null => ElementSelector(HTMLTagType(element)) -> s
+        case _ => StringSelector(selectorString) -> ""
       }
       case _ => selectorString match {
         case ChildSelectorRegex(s) => ChildSelector(parent, apply(s)) -> ""
@@ -84,7 +85,7 @@ object AllSelector extends Selector {
   def matches(t: HTMLTag) = true
 }
 
-case class StringSelector(value: String) extends Selector {
+case class StringSelector(value: String, override val quoted: Boolean = true) extends Selector {
   def matches(t: HTMLTag) = false
 }
 

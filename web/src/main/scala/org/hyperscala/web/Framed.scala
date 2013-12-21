@@ -20,7 +20,9 @@ class Framed[P <: Webpage](wrapper: => P)(implicit manifest: Manifest[P]) extend
       src := url.toString()                       // Set the iframe's src to load the supplied page
     }
   }
-  wrapped := wrapper
+  Website().contextualize(Website().requestContext) {
+    wrapped := wrapper
+  }
 
   def url = Website().request.url.copy(parameters = HttpParameters(Map("pageId" -> List(wrapped().pageId))))
 

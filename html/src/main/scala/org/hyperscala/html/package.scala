@@ -20,6 +20,8 @@ package object html {
   implicit def int2ZIndex(i: Int) = ZIndex.Numeric(i)
 
   implicit def it2Rit[T <: IdentifiableTag](t: T) = ReIdentifiable[T](t)
+
+  implicit def tag2CopyableTag[T <: HTMLTag](t: T) = new CopyableHTMLTag[T](t)
 }
 
 case class LengthInt(i: Int) {

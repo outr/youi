@@ -8,6 +8,8 @@ object Dependencies {
   val powerScalaHierarchy = "org.powerscala" %% "powerscala-hierarchy" % powerScalaVersion
   val powerScalaProperty = "org.powerscala" %% "powerscala-property" % powerScalaVersion
 
+  val WebJarsJQuery = "org.webjars" % "jquery" % "1.10.2-1"
+
   val outrNetCore = "com.outr.net" %% "outrnet-core" % outrNetVersion
   val outrNetServlet = "com.outr.net" %% "outrnet-servlet" % outrNetVersion
   val outrNetJetty = "com.outr.net" %% "outrnet-jetty" % outrNetVersion

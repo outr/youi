@@ -9,7 +9,7 @@ import tag.{Head, HTML, Body, Title}
 import org.scalatest.{Matchers, WordSpec}
 
 /**
- * @author Matt Hicks <mhicks@powerscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 class HTMLRenderingSpec extends WordSpec with Matchers {
   val builder = new SAXBuilder()

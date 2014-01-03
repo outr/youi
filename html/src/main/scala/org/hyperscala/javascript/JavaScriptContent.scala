@@ -7,7 +7,7 @@ import org.powerscala.Color
 import org.powerscala.json.Jsonify
 
 /**
- * @author Matt Hicks <mhicks@powerscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 trait JavaScriptContent extends XMLContent with Jsonify {
   def content: String

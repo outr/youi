@@ -8,7 +8,7 @@ import org.powerscala.hierarchy.ChildLike
 /**
  * Convenience intercepting of actions in a page.
  *
- * @author Matt Hicks <mhicks@powerscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 class MarkupIntercepting(parentInterceptor: MarkupIntercepting) extends Listenable with ChildLike[MarkupIntercepting] {
   protected def hierarchicalParent = parentInterceptor

@@ -3,7 +3,7 @@ package org.hyperscala.persistence
 import scala.collection.immutable.ListSet
 
 /**
- * @author Matt Hicks <mhicks@powerscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 object ListSetStringPersistence extends ValuePersistence[ListSet[String]] {
   def fromString(s: String, name: String, clazz: Class[_]) = ListSet(s.split(" "): _*)

@@ -3,7 +3,7 @@ package org.hyperscala
 import java.util.UUID
 
 /**
- * @author Matt Hicks <mhicks@powerscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 object Unique {
   def apply(): String = UUID.randomUUID().toString.replace("-", "") match {

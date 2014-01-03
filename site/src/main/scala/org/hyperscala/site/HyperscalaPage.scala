@@ -12,7 +12,7 @@ import language.reflectiveCalls
 import org.hyperscala.web.module.FormSupport
 
 /**
- * @author Matt Hicks <mhicks@powerscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 class HyperscalaPage extends Webpage with FormSupport {
   def site = HyperscalaSite

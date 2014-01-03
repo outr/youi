@@ -3,7 +3,7 @@ package org.hyperscala.site
 import org.hyperscala.html._
 
 /**
- * @author Matt Hicks <mhicks@powerscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 class HyperscalaAbout extends HyperscalaPage {
   main.contents += new tag.H1(content = "About Hyperscala")

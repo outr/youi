@@ -19,7 +19,7 @@ import com.outr.net.http.request.HttpRequest
 import com.outr.launcher.Launchable
 
 /**
- * @author Matt Hicks <mhicks@powerscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 object HyperscalaSite extends Website[MapSession] with JettyApplication with Launchable {
   // Setup file logging

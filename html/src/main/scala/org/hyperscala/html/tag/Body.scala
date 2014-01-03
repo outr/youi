@@ -8,7 +8,7 @@ import org.hyperscala.html.constraints._
 
 /**
  * NOTE: This file has been generated. Do not modify directly!
- * @author Matt Hicks <mhicks@hyperscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 class Body extends Container[BodyChild] with HTMLChild with HTMLTag {
   lazy val xmlLabel = "body"

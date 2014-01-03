@@ -4,7 +4,7 @@ import io.HTMLWriter
 import org.jdom2._
 
 /**
- * @author Matt Hicks <mhicks@powerscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 trait XMLContent extends org.powerscala.hierarchy.Element[Any] {
   def write(writer: HTMLWriter): Unit

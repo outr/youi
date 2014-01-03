@@ -9,7 +9,7 @@ import org.hyperscala.examples.Example
 import language.reflectiveCalls
 
 /**
- * @author Matt Hicks <mhicks@powerscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 class AutoCompleteExample extends Example {
   Webpage().require(Autocomplete)

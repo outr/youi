@@ -4,7 +4,7 @@ import java.net.URL
 import org.powerscala.concurrent.{Time, AtomicInt, Executor}
 
 /**
- * @author Matt Hicks <mhicks@powerscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 object StressTester {
   def connect() = {

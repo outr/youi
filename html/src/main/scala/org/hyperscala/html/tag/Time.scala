@@ -9,7 +9,7 @@ import java.util.Calendar
 
 /**
  * NOTE: This file has been generated. Do not modify directly!
- * @author Matt Hicks <mhicks@hyperscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 class Time extends Container[BodyChild] with BodyChild with HTMLTag {
   lazy val xmlLabel = "time"

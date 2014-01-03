@@ -14,7 +14,7 @@ import scala.collection.JavaConversions._
 import org.hyperscala.web.Webpage
 
 /**
- * @author Matt Hicks <mhicks@powerscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 object HTMLToScala {
   lazy val WebpageTemplate = IO.copy(getClass.getClassLoader.getResource("webpage.template"))

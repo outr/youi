@@ -3,7 +3,7 @@ package org.hyperscala.persistence
 import org.powerscala.Language
 
 /**
- * @author Matt Hicks <mhicks@powerscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 // TODO: use ISO codes instead
 object LanguagePersistence extends ValuePersistence[Language] {

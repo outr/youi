@@ -5,7 +5,7 @@ import org.jdom2.{Comment => JDOMComment, Text, Content, Element}
 import scala.collection.JavaConversions._
 
 /**
- * @author Matt Hicks <mhicks@powerscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 trait Container[C <: XMLContent] extends MutableContainer[C] with Markup {
   override def xmlChildren = contents

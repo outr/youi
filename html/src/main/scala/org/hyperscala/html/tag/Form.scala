@@ -9,7 +9,7 @@ import java.net.URLDecoder
 
 /**
  * NOTE: This file has been generated. Do not modify directly!
- * @author Matt Hicks <mhicks@hyperscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 class Form extends Container[BodyChild] with BodyChild with HTMLTag {
   lazy val xmlLabel = "form"

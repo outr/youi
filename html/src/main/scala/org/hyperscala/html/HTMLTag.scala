@@ -15,7 +15,7 @@ import scala.collection.immutable.ListSet
 
 /**
  * NOTE: This file has been generated. Do not modify directly!
- * @author Matt Hicks <mhicks@hyperscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 trait HTMLTag extends IdentifiableTag {
   lazy val accessKey = PropertyAttribute[Char]("accesskey", -1.toChar)

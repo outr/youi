@@ -3,7 +3,7 @@ package org.hyperscala
 import org.powerscala.enum.{Enumerated, EnumEntry}
 
 /**
- * @author Matt Hicks <mhicks@powerscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 class InclusionMode protected() extends EnumEntry
 

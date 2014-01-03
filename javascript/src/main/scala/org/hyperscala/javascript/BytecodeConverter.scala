@@ -7,7 +7,7 @@ import org.objectweb.asm.Opcodes._
 import collection.mutable
 
 /**
- * @author Matt Hicks <mhicks@powerscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 class BytecodeConverter(methodNode: MethodNode, includeLineNumbers: Boolean, debug: Boolean = false) extends MethodVisitor(Opcodes.ASM4) {
   var depth = 0

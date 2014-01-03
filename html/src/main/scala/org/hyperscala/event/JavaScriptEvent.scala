@@ -7,7 +7,7 @@ import org.hyperscala.html.HTMLTag
 import com.outr.net.Method
 
 /**
- * @author Matt Hicks <mhicks@powerscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 class JavaScriptEvent(val tag: HTMLTag)
 

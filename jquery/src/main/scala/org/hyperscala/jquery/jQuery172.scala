@@ -6,7 +6,7 @@ import org.powerscala.Version
 import org.hyperscala.module._
 
 /**
- * @author Matt Hicks <mhicks@powerscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 object jQuery172 extends Module {
   def name = "jquery"

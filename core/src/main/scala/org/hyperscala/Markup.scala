@@ -10,7 +10,7 @@ import org.powerscala.event.{Intercept, Listenable}
 import org.powerscala.event.processor.InterceptProcessor
 
 /**
- * @author Matt Hicks <mhicks@powerscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 trait Markup extends XMLContent with Listenable with Logging {
   private val _initialized = new AtomicBoolean(false)

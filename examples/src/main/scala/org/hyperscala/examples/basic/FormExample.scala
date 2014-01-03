@@ -9,7 +9,7 @@ import org.hyperscala.jquery.jQuery172
 import org.hyperscala.examples.Example
 
 /**
- * @author Matt Hicks <mhicks@powerscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 class FormExample extends Example {
   Webpage().require(jQuery172)

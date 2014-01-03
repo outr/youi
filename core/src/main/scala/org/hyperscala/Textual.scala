@@ -5,7 +5,7 @@ import org.jdom2.{Element, Content}
 import persistence.StringPersistence
 
 /**
- * @author Matt Hicks <mhicks@powerscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 trait Textual extends Markup {
   lazy val content = PropertyAttribute[String]("content", null, inclusion = InclusionMode.Exclude)(StringPersistence, this, implicitly[Manifest[String]])

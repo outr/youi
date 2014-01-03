@@ -3,7 +3,7 @@ package org.hyperscala.persistence
 
 
 /**
- * @author Matt Hicks <mhicks@powerscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 /*object StyleSheetPersistence extends ValuePersistence[Map[String, Style[_]]] {
   def fromString(s: String, clazz: Class[_]) = if (s.trim.length > 0) {

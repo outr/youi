@@ -10,7 +10,7 @@ import com.outr.net.Method
 
 /**
  * NOTE: This file has been generated. Do not modify directly!
- * @author Matt Hicks <mhicks@hyperscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 class Input extends BodyChild with HTMLTag with FormField {
   lazy val xmlLabel = "input"

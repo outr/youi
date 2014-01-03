@@ -6,7 +6,7 @@ import annotation.tailrec
 import org.powerscala.IO
 
 /**
- * @author Matt Hicks <mhicks@powerscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 object HTMLCodeGenerator {
   val BaseOutput = new File("core/src/main/scala/org/hyperscala")

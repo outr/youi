@@ -7,7 +7,7 @@ import java.lang.reflect.Method
 import scala.collection.JavaConversions._
 
 /**
- * @author Matt Hicks <mhicks@powerscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 object FunctionConverter {
   def f0[R](name: String, f: () => R, includeLineNumbers: Boolean = false, debug: Boolean = false)

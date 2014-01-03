@@ -5,7 +5,7 @@ import org.powerscala.reflect._
 import org.hyperscala.AttributeValue
 
 /**
- * @author Matt Hicks <mhicks@powerscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 trait EnumEntryPersistence[E <: EnumEntry with AttributeValue] extends ValuePersistence[E] {
   def fromString(s: String, name: String, clazz: Class[_]) = {

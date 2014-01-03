@@ -9,7 +9,7 @@ import scala.Some
 
 /**
  * NOTE: This file has been generated. Do not modify directly!
- * @author Matt Hicks <mhicks@hyperscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 class HTML extends Container[HTMLChild] with HTMLTag {
   lazy val xmlLabel = "html"

@@ -1,6 +1,5 @@
 package org.hyperscala.ui.widgets.visual
 
-import `type`.VisualType
 import org.hyperscala.html._
 import org.hyperscala.css.attributes._
 import org.powerscala.property._
@@ -9,7 +8,7 @@ import org.powerscala.Color
 import tag.Text
 
 /**
- * @author Matt Hicks <mhicks@powerscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 class StandardVisual[T](builder: VisualBuilder[T]) extends Visual[T]
                                                    with EditableVisual[T]

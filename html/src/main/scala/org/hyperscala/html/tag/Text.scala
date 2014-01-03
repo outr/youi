@@ -8,7 +8,7 @@ import org.hyperscala.html.HTMLTag
 import org.hyperscala.io.HTMLWriter
 
 /**
- * @author Matt Hicks <mhicks@powerscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 class Text extends Textual with HTMLChild with BodyChild with HeadChild with HTMLTag with TextMarkup {
   def this(content: String) = {

@@ -5,7 +5,7 @@ import org.hyperscala.html.constraints.BodyChild
 import org.hyperscala.ui.widgets.visual.VisualBuilder
 
 /**
- * @author Matt Hicks <mhicks@powerscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 trait VisualType[T] {
   def valid(details: VisualBuilder[_]): Boolean

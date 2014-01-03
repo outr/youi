@@ -3,7 +3,7 @@ package org.hyperscala
 import io.HTMLWriter
 
 /**
- * @author Matt Hicks <mhicks@powerscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 trait XMLAttribute {
   def name: String

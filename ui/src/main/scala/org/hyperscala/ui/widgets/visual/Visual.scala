@@ -6,7 +6,7 @@ import org.powerscala.event.Listenable
 import org.hyperscala.html._
 
 /**
- * @author Matt Hicks <mhicks@powerscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 trait Visual[T] extends tag.Div with Listenable with Stringify[T] {
   def manifest: Manifest[T]

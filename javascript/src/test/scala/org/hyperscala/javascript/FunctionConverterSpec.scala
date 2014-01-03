@@ -3,7 +3,7 @@ package org.hyperscala.javascript
 import org.scalatest.{Matchers, WordSpec}
 
 /**
- * @author Matt Hicks <mhicks@powerscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 class FunctionConverterSpec extends WordSpec with Matchers {
   "FunctionConverter with different returns" should {

@@ -3,7 +3,7 @@ package org.hyperscala.ui.widgets.visual
 import org.hyperscala.html._
 
 /**
- * @author Matt Hicks <mhicks@powerscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 trait ValidatableVisual[T] extends Visual[T] {
   type Validation = T => Either[Option[T], String]

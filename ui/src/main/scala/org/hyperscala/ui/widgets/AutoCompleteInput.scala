@@ -15,7 +15,7 @@ import language.reflectiveCalls
 import org.hyperscala.realtime.RealtimeEvent
 
 /**
- * @author Matt Hicks <mhicks@powerscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 abstract class AutoCompleteInput[T](id: String = Unique(), default: T)(implicit manifest: Manifest[T]) extends tag.Div(id = id) with FormField {
   val property = Property[T](default = Some(default))(this, manifest)

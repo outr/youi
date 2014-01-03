@@ -9,7 +9,7 @@ import javascript.{JavaScriptString, JavaScriptContent}
 
 /**
  * NOTE: This file has been generated. Do not modify directly!
- * @author Matt Hicks <mhicks@hyperscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 class Script extends Container[JavaScriptContent] with BodyChild with HeadChild with HTMLTag {
   lazy val xmlLabel = "script"

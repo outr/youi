@@ -1,6 +1,6 @@
 package org.hyperscala
 
 /**
- * @author Matt Hicks <mhicks@powerscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 trait TextMarkup extends Markup

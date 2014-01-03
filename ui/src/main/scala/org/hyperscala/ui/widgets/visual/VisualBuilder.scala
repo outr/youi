@@ -1,12 +1,11 @@
 package org.hyperscala.ui.widgets.visual
 
-import `type`.VisualType
 import org.powerscala.property.Property
 
 import language.existentials
 
 /**
- * @author Matt Hicks <mhicks@powerscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 case class VisualBuilder[T](_name: String = null,
                             _labeled: Boolean = true,

@@ -12,7 +12,7 @@ import org.powerscala.property.{Property, PropertyLike}
 import org.powerscala.event.Listenable
 
 /**
- * @author Matt Hicks <mhicks@powerscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 trait Tag extends Markup with AttributeContainer[PropertyAttribute[_]] {
   implicit val thisTag = this

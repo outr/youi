@@ -3,7 +3,7 @@ package org.hyperscala.ui.widgets.visual.`type`
 import org.hyperscala.ui.widgets.visual.VisualBuilder
 
 /**
- * @author Matt Hicks <mhicks@powerscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 object StringInputVisualType extends InputVisualType[String] {
   def valid(details: VisualBuilder[_]) = details.clazz == classOf[String] && details.selection == null && !details.multiLine

@@ -6,7 +6,7 @@ import module.{Module, Interface}
 import org.powerscala.log.Logging
 
 /**
- * @author Matt Hicks <mhicks@powerscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 trait Page extends Listenable with Updatable with Logging {
   protected def parentIntercept: MarkupIntercepting = null

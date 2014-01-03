@@ -5,7 +5,7 @@ import org.hyperscala.AttributeValue
 
 /**
  * NOTE: This file has been generated. Do not modify directly!
- * @author Matt Hicks <mhicks@hyperscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 class Opacity(val n: Double) extends AttributeValue with NumericValue {
   def value = n.toString

@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * NOTE: This file has been generated. Do not modify directly!
- * @author Matt Hicks <mhicks@hyperscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 class Select extends Container[Option] with BodyChild with HTMLTag with FormField {
   implicit val thisSelect = this

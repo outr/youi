@@ -3,7 +3,7 @@ package org.hyperscala.persistence
 import org.powerscala.Color
 
 /**
- * @author Matt Hicks <mhicks@powerscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 object ColorPersistence extends ValuePersistence[Color] {
   def fromString(s: String, name: String, clazz: Class[_]) = Color(s)

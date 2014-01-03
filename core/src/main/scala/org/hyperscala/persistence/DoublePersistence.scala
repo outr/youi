@@ -1,7 +1,7 @@
 package org.hyperscala.persistence
 
 /**
- * @author Matt Hicks <mhicks@powerscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 object DoublePersistence extends ValuePersistence[Double] {
   def fromString(s: String, name: String, clazz: Class[_]) = s.collect {

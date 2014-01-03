@@ -3,7 +3,7 @@ package org.hyperscala.event
 import org.powerscala.enum.{Enumerated, EnumEntry}
 
 /**
- * @author Matt Hicks <mhicks@powerscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 sealed class Key(val code: Int, val description: String) extends EnumEntry
 

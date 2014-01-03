@@ -3,7 +3,7 @@ package org.hyperscala.io
 import annotation.tailrec
 
 /**
- * @author Matt Hicks <mhicks@powerscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 case class HTMLWriter(writer: String => Unit, tab: String = "  ", newLine: String = "\n") {
   private var _tabs: Int = 0

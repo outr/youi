@@ -8,7 +8,7 @@ import org.hyperscala.html.constraints._
 
 /**
  * NOTE: This file has been generated. Do not modify directly!
- * @author Matt Hicks <mhicks@hyperscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 class Link extends Textual with BodyChild with HeadChild with HTMLTag {
   lazy val xmlLabel = "link"

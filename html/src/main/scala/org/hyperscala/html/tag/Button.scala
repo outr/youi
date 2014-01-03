@@ -9,7 +9,7 @@ import com.outr.net.Method
 
 /**
  * NOTE: This file has been generated. Do not modify directly!
- * @author Matt Hicks <mhicks@hyperscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 class Button extends Container[BodyChild] with BodyChild with HTMLTag with FormField {
   lazy val xmlLabel = "button"

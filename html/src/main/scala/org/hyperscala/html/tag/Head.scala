@@ -11,7 +11,7 @@ import org.hyperscala.selector.Selector
 
 /**
  * NOTE: This file has been generated. Do not modify directly!
- * @author Matt Hicks <mhicks@hyperscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 class Head extends Container[HeadChild] with HTMLChild with HTMLTag {
   lazy val xmlLabel = "head"

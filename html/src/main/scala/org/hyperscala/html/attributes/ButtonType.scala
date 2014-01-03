@@ -6,7 +6,7 @@ import org.hyperscala.AttributeValue
 
 /**
  * NOTE: This file has been generated. Do not modify directly!
- * @author Matt Hicks <mhicks@hyperscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 sealed class ButtonType(val value: String) extends EnumEntry with AttributeValue
 

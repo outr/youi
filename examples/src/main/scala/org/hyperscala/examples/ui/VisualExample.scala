@@ -6,14 +6,13 @@ import org.hyperscala.css.attributes._
 
 import org.powerscala.property._
 import org.powerscala.Country
-import org.hyperscala.ui.widgets.visual.`type`.DateInputVisualType
 import org.hyperscala.web.Webpage
 import org.hyperscala.realtime.{RealtimeEvent, Realtime}
 import org.hyperscala.examples.Example
 import language.reflectiveCalls
 
 /**
- * @author Matt Hicks <mhicks@powerscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 class VisualExample extends Example {
   Webpage().require(Realtime)

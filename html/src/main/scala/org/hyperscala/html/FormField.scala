@@ -5,7 +5,7 @@ import org.hyperscala.ResponseMessage
 import org.powerscala.property.Property
 
 /**
- * @author Matt Hicks <mhicks@powerscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 trait FormField extends BodyChild {
   def disabled: Property[Boolean]

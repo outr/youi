@@ -6,7 +6,7 @@ import persistence.ValuePersistence
 import org.powerscala.event.Listenable
 
 /**
- * @author Matt Hicks <mhicks@powerscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 class PropertyAttribute[T](val name: String,
                            default: T,

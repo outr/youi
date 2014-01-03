@@ -10,7 +10,7 @@ import org.hyperscala.css.attributes._
 
 /**
  * NOTE: This file has been generated. Do not modify directly!
- * @author Matt Hicks <mhicks@hyperscala.org>
+ * @author Matt Hicks <matt@outr.com>
  */
 class Img extends Container[BodyChild] with BodyChild with HTMLTag {
   lazy val xmlLabel = "img"

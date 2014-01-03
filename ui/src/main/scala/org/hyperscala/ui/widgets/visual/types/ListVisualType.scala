@@ -1,4 +1,4 @@
-package org.hyperscala.ui.widgets.visual.`type`
+package org.hyperscala.ui.widgets.visual.types
 
 import org.powerscala.property.Property
 import org.hyperscala.ui.widgets.visual.VisualBuilder

@@ -6,6 +6,7 @@ import org.powerscala.property._
 import org.hyperscala.Unique
 import org.powerscala.Color
 import tag.Text
+import org.hyperscala.ui.widgets.visual.types.VisualType
 
 /**
  * @author Matt Hicks <matt@outr.com>

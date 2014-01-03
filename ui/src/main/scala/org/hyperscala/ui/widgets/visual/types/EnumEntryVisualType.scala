@@ -1,4 +1,4 @@
-package org.hyperscala.ui.widgets.visual.`type`
+package org.hyperscala.ui.widgets.visual.types
 
 import org.powerscala.enum.{EnumEntry, Enumerated}
 import org.powerscala.property.Property

@@ -3,6 +3,7 @@ package org.hyperscala.ui.widgets.visual
 import org.powerscala.property.Property
 
 import language.existentials
+import org.hyperscala.ui.widgets.visual.types.VisualType
 
 /**
  * @author Matt Hicks <matt@outr.com>

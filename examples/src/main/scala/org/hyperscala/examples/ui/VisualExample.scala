@@ -10,6 +10,7 @@ import org.hyperscala.web.Webpage
 import org.hyperscala.realtime.{RealtimeEvent, Realtime}
 import org.hyperscala.examples.Example
 import language.reflectiveCalls
+import org.hyperscala.ui.widgets.visual.types.DateInputVisualType
 
 /**
  * @author Matt Hicks <matt@outr.com>

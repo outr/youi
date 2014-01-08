@@ -82,6 +82,8 @@ object HyperScalaBuild extends Build {
   lazy val jquery = Project("jquery", file("jquery"), settings = createSettings("hyperscala-jquery"))
     .dependsOn(web)
     .settings(libraryDependencies += WebJarsJQuery)
+  lazy val socketio = Project("socketio", file("socketio"), settings = createSettings("hyperscala-socketio"))
+    .dependsOn(jquery)
   lazy val realtime = Project("realtime", file("realtime"), settings = createSettings("hyperscala-realtime"))
     .dependsOn(web, jquery)
     .settings(libraryDependencies ++= Seq(outrNetCommunicatorClient, outrNetCommunicatorServer))
@@ -91,7 +93,7 @@ object HyperScalaBuild extends Build {
     .settings(publishArtifact := false)
   // Examples and Site
   lazy val examples = Project("examples", file("examples"), settings = createSettings("hyperscala-examples"))
-    .dependsOn(web, ui, snapSVG)
+    .dependsOn(web, ui, snapSVG, socketio)
     .settings(libraryDependencies ++= Seq(outrNetServlet))
   lazy val hello = Project("hello", file("hello"), settings = createSettings("hyperscala-hello") ++ Revolver.settings ++ com.earldouglas.xsbtwebplugin.WebPlugin.webSettings)
     .dependsOn(web)

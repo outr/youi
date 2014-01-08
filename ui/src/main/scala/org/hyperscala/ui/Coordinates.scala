@@ -19,8 +19,25 @@ abstract class Coordinates extends Listenable with StorageComponent[CoordinatesT
 
   override protected def componentIdentifier = s"coordinates-$id"
 
-  def coordinateX(local: Double, absolute: Double, width: Double): Double
-  def coordinateY(local: Double, absolute: Double, height: Double): Double
+  def coordinateX(absolute: Double, width: Double): Double
+  def coordinateY(absolute: Double, height: Double): Double
+
+  def coordinateX(absolute: Double, width: Double, horizontal: Horizontal): Double = {
+    val value = coordinateX(absolute, width)
+    horizontal match {
+      case Horizontal.Left => value
+      case Horizontal.Center => value + (width * 0.5)
+      case Horizontal.Right => value + width
+    }
+  }
+  def coordinateY(absolute: Double, height: Double, vertical: Vertical): Double = {
+    val value = coordinateY(absolute, height)
+    vertical match {
+      case Vertical.Top => value
+      case Vertical.Middle => value + (height * 0.5)
+      case Vertical.Bottom => value + height
+    }
+  }
 
   def localizeX(x: Double, ct: CoordinatesTag): Double
   def localizeY(y: Double, ct: CoordinatesTag): Double
@@ -31,9 +48,9 @@ abstract class Coordinates extends Listenable with StorageComponent[CoordinatesT
 }
 
 class CoordinatesOffsetFromCenter(offsetX: Double = 0.0, offsetY: Double = 0.0) extends Coordinates {
-  def coordinateX(local: Double, absolute: Double, width: Double) = absolute - (WindowSize.width() / 2.0)
+  def coordinateX(absolute: Double, width: Double) = absolute - (WindowSize.width() / 2.0)
 
-  def coordinateY(local: Double, absolute: Double, height: Double) = absolute - (WindowSize.height() / 2.0)
+  def coordinateY(absolute: Double, height: Double) = absolute - (WindowSize.height() / 2.0)
 
   def localizeX(x: Double, ct: CoordinatesTag) = x + (WindowSize.width() / 2.0)
 
@@ -48,7 +65,7 @@ class CoordinatesOffsetFromCenter(offsetX: Double = 0.0, offsetY: Double = 0.0) 
   }
 }
 
-class CoordinatesTag(coordinates: Coordinates, val b: Bounding, val t: HTMLTag) extends Listenable with Logging {
+class CoordinatesTag(val coordinates: Coordinates, val b: Bounding, val t: HTMLTag) extends Listenable with Logging {
   private val updatingCoordinates = new ThreadLocal[Boolean] {
     override def initialValue() = false
   }
@@ -177,7 +194,7 @@ class CoordinatesTag(coordinates: Coordinates, val b: Bounding, val t: HTMLTag) 
   }
 
   private def updateCoordinatesX() = doUpdate {
-    val cx = coordinates.coordinateX(b.localX(), b.absoluteX(), b.width())
+    val cx = coordinates.coordinateX(b.absoluteX(), b.width())
     val ux = horizontal() match {
       case Horizontal.Left => cx
       case Horizontal.Center => cx + (b.width() / 2.0)
@@ -187,7 +204,7 @@ class CoordinatesTag(coordinates: Coordinates, val b: Bounding, val t: HTMLTag) 
   }
 
   private def updateCoordinatesY() = doUpdate {
-    val cy = coordinates.coordinateY(b.localY(), b.absoluteY(), b.height())
+    val cy = coordinates.coordinateY(b.absoluteY(), b.height())
     val uy = vertical() match {
       case Vertical.Top => cy
       case Vertical.Middle => cy + (b.height() / 2.0)

@@ -10,13 +10,13 @@ import org.hyperscala.AttributeValue
  */
 class Length(val value: String) extends EnumEntry with AttributeValue {
   lazy val pixels = if (value.endsWith("px")) {
-    value.substring(0, value.length - 2).toInt
+    value.substring(0, value.length - 2).toDouble
   } else {
     0
   }
 
   lazy val percent = if (value.endsWith("%")) {
-    value.substring(0, value.length - 1).toInt
+    value.substring(0, value.length - 1).toDouble
   } else {
     0
   }
@@ -34,6 +34,7 @@ object Length extends Enumerated[Length] with EnumEntryPersistence[Length] {
   val Auto = new Length("auto")
   val Inherit = new Length("inherit")
   def Pixels(v: Int) = Length("%spx".format(v))
+  def Pixels(v: Double) = Length("%spx".format(v))
   def Centimeters(v: Int) = Length("%scm".format(v))
   def Percent(v: Int) = Length(v + "%")
 

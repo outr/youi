@@ -24,6 +24,7 @@ trait Selector extends Jsonify {
 
 object Selector extends ValuePersistence[List[Selector]] {
   def all = AllSelector
+  def empty = EmptySelector
   def clazz(className: String) = ClassSelector(className)
   def element[T <: HTMLTag](implicit manifest: Manifest[T]) = {
     ElementSelector(HTMLTagType.byClass(manifest.runtimeClass.asInstanceOf[Class[T]]).get)
@@ -83,6 +84,14 @@ object AllSelector extends Selector {
   val value = "*"
 
   def matches(t: HTMLTag) = true
+}
+
+object EmptySelector extends Selector {
+  val value = ""
+
+  override def quoted = false
+
+  def matches(t: HTMLTag) = false
 }
 
 case class StringSelector(value: String, override val quoted: Boolean = true) extends Selector {

@@ -12,6 +12,7 @@ import org.powerscala.concurrent.Time
 import org.powerscala.log.Logging
 import org.hyperscala.event.EventReceived
 import org.powerscala.event.processor.UnitProcessor
+import org.hyperscala.javascript.dsl.JSFunction0
 
 /**
  * Bounding wraps around HTMLTags to keep track of position and dimension as represented in the client.
@@ -56,8 +57,15 @@ object Bounding extends Module with StorageComponent[Bounding, HTMLTag] with Log
     page.head.contents += new tag.Script(mimeType = "text/javascript", src = "/bounding.js")
   }
 
-  def monitor(selector: Selector, frequency: Double = 0.5) = {
-    Realtime.sendJavaScript(s"window.bounding.monitor(${selector.content}, ${Time.millis(frequency)});", onlyRealtime = false)
+  def monitor(selector: Selector, frequency: Double = 0.5, selectorFunction: JSFunction0[Selector] = null) = {
+    val sf = if (selectorFunction != null) {
+      selectorFunction.toJS(1)
+    } else {
+      "null"
+    }
+    val js = s"window.bounding.monitor(${selector.content}, ${Time.millis(frequency)}, $sf);"
+    info(s"monitor: $js")
+    Realtime.sendJavaScript(js, onlyRealtime = false)
   }
 
   def disable(selector: Selector) = {

@@ -1,6 +1,6 @@
 var bounding = {
     entries: {},
-    monitor: function(selector, frequency) {
+    monitor: function(selector, frequency, selectorFunction) {
         bounding.remove(selector);         // Make sure this id isn't already being monitored
 
         var entry = {
@@ -8,12 +8,17 @@ var bounding = {
         };
         bounding.entries[selector] = bounding;
         entry.intervalId = setInterval(function() {
-            bounding.check(selector);
+            var selection;
+            if (selectorFunction == null) {
+                selection = $(selector);
+            } else {
+                selection = selectorFunction();
+            }
+            bounding.check(selector, selection);
         }, frequency);
     },
-    check: function(selector) {
+    check: function(selector, selection) {
         var selectorEntry = bounding.entries[selector];
-        var selection = $(selector);
         if (selection.length > 0) {
             selection.each(function() {     // Iterate over each entry
                 var element = $(this);

@@ -8,7 +8,7 @@ object Dependencies {
   val powerScalaHierarchy = "org.powerscala" %% "powerscala-hierarchy" % powerScalaVersion
   val powerScalaProperty = "org.powerscala" %% "powerscala-property" % powerScalaVersion
 
-  val WebJarsJQuery = "org.webjars" % "jquery" % "1.10.2-1"
+  val webJarsJQuery = "org.webjars" % "jquery" % "1.10.2-1"
 
   val outrNetCore = "com.outr.net" %% "outrnet-core" % outrNetVersion
   val outrNetServlet = "com.outr.net" %% "outrnet-servlet" % outrNetVersion
@@ -27,6 +27,8 @@ object Dependencies {
   val htmlcleaner = "net.sourceforge.htmlcleaner" % "htmlcleaner" % "2.6.1"
   val akkaActors = "com.typesafe.akka" % "akka-actor_2.10" % "2.2.1"
   val uaDetector = "net.sf.uadetector" % "uadetector-resources" % "2013.09"
+
+  val argonaut = "io.argonaut" %% "argonaut" % "6.0.1"
 
   val scalaTest = "org.scalatest" % "scalatest_2.10" % "2.0.RC2" % "test"
 }

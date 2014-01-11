@@ -18,6 +18,7 @@ import com.outr.net.http.jetty.JettyApplication
 import com.outr.net.http.request.HttpRequest
 import com.outr.launcher.Launchable
 import org.hyperscala.examples.socketio.SocketIOExample
+import org.hyperscala.examples.connect.ConnectExample
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -95,6 +96,7 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication with Lau
     val bounding = page(new HyperscalaExample(new BoundingExample), Scope.Page, "/example/bounding.html")
     val jCanvas = page(new HyperscalaExample(new jCanvasExample), Scope.Page, "/example/jcanvas.html")
     val socketio = page(new HyperscalaExample(new SocketIOExample), Scope.Page, "/example/socketio.html")
+    val connect = page(new HyperscalaExample(new ConnectExample), Scope.Page, "/example/connect.html")
     val svg = new {
       val basic = page(new HyperscalaExample(new BasicSVGExample), Scope.Page, "/example/svg/basic.html")
       val shapes = page(new HyperscalaExample(new SVGShapesExample), Scope.Page, "/example/svg/shapes.html")

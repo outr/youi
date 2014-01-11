@@ -5,11 +5,18 @@ HyperscalaConnect = (function() {
     var handlers = {};
     var queue = [];
     var sentQueue = [];
+    var lastReceiveId = 0;
+    var disconnected = false;
+    var maxRetries = 10;
+    var sendFailures = 0;
+    var receiveFailures = 0;
 
     var sendSuccess = function(data) {
         if (data.status == 'OK') {
+            sendFailures = 0;
             respond(false);          // Send more data or wait for more data
         } else {
+            sendFailures++;
             console.log('Send successfully, but incorrect respond data: ' + JSON.stringify(data) + ', retrying in five seconds!');
             setTimeout(function() {
                 respond(true);
@@ -17,6 +24,7 @@ HyperscalaConnect = (function() {
         }
     };
     var sendError = function(jqXHR, textStatus, errorThrown) {
+        sendFailures++;
         if (errorThrown == 'Not Found') {
             console.log('Page not found. Reloading page...');
             location.reload();
@@ -26,7 +34,11 @@ HyperscalaConnect = (function() {
                 respond(true);
             }, 5000);
         } else {
-            console.log('Receive Error: ' + textStatus + ' - ' + errorThrown + '. Unhandled failure.');
+            console.log('Receive Error: ' + textStatus + ' - ' + errorThrown + '. Unhandled failure. Reloading page in fifteen seconds...');
+            disconnect();
+            setTimeout(function() {
+                location.reload();
+            }, 15000);
         }
     };
     var sendComplete = function(event) {
@@ -43,18 +55,35 @@ HyperscalaConnect = (function() {
         complete: sendComplete,
         timeout: 15000
     };
+    var disconnect = function() {
+        disconnected = true;
+    };
 
     var receiveSuccess = function(data) {
         if (data.status == 'OK') {
+            receiveFailures = 0;
             var allHandlers = handlers['*'];
             for (var index = 0; index < data.messages.length; index++) {
                 var message = data.messages[index];
-                var array = handlers[message.event];
-                receive(message.event, message.data, array, false);
-                receive(message.event, message.data, allHandlers, true);
+                var expectedId = lastReceiveId + 1;
+                if (message.id == expectedId) {
+                    var array = handlers[message.event];
+                    lastReceiveId = expectedId;
+                    receive(message.event, message.data, array, false);
+                    receive(message.event, message.data, allHandlers, true);
+                } else if (message.id < expectedId) {
+                    console.log('Ignoring message: ' + message.event + '. Expected ID: ' + expectedId + ', Message ID: ' + message.id);
+                } else if (message.id > expectedId) {
+                    console.log('Lost a message, reloading in five seconds...');
+                    disconnect();
+                    setTimeout(function() {
+                        location.reload();
+                    }, 5000);
+                }
             }
             request(false);
         } else {
+            receiveFailures++;
             console.log('Received successfully, but incorrect data: ' + JSON.stringify(data) + ', retrying in five seconds!');
             setTimeout(function() {
                 request(true);
@@ -62,6 +91,7 @@ HyperscalaConnect = (function() {
         }
     };
     var receiveError = function(jqXHR, textStatus, errorThrown) {
+        receiveFailures++;
         if (errorThrown == 'Not Found') {
             console.log('Page not found. Reloading page...');
             location.reload();
@@ -71,7 +101,11 @@ HyperscalaConnect = (function() {
                 request(true);
             }, 5000);
         } else {
-            console.log('Receive Error: ' + textStatus + ' - ' + errorThrown + '. Unhandled failure.');
+            console.log('Receive Error: ' + textStatus + ' - ' + errorThrown + '. Unhandled failure. Reloading page in fifteen seconds...');
+            disconnect();
+            setTimeout(function() {
+                location.reload();
+            }, 15000);
         }
     };
     var receiveComplete = function(event) {
@@ -95,6 +129,8 @@ HyperscalaConnect = (function() {
 
         request(false);          // Request data from the server
         respond(false);          // Send data to the server
+
+        $(window).unload(disconnect);       // Disconnect when the page unloads
     };
     var send = function(event, data) {
         queue.push({
@@ -117,14 +153,21 @@ HyperscalaConnect = (function() {
     // Internal functions
 
     var request = function(resend) {
-        var data = {
-            pageId: pageId,
-            connectionId: connectionId,
-            timestamp: new Date().getTime(),
-            resend: resend
-        };
-        receiveSettings.data = JSON.stringify(data);
-        $.ajax(receiveSettings);
+        if (!disconnected) {
+            if (receiveFailures >= maxRetries) {
+                console.log('Maximum receive failures reached. Disconnecting.');
+                disconnect();
+            } else {
+                var data = {
+                    pageId: pageId,
+                    connectionId: connectionId,
+                    timestamp: new Date().getTime(),
+                    resend: resend
+                };
+                receiveSettings.data = JSON.stringify(data);
+                $.ajax(receiveSettings);
+            }
+        }
     };
     var respond = function(resend) {
         if (resend) {                       // Failure, so lets send the queue again
@@ -169,14 +212,21 @@ HyperscalaConnect = (function() {
      * @param queue
      */
     var sendQueue = function(queue) {
-        var data = {
-            pageId: pageId,
-            connectionId: connectionId,
-            timestamp: new Date().getTime(),
-            messages: queue
-        };
-        sendSettings.data = JSON.stringify(data);
-        $.ajax(sendSettings);
+        if (!disconnected) {
+            if (sendFailures >= maxRetries) {
+                console.log('Maximum send failures reached. Disconnecting.');
+                disconnect();
+            } else {
+                var data = {
+                    pageId: pageId,
+                    connectionId: connectionId,
+                    timestamp: new Date().getTime(),
+                    messages: queue
+                };
+                sendSettings.data = JSON.stringify(data);
+                $.ajax(sendSettings);
+            }
+        }
     };
 
     return {

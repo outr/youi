@@ -1,10 +1,9 @@
 package org.hyperscala.realtime
 
-import org.hyperscala.web.{WebpageHandler, Webpage, Website}
+import org.hyperscala.web.{Webpage, Website}
 
 import org.hyperscala.html._
 
-import org.powerscala.json._
 import org.hyperscala.web.module.IdentifyTags
 import org.powerscala.Version
 import org.hyperscala.module._
@@ -12,62 +11,43 @@ import org.hyperscala.jquery.jQuery
 
 import language.reflectiveCalls
 import org.hyperscala.jquery.stylesheet.jQueryStyleSheet
-import com.outr.net.communicator.server.{Message, Connection, Communicator}
 import org.powerscala.log.Logging
-import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.html.attributes.InputType
 import org.hyperscala.javascript.dsl.Statement
 import org.hyperscala.selector.Selector
 import org.powerscala.property.Property
 import org.hyperscala.{Markup, Container}
+import org.hyperscala.connect.{Message, Connection, Connect}
+import org.powerscala.event.Listenable
+import argonaut.{CodecJson, Json}
+import argonaut.Argonaut._
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-object Realtime extends Module with Logging {
+object Realtime extends Module with Logging with Listenable {
   val debug = Property[Boolean]()
 
   def name = "realtime"
 
   def version = Version(1, 1)
 
-  override def dependencies = List(jQuery.LatestWithDefault, jQueryStyleSheet, IdentifyTags)
+  override def dependencies = List(jQuery.LatestWithDefault, jQueryStyleSheet, IdentifyTags, Connect)
 
   def init() = {
-    // Configure communicator resources
-    Communicator.configure(Website())
     // Register realtime.js to actually establish the connection
     Website().register("/js/realtime.js", "realtime.js")
-    // Listen for connections
-    Communicator.created.on {
-      case (connection, data) => {
-        val pageId = data.asInstanceOf[Map[String, String]]("pageId")
-        created(connection, pageId)
-      }
-    }
-    Communicator.connected.on {
-      case (connection, data) => {
-        connected(connection)
-      }
-    }
-    Communicator.received.on {
-      case (connection, message) => received(connection, message)
-    }
-    Communicator.disposed.on {
-      case connection => disposed(connection)
-    }
   }
 
   def load() = {
     val page = Webpage()
-    page.head.contents += new tag.Script(src = "/GWTCommunicator/GWTCommunicator.nocache.js")
-    page.head.contents += new tag.Script(src = "/communicator.js")
-    page.head.contents += new tag.Link(href = "/communicator.css")
     page.head.contents += new tag.Script(src = "/js/realtime.js")
-    page.head.contents += new tag.Script(content = JavaScriptString(s"jQuery(document).ready(function() { connectRealtime('${page.pageId}', ${debug()}); });"))
+    Connect.event {
+      case (connection, message) => received(connection, message)
+    }
   }
 
-  private def created(connection: Connection, pageId: String) = {
+  /*private def created(connection: Connection, pageId: String) = {
     WebpageHandler.pageById[Webpage](pageId) match {
       case Some(page) => {
         val realtime = RealtimePage(page)             // Get reference to RealtimePage
@@ -76,34 +56,34 @@ object Realtime extends Module with Logging {
       }
       case None => warn(s"Unable to find page by id: $pageId (cached page ids: ${Website().pages.ids.mkString(", ")})")
     }
-  }
+  }*/
 
-  private def connected(connection: Connection) = {
+  /*private def connected(connection: Connection) = {
     val page = connection.store[Webpage]("page")
     val realtime = RealtimePage(page)
     realtime.connectionConnected(connection)
-  }
+  }*/
 
   private def received(connection: Connection, message: Message) = {
-    val page = connection.store[Webpage]("page")
+    val page = connection.webpage
     val realtime = RealtimePage(page)
     realtime.received(connection, message)
   }
 
-  private def disposed(connection: Connection) = {
+  /*private def disposed(connection: Connection) = {
     val page = connection.store[Webpage]("page")    // Load the page from the connection
     val realtime = RealtimePage(page)               // Get a reference to RealtimePage
     realtime.connectionDisposed(connection)         // Notify the RealtimePage that a connection was disposed
-  }
+  }*/
 
-  def broadcast(event: String, message: Any, sendWhenConnected: Boolean, page: Webpage = Webpage()) = {
+  def broadcast(event: String, message: Json, sendWhenConnected: Boolean, page: Webpage = Webpage()) = {
     Webpage().require(this)
     val realtime = RealtimePage(page)
-    val content = message match {
-      case s: String => s
-      case other => generate(other, specifyClassName = false)
-    }
-    realtime.send(event, content, sendWhenConnected = sendWhenConnected)
+//    val content = message match {
+//      case s: String => s
+//      case other => generate(other, specifyClassName = false)
+//    }
+    realtime.send(event, message, sendWhenConnected = sendWhenConnected)
   }
 
   /**
@@ -136,16 +116,15 @@ object Realtime extends Module with Logging {
    * @param onlyRealtime if true the JavaScript will only be sent if the page has already completed rendering (default: true)
    * @param delay optionally specifies a delay before the instruction is invoked
    */
-  def sendJavaScript(instruction: String, content: String = null, selector: Selector = null, onlyRealtime: Boolean = true, delay: Int = 0): Unit = {
-    debug(s"sendJavaScript: $instruction")
-    broadcast("eval", JavaScriptMessage(instruction, content, selector, delay), sendWhenConnected = !onlyRealtime)
+  def sendJavaScript(instruction: String, content: Option[String] = None, selector: Option[Selector] = None, onlyRealtime: Boolean = true, delay: Int = 0): Unit = {
+    broadcast("eval", JavaScriptMessage(instruction, content, selector.map(s => s.content), delay).asJson, sendWhenConnected = !onlyRealtime)
   }
 
   def sendRedirect(url: String) = {
-    sendJavaScript("window.location.href = content;", url, onlyRealtime = false)
+    sendJavaScript("window.location.href = content;", Some(url), onlyRealtime = false)
   }
 
-  def send(statement: Statement[_], selector: Selector = null, onlyRealtime: Boolean = false) = {
+  def send(statement: Statement[_], selector: Option[Selector] = None, onlyRealtime: Boolean = false) = {
     Realtime.sendJavaScript(statement.content, selector = selector, onlyRealtime = onlyRealtime)
   }
 
@@ -210,4 +189,8 @@ object Realtime extends Module with Logging {
   }
 }
 
-case class JavaScriptMessage(instruction: String, content: String = null, selector: Selector = null, delay: Int = 0)
+case class JavaScriptMessage(instruction: String, content: Option[String] = None, selector: Option[String] = None, delay: Int = 0)
+
+object JavaScriptMessage {
+  implicit def JavaScriptMessageCodecJson: CodecJson[JavaScriptMessage] = casecodec4(JavaScriptMessage.apply, JavaScriptMessage.unapply)("instruction", "content", "selector", "delay")
+}

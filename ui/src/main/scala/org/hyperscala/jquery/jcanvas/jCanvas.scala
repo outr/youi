@@ -22,10 +22,10 @@ class jCanvas(selector: jQuerySelector) {
               radius: Radius = null,
               start: Start = null,
               end: End = null): Statement[Unit] = {
-    drawArc(strokeStyle, strokeWidth, x, y, radius, start, end)
+    arc(strokeStyle, strokeWidth, x, y, radius, start, end)
   }
 
-  def drawArc(properties: ArcProperty*): Statement[Unit] = selector.call("drawArc", properties2Map(properties: _*))
+  def arc(properties: ArcProperty*): Statement[Unit] = selector.call("drawArc", properties2Map(properties: _*))
 
   private def properties2Map(properties: CanvasProperty*) = {
     properties.collect {

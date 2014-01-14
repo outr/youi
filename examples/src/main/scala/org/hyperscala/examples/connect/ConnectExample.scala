@@ -24,7 +24,7 @@ class ConnectExample extends Example {
   Connect.on("ping") {
     case data => {
       println("Received ping, sending pong...")
-      Connect.send("pong", data.reverse)
+      Connect.send("pong", data)
     }
   }
 

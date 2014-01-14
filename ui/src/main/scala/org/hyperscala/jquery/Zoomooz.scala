@@ -31,7 +31,7 @@ class Zoomooz(selector: jQuerySelector) {
       "preservescroll" -> preserveScroll
     )
     if (root != null) {
-      values += "root" -> root
+      values += "root" -> root.content
     }
     selector.call("zoomTo", values)
   }

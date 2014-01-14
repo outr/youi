@@ -12,7 +12,7 @@ object HyperScalaBuild extends Build {
   import Dependencies._
 
   val baseSettings = Defaults.defaultSettings ++ Seq(
-    version := "0.8.3-SNAPSHOT",
+    version := "0.8.4-SNAPSHOT",
     organization := "org.hyperscala",
     scalaVersion := "2.10.3",
     libraryDependencies ++= Seq(
@@ -66,7 +66,7 @@ object HyperScalaBuild extends Build {
     .settings(publishArtifact in Compile := false, publishArtifact in Test := false)
     .aggregate(core, html, javascript, svg, web, jquery, socketio, realtime, ui, generator, examples, hello, numberGuess, site)
   lazy val core = Project("core", file("core"), settings = createSettings("hyperscala-core"))
-    .settings(libraryDependencies ++= Seq(outrNetCore))
+    .settings(libraryDependencies ++= Seq(outrNetCore, argonaut))
   lazy val html = Project("html", file("html"), settings = createSettings("hyperscala-html"))
     .dependsOn(core)
   lazy val svg = Project("svg", file("svg"), settings = createSettings("hyperscala-svg"))
@@ -84,12 +84,10 @@ object HyperScalaBuild extends Build {
     .settings(libraryDependencies += webJarsJQuery)
   lazy val connect = Project("connect", file("connect"), settings = createSettings("hyperscala-connect"))
     .dependsOn(jquery)
-    .settings(libraryDependencies += argonaut)
   lazy val socketio = Project("socketio", file("socketio"), settings = createSettings("hyperscala-socketio"))
     .dependsOn(jquery)
   lazy val realtime = Project("realtime", file("realtime"), settings = createSettings("hyperscala-realtime"))
-    .dependsOn(web, jquery)
-    .settings(libraryDependencies ++= Seq(outrNetCommunicatorClient, outrNetCommunicatorServer))
+    .dependsOn(web, jquery, connect)
   lazy val ui = Project("ui", file("ui"), settings = createSettings("hyperscala-ui"))
     .dependsOn(web, realtime, jquery)
   lazy val generator = Project("generator", file("generator"), settings = createSettings("hyperscala-generator"))

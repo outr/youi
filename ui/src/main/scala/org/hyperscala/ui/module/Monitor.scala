@@ -4,14 +4,15 @@ import org.hyperscala.module.Module
 import org.powerscala.Version
 import org.hyperscala.realtime.{RealtimePage, Realtime}
 import org.hyperscala.web.{Webpage, Website}
-import org.hyperscala.html.{HTMLTag, tag}
+import org.hyperscala.html._
 import org.powerscala.property.Property
-import org.hyperscala.{PropertyAttribute, ResponseMessage, Unique}
+import org.hyperscala.{PropertyAttribute, Unique}
 import org.hyperscala.persistence.ValuePersistence
 import org.hyperscala.css.StyleSheetAttribute
 
 import org.hyperscala.realtime.dsl._
 import org.hyperscala.javascript.dsl.JSFunction0
+import argonaut.JsonObject
 
 /**
  * Monitor allows arbitrary JavaScript to be monitored for a changing result at a specific interval and to send that data
@@ -89,15 +90,15 @@ object Monitor extends Module {
       map -= id
     }
 
-    override def receive(event: String, message: ResponseMessage) = event match {
+    override def receive(event: String, json: JsonObject) = event match {
       case "monitored" => {
-        val id = message[String]("elementId")
+        val id = json.string("elementId")
         map.get(id) match {
-          case Some(m) => m.receive(message)
+          case Some(m) => m.receive(json)
           case None => warn(s"Monitor $id doesn't exist!")
         }
       }
-      case _ => super.receive(event, message)
+      case _ => super.receive(event, json)
     }
   }
 }
@@ -106,8 +107,8 @@ class Monitor[T] private(val id: String, val frequency: Double, val evaluator: J
                         (implicit manifest: Manifest[T], converter: ValuePersistence[T]) {
   val property = Property[T](default = None)
 
-  def receive(message: ResponseMessage) = {
-    val value = message[String]("value")
+  def receive(json: JsonObject) = {
+    val value = json.string("value")
     property := converter.fromString(value, null, manifest.runtimeClass)
   }
 }

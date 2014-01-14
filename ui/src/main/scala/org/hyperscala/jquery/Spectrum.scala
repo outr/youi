@@ -187,7 +187,7 @@ class Spectrum private(val wrapped: Input) extends jQueryComponent {
   }
 
   override def option(key: String, value: Any) = key match {
-    case "color" => Realtime.send($(wrapped).call(s"spectrum('set', ${JavaScriptContent.toJS(value)}"))
+    case "color" => Realtime.send($(wrapped).call(s"spectrum('set', ${JavaScriptContent.toJS(value)})"))
     case _ => super.option(key, value)
   }
 }

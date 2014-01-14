@@ -2,7 +2,7 @@ package org.hyperscala.svg
 
 import attributes.{Transform, XMLSpace}
 import event._
-import org.hyperscala.{IdentifiableTag, PropertyAttribute, ResponseMessage}
+import org.hyperscala.{IdentifiableTag, PropertyAttribute}
 import org.hyperscala.io.HTMLWriter
 import org.hyperscala.svg.event.processor._
 
@@ -53,7 +53,7 @@ trait SVGTag extends IdentifiableTag {
     b.toString()
   }
 
-  override def receive(event: String, message: ResponseMessage) = event match {
+  /*override def receive(event: String, message: ResponseMessage) = event match {
     case "svgMouseEvent" => {
       val eventType = message[String]("event")
       val altKey = message[Boolean]("altKey")
@@ -119,7 +119,7 @@ trait SVGTag extends IdentifiableTag {
       fire(evt)
     }
     case _ => super.receive(event, message)
-  }
+  }*/
   
   protected def fire(event: SVGEvent) = event match {
     case evt: SVGFocusInEvent => focusInEvent.fire(evt)

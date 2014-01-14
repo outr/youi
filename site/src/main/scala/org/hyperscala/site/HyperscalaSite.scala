@@ -17,7 +17,6 @@ import com.outr.net.http.session.MapSession
 import com.outr.net.http.jetty.JettyApplication
 import com.outr.net.http.request.HttpRequest
 import com.outr.launcher.Launchable
-import org.hyperscala.examples.socketio.SocketIOExample
 import org.hyperscala.examples.connect.ConnectExample
 
 /**
@@ -50,7 +49,8 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication with Lau
     val large = page(new LargePageExample, Scope.Request, "/example/large.html")
     val static = page(new HyperscalaExample(new StaticHTMLExample), Scope.Request, "/example/static.html")
     val form = page(new HyperscalaExample(new FormExample), Scope.Session, "/example/form.html")
-    val realTime = page(new HyperscalaExample(new RealtimeWebpageExample), Scope.Session, "/example/realtime.html")
+    val realTime = page(new HyperscalaExample(new RealtimeExample), Scope.Session, "/example/realtime.html")
+    val realTimeWebpage = page(new HyperscalaExample(new RealtimeWebpageExample), Scope.Session, "/example/realtime_webpage.html")
     val realTimeForm = page(new HyperscalaExample(new RealtimeFormExample), Scope.Page, "/example/realtime_form.html")
     val visual = page(new HyperscalaExample(new VisualExample), Scope.Session, "/example/visual.html")
     val visualize = page(new HyperscalaExample(new VisualizeExample), Scope.Session, "/example/visualize.html")
@@ -75,27 +75,27 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication with Lau
     val dynamicPage = page(new DynamicPageExample, Scope.Page, "/example/dynamic_page.html")
     val chat = page(new ChatExample, Scope.Session, "/example/chat.html")
     val pageChange = page(new HyperscalaExample(new PageChangeWarningExample), Scope.Page, "/example/page_change.html")
-    val pageLoader = page(new PageLoaderExample, Scope.Page, "/example/page_loader.html")
+//    val pageLoader = page(new PageLoaderExample, Scope.Page, "/example/page_loader.html")
     val fileUploader = page(new HyperscalaExample(new FileUploaderExample), Scope.Page, "/example/file_upload.html")
     val dynamicURL = page(new HyperscalaExample(new DynamicURLExample), Scope.Page, "/example/dynamic_url.html")
     val multiSelect = page(new HyperscalaExample(new MultiSelectExample), Scope.Page, "/example/multi_select.html")
     val select2 = page(new HyperscalaExample(new Select2Example), Scope.Page, "/example/select2.html")
     val caseForm = page(new HyperscalaExample(new CaseFormExample), Scope.Page, "/example/case_form.html")
-    val jsCombiner = page(new HyperscalaExample(new JavaScriptCombinerExample), Scope.Request, "/example/js_combiner.html")
+//    val jsCombiner = page(new HyperscalaExample(new JavaScriptCombinerExample), Scope.Request, "/example/js_combiner.html")
     val jQueryEvents = page(new HyperscalaExample(new jQueryEventsExample), Scope.Request, "/example/jquery_events.html")
     val selectWrapper = page(new HyperscalaExample(new SelectWrapperExample), Scope.Page, "/example/select_wrapper.html")
     val dsl = page(new HyperscalaExample(new RealtimeDSLExample), Scope.Page, "/example/dsl.html")
     val history = page(new HyperscalaExample(new HistoryExample), Scope.Page, "/example/history.html")
     val monitor = page(new HyperscalaExample(new MonitorExample), Scope.Page, "/example/monitor.html")
     val changeable = page(new HyperscalaExample(new ChangeableExample), Scope.Page, "/example/changeable.html")
-    val zoomooz = page(new HyperscalaExample(new ZoomoozExample), Scope.Page, "/example/zoomooz.html")
+//    val zoomooz = page(new HyperscalaExample(new ZoomoozExample), Scope.Page, "/example/zoomooz.html")
     val compliance = page(new HyperscalaExample(new ComplianceExample), Scope.Page, "/example/compliance.html")
     val coordinates = page(new HyperscalaExample(new CoordinatesExample), Scope.Page, "/example/coordinates.html")
     val framed = page(new HyperscalaExample(new FramedExample), Scope.Page, "/example/framed.html")
     val jsrequest = page(new HyperscalaExample(new JSRequestExample), Scope.Page, "/example/jsrequest.html")
     val bounding = page(new HyperscalaExample(new BoundingExample), Scope.Page, "/example/bounding.html")
     val jCanvas = page(new HyperscalaExample(new jCanvasExample), Scope.Page, "/example/jcanvas.html")
-    val socketio = page(new HyperscalaExample(new SocketIOExample), Scope.Page, "/example/socketio.html")
+//    val socketio = page(new HyperscalaExample(new SocketIOExample), Scope.Page, "/example/socketio.html")
     val connect = page(new HyperscalaExample(new ConnectExample), Scope.Page, "/example/connect.html")
     val svg = new {
       val basic = page(new HyperscalaExample(new BasicSVGExample), Scope.Page, "/example/svg/basic.html")

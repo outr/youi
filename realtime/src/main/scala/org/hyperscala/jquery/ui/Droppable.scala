@@ -1,12 +1,18 @@
 package org.hyperscala.jquery.ui
 
-import org.hyperscala.html.HTMLTag
-import org.hyperscala.jquery.{JSMapper, jQueryComponent}
+import org.hyperscala.html._
+import org.hyperscala.jquery.jQueryComponent
 import org.hyperscala.selector.Selector
 import org.powerscala.StorageComponent
 import org.hyperscala.web.Webpage
-import org.hyperscala.javascript.JavaScriptString
+import org.hyperscala.TagMessage
+import argonaut.CodecJson
+import argonaut.Argonaut._
 import org.hyperscala.event.EventReceived
+import org.hyperscala.jquery.JSMapper
+import org.hyperscala.javascript.JavaScriptString
+import scala.Some
+
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -52,20 +58,25 @@ case class DropEvent(draggable: Draggable,
                      offsetTop: Double)
 
 object DropEvent {
-  private val variables2JSON = new JavaScriptString("{ draggable: ui.draggable.attr('id'), helper: ui.helper.attr('id'), position: ui.position, offset: ui.offset }")
+  private val variables2JSON = new JavaScriptString("{ draggable: ui.draggable.attr('id'), helper: ui.helper.attr('id'), draggableLeft: ui.position.left, draggableTop: ui.position.top, helperLeft: ui.offset.left, helperTop: ui.offset.top }")
   private val converter = (evt: EventReceived) => {
-    val draggable = Webpage().body.byId[HTMLTag](evt.message[String]("draggable")) match {
+    val m = evt.json.as[DropTagMessage]
+    val draggable = Webpage().body.byId[HTMLTag](m.draggable) match {
       case Some(tag) => Draggable(tag)
       case None => null
     }
-    val helper = Webpage().body.byId[HTMLTag](evt.message[String]("helper")).getOrElse(null)
-    val position = evt.message[Map[String, Double]]("position")
-    val offset = evt.message[Map[String, Double]]("offset")
-    val draggableLeft = position("left")
-    val draggableTop = position("top")
-    val helperLeft = offset("left")
-    val helperTop = offset("top")
+    val helper = Webpage().body.byId[HTMLTag](m.helper).getOrElse(null)
+    val draggableLeft = m.draggableLeft
+    val draggableTop = m.draggableTop
+    val helperLeft = m.helperLeft
+    val helperTop = m.helperTop
     DropEvent(draggable, helper, draggableLeft, draggableTop, helperLeft, helperTop)
   }
   val Mapper = JSMapper(List("event", "ui"), variables2JSON, converter)
+}
+
+case class DropTagMessage(id: String, draggable: String, helper: String, draggableLeft: Double, draggableTop: Double, helperLeft: Double, helperTop: Double) extends TagMessage
+
+object DropTagMessage {
+  implicit def DropTagMessageCodecJson: CodecJson[DropTagMessage] = casecodec7(DropTagMessage.apply, DropTagMessage.unapply)("id", "draggable", "helper", "draggableLeft", "draggableTop", "helperLeft", "helperTop")
 }

@@ -3,7 +3,7 @@ package org.hyperscala.ui
 import org.hyperscala.module.Module
 import org.powerscala.{StorageComponent, Version}
 import org.hyperscala.realtime.Realtime
-import org.hyperscala.html.{tag, HTMLTag}
+import org.hyperscala.html._
 import org.powerscala.event.{Intercept, Listenable}
 import org.powerscala.property.Property
 import org.hyperscala.web.{Webpage, Website}
@@ -35,7 +35,7 @@ object Bounding extends Module with StorageComponent[Bounding, HTMLTag] with Log
     val page = Webpage()
     page.body.eventReceived.on {
       case evt => if (evt.event == "bounding") {
-        val id = evt.message[String]("elementId")
+        val id = evt.json.string("elementId")
         page.byId[HTMLTag](id) match {
           case Some(t) => {
             val b = apply(t)
@@ -64,7 +64,6 @@ object Bounding extends Module with StorageComponent[Bounding, HTMLTag] with Log
       "null"
     }
     val js = s"window.bounding.monitor(${selector.content}, ${Time.millis(frequency)}, $sf);"
-    info(s"monitor: $js")
     Realtime.sendJavaScript(js, onlyRealtime = false)
   }
 
@@ -104,7 +103,7 @@ class Bounding(val tag: HTMLTag) extends Listenable {
     absolute - diff
   }
 
-  protected def set(evt: EventReceived, propertyName: String, property: Property[Double]) = evt.message.get[Double](propertyName) match {
+  protected def set(evt: EventReceived, propertyName: String, property: Property[Double]) = evt.json.doubleOption(propertyName) match {
     case Some(v) => {
       val oldValue = property()
       property := v

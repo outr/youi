@@ -10,6 +10,7 @@ HyperscalaConnect = (function() {
     var maxRetries = 10;
     var sendFailures = 0;
     var receiveFailures = 0;
+    var debug = false;
 
     var sendSuccess = function(data) {
         if (data.status == 'OK') {
@@ -27,7 +28,7 @@ HyperscalaConnect = (function() {
         sendFailures++;
         if (errorThrown == 'Not Found') {
             console.log('Page not found. Reloading page...');
-            location.reload();
+            reload();
         } else if (errorThrown == '') {
             console.log('Unable to connect. Retrying in five seconds...');
             setTimeout(function() {
@@ -37,7 +38,7 @@ HyperscalaConnect = (function() {
             console.log('Receive Error: ' + textStatus + ' - ' + errorThrown + '. Unhandled failure. Reloading page in fifteen seconds...');
             disconnect();
             setTimeout(function() {
-                location.reload();
+                reload();
             }, 15000);
         }
     };
@@ -58,8 +59,16 @@ HyperscalaConnect = (function() {
     var disconnect = function() {
         disconnected = true;
     };
+    var reload = function() {
+        if (debug) {
+            console.log('Not reloading, in debug mode!');
+        } else {
+            location.reload();
+        }
+    };
 
     var receiveSuccess = function(data) {
+        if (debug) console.log('server -> client: ' + JSON.stringify(data));
         if (data.status == 'OK') {
             receiveFailures = 0;
             var allHandlers = handlers['*'];
@@ -74,10 +83,10 @@ HyperscalaConnect = (function() {
                 } else if (message.id < expectedId) {
                     console.log('Ignoring message: ' + message.event + '. Expected ID: ' + expectedId + ', Message ID: ' + message.id);
                 } else if (message.id > expectedId) {
-                    console.log('Lost a message, reloading in five seconds...');
+                    console.log('Lost a message! Expected: ' + expectedId + ', Received: ' + message.id + ' Reloading in five seconds...');
                     disconnect();
                     setTimeout(function() {
-                        location.reload();
+                        reload();
                     }, 5000);
                 }
             }
@@ -94,7 +103,7 @@ HyperscalaConnect = (function() {
         receiveFailures++;
         if (errorThrown == 'Not Found') {
             console.log('Page not found. Reloading page...');
-            location.reload();
+            reload();
         } else if (errorThrown == '') {
             console.log('Unable to connect. Retrying in five seconds...');
             setTimeout(function() {
@@ -104,7 +113,7 @@ HyperscalaConnect = (function() {
             console.log('Receive Error: ' + textStatus + ' - ' + errorThrown + '. Unhandled failure. Reloading page in fifteen seconds...');
             disconnect();
             setTimeout(function() {
-                location.reload();
+                reload();
             }, 15000);
         }
     };
@@ -224,6 +233,7 @@ HyperscalaConnect = (function() {
                     messages: queue
                 };
                 sendSettings.data = JSON.stringify(data);
+                if (debug) console.log('client -> server: ' + sendSettings.data);
                 $.ajax(sendSettings);
             }
         }

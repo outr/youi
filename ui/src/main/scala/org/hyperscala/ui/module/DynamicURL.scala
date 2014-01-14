@@ -85,8 +85,8 @@ case class DynamicURLInstance(webpage: Webpage) extends Listenable {
 
   private def listenForBrowserChanges() = {  // Listen for changes coming from the browser changing the hash
     webpage.body.handle("hashChanged") {
-      case message => {
-        val hash = message[String]("hash") match {
+      case json => {
+        val hash = json.string("hash") match {
           case null => ""
           case "" => ""
           case s => s.substring(1)
@@ -121,9 +121,9 @@ case class DynamicURLInstance(webpage: Webpage) extends Listenable {
     map.change.on {
       case evt => if (!changing.get()) {
         val hashString = map().collect {
-          case (key, value) if (value != null) => "%s%s%s".format(encode(key, "UTF-8"), DynamicURL.splitCharacter, encode(value, "UTF-8"))
+          case (key, value) if value != null => "%s%s%s".format(encode(key, "UTF-8"), DynamicURL.splitCharacter, encode(value, "UTF-8"))
         }.mkString(DynamicURL.delineationCharacter.toString)
-        Realtime.sendJavaScript("setHash(content);", content = hashString, onlyRealtime = false)
+        Realtime.sendJavaScript("setHash(content);", content = Option(hashString), onlyRealtime = false)
       }
     }
   }

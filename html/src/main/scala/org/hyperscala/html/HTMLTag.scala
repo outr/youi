@@ -2,7 +2,6 @@ package org.hyperscala.html
 
 import attributes._
 import org.hyperscala._
-import io.HTMLWriter
 import org.hyperscala.html.tag._
 import org.hyperscala.css.StyleSheet
 import scala.collection.{Map => ScalaMap}
@@ -10,8 +9,11 @@ import org.powerscala.property.{ListSetProperty, Property}
 import org.hyperscala.event._
 import org.hyperscala.event.processor._
 import org.jdom2.Attribute
-import org.hyperscala.selector.{TagIdSelector, Selector}
+import org.hyperscala.selector.Selector
 import scala.collection.immutable.ListSet
+import argonaut.JsonObject
+import org.hyperscala.io.HTMLWriter
+import org.hyperscala.selector.TagIdSelector
 
 /**
  * NOTE: This file has been generated. Do not modify directly!
@@ -243,26 +245,26 @@ trait HTMLTag extends IdentifiableTag {
     throw new UnsupportedOperationException("%s doesn't support updating value!".format(xmlLabel))
   }
 
-  override def receive(event: String, message: ResponseMessage) = event match {
+  override def receive(event: String, json: JsonObject) = event match {
     case JavaScriptEvent(creator) => {
       val evt = creator(this)
       fire(evt)
     }
     case "keyEvent" => {  // Fires key events on this tag
-      val eventType = message[String]("event")
-      val altKey = message[Boolean]("altKey")
-      val char = message[Int]("char")
-      val ctrlKey = message[Boolean]("ctrlKey")
-      val key = message[Int]("key")
-      val locale = message.getOrElse[String]("locale", null)
-      val location = message.getOrElse[Long]("location", 0L)
-      val metaKey = message[Boolean]("metaKey")
-      val repeat = message.getOrElse[Boolean]("repeat", false)
-      val shiftKey = message[Boolean]("shiftKey")
+      val eventType = json.string("event")
+      val altKey = json.boolean("altKey")
+      val char = json.int("char")
+      val ctrlKey = json.boolean("ctrlKey")
+      val key = json.int("key")
+      val locale = json.string("locale")
+      val location = json.long("location", 0L)
+      val metaKey = json.boolean("metaKey")
+      val repeat = json.boolean("repeat")
+      val shiftKey = json.boolean("shiftKey")
       val evt = JavaScriptEvent.createKeyEvent(this, eventType, altKey, char, ctrlKey, key, locale, location, metaKey, repeat, shiftKey)
       fire(evt)
     }
-    case _ => super.receive(event, message)
+    case _ => super.receive(event, json)
   }
   
   protected def fire(event: JavaScriptEvent) = event match {

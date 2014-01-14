@@ -1,4 +1,10 @@
-var communicator = new Communicator();
+HyperscalaConnect.on('eval', function(data) {
+    try {
+        realtimeEvaluate(data, false);
+    } catch(err) {
+        log('Failed to evaluate instruction: ' + JSON.stringify(data) + ' - ' + err);
+    }
+});
 
 /**
  * Connects the Communicator with a RealtimePage on the server and allows asynchronous
@@ -64,8 +70,7 @@ function realtimeEvent(event, data, confirmation, preventDefault, fireChange, on
         if (id != null) {
             var eventType = event.type;
             var content = {
-                id: id,
-                eventType: eventType
+                id: id
             };
 
             if ('keydown, keypress, keyup'.indexOf(eventType) != -1) {
@@ -80,7 +85,7 @@ function realtimeEvent(event, data, confirmation, preventDefault, fireChange, on
                         value: realtimeChangeEventValue(element)
                     })
                 }
-                communicator.send('realtime', content);
+                HyperscalaConnect.send(eventType, content);
             };
 
             if (confirmation == null || confirm(confirmation)) {
@@ -104,11 +109,10 @@ function realtimeSend(id, eventType, content) {
         content = jQuery.parseJSON(content);
     }
     var data = {
-        id: id,
-        eventType: eventType
+        id: id
     };
     jQuery.extend(data, content);
-    communicator.send('realtime', data);
+    HyperscalaConnect.send(eventType, data);
 }
 
 /**

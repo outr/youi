@@ -9,7 +9,7 @@ import com.outr.net.http.request.HttpRequest
 import com.outr.net.http.response.{HttpResponseStatus, HttpResponse}
 import org.hyperscala.jquery.jQuery
 import org.hyperscala.Unique
-import org.hyperscala.javascript.JavaScriptString
+import org.hyperscala.javascript.JavaScriptContent
 import com.outr.net.http.content.StringContent
 
 import argonaut._, Argonaut._
@@ -25,7 +25,7 @@ import org.powerscala.log.Logging
  *
  * @author Matt Hicks <matt@outr.com>
  */
-object Connect extends Module with HttpHandler {
+object Connect extends Module with HttpHandler with Logging {
   val name = "connect"
   val version = Version(1)
 
@@ -50,15 +50,15 @@ object Connect extends Module with HttpHandler {
   def load() = {
     Webpage().head.contents += new tag.Script(src = "/js/hyperscala.connect.js")
     Webpage().head.contents += new tag.Script {
-      val pageId = Webpage().pageId
-      val connectionId = connections().create().id
-      contents += JavaScriptString(s"HyperscalaConnect.init('$pageId', '$connectionId');")
+      contents += ConnectSession(Webpage())
     }
   }
 
-  def on(event: String)(f: String => Unit) = connections().on(event)(f)
+  def event(f: ((Connection, Message)) => Unit) = connections().on(f)
 
-  def send(event: String, data: String) = connections().send2Client(event, data)
+  def on(event: String)(f: Json => Unit) = connections().on(event)(f)
+
+  def send(event: String, data: Json, sendWhenConnected: Boolean = true) = connections().send2Client(event, data, sendWhenConnected)
 
   def connections(page: Webpage = Webpage()) = page.store.getOrSet("hyperscala.connect", new Connections(Webpage()))
 
@@ -72,6 +72,7 @@ object Connect extends Module with HttpHandler {
       case Some(json) => {
         Website().pages.byId[Webpage](json.pageId) match {
           case Some(page) => {
+            page.checkIn()                      // Let the page know it's still in-use
             val conns = connections(page)
             conns.byId(json.connectionId) match {
               case Some(connection) => request.url.filename match {
@@ -82,7 +83,7 @@ object Connect extends Module with HttpHandler {
                 case "send" => {
                   val send = json.asInstanceOf[SendRequest]
                   send.messages.foreach {
-                    case message => conns.send2Server(connection, message)
+                    case message => connection.send2Server(message)
                   }
                   val r = SendResponse("OK")
                   response.copy(content = StringContent(r.asJson.spaces2), status = HttpResponseStatus.OK)
@@ -94,29 +95,31 @@ object Connect extends Module with HttpHandler {
           case None => createError(response, Error.PageNotFound, "Page not found")
         }
       }
-      case None => createError(response, Error.InvalidRequest, "JSON request data was invalid. The receive request must contain pageId, connectionId, timestamp, and resend.")
+      case None => createError(response, Error.InvalidRequest, s"JSON ${request.url.filename} data was invalid. Actual content: [$content]")
     }
   }
 
   private def createError(response: HttpResponse, code: Int, message: String) = {
+    warn(s"Connect.createError: $code - $message")
     response.copy(status = HttpResponseStatus.BadRequest(s"$code:$message"))
   }
 }
 
-class Connections(webpage: Webpage) extends Listenable with Logging {
+class Connections(val webpage: Webpage) extends Listenable with Logging {
   private var map = Map.empty[String, Connection]
-  private var server2ClientId = 0
-  private var client2ServerId = 0
 
-  def nextServer2ClientId() = synchronized {
-    server2ClientId += 1
-    server2ClientId
-  }
+  private var backlog = List.empty[(String, Json)]
+
+  val created = new UnitProcessor[Connection]("created")
+
+  def isEmpty = map.isEmpty
 
   lazy val actor = Connect.newActor()
   val messageEvent = new UnitProcessor[(Connection, Message)]("messageEvent")
 
-  def on(event: String)(f: String => Unit) = {
+  def on(f: ((Connection, Message)) => Unit) = messageEvent.on(f)
+
+  def on(event: String)(f: Json => Unit) = {
     messageEvent.on {
       case (connection, message) => if (message.event == event) {
         f(message.data)
@@ -127,30 +130,21 @@ class Connections(webpage: Webpage) extends Listenable with Logging {
   def create() = synchronized {
     val connection = new Connection(this)
     map += connection.id -> connection
+    if (backlog.nonEmpty) {     // Send backlog
+      backlog.reverse.foreach {
+        case (event, data) => connection.send2Client(event, data)
+      }
+      backlog = Nil
+    }
+    created.fire(connection)
     connection
   }
 
-  def send2Client(event: String, data: String) = {
-    val m = Message(nextServer2ClientId(), event, data)
-    map.values.foreach(c => c.send2Client(m))
-  }
-
-  def send2Server(connection: Connection, message: Message) = synchronized {
-    val expectedId = client2ServerId + 1
-    if (message.id == expectedId) {
-      client2ServerId = expectedId
-      val context = Website().requestContext          // Get the context for the current thread
-      val f = () => {
-        Website().contextualize(context) {
-          Webpage.updateContext(webpage)
-          messageEvent.fire(connection -> message)
-        }
-      }
-      actor ! f     // Process receives one at a time via actor
-    } else if (message.id < expectedId) {           // We've already seen this one, ignore it
-      warn(s"ignoring already received message id: ${message.id} (next expected: $expectedId)")
+  def send2Client(event: String, data: Json, sendWhenConnected: Boolean) = synchronized {
+    if (isEmpty && sendWhenConnected) {
+      backlog = event -> data :: backlog
     } else {
-      error(s"Lost messages. Expected: $expectedId but received ${message.id}.")
+      map.values.foreach(c => c.send2Client(event, data))
     }
   }
 
@@ -165,21 +159,52 @@ class AsynchronousFunctionActor extends Actor {
   }
 }
 
-class Connection(connections: Connections) {
+class Connection(connections: Connections) extends Logging {
   val id = Unique()
+
+  private var server2ClientId = 0
+  private var client2ServerId = 0
+
+  def nextServer2ClientId() = synchronized {
+    server2ClientId += 1
+    server2ClientId
+  }
+
+  def webpage = connections.webpage
 
   private var queue = List.empty[Message]
   private var sentQueue = List.empty[Message]
 
   def update() = {}
 
-  def send2Client(m: Message) = synchronized {
+  def send2Client(event: String, data: Json) = synchronized {
+    val m = Message(nextServer2ClientId(), event, data)
     queue = m :: queue
+  }
+
+  def send2Server(message: Message) = synchronized {
+    val expectedId = client2ServerId + 1
+    if (message.id == expectedId) {
+      client2ServerId = expectedId
+      val context = Website().requestContext          // Get the context for the current thread
+      val f = () => {
+          Website().contextualize(context) {
+            Webpage.updateContext(webpage)
+            connections.messageEvent.fire(this -> message)
+          }
+        }
+      connections.actor ! f     // Process receives one at a time via actor
+    } else if (message.id < expectedId) {           // We've already seen this one, ignore it
+      warn(s"ignoring already received message id: ${message.id} (next expected: $expectedId)")
+    } else {
+      error(s"Lost messages. Expected: $expectedId but received ${message.id}.")
+    }
   }
 
   def receive(response: HttpResponse, resend: Boolean) = {
     if (!resend) {
       Time.waitFor(30.0, precision = 0.05) {      // Wait up to 30 seconds for an entry in the queue
+        webpage.checkIn()       // Keep the page alive
         queue.nonEmpty
       }
 
@@ -225,8 +250,15 @@ object ReceiveResponse {
   implicit def ReceiveResonseCodecJson: CodecJson[ReceiveResponse] = casecodec2(ReceiveResponse.apply, ReceiveResponse.unapply)("status", "messages")
 }
 
-case class Message(id: Int, event: String, data: String)
+case class Message(id: Int, event: String, data: Json)
 
 object Message {
   implicit def MessageCodecJson: CodecJson[Message] = casecodec3(Message.apply, Message.unapply)("id", "event", "data")
+}
+
+case class ConnectSession(page: Webpage) extends JavaScriptContent {
+  def content = {   // Generate a new connection each rendering of the content
+    val connection = Website().request.store.getOrSet("hyperscala.connect.session", Connect.connections(page).create())
+    s"HyperscalaConnect.init('${page.pageId}', '${connection.id}');"
+  }
 }

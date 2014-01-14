@@ -650,7 +650,7 @@ class RichEditor private(val wrapped: HTMLTag) extends WrappedComponent[HTMLTag]
     }
     wrapped.eventReceived.on {
       case evt => if (evt.event == "editorChanged") {
-        val content = evt.message[String]("value")
+        val content = evt.json.string("value")
         changeValue(content)
 
         Intercept.Stop
@@ -697,7 +697,7 @@ class RichEditor private(val wrapped: HTMLTag) extends WrappedComponent[HTMLTag]
    * @param mode the insertion mode to use.
    */
   def insert(content: String, mode: InsertMode) = {
-    Realtime.sendJavaScript(s"richEditorInsert('${wrapped.identity}', '${mode.value}', content);", onlyRealtime = false, content = content)
+    Realtime.sendJavaScript(s"richEditorInsert('${wrapped.identity}', '${mode.value}', content);", onlyRealtime = false, content = Option(content))
   }
 
   /**

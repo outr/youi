@@ -77,7 +77,7 @@ class Dialog private(val wrapped: HTMLTag) extends jQueryComponent {
   val buttonEvent = new StandardHierarchyEventProcessor[ButtonClicked]("buttonEvent")
   wrapped.eventReceived.on {
     case evt if evt.event == "buttonClicked" => {
-      buttonEvent.fire(ButtonClicked(evt.message[String]("name")))
+      buttonEvent.fire(ButtonClicked(evt.json.string("name")))
       Intercept.Stop
     }
     case _ => Intercept.Continue

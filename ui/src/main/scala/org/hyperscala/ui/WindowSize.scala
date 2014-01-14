@@ -1,5 +1,6 @@
 package org.hyperscala.ui
 
+import org.hyperscala.html._
 import org.hyperscala.module.Module
 import org.powerscala.Version
 import org.hyperscala.realtime.Realtime
@@ -35,8 +36,8 @@ object WindowSize extends Module with Listenable {
     val page = Webpage()
     page.body.eventReceived.on {
       case evt => if (evt.event == "window_size") {
-        val width = evt.message[Int]("width")
-        val height = evt.message[Int]("height")
+        val width = evt.json.int("width")
+        val height = evt.json.int("height")
 
         this.width := width
         this.height := height

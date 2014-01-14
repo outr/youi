@@ -1,9 +1,8 @@
 package org.hyperscala.realtime
 
-import org.hyperscala.web.{Website, Webpage}
-import org.hyperscala.html.{StyleSpaces, FormField, HTMLTag, tag}
+import org.hyperscala.web.Webpage
+import org.hyperscala.html._
 import org.hyperscala.javascript.JavaScriptContent
-import com.outr.net.communicator.server.Connection
 import org.powerscala.hierarchy.event.Descendants
 import org.powerscala.Priority
 import org.powerscala.log.Logging
@@ -11,24 +10,20 @@ import org.hyperscala.css.{Style, StyleSheetAttribute, StyleSheet}
 import org.powerscala.property.Property
 import org.hyperscala._
 import org.hyperscala.svg.{Svg, SVGTag}
+import org.powerscala.hierarchy.ChildLike
+import org.hyperscala.connect.{Message, Connection, Connect}
+import argonaut.{Json, CodecJson}
+import argonaut.Argonaut._
 import org.powerscala.property.event.PropertyChangeEvent
 import org.powerscala.hierarchy.event.ChildAddedEvent
-import com.outr.net.communicator.server.Message
-import org.hyperscala.ResponseMessage
+import scala.Some
 import org.powerscala.hierarchy.event.ChildRemovedEvent
-import org.powerscala.hierarchy.ChildLike
-import scala.annotation.tailrec
-import org.powerscala.event.Listener
-import akka.actor.{Actor, Props, ActorSystem}
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
 class RealtimePage private(page: Webpage) extends Logging {
-  private var _connections = List.empty[Connection]
-  def connections = _connections
-
-  lazy val actor = RealtimePage.newActor()
+  def connections = Connect.connections(page)
 
   // Configure Listeners
   page.childAdded.listen(Priority.Normal, Descendants) {
@@ -44,66 +39,60 @@ class RealtimePage private(page: Webpage) extends Logging {
     case evt => propertyChanged(evt)
   }
 
-  private var backlog = List.empty[(String, String)]
-
-  def send(event: String, message: String, sendWhenConnected: Boolean) = synchronized {
-    if (connections.isEmpty) {
-      if (sendWhenConnected) {
-        backlog = event -> message :: backlog
-      }
-    } else {
-      sendRecursive(event, message, connections)
-    }
+  def send(event: String, message: Json, sendWhenConnected: Boolean) = synchronized {
+    connections.send2Client(event, message, sendWhenConnected)
   }
 
-  private def sendBacklog() = if (backlog.nonEmpty) {
-    backlog.reverse.foreach {
-      case (event, message) => sendRecursive(event, message, connections)
-    }
-    backlog = Nil
-  }
-
-  @tailrec
+  /*@tailrec
   private def sendRecursive(event: String, message: String, connections: List[Connection]): Unit = {
     if (connections.nonEmpty) {
       val c = connections.head
       c.send(event, message)
       sendRecursive(event, message, connections.tail)
     }
-  }
+  }*/
 
-  protected[realtime] def connectionCreated(connection: Connection) = synchronized {
+  /*protected[realtime] def connectionCreated(connection: Connection) = synchronized {
     _connections = connection :: _connections
     heardFromListener = connection.heardFrom.on {
       case time => page.checkIn()       // Check in with the page to keep it from timing out.
     }
-  }
+  }*/
 
-  private var heardFromListener: Listener[Long, Unit] = _
+//  private var heardFromListener: Listener[Long, Unit] = _
 
-  protected[realtime] def connectionConnected(connection: Connection) = synchronized {
-    sendBacklog()
-  }
+//  protected[realtime] def connectionConnected(connection: Connection) = synchronized {
+//    sendBacklog()
+//  }
 
-  protected[realtime] def received(connection: Connection, message: Message) = if (message.event == "realtime") {
+  protected[realtime] def received(connection: Connection, message: Message) = {
     synchronized {
       Webpage.updateContext(page)     // Contextualize
 
-      val content = message.data.asInstanceOf[Map[String, Any]]
-      val id = content("id").asInstanceOf[String]
-      val eventType = content("eventType").asInstanceOf[String]
-
+      val json = message.data.obj.getOrElse(throw new RuntimeException(s"Data is not a JSON object: ${message.data}"))
+      val id = json.string("id")
       val t = id match {
-        case null => Some(page.body)
+        case null | "" => Some(page.body)
         case _ => page.html.byId[IdentifiableTag](id)
       }
       t match {
-        case Some(element) => asynchronousReceive(element, eventType, ResponseMessage(content))
-        case None => warn(s"Unable to find tag by id: $id to fire event: $eventType for message: $content")
+        case Some(element) => element.receive(message.event, json)
+        case None => warn(s"Unable to find tag by id: $id to fire event: ${message.event} for message: ${message.data}")
       }
+//      val eventType = content("eventType").asInstanceOf[String]
+
+//      val t = id match {
+//        case null => Some(page.body)
+//        case _ => page.html.byId[IdentifiableTag](id)
+//      }
+//      t match {
+//        case Some(element) => element.receive(message.event, content)
+//        case None => warn(s"Unable to find tag by id: $id to fire event: $eventType for message: $content")
+//      }
     }
   }
 
+/*
   /**
    * Executes the event in another thread to keep from blocking data receiving.
    *
@@ -125,7 +114,7 @@ class RealtimePage private(page: Webpage) extends Logging {
   protected[realtime] def connectionDisposed(connection: Connection) = synchronized {
     _connections = _connections.filterNot(c => c == connection)
     connection.heardFrom -= heardFromListener
-  }
+  }*/
 
   private def childAdded(evt: ChildAddedEvent) = synchronized {
     if (!RealtimePage.ignoringStructureChanges) {
@@ -154,7 +143,7 @@ class RealtimePage private(page: Webpage) extends Logging {
                 "$('#%s').after(%s);".format(before.id(), variable)
               }
               val content = child.outputString
-              send(JavaScriptMessage(instruction, content))
+              send(JavaScriptMessage(instruction, Some(content)))
             }
           }
         }
@@ -214,12 +203,12 @@ class RealtimePage private(page: Webpage) extends Logging {
       } else {
         Page().intercept.renderAttribute.fire(property) match {
           case Some(pa) => t match {
-            case title: tag.Title if property.name == "content" => send(JavaScriptMessage("document.title = content;", property.attributeValue))
+            case title: tag.Title if property.name == "content" => send(JavaScriptMessage("document.title = content;", Some(property.attributeValue)))
             case textual: Textual if property.name == "content" => textual match {
-              case option: tag.Option => send(JavaScriptMessage("$('#%s').html(content);".format(t.id()), property.attributeValue))
-              case _ => send(JavaScriptMessage("$('#%s').val(content);".format(t.id()), property.attributeValue))
+              case option: tag.Option => send(JavaScriptMessage("$('#%s').html(content);".format(t.id()), Some(property.attributeValue)))
+              case _ => send(JavaScriptMessage("$('#%s').val(content);".format(t.id()), Some(property.attributeValue)))
             }
-            case input: tag.Input if property.name == "value" => send(JavaScriptMessage("$('#%s').val(content);".format(t.id()), property.attributeValue))
+            case input: tag.Input if property.name == "value" => send(JavaScriptMessage("$('#%s').val(content);".format(t.id()), Some(property.attributeValue)))
             case input: tag.Input if property.name == "checked" => send(JavaScriptMessage(s"$$('#${t.identity}').prop('checked', ${property()});"))
             case option: tag.Option if property.name == "selected" => {
               if (option.selected()) {
@@ -227,14 +216,14 @@ class RealtimePage private(page: Webpage) extends Logging {
                 if (select.multiple()) {
                   throw new RuntimeException("Multiple Select Currently not supported!")
                 } else {
-                  send(JavaScriptMessage(s"$$('#${select.identity}').val(content);", content = option.value()))
+                  send(JavaScriptMessage(s"$$('#${select.identity}').val(content);", content = Option(option.value())))
                 }
               }
             }
             //            case option: tag.Option if (property.name == "selected") => if (property() == true) send(JavaScriptMessage(s"$$('#${t.id()}').attr('${property.name}', ${property()});"))
             case _ if property() == false => send(JavaScriptMessage("$('#%s').removeAttr('%s');".format(t.id(), property.name)))
             //            case _ if (property() == true) => send(JavaScriptMessage(s"$$('#${t.id()}').attr('${property.name}', '${property.name}');"))
-            case _ => send(JavaScriptMessage("$('#%s').attr('%s', content);".format(t.id(), property.name), property.attributeValue))
+            case _ => send(JavaScriptMessage("$('#%s').attr('%s', content);".format(t.id(), property.name), Some(property.attributeValue)))
           }
           case None => // Attribute shouldn't render so we ignore it
         }
@@ -249,31 +238,30 @@ class RealtimePage private(page: Webpage) extends Logging {
       case null => ""
       case _ => anyStyle.persistence.toString(value, cssName, value.getClass)
     }
-    send(JavaScriptMessage(s"$$.stylesheet('$selector', '$cssName', content)", cssValue))
+    send(JavaScriptMessage(s"$$.stylesheet('$selector', '$cssName', content)", Option(cssValue)))
   }
 
   private def styleChanged(selector: String, style: Style[_], value: AnyRef) = {
     val anyStyle = style.asInstanceOf[Style[AnyRef]]
     val cssName = style.cssName
     val cssValue = if (value != null) anyStyle.persistence.toString(value, cssName, value.getClass) else null
-    send(JavaScriptMessage("$('%s').css('%s', content);".format(selector, cssName), cssValue))
+    send(JavaScriptMessage("$('%s').css('%s', content);".format(selector, cssName), Option(cssValue)))
   }
 
   private def send(js: JavaScriptMessage): Unit = {
-    val message = Map("instruction" -> js.instruction, "content" -> js.content)
-    send("eval", message)
-  }
-
-  private def send(event: String, data: Any) = connections.foreach {
-    case connection => connection.send(event, data)
+    val message = EvalMessage(js.instruction, js.content)
+    val data = message.asJson
+    connections.send2Client("eval", data, sendWhenConnected = false)
   }
 }
 
-object RealtimePage {
-  System.setProperty("akka.daemonic", "on")
-  private val system = ActorSystem("RealtimePageActorSystem")
-  private def newActor() = system.actorOf(Props[AsynchronousInboundEventActor])
+case class EvalMessage(instruction: String, content: Option[String])
 
+object EvalMessage {
+  implicit def EvalMessageCodecJson: CodecJson[EvalMessage] = casecodec2(EvalMessage.apply, EvalMessage.unapply)("instruction", "content")
+}
+
+object RealtimePage {
   private val _ignoringChangeProperty = new ThreadLocal[Property[_]]
   private val _ignoringChangeValue = new ThreadLocal[Any]
   private val _ignoringStructureChanges = new ThreadLocal[Boolean] {
@@ -307,11 +295,5 @@ object RealtimePage {
       throw new NullPointerException("Page cannot be null!")
     }
     page.store.getOrSet("realtime", new RealtimePage(page))
-  }
-}
-
-class AsynchronousInboundEventActor extends Actor {
-  def receive = {
-    case f: Function0[_] => f()
   }
 }

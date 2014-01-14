@@ -27,7 +27,7 @@ object jQueryEvents extends Module with Logging {
     html.byTag[HTMLTag].foreach {
       case tag => {
         tag.xmlAttributes.foreach {
-          case attribute: EventProperty if (attribute.modified && attribute.name.startsWith("on")) => {
+          case attribute: EventProperty if attribute.modified && attribute.name.startsWith("on") => {
             val id = tag.identity
             val name = attribute.name.substring(2)
             b.append(s"\t$$('#$id').$name(function (event) { ${attribute().content} });\r\n")

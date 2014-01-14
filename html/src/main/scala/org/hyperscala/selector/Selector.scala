@@ -5,6 +5,7 @@ import org.hyperscala.html.HTMLTag
 import org.hyperscala.html.HTMLTagType
 import org.hyperscala.IdentifiableTag
 import org.powerscala.json.Jsonify
+import scala.Some
 
 /**
  * @author Matt Hicks <matt@outr.com>

@@ -5,10 +5,11 @@ import org.powerscala.Version
 import org.hyperscala.web.{Webpage, Website}
 import org.hyperscala.html._
 import org.powerscala.event.Intercept
-import org.hyperscala.{ResponseMessage, Unique}
+import org.hyperscala.Unique
 import org.powerscala.log.Logging
 import org.powerscala.reflect._
 import org.hyperscala.javascript.dsl.JSFunction0
+import argonaut.JsonObject
 
 /**
  * JSRequest allows a JavaScript statement to be supplied, it is invoked in the browser, and the result is sent back to
@@ -31,10 +32,10 @@ object JSRequest extends Module with Logging {
     Webpage().body.eventReceived.on {
       case evt => evt.event match {
         case "jsresponse" => Webpage().synchronized {
-          val id = evt.message[String]("responseId")
+          val id = evt.json.string("responseId")
           Webpage().store.get[JSHandler[_]](id) match {
             case Some(handler) => {
-              handler.process(evt.message)
+              handler.process(evt.json)
               Webpage().store.remove(id)
             }
             case None => warn(s"Unable to find JSHandler by id: $id")
@@ -64,8 +65,8 @@ object JSRequest extends Module with Logging {
   }
 
   case class JSHandler[T](f: List[T] => Unit, clazz: EnhancedClass) {
-    def process(message: ResponseMessage) = {
-      val responseList = message[List[Any]]("responses")
+    def process(json: JsonObject) = {
+      val responseList = json.list("responses")
       val responses = responseList.map(r => clazz.convertTo[T](clazz.simpleName, r))
       f(responses)
     }

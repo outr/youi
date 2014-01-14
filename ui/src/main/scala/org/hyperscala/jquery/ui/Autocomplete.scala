@@ -120,13 +120,13 @@ class Autocompletified private(val input: FormField) {
       case evt => sendChanges(evt)
     }
     input.eventReceived.on {
-      case EventReceived(event, message) if event == "autocompleteSelect" => {
-        val value = message.map("value").asInstanceOf[String]
+      case EventReceived(event, json) if event == "autocompleteSelect" => {
+        val value = json.string("value")
         selected := List(value)
         Intercept.Stop
       }
-      case EventReceived(event, message) if event == "autocompleteMultiSelect" => {
-        val values = message.map("values").asInstanceOf[List[String]]
+      case EventReceived(event, json) if event == "autocompleteMultiSelect" => {
+        val values = json.strings("values")
         selected := values
         Intercept.Stop
       }

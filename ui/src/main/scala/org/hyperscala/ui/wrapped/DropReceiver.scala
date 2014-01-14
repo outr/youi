@@ -19,8 +19,8 @@ class DropReceiver private(val wrapped: HTMLTag) extends WrappedComponent[HTMLTa
   private def init() = {
     wrapped.eventReceived.on {
       case evt if evt.event == "dropped" => {
-        val types = evt.message[List[String]]("types")
-        val data = evt.message[Map[String, String]]("data").map {
+        val types = evt.json.strings("types")
+        val data = evt.json.stringMap("data").map {
           case (key, value) => DropData(key, value.toString)
         }.toList
         dropped.fire(DropReceived(types, data))

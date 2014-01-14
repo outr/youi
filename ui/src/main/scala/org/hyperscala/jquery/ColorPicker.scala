@@ -58,7 +58,7 @@ class ColorPicker private(val wrapped: tag.Input) extends jQueryComponent {
   on("ok", ColorPicker.OkFunction)
   wrapped.eventReceived.on {
     case evt if evt.event == "colorSelected" => {
-      val value = evt.message[String]("value")
+      val value = evt.json.string("value")
       if (value != null && value.trim.nonEmpty) {
         color := Color(value)
       } else {

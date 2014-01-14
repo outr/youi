@@ -1,7 +1,6 @@
 package org.hyperscala.html
 
 import org.powerscala.log.Logging
-import java.util
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -10,7 +9,7 @@ object FillMemory extends Logging {
   def main(args: Array[String]): Unit = {
     val start = System.currentTimeMillis()
     var counter = 0
-    val buffer = new util.ArrayList[tag.A](200000)
+    val buffer = new java.util.ArrayList[tag.A](200000)
     try {
       while (true) {
         buffer.add(new tag.A(name = "Tag%s".format(counter)))

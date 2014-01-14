@@ -1,6 +1,6 @@
 package org.hyperscala.event
 
-import org.hyperscala.ResponseMessage
+import argonaut.JsonObject
 
 /**
  * EventReceived is fired on an IdentifiableTag if no other internal receiving support is found.
@@ -9,4 +9,4 @@ import org.hyperscala.ResponseMessage
  *
  * @author Matt Hicks <matt@outr.com>
  */
-case class EventReceived(event: String, message: ResponseMessage)
+case class EventReceived(event: String, json: JsonObject)

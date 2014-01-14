@@ -2,11 +2,12 @@ package org.hyperscala.html.tag
 
 import org.hyperscala._
 import css.StyleSheet
-import html.{FormField, HTMLTag}
+import html._
 import io.HTMLWriter
 import org.hyperscala.html.attributes._
 import org.hyperscala.html.constraints._
 import com.outr.net.Method
+import argonaut.JsonObject
 
 /**
  * NOTE: This file has been generated. Do not modify directly!
@@ -131,12 +132,15 @@ class Input extends BodyChild with HTMLTag with FormField {
 
   override def formValue = value
 
-  override def receive(event: String, message: ResponseMessage) = event match {
+  override def receive(event: String, json: JsonObject) = event match {
     case "change" if inputType() == InputType.CheckBox || inputType() == InputType.Radio => {
-      val v = message[Boolean]("value")
-      checked := v
-      super.receive(event, message)
+      val m = json.as[ChangeTagMessage]
+      m.value match {
+        case Some(v) => checked := v.isTrue
+        case None => // No value sent
+      }
+      super.receive(event, json)
     }
-    case _ => super.receive(event, message)
+    case _ => super.receive(event, json)
   }
 }

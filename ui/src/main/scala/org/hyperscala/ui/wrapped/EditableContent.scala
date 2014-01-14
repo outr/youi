@@ -1,7 +1,7 @@
 package org.hyperscala.ui.wrapped
 
 import org.powerscala._
-import org.hyperscala.html.{tag, HTMLTag}
+import org.hyperscala.html._
 import org.hyperscala.web.{Website, Webpage}
 import org.hyperscala.realtime.{RealtimePage, Realtime}
 import org.hyperscala.html.attributes.ContentEditable
@@ -56,10 +56,10 @@ class EditableContent private(t: HTMLTag with Container[BodyChild]) {
   private def init() = {
     t.contentEditable := ContentEditable.True
 
-    Realtime.sendJavaScript(s"initEditableContent('${t.identity}');", selector = Selector.id(t.identity), onlyRealtime = false)
+    Realtime.sendJavaScript(s"initEditableContent('${t.identity}');", selector = Some(Selector.id(t.identity)), onlyRealtime = false)
     t.eventReceived.on {
       case evt if evt.event == "htmlChanged" => {
-        val htmlString = evt.message[String]("html")
+        val htmlString = evt.json.string("html")
         val xml = HTMLToScala.toXML(htmlString, clean = true)
         val body = xml.getChild("body")
         RealtimePage.ignoreStructureChanges {      // Keep WebpageConnection from sending the changes to the client
@@ -70,8 +70,21 @@ class EditableContent private(t: HTMLTag with Container[BodyChild]) {
         Intercept.Stop
       }
       case evt if evt.event == "selectionChanged" => {
-        evt.message.map.foreach {   // Update all changed values
-          case (key, value) => selection(key) = value
+        evt.json.toMap.foreach {
+          case (key, value) => {
+            val v = if (value.isString) {
+              value.stringOrEmpty
+            } else if (value.isNull) {
+              null
+            } else if (value.isBool) {
+              value.bool.get
+            } else if (value.isNumber) {
+              value.numberOrZero
+            } else {
+              throw new RuntimeException(s"Unsupported conversion: $value")
+            }
+            selection(key) = v
+          }
         }
         selectionChanged.fire(SelectionChanged(
           selectedText.getOrElse(null),
@@ -80,6 +93,17 @@ class EditableContent private(t: HTMLTag with Container[BodyChild]) {
           selectedEndOffset.getOrElse(-1)
         ))
         Intercept.Stop
+//        throw new RuntimeException(s"Not implemented: ${evt.json.toJson.spaces2}")
+//        evt.message.map.foreach {   // Update all changed values
+//          case (key, value) => selection(key) = value
+//        }
+//        selectionChanged.fire(SelectionChanged(
+//          selectedText.getOrElse(null),
+//          selectedHTML.getOrElse(null),
+//          selectedStartOffset.getOrElse(-1),
+//          selectedEndOffset.getOrElse(-1)
+//        ))
+//        Intercept.Stop
       }
       case _ => Intercept.Continue
     }

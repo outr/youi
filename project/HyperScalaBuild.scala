@@ -64,7 +64,7 @@ object HyperScalaBuild extends Build {
 
   lazy val root = Project("root", file("."), settings = unidocSettings ++ createSettings("hyperscala-root"))
     .settings(publishArtifact in Compile := false, publishArtifact in Test := false)
-    .aggregate(core, html, javascript, svg, web, jquery, socketio, realtime, ui, generator, examples, hello, numberGuess, site)
+    .aggregate(core, html, javascript, svg, web, jquery, connect, socketio, realtime, ui, generator, examples, hello, numberGuess, site)
   lazy val core = Project("core", file("core"), settings = createSettings("hyperscala-core"))
     .settings(libraryDependencies ++= Seq(outrNetCore, argonaut))
   lazy val html = Project("html", file("html"), settings = createSettings("hyperscala-html"))

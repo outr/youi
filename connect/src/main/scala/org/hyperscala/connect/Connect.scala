@@ -259,6 +259,10 @@ object Message {
 case class ConnectSession(page: Webpage) extends JavaScriptContent {
   def content = {   // Generate a new connection each rendering of the content
     val connection = Website().request.store.getOrSet("hyperscala.connect.session", Connect.connections(page).create())
-    s"HyperscalaConnect.init('${page.pageId}', '${connection.id}');"
+    s"""
+      |$$(document).ready(function() {
+      | HyperscalaConnect.init('${page.pageId}', '${connection.id}');
+      |});
+    """.stripMargin
   }
 }

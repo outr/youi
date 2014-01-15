@@ -16,30 +16,32 @@ HyperscalaConnect = (function() {
         if (data.status == 'OK') {
             sendFailures = 0;
             respond(false);          // Send more data or wait for more data
-        } else {
+        } else if (!disconnected) {
             sendFailures++;
-            console.log('Send successfully, but incorrect respond data: ' + JSON.stringify(data) + ', retrying in five seconds!');
+            console.log('Send successfully, but incorrect respond data: ' + JSON.stringify(data, undefined, 2) + ', retrying in five seconds!');
             setTimeout(function() {
                 respond(true);
             }, 5000);
         }
     };
     var sendError = function(jqXHR, textStatus, errorThrown) {
-        sendFailures++;
-        if (errorThrown == 'Not Found') {
-            console.log('Page not found. Reloading page...');
-            reload();
-        } else if (errorThrown == '') {
-            console.log('Unable to connect. Retrying in five seconds...');
-            setTimeout(function() {
-                respond(true);
-            }, 5000);
-        } else {
-            console.log('Receive Error: ' + textStatus + ' - ' + errorThrown + '. Unhandled failure. Reloading page in fifteen seconds...');
-            disconnect();
-            setTimeout(function() {
+        if (!disconnected) {
+            sendFailures++;
+            if (errorThrown == 'Not Found') {
+                console.log('Page not found. Reloading page...');
                 reload();
-            }, 15000);
+            } else if (errorThrown == '') {
+                console.log('Unable to connect. Retrying in five seconds...');
+                setTimeout(function() {
+                    respond(true);
+                }, 5000);
+            } else {
+                console.log('Receive Error: ' + textStatus + ' - ' + errorThrown + '. Unhandled failure. Reloading page in fifteen seconds...');
+                disconnect();
+                setTimeout(function() {
+                    reload();
+                }, 15000);
+            }
         }
     };
     var sendComplete = function(event) {
@@ -57,6 +59,7 @@ HyperscalaConnect = (function() {
         timeout: 15000
     };
     var disconnect = function() {
+        console.log('Disconnecting');
         disconnected = true;
     };
     var reload = function() {
@@ -68,7 +71,7 @@ HyperscalaConnect = (function() {
     };
 
     var receiveSuccess = function(data) {
-        if (debug) console.log('server -> client: ' + JSON.stringify(data));
+        if (debug) console.log('server -> client: ' + JSON.stringify(data, undefined, 2));
         if (data.status == 'OK') {
             receiveFailures = 0;
             var allHandlers = handlers['*'];
@@ -91,30 +94,35 @@ HyperscalaConnect = (function() {
                 }
             }
             request(false);
-        } else {
+        } else if (!disconnected) {
             receiveFailures++;
-            console.log('Received successfully, but incorrect data: ' + JSON.stringify(data) + ', retrying in five seconds!');
+            console.log('Received successfully, but incorrect data: ' + JSON.stringify(data, undefined, 2) + ', retrying in five seconds!');
             setTimeout(function() {
                 request(true);
             }, 5000);
         }
     };
     var receiveError = function(jqXHR, textStatus, errorThrown) {
-        receiveFailures++;
-        if (errorThrown == 'Not Found') {
-            console.log('Page not found. Reloading page...');
-            reload();
-        } else if (errorThrown == '') {
-            console.log('Unable to connect. Retrying in five seconds...');
-            setTimeout(function() {
-                request(true);
-            }, 5000);
-        } else {
-            console.log('Receive Error: ' + textStatus + ' - ' + errorThrown + '. Unhandled failure. Reloading page in fifteen seconds...');
-            disconnect();
-            setTimeout(function() {
+        if (!disconnected) {
+            receiveFailures++;
+            if (errorThrown == 'Not Found') {
+                console.log('Page not found. Reloading page...');
                 reload();
-            }, 15000);
+            } else if (errorThrown == 'SyntaxError: Unexpected token <') {
+                console.log('Invalid page content. Reloading page...');
+                reload();
+            } else if (errorThrown == '') {
+                console.log('Unable to connect. Retrying in five seconds...');
+                setTimeout(function() {
+                    request(true);
+                }, 5000);
+            } else {
+                console.log('Receive Error: ' + textStatus + ' - ' + errorThrown + '. Unhandled failure. Reloading page in fifteen seconds...');
+                disconnect();
+                setTimeout(function() {
+                    reload();
+                }, 15000);
+            }
         }
     };
     var receiveComplete = function(event) {
@@ -139,7 +147,12 @@ HyperscalaConnect = (function() {
         request(false);          // Request data from the server
         respond(false);          // Send data to the server
 
-        $(window).unload(disconnect);       // Disconnect when the page unloads
+        window.onbeforeunload = function() {
+            disconnect();
+        };
+        window.onunload = function() {
+            disconnect();
+        };
     };
     var send = function(event, data) {
         queue.push({

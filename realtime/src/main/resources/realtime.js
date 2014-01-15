@@ -1,47 +1,12 @@
+var debug = true;
+
 HyperscalaConnect.on('eval', function(data) {
     try {
-        realtimeEvaluate(data, false);
+        realtimeEvaluate(data, debug);
     } catch(err) {
         log('Failed to evaluate instruction: ' + JSON.stringify(data) + ' - ' + err);
     }
 });
-
-/**
- * Connects the Communicator with a RealtimePage on the server and allows asynchronous
- * communication to occur.
- *
- * @param pageId
- * @param debug
- */
-function connectRealtime(pageId, debug) {
-    communicator.connect({
-        createData: {
-            pageId: pageId
-        },
-        on: {
-            connected: function() {
-                console.log('Connection established!');
-            },
-            error: function(err) {
-                console.log('Error occurred: ' + err);
-            },
-            eval: function(msg) {
-                try {
-                    if (typeof msg == 'string') {           // Parse to JSON if it isn't already
-                        msg = jQuery.parseJSON(msg);
-                    }
-                } catch(err) {
-                    log('Unable to parse JSON [' + msg + ']');
-                }
-                try {
-                    realtimeEvaluate(msg, debug);
-                } catch(err) {
-                    log('Failed to evaluate instruction: ' + msg + ' - ' + err);
-                }
-            }
-        }
-    });
-}
 
 /**
  * Add this call to a JavaScript event to fire the event down to the server.
@@ -185,7 +150,20 @@ function realtimeEvaluate(json, debug) {
             if (debug) {
                 log('evaluating: ' + instruction + ' (content: ' + content + ')');
             }
-            eval(instruction);
+            if (instruction.indexOf("$('#busyDialog').dialog") == 0) {
+                console.log('Arbitrary execution (' + $('#busyDialog').length + ')!');
+//                $('#busyDialog').dialog({
+//                    modal: true,
+//                    height: 120,
+//                    resizable: false,
+//                    closeOnEscape: false,
+//                    width: 320,
+//                    autoOpen: false
+//                });
+                eval(instruction.toString);
+            } else {
+                eval(instruction.toString);
+            }
         } catch(err) {
             log('Error occurred (' + err.message + ') while attempting to evaluate instruction: [' + instruction + '] with content: [' + content + '].')
         }

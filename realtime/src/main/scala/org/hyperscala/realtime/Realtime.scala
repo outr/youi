@@ -116,6 +116,7 @@ object Realtime extends Module with Logging with Listenable {
    * @param onlyRealtime if true the JavaScript will only be sent if the page has already completed rendering (default: true)
    * @param delay optionally specifies a delay before the instruction is invoked
    */
+  // TODO: deprecate in favor of $('#busyDialog')['dialog')(json);
   def sendJavaScript(instruction: String, content: Option[String] = None, selector: Option[Selector] = None, onlyRealtime: Boolean = true, delay: Int = 0): Unit = {
     broadcast("eval", JavaScriptMessage(instruction, content, selector.map(s => s.content), delay).asJson, sendWhenConnected = !onlyRealtime)
   }

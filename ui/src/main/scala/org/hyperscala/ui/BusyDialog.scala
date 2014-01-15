@@ -4,7 +4,7 @@ import org.hyperscala.html._
 import org.hyperscala.module.Module
 import org.powerscala.Version
 import org.hyperscala.web.{Website, Webpage}
-import org.hyperscala.jquery.ui.Dialog
+import org.hyperscala.jquery.ui.{jQueryUI, Dialog}
 import org.hyperscala.realtime.Realtime
 import language.reflectiveCalls
 
@@ -16,7 +16,7 @@ object BusyDialog extends Module {
 
   def version = Version(1)
 
-  override def dependencies = List(Realtime)
+  override def dependencies = List(jQueryUI.LatestWithDefault, Realtime)
 
   def init() = {
     Website().register("/images/indeterminate_progress01.gif", "indeterminate_progress01.gif")

@@ -43,14 +43,22 @@ object Connect extends Module with HttpHandler with Logging {
 
   def init() = {
     Website().register("/js/hyperscala.connect.js", "hyperscala.connect.js")
+    Website().register("/css/hyperscala.connect.css", "hyperscala.connect.css")
     Website().addHandler(this, "/hyperscala.connect/send")
     Website().addHandler(this, "/hyperscala.connect/receive")
   }
 
   def load() = {
+    Webpage().head.contents += new tag.Link(href = "/css/hyperscala.connect.css")
     Webpage().head.contents += new tag.Script(src = "/js/hyperscala.connect.js")
     Webpage().head.contents += new tag.Script {
       contents += ConnectSession(Webpage())
+    }
+    Webpage().body.contents += new tag.Div(id = "hyperscala_connect_error", clazz = List("hyperscala_connect_error_hidden")) {
+      contents += new tag.Div {
+        contents += new tag.A(id = "hyperscala_connect_error_close", titleText = "Close", clazz = List("close"))
+        contents += new tag.Div(id = "hyperscala_connect_error_message")
+      }
     }
   }
 

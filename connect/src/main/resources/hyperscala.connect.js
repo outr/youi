@@ -12,12 +12,39 @@ HyperscalaConnect = (function() {
     var receiveFailures = 0;
     var debug = false;
 
+    var errorDisposed = false;
+    var errorDiv = $('#hyperscala_connect_error');
+    var errorClose = $('#hyperscala_connect_error_close');
+    var errorMessage = $('#hyperscala_connect_error_message');
+
+    var showErrorDialog = function(title, text) {
+        updateErrorDialog(title, text);
+        if (!errorDisposed) {
+            errorDiv.removeClass('hyperscala_connect_error_hidden');
+        }
+    };
+    var updateErrorDialog = function(title, text) {
+        console.log('ErrorMessage: ' + errorMessage.length + ', ErrorDiv: ' + errorDiv.length);
+        errorMessage.html('<h2>' + title + '</h2><p>' + text + '</p>');
+    };
+    var closeErrorDialog = function() {
+        errorDisposed = false;          // Reset the disposed status
+        errorDiv.addClass('hyperscala_connect_error_hidden');
+    };
+    errorClose.click(function() {
+        closeErrorDialog();
+        errorDisposed = true;
+    });
+
     var sendSuccess = function(data) {
         if (data.status == 'OK') {
             sendFailures = 0;
+            closeErrorDialog();
             respond(false);          // Send more data or wait for more data
         } else if (!disconnected) {
             sendFailures++;
+
+            showErrorDialog('Bad Response Data', 'The server gave us some bad data. Let\'s keep trying...');
             console.log('Send successfully, but incorrect respond data: ' + JSON.stringify(data, undefined, 2) + ', retrying in five seconds!');
             setTimeout(function() {
                 respond(true);
@@ -28,19 +55,22 @@ HyperscalaConnect = (function() {
         if (!disconnected) {
             sendFailures++;
             if (errorThrown == 'Not Found') {
+                showErrorDialog('Page Not Found', 'Unable to find the needed page, let\'s reload...');
                 console.log('Page not found. Reloading page...');
                 reload();
             } else if (errorThrown == '') {
+                showErrorDialog('Unable to Connect', 'Unable to establish a connection to the server. Let\'s keep trying...');
                 console.log('Unable to connect. Retrying in five seconds...');
                 setTimeout(function() {
                     respond(true);
                 }, 5000);
             } else {
+                showErrorDialog('Receive Error', 'The server threw an error. Sorry about that, we\'ll reload the page for you...');
                 console.log('Receive Error: ' + textStatus + ' - ' + errorThrown + '. Unhandled failure. Reloading page in fifteen seconds...');
                 disconnect();
                 setTimeout(function() {
                     reload();
-                }, 15000);
+                }, 5000);
             }
         }
     };
@@ -59,6 +89,7 @@ HyperscalaConnect = (function() {
         timeout: 15000
     };
     var disconnect = function() {
+        showErrorDialog('Disconnected', 'The connection to the server has been terminated. Please reload the page to reconnect.');
         console.log('Disconnecting');
         disconnected = true;
     };
@@ -73,6 +104,7 @@ HyperscalaConnect = (function() {
     var receiveSuccess = function(data) {
         if (debug) console.log('server -> client: ' + JSON.stringify(data, undefined, 2));
         if (data.status == 'OK') {
+            closeErrorDialog();
             receiveFailures = 0;
             var allHandlers = handlers['*'];
             for (var index = 0; index < data.messages.length; index++) {
@@ -86,6 +118,7 @@ HyperscalaConnect = (function() {
                 } else if (message.id < expectedId) {
                     console.log('Ignoring message: ' + message.event + '. Expected ID: ' + expectedId + ', Message ID: ' + message.id);
                 } else if (message.id > expectedId) {
+                    showErrorDialog('Corrupted Data', 'The server didn\'t send us all the data, we need to reload...');
                     console.log('Lost a message! Expected: ' + expectedId + ', Received: ' + message.id + ' Reloading in five seconds...');
                     disconnect();
                     setTimeout(function() {
@@ -96,6 +129,7 @@ HyperscalaConnect = (function() {
             request(false);
         } else if (!disconnected) {
             receiveFailures++;
+            showErrorDialog('Bad Response Data', 'The server gave us some bad data. Let\'s keep trying...');
             console.log('Received successfully, but incorrect data: ' + JSON.stringify(data, undefined, 2) + ', retrying in five seconds!');
             setTimeout(function() {
                 request(true);
@@ -106,17 +140,21 @@ HyperscalaConnect = (function() {
         if (!disconnected) {
             receiveFailures++;
             if (errorThrown == 'Not Found') {
+                showErrorDialog('Page Not Found', 'Unable to find the needed page, let\'s reload...');
                 console.log('Page not found. Reloading page...');
                 reload();
             } else if (errorThrown == 'SyntaxError: Unexpected token <') {
+                showErrorDialog('Unexpected Page Data', 'Looks like the server may have restarted, let\'s reload...');
                 console.log('Invalid page content. Reloading page...');
                 reload();
             } else if (errorThrown == '') {
+                showErrorDialog('Unable to Connect', 'Unable to establish a connection to the server. Let\'s keep trying...');
                 console.log('Unable to connect. Retrying in five seconds...');
                 setTimeout(function() {
                     request(true);
                 }, 5000);
             } else {
+                showErrorDialog('Receive Error', 'The server threw an error. Sorry about that, we\'ll reload the page for you...');
                 console.log('Receive Error: ' + textStatus + ' - ' + errorThrown + '. Unhandled failure. Reloading page in fifteen seconds...');
                 disconnect();
                 setTimeout(function() {
@@ -143,6 +181,10 @@ HyperscalaConnect = (function() {
     var init = function(pid, cid) {
         pageId = pid;
         connectionId = cid;
+
+        errorDiv = $('#hyperscala_connect_error');
+        errorClose = $('#hyperscala_connect_error_close');
+        errorMessage = $('#hyperscala_connect_error_message');
 
         request(false);          // Request data from the server
         respond(false);          // Send data to the server

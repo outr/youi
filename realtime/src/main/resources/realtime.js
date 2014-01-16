@@ -2,6 +2,8 @@ var debug = true;
 
 HyperscalaConnect.on('eval', function(data) {
     try {
+//        var s = JSON.stringify(data);
+//        var json = jQuery.parseJSON(s);
         realtimeEvaluate(data, debug);
     } catch(err) {
         log('Failed to evaluate instruction: ' + JSON.stringify(data) + ' - ' + err);
@@ -150,20 +152,7 @@ function realtimeEvaluate(json, debug) {
             if (debug) {
                 log('evaluating: ' + instruction + ' (content: ' + content + ')');
             }
-            if (instruction.indexOf("$('#busyDialog').dialog") == 0) {
-                console.log('Arbitrary execution (' + $('#busyDialog').length + ')!');
-//                $('#busyDialog').dialog({
-//                    modal: true,
-//                    height: 120,
-//                    resizable: false,
-//                    closeOnEscape: false,
-//                    width: 320,
-//                    autoOpen: false
-//                });
-                eval(instruction.toString);
-            } else {
-                eval(instruction.toString);
-            }
+            eval(instruction);
         } catch(err) {
             log('Error occurred (' + err.message + ') while attempting to evaluate instruction: [' + instruction + '] with content: [' + content + '].')
         }

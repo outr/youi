@@ -190,9 +190,13 @@ HyperscalaConnect = (function() {
         respond(false);          // Send data to the server
 
         window.onbeforeunload = function() {
+            closeErrorDialog();
+            errorDisposed = true;
             disconnect();
         };
         window.onunload = function() {
+            closeErrorDialog();
+            errorDisposed = true;
             disconnect();
         };
     };

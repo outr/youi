@@ -2,9 +2,19 @@ var debug = true;
 
 HyperscalaConnect.on('eval', function(data) {
     try {
-//        var s = JSON.stringify(data);
-//        var json = jQuery.parseJSON(s);
         realtimeEvaluate(data, debug);
+    } catch(err) {
+        log('Failed to evaluate instruction: ' + JSON.stringify(data) + ' - ' + err);
+    }
+});
+
+HyperscalaConnect.on('jquery.call', function(data) {
+    try {
+        var selector = data['selector'];
+        var call = data['call'];
+        var args = data['args'];
+        console.log('jquery.call: ' + selector + ', ' + call + ', ' + args);
+        $(selector)[call](args);
     } catch(err) {
         log('Failed to evaluate instruction: ' + JSON.stringify(data) + ' - ' + err);
     }
@@ -126,7 +136,7 @@ function realtimeUpdateKeyEvent(event, content) {
 }
 
 function realtimeEvaluate(json, debug) {
-    var content = json['content'];
+    window.content = json['content'];
     var instruction = json['instruction'];
     var selector = json['selector'];
     var delay = json['delay'];
@@ -152,10 +162,21 @@ function realtimeEvaluate(json, debug) {
             if (debug) {
                 log('evaluating: ' + instruction + ' (content: ' + content + ')');
             }
-            eval(instruction);
+            // TODO: add explicit handling for $('#busyDialog') to validate 100% it is an eval issue
+            // TODO: try one message per request?
+            // TODO: try wrapping in a $(document).ready(...)?
+            globalEval(instruction);
         } catch(err) {
             log('Error occurred (' + err.message + ') while attempting to evaluate instruction: [' + instruction + '] with content: [' + content + '].')
         }
+    }
+}
+
+function globalEval(src) {
+    if (window.execScript) {        // eval in global scope for IE
+        window.execScript(src);
+    } else {                        // other browsers
+        eval.call(null, src);
     }
 }
 

@@ -76,7 +76,7 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication with Lau
     val dynamicPage = page(new DynamicPageExample, Scope.Page, "/example/dynamic_page.html")
     val chat = page(new ChatExample, Scope.Session, "/example/chat.html")
     val pageChange = page(new HyperscalaExample(new PageChangeWarningExample), Scope.Page, "/example/page_change.html")
-//    val pageLoader = page(new PageLoaderExample, Scope.Page, "/example/page_loader.html")
+    val pageLoader = page(new PageLoaderExample, Scope.Page, "/example/page_loader.html")
     val fileUploader = page(new HyperscalaExample(new FileUploaderExample), Scope.Page, "/example/file_upload.html")
     val dynamicURL = page(new HyperscalaExample(new DynamicURLExample), Scope.Page, "/example/dynamic_url.html")
     val multiSelect = page(new HyperscalaExample(new MultiSelectExample), Scope.Page, "/example/multi_select.html")

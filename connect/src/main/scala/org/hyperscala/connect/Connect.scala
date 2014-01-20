@@ -120,6 +120,15 @@ class Connections(val webpage: Webpage) extends Listenable with Logging {
 
   val created = new UnitProcessor[Connection]("created")
 
+  webpage.html.onAfterRender {
+    if (backlog.nonEmpty) {     // Send backlog after render
+      backlog.reverse.foreach {
+        case (event, data) => map.values.foreach(c => c.send2Client(event, data))
+      }
+      backlog = Nil
+    }
+  }
+
   def isEmpty = map.isEmpty
 
   lazy val actor = Connect.newActor()
@@ -138,21 +147,15 @@ class Connections(val webpage: Webpage) extends Listenable with Logging {
   def create() = synchronized {
     val connection = new Connection(this)
     map += connection.id -> connection
-    if (backlog.nonEmpty) {     // Send backlog
-      backlog.reverse.foreach {
-        case (event, data) => connection.send2Client(event, data)
-      }
-      backlog = Nil
-    }
     created.fire(connection)
     connection
   }
 
   def send2Client(event: String, data: Json, sendWhenConnected: Boolean) = synchronized {
-    if (isEmpty && sendWhenConnected) {
-      backlog = event -> data :: backlog
-    } else {
+    if (webpage.rendered) {
       map.values.foreach(c => c.send2Client(event, data))
+    } else if (sendWhenConnected) {
+      backlog = event -> data :: backlog
     }
   }
 

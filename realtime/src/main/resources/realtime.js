@@ -1,4 +1,4 @@
-var debug = true;
+var debug = false;
 
 HyperscalaConnect.on('eval', function(data) {
     try {
@@ -162,9 +162,6 @@ function realtimeEvaluate(json, debug) {
             if (debug) {
                 log('evaluating: ' + instruction + ' (content: ' + content + ')');
             }
-            // TODO: add explicit handling for $('#busyDialog') to validate 100% it is an eval issue
-            // TODO: try one message per request?
-            // TODO: try wrapping in a $(document).ready(...)?
             globalEval(instruction);
         } catch(err) {
             log('Error occurred (' + err.message + ') while attempting to evaluate instruction: [' + instruction + '] with content: [' + content + '].')

@@ -47,42 +47,15 @@ object Realtime extends Module with Logging with Listenable {
     }
   }
 
-  /*private def created(connection: Connection, pageId: String) = {
-    WebpageHandler.pageById[Webpage](pageId) match {
-      case Some(page) => {
-        val realtime = RealtimePage(page)             // Get reference to RealtimePage
-        realtime.connectionCreated(connection)        // Notify the RealtimePage that a connection was created
-        connection.store("page") = page               // Assign the page to the connection
-      }
-      case None => warn(s"Unable to find page by id: $pageId (cached page ids: ${Website().pages.ids.mkString(", ")})")
-    }
-  }*/
-
-  /*private def connected(connection: Connection) = {
-    val page = connection.store[Webpage]("page")
-    val realtime = RealtimePage(page)
-    realtime.connectionConnected(connection)
-  }*/
-
   private def received(connection: Connection, message: Message) = {
     val page = connection.webpage
     val realtime = RealtimePage(page)
     realtime.received(connection, message)
   }
 
-  /*private def disposed(connection: Connection) = {
-    val page = connection.store[Webpage]("page")    // Load the page from the connection
-    val realtime = RealtimePage(page)               // Get a reference to RealtimePage
-    realtime.connectionDisposed(connection)         // Notify the RealtimePage that a connection was disposed
-  }*/
-
   def broadcast(event: String, message: Json, sendWhenConnected: Boolean, page: Webpage = Webpage()) = {
     Webpage().require(this)
     val realtime = RealtimePage(page)
-//    val content = message match {
-//      case s: String => s
-//      case other => generate(other, specifyClassName = false)
-//    }
     realtime.send(event, message, sendWhenConnected = sendWhenConnected)
   }
 

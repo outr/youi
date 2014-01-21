@@ -24,7 +24,6 @@ HyperscalaConnect = (function() {
         }
     };
     var updateErrorDialog = function(title, text) {
-        console.log('ErrorMessage: ' + errorMessage.length + ', ErrorDiv: ' + errorDiv.length);
         errorMessage.html('<h2>' + title + '</h2><p>' + text + '</p>');
     };
     var closeErrorDialog = function() {

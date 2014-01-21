@@ -177,27 +177,33 @@ HyperscalaConnect = (function() {
         timeout: 60000
     };
 
+    var initialized = false;
     var init = function(pid, cid) {
-        pageId = pid;
-        connectionId = cid;
+        if (!initialized) {
+            initialized = true;
+            pageId = pid;
+            connectionId = cid;
 
-        errorDiv = $('#hyperscala_connect_error');
-        errorClose = $('#hyperscala_connect_error_close');
-        errorMessage = $('#hyperscala_connect_error_message');
+            errorDiv = $('#hyperscala_connect_error');
+            errorClose = $('#hyperscala_connect_error_close');
+            errorMessage = $('#hyperscala_connect_error_message');
 
-        request(false);          // Request data from the server
-        respond(false);          // Send data to the server
+            request(false);          // Request data from the server
+            respond(false);          // Send data to the server
 
-        window.onbeforeunload = function() {
-            closeErrorDialog();
-            errorDisposed = true;
-            disconnect();
-        };
-        window.onunload = function() {
-            closeErrorDialog();
-            errorDisposed = true;
-            disconnect();
-        };
+            window.onbeforeunload = function() {
+                closeErrorDialog();
+                errorDisposed = true;
+                disconnect();
+            };
+            window.onunload = function() {
+                closeErrorDialog();
+                errorDisposed = true;
+                disconnect();
+            };
+        } else {
+            console.log('WARNING: attempting to initialize a second time - pid: ' + pid + ', cid: ' + cid);
+        }
     };
     var send = function(event, data) {
         queue.push({

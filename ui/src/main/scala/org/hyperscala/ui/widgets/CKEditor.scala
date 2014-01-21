@@ -12,12 +12,12 @@ import org.hyperscala.realtime.Realtime
 object CKEditor extends Module {
   def name = "ckeditor"
 
-  def version = Version(4, 2, 0)
+  def version = Version(4, 3, 2)
 
   override def dependencies = List(Realtime)
 
   def init() = {
-    Website().addClassPath("/cke/", "ckeditor/")
+    Website().addClassPath("/cke/", "ckeditor-4.3.2/")
   }
 
   def load() = {

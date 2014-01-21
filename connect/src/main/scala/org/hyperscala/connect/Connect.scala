@@ -100,7 +100,7 @@ object Connect extends Module with HttpHandler with Logging {
               case None => createError(response, Error.ConnectionNotFound, "Connection not found")
             }
           }
-          case None => createError(response, Error.PageNotFound, "Page not found")
+          case None => createError(response, Error.PageNotFound, s"Page not found (id: ${json.pageId})")
         }
       }
       case None => createError(response, Error.InvalidRequest, s"JSON ${request.url.filename} data was invalid. Actual content: [$content]")

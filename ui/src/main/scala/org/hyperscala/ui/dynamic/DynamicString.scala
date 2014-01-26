@@ -3,6 +3,7 @@ package org.hyperscala.ui.dynamic
 import org.powerscala.IO
 import java.io.File
 import java.net.URL
+import org.powerscala.log.Logging
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
@@ -36,7 +37,9 @@ class DependentDynamicString protected[dynamic](dynamicString: DynamicString, va
   }
 }
 
-class GeneralDynamicString protected[dynamic](val contentFunction: () => String, val lastModifiedFunction: () => Long, val converter: String => String) extends DynamicString {
+class GeneralDynamicString protected[dynamic](val contentFunction: () => String,
+                                              val lastModifiedFunction: () => Long,
+                                              val converter: String => String) extends DynamicString with Logging {
   private var _lastModified: Long = _
   private var _content: String = _
 
@@ -73,7 +76,7 @@ object DynamicString {
   private var map = Map.empty[String, DynamicString]
 
   private def name(dynamicString: DynamicString) = map.collectFirst {
-    case (name, ds) if (ds == dynamicString) => name
+    case (name, ds) if ds == dynamicString => name
   }.getOrElse(throw new NullPointerException("Unable to find name for %s.".format(dynamicString)))
 
   def getOrSet[T <: DynamicString](name: String, creator: => T): T = synchronized {
@@ -87,6 +90,16 @@ object DynamicString {
     }
   }
 
+  def remove(name: String) = synchronized {
+    map -= name
+  }
+
+  def replace[T <: DynamicString](name: String, creator: => T): T = synchronized {
+    val ds: T = creator
+    map += name -> ds.asInstanceOf[DynamicString]
+    ds
+  }
+
   val defaultConverter = (s: String) => s
 
   def dependent(name: String, dynamicString: DynamicString, converter: String => String = defaultConverter) = {
@@ -95,8 +108,8 @@ object DynamicString {
   def static(name: String, content: String, converter: String => String = defaultConverter) = {
     getOrSet[DynamicString](name, new GeneralDynamicString(contentFunction(content), defaultLastModifyFunction, converter))
   }
-  def dynamic(name: String, content: String, converter: String => String = defaultConverter) = {
-    getOrSet[DynamicString](name, new GeneralDynamicString(contentFunction(content), () => System.currentTimeMillis(), converter))
+  def dynamic(content: => String, converter: String => String = defaultConverter) = {
+    new GeneralDynamicString(contentFunction(content), () => System.currentTimeMillis(), converter)
   }
   def file(name: String, file: File, converter: String => String = defaultConverter) = {
     getOrSet[DynamicString](name, new GeneralDynamicString(contentFunction(file), lastModifyFunction(file), converter))
@@ -105,7 +118,7 @@ object DynamicString {
     getOrSet[DynamicString](name, new GeneralDynamicString(contentFunction(url), lastModifyFunction(url, checkLastModified), converter))
   }
 
-  def contentFunction(content: String) = () => content
+  def contentFunction(content: => String) = () => content
   def contentFunction(file: File) = () => IO.copy(file)
   def contentFunction(url: URL) = () => IO.copy(url)
 

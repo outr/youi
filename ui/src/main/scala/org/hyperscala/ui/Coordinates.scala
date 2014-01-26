@@ -47,6 +47,33 @@ abstract class Coordinates extends Listenable with StorageComponent[CoordinatesT
   }
 }
 
+abstract class CoordinatesFromZero extends Coordinates {
+  def coordinateX(absolute: Double, width: Double) = absolute - zeroX
+
+  def coordinateY(absolute: Double, height: Double) = absolute - zeroY
+
+  def localizeX(x: Double, ct: CoordinatesTag) = x + zeroX
+
+  def localizeY(y: Double, ct: CoordinatesTag) = y + zeroY
+
+  def zeroX: Double
+  def zeroY: Double
+}
+
+class Coordinates960 extends CoordinatesFromZero {
+  def zeroX = (WindowSize.width() / 2.0) - 480.0
+
+  def zeroY = 0.0
+
+  override protected def create(t: HTMLTag) = {
+    val ct = super.create(t)
+    WindowSize.width.change and WindowSize.height.change on {   // This coordinate system depends on WindowSize as well
+      case evt => ct.update()
+    }
+    ct
+  }
+}
+
 class CoordinatesOffsetFromCenter(offsetX: Double = 0.0, offsetY: Double = 0.0) extends Coordinates {
   def coordinateX(absolute: Double, width: Double) = absolute - (WindowSize.width() / 2.0)
 
@@ -74,7 +101,7 @@ class CoordinatesTag(val coordinates: Coordinates, val b: Bounding, val t: HTMLT
   val x = new Property[Double](default = Some(-1.0))
   val y = new Property[Double](default = Some(-1.0))
   val horizontal = new Property[Horizontal](default = Some(Horizontal.Left))
-  val vertical = new Property[Vertical](default = Some(Vertical.Middle))
+  val vertical = new Property[Vertical](default = Some(Vertical.Top))
   val manageX = new Property[Boolean](default = Option(false))
   val manageY = new Property[Boolean](default = Option(false))
   val enabled = new Property[Boolean](default = Some(true))

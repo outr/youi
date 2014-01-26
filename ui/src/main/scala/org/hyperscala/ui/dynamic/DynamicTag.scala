@@ -43,8 +43,8 @@ object DynamicTag {
     apply[T](name, DynamicString.static("%s.DynamicString".format(name), content, converter))
   }
 
-  def dynamic[T <: HTMLTag](name: String, content: String, converter: String => String = DynamicString.defaultConverter) = {
-    apply[T](name, DynamicString.dynamic("%s.DynamicString".format(name), content, converter))
+  def dynamic[T <: HTMLTag](content: => String, converter: String => String = DynamicString.defaultConverter) = {
+    new DynamicTag[T](DynamicString.dynamic(content, converter), DynamicString.defaultConverter)
   }
 
   def file[T <: HTMLTag](name: String, file: File, converter: String => String = DynamicString.defaultConverter) = {

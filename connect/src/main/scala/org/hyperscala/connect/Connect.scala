@@ -48,16 +48,20 @@ object Connect extends Module with HttpHandler with Logging {
     Website().addHandler(this, "/hyperscala.connect/receive")
   }
 
+  def disableErrorDisplay() = Webpage().store.update("hyperscala.connect.disableErrorDisplay", true)
+
   def load() = {
     Webpage().head.contents += new tag.Link(href = "/css/hyperscala.connect.css")
     Webpage().head.contents += new tag.Script(src = "/js/hyperscala.connect.js")
     Webpage().head.contents += new tag.Script {
       contents += ConnectSession(Webpage())
     }
-    Webpage().body.contents += new tag.Div(id = "hyperscala_connect_error", clazz = List("hyperscala_connect_error_hidden")) {
-      contents += new tag.Div {
-        contents += new tag.A(id = "hyperscala_connect_error_close", titleText = "Close", clazz = List("close"))
-        contents += new tag.Div(id = "hyperscala_connect_error_message")
+    if (!Webpage().store.getOrElse("hyperscala.connect.disableErrorDisplay", false)) {
+      Webpage().body.contents += new tag.Div(id = "hyperscala_connect_error", clazz = List("hyperscala_connect_error_hidden")) {
+        contents += new tag.Div {
+          contents += new tag.A(id = "hyperscala_connect_error_close", titleText = "Close", clazz = List("close"))
+          contents += new tag.Div(id = "hyperscala_connect_error_message")
+        }
       }
     }
   }

@@ -2,7 +2,7 @@ package org.hyperscala.jquery.ui
 
 import org.hyperscala.html._
 import org.hyperscala.web.Webpage
-import org.hyperscala.Unique
+import org.powerscala.Unique
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.selector.Selector
 

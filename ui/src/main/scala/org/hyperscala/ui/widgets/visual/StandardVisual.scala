@@ -3,7 +3,7 @@ package org.hyperscala.ui.widgets.visual
 import org.hyperscala.html._
 import org.hyperscala.css.attributes._
 import org.powerscala.property._
-import org.hyperscala.Unique
+import org.powerscala.Unique
 import org.powerscala.Color
 import tag.Text
 import org.hyperscala.ui.widgets.visual.types.VisualType

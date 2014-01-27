@@ -8,7 +8,7 @@ import org.hyperscala.realtime.{RealtimeEvent, Realtime}
 import org.hyperscala.ui.dynamic.{DynamicTagged, DynamicTag, DynamicContent}
 import language.reflectiveCalls
 import org.hyperscala.jquery.dsl._
-import org.hyperscala.Unique
+import org.powerscala.Unique
 
 /**
  * @author Matt Hicks <mhicks@outr.com>

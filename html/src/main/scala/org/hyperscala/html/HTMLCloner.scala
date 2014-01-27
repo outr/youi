@@ -1,7 +1,8 @@
 package org.hyperscala.html
 
-import org.hyperscala.{Container, PropertyAttribute, Unique}
+import org.hyperscala.{Container, PropertyAttribute}
 import org.hyperscala.html.tag.Text
+import org.powerscala.Unique
 
 /**
  * @author Matt Hicks <matt@outr.com>

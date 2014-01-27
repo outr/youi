@@ -6,7 +6,7 @@ import org.hyperscala.html.HTMLTag
 import org.powerscala.event.Listenable
 import org.powerscala.property.Property
 import org.hyperscala.css.attributes._
-import org.hyperscala.Unique
+import org.powerscala.Unique
 import org.powerscala.log.Logging
 
 /**

@@ -3,7 +3,7 @@ package org.hyperscala.ui.widgets
 
 import org.hyperscala.html._
 import attributes.{InputType, Target}
-import org.hyperscala.Unique
+import org.powerscala.Unique
 import org.hyperscala.web.{Website, Webpage}
 import org.hyperscala.css.attributes.Display
 import org.hyperscala.realtime.{RealtimeEvent, Realtime}

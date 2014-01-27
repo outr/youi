@@ -5,7 +5,7 @@ import org.powerscala.{Priority, Version}
 import org.hyperscala.html.HTMLTag
 import org.hyperscala.html.tag.Script
 import org.powerscala.property.event.PropertyChangeEvent
-import org.hyperscala.Unique
+import org.powerscala.Unique
 import org.hyperscala.javascript.{EventProperty, JavaScriptString}
 import org.hyperscala.module._
 import org.hyperscala.jquery.jQuery

@@ -1,12 +1,12 @@
 package org.hyperscala.socketio
 
 import org.hyperscala.web.{Website, Webpage}
-import org.hyperscala.Unique
 import org.hyperscala.html._
 import org.hyperscala.javascript.JavaScriptString
 import com.outr.net.http.request.HttpRequest
 import com.outr.net.http.response.{HttpResponseStatus, HttpResponse}
 import com.outr.net.http.content.StringContent
+import org.powerscala.Unique
 
 /**
  * @author Matt Hicks <matt@outr.com>

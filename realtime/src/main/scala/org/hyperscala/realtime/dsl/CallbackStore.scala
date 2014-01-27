@@ -3,11 +3,12 @@ package org.hyperscala.realtime.dsl
 import org.hyperscala.html._
 import org.hyperscala.css.attributes.Display
 import org.hyperscala.web.Webpage
-import org.hyperscala.{TagMessage, Unique}
+import org.hyperscala.TagMessage
 import argonaut.{JsonObject, CodecJson}
 import argonaut.Argonaut._
 import org.hyperscala.javascript.JavaScriptString
 import scala.Some
+import org.powerscala.Unique
 
 /**
  * @author Matt Hicks <matt@outr.com>

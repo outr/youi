@@ -1,7 +1,7 @@
 package org.hyperscala.ui.dynamic
 
 import org.hyperscala.html.HTMLTag
-import org.hyperscala.Unique
+import org.powerscala.Unique
 
 /**
  * @author Matt Hicks <matt@outr.com>

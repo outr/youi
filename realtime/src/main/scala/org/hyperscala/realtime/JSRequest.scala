@@ -1,11 +1,10 @@
 package org.hyperscala.realtime
 
 import org.hyperscala.module.Module
-import org.powerscala.Version
+import org.powerscala.{Unique, Version}
 import org.hyperscala.web.{Webpage, Website}
 import org.hyperscala.html._
 import org.powerscala.event.Intercept
-import org.hyperscala.Unique
 import org.powerscala.log.Logging
 import org.powerscala.reflect._
 import org.hyperscala.javascript.dsl.JSFunction0

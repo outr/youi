@@ -5,6 +5,7 @@ import org.hyperscala.event.processor.EventReceivedProcessor
 import org.powerscala.event.Intercept
 import org.hyperscala.io.HTMLWriter
 import argonaut.JsonObject
+import org.powerscala.Unique
 
 /**
  * @author Matt Hicks <mhicks@outr.com>

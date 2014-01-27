@@ -6,6 +6,7 @@ import math._
 
 import language.implicitConversions
 import argonaut._
+import org.powerscala.Unique
 
 package object html {
   /**

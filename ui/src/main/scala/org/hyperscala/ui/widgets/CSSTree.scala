@@ -6,7 +6,7 @@ import org.hyperscala.web.{Webpage, Website}
 import org.hyperscala.html._
 import org.hyperscala.html.constraints.BodyChild
 import org.hyperscala.html.attributes.InputType
-import org.hyperscala.Unique
+import org.powerscala.Unique
 
 /**
  * @author Matt Hicks <matt@outr.com>

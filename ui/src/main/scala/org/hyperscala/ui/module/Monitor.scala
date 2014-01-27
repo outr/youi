@@ -1,12 +1,12 @@
 package org.hyperscala.ui.module
 
 import org.hyperscala.module.Module
-import org.powerscala.Version
+import org.powerscala.{Unique, Version}
 import org.hyperscala.realtime.{RealtimePage, Realtime}
 import org.hyperscala.web.{Webpage, Website}
 import org.hyperscala.html._
 import org.powerscala.property.Property
-import org.hyperscala.{PropertyAttribute, Unique}
+import org.hyperscala.PropertyAttribute
 import org.hyperscala.persistence.ValuePersistence
 import org.hyperscala.css.StyleSheetAttribute
 

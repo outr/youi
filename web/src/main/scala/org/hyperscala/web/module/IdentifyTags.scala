@@ -2,8 +2,8 @@ package org.hyperscala.web.module
 
 import org.hyperscala.web.Webpage
 import org.hyperscala.html.HTMLTag
-import org.hyperscala.{IdentifiableTag, Unique}
-import org.powerscala.Version
+import org.hyperscala.IdentifiableTag
+import org.powerscala.{Unique, Version}
 import org.hyperscala.module._
 
 /**

@@ -3,10 +3,10 @@ package org.hyperscala.web
 import com.outr.net.http.HttpHandler
 import com.outr.net.http.request.HttpRequest
 import com.outr.net.http.response.{HttpResponseStatus, HttpResponse}
-import org.hyperscala.Unique
 import org.powerscala.log.Logging
 import com.outr.net.http.handler.HandlerProcessor
 import org.powerscala.event.Listenable
+import org.powerscala.Unique
 
 /**
  * @author Matt Hicks <matt@outr.com>

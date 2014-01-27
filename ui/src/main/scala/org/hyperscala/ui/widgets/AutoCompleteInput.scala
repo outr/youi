@@ -1,7 +1,7 @@
 package org.hyperscala.ui.widgets
 
 import org.hyperscala.html._
-import org.hyperscala.Unique
+import org.powerscala.Unique
 
 import org.powerscala.property._
 import org.powerscala.Color

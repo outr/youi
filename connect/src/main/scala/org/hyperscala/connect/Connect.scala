@@ -1,14 +1,13 @@
 package org.hyperscala.connect
 
 import org.hyperscala.module.Module
-import org.powerscala.Version
+import org.powerscala.{Unique, Version}
 import org.hyperscala.web.{Webpage, Website}
 import org.hyperscala.html._
 import com.outr.net.http.HttpHandler
 import com.outr.net.http.request.HttpRequest
 import com.outr.net.http.response.{HttpResponseStatus, HttpResponse}
 import org.hyperscala.jquery.jQuery
-import org.hyperscala.Unique
 import org.hyperscala.javascript.JavaScriptContent
 import com.outr.net.http.content.StringContent
 

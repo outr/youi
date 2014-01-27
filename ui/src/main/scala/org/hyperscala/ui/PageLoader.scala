@@ -2,7 +2,7 @@ package org.hyperscala.ui
 
 import org.hyperscala.web.{WebpageHandler, Website, Webpage}
 import org.hyperscala.realtime.Realtime
-import org.hyperscala.Unique
+import org.powerscala.Unique
 
 /**
  * @author Matt Hicks <matt@outr.com>

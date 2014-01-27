@@ -2,7 +2,7 @@ package org.hyperscala.ui.dynamic
 
 import org.hyperscala.html.HTMLTag
 import org.jdom2.Element
-import org.hyperscala.{Unique, Container}
+import org.hyperscala.Container
 import org.hyperscala.html.constraints.BodyChild
 import org.hyperscala.io.HTMLWriter
 import org.jdom2.input.{JDOMParseException, SAXBuilder}
@@ -13,6 +13,7 @@ import org.hyperscala.web.Webpage
 import org.hyperscala.realtime.Realtime
 import java.net.URL
 import org.hyperscala.html.tag.Text
+import org.powerscala.Unique
 
 /**
  * DynamicContent provides similar functionality to StaticContent rendering pre-defined HTML onto the page in place of

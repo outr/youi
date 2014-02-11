@@ -39,6 +39,7 @@ class Select extends Container[Option] with BodyChild with HTMLTag with FormFiel
            form: String = null,
            multiple: java.lang.Boolean = null,
            size: java.lang.Integer = null,
+           placeHolder: String = null,
            content: Option = null) = {
     this()
     init(name, accessKey, clazz, contentEditable, contextMenu, dir, draggable, dropZone, hidden, id, lang, role, spellCheck, style, tabIndex, titleText)
@@ -47,6 +48,7 @@ class Select extends Container[Option] with BodyChild with HTMLTag with FormFiel
     up(this.form, form)
     up(this.multiple, multiple)
     up(this.size, size)
+    up(this.placeHolder, placeHolder)
     if (content != null) contents += content
   }
 
@@ -55,6 +57,7 @@ class Select extends Container[Option] with BodyChild with HTMLTag with FormFiel
   lazy val form = PropertyAttribute[String]("form", null)
   lazy val multiple = PropertyAttribute[Boolean]("multiple", false)
   lazy val size = PropertyAttribute[Int]("size", -1)
+  lazy val placeHolder = PropertyAttribute[String]("placeholder", null)
 
   val selectedOptions = new Property[List[Option]](default = Some(Nil)) with ListProperty[Option]
   val selected = new Property[List[String]](default = Some(Nil)) with ListProperty[String]

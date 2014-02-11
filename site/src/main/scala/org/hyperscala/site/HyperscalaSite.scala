@@ -18,6 +18,7 @@ import com.outr.net.http.jetty.JettyApplication
 import com.outr.net.http.request.HttpRequest
 import com.outr.launcher.Launchable
 import org.hyperscala.examples.connect.ConnectExample
+import org.hyperscala.examples.service.TestService
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -107,6 +108,8 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication with Lau
     val playComparison = page(new PlayHelloWorldPage, Scope.Page, "/example/comparison/play_hello_world.html")
   }
   val todoMVC = page(TodoMVC, Scope.Session, "/todomvc.html")
+
+  TestService.register(this)    // Register the test service
 
   addClassPath("/images/", "images/")
   addClassPath("/css/", "css/")

@@ -12,13 +12,17 @@ import com.outr.net.http.request.HttpRequest
 import com.outr.net.http.response.{HttpResponseStatus, HttpResponse}
 import com.outr.net.http.content.{ContentType, StringContent}
 import org.powerscala.log.Logging
+import org.powerscala.event.processor.ModifiableProcessor
+import org.powerscala.event.Listenable
 
 /**
  * Service exposes methods as web service end-points through JSON communication.
  *
  * @author Matt Hicks <matt@outr.com>
  */
-trait Service {
+trait Service extends Listenable {
+  val beforeInvoke = new ModifiableProcessor[ServiceInvocation]("beforeInvoke")
+
   private lazy val endpoints = findEndpoints()
 
   /**
@@ -51,11 +55,11 @@ object Service {
   def fromCamelCase(name: String) = "([A-Z])".r.replaceAllIn(name, m => "-" + m.group(0).toLowerCase)
 }
 
-case class ServiceEndpoint(service: Service, name: String, method: EnhancedMethod) extends HttpHandler with Logging {
+case class ServiceEndpoint(service: Service, name: String, method: EnhancedMethod) extends HttpHandler with Listenable with Logging {
   def uri = s"${service.basePath}$name"
 
   def callJSON(content: String) = {
-    val args = if (method.args.isEmpty) {
+    if (method.args.isEmpty) {
       Map.empty[String, Any]
     } else {
       JSON.parseFull(content) match {
@@ -77,12 +81,10 @@ case class ServiceEndpoint(service: Service, name: String, method: EnhancedMetho
         case None => throw new ServiceException(s"Failed to parse JSON: $content")
       }
     }
-    val result = method[Any](service, args, requireValues = true)
-    JSONConverter.generate(result, specifyClassName = false)
   }
 
   def callParameters(params: HttpParameters) = {
-    val args = params.values.map {
+    params.values.map {
       case (key, values) => {
         val name = Service.toCamelCase(key)
         method.arg(name) match {
@@ -101,30 +103,45 @@ case class ServiceEndpoint(service: Service, name: String, method: EnhancedMetho
         }
       }
     }.flatten.toMap
-    val result = method[Any](service, args, requireValues = true)
-    JSONConverter.generate(result, specifyClassName = false)
   }
 
   override def onReceive(request: HttpRequest, response: HttpResponse) = {
-    val (responseString, status) = try {
+    val (responseString, modifiedResponse) = try {
       val content = request.contentString.getOrElse(null)
-      if (content != null || method.args.isEmpty) {
-        callJSON(content) -> HttpResponseStatus.OK
+      val args = if (content != null || method.args.isEmpty) {
+        callJSON(content)
       } else {
-        callParameters(request.url.parameters) -> HttpResponseStatus.OK
+        callParameters(request.url.parameters)
+      }
+      val invocation = ServiceInvocation(this, Some(args), request, response.copy(status = HttpResponseStatus.OK))
+      val updated = service.beforeInvoke.fire(invocation)    // Fire on service
+      updated.args match {
+        case Some(updatedArgs) => {
+          val result = method[Any](service, updatedArgs, requireValues = true)
+          val responseJSON = JSONConverter.generate(result, specifyClassName = false)
+          (responseJSON, updated.response)
+        }
+        case None => (null, updated.response)
       }
     } catch {
-      case exc: ServiceException => JSONConverter.generate(ServiceErrorResponse(ServiceError(exc.message, exc.code)), specifyClassName = false) -> HttpResponseStatus.InternalServerError
-      case exc: MissingArgumentException => JSONConverter.generate(ServiceErrorResponse(ServiceError(exc.message, -1)), specifyClassName = false) -> HttpResponseStatus.InternalServerError
+      case exc: ServiceException => (JSONConverter.generate(ServiceErrorResponse(ServiceError(exc.message, exc.code)), specifyClassName = false), response.copy(status = HttpResponseStatus.InternalServerError))
+      case exc: MissingArgumentException => (JSONConverter.generate(ServiceErrorResponse(ServiceError(exc.message, -1)), specifyClassName = false), response.copy(status = HttpResponseStatus.InternalServerError))
       case t: Throwable => {
         error(s"Error occurred on endpoint: $uri ($method)", t)
-        JSONConverter.generate(ServiceErrorResponse(ServiceError("Internal error occurred", -1)), specifyClassName = false) -> HttpResponseStatus.InternalServerError
+        (JSONConverter.generate(ServiceErrorResponse(ServiceError("Internal error occurred", -1)), specifyClassName = false), response.copy(status = HttpResponseStatus.InternalServerError))
       }
     }
-    response.copy(content = StringContent(responseString, contentType = ContentType.JSON), status = status)
+    val responseContent = if (responseString != null) {
+      StringContent(responseString, contentType = ContentType.JSON)
+    } else {
+      null
+    }
+    modifiedResponse.copy(content = responseContent)
   }
 }
 
 case class ServiceError(message: String, code: Int)
 
 case class ServiceErrorResponse(error: ServiceError)
+
+case class ServiceInvocation(endpoint: ServiceEndpoint, args: Option[Map[String, Any]], request: HttpRequest, response: HttpResponse)

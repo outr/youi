@@ -2,7 +2,7 @@ package org.hyperscala.ui.typed
 
 import org.hyperscala.html._
 import org.powerscala.property.Property
-import org.hyperscala.realtime.RealtimeEvent
+import org.hyperscala.realtime._
 
 /**
  * TypedInput is a simple wrapper class around an Input tag to bind the value of the input to a type.
@@ -22,16 +22,19 @@ abstract class TypedInput[T](val wrapped: tag.Input)(implicit manifest: Manifest
   wrapped.keyUpEvent := RealtimeEvent(fireChange = true, preventDefault = false)
   wrapped.changeEvent := RealtimeEvent()
   wrapped.value.change.on {
-    case evt => updatePropertyFromInput()   // Input value has been modified, update the property
+    case evt => updatePropertyFromInput(commit = false)   // Input value has been modified, update the property
+  }
+  wrapped.blurEvent.onRealtime {
+    case evt => updatePropertyFromInput(commit = true)   // Input is blurring, update the property with the committed value
   }
 
-  updatePropertyFromInput()
+  updatePropertyFromInput(commit = false)
 
-  def toType(s: String): Option[T]
+  def toType(s: String, commit: Boolean): Option[T]
   def fromType(value: Option[T]): String
 
-  def updatePropertyFromInput() = attemptChange {
-    property := toType(wrapped.value())
+  def updatePropertyFromInput(commit: Boolean) = attemptChange {
+    property := toType(wrapped.value(), commit)
   }
 
   def updateInputFromProperty() = attemptChange {

@@ -250,8 +250,8 @@ trait HTMLTag extends IdentifiableTag {
       val evt = creator(this)
       fire(evt)
     }
-    case "keyEvent" => {  // Fires key events on this tag
-      val eventType = json.string("event")
+    case "keydown" | "keyup" | "keypress" => {  // Fires key events on this tag
+      val eventType = event
       val altKey = json.boolean("altKey")
       val char = json.int("char")
       val ctrlKey = json.boolean("ctrlKey")

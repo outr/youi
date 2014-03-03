@@ -4,6 +4,7 @@ import org.hyperscala.html._
 import org.hyperscala.web.Webpage
 import org.hyperscala.jquery.dsl._
 import org.hyperscala.realtime.Realtime
+import org.hyperscala.selector.Selector
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
@@ -24,6 +25,6 @@ object DatePicker {
   def apply(t: HTMLTag) = {
     Webpage().require(jQueryUI, jQueryUI.Latest)
 
-    Realtime.send($(t).call("datepicker()"))
+    Realtime.send($(t).call("datepicker()"), Some(Selector.id(t)))
   }
 }

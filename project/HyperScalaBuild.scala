@@ -25,6 +25,7 @@ object HyperScalaBuild extends Build {
       akkaActors,
       scalaTest
     ),
+    fork := true,
     scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature"),
     resolvers ++= Seq("Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/",
                       "twitter-repo" at "http://maven.twttr.com",

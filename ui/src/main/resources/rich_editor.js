@@ -12,6 +12,7 @@ function createRichEditor(id, inline) {
     } else {
         var configuration = {
             removePlugins: 'undo',
+            title: false,
             on: {
                 configLoaded: function() {
                     this.config.disableNativeSpellChecker = false;

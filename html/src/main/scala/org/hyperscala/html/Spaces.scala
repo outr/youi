@@ -2,12 +2,13 @@ package org.hyperscala.html
 
 import org.powerscala.event.processor.UnitProcessor
 import org.powerscala.event.Listenable
+import scala.collection.immutable.ListMap
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
 trait Spaces[K, V] extends Listenable {
-  private var spaces = Map.empty[K, V]
+  private var spaces = ListMap.empty[K, V]
 
   implicit def keyManifest: Manifest[K]
   implicit def valueManifest: Manifest[V]

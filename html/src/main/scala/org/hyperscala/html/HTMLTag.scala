@@ -9,11 +9,10 @@ import org.powerscala.property.{ListSetProperty, Property}
 import org.hyperscala.event._
 import org.hyperscala.event.processor._
 import org.jdom2.Attribute
-import org.hyperscala.selector.Selector
+import org.hyperscala.selector.{PseudoClass, Selector, TagIdSelector}
 import scala.collection.immutable.ListSet
 import argonaut.JsonObject
 import org.hyperscala.io.HTMLWriter
-import org.hyperscala.selector.TagIdSelector
 
 /**
  * NOTE: This file has been generated. Do not modify directly!
@@ -147,6 +146,7 @@ trait HTMLTag extends IdentifiableTag {
   def isStyleDefined = _styleDefined
   lazy val styleProperty = Property[StyleSheet](default = scala.Option(HTMLTag.styleCreator()(this)))
   def style = styleProperty()
+  def style(sub: PseudoClass) = HTMLPage().head.selector(Selector.pseudo(Selector.id(this), sub))
 
   protected def generateChildFromTagName(name: String): XMLContent = {
     HTMLTag.create(name)

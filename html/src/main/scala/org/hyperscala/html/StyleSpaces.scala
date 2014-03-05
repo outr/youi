@@ -13,6 +13,9 @@ class StyleSpaces(head: Head) extends tag.Style(id = "style_spaces") with Spaces
   override protected def before() = {
     super.before()
 
-    content := map.values.map(ss => ss.toString).mkString
+    val contentString = map.values.collect {
+      case ss if ss.nonEmpty => ss.toString
+    }.mkString
+    content := contentString
   }
 }

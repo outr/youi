@@ -348,6 +348,9 @@ class StyleSheet(val hierarchicalParent: Listenable,
     }
   }
 
+  def isEmpty = attributes.values.find(ssa => ssa.shouldRender).isEmpty
+  def nonEmpty = !isEmpty
+
   override def toString = if (selector != null) {
     val b = new StringBuilder
     b.append("\n      ")

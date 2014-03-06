@@ -55,7 +55,7 @@ class HeadScriptTag(page: Webpage, tag: HTMLTag) {
   def updateScript() = {
     val b = new StringBuilder
     tag.xmlAttributes.foreach {
-      case ep: EventProperty if (ep.shouldRender) => {
+      case ep: EventProperty if ep.shouldRender => {
         if (tag.id() == null) {   // Make sure there's an ID to reference
           tag.id := Unique()
         }

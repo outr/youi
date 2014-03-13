@@ -56,4 +56,6 @@ class Script extends Container[JavaScriptContent] with BodyChild with HeadChild 
   override protected def processText(text: String) = {
     contents += new JavaScriptString(text)
   }
+
+  def scriptString = contents.map(jsc => jsc.content).mkString("\r\n\r\n")
 }

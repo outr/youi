@@ -15,6 +15,10 @@ class AutoCompleteExample extends Example {
   Webpage().require(Autocomplete)
   Webpage().body.style.fontFamily := "Arial, sans-serif"
 
+  contents += new tag.P {
+    contents += "Wrapper around jQuery UI's autocomplete functionality. Start typing a spoken language below to see it in action."
+  }
+
   contents += new tag.Div {
     style.paddingTop := 25.px
     style.paddingBottom := 25.px

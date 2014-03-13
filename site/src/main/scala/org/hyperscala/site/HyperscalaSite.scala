@@ -75,7 +75,7 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication with Lau
     val confirmDialog = page(new HyperscalaExample(new ConfirmDialogExample), Scope.Page, "/example/confirm_dialog.html")
     val dynamic = page(new HyperscalaExample(new DynamicContentExample), Scope.Page, "/example/dynamic.html")
     val dynamicPage = page(new DynamicPageExample, Scope.Page, "/example/dynamic_page.html")
-    val chat = page(new ChatExample, Scope.Session, "/example/chat.html")
+    val chat = page(new HyperscalaExample(new ChatExample), Scope.Page, "/example/chat.html")
     val pageChange = page(new HyperscalaExample(new PageChangeWarningExample), Scope.Page, "/example/page_change.html")
     val pageLoader = page(new PageLoaderExample, Scope.Page, "/example/page_loader.html")
     val fileUploader = page(new HyperscalaExample(new FileUploaderExample), Scope.Page, "/example/file_upload.html")
@@ -100,6 +100,7 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication with Lau
 //    val socketio = page(new HyperscalaExample(new SocketIOExample), Scope.Page, "/example/socketio.html")
     val connect = page(new HyperscalaExample(new ConnectExample), Scope.Page, "/example/connect.html")
     val externalStyle = page(new HyperscalaExample(new ExternalStyleExample), Scope.Page, "/example/external_style.html")
+    val headScript = page(new HyperscalaExample(new HeadScriptExample), Scope.Page, "/example/head_script.html")
     val svg = new {
       val basic = page(new HyperscalaExample(new BasicSVGExample), Scope.Page, "/example/svg/basic.html")
       val shapes = page(new HyperscalaExample(new SVGShapesExample), Scope.Page, "/example/svg/shapes.html")

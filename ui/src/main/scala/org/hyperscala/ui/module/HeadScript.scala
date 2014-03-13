@@ -27,6 +27,7 @@ object HeadScript extends Module {
     val page = Webpage()
     page.intercept.renderAttribute.on {
       case ep: EventProperty => None    // Don't render JavaScript in HTML
+      case pa => Some(pa)
     }
 
     page.intercept.init.on {

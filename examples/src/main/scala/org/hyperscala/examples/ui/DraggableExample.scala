@@ -16,6 +16,10 @@ class DraggableExample extends Example {
   Webpage().require(jQueryUI.Latest)
   Webpage().require(Realtime)
 
+  contents += new tag.P {
+    contents += "Draggable provides a very simple wrapper around jQuery UI's Draggable functionality."
+  }
+
   val dragDiv = new tag.Div(id = "draggable", content = "Drag me")
   dragDiv.style.width := 100.px
   dragDiv.style.height := 100.px

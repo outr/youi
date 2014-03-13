@@ -23,6 +23,10 @@ class ChangeableExample extends Example {
   Webpage().require(Realtime)
   Realtime.connectForm()
 
+  contents += new tag.P {
+    contents += "Changeable module allows the use of a JavaScript DSL to define style changes to be applied a tag."
+  }
+
   val div = new tag.Div(id = "myDiv", content = "Positioned Element")
   div.style.width := 100.px
   div.style.height := 100.px

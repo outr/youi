@@ -21,6 +21,10 @@ class ConnectExample extends Example {
       """.stripMargin)
   }
 
+  contents += new tag.P {
+    contents += "Connect provides the foundational support needed for the Realtime communication in Hyperscala, and can be utilized directly for a looser coupling of client to server communication."
+  }
+
   Connect.on("ping") {
     case data => {
       println("Received ping, sending pong...")

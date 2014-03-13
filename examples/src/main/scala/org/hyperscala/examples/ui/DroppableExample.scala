@@ -17,6 +17,10 @@ class DroppableExample extends Example {
   Webpage().require(jQueryUI.Latest)
   Webpage().require(Realtime)
 
+  contents += new tag.P {
+    contents += "Droppable utilizes jQuery UI's Droppable functionality to support simple drag-and-drop."
+  }
+
   val dropDiv = new tag.Div(id = "droppable", content = "Drop here")
   dropDiv.style.position := Position.Relative
   dropDiv.style.left := 250.px

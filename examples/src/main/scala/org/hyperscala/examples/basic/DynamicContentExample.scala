@@ -12,6 +12,10 @@ import org.hyperscala.realtime.RealtimeEvent
  * @author Matt Hicks <mhicks@outr.com>
  */
 class DynamicContentExample extends Example {
+  contents += new tag.P {
+    contents += "DynamicContent provides a mechanism to dynamically load and parse existing HTML content that can then be manipulated in Hyperscala before rendering to the browser."
+  }
+
   val form = new SimpleDynamicForm
   contents += form
 }

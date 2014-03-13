@@ -12,6 +12,10 @@ import org.hyperscala.ui.module._
  * @author Matt Hicks <matt@outr.com>
  */
 class ComplianceExample extends Example {
+  contents += new tag.P {
+    contents += "Compliance offers features to assist with cross-browser compliance support for things like scaling content that works consistently and simply without having a development concern about what browser is being utilized."
+  }
+
   val test = new tag.H2(id = "test", content = "Simple content within a div")
   val div = new tag.Div(id = "zoomable", content = test)
   div.style.position := Position.Relative

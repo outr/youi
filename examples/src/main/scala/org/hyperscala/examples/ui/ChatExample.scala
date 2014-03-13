@@ -9,16 +9,19 @@ import org.hyperscala.ui.dynamic.{DynamicTagged, DynamicTag, DynamicContent}
 import language.reflectiveCalls
 import org.hyperscala.jquery.dsl._
 import org.powerscala.Unique
+import org.hyperscala.examples.{ExamplePage, Example}
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */
-class ChatExample extends Webpage {
-  Webpage().require(Realtime)
+class ChatExample extends Example {
+  page.require(Realtime)
+
+  contents += new tag.P {
+    contents += "Simple real-time chat example with basic user management and history."
+  }
 
   val nickname = new Property[String]
-
-  body.style.fontFamily := "Helvetica, sans-serif"
 
   val chatMain = DynamicContent.url(ChatExample.Main, null)
 
@@ -38,7 +41,7 @@ class ChatExample extends Webpage {
     case evt => sendMessage()
   }
 
-  body.contents += chatMain
+  contents += chatMain
 
   ChatExample.chatHistory.foreach {   // Load history
     case (nick, text) => messages.contents += new ChatEntry(nick, text)
@@ -83,9 +86,12 @@ object ChatExample {
     }
   }
   def sendMessage(nickname: String, message: String) = synchronized {
-    Website().pages[ChatExample].foreach {
-      case chat => Webpage.contextualize(chat) {
-        chat.messages.contents.insert(0, new ChatEntry(nickname, message))
+    Website().pages[ExamplePage].foreach {
+      case page => page.example match {
+        case chat: ChatExample => Webpage.contextualize(page) {
+          chat.messages.contents.insert(0, new ChatEntry(nickname, message))
+        }
+        case _ => // Ignore non chat examples
       }
     }
     history = ((nickname, message) :: history).take(20)

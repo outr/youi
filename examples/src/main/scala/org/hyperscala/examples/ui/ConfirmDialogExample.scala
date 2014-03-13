@@ -16,6 +16,10 @@ class ConfirmDialogExample extends Example {
   Webpage().require(jQueryUI.Latest)
   Realtime.connectForm()
 
+  contents += new tag.P {
+    contents += "ConfirmDialog offers an extension to jQuery UI's Dialog to provide simple true/false confirmation."
+  }
+
   val button = new tag.Button(content = "Show Dialog")
   button.clickEvent.on {
     case evt => showDialog()

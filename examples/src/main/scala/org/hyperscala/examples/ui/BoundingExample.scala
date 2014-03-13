@@ -19,6 +19,10 @@ class BoundingExample extends Example {
   Webpage().require(Realtime)
   Webpage().require(Bounding)
 
+  contents += new tag.P {
+    contents += "The Bounding module allows monitoring of a selector. A monitored element sends positional and size information back to the server as it changes. See this in action in the following draggable div below."
+  }
+
   val dragDiv = new tag.Div(id = "draggable", content = "Drag me")
   dragDiv.style.width := 100.px
   dragDiv.style.height := 100.px

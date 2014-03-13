@@ -17,6 +17,10 @@ class CaseFormExample extends Example {
 
   Webpage().head.contents += new tag.Link(href = "/css/case_form.css")
 
+  contents += new tag.P {
+    contents += "CaseForm provides a simple generated form wrapper around a case class allowing visualization and editing of a case class in real-time."
+  }
+
   val form = DynamicTag.url[tag.Form]("case_form_example", getClass.getClassLoader.getResource("case_form.html")).create()
   val errorSupport = new HTMLErrorSupport[tag.Li, tag.Ul](form.getById[tag.Ul]("errors")) with FieldErrorClassSupport {
     protected def className = "error"

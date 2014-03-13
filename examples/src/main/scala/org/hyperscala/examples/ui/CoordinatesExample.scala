@@ -16,6 +16,10 @@ import org.hyperscala.selector.Selector
 class CoordinatesExample extends Example {
   page.require(WindowSize)
 
+  contents += new tag.P {
+    contents += "Coordinates provides the ability to define an arbitrary coordinate system that can be used to read and set positioning for elements on the screen."
+  }
+
   val div = new tag.Div(id = "div1", clazz = List("bounding"), content = new tag.H2(id = "content1", content = "Centered Content"))
   div.style.position := Position.Relative
   div.style.left := 0.px

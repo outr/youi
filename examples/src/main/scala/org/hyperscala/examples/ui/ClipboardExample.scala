@@ -12,6 +12,10 @@ import org.hyperscala.ui.clipboard.Clipboard
 class ClipboardExample extends Example {
   page.require(Clipboard)
 
+  contents += new tag.P {
+    contents += "Clipboard module provides storage and retrieval of data from the clipboard support."
+  }
+
   val div = new tag.Div
   val input = new tag.Input(id = "myInput")
   val textArea = new tag.TextArea(id = "myTextArea", content = "My Text Area!")

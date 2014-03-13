@@ -11,5 +11,5 @@ class DynamicPageExample extends DynamicWebpage {
 
   val message = getById[tag.Strong]("message")
 
-  message.contents.replaceWith("Dynamically updated content!")
+  message.contents.replaceWith("Dynamically updated content from an existing HTML page!")
 }

@@ -16,6 +16,10 @@ class ColorPickerExample extends Example {
   Webpage().require(ColorPicker)
   Webpage().require(Realtime)
 
+  contents += new tag.P {
+    contents += "ColorPicker module wraps around an input field to provide an implementation of jQuery color picking."
+  }
+
   val colorPicker = new tag.Input(id = "color")
   contents += colorPicker
 

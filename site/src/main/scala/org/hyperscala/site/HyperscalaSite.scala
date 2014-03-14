@@ -101,6 +101,7 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication with Lau
     val connect = page(new HyperscalaExample(new ConnectExample), Scope.Page, "/example/connect.html")
     val externalStyle = page(new HyperscalaExample(new ExternalStyleExample), Scope.Page, "/example/external_style.html")
     val headScript = page(new HyperscalaExample(new HeadScriptExample), Scope.Page, "/example/head_script.html")
+    val basketJS = page(new HyperscalaExample(new BasketJSExample), Scope.Page, "/example/basketjs.html")
     val svg = new {
       val basic = page(new HyperscalaExample(new BasicSVGExample), Scope.Page, "/example/svg/basic.html")
       val shapes = page(new HyperscalaExample(new SVGShapesExample), Scope.Page, "/example/svg/shapes.html")

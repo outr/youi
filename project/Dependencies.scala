@@ -1,8 +1,8 @@
 import sbt._
 
 object Dependencies {
-  val powerScalaVersion = "1.6.3-SNAPSHOT"
-  val outrNetVersion = "1.0.2-SNAPSHOT"
+  val powerScalaVersion = "1.6.3"
+  val outrNetVersion = "1.0.2"
 
   val powerScalaReflect = "org.powerscala" %% "powerscala-reflect" % powerScalaVersion
   val powerScalaHierarchy = "org.powerscala" %% "powerscala-hierarchy" % powerScalaVersion

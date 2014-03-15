@@ -12,7 +12,7 @@ object HyperScalaBuild extends Build {
   import Dependencies._
 
   val baseSettings = Defaults.defaultSettings ++ Seq(
-    version := "0.8.4",
+    version := "0.8.5-SNAPSHOT",
     organization := "org.hyperscala",
     scalaVersion := "2.10.3",
     libraryDependencies ++= Seq(

@@ -13,8 +13,6 @@ object Dependencies {
   val outrNetCore = "com.outr.net" %% "outrnet-core" % outrNetVersion
   val outrNetServlet = "com.outr.net" %% "outrnet-servlet" % outrNetVersion
   val outrNetJetty = "com.outr.net" %% "outrnet-jetty" % outrNetVersion
-  val outrNetCommunicatorClient = "com.outr.net" %% "outrnet-communicator-client" % outrNetVersion
-  val outrNetCommunicatorServer = "com.outr.net" %% "outrnet-communicator-server" % outrNetVersion
 
   val launcher = "com.outr.launcher" %% "launcher" % "1.0.0-SNAPSHOT"
 

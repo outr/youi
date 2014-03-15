@@ -103,7 +103,7 @@ object HyperScalaBuild extends Build {
     .settings(mainClass := Some("org.hyperscala.hello.HelloSite"))
   lazy val numberGuess = Project("numberguess", file("numberguess"), settings = createSettings("hyperscala-numberguess") ++ Revolver.settings ++ com.earldouglas.xsbtwebplugin.WebPlugin.webSettings)
     .dependsOn(ui)
-    .settings(libraryDependencies ++= Seq(jettyWebapp, outrNetServlet, outrNetJetty, outrNetCommunicatorClient, outrNetCommunicatorServer))
+    .settings(libraryDependencies ++= Seq(jettyWebapp, outrNetServlet, outrNetJetty))
     .settings(mainClass := Some("org.hyperscala.numberguess.NumberGuessSite"))
   lazy val site = Project("site", file("site"), settings = createSettings("hyperscala-site") ++ Revolver.settings ++ com.earldouglas.xsbtwebplugin.WebPlugin.webSettings)
     .settings(jarName in assembly := s"hyperscala-${version.value}.jar", mergeStrategy in assembly <<= (mergeStrategy in assembly) {

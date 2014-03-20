@@ -45,6 +45,7 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication with Lau
   val examples = new {
     val hello = page(new HyperscalaExample(new HelloWorldPage), Scope.Request, "/example/hello.html")
 //    val numberGuess = page(new HyperscalaExample(new NumberGuess), Scope.Page, "/example/number_guess.html")
+    val scoped = page(new HyperscalaExample(ScopedExample), Scope.Application, "/example/scoped.html")
     val style = page(new StyleSheetExample, Scope.Request, "/example/style.html")
     val userAgent = page(new HyperscalaExample(new UserAgentExample), Scope.Request, "/example/user_agent.html")
     val large = page(new LargePageExample, Scope.Request, "/example/large.html")

@@ -15,6 +15,7 @@ import com.outr.net.http.request.HttpRequest
 import com.outr.net.http.response.{HttpResponseStatus, HttpResponse}
 import org.hyperscala.module.Module
 import org.powerscala.Version
+import com.outr.net.Method
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
@@ -42,7 +43,7 @@ abstract class FileUploader extends tag.Div with MultipartSupport {
     style.display := Display.None
   }
   val uploadPath = s"${FileUploader.Path}?pageId=${Webpage().pageId}&fieldId=$identity"
-  val uploadForm = new tag.Form(id = s"form$identity", action = uploadPath, encType = "multipart/form-data", method = "post", target = Target(iFrame.name()))
+  val uploadForm = new tag.Form(id = s"form$identity", action = uploadPath, encType = "multipart/form-data", method = Method.Post, target = Target(iFrame.name()))
   val inputId = s"file$identity"
   private var _input = createInput()
   def input = _input

@@ -7,6 +7,7 @@ import tag._
 import org.hyperscala.web.Webpage
 import org.hyperscala.jquery.jQuery172
 import org.hyperscala.examples.Example
+import com.outr.net.Method
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -19,7 +20,7 @@ class FormExample extends Example {
   }
   contents += messages
 
-  contents += new Form(id = "form", method = "post") {
+  contents += new Form(id = "form", method = Method.Post) {
     val items = List("Name", "Phone", "Email")
     items.foreach {
       case item => {

@@ -7,6 +7,7 @@ import org.hyperscala.html.attributes._
 import org.hyperscala.html.constraints._
 import java.net.URLDecoder
 import argonaut.JsonObject
+import com.outr.net.Method
 
 /**
  * NOTE: This file has been generated. Do not modify directly!
@@ -35,7 +36,7 @@ class Form extends Container[BodyChild] with BodyChild with HTMLTag {
            action: String = null,
            autoComplete: AutoComplete = null,
            encType: String = null,
-           method: String = null,
+           method: Method = null,
            noValidate: String = null,
            target: Target = null,
            content: BodyChild = null) = {
@@ -55,7 +56,7 @@ class Form extends Container[BodyChild] with BodyChild with HTMLTag {
   lazy val action = PropertyAttribute[String]("action", null)
   lazy val autoComplete = PropertyAttribute[AutoComplete]("autocomplete", null)
   lazy val encType = PropertyAttribute[String]("enctype", null)
-  lazy val method = PropertyAttribute[String]("method", null)
+  lazy val method = PropertyAttribute[Method]("method", Method.Get, inclusion = InclusionMode.Always)
   lazy val noValidate = PropertyAttribute[String]("novalidate", null)
   lazy val target = PropertyAttribute[Target]("target", null)
 

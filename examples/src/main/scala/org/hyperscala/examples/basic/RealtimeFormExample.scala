@@ -5,6 +5,7 @@ import attributes.ButtonType
 import org.hyperscala.web.Webpage
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.examples.Example
+import com.outr.net.Method
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
@@ -14,7 +15,7 @@ class RealtimeFormExample extends Example {
   Realtime.connectForm()
 //  Realtime.connectPost()
 
-  contents += new tag.Form(method = "get") {
+  contents += new tag.Form(method = Method.Get) {
     submitEvent.on {
       case evt => println("Form submitted with '%s'.".format(input.value()))
     }

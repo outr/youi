@@ -10,6 +10,7 @@ import org.powerscala.Unique
 object HTMLCloner {
   val NullifyIdHandler = (id: String) => null
   val UniqueIdHandler = (id: String) => Unique()
+  val RetainIdHandler = (id: String) => id
 
   def clone(t: HTMLTag, idHandler: String => String = NullifyIdHandler): HTMLTag = {
     val cloned = t match {

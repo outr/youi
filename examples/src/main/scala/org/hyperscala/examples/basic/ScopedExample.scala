@@ -1,7 +1,7 @@
 package org.hyperscala.examples.basic
 
 import org.hyperscala.examples.Example
-import org.hyperscala.web.{Scoped, Scope}
+import org.hyperscala.web.{ScopedReplacement, Scoped, Scope}
 import org.powerscala.property.Property
 import org.hyperscala.html._
 
@@ -10,6 +10,12 @@ import org.hyperscala.html._
  */
 object ScopedExample extends Example {
   val loaded = Property[Int](default = Some(0))
+
+  contents += new tag.Div(id = "replaceable", content = "Original Content")
+
+  val replaceable = ScopedReplacement(Scope.Page, getById[tag.Div]("replaceable")) {
+    case t => t.contents += s" ${loaded()}"
+  }
 
   contents += new tag.Div(content = s"First Load: ${loaded()}")
 

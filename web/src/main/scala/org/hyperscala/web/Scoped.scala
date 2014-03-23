@@ -24,3 +24,5 @@ class Scoped[T <: HTMLTag](scope: Scope, creator: () => T) extends BodyChild {
 object Scoped {
   def apply[T <: HTMLTag](scope: Scope)(creator: => T) = new Scoped[T](scope, () => creator)
 }
+
+// TODO: scoped blocks of code that get invoked each time that scope is created?

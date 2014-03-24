@@ -14,7 +14,6 @@ import java.io.OutputStream
 import org.powerscala.hierarchy.event.{ChildRemovedProcessor, ChildAddedProcessor, StandardHierarchyEventProcessor}
 import java.util.concurrent.atomic.AtomicBoolean
 import org.powerscala.reflect._
-import com.outr.net.http.session.Session
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -27,10 +26,8 @@ class Webpage extends HttpHandler with HTMLPage with ModularPage with Temporal w
 
   val pageId = Unique()
   val store = new MapStorage[Any, Any]
-  store("session") = Website().session
-  store("request") = Website().request
-  def webpageSession = store[Session]("session")
-  def webpageRequest = store[HttpRequest]("request")
+  def webpageSession = Website().session
+  def webpageRequest = Website().request
 
   val childAdded = new ChildAddedProcessor
   val childRemoved = new ChildRemovedProcessor
@@ -63,6 +60,27 @@ class Webpage extends HttpHandler with HTMLPage with ModularPage with Temporal w
   def byId[T <: Tag](id: String)(implicit manifest: Manifest[T]) = html.byId[T](id)(manifest)
 
   def getById[T <: Tag](id: String)(implicit manifest: Manifest[T]) = html.getById[T](id)(manifest)
+
+  /**
+   * Invokes the supplied function once-per session at page loading time.
+   *
+   * @param f the function to invoke
+   */
+  def session(f: => Unit) = {
+    val id = Unique()
+    pageLoadingEvent.on {
+      case webpage => {
+        webpage.webpageSession.get[String](id) match {
+          case Some(_) => // Already loaded, nothing to do
+          case None => try {
+            f
+          } finally {
+            webpage.webpageSession(id) = id     // Make sure this only happens once per session
+          }
+        }
+      }
+    }
+  }
 
   def onReceive(request: HttpRequest, response: HttpResponse) = errorSupport {
     val status = HttpResponseStatus.OK

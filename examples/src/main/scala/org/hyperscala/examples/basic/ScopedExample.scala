@@ -1,7 +1,7 @@
 package org.hyperscala.examples.basic
 
 import org.hyperscala.examples.Example
-import org.hyperscala.web.{ScopedReplacement, Scoped, Scope}
+import org.hyperscala.web.{Webpage, ScopedReplacement, Scoped, Scope}
 import org.powerscala.property.Property
 import org.hyperscala.html._
 
@@ -28,5 +28,9 @@ object ScopedExample extends Example {
   }
   contents += Scoped(Scope.Application) {
     new tag.Div(content = s"Application Updated at ${loaded()}")
+  }
+
+  Webpage().session {
+    contents += new tag.Div(content = "New Session Added!")
   }
 }

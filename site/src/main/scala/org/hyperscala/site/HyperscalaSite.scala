@@ -19,6 +19,8 @@ import com.outr.net.http.request.HttpRequest
 import com.outr.launcher.Launchable
 import org.hyperscala.examples.connect.ConnectExample
 import org.hyperscala.examples.service.TestService
+import com.outr.net.http.filter.PathFilter
+import org.hyperscala.hello.HelloSite
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -34,6 +36,11 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication with Lau
   }
   // Configure System.out and System.err to go to logger
   Logging.configureSystem()
+
+  override def init() = {
+    super.init()
+    HelloSite.initialize()    // Make sure HelloSite is initialized
+  }
 
   override def defaultPort = 8889
 
@@ -113,6 +120,8 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication with Lau
     val playComparison = page(new PlayHelloWorldPage, Scope.Page, "/example/comparison/play_hello_world.html")
   }
   val todoMVC = page(TodoMVC, Scope.Session, "/todomvc.html")
+
+  handlers.add(PathFilter("/hello", HelloSite))
 
   TestService.register(this)    // Register the test service
 

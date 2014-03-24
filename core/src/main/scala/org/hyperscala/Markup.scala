@@ -6,8 +6,10 @@ import annotation.tailrec
 import scala.collection.JavaConversions._
 import java.util.concurrent.atomic.AtomicBoolean
 import org.powerscala.log.Logging
-import org.powerscala.event.{Intercept, Listenable}
+import org.powerscala.event.{Listener, Intercept, Listenable}
 import org.powerscala.event.processor.InterceptProcessor
+import org.powerscala.hierarchy.event.{Ancestors, ChildAddedEvent}
+import org.powerscala.Priority
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -181,6 +183,27 @@ trait Markup extends XMLContent with Listenable with Logging {
   protected def after(): Unit = Page() match {
     case null => // May not be part of a page
     case page => page.intercept.afterRender.fire(this)
+  }
+
+  /**
+   * Invoke the supplied function when P is an available ancestor. This will be invoked a maximum of one times and zero
+   * times if P never appears as an ancestor.
+   *
+   * @param f the function to invoke
+   * @param manifest the manifest for the generic ancestor
+   * @tparam P the ancestor type to find
+   */
+  def connected[P](f: P => Unit)(implicit manifest: Manifest[P]) = {
+    @volatile var listener: Listener[ChildAddedEvent, Unit] = null
+    listener = listen[ChildAddedEvent, Unit, Unit]("childAdded", Priority.Normal, Ancestors) {
+      case evt => root[P] match {
+        case Some(p) => {
+          listeners -= listener
+          f(p)
+        }
+        case None => // Not connected yet
+      }
+    }
   }
 
   @tailrec

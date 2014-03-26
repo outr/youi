@@ -2,7 +2,7 @@ package org.hyperscala.examples.ui
 
 import org.hyperscala.html._
 import org.powerscala.Language
-import org.hyperscala.web.Webpage
+import org.hyperscala.web._
 import org.hyperscala.realtime.RealtimeEvent
 import org.hyperscala.jquery.ui.{AutocompleteResult, Autocomplete}
 import org.hyperscala.examples.Example
@@ -12,8 +12,10 @@ import language.reflectiveCalls
  * @author Matt Hicks <matt@outr.com>
  */
 class AutoCompleteExample extends Example {
-  Webpage().require(Autocomplete)
-  Webpage().body.style.fontFamily := "Arial, sans-serif"
+  this.require(Autocomplete)
+  connected[tag.Body] {
+    case body => body.style.fontFamily := "Arial, sans-serif"
+  }
 
   contents += new tag.P {
     contents += "Wrapper around jQuery UI's autocomplete functionality. Start typing a spoken language below to see it in action."

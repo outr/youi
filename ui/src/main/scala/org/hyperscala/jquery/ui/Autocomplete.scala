@@ -2,7 +2,7 @@ package org.hyperscala.jquery.ui
 
 import org.hyperscala.html._
 import org.hyperscala.realtime.Realtime
-import org.hyperscala.web.{Website, Webpage}
+import org.hyperscala.web._
 import org.powerscala.property.Property
 import org.powerscala.event.Intercept
 import org.powerscala.property.event.PropertyChangeEvent
@@ -14,6 +14,7 @@ import com.outr.net.http.HttpHandler
 import com.outr.net.http.request.HttpRequest
 import com.outr.net.http.response.{HttpResponseStatus, HttpResponse}
 import com.outr.net.http.content.StringContent
+import com.outr.net.http.session.Session
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -24,7 +25,7 @@ class Autocomplete extends tag.Input {
 
 class Autocompletified private(val input: FormField) {
   input.identity
-  Webpage().require(Autocomplete)
+  input.require(Autocomplete)
 
   private val changing = new AtomicBoolean(false)
 
@@ -93,31 +94,27 @@ class Autocompletified private(val input: FormField) {
     }
   }
 
-  if (input.initialized) {
-    autoCompletify()
-  } else {
-    input.onInit {
-      autoCompletify()
-    }
+  input.connected[Webpage[_ <: Session]] {
+    case webpage => autoCompletify(webpage)
   }
 
-  private def autoCompletify() = {
+  private def autoCompletify[S <: Session](webpage: Webpage[S]) = {
     val appendId = appendTo() match {
       case null => null
       case t => s"'t.id()'"
     }
-    Realtime.sendJavaScript(s"autocompletify('${Webpage().pageId}', '${input.id()}', ${multiple()}, ${autoFocus()}, ${delay()}, $appendId, ${disabled()}, ${minLength()})", onlyRealtime = false)
+    Realtime.sendJavaScript(webpage, s"autocompletify('${webpage.pageId}', '${input.id()}', ${multiple()}, ${autoFocus()}, ${delay()}, $appendId, ${disabled()}, ${minLength()})", onlyRealtime = false)
     autoFocus.change.on {
-      case evt => sendChanges(evt)
+      case evt => sendChanges(webpage, evt)
     }
     delay.change.on {
-      case evt => sendChanges(evt)
+      case evt => sendChanges(webpage, evt)
     }
     disabled.change.on {
-      case evt => sendChanges(evt)
+      case evt => sendChanges(webpage, evt)
     }
     minLength.change.on {
-      case evt => sendChanges(evt)
+      case evt => sendChanges(webpage, evt)
     }
     input.eventReceived.on {
       case EventReceived(event, json) if event == "autocompleteSelect" => {
@@ -133,17 +130,17 @@ class Autocompletified private(val input: FormField) {
     }
     input.value.change.on {
       case evt => if (!changing.get()) {
-        Realtime.sendJavaScript("$('#%s')[0].value = \"%s\";".format(input.id(), input.value()))
+        Realtime.sendJavaScript(webpage, "$('#%s')[0].value = \"%s\";".format(input.id(), input.value()))
         selected := input.value().split(",").map(s => s.trim).toList
       }
     }
   }
 
-  private def sendChanges(evt: PropertyChangeEvent[_]) = evt.property match {
-    case p if p == autoFocus => Realtime.sendJavaScript("$('#%s').autocomplete('option', 'autoFocus', %s);".format(input.id(), autoFocus()))
-    case p if p == delay => Realtime.sendJavaScript("$('#%s').autocomplete('option', 'delay', %s);".format(input.id(), delay()))
-    case p if p == disabled => Realtime.sendJavaScript("$('#%s').autocomplete('option', 'disabled', %s);".format(input.id(), disabled()))
-    case p if p == minLength => Realtime.sendJavaScript("$('#%s').autocomplete('option', 'minLength', %s);".format(input.id(), minLength()))
+  private def sendChanges[S <: Session](webpage: Webpage[S], evt: PropertyChangeEvent[_]) = evt.property match {
+    case p if p == autoFocus => Realtime.sendJavaScript(webpage, "$('#%s').autocomplete('option', 'autoFocus', %s);".format(input.id(), autoFocus()))
+    case p if p == delay => Realtime.sendJavaScript(webpage, "$('#%s').autocomplete('option', 'delay', %s);".format(input.id(), delay()))
+    case p if p == disabled => Realtime.sendJavaScript(webpage, "$('#%s').autocomplete('option', 'disabled', %s);".format(input.id(), disabled()))
+    case p if p == minLength => Realtime.sendJavaScript(webpage, "$('#%s').autocomplete('option', 'minLength', %s);".format(input.id(), minLength()))
   }
 }
 
@@ -170,33 +167,33 @@ object Autocompletified {
   }
 }
 
-object Autocomplete extends Module with HttpHandler {
+object Autocomplete extends Module {
   val name = "autocomplete"
   val version = Version(1)
 
   override def dependencies = List(jQueryUI.LatestWithDefault, Realtime)
 
-  def init() = {
-    Website().addHandler(this, "/autocomplete/request")
-    Website().register("/js/autocomplete.js", "autocomplete.js")
+  override def init[S <: Session](website: Website[S]) = {
+    website.addHandler(new AutocompleteHandler(website), "/autocomplete/request")
+    website.register("/js/autocomplete.js", "autocomplete.js")
   }
 
-  def load() = {
-    Webpage().head.contents += new tag.Script(src = "/js/autocomplete.js")
+  override def load[S <: Session](webpage: Webpage[S]) = {
+    webpage.head.contents += new tag.Script(src = "/js/autocomplete.js")
   }
+}
 
+class AutocompleteHandler[S <: Session](website: Website[S]) extends HttpHandler {
   def onReceive(request: HttpRequest, response: HttpResponse) = {
     val pageId = request.url.parameters.first("pageId")
     val fieldId = request.url.parameters.first("fieldId")
     val term = request.url.parameters.first("term")
 
-    val page = Website().pages.byId[Webpage](pageId).getOrElse(throw new NullPointerException(s"Cannot find page by id: $pageId"))
-    Webpage.contextualize(page) {
-      val input = page.getById[FormField](fieldId)
-      val autocompletified = Autocompletified(input)
-      val results = autocompletified.submit(term).map(Autocompletified.Result2JSON).mkString("[", ", ", "]")
-      response.copy(content = StringContent(results), status = HttpResponseStatus.OK)
-    }
+    val page = website.pages.byId[Webpage[S]](pageId).getOrElse(throw new NullPointerException(s"Cannot find page by id: $pageId"))
+    val input = page.getById[FormField](fieldId)
+    val autocompletified = Autocompletified(input)
+    val results = autocompletified.submit(term).map(Autocompletified.Result2JSON).mkString("[", ", ", "]")
+    response.copy(content = StringContent(results), status = HttpResponseStatus.OK)
   }
 }
 

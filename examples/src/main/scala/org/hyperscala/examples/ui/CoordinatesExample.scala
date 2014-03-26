@@ -8,13 +8,15 @@ import org.hyperscala.css.attributes.{Vertical, Horizontal, Position}
 import org.hyperscala.realtime.RealtimeEvent
 import org.hyperscala.ui._
 import org.hyperscala.javascript.JavaScriptString
+import org.hyperscala.web._
 import org.hyperscala.selector.Selector
+import com.outr.net.http.session.Session
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
 class CoordinatesExample extends Example {
-  page.require(WindowSize)
+  this.require(WindowSize)
 
   contents += new tag.P {
     contents += "Coordinates provides the ability to define an arbitrary coordinate system that can be used to read and set positioning for elements on the screen."
@@ -62,65 +64,74 @@ class CoordinatesExample extends Example {
     style.height := 6.px
     style.zIndex := 100
     style.backgroundColor := Color.Red
-    WindowSized.resized(new JavaScriptString(
-      """
-        |var centerDiv = $('#centerDiv');
-        |centerDiv.css('left', (windowWidth - centerDiv.width()) / 2);
-        |centerDiv.css('top', (windowHeight - centerDiv.height()) / 2);
-      """.stripMargin))
+    connected[Webpage[Session]] {
+      case webpage => {
+        WindowSized.resized(webpage, new JavaScriptString(
+          """
+            |var centerDiv = $('#centerDiv');
+            |centerDiv.css('left', (windowWidth - centerDiv.width()) / 2);
+            |centerDiv.css('top', (windowHeight - centerDiv.height()) / 2);
+          """.stripMargin))
+      }
+    }
   }
   contents += centerDiv
 
-  Bounding.monitor(Selector.clazz("bounding"), 0.5)   // Monitor bounding div1 and div2
+  connected[Webpage[Session]] {
+    case webpage => {
+      Bounding.monitor(webpage, Selector.clazz("bounding"), 0.5)
 
-  val coordinates = new CoordinatesOffsetFromCenter()
+      val coordinates = new CoordinatesOffsetFromCenter(webpage)
 
-  val divc = coordinates(div)
-  divc.horizontal := Horizontal.Center
-  divc.vertical := Vertical.Middle
-  divc.x := 0.0
-  divc.y := 0.0
-  divc.manageX := true
-  divc.manageY := true
+      val divc = coordinates(div)
+      divc.horizontal := Horizontal.Center
+      divc.vertical := Vertical.Middle
+      divc.x := 0.0
+      divc.y := 0.0
+      divc.manageX := true
+      divc.manageY := true
 
-  val divc2 = coordinates(div2)
-  divc2.horizontal := Horizontal.Right
-  divc2.x := 480.0
+      val divc2 = coordinates(div2)
+      divc2.horizontal := Horizontal.Right
+      divc2.x := 480.0
 
-  val divc3 = coordinates(div3)
+      val divc3 = coordinates(div3)
 
-  contents += new tag.Button(content = "Horizontal.Left") {
-    clickEvent := RealtimeEvent()
-    clickEvent.on {
-      case evt => divc.horizontal := Horizontal.Left
-    }
-  }
-  contents += new tag.Button(content = "Horizontal.Center") {
-    clickEvent := RealtimeEvent()
-    clickEvent.on {
-      case evt => divc.horizontal := Horizontal.Center
-    }
-  }
-  contents += new tag.Button(content = "Horizontal.Right") {
-    clickEvent := RealtimeEvent()
-    clickEvent.on {
-      case evt => divc.horizontal := Horizontal.Right
-    }
-  }
+      contents += new tag.Button(content = "Horizontal.Left") {
+        clickEvent := RealtimeEvent()
+        clickEvent.on {
+          case evt => divc.horizontal := Horizontal.Left
+        }
+      }
+      contents += new tag.Button(content = "Horizontal.Center") {
+        clickEvent := RealtimeEvent()
+        clickEvent.on {
+          case evt => divc.horizontal := Horizontal.Center
+        }
+      }
+      contents += new tag.Button(content = "Horizontal.Right") {
+        clickEvent := RealtimeEvent()
+        clickEvent.on {
+          case evt => divc.horizontal := Horizontal.Right
+        }
+      }
 
-  contents += new tag.Button(content = "Center Float Div") {
-    clickEvent := RealtimeEvent()
-    clickEvent.on {
-      case evt => {
-        divc3.set(0.0, 0.0, Horizontal.Center, Vertical.Middle)
+      contents += new tag.Button(content = "Center Float Div") {
+        clickEvent := RealtimeEvent()
+        clickEvent.on {
+          case evt => {
+            divc3.set(0.0, 0.0, Horizontal.Center, Vertical.Middle)
+          }
+        }
+      }
+
+      contents += new tag.Button(content = "Position Information") {
+        clickEvent := RealtimeEvent()
+        clickEvent.on {
+          case evt => println(s"Position of Float: ${divc3.center} x ${divc3.middle}")
+        }
       }
     }
   }
 
-  contents += new tag.Button(content = "Position Information") {
-    clickEvent := RealtimeEvent()
-    clickEvent.on {
-      case evt => println(s"Position of Float: ${divc3.center} x ${divc3.middle}")
-    }
-  }
 }

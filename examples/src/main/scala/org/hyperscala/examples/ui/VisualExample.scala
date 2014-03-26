@@ -6,7 +6,7 @@ import org.hyperscala.css.attributes._
 
 import org.powerscala.property._
 import org.powerscala.Country
-import org.hyperscala.web.Webpage
+import org.hyperscala.web._
 import org.hyperscala.realtime.{RealtimeEvent, Realtime}
 import org.hyperscala.examples.Example
 import language.reflectiveCalls
@@ -16,9 +16,11 @@ import org.hyperscala.ui.widgets.visual.types.DateInputVisualType
  * @author Matt Hicks <matt@outr.com>
  */
 class VisualExample extends Example {
-  Webpage().require(Realtime)
+  this.require(Realtime)
 
-  Webpage().body.style.fontFamily := "sans-serif"
+  connected[tag.Body] {
+    case body => body.style.fontFamily := "sans-serif"
+  }
 
   val property = Property[TestPerson](default = Some(new TestPerson(name = "John Doe", age = 21)))
   property.change.on {

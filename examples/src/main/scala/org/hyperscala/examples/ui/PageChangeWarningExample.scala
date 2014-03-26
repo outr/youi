@@ -1,6 +1,6 @@
 package org.hyperscala.examples.ui
 
-import org.hyperscala.web.Webpage
+import org.hyperscala.web._
 import org.hyperscala.ui.PageChangeWarning
 
 import org.hyperscala.html._
@@ -13,7 +13,7 @@ import org.hyperscala.realtime.RealtimeEvent
  * @author Matt Hicks <mhicks@outr.com>
  */
 class PageChangeWarningExample extends Example {
-  Webpage().require(PageChangeWarning)
+  this.require(PageChangeWarning)
 
   contents += new tag.Div {
     contents += new tag.A(href = "http://www.google.com", content = "Leave the Page")
@@ -21,7 +21,7 @@ class PageChangeWarningExample extends Example {
       clickEvent := RealtimeEvent()
 
       clickEvent.on {
-        case evt => PageChangeWarning.warn("There are unsaved changes.")
+        case evt => PageChangeWarning.warn(this.webpage, "There are unsaved changes.")
       }
     }
 
@@ -29,7 +29,7 @@ class PageChangeWarningExample extends Example {
       clickEvent := RealtimeEvent()
 
       clickEvent.on {
-        case evt => PageChangeWarning.warn(null)
+        case evt => PageChangeWarning.warn(this.webpage, null)
       }
     }
   }

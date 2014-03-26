@@ -8,12 +8,13 @@ import org.powerscala.Color
 import org.hyperscala.css.attributes.Position
 import org.hyperscala.ui.wrapped.DropReceiver
 import org.hyperscala.jquery.Gritter
+import org.hyperscala.web._
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
 class DropReceiverExample extends Example {
-  page.require(Gritter)
+  this.require(Gritter)
 
   contents += new tag.P {
     contents += "DropReceiver provides a convenient mechanism to receive drag-and-drop content of many types."
@@ -32,6 +33,6 @@ class DropReceiverExample extends Example {
 
   val dropReceiver = DropReceiver(dropDiv)
   dropReceiver.dropped.on {
-    case evt => Gritter.add("Drop Received", s"Dropped: $evt")
+    case evt => Gritter.add(this.webpage, "Drop Received", s"Dropped: $evt")
   }
 }

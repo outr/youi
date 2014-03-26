@@ -2,12 +2,13 @@ package org.hyperscala.ui
 
 import org.hyperscala.module.Module
 import org.powerscala.Version
-import org.hyperscala.web.{Webpage, Website}
+import org.hyperscala.web._
 import org.hyperscala.html._
 import org.hyperscala.jquery.jQuery
 import scala.collection.mutable.ListBuffer
 import org.hyperscala.jquery.dsl._
 import org.hyperscala.realtime.Realtime
+import com.outr.net.http.session.Session
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -23,14 +24,16 @@ object jsTree extends Module {
 
   override val dependencies = List(jQuery.LatestWithDefault)
 
-  def init() = {
-    Website().addClassPath("/js/jstree/", "jstree/")
+  override def init[S <: Session](website: Website[S]) = {
+    website.addClassPath("/js/jstree/", "jstree/")
   }
 
-  def load() = Webpage().head.contents += new tag.Script(mimeType = "text/javascript", src = "/js/jstree/jquery.jstree.js")
+  override def load[S <: Session](webpage: Webpage[S]) = {
+    webpage.head.contents += new tag.Script(mimeType = "text/javascript", src = "/js/jstree/jquery.jstree.js")
+  }
 
   def apply(t: HTMLTag, types: Type*) = {
-    Webpage().require(jsTree)
+    t.require(jsTree)
     val attributes = ListBuffer.empty[String]
     if (types.nonEmpty) {
       attributes +=
@@ -50,7 +53,10 @@ object jsTree extends Module {
         |%s
         |})
       """.stripMargin.trim.format(attributes.map(s => "\t\t%s".format(s)).mkString(",\r\n"))
-    Realtime.send($(t).call(js))
+    t.connected[Webpage[_ <: Session]] {
+      case webpage => Realtime.send(webpage, $(t).call(js))
+    }
+
   }
 
   case class Type(name: String,

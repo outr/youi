@@ -8,13 +8,15 @@ import org.hyperscala.realtime.JSRequest
 import org.hyperscala.javascript.dsl._
 import org.hyperscala.jquery.dsl._
 import org.hyperscala.jquery.Gritter
+import org.hyperscala.web._
+import com.outr.net.http.session.Session
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
 class JSRequestExample extends Example {
-  page.require(JSRequest)
-  page.require(Gritter)
+  this.require(JSRequest)
+  this.require(Gritter)
 
   val div = new tag.Div(id = "myDiv", content = "Positioned Element") {
     style.width := 100.px
@@ -25,7 +27,11 @@ class JSRequestExample extends Example {
   }
   contents += div
 
-  JSRequest.send($(div).offset().left, $(div).offset().top) {
-    case response => Gritter.add("Response Received", s"Response received: $response", sticky = true)
+  connected[Webpage[Session]] {
+    case webpage => {
+      JSRequest.send(webpage, $(div).offset().left, $(div).offset().top) {
+        case response => Gritter.add(webpage, "Response Received", s"Response received: $response", sticky = true)
+      }
+    }
   }
 }

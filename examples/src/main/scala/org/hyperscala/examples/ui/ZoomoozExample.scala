@@ -9,12 +9,13 @@ import org.hyperscala.jquery.dsl._
 import org.hyperscala.jquery._
 import org.hyperscala.realtime.dsl._
 import org.hyperscala.realtime.RealtimeEvent
+import org.hyperscala.web._
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
 class ZoomoozExample extends Example {
-  page.require(Zoomooz)
+  this.require(Zoomooz)
 
   val test = new tag.H2(id = "test", content = "Simple content within a div")
   val div = new tag.Div(id = "zoomable", content = test)
@@ -31,13 +32,13 @@ class ZoomoozExample extends Example {
   contents += new tag.Button(content = "Zoom In") {
     clickEvent := RealtimeEvent()
     clickEvent.on {
-      case evt => $(test).zoomTo(targetSize = 1.5, duration = 1.0, root = $(div)).send()
+      case evt => $(test).zoomTo(targetSize = 1.5, duration = 1.0, root = $(div)).send(this.webpage)
     }
   }
   contents += new tag.Button(content = "Zoom Normal") {
     clickEvent := RealtimeEvent()
     clickEvent.on {
-      case evt => $(div).zoomTo(targetSize = 1.0, duration = 1.0, root = $(div)).send()
+      case evt => $(div).zoomTo(targetSize = 1.0, duration = 1.0, root = $(div)).send(this.webpage)
     }
   }
 }

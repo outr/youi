@@ -1,7 +1,7 @@
 package org.hyperscala.examples.ui
 
 import org.hyperscala.html._
-import org.hyperscala.web.Webpage
+import org.hyperscala.web._
 import org.hyperscala.jquery.ColorPicker
 import org.hyperscala.jquery.ColorPicker._
 import org.hyperscala.examples.Example
@@ -13,8 +13,8 @@ import org.powerscala.Color
  * @author Matt Hicks <matt@outr.com>
  */
 class ColorPickerExample extends Example {
-  Webpage().require(ColorPicker)
-  Webpage().require(Realtime)
+  this.require(ColorPicker)
+  this.require(Realtime)
 
   contents += new tag.P {
     contents += "ColorPicker module wraps around an input field to provide an implementation of jQuery color picking."

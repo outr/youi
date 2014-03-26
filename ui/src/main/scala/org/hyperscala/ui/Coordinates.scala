@@ -8,13 +8,12 @@ import org.powerscala.property.Property
 import org.hyperscala.css.attributes._
 import org.powerscala.Unique
 import org.powerscala.log.Logging
+import com.outr.net.http.session.Session
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-abstract class Coordinates extends Listenable with StorageComponent[CoordinatesTag, HTMLTag] {
-  Webpage().require(Bounding)
-
+abstract class Coordinates[S <: Session](val webpage: Webpage[S]) extends Listenable with StorageComponent[CoordinatesTag[S], HTMLTag] {
   val id = Unique()
 
   override protected def componentIdentifier = s"coordinates-$id"
@@ -39,60 +38,61 @@ abstract class Coordinates extends Listenable with StorageComponent[CoordinatesT
     }
   }
 
-  def localizeX(x: Double, ct: CoordinatesTag): Double
-  def localizeY(y: Double, ct: CoordinatesTag): Double
+  def localizeX(x: Double, ct: CoordinatesTag[S]): Double
+  def localizeY(y: Double, ct: CoordinatesTag[S]): Double
 
   protected def create(t: HTMLTag) = synchronized {
-    new CoordinatesTag(this, Bounding(t), t)
+    new CoordinatesTag[S](this, Bounding(t), t)
   }
 }
 
-abstract class CoordinatesFromZero extends Coordinates {
+abstract class CoordinatesFromZero[S <: Session](webpage: Webpage[S]) extends Coordinates(webpage) {
   def coordinateX(absolute: Double, width: Double) = absolute - zeroX
 
   def coordinateY(absolute: Double, height: Double) = absolute - zeroY
 
-  def localizeX(x: Double, ct: CoordinatesTag) = x + zeroX
+  def localizeX(x: Double, ct: CoordinatesTag[S]) = x + zeroX
 
-  def localizeY(y: Double, ct: CoordinatesTag) = y + zeroY
+  def localizeY(y: Double, ct: CoordinatesTag[S]) = y + zeroY
 
   def zeroX: Double
   def zeroY: Double
 }
 
-class Coordinates960 extends CoordinatesFromZero {
-  def zeroX = (WindowSize.width() / 2.0) - 480.0
+class Coordinates960[S <: Session](webpage: Webpage[S]) extends CoordinatesFromZero(webpage) {
+  def zeroX = (WindowSize.width(webpage)() / 2.0) - 480.0
 
   def zeroY = 0.0
 
   override protected def create(t: HTMLTag) = {
     val ct = super.create(t)
-    WindowSize.width.change and WindowSize.height.change on {   // This coordinate system depends on WindowSize as well
+    WindowSize.width(webpage).change and WindowSize.height(webpage).change on {   // This coordinate system depends on WindowSize as well
       case evt => ct.update()
     }
+
     ct
   }
 }
 
-class CoordinatesOffsetFromCenter(offsetX: Double = 0.0, offsetY: Double = 0.0) extends Coordinates {
-  def coordinateX(absolute: Double, width: Double) = absolute - (WindowSize.width() / 2.0)
+class CoordinatesOffsetFromCenter[S <: Session](webpage: Webpage[S], offsetX: Double = 0.0, offsetY: Double = 0.0) extends Coordinates(webpage) {
+  def coordinateX(absolute: Double, width: Double) = absolute - (WindowSize.width(webpage)() / 2.0)
 
-  def coordinateY(absolute: Double, height: Double) = absolute - (WindowSize.height() / 2.0)
+  def coordinateY(absolute: Double, height: Double) = absolute - (WindowSize.height(webpage)() / 2.0)
 
-  def localizeX(x: Double, ct: CoordinatesTag) = x + (WindowSize.width() / 2.0)
+  def localizeX(x: Double, ct: CoordinatesTag[S]) = x + (WindowSize.width(webpage)() / 2.0)
 
-  def localizeY(y: Double, ct: CoordinatesTag) = y + (WindowSize.height() / 2.0)
+  def localizeY(y: Double, ct: CoordinatesTag[S]) = y + (WindowSize.height(webpage)() / 2.0)
 
   override protected def create(t: HTMLTag) = {
     val ct = super.create(t)
-    WindowSize.width.change and WindowSize.height.change on {   // This coordinate system depends on WindowSize as well
+    WindowSize.width(webpage).change and WindowSize.height(webpage).change on {   // This coordinate system depends on WindowSize as well
       case evt => ct.update()
     }
     ct
   }
 }
 
-class CoordinatesTag(val coordinates: Coordinates, val b: Bounding, val t: HTMLTag) extends Listenable with Logging {
+class CoordinatesTag[S <: Session](val coordinates: Coordinates[S], val b: Bounding, val t: HTMLTag) extends Listenable with Logging {
   private val updatingCoordinates = new ThreadLocal[Boolean] {
     override def initialValue() = false
   }

@@ -114,11 +114,11 @@ trait Markup extends XMLContent with Listenable with Logging {
     case _ => throw new RuntimeException("%s: Unsupported content type: %s".format(getClass.getName, content.getClass.getName))
   }
 
-  protected def initialize(): Unit = {
-    Page() match {
-      case null => // May not be part of a page
-      case page => page.intercept.init.fire(this)
-    }
+  private def page = root[Page].getOrElse(throw new RuntimeException("No Page instance defined in hierarchy."))
+
+  protected def initialize(): Unit = root[Page] match {
+    case Some(page) => page.intercept.init.fire(this)
+    case None => // Not connected to a page
   }
 
   /**
@@ -126,29 +126,33 @@ trait Markup extends XMLContent with Listenable with Logging {
    *
    * @param f represents the function to be called upon init
    */
-  def onInit(f: => Unit): Unit = if (!initialized) {
-    Page().intercept.init.on {
-      case markup => if (markup == Markup.this) {
-        f
-      }
-    }
-  } else {
-    f
-  }
-
-  /**
-   * Invokes the function before rendering of this markup. If the markup is already rendered then the function is
-   * invoked immediately.
-   */
-  def onBeforeRender(f: => Unit) = if (rendered) {
-    f
-  } else {
-    Page().intercept.beforeRender.on {
-      case markup => {
-        if (markup == Markup.this) {
+  def onInit(f: => Unit): Unit = connected[Page] {
+    case page => if (!initialized) {
+      page.intercept.init.on {
+        case markup => if (markup == Markup.this) {
           f
         }
-        Intercept.Continue
+      }
+    } else {
+      f
+    }
+  }
+
+  /**
+   * Invokes the function before rendering of this markup. If the markup is already rendered then the function is
+   * invoked immediately.
+   */
+  def onBeforeRender(f: => Unit) = connected[Page] {
+    case page => if (rendered) {
+      f
+    } else {
+      page.intercept.beforeRender.on {
+        case markup => {
+          if (markup == Markup.this) {
+            f
+          }
+          Intercept.Continue
+        }
       }
     }
   }
@@ -157,12 +161,16 @@ trait Markup extends XMLContent with Listenable with Logging {
    * Invokes the function before rendering of this markup. If the markup is already rendered then the function is
    * invoked immediately.
    */
-  def onAfterRender(f: => Unit) = if (rendered) {
-    f
-  } else {
-    Page().intercept.afterRender.on {
-      case markup => if (markup == Markup.this) {
-        f
+  def onAfterRender(f: => Unit) = connected[Page] {
+    case page => if (rendered) {
+      f
+    } else {
+      page.intercept.afterRender.on {
+        case markup => {
+          if (markup == Markup.this) {
+            f
+          }
+        }
       }
     }
   }
@@ -170,19 +178,17 @@ trait Markup extends XMLContent with Listenable with Logging {
   /**
    * Invoked immediately before writing this markup out.
    */
-  protected def before(): Unit = {
-    Page() match {
-      case null => // May not be part of a page
-      case page => page.intercept.beforeRender.fire(this)
-    }
+  protected def before(): Unit = root[Page] match {
+    case Some(page) => page.intercept.beforeRender.fire(this)
+    case None => // Not connected to a page
   }
 
   /**
    * Invoked immediately after writing this markup out.
    */
-  protected def after(): Unit = Page() match {
-    case null => // May not be part of a page
-    case page => page.intercept.afterRender.fire(this)
+  protected def after(): Unit = root[Page] match {
+    case Some(page) => page.intercept.afterRender.fire(this)
+    case None => // Not connected to a page
   }
 
   /**
@@ -194,14 +200,19 @@ trait Markup extends XMLContent with Listenable with Logging {
    * @tparam P the ancestor type to find
    */
   def connected[P](f: P => Unit)(implicit manifest: Manifest[P]) = {
-    @volatile var listener: Listener[ChildAddedEvent, Unit] = null
-    listener = listen[ChildAddedEvent, Unit, Unit]("childAdded", Priority.Normal, Ancestors) {
-      case evt => root[P] match {
-        case Some(p) => {
-          listeners -= listener
-          f(p)
+    root[P] match {
+      case Some(p) => f(p)      // Root of type already exists
+      case None => {            // Wait for it to be hierarchically attached
+        @volatile var listener: Listener[ChildAddedEvent, Unit] = null
+        listener = listen[ChildAddedEvent, Unit, Unit]("childAdded", Priority.Normal, Ancestors) {
+          case evt => root[P] match {
+            case Some(p) => {
+              listeners -= listener
+              f(p)
+            }
+            case None => // Not connected yet
+          }
         }
-        case None => // Not connected yet
       }
     }
   }

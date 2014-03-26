@@ -11,7 +11,9 @@ import org.powerscala.IO
 import org.jdom2.xpath.XPathFactory
 import org.jdom2.filter.Filters
 import scala.collection.JavaConversions._
-import org.hyperscala.web.Webpage
+import org.hyperscala.web.{Website, Webpage}
+import com.outr.net.http.session.{MapSession, Session}
+import com.outr.net.http.request.HttpRequest
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -29,7 +31,7 @@ object HTMLToScala {
     parent.read(body)                                  // Read the new data back in
   }
 
-  def toScala(page: Webpage, packageName: String, className: String) = {
+  def toScala[S <: Session](page: Webpage[S], packageName: String, className: String) = {
     val b = new ScalaWebpageBuffer(packageName, className, page)
     b.code
   }
@@ -62,8 +64,8 @@ object HTMLToScala {
     toInstantiator[T](tag, className)
   }*/
 
-  def toPage(source: String, clean: Boolean = true) = {
-    val page = new Webpage()
+  def toPage[S <: Session](website: Website[S], source: String, clean: Boolean = true)(implicit manifest: Manifest[S]) = {
+    val page = new Webpage(website)
     page.html.read(toXML(source, clean))
     page
   }
@@ -96,6 +98,9 @@ object HTMLToScala {
   }
 
   def main(args: Array[String]): Unit = {
+    val website = new Website[MapSession] {
+      override protected def createSession(request: HttpRequest, id: String) = new MapSession(id, this)
+    }
     Markup.UnsupportedAttributeException = false
     val preferences = Preferences.userNodeForPackage(getClass)
     val filePath = preferences.get("path", ".")
@@ -106,7 +111,7 @@ object HTMLToScala {
         val file = chooser.selectedFile
         preferences.put("path", file.getParentFile.getAbsolutePath)
 
-        val webpage = toPage(IO.copy(file), clean = true)
+        val webpage = toPage(website, IO.copy(file), clean = true)
 
         val savePath = preferences.get("savePath", preferences.get("path", "."))
         val saver = new FileChooser(new File(savePath))

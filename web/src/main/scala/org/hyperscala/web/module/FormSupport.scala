@@ -8,11 +8,12 @@ import org.powerscala.hierarchy.ChildLike
 import org.hyperscala.event.SubmitEvent
 import com.outr.net.http.request.HttpRequest
 import com.outr.net.http.response.HttpResponse
+import com.outr.net.http.session.Session
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-trait FormSupport extends Webpage {
+trait FormSupport[S <: Session] extends Webpage[S] {
   override def onReceive(request: HttpRequest, response: HttpResponse) = {
     var form: Form = null
     request.url.parameters.values.foreach {

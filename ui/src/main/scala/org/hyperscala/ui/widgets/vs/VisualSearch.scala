@@ -2,7 +2,7 @@ package org.hyperscala.ui.widgets.vs
 
 import org.hyperscala.html._
 import org.hyperscala.module.Module
-import org.hyperscala.web.{Website, Webpage}
+import org.hyperscala.web._
 import org.hyperscala.jquery.jQuery
 import org.hyperscala.jquery.ui.jQueryUI
 import org.hyperscala.realtime.Realtime
@@ -17,6 +17,7 @@ import com.outr.net.http.request.HttpRequest
 import scala.Some
 import com.outr.net.http.response.HttpResponse
 import com.outr.net.http.content.StringContent
+import com.outr.net.http.session.Session
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -24,7 +25,7 @@ import com.outr.net.http.content.StringContent
 class VisualSearch extends tag.Div {
   private var _facets = List.empty[VisualSearchFacet]
 
-  Webpage().require(VisualSearch)
+  this.require(VisualSearch)
   identity
 
   private val modifying = new ThreadLocal[VisualSearchQuery]
@@ -55,14 +56,20 @@ class VisualSearch extends tag.Div {
   override protected def initialize() {
     super.initialize()
 
-    val instruction = s"createVisualSearch('${Webpage().pageId}', '$identity', '${VisualSearch.Path}');"
-    Realtime.sendJavaScript(instruction, selector = Some(Selector.id(id())), onlyRealtime = false)
+    connected[Webpage[Session]] {
+      case webpage => {
+        val instruction = s"createVisualSearch('${webpage.pageId}', '$identity', '${VisualSearch.Path}');"
+        Realtime.sendJavaScript(webpage, instruction, selector = Some(Selector.id(id())), onlyRealtime = false)
+      }
+    }
 
     query.change.on {
       case evt => {
         if (query() != modifying.get()) {   // Only send change to client if not the same information sent from client
-        val content = "\"%s\"".format(query().query)
-          Realtime.sendJavaScript("setVisualSearchQuery('%s', content);".format(id()), Option(content))
+          val content = "\"%s\"".format(query().query)
+          connected[Webpage[Session]] {
+            case webpage => Realtime.sendJavaScript(webpage, "setVisualSearchQuery('%s', content);".format(id()), Option(content))
+          }
         }
         search(query())
       }
@@ -92,7 +99,7 @@ object SearchRequest {
   implicit def SearchRequestCodecJson: CodecJson[SearchRequest] = casecodec2(SearchRequest.apply, SearchRequest.unapply)("query", "facets")
 }
 
-object VisualSearch extends Module with HttpHandler {
+object VisualSearch extends Module {
   val Path = "/visualsearch/search"
 
   val name = "visualsearch"
@@ -102,13 +109,12 @@ object VisualSearch extends Module with HttpHandler {
 
   val basePath = "/visualsearch-0.4.0/"
 
-  def init() = {
-    Website().addHandler(this, Path)
-    Website().addClassPath(basePath, "visualsearch/0.4.0/")
+  override def init[S <: Session](website: Website[S]) = {
+    website.addHandler(new VisualSearchHandler(website), Path)
+    website.addClassPath(basePath, "visualsearch/0.4.0/")
   }
 
-  def load() = {
-    val page = Webpage()
+  override def load[S <: Session](page: Webpage[S]) = {
     // TODO: extract underscore and backbone as modules
     page.head.contents += new tag.Link(href = "%slib/css/reset.css".format(basePath), rel = "stylesheet")
     page.head.contents += new tag.Link(href = "%slib/css/icons.css".format(basePath), rel = "stylesheet")
@@ -131,37 +137,39 @@ object VisualSearch extends Module with HttpHandler {
     page.head.contents += new tag.Script(mimeType = "text/javascript", src = "%shyperscala-visualsearch.js".format(basePath))
   }
 
+}
+
+class VisualSearchHandler[S <: Session](website: Website[S]) extends HttpHandler {
   def onReceive(request: HttpRequest, response: HttpResponse) = {
     val pageId = request.url.parameters.first("pageId")
     val fieldId = request.url.parameters.first("fieldId")
 
-    val page = Website().pages.byId[Webpage](pageId).getOrElse(throw new NullPointerException(s"Cannot find page by id: $pageId"))
-    Webpage.contextualize(page) {
-      val visualSearch = page.getById[VisualSearch](fieldId)
-      val results = request.url.parameters.first("requestType") match {
-        case "facets" => {
-          visualSearch.facets.collect {
-            case f if f.allowMultiple || !visualSearch.queryHasFacet(f.name) => if (f.category == null) {
-              "\"%s\"".format(f.name)
-            } else {
-              "{\"label\": \"%s\", \"category\": \"%s\"}".format(f.name, f.category)
-            }
-          }.mkString("[", ", ", "]")
-        }
-        case "values" => {
-          val facetName = request.url.parameters.first("facet")
-          val term = request.url.parameters.first("term")
-          visualSearch.facet(facetName) match {
-            case Some(facet) => {
-              val results = facet.search(term, visualSearch)
-              val resultString = results.map(r => "{\"value\": \"%s\", \"label\": \"%s\"}".format(r.value, r.label)).mkString("[", ", ", "]")
-              "{\"resultType\": \"%s\", \"exactMatch\": %s, \"results\": %s}".format(facet.resultType.name, facet.exactMatch, resultString)
-            }
-            case None => "{\"results\": []}"
+    val page = website.pages.byId[Webpage[S]](pageId).getOrElse(throw new NullPointerException(s"Cannot find page by id: $pageId"))
+    val visualSearch = page.getById[VisualSearch](fieldId)
+    val results = request.url.parameters.first("requestType") match {
+      case "facets" => {
+        visualSearch.facets.collect {
+          case f if f.allowMultiple || !visualSearch.queryHasFacet(f.name) => if (f.category == null) {
+            "\"%s\"".format(f.name)
+          } else {
+            "{\"label\": \"%s\", \"category\": \"%s\"}".format(f.name, f.category)
           }
+        }.mkString("[", ", ", "]")
+      }
+      case "values" => {
+        val facetName = request.url.parameters.first("facet")
+        val term = request.url.parameters.first("term")
+        visualSearch.facet(facetName) match {
+          case Some(facet) => {
+            val results = facet.search(term, visualSearch)
+            val resultString = results.map(r => "{\"value\": \"%s\", \"label\": \"%s\"}".format(r.value, r.label)).mkString("[", ", ", "]")
+            "{\"resultType\": \"%s\", \"exactMatch\": %s, \"results\": %s}".format(facet.resultType.name, facet.exactMatch, resultString)
+          }
+          case None => "{\"results\": []}"
         }
       }
-      response.copy(content = StringContent(results), status = HttpResponseStatus.OK)
     }
+    response.copy(content = StringContent(results), status = HttpResponseStatus.OK)
   }
+
 }

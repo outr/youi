@@ -2,7 +2,7 @@ package org.hyperscala.jquery
 
 import org.powerscala.{StorageComponent, Color, Version}
 import org.hyperscala.module.{Module, InterfaceWithDefault}
-import org.hyperscala.web.{Webpage, Website}
+import org.hyperscala.web._
 import org.hyperscala.html.tag
 
 import scala.language.implicitConversions
@@ -10,6 +10,7 @@ import org.hyperscala.html.tag.Input
 import org.hyperscala.javascript.JavaScriptContent
 import org.hyperscala.realtime.{Realtime, RealtimeEvent}
 import org.hyperscala.jquery.dsl._
+import com.outr.net.http.session.Session
 
 /**
  * Spectrum is a wrapper around the the jQuery Colorpicker found here: http://bgrins.github.io/spectrum/
@@ -30,18 +31,17 @@ object Spectrum extends Module with JavaScriptCaller with StorageComponent[Spect
 
   override def dependencies = List(InterfaceWithDefault(jQuery, jQuery.Latest))
 
-  def init() = {
-    Website().addClassPath("/spectrum/", "spectrum/")
+  override def init[S <: Session](website: Website[S]) = {
+    website.addClassPath("/spectrum/", "spectrum/")
   }
 
-  def load() = {
-    val page = Webpage()
-    page.head.contents += new tag.Link(href = "/spectrum/spectrum.css", rel = "stylesheet")
-    page.head.contents += new tag.Script(mimeType = "text/javascript", src = "/spectrum/spectrum.js")
+  override def load[S <: Session](webpage: Webpage[S]) = {
+    webpage.head.contents += new tag.Link(href = "/spectrum/spectrum.css", rel = "stylesheet")
+    webpage.head.contents += new tag.Script(mimeType = "text/javascript", src = "/spectrum/spectrum.js")
   }
 
   override def apply(tag: Input) = {
-    Webpage().require(this)
+    tag.require(this)
     super.apply(tag)
   }
 
@@ -187,7 +187,9 @@ class Spectrum private(val wrapped: Input) extends jQueryComponent {
   }
 
   override def option(key: String, value: Any) = key match {
-    case "color" => Realtime.send($(wrapped).call(s"spectrum('set', ${JavaScriptContent.toJS(value)})"))
+    case "color" => wrapped.connected[Webpage[_ <: Session]] {
+      case webpage => Realtime.send(webpage, $(wrapped).call(s"spectrum('set', ${JavaScriptContent.toJS(value)})"))
+    }
     case _ => super.option(key, value)
   }
 }

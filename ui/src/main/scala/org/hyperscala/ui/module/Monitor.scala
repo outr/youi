@@ -13,6 +13,7 @@ import org.hyperscala.css.StyleSheetAttribute
 import org.hyperscala.realtime.dsl._
 import org.hyperscala.javascript.dsl.JSFunction0
 import argonaut.JsonObject
+import com.outr.net.http.session.Session
 
 /**
  * Monitor allows arbitrary JavaScript to be monitored for a changing result at a specific interval and to send that data
@@ -27,30 +28,30 @@ object Monitor extends Module {
 
   override def dependencies = List(Realtime)
 
-  def init() = {
-    Website().register("/js/monitor.js", "monitor.js")
+  override def init[S <: Session](website: Website[S]) = {
+    website.register("/js/monitor.js", "monitor.js")
   }
 
-  def load() = {
-    Webpage().head.contents += new tag.Script(mimeType = "text/javascript", src = "/js/monitor.js")
-    val div = apply()
-    Webpage().body.contents += div
+  override def load[S <: Session](webpage: Webpage[S]) = {
+    webpage.head.contents += new tag.Script(mimeType = "text/javascript", src = "/js/monitor.js")
+    val div = apply(webpage)
+    webpage.body.contents += div
   }
 
-  private def apply() = {
-    Webpage().store.getOrSet("monitor_div", new MonitorDiv)
+  private def apply[S <: Session](webpage: Webpage[S]) = {
+    webpage.store.getOrSet("monitor_div", new MonitorDiv)
   }
 
-  def create[T](frequency: Double, evaluator: JSFunction0[T])
+  def create[T, S <: Session](webpage: Webpage[S], frequency: Double, evaluator: JSFunction0[T])
                (implicit manifest: Manifest[T], converter: ValuePersistence[T]) = {
-    apply().create[T](frequency, evaluator)
+    apply(webpage).create[T, S](webpage, frequency, evaluator)
   }
 
-  def remove[T](monitor: Monitor[T]) = {
-    apply().remove[T](monitor)
+  def remove[T, S <: Session](webpage: Webpage[S], monitor: Monitor[T]) = {
+    apply(webpage).remove[T, S](webpage, monitor)
   }
 
-  def sync[T](attribute: PropertyAttribute[T], frequency: Double) = {
+  def sync[T, S <: Session](webpage: Webpage[S], attribute: PropertyAttribute[T], frequency: Double) = {
     val function = attribute match {
       case ssa: StyleSheetAttribute[T] => {
         val t = ssa.ss.hierarchicalParent.asInstanceOf[HTMLTag]
@@ -61,7 +62,7 @@ object Monitor extends Module {
         onAttribute(t, attribute)
       }
     }
-    val monitor = create[T](frequency, function)(attribute.manifest, attribute.persister)
+    val monitor = create[T, S](webpage, frequency, function)(attribute.manifest, attribute.persister)
     val property = monitor.property
     property.change.on {
       case evt => RealtimePage.ignoringChange(attribute, property())
@@ -72,7 +73,7 @@ object Monitor extends Module {
   private class MonitorDiv extends tag.Div(id = "realtime_monitor") {
     private var map = Map.empty[String, Monitor[_]]
 
-    def create[T](frequency: Double, evaluator: JSFunction0[T])
+    def create[T, S <: Session](webpage: Webpage[S], frequency: Double, evaluator: JSFunction0[T])
                  (implicit manifest: Manifest[T], converter: ValuePersistence[T]) = {
       val id = Unique()
       val monitor = new Monitor[T](id, frequency, evaluator)
@@ -80,13 +81,13 @@ object Monitor extends Module {
         map += id -> monitor
       }
       val f = math.round(frequency * 1000.0)
-      Realtime.sendJavaScript(s"window.monitor.createMonitor('$id', $f, ${evaluator.content});", onlyRealtime = false)
+      Realtime.sendJavaScript(webpage, s"window.monitor.createMonitor('$id', $f, ${evaluator.content});", onlyRealtime = false)
       monitor
     }
 
-    def remove[T](monitor: Monitor[T]) = synchronized {
+    def remove[T, S <: Session](webpage: Webpage[S], monitor: Monitor[T]) = synchronized {
       val id = monitor.id
-      Realtime.sendJavaScript(s"window.monitor.removeMonitor('$id');", onlyRealtime = false)
+      Realtime.sendJavaScript(webpage, s"window.monitor.removeMonitor('$id');", onlyRealtime = false)
       map -= id
     }
 

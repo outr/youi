@@ -7,13 +7,12 @@ import org.hyperscala.html.tag
 import org.hyperscala.jquery.dsl.jQuerySelector
 import org.hyperscala.javascript.dsl.{WrappedStatement, JSFunction1}
 import org.hyperscala.event.MouseWheelEvent
+import com.outr.net.http.session.Session
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
 class jQueryMouseWheel(selector: jQuerySelector) {
-  Webpage().require(jQueryNearest)
-
   def mouseWheel(f: JSFunction1[MouseWheelEvent, Boolean]) = {
     WrappedStatement[Unit](s"${selector.content}.mousewheel(", f, ")", sideEffects = true)
   }
@@ -26,12 +25,11 @@ object jQueryMouseWheel extends Module {
 
   override def dependencies = List(jQuery.LatestWithDefault)
 
-  def init() = {
-    Website().register("/js/jquery.mousewheel.js", "jquery.mousewheel.js")
+  override def init[S <: Session](website: Website[S]) = {
+    website.register("/js/jquery.mousewheel.js", "jquery.mousewheel.js")
   }
 
-  def load() = {
-    val page = Webpage()
-    page.head.contents += new tag.Script(mimeType = "text/javascript", src = "/js/jquery.mousewheel.js")
+  override def load[S <: Session](webpage: Webpage[S]) = {
+    webpage.head.contents += new tag.Script(mimeType = "text/javascript", src = "/js/jquery.mousewheel.js")
   }
 }

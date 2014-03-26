@@ -1,20 +1,23 @@
 package org.hyperscala.examples.ui
 
 import org.hyperscala.html._
-import org.hyperscala.web.Webpage
+import org.hyperscala.web._
 import org.hyperscala.jquery.ui.jQueryUI
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.ui.ConfirmDialog
 import org.hyperscala.examples.Example
 import language.reflectiveCalls
+import com.outr.net.http.session.Session
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
 class ConfirmDialogExample extends Example {
-  Webpage().require(Realtime)
-  Webpage().require(jQueryUI.Latest)
-  Realtime.connectForm()
+  this.require(Realtime)
+  this.require(jQueryUI.Latest)
+  connected[Webpage[Session]] {
+    case webpage => Realtime.connectForm(webpage)
+  }
 
   contents += new tag.P {
     contents += "ConfirmDialog offers an extension to jQuery UI's Dialog to provide simple true/false confirmation."
@@ -30,6 +33,7 @@ class ConfirmDialogExample extends Example {
   def showDialog() = {
     contents += new ConfirmDialog {
       dialog.title := "Are you sure?"
+      dialog.modal := true
       def body = new tag.Div {
         contents += new tag.P(content = "This is an example confirmation dialog.")
         contents += new tag.P(content = "What will you choose?")

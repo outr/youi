@@ -6,6 +6,7 @@ import org.powerscala.Version
 import org.hyperscala.module._
 import org.hyperscala.javascript.{JavaScriptString, JavaScriptContent}
 import org.hyperscala.jquery.jQuery
+import com.outr.net.http.session.Session
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
@@ -17,18 +18,17 @@ object WindowSized extends Module {
 
   override def dependencies = List(InterfaceWithDefault(jQuery, jQuery.Latest))
 
-  def init() = {
-    Website().register("/window_size.js", "window_size.js")
+  override def init[S <: Session](website: Website[S]) = {
+    website.register("/window_size.js", "window_size.js")
   }
 
-  def load() = {
-    val page = Webpage()
-    page.head.contents += new tag.Script(mimeType = "text/javascript", src = "/window_size.js")
+  override def load[S <: Session](webpage: Webpage[S]) = {
+    webpage.head.contents += new tag.Script(mimeType = "text/javascript", src = "/window_size.js")
   }
 
-  def resized(script: JavaScriptContent) = {
-    Webpage().require(this)
-    Webpage().head.contents += new tag.Script {
+  def resized[S <: Session](webpage: Webpage[S], script: JavaScriptContent) = {
+    webpage.require(this)
+    webpage.head.contents += new tag.Script {
       contents += new JavaScriptString(
         """
           |$(window).bind('windowSized', function(event, windowWidth, windowHeight) {
@@ -38,12 +38,12 @@ object WindowSized extends Module {
     }
   }
 
-  def widthAlgorithm(id: String, algorithm: String) = resized(new JavaScriptString(
+  def widthAlgorithm[S <: Session](webpage: Webpage[S], id: String, algorithm: String) = resized(webpage, new JavaScriptString(
     """
       |$('#%s').width(%s);
     """.stripMargin.format(id, algorithm)))
 
-  def heightAlgorithm(id: String, algorithm: String) = resized(new JavaScriptString(
+  def heightAlgorithm[S <: Session](webpage: Webpage[S], id: String, algorithm: String) = resized(webpage, new JavaScriptString(
     """
       |$('#%s').height(%s);
     """.stripMargin.format(id, algorithm)))

@@ -4,6 +4,8 @@ import org.hyperscala.css.Style
 import org.hyperscala.web.useragent.{BrowserFamily, UserAgent}
 import org.hyperscala.html.HTMLTag
 import org.hyperscala.persistence.ValuePersistence
+import com.outr.net.http.session.Session
+import org.hyperscala.web.Webpage
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -19,15 +21,15 @@ class Compliance(t: HTMLTag) {
   val WebkitTransform = new Style[Transform]("-webkit-transform")
   val WebkitTransformOrigin = new Style[Double]("-webkit-transform-origin")
 
-  def scalePercent(v: Int) = scale(v / 100.0)
-  def scalePercent = math.round(scale * 100.0).toInt
+  def scalePercent[S <: Session](webpage: Webpage[S], v: Int) = scale(webpage, v / 100.0)
+  def scalePercent[S <: Session](webpage: Webpage[S]) = math.round(scale(webpage) * 100.0).toInt
 
-  def scale(v: Double) = if (UserAgent().browser.family == BrowserFamily.IE) {
+  def scale[S <: Session](webpage: Webpage[S], v: Double) = if (UserAgent(webpage).browser.family == BrowserFamily.IE) {
     t.style(IEZoom, None) := v
-  } else if (UserAgent().browser.family == BrowserFamily.Firefox) {
+  } else if (UserAgent(webpage).browser.family == BrowserFamily.Firefox) {
     t.style(FirefoxTransform, None) := Scale(v)
     t.style(FirefoxTransformOrigin, None) := 0.0
-  } else if (UserAgent().browser.family == BrowserFamily.Opera) {
+  } else if (UserAgent(webpage).browser.family == BrowserFamily.Opera) {
     t.style(OperaTransform, None) := Scale(v)
     t.style(OperaTransformOrigin, None) := 0.0
   } else {
@@ -35,13 +37,13 @@ class Compliance(t: HTMLTag) {
     t.style(WebkitTransformOrigin, None) := 0.0
   }
 
-  def scale = if (UserAgent().browser.family == BrowserFamily.IE) {
+  def scale[S <: Session](webpage: Webpage[S]) = if (UserAgent(webpage).browser.family == BrowserFamily.IE) {
     t.style(IEZoom, Some(1.0)).value
-  } else if (UserAgent().browser.family == BrowserFamily.Firefox) {
+  } else if (UserAgent(webpage).browser.family == BrowserFamily.Firefox) {
     t.style(FirefoxTransform, Some(Scale(1.0))).value match {
       case s: Scale => s.value
     }
-  } else if (UserAgent().browser.family == BrowserFamily.Opera) {
+  } else if (UserAgent(webpage).browser.family == BrowserFamily.Opera) {
     t.style(OperaTransform, Some(Scale(1.0))).value match {
       case s: Scale => s.value
     }

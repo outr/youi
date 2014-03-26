@@ -21,6 +21,7 @@ import org.hyperscala.connect.{Message, Connection, Connect}
 import org.powerscala.event.Listenable
 import argonaut.{CodecJson, Json}
 import argonaut.Argonaut._
+import com.outr.net.http.session.Session
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -34,27 +35,26 @@ object Realtime extends Module with Logging with Listenable {
 
   override def dependencies = List(jQuery.LatestWithDefault, jQueryStyleSheet, IdentifyTags, Connect)
 
-  def init() = {
+  override def init[S <: Session](website: Website[S]) = {
     // Register realtime.js to actually establish the connection
-    Website().register("/js/realtime.js", "realtime.js")
+    website.register("/js/realtime.js", "realtime.js")
   }
 
-  def load() = {
-    val page = Webpage()
-    page.head.contents += new tag.Script(src = "/js/realtime.js")
-    Connect.event {
+  override def load[S <: Session](webpage: Webpage[S]) = {
+    webpage.head.contents += new tag.Script(src = "/js/realtime.js")
+    Connect.event[S](webpage) {
       case (connection, message) => received(connection, message)
-    }
+    }(webpage.website.manifest)
   }
 
-  private def received(connection: Connection, message: Message) = {
+  private def received[S <: Session](connection: Connection[S], message: Message) = {
     val page = connection.webpage
     val realtime = RealtimePage(page)
     realtime.received(connection, message)
   }
 
-  def broadcast(event: String, message: Json, sendWhenConnected: Boolean, page: Webpage = Webpage()) = {
-    Webpage().require(this)
+  def broadcast[S <: Session](event: String, message: Json, sendWhenConnected: Boolean, page: Webpage[S]) = {
+    page.require(this)
     val realtime = RealtimePage(page)
     realtime.send(event, message, sendWhenConnected = sendWhenConnected)
   }
@@ -90,27 +90,32 @@ object Realtime extends Module with Logging with Listenable {
    * @param delay optionally specifies a delay before the instruction is invoked
    */
   // TODO: deprecate in favor of $('#busyDialog')['dialog')(json);
-  def sendJavaScript(instruction: String, content: Option[String] = None, selector: Option[Selector] = None, onlyRealtime: Boolean = true, delay: Int = 0): Unit = {
-    broadcast("eval", JavaScriptMessage(instruction, content, selector.map(s => s.content), delay).asJson, sendWhenConnected = !onlyRealtime)
+  def sendJavaScript[S <: Session](webpage: Webpage[S],
+                                   instruction: String,
+                                   content: Option[String] = None,
+                                   selector: Option[Selector] = None,
+                                   onlyRealtime: Boolean = true,
+                                   delay: Int = 0): Unit = {
+    broadcast("eval", JavaScriptMessage(instruction, content, selector.map(s => s.content), delay).asJson, sendWhenConnected = !onlyRealtime, page = webpage)
   }
 
-  def sendRedirect(url: String) = {
-    sendJavaScript("window.location.href = content;", Some(url), onlyRealtime = false)
+  def sendRedirect[S <: Session](webpage: Webpage[S], url: String) = {
+    sendJavaScript(webpage, "window.location.href = content;", Some(url), onlyRealtime = false)
   }
 
-  def send(statement: Statement[_], selector: Option[Selector] = None, onlyRealtime: Boolean = false) = {
-    Realtime.sendJavaScript(statement.content, selector = selector, onlyRealtime = onlyRealtime)
+  def send[S <: Session](webpage: Webpage[S], statement: Statement[_], selector: Option[Selector] = None, onlyRealtime: Boolean = false) = {
+    Realtime.sendJavaScript(webpage, statement.content, selector = selector, onlyRealtime = onlyRealtime)
   }
 
-  def reload(fresh: Boolean = false) = {
-    sendJavaScript("location.reload(%s);".format(fresh))
+  def reload[S <: Session](webpage: Webpage[S], fresh: Boolean = false) = {
+    sendJavaScript(webpage, "location.reload(%s);".format(fresh))
   }
 
   /**
    * Connects change events for FormField (input, textarea, and select) as well as click events on button and input.
    */
-  def connectStandard() = {
-    Webpage().live[FormField] {
+  def connectStandard[S <: Session](webpage: Webpage[S]) = {
+    webpage.live[FormField] {
       case field => {
         field.changeEvent := RealtimeEvent()
         field match {
@@ -119,7 +124,7 @@ object Realtime extends Module with Logging with Listenable {
         }
       }
     }
-    Webpage().live[tag.Button] {
+    webpage.live[tag.Button] {
       case b => b.clickEvent := RealtimeEvent()
     }
   }
@@ -127,8 +132,8 @@ object Realtime extends Module with Logging with Listenable {
   /**
    * All change and click events fire events to the server and form submits prevent default and send event to server.
    */
-  def connectForm() = {
-    Webpage().live[FormField] {
+  def connectForm[S <: Session](webpage: Webpage[S]) = {
+    webpage.live[FormField] {
       case field => {
         if (field.changeEvent() == null) {
           field.changeEvent := RealtimeEvent(preventDefault = false)
@@ -143,10 +148,10 @@ object Realtime extends Module with Logging with Listenable {
         }
       }
     }
-    Webpage().live[tag.Button] {
+    webpage.live[tag.Button] {
       case b => if (b.clickEvent() == null) b.clickEvent := RealtimeEvent(preventDefault = false)
     }
-    Webpage().live[tag.Form] {
+    webpage.live[tag.Form] {
       case f => {
         if (f.submitEvent() == null) f.submitEvent := RealtimeEvent()
       }
@@ -156,8 +161,8 @@ object Realtime extends Module with Logging with Listenable {
   /**
    * Sends all form data over realtime upon form submit.
    */
-  def connectPost() = {
-    Webpage().live[tag.Form] {
+  def connectPost[S <: Session](webpage: Webpage[S]) = {
+    webpage.live[tag.Form] {
       case f => if (f.submitEvent() == null) f.submitEvent := RealtimeEvent(fireChange = true)
     }
   }

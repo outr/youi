@@ -6,6 +6,7 @@ import org.hyperscala.web.{Webpage, Website}
 import org.hyperscala.html._
 import scala.collection.mutable.ListBuffer
 import org.hyperscala.javascript.JavaScriptString
+import com.outr.net.http.session.Session
 
 
 /**
@@ -16,19 +17,19 @@ object BasketJS extends Module {
 
   def version = Version(0, 4, 0)
 
-  def init() = {
-    Website().register("/js/basket.full.min.js", "basketjs/basket.full.min.js")
-    Website().register("/js/basket.full.map", "basketjs/basket.full.map")
+  override def init[S <: Session](website: Website[S]) = {
+    website.register("/js/basket.full.min.js", "basketjs/basket.full.min.js")
+    website.register("/js/basket.full.map", "basketjs/basket.full.map")
   }
 
-  def load() = {
-    Webpage().head.onBeforeRender {
-      Webpage().store("basketjs") = new BasketJSPage(Webpage())
+  override def load[S <: Session](webpage: Webpage[S]) = {
+    webpage.head.onBeforeRender {
+      webpage.store("basketjs") = new BasketJSPage(webpage)
     }
   }
 }
 
-class BasketJSPage(page: Webpage) {
+class BasketJSPage[S <: Session](page: Webpage[S]) {
   val basketScriptURLS = ListBuffer.empty[String]
   val basketScriptContents = ListBuffer.empty[String]
 

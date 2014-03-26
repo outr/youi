@@ -3,17 +3,18 @@ package org.hyperscala.web
 import org.hyperscala.html.{HTMLCloner, HTMLTag}
 import org.hyperscala.Container
 import org.hyperscala.html.constraints.BodyChild
+import com.outr.net.http.session.Session
 
 /**
  * ScopedReplacement offers a convenient mechanism to scope an existing page element
  *
  * @author Matt Hicks <matt@outr.com>
  */
-class ScopedReplacement[T <: HTMLTag](scope: Scope, original: T, processor: T => Unit = (t: T) => Unit) {
+class ScopedReplacement[T <: HTMLTag, S <: Session](website: Website[S], scope: Scope, original: T, processor: T => Unit = (t: T) => Unit) {
   val originalParent = original.parent.asInstanceOf[Container[BodyChild]]
   original.removeFromParent()
 
-  originalParent.contents += Scoped(scope) {
+  originalParent.contents += Scoped(scope, website) {
     val cloned = HTMLCloner.clone(original, idHandler = HTMLCloner.RetainIdHandler).asInstanceOf[T]
     processor(cloned)
     cloned
@@ -21,5 +22,7 @@ class ScopedReplacement[T <: HTMLTag](scope: Scope, original: T, processor: T =>
 }
 
 object ScopedReplacement {
-  def apply[T <: HTMLTag](scope: Scope, original: T)(processor: T => Unit) = new ScopedReplacement(scope, original, processor)
+  def apply[T <: HTMLTag, S <: Session](website: Website[S], scope: Scope, original: T)(processor: T => Unit) = {
+    new ScopedReplacement(website, scope, original, processor)
+  }
 }

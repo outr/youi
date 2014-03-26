@@ -8,6 +8,7 @@ import org.powerscala.property.Property
 import org.hyperscala.jquery.dsl.jQuerySelector
 import org.powerscala.enum.{Enumerated, EnumEntry}
 import org.powerscala.concurrent.Time
+import com.outr.net.http.session.Session
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -44,14 +45,13 @@ object Zoomooz extends Module {
 
   override def dependencies = List(jQuery.LatestWithDefault)
 
-  def init() = {
-    Website().addClassPath("/jquery-zoomooz/", "jquery-zoomooz/")
+  override def init[S <: Session](website: Website[S]) = {
+    website.addClassPath("/jquery-zoomooz/", "jquery-zoomooz/")
   }
 
-  def load() = {
-    val page = Webpage()
+  override def load[S <: Session](webpage: Webpage[S]) = {
     val name = if (debug()) "jquery.zoomooz.min.js" else "jquery.zoomooz.js"
-    page.head.contents += new tag.Script(mimeType = "text/javascript", src = s"/jquery-zoomooz/$name")
+    webpage.head.contents += new tag.Script(mimeType = "text/javascript", src = s"/jquery-zoomooz/$name")
   }
 }
 

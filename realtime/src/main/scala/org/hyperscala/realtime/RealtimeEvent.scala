@@ -1,7 +1,6 @@
 package org.hyperscala.realtime
 
 import org.hyperscala.javascript.JavaScriptContent
-import org.hyperscala.web.Webpage
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -11,8 +10,6 @@ case class RealtimeEvent(confirmation: String = null,
                          fireChange: Boolean = false,
                          onlyLast: Boolean = true,
                          delay: Int = 0) extends JavaScriptContent {
-  Webpage().require(Realtime)
-
   lazy val content = {
     val conf = JavaScriptContent.toJS(confirmation)
     s"return realtimeEvent(event, (typeof data === 'undefined') ? null : data, $conf, $preventDefault, $fireChange, $onlyLast, $delay);"

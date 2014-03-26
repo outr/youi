@@ -146,7 +146,7 @@ trait HTMLTag extends IdentifiableTag {
   def isStyleDefined = _styleDefined
   lazy val styleProperty = Property[StyleSheet](default = scala.Option(HTMLTag.styleCreator()(this)))
   def style = styleProperty()
-  def style(sub: PseudoClass) = HTMLPage().head.selector(Selector.pseudo(Selector.id(this), sub))
+  def style(sub: PseudoClass) = page.head.selector(Selector.pseudo(Selector.id(this), sub))
 
   protected def generateChildFromTagName(name: String): XMLContent = {
     HTMLTag.create(name)
@@ -167,7 +167,7 @@ trait HTMLTag extends IdentifiableTag {
   /**
    * Returns a reference to the HTMLPage associated with this element.
    */
-  def page = HTMLPage()
+  def page = root[HTMLPage].getOrElse(throw new RuntimeException("HTMLPage not connected to this tag yet."))
 
   /**
    * Returns all defined styles for this tag.

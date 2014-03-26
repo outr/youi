@@ -16,6 +16,7 @@ import scala.language.postfixOps
 import org.hyperscala.event.Key
 import org.powerscala.enum.{Enumerated, EnumEntry}
 import org.hyperscala.web.useragent.UserAgent
+import com.outr.net.http.session.Session
 
 /**
  * History module provides history management functionality to a webpage.
@@ -26,32 +27,34 @@ object History extends Module {
   /**
    * Creates a new HistoryInstance each time it is called (once per webpage instance).
    */
-  val WebpageInstanceCreator = () => new HistoryInstance
+  val WebpageInstanceCreator = (webpage: Webpage[_ <: Session]) => new HistoryInstance(webpage)
   /**
    * Stores the HistoryInstance in the session so each webpage has a persistent instance.
    */
-  val SessionInstanceCreator = () => Website().session.getOrSet(s"${Webpage().getClass.getName}.history_module", new HistoryInstance)
+  val SessionInstanceCreator = (webpage: Webpage[_ <: Session]) => {
+    webpage.website.session.getOrSet(s"${webpage.getClass.getName}.history_module", new HistoryInstance(webpage))
+  }
 
   val name = "history"
   val version = Version(1)
 
   override def dependencies = List(Realtime)
 
-  def init() = {}
+  override def init[S <: Session](website: Website[S]) = {}
 
-  def load() = apply()
+  override def load[S <: Session](webpage: Webpage[S]) = apply(webpage)
 
   /**
    * Creates new HistoryInstances. This can be overridden to pre-populate or share instances across multiple pages.
    *
    * By default a single instance is tied to a single webpage instance (WebpageInstanceCreator).
    */
-  var creator: () => HistoryInstance = WebpageInstanceCreator
+  var creator: (Webpage[_ <: Session]) => HistoryInstance = WebpageInstanceCreator
 
-  def apply() = Webpage().store.getOrSet("history_module", creator())
+  def apply[S <: Session](webpage: Webpage[S]) = webpage.store.getOrSet("history_module", creator(webpage))
 }
 
-class HistoryInstance extends Listenable {
+class HistoryInstance(webpage: Webpage[_ <: Session]) extends Listenable {
   private var undos = Queue.empty[HistoryEntry]
   private var redos = Queue.empty[HistoryEntry]
   private val changing = new AtomicInt(0)
@@ -60,26 +63,26 @@ class HistoryInstance extends Listenable {
   val stateChanged = new UnitProcessor[HistoryStateChange]("history_state_change")
 
   // Configure key bindings on page
-  if (UserAgent().os.family.apple) {
-    $(body).keyDown(onKey(Key.Z, shiftKey = Some(false), metaKey = Some(true), stopPropagation = true) {
+  if (UserAgent(webpage).os.family.apple) {
+    $(body).keyDown(onKey(webpage, Key.Z, shiftKey = Some(false), metaKey = Some(true), stopPropagation = true) {
       undo()
-    }).send()
-    $(body).keyDown(onKey(Key.Z, shiftKey = Some(true), metaKey = Some(true), stopPropagation = true) {
+    }).send(webpage)
+    $(body).keyDown(onKey(webpage, Key.Z, shiftKey = Some(true), metaKey = Some(true), stopPropagation = true) {
       redo()
-    }).send()
-    $(body).keyDown(onKey(Key.Y, ctrlKey = Some(true), stopPropagation = true) {
+    }).send(webpage)
+    $(body).keyDown(onKey(webpage, Key.Y, ctrlKey = Some(true), stopPropagation = true) {
       redo()
-    }).send()
+    }).send(webpage)
   } else {
-    $(body).keyDown(onKey(Key.Z, shiftKey = Some(false), ctrlKey = Some(true), stopPropagation = true) {
+    $(body).keyDown(onKey(webpage, Key.Z, shiftKey = Some(false), ctrlKey = Some(true), stopPropagation = true) {
       undo()
-    }).send()
-    $(body).keyDown(onKey(Key.Z, shiftKey = Some(true), ctrlKey = Some(true), stopPropagation = true) {
+    }).send(webpage)
+    $(body).keyDown(onKey(webpage, Key.Z, shiftKey = Some(true), ctrlKey = Some(true), stopPropagation = true) {
       redo()
-    }).send()
-    $(body).keyDown(onKey(Key.Y, ctrlKey = Some(true), stopPropagation = true) {
+    }).send(webpage)
+    $(body).keyDown(onKey(webpage, Key.Y, ctrlKey = Some(true), stopPropagation = true) {
       redo()
-    }).send()
+    }).send(webpage)
   }
 
   def undoList = undos.toList

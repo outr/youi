@@ -1,19 +1,20 @@
 package org.hyperscala.examples.basic
 
 import org.hyperscala.html._
-import org.hyperscala.web.Webpage
+import org.hyperscala.web.{Website, Webpage}
 import org.powerscala.Color
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.selector._
 import org.hyperscala.selector.Selector._
 import org.hyperscala.css.attributes.Decoration
+import com.outr.net.http.session.Session
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class StyleSheetExample extends Webpage {
-  Webpage().require(Realtime)
-  Realtime.connectStandard()
+class StyleSheetExample[S <: Session](website: Website[S]) extends Webpage(website) {
+  require(Realtime)
+  Realtime.connectStandard(this)
 
   val allStyle = head.selector(all)
   allStyle.fontFamily := "sans-serif"

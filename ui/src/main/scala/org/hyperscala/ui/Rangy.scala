@@ -5,6 +5,7 @@ import org.powerscala.Version
 import org.hyperscala.web.{Webpage, Website}
 import org.hyperscala.html.tag
 import org.hyperscala.jquery.jQuery
+import com.outr.net.http.session.Session
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -15,12 +16,11 @@ object Rangy extends Module {
 
   override def dependencies = List(jQuery.LatestWithDefault)
 
-  def init() = {
-    Website().addClassPath("/rangy-1.2.3/", "rangy-1.2.3/")
+  override def init[S <: Session](website: Website[S]) = {
+    website.addClassPath("/rangy-1.2.3/", "rangy-1.2.3/")
   }
 
-  def load() = {
-    val page = Webpage()
+  override def load[S <: Session](page: Webpage[S]) = {
     page.head.contents += new tag.Script(mimeType = "text/javascript", src = "/rangy-1.2.3/rangy-core.js")
     page.head.contents += new tag.Script(mimeType = "text/javascript", src = "/rangy-1.2.3/rangy-cssclassapplier.js")
     page.head.contents += new tag.Script(mimeType = "text/javascript", src = "/rangy-1.2.3/rangy-selectionsaverestore.js")

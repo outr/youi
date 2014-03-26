@@ -3,8 +3,7 @@ package org.hyperscala.ui.widgets.visual.types
 import org.hyperscala.ui.widgets.visual.VisualBuilder
 import org.powerscala.property.Property
 import org.hyperscala.ui.widgets.ListSelect
-import org.hyperscala.web.Webpage
-import org.hyperscala.realtime.{RealtimeEvent, Realtime}
+import org.hyperscala.realtime.RealtimeEvent
 
 import language.reflectiveCalls
 
@@ -16,8 +15,6 @@ object BooleanVisualType extends VisualType[Boolean] {
 
   def create(property: Property[Boolean], details: VisualBuilder[Boolean]) = {
     new ListSelect[Boolean](List(true, false)) {
-      Webpage().require(Realtime)
-
       changeEvent := RealtimeEvent()
 
       property.change.on {

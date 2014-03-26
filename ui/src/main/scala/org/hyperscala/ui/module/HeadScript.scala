@@ -1,6 +1,6 @@
 package org.hyperscala.ui.module
 
-import org.hyperscala.web.Webpage
+import org.hyperscala.web.{Website, Webpage}
 import org.powerscala.{Priority, Version}
 import org.hyperscala.html.HTMLTag
 import org.hyperscala.html.tag.Script
@@ -10,6 +10,7 @@ import org.hyperscala.javascript.{EventProperty, JavaScriptString}
 import org.hyperscala.module._
 import org.hyperscala.jquery.jQuery
 import org.powerscala.hierarchy.event.Descendants
+import com.outr.net.http.session.Session
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -21,10 +22,9 @@ object HeadScript extends Module {
 
   override def dependencies = List(InterfaceWithDefault(jQuery, jQuery.Latest))
 
-  def init() = {}
+  override def init[S <: Session](website: Website[S]) = {}
 
-  def load() = {
-    val page = Webpage()
+  override def load[S <: Session](page: Webpage[S]) = {
     page.intercept.renderAttribute.on {
       case ep: EventProperty => None    // Don't render JavaScript in HTML
       case pa => Some(pa)
@@ -40,7 +40,7 @@ object HeadScript extends Module {
   }
 }
 
-class HeadScriptTag(page: Webpage, tag: HTMLTag) {
+class HeadScriptTag[S <: Session](page: Webpage[S], tag: HTMLTag) {
   private var script: Script = null
 
   // TODO: support id changing

@@ -12,7 +12,7 @@ object HyperScalaBuild extends Build {
   import Dependencies._
 
   val baseSettings = Defaults.defaultSettings ++ Seq(
-    version := "0.8.5-SNAPSHOT",
+    version := "0.9.0-SNAPSHOT",
     organization := "org.hyperscala",
     scalaVersion := "2.10.3",
     libraryDependencies ++= Seq(
@@ -65,7 +65,7 @@ object HyperScalaBuild extends Build {
 
   lazy val root = Project("root", file("."), settings = unidocSettings ++ createSettings("hyperscala-root"))
     .settings(publishArtifact in Compile := false, publishArtifact in Test := false)
-    .aggregate(core, html, javascript, svg, web, jquery, connect, socketio, realtime, ui, generator, examples, hello, numberGuess, site)
+    .aggregate(core, html, javascript, svg, web, jquery, connect, realtime, ui, generator, hello, examples, numberGuess, site)
   lazy val core = Project("core", file("core"), settings = createSettings("hyperscala-core"))
     .settings(libraryDependencies ++= Seq(outrNetCore, argonaut))
   lazy val html = Project("html", file("html"), settings = createSettings("hyperscala-html"))
@@ -85,8 +85,6 @@ object HyperScalaBuild extends Build {
     .settings(libraryDependencies += webJarsJQuery)
   lazy val connect = Project("connect", file("connect"), settings = createSettings("hyperscala-connect"))
     .dependsOn(jquery)
-  lazy val socketio = Project("socketio", file("socketio"), settings = createSettings("hyperscala-socketio"))
-    .dependsOn(jquery)
   lazy val realtime = Project("realtime", file("realtime"), settings = createSettings("hyperscala-realtime"))
     .dependsOn(web, jquery, connect)
   lazy val ui = Project("ui", file("ui"), settings = createSettings("hyperscala-ui"))
@@ -99,7 +97,7 @@ object HyperScalaBuild extends Build {
     .settings(libraryDependencies ++= Seq(jettyWebapp, outrNetServlet, outrNetJetty))
     .settings(mainClass := Some("org.hyperscala.hello.HelloSite"))
   lazy val examples = Project("examples", file("examples"), settings = createSettings("hyperscala-examples"))
-    .dependsOn(web, ui, snapSVG, connect, socketio, hello)
+    .dependsOn(web, ui, snapSVG, connect, hello)
     .settings(libraryDependencies ++= Seq(outrNetServlet))
   lazy val numberGuess = Project("numberguess", file("numberguess"), settings = createSettings("hyperscala-numberguess") ++ Revolver.settings ++ com.earldouglas.xsbtwebplugin.WebPlugin.webSettings)
     .dependsOn(ui)

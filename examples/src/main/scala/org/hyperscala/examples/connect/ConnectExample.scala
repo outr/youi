@@ -4,31 +4,37 @@ import org.hyperscala.examples.Example
 import org.hyperscala.connect.Connect
 import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.html._
+import org.hyperscala.web._
+import com.outr.net.http.session.Session
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
 class ConnectExample extends Example {
-  page.require(Connect)
+  this.require(Connect)
 
-  page.head.contents += new tag.Script {
-    contents += JavaScriptString(
-      """
-        |HyperscalaConnect.on('pong', function(data) {
-        | console.log('Received pong from server: ' + data);
-        |});
-        |HyperscalaConnect.send('ping', 'Hello World!');
-      """.stripMargin)
-  }
+  connected[Webpage[Session]] {
+    case webpage => {
+      webpage.head.contents += new tag.Script {
+        contents += JavaScriptString(
+          """
+            |HyperscalaConnect.on('pong', function(data) {
+            | console.log('Received pong from server: ' + data);
+            |});
+            |HyperscalaConnect.send('ping', 'Hello World!');
+          """.stripMargin)
+      }
 
-  contents += new tag.P {
-    contents += "Connect provides the foundational support needed for the Realtime communication in Hyperscala, and can be utilized directly for a looser coupling of client to server communication."
-  }
+      contents += new tag.P {
+        contents += "Connect provides the foundational support needed for the Realtime communication in Hyperscala, and can be utilized directly for a looser coupling of client to server communication."
+      }
 
-  Connect.on("ping") {
-    case data => {
-      println("Received ping, sending pong...")
-      Connect.send("pong", data)
+      Connect.on(webpage, "ping") {
+        case data => {
+          println("Received ping, sending pong...")
+          Connect.send(webpage, "pong", data)
+        }
+      }
     }
   }
 

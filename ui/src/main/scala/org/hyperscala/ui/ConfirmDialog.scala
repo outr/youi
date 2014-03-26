@@ -5,6 +5,7 @@ import constraints.BodyChild
 import org.hyperscala.jquery.ui.Dialog
 import org.hyperscala.web.Webpage
 import language.reflectiveCalls
+import com.outr.net.http.session.Session
 
 /**
  * Displays a confirmation dialog that allows the user to accept or cancel.
@@ -41,7 +42,7 @@ abstract class ConfirmDialog extends tag.Div {
 }
 
 object ConfirmDialog {
-  def show(message: BodyChild, windowTitle: String = "Confirm", acceptText: String = "Accept", cancelText: String = "Cancel")(accepted: => Unit) = {
+  def show[S <: Session](webpage: Webpage[S], message: BodyChild, windowTitle: String = "Confirm", acceptText: String = "Accept", cancelText: String = "Cancel")(accepted: => Unit) = {
     val dialog = new ConfirmDialog {
       dialog.title := windowTitle
 
@@ -54,6 +55,6 @@ object ConfirmDialog {
 
       def body = message
     }
-    Webpage().body.contents += dialog
+    webpage.body.contents += dialog
   }
 }

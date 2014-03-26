@@ -54,9 +54,9 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication with Lau
 //    val numberGuess = page(new HyperscalaExample(new NumberGuess), Scope.Page, "/example/number_guess.html")
     val scoped = page(new HyperscalaExample(ScopedExample), Scope.Application, "/example/scoped.html")
     val connected = page(new HyperscalaExample(new ConnectedExample), Scope.Page, "/example/connected.html")
-    val style = page(new StyleSheetExample, Scope.Request, "/example/style.html")
+    val style = page(new StyleSheetExample(HyperscalaSite.this), Scope.Request, "/example/style.html")
     val userAgent = page(new HyperscalaExample(new UserAgentExample), Scope.Request, "/example/user_agent.html")
-    val large = page(new LargePageExample, Scope.Request, "/example/large.html")
+    val large = page(new LargePageExample(HyperscalaSite.this), Scope.Request, "/example/large.html")
     val static = page(new HyperscalaExample(new StaticHTMLExample), Scope.Request, "/example/static.html")
     val form = page(new HyperscalaExample(new FormExample), Scope.Session, "/example/form.html")
     val realTime = page(new HyperscalaExample(new RealtimeExample), Scope.Session, "/example/realtime.html")
@@ -83,10 +83,10 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication with Lau
     val clipboard = page(new HyperscalaExample(new ClipboardExample), Scope.Page, "/example/clipboard.html")
     val confirmDialog = page(new HyperscalaExample(new ConfirmDialogExample), Scope.Page, "/example/confirm_dialog.html")
     val dynamic = page(new HyperscalaExample(new DynamicContentExample), Scope.Page, "/example/dynamic.html")
-    val dynamicPage = page(new DynamicPageExample, Scope.Page, "/example/dynamic_page.html")
+    val dynamicPage = page(new DynamicPageExample(HyperscalaSite.this), Scope.Page, "/example/dynamic_page.html")
     val chat = page(new HyperscalaExample(new ChatExample), Scope.Page, "/example/chat.html")
     val pageChange = page(new HyperscalaExample(new PageChangeWarningExample), Scope.Page, "/example/page_change.html")
-    val pageLoader = page(new PageLoaderExample, Scope.Page, "/example/page_loader.html")
+    val pageLoader = page(new PageLoaderExample(HyperscalaSite.this), Scope.Page, "/example/page_loader.html")
     val fileUploader = page(new HyperscalaExample(new FileUploaderExample), Scope.Page, "/example/file_upload.html")
     val dynamicURL = page(new HyperscalaExample(new DynamicURLExample), Scope.Page, "/example/dynamic_url.html")
     val multiSelect = page(new HyperscalaExample(new MultiSelectExample), Scope.Page, "/example/multi_select.html")
@@ -102,7 +102,6 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication with Lau
 //    val zoomooz = page(new HyperscalaExample(new ZoomoozExample), Scope.Page, "/example/zoomooz.html")
     val compliance = page(new HyperscalaExample(new ComplianceExample), Scope.Page, "/example/compliance.html")
     val coordinates = page(new HyperscalaExample(new CoordinatesExample), Scope.Page, "/example/coordinates.html")
-    val framed = page(new HyperscalaExample(new FramedExample), Scope.Page, "/example/framed.html")
     val jsrequest = page(new HyperscalaExample(new JSRequestExample), Scope.Page, "/example/jsrequest.html")
     val bounding = page(new HyperscalaExample(new BoundingExample), Scope.Page, "/example/bounding.html")
     val jCanvas = page(new HyperscalaExample(new jCanvasExample), Scope.Page, "/example/jcanvas.html")
@@ -117,9 +116,9 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication with Lau
       val dynamic = page(new HyperscalaExample(new DynamicSVGExample), Scope.Page, "/example/svg/dynamic.html")
     }
     val snapsvg = page(new HyperscalaExample(new SnapSVGExample), Scope.Page, "/example/snapsvg.html")
-    val playComparison = page(new PlayHelloWorldPage, Scope.Page, "/example/comparison/play_hello_world.html")
+    val playComparison = page(new PlayHelloWorldPage(HyperscalaSite.this), Scope.Page, "/example/comparison/play_hello_world.html")
   }
-  val todoMVC = page(TodoMVC, Scope.Session, "/todomvc.html")
+  val todoMVC = page(new TodoMVC(HyperscalaSite.this), Scope.Session, "/todomvc.html")
 
   handlers.add(PathFilter("/hello", HelloSite))
 
@@ -129,7 +128,7 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication with Lau
   addClassPath("/css/", "css/")
   addClassPath("/js/", "js/")
 
-  protected def createSession(request: HttpRequest, id: String) = new MapSession(id)
+  protected def createSession(request: HttpRequest, id: String) = new MapSession(id, this)
 
   def run() = main(Array.empty)
 }

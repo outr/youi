@@ -7,11 +7,15 @@ import org.powerscala.log.Logging
 import com.outr.net.http.handler.HandlerProcessor
 import org.powerscala.event.Listenable
 import org.powerscala.Unique
+import com.outr.net.http.session.Session
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class WebpageHandler(pageCreator: () => Webpage, scope: Scope, val uris: List[String]) extends HttpHandler with Logging with Listenable {
+class WebpageHandler[S <: Session](pageCreator: () => Webpage[S],
+                                   val scope: Scope,
+                                   val website: Website[S],
+                                   val uris: List[String]) extends HttpHandler with Logging with Listenable {
   /**
    * Allows pre-management of the response before handling by a webpage. If the HttpResponseStatus is not NotFound then
    * the page will not be referenced to handle it.
@@ -31,8 +35,8 @@ class WebpageHandler(pageCreator: () => Webpage, scope: Scope, val uris: List[St
     }
   } catch {
     case t: Throwable => {
-      Website().errorThrown(t)
-      Website().errorPage(request, response)
+      website.errorThrown(t)
+      website.errorPage(request, response)
     }
   }
 
@@ -48,36 +52,36 @@ class WebpageHandler(pageCreator: () => Webpage, scope: Scope, val uris: List[St
     WebpageHandler.handle(request, response, page)
   }
 
-  def load(request: HttpRequest): Option[Webpage] = scope match {
+  def load(request: HttpRequest): Option[Webpage[S]] = scope match {
     case Scope.Request => None
     case Scope.Page => request.url.parameters.getFirst("pageId") match {
-      case Some(pageId) => Website()._pages.get(pageId)
+      case Some(pageId) => website._pages.get(pageId)
       case None => None
     }
-    case Scope.Session => Website()._pages.get(sessionId)
-    case Scope.Application => Website()._pages.get(id)
+    case Scope.Session => website._pages.get(sessionId)
+    case Scope.Application => website._pages.get(id)
   }
 
-  def cache(page: Webpage) = {
+  def cache(page: Webpage[S]) = {
     scope match {
       case Scope.Request => // Nothing to do
       case Scope.Page => // Nothing to do
-      case Scope.Session => Website()._pages(sessionId) = page
-      case Scope.Application => Website()._pages(id) = page
+      case Scope.Session => website._pages(sessionId) = page
+      case Scope.Application => website._pages(id) = page
     }
     debug(s"Caching page: ${page.pageId}!")
     WebpageHandler.cachePage(page)         // All pages are stored at least by their id
   }
 
-  private def sessionId = s"$id.${Website().session.id}"
+  private def sessionId = s"$id.${website.session.id}"
 }
 
 object WebpageHandler {
-  def pageById[W <: Webpage](pageId: String) = Website()._pages.get[W](pageId)
+  def pageById[W <: Webpage[S], S <: Session](pageId: String, website: Website[S]) = website._pages.get[W](pageId)
 
-  def cachePage(page: Webpage) = Website()._pages(page.pageId) = page
+  def cachePage[S <: Session](page: Webpage[S]) = page.website._pages(page.pageId) = page
 
-  def handle(request: HttpRequest, response: HttpResponse, page: Webpage) = {
+  def handle[S <: Session](request: HttpRequest, response: HttpResponse, page: Webpage[S]) = {
     page.checkIn()
     page.onReceive(request, response)
   }

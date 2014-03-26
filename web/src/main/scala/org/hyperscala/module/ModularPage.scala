@@ -1,19 +1,19 @@
 package org.hyperscala.module
 
 import org.hyperscala.html._
-import org.hyperscala.Page
-import org.hyperscala.web.Website
+import org.hyperscala.web.Webpage
 import java.util.concurrent.atomic.AtomicBoolean
 import org.powerscala.event.Intercept
 import org.powerscala.event.processor.{EventToken, TokenProcessor}
+import com.outr.net.http.session.Session
 
 /**
  * ModularPage represents all the functionality within a Webpage for dealing with Modules and Interfaces.
  *
  * @author Matt Hicks <matt@outr.com>
  */
-trait ModularPage {
-  this: Page =>
+trait ModularPage[S <: Session] {
+  this: Webpage[S] =>
 
   private val modularPageLoaded = new AtomicBoolean(false)
   private var interfaces = List.empty[Interface]
@@ -22,6 +22,8 @@ trait ModularPage {
   val modulesLoaded = new TokenProcessor("modulesLoaded")
 
   def module(name: String) = interfaces.find(i => i.name == name)
+
+  def require(name: String): Unit = require(Interface(name))
 
   def require(interface: Interface): Unit = synchronized {
     val existing = module(interface.name)
@@ -97,13 +99,13 @@ trait ModularPage {
    * Makes sure the module is initialized the first use in the website and then loads it.
    */
   private def loadModule(module: Module) = {
-    val initialized = Website().application.getOrElse("initializedModules", Set.empty[Module])
+    val initialized = website.application.getOrElse("initializedModules", Set.empty[Module])
     if (!initialized.contains(module)) {
-      module.init()
-      Website().application("initializedModules") = initialized + module
+      module.init(website)
+      website.application("initializedModules") = initialized + module
     }
     debug("Loading module: %s".format(module.getClass.getSimpleName))
-    module.load()
+    module.load(this)
   }
 
   intercept.beforeRender.on {

@@ -6,6 +6,7 @@ import scala.collection.mutable.ListBuffer
 import org.hyperscala.web.{Webpage, Website}
 import org.hyperscala.html.tag
 import org.powerscala.enum.{Enumerated, EnumEntry}
+import com.outr.net.http.session.Session
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -25,30 +26,34 @@ trait WebJarModule extends Module {
     }
   }
 
-  def init() = jarResources.foreach(r => r.init())
+  def init[S <: Session](website: Website[S]) = jarResources.foreach(r => r.init(website))
 
-  def load() = jarResources.foreach(r => r.load())
+  def load[S <: Session](webpage: Webpage[S]) = jarResources.foreach(r => r.load(webpage))
 }
 
 case class WebJarResource(path: String, resource: URL, resourceType: WebJarType) {
-  def init() = Website().register(path, resource)
+  def init[S <: Session](website: Website[S]) = {
+    website.register(path, resource)
+  }
 
-  def load() = resourceType.load(this)
+  def load[S <: Session](webpage: Webpage[S]) = {
+    resourceType.load(this, webpage)
+  }
 }
 
-class WebJarType private(val load: WebJarResource => Unit) extends EnumEntry
+class WebJarType private(val load: (WebJarResource, Webpage[_]) => Unit) extends EnumEntry
 
 object WebJarType extends Enumerated[WebJarType] {
   /**
    * Resource does absolutely nothing except make the resource available at the path.
    */
-  val Resource = new WebJarType(r => Unit)
+  val Resource = new WebJarType((r, w) => Unit)
   /**
    * Adds a script entry to head referencing the path.
    */
-  val Script = new WebJarType(r => Webpage().head.contents += new tag.Script(src = r.path))
+  val Script = new WebJarType((r, w) => w.head.contents += new tag.Script(src = r.path))
   /**
    * Adds a link to the StyleSheet path in head.
    */
-  val Style = new WebJarType(r => Webpage().head.contents += new tag.Link(href = r.path))
+  val Style = new WebJarType((r, w) => w.head.contents += new tag.Link(href = r.path))
 }

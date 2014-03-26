@@ -4,10 +4,11 @@ import org.hyperscala.module.Module
 import org.powerscala.{StorageComponent, Version}
 import org.hyperscala.html.{tag, HTMLTag}
 import org.hyperscala.jquery.{jQueryComponent, jQuery}
-import org.hyperscala.web.{Webpage, Website}
+import org.hyperscala.web._
 import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.css.Style
 import org.hyperscala.javascript.dsl.{JSFunction1, Statement}
+import com.outr.net.http.session.Session
 
 /**
  * Changeable wraps existing elements to allow them to change an element relative to an
@@ -21,16 +22,16 @@ object Changeable extends Module with StorageComponent[Changeable, HTMLTag] {
 
   override def dependencies = List(jQuery.LatestWithDefault)
 
-  def init() = {
-    Website().register("/js/changeable.js", "changeable.js")
+  override def init[S <: Session](website: Website[S]) = {
+    website.register("/js/changeable.js", "changeable.js")
   }
 
-  def load() = {
-    Webpage().head.contents += new tag.Script(mimeType = "text/javascript", src = "/js/changeable.js")
+  override def load[S <: Session](webpage: Webpage[S]) = {
+    webpage.head.contents += new tag.Script(mimeType = "text/javascript", src = "/js/changeable.js")
   }
 
   override def apply(t: HTMLTag) = {
-    Webpage().require(this)
+    t.require(this)
     super.apply(t)
   }
 

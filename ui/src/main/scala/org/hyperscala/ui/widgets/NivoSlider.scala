@@ -1,12 +1,13 @@
 package org.hyperscala.ui.widgets
 
 import org.hyperscala.module._
-import org.hyperscala.web.{Website, Webpage}
+import org.hyperscala.web._
 import org.powerscala.Version
 
 import org.hyperscala.html._
 import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.jquery.jQuery
+import com.outr.net.http.session.Session
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -28,7 +29,7 @@ class NivoSlider(_id: String,
                  prevText: String = "Prev",
                  nextText: String = "Next",
                  randomStart: Boolean = false) extends tag.Div(id = _id, clazz = List("slider-wrapper", "theme-%s".format(theme))) {
-  Webpage().require(NivoSlider)
+  this.require(NivoSlider)
 
   val slider = new tag.Div(id = "%sSlider".format(_id), clazz = List("nivoSlider"))
 
@@ -67,12 +68,11 @@ object NivoSlider extends Module {
 
   override def dependencies = List(InterfaceWithDefault(jQuery, jQuery.Latest))
 
-  def init() = {
-    Website().addClassPath("/nivo-slider/", "nivo-slider/")
+  override def init[S <: Session](website: Website[S]) = {
+    website.addClassPath("/nivo-slider/", "nivo-slider/")
   }
 
-  def load() = {
-    val page = Webpage()
+  override def load[S <: Session](page: Webpage[S]) = {
     page.head.contents += new tag.Link(rel = "stylesheet", href = "/nivo-slider/themes/default/default.css", mimeType = "text/css", media = "screen")
     page.head.contents += new tag.Link(rel = "stylesheet", href = "/nivo-slider/themes/light/light.css", mimeType = "text/css", media = "screen")
     page.head.contents += new tag.Link(rel = "stylesheet", href = "/nivo-slider/themes/dark/dark.css", mimeType = "text/css", media = "screen")

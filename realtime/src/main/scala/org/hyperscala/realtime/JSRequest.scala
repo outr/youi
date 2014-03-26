@@ -9,6 +9,7 @@ import org.powerscala.log.Logging
 import org.powerscala.reflect._
 import org.hyperscala.javascript.dsl.JSFunction0
 import argonaut.JsonObject
+import com.outr.net.http.session.Session
 
 /**
  * JSRequest allows a JavaScript statement to be supplied, it is invoked in the browser, and the result is sent back to
@@ -22,20 +23,20 @@ object JSRequest extends Module with Logging {
 
   override def dependencies = List(Realtime)
 
-  def init() = {
-    Website().register("/js/jsrequest.js", "jsrequest.js")
+  override def init[S <: Session](website: Website[S]) = {
+    website.register("/js/jsrequest.js", "jsrequest.js")
   }
 
-  def load() = {
-    Webpage().head.contents += new tag.Script(mimeType = "text/javascript", src = "/js/jsrequest.js")
-    Webpage().body.eventReceived.on {
+  override def load[S <: Session](webpage: Webpage[S]) = {
+    webpage.head.contents += new tag.Script(mimeType = "text/javascript", src = "/js/jsrequest.js")
+    webpage.body.eventReceived.on {
       case evt => evt.event match {
-        case "jsresponse" => Webpage().synchronized {
+        case "jsresponse" => webpage.synchronized {
           val id = evt.json.string("responseId")
-          Webpage().store.get[JSHandler[_]](id) match {
+          webpage.store.get[JSHandler[_]](id) match {
             case Some(handler) => {
               handler.process(evt.json)
-              Webpage().store.remove(id)
+              webpage.store.remove(id)
             }
             case None => warn(s"Unable to find JSHandler by id: $id")
           }
@@ -55,12 +56,12 @@ object JSRequest extends Module with Logging {
    * @param manifest the manifest of T for conversion
    * @tparam T the type of data to be received
    */
-  def send[T](requests: JSFunction0[T]*)(f: List[T] => Unit)(implicit manifest: Manifest[T]) = Webpage().synchronized {
+  def send[T, S <: Session](webpage: Webpage[S], requests: JSFunction0[T]*)(f: List[T] => Unit)(implicit manifest: Manifest[T]) = webpage.synchronized {
     val id = Unique()
     val handler = JSHandler[T](f, manifest.runtimeClass.asInstanceOf[Class[T]])
-    Webpage().store.update(id, handler)
+    webpage.store.update(id, handler)
     val js = requests.map(jsf => jsf.content).mkString("[", ", ", "]")
-    Realtime.sendJavaScript(s"jsRequest('$id', $js);", onlyRealtime = false)
+    Realtime.sendJavaScript(webpage, s"jsRequest('$id', $js);", onlyRealtime = false)
   }
 
   case class JSHandler[T](f: List[T] => Unit, clazz: EnhancedClass) {

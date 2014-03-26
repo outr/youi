@@ -4,12 +4,13 @@ import org.hyperscala.html._
 import org.hyperscala.realtime.{RealtimeEvent, Realtime}
 import language.reflectiveCalls
 import org.hyperscala.examples.Example
+import org.hyperscala.web._
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */
 class RealtimeExample extends Example {
-  page.require(Realtime)
+  this.require(Realtime)
 
   contents += new tag.Button(content = "Click Me!") {
     clickEvent := RealtimeEvent()

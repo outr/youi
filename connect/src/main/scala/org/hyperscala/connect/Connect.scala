@@ -17,6 +17,7 @@ import org.powerscala.event.processor.UnitProcessor
 import org.powerscala.event.Listenable
 import akka.actor.{Props, ActorSystem, Actor}
 import org.powerscala.log.Logging
+import com.outr.net.http.session.Session
 
 /**
  * Connect provides communication support to Hyperscala to allow the client to communicate to the server and the server
@@ -24,7 +25,7 @@ import org.powerscala.log.Logging
  *
  * @author Matt Hicks <matt@outr.com>
  */
-object Connect extends Module with HttpHandler with Logging {
+object Connect extends Module with Logging {
   val name = "connect"
   val version = Version(1)
 
@@ -40,23 +41,22 @@ object Connect extends Module with HttpHandler with Logging {
 
   override def dependencies = List(jQuery.LatestWithDefault)
 
-  def init() = {
-    Website().register("/js/hyperscala.connect.js", "hyperscala.connect.js")
-    Website().register("/css/hyperscala.connect.css", "hyperscala.connect.css")
-    Website().addHandler(this, "/hyperscala.connect/send")
-    Website().addHandler(this, "/hyperscala.connect/receive")
+  override def init[S <: Session](website: Website[S]) = {
+    website.register("/js/hyperscala.connect.js", "hyperscala.connect.js")
+    website.register("/css/hyperscala.connect.css", "hyperscala.connect.css")
+    val handler = new ConnectHandler(website)(website.manifest)
+    website.addHandler(handler, "/hyperscala.connect/send")
+    website.addHandler(handler, "/hyperscala.connect/receive")
   }
 
-  def disableErrorDisplay() = Webpage().store.update("hyperscala.connect.disableErrorDisplay", true)
-
-  def load() = {
-    Webpage().head.contents += new tag.Link(href = "/css/hyperscala.connect.css")
-    Webpage().head.contents += new tag.Script(src = "/js/hyperscala.connect.js")
-    Webpage().head.contents += new tag.Script {
-      contents += ConnectSession(Webpage())
+  override def load[S <: Session](webpage: Webpage[S]) = {
+    webpage.head.contents += new tag.Link(href = "/css/hyperscala.connect.css")
+    webpage.head.contents += new tag.Script(src = "/js/hyperscala.connect.js")
+    webpage.head.contents += new tag.Script {
+      contents += ConnectSession(webpage)
     }
-    if (!Webpage().store.getOrElse("hyperscala.connect.disableErrorDisplay", false)) {
-      Webpage().body.contents += new tag.Div(id = "hyperscala_connect_error", clazz = List("hyperscala_connect_error_hidden")) {
+    if (!webpage.store.getOrElse("hyperscala.connect.disableErrorDisplay", false)) {
+      webpage.body.contents += new tag.Div(id = "hyperscala_connect_error", clazz = List("hyperscala_connect_error_hidden")) {
         contents += new tag.Div {
           contents += new tag.A(id = "hyperscala_connect_error_close", titleText = "Close", clazz = List("close"))
           contents += new tag.Div(id = "hyperscala_connect_error_message")
@@ -65,14 +65,31 @@ object Connect extends Module with HttpHandler with Logging {
     }
   }
 
-  def event(f: ((Connection, Message)) => Unit) = connections().on(f)
+  def disableErrorDisplay[S <: Session](webpage: Webpage[S]) = webpage.store.update("hyperscala.connect.disableErrorDisplay", true)
 
-  def on(event: String)(f: Json => Unit) = connections().on(event)(f)
+  def event[S <: Session](webpage: Webpage[S])(f: ((Connection[S], Message)) => Unit)(implicit manifest: Manifest[S]) = {
+    connections(webpage).on(f)
+  }
 
-  def send(event: String, data: Json, sendWhenConnected: Boolean = true) = connections().send2Client(event, data, sendWhenConnected)
+  def on[S <: Session](webpage: Webpage[S], event: String)(f: Json => Unit)(implicit manifest: Manifest[S]) = {
+    connections(webpage).on(event)(f)
+  }
 
-  def connections(page: Webpage = Webpage()) = page.store.getOrSet("hyperscala.connect", new Connections(Webpage()))
+  def send[S <: Session](webpage: Webpage[S], event: String, data: Json, sendWhenConnected: Boolean = true)(implicit manifest: Manifest[S]) = {
+    connections(webpage).send2Client(event, data, sendWhenConnected)
+  }
 
+  def connections[S <: Session](page: Webpage[S])(implicit manifest: Manifest[S]) = {
+    page.store.getOrSet("hyperscala.connect", new Connections(page))
+  }
+
+  def createError(response: HttpResponse, code: Int, message: String) = {
+    warn(s"Connect.createError: $code - $message")
+    response.copy(status = HttpResponseStatus.BadRequest(s"$code:$message"))
+  }
+}
+
+class ConnectHandler[S <: Session](website: Website[S])(implicit manifest: Manifest[S]) extends HttpHandler {
   def onReceive(request: HttpRequest, response: HttpResponse) = {
     val content = request.contentString.get
     val jsonOption = request.url.filename match {
@@ -81,10 +98,10 @@ object Connect extends Module with HttpHandler with Logging {
     }
     jsonOption match {
       case Some(json) => {
-        Website().pages.byId[Webpage](json.pageId) match {
+        website.pages.byId[Webpage[S]](json.pageId) match {
           case Some(page) => {
             page.checkIn()                      // Let the page know it's still in-use
-            val conns = connections(page)
+            val conns = Connect.connections(page)
             conns.byId(json.connectionId) match {
               case Some(connection) => request.url.filename match {
                 case "receive" => {
@@ -100,28 +117,23 @@ object Connect extends Module with HttpHandler with Logging {
                   response.copy(content = StringContent(r.asJson.spaces2), status = HttpResponseStatus.OK)
                 }
               }
-              case None => createError(response, Error.ConnectionNotFound, "Connection not found")
+              case None => Connect.createError(response, Connect.Error.ConnectionNotFound, "Connection not found")
             }
           }
-          case None => createError(response, Error.PageNotFound, s"Page not found (id: ${json.pageId})")
+          case None => Connect.createError(response, Connect.Error.PageNotFound, s"Page not found (id: ${json.pageId})")
         }
       }
-      case None => createError(response, Error.InvalidRequest, s"JSON ${request.url.filename} data was invalid. Actual content: [$content]")
+      case None => Connect.createError(response, Connect.Error.InvalidRequest, s"JSON ${request.url.filename} data was invalid. Actual content: [$content]")
     }
-  }
-
-  private def createError(response: HttpResponse, code: Int, message: String) = {
-    warn(s"Connect.createError: $code - $message")
-    response.copy(status = HttpResponseStatus.BadRequest(s"$code:$message"))
   }
 }
 
-class Connections(val webpage: Webpage) extends Listenable with Logging {
-  private var map = Map.empty[String, Connection]
+class Connections[S <: Session](val webpage: Webpage[S])(implicit manifest: Manifest[S]) extends Listenable with Logging {
+  private var map = Map.empty[String, Connection[S]]
 
   private var backlog = List.empty[(String, Json)]
 
-  val created = new UnitProcessor[Connection]("created")
+  val created = new UnitProcessor[Connection[S]]("created")
 
   webpage.html.onAfterRender {
     if (backlog.nonEmpty) {     // Send backlog after render
@@ -135,9 +147,9 @@ class Connections(val webpage: Webpage) extends Listenable with Logging {
   def isEmpty = map.isEmpty
 
   lazy val actor = Connect.newActor()
-  val messageEvent = new UnitProcessor[(Connection, Message)]("messageEvent")
+  val messageEvent = new UnitProcessor[(Connection[S], Message)]("messageEvent")
 
-  def on(f: ((Connection, Message)) => Unit) = messageEvent.on(f)
+  def on(f: ((Connection[S], Message)) => Unit) = messageEvent.on(f)
 
   def on(event: String)(f: Json => Unit) = {
     messageEvent.on {
@@ -173,7 +185,7 @@ class AsynchronousFunctionActor extends Actor {
   }
 }
 
-class Connection(connections: Connections) extends Logging {
+class Connection[S <: Session](connections: Connections[S]) extends Logging {
   val id = Unique()
 
   private var server2ClientId = 0
@@ -200,12 +212,13 @@ class Connection(connections: Connections) extends Logging {
     val expectedId = client2ServerId + 1
     if (message.id == expectedId) {
       client2ServerId = expectedId
-      val context = Website().requestContext          // Get the context for the current thread
+//      val context = webpage.website.request          // Get the context for the current thread
       val f = () => {
-          Website().contextualize(context) {
-            Webpage.updateContext(webpage)
-            connections.messageEvent.fire(this -> message)
-          }
+//          Website().contextualize(context) {
+//            Webpage.updateContext(webpage)
+//            connections.messageEvent.fire(this -> message)
+//          }
+          connections.messageEvent.fire(this -> message)
         }
       connections.actor ! f     // Process receives one at a time via actor
     } else if (message.id < expectedId) {           // We've already seen this one, ignore it
@@ -270,9 +283,9 @@ object Message {
   implicit def MessageCodecJson: CodecJson[Message] = casecodec3(Message.apply, Message.unapply)("id", "event", "data")
 }
 
-case class ConnectSession(page: Webpage) extends JavaScriptContent {
+case class ConnectSession[S <: Session](page: Webpage[S]) extends JavaScriptContent {
   def content = {   // Generate a new connection each rendering of the content
-    val connection = Website().request.store.getOrSet("hyperscala.connect.session", Connect.connections(page).create())
+    val connection = page.website.request.store.getOrSet("hyperscala.connect.session", Connect.connections(page)(page.website.manifest).create())
     s"""
       |$$(document).ready(function() {
       | HyperscalaConnect.init('${page.pageId}', '${connection.id}');

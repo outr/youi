@@ -1,13 +1,14 @@
 package org.hyperscala.examples.comparison
 
 import org.hyperscala.html._
-import org.hyperscala.web.Webpage
+import org.hyperscala.web.{Website, Webpage}
 import org.hyperscala.ui.validation._
 import org.hyperscala.realtime.{RealtimeEvent, Realtime}
 import org.hyperscala.css.attributes.Display
 import org.powerscala.Color
 import org.hyperscala.ui.dynamic.{DynamicContent, DynamicString}
 import language.reflectiveCalls
+import com.outr.net.http.session.Session
 
 /**
  * Comparison port of Play! Framework's Hello World example that's not really a Hello World example.
@@ -16,9 +17,9 @@ import language.reflectiveCalls
  *
  * @author Matt Hicks <mhicks@outr.com>
  */
-class PlayHelloWorldPage extends Webpage {
+class PlayHelloWorldPage[S <: Session](website: Website[S]) extends Webpage(website) {
   require(Realtime)
-  Realtime.connectStandard()
+  Realtime.connectStandard(this)
 
   title := "The 'helloworld' application"
 
@@ -84,7 +85,7 @@ class PlayHelloWorldPage extends Webpage {
   }
 }
 
-class PlayHelloWorldConfiguration(page: PlayHelloWorldPage) extends DynamicContent("configure") {
+class PlayHelloWorldConfiguration[S <: Session](page: PlayHelloWorldPage[S]) extends DynamicContent("configure") {
   def dynamicString = DynamicString.url("play_hello_world_configuration.html", PlayHelloWorldPage.configuration)
 
   val nameContainer = load[tag.Dl]("name_field")

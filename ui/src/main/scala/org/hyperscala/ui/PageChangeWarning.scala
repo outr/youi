@@ -6,6 +6,7 @@ import org.powerscala.Version
 import org.hyperscala.html._
 import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.realtime.Realtime
+import com.outr.net.http.session.Session
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
@@ -17,20 +18,20 @@ object PageChangeWarning extends Module {
 
   override def dependencies = List(Realtime)
 
-  def init() = {
-    Website().register("/js/page_change_warning.js", "page_change_warning.js")
+  override def init[S <: Session](website: Website[S]) = {
+    website.register("/js/page_change_warning.js", "page_change_warning.js")
   }
 
-  def load() = {
-    Webpage().head.contents += new tag.Script(src = "/js/page_change_warning.js")
+  override def load[S <: Session](webpage: Webpage[S]) = {
+    webpage.head.contents += new tag.Script(src = "/js/page_change_warning.js")
   }
 
-  def warn(message: String) = {
+  def warn[S <: Session](webpage: Webpage[S], message: String) = {
     val m = message match {
       case null => "null"
       case _ => "'%s'".format(message)
     }
-    Webpage().body.contents += new tag.Script {
+    webpage.body.contents += new tag.Script {
       contents += new JavaScriptString("setPageChangeWarning(%s);".format(m))
     }
   }

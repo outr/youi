@@ -12,6 +12,7 @@ import org.powerscala.enum.{Enumerated, EnumEntry}
 import org.powerscala.event.processor.UnitProcessor
 import org.powerscala.event.Listenable
 import argonaut.JsonObject
+import com.outr.net.http.session.Session
 
 /**
  * Clipboard offers a mechanism to manage storage and retrieval of items on the server level as an alternative for a
@@ -23,11 +24,11 @@ object Clipboard extends Module {
   /**
    * Creates a new ClipboardInstance each time it is called (once per webpage instance).
    */
-  val WebpageInstanceCreator = () => new ClipboardInstance
+  val WebpageInstanceCreator = (webpage: Webpage[_ <: Session]) => new ClipboardInstance(webpage)
   /**
    * Stores the ClipboardInstance in the session.
    */
-  val SessionInstanceCreator = () => Website().session.getOrSet("clipboard_module", new ClipboardInstance)
+  val SessionInstanceCreator = (webpage: Webpage[_ <: Session]) => webpage.website.session.getOrSet("clipboard_module", new ClipboardInstance(webpage))
 
   val name = "clipboard"
   val version = Version(1)
@@ -39,18 +40,18 @@ object Clipboard extends Module {
    *
    * By default a single instance is tied to a single webpage instance (WebpageInstanceCreator).
    */
-  var creator: () => ClipboardInstance = WebpageInstanceCreator
+  var creator: (Webpage[_ <: Session]) => ClipboardInstance = WebpageInstanceCreator
 
-  def init() {
-    Website().register("/js/clipboard.js", "clipboard.js")
+  override def init[S <: Session](website: Website[S]) = {
+    website.register("/js/clipboard.js", "clipboard.js")
   }
 
-  def load() {
-    Webpage().head.contents += new tag.Script(mimeType = "text/javascript", src = "/js/clipboard.js")
-    apply()   // Make sure the clipboard instance is created
+  override def load[S <: Session](webpage: Webpage[S]) = {
+    webpage.head.contents += new tag.Script(mimeType = "text/javascript", src = "/js/clipboard.js")
+    apply(webpage)   // Make sure the clipboard instance is created
   }
 
-  def apply() = Webpage().store.getOrSet("clipboard_module", creator())
+  def apply[S <: Session](webpage: Webpage[S]) = webpage.store.getOrSet("clipboard_module", creator(webpage))
 
   def connect(tags: HTMLTag*) = tags.foreach {
     case t => if (!t.clazz.contains("use-clipboard")) {
@@ -59,7 +60,7 @@ object Clipboard extends Module {
   }
 }
 
-class ClipboardInstance extends Listenable {
+class ClipboardInstance(webpage: Webpage[_ <: Session]) extends Listenable {
   /**
    * Fired when an event occurs in the client and is sent to the server. This is primarily caused by a keyboard Cut,
    * Copy, or Paste action occurring in the browser.
@@ -112,7 +113,7 @@ class ClipboardInstance extends Listenable {
       case _ => super.receive(event, json)
     }
   }
-  Webpage().body.contents += hiddenDiv
+  webpage.body.contents += hiddenDiv
 
   def +=(entry: ClipboardEntry): Unit = synchronized {
     _list = entry :: _list
@@ -131,7 +132,7 @@ class ClipboardInstance extends Listenable {
   def list = _list
 
   private def fireClipEvent(clipType: ClipType, json: JsonObject) = {
-    val element = Webpage().html.byId[HTMLTag](json.string("id"))
+    val element = webpage.html.byId[HTMLTag](json.string("id"))
     val mouseX = json.int("mouseX")
     val mouseY = json.int("mouseY")
     val selected = json.string("selected")

@@ -14,13 +14,13 @@ class PropertyAttribute[T](val name: String,
                           (implicit val persister: ValuePersistence[T], parent: Listenable, manifest: Manifest[T])
                            extends Property[T](default = Some(default))(parent, manifest) with XMLAttribute {
   parent match {
-    case tag: Tag => tag.addAttribute(this)
+    case tag: Tag => {
+      tag.addAttribute(this)
+      tag.connected[Page] {
+        case page => page.intercept.initAttribute.fire(this)    // Fire the initialization to be intercepted
+      }
+    }
     case _ => // Parent is not a tag
-  }
-
-  Page() match {
-    case null => // May not be part of a page
-    case page => page.intercept.initAttribute.fire(this)   // Fire the initialization to be intercepted
   }
 
   def attributeValue = persister.toString(value, name, manifest.runtimeClass)
@@ -31,13 +31,15 @@ class PropertyAttribute[T](val name: String,
   def shouldRender = include
 
   def write(markup: Markup, writer: HTMLWriter) = if (shouldRender) {
-    Page() match {
-      case null => writer.write(" %s=\"%s\"".format(name, attributeValue))
-      case page => page.intercept.renderAttribute.fire(PropertyAttribute.this) match {
+    val page = markup.root[Page].getOrElse(throw new RuntimeException("Page not found for markup."))
+//    Page() match {
+//      case null => writer.write(" %s=\"%s\"".format(name, attributeValue))
+//      case page =>
+      page.intercept.renderAttribute.fire(PropertyAttribute.this) match {
         case Some(pa) if pa() != null => writer.write(" %s=\"%s\"".format(pa.name, persister.toString(pa().asInstanceOf[T], pa.name, manifest.runtimeClass)))
         case _ => // Told not to render by intercept
       }
-    }
+//    }
   }
 
   def read(markup: Markup, newValue: String) = {

@@ -2,7 +2,7 @@ package org.hyperscala.ui.wrapped
 
 import org.powerscala._
 import org.hyperscala.html._
-import org.hyperscala.web.{Website, Webpage}
+import org.hyperscala.web._
 import org.hyperscala.realtime.{RealtimePage, Realtime}
 import org.hyperscala.html.attributes.ContentEditable
 import org.hyperscala.javascript.JavaScriptContent
@@ -15,6 +15,7 @@ import org.hyperscala.Container
 import org.jdom2.Element
 import org.powerscala.event.processor.UnitProcessor
 import org.hyperscala.selector.Selector
+import com.outr.net.http.session.Session
 
 /**
  * EditableContent allows easy wrapping around an HTMLTag container to allow the use of HTML5's contentEditable flag
@@ -29,16 +30,16 @@ object EditableContent extends Module with StorageComponent[EditableContent, HTM
 
   override def dependencies = List(jQuery.LatestWithDefault, Realtime)
 
-  def init() {
-    Website().register("/js/editable_content.js", "editable_content.js")
+  override def init[S <: Session](website: Website[S]) = {
+    website.register("/js/editable_content.js", "editable_content.js")
   }
 
-  def load() {
-    Webpage().head.contents += new tag.Script(src = "/js/editable_content.js")
+  override def load[S <: Session](webpage: Webpage[S]) = {
+    webpage.head.contents += new tag.Script(src = "/js/editable_content.js")
   }
 
   override def apply(tag: HTMLTag with Container[BodyChild]) = {
-    Webpage().require(this)
+    tag.require(this)
     super.apply(tag)
   }
 
@@ -53,59 +54,62 @@ class EditableContent private(t: HTMLTag with Container[BodyChild]) {
 
   init()
 
-  private def init() = {
-    t.contentEditable := ContentEditable.True
+  private def init() = t.connected[Webpage[Session]] {
+    case webpage => {
+      t.contentEditable := ContentEditable.True
 
-    Realtime.sendJavaScript(s"initEditableContent('${t.identity}');", selector = Some(Selector.id(t.identity)), onlyRealtime = false)
-    t.eventReceived.on {
-      case evt if evt.event == "htmlChanged" => {
-        val htmlString = evt.json.string("html")
-        val xml = HTMLToScala.toXML(htmlString, clean = true)
-        val body = xml.getChild("body")
-        RealtimePage.ignoreStructureChanges {      // Keep WebpageConnection from sending the changes to the client
-          t.contents.clear()                            // Remove all contents
-          t.read(body)                                  // Read the new data back in
-        }
-        contentChanged.fire(ContentChanged(xml, htmlString))
-        Intercept.Stop
-      }
-      case evt if evt.event == "selectionChanged" => {
-        evt.json.toMap.foreach {
-          case (key, value) => {
-            val v = if (value.isString) {
-              value.stringOrEmpty
-            } else if (value.isNull) {
-              null
-            } else if (value.isBool) {
-              value.bool.get
-            } else if (value.isNumber) {
-              value.numberOrZero
-            } else {
-              throw new RuntimeException(s"Unsupported conversion: $value")
-            }
-            selection(key) = v
+      Realtime.sendJavaScript(webpage, s"initEditableContent('${t.identity}');", selector = Some(Selector.id(t.identity)), onlyRealtime = false)
+      t.eventReceived.on {
+        case evt if evt.event == "htmlChanged" => {
+          val htmlString = evt.json.string("html")
+          val xml = HTMLToScala.toXML(htmlString, clean = true)
+          val body = xml.getChild("body")
+          RealtimePage.ignoreStructureChanges {
+            // Keep WebpageConnection from sending the changes to the client
+            t.contents.clear() // Remove all contents
+            t.read(body) // Read the new data back in
           }
+          contentChanged.fire(ContentChanged(xml, htmlString))
+          Intercept.Stop
         }
-        selectionChanged.fire(SelectionChanged(
-          selectedText.getOrElse(null),
-          selectedHTML.getOrElse(null),
-          selectedStartOffset.getOrElse(-1),
-          selectedEndOffset.getOrElse(-1)
-        ))
-        Intercept.Stop
-//        throw new RuntimeException(s"Not implemented: ${evt.json.toJson.spaces2}")
-//        evt.message.map.foreach {   // Update all changed values
-//          case (key, value) => selection(key) = value
-//        }
-//        selectionChanged.fire(SelectionChanged(
-//          selectedText.getOrElse(null),
-//          selectedHTML.getOrElse(null),
-//          selectedStartOffset.getOrElse(-1),
-//          selectedEndOffset.getOrElse(-1)
-//        ))
-//        Intercept.Stop
+        case evt if evt.event == "selectionChanged" => {
+          evt.json.toMap.foreach {
+            case (key, value) => {
+              val v = if (value.isString) {
+                value.stringOrEmpty
+              } else if (value.isNull) {
+                null
+              } else if (value.isBool) {
+                value.bool.get
+              } else if (value.isNumber) {
+                value.numberOrZero
+              } else {
+                throw new RuntimeException(s"Unsupported conversion: $value")
+              }
+              selection(key) = v
+            }
+          }
+          selectionChanged.fire(SelectionChanged(
+            selectedText.getOrElse(null),
+            selectedHTML.getOrElse(null),
+            selectedStartOffset.getOrElse(-1),
+            selectedEndOffset.getOrElse(-1)
+          ))
+          Intercept.Stop
+          //        throw new RuntimeException(s"Not implemented: ${evt.json.toJson.spaces2}")
+          //        evt.message.map.foreach {   // Update all changed values
+          //          case (key, value) => selection(key) = value
+          //        }
+          //        selectionChanged.fire(SelectionChanged(
+          //          selectedText.getOrElse(null),
+          //          selectedHTML.getOrElse(null),
+          //          selectedStartOffset.getOrElse(-1),
+          //          selectedEndOffset.getOrElse(-1)
+          //        ))
+          //        Intercept.Stop
+        }
+        case _ => Intercept.Continue
       }
-      case _ => Intercept.Continue
     }
   }
 
@@ -501,8 +505,8 @@ class EditableContent private(t: HTMLTag with Container[BodyChild]) {
    */
   def styleWithCSS(flag: Boolean) = execCommand("styleWithCSS", flag)
 
-  def execCommand(command: String, value: Any = null): Unit = {
-    Realtime.sendJavaScript(s"editableContentExecCommand('${t.identity}', '$command', ${JavaScriptContent.toJS(value)});")
+  def execCommand(command: String, value: Any = null): Unit = t.connected[Webpage[Session]] {
+    case webpage => Realtime.sendJavaScript(webpage, s"editableContentExecCommand('${t.identity}', '$command', ${JavaScriptContent.toJS(value)});")
   }
 }
 

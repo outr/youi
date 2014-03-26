@@ -3,7 +3,7 @@ package org.hyperscala.examples.ui
 import org.hyperscala.html._
 
 import org.hyperscala.examples.Example
-import org.hyperscala.web.Webpage
+import org.hyperscala.web._
 import org.hyperscala.realtime.{RealtimeEvent, Realtime}
 import org.hyperscala.ui.widgets.Select2
 import org.hyperscala.javascript.JavaScriptString
@@ -15,8 +15,8 @@ import language.reflectiveCalls
  * @author Matt Hicks <matt@outr.com>
  */
 class Select2Example extends Example {
-  Webpage().require(Realtime)
-  Webpage().require(Gritter)
+  this.require(Realtime)
+  this.require(Gritter)
 
   val select = new tag.Select(id = "test") {
     contents += new tag.Option(value = "apple", content = "Apple")
@@ -25,7 +25,7 @@ class Select2Example extends Example {
 
     changeEvent := RealtimeEvent()
     value.change.on {
-      case evt => Gritter.add("Selection Changed", s"Value changed to ${value()}")
+      case evt => Gritter.add(this.webpage, "Selection Changed", s"Value changed to ${value()}")
     }
   }
   contents += select

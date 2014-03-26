@@ -4,7 +4,7 @@ import org.hyperscala.html._
 import org.hyperscala.examples.Example
 import org.hyperscala.ui.widgets.{Selectable, MultiSelect}
 import org.hyperscala.jquery.Gritter
-import org.hyperscala.web.Webpage
+import org.hyperscala.web._
 import org.hyperscala.css.attributes._
 import language.reflectiveCalls
 import org.hyperscala.realtime.RealtimeEvent
@@ -13,7 +13,7 @@ import org.hyperscala.realtime.RealtimeEvent
  * @author Matt Hicks <matt@outr.com>
  */
 class MultiSelectExample extends Example {
-  Webpage().require(Gritter)
+  this.require(Gritter)
 
   val select = new MultiSelect[Int] {
     style.height := 100.px
@@ -58,7 +58,7 @@ class MultiSelectExample extends Example {
     clickEvent := RealtimeEvent()
 
     clickEvent.on {
-      case evt => Gritter.add("Selected Items", select.selected().mkString(", "))
+      case evt => Gritter.add(this.webpage, "Selected Items", select.selected().mkString(", "))
     }
   }
 }

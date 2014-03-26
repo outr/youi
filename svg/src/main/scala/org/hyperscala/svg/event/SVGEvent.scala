@@ -2,7 +2,6 @@ package org.hyperscala.svg.event
 
 import org.hyperscala.svg.SVGTag
 import org.hyperscala.javascript.JavaScriptString
-import org.hyperscala.Page
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
@@ -12,8 +11,6 @@ class SVGEvent(val tag: SVGTag)
 object SVGEvent {
   def apply(confirmation: String = null,
             preventDefault: Boolean = true) = {
-    Page().require("realtime")
-
     val b = new StringBuilder
     if (confirmation != null) {
       b.append("if (confirm('%s')) { ".format(confirmation))

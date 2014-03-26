@@ -4,11 +4,11 @@ import org.hyperscala.html.HTMLTag
 import org.hyperscala.javascript.{JavaScriptContent, JavaScriptString}
 import org.powerscala.event.processor.UnitProcessor
 import org.powerscala.event.Intercept
-import org.hyperscala.web.WrappedComponent
 import org.hyperscala.event.EventReceived
 import org.hyperscala.jquery.dsl._
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.javascript.dsl.Statement
+import org.hyperscala.web._
 
 /**
  * jQueryComponent trait works to provide easier access to making calls to jQuery for extensions like autocomplete and
@@ -21,7 +21,7 @@ trait jQueryComponent extends WrappedComponent[HTMLTag] {
 
   protected def functionName: String
 
-  private def send(statement: Statement[_]) = Realtime.send(statement, Some(selector.selector))
+  private def send(statement: Statement[_]) = Realtime.send(wrapped.webpage, statement, Some(selector.selector))
 
   protected def initializeComponent(values: Map[String, Any]) = {
     send(selector.call(functionName, values))

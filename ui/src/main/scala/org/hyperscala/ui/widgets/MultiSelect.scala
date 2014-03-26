@@ -4,7 +4,7 @@ import org.hyperscala.html._
 import attributes.InputType
 import constraints.BodyChild
 import org.powerscala.property.Property
-import org.hyperscala.web.Webpage
+import org.hyperscala.web._
 import org.hyperscala.realtime.{RealtimeEvent, Realtime}
 
 import language.reflectiveCalls
@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicBoolean
  * @author Matt Hicks <matt@outr.com>
  */
 abstract class MultiSelect[T](implicit manifest: Manifest[T]) extends tag.Div {
-  Webpage().require(Realtime)
+  this.require(Realtime)
 
   val selected = Property[List[T]](default = Some(Nil))
 

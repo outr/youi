@@ -3,7 +3,7 @@ package org.hyperscala.ui.widgets.visual.types
 import org.powerscala.property.Property
 import org.hyperscala.ui.widgets.visual.{Stringify, VisualBuilder}
 import org.hyperscala.html.tag
-import org.hyperscala.web.Webpage
+import org.hyperscala.web._
 import org.hyperscala.html.attributes.InputType
 import org.hyperscala.html.constraints.BodyChild
 import org.hyperscala.realtime.{RealtimeEvent, Realtime}
@@ -17,7 +17,7 @@ trait InputVisualType[T] extends VisualType[T] with Stringify[T] {
   def fromString(s: String): T
 
   def create(property: Property[T], details: VisualBuilder[T]): BodyChild = new tag.Input {
-    Webpage().require(Realtime)
+    this.require(Realtime)
 
     if (details.masked) {
       inputType := InputType.Password

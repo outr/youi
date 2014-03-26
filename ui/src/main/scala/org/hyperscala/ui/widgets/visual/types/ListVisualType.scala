@@ -3,7 +3,7 @@ package org.hyperscala.ui.widgets.visual.types
 import org.powerscala.property.Property
 import org.hyperscala.ui.widgets.visual.VisualBuilder
 import org.hyperscala.ui.widgets.ListSelect
-import org.hyperscala.web.Webpage
+import org.hyperscala.web._
 import org.hyperscala.realtime.{RealtimeEvent, Realtime}
 
 import language.reflectiveCalls
@@ -16,7 +16,7 @@ object ListVisualType extends VisualType[Any] {
 
   def create(property: Property[Any], details: VisualBuilder[Any]) = {
     val list = new ListSelect[Any](values = details.selection, nullAllowed = details.nullAllowed) {
-      Webpage().require(Realtime)
+      this.require(Realtime)
 
       changeEvent := RealtimeEvent()
 

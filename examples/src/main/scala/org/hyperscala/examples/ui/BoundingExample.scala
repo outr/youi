@@ -1,6 +1,5 @@
 package org.hyperscala.examples.ui
 
-import org.hyperscala.web.Webpage
 
 import org.hyperscala.html._
 import org.hyperscala.jquery.ui._
@@ -10,14 +9,16 @@ import org.hyperscala.realtime.Realtime
 import org.powerscala.Color
 import org.hyperscala.ui.Bounding
 import org.hyperscala.selector.Selector
+import org.hyperscala.web._
+import com.outr.net.http.session.Session
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
 class BoundingExample extends Example {
-  Webpage().require(jQueryUI.Latest)
-  Webpage().require(Realtime)
-  Webpage().require(Bounding)
+  this.require(jQueryUI.Latest)
+  this.require(Realtime)
+  this.require(Bounding)
 
   contents += new tag.P {
     contents += "The Bounding module allows monitoring of a selector. A monitored element sends positional and size information back to the server as it changes. See this in action in the following draggable div below."
@@ -38,12 +39,16 @@ class BoundingExample extends Example {
   val message = new tag.Div(id = "message")
   contents += message
 
-  Bounding.monitor(Selector.id(dragDiv), 0.2)
-  Bounding.modified.on {
-    case evt => synchronized {
-      message.contents += new tag.Div(content = s"${evt.propertyName} changed from ${evt.oldValue} to ${evt.newValue}")
-      if (message.contents.length > 10) {
-        message.contents -= message.contents(0)   // Remove the first entry
+  connected[Webpage[Session]] {
+    case webpage => {
+      Bounding.monitor(webpage, Selector.id(dragDiv), 0.2)
+      Bounding.modified(webpage).on {
+        case evt => synchronized {
+          message.contents += new tag.Div(content = s"${evt.propertyName} changed from ${evt.oldValue} to ${evt.newValue}")
+          if (message.contents.length > 10) {
+            message.contents -= message.contents(0)   // Remove the first entry
+          }
+        }
       }
     }
   }

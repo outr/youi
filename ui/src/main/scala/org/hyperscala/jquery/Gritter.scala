@@ -6,6 +6,7 @@ import org.hyperscala.web.{Webpage, Website}
 import org.hyperscala.html.tag
 import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.realtime.Realtime
+import com.outr.net.http.session.Session
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -17,24 +18,24 @@ object Gritter extends Module with JavaScriptCaller {
 
   override def dependencies = List(InterfaceWithDefault(jQuery, jQuery.Latest), Realtime)
 
-  def init() = {
-    Website().addClassPath("/gritter/", "gritter/")
+  override def init[S <: Session](website: Website[S]) = {
+    website.addClassPath("/gritter/", "gritter/")
   }
 
-  def load() = {
-    val page = Webpage()
-    page.head.contents += new tag.Link(href = "/gritter/css/jquery.gritter.css", rel = "stylesheet")
-    page.head.contents += new tag.Script(mimeType = "text/javascript", src = "/gritter/js/jquery.gritter.min.js")
+  override def load[S <: Session](webpage: Webpage[S]) = {
+    webpage.head.contents += new tag.Link(href = "/gritter/css/jquery.gritter.css", rel = "stylesheet")
+    webpage.head.contents += new tag.Script(mimeType = "text/javascript", src = "/gritter/js/jquery.gritter.min.js")
   }
 
-  def add(title: String,
-          text: String,
-          image: String = null,
-          sticky: Boolean = false,
-          time: Int = 8000,
-          className: String = null) = {
-    Webpage().require(this)
-    Webpage().body.contents += new tag.Script(content = new JavaScriptString(
+  def add[S <: Session](webpage: Webpage[S],
+                        title: String,
+                        text: String,
+                        image: String = null,
+                        sticky: Boolean = false,
+                        time: Int = 8000,
+                        className: String = null) = {
+    webpage.require(this)
+    webpage.body.contents += new tag.Script(content = new JavaScriptString(
       """
         |$.gritter.add({
         |   'title': %s,

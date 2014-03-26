@@ -5,10 +5,11 @@ import org.powerscala.{Version, StorageComponent}
 import org.hyperscala.html._
 import org.hyperscala.jquery.jQuery
 import org.hyperscala.realtime.Realtime
-import org.hyperscala.web.{Webpage, Website}
+import org.hyperscala.web._
 import org.hyperscala.web.WrappedComponent
 import org.powerscala.event.processor.UnitProcessor
 import org.powerscala.event.{Intercept, Listenable}
+import com.outr.net.http.session.Session
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -31,10 +32,12 @@ class DropReceiver private(val wrapped: HTMLTag) extends WrappedComponent[HTMLTa
     }
   }
 
-  protected def initializeComponent(values: Map[String, Any]) = {
-    Realtime.sendJavaScript(s"createDropReceiver('${wrapped.identity}');", onlyRealtime = false)
-    values.foreach {
-      case (key, value) => modify(key, value)
+  protected def initializeComponent(values: Map[String, Any]) = wrapped.connected[Webpage[Session]] {
+    case webpage => {
+      Realtime.sendJavaScript(webpage, s"createDropReceiver('${wrapped.identity}');", onlyRealtime = false)
+      values.foreach {
+        case (key, value) => modify(key, value)
+      }
     }
   }
 
@@ -61,16 +64,16 @@ object DropReceiver extends Module with StorageComponent[DropReceiver, HTMLTag] 
 
   override def dependencies = List(jQuery.LatestWithDefault, Realtime)
 
-  def init() = {
-    Website().register("/js/drop_receiver.js", "drop_receiver.js")
+  override def init[S <: Session](website: Website[S]) = {
+    website.register("/js/drop_receiver.js", "drop_receiver.js")
   }
 
-  def load() = {
-    Webpage().head.contents += new tag.Script(mimeType = "text/javascript", src = "/js/drop_receiver.js")
+  override def load[S <: Session](webpage: Webpage[S]) = {
+    webpage.head.contents += new tag.Script(mimeType = "text/javascript", src = "/js/drop_receiver.js")
   }
 
   override def apply(t: HTMLTag) = {
-    Webpage().require(this)
+    t.require(this)
     super.apply(t)
   }
 

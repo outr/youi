@@ -8,31 +8,30 @@ import org.powerscala.hierarchy.{MutableChildLike, ParentLike}
 import com.outr.net.http.HttpHandler
 import com.outr.net.http.request.HttpRequest
 import com.outr.net.http.response.{HttpResponseStatus, HttpResponse}
-import org.hyperscala.{Tag, Page, Markup}
+import org.hyperscala.{Tag, Markup}
 import org.powerscala.{Unique, MapStorage}
 import java.io.OutputStream
 import org.powerscala.hierarchy.event.{ChildRemovedProcessor, ChildAddedProcessor, StandardHierarchyEventProcessor}
 import java.util.concurrent.atomic.AtomicBoolean
 import org.powerscala.reflect._
+import com.outr.net.http.session.Session
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class Webpage extends HttpHandler with HTMLPage with ModularPage with Temporal with ParentLike[tag.HTML] {
-  Webpage.updateContext(this)
+class Webpage[S <: Session](val website: Website[S]) extends HttpHandler with HTMLPage with ModularPage[S] with Temporal with ParentLike[tag.HTML] {
+  implicit def manifest = website.manifest
 
   private val _rendered = new AtomicBoolean(false)
   def rendered = _rendered.get()
 
   val pageId = Unique()
   val store = new MapStorage[Any, Any]
-  def webpageSession = Website().session
-  def webpageRequest = Website().request
 
   val childAdded = new ChildAddedProcessor
   val childRemoved = new ChildRemovedProcessor
-  val pageLoadingEvent = new StandardHierarchyEventProcessor[Webpage]("pageLoading")
-  val pageLoadedEvent = new StandardHierarchyEventProcessor[Webpage]("pageLoaded")
+  val pageLoadingEvent = new StandardHierarchyEventProcessor[Webpage[S]]("pageLoading")
+  val pageLoadedEvent = new StandardHierarchyEventProcessor[Webpage[S]]("pageLoaded")
 
   def defaultTitle = CaseValue.generateLabel(getClass.getSimpleName.replaceAll("\\$", ""))
 
@@ -70,12 +69,12 @@ class Webpage extends HttpHandler with HTMLPage with ModularPage with Temporal w
     val id = Unique()
     pageLoadingEvent.on {
       case webpage => {
-        webpage.webpageSession.get[String](id) match {
+        webpage.website.session.get[String](id) match {
           case Some(_) => // Already loaded, nothing to do
           case None => try {
             f
           } finally {
-            webpage.webpageSession(id) = id     // Make sure this only happens once per session
+            webpage.website.session(id) = id     // Make sure this only happens once per session
           }
         }
       }
@@ -93,7 +92,7 @@ class Webpage extends HttpHandler with HTMLPage with ModularPage with Temporal w
     }
     val headers = response.headers.CacheControl()
     response.copy(content = content, status = status, headers = headers)
-  }.getOrElse(Website().errorPage(request, response, HttpResponseStatus.InternalServerError))
+  }.getOrElse(website.errorPage(request, response, HttpResponseStatus.InternalServerError))
 
   /**
    * The amount of time in seconds this webpage will continue to be cached in memory without any communication.
@@ -103,7 +102,7 @@ class Webpage extends HttpHandler with HTMLPage with ModularPage with Temporal w
   def timeout = 2.minutes
 
   override def checkIn() = {
-    webpageSession.checkIn()      // Keep the session alive as well
+    website.session.checkIn()      // Keep the session alive as well
     super.checkIn()
   }
 
@@ -128,7 +127,7 @@ class Webpage extends HttpHandler with HTMLPage with ModularPage with Temporal w
    *
    * @param t the throwable thrown
    */
-  def pageError(t: Throwable) = Website().pageError.fire(this -> t)
+  def pageError(t: Throwable) = website.pageError.fire(this -> t)
 
   /**
    * Error Support wraps the supplied function so if an exception is thrown while invoking it will be properly reported
@@ -165,25 +164,6 @@ class Webpage extends HttpHandler with HTMLPage with ModularPage with Temporal w
   }
 
   def dispose() = {
-    Website().pages.remove(this)
-  }
-}
-
-object Webpage {
-  def apply() = Website().requestContext[Webpage]("webpage")
-
-  def updateContext(webpage: Webpage) = {
-    Page.instance.set(webpage)
-    Website().requestContext("webpage") = webpage
-  }
-
-  def contextualize[T](webpage: Webpage)(f: => T) = {
-    val previous = Website().requestContext.getOrElse[Webpage]("webpage", null)
-    updateContext(webpage)
-    try {
-      f
-    } finally {
-      updateContext(previous)
-    }
+    website.pages.remove(this)
   }
 }

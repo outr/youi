@@ -15,8 +15,12 @@ import org.hyperscala.realtime.RealtimeEvent
  * @author Matt Hicks <matt@outr.com>
  */
 class RichEditorExample extends Example {
-  val activeStyle = page.head.selector(Selector.clazz("active"))
-  activeStyle.backgroundColor := Color.Red
+  connected[tag.HTML] {
+    case html => {
+      val activeStyle = html.head.selector(Selector.clazz("active"))
+      activeStyle.backgroundColor := Color.Red
+    }
+  }
 
   val div = new tag.Div(id = "editable") {
     style.width := 500.px

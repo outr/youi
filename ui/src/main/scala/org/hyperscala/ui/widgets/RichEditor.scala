@@ -1,7 +1,7 @@
 package org.hyperscala.ui.widgets
 
 import org.hyperscala.html._
-import org.hyperscala.web.{Website, Webpage}
+import org.hyperscala.web._
 import org.hyperscala.realtime.{RealtimePage, Realtime}
 import org.hyperscala.module.Module
 import org.powerscala.{Version, StorageComponent}
@@ -18,6 +18,7 @@ import org.hyperscala.css.attributes.{Length, Alignment, FontSize}
 import org.hyperscala.ui.clipboard.{ClipType, Clipboard}
 import org.powerscala.enum.{Enumerated, EnumEntry}
 import org.hyperscala.javascript.dsl.JSFunction1
+import com.outr.net.http.session.Session
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -38,16 +39,16 @@ object RichEditor extends Module with StorageComponent[RichEditor, HTMLTag] {
 
   override def dependencies = List(jQuery.LatestWithDefault, Realtime, CKEditor)
 
-  def init() = {
-    Website().register("/js/rich_editor.js", "rich_editor.js")
+  override def init[S <: Session](website: Website[S]) = {
+    website.register("/js/rich_editor.js", "rich_editor.js")
   }
 
-  def load() = {
-    Webpage().head.contents += new tag.Script(mimeType = "text/javascript", src = "/js/rich_editor.js")
+  override def load[S <: Session](webpage: Webpage[S]) = {
+    webpage.head.contents += new tag.Script(mimeType = "text/javascript", src = "/js/rich_editor.js")
   }
 
   override def apply(t: HTMLTag) = {
-    Webpage().require(this)
+    t.require(this)
     super.apply(t)
   }
 
@@ -61,27 +62,32 @@ class RichEditor private(val wrapped: HTMLTag) extends WrappedComponent[HTMLTag]
    * Configures the Clipboard module to integrate with this editor.
    */
   def enableClipboard() = {
-    Webpage().require(Clipboard)
+    wrapped.require(Clipboard)
 
     Clipboard.connect(wrapped)
-    Clipboard().configureDefaultHandling()
+    wrapped.connected[Webpage[_ <: Session]] {
+      case webpage => {
+        Clipboard(webpage).configureDefaultHandling()
 
-    Clipboard().clientEvent.on {
-      case evt => if (evt.element.getOrElse(null) == wrapped) {
-        evt.clipType match {
-          case ClipType.Cut => delete()
-          case ClipType.Copy => // Default handling will take care of this
-          case ClipType.Paste => {
-            Clipboard().headOption match {
-              case Some(entry) => {
-                insert(entry.value.toString, InsertMode.UnfilteredHTML)
+        Clipboard(webpage).clientEvent.on {
+          case evt => if (evt.element.getOrElse(null) == wrapped) {
+            evt.clipType match {
+              case ClipType.Cut => delete()
+              case ClipType.Copy => // Default handling will take care of this
+              case ClipType.Paste => {
+                Clipboard(webpage).headOption match {
+                  case Some(entry) => {
+                    insert(entry.value.toString, InsertMode.UnfilteredHTML)
+                  }
+                  case None => // Nothing in the clipboard to paste
+                }
               }
-              case None => // Nothing in the clipboard to paste
             }
           }
         }
       }
     }
+
   }
 
   /**
@@ -679,15 +685,17 @@ class RichEditor private(val wrapped: HTMLTag) extends WrappedComponent[HTMLTag]
     }
   }
 
-  protected def initializeComponent(values: Map[String, Any]) = {
-    Realtime.sendJavaScript(s"createRichEditor('${wrapped.identity}', ${inline()});", onlyRealtime = false)
-    values.foreach {
-      case (key, value) => modify(key, value)
+  protected def initializeComponent(values: Map[String, Any]) = wrapped.connected[Webpage[_ <: Session]] {
+    case webpage => {
+      Realtime.sendJavaScript(webpage, s"createRichEditor('${wrapped.identity}', ${inline()});", onlyRealtime = false)
+      values.foreach {
+        case (key, value) => modify(key, value)
+      }
     }
   }
 
-  protected def modify(key: String, value: Any) = {
-    Realtime.sendJavaScript(s"richEditorOption('${wrapped.identity}', '$key', ${JavaScriptContent.toJS(value)});", onlyRealtime = false)
+  protected def modify(key: String, value: Any) = wrapped.connected[Webpage[_ <: Session]] {
+    case webpage => Realtime.sendJavaScript(webpage, s"richEditorOption('${wrapped.identity}', '$key', ${JavaScriptContent.toJS(value)});", onlyRealtime = false)
   }
 
   /**
@@ -696,8 +704,8 @@ class RichEditor private(val wrapped: HTMLTag) extends WrappedComponent[HTMLTag]
    * @param content the HTML content to insert.
    * @param mode the insertion mode to use.
    */
-  def insert(content: String, mode: InsertMode) = {
-    Realtime.sendJavaScript(s"richEditorInsert('${wrapped.identity}', '${mode.value}', content);", onlyRealtime = false, content = Option(content))
+  def insert(content: String, mode: InsertMode) = wrapped.connected[Webpage[_ <: Session]] {
+    case webpage => Realtime.sendJavaScript(webpage, s"richEditorInsert('${wrapped.identity}', '${mode.value}', content);", onlyRealtime = false, content = Option(content))
   }
 
   /**
@@ -707,23 +715,29 @@ class RichEditor private(val wrapped: HTMLTag) extends WrappedComponent[HTMLTag]
    */
   private def changeValue(content: String) = html.applyChange(content)
 
-  def execCommand(command: String, value: Any = null): Unit = {
-    Realtime.sendJavaScript(s"richEditorExecCommand('${wrapped.identity}', '$command', ${JavaScriptContent.toJS(value)});")
+  def execCommand(command: String, value: Any = null): Unit = wrapped.connected[Webpage[_ <: Session]] {
+    case webpage => Realtime.sendJavaScript(webpage, s"richEditorExecCommand('${wrapped.identity}', '$command', ${JavaScriptContent.toJS(value)});")
   }
 
-  def execApplyStyle(style: RichEditorStyle) = {
-    val js = s"richEditorApplyStyle('${wrapped.identity}', ${style.toJSString});"
-    Realtime.sendJavaScript(js)
+  def execApplyStyle(style: RichEditorStyle) = wrapped.connected[Webpage[_ <: Session]] {
+    case webpage => {
+      val js = s"richEditorApplyStyle('${wrapped.identity}', ${style.toJSString});"
+      Realtime.sendJavaScript(webpage, js)
+    }
   }
 
-  def execRemoveStyle(style: RichEditorStyle) = {
-    val js = s"richEditorRemoveStyle('${wrapped.identity}', ${style.toJSString});"
-    Realtime.sendJavaScript(js)
+  def execRemoveStyle(style: RichEditorStyle) = wrapped.connected[Webpage[_ <: Session]] {
+    case webpage => {
+      val js = s"richEditorRemoveStyle('${wrapped.identity}', ${style.toJSString});"
+      Realtime.sendJavaScript(webpage, js)
+    }
   }
 
-  def execToggleStyle(style: RichEditorStyle) = {
-    val js = s"richEditorToggleStyle('${wrapped.identity}', ${style.toJSString});"
-    Realtime.sendJavaScript(js)
+  def execToggleStyle(style: RichEditorStyle) = wrapped.connected[Webpage[_ <: Session]] {
+    case webpage => {
+      val js = s"richEditorToggleStyle('${wrapped.identity}', ${style.toJSString});"
+      Realtime.sendJavaScript(webpage, js)
+    }
   }
 
   /**
@@ -735,9 +749,11 @@ class RichEditor private(val wrapped: HTMLTag) extends WrappedComponent[HTMLTag]
    * @param action the JavaScript action to take when the state changes
    * @param style the style to listen to
    */
-  def onStyleChange(action: JSFunction1[Boolean, Unit], style: RichEditorStyle): Unit = {
-    val instruction = s"richEditorAttachStyleStateChange('${wrapped.identity}', ${style.toJSString}, ${action.content});"
-    Realtime.sendJavaScript(instruction, onlyRealtime = false)
+  def onStyleChange(action: JSFunction1[Boolean, Unit], style: RichEditorStyle): Unit = wrapped.connected[Webpage[_ <: Session]] {
+    case webpage => {
+      val instruction = s"richEditorAttachStyleStateChange('${wrapped.identity}', ${style.toJSString}, ${action.content});"
+      Realtime.sendJavaScript(webpage, instruction, onlyRealtime = false)
+    }
   }
 
   /**
@@ -746,9 +762,11 @@ class RichEditor private(val wrapped: HTMLTag) extends WrappedComponent[HTMLTag]
    * @param action the JavaScript action to take when the state changes
    * @param cssStyle the Style to listen to
    */
-  def onStyleValueChange(action: JSFunction1[String, Unit], cssStyle: Style[_]): Unit = {
-    val instruction = s"richEditorAttachStyleValueChange('${wrapped.identity}', '${cssStyle.cssName}', ${action.content});"
-    Realtime.sendJavaScript(instruction, onlyRealtime = false)
+  def onStyleValueChange(action: JSFunction1[String, Unit], cssStyle: Style[_]): Unit = wrapped.connected[Webpage[_ <: Session]] {
+    case webpage => {
+      val instruction = s"richEditorAttachStyleValueChange('${wrapped.identity}', '${cssStyle.cssName}', ${action.content});"
+      Realtime.sendJavaScript(webpage, instruction, onlyRealtime = false)
+    }
   }
 
   /**
@@ -757,14 +775,16 @@ class RichEditor private(val wrapped: HTMLTag) extends WrappedComponent[HTMLTag]
    * @param f the content to execute
    * @param onlyRealtime true if this should only be executed after page rendering is complete
    */
-  def afterInit(f: JavaScriptContent, onlyRealtime: Boolean = false): Unit = {
-    val s =
-      s"""
-        |var f = function() { ${f.content} };
-        |invokeAfterRichEditorInit('${wrapped.identity}', f);
-      """.stripMargin
-    println(s"AfterInit[$s]")
-    Realtime.sendJavaScript(s, onlyRealtime = onlyRealtime)
+  def afterInit(f: JavaScriptContent, onlyRealtime: Boolean = false): Unit = wrapped.connected[Webpage[_ <: Session]] {
+    case webpage => {
+      val s =
+        s"""
+          |var f = function() { ${f.content} };
+          |invokeAfterRichEditorInit('${wrapped.identity}', f);
+        """.stripMargin
+      println(s"AfterInit[$s]")
+      Realtime.sendJavaScript(webpage, s, onlyRealtime = onlyRealtime)
+    }
   }
 }
 

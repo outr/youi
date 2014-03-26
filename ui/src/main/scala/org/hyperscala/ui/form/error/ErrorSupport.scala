@@ -2,11 +2,14 @@ package org.hyperscala.ui.form.error
 
 import org.hyperscala.html.HTMLTag
 import scala.collection.mutable.ListBuffer
+import org.hyperscala.web.Webpage
+import com.outr.net.http.session.Session
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
 trait ErrorSupport {
+  protected def page: Webpage[_ <: Session]
   private var errors = ListBuffer.empty[ErrorMessage]
 
   final def add(message: String, elements: HTMLTag*) = synchronized {

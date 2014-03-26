@@ -3,7 +3,7 @@ package org.hyperscala.ui.widgets.visual.types
 import org.powerscala.property.Property
 import org.hyperscala.html._
 import org.hyperscala.ui.widgets.visual.VisualBuilder
-import org.hyperscala.web.Webpage
+import org.hyperscala.web._
 import org.hyperscala.realtime.{RealtimeEvent, Realtime}
 
 import language.reflectiveCalls
@@ -15,7 +15,7 @@ object StringTextAreaVisualType extends VisualType[String] {
   def valid(details: VisualBuilder[_]) = details.clazz == classOf[String] && details.selection == null && details.multiLine
 
   def create(property: Property[String], details: VisualBuilder[String]) = new tag.TextArea {
-    Webpage().require(Realtime)
+    this.require(Realtime)
 
     changeEvent := RealtimeEvent()
 

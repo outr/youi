@@ -8,6 +8,7 @@ import org.hyperscala.selector.Selector
 import org.hyperscala.javascript.dsl.{MultiStatement, Statement}
 import org.hyperscala.svg.Svg
 import scala.collection.mutable.ListBuffer
+import com.outr.net.http.session.Session
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -86,14 +87,14 @@ object Snap extends Module {
   def apply(selector: Selector) = new Snap(selector)
   def apply(svg: Svg) = new Snap(Selector.id(svg))
 
-  def init() = {
-    Website().register("/js/snap.svg.js", "snapsvg/snap.svg.js")
-    Website().register("/js/snap.svg-min.js", "snapsvg/snap.svg-min.js")
+  override def init[S <: Session](website: Website[S]) = {
+    website.register("/js/snap.svg.js", "snapsvg/snap.svg.js")
+    website.register("/js/snap.svg-min.js", "snapsvg/snap.svg-min.js")
   }
 
-  def load() = if (debug) {
-    Webpage().head.contents += new tag.Script(mimeType = "text/javascript", src = "/js/snap.svg.js")
+  override def load[S <: Session](webpage: Webpage[S]) = if (debug) {
+    webpage.head.contents += new tag.Script(mimeType = "text/javascript", src = "/js/snap.svg.js")
   } else {
-    Webpage().head.contents += new tag.Script(mimeType = "text/javascript", src = "/js/snap.svg-min.js")
+    webpage.head.contents += new tag.Script(mimeType = "text/javascript", src = "/js/snap.svg-min.js")
   }
 }

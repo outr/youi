@@ -4,7 +4,7 @@ import org.hyperscala.module.Module
 import org.powerscala.{Color, Version, StorageComponent}
 
 import org.hyperscala.html._
-import org.hyperscala.web.{Webpage, Website}
+import org.hyperscala.web._
 import org.hyperscala.html.tag.Input
 import org.hyperscala.jquery.ui.jQueryUI
 import org.hyperscala.javascript.JavaScriptString
@@ -12,6 +12,7 @@ import org.hyperscala.javascript.JavaScriptString
 import scala.language.implicitConversions
 import org.powerscala.event.Intercept
 import org.hyperscala.realtime.RealtimeEvent
+import com.outr.net.http.session.Session
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -33,18 +34,17 @@ object ColorPicker extends Module with JavaScriptCaller with StorageComponent[Co
 
   override def dependencies = List(jQuery.LatestWithDefault, jQueryUI.LatestWithDefault)
 
-  def init() = {
-    Website().addClassPath("/colorpicker-1.0.4/", "colorpicker-1.0.4/")
+  override def init[S <: Session](website: Website[S]) = {
+    website.addClassPath("/colorpicker-1.0.4/", "colorpicker-1.0.4/")
   }
 
-  def load() = {
-    val page = Webpage()
-    page.head.contents += new tag.Link(href = "/colorpicker-1.0.4/jquery.colorpicker.css", rel = "stylesheet")
-    page.head.contents += new tag.Script(mimeType = "text/javascript", src = "/colorpicker-1.0.4/jquery.colorpicker.js")
+  override def load[S <: Session](webpage: Webpage[S]) = {
+    webpage.head.contents += new tag.Link(href = "/colorpicker-1.0.4/jquery.colorpicker.css", rel = "stylesheet")
+    webpage.head.contents += new tag.Script(mimeType = "text/javascript", src = "/colorpicker-1.0.4/jquery.colorpicker.js")
   }
 
   override def apply(tag: Input) = {
-    Webpage().require(this)
+    tag.require(this)
     super.apply(tag)
   }
 

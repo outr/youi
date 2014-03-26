@@ -1,6 +1,5 @@
 package org.hyperscala.examples.ui
 
-import org.hyperscala.web.Webpage
 
 import org.hyperscala.html._
 import org.hyperscala.jquery.ui._
@@ -9,13 +8,14 @@ import language.reflectiveCalls
 import org.hyperscala.realtime.Realtime
 import org.powerscala.Color
 import org.hyperscala.css.attributes.Position
+import org.hyperscala.web._
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
 class DroppableExample extends Example {
-  Webpage().require(jQueryUI.Latest)
-  Webpage().require(Realtime)
+  this.require(jQueryUI.Latest)
+  this.require(Realtime)
 
   contents += new tag.P {
     contents += "Droppable utilizes jQuery UI's Droppable functionality to support simple drag-and-drop."

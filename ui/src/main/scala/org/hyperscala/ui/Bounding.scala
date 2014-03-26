@@ -6,13 +6,14 @@ import org.hyperscala.realtime.Realtime
 import org.hyperscala.html._
 import org.powerscala.event.{Intercept, Listenable}
 import org.powerscala.property.Property
-import org.hyperscala.web.{Webpage, Website}
+import org.hyperscala.web._
 import org.hyperscala.selector.Selector
 import org.powerscala.concurrent.Time
 import org.powerscala.log.Logging
 import org.hyperscala.event.EventReceived
 import org.powerscala.event.processor.UnitProcessor
 import org.hyperscala.javascript.dsl.JSFunction0
+import com.outr.net.http.session.Session
 
 /**
  * Bounding wraps around HTMLTags to keep track of position and dimension as represented in the client.
@@ -23,20 +24,19 @@ object Bounding extends Module with StorageComponent[Bounding, HTMLTag] with Log
   val name = "bounding"
   val version = Version(1)
 
-  def modified = Webpage().store.getOrSet("boundingEvents", new UnitProcessor[BoundingEvent]("modified"))
+  def modified[S <: Session](webpage: Webpage[S]) = webpage.store.getOrSet("boundingEvents", new UnitProcessor[BoundingEvent]("modified"))
 
   override def dependencies = List(Realtime)
 
-  def init() = {
-    Website().register("/bounding.js", "bounding.js")
+  override def init[S <: Session](website: Website[S]) = {
+    website.register("/bounding.js", "bounding.js")
   }
 
-  def load() = {
-    val page = Webpage()
-    page.body.eventReceived.on {
+  override def load[S <: Session](webpage: Webpage[S]) = {
+    webpage.body.eventReceived.on {
       case evt => if (evt.event == "bounding") {
         val id = evt.json.string("elementId")
-        page.byId[HTMLTag](id) match {
+        webpage.byId[HTMLTag](id) match {
           case Some(t) => {
             val b = apply(t)
             b.set(evt, "localX", b.localX)
@@ -54,21 +54,21 @@ object Bounding extends Module with StorageComponent[Bounding, HTMLTag] with Log
         Intercept.Continue
       }
     }
-    page.head.contents += new tag.Script(mimeType = "text/javascript", src = "/bounding.js")
+    webpage.head.contents += new tag.Script(mimeType = "text/javascript", src = "/bounding.js")
   }
 
-  def monitor(selector: Selector, frequency: Double = 0.5, selectorFunction: JSFunction0[Selector] = null) = {
+  def monitor[S <: Session](webpage: Webpage[S], selector: Selector, frequency: Double = 0.5, selectorFunction: JSFunction0[Selector] = null) = {
     val sf = if (selectorFunction != null) {
       selectorFunction.toJS(1)
     } else {
       "null"
     }
     val js = s"window.bounding.monitor(${selector.content}, ${Time.millis(frequency)}, $sf);"
-    Realtime.sendJavaScript(js, onlyRealtime = false)
+    Realtime.sendJavaScript(webpage, js, onlyRealtime = false)
   }
 
-  def disable(selector: Selector) = {
-    Realtime.sendJavaScript(s"window.bounding.remove(${selector.content});", onlyRealtime = false)
+  def disable[S <: Session](webpage: Webpage[S], selector: Selector) = {
+    Realtime.sendJavaScript(webpage, s"window.bounding.remove(${selector.content});", onlyRealtime = false)
   }
 
   protected def create(t: HTMLTag) = new Bounding(t)
@@ -107,7 +107,7 @@ class Bounding(val tag: HTMLTag) extends Listenable {
     case Some(v) => {
       val oldValue = property()
       property := v
-      Bounding.modified.fire(BoundingEvent(this, propertyName, property, oldValue, v))
+      Bounding.modified(tag.webpage[Session]).fire(BoundingEvent(this, propertyName, property, oldValue, v))
     }
     case None => // Property not changed
   }

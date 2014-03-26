@@ -53,7 +53,9 @@ class Draggable private(val wrapped: HTMLTag) extends jQueryComponent {
 
 object Draggable extends StorageComponent[Draggable, HTMLTag] {
   override def apply(t: HTMLTag) = {
-    Webpage().require(jQueryUI.LatestWithDefault)
+    t.connected[Webpage[_]] {
+      case webpage => webpage.require(jQueryUI.LatestWithDefault)
+    }
     super.apply(t)
   }
 

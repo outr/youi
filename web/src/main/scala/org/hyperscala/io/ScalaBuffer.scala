@@ -10,6 +10,7 @@ import org.hyperscala.css.attributes.Length
 import org.powerscala.enum.EnumEntry
 
 import org.powerscala.reflect._
+import com.outr.net.http.session.Session
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -137,8 +138,8 @@ object ScalaBuffer {
       case Some(alias) => alias
       case None => {
         val method = tag.getClass.methods.find {
-          case m if (m.name == "formValue") => false
-          case m if (m.returnType.`type`.hasType(classOf[PropertyAttribute[_]])) => m.invoke[AnyRef](tag) == attribute
+          case m if m.name == "formValue" => false
+          case m if m.returnType.`type`.hasType(classOf[PropertyAttribute[_]]) => m.invoke[AnyRef](tag) == attribute
           case _ => false
         }.get
         attributes += key -> method.name
@@ -148,7 +149,7 @@ object ScalaBuffer {
   }
 }
 
-class ScalaWebpageBuffer(packageName: String, className: String, page: Webpage) extends ScalaBuffer {
+class ScalaWebpageBuffer[S <: Session](packageName: String, className: String, page: Webpage[S]) extends ScalaBuffer {
   writeAttributes(page.head, all = true, prefix = "head")
   page.head.contents.foreach(t => writeTag(t, "head"))
   writeAttributes(page.body, all = true, prefix = "body")

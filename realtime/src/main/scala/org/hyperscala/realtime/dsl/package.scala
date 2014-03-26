@@ -8,6 +8,8 @@ import org.hyperscala.javascript.dsl._
 import org.hyperscala.jquery.dsl._
 
 import scala.language.implicitConversions
+import org.hyperscala.web.Webpage
+import com.outr.net.http.session.Session
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -18,13 +20,14 @@ package object dsl {
   val window = StringSelector("window")
   val body = StringSelector("body")
 
-  def onKey(key: Key,
+  def onKey[S <: Session](webpage: Webpage[S],
+            key: Key,
             altKey: Option[Boolean] = None,
             ctrlKey: Option[Boolean] = None,
             metaKey: Option[Boolean] = None,
             shiftKey: Option[Boolean] = None,
             stopPropagation: Boolean = false)(f: => Unit): JSFunction1[KeyboardEvent, Boolean] = {
-    val store = CallbackStore()
+    val store = CallbackStore(webpage)
     val callback = store.createCallback(() => f)
     val conditional = new StringBuilder
     conditional.append("if (p1.keyCode == ")

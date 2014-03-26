@@ -8,6 +8,7 @@ import org.hyperscala.realtime.Realtime
 import org.powerscala.property.Property
 import java.util.concurrent.atomic.AtomicBoolean
 import org.powerscala.event.Listenable
+import com.outr.net.http.session.Session
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -21,24 +22,23 @@ object DynamicURL extends Module {
 
   override val dependencies = List(Realtime)
 
-  def init() = {
-    Website().register("/js/dynamic_url.js", "dynamic_url.js")
+  override def init[S <: Session](website: Website[S]) = {
+    website.register("/js/dynamic_url.js", "dynamic_url.js")
   }
 
-  def load() = {
-    Webpage().head.contents += new tag.Script(mimeType = "text/javascript", src = "/js/dynamic_url.js")
-    apply()    // Make sure the instance has been created
+  override def load[S <: Session](webpage: Webpage[S]) = {
+    webpage.head.contents += new tag.Script(mimeType = "text/javascript", src = "/js/dynamic_url.js")
+    apply(webpage)    // Make sure the instance has been created
   }
 
-  def apply() = {
-    val webpage = Webpage()
+  def apply[S <: Session](webpage: Webpage[S]) = {
     webpage.synchronized {
       webpage.store.getOrSet("dynamicURLInstance", new DynamicURLInstance(webpage))
     }
   }
 }
 
-case class DynamicURLInstance(webpage: Webpage) extends Listenable {
+case class DynamicURLInstance[S <: Session](webpage: Webpage[S]) extends Listenable {
   val name = () => "DynamicURLInstance"
   def parent = null
 
@@ -123,7 +123,7 @@ case class DynamicURLInstance(webpage: Webpage) extends Listenable {
         val hashString = map().collect {
           case (key, value) if value != null => "%s%s%s".format(encode(key, "UTF-8"), DynamicURL.splitCharacter, encode(value, "UTF-8"))
         }.mkString(DynamicURL.delineationCharacter.toString)
-        Realtime.sendJavaScript("setHash(content);", content = Option(hashString), onlyRealtime = false)
+        Realtime.sendJavaScript(webpage, "setHash(content);", content = Option(hashString), onlyRealtime = false)
       }
     }
   }

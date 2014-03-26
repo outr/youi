@@ -1,10 +1,11 @@
 package org.hyperscala.jquery.ui
 
 import org.hyperscala.html._
-import org.hyperscala.web.Webpage
+import org.hyperscala.web._
 import org.hyperscala.jquery.dsl._
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.selector.Selector
+import com.outr.net.http.session.Session
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
@@ -12,7 +13,7 @@ import org.hyperscala.selector.Selector
 trait DatePicker extends HTMLTag {
   identity        // Make sure it has an id
 
-  Webpage().require(jQueryUI, jQueryUI.Latest)
+  this.require(jQueryUI, jQueryUI.Latest)
 
   override protected def initialize() {
     super.initialize()
@@ -23,8 +24,11 @@ trait DatePicker extends HTMLTag {
 
 object DatePicker {
   def apply(t: HTMLTag) = {
-    Webpage().require(jQueryUI, jQueryUI.Latest)
+    t.require(jQueryUI, jQueryUI.Latest)
 
-    Realtime.send($(t).call("datepicker()"), Some(Selector.id(t)))
+    t.connected[Webpage[_ <: Session]] {
+      case webpage => Realtime.send(webpage, $(t).call("datepicker()"), Some(Selector.id(t)))
+    }
+
   }
 }

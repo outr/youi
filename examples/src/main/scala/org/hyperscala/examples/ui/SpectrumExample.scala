@@ -1,7 +1,7 @@
 package org.hyperscala.examples.ui
 
 import org.hyperscala.html._
-import org.hyperscala.web.Webpage
+import org.hyperscala.web._
 import org.hyperscala.jquery.Spectrum
 import org.hyperscala.jquery.Spectrum._
 import org.hyperscala.examples.Example
@@ -13,8 +13,8 @@ import org.powerscala.Color
  * @author Matt Hicks <matt@outr.com>
  */
 class SpectrumExample extends Example {
-  Webpage().require(Spectrum)
-  Webpage().require(Realtime)
+  this.require(Spectrum)
+  this.require(Realtime)
 
   val colorPicker = new tag.Input(id = "color")
   contents += colorPicker

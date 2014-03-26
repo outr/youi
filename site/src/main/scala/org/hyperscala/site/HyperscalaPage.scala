@@ -10,11 +10,12 @@ import org.hyperscala.web.Webpage
 import org.hyperscala.ui.WindowSized
 import language.reflectiveCalls
 import org.hyperscala.web.module.FormSupport
+import com.outr.net.http.session.MapSession
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class HyperscalaPage extends Webpage with FormSupport {
+class HyperscalaPage extends Webpage(HyperscalaSite) with FormSupport[MapSession] {
   def site = HyperscalaSite
 
   title := "Hyperscala - Statically typed bare-metal HTML, CSS, and JavaScript framework for Scala."
@@ -24,7 +25,7 @@ class HyperscalaPage extends Webpage with FormSupport {
   head.contents += new tag.Link(rel = "stylesheet", href = "/css/style.css")
 
   val main = new tag.Div(id = "main") {
-    WindowSized.heightAlgorithm("main", "windowHeight - 235")
+    WindowSized.heightAlgorithm(HyperscalaPage.this, "main", "windowHeight - 235")
   }
   val middle = new tag.Div(id = "middle") {
     contents += new tag.Img(id = "logo", src = "/images/hyperscala.png", alt = "Hyperscala") {

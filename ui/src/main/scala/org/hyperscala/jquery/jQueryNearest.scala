@@ -4,6 +4,7 @@ import org.hyperscala.module.Module
 import org.powerscala.Version
 import org.hyperscala.web.{Webpage, Website}
 import org.hyperscala.html.tag
+import com.outr.net.http.session.Session
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -15,12 +16,11 @@ object jQueryNearest extends Module {
 
   override def dependencies = List(jQuery.LatestWithDefault)
 
-  def init() = {
-    Website().register("/js/jquery.nearest.js", "jquery.nearest.js")
+  override def init[S <: Session](website: Website[S]) = {
+    website.register("/js/jquery.nearest.js", "jquery.nearest.js")
   }
 
-  def load() = {
-    val page = Webpage()
-    page.head.contents += new tag.Script(mimeType = "text/javascript", src = "/js/jquery.nearest.js")
+  override def load[S <: Session](webpage: Webpage[S]) = {
+    webpage.head.contents += new tag.Script(mimeType = "text/javascript", src = "/js/jquery.nearest.js")
   }
 }

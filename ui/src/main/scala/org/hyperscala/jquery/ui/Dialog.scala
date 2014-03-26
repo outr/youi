@@ -2,7 +2,7 @@ package org.hyperscala.jquery.ui
 
 import event.ButtonClicked
 import org.hyperscala.html._
-import org.hyperscala.web.Webpage
+import org.hyperscala.web._
 import org.powerscala.property._
 import org.powerscala.event.{Intercept, Listenable}
 import org.hyperscala.realtime.Realtime
@@ -23,8 +23,8 @@ object Dialog extends JavaScriptCaller with StorageComponent[Dialog, HTMLTag] {
   implicit def tag2Dialog(tag: HTMLTag) = apply(tag)
   
   override def apply(tag: HTMLTag) = {
-    Webpage().require(jQueryUI.LatestWithDefault)
-    Webpage().require(Realtime)
+    tag.require(jQueryUI.LatestWithDefault)
+    tag.require(Realtime)
     super.apply(tag)
   }
   

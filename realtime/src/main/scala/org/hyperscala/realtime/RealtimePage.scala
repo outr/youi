@@ -18,12 +18,13 @@ import org.powerscala.property.event.PropertyChangeEvent
 import org.powerscala.hierarchy.event.ChildAddedEvent
 import scala.Some
 import org.powerscala.hierarchy.event.ChildRemovedEvent
+import com.outr.net.http.session.Session
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class RealtimePage private(page: Webpage) extends Logging {
-  def connections = Connect.connections(page)
+class RealtimePage[S <: Session] private(page: Webpage[S]) extends Logging {
+  def connections = Connect.connections(page)(page.website.manifest)
 
   // Configure Listeners
   page.childAdded.listen(Priority.Normal, Descendants) {
@@ -65,10 +66,8 @@ class RealtimePage private(page: Webpage) extends Logging {
 //    sendBacklog()
 //  }
 
-  protected[realtime] def received(connection: Connection, message: Message) = {
+  protected[realtime] def received(connection: Connection[S], message: Message) = {
     synchronized {
-      Webpage.updateContext(page)     // Contextualize
-
       val json = message.data.obj.getOrElse(throw new RuntimeException(s"Data is not a JSON object: ${message.data}"))
       val id = json.string("id")
       val t = id match {
@@ -144,6 +143,8 @@ class RealtimePage private(page: Webpage) extends Logging {
               }
               val content = child.outputString
               send(JavaScriptMessage(instruction, Some(content)))
+              Markup.rendered(child)                            // Mark child tag as rendered
+              child.byTag[HTMLTag].foreach(Markup.rendered)     // Mark all tags children of child tag as rendered
             }
           }
         }
@@ -197,11 +198,11 @@ class RealtimePage private(page: Webpage) extends Logging {
 
   private def tagPropertyChanged(t: IdentifiableTag, property: PropertyAttribute[_], oldValue: Any, newValue: Any) = {
     debug("propertyChanged: %s.%s from %s to %s".format(t.xmlLabel, property.name, oldValue, newValue))
-    if (t.root[Webpage].nonEmpty && !property.isInstanceOf[StyleSheetAttribute[_]] && !t.isInstanceOf[tag.Text]) {
+    if (t.root[Webpage[_]].nonEmpty && !property.isInstanceOf[StyleSheetAttribute[_]] && !t.isInstanceOf[tag.Text]) {
       if (property == t.id && oldValue == null) {
         // Ignore initial id change as it is sent when added
       } else {
-        Page().intercept.renderAttribute.fire(property) match {
+        page.intercept.renderAttribute.fire(property) match {
           case Some(pa) => t match {
             case title: tag.Title if property.name == "content" => send(JavaScriptMessage("document.title = content;", Some(property.attributeValue)))
             case textual: Textual if property.name == "content" => textual match {
@@ -290,7 +291,7 @@ object RealtimePage {
     }
   }
 
-  def apply(page: Webpage) = synchronized {
+  def apply[S <: Session](page: Webpage[S]) = synchronized {
     if (page == null) {
       throw new NullPointerException("Page cannot be null!")
     }

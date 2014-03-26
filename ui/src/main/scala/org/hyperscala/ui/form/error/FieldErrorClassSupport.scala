@@ -1,8 +1,6 @@
 package org.hyperscala.ui.form.error
 
 import org.hyperscala.html.HTMLTag
-import org.hyperscala.jquery.jQuery
-import org.hyperscala.web.Webpage
 import org.hyperscala.jquery.dsl._
 import org.hyperscala.realtime.Realtime
 
@@ -13,8 +11,6 @@ trait FieldErrorClassSupport extends ErrorSupport {
   protected def className: String
 
   private var currentFields = List.empty[HTMLTag]
-
-  Webpage().require(jQuery.LatestWithDefault)
 
   override protected def clearDisplay() = {
     super.clearDisplay()
@@ -33,7 +29,7 @@ trait FieldErrorClassSupport extends ErrorSupport {
         if (!t.clazz().contains(className)) {
           t.clazz += className
           if (currentFields.isEmpty) {
-            Realtime.send($(t).focus())
+            Realtime.send(page, $(t).focus())
           }
           currentFields = t :: currentFields
         }

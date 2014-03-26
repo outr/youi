@@ -10,5 +10,5 @@ import com.outr.net.http.request.HttpRequest
  * @author Matt Hicks <matt@outr.com>
  */
 trait BasicWebsite extends Website[MapSession] {
-  protected def createSession(request: HttpRequest, id: String) = new MapSession(id)
+  protected def createSession(request: HttpRequest, id: String) = new MapSession(id, this)
 }

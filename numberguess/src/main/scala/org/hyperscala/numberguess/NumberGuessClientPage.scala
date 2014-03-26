@@ -1,13 +1,8 @@
 package org.hyperscala.numberguess
 
 import org.hyperscala.html._
-import org.hyperscala.web.Webpage
 
 import org.hyperscala.javascript.dsl._
-
-class NumberGuessClientPage extends Webpage {
-
-}
 
 object NumberGuessClientPage {
   def main(args: Array[String]): Unit = {

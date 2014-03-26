@@ -2,17 +2,18 @@ package org.hyperscala.ui.widgets
 
 import org.hyperscala.module.Module
 import org.powerscala.Version
-import org.hyperscala.web.{Webpage, Website}
+import org.hyperscala.web._
 import org.hyperscala.html._
 import org.hyperscala.html.constraints.BodyChild
 import org.hyperscala.html.attributes.InputType
 import org.powerscala.Unique
+import com.outr.net.http.session.Session
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
 class CSSTree extends tag.Div(clazz = List("css-treeview")) {
-  Webpage().require(CSSTree)
+  this.require(CSSTree)
 
   val list = new tag.Ul
   contents += list
@@ -44,11 +45,11 @@ object CSSTree extends Module {
   val name = "csstree"
   val version = Version(1)
 
-  def init() = {
-    Website().addClassPath("/csstree/", "csstree/")
+  override def init[S <: Session](website: Website[S]) = {
+    website.addClassPath("/csstree/", "csstree/")
   }
 
-  def load() = {
-    Webpage().head.contents += new tag.Link(href = "/csstree/style.css", rel = "stylesheet")
+  override def load[S <: Session](webpage: Webpage[S]) = {
+    webpage.head.contents += new tag.Link(href = "/csstree/style.css", rel = "stylesheet")
   }
 }

@@ -5,6 +5,7 @@ import org.powerscala.Version
 import org.hyperscala.web.{Website, Webpage}
 import org.hyperscala.html.tag
 import org.hyperscala.realtime.Realtime
+import com.outr.net.http.session.Session
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -16,11 +17,11 @@ object CKEditor extends Module {
 
   override def dependencies = List(Realtime)
 
-  def init() = {
-    Website().addClassPath("/cke/", "ckeditor-4.3.2/")
+  override def init[S <: Session](website: Website[S]) = {
+    website.addClassPath("/cke/", "ckeditor-4.3.2/")
   }
 
-  def load() = {
-    Webpage().head.contents += new tag.Script(mimeType = "text/javascript", src = "/cke/ckeditor.js")
+  override def load[S <: Session](webpage: Webpage[S]) = {
+    webpage.head.contents += new tag.Script(mimeType = "text/javascript", src = "/cke/ckeditor.js")
   }
 }

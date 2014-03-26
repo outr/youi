@@ -5,7 +5,7 @@ import org.hyperscala.svg
 import org.hyperscala.svg._
 import org.powerscala.Color
 import org.hyperscala.html._
-import org.hyperscala.web.Webpage
+import org.hyperscala.web._
 import org.hyperscala.realtime.{RealtimeEvent, Realtime}
 
 import language.reflectiveCalls
@@ -16,7 +16,7 @@ import java.util.Random
  */
 class DynamicSVGExample extends Example {
   val r = new Random()
-  Webpage().require(Realtime)
+  this.require(Realtime)
 
   val canvasWidth = 850
   val canvasHeight = 400

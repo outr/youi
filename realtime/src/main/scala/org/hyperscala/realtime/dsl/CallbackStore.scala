@@ -9,18 +9,19 @@ import argonaut.Argonaut._
 import org.hyperscala.javascript.JavaScriptString
 import scala.Some
 import org.powerscala.Unique
+import com.outr.net.http.session.Session
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class CallbackStore extends tag.Div(id = "jquerydsl_callbackstore") {
+class CallbackStore[S <: Session](webpage: Webpage[S]) extends tag.Div(id = "jquerydsl_callbackstore") {
   private var map = Map.empty[String, () => Unit]
 
   // No visible display
   style.display := Display.None
 
   // Add it to the body of the web page
-  Webpage().body.contents += this
+  webpage.body.contents += this
 
   def createCallback(f: () => Unit) = synchronized {
     val id = Unique()
@@ -38,7 +39,7 @@ class CallbackStore extends tag.Div(id = "jquerydsl_callbackstore") {
 }
 
 object CallbackStore {
-  def apply() = Webpage().store.getOrSet("jquerydsl_callbackstore", new CallbackStore)
+  def apply[S <: Session](webpage: Webpage[S]) = webpage.store.getOrSet("jquerydsl_callbackstore", new CallbackStore(webpage))
 }
 
 case class CallbackTagMessage(id: String, callbackId: String) extends TagMessage

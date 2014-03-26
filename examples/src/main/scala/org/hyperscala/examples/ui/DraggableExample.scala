@@ -1,6 +1,6 @@
 package org.hyperscala.examples.ui
 
-import org.hyperscala.web.Webpage
+import org.hyperscala.web._
 
 import org.hyperscala.html._
 import org.hyperscala.jquery.ui._
@@ -13,8 +13,8 @@ import org.powerscala.Color
  * @author Matt Hicks <matt@outr.com>
  */
 class DraggableExample extends Example {
-  Webpage().require(jQueryUI.Latest)
-  Webpage().require(Realtime)
+  this.require(jQueryUI.Latest)
+  this.require(Realtime)
 
   contents += new tag.P {
     contents += "Draggable provides a very simple wrapper around jQuery UI's Draggable functionality."

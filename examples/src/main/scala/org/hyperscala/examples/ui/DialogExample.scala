@@ -1,6 +1,6 @@
 package org.hyperscala.examples.ui
 
-import org.hyperscala.web.Webpage
+import org.hyperscala.web._
 
 import org.hyperscala.html._
 import org.hyperscala.jquery.ui._
@@ -12,7 +12,7 @@ import org.hyperscala.realtime.RealtimeEvent
  * @author Matt Hicks <matt@outr.com>
  */
 class DialogExample extends Example {
-  Webpage().require(jQueryUI.Latest)
+  this.require(jQueryUI.Latest)
 
   contents += new tag.P {
     contents += "Dialog provides a simple wrapper around jQuery UI's Dialog."

@@ -8,15 +8,17 @@ import org.hyperscala.javascript.dsl._
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.realtime.dsl._
 import org.powerscala.Color
+import org.hyperscala.web._
 
 import scala.language.implicitConversions
+import com.outr.net.http.session.Session
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */
 class SnapSVGExample extends Example {
-  page.require(Snap)
-  page.require(Realtime)
+  this.require(Snap)
+  this.require(Realtime)
 
   implicit def color2Statement(c: Color) = s(c)
   implicit def element2Statement(e: SnapElement) = s(e)
@@ -34,5 +36,7 @@ class SnapSVGExample extends Example {
     bigCircle.attr(mask = discs)
   }
   println(js.toJS())
-  js.send()
+  connected[Webpage[Session]] {
+    case webpage => js.send(webpage)
+  }
 }

@@ -7,12 +7,14 @@ import org.hyperscala.jquery.dsl._
 import org.hyperscala.realtime.dsl._
 import org.hyperscala.event.Key
 import org.hyperscala.jquery.Gritter
+import org.hyperscala.web._
+import com.outr.net.http.session.Session
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
 class RealtimeDSLExample extends Example {
-  page.require(Gritter)
+  this.require(Gritter)
 
   contents += new tag.P {
     contents += "Hyperscala provides a rich DSL for JavaScript and jQuery to be portrayed in Scala code that can be effectively converted to JavaScript in the browser. In the following example the jQuery DSL is used on the input to receive a notification on the server when the Escape key is pressed."
@@ -21,7 +23,11 @@ class RealtimeDSLExample extends Example {
   val input = new tag.Input(id = "my_input")
   contents += input
 
-  $(input).keyUp(onKey(Key.Escape) {
-    Gritter.add("Server Received", "Escape was pressed!")
-  }).send()
+  connected[Webpage[Session]] {
+    case webpage => {
+      $(input).keyUp(onKey(webpage, Key.Escape) {
+        Gritter.add(webpage, "Server Received", "Escape was pressed!")
+      }).send(webpage)
+    }
+  }
 }

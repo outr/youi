@@ -8,7 +8,7 @@ import org.powerscala.reflect._
 import org.hyperscala.ui.convert.Converter
 import org.powerscala.log.Logging
 import org.hyperscala.ui.form.error.ErrorSupport
-import org.hyperscala.web.Webpage
+import org.hyperscala.web._
 import org.hyperscala.ui.BusyDialog
 
 /**
@@ -19,7 +19,7 @@ import org.hyperscala.ui.BusyDialog
 abstract class CaseForm[T](val form: tag.Form,
                            errorSupport: ErrorSupport,
                            realTime: Boolean = false)(implicit manifest: Manifest[T]) extends Logging {
-  Webpage().require(BusyDialog)
+  form.require(BusyDialog)
 
   val property = Property[T]()
 
@@ -35,7 +35,7 @@ abstract class CaseForm[T](val form: tag.Form,
   }
 
   private def submitForm() = {
-    BusyDialog(processingLabel) {
+    BusyDialog(form.webpage, processingLabel) {
       submit()
     }
   }

@@ -8,13 +8,12 @@ import org.hyperscala.html._
 import org.hyperscala.jquery.dsl.jQuerySelector
 import org.hyperscala.jquery.jQuery
 import org.hyperscala.javascript.dsl.Statement
+import com.outr.net.http.session.Session
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
 class jCanvas(selector: jQuerySelector) {
-  Webpage().require(jCanvas)
-
   def drawArc(strokeStyle: StrokeStyle = null,
               strokeWidth: StrokeWidth = null,
               x: X = null,
@@ -45,12 +44,11 @@ object jCanvas extends Module {
 
   override def dependencies = List(InterfaceWithDefault(jQuery, jQuery.Latest), Realtime)
 
-  def init() = {
-    Website().register("/js/jcanvas.min.js", "jcanvas.min.js")
+  override def init[S <: Session](website: Website[S]) = {
+    website.register("/js/jcanvas.min.js", "jcanvas.min.js")
   }
 
-  def load() = {
-    val page = Webpage()
-    page.head.contents += new tag.Script(mimeType = "text/javascript", src = "/js/jcanvas.min.js")
+  override def load[S <: Session](webpage: Webpage[S]) = {
+    webpage.head.contents += new tag.Script(mimeType = "text/javascript", src = "/js/jcanvas.min.js")
   }
 }

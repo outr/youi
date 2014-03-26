@@ -10,7 +10,3 @@ trait HTMLPage extends Page {
   def head: tag.Head
   def body: tag.Body
 }
-
-object HTMLPage {
-  def apply() = Page().asInstanceOf[HTMLPage]
-}

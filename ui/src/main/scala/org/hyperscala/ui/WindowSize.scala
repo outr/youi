@@ -4,10 +4,11 @@ import org.hyperscala.html._
 import org.hyperscala.module.Module
 import org.powerscala.Version
 import org.hyperscala.realtime.Realtime
-import org.hyperscala.web.Webpage
+import org.hyperscala.web.{Website, Webpage}
 import org.hyperscala.javascript.JavaScriptString
 import org.powerscala.event.{Listenable, Intercept}
 import org.powerscala.property.Property
+import com.outr.net.http.session.Session
 
 /**
  * WindowSize maintains the webpage window size when required on a webpage.
@@ -23,24 +24,23 @@ object WindowSize extends Module with Listenable {
   /**
    * Should always reflect the width of the webpage window.
    */
-  def width = Webpage().store.getOrSet("windowWidth", new Property[Int]())
+  def width[S <: Session](webpage: Webpage[S]) = webpage.store.getOrSet("windowWidth", new Property[Int]())
 
   /**
    * Should always reflect the height of the webpage window.
    */
-  def height = Webpage().store.getOrSet("windowHeight", new Property[Int]())
+  def height[S <: Session](webpage: Webpage[S]) = webpage.store.getOrSet("windowHeight", new Property[Int]())
 
-  def init() = {}
+  override def init[S <: Session](website: Website[S]) = {}
 
-  def load() = {
-    val page = Webpage()
-    page.body.eventReceived.on {
+  override def load[S <: Session](webpage: Webpage[S]) = {
+    webpage.body.eventReceived.on {
       case evt => if (evt.event == "window_size") {
         val width = evt.json.int("width")
         val height = evt.json.int("height")
 
-        this.width := width
-        this.height := height
+        this.width(webpage) := width
+        this.height(webpage) := height
 
         Intercept.Stop
       } else {
@@ -54,6 +54,6 @@ object WindowSize extends Module with Listenable {
         | height: windowHeight
         |});
       """.stripMargin
-    WindowSized.resized(JavaScriptString(js))
+    WindowSized.resized(webpage, JavaScriptString(js))
   }
 }

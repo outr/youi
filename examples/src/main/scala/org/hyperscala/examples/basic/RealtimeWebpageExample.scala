@@ -2,16 +2,16 @@ package org.hyperscala.examples.basic
 
 import org.hyperscala.html._
 import org.powerscala.Color
-import org.hyperscala.web.Webpage
 import org.hyperscala.realtime.{RealtimeEvent, Realtime}
 import org.hyperscala.examples.Example
+import org.hyperscala.web._
 import language.reflectiveCalls
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
 class RealtimeWebpageExample extends Example {
-  Webpage().require(Realtime)
+  this.require(Realtime)
 
   var count = 0
   var reversed = false

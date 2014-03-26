@@ -1,6 +1,5 @@
 package org.hyperscala.examples.ui
 
-import org.hyperscala.web.Webpage
 
 import org.hyperscala.html._
 import org.hyperscala.examples.Example
@@ -12,6 +11,8 @@ import org.hyperscala.css.attributes.Position
 import org.hyperscala.javascript.dsl._
 import org.hyperscala.jquery.dsl._
 import org.hyperscala.css.Style
+import org.hyperscala.web._
+import com.outr.net.http.session.Session
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -19,9 +20,12 @@ import org.hyperscala.css.Style
 class ChangeableExample extends Example {
   import ChangeableExample._
 
-  Webpage().require(Changeable)
-  Webpage().require(Realtime)
-  Realtime.connectForm()
+  this.require(Changeable)
+  this.require(Realtime)
+
+  connected[Webpage[Session]] {
+    case webpage => Realtime.connectForm(webpage)
+  }
 
   contents += new tag.P {
     contents += "Changeable module allows the use of a JavaScript DSL to define style changes to be applied a tag."

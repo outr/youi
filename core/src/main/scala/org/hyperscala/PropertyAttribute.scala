@@ -31,7 +31,7 @@ class PropertyAttribute[T](val name: String,
   def shouldRender = include
 
   def write(markup: Markup, writer: HTMLWriter) = if (shouldRender) {
-    val page = markup.root[Page].getOrElse(throw new RuntimeException("Page not found for markup."))
+    val page = markup.root[Page].getOrElse(throw new RuntimeException(s"Page not found for markup ($name = $attributeValue)"))
 //    Page() match {
 //      case null => writer.write(" %s=\"%s\"".format(name, attributeValue))
 //      case page =>

@@ -53,6 +53,7 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication with Lau
     val hello = page(new HyperscalaExample(new HelloWorldPage), Scope.Request, "/example/hello.html")
 //    val numberGuess = page(new HyperscalaExample(new NumberGuess), Scope.Page, "/example/number_guess.html")
     val scoped = page(new HyperscalaExample(ScopedExample), Scope.Application, "/example/scoped.html")
+    val framed = page(new HyperscalaExample(new FramedExample), Scope.Page, "/example/framed.html")
     val connected = page(new HyperscalaExample(new ConnectedExample), Scope.Page, "/example/connected.html")
     val style = page(new StyleSheetExample(HyperscalaSite.this), Scope.Request, "/example/style.html")
     val userAgent = page(new HyperscalaExample(new UserAgentExample), Scope.Request, "/example/user_agent.html")

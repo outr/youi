@@ -1,15 +1,16 @@
 package org.hyperscala.examples.ui
 
 import org.hyperscala.html._
-import org.hyperscala.web.Website
 import org.powerscala.property.Property
 import org.hyperscala.realtime.{RealtimeEvent, Realtime}
 import org.hyperscala.ui.dynamic.{DynamicTagged, DynamicTag, DynamicContent}
 import language.reflectiveCalls
 import org.hyperscala.jquery.dsl._
 import org.powerscala.Unique
-import org.hyperscala.examples.Example
+import org.hyperscala.examples.{ExamplePage, Example}
 import org.hyperscala.web._
+import scala.annotation.tailrec
+import com.outr.net.http.session.Session
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
@@ -46,12 +47,13 @@ class ChatExample extends Example {
   ChatExample.chatHistory.foreach {   // Load history
     case (nick, text) => messages.contents += new ChatEntry(nick, text)
   }
-  updateNickname()
 
-  throw new RuntimeException("Broken!")
+  connected[Webpage[Session]] {
+    case webpage => updateNickname()
+  }
 
   def sendMessage() = {
-//    ChatExample.sendMessage(nickname(), message.value())
+    ChatExample.sendMessage(this.website, nickname(), message.value())
     message.value := ""
     Realtime.send(this.webpage, $(message).focus())
   }
@@ -62,7 +64,7 @@ class ChatExample extends Example {
       case v => v
     }
     if (current != nickname()) {
-//      nickname := ChatExample.generateNick(current)
+      nickname := ChatExample.generateNick(this.website, current)
       chatName.value := nickname()
     }
   }
@@ -74,30 +76,30 @@ object ChatExample {
 
   private var history = List.empty[(String, String)]
 
-//  def instances = Website().sessions.valuesByType[ChatExample].toList
-//  @tailrec
-//  def generateNick(nickname: String, increment: Int = 0): String = {
-//    val nick = increment match {
-//      case 0 => nickname
-//      case _ => "%s%s".format(nickname, increment)
-//    }
-//    if (instances.find(c => c.nickname() == nick).isEmpty) {
-//      nick
-//    } else {
-//      generateNick(nickname, increment + 1)
-//    }
-//  }
-//  def sendMessage(nickname: String, message: String) = synchronized {
-//    Website().pages[ExamplePage].foreach {
-//      case page => page.example match {
-//        case chat: ChatExample => Webpage.contextualize(page) {
-//          chat.messages.contents.insert(0, new ChatEntry(nickname, message))
-//        }
-//        case _ => // Ignore non chat examples
-//      }
-//    }
-//    history = ((nickname, message) :: history).take(20)
-//  }
+  def instances[S <: Session](website: Website[S]) = {
+    implicit val sessionManifest = website.manifest
+    website.pages[ExamplePage[S]].map(p => p.example).collect {
+      case chat: ChatExample => chat
+    }.toList
+  }
+  @tailrec
+  def generateNick[S <: Session](website: Website[S], nickname: String, increment: Int = 0): String = {
+    val nick = increment match {
+      case 0 => nickname
+      case _ => s"$nickname$increment"
+    }
+    if (instances(website).find(c => c.nickname() == nick).isEmpty) {
+      nick
+    } else {
+      generateNick(website, nickname, increment + 1)
+    }
+  }
+  def sendMessage[S <: Session](website: Website[S], nickname: String, message: String) = synchronized {
+    instances(website).foreach {
+      case chat => chat.messages.contents.insert(0, new ChatEntry(nickname, message))
+    }
+    history = ((nickname, message) :: history).take(20)
+  }
   def chatHistory = history
 }
 

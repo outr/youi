@@ -10,8 +10,6 @@ import org.hyperscala.event.MouseWheelEvent
  * @author Matt Hicks <matt@outr.com>
  */
 package object jquery {
-  implicit def jqs2zoomooz(s: jQuerySelector) = new Zoomooz(s)
-
   implicit def jqs2MouseWheel(s: jQuerySelector) = new jQueryMouseWheel(s)
 
   def deferTo(other: jQuerySelector, cancel: Boolean = true): JSFunction1[MouseWheelEvent, Boolean] = {

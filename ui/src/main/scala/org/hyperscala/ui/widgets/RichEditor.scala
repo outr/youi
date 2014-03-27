@@ -99,7 +99,7 @@ class RichEditor private(val wrapped: HTMLTag) extends WrappedComponent[HTMLTag]
    *
    * Defaults to true.
    */
-  val inline = Property[Boolean](default = Some(true))
+  lazy val inline = Property[Boolean](default = Some(true))
 
   /**
    * The frequency at which the content is validated for changes in milliseconds. If this is set to 0 the content
@@ -107,35 +107,35 @@ class RichEditor private(val wrapped: HTMLTag) extends WrappedComponent[HTMLTag]
    *
    * Defaults to 1000.
    */
-  val validateFrequency = property[Long]("validateFrequency", 1000)
+  lazy val validateFrequency = property[Long]("validateFrequency", 1000)
 
   /**
    * Whether this editor is read-only.
    *
    * Defaults to false.
    */
-  val readOnly = property[Boolean]("readOnly", false)
+  lazy val readOnly = property[Boolean]("readOnly", false)
 
   /**
    * Reflects the HTML content of the editor.
    *
    * Defaults to the innerHTML value of wrapped.
    */
-  val html = property[String]("html", IdentifiableTag.ignoreIds(wrapped.innerHTML))
+  lazy val html = property[String]("html", IdentifiableTag.ignoreIds(wrapped.innerHTML))
 
   /**
    * Updates the wrapped tag's content when the content is modified if this is set to true.
    *
    * Defaults to false.
    */
-  val updateWrapped = Property[Boolean](default = Some(false))
+  lazy val updateWrapped = Property[Boolean](default = Some(false))
 
   /**
    * Defines whether the native toolbar should be displayed.
    *
    * Defaults to false.
    */
-  val showToolbar = property[Boolean]("showToolbar", false)
+  lazy val showToolbar = property[Boolean]("showToolbar", false)
 
   /**
    * Defines whether the path navigation in the bottom bar should be displayed. This is only applicable when not
@@ -143,41 +143,41 @@ class RichEditor private(val wrapped: HTMLTag) extends WrappedComponent[HTMLTag]
    *
    * Defaults to true.
    */
-  val showPath = property[Boolean]("showPath", true)
+  lazy val showPath = property[Boolean]("showPath", true)
 
   /**
    * Defines whether the resizer in the bottom bar should be displayed. This is only applicable when not inline.
    *
    * Defaults to true.
    */
-  val showResizer = property[Boolean]("showResizer", true)
+  lazy val showResizer = property[Boolean]("showResizer", true)
 
-  val showSaveButton = property[Boolean]("showToolbarButtonsave", true)
-  val showNewPageButton = property[Boolean]("showToolbarButtonnewpage", true)
-  val showPreviewButton = property[Boolean]("showToolbarButtonpreview", true)
-  val showPrintButton = property[Boolean]("showToolbarButtonprint", true)
-  val showTemplatesButton = property[Boolean]("showToolbarButtontemplates", true)
-  val showCutButton = property[Boolean]("showToolbarButtoncut", true)
-  val showCopyButton = property[Boolean]("showToolbarButtoncopy", true)
-  val showPasteButton = property[Boolean]("showToolbarButtonpaste", true)
-  val showPasteTextButton = property[Boolean]("showToolbarButtonpastetext", true)
-  val showPasteFromWordButton = property[Boolean]("showToolbarButtonpastefromword", true)
-  val showUndoButton = property[Boolean]("showToolbarButtonundo", true)
-  val showRedoButton = property[Boolean]("showToolbarButtonredo", true)
-  val showFindButton = property[Boolean]("showToolbarButtonfind", true)
-  val showReplaceButton = property[Boolean]("showToolbarButtonreplace", true)
-  val showSelectAllButton = property[Boolean]("showToolbarButtonselectall", true)
-  val showSpellCheckButton = property[Boolean]("showToolbarButtonscayt", true)
-  val showFormButton = property[Boolean]("showToolbarButtonform", true)
-  val showCheckBoxButton = property[Boolean]("showToolbarButtoncheckbox", true)
-  val showRadioButton = property[Boolean]("showToolbarButtonradio", true)
-  val showTextFieldButton = property[Boolean]("showToolbarButtontextfield", true)
-  val showTextAreaButton = property[Boolean]("showToolbarButtontextarea", true)
-  val showSelectButton = property[Boolean]("showToolbarButtonselect", true)
-  val showButtonButton = property[Boolean]("showToolbarButtonbutton", true)
-  val showImageButtonButton = property[Boolean]("showToolbarButtonimagebutton", true)
-  val showHiddenFieldButton = property[Boolean]("showToolbarButtonhiddenfield", true)
-  val showAboutButton = property[Boolean]("showToolbarButtonabout", true)
+  lazy val showSaveButton = property[Boolean]("showToolbarButtonsave", true)
+  lazy val showNewPageButton = property[Boolean]("showToolbarButtonnewpage", true)
+  lazy val showPreviewButton = property[Boolean]("showToolbarButtonpreview", true)
+  lazy val showPrintButton = property[Boolean]("showToolbarButtonprint", true)
+  lazy val showTemplatesButton = property[Boolean]("showToolbarButtontemplates", true)
+  lazy val showCutButton = property[Boolean]("showToolbarButtoncut", true)
+  lazy val showCopyButton = property[Boolean]("showToolbarButtoncopy", true)
+  lazy val showPasteButton = property[Boolean]("showToolbarButtonpaste", true)
+  lazy val showPasteTextButton = property[Boolean]("showToolbarButtonpastetext", true)
+  lazy val showPasteFromWordButton = property[Boolean]("showToolbarButtonpastefromword", true)
+  lazy val showUndoButton = property[Boolean]("showToolbarButtonundo", true)
+  lazy val showRedoButton = property[Boolean]("showToolbarButtonredo", true)
+  lazy val showFindButton = property[Boolean]("showToolbarButtonfind", true)
+  lazy val showReplaceButton = property[Boolean]("showToolbarButtonreplace", true)
+  lazy val showSelectAllButton = property[Boolean]("showToolbarButtonselectall", true)
+  lazy val showSpellCheckButton = property[Boolean]("showToolbarButtonscayt", true)
+  lazy val showFormButton = property[Boolean]("showToolbarButtonform", true)
+  lazy val showCheckBoxButton = property[Boolean]("showToolbarButtoncheckbox", true)
+  lazy val showRadioButton = property[Boolean]("showToolbarButtonradio", true)
+  lazy val showTextFieldButton = property[Boolean]("showToolbarButtontextfield", true)
+  lazy val showTextAreaButton = property[Boolean]("showToolbarButtontextarea", true)
+  lazy val showSelectButton = property[Boolean]("showToolbarButtonselect", true)
+  lazy val showButtonButton = property[Boolean]("showToolbarButtonbutton", true)
+  lazy val showImageButtonButton = property[Boolean]("showToolbarButtonimagebutton", true)
+  lazy val showHiddenFieldButton = property[Boolean]("showToolbarButtonhiddenfield", true)
+  lazy val showAboutButton = property[Boolean]("showToolbarButtonabout", true)
 
   def showFormButtons(visible: Boolean) = {
     showFormButton := false

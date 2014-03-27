@@ -9,6 +9,9 @@ import org.hyperscala.event.SubmitEvent
 import com.outr.net.http.request.HttpRequest
 import com.outr.net.http.response.HttpResponse
 import com.outr.net.http.session.Session
+import com.outr.net.Method
+import com.outr.net.http.content.FormPostContent
+import com.outr.net.http.HttpParameters
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -16,7 +19,18 @@ import com.outr.net.http.session.Session
 trait FormSupport[S <: Session] extends Webpage[S] {
   override def onReceive(request: HttpRequest, response: HttpResponse) = {
     var form: Form = null
-    request.url.parameters.values.foreach {
+    val parameters = if (request.method == Method.Post) {
+      request.content match {
+        case Some(content) => content match {
+          case fpc: FormPostContent => fpc.parameters
+        }
+        case None => HttpParameters.Empty
+      }
+    } else {
+      request.url.parameters
+    }
+
+    parameters.values.foreach {
       case (key, values) => html.byName[HTMLTag](key).headOption match {
         case Some(t) if t.renderable => {   // Only apply to tags that are rendered to the page
           if (form == null) {

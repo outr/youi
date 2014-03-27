@@ -17,6 +17,7 @@ import com.outr.net.http.session.Session
  */
 class CoordinatesExample extends Example {
   this.require(WindowSize)
+  this.require(Bounding)
 
   contents += new tag.P {
     contents += "Coordinates provides the ability to define an arbitrary coordinate system that can be used to read and set positioning for elements on the screen."

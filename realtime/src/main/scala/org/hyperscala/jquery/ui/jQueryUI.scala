@@ -11,7 +11,7 @@ import com.outr.net.http.session.Session
  * @author Matt Hicks <matt@outr.com>
  */
 object jQueryUI extends Interface {
-  def Latest = jQueryUI1103
+  def Latest = jQueryUI1104
   lazy val LatestWithDefault = InterfaceWithDefault(jQueryUI, Latest)
 
   def name = "jquery-ui"

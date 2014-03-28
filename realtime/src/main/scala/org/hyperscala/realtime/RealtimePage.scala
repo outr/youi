@@ -143,8 +143,10 @@ class RealtimePage[S <: Session] private(page: Webpage[S]) extends Logging {
               }
               val content = child.outputString
               send(JavaScriptMessage(instruction, Some(content)))
-              Markup.rendered(child)                            // Mark child tag as rendered
-              child.byTag[HTMLTag].foreach(Markup.rendered)     // Mark all tags children of child tag as rendered
+              if (page.rendered) {                            // Only do this if the page has already rendered
+                Markup.rendered(child)                        // Mark child tag as rendered
+                child.byTag[HTMLTag].foreach(Markup.rendered) // Mark all tags children of child tag as rendered
+              }
             }
           }
         }

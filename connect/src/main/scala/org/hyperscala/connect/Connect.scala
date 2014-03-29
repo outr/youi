@@ -212,13 +212,12 @@ class Connection[S <: Session](connections: Connections[S]) extends Logging {
     val expectedId = client2ServerId + 1
     if (message.id == expectedId) {
       client2ServerId = expectedId
-//      val context = webpage.website.request          // Get the context for the current thread
+      val website = webpage.website
+      val request = website.request          // Get the request for the current thread
       val f = () => {
-//          Website().contextualize(context) {
-//            Webpage.updateContext(webpage)
-//            connections.messageEvent.fire(this -> message)
-//          }
-          connections.messageEvent.fire(this -> message)
+          website.contextualize(request) {
+            connections.messageEvent.fire(this -> message)
+          }
         }
       connections.actor ! f     // Process receives one at a time via actor
     } else if (message.id < expectedId) {           // We've already seen this one, ignore it

@@ -84,7 +84,7 @@ class Webpage[S <: Session](val website: Website[S]) extends HttpHandler with HT
   def onReceive(request: HttpRequest, response: HttpResponse) = errorSupport {
     val status = HttpResponseStatus.OK
     val content = new HTMLStreamer(html) {
-      override def stream(output: OutputStream) = {
+      override def stream(output: OutputStream) = website.contextualize(request) {
         pageLoading()
         super.stream(output)
         pageLoaded()

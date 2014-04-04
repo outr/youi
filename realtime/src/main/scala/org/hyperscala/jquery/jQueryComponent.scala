@@ -9,6 +9,7 @@ import org.hyperscala.jquery.dsl._
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.javascript.dsl.Statement
 import org.hyperscala.web._
+import com.outr.net.http.session.Session
 
 /**
  * jQueryComponent trait works to provide easier access to making calls to jQuery for extensions like autocomplete and
@@ -21,7 +22,25 @@ trait jQueryComponent extends WrappedComponent[HTMLTag] {
 
   protected def functionName: String
 
-  private def send(statement: Statement[_]) = Realtime.send(wrapped.webpage, statement, Some(selector.selector))
+  private var backlog = List.empty[Statement[_]]
+  private var webpage: Webpage[Session] = _
+  wrapped.connected[Webpage[Session]] {
+    case w => synchronized {
+      backlog.reverse.foreach {
+        case s => Realtime.send(w, s, Some(selector.selector))
+      }
+      webpage = w
+      backlog = Nil
+    }
+  }
+
+  private def send(statement: Statement[_]) = synchronized {
+    if (webpage != null) {
+      Realtime.send(webpage, statement, Some(selector.selector))
+    } else {
+      backlog = statement :: backlog
+    }
+  }
 
   protected def initializeComponent(values: Map[String, Any]) = {
     send(selector.call(functionName, values))
@@ -33,6 +52,11 @@ trait jQueryComponent extends WrappedComponent[HTMLTag] {
 
   def call(function: String) = {
     send(selector.call(s"$functionName('$function')"))
+  }
+
+  def call(function: String, arg: Any) = {
+    val argValue = JavaScriptContent.toJS(arg)
+    send(selector.call(s"$functionName('$function', $argValue)"))
   }
 
   def on(eventType: String, function: JavaScriptContent) = {

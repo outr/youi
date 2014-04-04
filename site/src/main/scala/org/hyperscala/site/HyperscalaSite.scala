@@ -77,6 +77,7 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication with Lau
     val colorPicker = page(new HyperscalaExample(new ColorPickerExample), Scope.Page, "/example/colorpicker.html")
     val visualSearch = page(new HyperscalaExample(new VisualSearchExample), Scope.Page, "/example/visualsearch.html")
     val dialog = page(new HyperscalaExample(new DialogExample), Scope.Page, "/example/dialog.html")
+    val spinner = page(new HyperscalaExample(new SpinnerExample), Scope.Page, "/example/spinner.html")
     val busyDialog = page(new HyperscalaExample(new BusyDialogExample), Scope.Page, "/example/busy_dialog.html")
     val draggable = page(new HyperscalaExample(new DraggableExample), Scope.Page, "/example/draggable.html")
     val droppable = page(new HyperscalaExample(new DroppableExample), Scope.Page, "/example/droppable.html")

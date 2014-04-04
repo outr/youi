@@ -24,14 +24,16 @@ object Select2 extends Module {
   def apply(select: tag.Select,
             formatResult: Option[JavaScriptContent] = None,
             formatSelection: Option[JavaScriptContent] = None,
-            escapeMarkup: Option[JavaScriptContent] = None) = {
+            escapeMarkup: Option[JavaScriptContent] = None,
+            dropdownCssClass: Option[String] = None) = {
     select.require(this)
 
     val id = select.identity
     val options = JavaScriptContent.options(
       JSOption("formatResult", formatResult),
       JSOption("formatSelection", formatSelection),
-      JSOption("escapeMarkup", escapeMarkup)
+      JSOption("escapeMarkup", escapeMarkup),
+      JSOption("dropdownCssClass", dropdownCssClass)
     )
     select.connected[Webpage[Session]] {
       case webpage => Realtime.sendJavaScript(webpage, "$('#%s').select2(%s);".format(id, options), selector = Some(Selector.id(id)), onlyRealtime = false)

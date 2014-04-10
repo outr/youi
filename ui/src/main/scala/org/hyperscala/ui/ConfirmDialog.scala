@@ -42,9 +42,10 @@ abstract class ConfirmDialog extends tag.Div {
 }
 
 object ConfirmDialog {
-  def show[S <: Session](webpage: Webpage[S], message: BodyChild, windowTitle: String = "Confirm", acceptText: String = "Accept", cancelText: String = "Cancel")(accepted: => Unit) = {
+  def show[S <: Session](webpage: Webpage[S], message: BodyChild, windowTitle: String = "Confirm", acceptText: String = "Accept", cancelText: String = "Cancel", modal: Boolean = true)(accepted: => Unit) = {
     val dialog = new ConfirmDialog {
       dialog.title := windowTitle
+      dialog.modal := modal
 
       override def accept = acceptText
       override def cancel = cancelText

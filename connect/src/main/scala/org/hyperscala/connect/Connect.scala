@@ -37,6 +37,7 @@ object Connect extends Module with Logging {
     val InvalidRequest = 1
     val PageNotFound = 2
     val ConnectionNotFound = 3
+    val NoContent = 4
   }
 
   override def dependencies = List(jQuery.LatestWithDefault)
@@ -90,41 +91,43 @@ object Connect extends Module with Logging {
 }
 
 class ConnectHandler[S <: Session](website: Website[S])(implicit manifest: Manifest[S]) extends HttpHandler {
-  def onReceive(request: HttpRequest, response: HttpResponse) = {
-    val content = request.contentString.get
-    val jsonOption = request.url.filename match {
-      case "receive" => content.decodeOption[ReceiveRequest]
-      case "send" => content.decodeOption[SendRequest]
-    }
-    jsonOption match {
-      case Some(json) => {
-        website.pages.byId[Webpage[S]](json.pageId) match {
-          case Some(page) => {
-            page.checkIn()                      // Let the page know it's still in-use
-            val conns = Connect.connections(page)
-            conns.byId(json.connectionId) match {
-              case Some(connection) => request.url.filename match {
-                case "receive" => {
-                  val receive = json.asInstanceOf[ReceiveRequest]
-                  connection.receive(response, receive.resend)
-                }
-                case "send" => {
-                  val send = json.asInstanceOf[SendRequest]
-                  send.messages.foreach {
-                    case message => connection.send2Server(message)
-                  }
-                  val r = SendResponse("OK")
-                  response.copy(content = StringContent(r.asJson.spaces2), status = HttpResponseStatus.OK)
-                }
-              }
-              case None => Connect.createError(response, Connect.Error.ConnectionNotFound, "Connection not found")
-            }
-          }
-          case None => Connect.createError(response, Connect.Error.PageNotFound, s"Page not found (id: ${json.pageId})")
-        }
+  def onReceive(request: HttpRequest, response: HttpResponse) = request.contentString match {
+    case Some(content) => {
+      val jsonOption = request.url.filename match {
+        case "receive" => content.decodeOption[ReceiveRequest]
+        case "send" => content.decodeOption[SendRequest]
       }
-      case None => Connect.createError(response, Connect.Error.InvalidRequest, s"JSON ${request.url.filename} data was invalid. Actual content: [$content]")
+      jsonOption match {
+        case Some(json) => {
+          website.pages.byId[Webpage[S]](json.pageId) match {
+            case Some(page) => {
+              page.checkIn() // Let the page know it's still in-use
+              val conns = Connect.connections(page)
+              conns.byId(json.connectionId) match {
+                case Some(connection) => request.url.filename match {
+                  case "receive" => {
+                    val receive = json.asInstanceOf[ReceiveRequest]
+                    connection.receive(response, receive.resend)
+                  }
+                  case "send" => {
+                    val send = json.asInstanceOf[SendRequest]
+                    send.messages.foreach {
+                      case message => connection.send2Server(message)
+                    }
+                    val r = SendResponse("OK")
+                    response.copy(content = StringContent(r.asJson.spaces2), status = HttpResponseStatus.OK)
+                  }
+                }
+                case None => Connect.createError(response, Connect.Error.ConnectionNotFound, "Connection not found")
+              }
+            }
+            case None => Connect.createError(response, Connect.Error.PageNotFound, s"Page not found (id: ${json.pageId})")
+          }
+        }
+        case None => Connect.createError(response, Connect.Error.InvalidRequest, s"JSON ${request.url.filename} data was invalid. Actual content: [$content]")
+      }
     }
+    case None => Connect.createError(response, Connect.Error.NoContent, "No content was sent in the request.")
   }
 }
 

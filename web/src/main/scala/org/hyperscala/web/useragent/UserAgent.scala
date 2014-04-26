@@ -1,7 +1,7 @@
 package org.hyperscala.web.useragent
 
 import org.powerscala.Version
-import org.hyperscala.web.{Website, Webpage}
+import org.hyperscala.web.Webpage
 import net.sf.uadetector.service.UADetectorServiceFactory
 import net.sf.uadetector.{UserAgentType, VersionNumber, ReadableUserAgent}
 import com.outr.net.http.session.Session
@@ -12,7 +12,8 @@ import com.outr.net.http.session.Session
 object UserAgent {
   private var cache = Map.empty[String, ReadableUserAgent]
 
-  def apply[S <: Session](webpage: Webpage[S]) = webpage.store.getOrSet("userAgentModule", new UserAgent(webpage.website))
+  def apply[S <: Session](webpage: Webpage[S]) = webpage.store.getOrSet("userAgentModule", new UserAgent(webpage.website.request.headers.UserAgent.getOrElse(throw new NullPointerException(s"User-Agent was not supplied: ${webpage.website.request.headers.values.keySet}"))))
+  def apply(userAgent: String) = new UserAgent(userAgent)
 
   private def parse(userAgent: String) = synchronized {
     cache.get(userAgent) match {
@@ -26,8 +27,7 @@ object UserAgent {
   }
 }
 
-class UserAgent[S <: Session] private(website: Website[S]) {
-  val userAgent = website.request.headers.UserAgent.getOrElse(throw new NullPointerException(s"User-Agent was not supplied: ${website.request.headers.values.keySet}"))
+class UserAgent private(userAgent: String) {
   val agent = UserAgent.parse(userAgent)
 
   val browser = Browser(

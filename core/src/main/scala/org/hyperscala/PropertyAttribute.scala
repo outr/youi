@@ -31,15 +31,15 @@ class PropertyAttribute[T](val name: String,
   def shouldRender = include
 
   def write(markup: Markup, writer: HTMLWriter) = if (shouldRender) {
-    val page = markup.root[Page].getOrElse(throw new RuntimeException(s"Page not found for markup ($name = $attributeValue)"))
-//    Page() match {
-//      case null => writer.write(" %s=\"%s\"".format(name, attributeValue))
-//      case page =>
-      page.intercept.renderAttribute.fire(PropertyAttribute.this) match {
-        case Some(pa) if pa() != null => writer.write(" %s=\"%s\"".format(pa.name, persister.toString(pa().asInstanceOf[T], pa.name, manifest.runtimeClass)))
-        case _ => // Told not to render by intercept
+    markup.root[Page] match {
+      case Some(page) => {
+        page.intercept.renderAttribute.fire(PropertyAttribute.this) match {
+          case Some(pa) if pa() != null => writer.write(" %s=\"%s\"".format(pa.name, persister.toString(pa().asInstanceOf[T], pa.name, manifest.runtimeClass)))
+          case _ => // Told not to render by intercept
+        }
       }
-//    }
+      case None => writer.write(" %s=\"%s\"".format(name, persister.toString(apply(), name, manifest.runtimeClass)))
+    }
   }
 
   def read(markup: Markup, newValue: String) = {

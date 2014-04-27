@@ -12,11 +12,11 @@ import org.hyperscala.web._
 class RealtimeExample extends Example {
   this.require(Realtime)
 
-  contents += new tag.Button(content = "Click Me!") {
+  contents += new tag.Button(id = "button", content = "Click Me!") {
     clickEvent := RealtimeEvent()
 
     clickEvent.on {
-      case evt => info("I've been clicked!")
+      case evt => info(s"I've been clicked! Target: ${evt.target.map(t => t.identity)}")
     }
   }
 }

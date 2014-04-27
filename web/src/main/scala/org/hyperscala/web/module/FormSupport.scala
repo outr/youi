@@ -41,7 +41,7 @@ trait FormSupport[S <: Session] extends Webpage[S] {
           }
           val v = values.toArray.map(o => o.toString)
           t match {
-            case button: tag.Button => button.submitEvent.fire(new SubmitEvent(button))
+            case button: tag.Button => button.submitEvent.fire(new SubmitEvent(button, Some(button)))
             case _ => t.formValue := v.head
           }
         }
@@ -49,7 +49,7 @@ trait FormSupport[S <: Session] extends Webpage[S] {
       }
     }
     if (form != null) {
-      form.submitEvent.fire(new SubmitEvent(form))
+      form.submitEvent.fire(new SubmitEvent(form, Some(form)))
     }
 
     super.onReceive(request, response)

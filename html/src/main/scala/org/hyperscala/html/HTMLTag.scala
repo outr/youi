@@ -247,7 +247,8 @@ trait HTMLTag extends IdentifiableTag {
 
   override def receive(event: String, json: JsonObject) = event match {
     case JavaScriptEvent(creator) => {
-      val evt = creator(this)
+      val target = json.stringOption("target").map(id => root[tag.Body].get.byId[HTMLTag](id)).flatten
+      val evt = creator(this, target)
       fire(evt)
     }
     case "keydown" | "keyup" | "keypress" => {  // Fires key events on this tag
@@ -261,7 +262,8 @@ trait HTMLTag extends IdentifiableTag {
       val metaKey = json.boolean("metaKey")
       val repeat = json.boolean("repeat")
       val shiftKey = json.boolean("shiftKey")
-      val evt = JavaScriptEvent.createKeyEvent(this, eventType, altKey, char, ctrlKey, key, locale, location, metaKey, repeat, shiftKey)
+      val target = json.stringOption("target").map(id => root[tag.Body].get.byId[HTMLTag](id)).flatten
+      val evt = JavaScriptEvent.createKeyEvent(this, target, eventType, altKey, char, ctrlKey, key, locale, location, metaKey, repeat, shiftKey)
       fire(evt)
     }
     case _ => super.receive(event, json)

@@ -33,23 +33,23 @@ HyperscalaConnect.on('jquery.call', function(data) {
  */
 function realtimeEvent(event, data, confirmation, preventDefault, fireChange, onlyLast, delay) {
     try {
+        if (event.srcElement) event.target = event.srcElement;
+
         var element = $(event.currentTarget);
         var id = element.attr('id');
         if (id == null) {
             element = $(event.target);
             id = element.attr('id');
-            if (id == null) {
-                element = $(event.srcElement);
-                id = element.attr('id');
-            }
         }
 
         if (id != null) {
             var eventType = event.type;
             var content = {
-                id: id
+                id: id,
+                target: $(event.target).attr('id')
             };
 
+            // Update the content with specific data
             if ('keydown, keypress, keyup'.indexOf(eventType) != -1) {
                 realtimeUpdateKeyEvent(event, content);
             } else if (eventType == 'change') {
@@ -58,9 +58,9 @@ function realtimeEvent(event, data, confirmation, preventDefault, fireChange, on
 
             var f = function() {
                 if (fireChange) {
-                    realtimeSend(id, 'change', {
+                    realtimeSend(id, 'change', jQuery.extend(content, {
                         value: realtimeChangeEventValue(element)
-                    })
+                    }));
                 }
                 HyperscalaConnect.send(eventType, content);
             };

@@ -41,6 +41,7 @@ object Realtime extends Module with Logging with Listenable {
   }
 
   override def load[S <: Session](webpage: Webpage[S]) = {
+    webpage.head.contents += new tag.Meta(httpEquiv = "expires", content = "0")
     webpage.head.contents += new tag.Script(src = "/js/realtime.js")
     Connect.event[S](webpage) {
       case (connection, message) => received(connection, message)

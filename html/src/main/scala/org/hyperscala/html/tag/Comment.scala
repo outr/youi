@@ -13,7 +13,7 @@ class Comment extends Text {
   }
 
   override protected def writeTag(writer: HTMLWriter) = if (content() != null) {
-    writer.write(s"<!--${content()}-->")
+    writer.write(s"${writer.newLine}<!--${content()}-->")
   }
 
   override def read(xml: Content) = content := xml.asInstanceOf[JDOMComment].getText

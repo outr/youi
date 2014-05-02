@@ -10,6 +10,7 @@ import org.hyperscala.realtime.Realtime
 import org.hyperscala.javascript.dsl.Statement
 import org.hyperscala.web._
 import com.outr.net.http.session.Session
+import scala.collection.mutable.ListBuffer
 
 /**
  * jQueryComponent trait works to provide easier access to making calls to jQuery for extensions like autocomplete and
@@ -22,15 +23,15 @@ trait jQueryComponent extends WrappedComponent[HTMLTag] {
 
   protected def functionName: String
 
-  private var backlog = List.empty[Statement[_]]
+  private lazy val backlog = ListBuffer.empty[Statement[_]]
   private var webpage: Webpage[Session] = _
   wrapped.connected[Webpage[Session]] {
     case w => synchronized {
-      backlog.reverse.foreach {
+      backlog.foreach {
         case s => Realtime.send(w, s, Some(selector.selector))
       }
       webpage = w
-      backlog = Nil
+      backlog.clear()
     }
   }
 
@@ -38,7 +39,7 @@ trait jQueryComponent extends WrappedComponent[HTMLTag] {
     if (webpage != null) {
       Realtime.send(webpage, statement, Some(selector.selector))
     } else {
-      backlog = statement :: backlog
+      backlog += statement
     }
   }
 

@@ -15,6 +15,9 @@ import org.powerscala.StorageComponent
 import scala.language.implicitConversions
 import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.css.attributes.Display
+import com.outr.net.http.session.Session
+import org.hyperscala.html.constraints.BodyChild
+import org.hyperscala.selector.{AttributeMatcher, Selector}
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -32,6 +35,31 @@ object Dialog extends JavaScriptCaller with StorageComponent[Dialog, HTMLTag] {
 
   private val buttonsConverter = (buttons: List[String]) => {
     JavaScriptString(buttons.map(b => s"'$b': function() { realtimeSend($$(this).attr('id'), 'buttonClicked', { 'name': '$b' }); }").mkString("{ ", ", ", " }"))
+  }
+
+  def show[S <: Session](webpage: Webpage[S], title: String, content: BodyChild, width: Int = 300, height: Int = -1, modal: Boolean = true, buttons: List[String] = null)(f: String => Unit) = {
+    webpage.body.contents += content
+    val dialog = Dialog(content)
+    dialog.title := title
+    dialog.autoOpen := true
+    dialog.buttons := buttons
+    dialog.width := width
+    dialog.height := height
+    dialog.modal := modal
+    dialog.buttonEvent.on {
+      case evt => {
+        f(evt.name)
+        dialog.close()
+        closed()
+      }
+    }
+    dialog.closeEvent.on {
+      case evt => closed()
+    }
+
+    def closed() = {
+      Realtime.sendJavaScript(webpage, s"$$('${dialog.dialogSelector.value}').remove();")
+    }
   }
 }
 
@@ -62,6 +90,8 @@ class Dialog private(val wrapped: HTMLTag) extends jQueryComponent {
   val width = property("width", 300)
 
   val isOpen = Property[Boolean](default = Option(false))
+
+  lazy val dialogSelector = Selector.attribute(null, "aria-describedby", AttributeMatcher.exactly, wrapped.identity)
 
   def open() = {
     call("open")

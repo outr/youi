@@ -16,7 +16,6 @@ import org.hyperscala.examples.snapsvg.SnapSVGExample
 import com.outr.net.http.session.MapSession
 import com.outr.net.http.jetty.JettyApplication
 import com.outr.net.http.request.HttpRequest
-import com.outr.launcher.Launchable
 import org.hyperscala.examples.connect.ConnectExample
 import org.hyperscala.examples.service.TestService
 import com.outr.net.http.filter.PathFilter
@@ -25,7 +24,7 @@ import org.hyperscala.hello.HelloSite
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-object HyperscalaSite extends Website[MapSession] with JettyApplication with Launchable {
+object HyperscalaSite extends Website[MapSession] with JettyApplication {
   // Setup file logging
   Logger.configure("root") {
     case l => {

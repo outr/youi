@@ -10,7 +10,7 @@ import org.powerscala.Unique
 import org.hyperscala.examples.{ExamplePage, Example}
 import org.hyperscala.web._
 import scala.annotation.tailrec
-import com.outr.net.http.session.Session
+import com.outr.net.http.session.{MapSession, Session}
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
@@ -28,6 +28,7 @@ class ChatExample extends Example {
 
   val chatName = chatMain.load[tag.Input]("chatName")
   val message = chatMain.load[tag.TextArea]("chatMessage")
+  message.autoFocus := true
   val submit = chatMain.load[tag.Button]("submit")
   val messages = chatMain.load[tag.Div]("messages")
 
@@ -53,20 +54,27 @@ class ChatExample extends Example {
   }
 
   def sendMessage() = {
-    ChatExample.sendMessage(this.website, nickname(), message.value())
+    if (message.value() != null && message.value().nonEmpty) {
+      ChatExample.sendMessage(this.website, nickname(), message.value())
+    }
     message.value := ""
     Realtime.send(this.webpage, $(message).focus())
   }
 
   def updateNickname() = {
+    val website = this.website[MapSession]
+    val sessionNickname = website.session.getOrElse[String]("chatNickname", null)
     val current = chatName.value() match {
-      case "" => "guest"
+      case "" | null => website.session.getOrElse[String]("chatNickname", "guest")
       case v => v
     }
-    if (current != nickname()) {
-      nickname := ChatExample.generateNick(this.website, current)
-      chatName.value := nickname()
+    if (current != nickname() && current != sessionNickname) {
+      nickname := ChatExample.generateNick(website, current)
+    } else {
+      nickname := current
     }
+    chatName.value := nickname()
+    website.session("chatNickname") = nickname()
   }
 }
 

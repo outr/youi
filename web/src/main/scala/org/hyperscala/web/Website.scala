@@ -32,7 +32,7 @@ abstract class Website[S <: Session](implicit val manifest: Manifest[S]) extends
    */
   lazy val pages = new Pages[S](this)
 
-  def init() = {
+  def init(): Unit = {
     handlers += CachedHandler               // Add caching support
     handlers += new ErrorHandler(this)      // Add error handling support - calls errorPage if there's an error with no content
     pageError.on {                          // Default logging of errors on a page

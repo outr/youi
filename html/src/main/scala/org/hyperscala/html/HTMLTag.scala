@@ -7,7 +7,6 @@ import org.hyperscala.css.StyleSheet
 import scala.collection.{Map => ScalaMap}
 import org.powerscala.property.{ListSetProperty, Property}
 import org.hyperscala.event._
-import org.hyperscala.event.processor._
 import org.jdom2.Attribute
 import org.hyperscala.selector.{PseudoClass, Selector, TagIdSelector}
 import scala.collection.immutable.ListSet
@@ -18,7 +17,7 @@ import org.hyperscala.io.HTMLWriter
  * NOTE: This file has been generated. Do not modify directly!
  * @author Matt Hicks <matt@outr.com>
  */
-trait HTMLTag extends IdentifiableTag {
+trait HTMLTag extends IdentifiableTag with AriaSupport with EventSupport {
   lazy val accessKey = PropertyAttribute[Char]("accesskey", -1.toChar)
   lazy val clazz = new PropertyAttribute[ListSet[String]]("class", ListSet.empty) with ListSetProperty[String]
   lazy val contentEditable = PropertyAttribute[ContentEditable]("contenteditable", null)
@@ -32,76 +31,6 @@ trait HTMLTag extends IdentifiableTag {
   lazy val spellCheck = PropertyAttribute[Boolean]("spellcheck", false)
   lazy val tabIndex = PropertyAttribute[Int]("tabindex", -1)
   lazy val titleText = PropertyAttribute[String]("title", null)
-
-  lazy val afterPrintEvent = new AfterPrintEventProcessor()
-  lazy val beforePrintEvent = new BeforePrintEventProcessor()
-  lazy val beforeOnLoadEvent = new BeforeOnLoadEventProcessor()
-  lazy val hasChangeEvent = new HasChangeEventProcessor()
-  lazy val loadEvent = new LoadEventProcessor()
-  lazy val messageEvent = new MessageEventProcessor()
-  lazy val offlineEvent = new OfflineEventProcessor()
-  lazy val onlineEvent = new OnlineEventProcessor()
-  lazy val pageHideEvent = new PageHideEventProcessor()
-  lazy val pageShowEvent = new PageShowEventProcessor()
-  lazy val popStateEvent = new PopStateEventProcessor()
-  lazy val redoEvent = new RedoEventProcessor()
-  lazy val resizeEvent = new ResizeEventProcessor()
-  lazy val storageEvent = new StorageEventProcessor()
-  lazy val undoEvent = new UndoEventProcessor()
-  lazy val unLoadEvent = new UnLoadEventProcessor()
-  lazy val blurEvent = new BlurEventProcessor()
-  lazy val changeEvent = new ChangeEventProcessor()
-  lazy val contextMenuEvent = new ContextMenuEventProcessor()
-  lazy val focusEvent = new FocusEventProcessor()
-  lazy val formChangeEvent = new FormChangeEventProcessor()
-  lazy val formInputEvent = new FormInputEventProcessor()
-  lazy val inputEvent = new InputEventProcessor()
-  lazy val invalidEvent = new InvalidEventProcessor()
-  lazy val resetEvent = new ResetEventProcessor()
-  lazy val selectEvent = new SelectEventProcessor()
-  lazy val submitEvent = new SubmitEventProcessor()
-  lazy val keyDownEvent = new KeyDownEventProcessor()
-  lazy val keyPressEvent = new KeyPressEventProcessor()
-  lazy val keyUpEvent = new KeyUpEventProcessor()
-  lazy val clickEvent = new ClickEventProcessor()
-  lazy val doubleClickEvent = new DoubleClickEventProcessor()
-  lazy val dragEvent = new DragEventProcessor()
-  lazy val dragEndEvent = new DragEndEventProcessor()
-  lazy val dragEnterEvent = new DragEnterEventProcessor()
-  lazy val dragLeaveEvent = new DragLeaveEventProcessor()
-  lazy val dragOverEvent = new DragOverEventProcessor()
-  lazy val dragStartEvent = new DragStartEventProcessor()
-  lazy val dropEvent = new DropEventProcessor()
-  lazy val mouseDownEvent = new MouseDownEventProcessor()
-  lazy val mouseMoveEvent = new MouseMoveEventProcessor()
-  lazy val mouseOutEvent = new MouseOutEventProcessor()
-  lazy val mouseOverEvent = new MouseOverEventProcessor()
-  lazy val mouseUpEvent = new MouseUpEventProcessor()
-  lazy val mouseWheelEvent = new MouseWheelEventProcessor()
-  lazy val scrollEvent = new ScrollEventProcessor()
-  lazy val abortEvent = new AbortEventProcessor()
-  lazy val canPlayEvent = new CanPlayEventProcessor()
-  lazy val canPlayThroughEvent = new CanPlayThroughEventProcessor()
-  lazy val durationChangeEvent = new DurationChangeEventProcessor()
-  lazy val emptiedEvent = new EmptiedEventProcessor()
-  lazy val endedEvent = new EndedEventProcessor()
-  lazy val errorEvent = new ErrorEventProcessor()
-  lazy val loadedDataEvent = new LoadedDataEventProcessor()
-  lazy val loadedMetaDataEvent = new LoadedMetaDataEventProcessor()
-  lazy val loadStartEvent = new LoadStartEventProcessor()
-  lazy val pauseEvent = new PauseEventProcessor()
-  lazy val playEvent = new PlayEventProcessor()
-  lazy val playingEvent = new PlayingEventProcessor()
-  lazy val progressEvent = new ProgressEventProcessor()
-  lazy val rateChangeEvent = new RateChangeEventProcessor()
-  lazy val readyStateChangeEvent = new ReadyStateChangeEventProcessor()
-  lazy val seekedEvent = new SeekedEventProcessor()
-  lazy val seekingEvent = new SeekingEventProcessor()
-  lazy val stalledEvent = new StalledEventProcessor()
-  lazy val suspendEvent = new SuspendEventProcessor()
-  lazy val timeUpdateEvent = new TimeUpdateEventProcessor()
-  lazy val volumeChangeEvent = new VolumeChangeEventProcessor()
-  lazy val waitingEvent = new WaitingEventProcessor()
 
   protected def init(name: String = null,
            accessKey: java.lang.Character = null,

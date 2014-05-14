@@ -5,7 +5,7 @@ package org.hyperscala.persistence
  */
 object IntPersistence extends ValuePersistence[Int] {
   def fromString(s: String, name: String, clazz: Class[_]) = s.collect {
-    case c if (c.isDigit) => c
+    case c if c.isDigit | c == '-' => c
   } match {
     case "" => 0
     case v => v.toInt

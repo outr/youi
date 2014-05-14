@@ -3,7 +3,7 @@ package org.hyperscala.io
 import org.hyperscala.web.Webpage
 import org.hyperscala.html.HTMLTag
 import org.hyperscala.{PropertyAttribute, Container}
-import org.hyperscala.html.tag.{Text, Title}
+import org.hyperscala.html.tag.{Comment, Text, Title}
 import org.hyperscala.css.StyleSheetAttribute
 import org.hyperscala.javascript.{EventProperty, JavaScriptString}
 import org.hyperscala.css.attributes.Length
@@ -36,10 +36,11 @@ abstract class ScalaBuffer {
     if (tag.render) {
       tag match {
         case title: Title => writeLine("title := \"%s\"".format(title.content()))
+        case comment: Comment => writeLine(s"contents += new tag.Comment(${createWrappedString(comment.content())})", prefix)
         case text: Text if text.content() != null && text.content().trim.length > 0 => writeLine("contents += %s".format(createWrappedString(text.content())), prefix)
         case _ => {
           val attributes = tag.xmlAttributes.collect {
-            case a: PropertyAttribute[_] if a.shouldRender && !a.isInstanceOf[EventProperty] && !a.isInstanceOf[StyleSheetAttribute[_]] && a() != null && !a.name.startsWith("data-") => {
+            case a: PropertyAttribute[_] if a.shouldRender && !a.isInstanceOf[EventProperty] && !a.isInstanceOf[StyleSheetAttribute[_]] && a() != null && !a.name.startsWith("data-") && !a.name.startsWith("aria-") => {
               "%s = %s".format(namify(tag, a), valuify(tag, a.name, a()))
             }
           }.mkString(", ")
@@ -88,21 +89,26 @@ abstract class ScalaBuffer {
       }
       case _ => // Ignore
     }
-    tag.dataAttributes.foreach {
-      case a: PropertyAttribute[_] => {
-        writeLine(s"""data("${a.name.substring(5)}", ${valuify(tag, a.name, a())})""")
-      }
-    }
     // Write event data
     tag.xmlAttributes.foreach {
       case a: PropertyAttribute[_] with EventProperty if a.shouldRender => {
         writeLine("event.%s := %s".format(a.name.substring(2), valuify(tag, a.name, a())), prefix)
+      }
+      case a: PropertyAttribute[_] if a.shouldRender && a.name.startsWith("aria-") => {
+        writeLine(s"${namify(tag, a)} := ${valuify(tag, a.name, a())}", prefix)
       }
       case a: PropertyAttribute[_] if a.shouldRender && all => {
         // Write out attributes that could be in constructor - used in <body>
         writeLine(s"${namify(tag, a)} := ${valuify(tag, a.name, a())}", prefix)
       }
       case _ => // Ignore
+    }
+
+    // Write data attributes
+    tag.dataAttributes.foreach {
+      case a: PropertyAttribute[_] => {
+        writeLine(s"""data("${a.name.substring(5)}", ${valuify(tag, a.name, a())})""")
+      }
     }
   }
 

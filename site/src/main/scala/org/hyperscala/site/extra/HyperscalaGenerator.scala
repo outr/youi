@@ -11,12 +11,16 @@ import com.outr.net.{Method, URL}
 import com.outr.net.http.content.{InputStreamContent, ContentType, StringContent}
 import org.powerscala.IO
 import scala.util.parsing.json.{JSONFormat, JSONObject}
+import org.hyperscala.jquery.Gritter
+import org.jdom2.input.JDOMParseException
+import org.hyperscala.html.tag.Comment
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
 class HyperscalaGenerator extends HyperscalaPage {
   require(Realtime)
+  require(Gritter)
 
   Realtime.connectStandard(this)
 
@@ -25,6 +29,7 @@ class HyperscalaGenerator extends HyperscalaPage {
   val text = new tag.TextArea(clazz = List("code_generator"))
   val createGist = new tag.Input(inputType = InputType.CheckBox, checked = true)
   val cleanHTML = new tag.Input(inputType = InputType.CheckBox, checked = false)
+  val removeComments = new tag.Input(inputType = InputType.CheckBox, checked = true)
   val rootIdInput = new tag.Input(clazz = List("code_generator"))
 
   main.contents += new tag.H1(content = "Hyperscala Code Generator")
@@ -52,6 +57,10 @@ class HyperscalaGenerator extends HyperscalaPage {
     contents += cleanHTML
   }
   main.contents += new tag.Label(clazz = List("code_generator")) {
+    contents += "Remove Comments:"
+    contents += removeComments
+  }
+  main.contents += new tag.Label(clazz = List("code_generator")) {
     contents += "Extract ID as root:"
     contents += rootIdInput
     contents += new tag.Em(content = "(Optional)")
@@ -77,22 +86,30 @@ class HyperscalaGenerator extends HyperscalaPage {
         case null | "" => null
         case s => s
       }
-      val html = HTMLToScala.toHTML(source, clean = cleanHTML.checked(), rootId = rootId)
-      val scala = if (packageName != null && className != null) {
-        HTMLToScala.toScala(html, packageName, className)
-      } else {
-        HTMLToScala.toScala(html)
-      }
-      if (createGist.checked()) {
-        val filename = if (className != null) {
-          className
-        } else {
-          "hyperscala_generated"
+      try {
+        val html = HTMLToScala.toHTML(source, clean = cleanHTML.checked(), rootId = rootId)
+        if (removeComments.checked()) {
+          html.byTag[Comment].foreach(_.removeFromParent())
         }
-        val url = createGist(filename, scala)
-        Realtime.sendRedirect(this, url)
-      } else {
-        text.value := scala
+        val scala = if (packageName != null && className != null) {
+          HTMLToScala.toScala(html, packageName, className)
+        } else {
+          HTMLToScala.toScala(html)
+        }
+        if (createGist.checked()) {
+          val filename = if (className != null) {
+            className
+          } else {
+            "hyperscala_generated"
+          }
+          val url = createGist(filename, scala)
+          Realtime.sendRedirect(this, url)
+        } else {
+          text.value := scala
+        }
+      } catch {
+        case exc: JDOMParseException => Gritter.add(this, "Parse Failure", "The content did not resolve to valid XHTML. The HTML content must be able to be loaded as XML. Try enabling 'Clean HTML' or make sure your HTML tags are properly terminating.")
+        case t: Throwable => Gritter.add(this, "Parse Failure", "Unable to parse the supplied content!")
       }
     }
   }

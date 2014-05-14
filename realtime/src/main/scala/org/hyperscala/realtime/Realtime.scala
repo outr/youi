@@ -120,7 +120,7 @@ object Realtime extends Module with Logging with Listenable {
       case field => {
         field.changeEvent := RealtimeEvent()
         field match {
-          case i: tag.Input => field.clickEvent := RealtimeEvent()
+          case i: tag.Input => field.clickEvent := RealtimeEvent(preventDefault = false)
           case _ => // Not an input
         }
       }

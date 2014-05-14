@@ -20,6 +20,7 @@ import org.hyperscala.examples.connect.ConnectExample
 import org.hyperscala.examples.service.TestService
 import com.outr.net.http.filter.PathFilter
 import org.hyperscala.hello.HelloSite
+import org.hyperscala.site.extra.HyperscalaGenerator
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -46,6 +47,7 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication {
   val site = new {
     val about = page(new HyperscalaAbout, Scope.Request, "/about.html", "/")
     val examples = page(new HyperscalaExamples, Scope.Request, "/examples.html")
+    val generator = page(new HyperscalaGenerator, Scope.Page, "/generator.html")
     val documentation = page(new HyperscalaDocumentation, Scope.Request, "/documentation.html")
   }
   val examples = new {

@@ -11,6 +11,7 @@ import org.powerscala.enum.EnumEntry
 
 import org.powerscala.reflect._
 import com.outr.net.http.session.Session
+import scala.collection.immutable.ListSet
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -38,7 +39,7 @@ abstract class ScalaBuffer {
         case text: Text if text.content() != null && text.content().trim.length > 0 => writeLine("contents += %s".format(createWrappedString(text.content())), prefix)
         case _ => {
           val attributes = tag.xmlAttributes.collect {
-            case a: PropertyAttribute[_] if a.shouldRender && !a.isInstanceOf[EventProperty] && !a.isInstanceOf[StyleSheetAttribute[_]] && a() != null => {
+            case a: PropertyAttribute[_] if a.shouldRender && !a.isInstanceOf[EventProperty] && !a.isInstanceOf[StyleSheetAttribute[_]] && a() != null && !a.name.startsWith("data-") => {
               "%s = %s".format(namify(tag, a), valuify(tag, a.name, a()))
             }
           }.mkString(", ")
@@ -80,21 +81,26 @@ abstract class ScalaBuffer {
 
   def writeAttributes(tag: HTMLTag, all: Boolean, prefix: String) = {
     // Write style data
-    throw new RuntimeException("writeAttributes disabled")
-    /*tag.style().properties.foreach {
-      case a: StyleSheetAttribute[_] if (a.shouldRender) => {
-        writeLine("style.%s := %s".format(a.name().replace('-', '.'), valuify(tag, a.name(), a())), prefix)
+//    throw new RuntimeException("writeAttributes disabled")
+    tag.style.attributes.values.foreach {
+      case a: StyleSheetAttribute[_] if a.shouldRender => {
+        writeLine(s"style.${a.style.name} := ${valuify(tag, a.name, a())}", prefix)
       }
       case _ => // Ignore
-    }*/
+    }
+    tag.dataAttributes.foreach {
+      case a: PropertyAttribute[_] => {
+        writeLine(s"""data("${a.name.substring(5)}", ${valuify(tag, a.name, a())})""")
+      }
+    }
     // Write event data
     tag.xmlAttributes.foreach {
-      case a: PropertyAttribute[_] with EventProperty if (a.shouldRender) => {
+      case a: PropertyAttribute[_] with EventProperty if a.shouldRender => {
         writeLine("event.%s := %s".format(a.name.substring(2), valuify(tag, a.name, a())), prefix)
       }
-      case a: PropertyAttribute[_] if (a.shouldRender && all) => {
+      case a: PropertyAttribute[_] if a.shouldRender && all => {
         // Write out attributes that could be in constructor - used in <body>
-        writeLine("%s := %s".format(namify(tag, a), valuify(tag, a.name, a())), prefix)
+        writeLine(s"${namify(tag, a)} := ${valuify(tag, a.name, a())}", prefix)
       }
       case _ => // Ignore
     }
@@ -119,10 +125,10 @@ abstract class ScalaBuffer {
 
   def valuify(tag: HTMLTag, name: String, v: Any) = v match {
     case s: String => "\"%s\"".format(s)
-    case l: List[_] if (name == "class") => "List(%s)".format(l.map(v => "\"%s\"".format(v)).mkString(", "))
+    case l: ListSet[_] if name == "class" => "List(%s)".format(l.map(v => "\"%s\"".format(v)).mkString(", "))
     case js: JavaScriptString => "JavaScriptString(%s)".format(createWrappedString(js.content))
-    case l: Length if (l.name == null && l.value.endsWith("px")) => "%s.px".format(l.pixels)
-    case l: Length if (l.name == null && l.value.endsWith("%")) => "%s.pct".format(l.percent)
+    case l: Length if l.name == null && l.value.endsWith("px") => "%s.px".format(l.pixels)
+    case l: Length if l.name == null && l.value.endsWith("%") => "%s.pct".format(l.percent)
     case e: EnumEntry => "%s.%s".format(e.parent.name, e.name)
     case i: Int => i.toString
     case _ => throw new RuntimeException("Unsupported value: %s.%s (%s: %s)".format(tag.getClass.getName, name, v, v.asInstanceOf[AnyRef].getClass.getName))
@@ -138,10 +144,15 @@ object ScalaBuffer {
       case Some(alias) => alias
       case None => {
         val method = tag.getClass.methods.find {
+          case m if m.name.indexOf('$') != -1 => false
           case m if m.name == "formValue" => false
-          case m if m.returnType.`type`.hasType(classOf[PropertyAttribute[_]]) => m.invoke[AnyRef](tag) == attribute
+          case m if m.returnType.`type`.hasType(classOf[PropertyAttribute[_]]) && m.args.isEmpty => try {
+            m.invoke[AnyRef](tag) eq attribute
+          } catch {
+            case t: Throwable => throw new RuntimeException(s"Failed to invoke ${m.absoluteSignature} on $key.", t)
+          }
           case _ => false
-        }.get
+        }.getOrElse(throw new RuntimeException(s"Unable to find method for $key"))
         attributes += key -> method.name
         method.name
       }
@@ -176,4 +187,14 @@ class ScalaTagBuffer(packageName: String, className: String, baseTag: HTMLTag) e
   }
 
   val code = HTMLToScala.TagTemplate.format(p, className, tagName(baseTag.getClass), b.toString())
+}
+
+class ScalaInstanceBuffer(baseTag: HTMLTag) extends ScalaBuffer {
+  writeAttributes(baseTag, all = true, prefix = null)
+  baseTag match {
+    case container: Container[_] => container.contents.foreach(tag => writeTag(tag.asInstanceOf[HTMLTag]))
+    case _ => // Not a container
+  }
+
+  val code = s"new tag.${tagName(baseTag.getClass)} {\r\n$b}"
 }

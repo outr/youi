@@ -43,6 +43,8 @@ body {
 .menuItem a {
     text-decoration: none;
     color: white;
+    padding-top: 2px;
+    display: inline-block;
 }
 .menuItem a:hover {
     color: #072459;
@@ -58,4 +60,14 @@ h1 {
 h2 {
     font-size: 18pt;
     font-weight: bold;
+}
+
+label.code_generator {
+    display: block;
+    margin: 5px;
+}
+
+textarea.code_generator {
+    width: 873px;
+    height: 400px;
 }

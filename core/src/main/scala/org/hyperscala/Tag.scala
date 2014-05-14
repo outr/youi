@@ -139,9 +139,11 @@ trait Tag extends Markup with AttributeContainer[PropertyAttribute[_]] {
   /**
    * Gets or creates a data attribute (data-<name>) and returns the property attribute.
    */
-  def dataAttribute(name: String) = getAttribute(s"data-$name") match {
-    case Some(propertyAttribute) => propertyAttribute.asInstanceOf[PropertyAttribute[String]]
-    case None => createAttribute[String](s"data-$name", null)
+  def dataAttribute(name: String) = synchronized {
+    getAttribute(s"data-$name") match {
+      case Some(propertyAttribute) => propertyAttribute.asInstanceOf[PropertyAttribute[String]]
+      case None => createAttribute[String](s"data-$name", null)
+    }
   }
 
   def data(name: String) = getAttribute(s"data-$name") match {
@@ -160,9 +162,15 @@ trait Tag extends Markup with AttributeContainer[PropertyAttribute[_]] {
     }
   }
 
+  private var _dataAttributes = List.empty[PropertyAttribute[_]]
+
+  def dataAttributes = _dataAttributes
+
   private def createAttribute[T](name: String, value: T, inclusionMode: InclusionMode = InclusionMode.NotEmpty)
                         (implicit persister: ValuePersistence[T], manifest: Manifest[T]) = {
-    PropertyAttribute[T](name, value, inclusionMode)
+    val a = PropertyAttribute[T](name, value, inclusionMode)
+    _dataAttributes = (a :: _dataAttributes.reverse).reverse
+    a
   }
 
   def byId[T <: Tag](id: String)(implicit manifest: Manifest[T]) = TypeFilteredIterator[T](ParentLike.descendants(this)).find {

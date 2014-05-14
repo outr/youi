@@ -41,6 +41,11 @@ object HTMLToScala {
     b.code
   }
 
+  def toScala(tag: HTMLTag) = {
+    val b = new ScalaInstanceBuffer(tag)
+    b.code
+  }
+
   /*def toInstantiator[T <: HTMLTag](tag: HTMLTag, className: String) = {
     val source = toScala(tag, null, className)
     val file = File.createTempFile("hyperscala", ".scala")

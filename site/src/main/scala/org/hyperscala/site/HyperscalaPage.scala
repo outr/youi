@@ -39,6 +39,7 @@ class HyperscalaPage extends Webpage(HyperscalaSite) with FormSupport[MapSession
     contents += new Bar {
       contents += MenuItem("About", site.site.about.link)
       contents += MenuItem("Examples", site.site.examples.link)
+      contents += MenuItem("Generator", site.site.generator.link)
       contents += MenuItem("Documentation", site.site.documentation.link)
       contents += MenuItem("Project", "https://github.com/darkfrog26/hyperscala/")
     }

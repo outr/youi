@@ -1,8 +1,8 @@
 import sbt._
 
 object Dependencies {
-  val powerScalaVersion = "1.6.4-SNAPSHOT"
-  val outrNetVersion = "1.1.0-SNAPSHOT"
+  val powerScalaVersion = "latest.integration"
+  val outrNetVersion = "latest.integration"
 
   val powerScalaReflect = "org.powerscala" %% "powerscala-reflect" % powerScalaVersion
   val powerScalaHierarchy = "org.powerscala" %% "powerscala-hierarchy" % powerScalaVersion
@@ -17,16 +17,16 @@ object Dependencies {
 //  val launcher = "com.outr.launcher" %% "launcher" % "1.0.0-SNAPSHOT"
 
 //  val servlet = "org.eclipse.jetty.orbit" % "javax.servlet" % "3.0.0.v201112011016"
-  val jettyWebapp = "org.eclipse.jetty" % "jetty-webapp" % "9.0.5.v20130815" % "container"
+  val jettyWebapp = "org.eclipse.jetty" % "jetty-webapp" % "latest.release" % "container"
 
-  val jdom = "org.jdom" % "jdom2" % "2.0.5"
-  val jaxen = "jaxen" % "jaxen" % "1.1.4"
+  val jdom = "org.jdom" % "jdom2" % "latest.release"
+  val jaxen = "jaxen" % "jaxen" % "latest.release"
 
-  val htmlcleaner = "net.sourceforge.htmlcleaner" % "htmlcleaner" % "2.6.1"
+  val htmlcleaner = "net.sourceforge.htmlcleaner" % "htmlcleaner" % "latest.release"
   val akkaActors = "com.typesafe.akka" % "akka-actor_2.10" % "2.2.1"
-  val uaDetector = "net.sf.uadetector" % "uadetector-resources" % "2013.09"
+  val uaDetector = "net.sf.uadetector" % "uadetector-resources" % "latest.release"
 
-  val argonaut = "io.argonaut" %% "argonaut" % "6.0.1"
+  val argonaut = "io.argonaut" %% "argonaut" % "latest.release"
 
-  val scalaTest = "org.scalatest" % "scalatest_2.10" % "2.0.RC2" % "test"
+  val scalaTest = "org.scalatest" %% "scalatest" % "latest.release" % "test"
 }

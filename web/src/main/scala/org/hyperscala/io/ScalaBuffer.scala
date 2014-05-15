@@ -52,6 +52,7 @@ abstract class ScalaBuffer {
           val children = tag match {
             case container: Container[_] if container.contents.nonEmpty => true
             case _ if style.trim.nonEmpty => true
+            case _ if tag.attributes.keys.find(name => name.startsWith("aria-") || name.startsWith("data-")).nonEmpty => true
             case _ => false
           }
           val opening = if (children) {
@@ -97,18 +98,14 @@ abstract class ScalaBuffer {
       case a: PropertyAttribute[_] if a.shouldRender && a.name.startsWith("aria-") => {
         writeLine(s"${namify(tag, a)} := ${valuify(tag, a.name, a())}", prefix)
       }
+      case a: PropertyAttribute[_] if a.shouldRender && a.name.startsWith("data-") => {
+        writeLine(s"""data("${a.name.substring(5)}", ${valuify(tag, a.name, a())})""")
+      }
       case a: PropertyAttribute[_] if a.shouldRender && all => {
         // Write out attributes that could be in constructor - used in <body>
         writeLine(s"${namify(tag, a)} := ${valuify(tag, a.name, a())}", prefix)
       }
       case _ => // Ignore
-    }
-
-    // Write data attributes
-    tag.dataAttributes.foreach {
-      case a: PropertyAttribute[_] => {
-        writeLine(s"""data("${a.name.substring(5)}", ${valuify(tag, a.name, a())})""")
-      }
     }
   }
 

@@ -109,7 +109,10 @@ class HyperscalaGenerator extends HyperscalaPage {
         }
       } catch {
         case exc: JDOMParseException => Gritter.add(this, "Parse Failure", "The content did not resolve to valid XHTML. The HTML content must be able to be loaded as XML. Try enabling 'Clean HTML' or make sure your HTML tags are properly terminating.")
-        case t: Throwable => Gritter.add(this, "Parse Failure", "Unable to parse the supplied content!")
+        case t: Throwable => {
+          Gritter.add(this, "Parse Failure", "Unable to parse the supplied content!")
+          error("Unable to parse the supplied content!", t)
+        }
       }
     }
   }

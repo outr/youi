@@ -14,6 +14,7 @@ import com.outr.net.http.content.{ContentType, StringContent}
 import org.powerscala.log.Logging
 import org.powerscala.event.processor.ModifiableProcessor
 import org.powerscala.event.Listenable
+import org.powerscala.StringUtil
 
 /**
  * Service exposes methods as web service end-points through JSON communication.
@@ -50,11 +51,6 @@ trait Service extends Listenable {
   }
 }
 
-object Service {
-  def toCamelCase(name: String) = "-([a-z])".r.replaceAllIn(name, m => m.group(1).toUpperCase)
-  def fromCamelCase(name: String) = "([A-Z])".r.replaceAllIn(name, m => "-" + m.group(0).toLowerCase)
-}
-
 case class ServiceEndpoint(service: Service, name: String, method: EnhancedMethod) extends HttpHandler with Listenable with Logging {
   def uri = s"${service.basePath}$name"
 
@@ -67,7 +63,7 @@ case class ServiceEndpoint(service: Service, name: String, method: EnhancedMetho
           val map = v.asInstanceOf[Map[String, Any]]
           map.map {
             case (key, value) => {
-              val name = Service.toCamelCase(key)
+              val name = StringUtil.toCamelCase(key)
               method.arg(name) match {
                 case Some(methodArgument) => {
                   val arg = JSONConverter.parseJSON[Any](value)(Manifest.classType[Any](methodArgument.`type`.javaClass))
@@ -86,7 +82,7 @@ case class ServiceEndpoint(service: Service, name: String, method: EnhancedMetho
   def callParameters(params: HttpParameters) = {
     params.values.map {
       case (key, values) => {
-        val name = Service.toCamelCase(key)
+        val name = StringUtil.toCamelCase(key)
         method.arg(name) match {
           case Some(methodArgument) => {
             val value = if (values.isEmpty) {

@@ -17,7 +17,7 @@ import scala.Some
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class Droppable private(val wrapped: HTMLTag) extends jQueryComponent {
+class Droppable private(val wrapped: HTMLTag, val autoInit: Boolean = true) extends jQueryComponent {
   def functionName = "droppable"
 
   val accept = property[Selector]("accept", Selector.all)

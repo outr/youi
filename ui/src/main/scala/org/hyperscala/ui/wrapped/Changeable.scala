@@ -43,7 +43,7 @@ object Changeable extends Module with StorageComponent[Changeable, HTMLTag] {
   }
 }
 
-class Changeable private(val wrapped: HTMLTag) extends jQueryComponent {
+class Changeable private(val wrapped: HTMLTag, val autoInit: Boolean = true) extends jQueryComponent {
   protected def functionName = "changeable"
 
   val frequency = property[Double]("frequency", 0.1, toJS = Changeable.f2js)

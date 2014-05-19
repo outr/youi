@@ -5,7 +5,6 @@ import org.hyperscala.ui.BusyDialog
 import org.hyperscala.html._
 import org.hyperscala.realtime.RealtimeEvent
 import org.hyperscala.jquery.Gritter
-import org.hyperscala.jquery.ui.Dialog
 import org.hyperscala.web._
 
 /**
@@ -18,11 +17,6 @@ class BusyDialogExample extends Example {
   contents += new tag.P {
     contents += "BusyDialog module expands on jQuery UI's Dialog to provide a convenient popup with an indeterminate progressbar in order to give a visual indication of a wait-state."
   }
-
-  val div = new tag.Div(id = "helloDiv", content = "Hello World!")
-  contents += div
-  val dialog = Dialog(div)
-  dialog.autoOpen := false
 
   contents += new tag.Button(content = "Wait for nothing...") {
     clickEvent := RealtimeEvent()

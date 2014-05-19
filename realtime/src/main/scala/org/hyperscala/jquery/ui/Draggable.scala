@@ -9,7 +9,7 @@ import org.hyperscala.selector.Selector
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class Draggable private(val wrapped: HTMLTag) extends jQueryComponent {
+class Draggable private(val wrapped: HTMLTag, val autoInit: Boolean = true) extends jQueryComponent {
   def functionName = "draggable"
 
   val addClasses = property[Boolean]("addClasses", true)

@@ -31,13 +31,7 @@ object BusyDialog extends Module {
     }
     webpage.body.contents += div
 
-    val dialog = Dialog(div)
-    dialog.autoOpen := false
-    dialog.closeOnEscape := false
-    dialog.modal := true
-    dialog.width := 320
-    dialog.height := 120
-    dialog.resizable := false
+    Dialog.assign(div, autoOpen = false, closeOnEscape = false, modal = true, width = 320, height = 120, resizable = false)
   }
 
   def disabled[T, S <: Session](webpage: Webpage[S])(f: => T): T = {

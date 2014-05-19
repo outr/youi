@@ -14,10 +14,10 @@ import com.outr.net.http.session.Session
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class DropReceiver private(val wrapped: HTMLTag) extends WrappedComponent[HTMLTag] with Listenable {
-  init()
+class DropReceiver private(val wrapped: HTMLTag, val autoInit: Boolean = true) extends WrappedComponent[HTMLTag] with Listenable {
+  initReceiver()
 
-  private def init() = {
+  private def initReceiver() = {
     wrapped.eventReceived.on {
       case evt if evt.event == "dropped" => {
         val types = evt.json.strings("types")

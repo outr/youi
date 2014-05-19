@@ -5,6 +5,7 @@ import org.powerscala.MappedStorage
 import org.hyperscala.javascript.{JavaScriptString, JavaScriptContent}
 import org.powerscala.event.Listenable
 import org.powerscala.property.Property
+import com.outr.net.http.session.Session
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -12,24 +13,30 @@ import org.powerscala.property.Property
 trait WrappedComponent[Tag <: HTMLTag] {
   private val storage = new MappedStorage[String, Any] {}
 
-  @volatile private var _initialized = false
-  def initialized = _initialized
+  @volatile private var _webpage: Webpage[Session] = _
+  protected def webpage = _webpage
+  def initialized = webpage != null
 
   protected def wrapped: Tag
+  protected def autoInit: Boolean
   protected def initializeComponent(values: Map[String, Any]): Unit
   protected def modify(key: String, value: Any): Unit
 
-  wrapped.onBeforeRender {
-    synchronized {
-      if (!_initialized) {
-        initializeComponent(storage.map)
-        _initialized = true
+  if (autoInit) init()
+
+  def init() = {
+    wrapped.connected[Webpage[Session]] {
+      case w => synchronized {
+        if (_webpage == null) {
+          _webpage = w
+          initializeComponent(storage.map)
+        }
       }
     }
   }
 
   def option(key: String, value: Any) = {
-    if (wrapped.rendered) {
+    if (initialized) {
       modify(key, value)
     } else {
       storage(key) = value

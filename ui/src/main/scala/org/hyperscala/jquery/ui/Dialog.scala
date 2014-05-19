@@ -30,8 +30,50 @@ object Dialog extends JavaScriptCaller with StorageComponent[Dialog, HTMLTag] {
     tag.require(Realtime)
     super.apply(tag)
   }
+
+  def assign(tag: HTMLTag,
+             autoOpen: Boolean = true,
+             buttons: List[String] = null,
+             closeOnEscape: Boolean = true,
+             closeText: String = "close",
+             dialogClass: String = "",
+             draggable: Boolean = true,
+             height: Int = -1,
+             hide: EffectInstance = null,
+             maxHeight: Int = -1,
+             maxWidth: Int = -1,
+             minHeight: Int = 150,
+             minWidth: Int = 150,
+             modal: Boolean = false,
+             position: String = "{ my: 'center', at: 'center', of: 'window', collision: 'none' }",
+             resizable: Boolean = true,
+             show: EffectInstance = null,
+             title: String = "Dialog",
+             width: Int = 300) = {
+    val d = new Dialog(tag, autoInit = false)
+    d.autoOpen := autoOpen
+    d.buttons := buttons
+    d.closeOnEscape := closeOnEscape
+    d.closeText := closeText
+    d.dialogClass := dialogClass
+    d.draggable := draggable
+    d.height := height
+    d.hide := hide
+    d.maxHeight := maxHeight
+    d.maxWidth := maxWidth
+    d.minHeight := minHeight
+    d.minWidth := minWidth
+    d.modal := modal
+    d.position := position
+    d.resizable := resizable
+    d.show := show
+    d.title := title
+    d.width := width
+    d.init()
+    set(tag, d)
+  }
   
-  protected def create(tag: HTMLTag) = new Dialog(tag)
+  protected def create(tag: HTMLTag) = new Dialog(tag, autoInit = true)
 
   private val buttonsConverter = (buttons: List[String]) => {
     JavaScriptString(buttons.map(b => s"'$b': function() { realtimeSend($$(this).attr('id'), 'buttonClicked', { 'name': '$b' }); }").mkString("{ ", ", ", " }"))
@@ -63,7 +105,7 @@ object Dialog extends JavaScriptCaller with StorageComponent[Dialog, HTMLTag] {
   }
 }
 
-class Dialog private(val wrapped: HTMLTag) extends jQueryComponent {
+class Dialog private(val wrapped: HTMLTag, val autoInit: Boolean) extends jQueryComponent {
   def functionName = "dialog"
 
   wrapped.style.display := Display.None    // Keep the tag from appearing before it's ready.

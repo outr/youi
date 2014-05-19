@@ -55,7 +55,7 @@ object RichEditor extends Module with StorageComponent[RichEditor, HTMLTag] {
   protected def create(t: HTMLTag) = new RichEditor(t)
 }
 
-class RichEditor private(val wrapped: HTMLTag) extends WrappedComponent[HTMLTag] {
+class RichEditor private(val wrapped: HTMLTag, val autoInit: Boolean = true) extends WrappedComponent[HTMLTag] {
   import RichEditor._
 
   /**
@@ -648,9 +648,9 @@ class RichEditor private(val wrapped: HTMLTag) extends WrappedComponent[HTMLTag]
 
   // TODO: getCommand('bold').state - 0 = disabled, 1 = true, 2 = false
 
-  init()
+  initEditor()
 
-  private def init() = {
+  private def initEditor() = {
     if (inline()) {
       wrapped.contentEditable := ContentEditable.True
     }

@@ -29,7 +29,7 @@ object Spinner extends JavaScriptCaller with StorageComponent[Spinner, tag.Input
   protected def create(input: tag.Input) = new Spinner(input)
 }
 
-class Spinner private(val wrapped: tag.Input) extends jQueryComponent {
+class Spinner private(val wrapped: tag.Input, val autoInit: Boolean = true) extends jQueryComponent {
   def functionName = "spinner"
 
   val value = Property[Double]()

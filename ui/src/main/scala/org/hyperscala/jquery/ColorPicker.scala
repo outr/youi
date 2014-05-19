@@ -51,7 +51,7 @@ object ColorPicker extends Module with JavaScriptCaller with StorageComponent[Co
   protected def create(t: Input) = new ColorPicker(t)
 }
 
-class ColorPicker private(val wrapped: tag.Input) extends jQueryComponent {
+class ColorPicker private(val wrapped: tag.Input, val autoInit: Boolean = true) extends jQueryComponent {
   def functionName = "colorpicker"
 
   // Make sure events fire back to server upon select

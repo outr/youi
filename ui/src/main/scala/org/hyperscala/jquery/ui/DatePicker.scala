@@ -29,6 +29,5 @@ object DatePicker {
     t.connected[Webpage[_ <: Session]] {
       case webpage => Realtime.send(webpage, $(t).call("datepicker()"), Some(Selector.id(t)))
     }
-
   }
 }

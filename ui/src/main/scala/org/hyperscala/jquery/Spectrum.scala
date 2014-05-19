@@ -48,7 +48,7 @@ object Spectrum extends Module with JavaScriptCaller with StorageComponent[Spect
   protected def create(t: Input) = new Spectrum(t)
 }
 
-class Spectrum private(val wrapped: Input) extends jQueryComponent {
+class Spectrum private(val wrapped: Input, val autoInit: Boolean = true) extends jQueryComponent {
   def functionName = "spectrum"
 
   if (wrapped.changeEvent() == null) {

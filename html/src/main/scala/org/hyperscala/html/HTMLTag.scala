@@ -5,11 +5,10 @@ import org.hyperscala._
 import org.hyperscala.html.tag._
 import org.hyperscala.css.StyleSheet
 import scala.collection.{Map => ScalaMap}
-import org.powerscala.property.{ListSetProperty, Property}
+import org.powerscala.property.{ListProperty, Property}
 import org.hyperscala.event._
 import org.jdom2.Attribute
-import org.hyperscala.selector.{PseudoClass, Selector, TagIdSelector}
-import scala.collection.immutable.ListSet
+import org.hyperscala.selector.{ClassSelector, PseudoClass, Selector, TagIdSelector}
 import argonaut.JsonObject
 import org.hyperscala.io.HTMLWriter
 
@@ -19,7 +18,14 @@ import org.hyperscala.io.HTMLWriter
  */
 trait HTMLTag extends IdentifiableTag with AriaSupport with EventSupport {
   lazy val accessKey = PropertyAttribute[Char]("accesskey", -1.toChar)
-  lazy val clazz = new PropertyAttribute[ListSet[String]]("class", ListSet.empty) with ListSetProperty[String]
+  lazy val clazz = new PropertyAttribute[List[String]]("class", Nil) with ListProperty[String] {
+    changing.on {     // Make sure there are no duplicates in clazz
+      case newValue => {
+        newValue.foreach(cn => if (!ClassSelector.isValid(cn)) throw new RuntimeException(s"Invalid class name: $cn in [${newValue.mkString(", ")}]"))
+        Some(newValue.distinct)
+      }
+    }
+  }
   lazy val contentEditable = PropertyAttribute[ContentEditable]("contenteditable", null)
   lazy val contextMenu = PropertyAttribute[String]("contextmenu", null)
   lazy val dir = PropertyAttribute[Direction]("dir", null)

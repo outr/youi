@@ -5,6 +5,7 @@ import org.jdom2.{Text, Content}
 import org.hyperscala.io.HTMLWriter
 import org.powerscala.Color
 import org.powerscala.json.Jsonify
+import org.powerscala.reflect._
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -33,6 +34,10 @@ object JavaScriptContent {
     case s: String => "'%s'".format(s.replaceAll("\n", " ").replaceAll("\r", " ").replaceAll("'", """\\\'"""))
     case l: List[_] => l.map(toJS).mkString("[", ", ", "]")
     case c: Color => s"'${c.hex.rgb}'"
+    case o: JSObject => {
+      val c: EnhancedClass = o.getClass
+      c.caseValues.map(cv => s"${cv.name}: ${toJS(cv(o))}").mkString("{ ", ", ", " }")
+    }
     case _ => v.toString
   }
 

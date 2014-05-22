@@ -100,9 +100,17 @@ case class StringSelector(value: String, override val quoted: Boolean = true) ex
 }
 
 case class ClassSelector(className: String) extends Selector {
+  if (!ClassSelector.isValid(className)) throw new RuntimeException(s"Invalid class selector: $className")
+
   def value = s".$className"
 
   def matches(t: HTMLTag) = t.clazz().contains(className)
+}
+
+object ClassSelector {
+  val Regex = """-?[_a-zA-Z]+[_a-zA-Z0-9-]*"""
+
+  def isValid(className: String) = className.matches(Regex)
 }
 
 case class ElementSelector[T <: HTMLTag](tagType: HTMLTagType[T]) extends Selector {

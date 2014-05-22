@@ -122,6 +122,8 @@ class ClipboardInstance(webpage: Webpage[_ <: Session]) extends Listenable {
 
   def headOption = list.headOption
 
+  def headByType(entryType: String) = list.find(entry => entry.entryType == entryType)
+
   /**
    * Removes all entries from clipboard.
    */

@@ -381,7 +381,7 @@ class StyleSheet(val hierarchicalParent: Listenable,
 }
 
 object StyleSheet {
-  private val StyleRegex = """(?s)([a-zA-Z_0-9\#]+) [{](.+?)[}]""".r
+  private val StyleRegex = """(?s)([\S ]+) [{](.+?)[}]""".r
   lazy val fieldsMap = classOf[StyleSheet].fields.filter(f => f.returnType.hasType(classOf[StyleSheetAttribute[_]])).map(f => f.name -> f).toMap
 
   def styles2Selectors(head: Head, root: HTMLTag) = {
@@ -403,7 +403,7 @@ object StyleSheet {
    */
   def parse(parent: Listenable, css: String) = StyleRegex.findAllIn(css).matchData.toList.map {
     case m => {
-      val ss = new StyleSheet(parent, Selector(m.group(1)))
+      val ss = new StyleSheet(parent, Selector(m.group(1).trim))
       ss(m.group(2))
       ss
     }

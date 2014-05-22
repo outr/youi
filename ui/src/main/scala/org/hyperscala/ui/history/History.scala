@@ -17,6 +17,7 @@ import org.hyperscala.event.Key
 import org.powerscala.enum.{Enumerated, EnumEntry}
 import org.hyperscala.web.useragent.UserAgent
 import com.outr.net.http.session.Session
+import org.hyperscala.javascript.dsl.body
 
 /**
  * History module provides history management functionality to a webpage.

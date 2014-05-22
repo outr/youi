@@ -9,7 +9,7 @@ class SelectorSpec extends WordSpec with Matchers {
   "Selector" when {
     "parsing" should {
       "support simple all selector" in {
-        Selector("*").getClass.getSimpleName should equal("AllSelector$")
+        Selector("*").getClass.getSimpleName should equal("AllSelector")
         Selector("*").value should equal("*")
       }
       "support simple class selector" in {
@@ -26,46 +26,95 @@ class SelectorSpec extends WordSpec with Matchers {
       }
       "support simple descendant selector" in {
         val selector = Selector("#myDiv button")
-        selector.getClass.getSimpleName should equal("DescendantSelector")
-        val ds = selector.asInstanceOf[DescendantSelector]
-        ds.parent.getClass.getSimpleName should equal("IdSelector")
-        ds.child.getClass.getSimpleName should equal("ElementSelector")
 
-        selector.value should equal("#myDiv button")
-        ds.parent.value should equal("#myDiv")
-        ds.child.value should equal("button")
+        val entries = selector.toList
+        entries.length should be(3)
+        val e1 = entries.head
+        e1.thisValue should be("#myDiv")
+        e1.getClass should be(classOf[IdSelector])
+        val e2 = entries.tail.head
+        e2.thisValue should be(" ")
+        e2.getClass should be(classOf[DescendantSelector])
+        val e3 = entries.tail.tail.head
+        e3.thisValue should be("button")
+        e3.getClass should be(classOf[ElementSelector[_]])
+
+        selector.value should be("#myDiv button")
       }
       "support simple child selector" in {
         val selector = Selector(".container > .buttons")
-        selector.getClass.getSimpleName should equal("ChildSelector")
-        val cs = selector.asInstanceOf[ChildSelector]
-        cs.parent.getClass.getSimpleName should equal("ClassSelector")
-        cs.child.getClass.getSimpleName should equal("ClassSelector")
 
-        selector.value should equal(".container > .buttons")
-        cs.parent.value should equal(".container")
-        cs.child.value should equal(".buttons")
+        val entries = selector.toList
+        entries.length should be(3)
+        val e1 = entries.head
+        e1.thisValue should be(".container")
+        e1.getClass should be(classOf[ClassSelector])
+        val e2 = entries.tail.head
+        e2.thisValue should be(" > ")
+        e2.getClass should be(classOf[ChildSelector])
+        val e3 = entries.tail.tail.head
+        e3.thisValue should be(".buttons")
+        e3.getClass should be(classOf[ClassSelector])
+
+        selector.value should be(".container > .buttons")
       }
       "support simple pseudo selector" in {
         val selector = Selector("div:hover")
-        selector.getClass.getSimpleName should equal("PseudoClassSelector")
-        val cs = selector.asInstanceOf[PseudoClassSelector]
-        cs.selector.getClass.getSimpleName should equal("ElementSelector")
 
-        selector.value should equal("div:hover")
-        cs.selector.value should equal("div")
-        cs.clazz should equal(PseudoClass.Hover)
+        val entries = selector.toList
+        entries.length should be(2)
+        val e1 = entries.head
+        e1.thisValue should be("div")
+        e1.getClass should be(classOf[ElementSelector[_]])
+        val e2 = entries.tail.head
+        e2.thisValue should be(":hover")
+        e2.getClass should be(classOf[PseudoClassSelector])
+
+        selector.value should be("div:hover")
       }
       "support simple preceding selector" in {
         val selector = Selector("div + button")
-        selector.getClass.getSimpleName should equal("PrecedingSelector")
-        val cs = selector.asInstanceOf[PrecedingSelector]
-        cs.selector.getClass.getSimpleName should equal("ElementSelector")
-        cs.sibling.getClass.getSimpleName should equal("ElementSelector")
 
-        selector.value should equal("div + button")
-        cs.selector.value should equal("div")
-        cs.sibling.value should equal("button")
+        val entries = selector.toList
+        entries.length should be(3)
+        val e1 = entries.head
+        e1.thisValue should be("div")
+        e1.getClass should be(classOf[ElementSelector[_]])
+        val e2 = entries.tail.head
+        e2.thisValue should be(" + ")
+        e2.getClass should be(classOf[PrecedingSelector])
+        val e3 = entries.tail.tail.head
+        e3.thisValue should be("button")
+        e3.getClass should be(classOf[ElementSelector[_]])
+
+        selector.value should be("div + button")
+      }
+      "support simple Selector.multiple" in {
+        val selector = Selector.multiple(Selector.id("first"), Selector.id("second"))
+
+        val entries = selector.toList
+        entries.length should be(3)
+        entries.head.thisValue should be("#first")
+        entries.tail.head.thisValue should be(", ")
+        entries.tail.tail.head.thisValue should be("#second")
+      }
+      "support complex Selector.multiple" in {
+        val selector = Selector.multiple(Selector("div.test:hover"), Selector("span#other:active"), Selector("#awesome:focus"))
+
+        val entries = selector.toList.toVector
+        entries.length should be(10)
+        entries(0).thisValue should be("div")
+        entries(1).thisValue should be(".test")
+        entries(2).thisValue should be(":hover")
+        entries(3).thisValue should be(", ")
+        entries(4).thisValue should be("span")
+        entries(5).thisValue should be("#other")
+        entries(6).thisValue should be(":active")
+        entries(7).thisValue should be(", ")
+        entries(8).thisValue should be("#awesome")
+        entries(9).thisValue should be(":focus")
+
+        selector.value should be("div.test:hover, span#other:active, #awesome:focus")
       }
     }
   }

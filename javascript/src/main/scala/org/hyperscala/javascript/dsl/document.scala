@@ -7,9 +7,10 @@ import org.hyperscala.selector.Selector
  * @author Matt Hicks <matt@outr.com>
  */
 object document extends DelayedStatement[HTMLTag] with Selector {
-  def value = "document"
+  def thisValue = "document"
+  def parent = None
 
-  def matches(t: HTMLTag) = false
+  def thisMatches(t: HTMLTag) = false
 
   override def quoted = false
 
@@ -22,4 +23,6 @@ object document extends DelayedStatement[HTMLTag] with Selector {
   def writeln(line: Statement[String]) = {
     WrappedStatement[Unit]("document.writeln(", line, ")", sideEffects = true)
   }
+
+  def duplicate(parent: Option[Selector]) = throw new RuntimeException("document cannot be duplicated")
 }

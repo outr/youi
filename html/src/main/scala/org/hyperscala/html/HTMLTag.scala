@@ -81,7 +81,7 @@ trait HTMLTag extends IdentifiableTag with AriaSupport with EventSupport {
   def isStyleDefined = _styleDefined
   lazy val styleProperty = Property[StyleSheet](default = scala.Option(HTMLTag.styleCreator()(this)))
   def style = styleProperty()
-  def style(sub: PseudoClass) = page.head.selector(Selector.pseudo(Selector.id(this), sub))
+  def style(sub: PseudoClass) = page.head.selector(Selector.pseudo(sub, Some(Selector.id(this))))
 
   protected def generateChildFromTagName(name: String): XMLContent = {
     HTMLTag.create(name)

@@ -1,7 +1,7 @@
 package org.hyperscala.realtime
 
 import org.hyperscala.event.{KeyboardEvent, Key}
-import org.hyperscala.selector.{StringSelector, Selector}
+import org.hyperscala.selector.Selector
 import org.hyperscala.css.StyleSheetAttribute
 import org.hyperscala.PropertyAttribute
 import org.hyperscala.javascript.dsl._
@@ -16,9 +16,6 @@ import com.outr.net.http.session.Session
  */
 package object dsl {
   implicit def statement2RealtimeStatement(statement: Statement[_]) = RealtimeStatement(statement)
-
-  val window = StringSelector("window")
-  val body = StringSelector("body")
 
   def onKey[S <: Session](webpage: Webpage[S],
             key: Key,

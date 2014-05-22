@@ -133,7 +133,7 @@ class Dialog private(val wrapped: HTMLTag, val autoInit: Boolean) extends jQuery
 
   val isOpen = Property[Boolean](default = Option(false))
 
-  lazy val dialogSelector = Selector.attribute(null, "aria-describedby", AttributeMatcher.exactly, wrapped.identity)
+  lazy val dialogSelector = Selector.attribute("aria-describedby", AttributeMatcher.exactly, wrapped.identity, None)
 
   def open() = {
     call("open")

@@ -26,7 +26,7 @@ class StyleSheetExample[S <: Session](website: Website[S]) extends Webpage(websi
   val colorButtonStyle = head.selector(id("colorButton"))
   colorButtonStyle.color := Color.Red
 
-  val h1HoverStyle = head.selector(pseudo(element[tag.H1], PseudoClass.Hover))
+  val h1HoverStyle = head.selector(pseudo(PseudoClass.Hover, Some(element[tag.H1])))
   h1HoverStyle.fontSize := 28.pt
 
   val h1 = new tag.H1(content = "Colored Red") {

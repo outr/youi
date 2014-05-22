@@ -11,36 +11,79 @@ import scala.Some
  * @author Matt Hicks <matt@outr.com>
  */
 trait Selector extends Jsonify {
-  def value: String
+  def root: Selector = parent match {
+    case Some(p) => p.root
+    case None => this
+  }
+  def parent: Option[Selector]
+  final lazy val value: String = parent match {
+    case Some(p) => s"${p.value}$thisValue"
+    case None => thisValue
+  }
   def quoted = true
 
-  def matches(t: HTMLTag): Boolean
+  final def matches(t: HTMLTag): Boolean = if (thisMatches(t)) {
+    parent match {
+      case Some(p) => p.matches(t)
+      case None => true
+    }
+  } else {
+    false
+  }
+
+  def thisValue: String
+  def thisMatches(t: HTMLTag): Boolean
 
   def content = if (quoted) s"'$value'" else value
 
   def parseJson(map: Map[String, Any]) = throw new RuntimeException("Unable to generate Selector from JSON.")
 
   def generate() = content
+
+  def toList = buildList(this)
+
+  def duplicate(parent: Option[Selector]): Selector
+
+  def addRoot(newRoot: Selector): Selector = parent match {
+    case Some(p) => duplicate(Some(p.addRoot(newRoot)))
+    case None => duplicate(Some(newRoot))
+  }
+
+  private def buildList(selector: Selector, list: List[Selector] = Nil): List[Selector] = {
+    val updated = selector :: list
+    selector.parent match {
+      case Some(p) => buildList(p, updated)
+      case None => updated
+    }
+  }
 }
 
 object Selector extends ValuePersistence[List[Selector]] {
-  def all = AllSelector
-  def empty = EmptySelector
+  lazy val all = AllSelector()
   def clazz(className: String) = ClassSelector(className)
   def element[T <: HTMLTag](implicit manifest: Manifest[T]) = {
     ElementSelector(HTMLTagType.byClass(manifest.runtimeClass.asInstanceOf[Class[T]]).get)
   }
-  def descendant(parent: Selector, child: Selector) = DescendantSelector(parent, child)
-  def child(parent: Selector, child: Selector) = ChildSelector(parent, child)
-  def pseudo(selector: Selector, clazz: PseudoClass) = PseudoClassSelector(selector, clazz)
-  def preceding(selector: Selector, sibling: Selector) = PrecedingSelector(selector, sibling)
-  def attribute(selector: Selector, attribute: String) = AttributeExistsSelector(selector, attribute)
-  def attribute(selector: Selector, attribute: String, matcher: AttributeMatcher, attributeValue: String) = {
-    AttributeSelector(selector, attribute, matcher, attributeValue)
+//  def descendant(parent: Selector, child: Selector) = DescendantSelector(parent, child)
+//  def child(parent: Selector, child: Selector) = ChildSelector(parent, child)
+  def pseudo(clazz: PseudoClass, parent: Option[Selector] = None) = PseudoClassSelector(clazz, parent)
+//  def preceding(selector: Selector, sibling: Selector) = PrecedingSelector(selector, sibling)
+  def attribute(attribute: String, parent: Option[Selector]) = AttributeExistsSelector(attribute, parent)
+  def attribute(attribute: String, matcher: AttributeMatcher, attributeValue: String, parent: Option[Selector]) = {
+    AttributeSelector(attribute, matcher, attributeValue, parent)
   }
   def id(id: String) = IdSelector(id)
   def id(t: HTMLTag) = TagIdSelector(t)
-  def multiple(selectors: Selector*) = MultipleSelector(selectors.toList)
+  def multiple(selectors: Selector*) = {
+    var current: Selector = selectors.head
+    selectors.tail.foreach {
+      case s => {
+        val multiple = MultipleSelector(Some(current))
+        current = s.addRoot(multiple)
+      }
+    }
+    current
+  }
 
   def fromString(s: String, name: String, clazz: Class[_]) = throw new UnsupportedOperationException("Not supported")
 
@@ -50,61 +93,51 @@ object Selector extends ValuePersistence[List[Selector]] {
 
   private val AllSelectorRegex = """[*](.*)""".r
   private val ClassSelectorRegex = """[.]([a-zA-Z0-9-]*)(.*)""".r
-  private val ElementSelectorRegex = """([a-zA-Z0-9-]*)(.*)""".r
+  private val ElementSelectorRegex = """([a-zA-Z0-9-]+)(.*)""".r
   private val IdSelectorRegex = """[#]([a-zA-Z0-9-]*)(.*)""".r
-  private val ChildSelectorRegex = """[ ]*[>][ ]*(.*)""".r
-  private val PseudoSelectorRegex = """[ ]*[:][ ]*([a-zA-Z0-9-]*)(.*)""".r
+  private val ChildSelectorRegex = """[ ]?[>][ ]?(.*)""".r
+  private val PseudoSelectorRegex = """[ ]?[:][ ]?([a-zA-Z0-9-]*)(.*)""".r
   private val PrecedingSelectorRegex = """[ ]*[+][ ]*(.*)""".r
-  private val DescendantSelectorRegex = """[ ]*(.*)""".r
+  private val DescendantSelectorRegex = """[ ](.*)""".r
+  private val AttributeValueSelectorRegex = """\[(\S*?)(=|~=|\|=)\"(.+)\"\](.*)""".r
+  private val AttributeExistsSelectorRegex = """\[(\S*?)\](.*)""".r
+  private val MultipleSelectorRegex = """[ ]?,[ ]?(.*)""".r
 
-  def apply(selectorString: String, parent: Selector = null): Selector = {
-    val (selector, more) = parent match {
-      case null => selectorString match {
-        case AllSelectorRegex(s) => AllSelector -> s
-        case ClassSelectorRegex(className, s) => ClassSelector(className) -> s
-        case IdSelectorRegex(id, s) => IdSelector(id) -> s
-        case ElementSelectorRegex(element, s) if HTMLTagType(element) != null => ElementSelector(HTMLTagType(element)) -> s
-        case _ => StringSelector(selectorString) -> ""
-      }
-      case _ => selectorString match {
-        case ChildSelectorRegex(s) => ChildSelector(parent, apply(s)) -> ""
-        case PseudoSelectorRegex(pseudo, s) => PseudoClassSelector(parent, PseudoClass(pseudo)) -> s
-        case PrecedingSelectorRegex(s) => PrecedingSelector(parent, apply(s)) -> ""
-        case DescendantSelectorRegex(s) => DescendantSelector(parent, apply(s)) -> ""
-      }
-    }
-    if (more.trim.nonEmpty) {
-      apply(more, selector)
-    } else {
-      selector
-    }
+  final def apply(selectorString: String, parent: Option[Selector] = None): Selector = selectorString match {
+    case null | "" => parent.getOrElse(throw new RuntimeException(s"Unable to parse selector from: [$selectorString]."))
+    case AllSelectorRegex(extra) => apply(extra, Some(AllSelector(parent)))
+    case ClassSelectorRegex(className, extra) => apply(extra, Some(ClassSelector(className, parent)))
+    case IdSelectorRegex(id, extra) => apply(extra, Some(IdSelector(id, parent)))
+    case ElementSelectorRegex(element, extra) => apply(extra, Some(ElementSelector(HTMLTagType.get(element).getOrElse(throw new RuntimeException(s"Unable to find tag type from: [$element].")), parent)))
+    case ChildSelectorRegex(extra) => apply(extra, Some(ChildSelector(parent)))
+    case PseudoSelectorRegex(pseudo, extra) => apply(extra, Some(PseudoClassSelector(PseudoClass(pseudo), parent)))
+    case PrecedingSelectorRegex(extra) => apply(extra, Some(PrecedingSelector(parent)))
+    case DescendantSelectorRegex(extra) => apply(extra, Some(DescendantSelector(parent)))
+    case AttributeValueSelectorRegex(attribute, matcher, value, extra) => apply(extra, Some(AttributeSelector(attribute, AttributeMatcher(matcher), value, parent)))
+    case AttributeExistsSelectorRegex(attribute, extra) => apply(extra, Some(AttributeExistsSelector(attribute, parent)))
+    case MultipleSelectorRegex(extra) => apply(extra, Some(MultipleSelector(parent)))
+  }
+
+  def get(selectorString: String) = if (selectorString != null && selectorString.trim.nonEmpty) {
+    Some(apply(selectorString))
+  } else {
+    None
   }
 }
 
-object AllSelector extends Selector {
-  val value = "*"
-
-  def matches(t: HTMLTag) = true
+case class AllSelector(parent: Option[Selector] = None) extends Selector {
+  def thisValue = "*"
+  def thisMatches(t: HTMLTag) = true
+  def duplicate(parent: Option[Selector]) = copy(parent = parent)
 }
 
-object EmptySelector extends Selector {
-  val value = ""
-
-  override def quoted = false
-
-  def matches(t: HTMLTag) = false
-}
-
-case class StringSelector(value: String, override val quoted: Boolean = true) extends Selector {
-  def matches(t: HTMLTag) = false
-}
-
-case class ClassSelector(className: String) extends Selector {
+case class ClassSelector(className: String, parent: Option[Selector] = None) extends Selector {
   if (!ClassSelector.isValid(className)) throw new RuntimeException(s"Invalid class selector: $className")
 
-  def value = s".$className"
+  def thisValue = s".$className"
 
-  def matches(t: HTMLTag) = t.clazz().contains(className)
+  def thisMatches(t: HTMLTag) = t.clazz().contains(className)
+  def duplicate(parent: Option[Selector]) = copy(parent = parent)
 }
 
 object ClassSelector {
@@ -113,74 +146,86 @@ object ClassSelector {
   def isValid(className: String) = className.matches(Regex)
 }
 
-case class ElementSelector[T <: HTMLTag](tagType: HTMLTagType[T]) extends Selector {
-  def value = tagType.htmlName
+case class ElementSelector[T <: HTMLTag](tagType: HTMLTagType[T], parent: Option[Selector] = None) extends Selector {
+  def thisValue = tagType.htmlName
 
-  def matches(t: HTMLTag) = tagType.clazz.isAssignableFrom(t.getClass)    // TODO: verify this works
+  def thisMatches(t: HTMLTag) = tagType.clazz.isAssignableFrom(t.getClass)    // TODO: verify this works
+
+  def duplicate(parent: Option[Selector]) = copy(parent = parent)
 }
 
-case class DescendantSelector(parent: Selector, child: Selector) extends Selector {
-  def value = s"${parent.value} ${child.value}"
+case class DescendantSelector(parent: Option[Selector] = None) extends Selector {
+  def thisValue = " "
 
   // TODO: fix matching support
-  def matches(t: HTMLTag) = t.parent != null && parent.matches(t.parent.asInstanceOf[HTMLTag]) && child.matches(t)
+  def thisMatches(t: HTMLTag) = false
+
+  def duplicate(parent: Option[Selector]) = copy(parent = parent)
 }
 
-case class ChildSelector(parent: Selector, child: Selector) extends Selector {
-  def value = s"${parent.value} > ${child.value}"
+case class ChildSelector(parent: Option[Selector] = None) extends Selector {
+  def thisValue = " > "
 
-  def matches(t: HTMLTag) = t.parent != null && parent.matches(t.parent.asInstanceOf[HTMLTag]) && child.matches(t)
+  def thisMatches(t: HTMLTag) = false    // TODO: support properly
+
+  def duplicate(parent: Option[Selector]) = copy(parent = parent)
 }
 
-case class PseudoClassSelector(selector: Selector, clazz: PseudoClass) extends Selector {
-  def value = s"${selector.value}:${clazz.value}"
+case class PseudoClassSelector(clazz: PseudoClass, parent: Option[Selector] = None) extends Selector {
+  def thisValue = s":${clazz.value}"
 
-  def matches(t: HTMLTag) = selector.matches(t)
+  def thisMatches(t: HTMLTag) = true
+
+  def duplicate(parent: Option[Selector]) = copy(parent = parent)
 }
 
-case class PrecedingSelector(selector: Selector, sibling: Selector) extends Selector {
-  def value = s"${selector.value} + ${sibling.value}"
+case class PrecedingSelector(parent: Option[Selector] = None) extends Selector {
+  def thisValue = " + "
 
-  def matches(t: HTMLTag) = throw new NotImplementedError("Matching support not implemented for this selector")
+  def thisMatches(t: HTMLTag) = throw new NotImplementedError("Matching support not implemented for this selector")
+
+  def duplicate(parent: Option[Selector]) = copy(parent = parent)
 }
 
-case class AttributeExistsSelector(selector: Selector, attribute: String) extends Selector {
-  def value = if (selector != null) {
-    s"${selector.value}[$attribute]"
-  } else {
-    s"[$attribute]"
-  }
+case class AttributeExistsSelector(attribute: String, parent: Option[Selector] = None) extends Selector {
+  def thisValue = s"[$attribute]"
 
-  def matches(t: HTMLTag) = t.attributes.contains(attribute)
+  def thisMatches(t: HTMLTag) = t.attributes.contains(attribute)
+
+  def duplicate(parent: Option[Selector]) = copy(parent = parent)
 }
 
-case class AttributeSelector(selector: Selector, attribute: String, matcher: AttributeMatcher, attributeValue: String) extends Selector {
-  def value = if (selector != null) {
-    s"""${selector.value}[$attribute${matcher.value}"$attributeValue"]"""
-  } else {
-    s"""[$attribute${matcher.value}"$attributeValue"]"""
-  }
+case class AttributeSelector(attribute: String, matcher: AttributeMatcher, attributeValue: String, parent: Option[Selector] = None) extends Selector {
+  def thisValue = s"""[$attribute${matcher.value}"$attributeValue"]"""
 
-  def matches(t: HTMLTag) = t.attributes.get(attribute) match {
+  def thisMatches(t: HTMLTag) = t.attributes.get(attribute) match {
     case Some(a) => a.attributeValue == attributeValue
     case None => false
   }
+
+  def duplicate(parent: Option[Selector]) = copy(parent = parent)
 }
 
-case class IdSelector(id: String) extends Selector {
-  def value = s"#$id"
+case class IdSelector(id: String, parent: Option[Selector] = None) extends Selector {
+  def thisValue = s"#$id"
 
-  def matches(t: HTMLTag) = t.id() == id
+  def thisMatches(t: HTMLTag) = t.id() == id
+
+  def duplicate(parent: Option[Selector]) = copy(parent = parent)
 }
 
-case class TagIdSelector(tag: IdentifiableTag) extends Selector {
-  def value = s"#${tag.identity}"
+case class TagIdSelector(tag: IdentifiableTag, parent: Option[Selector] = None) extends Selector {
+  def thisValue = s"#${tag.identity}"
 
-  def matches(t: HTMLTag) = tag.identity == t.id()
+  def thisMatches(t: HTMLTag) = tag.identity == t.id()
+
+  def duplicate(parent: Option[Selector]) = copy(parent = parent)
 }
 
-case class MultipleSelector(selectors: List[Selector]) extends Selector {
-  def value = selectors.map(s => s.value).mkString(", ")
+case class MultipleSelector(parent: Option[Selector] = None) extends Selector {
+  def thisValue = ", "
 
-  def matches(t: HTMLTag) = selectors.find(s => s.matches(t)).nonEmpty
+  def thisMatches(t: HTMLTag) = false // TODO: implement
+
+  def duplicate(parent: Option[Selector]) = copy(parent = parent)
 }

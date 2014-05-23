@@ -3,6 +3,7 @@ package org.hyperscala.css
 import org.scalatest.{Matchers, WordSpec}
 import org.powerscala.Color
 import org.hyperscala.selector._
+import org.hyperscala.css.attributes.Origin
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -24,6 +25,12 @@ class StyleSheetParsingSpec extends WordSpec with Matchers {
   val css4 = """div.test { background-color: red; }"""
   val css5 = """[data-type] { background-color: black; }"""
   val css6 = """[data-type], [data-other="test"], #heading { background-color: blue; }"""
+  val css7 = """#heading:hover, #heading.test_state_hover {
+               |  background-color: #ff0000;
+               |}""".stripMargin
+  val css8 = """#heading {
+               |  background-origin: border-box;
+               |}""".stripMargin
 
   "StyleSheet.parse" should {
     "properly parse out one StyleSheet" in {
@@ -90,6 +97,27 @@ class StyleSheetParsingSpec extends WordSpec with Matchers {
       s5.thisValue should be("#heading")
 
       sheet1.selector.value should be("[data-type], [data-other=\"test\"], #heading")
+    }
+    "properly parse out another multi-selector entry" in {
+      val sheets = StyleSheet.parse(null, css7)
+      sheets.length should be(1)
+      val sheet1 = sheets.head
+      val selectors = sheet1.selector.toList.toVector
+      selectors.length should be(5)
+
+      selectors(0).thisValue should be("#heading")
+      selectors(1).thisValue should be(":hover")
+      selectors(2).thisValue should be(", ")
+      selectors(3).thisValue should be("#heading")
+      selectors(4).thisValue should be(".test_state_hover")
+
+      sheet1.selector.value should be("#heading:hover, #heading.test_state_hover")
+    }
+    "properly parse out background-origin" in {
+      val sheets = StyleSheet.parse(null, css8)
+      sheets.length should be(1)
+      val sheet1 = sheets.head
+      sheet1.backgroundOrigin() should be(Origin.BorderBox)
     }
   }
 }

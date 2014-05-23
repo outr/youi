@@ -1,14 +1,14 @@
 package org.hyperscala.css.attributes
 
-import org.powerscala.enum.{Enumerated, EnumEntry}
+import org.powerscala.enum.Enumerated
 import org.hyperscala.persistence.EnumEntryPersistence
-import org.hyperscala.AttributeValue
+import org.hyperscala.EnumEntryAttributeValue
 
 /**
  * NOTE: This file has been generated. Do not modify directly!
  * @author Matt Hicks <matt@outr.com>
  */
-class Length(val value: String) extends EnumEntry with AttributeValue {
+class Length(val value: String) extends EnumEntryAttributeValue {
   lazy val pixels = if (value.endsWith("px")) {
     value.substring(0, value.length - 2).toDouble
   } else {

@@ -1,13 +1,13 @@
 package org.hyperscala.css.attributes
 
-import org.powerscala.enum.{Enumerated, EnumEntry}
-import org.hyperscala.AttributeValue
+import org.powerscala.enum.Enumerated
+import org.hyperscala.EnumEntryAttributeValue
 import org.hyperscala.persistence.EnumEntryPersistence
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class FontWeight private(val value: String) extends EnumEntry with AttributeValue
+class FontWeight private(val value: String) extends EnumEntryAttributeValue
 
 object FontWeight extends Enumerated[FontWeight] with EnumEntryPersistence[FontWeight] {
   val Normal = new FontWeight("normal")

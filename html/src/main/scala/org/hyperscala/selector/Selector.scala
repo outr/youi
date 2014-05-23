@@ -60,7 +60,7 @@ trait Selector extends Jsonify {
 
 object Selector extends ValuePersistence[List[Selector]] {
   lazy val all = AllSelector()
-  def clazz(className: String) = ClassSelector(className)
+  def clazz(className: String, parent: Option[Selector] = None) = ClassSelector(className, parent)
   def element[T <: HTMLTag](implicit manifest: Manifest[T]) = {
     ElementSelector(HTMLTagType.byClass(manifest.runtimeClass.asInstanceOf[Class[T]]).get)
   }
@@ -92,7 +92,7 @@ object Selector extends ValuePersistence[List[Selector]] {
   }
 
   private val AllSelectorRegex = """[*](.*)""".r
-  private val ClassSelectorRegex = """[.]([a-zA-Z0-9-]*)(.*)""".r
+  private val ClassSelectorRegex = """[.]([a-zA-Z0-9-_]*)(.*)""".r
   private val ElementSelectorRegex = """([a-zA-Z0-9-]+)(.*)""".r
   private val IdSelectorRegex = """[#]([a-zA-Z0-9-]*)(.*)""".r
   private val ChildSelectorRegex = """[ ]?[>][ ]?(.*)""".r

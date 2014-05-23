@@ -1,13 +1,13 @@
 package org.hyperscala.css.attributes
 
-import org.powerscala.enum.{Enumerated, EnumEntry}
-import org.hyperscala.AttributeValue
+import org.powerscala.enum.Enumerated
+import org.hyperscala.EnumEntryAttributeValue
 import org.hyperscala.persistence.EnumEntryPersistence
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class ZIndex private(val n: Int = -1) extends EnumEntry with AttributeValue {
+class ZIndex private(val n: Int = -1) extends EnumEntryAttributeValue {
   def value = if (n != -1) n.toString else name
 }
 

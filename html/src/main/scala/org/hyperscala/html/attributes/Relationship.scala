@@ -1,14 +1,14 @@
 package org.hyperscala.html.attributes
 
-import org.powerscala.enum.{Enumerated, EnumEntry}
+import org.powerscala.enum.Enumerated
 import org.hyperscala.persistence.EnumEntryPersistence
-import org.hyperscala.AttributeValue
+import org.hyperscala.EnumEntryAttributeValue
 
 /**
  * NOTE: This file has been generated. Do not modify directly!
  * @author Matt Hicks <matt@outr.com>
  */
-sealed class Relationship(val value: String) extends EnumEntry with AttributeValue
+sealed class Relationship(val value: String) extends EnumEntryAttributeValue
 
 object Relationship extends Enumerated[Relationship] with EnumEntryPersistence[Relationship] {
   val NoReferrer = new Relationship("noreferrer")

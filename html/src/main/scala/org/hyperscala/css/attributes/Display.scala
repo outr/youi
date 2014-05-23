@@ -1,14 +1,14 @@
 package org.hyperscala.css.attributes
 
-import org.powerscala.enum.{Enumerated, EnumEntry}
+import org.powerscala.enum.Enumerated
 import org.hyperscala.persistence.EnumEntryPersistence
-import org.hyperscala.AttributeValue
+import org.hyperscala.EnumEntryAttributeValue
 
 /**
  * NOTE: This file has been generated. Do not modify directly!
  * @author Matt Hicks <matt@outr.com>
  */
-sealed class Display(val value: String) extends EnumEntry with AttributeValue
+sealed class Display(val value: String) extends EnumEntryAttributeValue
 
 object Display extends Enumerated[Display] with EnumEntryPersistence[Display] {
   val ListItem = new Display("list-item")

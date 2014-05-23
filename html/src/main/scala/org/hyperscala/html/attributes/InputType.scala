@@ -1,14 +1,14 @@
 package org.hyperscala.html.attributes
 
-import org.powerscala.enum.{Enumerated, EnumEntry}
+import org.powerscala.enum.Enumerated
 import org.hyperscala.persistence.EnumEntryPersistence
-import org.hyperscala.AttributeValue
+import org.hyperscala.EnumEntryAttributeValue
 
 /**
  * NOTE: This file has been generated. Do not modify directly!
  * @author Matt Hicks <matt@outr.com>
  */
-sealed class InputType(val value: String) extends EnumEntry with AttributeValue
+sealed class InputType(val value: String) extends EnumEntryAttributeValue
 
 object InputType extends Enumerated[InputType] with EnumEntryPersistence[InputType] {
   val Radio = new InputType("radio")

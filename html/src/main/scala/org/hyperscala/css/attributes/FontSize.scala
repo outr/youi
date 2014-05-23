@@ -1,14 +1,14 @@
 package org.hyperscala.css.attributes
 
-import org.powerscala.enum.{Enumerated, EnumEntry}
+import org.powerscala.enum.Enumerated
 import org.hyperscala.persistence.EnumEntryPersistence
-import org.hyperscala.AttributeValue
+import org.hyperscala.EnumEntryAttributeValue
 
 /**
  * NOTE: This file has been generated. Do not modify directly!
  * @author Matt Hicks <matt@outr.com>
  */
-class FontSize(val value: String) extends EnumEntry with AttributeValue
+class FontSize(val value: String) extends EnumEntryAttributeValue
 
 object FontSize extends Enumerated[FontSize] with EnumEntryPersistence[FontSize] {
   val XSmall = new FontSize("x-small")

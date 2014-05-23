@@ -12,7 +12,7 @@ object body extends DelayedStatement[HTMLTag] with Selector {
 
   def thisMatches(t: HTMLTag) = false
 
-  override def quoted = false
+  override def quoted = true
 
   def toStatement = ExistingStatement[HTMLTag]("body")
 

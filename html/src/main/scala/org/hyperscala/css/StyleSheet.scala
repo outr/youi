@@ -316,8 +316,10 @@ class StyleSheet(val hierarchicalParent: Listenable,
   def apply(css: String) = try {
     css.split(";").map(s => s.trim()).collect {
       case s if s.nonEmpty => {
-        val a = s.split(":")
-        a(0).trim -> a(1).trim
+        val split = s.indexOf(':')
+        val key = s.substring(0, split).trim
+        val value = s.substring(split + 1).trim
+        key -> value
       }
     }.foreach {
       case (key, value) => Style.byCSSName(key) match {

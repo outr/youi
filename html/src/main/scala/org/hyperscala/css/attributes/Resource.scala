@@ -15,7 +15,11 @@ object Resource extends Enumerated[Resource] with EnumEntryPersistence[Resource]
   val Inherit = new Resource("inherit")
 
   override def apply(name: String) = super.apply(name) match {
-    case null => new Resource("url('%s')".format(name))
+    case null => if (name.startsWith("url(")) {
+      new Resource(name)
+    } else {
+      new Resource("url('%s')".format(name))
+    }
     case v => v
   }
 }

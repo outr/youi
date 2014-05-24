@@ -3,7 +3,7 @@ package org.hyperscala.css
 import org.scalatest.{Matchers, WordSpec}
 import org.powerscala.Color
 import org.hyperscala.selector._
-import org.hyperscala.css.attributes.Origin
+import org.hyperscala.css.attributes.{Resource, Origin}
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -31,6 +31,7 @@ class StyleSheetParsingSpec extends WordSpec with Matchers {
   val css8 = """#heading {
                |  background-origin: border-box;
                |}""".stripMargin
+  val css9 = """#heading { background-image: url('http://www.testimage.com/test.jpg'); }"""
 
   "StyleSheet.parse" should {
     "properly parse out one StyleSheet" in {
@@ -118,6 +119,12 @@ class StyleSheetParsingSpec extends WordSpec with Matchers {
       sheets.length should be(1)
       val sheet1 = sheets.head
       sheet1.backgroundOrigin() should be(Origin.BorderBox)
+    }
+    "properly parse out background-image" in {
+      val sheets = StyleSheet.parse(null, css9)
+      sheets.length should be(1)
+      val sheet1 = sheets.head
+      sheet1.backgroundImage() should be(Resource("http://www.testimage.com/test.jpg"))
     }
   }
 }

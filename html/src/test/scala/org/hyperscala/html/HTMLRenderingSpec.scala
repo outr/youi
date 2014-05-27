@@ -58,52 +58,48 @@ class HTMLRenderingSpec extends WordSpec with Matchers {
           contents += "Test Body"
         }
       }
-      val out = html.outputString
+      val out = clean(html.outputString)
       out should equal("<html><head><title>Test Title</title></head><body>Test Body</body></html>")
     }
   }
   "Attributes" should {
     "show properly when Boolean true" in {
       val html = new HTML(hidden = true)
-      val out = html.outputString
-      out should equal("<html hidden=\"\"/>")
+      val out = clean(html.outputString)
+      out should equal("<html hidden=\"hidden\"></html>")
     }
     "show properly when Boolean false" in {
       val html = new HTML(hidden = false)
-      val out = html.outputString
-      out should equal("<html/>")
+      val out = clean(html.outputString)
+      out should equal("<html></html>")
     }
     "show properly when Char" in {
       val html = new HTML(accessKey = 'T')
-      val out = html.outputString
-      out should equal("<html accesskey=\"T\"/>")
+      val out = clean(html.outputString)
+      out should equal("<html accesskey=\"T\"></html>")
     }
     "show properly when Int" in {
       val html = new HTML(tabIndex = 5)
-      val out = html.outputString
-      out should equal("<html tabindex=\"5\"/>")
+      val out = clean(html.outputString)
+      out should equal("<html tabindex=\"5\"></html>")
     }
     "show properly when List[String]" in {
       val html = new HTML(clazz = List("one", "two", "three"))
-      val out = html.outputString
-      out should equal("<html class=\"one two three\"/>")
+      val out = clean(html.outputString)
+      out should equal("<html class=\"one two three\"></html>")
     }
     "show properly when EnumEntry" in {
       val html = new HTML(contentEditable = ContentEditable.True)
-      val out = html.outputString
-      out should equal("<html contenteditable=\"true\"/>")
+      val out = clean(html.outputString)
+      out should equal("<html contenteditable=\"true\"></html>")
     }
     "show properly when CSS" in {
-//      val css = new StyleSheet {
-//        font.face := "Arial"
-//        display := Display.Inline
-//      }
       val html = new HTML {
         style.fontFace := "Arial"
         style.display := Display.Inline
       }
-      val out = html.outputString
-      out should equal("<html style=\"display: inline; font-face: Arial\"/>")
+      val out = clean(html.outputString)
+      out should equal("<html style=\"font-face: Arial; display: inline\"></html>")
     }
   }
   "DOM deserialization" should {
@@ -112,15 +108,17 @@ class HTMLRenderingSpec extends WordSpec with Matchers {
       val html = new HTML
       val document = builder.build(new StringReader(content))
       html.read(document.getRootElement)
-      val out = html.outputString
+      val out = clean(html.outputString)
       out should equal(content)
     }
     "properly deserialize a basic HTML page with CSS" in {
       val content = "<html><head><title>Test Title</title></head><body><h1 style=\"display: none\">Test Body</h1></body></html>"
       val html = new HTML
       html.read(builder.build(new StringReader(content)).getRootElement)
-      val out = html.outputString
+      val out = clean(html.outputString)
       out should equal(content)
     }
   }
+
+  private def clean(html: String) = html.replaceAll("""[>]\s*""", ">").replaceAll("""\s*[<]""", "<")
 }

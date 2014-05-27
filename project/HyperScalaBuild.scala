@@ -12,9 +12,9 @@ object HyperScalaBuild extends Build {
   import Dependencies._
 
   val baseSettings = Defaults.defaultSettings ++ Seq(
-    version := "0.9.0-SNAPSHOT",
+    version := "0.9.1-SNAPSHOT",
     organization := "org.hyperscala",
-    scalaVersion := "2.10.3",
+    scalaVersion := "2.11.1",
     libraryDependencies ++= Seq(
       powerScalaReflect,
       powerScalaHierarchy,
@@ -76,8 +76,7 @@ object HyperScalaBuild extends Build {
     .dependsOn(html)
   lazy val web = Project("web", file("web"), settings = createSettings("hyperscala-web"))
     .dependsOn(html, javascript, svg)
-    .settings(libraryDependencies ++= Seq(uaDetector))
-    .settings(libraryDependencies <+= scalaVersion { "org.scala-lang" % "scala-swing" % })
+    .settings(libraryDependencies ++= Seq(uaDetector, scalaSwing))
   lazy val snapSVG = Project("snapsvg", file("snapsvg"), settings = createSettings("hyperscala-snapsvg"))
     .dependsOn(web)
   lazy val jquery = Project("jquery", file("jquery"), settings = createSettings("hyperscala-jquery"))

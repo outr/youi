@@ -14,6 +14,8 @@ object Dependencies {
   val outrNetServlet = "com.outr.net" %% "outrnet-servlet" % outrNetVersion
   val outrNetJetty = "com.outr.net" %% "outrnet-jetty" % outrNetVersion
 
+  val scalaSwing = "org.scala-lang.modules" %% "scala-swing" % "latest.release"
+
 //  val launcher = "com.outr.launcher" %% "launcher" % "1.0.0-SNAPSHOT"
 
 //  val servlet = "org.eclipse.jetty.orbit" % "javax.servlet" % "3.0.0.v201112011016"
@@ -23,7 +25,7 @@ object Dependencies {
   val jaxen = "jaxen" % "jaxen" % "latest.release"
 
   val htmlcleaner = "net.sourceforge.htmlcleaner" % "htmlcleaner" % "latest.release"
-  val akkaActors = "com.typesafe.akka" % "akka-actor_2.10" % "2.2.1"
+  val akkaActors = "com.typesafe.akka" %% "akka-actor" % "latest.release"
   val uaDetector = "net.sf.uadetector" % "uadetector-resources" % "latest.release"
 
   val argonaut = "io.argonaut" %% "argonaut" % "latest.release"

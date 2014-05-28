@@ -36,9 +36,30 @@ object JavaScriptContent {
     case c: Color => s"'${c.hex.rgb}'"
     case o: JSObject => {
       val c: EnhancedClass = o.getClass
-      c.caseValues.map(cv => s"${cv.name}: ${toJS(cv(o))}").mkString("{ ", ", ", " }")
+      val default = o match {
+        case od: JSObjectWithDefault => {
+          val d = od.default
+          d.getClass.caseValues.map(cv => cv.name -> cv[Any](d)).toMap
+        }
+        case _ => Map.empty[String, Any]
+      }
+      c.caseValues.map {
+        case cv => {
+          val value = cv[Any](o)
+          default.get(cv.name) match {
+            case Some(d) if d == value => None
+            case _ => toJSOption(value).map(s => s"${cv.name}: $s")
+          }
+        }
+      }.flatten.mkString("{ ", ", ", " }")
     }
     case _ => v.toString
+  }
+
+  def toJSOption(v: Any): Option[String] = v match {
+    case Some(value) => Some(toJS(value))
+    case None => None
+    case _ => Some(toJS(v))
   }
 
   def options(options: JSOption*) = {

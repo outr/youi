@@ -71,6 +71,7 @@ object Dialog extends JavaScriptCaller with StorageComponent[Dialog, HTMLTag] {
     d.width := width
     d.init()
     set(tag, d)
+    d
   }
   
   protected def create(tag: HTMLTag) = new Dialog(tag, autoInit = true)

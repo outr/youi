@@ -9,6 +9,7 @@ import org.powerscala.property.Property
 import java.util.concurrent.atomic.AtomicBoolean
 import org.powerscala.event.Listenable
 import com.outr.net.http.session.Session
+import org.powerscala.property.event.PropertyChangeEvent
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -58,9 +59,10 @@ case class DynamicURLInstance[S <: Session](webpage: Webpage[S]) extends Listena
    *
    * @param name the name to match in the hash
    * @param default the default value to use if not found in the hash
+   * @param allowNull if enabled will set the value of the property to null if there is no value of the property (defaults to false)
    * @return new property bound multi-directionally to changes in the hash
    */
-  def property[T](name: String, default: T)(implicit t2s: T => String, s2t: String => T, manifest: Manifest[T]) = {
+  def property[T](name: String, default: T, allowNull: Boolean = false)(implicit t2s: T => String, s2t: String => T, manifest: Manifest[T]) = {
     val initial = map().get(name) match {
       case Some(value) => s2t(value)
       case None => default
@@ -70,6 +72,7 @@ case class DynamicURLInstance[S <: Session](webpage: Webpage[S]) extends Listena
       case evt => synchronized {
         map().get(name) match {
           case Some(value) => p := s2t(value)
+          case None if allowNull => p := s2t(null)
           case None => // Ignore
         }
       }
@@ -108,7 +111,11 @@ case class DynamicURLInstance[S <: Session](webpage: Webpage[S]) extends Listena
         }
         changing.set(true)
         try {
-          map := hashMap
+          if (map() == hashMap) {     // Make sure a change even is always fired
+            map.change.fire(PropertyChangeEvent(map, map(), hashMap))
+          } else {                    // New value is not equal
+            map := hashMap
+          }
         } finally {
           changing.set(false)
         }

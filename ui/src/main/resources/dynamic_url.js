@@ -1,15 +1,15 @@
 var currentHash = null;
 
 $(function() {
-    jsFireHashChanged();
+    jsFireHashChanged(true);
     $(window).on('hashchange', function() {
         jsFireHashChanged();
     });
 });
 
-function jsFireHashChanged() {
+function jsFireHashChanged(alwaysFire) {
     var hash = window.location.hash;
-    if (hash != currentHash) {
+    if (hash != currentHash || alwaysFire) {
         var body = $('body');
         realtimeSend(null, 'hashChanged', {
             hash: hash

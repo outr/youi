@@ -6,6 +6,7 @@ import org.hyperscala.io.HTMLWriter
 import org.powerscala.Color
 import org.powerscala.json.Jsonify
 import org.powerscala.reflect._
+import java.util.Date
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -33,23 +34,29 @@ object JavaScriptContent {
     case js: JavaScriptContent => js.content
     case s: String => "'%s'".format(s.replaceAll("\n", " ").replaceAll("\r", " ").replaceAll("'", """\\\'"""))
     case l: List[_] => l.map(toJS).mkString("[", ", ", "]")
+    case d: Date => s"new Date(${d.getTime})"
     case c: Color => s"'${c.hex.rgb}'"
     case o: JSObject => {
       val c: EnhancedClass = o.getClass
       val default = o match {
         case od: JSObjectWithDefault => {
           val d = od.default
-          d.getClass.caseValues.map(cv => cv.name -> cv[Any](d)).toMap
+          d.getClass.caseValues.map {
+            case cv => JSObject.fieldName(d, cv).map(fn => fn -> cv[Any](d))
+          }.flatten.toMap
         }
         case _ => Map.empty[String, Any]
       }
       c.caseValues.map {
-        case cv => {
-          val value = cv[Any](o)
-          default.get(cv.name) match {
-            case Some(d) if d == value => None
-            case _ => toJSOption(value).map(s => s"${cv.name}: $s")
+        case cv => JSObject.fieldName(o, cv) match {
+          case Some(fieldName) => {
+            val value = cv[Any](o)
+            default.get(fieldName) match {
+              case Some(d) if d == value => None
+              case _ => toJSOption(value).map(s => s"$fieldName: $s")
+            }
           }
+          case None => None
         }
       }.flatten.mkString("{ ", ", ", " }")
     }

@@ -74,6 +74,8 @@ function realtimeEvent(event, data, confirmation, preventDefault, fireChange, on
             }
 
             return !preventDefault;
+        } else {
+            console.log('realtimeEvent: element id is null, so not firing event.');
         }
     } catch(err) {
         // TODO: add support to send errors to the server (if possible)

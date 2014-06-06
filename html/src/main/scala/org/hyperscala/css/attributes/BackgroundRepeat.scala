@@ -15,7 +15,7 @@ case class BackgroundRepeat(horizontal: Repeat, vertical: Repeat) {
   private def toString(repeat: Repeat) = if (repeat != null) {
     repeat.value
   } else {
-    "repeat"
+    "inherit"
   }
 }
 

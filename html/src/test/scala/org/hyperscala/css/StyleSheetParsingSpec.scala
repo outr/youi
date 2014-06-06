@@ -3,7 +3,8 @@ package org.hyperscala.css
 import org.scalatest.{Matchers, WordSpec}
 import org.powerscala.Color
 import org.hyperscala.selector._
-import org.hyperscala.css.attributes.{Resource, Origin}
+import org.hyperscala.css.attributes.{Length, Horizontal, Resource, Origin}
+import org.hyperscala.html._
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -32,6 +33,8 @@ class StyleSheetParsingSpec extends WordSpec with Matchers {
                |  background-origin: border-box;
                |}""".stripMargin
   val css9 = """#heading { background-image: url('http://www.testimage.com/test.jpg'); }"""
+  val css10 = """#heading { background-position: center; }"""
+  val css11 = """#heading { background-size: 900px auto; }"""
 
   "StyleSheet.parse" should {
     "properly parse out one StyleSheet" in {
@@ -125,6 +128,26 @@ class StyleSheetParsingSpec extends WordSpec with Matchers {
       sheets.length should be(1)
       val sheet1 = sheets.head
       sheet1.backgroundImage() should be(Resource("http://www.testimage.com/test.jpg"))
+    }
+    "properly parse out background-position" in {
+      val sheets = StyleSheet.parse(null, css10)
+      sheets.length should be(1)
+      val sheet1 = sheets.head
+      val bp = sheet1.backgroundPosition()R
+      bp shouldNot be(null)
+      bp.horizontal should be(Horizontal.Center)
+      bp.vertical should be(null)
+      bp.offsetX should be(null)
+      bp.offsetY should be(null)
+    }
+    "properly parse out background-size" in {
+      val sheets = StyleSheet.parse(null, css11)
+      sheets.length should be(1)
+      val sheet1 = sheets.head
+      val bs = sheet1.backgroundSize()
+      bs shouldNot be(null)
+      bs.horizontal should be(900.px)
+      bs.vertical should be (Length.Auto)
     }
   }
 }

@@ -133,7 +133,7 @@ class StyleSheetParsingSpec extends WordSpec with Matchers {
       val sheets = StyleSheet.parse(null, css10)
       sheets.length should be(1)
       val sheet1 = sheets.head
-      val bp = sheet1.backgroundPosition()R
+      val bp = sheet1.backgroundPosition()
       bp shouldNot be(null)
       bp.horizontal should be(Horizontal.Center)
       bp.vertical should be(null)

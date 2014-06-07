@@ -49,7 +49,7 @@ object HTML5Compliance {
       }
       case td: tag.Td => name match {
         case "valign" => {
-          td.style.verticalAlign := new Length(value)
+          td.style.verticalAlign := Length(value)
           Intercept.Stop
         }
       }

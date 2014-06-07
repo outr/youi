@@ -6,7 +6,7 @@ import org.hyperscala.{PropertyAttribute, Container}
 import org.hyperscala.html.tag.{Comment, Text, Title}
 import org.hyperscala.css.StyleSheetAttribute
 import org.hyperscala.javascript.{EventProperty, JavaScriptString}
-import org.hyperscala.css.attributes.Length
+import org.hyperscala.css.attributes.{PixelLength, NumericLength, Length}
 import org.powerscala.enum.EnumEntry
 
 import org.powerscala.reflect._
@@ -130,8 +130,7 @@ abstract class ScalaBuffer {
     case s: String => "\"%s\"".format(s)
     case l: ListSet[_] if name == "class" => "List(%s)".format(l.map(v => "\"%s\"".format(v)).mkString(", "))
     case js: JavaScriptString => "JavaScriptString(%s)".format(createWrappedString(js.content))
-    case l: Length if l.name == null && l.value.endsWith("px") => "%s.px".format(l.pixels)
-    case l: Length if l.name == null && l.value.endsWith("%") => "%s.pct".format(l.percent)
+    case l: NumericLength => s"${l.number}.${l.lengthType}"
     case e: EnumEntry => "%s.%s".format(e.parent.name, e.name)
     case i: Int => i.toString
     case _ => throw new RuntimeException("Unsupported value: %s.%s (%s: %s)".format(tag.getClass.getName, name, v, v.asInstanceOf[AnyRef].getClass.getName))

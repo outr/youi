@@ -71,33 +71,19 @@ object FontSize extends Enumerated[FontSize] with EnumEntryPersistence[FontSize]
   def Percent(v: Double) = PercentLength(v)
   def Points(v: Double) = PointLength(v)
 
-  override def apply(name: String): FontSize = name.toLowerCase match {
-    case "x-small" => XSmall
-    case "small" => Small
-    case "large" => Large
-    case "smaller" => Smaller
-    case "medium" => Medium
-    case "xx-large" => XXLarge
-    case "xx-small" => XXSmall
-    case null => null
-    case "auto" => AutoLength
-    case "inherit" => InheritLength
-    case Length.NumberRegex(n, t) => t match {
-      case null | "" | "px" => PixelLength(n.toDouble)
-      case "ch" => ChLength(n.toDouble)
-      case "cm" => CentimeterLength(n.toDouble)
-      case "em" => EmLength(n.toDouble)
-      case "ex" => ExLength(n.toDouble)
-      case "in" => InchLength(n.toDouble)
-      case "mm" => MillimeterLength(n.toDouble)
-      case "%" => PercentLength(n.toDouble)
-      case "pc" => PicaLength(n.toDouble)
-      case "pt" => PointLength(n.toDouble)
-      case "rem" => RemLength(n.toDouble)
-      case "vh" => ViewportHeightLength(n.toDouble)
-      case "vmin" => ViewportMinimumLength(n.toDouble)
-      case "vmax" => ViewportMaximumLength(n.toDouble)
-      case "vw" => ViewportWidthLength(n.toDouble)
-    }
+  override def apply(name: String) = get(name).getOrElse(throw new RuntimeException(s"FontSize not found for value: $name."))
+
+  override def get(name: String): Option[FontSize] = name.toLowerCase.trim match {
+    case null | "" => None
+    case "x-small" => Some(XSmall)
+    case "small" => Some(Small)
+    case "large" => Some(Large)
+    case "smaller" => Some(Smaller)
+    case "medium" => Some(Medium)
+    case "xx-large" => Some(XXLarge)
+    case "xx-small" => Some(XXSmall)
+    case "auto" => Some(AutoLength)
+    case "inherit" => Some(InheritLength)
+    case s => NumericLength.get(s)
   }
 }

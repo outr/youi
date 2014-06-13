@@ -91,13 +91,3 @@ object IdentifiableTag {
    */
   def ignoreIds = _ignoreIds.get()
 }
-
-//case class ResponseMessage(map: Map[String, Any]) {
-//  def apply[T](key: String)(implicit manifest: Manifest[T]) = convert[T](manifest, map(key))
-//  def get[T](key: String)(implicit manifest: Manifest[T]) = map.get(key).map(v => convert[T](manifest, v))
-//  def getOrElse[T](key: String, f: => T)(implicit manifest: Manifest[T]) = convert[T](manifest, map.getOrElse(key, f))
-//
-//  private def convert[T](manifest: Manifest[T], value: Any) = {
-//    manifest.runtimeClass.convertTo[T]("value", value)
-//  }
-//}

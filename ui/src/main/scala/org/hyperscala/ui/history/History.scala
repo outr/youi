@@ -61,7 +61,7 @@ class HistoryInstance(webpage: Webpage[_ <: Session]) extends Listenable {
   private val changing = new AtomicInt(0)
 
   val added = new UnitProcessor[HistoryEntry]("history_added")
-  val stateChanged = new UnitProcessor[HistoryStateChange]("history_state_change")
+  val state = new UnitProcessor[HistoryStateChange]("historyState")
 
   // Configure key bindings on page
   if (UserAgent(webpage).os.family.apple) {
@@ -102,6 +102,7 @@ class HistoryInstance(webpage: Webpage[_ <: Session]) extends Listenable {
    */
   def add(entry: HistoryEntry, callRedo: Boolean = false) = synchronized {
     if (!isChanging) {
+      val previousRedos = redos
       cut()                                     // Clear out any redo history before add an entry
       val newEntry = previous() match {         // Allows merging with the previous history entry
         case Some(p) => entry.mergeWithPrevious(p) match {
@@ -120,6 +121,7 @@ class HistoryInstance(webpage: Webpage[_ <: Session]) extends Listenable {
       }
       undos = newEntry +: undos                 // Add the entry to the undos queue
       added.fire(newEntry)
+      state.fire(HistoryAdded(newEntry, previousRedos))
     }
   }
 
@@ -139,7 +141,7 @@ class HistoryInstance(webpage: Webpage[_ <: Session]) extends Listenable {
           entry.undo()            // Undo the entry
           undos = undos.tail      // Remove it from the undos queue
           redos = entry +: redos  // Add it to the redos queue
-          stateChanged.fire(HistoryStateChange.Undo)
+          state.fire(HistoryUndo(entry))
           true
         }
         case None => false
@@ -159,7 +161,7 @@ class HistoryInstance(webpage: Webpage[_ <: Session]) extends Listenable {
           entry.redo()            // Redo the entry
           redos = redos.tail      // Remove it from the redos queue
           undos = entry +: undos  // Add it to the undos queue
-          stateChanged.fire(HistoryStateChange.Redo)
+          state.fire(HistoryRedo(entry))
           true
         }
         case None => false
@@ -216,16 +218,29 @@ class HistoryInstance(webpage: Webpage[_ <: Session]) extends Listenable {
    * Clears all undo and redo history.
    */
   def clear() = synchronized {
+    val evt = HistoryCleared(undos, redos)
     undos = Queue.empty
     redos = Queue.empty
-    stateChanged.fire(HistoryStateChange.Clear)
+    state.fire(evt)
   }
 }
 
-class HistoryStateChange private() extends EnumEntry
+sealed trait HistoryStateChange {
+  def entryOption: Option[HistoryEntry]
+}
 
-object HistoryStateChange extends Enumerated[HistoryStateChange] {
-  val Undo = new HistoryStateChange
-  val Redo = new HistoryStateChange
-  val Clear = new HistoryStateChange
+case class HistoryAdded(entry: HistoryEntry, redos: Queue[HistoryEntry]) extends HistoryStateChange {
+  lazy val entryOption = Some(entry)
+}
+
+case class HistoryUndo(entry: HistoryEntry) extends HistoryStateChange {
+  lazy val entryOption = Some(entry)
+}
+
+case class HistoryRedo(entry: HistoryEntry) extends HistoryStateChange {
+  lazy val entryOption = Some(entry)
+}
+
+case class HistoryCleared(undos: Queue[HistoryEntry], redos: Queue[HistoryEntry]) extends HistoryStateChange {
+  def entryOption = None
 }

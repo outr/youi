@@ -81,6 +81,8 @@ object JavaScriptEvent {
     "waiting" -> ((t: HTMLTag, target: Option[HTMLTag]) => new WaitingEvent(t, target))
   )
 
+  val eventNames = map.values.toList.map(f => f(null, None).getClass.getSimpleName).map(name => name.charAt(0).toLower + name.substring(1, name.length - 5)).sorted
+
   def unapply(eventType: String) = creator(eventType)
 
   def creator(eventType: String) = map.get(eventType)

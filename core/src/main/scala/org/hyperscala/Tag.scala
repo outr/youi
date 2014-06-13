@@ -126,10 +126,17 @@ trait Tag extends Markup with AttributeContainer[PropertyAttribute[_]] {
    * @tparam T the type of the data for the property wrapper
    * @return created Property wrapper
    */
-  def dataWrapper[T](name: String, initial: T)(converter: T => String)(implicit parent: Listenable = null, manifest: Manifest[T]) = {
+  def dataWrapper[T](name: String, initial: T, prop: Option[Property[T]] = None)
+                    (converter: T => String)(implicit parent: Listenable = null, manifest: Manifest[T]) = {
     val attribute = dataAttribute(name)
     attribute := converter(initial)
-    val property = Property[T](default = Option(initial))
+    val property = prop match {
+      case Some(p) => {
+        p := initial
+        p
+      }
+      case None => Property[T](default = Option(initial))
+    }
     property.change.on {
       case evt => attribute := converter(evt.newValue)
     }

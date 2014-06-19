@@ -37,6 +37,10 @@ trait jQueryComponent extends WrappedComponent[HTMLTag] {
     send(selector.option(functionName, key, value))
   }
 
+  def call() = if (initialized) {
+    send(selector.call(s"$functionName()"))
+  }
+
   def call(function: String) = {
     send(selector.call(s"$functionName('$function')"))
   }

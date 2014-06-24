@@ -2,11 +2,12 @@ package org.hyperscala.examples.ui
 
 import org.hyperscala.examples.Example
 import org.hyperscala.html._
-import org.hyperscala.html.attributes.Target
-import org.hyperscala.jquery.ui._
+import org.hyperscala.html.attributes._
+import org.hyperscala.css.attributes._
 import org.hyperscala.realtime.RealtimeEvent
 import org.hyperscala.ui.JustifiedGallery
 import org.hyperscala.web._
+import org.powerscala.Color
 import scala.language.implicitConversions
 
 import scala.language.reflectiveCalls
@@ -46,6 +47,17 @@ class JustifiedGalleryExample extends Example {
         val imageURL = s"http://lorempixel.com/$width/$height/"
         myDiv.contents += new tag.A(href = imageURL) {
           contents += new tag.Img(src = imageURL, alt = s"Image ${index + 1}")
+          if (index == 0) {
+            contents += new tag.Div(clazz = List("caption")) {
+              contents += "This is a "
+              contents += new tag.Span(content = "custom caption!") {
+                style.color := Color.Red
+              }
+              contents += new tag.Span(content = "Nice!") {
+                style.float := Float.Right
+              }
+            }
+          }
         }
       }
     }

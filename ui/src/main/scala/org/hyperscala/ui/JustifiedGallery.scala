@@ -8,6 +8,7 @@ import org.hyperscala.module._
 import org.hyperscala.jquery.{jQueryComponent, JavaScriptCaller, jQuery}
 import com.outr.net.http.session.Session
 import org.hyperscala.web._
+import scala.language.implicitConversions
 
 /**
  * Wrapper module around this jQuery project:

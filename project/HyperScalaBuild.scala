@@ -2,7 +2,6 @@ import sbt._
 import Keys._
 
 import sbtunidoc.Plugin._
-import scala.Some
 import spray.revolver.RevolverPlugin._
 
 import sbtassembly.Plugin._

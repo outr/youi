@@ -27,15 +27,9 @@ import org.hyperscala.site.extra.HyperscalaGenerator
  */
 object HyperscalaSite extends Website[MapSession] with JettyApplication {
   // Setup file logging
-  Logger.configure("root") {
-    case l => {
-      val directory = new File("logs")
-      val writer = new FileWriter(directory, FileWriter.Daily("hyp"), append = true)
-      l.withHandler(Formatter.Default, Level.Info, writer)
-    }
-  }
+  logger.addHandler(new FileWriter(new File("logs"), FileWriter.Daily("hyp"), append = true), Level.Info, Formatter.Default)
   // Configure System.out and System.err to go to logger
-  Logging.configureSystem()
+  Logger.configureSystem()
 
   override def init() = {
     super.init()

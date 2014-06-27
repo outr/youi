@@ -22,6 +22,9 @@ import com.outr.net.http.session.Session
 class Webpage[S <: Session](val website: Website[S]) extends HttpHandler with HTMLPage with ModularPage[S] with Temporal with ParentLike[tag.HTML] {
   implicit def manifest = website.manifest
 
+  // Make the webpage logger's parent reference the website's logger
+  logger.parent = Some(website.logger)
+
   private val _rendered = new AtomicBoolean(false)
   def rendered = _rendered.get()
 

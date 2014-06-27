@@ -27,7 +27,7 @@ import org.hyperscala.site.extra.HyperscalaGenerator
  */
 object HyperscalaSite extends Website[MapSession] with JettyApplication {
   // Setup file logging
-  logger.addHandler(new FileWriter(new File("logs"), FileWriter.Daily("hyp"), append = true), Level.Info, Formatter.Default)
+  Logger.Root.configureFileLogging("hyp")
   // Configure System.out and System.err to go to logger
   Logger.configureSystem()
 

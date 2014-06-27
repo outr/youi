@@ -14,7 +14,7 @@ import com.outr.net.http.content.StringContent
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-abstract class Website[S <: Session](implicit val manifest: Manifest[S]) extends WebApplication[S] {
+abstract class Website[S <: Session](implicit val manifest: Manifest[S]) extends WebApplication[S] with Logging {
   /**
    * Application stores content that should be persistent throughout the life of the website.
    */

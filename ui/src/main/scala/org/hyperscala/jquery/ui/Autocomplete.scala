@@ -131,7 +131,10 @@ class Autocompletified private(val input: FormField) {
     input.value.change.on {
       case evt => if (!changing.get()) {
         Realtime.sendJavaScript(webpage, "$('#%s')[0].value = \"%s\";".format(input.id(), input.value()))
-        selected := input.value().split(",").map(s => s.trim).toList
+        selected := (input.value() match {
+          case null | "" => Nil
+          case s => s.split(",").map(s => s.trim).toList
+        })
       }
     }
   }

@@ -158,7 +158,6 @@ class Select2 private(val wrapped: tag.Select, val autoInit: Boolean = true) ext
 
   wrapped.changeEvent.on {
     case evt => doChange {
-      println(s"Selected: ${wrapped.selected()} / ${wrapped.value()}")
       value := wrapped.value()
       values := List(wrapped.value())
     }

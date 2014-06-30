@@ -5,6 +5,7 @@ import css.StyleSheet
 import html.HTMLTag
 import org.hyperscala.html.attributes._
 import org.hyperscala.html.constraints._
+import org.powerscala.property.Property
 
 /**
  * NOTE: This file has been generated. Do not modify directly!
@@ -38,14 +39,16 @@ class Option extends Textual with BodyChild with HTMLTag {
     init(name, accessKey, clazz, contentEditable, contextMenu, dir, draggable, dropZone, hidden, id, lang, role, spellCheck, style, tabIndex, titleText)
     up(this.disabled, disabled)
     up(this.label, label)
-    up(this.selected, selected)
+    if (selected != null) {
+      this.selected := selected
+    }
     up(this.value, value)
     up(this.content, content)
   }
 
   lazy val disabled = PropertyAttribute[Boolean]("disabled", false)
   lazy val label = PropertyAttribute[String]("label", null)
-  lazy val selected = PropertyAttribute[Boolean]("selected", false)
+  lazy val selected = Property[Boolean](default = Some(false))
   lazy val value = PropertyAttribute[String]("value", null)
 
   selected.change.on {

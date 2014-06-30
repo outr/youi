@@ -6,7 +6,8 @@ import css.StyleSheet
 import html.{FormField, HTMLTag}
 import org.hyperscala.html.attributes._
 import org.hyperscala.html.constraints._
-import org.powerscala.property.{ListProperty, Property}
+import org.hyperscala.persistence.ValuePersistence
+import org.powerscala.property.{PropertyView, ListProperty, Property}
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -60,10 +61,30 @@ class Select extends Container[Option] with BodyChild with HTMLTag with FormFiel
   lazy val size = PropertyAttribute[Int]("size", -1)
   lazy val placeHolder = PropertyAttribute[String]("placeholder", null)
 
-  val selectedOptions = new Property[List[Option]](default = Some(Nil)) with ListProperty[Option]
-  val selected = new Property[List[String]](default = Some(Nil)) with ListProperty[String]
-  val value = Property[String]()
+  implicit def optionsPersistence = new ValuePersistence[List[Option]] {
+    override def fromString(s: String, name: String, clazz: Class[_]): List[Option] = s.split("|").map(optionByValue).flatten.toList
 
+    override def toString(t: List[Option], name: String, clazz: Class[_]) = t.map(_.value()).mkString("|")
+  }
+  val selectedOptions = new PropertyAttribute[List[Option]]("selectedOptions", Nil) with ListProperty[Option]
+  val selected = new Property[List[String]](default = Some(Nil)) with ListProperty[String] with PropertyView[List[String], List[Option]] {
+    override def viewing = selectedOptions
+
+    override def convertFrom(value: List[Option]) = value.map(_.value())
+    override def convertTo(value: List[String]) = value.map(optionByValue).flatten
+  }
+  val value = new Property[String]() with PropertyView[String, List[Option]] {
+    override def viewing = selectedOptions
+
+    override def convertFrom(value: List[Option]) = value.map(_.value()).mkString("|")
+    override def convertTo(value: String) = if (value == null) {
+      Nil
+    } else {
+      value.split("|").map(v => optionByValue(v)).toList.flatten
+    }
+  }
+
+  private val updating = new AtomicBoolean(false)
   private def tryUpdating(f: => Unit) = if (updating.compareAndSet(false, true)) {
     try {
       f
@@ -72,41 +93,7 @@ class Select extends Container[Option] with BodyChild with HTMLTag with FormFiel
     }
   }
 
-  selectedOptions.change.on {
-    case evt => {
-      updateOptionsFromSelection()
-      tryUpdating {
-        selected := evt.newValue.map(o => o.value())
-        value := selected().mkString("|")
-      }
-    }
-  }
-  selected.change.on {
-    case evt => if (!updating.get()) {
-      selectedOptions := evt.newValue.map(s => optionByValue(s)).flatten
-    }
-  }
-  value.change.on {
-    case evt => if (!updating.get()) {
-      if (evt.newValue != null) {
-        selected := evt.newValue.split('|').toList
-      } else {
-        selected := Nil
-      }
-    }
-  }
-  childAdded.on {
-    case evt => evt.child match {
-      case o: Option => updateSelectionFromOptions()
-    }
-  }
-  childRemoved.on {
-    case evt => evt.child match {
-      case o: Option => updateSelectionFromOptions()
-    }
-  }
-
-  private val updating = new AtomicBoolean(false)
+  def optionByValue(value: String) = contents.find(o => o.value() == value)
 
   private[html] def updateSelectionFromOptions() = tryUpdating {
     val options = contents.collect {
@@ -122,14 +109,30 @@ class Select extends Container[Option] with BodyChild with HTMLTag with FormFiel
     }
   }
 
-  override protected def processChange(value: Json) = if (value.isArray) {
-    val values = value.array.fold(List.empty[String])(a => a.toList.map(j => j.string).flatten)
-    selected := values
-  } else {
-    super.processChange(value)
+  childAdded.on {
+    case evt => evt.child match {
+      case o: Option => updateSelectionFromOptions()
+    }
+  }
+  childRemoved.on {
+    case evt => evt.child match {
+      case o: Option => updateSelectionFromOptions()
+    }
+  }
+  selectedOptions.change.on {
+    case evt => updateOptionsFromSelection()              // Update the option tags' selected state upon change
   }
 
-  def optionByValue(value: String) = contents.find(o => o.value() == value)
+  override protected def processChange(value: Json) = {
+    if (value.isArray) {
+      val options = value.array.fold(List.empty[Option])(a => a.toList.flatMap(j => optionByValue(j.stringOrEmpty)))
+      FormField.ignorePropertyChange(selectedOptions, options) {
+        selectedOptions := options
+      }
+    } else {
+      super.processChange(value)
+    }
+  }
 
   override def formValue = value
 }

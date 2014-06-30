@@ -60,10 +60,10 @@ class Select2Example extends Example {
     }
   }
   contents += multiSelect
-  contents += new tag.Button(content = "Select English") {
+  contents += new tag.Button(content = "Select English and French") {
     clickEvent := RealtimeEvent()
     clickEvent.on {
-      case evt => multiSelect.selected := List(Language.English.name) //select2Multi.values := List(Language.English.name)
+      case evt => select2Multi.values := List(Language.English.name, Language.French.name)
     }
   }
 
@@ -85,5 +85,5 @@ class Select2Example extends Example {
   select2.formatSelection := formatter
   select2.escapeMarkup := Select2.DontEscapeMarkup
 
-//  val select2Multi = Select2(multiSelect)
+  val select2Multi = Select2(multiSelect)
 }

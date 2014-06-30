@@ -15,16 +15,14 @@ trait FormField extends BodyChild {
   override def receive(event: String, json: JsonObject) = event match {
     case "change" => {
       val m = json.as[ChangeTagMessage]
-      m.value match {
-        case Some(v) => processChange(v)
-        case None => // No change data sent
-      }
+      processChange(m.value.orNull)
       super.receive(event, json)
     }
     case _ => super.receive(event, json)
   }
 
   protected def processChange(value: Json) = value match {
+    case _ if value == null || value.isNull => changeTo(null)
     case _ if value.isString => changeTo(value.stringOrEmpty)
     case _ => throw new RuntimeException(s"Unsupported Json type: ${value.getClass} ($value) for ${getClass.getName} ($xmlLabel / $identity).")
   }
@@ -41,12 +39,21 @@ trait FormField extends BodyChild {
 }
 
 object FormField {
-  private val _changingProperty = new ThreadLocal[Property[String]]()
-  private val _changingValue = new ThreadLocal[String]()
+  private val _changingProperty = new ThreadLocal[Property[_]]()
+  private val _changingValue = new ThreadLocal[Any]()
   private def clear() = {
     _changingProperty.remove()
     _changingValue.remove()
   }
   def changingProperty = _changingProperty.get()
   def changingValue = _changingValue.get()
+  def ignorePropertyChange[T, R](property: Property[T], value: T)(f: => R): R = {
+    _changingProperty.set(property)
+    _changingValue.set(value)
+    try {
+      f
+    } finally {
+      clear()
+    }
+  }
 }

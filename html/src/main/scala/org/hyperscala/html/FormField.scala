@@ -16,12 +16,17 @@ trait FormField extends BodyChild {
     case "change" => {
       val m = json.as[ChangeTagMessage]
       m.value match {
-        case Some(v) => changeTo(v.stringOrEmpty)
+        case Some(v) => processChange(v)
         case None => // No change data sent
       }
       super.receive(event, json)
     }
     case _ => super.receive(event, json)
+  }
+
+  protected def processChange(value: Json) = value match {
+    case _ if value.isString => changeTo(value.stringOrEmpty)
+    case _ => throw new RuntimeException(s"Unsupported Json type: ${value.getClass} ($value) for ${getClass.getName} ($xmlLabel / $identity).")
   }
 
   def changeTo(newValue: String) = {

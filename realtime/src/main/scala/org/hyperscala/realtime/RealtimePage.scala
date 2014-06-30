@@ -216,11 +216,11 @@ class RealtimePage[S <: Session] private(page: Webpage[S]) extends Logging {
             case option: tag.Option if property.name == "selected" => {
               if (option.selected()) {
                 val select = option.parent.asInstanceOf[tag.Select]
-                if (select.multiple()) {
-                  throw new RuntimeException("Multiple Select Currently not supported!")
-                } else {
+//                if (select.multiple()) {
+//                  throw new RuntimeException("Multiple Select Currently not supported!")
+//                } else {
                   send(JavaScriptMessage(s"$$('#${select.identity}').val(content);", content = Option(option.value())))
-                }
+//                }
               }
             }
             //            case option: tag.Option if (property.name == "selected") => if (property() == true) send(JavaScriptMessage(s"$$('#${t.id()}').attr('${property.name}', ${property()});"))

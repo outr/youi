@@ -8,6 +8,7 @@ import org.hyperscala.realtime.{RealtimeEvent, Realtime}
 import org.hyperscala.ui.widgets.Select2
 import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.jquery.Gritter
+import org.powerscala.Language
 
 import language.reflectiveCalls
 
@@ -25,7 +26,7 @@ class Select2Example extends Example {
 
     changeEvent := RealtimeEvent()
     value.change.on {
-      case evt => Gritter.add(this.webpage, "Selection Changed", s"Value changed to ${value()}")
+      case evt => Gritter.add(this.webpage, "Selection Changed", s"Value changed to ${value()}.")
     }
   }
   contents += select
@@ -42,9 +43,27 @@ class Select2Example extends Example {
   contents += new tag.Button(content = "Select Banana") {
     clickEvent := RealtimeEvent()
     clickEvent.on {
-      case evt => {
-        Select2.set(select, "banana")
-      }
+      case evt => select2.value := "banana"
+    }
+  }
+
+  contents += new tag.Br
+  contents += new tag.Br
+
+  val multiSelect = new tag.Select(id = "testMultiple", multiple = true) {
+    style.minWidth := 120.px
+    Language.values.foreach(l => contents += new tag.Option(value = l.name, content = l.label))
+
+    changeEvent := RealtimeEvent()
+    selected.change.on {
+      case evt => Gritter.add(this.webpage, "Multiple Selection Changed", s"Values changed to ${evt.newValue.mkString(", ")}.")
+    }
+  }
+  contents += multiSelect
+  contents += new tag.Button(content = "Select English") {
+    clickEvent := RealtimeEvent()
+    clickEvent.on {
+      case evt => multiSelect.selected := List(Language.English.name) //select2Multi.values := List(Language.English.name)
     }
   }
 
@@ -60,5 +79,11 @@ class Select2Example extends Example {
       | }
       |}
     """.stripMargin)
-  Select2(select, formatResult = Some(formatter), formatSelection = Some(formatter), escapeMarkup = Some(Select2.DontEscapeMarkup))
+
+  val select2 = Select2(select)
+  select2.formatResult := formatter
+  select2.formatSelection := formatter
+  select2.escapeMarkup := Select2.DontEscapeMarkup
+
+//  val select2Multi = Select2(multiSelect)
 }

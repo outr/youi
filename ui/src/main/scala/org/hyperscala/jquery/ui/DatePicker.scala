@@ -1,33 +1,36 @@
 package org.hyperscala.jquery.ui
 
 import org.hyperscala.html._
+import org.hyperscala.jquery.{jQueryComponent, JavaScriptCaller}
 import org.hyperscala.web._
-import org.hyperscala.jquery.dsl._
 import org.hyperscala.realtime.Realtime
-import org.hyperscala.selector.Selector
-import com.outr.net.http.session.Session
+import org.powerscala.StorageComponent
+import scala.language.implicitConversions
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */
-trait DatePicker extends HTMLTag {
-  identity        // Make sure it has an id
+object DatePicker extends JavaScriptCaller with StorageComponent[DatePicker, tag.Input] {
+  implicit def tag2Picker(t: tag.Input) = apply(t)
 
-  this.require(jQueryUI, jQueryUI.Latest)
-
-  override protected def initialize() {
-    super.initialize()
-
-    DatePicker(this)
+  override def apply(t: tag.Input) = {
+    t.require(jQueryUI.LatestWithDefault)
+    t.require(Realtime)
+    super.apply(t)
   }
+
+  override protected def create(t: tag.Input) = new DatePicker(t)
 }
 
-object DatePicker {
-  def apply(t: HTMLTag) = {
-    t.require(jQueryUI, jQueryUI.Latest)
+class DatePicker private(val wrapped: tag.Input) extends jQueryComponent {
+  def functionName = "datepicker"
+  override protected def autoInit = true
 
-    t.connected[Webpage[_ <: Session]] {
-      case webpage => Realtime.send(webpage, $(t).call("datepicker()"), Some(Selector.id(t)))
-    }
-  }
+  val dateFormat = property("dateFormat", "mm/dd/yy")
+
+  def destroy() = call("destroy")
+  def hide() = call("hide")
+  def refresh() = call("refresh")
+  def setDate(date: String) = call("setDate", date)
+  def show() = call("show")
 }

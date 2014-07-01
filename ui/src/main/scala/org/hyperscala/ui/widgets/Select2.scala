@@ -36,37 +36,6 @@ object Select2 extends Module with JavaScriptCaller with StorageComponent[Select
 
   lazy val DontEscapeMarkup = JavaScriptString("function(m) { return m; }")
 
-  /*def apply(select: tag.Select,
-            formatResult: Option[JavaScriptContent] = None,
-            formatSelection: Option[JavaScriptContent] = None,
-            escapeMarkup: Option[JavaScriptContent] = None,
-            dropdownCssClass: Option[String] = None) = {
-    select.require(this)
-
-    val id = select.identity
-    val options = JavaScriptContent.options(
-      JSOption("formatResult", formatResult),
-      JSOption("formatSelection", formatSelection),
-      JSOption("escapeMarkup", escapeMarkup),
-      JSOption("dropdownCssClass", dropdownCssClass)
-    )
-    select.connected[Webpage[Session]] {
-      case webpage => Realtime.sendJavaScript(webpage, "$('#%s').select2(%s);".format(id, options), selector = Some(Selector.id(id)), onlyRealtime = false)
-    }
-  }
-
-  def enable(select: tag.Select) = select.connected[Webpage[Session]] {
-    case webpage => Realtime.sendJavaScript(webpage, "$('#%s').select2('enable');".format(select.id()))
-  }
-
-  def disable(select: tag.Select) = select.connected[Webpage[Session]] {
-    case webpage => Realtime.sendJavaScript(webpage, "$('#%s').select2('disable');".format(select.id()))
-  }
-
-  def set(select: tag.Select, value: String, delay: Int = 0) = select.connected[Webpage[Session]] {
-    case webpage => Realtime.sendJavaScript(webpage, "$('#%s').select2('val', '%s');".format(select.id(), value), delay = delay)
-  }*/
-
   override def dependencies = List(Realtime)
 
   override def init[S <: Session](website: Website[S]) = {

@@ -3,7 +3,7 @@ package org.hyperscala.jquery.dsl
 import org.hyperscala.selector.Selector
 import org.hyperscala.javascript.dsl.{JSFunction1, WrappedStatement, ExistingStatement, Statement}
 import org.hyperscala.css.Style
-import org.hyperscala.javascript.JavaScriptContent
+import org.hyperscala.javascript.{JavaScriptString, JavaScriptContent}
 import org.hyperscala.event.KeyboardEvent
 
 /**

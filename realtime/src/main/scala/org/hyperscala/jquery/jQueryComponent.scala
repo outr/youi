@@ -17,42 +17,42 @@ import org.hyperscala.web._
  * @author Matt Hicks <matt@outr.com>
  */
 trait jQueryComponent extends WrappedComponent[HTMLTag] {
-  lazy val selector = $(wrapped)
+  lazy val tagSelector = $(wrapped)
 
   protected def functionName: String
 
   private def send(statement: Statement[_]) = synchronized {
     if (initialized) {
-      Realtime.send(webpage, statement, Some(selector.selector))
+      Realtime.send(webpage, statement, Some(tagSelector.selector))
     } else {
       throw new RuntimeException("component not initialized!")
     }
   }
 
   protected def initializeComponent(values: Map[String, Any]) = {
-    send(selector.call(functionName, values))
+    send(tagSelector.call(functionName, values))
   }
 
   protected def modify(key: String, value: Any) = {
-    send(selector.option(functionName, key, value))
+    send(tagSelector.option(functionName, key, value))
   }
 
   def call() = if (initialized) {
-    send(selector.call(s"$functionName()"))
+    send(tagSelector.call(s"$functionName()"))
   }
 
   def call(function: String) = {
-    send(selector.call(s"$functionName('$function')"))
+    send(tagSelector.call(s"$functionName('$function')"))
   }
 
   def call(function: String, arg: Any) = {
     val argValue = JavaScriptContent.toJS(arg)
-    send(selector.call(s"$functionName('$function', $argValue)"))
+    send(tagSelector.call(s"$functionName('$function', $argValue)"))
   }
 
   def on(eventType: String, function: JavaScriptContent) = {
     if (wrapped.rendered) {
-      send(selector.on(eventType, function))
+      send(tagSelector.on(eventType, function))
     } else {
       option(eventType, function)
     }

@@ -1,5 +1,6 @@
 package org.hyperscala.site
 
+import org.hyperscala.examples.ux.SingleSelectListExample
 import org.hyperscala.web.Website
 import org.hyperscala.examples.helloworld.HelloWorldPage
 import org.hyperscala.web.Scope
@@ -72,6 +73,7 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication {
     val colorPicker = page(new HyperscalaExample(new ColorPickerExample), Scope.Page, "/example/colorpicker.html")
     val visualSearch = page(new HyperscalaExample(new VisualSearchExample), Scope.Page, "/example/visualsearch.html")
     val dialog = page(new HyperscalaExample(new DialogExample), Scope.Page, "/example/dialog.html")
+    val progressBar = page(new HyperscalaExample(new ProgressBarExample), Scope.Page, "/example/progress_bar.html")
     val spinner = page(new HyperscalaExample(new SpinnerExample), Scope.Page, "/example/spinner.html")
     val busyDialog = page(new HyperscalaExample(new BusyDialogExample), Scope.Page, "/example/busy_dialog.html")
     val draggable = page(new HyperscalaExample(new DraggableExample), Scope.Page, "/example/draggable.html")
@@ -111,6 +113,7 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication {
       val shapes = page(new HyperscalaExample(new SVGShapesExample), Scope.Page, "/example/svg/shapes.html")
       val dynamic = page(new HyperscalaExample(new DynamicSVGExample), Scope.Page, "/example/svg/dynamic.html")
     }
+    val singleSelectList = page(new HyperscalaExample(new SingleSelectListExample), Scope.Page, "/example/ux/single_select_list.html")
     val snapsvg = page(new HyperscalaExample(new SnapSVGExample), Scope.Page, "/example/snapsvg.html")
     val playComparison = page(new PlayHelloWorldPage(HyperscalaSite.this), Scope.Page, "/example/comparison/play_hello_world.html")
   }

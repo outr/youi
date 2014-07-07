@@ -1,5 +1,6 @@
 package org.hyperscala.javascript
 
+import org.hyperscala.selector.Selector
 import org.hyperscala.{AttributeValue, XMLContent}
 import org.jdom2.{Text, Content}
 import org.hyperscala.io.HTMLWriter
@@ -36,6 +37,7 @@ object JavaScriptContent {
     case l: List[_] => l.map(toJS).mkString("[", ", ", "]")
     case d: Date => s"new Date(${d.getTime})"
     case c: Color => s"'${c.hex.rgb}'"
+    case s: Selector => s.content
     case o: JSObject => {
       val c: EnhancedClass = o.getClass
       val default = o match {

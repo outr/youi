@@ -4,7 +4,7 @@ import org.hyperscala.html._
 import org.hyperscala.module.Module
 import org.powerscala.Version
 import org.hyperscala.web.{Website, Webpage}
-import org.hyperscala.jquery.ui.{jQueryUI, Dialog}
+import org.hyperscala.jquery.ui.{ProgressBar, jQueryUI, Dialog}
 import org.hyperscala.realtime.Realtime
 import language.reflectiveCalls
 import com.outr.net.http.session.Session
@@ -25,9 +25,14 @@ object BusyDialog extends Module {
 
   override def load[S <: Session](webpage: Webpage[S]) = {
     val div = new tag.Div(id = "busyDialog") {
-      contents += new tag.Img(src = "/images/indeterminate_progress01.gif", width = "200", height = "40") {
-        style.marginLeft := 40.px
+      val progressDiv = new tag.Div {
+        style.marginTop := 10.px
+        style.width := 280.px
+        style.height := 30.px
       }
+      val progressBar = ProgressBar(progressDiv)
+      progressBar.value := None
+      contents += progressDiv
     }
     webpage.body.contents += div
 

@@ -9,7 +9,7 @@ import org.powerscala.log.Logging
 import org.powerscala.event.processor.UnitProcessor
 import com.outr.net.http.request.HttpRequest
 import com.outr.net.http.response.{HttpResponseStatus, HttpResponse}
-import com.outr.net.http.content.StringContent
+import com.outr.net.http.content.{ContentType, StringContent}
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -55,7 +55,8 @@ abstract class Website[S <: Session](implicit val manifest: Manifest[S]) extends
   def errorPage(request: HttpRequest,
                 response: HttpResponse,
                 status: HttpResponseStatus = HttpResponseStatus.InternalServerError): HttpResponse = {
-    response.copy(status = status, content = StringContent("An error occurred!"))
+    val html = s"<html><head><title>${status.code} ${status.message}</title></head><body><h1><b>${status.code}</b>: ${status.message}</h1></body></html>"
+    response.copy(status = status, content = StringContent(html, contentType = ContentType.HTML))
   }
 
   override def dispose() = {

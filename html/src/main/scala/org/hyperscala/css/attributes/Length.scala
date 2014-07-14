@@ -129,11 +129,10 @@ object Length extends Enumerated[Length] with EnumEntryPersistence[Length] {
 
   override def apply(name: String) = get(name).getOrElse(throw new RuntimeException(s"Length not found for value: $name."))
 
-  override def get(name: String) = name.toLowerCase.trim match {
-    case null | "" => None
-    case "auto" => Some(AutoLength)
-    case "inherit" => Some(InheritLength)
-    case s => NumericLength.get(s)
+  override def get(name: String, caseSensitive: Boolean = false) = super.get(name, caseSensitive) match {
+    case Some(l) => Some(l)
+    case None if name == null => None
+    case None => NumericLength.get(name.toLowerCase)
   }
 }
 

@@ -55,8 +55,10 @@ class PredefinedSingleSelectList[T](val select: HTMLTag with Container[BodyChild
     }
   }
   def refreshSelected() = {
-    select.contents.replaceWith(new tag.Span(content = stringify(selected())))
+    select.contents.replaceWith(toSelectedElement(selected()))
   }
 
-  def toElement(t: T) = new tag.Div(clazz = List("listItem"), content = stringify(t))
+  def toSelectedElement(t: T): BodyChild = new tag.Span(content = stringify(selected()))
+
+  def toElement(t: T): BodyChild = new tag.Div(clazz = List("listItem"), content = stringify(t))
 }

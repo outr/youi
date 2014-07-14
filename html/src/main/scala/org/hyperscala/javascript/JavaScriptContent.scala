@@ -38,6 +38,7 @@ object JavaScriptContent {
     case d: Date => s"new Date(${d.getTime})"
     case c: Color => s"'${c.hex.rgb}'"
     case s: Selector => s.content
+    case m: Map[_, _] => m.map(t => s"${toJS(t._1)}: ${toJS(t._2)}").mkString("{ ", ", ", "}")
     case o: JSObject => {
       val c: EnhancedClass = o.getClass
       val default = o match {

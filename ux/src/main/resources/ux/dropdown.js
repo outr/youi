@@ -8,20 +8,24 @@
                 settings.mainSelector = this;
                 this.data('dropdownSettings', settings);
 
+                var ignoreEvent = false;
+
                 // Listen for the show on event
                 this.on(settings.showOn, function() {
                     toggleDropdown(settings);
+                    ignoreEvent = true;                     // Make sure the hideOnClick ignores this event
                 });
 
                 // Configure hide on click
-                if (settings.hideOnClick) {
-                    $(document).click(function(evt) {
-                        var isMain = evt.target == settings.mainSelector.get(0);
-                        if (!isMain) {
+                $(document).click(function() {
+                    if (ignoreEvent) {
+                        ignoreEvent = false;                // The element was clicked on, so ignore this event
+                    } else {
+                        if (settings.hideOnClick) {
                             closeDropdown(settings);
                         }
-                    });
-                }
+                    }
+                });
 
                 if (settings.dropdownSelector == null) {
                     console.log('The option dropdownSelector must be set to a jQuery selector in order to properly show the drop-down.');
@@ -50,6 +54,8 @@
                 return toggleDropdown(settings);
             },
             option: function(key, value) {
+                var settings = this.data('dropdownSettings');
+                settings[key] = value;
                 console.log('option: ' + key + ' = ' + value);
             }
         };
@@ -64,8 +70,8 @@
 
         function openDropdown(settings) {
             var instance = settings.mainSelector;
-            var top = instance.offset().top + instance.outerHeight();
-            var left = instance.offset().left;
+            var top = instance.offset().top + instance.outerHeight() + settings.offsetY;
+            var left = instance.offset().left + settings.offsetX;
             settings.dropdownSelector.css('top', top);
             settings.dropdownSelector.css('left', left);
             settings.dropdownSelector.css('display', 'block');
@@ -104,7 +110,9 @@
         // Defines what event should cause the dropdown to appear.
         showOn: 'click',
         // Hides the dropdown when mouse is clicked anywhere else on the screen.
-        hideOnClick: true
+        hideOnClick: true,
+        offsetX: 0,
+        offsetY: 0
     };
 }(jQuery));
 

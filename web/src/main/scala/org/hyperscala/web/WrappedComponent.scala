@@ -22,6 +22,8 @@ trait WrappedComponent[Tag <: HTMLTag] {
   protected def initializeComponent(values: Map[String, Any]): Unit
   protected def modify(key: String, value: Any): Unit
 
+  private var postInit = List.empty[() => Unit]
+
   if (autoInit) init()
 
   def init() = {
@@ -30,8 +32,18 @@ trait WrappedComponent[Tag <: HTMLTag] {
         if (_webpage == null) {
           _webpage = w
           initializeComponent(storage.map)
+          postInit.foreach(f => f())
+          postInit = Nil
         }
       }
+    }
+  }
+
+  def afterInit(f: => Unit) = synchronized {
+    if (initialized) {
+      f
+    } else {
+      postInit = ((() => f) :: postInit.reverse).reverse
     }
   }
 

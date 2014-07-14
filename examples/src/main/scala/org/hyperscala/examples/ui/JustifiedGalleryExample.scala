@@ -27,6 +27,7 @@ class JustifiedGalleryExample extends Example {
   contents += myDiv
   val gallery = JustifiedGallery(myDiv)
   gallery.rowHeight := 240
+  gallery.sizeRangeSuffixes := JustifiedGallery.DefaultSizeRangeSuffixes.map(t => t._1 -> "")
 
   contents += new tag.Button(content = "Refresh Images") {
     clickEvent := RealtimeEvent()

@@ -114,14 +114,18 @@ class Select2 private(val wrapped: tag.Select, val autoInit: Boolean = true) ext
     case evt => doChange {
       values := List(evt.newValue)
 
-      call("val", JavaScriptString(s"${JavaScriptContent.toJS(evt.newValue)}, true"))
+      afterInit {
+        call("val", JavaScriptString(s"${JavaScriptContent.toJS(evt.newValue)}, true"))
+      }
     }
   }
   values.change.on {
     case evt => doChange {
       value := evt.newValue.mkString(", ")
 
-      call("val", JavaScriptString(s"${JavaScriptContent.toJS(evt.newValue)}, true"))
+      afterInit {
+        call("val", JavaScriptString(s"${JavaScriptContent.toJS(evt.newValue)}, true"))
+      }
     }
   }
 

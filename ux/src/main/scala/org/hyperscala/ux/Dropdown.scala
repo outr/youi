@@ -35,6 +35,8 @@ class Dropdown private(val wrapped: HTMLTag) extends jQueryComponent {
   val modifyDropdownCSS = property("modifyDropdownCSS", true)
   val showOn = property("showOn", "click")
   val hideOnClick = property("hideOnClick", true)
+  val offsetX = property[Int]("offsetX", 0)
+  val offsetY = property[Int]("offsetY", 0)
 
   def open() = call("open")
   def close() = call("close")

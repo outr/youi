@@ -16,8 +16,8 @@ object Target extends Enumerated[Target] with EnumEntryPersistence[Target] {
   val Parent = new Target("_parent")
   val Top = new Target("_top")
 
-  override def apply(name: String) = super.apply(name) match {
-    case null => new Target(name)
-    case v => v
+  override def apply(name: String) = get(name) match {
+    case Some(t) => t
+    case None => new Target(name)
   }
 }

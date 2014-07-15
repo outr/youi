@@ -3,6 +3,7 @@ package org.hyperscala.ui.widgets
 
 import org.hyperscala.html._
 import attributes.{InputType, Target}
+import org.hyperscala.javascript.JavaScriptString
 import org.powerscala.Unique
 import org.hyperscala.web._
 import org.hyperscala.css.attributes.Display
@@ -45,6 +46,7 @@ abstract class FileUploader extends tag.Div with MultipartSupport {
   }
 
   val uploadForm = new tag.Form(id = s"form$identity", action = "", encType = "multipart/form-data", method = Method.Post, target = Target(iFrame.name()))
+  uploadForm.submitEvent := JavaScriptString("")
   val inputId = s"file$identity"
   private var _input = createInput()
   def input = _input
@@ -55,7 +57,9 @@ abstract class FileUploader extends tag.Div with MultipartSupport {
       uploadForm.action := uploadPath
     }
   }
-
+  connected[tag.Form] {         // Make sure another form doesn't wrap this or things will mess up.
+    case form => error(s"Another form is wrapping this FileUploader so it will not work properly!")
+  }
 
   protected def createInput() = {
     new tag.Input(id = inputId, name = "file", inputType = InputType.File, size = 20) {
@@ -63,6 +67,7 @@ abstract class FileUploader extends tag.Div with MultipartSupport {
       changeEvent.on {
         case evt => {
           BusyDialog.show(this.webpage, uploadTitle)
+          println(s"UploadFormID: ${uploadForm.id()}")
           Realtime.sendJavaScript(this.webpage, "$('#%s').submit();".format(uploadForm.id()))
         }
       }

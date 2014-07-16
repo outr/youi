@@ -30,7 +30,7 @@ class HyperscalaAbout extends HyperscalaPage {
       |forward. Unfortunately, this does not take into account the separation of developer and designer. Good luck
       |trying to convince your web designer to learn Scala. This is where the second option comes in. Through the use of
       |DynamicContent you can pull in snippets of HTML (similarly to StaticHTML), but extract elements out by id and
-      |modify and introspect them to your hearts content. Though it would seem like this would be incredibly slow, it's
+      |modify and introspect them to your heart's content. Though it would seem like this would be incredibly slow, it's
       |actually optimized to the extent that in most cases it performs faster than any other option. It's sort of like
       |a dynamically regenerating JSP file that only deals with the dynamic parts.
     """.stripMargin

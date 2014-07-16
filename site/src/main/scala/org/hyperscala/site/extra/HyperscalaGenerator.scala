@@ -132,4 +132,6 @@ class HyperscalaGenerator extends HyperscalaPage {
       case None => throw new RuntimeException("Gist Not found in JSON!")
     }
   }
+
+  override def sourceURL = "https://github.com/darkfrog26/hyperscala/blob/master/site/src/main/scala/org/hyperscala/site/extra/HyperscalaGenerator.scala"
 }

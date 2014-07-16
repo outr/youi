@@ -32,7 +32,9 @@ class HyperscalaPage extends Webpage(HyperscalaSite) with FormSupport[MapSession
       style.float := Float.Left
     }
     if (sourceURL != null) {
-      contents += new tag.A(href = sourceURL, target = Target.Blank, content = "View Source") {
+      val filename = sourceURL.substring(sourceURL.lastIndexOf('/') + 1)
+      contents += new tag.A(href = sourceURL, target = Target.Blank, content = s"View $filename on GitHub") {
+        clazz += "view_source"
         style.float := Float.Right
       }
     }

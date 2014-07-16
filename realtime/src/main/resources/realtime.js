@@ -13,7 +13,7 @@ HyperscalaConnect.on('jquery.call', function(data) {
         var selector = data['selector'];
         var call = data['call'];
         var args = data['args'];
-        console.log('jquery.call: ' + selector + ', ' + call + ', ' + args);
+        log('jquery.call: ' + selector + ', ' + call + ', ' + args);
         $(selector)[call](args);
     } catch(err) {
         log('Failed to evaluate instruction: ' + JSON.stringify(data) + ' - ' + err);
@@ -75,7 +75,7 @@ function realtimeEvent(event, data, confirmation, preventDefault, fireChange, on
 
             return !preventDefault;
         } else {
-            console.log('realtimeEvent: element id is null, so not firing event.');
+            log('realtimeEvent: element id is null, so not firing event.');
         }
     } catch(err) {
         // TODO: add support to send errors to the server (if possible)

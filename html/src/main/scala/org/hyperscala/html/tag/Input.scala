@@ -97,7 +97,7 @@ class Input extends BodyChild with HTMLTag with FormField {
   lazy val alt = PropertyAttribute[String]("alt", null)
   lazy val autoComplete = PropertyAttribute[AutoComplete]("autocomplete", null)
   lazy val autoFocus = PropertyAttribute[Boolean]("autofocus", false)
-  lazy val checked = PropertyAttribute[Boolean]("checked", false)
+  val checked = PropertyAttribute[Boolean]("checked", false)
   lazy val disabled = PropertyAttribute[Boolean]("disabled", false)
   lazy val form = PropertyAttribute[String]("form", null)
   lazy val formAction = PropertyAttribute[String]("formaction", null)

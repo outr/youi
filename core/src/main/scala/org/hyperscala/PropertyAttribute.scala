@@ -10,7 +10,8 @@ import org.powerscala.event.Listenable
  */
 class PropertyAttribute[T](val name: String,
                            default: T,
-                           var inclusion: InclusionMode = InclusionMode.ModifiedAndNotEmpty)
+                           var inclusion: InclusionMode = InclusionMode.ModifiedAndNotEmpty,
+                           val dynamic: Boolean = false)
                           (implicit val persister: ValuePersistence[T], parent: Listenable, manifest: Manifest[T])
                            extends Property[T](default = Some(default))(parent, manifest) with XMLAttribute {
   parent match {
@@ -56,8 +57,8 @@ class PropertyAttribute[T](val name: String,
 }
 
 object PropertyAttribute {
-  def apply[T](name: String, default: T, inclusion: InclusionMode = InclusionMode.ModifiedAndNotEmpty)
+  def apply[T](name: String, default: T, inclusion: InclusionMode = InclusionMode.ModifiedAndNotEmpty, dynamic: Boolean = false)
               (implicit persister: ValuePersistence[T], parent: Markup, manifest: Manifest[T]) = {
-    new PropertyAttribute[T](name, default, inclusion)(persister, parent, manifest)
+    new PropertyAttribute[T](name, default, inclusion, dynamic)(persister, parent, manifest)
   }
 }

@@ -53,7 +53,7 @@ class HyperscalaPage extends Webpage(HyperscalaSite) with FormSupport[MapSession
         style.paddingTop := 3.px
         style.paddingRight := 30.px
         style.fontSize := FontSize.Small
-        contents += "&copy;2013 Hyperscala.org"
+        contents += "&copy;2014 Hyperscala.org"
       }
     }
   }

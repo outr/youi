@@ -111,7 +111,11 @@ trait Tag extends Markup with AttributeContainer[PropertyAttribute[_]] {
         propertyAttribute.read(this, a.getValue)
         true
       }
-      case None => false
+      case None if Tag.AutoCreate => {    // Property not found, so lets create it
+        createAttribute[String](a.getName, a.getValue)
+        true
+      }
+      case None => false                  // Property not found and AutoCreate is false
     }
   }
 
@@ -175,7 +179,7 @@ trait Tag extends Markup with AttributeContainer[PropertyAttribute[_]] {
 
   private def createAttribute[T](name: String, value: T, inclusionMode: InclusionMode = InclusionMode.NotEmpty)
                         (implicit persister: ValuePersistence[T], manifest: Manifest[T]) = {
-    val a = PropertyAttribute[T](name, value, inclusionMode)
+    val a = PropertyAttribute[T](name, value, inclusionMode, dynamic = true)
     _dataAttributes = (a :: _dataAttributes.reverse).reverse
     a
   }
@@ -195,6 +199,8 @@ trait Tag extends Markup with AttributeContainer[PropertyAttribute[_]] {
 }
 
 object Tag {
+  var AutoCreate = false
+
   private var map = Map.empty[String, Map[String, EnhancedField]]
 
   // Improve performance by re-using list for same tag

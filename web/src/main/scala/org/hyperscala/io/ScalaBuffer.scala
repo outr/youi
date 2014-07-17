@@ -2,7 +2,7 @@ package org.hyperscala.io
 
 import org.hyperscala.web.Webpage
 import org.hyperscala.html.HTMLTag
-import org.hyperscala.{PropertyAttribute, Container}
+import org.hyperscala.{EnumEntryAttributeValue, PropertyAttribute, Container}
 import org.hyperscala.html.tag.{Comment, Text, Title}
 import org.hyperscala.css.StyleSheetAttribute
 import org.hyperscala.javascript.{EventProperty, JavaScriptString}
@@ -20,10 +20,27 @@ abstract class ScalaBuffer {
   var depth = 1
   val b = new StringBuilder
 
-  def createWrappedString(s: String) = if (s.indexOf('\n') != -1) {
-    "\"\"\"%s\"\"\"".format(s)
+  def createWrappedString(s: String) = if (s.trim.nonEmpty) {
+    val preWhitespace = s.charAt(0).isWhitespace
+    val postWhitespace = s.charAt(s.length - 1).isWhitespace
+    val b = new StringBuilder
+    if (preWhitespace) {
+      b.append(' ')
+    }
+    b.append(s.trim)
+    if (postWhitespace) {
+      b.append(' ')
+    }
+    val trimmed = b.toString()
+    if (s.indexOf('\n') != -1) {
+      "\"\"\"%s\"\"\"".format(trimmed)
+    } else {
+      "\"%s\"".format(trimmed.replaceAll("\"", "\\\\\""))
+    }
+  } else if (s.isEmpty) {
+    "\"\""
   } else {
-    "\"%s\"".format(s.replaceAll("\"", "\\\\\""))
+    "\" \""
   }
 
   def tagName(clazz: Class[_]): String = if (clazz.getName.startsWith("org.hyperscala.html.tag.") && !clazz.getName.contains("$")) {
@@ -37,10 +54,10 @@ abstract class ScalaBuffer {
       tag match {
         case title: Title => writeLine("title := \"%s\"".format(title.content()))
         case comment: Comment => writeLine(s"contents += new tag.Comment(${createWrappedString(comment.content())})", prefix)
-        case text: Text if text.content() != null && text.content().trim.length > 0 => writeLine("contents += %s".format(createWrappedString(text.content())), prefix)
+        case text: Text if text.content() != null && text.content().trim.length > 0 => writeLine(s"contents += ${createWrappedString(text.content())}", prefix)
         case _ => {
           val attributes = tag.xmlAttributes.collect {
-            case a: PropertyAttribute[_] if a.shouldRender && !a.isInstanceOf[EventProperty] && !a.isInstanceOf[StyleSheetAttribute[_]] && a() != null && !a.name.startsWith("data-") && !a.name.startsWith("aria-") => {
+            case a: PropertyAttribute[_] if a.shouldRender && !a.isInstanceOf[EventProperty] && !a.isInstanceOf[StyleSheetAttribute[_]] && a() != null && !a.name.startsWith("data-") && !a.name.startsWith("aria-") && !a.dynamic => {
               "%s = %s".format(namify(tag, a), valuify(tag, a.name, a()))
             }
           }.mkString(", ")
@@ -93,7 +110,7 @@ abstract class ScalaBuffer {
     // Write event data
     tag.xmlAttributes.foreach {
       case a: PropertyAttribute[_] with EventProperty if a.shouldRender => {
-        writeLine("event.%s := %s".format(a.name.substring(2), valuify(tag, a.name, a())), prefix)
+        writeLine(s"${a.name.substring(2)}Event := ${valuify(tag, a.name, a())}", prefix)
       }
       case a: PropertyAttribute[_] if a.shouldRender && a.name.startsWith("aria-") => {
         writeLine(s"${namify(tag, a)} := ${valuify(tag, a.name, a())}", prefix)
@@ -124,16 +141,20 @@ abstract class ScalaBuffer {
     b.append(content)
   }
 
-  def namify(tag: HTMLTag, a: PropertyAttribute[_]) = ScalaBuffer.attributeName(tag, a)
+  def namify(tag: HTMLTag, a: PropertyAttribute[_]) = ScalaBuffer.attributeName(tag, a) match {
+    case Some(name) => name
+    case None => s"""attribute("${a.name}")"""      // Dynamically defined attribute
+  }
 
   def valuify(tag: HTMLTag, name: String, v: Any) = v match {
-    case s: String => "\"%s\"".format(s)
-    case l: ListSet[_] if name == "class" => "List(%s)".format(l.map(v => "\"%s\"".format(v)).mkString(", "))
+    case s: String => createWrappedString(s)
+    case l: List[_] if name == "class" => "List(%s)".format(l.map(v => "\"%s\"".format(v)).mkString(", "))
     case js: JavaScriptString => "JavaScriptString(%s)".format(createWrappedString(js.content))
     case l: NumericLength => s"${l.number}.${l.lengthType}"
-    case e: EnumEntry => "%s.%s".format(e.parent.name, e.name)
+    case e: EnumEntry if e.name != null => s"${e.parent.name}.${e.name}"
+    case e: EnumEntryAttributeValue => s"""${e.parent.name}("${e.value}")"""
     case i: Int => i.toString
-    case _ => throw new RuntimeException("Unsupported value: %s.%s (%s: %s)".format(tag.getClass.getName, name, v, v.asInstanceOf[AnyRef].getClass.getName))
+    case _ => throw new RuntimeException(s"Unsupported value in ${tag.xmlLabel} for name: $name, value: $v of type ${v.asInstanceOf[AnyRef].getClass.getName}")
   }
 }
 
@@ -143,9 +164,9 @@ object ScalaBuffer {
   def attributeName(tag: HTMLTag, attribute: PropertyAttribute[_]) = synchronized {
     val key = "%s.%s".format(tag.xmlLabel, attribute.name)
     attributes.get(key) match {
-      case Some(alias) => alias
+      case Some(alias) => Some(alias)
       case None => {
-        val method = tag.getClass.methods.find {
+        val methodOption = tag.getClass.methods.find {
           case m if m.name.indexOf('$') != -1 => false
           case m if m.name == "formValue" => false
           case m if m.returnType.`type`.hasType(classOf[PropertyAttribute[_]]) && m.args.isEmpty => try {
@@ -154,9 +175,14 @@ object ScalaBuffer {
             case t: Throwable => throw new RuntimeException(s"Failed to invoke ${m.absoluteSignature} on $key.", t)
           }
           case _ => false
-        }.getOrElse(throw new RuntimeException(s"Unable to find method for $key"))
-        attributes += key -> method.name
-        method.name
+        }
+        methodOption match {
+          case Some(m) => {
+            attributes += key -> m.name
+            Some(m.name)
+          }
+          case None => None // Ignore, attribute is dynamically defined
+        }
       }
     }
   }

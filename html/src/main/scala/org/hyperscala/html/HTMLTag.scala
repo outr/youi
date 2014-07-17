@@ -21,8 +21,11 @@ trait HTMLTag extends IdentifiableTag with AriaSupport with EventSupport {
   lazy val clazz = new PropertyAttribute[List[String]]("class", Nil) with ListProperty[String] {
     changing.on {     // Make sure there are no duplicates in clazz
       case newValue => {
-        newValue.foreach(cn => if (!ClassSelector.isValid(cn)) throw new RuntimeException(s"Invalid class name: $cn in [${newValue.mkString(", ")}]"))
-        Some(newValue.distinct)
+        Some(newValue.map {
+          case className if className == null || className.trim.isEmpty => None
+          case className if ClassSelector.isValid(className) => Some(className)
+          case className => throw new RuntimeException(s"Invalid class name: '$className' in [${newValue.mkString(", ")}]")
+        }.flatten.distinct)
       }
     }
   }

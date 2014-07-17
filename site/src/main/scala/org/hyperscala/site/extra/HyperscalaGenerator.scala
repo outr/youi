@@ -1,14 +1,16 @@
 package org.hyperscala.site.extra
 
+import org.hyperscala.Tag
 import org.hyperscala.site.HyperscalaPage
 import org.hyperscala.html._
-import org.hyperscala.realtime.Realtime
+import org.hyperscala.realtime._
 import org.hyperscala.io.HTMLToScala
 import org.hyperscala.html.attributes.InputType
 import com.outr.net.http.client.HttpClient
 import com.outr.net.http.request.HttpRequest
 import com.outr.net.{Method, URL}
 import com.outr.net.http.content.{InputStreamContent, ContentType, StringContent}
+import org.hyperscala.ui.BusyDialog
 import org.powerscala.IO
 import scala.util.parsing.json.{JSONFormat, JSONObject}
 import org.hyperscala.jquery.Gritter
@@ -21,7 +23,9 @@ import org.hyperscala.html.tag.Comment
 class HyperscalaGenerator extends HyperscalaPage {
   require(Realtime)
   require(Gritter)
+  require(BusyDialog)
 
+  Tag.AutoCreate = true               // Auto-create attributes that don't already exist
   Realtime.connectStandard(this)
 
   val packageInput = new tag.Input(clazz = List("code_generator"))
@@ -71,7 +75,7 @@ class HyperscalaGenerator extends HyperscalaPage {
     }
   }
 
-  def generate() = {
+  def generate() = BusyDialog(this, "Generating...") {
     val source = text.value()
     if (source != null && source.nonEmpty) {
       val rootId = rootIdInput.value() match {

@@ -124,7 +124,7 @@ class Select extends Container[Option] with BodyChild with HTMLTag with FormFiel
   }
 
   override protected def processChange(value: Json) = {
-    if (value.isArray) {
+    if (value != null && value.isArray) {
       val options = value.array.fold(List.empty[Option])(a => a.toList.flatMap(j => optionByValue(j.stringOrEmpty)))
       FormField.ignorePropertyChange(selectedOptions, options) {
         selectedOptions := options

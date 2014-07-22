@@ -1,5 +1,9 @@
 package org.hyperscala.site.extra
 
+import java.util.Collections
+
+import org.eclipse.egit.github.core.service.GistService
+import org.eclipse.egit.github.core.{Gist, GistFile}
 import org.hyperscala.Tag
 import org.hyperscala.site.HyperscalaPage
 import org.hyperscala.html._
@@ -12,7 +16,6 @@ import com.outr.net.{Method, URL}
 import com.outr.net.http.content.{InputStreamContent, ContentType, StringContent}
 import org.hyperscala.ui.BusyDialog
 import org.powerscala.IO
-import scala.util.parsing.json.{JSONFormat, JSONObject}
 import org.hyperscala.jquery.Gritter
 import org.jdom2.input.JDOMParseException
 import org.hyperscala.html.tag.Comment
@@ -122,19 +125,14 @@ class HyperscalaGenerator extends HyperscalaPage {
   }
 
   def createGist(filename: String, content: String) = {
-    val extractor = """html_url":"https://gist.github.com/([a-z0-9]*)""".r
-    val files = Map(s"$filename.scala" -> JSONObject(Map("content" -> content)))
-    val jsonRequest = Map("description" -> "hyperscala generated", "public" -> true, "files" -> JSONObject(files))
-    val jsonRequestString = JSONObject(jsonRequest).toString(JSONFormat.defaultFormatter)
-    val requestContent = StringContent(jsonRequestString, contentType = ContentType.JSON)
-    val request = HttpRequest(URL("https://api.github.com/gists"), Method.Post, content = Some(requestContent))
-    val response = HttpClient.send(request)
-    val stream = response.content.asInstanceOf[InputStreamContent]
-    val jsonString = IO.copy(stream.input)
-    extractor.findFirstMatchIn(jsonString) match {
-      case Some(m) => s"https://gist.github.com/${m.group(1)}"
-      case None => throw new RuntimeException("Gist Not found in JSON!")
-    }
+    val file = new GistFile
+    file.setContent(content)
+    val gist = new Gist
+    gist.setPublic(true)
+    gist.setDescription("Generated Hyperscala source code from HTML file posted to http://hyperscala.org/generator.html")
+    gist.setFiles(Collections.singletonMap(s"$filename.scala", file))
+    val service = new GistService
+    service.createGist(gist).getHtmlUrl
   }
 
   override def sourceURL = "https://github.com/darkfrog26/hyperscala/blob/master/site/src/main/scala/org/hyperscala/site/extra/HyperscalaGenerator.scala"

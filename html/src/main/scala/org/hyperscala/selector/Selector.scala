@@ -4,13 +4,12 @@ import org.hyperscala.persistence.ValuePersistence
 import org.hyperscala.html.HTMLTag
 import org.hyperscala.html.HTMLTagType
 import org.hyperscala.IdentifiableTag
-import org.powerscala.json.Jsonify
 import scala.Some
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-trait Selector extends Jsonify {
+trait Selector {
   def root: Selector = parent match {
     case Some(p) => p.root
     case None => this

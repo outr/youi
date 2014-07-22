@@ -27,7 +27,7 @@ trait NumericLength extends Length with FontSize {
 }
 
 object NumericLength {
-  val Regex = """([\d.]+)([%a-zA-Z]*+)""".r
+  val Regex = """([-\d.]+)([%a-zA-Z]*+)""".r
 
   def apply(name: String) = get(name).getOrElse(throw new RuntimeException(s"NumericLength not found for value: $name."))
 

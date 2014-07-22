@@ -14,12 +14,12 @@ object Resource extends Enumerated[Resource] with EnumEntryPersistence[Resource]
   val None = new Resource("none")
   val Inherit = new Resource("inherit")
 
-  override def apply(name: String) = super.apply(name) match {
-    case null => if (name.startsWith("url(")) {
-      new Resource(name)
+  override def get(name: String, caseSensitive: Boolean = false) = super.get(name, caseSensitive) match {
+    case Some(v) => Some(v)
+    case scala.None => if (name.toLowerCase.startsWith("url(")) {
+      Some(new Resource(name))
     } else {
-      new Resource("url('%s')".format(name))
+      Some(new Resource("url('%s')".format(name)))
     }
-    case v => v
   }
 }

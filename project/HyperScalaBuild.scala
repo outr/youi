@@ -76,6 +76,9 @@ object HyperScalaBuild extends Build {
   lazy val web = Project("web", file("web"), settings = createSettings("hyperscala-web"))
     .dependsOn(html, javascript, svg)
     .settings(libraryDependencies ++= Seq(uaDetector, scalaSwing))
+  lazy val service = Project("service", file("service"), settings = createSettings("hyperscala-service"))
+    .dependsOn(web)
+    .settings(libraryDependencies ++= Seq(powerScalaJson))
   lazy val snapSVG = Project("snapsvg", file("snapsvg"), settings = createSettings("hyperscala-snapsvg"))
     .dependsOn(web)
   lazy val jquery = Project("jquery", file("jquery"), settings = createSettings("hyperscala-jquery"))
@@ -112,6 +115,6 @@ object HyperScalaBuild extends Build {
       }
     }, mainClass in assembly := Some("org.hyperscala.site.HyperscalaSite"))
     .settings(mainClass := Some("org.hyperscala.site.HyperscalaSite"))
-    .settings(libraryDependencies ++= Seq(jettyWebapp, outrNetServlet, outrNetJetty))
+    .settings(libraryDependencies ++= Seq(jettyWebapp, outrNetServlet, outrNetJetty, githubCore))
     .dependsOn(examples)
 }

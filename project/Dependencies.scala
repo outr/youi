@@ -7,6 +7,7 @@ object Dependencies {
   val powerScalaReflect = "org.powerscala" %% "powerscala-reflect" % powerScalaVersion
   val powerScalaHierarchy = "org.powerscala" %% "powerscala-hierarchy" % powerScalaVersion
   val powerScalaProperty = "org.powerscala" %% "powerscala-property" % powerScalaVersion
+  val powerScalaJson = "org.powerscala" %% "powerscala-json" % powerScalaVersion
 
   val webJarsJQuery = "org.webjars" % "jquery" % "1.10.2-1"
 
@@ -28,6 +29,7 @@ object Dependencies {
   val akkaActors = "com.typesafe.akka" %% "akka-actor" % "latest.release"
   val uaDetector = "net.sf.uadetector" % "uadetector-resources" % "latest.release"
 
+  val githubCore = "org.eclipse.mylyn.github" % "org.eclipse.egit.github.core" % "2.1.5"
   val argonaut = "io.argonaut" %% "argonaut" % "latest.release"
 
   val scalaTest = "org.scalatest" %% "scalatest" % "latest.release" % "test"

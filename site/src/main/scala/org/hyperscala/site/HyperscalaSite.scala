@@ -18,7 +18,6 @@ import com.outr.net.http.session.MapSession
 import com.outr.net.http.jetty.JettyApplication
 import com.outr.net.http.request.HttpRequest
 import org.hyperscala.examples.connect.ConnectExample
-import org.hyperscala.examples.service.TestService
 import com.outr.net.http.filter.PathFilter
 import org.hyperscala.hello.HelloSite
 import org.hyperscala.site.extra.HyperscalaGenerator
@@ -122,7 +121,7 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication {
 
   handlers.add(PathFilter("/hello", HelloSite))
 
-  TestService.register(this)    // Register the test service
+//  TestService.register(this)    // Register the test service
 
   addClassPath("/images/", "images/")
   addClassPath("/css/", "css/")

@@ -11,3 +11,8 @@ package org.hyperscala.service
  * @author Matt Hicks <matt@outr.com>
  */
 case class ServiceException(message: String, code: Int = -1) extends RuntimeException(message)
+
+object ServiceException {
+  val InternalError = 500
+  val MissingValues = 501
+}

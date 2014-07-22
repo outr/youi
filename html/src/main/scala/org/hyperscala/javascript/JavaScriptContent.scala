@@ -5,14 +5,13 @@ import org.hyperscala.{AttributeValue, XMLContent}
 import org.jdom2.{Text, Content}
 import org.hyperscala.io.HTMLWriter
 import org.powerscala.Color
-import org.powerscala.json.Jsonify
 import org.powerscala.reflect._
 import java.util.Date
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-trait JavaScriptContent extends XMLContent with Jsonify {
+trait JavaScriptContent extends XMLContent {
   def content: String
 
   def write(writer: HTMLWriter) = writer.write(content)

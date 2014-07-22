@@ -133,7 +133,7 @@ class Input extends BodyChild with HTMLTag with FormField {
   override def formValue = value
 
   override protected def processChange(value: Json) = {
-    if (value.isBool && List(InputType.CheckBox, InputType.Radio).contains(inputType())) {
+    if (value != null && value.isBool && List(InputType.CheckBox, InputType.Radio).contains(inputType())) {
       val b = value.bool.getOrElse(false)
       FormField.ignorePropertyChange(checked, b) {
         checked := b

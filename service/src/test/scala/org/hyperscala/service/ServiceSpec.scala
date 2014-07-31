@@ -29,6 +29,20 @@ class ServiceSpec extends WordSpec with Matchers {
       response.content shouldNot equal(null)
       response.content.asString should equal("\"dlroW olleH\"")
     }
+    "invoke the 'reverse' endpoint without name" in {
+      val request = HttpRequest(URL("http://localhost/test/reverse"))
+      val response = TestSite.onReceive(request, HttpResponse(status = HttpResponseStatus.NotFound))
+      response.status should equal(HttpResponseStatus.InternalServerError)
+      response.content shouldNot equal(null)
+      response.content.asString should equal("""{"message":"Unable to find value for /test/reverse.name.","code":501}""")
+    }
+    "invoke the 'reverse' endpoint with 'fail' to cause an arbitrary failure" in {
+      val request = HttpRequest(URL("http://localhost/test/reverse?name=fail"))
+      val response = TestSite.onReceive(request, HttpResponse(status = HttpResponseStatus.NotFound))
+      response.status should equal(HttpResponseStatus.InternalServerError)
+      response.content shouldNot equal(null)
+      response.content.asString should equal("""{"message":"Intended Failure","code":100}""")
+    }
   }
   "ComplexService" should {
     "properly register with TestSite" in {
@@ -60,7 +74,11 @@ object SimpleService extends Service {
   override val path = "/test"
 
   @endpoint
-  def reverse(name: String) = name.reverse
+  def reverse(name: String) = if (name == "fail") {
+    throw new ServiceException("Intended Failure", 100)
+  } else {
+    name.reverse
+  }
 }
 
 object ComplexService extends Service {

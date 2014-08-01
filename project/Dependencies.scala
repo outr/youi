@@ -1,8 +1,8 @@
 import sbt._
 
 object Dependencies {
-  val powerScalaVersion = "latest.integration"
-  val outrNetVersion = "latest.integration"
+  val powerScalaVersion = "1.6.6-SNAPSHOT"
+  val outrNetVersion = "1.1.2-SNAPSHOT"
 
   val powerScalaReflect = "org.powerscala" %% "powerscala-reflect" % powerScalaVersion
   val powerScalaHierarchy = "org.powerscala" %% "powerscala-hierarchy" % powerScalaVersion
@@ -17,9 +17,6 @@ object Dependencies {
 
   val scalaSwing = "org.scala-lang.modules" %% "scala-swing" % "latest.release"
 
-//  val launcher = "com.outr.launcher" %% "launcher" % "1.0.0-SNAPSHOT"
-
-//  val servlet = "org.eclipse.jetty.orbit" % "javax.servlet" % "3.0.0.v201112011016"
   val jettyWebapp = "org.eclipse.jetty" % "jetty-webapp" % "latest.release" % "container"
 
   val jdom = "org.jdom" % "jdom2" % "latest.release"

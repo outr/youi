@@ -18,6 +18,6 @@ trait Page extends Listenable with Updatable with Logging {
   override def update(delta: Double) {
     super.update(delta)
 
-    intercept.update.fire(this)
+    intercept.update.fire(delta)
   }
 }

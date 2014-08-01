@@ -40,31 +40,13 @@ class RealtimePage[S <: Session] private(page: Webpage[S]) extends Logging {
     case evt => propertyChanged(evt)
   }
 
+  // Called when the client initializes and sends its first message back to the server
+  def initialized() = {
+  }
+
   def send(event: String, message: Json, sendWhenConnected: Boolean) = synchronized {
     connections.send2Client(event, message, sendWhenConnected)
   }
-
-  /*@tailrec
-  private def sendRecursive(event: String, message: String, connections: List[Connection]): Unit = {
-    if (connections.nonEmpty) {
-      val c = connections.head
-      c.send(event, message)
-      sendRecursive(event, message, connections.tail)
-    }
-  }*/
-
-  /*protected[realtime] def connectionCreated(connection: Connection) = synchronized {
-    _connections = connection :: _connections
-    heardFromListener = connection.heardFrom.on {
-      case time => page.checkIn()       // Check in with the page to keep it from timing out.
-    }
-  }*/
-
-//  private var heardFromListener: Listener[Long, Unit] = _
-
-//  protected[realtime] def connectionConnected(connection: Connection) = synchronized {
-//    sendBacklog()
-//  }
 
   protected[realtime] def received(connection: Connection[S], message: Message) = {
     synchronized {
@@ -78,42 +60,8 @@ class RealtimePage[S <: Session] private(page: Webpage[S]) extends Logging {
         case Some(element) => element.receive(message.event, json)
         case None => warn(s"Unable to find tag by id: $id to fire event: ${message.event} for message: ${message.data}")
       }
-//      val eventType = content("eventType").asInstanceOf[String]
-
-//      val t = id match {
-//        case null => Some(page.body)
-//        case _ => page.html.byId[IdentifiableTag](id)
-//      }
-//      t match {
-//        case Some(element) => element.receive(message.event, content)
-//        case None => warn(s"Unable to find tag by id: $id to fire event: $eventType for message: $content")
-//      }
     }
   }
-
-/*
-  /**
-   * Executes the event in another thread to keep from blocking data receiving.
-   *
-   * @param element the element the event is received for
-   * @param eventType the type of event
-   * @param responseMessage the response message of the event
-   */
-  private def asynchronousReceive(element: IdentifiableTag, eventType: String, responseMessage: ResponseMessage) = {
-    val context = Website().requestContext          // Get the context for the current thread
-    val f = () => {
-      Website().contextualize(context) {
-        Page.instance.set(Webpage())
-        element.receive(eventType, responseMessage)
-      }
-    }
-    actor ! f     // Process receives one at a time via actor
-  }
-
-  protected[realtime] def connectionDisposed(connection: Connection) = synchronized {
-    _connections = _connections.filterNot(c => c == connection)
-    connection.heardFrom -= heardFromListener
-  }*/
 
   private def childAdded(evt: ChildAddedEvent) = synchronized {
     if (!RealtimePage.ignoringStructureChanges) {

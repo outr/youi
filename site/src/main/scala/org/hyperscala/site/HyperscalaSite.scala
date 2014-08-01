@@ -56,6 +56,7 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication {
     val static = page(new HyperscalaExample(new StaticHTMLExample), Scope.Request, "/example/static.html")
     val form = page(new HyperscalaExample(new FormExample), Scope.Request, "/example/form.html")
     val realTime = page(new HyperscalaExample(new RealtimeExample), Scope.Session, "/example/realtime.html")
+    val realTimeDate = page(new HyperscalaExample(new RealtimeDateExample), Scope.Page, "/example/realtime_date.html")
     val realTimeWebpage = page(new HyperscalaExample(new RealtimeWebpageExample), Scope.Session, "/example/realtime_webpage.html")
     val realTimeForm = page(new HyperscalaExample(new RealtimeFormExample), Scope.Page, "/example/realtime_form.html")
     val visual = page(new HyperscalaExample(new VisualExample), Scope.Session, "/example/visual.html")

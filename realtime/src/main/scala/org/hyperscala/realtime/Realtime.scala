@@ -18,7 +18,7 @@ import org.hyperscala.selector.Selector
 import org.powerscala.property.Property
 import org.hyperscala.{Markup, Container}
 import org.hyperscala.connect.{Message, Connection, Connect}
-import org.powerscala.event.Listenable
+import org.powerscala.event.{Intercept, Listenable}
 import argonaut.{CodecJson, Json}
 import argonaut.Argonaut._
 import com.outr.net.http.session.Session
@@ -43,6 +43,15 @@ object Realtime extends Module with Logging with Listenable {
   override def load[S <: Session](webpage: Webpage[S]) = {
     webpage.head.contents += new tag.Meta(httpEquiv = "expires", content = "0")
     webpage.head.contents += new tag.Script(src = "/js/realtime.js")
+    webpage.body.eventReceived.on {
+      case evt => if (evt.event == "init") {
+        val realtime = RealtimePage(webpage)
+        realtime.initialized()
+        Intercept.Stop
+      } else {
+        Intercept.Continue
+      }
+    }
     Connect.event[S](webpage) {
       case (connection, message) => received(connection, message)
     }(webpage.website.manifest)

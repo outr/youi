@@ -20,6 +20,8 @@ HyperscalaConnect.on('jquery.call', function(data) {
     }
 });
 
+realtimeSend(null, 'init', {});
+
 /**
  * Add this call to a JavaScript event to fire the event down to the server.
  *

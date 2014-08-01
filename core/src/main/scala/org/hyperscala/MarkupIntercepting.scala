@@ -35,9 +35,9 @@ class MarkupIntercepting(parentInterceptor: MarkupIntercepting) extends Listenab
    */
   val renderAttribute = new RenderAttributeProcessor()
   /**
-   * Called upon update of Page instance.
+   * Called upon update of Page instance with the delta.
    */
-  val update = new StandardHierarchyEventProcessor[Page]("update")
+  val update = new StandardHierarchyEventProcessor[Double]("update")
 }
 
 class RenderAttributeProcessor(implicit listenable: Listenable)

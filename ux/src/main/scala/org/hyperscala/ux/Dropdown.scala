@@ -26,7 +26,7 @@ object Dropdown extends JavaScriptCaller with StorageComponent[Dropdown, HTMLTag
 }
 
 class Dropdown private(val wrapped: HTMLTag) extends jQueryComponent {
-  def autoInit = true
+  def autoInit = false
   def functionName = "dropdown"
 
   implicit def listenable: Listenable = wrapped
@@ -41,4 +41,9 @@ class Dropdown private(val wrapped: HTMLTag) extends jQueryComponent {
   def open() = call("open")
   def close() = call("close")
   def toggle() = call("toggle")
+
+  // Init only after the selector has been set
+  selector.change.on {
+    case evt => init()
+  }
 }

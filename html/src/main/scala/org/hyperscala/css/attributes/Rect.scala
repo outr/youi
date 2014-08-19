@@ -21,6 +21,7 @@ object Rect extends ValuePersistence[Rect] {
   def apply(s: String) = s match {
     case Regex(t, r, b, l) => new Rect(Length(t), Length(r), Length(b), Length(l))
     case "auto" => new Rect()
+    case "" => new Rect()
     case _ => throw new RuntimeException(s"Unsupported rect format: [$s]")
   }
 

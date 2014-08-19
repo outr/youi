@@ -16,6 +16,7 @@ trait SingleSelectList[T] {
   val selected = Property[T]()
   val options = new Property[List[T]] with ListProperty[T]
   val disabled = Property[Boolean](default = Some(false))
+  val allowNull = Property[Boolean](default = Some(false))
 
   selected.change.on {
     case evt => refreshSelected()   // Refresh the selected display when the selected option changes
@@ -23,8 +24,9 @@ trait SingleSelectList[T] {
   options.change.on {
     case evt => {
       refreshItems()                // Refresh the items list when the options list changes
+      val default = (if (allowNull()) null else options().headOption.getOrElse(null)).asInstanceOf[T]
       if (!options().contains(selected())) {
-        selected := options().headOption.getOrElse(null).asInstanceOf[T]
+        selected := default
       }
     }
   }

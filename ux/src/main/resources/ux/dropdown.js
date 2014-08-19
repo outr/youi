@@ -56,7 +56,7 @@
             option: function(key, value) {
                 var settings = this.data('dropdownSettings');
                 settings[key] = value;
-                console.log('option: ' + key + ' = ' + value);
+                this.data('dropdownSettings', settings);
             }
         };
 

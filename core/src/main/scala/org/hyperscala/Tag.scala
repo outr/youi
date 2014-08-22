@@ -84,7 +84,7 @@ trait Tag extends Markup with AttributeContainer[PropertyAttribute[_]] {
     if (option.isDefined) {
       option
     } else if (name.startsWith("data-")) {
-      Some(createAttribute[String](name, null))
+      Some(createAttribute[String](name, null, InclusionMode.Always))
     } else {
       val attributeName = name.replaceAll("-", "") match {
         case "type" if List("link", "script").contains(xmlLabel) => "mimeType"
@@ -151,10 +151,7 @@ trait Tag extends Markup with AttributeContainer[PropertyAttribute[_]] {
    * Gets or creates a data attribute (data-<name>) and returns the property attribute.
    */
   def dataAttribute(name: String) = synchronized {
-    getAttribute(s"data-$name") match {
-      case Some(propertyAttribute) => propertyAttribute.asInstanceOf[PropertyAttribute[String]]
-      case None => createAttribute[String](s"data-$name", null)
-    }
+    getAttribute(s"data-$name").get.asInstanceOf[PropertyAttribute[String]]
   }
 
   def data(name: String) = getAttribute(s"data-$name") match {

@@ -241,7 +241,7 @@ object Style extends Enumerated[Style[_]] {
   val transitionProperty = new Style[String]("transition-property")
   val transitionTimingFunction = new Style[String]("transition-timing-function")
   val unicodeBidi = new Style[String]("unicode-bidi")
-  val verticalAlign = new Style[Length]("vertical-align")
+  val verticalAlign = new Style[VerticalAlignment]("vertical-align")
   val visibility = new Style[Visibility]("visibility")
   val voiceBalance = new Style[String]("voice-balance")
   val voiceDuration = new Style[String]("voice-duration")

@@ -4,7 +4,7 @@ import org.hyperscala.Markup
 import org.jdom2.Attribute
 import org.powerscala.event.Intercept
 import org.hyperscala.html._
-import org.hyperscala.css.attributes.{Length, BorderCollapse}
+import org.hyperscala.css.attributes.{VerticalAlignment, Length, BorderCollapse}
 import org.powerscala.Priority
 
 /**
@@ -49,7 +49,7 @@ object HTML5Compliance {
       }
       case td: tag.Td => name match {
         case "valign" => {
-          td.style.verticalAlign := Length(value)
+          td.style.verticalAlign := VerticalAlignment(value)
           Intercept.Stop
         }
       }

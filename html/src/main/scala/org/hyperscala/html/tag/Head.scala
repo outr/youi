@@ -103,6 +103,11 @@ class Head extends Container[HeadChild] with HTMLChild with HTMLTag {
     }
   }
 
+  def useStyle[R](selector: Selector)(f: StyleSheet => R) = {
+    val style = this.selector(selector)
+    f(style)
+  }
+
   def deleteSelector(selector: Selector) = synchronized {
     val selectorString = selector.value
     styleSpaces.remove(selectorString)

@@ -59,6 +59,7 @@ package object persistence {
   implicit val textClipPersistence = TextClip
   implicit val textShadowPersistence = TextShadow
   implicit val textTransformPersistence = TextTransform
+  implicit val verticalAlignmentPersistence = VerticalAlignment
   implicit val visibilityPersistence = Visibility
   implicit val whiteSpacePersistence = WhiteSpace
   implicit val zIndexPersistence = ZIndex

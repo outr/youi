@@ -2,6 +2,7 @@ package org.hyperscala.jquery
 
 import org.hyperscala.html.HTMLTag
 import org.hyperscala.javascript.{JavaScriptContent, JavaScriptString}
+import org.hyperscala.selector.Selector
 import org.powerscala.event.processor.UnitProcessor
 import org.powerscala.event.Intercept
 import org.hyperscala.event.EventReceived
@@ -21,9 +22,11 @@ trait jQueryComponent extends WrappedComponent[HTMLTag] {
 
   protected def functionName: String
 
+  protected def realtimeSelector: Option[Selector] = Some(tagSelector.selector)
+
   private def send(statement: Statement[_]) = synchronized {
     if (initialized) {
-      Realtime.send(webpage, statement, Some(tagSelector.selector))
+      Realtime.send(webpage, statement, selector = realtimeSelector)
     } else {
       throw new RuntimeException("component not initialized!")
     }

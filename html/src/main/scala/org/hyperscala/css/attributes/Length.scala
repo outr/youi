@@ -19,7 +19,7 @@ sealed trait Length extends EnumEntryAttributeValue {
   }
 }
 
-trait NumericLength extends Length with FontSize {
+trait NumericLength extends Length with FontSize with VerticalAlignment {
   def number: Double
   def lengthType: String
 
@@ -52,11 +52,11 @@ object NumericLength {
   }
 }
 
-object AutoLength extends Length with FontSize {
+object AutoLength extends Length with FontSize with VerticalAlignment {
   val value = "auto"
 }
 
-object InheritLength extends Length with FontSize {
+object InheritLength extends Length with FontSize with VerticalAlignment {
   val value = "inherit"
 }
 

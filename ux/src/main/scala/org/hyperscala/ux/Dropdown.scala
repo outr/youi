@@ -3,6 +3,7 @@ package org.hyperscala.ux
 import org.hyperscala.html._
 import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.jquery.dsl.jQuerySelector
+import org.hyperscala.selector.Selector
 import org.hyperscala.web._
 import org.hyperscala.jquery.{jQueryComponent, JavaScriptCaller}
 import org.powerscala.StorageComponent
@@ -28,6 +29,8 @@ object Dropdown extends JavaScriptCaller with StorageComponent[Dropdown, HTMLTag
 class Dropdown private(val wrapped: HTMLTag) extends jQueryComponent {
   def autoInit = false
   def functionName = "dropdown"
+
+  override protected def realtimeSelector = Some(selector().selector)
 
   implicit def listenable: Listenable = wrapped
 

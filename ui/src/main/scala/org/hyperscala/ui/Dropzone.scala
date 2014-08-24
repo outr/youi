@@ -7,7 +7,7 @@ import com.outr.net.http.handler.{MultipartSupport, MultipartHandler}
 import com.outr.net.http.request.HttpRequest
 import com.outr.net.http.response.{HttpResponseStatus, HttpResponse}
 import org.hyperscala.html._
-import org.hyperscala.javascript.JavaScriptString
+import org.hyperscala.javascript.{JavaScriptContent, JavaScriptString}
 import org.hyperscala.jquery.jQueryComponent
 import org.hyperscala.module.Module
 import org.powerscala.event.Listenable
@@ -108,6 +108,32 @@ class Dropzone(container: HTMLTag) extends jQueryComponent with Listenable {
   val dictRemoveFile = property("dictRemoveFile", "Remove file")
   val dictRemoveFileConfirmation = property[String]("dictRemoveFileConfirmation", null)
   val dictMaxFilesExceeded = property("dictMaxFilesExceeded", "You can not upload any more files.")
+
+  val drop = property[JavaScriptContent]("drop", null)
+  val dragStart = property[JavaScriptContent]("dragstart", null)
+  val dragEnd = property[JavaScriptContent]("dragend", null)
+  val dragEnter = property[JavaScriptContent]("dragenter", null)
+  val dragOver = property[JavaScriptContent]("dragover", null)
+  val dragLeave = property[JavaScriptContent]("dragleave", null)
+
+  val addedFile = property[JavaScriptContent]("addedfile", null)
+  val removedFile = property[JavaScriptContent]("removedfile", null)
+  val thumbnail = property[JavaScriptContent]("thumbnail", null)
+  val error = property[JavaScriptContent]("error", null)
+  val processing = property[JavaScriptContent]("processing", null)
+  val uploadProgress = property[JavaScriptContent]("uploadprogress", null)
+  val sending = property[JavaScriptContent]("sending", null)
+  val success = property[JavaScriptContent]("success", null)
+  val complete = property[JavaScriptContent]("complete", null)
+  val canceled = property[JavaScriptContent]("canceled", null)
+  val maxFilesReached = property[JavaScriptContent]("maxFilesReached", null)
+  val maxFilesExceeded = property[JavaScriptContent]("maxFilesExceeded", null)
+
+  val processingMultiple = property[JavaScriptContent]("processingmultiple", null)
+  val sendingMultiple = property[JavaScriptContent]("sendingmultiple", null)
+  val successMultiple = property[JavaScriptContent]("successmultiple", null)
+  val completeMultiple = property[JavaScriptContent]("completemultiple", null)
+  val cancelMultiple = property[JavaScriptContent]("cancelmultiple", null)
 
   container.connected[Webpage[_]] {
     case webpage => {

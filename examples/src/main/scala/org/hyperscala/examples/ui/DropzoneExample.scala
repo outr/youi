@@ -2,6 +2,7 @@ package org.hyperscala.examples.ui
 
 import org.hyperscala.css.attributes.{Alignment, VerticalAlignment, Display, LineStyle}
 import org.hyperscala.examples.Example
+import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.web._
 import org.hyperscala.ui.Dropzone
 import org.hyperscala.html._
@@ -134,6 +135,48 @@ class DropzoneExample extends Example {
   dropzone.previewTemplate := template.outputString
   dropzone.thumbnailWidth := 150
   dropzone.thumbnailHeight := 150
+  dropzone.addedFile := JavaScriptString(
+    """
+      |function(file) {
+      | console.log('addedfile!: ' + file);
+      |}
+    """.stripMargin)
+  dropzone.removedFile := JavaScriptString(
+    """
+      |function(file) {
+      | console.log('removedfile!: ' + file);
+      |}
+    """.stripMargin)
+  dropzone.thumbnail := JavaScriptString(
+    """
+      |function(file, dataUrl) {
+      | console.log('thumbnail!: ' + file + ', ' + dataUrl);
+      |}
+    """.stripMargin)
+  dropzone.processing := JavaScriptString(
+    """
+      |function(file) {
+      | console.log('processing!: ' + file);
+      |}
+    """.stripMargin)
+  dropzone.uploadProgress := JavaScriptString(
+    """
+      |function(file, progress, bytesSent) {
+      | console.log('uploadProgress!: ' + file + ', ' + progress + ', ' + bytesSent);
+      |}
+    """.stripMargin)
+  dropzone.success := JavaScriptString(
+    """
+      |function(file) {
+      | console.log('success!: ' + file);
+      |}
+    """.stripMargin)
+  dropzone.complete := JavaScriptString(
+    """
+      |function(file) {
+      | console.log('complete!: ' + file);
+      |}
+    """.stripMargin)
   dropzone.fileReceived.on {
     case (filename, file) => println(s"Filename: $filename, Length: ${file.length()}")
   }

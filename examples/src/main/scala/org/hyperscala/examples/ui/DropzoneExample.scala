@@ -4,7 +4,7 @@ import org.hyperscala.css.attributes.{Alignment, VerticalAlignment, Display, Lin
 import org.hyperscala.examples.Example
 import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.web._
-import org.hyperscala.ui.Dropzone
+import org.hyperscala.ui.{DropzoneFileEvent, Dropzone}
 import org.hyperscala.html._
 import org.powerscala.Color
 import org.hyperscala.selector._
@@ -13,6 +13,8 @@ import org.hyperscala.selector._
  * @author Matt Hicks <matt@outr.com>
  */
 class DropzoneExample extends Example {
+  val ServerMode = true
+
   this.require(Dropzone)
 
   connected[tag.HTML] {
@@ -61,7 +63,7 @@ class DropzoneExample extends Example {
     }
   }
 
-  val container = new tag.Div
+  val container = new tag.Div(id = "container")
   val s = container.style
   s.cursor := "pointer"
   s.width := 200.px
@@ -88,96 +90,93 @@ class DropzoneExample extends Example {
   }
   contents += previews
 
-  val template = new tag.Div {
-    clazz += "dz-preview"
-    clazz += "dz-file-preview"
-    contents += new tag.Div {
-      clazz += "dz-details"
-      contents += new tag.Img {
-        data("dz-thumbnail", "")
-      }
-      contents += new tag.Div {
-        clazz += "dz-filename"
-        contents += new tag.Span {
-          data("dz-name", "")
+  val dropzone = Dropzone(container)
+  if (ServerMode) {
+    dropzone.connectEventsToServer()
+    dropzone.addedFileEvent.on {
+      case evt => previews.contents += new DropzoneEntry(dropzone, Some(evt))
+    }
+    dropzone.fileReceived.on {
+      case (filename, file) => println(s"Filename: $filename, Length: ${file.length()}")
+    }
+  } else {
+    dropzone.previewsContainer := "#previews"
+    dropzone.previewTemplate := new DropzoneEntry(dropzone).outputString
+  }
+  dropzone.thumbnailWidth := 150
+  dropzone.thumbnailHeight := 150
+}
+
+class DropzoneEntry(dropzone: Dropzone, evt: Option[DropzoneFileEvent] = None) extends tag.Div {
+  val preview = new tag.Img {
+    data("dz-thumbnail", "")
+  }
+  val progress = new tag.Span {
+    clazz += "dz-upload"
+    data("dz-uploadprogress", "")
+  }
+
+  evt match {
+    case Some(e) => {
+      dropzone.thumbnailEvent.on {
+        case pe => if (pe.name == e.name) {
+          dropzone.applyThumbnail(preview)
         }
       }
-      contents += new tag.Div {
-        clazz += "dz-size"
-        data("dz-size", "")
+      dropzone.uploadProgressEvent.on {
+        case pe => if (pe.name == e.name) {   // Make sure it's this entry
+          progress.style.width := pe.progress.pct
+        }
+      }
+      dropzone.successEvent.on {
+        case pe => if (pe.name == e.name) {
+          progress.style.width := 100.pct
+        }
+      }
+    }
+    case None => // Static
+  }
+
+  clazz += "dz-preview"
+  clazz += "dz-file-preview"
+  contents += new tag.Div {
+    clazz += "dz-details"
+    contents += preview
+    contents += new tag.Div {
+      clazz += "dz-filename"
+      contents += new tag.Span {
+        data("dz-name", "")
+        evt match {
+          case Some(e) => contents += e.name
+          case None => // Ignore
+        }
       }
     }
     contents += new tag.Div {
-      clazz += "dz-progress"
-      contents += new tag.Span {
-        clazz += "dz-upload"
-        data("dz-uploadprogress", "")
-      }
-    }
-    contents += new tag.Div {
-      clazz += "dz-success-mark"
-      contents += "Success!"
-    }
-    contents += new tag.Div {
-      clazz += "dz-error-mark"
-      contents += "Failure!"
-    }
-    contents += new tag.Div {
-      clazz += "dz-error-message"
-      contents += new tag.Span {
-        data("dz-errormessage", "")
+      clazz += "dz-size"
+      data("dz-size", "")
+      evt match {
+        case Some(e) => contents += s"${e.size} bytes"
+        case None => // Ignore
       }
     }
   }
-
-  val dropzone = Dropzone(container)
-  dropzone.previewsContainer := "#previews"
-  dropzone.previewTemplate := template.outputString
-  dropzone.thumbnailWidth := 150
-  dropzone.thumbnailHeight := 150
-  dropzone.addedFile := JavaScriptString(
-    """
-      |function(file) {
-      | console.log('addedfile!: ' + file);
-      |}
-    """.stripMargin)
-  dropzone.removedFile := JavaScriptString(
-    """
-      |function(file) {
-      | console.log('removedfile!: ' + file);
-      |}
-    """.stripMargin)
-  dropzone.thumbnail := JavaScriptString(
-    """
-      |function(file, dataUrl) {
-      | console.log('thumbnail!: ' + file + ', ' + dataUrl);
-      |}
-    """.stripMargin)
-  dropzone.processing := JavaScriptString(
-    """
-      |function(file) {
-      | console.log('processing!: ' + file);
-      |}
-    """.stripMargin)
-  dropzone.uploadProgress := JavaScriptString(
-    """
-      |function(file, progress, bytesSent) {
-      | console.log('uploadProgress!: ' + file + ', ' + progress + ', ' + bytesSent);
-      |}
-    """.stripMargin)
-  dropzone.success := JavaScriptString(
-    """
-      |function(file) {
-      | console.log('success!: ' + file);
-      |}
-    """.stripMargin)
-  dropzone.complete := JavaScriptString(
-    """
-      |function(file) {
-      | console.log('complete!: ' + file);
-      |}
-    """.stripMargin)
-  dropzone.fileReceived.on {
-    case (filename, file) => println(s"Filename: $filename, Length: ${file.length()}")
+  contents += new tag.Div {
+    clazz += "dz-progress"
+    contents += progress
+  }
+  contents += new tag.Div {
+    clazz += "dz-success-mark"
+    contents += "Success!"
+  }
+  contents += new tag.Div {
+    clazz += "dz-error-mark"
+    contents += "Failure!"
+  }
+  contents += new tag.Div {
+    clazz += "dz-error-message"
+    contents += new tag.Span {
+      data("dz-errormessage", "")
+    }
   }
 }

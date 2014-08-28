@@ -49,6 +49,7 @@ object NumericLength {
       case "vmax" => Some(ViewportMaximumLength(n.toDouble))
       case "vw" => Some(ViewportWidthLength(n.toDouble))
     }
+    case _ => None
   }
 }
 

@@ -75,7 +75,7 @@ object HyperScalaBuild extends Build {
     .dependsOn(html)
   lazy val web = Project("web", file("web"), settings = createSettings("hyperscala-web"))
     .dependsOn(html, javascript, svg)
-    .settings(libraryDependencies ++= Seq(uaDetector, scalaSwing))
+    .settings(libraryDependencies ++= Seq(uaDetector, scalaSwing, commonsCodec))
   lazy val service = Project("service", file("service"), settings = createSettings("hyperscala-service"))
     .dependsOn(web)
     .settings(libraryDependencies ++= Seq(powerScalaJson))

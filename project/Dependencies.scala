@@ -17,6 +17,8 @@ object Dependencies {
 
   val scalaSwing = "org.scala-lang.modules" %% "scala-swing" % "latest.release"
 
+  val commonsCodec = "commons-codec" % "commons-codec" % "1.9"
+
   val jettyWebapp = "org.eclipse.jetty" % "jetty-webapp" % "latest.release" % "container"
 
   val jdom = "org.jdom" % "jdom2" % "latest.release"

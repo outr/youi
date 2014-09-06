@@ -131,8 +131,9 @@ class Select2 private(val wrapped: tag.Select, val autoInit: Boolean = true) ext
 
   wrapped.changeEvent.on {
     case evt => doChange {
-      value := wrapped.value()
-      values := List(wrapped.value())
+      val s = wrapped.value()
+      value := s
+      values := (if (s != null) s.split("[|]").toList else Nil)
     }
   }
 }

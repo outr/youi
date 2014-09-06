@@ -144,6 +144,10 @@ class Dialog private(val wrapped: HTMLTag, val autoInit: Boolean) extends jQuery
     call("close")
     isOpen := false
   }
+  def destroy() = {
+    call("destroy")
+    isOpen := false
+  }
 
   val openEvent = event("open")
   val closeEvent = event("close")

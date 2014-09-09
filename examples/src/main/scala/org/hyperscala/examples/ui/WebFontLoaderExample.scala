@@ -27,10 +27,25 @@ class WebFontLoaderExample extends Example {
     style.fontSize := 32.px
   }
 
+  contents += new tag.P(content = "Example of not preloaded Inconsolata as custom font.") {
+    style.fontFamily := "Inconsolata, Times"
+    style.fontSize := 32.px
+  }
+
   contents += new tag.Button(content = "Load Rock Salt Font") {
     clickEvent.onRealtime {
       case evt => {
         loadFont("Rock Salt")
+        removeFromParent()
+      }
+    }
+  }
+  contents += new tag.Button(content = "Load Inconsolata Font") {
+    clickEvent.onRealtime {
+      case evt => {
+        connected[Webpage[_ <: Session]] {
+          case webpage => WebFontLoader(webpage).custom("Inconsolata", "normal", "400", "http://fonts.gstatic.com/s/inconsolata/v9/BjAYBlHtW3CJxDcjzrnZCIbN6UDyHWBl620a-IRfuBk.woff")
+        }
         removeFromParent()
       }
     }

@@ -118,7 +118,6 @@ object Style extends Enumerated[Style[_]] {
   val float = new Style[Float]("float")
   val floatOffset = new Style[String]("float-offset")
   val font = new Style[String]("font")
-  val fontFace = new Style[String]("font-face")
   val fontFamily = new Style[String]("font-family")
   val fontSize = new Style[FontSize]("font-size")
   val fontSizeAdjust = new Style[String]("font-size-adjust")

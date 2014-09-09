@@ -136,7 +136,6 @@ class StyleSheet(val hierarchicalParent: Listenable,
   lazy val float = new StyleSheetAttribute(Style.float)
   lazy val floatOffset = new StyleSheetAttribute(Style.floatOffset)
   lazy val font = new StyleSheetAttribute(Style.font)
-  lazy val fontFace = new StyleSheetAttribute(Style.fontFace)
   lazy val fontFamily = new StyleSheetAttribute(Style.fontFamily)
   lazy val fontSize = new StyleSheetAttribute(Style.fontSize)
   lazy val fontSizeAdjust = new StyleSheetAttribute(Style.fontSizeAdjust)

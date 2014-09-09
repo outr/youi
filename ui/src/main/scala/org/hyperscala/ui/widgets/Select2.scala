@@ -53,7 +53,7 @@ object Select2 extends Module with JavaScriptCaller with StorageComponent[Select
   }
 }
 
-class Select2 private(val wrapped: tag.Select, val autoInit: Boolean = true) extends jQueryComponent {
+class Select2(val wrapped: tag.Select, val autoInit: Boolean = true) extends jQueryComponent {
   def functionName = "select2"
 
   implicit def listenable: Listenable = wrapped

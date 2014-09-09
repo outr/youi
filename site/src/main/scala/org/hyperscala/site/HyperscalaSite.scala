@@ -111,6 +111,7 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication {
     val justifiedGallery = page(new HyperscalaExample(new JustifiedGalleryExample), Scope.Page, "/example/justified-gallery.html")
     val gallery = page(new HyperscalaExample(new GalleryExample), Scope.Page, "/example/gallery.html")
     val dropzone = page(new HyperscalaExample(new DropzoneExample), Scope.Page, "/example/dropzone.html")
+    val webFontLoader = page(new HyperscalaExample(new WebFontLoaderExample), Scope.Page, "/example/webfontloader.html")
     val svg = new {
       val basic = page(new HyperscalaExample(new BasicSVGExample), Scope.Page, "/example/svg/basic.html")
       val shapes = page(new HyperscalaExample(new SVGShapesExample), Scope.Page, "/example/svg/shapes.html")

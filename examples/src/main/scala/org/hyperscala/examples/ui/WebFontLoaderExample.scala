@@ -44,7 +44,7 @@ class WebFontLoaderExample extends Example {
     clickEvent.onRealtime {
       case evt => {
         connected[Webpage[_ <: Session]] {
-          case webpage => WebFontLoader(webpage).custom("Inconsolata", "normal", "400", "http://fonts.gstatic.com/s/inconsolata/v9/BjAYBlHtW3CJxDcjzrnZCIbN6UDyHWBl620a-IRfuBk.woff")
+          case webpage => WebFontLoader(webpage).custom("Inconsolata", "normal", "400", "http://fonts.gstatic.com/s/inconsolata/v9/BjAYBlHtW3CJxDcjzrnZCIbN6UDyHWBl620a-IRfuBk.woff", List("Inconsolata"))
         }
         removeFromParent()
       }

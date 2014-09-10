@@ -39,11 +39,11 @@ class WebFontLoader[S <: Session] private(webpage: Webpage[S]) {
     }
   }
 
-  def custom(family: String, style: String, weight: String, woff: String) = synchronized {
+  def custom(family: String, style: String, weight: String, woff: String, aliases: List[String]) = synchronized {
     val key = s"$family;$style;$weight"
     if (!loaded.contains(key)) {
       WebFontLoader.synchronized {
-        WebFontLoader.customFonts += key -> CustomFont(family, style, weight, woff)
+        WebFontLoader.customFonts += key -> CustomFont(family, style, weight, woff, aliases)
       }
       val js =
         s"""
@@ -62,7 +62,7 @@ class WebFontLoader[S <: Session] private(webpage: Webpage[S]) {
   def isLoaded(family: String) = loaded.contains(family)
 }
 
-case class CustomFont(family: String, style: String, weight: String, woff: String)
+case class CustomFont(family: String, style: String, weight: String, woff: String, aliases: List[String])
 
 object WebFontLoader extends Module with HttpHandler {
   val name = "webfontloader"
@@ -83,7 +83,6 @@ object WebFontLoader extends Module with HttpHandler {
   def apply[S <: Session](webpage: Webpage[S]) = webpage.store.getOrSet("webfontloader", new WebFontLoader(webpage))
 
   override def onReceive(request: HttpRequest, response: HttpResponse) = {
-    println(s"WebFontLoader, URL: ${request.url}")
     val family = request.url.parameters.first("family")
     val style = request.url.parameters.first("style")
     val weight = request.url.parameters.first("weight")
@@ -95,7 +94,7 @@ object WebFontLoader extends Module with HttpHandler {
          |  font-family: '$family';
          |  font-style: $style;
          |  font-weight: $weight;
-         |  src: local('$family'), url(${font.woff}) format('woff');
+         |  src: ${font.aliases.map(s => s"local('$s')").mkString(", ")}, url(${font.woff}) format('woff');
          |}
        """.stripMargin
     response.copy(status = HttpResponseStatus.OK, content = StringContent(css, ContentType("text/css")))

@@ -13,15 +13,13 @@ import com.outr.net.http.session.Session
 object CKEditor extends Module {
   def name = "ckeditor"
 
-  def version = Version(4, 3, 2)
+  def version = Version(4, 4, 4)
 
   override def dependencies = List(Realtime)
 
-  override def init[S <: Session](website: Website[S]) = {
-    website.addClassPath("/cke/", "ckeditor-4.3.2/")
-  }
+  override def init[S <: Session](website: Website[S]) = {}
 
   override def load[S <: Session](webpage: Webpage[S]) = {
-    webpage.head.contents += new tag.Script(mimeType = "text/javascript", src = "/cke/ckeditor.js")
+    webpage.head.contents += new tag.Script(mimeType = "text/javascript", src = s"//cdn.ckeditor.com/$version/full/ckeditor.js")
   }
 }

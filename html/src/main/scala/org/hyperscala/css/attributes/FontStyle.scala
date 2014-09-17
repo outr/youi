@@ -14,4 +14,8 @@ object FontStyle extends Enumerated[FontStyle] with EnumEntryPersistence[FontSty
   val Italic = new FontStyle("italic")
   val Oblique = new FontStyle("oblique")
   val Inherit = new FontStyle("inherit")
+
+  override def apply(name: String, caseSensitive: Boolean) = {
+    get(name, caseSensitive).getOrElse(new FontStyle(name))
+  }
 }

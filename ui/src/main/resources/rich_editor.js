@@ -41,6 +41,32 @@ function createRichEditor(id, inline) {
                     var options = window.richEditorOptions[id];
                     options.selectionPath = ev.data.path;
                 }
+            },
+            fontSize_style: {
+                element: 'span',
+                styles: {
+                    'font-size': '12pt'
+                },
+                overrides: {
+                    element: 'font',
+                    attributes: {
+                        size: null
+                    }
+                }
+            },
+            coreStyles_bold: {
+                element: 'span',
+                attributes: {
+                    style: 'font-weight: bold'
+                },
+                overrides: ['strong', 'b']
+            },
+            coreStyles_italic: {
+                element: 'span',
+                attributes: {
+                    style: 'font-style: italic'
+                },
+                overrides: ['em', 'i']
             }
         };
         if (inline) {

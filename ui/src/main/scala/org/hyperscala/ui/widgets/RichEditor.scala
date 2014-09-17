@@ -14,7 +14,7 @@ import org.hyperscala.{Container, IdentifiableTag}
 import org.hyperscala.html.attributes.ContentEditable
 import org.hyperscala.io.HTMLToScala
 import org.hyperscala.css.Style
-import org.hyperscala.css.attributes.{Length, Alignment, FontSize}
+import org.hyperscala.css.attributes._
 import org.hyperscala.ui.clipboard.{ClipType, Clipboard}
 import org.powerscala.enum.{Enumerated, EnumEntry}
 import org.hyperscala.javascript.dsl.JSFunction1
@@ -24,12 +24,15 @@ import com.outr.net.http.session.Session
  * @author Matt Hicks <matt@outr.com>
  */
 object RichEditor extends Module with StorageComponent[RichEditor, HTMLTag] {
-  val BoldStyle = RichEditorStyle("strong", overrides = List(Override("b")))
-  val ItalicStyle = RichEditorStyle("em", overrides = List(Override("i")))
+  val BoldStyle = RichEditorStyle("span", styles = Map("font-weight" -> "bold"), overrides = List(Override("b"), Override("strong")))
+  val ItalicStyle = RichEditorStyle("span", styles = Map("font-style" -> "italic"), overrides = List(Override("i"), Override("em")))
   val UnderlineStyle = RichEditorStyle("u")
   val StrikeStyle = RichEditorStyle("s", overrides = List(Override("strike")))
   val SubscriptStyle = RichEditorStyle("sub")
   val SuperscriptStyle = RichEditorStyle("sup")
+  def FontFamilyStyle(family: String) = RichEditorStyle("span", styles = Map("font-family" -> family), overrides = List(Override("font", Map("family" -> null))))
+  def FontWeightStyle(weight: FontWeight) = RichEditorStyle("span", styles = Map("font-weight" -> weight.value), overrides = List(Override("font", Map("weight" -> null))))
+  def FontStyleStyle(style: FontStyle) = RichEditorStyle("span", styles = Map("font-style" -> style.value), overrides = List(Override("font", Map("style" -> null))))
   def FontSizeStyle(size: FontSize) = RichEditorStyle("span", styles = Map("font-size" -> size), overrides = List(Override("font", Map("size" -> null))))
   def TextAlignStyle(alignment: Alignment) = RichEditorStyle("span", styles = Map("text-align" -> alignment.value))
   def LineHeightStyle(length: Length) = RichEditorStyle("span", styles = Map("line-height" -> length.value))
@@ -70,7 +73,7 @@ class RichEditor private(val wrapped: HTMLTag, val autoInit: Boolean = true) ext
         Clipboard(webpage).configureDefaultHandling()
 
         Clipboard(webpage).clientEvent.on {
-          case evt => if (evt.element.getOrElse(null) == wrapped) {
+          case evt => if (evt.element.orNull == wrapped) {
             evt.clipType match {
               case ClipType.Cut => delete()
               case ClipType.Copy => // Default handling will take care of this
@@ -219,6 +222,26 @@ class RichEditor private(val wrapped: HTMLTag, val autoInit: Boolean = true) ext
    * @param action the action function that is called when font-size changes with the size as a String or null.
    */
   def onFontSize(action: JSFunction1[String, Unit]) = onStyleValueChange(action, Style.fontSize)
+
+  /**
+   * Applies the specified font family to the the selected content.
+   *
+   * @param family represents the font-family to apply to the selection.
+   */
+  def fontFamily(family: String) = execApplyStyle(FontFamilyStyle(family))
+
+  /**
+   * Invokes the supplied action when the value of the font-family changes in the selectoin.
+   *
+   * @param action the action function that is called when font-family changes with the size as a String or null.
+   */
+  def onFontFamily(action: JSFunction1[String, Unit]) = onStyleValueChange(action, Style.fontFamily)
+
+  def fontWeight(weight: FontWeight) = execApplyStyle(FontWeightStyle(weight))
+  def onFontWeight(action: JSFunction1[String, Unit]) = onStyleValueChange(action, Style.fontWeight)
+
+  def fontStyle(style: FontStyle) = execApplyStyle(FontStyleStyle(style))
+  def onFontStyle(action: JSFunction1[String, Unit]) = onStyleValueChange(action, Style.fontStyle)
 
   /**
    * Toggles bold state on the selected content.

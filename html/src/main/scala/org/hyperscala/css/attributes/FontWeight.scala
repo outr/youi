@@ -24,4 +24,8 @@ object FontWeight extends Enumerated[FontWeight] with EnumEntryPersistence[FontW
   val Weight800 = new FontWeight("800")
   val Weight000 = new FontWeight("900")
   val Inherit = new FontWeight("inherit")
+
+  override def apply(name: String, caseSensitive: Boolean) = {
+    get(name, caseSensitive).getOrElse(new FontWeight(name))
+  }
 }

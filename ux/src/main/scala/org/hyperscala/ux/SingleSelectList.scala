@@ -1,6 +1,7 @@
 package org.hyperscala.ux
 
 import org.hyperscala.Container
+import org.hyperscala.event.Key
 import org.hyperscala.html._
 import org.hyperscala.html.constraints.BodyChild
 import org.hyperscala.realtime._
@@ -37,16 +38,18 @@ trait SingleSelectList[T] {
   def refreshSelected(): Unit
 }
 
-class PredefinedSingleSelectList[T](val select: HTMLTag with Container[BodyChild], val drop: tag.Div)(implicit val manifest: Manifest[T], stringify: T => String) extends SingleSelectList[T] {
+abstract class DropdownSingleSelectList[Select <: HTMLTag, Type](val select: Select, val drop: tag.Div)(implicit val manifest: Manifest[Type]) extends SingleSelectList[Type] {
   // Create dropdown support
   val dropdown = Dropdown(select)
   dropdown.selector := Selector.id(drop.identity)
+
+  def filter(list: List[Type]): List[Type] = list
 
   def open() = dropdown.open()
   def close() = dropdown.close()
   def refreshItems() = {
     drop.contents.clear()
-    options().foreach {
+    filter(options()).foreach {
       case t => {
         val e = toElement(t)
         e.clickEvent.onRealtime {
@@ -56,11 +59,46 @@ class PredefinedSingleSelectList[T](val select: HTMLTag with Container[BodyChild
       }
     }
   }
+
+  def toElement(t: Type): BodyChild
+}
+
+abstract class InputSingleSelectList[Type](select: tag.Input, drop: tag.Div)(implicit manifest: Manifest[Type]) extends DropdownSingleSelectList[tag.Input, Type](select, drop) {
+  selected := fromString(select.value())
+  select.keyUpEvent := RealtimeEvent(fireChange = true)
+  select.keyUpEvent.on {
+    case evt => if (evt.key == Key.Enter || evt.key == Key.Return) {
+      validate()
+    } else if (evt.key == Key.Escape) {
+      select.value := toString(selected())
+      close()
+    } else {
+      refreshItems()
+      dropdown.open()
+    }
+  }
+  select.blurEvent.onRealtime {
+    case evt => validate()
+  }
+
+  def validate() = {
+    selected := fromString(select.value())
+    close()
+  }
+
+  override def toElement(t: Type) = new tag.Div(clazz = List("listItem"), content = toString(t))
+
+  def toString(value: Type): String
+
+  def fromString(s: String): Type
+}
+
+class PredefinedSingleSelectList[Select <: HTMLTag with Container[BodyChild], Type](select: Select, drop: tag.Div)(implicit manifest: Manifest[Type], stringify: Type => String) extends DropdownSingleSelectList[Select, Type](select, drop) {
   def refreshSelected() = {
     select.contents.replaceWith(toSelectedElement(selected()))
   }
 
-  def toSelectedElement(t: T): BodyChild = new tag.Span(content = stringify(selected()))
+  def toSelectedElement(t: Type): BodyChild = new tag.Span(content = stringify(selected()))
 
-  def toElement(t: T): BodyChild = new tag.Div(clazz = List("listItem"), content = stringify(t))
+  def toElement(t: Type): BodyChild = new tag.Div(clazz = List("listItem"), content = stringify(t))
 }

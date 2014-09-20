@@ -15,12 +15,15 @@ trait SingleSelectList[T] {
   implicit def manifest: Manifest[T]
 
   val selected = Property[T]()
-  val options = new Property[List[T]] with ListProperty[T]
+  val options = new Property[List[T]](default = Some(Nil)) with ListProperty[T]
   val disabled = Property[Boolean](default = Some(false))
   val allowNull = Property[Boolean](default = Some(false))
 
   selected.change.on {
-    case evt => refreshSelected()   // Refresh the selected display when the selected option changes
+    case evt => {
+      refreshSelected()   // Refresh the selected display when the selected option changes
+      refreshItems()      // Make sure the items list is refreshed to reflect the new selection
+    }
   }
   options.change.on {
     case evt => {
@@ -53,7 +56,10 @@ abstract class DropdownSingleSelectList[Select <: HTMLTag, Type](val select: Sel
       case t => {
         val e = toElement(t)
         e.clickEvent.onRealtime {
-          case evt => selected := t
+          case evt => {
+            selected := t
+            close()
+          }
         }
         drop.contents += e
       }
@@ -63,27 +69,38 @@ abstract class DropdownSingleSelectList[Select <: HTMLTag, Type](val select: Sel
   def toElement(t: Type): BodyChild
 }
 
-abstract class InputSingleSelectList[Type](select: tag.Input, drop: tag.Div)(implicit manifest: Manifest[Type]) extends DropdownSingleSelectList[tag.Input, Type](select, drop) {
+abstract class InputSingleSelectList[Type](select: tag.Input, drop: tag.Div, validateOnKey: Boolean = false)(implicit manifest: Manifest[Type]) extends DropdownSingleSelectList[tag.Input, Type](select, drop) {
   selected := fromString(select.value())
   select.keyUpEvent := RealtimeEvent(fireChange = true)
   select.keyUpEvent.on {
     case evt => if (evt.key == Key.Enter || evt.key == Key.Return) {
       validate()
+      close()
     } else if (evt.key == Key.Escape) {
       select.value := toString(selected())
       close()
     } else {
-      refreshItems()
       dropdown.open()
+      if (validateOnKey) {
+        validate()
+      }
     }
   }
-  select.blurEvent.onRealtime {
-    case evt => validate()
+  select.value.change.on {
+    case evt => {
+      refreshItems()
+      validate()
+    }
   }
+//  select.blurEvent.onRealtime {
+//    case evt => {
+//      validate()
+//      close()
+//    }
+//  }
 
   def validate() = {
     selected := fromString(select.value())
-    close()
   }
 
   override def toElement(t: Type) = new tag.Div(clazz = List("listItem"), content = toString(t))
@@ -91,6 +108,11 @@ abstract class InputSingleSelectList[Type](select: tag.Input, drop: tag.Div)(imp
   def toString(value: Type): String
 
   def fromString(s: String): Type
+
+  override def refreshSelected() = {
+//    println(s"refreshSelected: ${select.value()}, ${select.value()}, ${selected()}, ${toString(selected())}")
+    select.value := toString(selected())
+  }
 }
 
 class PredefinedSingleSelectList[Select <: HTMLTag with Container[BodyChild], Type](select: Select, drop: tag.Div)(implicit manifest: Manifest[Type], stringify: Type => String) extends DropdownSingleSelectList[Select, Type](select, drop) {

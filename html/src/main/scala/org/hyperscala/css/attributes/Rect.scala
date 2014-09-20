@@ -16,10 +16,12 @@ class Rect(val top: Length = null, val right: Length = null, val bottom: Length 
 }
 
 object Rect extends ValuePersistence[Rect] {
-  val Regex = """rect\((.+), (.+), (.+), (.+)\)""".r
+  val RegexStandard = """rect\((.+), (.+), (.+), (.+)\)""".r
+  val RegexNoCommas = """rect\((.+) (.+) (.+) (.+)\)""".r
 
   def apply(s: String) = s match {
-    case Regex(t, r, b, l) => new Rect(Length(t), Length(r), Length(b), Length(l))
+    case RegexStandard(t, r, b, l) => new Rect(Length(t), Length(r), Length(b), Length(l))
+    case RegexNoCommas(t, r, b, l) => new Rect(Length(t), Length(r), Length(b), Length(l))
     case "auto" => new Rect()
     case "" => new Rect()
     case _ => throw new RuntimeException(s"Unsupported rect format: [$s]")

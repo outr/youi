@@ -75,18 +75,17 @@ class SingleSelectListExample extends Example {
   }
 
   contents.addAll(input, inputDropDownContainer)
-  val inputSelectList = new InputSingleSelectList[Option[String]](input, inputDropDownContainer) {
-    override def filter(list: List[Option[String]]) = if (select.value().isEmpty) {
+  val inputSelectList = new InputSingleSelectList[Option[String]](input, inputDropDownContainer, validateOnKey = true) {
+    override def filter(list: List[Option[String]]) = (if (select.value().isEmpty) {
       list
     } else {
-      list.flatten.filter(s => s.toLowerCase.contains(select.value().toLowerCase)).map(s => Option(s))
-    }
+      val (left, right) = list.flatten.partition(s => s.toLowerCase.contains(select.value().toLowerCase))
+      (left ::: right).map(Option.apply)
+    }).take(10)
 
     override def toString(value: Option[String]) = stringify(value)
 
     override def fromString(s: String) = Option(s)
-
-    override def refreshSelected() = select.value := stringify(selected())
   }
   inputSelectList.options := List(null, "Orange", "Strawberry", "Grape", "Cherry", "Raspberry", "Lemon").map(Option.apply)
   inputSelectList.selected.change.on {

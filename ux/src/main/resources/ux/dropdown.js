@@ -73,7 +73,7 @@
             var position = instance.position();
             var top = position.top + instance.outerHeight() + settings.offsetY;
             var left = position.left + settings.offsetX;
-            console.log('Positioning: left: ' + left + ', top: ' + top + ', position: ' + position.left + 'x' + position.top + ', offset: ' + instance.offset().left + 'x' + instance.offset().top);
+//            console.log('Positioning: left: ' + left + ', top: ' + top + ', position: ' + position.left + 'x' + position.top + ', offset: ' + instance.offset().left + 'x' + instance.offset().top);
             settings.dropdownSelector.css('top', top);
             settings.dropdownSelector.css('left', left);
             settings.dropdownSelector.css('display', 'block');

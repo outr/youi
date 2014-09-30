@@ -191,6 +191,7 @@ trait Tag extends Markup with AttributeContainer[PropertyAttribute[_]] {
   }
 
   def byTag[T <: Tag](implicit manifest: Manifest[T]) = TypeFilteredIterator[T](ParentLike.descendants(this)).toStream
+  def byType[T](implicit manifest: Manifest[T]) = TypeFilteredIterator[T](ParentLike.descendants(this)).toStream
 
   tagCreated.fire(TagCreated(this))
 }

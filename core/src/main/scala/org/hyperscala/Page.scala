@@ -1,13 +1,13 @@
 package org.hyperscala
 
+import org.powerscala.concurrent.Temporal
 import org.powerscala.event.Listenable
-import org.powerscala.Updatable
 import org.powerscala.log.Logging
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-trait Page extends Listenable with Updatable with Logging {
+trait Page extends Listenable with Temporal with Logging {
   protected def parentIntercept: MarkupIntercepting = null
 
   def rendered: Boolean

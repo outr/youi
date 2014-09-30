@@ -19,7 +19,7 @@ import com.outr.net.http.session.Session
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class Webpage[S <: Session](val website: Website[S]) extends HttpHandler with HTMLPage with ModularPage[S] with Temporal with ParentLike[tag.HTML] {
+class Webpage[S <: Session](val website: Website[S]) extends HttpHandler with HTMLPage with ModularPage[S] with ParentLike[tag.HTML] {
   implicit def manifest = website.manifest
 
   // Make the webpage logger's parent reference the website's logger
@@ -166,7 +166,9 @@ class Webpage[S <: Session](val website: Website[S]) extends HttpHandler with HT
     }
   }
 
-  def dispose() = {
+  override def dispose() = {
+    super.dispose()
+
     website.pages.remove(this)
   }
 }

@@ -10,7 +10,7 @@ import org.hyperscala.html.constraints._
  * NOTE: This file has been generated. Do not modify directly!
  * @author Matt Hicks <matt@outr.com>
  */
-class Source extends Container[BodyChild] with BodyChild with HTMLTag {
+class Source extends BodyChild with HTMLTag {
   lazy val xmlLabel = "source"
 
   def this(name: String = null,
@@ -29,11 +29,14 @@ class Source extends Container[BodyChild] with BodyChild with HTMLTag {
            style: StyleSheet = null,
            tabIndex: java.lang.Integer = null,
            titleText: String = null,
-           content: BodyChild = null) = {
+           src: String = null,
+           sourceType: String = null) = {
     this()
     init(name, accessKey, clazz, contentEditable, contextMenu, dir, draggable, dropZone, hidden, id, lang, role, spellCheck, style, tabIndex, titleText)
-    if (content != null) contents += content
+    up(this.src, src)
+    up(this.sourceType, sourceType)
   }
 
-
+  lazy val src = PropertyAttribute[String]("src", null)
+  lazy val sourceType = PropertyAttribute[String]("type", null)
 }

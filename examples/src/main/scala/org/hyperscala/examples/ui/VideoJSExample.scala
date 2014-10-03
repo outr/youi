@@ -3,6 +3,7 @@ package org.hyperscala.examples.ui
 import org.hyperscala.css.SelectorStyleSheet
 import org.hyperscala.css.attributes.Display
 import org.hyperscala.html._
+import org.hyperscala.realtime._
 import org.hyperscala.examples.Example
 import org.hyperscala.selector.Selector
 import org.hyperscala.ui.VideoJS
@@ -16,6 +17,7 @@ class VideoJSExample extends Example {
   }
 
   val video = new VideoJS {
+    id := "video_example"
     controls := true
     preLoad := "auto"
     playCentered := true
@@ -29,4 +31,16 @@ class VideoJSExample extends Example {
   }
 
   contents += video
+
+  contents += new tag.Button {
+    contents += "Change Video"
+    clickEvent.onRealtime {
+      case evt => {
+        video.src := "http://mirror.cessen.com/blender.org/peach/trailer/trailer_480p.mov"
+        video.poster := "http://peach.blender.org/wp-content/uploads/watchtrailer.gif"
+
+        removeFromParent()
+      }
+    }
+  }
 }

@@ -24,16 +24,7 @@ object BusyDialog extends Module {
   }
 
   override def load[S <: Session](webpage: Webpage[S]) = {
-    val div = new tag.Div(id = "busyDialog") {
-      val progressDiv = new tag.Div {
-        style.marginTop := 10.px
-        style.width := 280.px
-        style.height := 30.px
-      }
-      val progressBar = ProgressBar(progressDiv)
-      progressBar.value := None
-      contents += progressDiv
-    }
+    val div = new BusyDialog
     webpage.body.contents += div
 
     Dialog.assign(div, autoOpen = false, closeOnEscape = false, modal = true, width = 320, height = 120, resizable = false)
@@ -59,10 +50,11 @@ object BusyDialog extends Module {
 
   def isDisabled[S <: Session](webpage: Webpage[S]) = webpage.store.getOrElse("BusyDialog.disabled", false)
 
-  def show[S <: Session](webpage: Webpage[S], title: String) = if (!isDisabled(webpage)) {
-    webpage.body.byId[tag.Div with Dialog]("busyDialog") match {
+  def show[S <: Session](webpage: Webpage[S], title: String, progress: Option[Double] = None) = if (!isDisabled(webpage)) {
+    webpage.body.byId[BusyDialog]("busyDialog") match {
       case Some(window) => {
         Dialog(window).title := title
+        window.progressBar.value := progress.map(d => math.round(d * 100.0).toInt)
         if (!Dialog(window).isOpen()) {
           Dialog(window).open()
         }
@@ -82,12 +74,23 @@ object BusyDialog extends Module {
     }
   }
 
-  def apply[T, S <: Session](webpage: Webpage[S], title: String)(f: => T): T = {
-    BusyDialog.show(webpage, title)
+  def apply[T, S <: Session](webpage: Webpage[S], title: String, progress: Option[Double] = None)(f: => T): T = {
+    BusyDialog.show(webpage, title, progress)
     try {
       f
     } finally {
       BusyDialog.hide(webpage)
     }
   }
+}
+
+class BusyDialog extends tag.Div(id = "busyDialog") {
+  val progressDiv = new tag.Div {
+    style.marginTop := 10.px
+    style.width := 280.px
+    style.height := 30.px
+  }
+  val progressBar = ProgressBar(progressDiv)
+  progressBar.value := None
+  contents += progressDiv
 }

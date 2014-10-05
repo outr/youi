@@ -51,10 +51,14 @@ class RealtimePage[S <: Session] private(page: Webpage[S]) extends Logging {
   protected[realtime] def received(connection: Connection[S], message: Message) = {
     synchronized {
       val json = message.data.obj.getOrElse(throw new RuntimeException(s"Data is not a JSON object: ${message.data}"))
+      val html = json.string("parentId") match {
+        case null | "" => page.html
+        case parentId => page.body.getById[RealtimeFrame](parentId).currentPage().html
+      }
       val id = json.string("id")
       val t = id match {
-        case null | "" => Some(page.body)
-        case _ => page.html.byId[IdentifiableTag](id)
+        case null | "" => Some(html.body)
+        case _ => html.byId[IdentifiableTag](id)
       }
       t match {
         case Some(element) => element.receive(message.event, json)
@@ -192,16 +196,21 @@ class RealtimePage[S <: Session] private(page: Webpage[S]) extends Logging {
   }
 
   private def send(js: JavaScriptMessage): Unit = {
-    val message = EvalMessage(js.instruction, js.content)
-    val data = message.asJson
-    connections.send2Client("eval", data, sendWhenConnected = false)
+    page.store.get[Webpage[_ <: Session]]("parentPage") match {
+      case Some(pp) => RealtimePage(pp).send(js.copy(parentFrameId = page.store.get[RealtimeFrame]("realtimeFrame").map(f => f.identity)))
+      case None => if (js.instruction.trim.nonEmpty) {
+        val message = EvalMessage(js.instruction, js.content, js.parentFrameId)
+        val data = message.asJson
+        connections.send2Client("eval", data, sendWhenConnected = false)
+      }
+    }
   }
 }
 
-case class EvalMessage(instruction: String, content: Option[String])
+case class EvalMessage(instruction: String, content: Option[String], parentFrameId: Option[String])
 
 object EvalMessage {
-  implicit def EvalMessageCodecJson: CodecJson[EvalMessage] = casecodec2(EvalMessage.apply, EvalMessage.unapply)("instruction", "content")
+  implicit def EvalMessageCodecJson: CodecJson[EvalMessage] = casecodec3(EvalMessage.apply, EvalMessage.unapply)("instruction", "content", "parentFrameId")
 }
 
 object RealtimePage {

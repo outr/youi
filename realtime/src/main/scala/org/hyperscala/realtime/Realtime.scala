@@ -106,7 +106,11 @@ object Realtime extends Module with Logging with Listenable {
                                    selector: Option[Selector] = None,
                                    onlyRealtime: Boolean = true,
                                    delay: Int = 0): Unit = {
-    broadcast("eval", JavaScriptMessage(instruction, content, selector.map(s => s.content), delay).asJson, sendWhenConnected = !onlyRealtime, page = webpage)
+    broadcast("eval", JavaScriptMessage(instruction, content, selector.map(s => s.content), delay, parentPageId(webpage)).asJson, sendWhenConnected = !onlyRealtime, page = webpage)
+  }
+
+  def parentPageId[S <: Session](webpage: Webpage[S]) = {
+    webpage.store.get[Webpage[_ <: Session]]("parentPage").map(p => p.pageId)
   }
 
   def sendRedirect[S <: Session](webpage: Webpage[S], url: String) = {
@@ -114,7 +118,7 @@ object Realtime extends Module with Logging with Listenable {
   }
 
   def send[S <: Session](webpage: Webpage[S], statement: Statement[_], selector: Option[Selector] = None, onlyRealtime: Boolean = false) = {
-    Realtime.sendJavaScript(webpage, statement.content, selector = selector, onlyRealtime = onlyRealtime)
+    sendJavaScript(webpage, statement.content, selector = selector, onlyRealtime = onlyRealtime)
   }
 
   def reload[S <: Session](webpage: Webpage[S], fresh: Boolean = false) = {
@@ -178,8 +182,8 @@ object Realtime extends Module with Logging with Listenable {
   }
 }
 
-case class JavaScriptMessage(instruction: String, content: Option[String] = None, selector: Option[String] = None, delay: Int = 0)
+case class JavaScriptMessage(instruction: String, content: Option[String] = None, selector: Option[String] = None, delay: Int = 0, parentFrameId: Option[String] = None)
 
 object JavaScriptMessage {
-  implicit def JavaScriptMessageCodecJson: CodecJson[JavaScriptMessage] = casecodec4(JavaScriptMessage.apply, JavaScriptMessage.unapply)("instruction", "content", "selector", "delay")
+  implicit def JavaScriptMessageCodecJson: CodecJson[JavaScriptMessage] = casecodec5(JavaScriptMessage.apply, JavaScriptMessage.unapply)("instruction", "content", "selector", "delay", "parentFrameId")
 }

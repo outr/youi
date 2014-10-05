@@ -11,6 +11,7 @@ HyperscalaConnect = (function() {
     var sendFailures = 0;
     var receiveFailures = 0;
     var debug = false;
+    var timeoutTimeInSeconds = 5;
 
     var errorDisposed = false;
     var errorDiv = $('#hyperscala_connect_error');
@@ -44,10 +45,10 @@ HyperscalaConnect = (function() {
             sendFailures++;
 
             showErrorDialog('Bad Response Data', 'The server gave us some bad data. Let\'s keep trying...');
-            console.log('Send successfully, but incorrect respond data: ' + JSON.stringify(data, undefined, 2) + ', retrying in five seconds!');
+            console.log('Send successfully, but incorrect respond data: ' + JSON.stringify(data, undefined, 2) + ', retrying in ' + timeoutTimeInSeconds + ' seconds!');
             setTimeout(function() {
                 respond(true);
-            }, 5000);
+            }, timeoutTimeInSeconds * 1000);
         }
     };
     var sendError = function(jqXHR, textStatus, errorThrown) {
@@ -59,17 +60,17 @@ HyperscalaConnect = (function() {
                 reload();
             } else if (errorThrown == '') {
                 showErrorDialog('Unable to Connect', 'Unable to establish a connection to the server. Let\'s keep trying...');
-                console.log('Unable to connect. Retrying in five seconds...');
+                console.log('Unable to connect. Retrying in ' + timeoutTimeInSeconds + ' seconds...');
                 setTimeout(function() {
                     respond(true);
-                }, 5000);
+                }, timeoutTimeInSeconds * 1000);
             } else {
-                showErrorDialog('Receive Error', 'The server threw an error. Sorry about that, we\'ll reload the page for you...');
-                console.log('Receive Error: ' + textStatus + ' - ' + errorThrown + '. Unhandled failure. Reloading page in fifteen seconds...');
+                showErrorDialog('Send Error', 'The server threw an error. Sorry about that, we\'ll reload the page for you...');
+                console.log('Send Error: ' + textStatus + ' - ' + errorThrown + '. ' + JSON.stringify(sentQueue) + ' Unhandled failure. Reloading page in ' + timeoutTimeInSeconds + ' seconds...');
                 disconnect();
                 setTimeout(function() {
                     reload();
-                }, 5000);
+                }, timeoutTimeInSeconds * 1000);
             }
         }
     };

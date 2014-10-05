@@ -40,6 +40,10 @@ trait ModularPage[S <: Session] {
     case _ => require(InterfaceWithDefault(interface, default))
   }
 
+  def remove(interface: Interface) = synchronized {
+    interfaces = interfaces.filterNot(i => i == interface)
+  }
+
   private def requireModule(module: Module, existing: Option[Interface]) = existing match {
     case Some(i) => i match {
       case e: Module => e.version.compare(module.version) match {

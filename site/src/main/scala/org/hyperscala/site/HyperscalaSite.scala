@@ -113,6 +113,7 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication {
     val dropzone = page(new HyperscalaExample(new DropzoneExample), Scope.Page, "/example/dropzone.html")
     val videoJS = page(new HyperscalaExample(new VideoJSExample), Scope.Page, "/example/videojs.html")
     val webFontLoader = page(new HyperscalaExample(new WebFontLoaderExample), Scope.Page, "/example/webfontloader.html")
+    val realtimeFrame = page(new HyperscalaExample(new RealtimeFrameExample), Scope.Page, "/example/realtime_frame.html")
     val svg = new {
       val basic = page(new HyperscalaExample(new BasicSVGExample), Scope.Page, "/example/svg/basic.html")
       val shapes = page(new HyperscalaExample(new SVGShapesExample), Scope.Page, "/example/svg/shapes.html")

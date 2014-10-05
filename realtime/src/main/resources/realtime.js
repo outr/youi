@@ -144,31 +144,39 @@ function realtimeEvaluate(json, debug) {
     var instruction = json['instruction'];
     var selector = json['selector'];
     var delay = json['delay'];
-    if (delay > 0) {                                // Handle delay if specified
-        json['delay'] = 0;
-        setTimeout(function() {
-            realtimeEvaluate(json, debug);
-        }, delay);
-    } else if (selector != null) {
-        if (eval('$(' + selector + ').length') == 0) {              // Selector returned empty, wait a few milliseconds and check again
-            if (debug) {
-                log('Selector: ' + selector + ' returned empty...waiting...');
-            }
-            setTimeout(function() {
-                realtimeEvaluate(json, debug);
-            }, 10);
-        } else {                                    // Selector has items, call again without selector
-            json['selector'] = null;
-            realtimeEvaluate(json, debug);
+    if (json['parentFrameId'] != null) {
+        var parentFrame = $('#' + json['parentFrameId']);
+        json['parentFrameId'] = null;
+        if (parentFrame.length > 0 && parentFrame.get(0).contentWindow.realtimeEvaluate) {
+            parentFrame.get(0).contentWindow.realtimeEvaluate(json, debug);
         }
     } else {
-        try {
-            if (debug) {
-                log('evaluating: ' + instruction + ' (content: ' + content + ')');
+        if (delay > 0) {                                // Handle delay if specified
+            json['delay'] = 0;
+            setTimeout(function () {
+                realtimeEvaluate(json, debug);
+            }, delay);
+        } else if (selector != null) {
+            if (eval('$(' + selector + ').length') == 0) {              // Selector returned empty, wait a few milliseconds and check again
+                if (debug) {
+                    log('Selector: ' + selector + ' returned empty...waiting...');
+                }
+                setTimeout(function () {
+                    realtimeEvaluate(json, debug);
+                }, 10);
+            } else {                                    // Selector has items, call again without selector
+                json['selector'] = null;
+                realtimeEvaluate(json, debug);
             }
-            globalEval(instruction);
-        } catch(err) {
-            log('Error occurred (' + err.message + ') while attempting to evaluate instruction: [' + instruction + '] with content: [' + content + '].')
+        } else {
+            try {
+                if (debug) {
+                    log('evaluating: ' + instruction + ' (content: ' + content + ')');
+                }
+                globalEval(instruction);
+            } catch (err) {
+                log('Error occurred (' + err.message + ') while attempting to evaluate instruction: [' + instruction + '] with content: [' + content + '].')
+            }
         }
     }
 }

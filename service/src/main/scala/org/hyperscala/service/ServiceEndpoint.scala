@@ -1,6 +1,6 @@
 package org.hyperscala.service
 
-import java.lang.reflect.InvocationTargetException
+import org.powerscala._
 
 import com.outr.net.URL
 import com.outr.net.http.HttpHandler
@@ -12,7 +12,6 @@ import org.powerscala.json.JSON
 import org.powerscala.log.Logging
 import org.powerscala.reflect.{EnhancedClass, MethodArgument, EnhancedMethod}
 
-import scala.annotation.tailrec
 import scala.xml.XML
 
 /**
@@ -73,7 +72,7 @@ case class ServiceEndpoint(service: Service, name: String, method: EnhancedMetho
       HttpResponseStatus.OK -> method[Any](service, args)
     } catch {
       case t: Throwable => {
-        rootCause(t) match {
+        t.rootCause match {
           case exc: ServiceException => HttpResponseStatus.InternalServerError -> exc
           case _ => {
             error(s"Error occurred on endpoint: $uri ($method).", t)
@@ -86,13 +85,6 @@ case class ServiceEndpoint(service: Service, name: String, method: EnhancedMetho
       StringContent(JSON.renderJSON(JSON.parseAndGet[Any](returnValue), pretty = formatJSON), ContentType.JSON)
     }
     response.copy(status = status, content = responseContent)
-  }
-
-  @tailrec
-  private def rootCause(t: Throwable): Throwable = if (t.getCause == null) {
-    t
-  } else {
-    rootCause(t.getCause)
   }
 
   private def contentToType(content: HttpContent) = content.contentType match {

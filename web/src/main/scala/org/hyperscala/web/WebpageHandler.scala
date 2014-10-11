@@ -8,6 +8,7 @@ import com.outr.net.http.handler.HandlerProcessor
 import org.powerscala.event.Listenable
 import org.powerscala.Unique
 import com.outr.net.http.session.Session
+import org.powerscala.property.Property
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -21,6 +22,12 @@ class WebpageHandler[S <: Session](pageCreator: () => Webpage[S],
    * the page will not be referenced to handle it.
    */
   val handlers = new HandlerProcessor()
+  /**
+   * If set to true, only pre-existing pages will be used referenced by pageId.
+   *
+   * Defaults to false.
+   */
+  val onlyById = Property[Boolean](default = Some(false))
 
   val id = Unique()
 
@@ -41,15 +48,19 @@ class WebpageHandler[S <: Session](pageCreator: () => Webpage[S],
   }
 
   def handle(request: HttpRequest, response: HttpResponse) = {
-    val page = load(request) match {
-      case Some(p) => p               // Found page cached, just return it
-      case None => {                  // Page not found, create and cache it
+    val pageOption = load(request) match {
+      case Some(p) => Some(p)                        // Found page cached, just return it
+      case None if !onlyById() => {                  // Page not found, create and cache it
         val p = pageCreator()
         cache(p)
-        p
+        Some(p)
       }
+      case _ => None
     }
-    WebpageHandler.handle(request, response, page)
+    pageOption match {
+      case Some(page) => WebpageHandler.handle(request, response, page)
+      case None => response
+    }
   }
 
   def load(request: HttpRequest): Option[Webpage[S]] = scope match {

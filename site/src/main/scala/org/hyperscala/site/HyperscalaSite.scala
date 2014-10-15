@@ -1,9 +1,9 @@
 package org.hyperscala.site
 
+import org.hyperscala.examples.bootstrap.{BootstrapTheme, BootstrapSignin}
 import org.hyperscala.examples.ux.SingleSelectListExample
-import org.hyperscala.web.Website
+import org.hyperscala.web.{WebpageHandler, Website, Scope}
 import org.hyperscala.examples.helloworld.HelloWorldPage
-import org.hyperscala.web.Scope
 import org.hyperscala.examples.basic._
 import org.hyperscala.examples.ui._
 import org.hyperscala.examples.todomvc.TodoMVC
@@ -115,6 +115,8 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication {
     val webFontLoader = page(new HyperscalaExample(new WebFontLoaderExample), Scope.Page, "/example/webfontloader.html")
     val realtimeFrame = page(new HyperscalaExample(new RealtimeFrameExample), Scope.Page, "/example/realtime_frame.html")
     val modalComponent = page(new HyperscalaExample(new ModalComponentExample), Scope.Page, "/example/modal_component.html")
+    val bootstrapSignIn = page(new BootstrapSignin(HyperscalaSite.this), Scope.Page, "/example/bootstrap/signin.html")
+    val bootstrapTheme = page(new BootstrapTheme(HyperscalaSite.this), Scope.Page, "/example/bootstrap/theme.html")
     val svg = new {
       val basic = page(new HyperscalaExample(new BasicSVGExample), Scope.Page, "/example/svg/basic.html")
       val shapes = page(new HyperscalaExample(new SVGShapesExample), Scope.Page, "/example/svg/shapes.html")

@@ -1,6 +1,6 @@
 .modal_component {
     position: absolute;
-    background-color: rgba(0, 0, 0, 0.8);
+    background-color: rgba(0, 0, 0, 0.4);
     width: 300px;
     height: 300px;
     left: 100px;

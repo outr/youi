@@ -44,10 +44,6 @@ class RealtimePage[S <: Session] private(page: Webpage[S]) extends Logging {
   def initialized() = {
   }
 
-  def send(event: String, message: Json, sendWhenConnected: Boolean) = synchronized {
-    connections.send2Client(event, message, sendWhenConnected)
-  }
-
   protected[realtime] def received(connection: Connection[S], message: Message) = {
     synchronized {
       val json = message.data.obj.getOrElse(throw new RuntimeException(s"Data is not a JSON object: ${message.data}"))
@@ -193,6 +189,13 @@ class RealtimePage[S <: Session] private(page: Webpage[S]) extends Logging {
     val cssName = style.cssName
     val cssValue = if (value != null) anyStyle.persistence.toString(value, cssName, value.getClass) else null
     send(JavaScriptMessage("$('%s').css('%s', content);".format(selector, cssName), Option(cssValue)))
+  }
+
+  def send(event: String, message: Json, sendWhenConnected: Boolean): Unit = synchronized {
+    page.store.get[Webpage[_ <: Session]]("parentPage") match {
+      case Some(pp) => RealtimePage(pp).send(event, message, sendWhenConnected)
+      case None => connections.send2Client(event, message, sendWhenConnected)
+    }
   }
 
   private def send(js: JavaScriptMessage): Unit = {

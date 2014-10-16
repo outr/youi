@@ -5,6 +5,7 @@ var modalTop;
 var modalRight;
 var modalBottom;
 var modalComponentWindow;
+var modalTimer;
 
 $(document).ready(function() {
     var body = $('body');
@@ -14,9 +15,22 @@ $(document).ready(function() {
     modalBottom = $('#modal_bottom');
     modalComponentWindow = $(window);
     modalData = {};
+    modalTimer = null;
     updateModal();
-    setInterval(updateModal, 500);
 });
+
+function modal(selector) {
+    var previous = modalComponent;
+    modalComponent = selector;
+    if (previous == null && selector != null) {
+        if (modalTimer != null) clearInterval(modalTimer);
+        modalTimer = setInterval(updateModal, 100);
+    } else if (previous != null && selector == null) {
+        clearInterval(modalTimer);
+        modalTimer = null;
+        updateModal();
+    }
+}
 
 function updateModal() {
     if (modalComponent == null) {

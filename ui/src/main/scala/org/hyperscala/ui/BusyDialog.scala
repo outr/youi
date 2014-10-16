@@ -20,7 +20,6 @@ object BusyDialog extends Module {
   override def dependencies = List(Realtime, jQueryUI.LatestWithDefault)
 
   override def init[S <: Session](website: Website[S]) = {
-    website.register("/images/indeterminate_progress01.gif", "indeterminate_progress01.gif")
   }
 
   override def load[S <: Session](webpage: Webpage[S]) = {

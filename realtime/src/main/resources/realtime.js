@@ -145,10 +145,13 @@ function realtimeEvaluate(json, debug) {
     var selector = json['selector'];
     var delay = json['delay'];
     if (json['parentFrameId'] != null) {
-        var parentFrame = $('#' + json['parentFrameId']);
+        var parentFrameId = json['parentFrameId']
+        var parentFrame = $('#' + parentFrameId);
         json['parentFrameId'] = null;
         if (parentFrame.length > 0 && parentFrame.get(0).contentWindow.realtimeEvaluate) {
             parentFrame.get(0).contentWindow.realtimeEvaluate(json, debug);
+        } else {
+//            console.log('Unable to find frame by id: ' + parentFrameId);
         }
     } else {
         if (delay > 0) {                                // Handle delay if specified

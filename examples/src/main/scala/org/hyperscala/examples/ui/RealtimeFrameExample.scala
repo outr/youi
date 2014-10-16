@@ -52,6 +52,7 @@ class FramedPage[S <: Session](website: Website[S], message: String) extends Web
     clickEvent.onRealtime {
       case evt => {
         body.contents += new tag.P(content = "Added dynamically!")
+        Realtime.sendJavaScript(FramedPage.this, "console.log('Wahoo!');")
       }
     }
   }

@@ -67,7 +67,7 @@ class ModalComponent(webpage: Webpage[_ <: Session]) extends Listenable {
         case null => null
         case s => new jQuerySelector(s).content
       }
-      Realtime.sendJavaScript(webpage, s"modalComponent = $selector; updateModal();")
+      Realtime.sendJavaScript(webpage, s"modal($selector);")
     }
   }
 }

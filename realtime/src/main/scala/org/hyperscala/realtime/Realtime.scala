@@ -106,11 +106,11 @@ object Realtime extends Module with Logging with Listenable {
                                    selector: Option[Selector] = None,
                                    onlyRealtime: Boolean = true,
                                    delay: Int = 0): Unit = {
-    broadcast("eval", JavaScriptMessage(instruction, content, selector.map(s => s.content), delay, parentPageId(webpage)).asJson, sendWhenConnected = !onlyRealtime, page = webpage)
+    broadcast("eval", JavaScriptMessage(instruction, content, selector.map(s => s.content), delay, parentFrameId(webpage)).asJson, sendWhenConnected = !onlyRealtime, page = webpage)
   }
 
-  def parentPageId[S <: Session](webpage: Webpage[S]) = {
-    webpage.store.get[Webpage[_ <: Session]]("parentPage").map(p => p.pageId)
+  def parentFrameId[S <: Session](webpage: Webpage[S]) = {
+    webpage.store.get[RealtimeFrame]("realtimeFrame").map(f => f.identity)
   }
 
   def sendRedirect[S <: Session](webpage: Webpage[S], url: String) = {

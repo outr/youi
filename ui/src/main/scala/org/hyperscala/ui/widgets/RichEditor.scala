@@ -671,12 +671,22 @@ class RichEditor private(val wrapped: HTMLTag, val autoInit: Boolean = true) ext
 
   // TODO: getCommand('bold').state - 0 = disabled, 1 = true, 2 = false
 
+  val editing = Property[Boolean](default = Some(false))
+  editing.change.on {
+    case evt => {
+      if (inline()) {
+        val contentEditable = if (evt.newValue) ContentEditable.True else ContentEditable.False
+        wrapped.contentEditable := contentEditable
+      }
+    }
+  }
+
+  def toggleEditing() = editing := !editing()
+
   initEditor()
 
   private def initEditor() = {
-    if (inline()) {
-      wrapped.contentEditable := ContentEditable.True
-    }
+    editing := true
     wrapped.eventReceived.on {
       case evt => if (evt.event == "editorChanged") {
         val content = evt.json.string("value")

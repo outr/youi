@@ -58,6 +58,18 @@ package object dsl {
     JSFunction0[T](s"return $$('${selector.value}').attr('$key');")(attribute.manifest)
   }
 
+  def addClassToParent(selector: Selector, className: String) = {
+    val js =
+      s"""
+        |if (p1) {
+        | $$(parent.document).find(${selector.content}).addClass('$className');
+        |} else {
+        | $$(parent.document).find(${selector.content}).removeClass('$className');
+        |}
+      """.stripMargin
+    JSFunction1[Boolean, Unit](js)
+  }
+
   def addClass(selector: Selector, className: String) = {
     val js =
       s"""
@@ -72,5 +84,10 @@ package object dsl {
 
   def setValue(selector: Selector) = new JSFunction1[String, Unit] {
     $(selector).value(p1)
+  }
+
+  def setValueToParent(selector: Selector) = {
+    val js = s"""$$(parent.document).find(${selector.content}).val(p1);"""
+    JSFunction1[String, Unit](js)
   }
 }

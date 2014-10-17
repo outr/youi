@@ -93,9 +93,9 @@ object Selector extends ValuePersistence[List[Selector]] {
   private val AllSelectorRegex = """[*](.*)""".r
   private val ClassSelectorRegex = """[.]([a-zA-Z0-9-_]*)(.*)""".r
   private val ElementSelectorRegex = """([a-zA-Z0-9-]+)(.*)""".r
-  private val IdSelectorRegex = """[#]([a-zA-Z0-9-]*)(.*)""".r
+  private val IdSelectorRegex = """[#]([a-zA-Z0-9-_]*)(.*)""".r
   private val ChildSelectorRegex = """[ ]?[>][ ]?(.*)""".r
-  private val PseudoSelectorRegex = """[ ]?[:][ ]?([a-zA-Z0-9-]*)(.*)""".r
+  private val PseudoSelectorRegex = """[ ]?[:][ ]?([a-zA-Z0-9-_]*)(.*)""".r
   private val PrecedingSelectorRegex = """[ ]*[+][ ]*(.*)""".r
   private val DescendantSelectorRegex = """[ ](.*)""".r
   private val AttributeValueSelectorRegex = """\[(\S*?)(=|~=|\|=)\"(.+)\"\](.*)""".r

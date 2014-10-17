@@ -209,4 +209,9 @@ class RichEditorExample extends Example {
   contents += new tag.Input(id = "fontWeight")
   contents += new tag.Input(id = "fontStyle")
   contents += new tag.Input(id = "fontSize")
+  contents += new tag.Button(id = "toggleEditing", content = "Toggle Editing") {
+    clickEvent.onRealtime {
+      case evt => editor.toggleEditing()
+    }
+  }
 }

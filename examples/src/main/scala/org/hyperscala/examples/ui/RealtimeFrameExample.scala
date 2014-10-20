@@ -46,13 +46,13 @@ class RealtimeFrameExample extends Example {
 }
 
 class FramedPage[S <: Session](website: Website[S], message: String) extends Webpage(website) {
+  Realtime.sendJavaScript(this, "console.log('Wahoo!');")
   body.contents += new tag.Strong(content = s"Framed page! Message: $message")
 
   body.contents += new tag.Button(content = "Test") {
     clickEvent.onRealtime {
       case evt => {
         body.contents += new tag.P(content = "Added dynamically!")
-        Realtime.sendJavaScript(FramedPage.this, "console.log('Wahoo!');")
       }
     }
   }

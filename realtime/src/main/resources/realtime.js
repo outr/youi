@@ -139,6 +139,8 @@ function realtimeUpdateKeyEvent(event, content) {
     content.shiftKey = event.shiftKey;
 }
 
+var realtimeCache = {};
+
 function realtimeEvaluate(json, debug) {
     window.content = json['content'];
     var instruction = json['instruction'];
@@ -148,10 +150,38 @@ function realtimeEvaluate(json, debug) {
         var parentFrameId = json['parentFrameId']
         var parentFrame = $('#' + parentFrameId);
         json['parentFrameId'] = null;
+        var cache = realtimeCache[parentFrameId];
         if (parentFrame.length > 0 && parentFrame.get(0).contentWindow.realtimeEvaluate) {
+            if (cache != null) {        // Process the cache before we do anything else (if there is anything in it)
+                cache.evaluate();
+            }
             parentFrame.get(0).contentWindow.realtimeEvaluate(json, debug);
         } else {
-//            console.log('Unable to find frame by id: ' + parentFrameId);
+            if (cache == null) {
+                cache = {
+                    backlog: []
+                };
+                cache.evaluate = function() {
+                    var parentFrame = $('#' + parentFrameId);
+                    if (parentFrame.length > 0 && parentFrame.get(0).contentWindow.realtimeEvaluate) {
+//                        console.log('Processing backlog: ' + cache.backlog.length);
+                        for (var i = 0; i < cache.backlog.length; i++) {
+                            parentFrame.get(0).contentWindow.realtimeEvaluate(cache.backlog[i], debug);
+                        }
+                        realtimeCache[parentFrameId] = null;
+                        clearInterval(cache.timer);
+                        return true;
+                    } else {
+                        return false;
+                    }
+                };
+                realtimeCache[parentFrameId] = cache;
+                cache.timer = setInterval(function() {
+                    cache.evaluate();
+                }, 100);
+            }
+            cache.backlog.push(json);
+//            console.log('Unable to find frame by id: ' + parentFrameId + ' for ' + JSON.stringify(json));
         }
     } else {
         if (delay > 0) {                                // Handle delay if specified

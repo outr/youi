@@ -137,7 +137,7 @@ class RealtimePage[S <: Session] private(page: Webpage[S]) extends Logging {
             val ssa = property.asInstanceOf[StyleSheetAttribute[_]]
             styleSheet.hierarchicalParent match {
               case styleSpaces: StyleSpaces => styleSheetChanged(styleSheet.selectorString, ssa.style, evt.newValue.asInstanceOf[AnyRef])
-              case t: IdentifiableTag => styleChanged(s"#${t.identity}", ssa.style, evt.newValue.asInstanceOf[AnyRef])
+              case t: IdentifiableTag => styleChanged(s"#${t.identity}", ssa.style, evt.newValue.asInstanceOf[AnyRef], ssa.isImportant)
             }
           }
         }
@@ -184,11 +184,15 @@ class RealtimePage[S <: Session] private(page: Webpage[S]) extends Logging {
     send(JavaScriptMessage(s"$$.stylesheet('$selector', '$cssName', content)", Option(cssValue)))
   }
 
-  private def styleChanged(selector: String, style: Style[_], value: AnyRef) = {
+  private def styleChanged(selector: String, style: Style[_], value: AnyRef, important: Boolean) = {
     val anyStyle = style.asInstanceOf[Style[AnyRef]]
     val cssName = style.cssName
     val cssValue = if (value != null) anyStyle.persistence.toString(value, cssName, value.getClass) else null
-    send(JavaScriptMessage("$('%s').css('%s', content);".format(selector, cssName), Option(cssValue)))
+    if (important) {
+      send(JavaScriptMessage("$('%s').style('%s', content, 'important');".format(selector, cssName), Option(cssValue)))
+    } else {
+      send(JavaScriptMessage("$('%s').css('%s', content);".format(selector, cssName), Option(cssValue)))
+    }
   }
 
   def send(event: String, message: Json, sendWhenConnected: Boolean): Unit = synchronized {

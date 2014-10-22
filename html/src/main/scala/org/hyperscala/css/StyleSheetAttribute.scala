@@ -16,7 +16,7 @@ class StyleSheetAttribute[T](val style: Style[T],
                                                                     ss,
                                                                     manifest) {
   private var _importantInitialized = false
-  lazy val important = new Property[Boolean](default = Some(true)) {
+  lazy val important = new Property[Boolean](default = Some(false)) {
     _importantInitialized = true
   }
 
@@ -26,12 +26,23 @@ class StyleSheetAttribute[T](val style: Style[T],
     // Ignore write request - HTMLTag writes the style itself
   }
 
+  def isImportant = _importantInitialized && important()
+
   def valueString = {
     val vs = style.persistence.toString(value, style.cssName, manifest.runtimeClass)
-    if (_importantInitialized && !important()) {
+    if (isImportant) {
       s"$vs !important"
     } else {
       vs
     }
+  }
+}
+
+object StyleSheetAttribute {
+  val ImportantRegex = """(.*) !\s*important""".r
+
+  def extractImportant(value: String) = value match {
+    case ImportantRegex(v) => v -> true
+    case _ => value -> false
   }
 }

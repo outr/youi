@@ -134,16 +134,17 @@ class ConnectHandler[S <: Session](website: Website[S])(implicit manifest: Manif
 class Connections[S <: Session](val webpage: Webpage[S])(implicit manifest: Manifest[S]) extends Listenable with Logging {
   private var map = Map.empty[String, Connection[S]]
 
-  private var backlog = List.empty[(String, Json)]
+  private var _backlog = List.empty[(String, Json)]
+  def backlog = _backlog
 
   val created = new UnitProcessor[Connection[S]]("created")
 
   webpage.html.onAfterRender {
-    if (backlog.nonEmpty) {     // Send backlog after render
-      backlog.reverse.foreach {
+    if (_backlog.nonEmpty) {     // Send backlog after render
+      _backlog.reverse.foreach {
         case (event, data) => map.values.foreach(c => c.send2Client(event, data))
       }
-      backlog = Nil
+      _backlog = Nil
     }
   }
 
@@ -173,7 +174,7 @@ class Connections[S <: Session](val webpage: Webpage[S])(implicit manifest: Mani
     if (webpage.rendered) {
       map.values.foreach(c => c.send2Client(event, data))
     } else if (sendWhenConnected) {
-      backlog = event -> data :: backlog
+      _backlog = event -> data :: _backlog
     }
   }
 

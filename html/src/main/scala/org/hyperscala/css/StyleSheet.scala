@@ -322,7 +322,10 @@ class StyleSheet(val hierarchicalParent: Listenable,
       }
     }.foreach {
       case (key, value) => Style.byCSSName(key) match {
-        case Some(style) => update[AnyRef](style.asInstanceOf[Style[AnyRef]], style.persistence.fromString(value, key, style.manifest.runtimeClass).asInstanceOf[AnyRef])
+        case Some(style) => {
+          val (v, important) = StyleSheetAttribute.extractImportant(value)
+          update[AnyRef](style.asInstanceOf[Style[AnyRef]], style.persistence.fromString(v, key, style.manifest.runtimeClass).asInstanceOf[AnyRef], important)
+        }
         case None => warn("Unable to find style by css name '%s' with value '%s'.".format(key, value))
       }
     }
@@ -339,7 +342,7 @@ class StyleSheet(val hierarchicalParent: Listenable,
       }
     }
     ss.attributes.values.foreach {              // Apply the attributes from ss to this stylesheet
-      case ssa => update(ssa.style, ssa())
+      case ssa => update(ssa.style, ssa(), ssa.isImportant)
     }
   }
 
@@ -369,7 +372,7 @@ class StyleSheet(val hierarchicalParent: Listenable,
     }.mkString("; ")
   }
 
-  def update[T](style: Style[T], value: T) = {
+  def update[T](style: Style[T], value: T, important: Boolean) = {
     val a = getAttribute(style.name) match {
       case Some(ssa) => ssa.asInstanceOf[StyleSheetAttribute[T]]
       case None => {
@@ -378,6 +381,11 @@ class StyleSheet(val hierarchicalParent: Listenable,
       }
     }
     a.value = value
+    if (important) {
+      a.important := true
+    } else if (a.isImportant) {
+      a.important := false
+    }
   }
 }
 

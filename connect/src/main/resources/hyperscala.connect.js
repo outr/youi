@@ -19,9 +19,11 @@ HyperscalaConnect = (function() {
     var errorMessage = $('#hyperscala_connect_error_message');
 
     var showErrorDialog = function(title, text) {
-        updateErrorDialog(title, text);
-        if (!errorDisposed) {
-            errorDiv.removeClass('hyperscala_connect_error_hidden');
+        if (window == window.top) {                 // Only show disconnection if we're the top frame
+            updateErrorDialog(title, text);
+            if (!errorDisposed) {
+                errorDiv.removeClass('hyperscala_connect_error_hidden');
+            }
         }
     };
     var updateErrorDialog = function(title, text) {

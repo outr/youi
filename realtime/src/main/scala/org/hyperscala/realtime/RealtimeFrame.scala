@@ -14,7 +14,7 @@ import org.powerscala.property.Property
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class RealtimeFrame(pageURL: String) extends tag.IFrame(src = "about:blank") {
+class RealtimeFrame(pageURL: String, singleConnection: Boolean = true) extends tag.IFrame(src = "about:blank") {
   val currentPage = Property[Webpage[_ <: Session]]()
   @volatile private var webpage: Webpage[Session] = _
 
@@ -31,12 +31,22 @@ class RealtimeFrame(pageURL: String) extends tag.IFrame(src = "about:blank") {
   private def updatePage() = {
     val url = currentPage.get match {
       case Some(page) => {
-        page.remove(Realtime)
-        page.remove(Connect)
-        page.require(RealtimeFrame)
-        page.store("parentPage") = webpage
-        page.store("realtimeFrame") = this
-        RealtimePage(page)            // Create RealtimePage to listen
+        if (singleConnection) {
+          page.remove(Realtime)
+          page.remove(Connect)
+          page.require(RealtimeFrame)
+          page.store("parentPage") = webpage
+          page.store("realtimeFrame") = this
+        }
+        val realtime = RealtimePage(page)            // Create RealtimePage to listen
+
+        if (singleConnection) {
+          // Process unsent backlog
+          val backlog = realtime.connections.backlog
+          backlog.foreach {
+            case (event, data) => RealtimePage(webpage).send(event, data, sendWhenConnected = true)
+          }
+        }
         WebpageHandler.cachePage(page)
         s"$pageURL?pageId=${page.pageId}"
       }

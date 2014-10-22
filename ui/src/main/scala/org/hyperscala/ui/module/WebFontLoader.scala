@@ -47,6 +47,7 @@ class WebFontLoader[S <: Session] private(webpage: Webpage[S]) {
       }
       val js =
         s"""
+           |console.log('Loading font: $family, $style, $weight');
            |WebFont.load({
            |  custom: {
            |    families: ['$family'],

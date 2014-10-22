@@ -34,7 +34,9 @@ object ModalComponent extends Module {
     apply(webpage)
   }
 
-  def apply[S <: Session](webpage: Webpage[S]) = webpage.store.getOrSet(name, new ModalComponent(webpage))
+  def apply[S <: Session](webpage: Webpage[S]) = webpage.synchronized {
+    webpage.store.getOrSet(name, new ModalComponent(webpage))
+  }
 }
 
 class ModalComponent(webpage: Webpage[_ <: Session]) extends Listenable {
@@ -58,7 +60,11 @@ class ModalComponent(webpage: Webpage[_ <: Session]) extends Listenable {
     case evt => modalClicked.fire(evt)
   }
 
-  webpage.body.contents.addAll(left, right, top, bottom)
+//  webpage.body.contents.addAll(left, right, top, bottom)
+  webpage.body.contents += left
+  webpage.body.contents += right
+  webpage.body.contents += top
+  webpage.body.contents += bottom
 
   val selected = Property[Selector]()
   selected.change.on {

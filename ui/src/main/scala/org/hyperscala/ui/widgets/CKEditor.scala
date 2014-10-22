@@ -13,7 +13,7 @@ import com.outr.net.http.session.Session
 object CKEditor extends Module {
   def name = "ckeditor"
 
-  def version = Version(4, 4, 4)
+  def version = Version(4, 4, 5)
 
   override def dependencies = List(Realtime)
 

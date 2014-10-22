@@ -3,6 +3,7 @@ package org.hyperscala.examples.ui
 import com.outr.net.http.session.Session
 import org.hyperscala.css.attributes.LineStyle
 import org.hyperscala.html._
+import org.hyperscala.ui.ModalComponent
 import org.hyperscala.web._
 import org.hyperscala.realtime._
 import org.hyperscala.examples.Example
@@ -46,13 +47,16 @@ class RealtimeFrameExample extends Example {
 }
 
 class FramedPage[S <: Session](website: Website[S], message: String) extends Webpage(website) {
-  Realtime.sendJavaScript(this, "console.log('Wahoo!');")
+  require(ModalComponent)
+
+  Realtime.sendJavaScript(this, "console.log('Wahoo!');", onlyRealtime = false)
   body.contents += new tag.Strong(content = s"Framed page! Message: $message")
 
   body.contents += new tag.Button(content = "Test") {
     clickEvent.onRealtime {
       case evt => {
-        body.contents += new tag.P(content = "Added dynamically!")
+//        body.contents += new tag.P(content = "Added dynamically!")
+        ModalComponent(FramedPage.this).selected := this
       }
     }
   }

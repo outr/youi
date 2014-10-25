@@ -3,6 +3,7 @@ package org.hyperscala.ui
 import com.outr.net.http.session.Session
 import org.hyperscala.PropertyAttribute
 import org.hyperscala.html._
+import org.hyperscala.html.extension.AbstractClassProperty
 import org.hyperscala.javascript.JavaScriptContent
 import org.hyperscala.module.{Interface, Module}
 import org.hyperscala.realtime.Realtime
@@ -26,10 +27,10 @@ class VideoJS extends tag.Video {
   identity                        // Make sure we have a unique id
   clazz += "video-js"
 
-  val skin = new ClassProperty[String](this, default = VideoJS.skin()) {
+  val skin = new AbstractClassProperty[String](this, default = VideoJS.skin()) {
     override def toClass(c: String) = Some(s"vjs-$c-skin")
   }
-  val playCentered = new ClassProperty[Boolean](this, default = false) {
+  val playCentered = new AbstractClassProperty[Boolean](this, default = false) {
     override def toClass(c: Boolean) = if (c) Some("vjs-big-play-centered") else None
   }
 
@@ -108,27 +109,4 @@ object VideoJS extends Module {
   def pauseAll[S <: Session](webpage: Webpage[S]) = {
     Realtime.sendJavaScript(webpage, "$('video').each(function() { $(this).get(0).pause(); });")
   }
-}
-
-// TODO: extract to higher level
-abstract class ClassProperty[T](t: HTMLTag, default: T)(implicit parent: Listenable, manifest: Manifest[T]) extends Property[T](default = Some(default)) {
-  toClass(default) match {
-    case Some(c) => t.clazz += c
-    case None => // Nothing to set
-  }
-
-  change.on {
-    case evt => {
-      toClass(evt.oldValue) match {
-        case Some(c) => t.clazz -= c
-        case None => // Nothing to remove
-      }
-      toClass(evt.newValue) match {
-        case Some(c) => t.clazz += c
-        case None => // Nothing to add
-      }
-    }
-  }
-
-  def toClass(c: T): Option[String]
 }

@@ -1,12 +1,22 @@
 package org.hyperscala.bootstrap.component
 
 import org.hyperscala.html._
+import org.hyperscala.html.extension.{ClassName, ClassProperty}
 import org.powerscala.enum.{Enumerated, EnumEntry}
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class Alert(alertType: AlertType) extends tag.Div(clazz = List("alert", alertType.className))
+class Alert extends tag.Div {
+  clazz += "alert"
+
+  val alertType = new ClassProperty[AlertType](this, AlertType.Info)
+
+  def this(alertType: AlertType) = {
+    this()
+    this.alertType := alertType
+  }
+}
 
 object Alert {
   def apply(title: String, message: String, alertType: AlertType) = new Alert(alertType) {
@@ -21,11 +31,11 @@ object Alert {
   def danger(title: String, message: String) = apply(title, message, AlertType.Danger)
 }
 
-class AlertType(val className: String) extends EnumEntry
+class AlertType(val className: Option[String]) extends EnumEntry with ClassName
 
 object AlertType extends Enumerated[AlertType] {
-  val Success = new AlertType("alert-success")
-  val Info = new AlertType("alert-info")
-  val Warning = new AlertType("alert-warning")
-  val Danger = new AlertType("alert-danger")
+  val Success = new AlertType(Option("alert-success"))
+  val Info = new AlertType(Option("alert-info"))
+  val Warning = new AlertType(Option("alert-warning"))
+  val Danger = new AlertType(Option("alert-danger"))
 }

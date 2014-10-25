@@ -115,6 +115,7 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication {
     val webFontLoader = page(new HyperscalaExample(new WebFontLoaderExample), Scope.Page, "/example/webfontloader.html")
     val realtimeFrame = page(new HyperscalaExample(new RealtimeFrameExample), Scope.Page, "/example/realtime_frame.html")
     val modalComponent = page(new HyperscalaExample(new ModalComponentExample), Scope.Page, "/example/modal_component.html")
+    val contentEditor = page(new HyperscalaExample(new ContentEditorExample), Scope.Page, "/example/content_editor.html")
     val bootstrapSignIn = page(new BootstrapSignin(HyperscalaSite.this), Scope.Page, "/example/bootstrap/signin.html")
     val bootstrapTheme = page(new BootstrapTheme(HyperscalaSite.this), Scope.Page, "/example/bootstrap/theme.html")
     val svg = new {

@@ -2,25 +2,20 @@ package org.hyperscala.bootstrap.component
 
 import org.hyperscala.html._
 import org.hyperscala.html.constraints.BodyChild
+import org.hyperscala.html.extension.ClassBooleanProperty
 import org.powerscala.property.Property
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class Tabs extends tag.Ul(clazz = List("nav", "nav-tabs")) with BootstrapComponent {
-  val pills = boolProp("nav-pills")
-  val stacked = boolProp("nav-stacked")
-  val justified = boolProp("nav-justified")
+class Tabs extends tag.Ul(clazz = List("nav")) {
+  val tabs = new ClassBooleanProperty(this, default = true, enabled = Some("nav-tabs"))
+  val pills = new ClassBooleanProperty(this, enabled = Some("nav-pills"))
+  val stacked = new ClassBooleanProperty(this, enabled = Some("nav-stacked"))
+  val justified = new ClassBooleanProperty(this, enabled = Some("nav-justified"))
+}
 
-  def addItem[T <: BodyChild](item: T, active: Boolean = false, disabled: Boolean = false) = {
-    contents += new tag.Li {
-      if (active) clazz += "active"
-      if (disabled) clazz += "disabled"
-
-      contents += item
-    }
-    item
-  }
-
-  def addLink(url: String, label: BodyChild, active: Boolean = false) = addItem(new tag.A(href = url, content = label), active = active)
+class TabEntry extends tag.Li {
+  val active = new ClassBooleanProperty(this, enabled = Some("active"))
+  val disabled = new ClassBooleanProperty(this, enabled = Some("disabled"))
 }

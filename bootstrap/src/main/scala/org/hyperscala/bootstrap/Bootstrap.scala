@@ -13,7 +13,7 @@ import org.hyperscala.jquery.jQuery
 object Bootstrap extends Module {
   override def name = "bootstrap"
 
-  override def version = Version(3, 1, 1)
+  override def version = Version(3, 2, 0)
 
   override def dependencies = List(jQuery.LatestWithDefault)
 
@@ -23,15 +23,16 @@ object Bootstrap extends Module {
     webpage.head.contents += new tag.Meta(httpEquiv = "X-UA-Compatible", content = "IE=edge")
     webpage.head.meta("viewport", "width=device-width, initial-scale=1")
 
-    webpage.head.contents += new tag.Link(href = "//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css")
-    webpage.head.contents += new tag.Link(href = "//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css")
+    val v = s"${version.major}.${version.minor}.${version.maintenance}"
+    webpage.head.contents += new tag.Link(href = s"//netdna.bootstrapcdn.com/bootstrap/$v/css/bootstrap.min.css")
+    webpage.head.contents += new tag.Link(href = s"//netdna.bootstrapcdn.com/bootstrap/$v/css/bootstrap-theme.min.css")
 
     webpage.head.contents += new tag.ConditionalComment("lt IE 9") {
-      contents += new tag.Script(src = "https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js")
+      contents += new tag.Script(src = "https://oss.maxcdn.com/libs/html5shiv/3.7.2/html5shiv.js")
       contents += new tag.Script(src = "https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js")
     }
 
-    webpage.head.contents += new tag.Script(src = "//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js")
-    webpage.head.contents += new tag.Script(src = "//cdnjs.cloudflare.com/ajax/libs/holder/2.3.1/holder.min.js")
+    webpage.head.contents += new tag.Script(src = s"//netdna.bootstrapcdn.com/bootstrap/$v/js/bootstrap.min.js")
+    webpage.head.contents += new tag.Script(src = "//cdnjs.cloudflare.com/ajax/libs/holder/2.4.1/holder.js")
   }
 }

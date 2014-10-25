@@ -1,6 +1,7 @@
 package org.hyperscala.bootstrap.component
 
 import org.hyperscala.html._
+import org.hyperscala.html.extension.ClassBooleanProperty
 import org.powerscala.enum.{Enumerated, EnumEntry}
 import org.powerscala.property.Property
 import org.hyperscala.css.attributes.PercentLength
@@ -8,24 +9,11 @@ import org.hyperscala.css.attributes.PercentLength
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class ProgressBar extends tag.Div(clazz = List("progress")) {
-  val striped = Property[Boolean](default = Some(false))
-  val active = Property[Boolean](default = Some(false))
+class ProgressBar extends tag.Div {
+  clazz += "progress"
 
-  striped.change.on {
-    case evt => if (evt.newValue) {
-      clazz += "progress-striped"
-    } else {
-      clazz -= "progress-striped"
-    }
-  }
-  active.change.on {
-    case evt => if (evt.newValue) {
-      clazz += "active"
-    } else {
-      clazz -= "active"
-    }
-  }
+  val striped = new ClassBooleanProperty(this, enabled = Some("progress-striped"))
+  val active = new ClassBooleanProperty(this, enabled = Some("progress-active"))
 
   private var _progress = 0.0
 

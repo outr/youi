@@ -12,6 +12,10 @@ import org.powerscala.property.Property
  * @author Matt Hicks <matt@outr.com>
  */
 class ClassBooleanProperty(t: HTMLTag, default: Boolean = false, enabled: Option[String] = None, disabled: Option[String] = None) extends Property[Boolean](default = Some(default)) {
+  (if (default) enabled else disabled) match {
+    case Some(className) => t.clazz += className
+    case None => // Ignore
+  }
   change.on {
     case evt => {
       val oldValue = if (evt.oldValue) enabled else disabled

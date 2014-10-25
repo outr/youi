@@ -34,6 +34,4 @@ class Tr extends Container[BodyChild] with BodyChild with HTMLTag {
     init(name, accessKey, clazz, contentEditable, contextMenu, dir, draggable, dropZone, hidden, id, lang, role, spellCheck, style, tabIndex, titleText)
     if (content != null) contents += content
   }
-
-
 }

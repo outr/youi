@@ -29,9 +29,9 @@ class Td extends Container[BodyChild] with BodyChild with HTMLTag {
            style: StyleSheet = null,
            tabIndex: java.lang.Integer = null,
            titleText: String = null,
-           colSpan: String = null,
+           colSpan: java.lang.Integer = null,
            headers: String = null,
-           rowSpan: String = null,
+           rowSpan: java.lang.Integer = null,
            content: BodyChild = null) = {
     this()
     init(name, accessKey, clazz, contentEditable, contextMenu, dir, draggable, dropZone, hidden, id, lang, role, spellCheck, style, tabIndex, titleText)
@@ -41,7 +41,7 @@ class Td extends Container[BodyChild] with BodyChild with HTMLTag {
     if (content != null) contents += content
   }
 
-  lazy val colSpan = PropertyAttribute[String]("colspan", null)
+  lazy val colSpan = PropertyAttribute[Int]("colspan", 1)
   lazy val headers = PropertyAttribute[String]("headers", null)
-  lazy val rowSpan = PropertyAttribute[String]("rowspan", null)
+  lazy val rowSpan = PropertyAttribute[Int]("rowspan", 1)
 }

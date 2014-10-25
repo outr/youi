@@ -11,6 +11,10 @@ import org.powerscala.property.Property
  * @author Matt Hicks <matt@outr.com>
  */
 class ClassProperty[T <: ClassName](t: HTMLTag, default: T)(implicit manifest: Manifest[T]) extends Property[T](default = Some(default))(t, manifest) {
+  default.className match {
+    case Some(className) => t.clazz += className
+    case None => // Ignore
+  }
   change.on {
     case evt => {
       evt.oldValue.className match {

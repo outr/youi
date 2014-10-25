@@ -96,8 +96,233 @@ class BootstrapTheme[S <: Session](site: Website[S]) extends Webpage(site) {
       contents += new Button("Link", buttonStyle = ButtonStyle.Link, buttonSize = ButtonSize.ExtraSmall)
     }
 
+    contents += new Header("Tables")
+    contents += new Row {
+      contents += new Column {
+        medium := Some(6)
+
+        contents += new Table {
+          contents += new TableRow {
+            contents += new tag.Th(content = "#")
+            contents += new tag.Th(content = "First Name")
+            contents += new tag.Th(content = "Last Name")
+            contents += new tag.Th(content = "Username")
+          }
+          contents += new TableRow {
+            contents += new tag.Td(content = "1")
+            contents += new tag.Td(content = "Mark")
+            contents += new tag.Td(content = "Otto")
+            contents += new tag.Td(content = "@mdo")
+          }
+          contents += new TableRow {
+            contents += new tag.Td(content = "2")
+            contents += new tag.Td(content = "Jacob")
+            contents += new tag.Td(content = "Thornton")
+            contents += new tag.Td(content = "@fat")
+          }
+          contents += new TableRow {
+            contents += new tag.Td(content = "3")
+            contents += new tag.Td(content = "Larry")
+            contents += new tag.Td(content = "the Bird")
+            contents += new tag.Td(content = "@twitter")
+          }
+        }
+      }
+      contents += new Column {
+        medium := Some(6)
+
+        contents += new Table {
+          striped := true
+
+          contents += new TableRow {
+            contents += new tag.Th(content = "#")
+            contents += new tag.Th(content = "First Name")
+            contents += new tag.Th(content = "Last Name")
+            contents += new tag.Th(content = "Username")
+          }
+          contents += new TableRow {
+            contents += new tag.Td(content = "1")
+            contents += new tag.Td(content = "Mark")
+            contents += new tag.Td(content = "Otto")
+            contents += new tag.Td(content = "@mdo")
+          }
+          contents += new TableRow {
+            contents += new tag.Td(content = "2")
+            contents += new tag.Td(content = "Jacob")
+            contents += new tag.Td(content = "Thornton")
+            contents += new tag.Td(content = "@fat")
+          }
+          contents += new TableRow {
+            contents += new tag.Td(content = "3")
+            contents += new tag.Td(content = "Larry")
+            contents += new tag.Td(content = "the Bird")
+            contents += new tag.Td(content = "@twitter")
+          }
+        }
+      }
+    }
+    contents += new Row {
+      contents += new Column {
+        medium := Some(6)
+
+        contents += new Table {
+          bordered := true
+
+          contents += new TableRow {
+            contents += new tag.Th(content = "#")
+            contents += new tag.Th(content = "First Name")
+            contents += new tag.Th(content = "Last Name")
+            contents += new tag.Th(content = "Username")
+          }
+          contents += new TableRow {
+            contents += new tag.Td(content = "1", rowSpan = 2)
+            contents += new tag.Td(content = "Mark")
+            contents += new tag.Td(content = "Otto")
+            contents += new tag.Td(content = "@mdo")
+          }
+          contents += new TableRow {
+            contents += new tag.Td(content = "Mark")
+            contents += new tag.Td(content = "Otto")
+            contents += new tag.Td(content = "@mdo")
+          }
+          contents += new TableRow {
+            contents += new tag.Td(content = "2")
+            contents += new tag.Td(content = "Jacob")
+            contents += new tag.Td(content = "Thornton")
+            contents += new tag.Td(content = "@fat")
+          }
+          contents += new TableRow {
+            contents += new tag.Td(content = "3")
+            contents += new tag.Td(content = "Larry the Bird", colSpan = 2)
+            contents += new tag.Td(content = "@twitter")
+          }
+        }
+      }
+      contents += new Column {
+        medium := Some(6)
+
+        contents += new Table {
+          condensed := true
+
+          contents += new TableRow {
+            contents += new tag.Th(content = "#")
+            contents += new tag.Th(content = "First Name")
+            contents += new tag.Th(content = "Last Name")
+            contents += new tag.Th(content = "Username")
+          }
+          contents += new TableRow {
+            contents += new tag.Td(content = "1")
+            contents += new tag.Td(content = "Mark")
+            contents += new tag.Td(content = "Otto")
+            contents += new tag.Td(content = "@mdo")
+          }
+          contents += new TableRow {
+            contents += new tag.Td(content = "2")
+            contents += new tag.Td(content = "Jacob")
+            contents += new tag.Td(content = "Thornton")
+            contents += new tag.Td(content = "@fat")
+          }
+          contents += new TableRow {
+            contents += new tag.Td(content = "3")
+            contents += new tag.Td(content = "Larry the Bird", colSpan = 2)
+            contents += new tag.Td(content = "@twitter")
+          }
+        }
+      }
+    }
+
     contents += new Header("Thumbnails")
     contents += new HolderImage(200, 200, "A generic square placeholder image with a white border around it, making it resemble a photograph taken with an old instant camera")
+
+    contents += new Header("Labels")
+    contents += new tag.H1 {
+      contents += new Label(LabelStyle.Default, "Default")
+      contents += new Label(LabelStyle.Primary, "Primary")
+      contents += new Label(LabelStyle.Success, "Success")
+      contents += new Label(LabelStyle.Info, "Info")
+      contents += new Label(LabelStyle.Warning, "Warning")
+      contents += new Label(LabelStyle.Danger, "Danger")
+    }
+    contents += new tag.H2 {
+      contents += new Label(LabelStyle.Default, "Default")
+      contents += new Label(LabelStyle.Primary, "Primary")
+      contents += new Label(LabelStyle.Success, "Success")
+      contents += new Label(LabelStyle.Info, "Info")
+      contents += new Label(LabelStyle.Warning, "Warning")
+      contents += new Label(LabelStyle.Danger, "Danger")
+    }
+    contents += new tag.H3 {
+      contents += new Label(LabelStyle.Default, "Default")
+      contents += new Label(LabelStyle.Primary, "Primary")
+      contents += new Label(LabelStyle.Success, "Success")
+      contents += new Label(LabelStyle.Info, "Info")
+      contents += new Label(LabelStyle.Warning, "Warning")
+      contents += new Label(LabelStyle.Danger, "Danger")
+    }
+    contents += new tag.H4 {
+      contents += new Label(LabelStyle.Default, "Default")
+      contents += new Label(LabelStyle.Primary, "Primary")
+      contents += new Label(LabelStyle.Success, "Success")
+      contents += new Label(LabelStyle.Info, "Info")
+      contents += new Label(LabelStyle.Warning, "Warning")
+      contents += new Label(LabelStyle.Danger, "Danger")
+    }
+    contents += new tag.H5 {
+      contents += new Label(LabelStyle.Default, "Default")
+      contents += new Label(LabelStyle.Primary, "Primary")
+      contents += new Label(LabelStyle.Success, "Success")
+      contents += new Label(LabelStyle.Info, "Info")
+      contents += new Label(LabelStyle.Warning, "Warning")
+      contents += new Label(LabelStyle.Danger, "Danger")
+    }
+    contents += new tag.H6 {
+      contents += new Label(LabelStyle.Default, "Default")
+      contents += new Label(LabelStyle.Primary, "Primary")
+      contents += new Label(LabelStyle.Success, "Success")
+      contents += new Label(LabelStyle.Info, "Info")
+      contents += new Label(LabelStyle.Warning, "Warning")
+      contents += new Label(LabelStyle.Danger, "Danger")
+    }
+    contents += new tag.P {
+      contents += new Label(LabelStyle.Default, "Default")
+      contents += new Label(LabelStyle.Primary, "Primary")
+      contents += new Label(LabelStyle.Success, "Success")
+      contents += new Label(LabelStyle.Info, "Info")
+      contents += new Label(LabelStyle.Warning, "Warning")
+      contents += new Label(LabelStyle.Danger, "Danger")
+    }
+
+    contents += new Header("Badges")
+    contents += new tag.P {
+      contents += new tag.A(href = "#") {
+        contents += "Inbox"
+        contents += new Badge("42")
+      }
+    }
+    contents += new Tabs {
+      tabs := false
+      pills := true
+
+      contents += new TabEntry {
+        active := true
+
+        contents += new tag.A(href = "#") {
+          contents += "Home"
+          contents += new Badge("42")
+        }
+      }
+      contents += new TabEntry {
+        contents += new tag.A(href = "#") {
+          contents += "Profile"
+        }
+      }
+      contents += new TabEntry {
+        contents += new tag.A(href = "#") {
+          contents += "Messages"
+          contents += new Badge("3")
+        }
+      }
+    }
 
     contents += new Header("Dropdown menus")
     contents += new tag.Div(clazz = List("dropdown", "theme-dropdown", "clearfix")) {
@@ -130,6 +355,39 @@ class BootstrapTheme[S <: Session](site: Website[S]) extends Webpage(site) {
             contents += "Separated link"
           }
         }
+      }
+    }
+
+    contents += new Header("Navs")
+    contents += new Tabs {
+      role := "tablist"
+
+      contents += new TabEntry {
+        active := true
+
+        contents += new tag.A(href = "#", content = "Home")
+      }
+      contents += new TabEntry {
+        contents += new tag.A(href = "#", content = "Profile")
+      }
+      contents += new TabEntry {
+        contents += new tag.A(href = "#", content = "Messages")
+      }
+    }
+    contents += new Tabs {
+      tabs := false
+      pills := true
+
+      contents += new TabEntry {
+        active := true
+
+        contents += new tag.A(href = "#", content = "Home")
+      }
+      contents += new TabEntry {
+        contents += new tag.A(href = "#", content = "Profile")
+      }
+      contents += new TabEntry {
+        contents += new tag.A(href = "#", content = "Messages")
       }
     }
 
@@ -173,6 +431,7 @@ class BootstrapTheme[S <: Session](site: Website[S]) extends Webpage(site) {
     contents += ProgressBar(0.2, ProgressType.Info)
     contents += ProgressBar(0.6, ProgressType.Warning)
     contents += ProgressBar(0.8, ProgressType.Danger)
+    contents += ProgressBar(0.6, ProgressType.Default, striped = true)
     contents += new ProgressBar {
       addProgress(0.35, ProgressType.Success)
       addProgress(0.2, ProgressType.Warning)
@@ -181,7 +440,7 @@ class BootstrapTheme[S <: Session](site: Website[S]) extends Webpage(site) {
 
     contents += new Header("List groups")
     contents += new Row {
-      contents += new Column(ColumnType.Small(4)) {
+      contents += new Column(small = Some(4)) {
         contents += new ListGroup {
           addText("Cras justo odio")
           addText("Dapibus ac facilisis in")
@@ -190,7 +449,7 @@ class BootstrapTheme[S <: Session](site: Website[S]) extends Webpage(site) {
           addText("Vestibulum at eros")
         }
       }
-      contents += new Column(ColumnType.Small(4)) {
+      contents += new Column(small = Some(4)) {
         contents += new ListGroup {
           addLink("#", "Cras justo odio", active = true)
           addLink("#", "Dapibus ac facilisis in")
@@ -199,7 +458,7 @@ class BootstrapTheme[S <: Session](site: Website[S]) extends Webpage(site) {
           addLink("#", "Vestibulum at eros")
         }
       }
-      contents += new Column(ColumnType.Small(4)) {
+      contents += new Column(small = Some(4)) {
         contents += new ListGroup {
           add("#", "List group item heading", "Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.", active = true)
           add("#", "List group item heading", "Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.")
@@ -210,15 +469,15 @@ class BootstrapTheme[S <: Session](site: Website[S]) extends Webpage(site) {
 
     contents += new Header("Panels")
     contents += new Row {
-      contents += new Column(ColumnType.Small(4)) {
+      contents += new Column(small = Some(4)) {
         contents += new Panel("Panel title", Some("Panel content"), PanelType.Default)
         contents += new Panel("Panel title", Some("Panel content"), PanelType.Primary)
       }
-      contents += new Column(ColumnType.Small(4)) {
+      contents += new Column(small = Some(4)) {
         contents += new Panel("Panel title", Some("Panel content"), PanelType.Success)
         contents += new Panel("Panel title", Some("Panel content"), PanelType.Info)
       }
-      contents += new Column(ColumnType.Small(4)) {
+      contents += new Column(small = Some(4)) {
         contents += new Panel("Panel title", Some("Panel content"), PanelType.Warning)
         contents += new Panel("Panel title", Some("Panel content"), PanelType.Danger)
       }

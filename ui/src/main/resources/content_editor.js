@@ -1,3 +1,5 @@
+rangy.config.checkSelectionRanges = false;
+
 function getContainerElement() {
     var nodes = selectionNodes();
 //    dumpNodes(nodes);
@@ -36,16 +38,17 @@ function getSelectionStyle(key) {
 
 function selectionNodes() {
     var s = rangy.getSelection();
-    if (s.isCollapsed) {            // Special handling for collapsed
-        var node = s.anchorNode;
+    var range = s.getRangeAt(0);
+    if (range.collapsed) {            // Special handling for collapsed
+        var node = range.startContainer;
         if (node.nodeType == Node.TEXT_NODE) {
             node = node.parentNode;         // Make sure it's an element and
         }
         return {
-            nodes: [s.anchorNode],
+            nodes: [range.startContainer],
             textComplete: false,
-            firstNode: s.anchorNode,
-            lastNode: s.anchorNode,
+            firstNode: range.startContainer,
+            lastNode: range.startContainer,
             commonContainer: node,
             properWrapper: false
         };
@@ -54,25 +57,28 @@ function selectionNodes() {
     var nodes = [];
 
     // Grab the parent if the selection represents the entire text block
-    if (s.focusNode.nodeType == Node.TEXT_NODE && s.anchorNode == s.focusNode && s.anchorOffset == 0 && s.anchorNode.nodeValue.length == s.focusOffset && s.focusNode.parentNode.childNodes.length == 1) {
+    if (range.startContainer.nodeType == Node.TEXT_NODE && range.startContainer == range.endContainer && range.startOffset == 0 && range.startContainer.nodeValue.length == range.endOffset && range.startContainer.parentNode.childNodes.length == 1) {
+//    if (s.focusNode.nodeType == Node.TEXT_NODE && s.anchorNode == s.focusNode && s.anchorOffset == 0 && s.anchorNode.nodeValue.length == s.focusOffset && s.focusNode.parentNode.childNodes.length == 1) {
         console.log('grabbing parent...');
-        s.focusNode = s.focusNode.parentNode;
-        s.anchorNode = s.focusNode;
+        range.startContainer = range.startContainer.parentNode;
+        range.endContainer = range.startContainer;
     }
 
+    console.log('Range? ' + range.startContainer + ':' + range.startOffset + ', ' + range.endContainer + ':' + range.endOffset);
+
     function verifyAndAdd(node) {
-        if (node == s.focusNode) {
+        if (node == range.endContainer) {
             foundEnd = true;
         }
         if (node.nodeType == Node.TEXT_NODE) {
             var start = 0;
             var textLength = node.nodeValue.length;
             var end = textLength;
-            if (node == s.anchorNode) {
-                start = s.anchorOffset;
+            if (node == range.startContainer) {
+                start = range.startOffset;
             }
-            if (node == s.focusNode) {
-                end = s.focusOffset;
+            if (node == range.endContainer) {
+                end = range.endOffset;
             }
             var length = end - start;
             if (length > 0) {
@@ -112,7 +118,7 @@ function selectionNodes() {
     }
 
     // Build nodes array
-    verifyAndAdd(s.anchorNode);
+    verifyAndAdd(range.startContainer);
 
     var allComplete = true;
     for (var i = 0; i < nodes.length; i++) {
@@ -132,7 +138,7 @@ function selectionNodes() {
         commonContainer = firstNode.node;
         properWrapper = true;
     } else {
-        commonContainer = s.getRangeAt(0).commonAncestorContainer;
+        commonContainer = range.commonAncestorContainer;
         // Make sure we have an element rather than a text node
         if (commonContainer.nodeType == 3) {
             commonContainer = commonContainer.parentNode;
@@ -195,7 +201,7 @@ function createStylized(key, value) {
     span.appendChild(range.extractContents());
     range.insertNode(span);
     range = rangy.createRange();
-    range.selectNode(span);
+    range.selectNodeContents(span);
     var s = rangy.getSelection();
     s.removeAllRanges();
     s.addRange(range);

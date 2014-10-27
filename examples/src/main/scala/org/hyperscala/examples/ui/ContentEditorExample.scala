@@ -69,6 +69,21 @@ class ContentEditorExample extends Example {
         case evt => Realtime.sendJavaScript(this.webpage, "toggleStyle('fontStyle', 'italic');")
       }
     }
+    contents += new tag.Button(content = "Red") {
+      mouseDownEvent.onRealtime {
+        case evt => Realtime.sendJavaScript(this.webpage, "toggleStyle('fontColor', 'red');")
+      }
+    }
+    contents += new tag.Button(content = "Green") {
+      mouseDownEvent.onRealtime {
+        case evt => Realtime.sendJavaScript(this.webpage, "toggleStyle('fontColor', 'green');")
+      }
+    }
+    contents += new tag.Button(content = "Blue") {
+      mouseDownEvent.onRealtime {
+        case evt => Realtime.sendJavaScript(this.webpage, "toggleStyle('fontColor', 'blue');")
+      }
+    }
 //    contents += new tag.Button(content = "Test") {
 //      mouseDownEvent.onRealtime {
 //        case evt => Realtime.sendJavaScript(this.webpage, "test();")

@@ -191,32 +191,6 @@ trait Markup extends XMLContent with Listenable with Logging {
     case None => // Not connected to a page
   }
 
-  /**
-   * Invoke the supplied function when P is an available ancestor. This will be invoked a maximum of one times and zero
-   * times if P never appears as an ancestor.
-   *
-   * @param f the function to invoke
-   * @param manifest the manifest for the generic ancestor
-   * @tparam P the ancestor type to find
-   */
-  def connected[P](f: P => Unit)(implicit manifest: Manifest[P]) = {
-    root[P] match {
-      case Some(p) => f(p)      // Root of type already exists
-      case None => {            // Wait for it to be hierarchically attached
-        @volatile var listener: Listener[ChildAddedEvent, Unit] = null
-        listener = listen[ChildAddedEvent, Unit, Unit]("childAdded", Priority.Normal, Ancestors) {
-          case evt => root[P] match {
-            case Some(p) => {
-              listeners -= listener
-              f(p)
-            }
-            case None => // Not connected yet
-          }
-        }
-      }
-    }
-  }
-
   @tailrec
   private def attributesFromXML(attributes: Seq[Attribute]): Unit = {
     if (attributes.nonEmpty) {

@@ -209,7 +209,7 @@ function realtimeEvaluate(json, debug) {
                 }
                 globalEval(instruction);
             } catch (err) {
-                log('Error occurred (' + err.message + ') while attempting to evaluate instruction: [' + instruction + '] with content: [' + content + '].')
+                log('Error occurred (' + err.message + ') while attempting to evaluate instruction: [' + instruction + '] with content: [' + content + ']. Stack: ' + err.stack);
             }
         }
     }

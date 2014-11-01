@@ -2,6 +2,7 @@ package org.hyperscala.examples.ui
 
 import org.hyperscala.css.SelectorStyleSheet
 import org.hyperscala.html._
+import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.ui.ContentEditor
 import org.hyperscala.web._
 import org.hyperscala.examples.Example
@@ -17,6 +18,20 @@ class ContentEditorExample extends Example {
   new SelectorStyleSheet("""[contenteditable="true"]:active, [contenteditable="true"]:focus""")(this) {
     border := "none"
     outline := "none"
+  }
+
+  contents += new tag.Script {
+    contents += new JavaScriptString(
+      """
+        |document.addEventListener('DOMContentLoaded', function() {
+        |  var currentColor = document.getElementById('currentColor');
+        |
+        |  addSelectionStyleChangeListener(document.getElementById('editor'), 'color', function(oldValue, newValue) {
+        |   currentColor.value = newValue;
+        |   console.log('Color changed from: ' + oldValue + ' to ' + newValue);
+        |  });
+        |});
+      """.stripMargin)
   }
 
   val div = new tag.Div(id = "editor") {
@@ -59,6 +74,16 @@ class ContentEditorExample extends Example {
     contents += new tag.Button(content = "Blue") {
       mouseDownEvent.onRealtime {
         case evt => Realtime.sendJavaScript(this.webpage, "toggleStyle('color', ['blue', 'rgb(0, 0, 255)'], null);")
+      }
+    }
+    contents += new tag.Button(content = "Insert Kitty") {
+      mouseDownEvent.onRealtime {
+        case evt => Realtime.sendJavaScript(this.webpage, "insertImage('http://www.freesmileys.org/emoticons/emoticon-animal-038.gif');")
+      }
+    }
+    contents += new tag.Input(id = "currentColor", value = "black") {
+      changeEvent.onRealtime {
+        case evt => println(s"Color Changed: ${value()}")
       }
     }
   }

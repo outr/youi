@@ -1,6 +1,8 @@
 package org.hyperscala.javascript.dsl
 
 import org.hyperscala.html.HTMLTag
+import org.hyperscala.html.attributes.Target
+import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.selector.Selector
 
 /**
@@ -20,4 +22,8 @@ object window extends DelayedStatement[HTMLTag] with Selector {
   def innerHeight = ExistingStatement[Double]("window.innerHeight")
 
   def duplicate(parent: Option[Selector]) = throw new RuntimeException("window cannot be duplicated")
+
+  def open(url: String, target: Target = Target.Self) = {
+    JavaScriptString(s"window.open(${JavaScriptContext.toJS(url)}, ${JavaScriptContext.toJS(target)});")
+  }
 }

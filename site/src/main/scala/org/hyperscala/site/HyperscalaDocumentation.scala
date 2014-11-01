@@ -5,7 +5,7 @@ import org.hyperscala.html._
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class HyperscalaDocumentation extends HyperscalaPage {
+object HyperscalaDocumentation extends HyperscalaPage {
   main.contents += new tag.H1(content = "Hyperscala Documentation")
   main.contents += new tag.Ul {
     l("Hyperscala: An Introduction", "http://www.matthicks.com/2013/01/hyperscala-introduction.html")

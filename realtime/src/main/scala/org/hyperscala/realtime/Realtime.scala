@@ -131,15 +131,15 @@ object Realtime extends Module with Logging with Listenable {
   def connectStandard[S <: Session](webpage: Webpage[S]) = {
     webpage.live[FormField] {
       case field => {
-        field.changeEvent := RealtimeEvent()
+        if (field.changeEvent() == null) field.changeEvent := RealtimeEvent()
         field match {
-          case i: tag.Input => field.clickEvent := RealtimeEvent(preventDefault = false)
+          case i: tag.Input => if (i.clickEvent() == null) field.clickEvent := RealtimeEvent(preventDefault = false)
           case _ => // Not an input
         }
       }
     }
     webpage.live[tag.Button] {
-      case b => b.clickEvent := RealtimeEvent()
+      case b => if (b.clickEvent() == null) b.clickEvent := RealtimeEvent()
     }
   }
 

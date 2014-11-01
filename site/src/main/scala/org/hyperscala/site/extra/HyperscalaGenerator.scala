@@ -9,7 +9,7 @@ import org.hyperscala.site.HyperscalaPage
 import org.hyperscala.html._
 import org.hyperscala.realtime._
 import org.hyperscala.io.HTMLToScala
-import org.hyperscala.html.attributes.InputType
+import org.hyperscala.html.attributes.{Target, InputType}
 import com.outr.net.http.client.HttpClient
 import com.outr.net.http.request.HttpRequest
 import com.outr.net.{Method, URL}
@@ -41,7 +41,9 @@ class HyperscalaGenerator extends HyperscalaPage {
 
   main.contents += new tag.H1(content = "Hyperscala Code Generator")
   main.contents += new tag.P {
-    contents += "Generate Hyperscala code from a block of HTML."
+    contents += "Generate Hyperscala code from a block of HTML. Utilizes the "
+    contents += new tag.A(href = "https://github.com/darkfrog26/hyperscala/blob/master/web/src/main/scala/org/hyperscala/io/HTMLToScala.scala", content = "HTMLToScala", target = Target.Blank)
+    contents += " object."
   }
 
   main.contents += new tag.Label(clazz = List("code_generator")) {

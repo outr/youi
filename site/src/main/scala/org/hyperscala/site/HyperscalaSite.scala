@@ -1,8 +1,9 @@
 package org.hyperscala.site
 
+import org.hyperscala.examples.Example
 import org.hyperscala.examples.bootstrap.{BootstrapTheme, BootstrapSignin}
 import org.hyperscala.examples.ux.SingleSelectListExample
-import org.hyperscala.web.{WebpageHandler, Website, Scope}
+import org.hyperscala.web.{Webpage, WebpageHandler, Website, Scope}
 import org.hyperscala.examples.helloworld.HelloWorldPage
 import org.hyperscala.examples.basic._
 import org.hyperscala.examples.ui._
@@ -22,6 +23,8 @@ import com.outr.net.http.filter.PathFilter
 import org.hyperscala.hello.HelloSite
 import org.hyperscala.site.extra.HyperscalaGenerator
 
+import scala.collection.mutable.ListBuffer
+
 /**
  * @author Matt Hicks <matt@outr.com>
  */
@@ -38,96 +41,112 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication {
 
   override def defaultPort = 8889
 
-  val site = new {
-    val about = page(new HyperscalaAbout, Scope.Request, "/about.html", "/")
-    val examples = page(new HyperscalaExamples, Scope.Request, "/examples.html")
-    val generator = page(new HyperscalaGenerator, Scope.Page, "/generator.html")
-    val documentation = page(new HyperscalaDocumentation, Scope.Request, "/documentation.html")
-  }
-  val examples = new {
-    val hello = page(new HyperscalaExample(new HelloWorldPage), Scope.Request, "/example/hello.html")
-//    val numberGuess = page(new HyperscalaExample(new NumberGuess), Scope.Page, "/example/number_guess.html")
-    val scoped = page(new HyperscalaExample(ScopedExample), Scope.Application, "/example/scoped.html")
-    val framed = page(new HyperscalaExample(new FramedExample), Scope.Page, "/example/framed.html")
-    val encodedImage = page(new HyperscalaExample(new EncodedImageExample), Scope.Page, "/example/encoded_image.html")
-    val connected = page(new HyperscalaExample(new ConnectedExample), Scope.Page, "/example/connected.html")
-    val style = page(new StyleSheetExample(HyperscalaSite.this), Scope.Request, "/example/style.html")
-    val userAgent = page(new HyperscalaExample(new UserAgentExample), Scope.Request, "/example/user_agent.html")
-    val large = page(new LargePageExample(HyperscalaSite.this), Scope.Request, "/example/large.html")
-    val static = page(new HyperscalaExample(new StaticHTMLExample), Scope.Request, "/example/static.html")
-    val form = page(new HyperscalaExample(new FormExample), Scope.Request, "/example/form.html")
-    val realTime = page(new HyperscalaExample(new RealtimeExample), Scope.Session, "/example/realtime.html")
-    val realTimeDate = page(new HyperscalaExample(new RealtimeDateExample), Scope.Page, "/example/realtime_date.html")
-    val realTimeWebpage = page(new HyperscalaExample(new RealtimeWebpageExample), Scope.Session, "/example/realtime_webpage.html")
-    val realTimeForm = page(new HyperscalaExample(new RealtimeFormExample), Scope.Page, "/example/realtime_form.html")
-    val visual = page(new HyperscalaExample(new VisualExample), Scope.Session, "/example/visual.html")
-    val visualize = page(new HyperscalaExample(new VisualizeExample), Scope.Session, "/example/visualize.html")
-    val visualizeAdvanced = page(new HyperscalaExample(new VisualizeAdvancedExample), Scope.Session, "/example/visualize_advanced.html")
-    val autoComplete = page(new HyperscalaExample(new AutoCompleteExample), Scope.Page, "/example/autocomplete.html")
-    val tabs = page(new HyperscalaExample(new TabsExample), Scope.Page, "/example/tabs.html")
-    val tree = page(new HyperscalaExample(new TreeExample), Scope.Page, "/example/tree.html")
-    val richEditor = page(new HyperscalaExample(new RichEditorExample), Scope.Page, "/example/richeditor.html")
-    val editableContent = page(new HyperscalaExample(new EditableContentExample), Scope.Page, "/example/editablecontent.html")
-    val nivoSlider = page(new HyperscalaExample(new NivoSliderExample), Scope.Page, "/example/nivoslider.html")
-    val gritter = page(new HyperscalaExample(new GritterExample), Scope.Page, "/example/gritter.html")
-    val spectrum = page(new HyperscalaExample(new SpectrumExample), Scope.Page, "/example/spectrum.html")
-    val colorPicker = page(new HyperscalaExample(new ColorPickerExample), Scope.Page, "/example/colorpicker.html")
-    val visualSearch = page(new HyperscalaExample(new VisualSearchExample), Scope.Page, "/example/visualsearch.html")
-    val dialog = page(new HyperscalaExample(new DialogExample), Scope.Page, "/example/dialog.html")
-    val progressBar = page(new HyperscalaExample(new ProgressBarExample), Scope.Page, "/example/progress_bar.html")
-    val spinner = page(new HyperscalaExample(new SpinnerExample), Scope.Page, "/example/spinner.html")
-    val busyDialog = page(new HyperscalaExample(new BusyDialogExample), Scope.Page, "/example/busy_dialog.html")
-    val draggable = page(new HyperscalaExample(new DraggableExample), Scope.Page, "/example/draggable.html")
-    val droppable = page(new HyperscalaExample(new DroppableExample), Scope.Page, "/example/droppable.html")
-    val dropReceiver = page(new HyperscalaExample(new DropReceiverExample), Scope.Page, "/example/drop_receiver.html")
-    val clipboard = page(new HyperscalaExample(new ClipboardExample), Scope.Page, "/example/clipboard.html")
-    val confirmDialog = page(new HyperscalaExample(new ConfirmDialogExample), Scope.Page, "/example/confirm_dialog.html")
-    val dynamic = page(new HyperscalaExample(new DynamicContentExample), Scope.Page, "/example/dynamic.html")
-    val dynamicPage = page(new DynamicPageExample(HyperscalaSite.this), Scope.Page, "/example/dynamic_page.html")
-    val chat = page(new HyperscalaExample(new ChatExample), Scope.Page, "/example/chat.html")
-    val pageChange = page(new HyperscalaExample(new PageChangeWarningExample), Scope.Page, "/example/page_change.html")
-    val pageLoader = page(new PageLoaderExample(HyperscalaSite.this), Scope.Page, "/example/page_loader.html")
-    val fileUploader = page(new HyperscalaExample(new FileUploaderExample), Scope.Page, "/example/file_upload.html")
-    val dynamicURL = page(new HyperscalaExample(new DynamicURLExample), Scope.Page, "/example/dynamic_url.html")
-    val multiSelect = page(new HyperscalaExample(new MultiSelectExample), Scope.Page, "/example/multi_select.html")
-    val select2 = page(new HyperscalaExample(new Select2Example), Scope.Page, "/example/select2.html")
-    val caseForm = page(new HyperscalaExample(new CaseFormExample), Scope.Page, "/example/case_form.html")
-    val jQueryEvents = page(new HyperscalaExample(new jQueryEventsExample), Scope.Request, "/example/jquery_events.html")
-    val selectWrapper = page(new HyperscalaExample(new SelectWrapperExample), Scope.Page, "/example/select_wrapper.html")
-    val dsl = page(new HyperscalaExample(new RealtimeDSLExample), Scope.Page, "/example/dsl.html")
-    val history = page(new HyperscalaExample(new HistoryExample), Scope.Page, "/example/history.html")
-    val monitor = page(new HyperscalaExample(new MonitorExample), Scope.Page, "/example/monitor.html")
-    val changeable = page(new HyperscalaExample(new ChangeableExample), Scope.Page, "/example/changeable.html")
-    val compliance = page(new HyperscalaExample(new ComplianceExample), Scope.Page, "/example/compliance.html")
-    val coordinates = page(new HyperscalaExample(new CoordinatesExample), Scope.Page, "/example/coordinates.html")
-    val jsrequest = page(new HyperscalaExample(new JSRequestExample), Scope.Page, "/example/jsrequest.html")
-    val bounding = page(new HyperscalaExample(new BoundingExample), Scope.Page, "/example/bounding.html")
-    val jCanvas = page(new HyperscalaExample(new jCanvasExample), Scope.Page, "/example/jcanvas.html")
-    val connect = page(new HyperscalaExample(new ConnectExample), Scope.Page, "/example/connect.html")
-    val externalStyle = page(new HyperscalaExample(new ExternalStyleExample), Scope.Page, "/example/external_style.html")
-    val headScript = page(new HyperscalaExample(new HeadScriptExample), Scope.Page, "/example/head_script.html")
-    val basketJS = page(new HyperscalaExample(new BasketJSExample), Scope.Page, "/example/basketjs.html")
-    val datePicker = page(new HyperscalaExample(new DatePickerExample), Scope.Page, "/example/datepicker.html")
-    val justifiedGallery = page(new HyperscalaExample(new JustifiedGalleryExample), Scope.Page, "/example/justified-gallery.html")
-    val gallery = page(new HyperscalaExample(new GalleryExample), Scope.Page, "/example/gallery.html")
-    val dropzone = page(new HyperscalaExample(new DropzoneExample), Scope.Page, "/example/dropzone.html")
-    val videoJS = page(new HyperscalaExample(new VideoJSExample), Scope.Page, "/example/videojs.html")
-    val webFontLoader = page(new HyperscalaExample(new WebFontLoaderExample), Scope.Page, "/example/webfontloader.html")
-    val realtimeFrame = page(new HyperscalaExample(new RealtimeFrameExample), Scope.Page, "/example/realtime_frame.html")
-    val modalComponent = page(new HyperscalaExample(new ModalComponentExample), Scope.Page, "/example/modal_component.html")
-    val contentEditor = page(new HyperscalaExample(new ContentEditorExample), Scope.Page, "/example/content_editor.html")
-    val bootstrapSignIn = page(new BootstrapSignin(HyperscalaSite.this), Scope.Page, "/example/bootstrap/signin.html")
-    val bootstrapTheme = page(new BootstrapTheme(HyperscalaSite.this), Scope.Page, "/example/bootstrap/theme.html")
-    val svg = new {
-      val basic = page(new HyperscalaExample(new BasicSVGExample), Scope.Page, "/example/svg/basic.html")
-      val shapes = page(new HyperscalaExample(new SVGShapesExample), Scope.Page, "/example/svg/shapes.html")
-      val dynamic = page(new HyperscalaExample(new DynamicSVGExample), Scope.Page, "/example/svg/dynamic.html")
-    }
-    val singleSelectList = page(new HyperscalaExample(new SingleSelectListExample), Scope.Page, "/example/ux/single_select_list.html")
-    val snapsvg = page(new HyperscalaExample(new SnapSVGExample), Scope.Page, "/example/snapsvg.html")
-    val playComparison = page(new PlayHelloWorldPage(HyperscalaSite.this), Scope.Page, "/example/comparison/play_hello_world.html")
-  }
-  val todoMVC = page(new TodoMVC(HyperscalaSite.this), Scope.Session, "/todomvc.html")
+  val siteAbout = page(HyperscalaAbout, Scope.Request, "/about.html", "/")
+  val siteExamples = page(HyperscalaExamples, Scope.Request, "/examples.html")
+  val siteGenerator = page(new HyperscalaGenerator, Scope.Page, "/generator.html")
+  val siteDocumentation = page(HyperscalaDocumentation, Scope.Request, "/documentation.html")
+
+  // Basic
+  val hello = example(new HelloWorldPage, "Basic", "Hello World", Scope.Request)
+  val style = example(new StyleSheetExample, "Basic", "Style Sheet", Scope.Request)
+  val large = pageExample(new LargePageExample(HyperscalaSite.this), "Basic", "Large Page", Scope.Request)
+  val dynamicPage = pageExample(new DynamicPageExample(HyperscalaSite.this), "Basic", "Dynamic Page", Scope.Page)
+  //    val numberGuess = page(new HyperscalaExample(new NumberGuess), Scope.Page, "/example/number_guess.html")
+  val scoped = example(ScopedExample, "Basic", "Scoped", Scope.Application)
+  val framed = example(new FramedExample, "Basic", "Framed", Scope.Page)
+  val encodedImage = example(new EncodedImageExample, "Basic", "Encoded Image", Scope.Page)
+  val connected = example(new ConnectedExample, "Basic", "Connected", Scope.Page)
+  val static = example(new StaticHTMLExample, "Basic", "Static HTML", Scope.Request)
+  val form = example(new FormExample, "Basic", "Form", Scope.Request)
+  val dynamic = example(new DynamicContentExample, "Basic", "DynamicContent", Scope.Page)
+
+  // Web
+  val userAgent = example(new UserAgentExample, "Web", "UserAgent", Scope.Request)
+
+  // Realtime
+  val connect = example(new ConnectExample, "Realtime", "Connect", Scope.Page)
+  val realTime = example(new RealtimeExample, "Realtime", "Realtime", Scope.Session)
+  val realTimeDate = example(new RealtimeDateExample, "Realtime", "Realtime Date", Scope.Page)
+  val realTimeWebpage = example(new RealtimeWebpageExample, "Realtime", "Realtime Webpage", Scope.Session)
+  val realTimeForm = example(new RealtimeFormExample, "Realtime", "Realtime Form", Scope.Page)
+  val chat = example(new ChatExample, "Realtime", "Chat", Scope.Page)
+  val pageChange = example(new PageChangeWarningExample, "Realtime", "Page Change Warning", Scope.Page)
+  val dsl = example(new RealtimeDSLExample, "Realtime", "RealtimeDSL", Scope.Page)
+  val realtimeFrame = example(new RealtimeFrameExample, "Realtime", "RealtimeFrame", Scope.Page)
+
+  // UI
+  val visual = example(new VisualExample, "UI", "Visual", Scope.Session)
+  val visualize = example(new VisualizeExample, "UI", "Visualize", Scope.Session)
+  val visualizeAdvanced = example(new VisualizeAdvancedExample, "UI", "Visualize Advanced", Scope.Session)
+  val autoComplete = example(new AutoCompleteExample, "UI", "AutoComplete", Scope.Page)
+  val tabs = example(new TabsExample, "UI", "Tabs", Scope.Page)
+  val tree = example(new TreeExample, "UI", "Tree", Scope.Page)
+  val editableContent = example(new EditableContentExample, "UI", "Editable Content", Scope.Page)
+  val clipboard = example(new ClipboardExample, "UI", "Clipboard", Scope.Page)
+  val multiSelect = example(new MultiSelectExample, "UI", "Multi Select", Scope.Page)
+  val caseForm = example(new CaseFormExample, "UI", "Case Form", Scope.Page)
+  val selectWrapper = example(new SelectWrapperExample, "UI", "Select Wrapper", Scope.Page)
+  val gallery = example(new GalleryExample, "UI", "Gallery", Scope.Page)
+  val modalComponent = example(new ModalComponentExample, "UI", "Modal Component", Scope.Page)
+  val contentEditor = example(new ContentEditorExample, "UI", "Content Editor", Scope.Page)
+
+  // Wrapper
+  val richEditor = example(new RichEditorExample, "Wrapper", "Rich Editor", Scope.Page)
+  val nivoSlider = example(new NivoSliderExample, "Wrapper", "Nivo Slider", Scope.Page)
+  val gritter = example(new GritterExample, "Wrapper", "Gritter", Scope.Page)
+  val spectrum = example(new SpectrumExample, "Wrapper", "Spectrum", Scope.Page)
+  val colorPicker = example(new ColorPickerExample, "Wrapper", "Color Picker", Scope.Page)
+  val visualSearch = example(new VisualSearchExample, "Wrapper", "Visual Search", Scope.Page)
+  val dialog = example(new DialogExample, "Wrapper", "Dialog", Scope.Page)
+  val progressBar = example(new ProgressBarExample, "Wrapper", "Progress Bar", Scope.Page)
+  val spinner = example(new SpinnerExample, "Wrapper", "Spinner", Scope.Page)
+  val busyDialog = example(new BusyDialogExample, "Wrapper", "Busy Dialog", Scope.Page)
+  val draggable = example(new DraggableExample, "Wrapper", "Draggable", Scope.Page)
+  val droppable = example(new DroppableExample, "Wrapper", "Droppable", Scope.Page)
+  val dropReceiver = example(new DropReceiverExample, "Wrapper", "Drop Receiver", Scope.Page)
+  val confirmDialog = example(new ConfirmDialogExample, "Wrapper", "Confirm Dialog", Scope.Page)
+  val select2 = example(new Select2Example, "Wrapper", "Select2", Scope.Page)
+  val jQueryEvents = example(new jQueryEventsExample, "Wrapper", "jQueryEvents", Scope.Request)
+  val jCanvas = example(new jCanvasExample, "Wrapper", "jCanvas", Scope.Page)
+  val basketJS = example(new BasketJSExample, "Wrapper", "BasketJS", Scope.Page)
+  val datePicker = example(new DatePickerExample, "Wrapper", "Date Picker", Scope.Page)
+  val justifiedGallery = example(new JustifiedGalleryExample, "Wrapper", "Justified Gallery", Scope.Page)
+  val dropzone = example(new DropzoneExample, "Wrapper", "Dropzone", Scope.Page)
+  val videoJS = example(new VideoJSExample, "Wrapper", "VideoJS", Scope.Page)
+  val webFontLoader = example(new WebFontLoaderExample, "Wrapper", "WebFontLoader", Scope.Page)
+  val snapsvg = example(new SnapSVGExample, "Wrapper", "SnapSVG", Scope.Page)
+
+  // Advanced
+  val fileUploader = example(new FileUploaderExample, "Advanced", "File Uploader", Scope.Page)
+  val dynamicURL = example(new DynamicURLExample, "Advanced", "Dynamic URL", Scope.Page)
+  val history = example(new HistoryExample, "Advanced", "History", Scope.Page)
+  val monitor = example(new MonitorExample, "Advanced", "Monitor", Scope.Page)
+  val changeable = example(new ChangeableExample, "Advanced", "Changeable", Scope.Page)
+  val compliance = example(new ComplianceExample, "Advanced", "Compliance", Scope.Page)
+  val coordinates = example(new CoordinatesExample, "Advanced", "Coordinates", Scope.Page)
+  val jsrequest = example(new JSRequestExample, "Advanced", "JSRequest", Scope.Page)
+  val bounding = example(new BoundingExample, "Advanced", "Bounding", Scope.Page)
+  val pageLoader = pageExample(new PageLoaderExample(HyperscalaSite.this), "Advanced", "Page Loader", Scope.Page)
+
+  // Module
+  val externalStyle = example(new ExternalStyleExample, "Module", "External Style", Scope.Page)
+  val headScript = example(new HeadScriptExample, "Module", "Head Script", Scope.Page)
+
+  // SVG
+  val basicSVG = example(new BasicSVGExample, "SVG", "BasicSVG", Scope.Page)
+  val shapesSVG = example(new SVGShapesExample, "SVG", "SVGShapes", Scope.Page)
+  val dynamicSVG = example(new DynamicSVGExample, "SVG", "DynamicSVG", Scope.Page)
+
+  // Bootstrap
+  val bootstrapSignIn = pageExample(new BootstrapSignin(HyperscalaSite.this), "Bootstrap", "Sign In", Scope.Page)
+  val bootstrapTheme = pageExample(new BootstrapTheme(HyperscalaSite.this), "Bootstrap", "Theme", Scope.Page)
+
+  // UX
+  val singleSelectList = example(new SingleSelectListExample, "UX", "SingleSelectList", Scope.Page)
+
+  // Comparison
+  val playComparison = pageExample(new PlayHelloWorldPage(HyperscalaSite.this), "Comparison", "Play - Hello World", Scope.Page)
+  val todoMVC = pageExample(new TodoMVC(HyperscalaSite.this), "Comparison", "TODO MVC", Scope.Session)
 
   handlers.add(PathFilter("/hello", HelloSite))
 
@@ -140,4 +159,20 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication {
   protected def createSession(request: HttpRequest, id: String) = new MapSession(id, this)
 
   def run() = main(Array.empty)
+
+  private lazy val _examples = ListBuffer.empty[ExampleEntry]
+  def examples = _examples.toList
+
+  def example(creator: => Example, group: String, name: String, scope: Scope = Scope.Page): WebpageHandler[MapSession] = {
+    pageExample(new HyperscalaExample(creator), group, name, scope)
+  }
+
+  def pageExample(creator: => Webpage[MapSession], group: String, name: String, scope: Scope = Scope.Page): WebpageHandler[MapSession] = {
+    val filename = s"${group.toLowerCase}/${name.replaceAll(" ", "_").toLowerCase}.html"
+    val path = s"/example/$filename"
+    _examples += ExampleEntry(group, name, path)
+    page(creator, scope, path)
+  }
 }
+
+case class ExampleEntry(group: String, name: String, path: String)

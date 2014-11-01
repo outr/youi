@@ -7,7 +7,7 @@ import org.hyperscala.selector.Selector
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class SelectorStyleSheet(selector: Selector)(implicit tag: HTMLTag) extends StyleSheet(null, null) {
+class SelectorStyleSheet(selector: Selector)(implicit tag: HTMLTag) extends StyleSheet(null, selector) {
   tag.connected[HTML] {
     case html => html.head.selector(selector)(this, append = true)
   }

@@ -46,29 +46,6 @@ object HTMLToScala {
     b.code
   }
 
-  /*def toInstantiator[T <: HTMLTag](tag: HTMLTag, className: String) = {
-    val source = toScala(tag, null, className)
-    val file = File.createTempFile("hyperscala", ".scala")
-    try {
-      val writer = new FileWriter(file)
-      try {
-        writer.write(source)
-      } finally {
-        writer.flush()
-        writer.close()
-      }
-      DynamicCompiler[T](className, file.toURI.toURL)
-    } finally {
-      file.delete()
-    }
-  }*/
-
-  /*def toInstantiator[T <: HTMLTag](source: Source, clean: Boolean) = {
-    val tag = toHTML(source, clean)
-    val className = "Custom%s".format(Unique())
-    toInstantiator[T](tag, className)
-  }*/
-
   def toPage[S <: Session](website: Website[S], source: String, clean: Boolean = true)(implicit manifest: Manifest[S]) = {
     val page = new Webpage(website)
     page.html.read(toXML(source, clean))

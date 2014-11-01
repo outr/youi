@@ -28,6 +28,16 @@ function toggleStyle(styleName, styleValues, disabled, nodes) {
     var s = rangy.getSelection();
     s.removeAllRanges();
     s.addRange(range);
+
+    // Fire event
+    editorFor(range.commonAncestorContainer).dispatchEvent(new Event('styleToggled'));
+}
+
+function editorFor(container) {
+    if (container.contentEditable == 'true') {
+        return container;
+    }
+    return editorFor(container.parentNode);
 }
 
 /**
@@ -163,6 +173,7 @@ function selectedNodes() {
     var range = rangy.getSelection().getRangeAt(0);
     var nodes = [];
     if (range.collapsed) {
+        // TODO: support non-text node
         nodes.push({
             node: range.startContainer,
             start: range.startOffset,
@@ -227,4 +238,33 @@ function selectedNodes() {
         }
     }
     return nodes;
+}
+
+function insertImage(source) {
+    var range = rangy.getSelection().getRangeAt(0);
+    range.deleteContents();
+    var img = document.createElement('img');
+    img.src = source;
+    range.insertNode(img);
+}
+
+/**
+ * Adds a listener to detect when the style name value changes for the selection on the supplied container.
+ *
+ * @param container the container to restrict change detection to
+ * @param styleName the style name to check
+ * @param listener the listener to invoke (function(oldValue, newValue))
+ */
+function addSelectionStyleChangeListener(container, styleName, listener) {
+    var previousStyle = null;
+    var checkStyle = function() {
+        var currentStyle = selectionStyle(styleName);           // Get the current style on the selection
+        if (currentStyle != previousStyle) {
+            listener(previousStyle, currentStyle);
+            previousStyle = currentStyle;
+        }
+    };
+    container.addEventListener('mouseup', checkStyle);
+    container.addEventListener('keyup', checkStyle);
+    container.addEventListener('styleToggled', checkStyle);
 }

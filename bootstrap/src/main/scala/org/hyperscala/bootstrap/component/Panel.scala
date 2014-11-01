@@ -26,10 +26,12 @@ class Panel extends tag.Div {
 
   val heading = new tag.Div(clazz = List("panel-heading"))
   val panelTitle = new tag.H3(clazz = List("panel-title"))
+  val outer = new tag.Div
   val body = new tag.Div(clazz = List("panel-body"))
 
   heading.contents += panelTitle
-  contents.addAll(heading, body)
+  outer.contents += body
+  contents.addAll(heading, outer)
 }
 
 class PanelType(val className: Option[String]) extends EnumEntry with ClassName

@@ -1,27 +1,26 @@
 package org.hyperscala.site
 
-import org.hyperscala.examples.Example
-import org.hyperscala.examples.bootstrap.{BootstrapTheme, BootstrapSignin}
-import org.hyperscala.examples.ux.SingleSelectListExample
-import org.hyperscala.web.{Webpage, WebpageHandler, Website, Scope}
-import org.hyperscala.examples.helloworld.HelloWorldPage
-import org.hyperscala.examples.basic._
-import org.hyperscala.examples.ui._
-import org.hyperscala.examples.todomvc.TodoMVC
-import org.hyperscala.examples.svg.{DynamicSVGExample, SVGShapesExample, BasicSVGExample}
-import org.hyperscala.examples.comparison.PlayHelloWorldPage
-import org.powerscala.log.{Logging, Level, Logger}
 import java.io.File
-import org.powerscala.log.writer.FileWriter
-import org.powerscala.log.formatter.Formatter
-import org.hyperscala.examples.snapsvg.SnapSVGExample
-import com.outr.net.http.session.MapSession
+
+import com.outr.net.http.filter.PathFilter
 import com.outr.net.http.jetty.JettyApplication
 import com.outr.net.http.request.HttpRequest
+import com.outr.net.http.session.MapSession
+import org.hyperscala.examples.Example
+import org.hyperscala.examples.basic._
+import org.hyperscala.examples.bootstrap.{BootstrapSignin, BootstrapTheme}
+import org.hyperscala.examples.comparison.PlayHelloWorldPage
 import org.hyperscala.examples.connect.ConnectExample
-import com.outr.net.http.filter.PathFilter
+import org.hyperscala.examples.helloworld.HelloWorldPage
+import org.hyperscala.examples.snapsvg.SnapSVGExample
+import org.hyperscala.examples.svg.{BasicSVGExample, DynamicSVGExample, SVGShapesExample}
+import org.hyperscala.examples.todomvc.TodoMVC
+import org.hyperscala.examples.ui._
+import org.hyperscala.examples.ux.SingleSelectListExample
 import org.hyperscala.hello.HelloSite
 import org.hyperscala.site.extra.HyperscalaGenerator
+import org.hyperscala.web.{Scope, Webpage, WebpageHandler, Website}
+import org.powerscala.log.Logger
 
 import scala.collection.mutable.ListBuffer
 
@@ -88,7 +87,7 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication {
   val selectWrapper = example(new SelectWrapperExample, "UI", "Select Wrapper", Scope.Page)
   val gallery = example(new GalleryExample, "UI", "Gallery", Scope.Page)
   val modalComponent = example(new ModalComponentExample, "UI", "Modal Component", Scope.Page)
-  val contentEditor = example(new ContentEditorExample, "UI", "Content Editor", Scope.Page)
+  val contentEditor = example(new ContentEditorExample(this), "UI", "Content Editor", Scope.Page)
 
   // Wrapper
   val richEditor = example(new RichEditorExample, "Wrapper", "Rich Editor", Scope.Page)
@@ -155,6 +154,8 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication {
   addClassPath("/images/", "images/")
   addClassPath("/css/", "css/")
   addClassPath("/js/", "js/")
+
+  addFilePath("/zxscolorpicker/", new File("/home/mhicks/projects/zxscolorpicker/"))
 
   protected def createSession(request: HttpRequest, id: String) = new MapSession(id, this)
 

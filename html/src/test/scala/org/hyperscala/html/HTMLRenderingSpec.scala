@@ -1,11 +1,12 @@
 package org.hyperscala.html
 
-import attributes.ContentEditable
-import org.jdom2.Element
-import org.hyperscala.css.attributes.Display
-import org.jdom2.input.SAXBuilder
 import java.io.StringReader
-import tag.{Head, HTML, Body, Title}
+
+import org.hyperscala.css.attributes.Display
+import org.hyperscala.html.attributes.ContentEditable
+import org.hyperscala.html.tag.{Body, HTML, Head, Title}
+import org.jdom2.Element
+import org.jdom2.input.SAXBuilder
 import org.scalatest.{Matchers, WordSpec}
 
 /**
@@ -95,11 +96,11 @@ class HTMLRenderingSpec extends WordSpec with Matchers {
     }
     "show properly when CSS" in {
       val html = new HTML {
-        style.fontFace := "Arial"
+        style.fontFamily := "Arial"
         style.display := Display.Inline
       }
       val out = clean(html.outputString)
-      out should equal("<html style=\"font-face: Arial; display: inline\"></html>")
+      out should equal("<html style=\"font-family: Arial; display: inline\"></html>")
     }
   }
   "DOM deserialization" should {

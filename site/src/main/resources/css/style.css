@@ -155,10 +155,16 @@ hr {
 }
 
 #logo {
+    padding-top: 3px;
     z-index: 100 !important;
 }
 
 .badge {
     font-size: 12px !important;
     min-width: 30px !important;
+}
+
+.example_back {
+    margin-top: 15px;
+    clear: both;
 }

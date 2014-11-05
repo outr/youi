@@ -1,24 +1,38 @@
 /**
  * Toggles the style value state on the selection.
  *
+ * @param containerId defines an optional container that the selection must be within to apply the style change.
  * @param styleName the css key camel-case.
  * @param styleValues the list of aliases for the value to match on. The first is what is set.
  * @param disabled the value to set if the value is already set on the entire selection.
  * @param nodes the list of nodes (will query if not provided).
  */
-function toggleStyle(styleName, styleValues, disabled, nodes) {
+function toggleStyle(containerId, styleName, styleValues, disabled, nodes) {
+    if (containerId != null) {
+        if (!selectionInContainer(containerId)) return;       // Don't allow style toggling if outside the container
+    }
     if (nodes == null) {
         nodes = selectedNodes();
     }
     var hasStyle = selectionHasStyle(styleName, styleValues, nodes);
 //    console.log('Already has the style? ' + hasStyle);
+    var styleValue = styleValues[0];
+    if (hasStyle) {
+        styleValue = null;
+    }
+    setStyle(null, styleName, styleValue);
+}
+
+function setStyle(containerId, styleName, styleValue, nodes) {
+    if (containerId != null) {
+        if (!selectionInContainer(containerId)) return;       // Don't allow styling if outside the container
+    }
+    if (nodes == null) {
+        nodes = selectedNodes();
+    }
     var spans = spansForSelected(nodes);
     for (var i = 0; i < spans.length; i++) {
-        if (hasStyle) {
-            spans[i].style[styleName] = null;       // Has the style, remove it.
-        } else {
-            spans[i].style[styleName] = styleValues[0]; // Apply the style
-        }
+        spans[i].style[styleName] = styleValue;
     }
 
     // Re-select
@@ -30,7 +44,18 @@ function toggleStyle(styleName, styleValues, disabled, nodes) {
     s.addRange(range);
 
     // Fire event
-    editorFor(range.commonAncestorContainer).dispatchEvent(new Event('styleToggled'));
+    editorFor(range.commonAncestorContainer).dispatchEvent(new Event('styleChanged'));
+}
+
+function selectionInContainer(containerId) {
+    var range = rangy.getSelection().getRangeAt(0);
+    var container = document.getElementById(containerId);
+    var element = range.commonAncestorContainer;
+    while (element != null) {
+        if (element == container) return true;
+        element = element.parentNode;
+    }
+    return false;
 }
 
 function editorFor(container) {
@@ -80,6 +105,9 @@ function selectionStyle(styleName, nodes) {
             value = null;
             break;
         }
+    }
+    if (value == '----') {
+        value = null;
     }
     return value;
 }
@@ -172,7 +200,7 @@ function spansForSelected(nodes) {
 function selectedNodes() {
     var range = rangy.getSelection().getRangeAt(0);
     var nodes = [];
-    if (range.collapsed) {
+    if (range.collapsed || range.endContainer == null) {
         // TODO: support non-text node
         nodes.push({
             node: range.startContainer,
@@ -193,6 +221,9 @@ function selectedNodes() {
         }
         var node = range.startContainer;
         while(true) {
+            if (node == null) {
+                console.log('node is null in selectedNodes: ' + range.startContainer + ':' + range.startOffset + ' - ' + range.endContainer + ':' + range.endOffset);
+            }
             var start = 0;
             var length = 0;
             if (node.nodeType == Node.TEXT_NODE) {
@@ -240,12 +271,25 @@ function selectedNodes() {
     return nodes;
 }
 
-function insertImage(source) {
-    var range = rangy.getSelection().getRangeAt(0);
-    range.deleteContents();
+/**
+ * Insert an image into the range.
+ *
+ * @param containerId defines an optional container that the selection must be within to insert the image.
+ * @param source the image source
+ */
+function insertImage(containerId, source) {
     var img = document.createElement('img');
     img.src = source;
-    range.insertNode(img);
+    insertNode(containerId, img);
+}
+
+function insertNode(containerId, node) {
+    if (containerId != null) {
+        if (!selectionInContainer(containerId)) return;       // Don't allow if outside the container
+    }
+    var range = rangy.getSelection().getRangeAt(0);
+    range.deleteContents();
+    range.insertNode(node);
 }
 
 /**
@@ -266,5 +310,5 @@ function addSelectionStyleChangeListener(container, styleName, listener) {
     };
     container.addEventListener('mouseup', checkStyle);
     container.addEventListener('keyup', checkStyle);
-    container.addEventListener('styleToggled', checkStyle);
+    container.addEventListener('styleChanged', checkStyle);
 }

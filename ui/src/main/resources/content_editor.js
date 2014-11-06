@@ -36,15 +36,43 @@ function setStyle(containerId, styleName, styleValue, nodes) {
     }
 
     // Re-select
-    var range = rangy.createRange();
-    range.setStartBefore(spans[0]);
-    range.setEndAfter(spans[spans.length - 1]);
-    var s = rangy.getSelection();
-    s.removeAllRanges();
-    s.addRange(range);
+    if (spans != null && spans.length > 0) {
+        var range = rangy.createRange();
+        range.setStartBefore(spans[0]);
+        range.setEndAfter(spans[spans.length - 1]);
+        var s = rangy.getSelection();
+        s.removeAllRanges();
+        s.addRange(range);
 
-    // Fire event
-    editorFor(range.commonAncestorContainer).dispatchEvent(new Event('styleChanged'));
+        // Fire event
+        editorFor(range.commonAncestorContainer).dispatchEvent(new Event('styleChanged'));
+    }
+}
+
+function adjustStyle(containerId, styleName, adjuster, nodes) {
+    if (containerId != null) {
+        if (!selectionInContainer(containerId)) return;       // Don't allow styling if outside the container
+    }
+    if (nodes == null) {
+        nodes = selectedNodes();
+    }
+    var spans = spansForSelected(nodes);
+    for (var i = 0; i < spans.length; i++) {
+        spans[i].style[styleName] = adjuster(styleForNode(spans[i], styleName));
+    }
+
+    // Re-select
+    if (spans != null && spans.length > 0) {
+        var range = rangy.createRange();
+        range.setStartBefore(spans[0]);
+        range.setEndAfter(spans[spans.length - 1]);
+        var s = rangy.getSelection();
+        s.removeAllRanges();
+        s.addRange(range);
+
+        // Fire event
+        editorFor(range.commonAncestorContainer).dispatchEvent(new Event('styleChanged'));
+    }
 }
 
 function selectionInContainer(containerId) {
@@ -81,6 +109,14 @@ function selectionHasStyle(styleName, styleValues, nodes) {
     var valuesString = styleValues.join(', ').toLowerCase();
     var value = selectionStyle(styleName, nodes);
     return valuesString.indexOf(value) != -1;
+}
+
+function styleForNode(node, styleName) {
+    if (node.nodeType == Node.TEXT_NODE) {
+        return window.getComputedStyle(node.parentNode, null)[styleName];
+    } else {
+        return window.getComputedStyle(node, null)[styleName];
+    }
 }
 
 /**
@@ -126,7 +162,8 @@ function spansForSelected(nodes) {
 
     function createNewSpan(text, currentParent) {
         var span = document.createElement('span');
-        span.classList.add('stylized');
+        var $span = $(span);
+        $span.addClass('stylized');
         if (text != null) {
             span.appendChild(document.createTextNode(text));
         }
@@ -151,7 +188,7 @@ function spansForSelected(nodes) {
         var node = nodeEntry.node;
 
         var parentStylized = null;
-        if (node.parentNode.classList.contains('stylized')) {
+        if ($(node.parentNode).hasClass('stylized')) {
             parentStylized = node.parentNode;
         }
         if (parentStylized != null && nodeEntry.start == 0 && nodeEntry.end == nodeEntry.length) {
@@ -201,15 +238,19 @@ function selectedNodes() {
     var range = rangy.getSelection().getRangeAt(0);
     var nodes = [];
     if (range.collapsed || range.endContainer == null) {
-        // TODO: support non-text node
+        var length = 0;
+        if (range.startContainer.nodeType == Node.TEXT_NODE) {
+            length = range.startContainer.nodeValue.length;
+        } else {
+            length = range.startContainer.childNodes.length;
+        }
         nodes.push({
             node: range.startContainer,
             start: range.startOffset,
             end: range.endOffset,
-            length: range.startContainer.nodeValue.length
+            length: length
         });
     } else {
-//        console.log('selectedNodes... ' + range.startContainer + ', ' + range.endContainer);
         if (range.startContainer == range.endContainer && range.startContainer.nodeType != Node.TEXT_NODE) {
             var startContainer = range.startContainer.childNodes.item(range.startOffset);
             var endContainer = range.startContainer.childNodes.item(range.endOffset);
@@ -217,13 +258,9 @@ function selectedNodes() {
             range.startOffset = 0;
             range.endContainer = endContainer;
             range.endOffset = 0;
-//            console.log('modified... ');
         }
         var node = range.startContainer;
         while(true) {
-            if (node == null) {
-                console.log('node is null in selectedNodes: ' + range.startContainer + ':' + range.startOffset + ' - ' + range.endContainer + ':' + range.endOffset);
-            }
             var start = 0;
             var length = 0;
             if (node.nodeType == Node.TEXT_NODE) {
@@ -290,6 +327,22 @@ function insertNode(containerId, node) {
     var range = rangy.getSelection().getRangeAt(0);
     range.deleteContents();
     range.insertNode(node);
+}
+
+function insertIntoSelection(containerId, html) {
+    var node = $.parseHTML(html)[0];
+    insertNode(containerId, node);
+}
+
+function insertAroundSelection(containerId, html) {
+    if (containerId != null) {
+        if (!selectionInContainer(containerId)) return;       // Don't allow if outside the container
+    }
+    var range = rangy.getSelection().getRangeAt(0);
+    if (range.canSurroundContents()) {
+        var node = $.parseHTML(html)[0];
+        range.surroundContents(node);
+    }
 }
 
 /**

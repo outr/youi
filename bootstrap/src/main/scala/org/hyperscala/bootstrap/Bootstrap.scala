@@ -1,11 +1,11 @@
 package org.hyperscala.bootstrap
 
-import org.hyperscala.module.Module
-import org.powerscala.Version
 import com.outr.net.http.session.Session
-import org.hyperscala.web.{Webpage, Website}
 import org.hyperscala.html._
 import org.hyperscala.jquery.jQuery
+import org.hyperscala.module.Module
+import org.hyperscala.web.{Webpage, Website}
+import org.powerscala.Version
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -15,7 +15,7 @@ object Bootstrap extends Module {
 
   override def version = Version(3, 2, 0)
 
-  override def dependencies = List(jQuery.LatestWithDefault)
+  override def dependencies = List(jQuery)
 
   override def init[S <: Session](website: Website[S]) = {}
 

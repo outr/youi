@@ -5,10 +5,10 @@ import org.hyperscala.connect.Connect
 import org.hyperscala.html.tag
 import org.hyperscala.jquery.jQuery
 import org.hyperscala.jquery.stylesheet.jQueryStyleSheet
-import org.hyperscala.module.{Module, Interface}
+import org.hyperscala.module.Module
 import org.hyperscala.selector.Selector
 import org.hyperscala.web.module.IdentifyTags
-import org.hyperscala.web.{Website, WebpageHandler, Webpage}
+import org.hyperscala.web.{Webpage, WebpageHandler, Website}
 import org.powerscala.property.Property
 
 /**
@@ -19,8 +19,8 @@ class RealtimeFrame(pageURL: String, singleConnection: Boolean = true) extends t
   @volatile private var webpage: Webpage[Session] = _
 
   connected[Webpage[Session]] {
-    case webpage => {
-      this.webpage = webpage
+    case page => {
+      webpage = page
       updatePage()
       currentPage.change.on {
         case evt => updatePage()
@@ -65,7 +65,7 @@ object RealtimeFrame extends Module {
   override val name = Realtime.name
   override val version = Realtime.version
 
-  override def dependencies = List(jQuery.LatestWithDefault, jQueryStyleSheet, IdentifyTags)
+  override def dependencies = List(jQuery, jQueryStyleSheet, IdentifyTags)
 
   override def init[S <: Session](website: Website[S]) = {
     website.register("/js/realtime_frame.js", "realtime_frame.js")

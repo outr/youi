@@ -1,12 +1,12 @@
 package org.hyperscala.ui
 
-import org.hyperscala.web.{Website, Webpage}
-import org.hyperscala.html._
-import org.powerscala.Version
-import org.hyperscala.module._
-import org.hyperscala.javascript.{JavaScriptString, JavaScriptContent}
-import org.hyperscala.jquery.jQuery
 import com.outr.net.http.session.Session
+import org.hyperscala.html._
+import org.hyperscala.javascript.{JavaScriptContent, JavaScriptString}
+import org.hyperscala.jquery.jQuery
+import org.hyperscala.module._
+import org.hyperscala.web.{Webpage, Website}
+import org.powerscala.Version
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
@@ -16,7 +16,7 @@ object WindowSized extends Module {
 
   def version = Version(1)
 
-  override def dependencies = List(InterfaceWithDefault(jQuery, jQuery.Latest))
+  override def dependencies = List(jQuery)
 
   override def init[S <: Session](website: Website[S]) = {
     website.register("/window_size.js", "window_size.js")

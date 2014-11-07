@@ -3,7 +3,7 @@ package org.hyperscala.ux
 import com.outr.net.http.session.Session
 import org.hyperscala.html._
 import org.hyperscala.jquery.jQuery
-import org.hyperscala.module.{InterfaceWithDefault, Module}
+import org.hyperscala.module.Module
 import org.hyperscala.web.{Webpage, Website}
 import org.powerscala.Version
 
@@ -14,7 +14,7 @@ object UX extends Module {
   def name = "hyperscala-ux"
   def version = Version(1, 0, 0)
 
-  override def dependencies = List(InterfaceWithDefault(jQuery, jQuery.Latest))
+  override def dependencies = List(jQuery)
 
   override def init[S <: Session](website: Website[S]) = {
     website.addClassPath("/ux", "ux")

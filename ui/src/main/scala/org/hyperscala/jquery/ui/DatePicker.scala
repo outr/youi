@@ -1,20 +1,21 @@
 package org.hyperscala.jquery.ui
 
 import org.hyperscala.html._
-import org.hyperscala.jquery.{jQueryComponent, JavaScriptCaller}
-import org.hyperscala.web._
+import org.hyperscala.jquery.{JavaScriptCaller, jQueryComponent}
 import org.hyperscala.realtime.Realtime
+import org.hyperscala.web._
 import org.powerscala.StorageComponent
+
 import scala.language.implicitConversions
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */
 object DatePicker extends JavaScriptCaller with StorageComponent[DatePicker, tag.Input] {
-  implicit def tag2Picker(t: tag.Input) = apply(t)
+  implicit def tag2Picker(t: tag.Input): DatePicker = apply(t)
 
   override def apply(t: tag.Input) = {
-    t.require(jQueryUI.LatestWithDefault)
+    t.require(jQueryUI)
     t.require(Realtime)
     super.apply(t)
   }

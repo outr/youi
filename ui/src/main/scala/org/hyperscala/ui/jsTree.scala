@@ -1,14 +1,15 @@
 package org.hyperscala.ui
 
-import org.hyperscala.module.Module
-import org.powerscala.Version
-import org.hyperscala.web._
-import org.hyperscala.html._
-import org.hyperscala.jquery.jQuery
-import scala.collection.mutable.ListBuffer
-import org.hyperscala.jquery.dsl._
-import org.hyperscala.realtime.Realtime
 import com.outr.net.http.session.Session
+import org.hyperscala.html._
+import org.hyperscala.jquery.dsl._
+import org.hyperscala.jquery.jQuery
+import org.hyperscala.module.Module
+import org.hyperscala.realtime.Realtime
+import org.hyperscala.web._
+import org.powerscala.Version
+
+import scala.collection.mutable.ListBuffer
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -22,7 +23,7 @@ object jsTree extends Module {
   val name = "jstree"
   val version = Version(2, extra = "alpha")
 
-  override val dependencies = List(jQuery.LatestWithDefault)
+  override val dependencies = List(jQuery)
 
   override def init[S <: Session](website: Website[S]) = {
     website.addClassPath("/js/jstree/", "jstree/")

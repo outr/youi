@@ -36,6 +36,8 @@ object document extends DelayedStatement[HTMLTag] with Selector {
 
 class Command extends EnumEntry with JavaScriptContent {
   override def content = s"'$name'"
+
+  override val parent = Command.asInstanceOf[Enumerated[EnumEntry]]
 }
 
 object Command extends Enumerated[Command] {

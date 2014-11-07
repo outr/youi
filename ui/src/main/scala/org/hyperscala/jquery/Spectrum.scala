@@ -1,16 +1,16 @@
 package org.hyperscala.jquery
 
-import org.powerscala.{StorageComponent, Color, Version}
-import org.hyperscala.module.{Module, InterfaceWithDefault}
-import org.hyperscala.web._
+import com.outr.net.http.session.Session
 import org.hyperscala.html.tag
-
-import scala.language.implicitConversions
 import org.hyperscala.html.tag.Input
 import org.hyperscala.javascript.JavaScriptContent
-import org.hyperscala.realtime.{Realtime, RealtimeEvent}
 import org.hyperscala.jquery.dsl._
-import com.outr.net.http.session.Session
+import org.hyperscala.module.Module
+import org.hyperscala.realtime.{Realtime, RealtimeEvent}
+import org.hyperscala.web._
+import org.powerscala.{Color, StorageComponent, Version}
+
+import scala.language.implicitConversions
 
 /**
  * Spectrum is a wrapper around the the jQuery Colorpicker found here: http://bgrins.github.io/spectrum/
@@ -23,13 +23,13 @@ import com.outr.net.http.session.Session
  * @author Matt Hicks <matt@outr.com>
  */
 object Spectrum extends Module with JavaScriptCaller with StorageComponent[Spectrum, Input] {
-  implicit def tag2Spectrum(tag: Input) = apply(tag)
+  implicit def tag2Spectrum(tag: Input): Spectrum = apply(tag)
 
   def name = "spectrum"
 
   def version = Version(1, 1, 1)
 
-  override def dependencies = List(InterfaceWithDefault(jQuery, jQuery.Latest))
+  override def dependencies = List(jQuery)
 
   override def init[S <: Session](website: Website[S]) = {
     website.addClassPath("/spectrum/", "spectrum/")

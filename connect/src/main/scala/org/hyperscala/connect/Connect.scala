@@ -1,23 +1,23 @@
 package org.hyperscala.connect
 
-import org.hyperscala.module.Module
-import org.powerscala.{Unique, Version}
-import org.hyperscala.web.{Webpage, Website}
-import org.hyperscala.html._
+import akka.actor.{Actor, ActorSystem, Props}
+import argonaut.Argonaut._
+import argonaut._
 import com.outr.net.http.HttpHandler
-import com.outr.net.http.request.HttpRequest
-import com.outr.net.http.response.{HttpResponseStatus, HttpResponse}
-import org.hyperscala.jquery.jQuery
-import org.hyperscala.javascript.JavaScriptContent
 import com.outr.net.http.content.StringContent
-
-import argonaut._, Argonaut._
-import org.powerscala.concurrent.Time
-import org.powerscala.event.processor.UnitProcessor
-import org.powerscala.event.Listenable
-import akka.actor.{Props, ActorSystem, Actor}
-import org.powerscala.log.Logging
+import com.outr.net.http.request.HttpRequest
+import com.outr.net.http.response.{HttpResponse, HttpResponseStatus}
 import com.outr.net.http.session.Session
+import org.hyperscala.html._
+import org.hyperscala.javascript.JavaScriptContent
+import org.hyperscala.jquery.jQuery
+import org.hyperscala.module.Module
+import org.hyperscala.web.{Webpage, Website}
+import org.powerscala.concurrent.Time
+import org.powerscala.event.Listenable
+import org.powerscala.event.processor.UnitProcessor
+import org.powerscala.log.Logging
+import org.powerscala.{Unique, Version}
 
 /**
  * Connect provides communication support to Hyperscala to allow the client to communicate to the server and the server
@@ -40,7 +40,7 @@ object Connect extends Module with Logging {
     val NoContent = 4
   }
 
-  override def dependencies = List(jQuery.LatestWithDefault)
+  override def dependencies = List(jQuery)
 
   override def init[S <: Session](website: Website[S]) = {
     website.register("/js/hyperscala.connect.js", "hyperscala.connect.js")

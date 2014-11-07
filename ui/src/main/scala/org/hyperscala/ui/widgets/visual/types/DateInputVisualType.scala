@@ -1,14 +1,14 @@
 package org.hyperscala.ui.widgets.visual.types
 
-import org.hyperscala.ui.widgets.visual.VisualBuilder
 import java.text.SimpleDateFormat
 import java.util.Date
-import org.powerscala.property.Property
 
 import org.hyperscala.html._
 import org.hyperscala.javascript.JavaScriptString
-import org.hyperscala.web._
 import org.hyperscala.jquery.ui.jQueryUI
+import org.hyperscala.ui.widgets.visual.VisualBuilder
+import org.hyperscala.web._
+import org.powerscala.property.Property
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -31,7 +31,7 @@ class DateInputVisualType(format: String = "MM/dd/yyyy") extends InputVisualType
     val input = super.create(property, details)
     input.identity
     new tag.Div {
-      this.require(jQueryUI.Latest)
+      this.require(jQueryUI)
       contents += input
       contents += new tag.Script {
         contents += JavaScriptString("$('#%s').datepicker();".format(input.id()))

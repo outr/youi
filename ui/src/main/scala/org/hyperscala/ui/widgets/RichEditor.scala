@@ -1,24 +1,23 @@
 package org.hyperscala.ui.widgets
 
-import org.hyperscala.html._
-import org.hyperscala.web._
-import org.hyperscala.realtime.{RealtimePage, Realtime}
-import org.hyperscala.module.Module
-import org.powerscala.{Version, StorageComponent}
-import org.hyperscala.jquery.jQuery
-import org.hyperscala.web.WrappedComponent
-import org.powerscala.event.Intercept
-import org.powerscala.property.Property
-import org.hyperscala.javascript.JavaScriptContent
-import org.hyperscala.{Container, IdentifiableTag}
-import org.hyperscala.html.attributes.ContentEditable
-import org.hyperscala.io.HTMLToScala
+import com.outr.net.http.session.Session
 import org.hyperscala.css.Style
 import org.hyperscala.css.attributes._
-import org.hyperscala.ui.clipboard.{ClipType, Clipboard}
-import org.powerscala.enum.{Enumerated, EnumEntry}
+import org.hyperscala.html._
+import org.hyperscala.html.attributes.ContentEditable
+import org.hyperscala.io.HTMLToScala
+import org.hyperscala.javascript.JavaScriptContent
 import org.hyperscala.javascript.dsl.JSFunction1
-import com.outr.net.http.session.Session
+import org.hyperscala.jquery.jQuery
+import org.hyperscala.module.Module
+import org.hyperscala.realtime.{Realtime, RealtimePage}
+import org.hyperscala.ui.clipboard.{ClipType, Clipboard}
+import org.hyperscala.web.{WrappedComponent, _}
+import org.hyperscala.{Container, IdentifiableTag}
+import org.powerscala.enum.{EnumEntry, Enumerated}
+import org.powerscala.event.Intercept
+import org.powerscala.property.Property
+import org.powerscala.{StorageComponent, Version}
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -40,7 +39,7 @@ object RichEditor extends Module with StorageComponent[RichEditor, HTMLTag] {
   def name = "RichEditor"
   def version = Version(2)
 
-  override def dependencies = List(jQuery.LatestWithDefault, Realtime, CKEditor)
+  override def dependencies = List(jQuery, Realtime, CKEditor)
 
   override def init[S <: Session](website: Website[S]) = {
     website.register("/js/rich_editor.js", "rich_editor.js")
@@ -59,7 +58,7 @@ object RichEditor extends Module with StorageComponent[RichEditor, HTMLTag] {
 }
 
 class RichEditor private(val wrapped: HTMLTag, val autoInit: Boolean = true) extends WrappedComponent[HTMLTag] {
-  import RichEditor._
+  import org.hyperscala.ui.widgets.RichEditor._
 
   /**
    * Configures the Clipboard module to integrate with this editor.

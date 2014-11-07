@@ -27,7 +27,7 @@ object ContentEditor extends Module with StorageComponent[ContentEditor, HTMLTag
   val name = "contentEditor"
   val version = Version(1)
 
-  override def dependencies = List(jQuery.LatestWithDefault, Realtime, Rangy)
+  override def dependencies = List(jQuery, Realtime, Rangy)
 
   override def init[S <: Session](website: Website[S]) = {
     website.register("/js/undo.js", "undo.js")

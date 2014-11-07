@@ -1,21 +1,21 @@
 package org.hyperscala.ui.wrapped
 
-import org.powerscala._
-import org.hyperscala.html._
-import org.hyperscala.web._
-import org.hyperscala.realtime.{RealtimePage, Realtime}
-import org.hyperscala.html.attributes.ContentEditable
-import org.hyperscala.javascript.JavaScriptContent
-import org.hyperscala.module.Module
-import org.hyperscala.jquery.jQuery
-import org.powerscala.event.Intercept
-import org.hyperscala.io.HTMLToScala
-import org.hyperscala.html.constraints.BodyChild
-import org.hyperscala.Container
-import org.jdom2.Element
-import org.powerscala.event.processor.UnitProcessor
-import org.hyperscala.selector.Selector
 import com.outr.net.http.session.Session
+import org.hyperscala.Container
+import org.hyperscala.html._
+import org.hyperscala.html.attributes.ContentEditable
+import org.hyperscala.html.constraints.BodyChild
+import org.hyperscala.io.HTMLToScala
+import org.hyperscala.javascript.JavaScriptContent
+import org.hyperscala.jquery.jQuery
+import org.hyperscala.module.Module
+import org.hyperscala.realtime.{Realtime, RealtimePage}
+import org.hyperscala.selector.Selector
+import org.hyperscala.web._
+import org.jdom2.Element
+import org.powerscala._
+import org.powerscala.event.Intercept
+import org.powerscala.event.processor.UnitProcessor
 
 /**
  * EditableContent allows easy wrapping around an HTMLTag container to allow the use of HTML5's contentEditable flag
@@ -28,7 +28,7 @@ object EditableContent extends Module with StorageComponent[EditableContent, HTM
   def name = "EditableContent"
   def version = Version(1)
 
-  override def dependencies = List(jQuery.LatestWithDefault, Realtime)
+  override def dependencies = List(jQuery, Realtime)
 
   override def init[S <: Session](website: Website[S]) = {
     website.register("/js/editable_content.js", "editable_content.js")
@@ -90,23 +90,12 @@ class EditableContent private(t: HTMLTag with Container[BodyChild]) {
             }
           }
           selectionChanged.fire(SelectionChanged(
-            selectedText.getOrElse(null),
-            selectedHTML.getOrElse(null),
+            selectedText.orNull,
+            selectedHTML.orNull,
             selectedStartOffset.getOrElse(-1),
             selectedEndOffset.getOrElse(-1)
           ))
           Intercept.Stop
-          //        throw new RuntimeException(s"Not implemented: ${evt.json.toJson.spaces2}")
-          //        evt.message.map.foreach {   // Update all changed values
-          //          case (key, value) => selection(key) = value
-          //        }
-          //        selectionChanged.fire(SelectionChanged(
-          //          selectedText.getOrElse(null),
-          //          selectedHTML.getOrElse(null),
-          //          selectedStartOffset.getOrElse(-1),
-          //          selectedEndOffset.getOrElse(-1)
-          //        ))
-          //        Intercept.Stop
         }
         case _ => Intercept.Continue
       }

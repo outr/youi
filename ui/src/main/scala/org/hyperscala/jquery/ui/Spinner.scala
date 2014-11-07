@@ -1,27 +1,27 @@
 package org.hyperscala.jquery.ui
 
-import org.hyperscala.jquery.{jQueryComponent, JavaScriptCaller}
-import org.powerscala.StorageComponent
-import org.hyperscala.html._
-import org.hyperscala.web._
-import org.hyperscala.realtime.Realtime
-import scala.language.implicitConversions
-import argonaut.CodecJson
 import argonaut.Argonaut._
-import org.hyperscala.jquery.JSMapper
+import argonaut.CodecJson
 import org.hyperscala.event.EventReceived
+import org.hyperscala.html._
 import org.hyperscala.javascript.JavaScriptString
-import org.powerscala.property.Property
+import org.hyperscala.jquery.{JSMapper, JavaScriptCaller, jQueryComponent}
+import org.hyperscala.realtime.Realtime
+import org.hyperscala.web._
+import org.powerscala.StorageComponent
 import org.powerscala.concurrent.AtomicBoolean
+import org.powerscala.property.Property
+
+import scala.language.implicitConversions
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
 object Spinner extends JavaScriptCaller with StorageComponent[Spinner, tag.Input] {
-  implicit def tag2Spinner(input: tag.Input) = apply(input)
+  implicit def tag2Spinner(input: tag.Input): Spinner = apply(input)
 
   override def apply(input: tag.Input) = {
-    input.require(jQueryUI.LatestWithDefault)
+    input.require(jQueryUI)
     input.require(Realtime)
     super.apply(input)
   }

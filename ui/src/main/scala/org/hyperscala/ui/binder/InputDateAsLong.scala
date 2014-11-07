@@ -1,22 +1,24 @@
 package org.hyperscala.ui.binder
 
-import org.hyperscala.html._
-import org.hyperscala.web._
 import java.text.SimpleDateFormat
 import java.util.Date
-import org.hyperscala.jquery.ui.jQueryUI
-import org.hyperscala.ui.dynamic.Binder
-import language.reflectiveCalls
-import org.hyperscala.realtime.{Realtime, RealtimeEvent}
-import org.hyperscala.jquery.dsl._
+
 import com.outr.net.http.session.Session
+import org.hyperscala.html._
+import org.hyperscala.jquery.dsl._
+import org.hyperscala.jquery.ui.jQueryUI
+import org.hyperscala.realtime.{Realtime, RealtimeEvent}
+import org.hyperscala.ui.dynamic.Binder
+import org.hyperscala.web._
+
+import scala.language.reflectiveCalls
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */
 class InputDateAsLong(format: String = "MM/dd/yyyy") extends Binder[tag.Input, Long] {
   def bind(input: tag.Input) = {
-    input.require(jQueryUI, jQueryUI.Latest)
+    input.require(jQueryUI, jQueryUI)
 
     input.value.change.on {
       case evt => {

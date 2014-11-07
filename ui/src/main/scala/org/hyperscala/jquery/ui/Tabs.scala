@@ -1,18 +1,18 @@
 package org.hyperscala.jquery.ui
 
+import com.outr.net.http.session.Session
 import org.hyperscala.html._
-import org.hyperscala.web._
-import org.powerscala.Unique
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.selector.Selector
-import com.outr.net.http.session.Session
+import org.hyperscala.web._
+import org.powerscala.Unique
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
 class Tabs extends tag.Div {
   this.require(Realtime)
-  this.require(jQueryUI.LatestWithDefault)
+  this.require(jQueryUI)
 
   identity
 

@@ -1,10 +1,10 @@
 package org.hyperscala.jquery
 
-import org.hyperscala.module.Module
-import org.powerscala.Version
-import org.hyperscala.web.{Webpage, Website}
-import org.hyperscala.html.tag
 import com.outr.net.http.session.Session
+import org.hyperscala.html.tag
+import org.hyperscala.module.Module
+import org.hyperscala.web.{Webpage, Website}
+import org.powerscala.Version
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -14,7 +14,7 @@ object jQueryNearest extends Module {
 
   val version = Version(3, 1, 9)
 
-  override def dependencies = List(jQuery.LatestWithDefault)
+  override def dependencies = List(jQuery)
 
   override def init[S <: Session](website: Website[S]) = {
     website.register("/js/jquery.nearest.js", "jquery.nearest.js")

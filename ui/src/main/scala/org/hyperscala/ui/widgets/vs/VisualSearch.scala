@@ -1,23 +1,21 @@
 package org.hyperscala.ui.widgets.vs
 
+import argonaut.Argonaut._
+import argonaut.{CodecJson, JsonObject}
+import com.outr.net.http.HttpHandler
+import com.outr.net.http.content.StringContent
+import com.outr.net.http.request.HttpRequest
+import com.outr.net.http.response.{HttpResponse, HttpResponseStatus}
+import com.outr.net.http.session.Session
 import org.hyperscala.html._
-import org.hyperscala.module.Module
-import org.hyperscala.web._
 import org.hyperscala.jquery.jQuery
 import org.hyperscala.jquery.ui.jQueryUI
+import org.hyperscala.module.Module
 import org.hyperscala.realtime.Realtime
-import org.powerscala.property._
-import org.powerscala.Version
-import com.outr.net.http.HttpHandler
-import com.outr.net.http.response.HttpResponseStatus
 import org.hyperscala.selector.Selector
-import argonaut.{CodecJson, JsonObject}
-import argonaut.Argonaut._
-import com.outr.net.http.request.HttpRequest
-import scala.Some
-import com.outr.net.http.response.HttpResponse
-import com.outr.net.http.content.StringContent
-import com.outr.net.http.session.Session
+import org.hyperscala.web._
+import org.powerscala.Version
+import org.powerscala.property._
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -105,7 +103,7 @@ object VisualSearch extends Module {
   val name = "visualsearch"
   val version = Version(0, 4, 0)
 
-  override val dependencies = List(jQuery.LatestWithDefault, jQueryUI.LatestWithDefault, Realtime)
+  override val dependencies = List(jQuery, jQueryUI, Realtime)
 
   val basePath = "/visualsearch-0.4.0/"
 

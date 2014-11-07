@@ -1,27 +1,25 @@
 package org.hyperscala.realtime
 
-import org.hyperscala.web.{Webpage, Website}
-
+import argonaut.Argonaut._
+import argonaut.{CodecJson, Json}
+import com.outr.net.http.session.Session
+import org.hyperscala.connect.{Connect, Connection, Message}
 import org.hyperscala.html._
-
-import org.hyperscala.web.module.IdentifyTags
-import org.powerscala.Version
-import org.hyperscala.module._
-import org.hyperscala.jquery.jQuery
-
-import language.reflectiveCalls
-import org.hyperscala.jquery.stylesheet.jQueryStyleSheet
-import org.powerscala.log.Logging
 import org.hyperscala.html.attributes.InputType
 import org.hyperscala.javascript.dsl.Statement
+import org.hyperscala.jquery.jQuery
+import org.hyperscala.jquery.stylesheet.jQueryStyleSheet
+import org.hyperscala.module._
 import org.hyperscala.selector.Selector
-import org.powerscala.property.Property
-import org.hyperscala.{Markup, Container}
-import org.hyperscala.connect.{Message, Connection, Connect}
+import org.hyperscala.web.module.IdentifyTags
+import org.hyperscala.web.{Webpage, Website}
+import org.hyperscala.{Container, Markup}
+import org.powerscala.Version
 import org.powerscala.event.{Intercept, Listenable}
-import argonaut.{CodecJson, Json}
-import argonaut.Argonaut._
-import com.outr.net.http.session.Session
+import org.powerscala.log.Logging
+import org.powerscala.property.Property
+
+import scala.language.reflectiveCalls
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -33,7 +31,7 @@ object Realtime extends Module with Logging with Listenable {
 
   def version = Version(1, 1)
 
-  override def dependencies = List(jQuery.LatestWithDefault, jQueryStyleSheet, IdentifyTags, Connect)
+  override def dependencies = List(jQuery, jQueryStyleSheet, IdentifyTags, Connect)
 
   override def init[S <: Session](website: Website[S]) = {
     // Register realtime.js to actually establish the connection

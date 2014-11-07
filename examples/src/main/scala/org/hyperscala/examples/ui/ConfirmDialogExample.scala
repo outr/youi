@@ -1,20 +1,21 @@
 package org.hyperscala.examples.ui
 
+import com.outr.net.http.session.Session
+import org.hyperscala.examples.Example
 import org.hyperscala.html._
-import org.hyperscala.web._
 import org.hyperscala.jquery.ui.jQueryUI
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.ui.ConfirmDialog
-import org.hyperscala.examples.Example
-import language.reflectiveCalls
-import com.outr.net.http.session.Session
+import org.hyperscala.web._
+
+import scala.language.reflectiveCalls
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
 class ConfirmDialogExample extends Example {
   this.require(Realtime)
-  this.require(jQueryUI.Latest)
+  this.require(jQueryUI)
   connected[Webpage[Session]] {
     case webpage => Realtime.connectForm(webpage)
   }

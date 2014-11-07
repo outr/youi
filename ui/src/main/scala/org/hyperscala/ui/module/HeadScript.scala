@@ -1,16 +1,15 @@
 package org.hyperscala.ui.module
 
-import org.hyperscala.web.{Website, Webpage}
-import org.powerscala.{Priority, Version}
+import com.outr.net.http.session.Session
 import org.hyperscala.html.HTMLTag
 import org.hyperscala.html.tag.Script
-import org.powerscala.property.event.PropertyChangeEvent
-import org.powerscala.Unique
 import org.hyperscala.javascript.{EventProperty, JavaScriptString}
-import org.hyperscala.module._
 import org.hyperscala.jquery.jQuery
+import org.hyperscala.module._
+import org.hyperscala.web.{Webpage, Website}
 import org.powerscala.hierarchy.event.Descendants
-import com.outr.net.http.session.Session
+import org.powerscala.property.event.PropertyChangeEvent
+import org.powerscala.{Priority, Unique, Version}
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -20,7 +19,7 @@ object HeadScript extends Module {
 
   def version = Version(1)
 
-  override def dependencies = List(InterfaceWithDefault(jQuery, jQuery.Latest))
+  override def dependencies = List(jQuery)
 
   override def init[S <: Session](website: Website[S]) = {}
 

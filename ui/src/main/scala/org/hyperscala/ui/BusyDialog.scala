@@ -1,13 +1,14 @@
 package org.hyperscala.ui
 
-import org.hyperscala.html._
-import org.hyperscala.module.Module
-import org.powerscala.Version
-import org.hyperscala.web.{Website, Webpage}
-import org.hyperscala.jquery.ui.{ProgressBar, jQueryUI, Dialog}
-import org.hyperscala.realtime.Realtime
-import language.reflectiveCalls
 import com.outr.net.http.session.Session
+import org.hyperscala.html._
+import org.hyperscala.jquery.ui.{Dialog, ProgressBar, jQueryUI}
+import org.hyperscala.module.Module
+import org.hyperscala.realtime.Realtime
+import org.hyperscala.web.{Webpage, Website}
+import org.powerscala.Version
+
+import scala.language.reflectiveCalls
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
@@ -17,7 +18,7 @@ object BusyDialog extends Module {
 
   def version = Version(1)
 
-  override def dependencies = List(Realtime, jQueryUI.LatestWithDefault)
+  override def dependencies = List(Realtime, jQueryUI)
 
   override def init[S <: Session](website: Website[S]) = {
   }

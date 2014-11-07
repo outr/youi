@@ -1,13 +1,12 @@
 package org.hyperscala.ui.widgets
 
-import org.hyperscala.module._
-import org.hyperscala.web._
-import org.powerscala.Version
-
+import com.outr.net.http.session.Session
 import org.hyperscala.html._
 import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.jquery.jQuery
-import com.outr.net.http.session.Session
+import org.hyperscala.module._
+import org.hyperscala.web._
+import org.powerscala.Version
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -66,7 +65,7 @@ object NivoSlider extends Module {
 
   def version = Version(3, 2)
 
-  override def dependencies = List(InterfaceWithDefault(jQuery, jQuery.Latest))
+  override def dependencies = List(jQuery)
 
   override def init[S <: Session](website: Website[S]) = {
     website.addClassPath("/nivo-slider/", "nivo-slider/")

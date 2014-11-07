@@ -1,32 +1,30 @@
 package org.hyperscala.jquery.ui
 
-import event.ButtonClicked
-import org.hyperscala.html._
-import org.hyperscala.web._
-import org.powerscala.property._
-import org.powerscala.event.{Intercept, Listenable}
-import org.hyperscala.realtime.Realtime
-import org.hyperscala.jquery.{jQueryComponent, JavaScriptCaller}
-
-import language.reflectiveCalls
-import org.powerscala.hierarchy.event.StandardHierarchyEventProcessor
-import org.powerscala.StorageComponent
-
-import scala.language.implicitConversions
-import org.hyperscala.javascript.JavaScriptString
-import org.hyperscala.css.attributes.Display
 import com.outr.net.http.session.Session
+import org.hyperscala.css.attributes.Display
+import org.hyperscala.html._
 import org.hyperscala.html.constraints.BodyChild
+import org.hyperscala.javascript.JavaScriptString
+import org.hyperscala.jquery.ui.event.ButtonClicked
+import org.hyperscala.jquery.{JavaScriptCaller, jQueryComponent}
+import org.hyperscala.realtime.Realtime
 import org.hyperscala.selector.{AttributeMatcher, Selector}
+import org.hyperscala.web._
+import org.powerscala.StorageComponent
+import org.powerscala.event.{Intercept, Listenable}
+import org.powerscala.hierarchy.event.StandardHierarchyEventProcessor
+import org.powerscala.property._
+
+import scala.language.{implicitConversions, reflectiveCalls}
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
 object Dialog extends JavaScriptCaller with StorageComponent[Dialog, HTMLTag] {
-  implicit def tag2Dialog(tag: HTMLTag) = apply(tag)
+  implicit def tag2Dialog(tag: HTMLTag): Dialog = apply(tag)
   
   override def apply(tag: HTMLTag) = {
-    tag.require(jQueryUI.LatestWithDefault)
+    tag.require(jQueryUI)
     tag.require(Realtime)
     super.apply(tag)
   }

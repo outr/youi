@@ -1,15 +1,14 @@
 package org.hyperscala.ui.wrapped
 
-import org.hyperscala.module.Module
-import org.powerscala.{Version, StorageComponent}
+import com.outr.net.http.session.Session
 import org.hyperscala.html._
 import org.hyperscala.jquery.jQuery
+import org.hyperscala.module.Module
 import org.hyperscala.realtime.Realtime
-import org.hyperscala.web._
-import org.hyperscala.web.WrappedComponent
+import org.hyperscala.web.{WrappedComponent, _}
 import org.powerscala.event.processor.UnitProcessor
 import org.powerscala.event.{Intercept, Listenable}
-import com.outr.net.http.session.Session
+import org.powerscala.{StorageComponent, Version}
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -62,7 +61,7 @@ object DropReceiver extends Module with StorageComponent[DropReceiver, HTMLTag] 
   def name = "DropReceiver"
   def version = Version(1)
 
-  override def dependencies = List(jQuery.LatestWithDefault, Realtime)
+  override def dependencies = List(jQuery, Realtime)
 
   override def init[S <: Session](website: Website[S]) = {
     website.register("/js/drop_receiver.js", "drop_receiver.js")

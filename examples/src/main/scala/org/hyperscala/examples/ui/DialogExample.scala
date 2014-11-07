@@ -1,18 +1,17 @@
 package org.hyperscala.examples.ui
 
-import org.hyperscala.web._
-
+import org.hyperscala.examples.Example
 import org.hyperscala.html._
 import org.hyperscala.jquery.ui._
-import org.hyperscala.examples.Example
-import language.reflectiveCalls
 import org.hyperscala.realtime.RealtimeEvent
+
+import scala.language.reflectiveCalls
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
 class DialogExample extends Example {
-  this.require(jQueryUI.Latest)
+  this.require(jQueryUI)
 
   contents += new tag.P {
     contents += "Dialog provides a simple wrapper around jQuery UI's Dialog."

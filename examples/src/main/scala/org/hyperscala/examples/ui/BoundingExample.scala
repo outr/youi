@@ -1,22 +1,23 @@
 package org.hyperscala.examples.ui
 
 
+import com.outr.net.http.session.Session
+import org.hyperscala.examples.Example
 import org.hyperscala.html._
 import org.hyperscala.jquery.ui._
-import org.hyperscala.examples.Example
-import language.reflectiveCalls
 import org.hyperscala.realtime.Realtime
-import org.powerscala.Color
-import org.hyperscala.ui.Bounding
 import org.hyperscala.selector.Selector
+import org.hyperscala.ui.Bounding
 import org.hyperscala.web._
-import com.outr.net.http.session.Session
+import org.powerscala.Color
+
+import scala.language.reflectiveCalls
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
 class BoundingExample extends Example {
-  this.require(jQueryUI.Latest)
+  this.require(jQueryUI)
   this.require(Realtime)
   this.require(Bounding)
 

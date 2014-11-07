@@ -1,12 +1,12 @@
 package org.hyperscala.jquery
 
-import org.powerscala.Version
-import org.hyperscala.module.{Module, InterfaceWithDefault}
-import org.hyperscala.web.{Webpage, Website}
+import com.outr.net.http.session.Session
 import org.hyperscala.html.tag
 import org.hyperscala.javascript.JavaScriptString
+import org.hyperscala.module.Module
 import org.hyperscala.realtime.Realtime
-import com.outr.net.http.session.Session
+import org.hyperscala.web.{Webpage, Website}
+import org.powerscala.Version
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -16,7 +16,7 @@ object Gritter extends Module with JavaScriptCaller {
 
   def version = Version(1, 7, 4)
 
-  override def dependencies = List(InterfaceWithDefault(jQuery, jQuery.Latest), Realtime)
+  override def dependencies = List(jQuery, Realtime)
 
   override def init[S <: Session](website: Website[S]) = {
     website.addClassPath("/gritter/", "gritter/")

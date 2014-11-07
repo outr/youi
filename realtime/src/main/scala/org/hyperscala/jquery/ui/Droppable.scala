@@ -1,17 +1,15 @@
 package org.hyperscala.jquery.ui
 
-import org.hyperscala.html._
-import org.hyperscala.jquery.jQueryComponent
-import org.hyperscala.selector.Selector
-import org.powerscala.StorageComponent
-import org.hyperscala.web._
-import org.hyperscala.TagMessage
-import argonaut.CodecJson
 import argonaut.Argonaut._
+import argonaut.CodecJson
+import org.hyperscala.TagMessage
 import org.hyperscala.event.EventReceived
-import org.hyperscala.jquery.JSMapper
+import org.hyperscala.html._
 import org.hyperscala.javascript.JavaScriptString
-import scala.Some
+import org.hyperscala.jquery.{JSMapper, jQueryComponent}
+import org.hyperscala.selector.Selector
+import org.hyperscala.web._
+import org.powerscala.StorageComponent
 
 
 /**
@@ -46,7 +44,7 @@ class Droppable private(val wrapped: HTMLTag, val autoInit: Boolean = true) exte
       case Some(tag) => Draggable(tag)
       case None => null
     }
-    val helper = wrapped.webpage.body.byId[HTMLTag](m.helper).getOrElse(null)
+    val helper = wrapped.webpage.body.byId[HTMLTag](m.helper).orNull
     val draggableLeft = m.draggableLeft
     val draggableTop = m.draggableTop
     val helperLeft = m.helperLeft
@@ -58,7 +56,7 @@ class Droppable private(val wrapped: HTMLTag, val autoInit: Boolean = true) exte
 
 object Droppable extends StorageComponent[Droppable, HTMLTag] {
   override def apply(t: HTMLTag) = {
-    t.require(jQueryUI.LatestWithDefault)
+    t.require(jQueryUI)
     super.apply(t)
   }
 

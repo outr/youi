@@ -1,13 +1,14 @@
 package org.hyperscala.ui
 
-import org.hyperscala.realtime.Realtime
+import com.outr.net.http.session.Session
 import org.hyperscala.html._
+import org.hyperscala.jquery.{JavaScriptCaller, jQuery, jQueryComponent}
+import org.hyperscala.module._
+import org.hyperscala.realtime.Realtime
+import org.hyperscala.web._
 import org.powerscala.event.Listenable
 import org.powerscala.{StorageComponent, Version}
-import org.hyperscala.module._
-import org.hyperscala.jquery.{jQueryComponent, JavaScriptCaller, jQuery}
-import com.outr.net.http.session.Session
-import org.hyperscala.web._
+
 import scala.language.implicitConversions
 
 /**
@@ -30,7 +31,7 @@ object JustifiedGallery extends Module with JavaScriptCaller with StorageCompone
   def name = "justified-gallery"
   def version = Version(3, 2, 0)
 
-  implicit def tag2Gallery(t: tag.Div) = apply(t)
+  implicit def tag2Gallery(t: tag.Div): JustifiedGallery = apply(t)
 
   override def apply(t: tag.Div) = {
     t.require(this)
@@ -39,7 +40,7 @@ object JustifiedGallery extends Module with JavaScriptCaller with StorageCompone
 
   protected def create(t: tag.Div) = new JustifiedGallery(t)
 
-  override def dependencies = List(InterfaceWithDefault(jQuery, jQuery.Latest), Realtime)
+  override def dependencies = List(jQuery, Realtime)
 
   override def init[S <: Session](website: Website[S]) = {
     website.addClassPath("/justified-gallery", "justified-gallery")

@@ -1,14 +1,14 @@
 package org.hyperscala.jquery.jcanvas
 
-import org.hyperscala.module.{InterfaceWithDefault, Module}
-import org.powerscala.Version
-import org.hyperscala.realtime.Realtime
-import org.hyperscala.web.{Webpage, Website}
+import com.outr.net.http.session.Session
 import org.hyperscala.html._
+import org.hyperscala.javascript.dsl.Statement
 import org.hyperscala.jquery.dsl.jQuerySelector
 import org.hyperscala.jquery.jQuery
-import org.hyperscala.javascript.dsl.Statement
-import com.outr.net.http.session.Session
+import org.hyperscala.module.Module
+import org.hyperscala.realtime.Realtime
+import org.hyperscala.web.{Webpage, Website}
+import org.powerscala.Version
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -42,7 +42,7 @@ object jCanvas extends Module {
   val name = "jcanvas"
   val version = Version(2013, 11, 21)
 
-  override def dependencies = List(InterfaceWithDefault(jQuery, jQuery.Latest), Realtime)
+  override def dependencies = List(jQuery, Realtime)
 
   override def init[S <: Session](website: Website[S]) = {
     website.register("/js/jcanvas.min.js", "jcanvas.min.js")

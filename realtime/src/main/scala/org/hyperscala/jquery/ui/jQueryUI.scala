@@ -1,37 +1,60 @@
 package org.hyperscala.jquery.ui
 
-import org.hyperscala.module._
-import org.hyperscala.html.HTMLTag
-import org.hyperscala.web._
-import org.hyperscala.realtime.Realtime
-import org.hyperscala.jquery.dsl._
 import com.outr.net.http.session.Session
+import org.hyperscala.html.{HTMLTag, tag}
+import org.hyperscala.jquery.dsl._
+import org.hyperscala.jquery.jQuery
+import org.hyperscala.module._
+import org.hyperscala.realtime.Realtime
+import org.hyperscala.web._
+import org.powerscala.Version
+import org.powerscala.property.Property
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-object jQueryUI extends Interface {
-  def Latest = jQueryUI1104
-  lazy val LatestWithDefault = InterfaceWithDefault(jQueryUI, Latest)
+object jQueryUI extends Module {
+  val name = "jquery-ui"
+  val version = Version(1, 11, 2)
+  val theme = Property[Theme](default = Option(Theme.Redmond))
 
-  def name = "jquery-ui"
+  override def dependencies = List(jQuery)
+
+  override def init[S <: Session](website: Website[S]) = {}
+
+  private lazy val v = s"${version.major}.${version.minor}.${version.maintenance}"
+
+  override def load[S <: Session](webpage: Webpage[S]) = {
+    webpage.head.contents += new tag.Link(href = themeCSS, rel = "stylesheet")
+//    webpage.head.contents += new tag.Link(href = "/jquery-ui-1.10.4/css/jquery-ui-fixes.css", rel = "stylesheet")
+    webpage.head.contents += new tag.Script(src = s"//code.jquery.com/ui/$v/jquery-ui.min.js")
+  }
+
+  def themeCSS = {
+    val t = theme()
+    if (t.cssPath != null) {
+      t.cssPath
+    } else {
+      s"//code.jquery.com/ui/$v/themes/${t.directory}/jquery-ui.min.css"
+    }
+  }
 
   def tabs(t: HTMLTag) = {
-    t.require(LatestWithDefault)
+    t.require(this)
     t.connected[Webpage[_ <: Session]] {
       case webpage => Realtime.send(webpage, $(t).call("tabs()"))
     }
   }
 
   def menu(t: HTMLTag) = {
-    t.require(LatestWithDefault)
+    t.require(this)
     t.connected[Webpage[_ <: Session]] {
       case webpage => Realtime.send(webpage, $(t).call("menu()"))
     }
   }
 
   def datepicker(t: HTMLTag) = {
-    t.require(LatestWithDefault)
+    t.require(this)
     t.connected[Webpage[_ <: Session]] {
       case webpage => Realtime.send(webpage, $(t).call("datepicker()"))
     }

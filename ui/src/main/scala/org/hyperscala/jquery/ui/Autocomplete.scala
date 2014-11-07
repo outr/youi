@@ -1,20 +1,21 @@
 package org.hyperscala.jquery.ui
 
+import java.util.concurrent.atomic.AtomicBoolean
+
+import com.outr.net.http.HttpHandler
+import com.outr.net.http.content.StringContent
+import com.outr.net.http.request.HttpRequest
+import com.outr.net.http.response.{HttpResponse, HttpResponseStatus}
+import com.outr.net.http.session.Session
+import org.hyperscala.event.EventReceived
 import org.hyperscala.html._
+import org.hyperscala.module.Module
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.web._
-import org.powerscala.property.Property
 import org.powerscala.event.Intercept
+import org.powerscala.property.Property
 import org.powerscala.property.event.PropertyChangeEvent
-import org.hyperscala.event.EventReceived
-import java.util.concurrent.atomic.AtomicBoolean
-import org.powerscala.{Version, Storage}
-import org.hyperscala.module.Module
-import com.outr.net.http.HttpHandler
-import com.outr.net.http.request.HttpRequest
-import com.outr.net.http.response.{HttpResponseStatus, HttpResponse}
-import com.outr.net.http.content.StringContent
-import com.outr.net.http.session.Session
+import org.powerscala.{Storage, Version}
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -174,7 +175,7 @@ object Autocomplete extends Module {
   val name = "autocomplete"
   val version = Version(1)
 
-  override def dependencies = List(jQueryUI.LatestWithDefault, Realtime)
+  override def dependencies = List(jQueryUI, Realtime)
 
   override def init[S <: Session](website: Website[S]) = {
     website.addHandler(new AutocompleteHandler(website), "/autocomplete/request")

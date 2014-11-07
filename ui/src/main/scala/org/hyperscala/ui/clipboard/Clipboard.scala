@@ -1,18 +1,18 @@
 package org.hyperscala.ui.clipboard
 
-import org.hyperscala.module.Module
-import org.powerscala.Version
-import org.hyperscala.web.{Website, Webpage}
-import org.hyperscala.html._
-import org.hyperscala.jquery.jQuery
-import org.hyperscala.realtime.Realtime
-import org.hyperscala.ui.Rangy
-import org.hyperscala.css.attributes.Display
-import org.powerscala.enum.{Enumerated, EnumEntry}
-import org.powerscala.event.processor.UnitProcessor
-import org.powerscala.event.Listenable
 import argonaut.JsonObject
 import com.outr.net.http.session.Session
+import org.hyperscala.css.attributes.Display
+import org.hyperscala.html._
+import org.hyperscala.jquery.jQuery
+import org.hyperscala.module.Module
+import org.hyperscala.realtime.Realtime
+import org.hyperscala.ui.Rangy
+import org.hyperscala.web.{Webpage, Website}
+import org.powerscala.Version
+import org.powerscala.enum.{EnumEntry, Enumerated}
+import org.powerscala.event.Listenable
+import org.powerscala.event.processor.UnitProcessor
 
 /**
  * Clipboard offers a mechanism to manage storage and retrieval of items on the server level as an alternative for a
@@ -33,7 +33,7 @@ object Clipboard extends Module {
   val name = "clipboard"
   val version = Version(1)
 
-  override def dependencies = List(jQuery.LatestWithDefault, Realtime, Rangy)
+  override def dependencies = List(jQuery, Realtime, Rangy)
 
   /**
    * Creates new ClipboardInstances. This can be overridden to pre-populate or share instances across multiple pages.

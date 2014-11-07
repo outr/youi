@@ -1,20 +1,20 @@
 package org.hyperscala.examples.ui
 
 
+import org.hyperscala.css.attributes.Position
+import org.hyperscala.examples.Example
 import org.hyperscala.html._
 import org.hyperscala.jquery.ui._
-import org.hyperscala.examples.Example
-import language.reflectiveCalls
 import org.hyperscala.realtime.Realtime
 import org.powerscala.Color
-import org.hyperscala.css.attributes.Position
-import org.hyperscala.web._
+
+import scala.language.reflectiveCalls
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
 class DroppableExample extends Example {
-  this.require(jQueryUI.Latest)
+  this.require(jQueryUI)
   this.require(Realtime)
 
   contents += new tag.P {

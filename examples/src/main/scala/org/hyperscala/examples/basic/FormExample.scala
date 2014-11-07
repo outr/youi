@@ -1,19 +1,17 @@
 package org.hyperscala.examples.basic
 
-import org.hyperscala.html._
-import attributes.{ButtonType, InputType}
-
-import tag._
-import org.hyperscala.web._
-import org.hyperscala.jquery.jQuery
-import org.hyperscala.examples.Example
 import com.outr.net.Method
+import org.hyperscala.examples.Example
+import org.hyperscala.html._
+import org.hyperscala.html.attributes.{ButtonType, InputType}
+import org.hyperscala.html.tag._
+import org.hyperscala.jquery.jQuery
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
 class FormExample extends Example {
-  this.require(jQuery.LatestWithDefault)
+  this.require(jQuery)
 
   val messages = new Div {
     style.paddingBottom := 10.px

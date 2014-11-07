@@ -1,14 +1,14 @@
 package org.hyperscala.ui.wrapped
 
-import org.hyperscala.module.Module
-import org.powerscala.{StorageComponent, Version}
-import org.hyperscala.html.{tag, HTMLTag}
-import org.hyperscala.jquery.{jQueryComponent, jQuery}
-import org.hyperscala.web._
-import org.hyperscala.javascript.JavaScriptString
-import org.hyperscala.css.Style
-import org.hyperscala.javascript.dsl.{JSFunction1, Statement}
 import com.outr.net.http.session.Session
+import org.hyperscala.css.Style
+import org.hyperscala.html.{HTMLTag, tag}
+import org.hyperscala.javascript.JavaScriptString
+import org.hyperscala.javascript.dsl.{JSFunction1, Statement}
+import org.hyperscala.jquery.{jQuery, jQueryComponent}
+import org.hyperscala.module.Module
+import org.hyperscala.web._
+import org.powerscala.{StorageComponent, Version}
 
 /**
  * Changeable wraps existing elements to allow them to change an element relative to an
@@ -20,7 +20,7 @@ object Changeable extends Module with StorageComponent[Changeable, HTMLTag] {
   val name = "changeable"
   val version = Version(1)
 
-  override def dependencies = List(jQuery.LatestWithDefault)
+  override def dependencies = List(jQuery)
 
   override def init[S <: Session](website: Website[S]) = {
     website.register("/js/changeable.js", "changeable.js")

@@ -1,15 +1,14 @@
 package org.hyperscala.ui.module
 
-import org.hyperscala.module.Module
-import org.powerscala.Version
-import org.hyperscala.jquery.jQuery
-import org.hyperscala.web.{Website, Webpage}
-import org.hyperscala.javascript.{JavaScriptString, EventProperty}
-
-import org.hyperscala.html._
-import org.hyperscala.InclusionMode
-import org.powerscala.log.Logging
 import com.outr.net.http.session.Session
+import org.hyperscala.InclusionMode
+import org.hyperscala.html._
+import org.hyperscala.javascript.{EventProperty, JavaScriptString}
+import org.hyperscala.jquery.jQuery
+import org.hyperscala.module.Module
+import org.hyperscala.web.{Webpage, Website}
+import org.powerscala.Version
+import org.powerscala.log.Logging
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -18,7 +17,7 @@ object jQueryEvents extends Module with Logging {
   val name = "jQueryEvents"
   val version = Version(1)
 
-  override val dependencies = List(jQuery.LatestWithDefault)
+  override val dependencies = List(jQuery)
 
   override def init[S <: Session](website: Website[S]) = {}
 

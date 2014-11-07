@@ -1,10 +1,10 @@
 package org.hyperscala.jquery.ui
 
-import org.hyperscala.jquery.jQueryComponent
 import org.hyperscala.html.HTMLTag
-import org.powerscala.StorageComponent
-import org.hyperscala.web.Webpage
+import org.hyperscala.jquery.jQueryComponent
 import org.hyperscala.selector.Selector
+import org.hyperscala.web.Webpage
+import org.powerscala.StorageComponent
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -54,7 +54,7 @@ class Draggable private(val wrapped: HTMLTag, val autoInit: Boolean = true) exte
 object Draggable extends StorageComponent[Draggable, HTMLTag] {
   override def apply(t: HTMLTag) = {
     t.connected[Webpage[_]] {
-      case webpage => webpage.require(jQueryUI.LatestWithDefault)
+      case webpage => webpage.require(jQueryUI)
     }
     super.apply(t)
   }

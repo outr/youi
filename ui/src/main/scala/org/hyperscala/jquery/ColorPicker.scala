@@ -1,24 +1,23 @@
 package org.hyperscala.jquery
 
-import org.hyperscala.module.Module
-import org.powerscala.{Color, Version, StorageComponent}
-
+import com.outr.net.http.session.Session
 import org.hyperscala.html._
-import org.hyperscala.web._
 import org.hyperscala.html.tag.Input
-import org.hyperscala.jquery.ui.jQueryUI
 import org.hyperscala.javascript.JavaScriptString
+import org.hyperscala.jquery.ui.jQueryUI
+import org.hyperscala.module.Module
+import org.hyperscala.realtime.RealtimeEvent
+import org.hyperscala.web._
+import org.powerscala.event.Intercept
+import org.powerscala.{Color, StorageComponent, Version}
 
 import scala.language.implicitConversions
-import org.powerscala.event.Intercept
-import org.hyperscala.realtime.RealtimeEvent
-import com.outr.net.http.session.Session
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
 object ColorPicker extends Module with JavaScriptCaller with StorageComponent[ColorPicker, tag.Input] {
-  implicit def tag2ColorPicker(tag: Input) = apply(tag)
+  implicit def tag2ColorPicker(tag: Input): ColorPicker = apply(tag)
 
   private val OkFunction = JavaScriptString(
     """function(event, color) {
@@ -32,7 +31,7 @@ object ColorPicker extends Module with JavaScriptCaller with StorageComponent[Co
   def name = "colorpicker"
   def version = Version(1, 0, 4)
 
-  override def dependencies = List(jQuery.LatestWithDefault, jQueryUI.LatestWithDefault)
+  override def dependencies = List(jQuery, jQueryUI)
 
   override def init[S <: Session](website: Website[S]) = {
     website.addClassPath("/colorpicker-1.0.4/", "colorpicker-1.0.4/")

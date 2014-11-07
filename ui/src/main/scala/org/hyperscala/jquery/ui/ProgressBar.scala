@@ -2,10 +2,11 @@ package org.hyperscala.jquery.ui
 
 import org.hyperscala.html._
 import org.hyperscala.javascript.JavaScriptString
+import org.hyperscala.jquery.{JavaScriptCaller, jQueryComponent}
 import org.hyperscala.web._
-import org.hyperscala.jquery.{jQueryComponent, JavaScriptCaller}
 import org.powerscala.StorageComponent
 import org.powerscala.event.Listenable
+
 import scala.language.implicitConversions
 
 /**
@@ -16,10 +17,10 @@ import scala.language.implicitConversions
  * @author Matt Hicks <matt@outr.com>
  */
 object ProgressBar extends JavaScriptCaller with StorageComponent[ProgressBar, HTMLTag] {
-  implicit def tag2ProgressBar(t: HTMLTag) = apply(t)
+  implicit def tag2ProgressBar(t: HTMLTag): ProgressBar = apply(t)
 
   override def apply(t: HTMLTag) = {
-    t.require(jQueryUI.LatestWithDefault)
+    t.require(jQueryUI)
     super.apply(t)
   }
 

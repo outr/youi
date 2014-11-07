@@ -1,4 +1,4 @@
-package org.hyperscala.ui
+package org.hyperscala.ui.widgets
 
 import com.outr.net.http.session.{MapSession, Session}
 import org.hyperscala.Container
@@ -7,11 +7,13 @@ import org.hyperscala.html._
 import org.hyperscala.html.attributes.ContentEditable
 import org.hyperscala.io.HTMLToScala
 import org.hyperscala.javascript.JavaScriptContent
-import org.hyperscala.javascript.dsl.JSFunction1
+import org.hyperscala.javascript.dsl.{Command, JSFunction1, document}
 import org.hyperscala.jquery.jQuery
 import org.hyperscala.module.Module
 import org.hyperscala.realtime._
+import org.hyperscala.realtime.dsl._
 import org.hyperscala.selector.Selector
+import org.hyperscala.ui.Rangy
 import org.hyperscala.web._
 import org.powerscala.event.processor.UnitProcessor
 import org.powerscala.event.{Intercept, Listenable}
@@ -210,6 +212,10 @@ class ContentEditor private(val container: HTMLTag) extends Listenable {
         Realtime.sendJavaScript(webpage, js, selector = Some(Selector.id(container)), onlyRealtime = false)
       }
     }
+  }
+
+  def exec(command: Command, value: String = null) = container.connected[Webpage[MapSession]] {
+    case webpage => document.execCommand(command, value).send(webpage)
   }
 
   updateEditable()

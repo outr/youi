@@ -1,18 +1,14 @@
 package org.hyperscala.ui.widgets
 
-import org.hyperscala.html._
-import org.powerscala.Unique
-
-import org.powerscala.property._
-import org.powerscala.Color
-import org.hyperscala.css.attributes.{LineStyle, Display, Position}
-
-import scala.math._
+import org.hyperscala.css.attributes.{Display, LineStyle, Position}
 import org.hyperscala.event._
-import scala.Some
-
-import language.reflectiveCalls
+import org.hyperscala.html._
 import org.hyperscala.realtime.RealtimeEvent
+import org.powerscala.property._
+import org.powerscala.{Color, Unique}
+
+import scala.language.reflectiveCalls
+import scala.math._
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -82,7 +78,7 @@ abstract class AutoCompleteInput[T](id: String = Unique(), default: T)(implicit 
 
   def applySelected(): Unit = if (showingCompletion) {
     selected match {
-      case Some(result) if (result.result != property()) => property := result.result
+      case Some(result) if result.result != property() => property := result.result
       case _ => {
         updateInput()
         hideCompletion()
@@ -102,7 +98,7 @@ abstract class AutoCompleteInput[T](id: String = Unique(), default: T)(implicit 
     style.width := 100.pct
     style.height := 100.pct
 
-    keyUpEvent := RealtimeEvent(fireChange = true, preventDefault = true, onlyLast = true)
+    keyUpEvent := RealtimeEvent(fireChange = true, preventDefault = true)
     blurEvent := RealtimeEvent(preventDefault = false, delay = 100)
 
     blurEvent.on {

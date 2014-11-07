@@ -1,11 +1,5 @@
 var debug = false;
 
-if (!Date.now) {
-  Date.now = function now() {
-    return new Date().getTime();
-  };
-}
-
 HyperscalaConnect.on('eval', function(data) {
     try {
         realtimeEvaluate(data, debug);

@@ -8,7 +8,7 @@ import org.hyperscala.examples.Example
 import org.hyperscala.html._
 import org.hyperscala.html.attributes.ContentEditable
 import org.hyperscala.realtime._
-import org.hyperscala.ui.ContentEditor
+import org.hyperscala.ui.widgets.ContentEditor
 import org.hyperscala.web._
 
 /**

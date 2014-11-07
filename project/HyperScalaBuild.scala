@@ -81,7 +81,6 @@ object HyperScalaBuild extends Build {
     .dependsOn(web)
   lazy val jquery = Project("jquery", file("jquery"), settings = createSettings("hyperscala-jquery"))
     .dependsOn(web)
-    .settings(libraryDependencies += webJarsJQuery)
   lazy val connect = Project("connect", file("connect"), settings = createSettings("hyperscala-connect"))
     .dependsOn(jquery)
   lazy val realtime = Project("realtime", file("realtime"), settings = createSettings("hyperscala-realtime"))

@@ -1,3 +1,9 @@
+if (!Date.now) {
+  Date.now = function now() {
+    return new Date().getTime();
+  };
+}
+
 HyperscalaConnect = (function() {
     var messageId = 0;
     var pageId = null;
@@ -237,7 +243,7 @@ HyperscalaConnect = (function() {
                 var data = {
                     pageId: pageId,
                     connectionId: connectionId,
-                    timestamp: new Date().getTime(),
+                    timestamp: Date.now(),
                     resend: resend
                 };
                 receiveSettings.data = JSON.stringify(data);
@@ -296,7 +302,7 @@ HyperscalaConnect = (function() {
                 var data = {
                     pageId: pageId,
                     connectionId: connectionId,
-                    timestamp: new Date().getTime(),
+                    timestamp: Date.now(),
                     messages: queue
                 };
                 sendSettings.data = JSON.stringify(data);

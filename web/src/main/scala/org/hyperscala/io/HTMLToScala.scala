@@ -1,19 +1,21 @@
 package org.hyperscala.io
 
-import org.hyperscala.html._
-import org.jdom2.input.SAXBuilder
-import java.io.{FileWriter, File, StringReader}
-import org.htmlcleaner.{PrettyXmlSerializer, HtmlCleaner}
-import org.hyperscala.{Container, Markup}
-import swing.FileChooser
+import java.io.{File, FileWriter, StringReader}
 import java.util.prefs.Preferences
-import org.powerscala.IO
-import org.jdom2.xpath.XPathFactory
-import org.jdom2.filter.Filters
-import scala.collection.JavaConversions._
-import org.hyperscala.web.{Website, Webpage}
-import com.outr.net.http.session.{MapSession, Session}
+
 import com.outr.net.http.request.HttpRequest
+import com.outr.net.http.session.{MapSession, Session}
+import org.htmlcleaner.{HtmlCleaner, PrettyXmlSerializer}
+import org.hyperscala.html._
+import org.hyperscala.web.{Webpage, Website}
+import org.hyperscala.{Container, Markup}
+import org.jdom2.filter.Filters
+import org.jdom2.input.SAXBuilder
+import org.jdom2.xpath.XPathFactory
+import org.powerscala.IO
+
+import scala.collection.JavaConversions._
+import scala.swing.FileChooser
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -24,7 +26,7 @@ object HTMLToScala {
 
   val builder = new SAXBuilder()
 
-  def replaceChildren(parent: HTMLTag with Container[HTMLTag], htmlString: String) = {
+  def replaceChildren(parent: HTMLTag with Container[_ <: HTMLTag], htmlString: String) = {
     val xml = HTMLToScala.toXML(htmlString, clean = true)
     val body = xml.getChild("body")
     parent.contents.clear()                            // Remove all contents

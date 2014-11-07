@@ -1,3 +1,23 @@
+function initContentEditor(containerId) {
+    var container = document.getElementById(containerId);
+
+    var previousValue = container.innerHTML;
+    var threshold = 500;
+    // TODO: allow setting the threshold
+    var checkContentEditorChange = function() {
+        var currentValue = container.innerHTML;
+        if (currentValue != previousValue) {
+            groupedSend(containerId, threshold, 'contentChanged', containerId, {
+                html: currentValue
+            });
+            previousValue = currentValue;
+        }
+    };
+    container.addEventListener('input', checkContentEditorChange);
+    container.addEventListener('styleChanged', checkContentEditorChange);
+    container.addEventListener('manipulatedSelection', checkContentEditorChange);
+}
+
 /**
  * Toggles the style value state on the selection.
  *
@@ -15,10 +35,9 @@ function toggleStyle(containerId, styleName, styleValues, disabled, nodes) {
         nodes = selectedNodes();
     }
     var hasStyle = selectionHasStyle(styleName, styleValues, nodes);
-//    console.log('Already has the style? ' + hasStyle);
     var styleValue = styleValues[0];
     if (hasStyle) {
-        styleValue = null;
+        styleValue = disabled;
     }
     setStyle(null, styleName, styleValue);
 }
@@ -35,6 +54,7 @@ function setStyle(containerId, styleName, styleValue, nodes) {
         spans[i].style[styleName] = styleValue;
     }
 
+    // -100
     // Re-select
     if (spans != null && spans.length > 0) {
         var range = rangy.createRange();
@@ -45,7 +65,7 @@ function setStyle(containerId, styleName, styleValue, nodes) {
         s.addRange(range);
 
         // Fire event
-        editorFor(range.commonAncestorContainer).dispatchEvent(new Event('styleChanged'));
+        editorFor(range.commonAncestorContainer).dispatchEvent(new CustomEvent('styleChanged'));
     }
 }
 
@@ -71,8 +91,22 @@ function adjustStyle(containerId, styleName, adjuster, nodes) {
         s.addRange(range);
 
         // Fire event
-        editorFor(range.commonAncestorContainer).dispatchEvent(new Event('styleChanged'));
+        editorFor(range.commonAncestorContainer).dispatchEvent(new CustomEvent('styleChanged'));
     }
+}
+
+function manipulateSelection(containerId, manipulator, nodes) {
+    if (containerId != null) {
+        if (!selectionInContainer(containerId)) return;       // Don't allow styling if outside the container
+    }
+    if (nodes == null) {
+        nodes = selectedNodes();
+    }
+    var spans = spansForSelected(nodes);
+    manipulator(spans);
+
+    // Fire event
+    editorFor(range.commonAncestorContainer).dispatchEvent(new CustomEvent('manipulatedSelection'));
 }
 
 function selectionInContainer(containerId) {
@@ -251,15 +285,17 @@ function selectedNodes() {
             length: length
         });
     } else {
-        if (range.startContainer == range.endContainer && range.startContainer.nodeType != Node.TEXT_NODE) {
-            var startContainer = range.startContainer.childNodes.item(range.startOffset);
-            var endContainer = range.startContainer.childNodes.item(range.endOffset);
-            range.startContainer = startContainer;
-            range.startOffset = 0;
-            range.endContainer = endContainer;
-            range.endOffset = 0;
+        var startContainer = range.startContainer;
+        var startOffset = range.startOffset;
+        var endContainer = range.endContainer;
+        var endOffset = range.endOffset;
+        if (startContainer == endContainer && startContainer.nodeType != Node.TEXT_NODE) {
+            startContainer = startContainer.childNodes.item(startOffset);
+            endContainer = startContainer.childNodes.item(endOffset);
+            startOffset = 0;
+            endOffset = 0;
         }
-        var node = range.startContainer;
+        var node = startContainer;
         while(true) {
             var start = 0;
             var length = 0;
@@ -269,11 +305,11 @@ function selectedNodes() {
                 length = node.childNodes.length;
             }
             var end = length;
-            if (node == range.startContainer) {
-                start = range.startOffset;
+            if (node == startContainer) {
+                start = startOffset;
             }
-            if (node == range.endContainer) {
-                end = range.endOffset;
+            if (node == endContainer) {
+                end = endOffset;
             }
             if (node.nodeType == Node.TEXT_NODE) {
                 if (end - start > 0) {
@@ -292,7 +328,7 @@ function selectedNodes() {
             }
 
 
-            if (node != range.endContainer) {
+            if (node != endContainer) {
                 if (node.hasChildNodes()) {
                     node = node.childNodes.item(start);
                 } else if (node.nextSibling != null) {

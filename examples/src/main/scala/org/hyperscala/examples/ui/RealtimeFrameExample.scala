@@ -2,11 +2,11 @@ package org.hyperscala.examples.ui
 
 import com.outr.net.http.session.Session
 import org.hyperscala.css.attributes.LineStyle
+import org.hyperscala.examples.Example
 import org.hyperscala.html._
+import org.hyperscala.realtime._
 import org.hyperscala.ui.ModalComponent
 import org.hyperscala.web._
-import org.hyperscala.realtime._
-import org.hyperscala.examples.Example
 import org.powerscala.Color
 
 /**
@@ -21,7 +21,7 @@ class RealtimeFrameExample extends Example {
     contents += "RealtimeFrame extends an IFrame to allow customized pages to be instantiated and then assigned from within the parent page."
   }
 
-  val frame = new RealtimeFrame("/example/realtime_frame.html") {
+  val frame = new RealtimeFrame("/example/realtime/realtimeframe.html", singleConnection = false) {
     style.borderColor := Color.Red
     style.borderStyle := LineStyle.Solid
     style.borderWidth := 2.px
@@ -55,8 +55,7 @@ class FramedPage[S <: Session](website: Website[S], message: String) extends Web
   body.contents += new tag.Button(content = "Test") {
     clickEvent.onRealtime {
       case evt => {
-//        body.contents += new tag.P(content = "Added dynamically!")
-        ModalComponent(FramedPage.this).selected := this
+        body.contents += new tag.P(content = "Added dynamically!")
       }
     }
   }

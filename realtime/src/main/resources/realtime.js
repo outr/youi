@@ -1,5 +1,11 @@
 var debug = false;
 
+if (!Date.now) {
+  Date.now = function now() {
+    return new Date().getTime();
+  };
+}
+
 HyperscalaConnect.on('eval', function(data) {
     try {
         realtimeEvaluate(data, debug);
@@ -30,10 +36,9 @@ realtimeSend(null, 'init', {});
  * @param confirmation
  * @param preventDefault
  * @param fireChange
- * @param onlyLast
  * @param delay
  */
-function realtimeEvent(event, data, confirmation, preventDefault, fireChange, onlyLast, delay) {
+function realtimeEvent(event, data, confirmation, preventDefault, fireChange, delay) {
     try {
         if (event.srcElement) event.target = event.srcElement;
 
@@ -48,7 +53,8 @@ function realtimeEvent(event, data, confirmation, preventDefault, fireChange, on
             var eventType = event.type;
             var content = {
                 id: id,
-                target: $(event.target).attr('id')
+                target: $(event.target).attr('id'),
+                data: data
             };
 
             // Update the content with specific data
@@ -148,7 +154,7 @@ function realtimeEvaluate(json, debug) {
     var selector = json['selector'];
     var delay = json['delay'];
     if (json['parentFrameId'] != null) {
-        var parentFrameId = json['parentFrameId']
+        var parentFrameId = json['parentFrameId'];
         var parentFrame = $('#' + parentFrameId);
         json['parentFrameId'] = null;
         var cache = realtimeCache[parentFrameId];
@@ -250,7 +256,7 @@ var realtimeGroup = {};         // Used for grouping
  * @param message
  */
 function groupedSend(groupId, timeout, event, id, message) {
-    var current = (new Date).getTime();
+    var current = Date.now();
     var group = realtimeGroup[groupId];
     if (group == null) {            // Set up group if not already defined
         group = {
@@ -282,7 +288,7 @@ function delayedGroupSend(groupId) {
     if (group != null) {
         realtimeSend(group.id, group.event, group.message);
         group.timeoutId = null;             // Remove the timeout id so we know it has run
-        group.lastSend = (new Date).getTime();
+        group.lastSend = Date.now();
     }
 }
 

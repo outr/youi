@@ -22,9 +22,9 @@ object jQuery extends Module {
   override def load[S <: Session](webpage: Webpage[S]) = {
     val userAgent = UserAgent(webpage)
     val v = if (userAgent.browser.family == BrowserFamily.IE && userAgent.browser.version.major < 9) {
-      s"${version1.major}.${version1.minor}.${version1.maintenance}"
+      version1.general
     } else {
-      s"${version2.major}.${version2.minor}.${version2.maintenance}"
+      version2.general
     }
     webpage.head.contents += new tag.Script(src = s"//code.jquery.com/jquery-$v.min.js")
   }

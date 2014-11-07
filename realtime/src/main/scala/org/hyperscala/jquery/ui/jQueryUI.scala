@@ -22,7 +22,7 @@ object jQueryUI extends Module {
 
   override def init[S <: Session](website: Website[S]) = {}
 
-  private lazy val v = s"${version.major}.${version.minor}.${version.maintenance}"
+  private def v = version.general
 
   override def load[S <: Session](webpage: Webpage[S]) = {
     webpage.head.contents += new tag.Link(href = themeCSS, rel = "stylesheet")

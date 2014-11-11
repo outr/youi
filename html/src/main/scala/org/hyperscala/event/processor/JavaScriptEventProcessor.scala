@@ -1,15 +1,18 @@
 package org.hyperscala.event.processor
 
-import org.hyperscala.event._
-import org.powerscala.hierarchy.event.StandardHierarchyEventProcessor
-import org.hyperscala.javascript.{JavaScriptContent, EventProperty}
 import org.hyperscala.Markup
-import org.powerscala.property.PropertyLike
+import org.hyperscala.event._
+import org.hyperscala.javascript.{EventProperty, JavaScriptContent}
+import org.powerscala.hierarchy.event.StandardHierarchyEventProcessor
+import org.powerscala.property.{ReadProperty, WriteProperty}
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class JavaScriptEventProcessor[T <: JavaScriptEvent](name: String, markup: Markup)(implicit eventManifest: Manifest[T]) extends StandardHierarchyEventProcessor[T](name)(markup, eventManifest) with PropertyLike[JavaScriptContent] {
+class JavaScriptEventProcessor[T <: JavaScriptEvent](name: String, markup: Markup)(implicit eventManifest: Manifest[T])
+      extends StandardHierarchyEventProcessor[T](name)(markup, eventManifest)
+      with ReadProperty[JavaScriptContent]
+      with WriteProperty[JavaScriptContent] {
   val js = new EventProperty(name)(markup)
 
   def apply() = js()

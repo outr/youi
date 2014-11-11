@@ -94,6 +94,22 @@ class ContentEditor private(val container: HTMLTag) extends Listenable {
     }
   }
 
+  def insertBlock(t: HTMLTag with Container[_ <: HTMLTag]) = {
+    container.connected[Webpage[MapSession]] {
+      case webpage => {
+        Realtime.sendJavaScript(webpage, s"insertAroundBlock('${container.identity}', content);", content = Some(t.outputString.trim))
+      }
+    }
+  }
+
+  def removeFromBlock(tagName: String) = {
+    container.connected[Webpage[MapSession]] {
+      case webpage => {
+        Realtime.sendJavaScript(webpage, s"removeFromBlock('${container.identity}', '$tagName');")
+      }
+    }
+  }
+
   def manipulateSelection(manipulator: JSFunction1[Array[tag.Span], Unit]) = {
     container.connected[Webpage[MapSession]] {
       case webpage => {
@@ -115,7 +131,7 @@ class ContentEditor private(val container: HTMLTag) extends Listenable {
   def adjustStyleSize[S](style: Style[S], adjustment: Int, min: Int = 0, max: Int = Int.MaxValue)(implicit manifest: Manifest[S]) = {
     val js =
       """
-        |var regex = /(-?\d+)(.*)/;
+        |var regex = /(-?\d+[.]?\d*)(.*)/;
         |var result = regex.exec(p1);
         |var n = parseInt(result[1]);
         |var type = result[2];
@@ -173,12 +189,16 @@ class ContentEditor private(val container: HTMLTag) extends Listenable {
     }
   }
 
-  def bindToggle[S](style: Style[S], t: HTMLTag, values: Seq[Any], activeClass: Option[String] = None, inactiveClass: Option[String] = None) = {
+  def bindToggle[S](style: Style[S], t: HTMLTag, values: Seq[Any], activeClass: Option[String] = None, inactiveClass: Option[String] = None, block: Boolean = false) = {
     container.connected[Webpage[MapSession]] {
       case webpage => {
         // Toggle the style when the tag is clicked on
         t.clickEvent.onRealtime {
-          case evt => Realtime.sendJavaScript(webpage, s"toggleStyle('${container.identity}', '${style.name}', [${values.map(JavaScriptContent.toJS).mkString(", ")}], null);")
+          case evt => if (block) {
+            Realtime.sendJavaScript(webpage, s"toggleBlockStyle('${container.identity}', '${style.name}', [${values.map(JavaScriptContent.toJS).mkString(", ")}], null);")
+          } else {
+            Realtime.sendJavaScript(webpage, s"toggleStyle('${container.identity}', '${style.name}', [${values.map(JavaScriptContent.toJS).mkString(", ")}], null);")
+          }
         }
 
         // Update the class when the style is set
@@ -191,7 +211,7 @@ class ContentEditor private(val container: HTMLTag) extends Listenable {
             | var inactiveClass = ${JavaScriptContent.toJS(inactiveClass.orNull)};
             |
             | addSelectionStyleChangeListener(document.getElementById('${container.identity}'), '${style.name}', function(oldValue, newValue) {
-            |  if (selectionHasStyle('${style.name}', styleValues)) {
+            |  if (${if (block) "selectionBlockHasStyle" else "selectionHasStyle"}('${style.name}', styleValues)) {
             |    if (inactiveClass != null) {
             |      tag.removeClass(inactiveClass);
             |    }
@@ -212,6 +232,10 @@ class ContentEditor private(val container: HTMLTag) extends Listenable {
         Realtime.sendJavaScript(webpage, js, selector = Some(Selector.id(container)), onlyRealtime = false)
       }
     }
+  }
+
+  def clearFormatting() = container.connected[Webpage[MapSession]] {
+    case webpage => Realtime.sendJavaScript(webpage, s"removeFormattingFromSelection('${container.identity}');", selector = Some(Selector.id(container)), onlyRealtime = false)
   }
 
   def exec(command: Command, value: String = null) = container.connected[Webpage[MapSession]] {

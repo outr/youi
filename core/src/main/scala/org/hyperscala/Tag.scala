@@ -1,15 +1,14 @@
 package org.hyperscala
 
-import event.TagCreated
-import persistence._
+import org.hyperscala.event.TagCreated
+import org.hyperscala.persistence._
+import org.jdom2.Attribute
 import org.powerscala.TypeFilteredIterator
+import org.powerscala.event.Listenable
 import org.powerscala.hierarchy.ParentLike
 import org.powerscala.hierarchy.event.StandardHierarchyEventProcessor
-import org.jdom2.Attribute
-
+import org.powerscala.property.{Property, ReadProperty}
 import org.powerscala.reflect._
-import org.powerscala.property.{Property, PropertyLike}
-import org.powerscala.event.Listenable
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -97,7 +96,7 @@ trait Tag extends Markup with AttributeContainer[PropertyAttribute[_]] {
       }
       attributeFields.get(attributeName.toLowerCase) match {
         case Some(field) => {
-          field[PropertyLike[_]](this, computeIfLazy = true)    // Make sure it's loaded if it's lazy
+          field[ReadProperty[_]](this, computeIfLazy = true)    // Make sure it's loaded if it's lazy
           super.getAttribute(name)
         }
         case None => None
@@ -206,7 +205,7 @@ object Tag {
     map.get(tag.xmlLabel) match {
       case Some(fieldsMap) => fieldsMap
       case None => {
-        val fieldsMap = tag.getClass.fields.filter(f => f.returnType.hasType(classOf[PropertyLike[_]])).map(f => f.name.toLowerCase -> f).toMap
+        val fieldsMap = tag.getClass.fields.filter(f => f.returnType.hasType(classOf[ReadProperty[_]])).map(f => f.name.toLowerCase -> f).toMap
         map += tag.xmlLabel -> fieldsMap
         fieldsMap
       }

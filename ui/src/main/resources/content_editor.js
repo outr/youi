@@ -1,3 +1,8 @@
+// Support finding the index of a Node in the parent
+Node.prototype.getParentIndex = function() {
+  return Array.prototype.indexOf.call(this.parentNode.childNodes, this);
+};
+
 function initContentEditor(containerId) {
     var container = document.getElementById(containerId);
 
@@ -32,7 +37,7 @@ function toggleStyle(containerId, styleName, styleValues, disabled, nodes) {
         if (!selectionInContainer(containerId)) return;       // Don't allow style toggling if outside the container
     }
     if (nodes == null) {
-        nodes = selectedNodes();
+        nodes = selectedTextNodes();
     }
     var hasStyle = selectionHasStyle(styleName, styleValues, nodes);
     var styleValue = styleValues[0];
@@ -42,71 +47,91 @@ function toggleStyle(containerId, styleName, styleValues, disabled, nodes) {
     setStyle(null, styleName, styleValue);
 }
 
-function setStyle(containerId, styleName, styleValue, nodes) {
+var blockRegex = /^(address|blockquote|body|center|dir|div|dl|fieldset|form|h[1-6]|hr|isindex|menu|noframes|noscript|ol|p|pre|table|ul|dd|dt|frameset|li|tbody|td|tfoot|th|thead|tr|html)$/i;
+
+function toggleBlockStyle(containerId, styleName, styleValues, disabled) {
+    if (containerId != null) {
+        if (!selectionInContainer(containerId)) return;       // Don't allow style toggling if outside the container
+    }
+    var blockContainer = findAncestor(rangy.getSelection().getRangeAt(0).commonAncestorContainer, function(n) {
+        var displayValue = n.style['display'];
+        return displayValue == 'block' || (displayValue == '' && blockRegex.test(n.nodeName));
+    });
+    if (blockContainer != null) {
+        var valuesString = styleValues.join(', ').toLowerCase();
+        var value = styleForNode(blockContainer, styleName);
+        clearStylePropertyOnNode(blockContainer, styleName);        // Clear the style on this and all children before applying
+        if (valuesString.indexOf(value) != -1) {
+            blockContainer.style[styleName] = disabled;             // Toggle it off
+        } else {
+            blockContainer.style[styleName] = styleValues[0];       // Toggle it on
+        }
+        editorFor(blockContainer).dispatchEvent(new CustomEvent('styleChanged'));
+    }
+}
+
+function clearStylePropertyOnNode(node, styleName) {
+    node.style[styleName] = null;
+    if (node.hasChildNodes()) {
+        for (var i = 0; i < node.childNodes.length; i++) {
+            var n = node.childNodes.item(i);
+            if (n.nodeType == Node.ELEMENT_NODE) {
+                clearStylePropertyOnNode(n, styleName);
+            }
+        }
+    }
+}
+
+function setStyle(containerId, styleName, styleValue) {
     if (containerId != null) {
         if (!selectionInContainer(containerId)) return;       // Don't allow styling if outside the container
     }
-    if (nodes == null) {
-        nodes = selectedNodes();
-    }
-    var spans = spansForSelected(nodes);
+    var spans = selectedSpans();
     for (var i = 0; i < spans.length; i++) {
         spans[i].style[styleName] = styleValue;
     }
 
-    // -100
-    // Re-select
     if (spans != null && spans.length > 0) {
-        var range = rangy.createRange();
-        range.setStartBefore(spans[0]);
-        range.setEndAfter(spans[spans.length - 1]);
-        var s = rangy.getSelection();
-        s.removeAllRanges();
-        s.addRange(range);
-
         // Fire event
+        var range = rangy.getSelection().getRangeAt(0);
         editorFor(range.commonAncestorContainer).dispatchEvent(new CustomEvent('styleChanged'));
     }
 }
 
-function adjustStyle(containerId, styleName, adjuster, nodes) {
+function adjustStyle(containerId, styleName, adjuster) {
     if (containerId != null) {
         if (!selectionInContainer(containerId)) return;       // Don't allow styling if outside the container
     }
-    if (nodes == null) {
-        nodes = selectedNodes();
-    }
-    var spans = spansForSelected(nodes);
+    var spans = selectedSpans();
     for (var i = 0; i < spans.length; i++) {
         spans[i].style[styleName] = adjuster(styleForNode(spans[i], styleName));
     }
 
-    // Re-select
     if (spans != null && spans.length > 0) {
-        var range = rangy.createRange();
-        range.setStartBefore(spans[0]);
-        range.setEndAfter(spans[spans.length - 1]);
-        var s = rangy.getSelection();
-        s.removeAllRanges();
-        s.addRange(range);
-
         // Fire event
+        var range = rangy.getSelection().getRangeAt(0);
         editorFor(range.commonAncestorContainer).dispatchEvent(new CustomEvent('styleChanged'));
     }
 }
 
-function manipulateSelection(containerId, manipulator, nodes) {
+function manipulateSelection(containerId, manipulator) {
     if (containerId != null) {
         if (!selectionInContainer(containerId)) return;       // Don't allow styling if outside the container
     }
-    if (nodes == null) {
-        nodes = selectedNodes();
-    }
-    var spans = spansForSelected(nodes);
+    var spans = selectedSpans();
     manipulator(spans);
 
     // Fire event
+    var range = rangy.getSelection().getRangeAt(0);
     editorFor(range.commonAncestorContainer).dispatchEvent(new CustomEvent('manipulatedSelection'));
+}
+
+function removeFormattingFromSelection(containerId) {
+    manipulateSelection(containerId, function(spans) {
+        for (var i = 0; i < spans.length; i++) {
+            spans[i].style.cssText = '';            // Clear the style
+        }
+    });
 }
 
 function selectionInContainer(containerId) {
@@ -132,16 +157,28 @@ function editorFor(container) {
  *
  * @param styleName the style name in camel-case
  * @param styleValues an array of all the style values that are considered a match (ex. ['bold', '700'])
- * @param nodes optional array of selectedNodes. If this is null it will get the selectedNodes.
+ * @param nodes optional array of selectedTextNodes. If this is null it will get the selectedTextNodes.
  * @returns {boolean} true only if the entire selection has the style value applied.
  */
 function selectionHasStyle(styleName, styleValues, nodes) {
     if (nodes == null) {
-        nodes = selectedNodes();
+        nodes = selectedTextNodes();
     }
 
     var valuesString = styleValues.join(', ').toLowerCase();
     var value = selectionStyle(styleName, nodes);
+    return valuesString.indexOf(value) != -1;
+}
+
+function selectionBlockHasStyle(styleName, styleValues, blockContainer) {
+    if (blockContainer == null) {
+        blockContainer = findAncestor(rangy.getSelection().getRangeAt(0).commonAncestorContainer, function (n) {
+            var displayValue = n.style['display'];
+            return displayValue == 'block' || (displayValue == '' && blockRegex.test(n.nodeName));
+        });
+    }
+    var valuesString = styleValues.join(', ').toLowerCase();
+    var value = styleForSelectedBlock(styleName, blockContainer);
     return valuesString.indexOf(value) != -1;
 }
 
@@ -151,6 +188,19 @@ function styleForNode(node, styleName) {
     } else {
         return window.getComputedStyle(node, null)[styleName];
     }
+}
+
+function styleForSelectedBlock(styleName, blockContainer) {
+    if (blockContainer == null) {
+        blockContainer = findAncestor(rangy.getSelection().getRangeAt(0).commonAncestorContainer, function (n) {
+            var displayValue = n.style['display'];
+            return displayValue == 'block' || (displayValue == '' && blockRegex.test(n.nodeName));
+        });
+    }
+    if (blockContainer != null) {
+        return styleForNode(blockContainer, styleName);
+    }
+    return null;
 }
 
 /**
@@ -163,7 +213,7 @@ function styleForNode(node, styleName) {
  */
 function selectionStyle(styleName, nodes) {
     if (nodes == null) {
-        nodes = selectedNodes();
+        nodes = selectedTextNodes();
     }
     var value = '----';
     for (var i = 0; i < nodes.length; i++) {
@@ -182,31 +232,19 @@ function selectionStyle(styleName, nodes) {
     return value;
 }
 
-/**
- * Iterates over the supplied nodes (or gets them from selectedNodes if null) and makes sure every text node is within a
- * stylized span and properly breaks partial text blocks.
- *
- * @param nodes the nodes array from selectedNodes (will query itself if it is null).
- * @returns {Array} array of spans representing the current selection
- */
-function spansForSelected(nodes) {
-    if (nodes == null) {
-        nodes = selectedNodes();
-    }
-
-    function createNewSpan(text, currentParent) {
+function selectedSpans() {
+    function createNewSpan(text, styleParent) {
         var span = document.createElement('span');
         var $span = $(span);
         $span.addClass('stylized');
         if (text != null) {
             span.appendChild(document.createTextNode(text));
         }
-        if (currentParent != null) {
-            span.style.cssText = currentParent.style.cssText;
+        if (styleParent != null) {
+            span.style.cssText = styleParent.style.cssText;
         }
         return span;
     }
-
     function appendAfter(before, after) {
         if (before.nextSibling != null) {
             before.parentNode.insertBefore(after, before.nextSibling);
@@ -215,133 +253,94 @@ function spansForSelected(nodes) {
         }
     }
 
-    // Break out spans
+    // Create spans array
+    var range = rangy.getSelection().getRangeAt(0);
+    range.splitBoundaries();
+    var nodes = range.getNodes([Node.TEXT_NODE]);
     var spans = [];
     for (var i = 0; i < nodes.length; i++) {
-        var nodeEntry = nodes[i];
-        var node = nodeEntry.node;
-
-        var parentStylized = null;
+        var node = nodes[i];
         if ($(node.parentNode).hasClass('stylized')) {
-            parentStylized = node.parentNode;
-        }
-        if (parentStylized != null && nodeEntry.start == 0 && nodeEntry.end == nodeEntry.length) {
-            spans.push(parentStylized);         // Already fully encapsulated
+            if (node.parentNode.childNodes.length == 1) {
+                spans.push(node.parentNode);
+            } else if (node.parentNode.parentNode != null) {
+                var emptyBlock = document.createTextNode('');
+                var parentNode = node.parentNode;
+                var currentNode = emptyBlock;
+                parentNode.parentNode.replaceChild(emptyBlock, parentNode);
+                for (var j = 0; j < parentNode.childNodes.length; j++) {
+                    var childNode = parentNode.childNodes.item(j);
+                    if (childNode.nodeType != Node.TEXT_NODE) {
+                        childNode.cssText += ';' + parentNode.style.cssText;
+                        appendAfter(currentNode, childNode);
+                        currentNode = childNode;
+                    } else {
+                        var span = createNewSpan(childNode.nodeValue, parentNode);
+                        appendAfter(currentNode, span);
+                        currentNode = span;
+                        if (childNode == node) {
+                            spans.push(span);
+                        }
+                    }
+                }
+            }
         } else {
-            var preSpan = null;
-            var postSpan = null;
-            var emptyBlock = document.createTextNode('');
-            var currentNode = node;
-            if (parentStylized != null) {
-                currentNode = parentStylized;
-            }
-            currentNode.parentNode.replaceChild(emptyBlock, currentNode);
-            var previous = emptyBlock;
-            if (nodeEntry.start > 0) {
-                var preText = node.nodeValue.substring(0, nodeEntry.start);
-                preSpan = createNewSpan(preText, parentStylized);
-            }
-            var newNode = createNewSpan(nodeEntry.text, parentStylized);
-            spans.push(newNode);
-            if (nodeEntry.end != nodeEntry.length) {
-                var postText = node.nodeValue.substring(nodeEntry.end);
-                postSpan = createNewSpan(postText, parentStylized);
-            }
-            if (preSpan != null) {
-                appendAfter(previous, preSpan);
-                previous = preSpan;
-            }
-            appendAfter(previous, newNode);
-            previous = newNode;
-            if (postSpan != null) {
-                appendAfter(previous, postSpan);
-                previous = postSpan;
-            }
+            var span = createNewSpan(node.nodeValue);
+            node.parentNode.replaceChild(span, node);
+            spans.push(span);
         }
     }
+
+    // Select the spans
+    if (spans.length > 0) {
+        var newRange = rangy.createRange();
+        newRange.setStartBefore(spans[0]);
+        newRange.setEndAfter(spans[spans.length - 1]);
+        var s = rangy.getSelection();
+        s.removeAllRanges();
+        s.addRange(newRange);
+    }
+
     return spans;
 }
 
 /**
- * Gathers all the text nodes for the current selection range and returns them in a JSON format:
- * { node, start, end, length, text }
- *
- * @returns {Array}
+ * Returns an array of text nodes for the current selection. Splits boundaries so no partial nodes are represented.
+ * 
+ * @returns Array[Text]
  */
-function selectedNodes() {
+function selectedTextNodes() {
     var range = rangy.getSelection().getRangeAt(0);
-    var nodes = [];
-    if (range.collapsed || range.endContainer == null) {
-        var length = 0;
-        if (range.startContainer.nodeType == Node.TEXT_NODE) {
-            length = range.startContainer.nodeValue.length;
-        } else {
-            length = range.startContainer.childNodes.length;
-        }
-        nodes.push({
+    if (range.collapsed && range.startContainer.nodeType == Node.TEXT_NODE) {
+        return [{
             node: range.startContainer,
             start: range.startOffset,
             end: range.endOffset,
-            length: length
-        });
+            length: range.startContainer.nodeValue.length,
+            text: ''
+        }]
     } else {
-        var startContainer = range.startContainer;
-        var startOffset = range.startOffset;
-        var endContainer = range.endContainer;
-        var endOffset = range.endOffset;
-        if (startContainer == endContainer && startContainer.nodeType != Node.TEXT_NODE) {
-            startContainer = startContainer.childNodes.item(startOffset);
-            endContainer = startContainer.childNodes.item(endOffset);
-            startOffset = 0;
-            endOffset = 0;
-        }
-        var node = startContainer;
-        while(true) {
-            var start = 0;
-            var length = 0;
-            if (node.nodeType == Node.TEXT_NODE) {
-                length = node.nodeValue.length;
-            } else {
-                length = node.childNodes.length;
+        var nodes = range.getNodes([Node.TEXT_NODE]);
+        var textNodes = [];
+        for (var i = 0; i < nodes.length; i++) {
+            var n = {
+                node: nodes[i],
+                start: 0,
+                length: nodes[i].nodeValue.length
+            };
+            if (nodes[i] == range.startContainer) {
+                n.start = range.startOffset;
             }
-            var end = length;
-            if (node == startContainer) {
-                start = startOffset;
+            if (nodes[i] == range.endContainer) {
+                n.end = range.endOffset;
             }
-            if (node == endContainer) {
-                end = endOffset;
-            }
-            if (node.nodeType == Node.TEXT_NODE) {
-                if (end - start > 0) {
-                    var t = {
-                        node: node,
-                        start: start,
-                        end: end,
-                        length: length,
-                        text: node.nodeValue.substring(start, end)
-                    };
-                    nodes.push(t);
-//                    console.log('text: ' + t.text + ' (' + t.start + ' - ' + t.end + ')');
-                }
-            } else {
-//                console.log('skipping container: ' + node + ' ' + start + ' - ' + end + ' (' + length + ') ' + node.childNodes.item(start));
-            }
-
-
-            if (node != endContainer) {
-                if (node.hasChildNodes()) {
-                    node = node.childNodes.item(start);
-                } else if (node.nextSibling != null) {
-                    node = node.nextSibling;
-                } else {
-                    node = node.parentNode.nextSibling;
-                }
-            } else {
-                break;
+            n.text = n.node.nodeValue.substring(n.start, n.end);
+            if (n.text != '') {
+                textNodes.push(n);
             }
         }
+        return textNodes;
     }
-    return nodes;
 }
 
 /**
@@ -363,6 +362,8 @@ function insertNode(containerId, node) {
     var range = rangy.getSelection().getRangeAt(0);
     range.deleteContents();
     range.insertNode(node);
+
+    editorFor(range.commonAncestorContainer).dispatchEvent(new CustomEvent('input'));
 }
 
 function insertIntoSelection(containerId, html) {
@@ -378,7 +379,86 @@ function insertAroundSelection(containerId, html) {
     if (range.canSurroundContents()) {
         var node = $.parseHTML(html)[0];
         range.surroundContents(node);
+
+        editorFor(range.commonAncestorContainer).dispatchEvent(new CustomEvent('input'));
     }
+}
+
+function insertAroundBlock(containerId, html) {
+    if (containerId != null) {
+        if (!selectionInContainer(containerId)) return;       // Don't allow if outside the container
+    }
+    var range = rangy.getSelection().getRangeAt(0);
+    if (range.collapsed) {
+        var node = range.startContainer;
+        var startOffset = range.startOffset;
+        var endOffset = range.endOffset;
+        var parent = range.commonAncestorContainer;
+        if (parent.nodeType == Node.TEXT_NODE) {
+            parent = parent.parentNode;
+        }
+        if ($(parent).hasClass('stylized')) {
+            parent = parent.parentNode;     // Don't include stylized as a common ancestor
+        }
+        $(parent).wrapInner(html);
+
+        var newRange = rangy.createRange();
+        newRange.setStart(node, startOffset);
+        newRange.setEnd(node, endOffset);
+        var s = rangy.getSelection();
+        s.removeAllRanges();
+        s.addRange(newRange);
+
+        editorFor(range.commonAncestorContainer).dispatchEvent(new CustomEvent('input'));
+    } else if (range.canSurroundContents()) {
+        var node = $.parseHTML(html)[0];
+        range.surroundContents(node);
+
+        editorFor(range.commonAncestorContainer).dispatchEvent(new CustomEvent('input'));
+    }
+}
+
+function removeFromBlock(containerId, tagName) {
+    if (containerId != null) {
+        if (!selectionInContainer(containerId)) return;       // Don't allow if outside the container
+    }
+    var range = rangy.getSelection().getRangeAt(0);
+    var node = range.startContainer;
+    var startOffset = range.startOffset;
+    var endOffset = range.endOffset;
+    var tag = findByTagName(range.startContainer, tagName);
+    var parent = tag.parentNode;
+    if (tag != null) {
+        var $tag = $(tag);
+        $tag.replaceWith($tag.html());
+    }
+
+    // Re-select
+    var newRange = rangy.createRange();
+    newRange.setStart(node, startOffset);
+    newRange.setEnd(node, endOffset);
+    var s = rangy.getSelection();
+    s.removeAllRanges();
+    s.addRange(newRange);
+
+    editorFor(parent).dispatchEvent(new CustomEvent('input'));
+}
+
+function findByTagName(node, tagName) {
+    return findAncestor(node, function(n) {
+        return n.nodeName.toLowerCase() == tagName.toLowerCase();
+    });
+}
+
+function findAncestor(node, validator) {
+    if (node.nodeType == Node.ELEMENT_NODE && validator(node)) {
+        return node;
+    }
+    var parent = node.parentNode;
+    if (parent != null) {
+        return findAncestor(parent, validator);
+    }
+    return null;
 }
 
 /**

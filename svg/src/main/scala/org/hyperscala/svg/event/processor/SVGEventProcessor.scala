@@ -1,15 +1,18 @@
 package org.hyperscala.svg.event.processor
 
-import org.hyperscala.svg.event._
 import org.hyperscala.Markup
-import org.powerscala.hierarchy.event.StandardHierarchyEventProcessor
-import org.powerscala.property.PropertyLike
 import org.hyperscala.javascript.{EventProperty, JavaScriptContent}
+import org.hyperscala.svg.event._
+import org.powerscala.hierarchy.event.StandardHierarchyEventProcessor
+import org.powerscala.property.{ReadProperty, WriteProperty}
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class SVGEventProcessor[T <: SVGEvent](name: String, markup: Markup)(implicit eventManifest: Manifest[T]) extends StandardHierarchyEventProcessor[T](name)(markup, eventManifest) with PropertyLike[JavaScriptContent] {
+class SVGEventProcessor[T <: SVGEvent](name: String, markup: Markup)(implicit eventManifest: Manifest[T])
+      extends StandardHierarchyEventProcessor[T](name)(markup, eventManifest)
+      with ReadProperty[JavaScriptContent]
+      with WriteProperty[JavaScriptContent] {
   val js = new EventProperty(name)(markup)
 
   def apply() = js()

@@ -3,7 +3,7 @@ package org.hyperscala.examples.ui
 import com.outr.net.http.session.MapSession
 import org.hyperscala.bootstrap.component.Button
 import org.hyperscala.css.Style
-import org.hyperscala.css.attributes.{Display, FontStyle, FontWeight}
+import org.hyperscala.css.attributes.{Alignment, FontStyle, FontWeight}
 import org.hyperscala.examples.Example
 import org.hyperscala.html._
 import org.hyperscala.html.attributes.ContentEditable
@@ -20,8 +20,11 @@ class ContentEditorExample(site: Website[MapSession]) extends Example {
   val redButton = new Button(label = "Red")
   val greenButton = new Button(label = "Green")
   val blueButton = new Button(label = "Blue")
-  val blockButton = new Button(label = "Block")
   val colorInput = new tag.Input(id = "currentColor")
+  val leftAlign = new Button(label = "Left Align")
+  val centerAlign = new Button(label = "Center Align")
+  val rightAlign = new Button(label = "Right Align")
+  val justifyAlign = new Button(label = "Justify Align")
 
   val frame = new RealtimeFrame("/example/ui/content_editor.html", singleConnection = false) {
     style.width := 100.pct
@@ -40,7 +43,6 @@ class ContentEditorExample(site: Website[MapSession]) extends Example {
     contents += redButton
     contents += greenButton
     contents += blueButton
-    contents += blockButton
     contents += new Button(label = "Insert Kitty") {
       mouseDownEvent.onRealtime {
         case evt => {
@@ -50,17 +52,12 @@ class ContentEditorExample(site: Website[MapSession]) extends Example {
     }
     contents += new Button(label = "Unindent") {
       mouseDownEvent.onRealtime {
-        case evt => {
-          editorPage.editor.adjustStyleSize(Style.marginLeft, -16, min = 0)
-        }
+        case evt => editorPage.editor.removeFromBlock("ul");
       }
     }
     contents += new Button(label = "Indent") {
       mouseDownEvent.onRealtime {
-        case evt => {
-          editorPage.editor.setStyle(Style.display, Display.Block)
-          editorPage.editor.adjustStyleSize(Style.marginLeft, 16)
-        }
+        case evt => editorPage.editor.insertBlock(new tag.Ul)
       }
     }
     contents += new Button(label = "Decrease Size") {
@@ -73,7 +70,13 @@ class ContentEditorExample(site: Website[MapSession]) extends Example {
         case evt => editorPage.editor.adjustStyleSize(Style.fontSize, 1)
       }
     }
+    contents += new Button(label = "Clear Formatting") {
+      mouseDownEvent.onRealtime {
+        case evt => editorPage.editor.clearFormatting()
+      }
+    }
     contents += colorInput
+    contents.addAll(leftAlign, centerAlign, rightAlign, justifyAlign)
   }
   contents += controls
 }
@@ -97,11 +100,14 @@ class EditorPage(site: Website[MapSession], example: ContentEditorExample) exten
   editor.bindToggle(Style.color, example.redButton, List("#ff0000", "rgb(255, 0, 0)", "red"), activeClass = Some("active"))
   editor.bindToggle(Style.color, example.greenButton, List("#00ff00", "rgb(0, 255, 0)", "green"), activeClass = Some("active"))
   editor.bindToggle(Style.color, example.blueButton, List("#0000ff", "rgb(0, 0, 255)", "blue"), activeClass = Some("active"))
-  editor.bindToggle(Style.display, example.blockButton, List(Display.Block), activeClass = Some("active"))
   editor.contentChanged.on {
     case evt => {
       println(div.outputString)
     }
   }
+  editor.bindToggle(Style.textAlign, example.leftAlign, List(Alignment.Left, "start"), activeClass = Some("active"), block = true)
+  editor.bindToggle(Style.textAlign, example.centerAlign, List(Alignment.Center), activeClass = Some("active"), block = true)
+  editor.bindToggle(Style.textAlign, example.rightAlign, List(Alignment.Right), activeClass = Some("active"), block = true)
+  editor.bindToggle(Style.textAlign, example.justifyAlign, List(Alignment.Justify), activeClass = Some("active"), block = true)
   body.contents += div
 }

@@ -1,7 +1,6 @@
 package org.hyperscala.javascript.dsl
 
 import org.hyperscala.html.HTMLTag
-import org.hyperscala.javascript.JavaScriptContent
 import org.hyperscala.selector.Selector
 import org.powerscala.enum.{EnumEntry, Enumerated}
 
@@ -30,15 +29,11 @@ object document extends DelayedStatement[HTMLTag] with Selector {
   def duplicate(parent: Option[Selector]) = throw new RuntimeException("document cannot be duplicated")
 
   def execCommand(command: Command, value: String = null) = {
-    MultiStatement[Unit](sideEffects = true, "document.execCommand(", command, ", ", value, ")")
+    MultiStatement[Unit](sideEffects = true, s"document.execCommand('${command.name}'", ", ", value, ")")
   }
 }
 
-class Command extends EnumEntry with JavaScriptContent {
-  override def content = s"'$name'"
-
-  override val parent = Command.asInstanceOf[Enumerated[EnumEntry]]
-}
+class Command extends EnumEntry
 
 object Command extends Enumerated[Command] {
   /**

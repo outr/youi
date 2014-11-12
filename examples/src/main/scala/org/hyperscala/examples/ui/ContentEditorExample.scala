@@ -7,6 +7,7 @@ import org.hyperscala.css.attributes.{Alignment, FontStyle, FontWeight}
 import org.hyperscala.examples.Example
 import org.hyperscala.html._
 import org.hyperscala.html.attributes.ContentEditable
+import org.hyperscala.javascript.dsl.Command
 import org.hyperscala.realtime._
 import org.hyperscala.ui.widgets.ContentEditor
 import org.hyperscala.web._
@@ -62,12 +63,22 @@ class ContentEditorExample(site: Website[MapSession]) extends Example {
     }
     contents += new Button(label = "Decrease Size") {
       mouseDownEvent.onRealtime {
-        case evt => editorPage.editor.adjustStyleSize(Style.fontSize, -1)
+        case evt => editorPage.editor.adjustStyleSize(Style.fontSize, -2)
       }
     }
     contents += new Button(label = "Increase Size") {
       mouseDownEvent.onRealtime {
-        case evt => editorPage.editor.adjustStyleSize(Style.fontSize, 1)
+        case evt => editorPage.editor.adjustStyleSize(Style.fontSize, 2)
+      }
+    }
+    contents += new Button(label = "Ordered List") {
+      mouseDownEvent.onRealtime {
+        case evt => editorPage.editor.exec(Command.insertOrderedList)
+      }
+    }
+    contents += new Button(label = "Unordered List") {
+      mouseDownEvent.onRealtime {
+        case evt => editorPage.editor.exec(Command.insertUnorderedList)
       }
     }
     contents += new Button(label = "Clear Formatting") {

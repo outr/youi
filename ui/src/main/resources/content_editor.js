@@ -3,6 +3,13 @@ Node.prototype.getParentIndex = function() {
   return Array.prototype.indexOf.call(this.parentNode.childNodes, this);
 };
 
+// Support capitalizing text
+String.prototype.capitalize = function() {
+    return this.replace(/[a-zA-Z0-9]+/g, function(txt) {
+        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    });
+};
+
 function initContentEditor(containerId) {
     var container = document.getElementById(containerId);
 
@@ -86,15 +93,45 @@ function setStyle(containerId, styleName, styleValue) {
     if (containerId != null) {
         if (!selectionInContainer(containerId)) return;       // Don't allow styling if outside the container
     }
-    var spans = selectedSpans();
-    for (var i = 0; i < spans.length; i++) {
-        spans[i].style[styleName] = styleValue;
-    }
+    if (rangy.getSelection().getRangeAt(0).collapsed) {
+        var container = rangy.getSelection().getRangeAt(0).commonAncestorContainer;
+        if (container.nodeType == Node.TEXT_NODE) {
+            container = container.parentNode;
+        }
+        setBlockStyle(null, styleName, styleValue, container, false);
+    } else {
+        var spans = selectedSpans();
+        for (var i = 0; i < spans.length; i++) {
+            spans[i].style[styleName] = styleValue;
+        }
 
-    if (spans != null && spans.length > 0) {
-        // Fire event
-        var range = rangy.getSelection().getRangeAt(0);
-        editorFor(range.commonAncestorContainer).dispatchEvent(new CustomEvent('styleChanged'));
+        if (spans != null && spans.length > 0) {
+            // Fire event
+            var range = rangy.getSelection().getRangeAt(0);
+            editorFor(range.commonAncestorContainer).dispatchEvent(new CustomEvent('styleChanged'));
+        }
+    }
+}
+
+function setBlockStyle(containerId, styleName, styleValue, blockContainer, overrideChildren) {
+    if (containerId != null) {
+        if (!selectionInContainer(containerId)) return;       // Don't allow style toggling if outside the container
+    }
+    if (overrideChildren == null) {
+        overrideChildren = true;
+    }
+    if (blockContainer == null) {
+        blockContainer = findAncestor(rangy.getSelection().getRangeAt(0).commonAncestorContainer, function (n) {
+            var displayValue = n.style['display'];
+            return displayValue == 'block' || (displayValue == '' && blockRegex.test(n.nodeName));
+        });
+    }
+    if (blockContainer != null) {
+        if (overrideChildren) {
+            clearStylePropertyOnNode(blockContainer, styleName);        // Clear the style on this and all children before applying
+        }
+        blockContainer.style[styleName] = styleValue;
+        editorFor(blockContainer).dispatchEvent(new CustomEvent('styleChanged'));
     }
 }
 
@@ -218,7 +255,9 @@ function selectionStyle(styleName, nodes) {
     var value = '----';
     for (var i = 0; i < nodes.length; i++) {
         var computed = window.getComputedStyle(nodes[i].node.parentNode, null)[styleName];
-        computed = computed.toLowerCase();
+        if (computed != null) {
+            computed = computed.toLowerCase();
+        }
         if (value == '----') {
             value = computed;
         } else if (computed != value) {

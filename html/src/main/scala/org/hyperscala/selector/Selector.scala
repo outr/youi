@@ -1,28 +1,26 @@
 package org.hyperscala.selector
 
-import org.hyperscala.persistence.ValuePersistence
-import org.hyperscala.html.HTMLTag
-import org.hyperscala.html.HTMLTagType
 import org.hyperscala.IdentifiableTag
-import scala.Some
+import org.hyperscala.html.{HTMLTag, HTMLTagType}
+import org.hyperscala.persistence.ValuePersistence
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
 trait Selector {
-  def root: Selector = parent match {
+  def root: Selector = parentSelector match {
     case Some(p) => p.root
     case None => this
   }
-  def parent: Option[Selector]
-  final lazy val value: String = parent match {
+  def parentSelector: Option[Selector]
+  final lazy val value: String = parentSelector match {
     case Some(p) => s"${p.value}$thisValue"
     case None => thisValue
   }
   def quoted = true
 
   final def matches(t: HTMLTag): Boolean = if (thisMatches(t)) {
-    parent match {
+    parentSelector match {
       case Some(p) => p.matches(t)
       case None => true
     }
@@ -43,14 +41,14 @@ trait Selector {
 
   def duplicate(parent: Option[Selector]): Selector
 
-  def addRoot(newRoot: Selector): Selector = parent match {
+  def addRoot(newRoot: Selector): Selector = parentSelector match {
     case Some(p) => duplicate(Some(p.addRoot(newRoot)))
     case None => duplicate(Some(newRoot))
   }
 
   private def buildList(selector: Selector, list: List[Selector] = Nil): List[Selector] = {
     val updated = selector :: list
-    selector.parent match {
+    selector.parentSelector match {
       case Some(p) => buildList(p, updated)
       case None => updated
     }
@@ -124,19 +122,19 @@ object Selector extends ValuePersistence[List[Selector]] {
   }
 }
 
-case class AllSelector(parent: Option[Selector] = None) extends Selector {
+case class AllSelector(parentSelector: Option[Selector] = None) extends Selector {
   def thisValue = "*"
   def thisMatches(t: HTMLTag) = true
-  def duplicate(parent: Option[Selector]) = copy(parent = parent)
+  def duplicate(parent: Option[Selector]) = copy(parentSelector = parent)
 }
 
-case class ClassSelector(className: String, parent: Option[Selector] = None) extends Selector {
+case class ClassSelector(className: String, parentSelector: Option[Selector] = None) extends Selector {
   if (!ClassSelector.isValid(className)) throw new RuntimeException(s"Invalid class selector: $className")
 
   def thisValue = s".$className"
 
   def thisMatches(t: HTMLTag) = t.clazz().contains(className)
-  def duplicate(parent: Option[Selector]) = copy(parent = parent)
+  def duplicate(parent: Option[Selector]) = copy(parentSelector = parent)
 }
 
 object ClassSelector {
@@ -145,56 +143,56 @@ object ClassSelector {
   def isValid(className: String) = className.matches(Regex)
 }
 
-case class ElementSelector[T <: HTMLTag](tagType: HTMLTagType[T], parent: Option[Selector] = None) extends Selector {
+case class ElementSelector[T <: HTMLTag](tagType: HTMLTagType[T], parentSelector: Option[Selector] = None) extends Selector {
   def thisValue = tagType.htmlName
 
   def thisMatches(t: HTMLTag) = tagType.clazz.isAssignableFrom(t.getClass)    // TODO: verify this works
 
-  def duplicate(parent: Option[Selector]) = copy(parent = parent)
+  def duplicate(parent: Option[Selector]) = copy(parentSelector = parent)
 }
 
-case class DescendantSelector(parent: Option[Selector] = None) extends Selector {
+case class DescendantSelector(parentSelector: Option[Selector] = None) extends Selector {
   def thisValue = " "
 
   // TODO: fix matching support
   def thisMatches(t: HTMLTag) = false
 
-  def duplicate(parent: Option[Selector]) = copy(parent = parent)
+  def duplicate(parent: Option[Selector]) = copy(parentSelector = parent)
 }
 
-case class ChildSelector(parent: Option[Selector] = None) extends Selector {
+case class ChildSelector(parentSelector: Option[Selector] = None) extends Selector {
   def thisValue = " > "
 
   def thisMatches(t: HTMLTag) = false    // TODO: support properly
 
-  def duplicate(parent: Option[Selector]) = copy(parent = parent)
+  def duplicate(parent: Option[Selector]) = copy(parentSelector = parent)
 }
 
-case class PseudoClassSelector(clazz: PseudoClass, parent: Option[Selector] = None) extends Selector {
+case class PseudoClassSelector(clazz: PseudoClass, parentSelector: Option[Selector] = None) extends Selector {
   def thisValue = s":${clazz.value}"
 
   def thisMatches(t: HTMLTag) = true
 
-  def duplicate(parent: Option[Selector]) = copy(parent = parent)
+  def duplicate(parent: Option[Selector]) = copy(parentSelector = parent)
 }
 
-case class PrecedingSelector(parent: Option[Selector] = None) extends Selector {
+case class PrecedingSelector(parentSelector: Option[Selector] = None) extends Selector {
   def thisValue = " + "
 
   def thisMatches(t: HTMLTag) = throw new NotImplementedError("Matching support not implemented for this selector")
 
-  def duplicate(parent: Option[Selector]) = copy(parent = parent)
+  def duplicate(parent: Option[Selector]) = copy(parentSelector = parent)
 }
 
-case class AttributeExistsSelector(attribute: String, parent: Option[Selector] = None) extends Selector {
+case class AttributeExistsSelector(attribute: String, parentSelector: Option[Selector] = None) extends Selector {
   def thisValue = s"[$attribute]"
 
   def thisMatches(t: HTMLTag) = t.attributes.contains(attribute)
 
-  def duplicate(parent: Option[Selector]) = copy(parent = parent)
+  def duplicate(parent: Option[Selector]) = copy(parentSelector = parent)
 }
 
-case class AttributeSelector(attribute: String, matcher: AttributeMatcher, attributeValue: String, parent: Option[Selector] = None) extends Selector {
+case class AttributeSelector(attribute: String, matcher: AttributeMatcher, attributeValue: String, parentSelector: Option[Selector] = None) extends Selector {
   def thisValue = s"""[$attribute${matcher.value}"$attributeValue"]"""
 
   def thisMatches(t: HTMLTag) = t.attributes.get(attribute) match {
@@ -202,29 +200,29 @@ case class AttributeSelector(attribute: String, matcher: AttributeMatcher, attri
     case None => false
   }
 
-  def duplicate(parent: Option[Selector]) = copy(parent = parent)
+  def duplicate(parent: Option[Selector]) = copy(parentSelector = parent)
 }
 
-case class IdSelector(id: String, parent: Option[Selector] = None) extends Selector {
+case class IdSelector(id: String, parentSelector: Option[Selector] = None) extends Selector {
   def thisValue = s"#$id"
 
   def thisMatches(t: HTMLTag) = t.id() == id
 
-  def duplicate(parent: Option[Selector]) = copy(parent = parent)
+  def duplicate(parent: Option[Selector]) = copy(parentSelector = parent)
 }
 
-case class TagIdSelector(tag: IdentifiableTag, parent: Option[Selector] = None) extends Selector {
+case class TagIdSelector(tag: IdentifiableTag, parentSelector: Option[Selector] = None) extends Selector {
   def thisValue = s"#${tag.identity}"
 
   def thisMatches(t: HTMLTag) = tag.identity == t.id()
 
-  def duplicate(parent: Option[Selector]) = copy(parent = parent)
+  def duplicate(parent: Option[Selector]) = copy(parentSelector = parent)
 }
 
-case class MultipleSelector(parent: Option[Selector] = None) extends Selector {
+case class MultipleSelector(parentSelector: Option[Selector] = None) extends Selector {
   def thisValue = ", "
 
   def thisMatches(t: HTMLTag) = false // TODO: implement
 
-  def duplicate(parent: Option[Selector]) = copy(parent = parent)
+  def duplicate(parent: Option[Selector]) = copy(parentSelector = parent)
 }

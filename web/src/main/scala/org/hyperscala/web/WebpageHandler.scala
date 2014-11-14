@@ -1,15 +1,5 @@
 package org.hyperscala.web
 
-import com.outr.net.http.HttpHandler
-import com.outr.net.http.request.HttpRequest
-import com.outr.net.http.response.{HttpResponseStatus, HttpResponse}
-import org.powerscala.log.Logging
-import com.outr.net.http.handler.HandlerProcessor
-import org.powerscala.event.Listenable
-import org.powerscala.Unique
-import com.outr.net.http.session.Session
-import org.powerscala.property.Property
-
 /**
  * @author Matt Hicks <matt@outr.com>
  */
@@ -78,7 +68,12 @@ class WebpageHandler[S <: Session](pageCreator: () => Webpage[S],
       case Scope.Request => // Nothing to do
       case Scope.Page => // Nothing to do
       case Scope.Session => website._pages(sessionId) = page
-      case Scope.Application => website._pages(id) = page
+      case Scope.Application => {
+        website._pages(id) = page
+        website.synchronized {
+          website._applicationPages = page :: website._applicationPages
+        }
+      }
     }
     debug(s"Caching page: ${page.pageId}!")
     WebpageHandler.cachePage(page)         // All pages are stored at least by their id

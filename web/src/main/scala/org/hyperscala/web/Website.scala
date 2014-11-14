@@ -1,16 +1,5 @@
 package org.hyperscala.web
 
-import com.outr.net.http.WebApplication
-import org.powerscala.MapStorage
-import com.outr.net.http.session.Session
-import org.powerscala.reflect._
-import com.outr.net.http.handler.CachedHandler
-import org.powerscala.log.Logging
-import org.powerscala.event.processor.UnitProcessor
-import com.outr.net.http.request.HttpRequest
-import com.outr.net.http.response.{HttpResponseStatus, HttpResponse}
-import com.outr.net.http.content.{ContentType, StringContent}
-
 /**
  * @author Matt Hicks <matt@outr.com>
  */
@@ -27,6 +16,7 @@ abstract class Website[S <: Session](implicit val manifest: Manifest[S]) extends
    * Keeps a reference to all currently loaded pages referenced by id.
    */
   private[web] val _pages = new MapStorage[String, Webpage[S]]
+  private[web] var _applicationPages = List.empty[Webpage[S]]
   /**
    * Access to all currently loaded pages.
    */
@@ -71,6 +61,9 @@ abstract class Website[S <: Session](implicit val manifest: Manifest[S]) extends
     try {
       pages.foreach {
         case page => page.update(delta)
+      }
+      _applicationPages.foreach {
+        case page => page.checkIn()         // Make sure application pages never timeout
       }
     } catch {
       case t: Throwable => error("Exception thrown while updating pages.", t)

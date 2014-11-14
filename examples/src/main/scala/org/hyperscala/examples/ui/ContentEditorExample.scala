@@ -9,7 +9,7 @@ import org.hyperscala.html._
 import org.hyperscala.html.attributes.ContentEditable
 import org.hyperscala.javascript.dsl.Command
 import org.hyperscala.realtime._
-import org.hyperscala.ui.widgets.ContentEditor
+import org.hyperscala.ui.widgets.{ContentEditor, VisualAlias}
 import org.hyperscala.web._
 
 /**
@@ -22,6 +22,8 @@ class ContentEditorExample(site: Website[MapSession]) extends Example {
   val greenButton = new Button(label = "Green")
   val blueButton = new Button(label = "Blue")
   val colorInput = new tag.Input(id = "currentColor")
+  val fontFamily = new tag.Input(id = "fontFamily")
+  val fontStyle = new tag.Input(id = "fontStyle")
   val leftAlign = new Button(label = "Left Align")
   val centerAlign = new Button(label = "Center Align")
   val rightAlign = new Button(label = "Right Align")
@@ -87,6 +89,8 @@ class ContentEditorExample(site: Website[MapSession]) extends Example {
       }
     }
     contents += colorInput
+    contents += fontFamily
+    contents += fontStyle
     contents.addAll(leftAlign, centerAlign, rightAlign, justifyAlign)
   }
   contents += controls
@@ -105,16 +109,16 @@ class EditorPage(site: Website[MapSession], example: ContentEditorExample) exten
     contents += new tag.P(content = "Select a portion of this text and try the controls on the bottom of the page.")
   }
   val editor = ContentEditor(div)
-  editor.bindInput(Style.color, example.colorInput)
+  editor.bindInput(Style.color, example.colorInput, format = true, VisualAlias("Black", "rgb(0, 0, 0)"), VisualAlias("Black", "#000000"), VisualAlias("Red", "rgb(255, 0, 0)"), VisualAlias("Red", "#ff0000"), VisualAlias("Green", "#00ff00"), VisualAlias("Green", "rgb(0, 255, 0)"), VisualAlias("Blue", "#0000ff"), VisualAlias("Blue", "rgb(0, 0, 255)"))
+  editor.bindInput(Style.fontFamily, example.fontFamily, format = true)
+  editor.bindFontStyle(example.fontStyle)
   editor.bindToggle(Style.fontWeight, example.boldButton, List(FontWeight.Bold, FontWeight.Weight700), activeClass = Some("active"))
   editor.bindToggle(Style.fontStyle, example.italicButton, List(FontStyle.Italic), activeClass = Some("active"))
   editor.bindToggle(Style.color, example.redButton, List("#ff0000", "rgb(255, 0, 0)", "red"), activeClass = Some("active"))
   editor.bindToggle(Style.color, example.greenButton, List("#00ff00", "rgb(0, 255, 0)", "green"), activeClass = Some("active"))
   editor.bindToggle(Style.color, example.blueButton, List("#0000ff", "rgb(0, 0, 255)", "blue"), activeClass = Some("active"))
-  editor.contentChanged.on {
-    case evt => {
-      println(div.outputString)
-    }
+  editor.content.change.on {
+    case evt => println(evt.newValue)
   }
   editor.bindToggle(Style.textAlign, example.leftAlign, List(Alignment.Left, "start"), activeClass = Some("active"), block = true)
   editor.bindToggle(Style.textAlign, example.centerAlign, List(Alignment.Center), activeClass = Some("active"), block = true)

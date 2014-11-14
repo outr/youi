@@ -45,7 +45,7 @@ function updateModal() {
         if (JSON.stringify(modalData) != JSON.stringify(vp)) {
             var windowWidth = modalComponentWindow.width();
             var windowHeight = modalComponentWindow.height();
-            console.log(JSON.stringify(fracs));
+            //console.log(JSON.stringify(fracs));
 //            console.log('old: ' + JSON.stringify(modalData));
 //            console.log('new: ' + JSON.stringify(vp) + ' - ' + windowWidth + 'x' + windowHeight);
             modalData = vp;

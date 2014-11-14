@@ -66,7 +66,7 @@ abstract class JSFunction2[P1, P2, R](implicit val manifest: Manifest[R]) extend
   val p2 = ExistingStatement[P2]("p2")
 
   override protected def before(b: StringBuilder, depth: Int) = {
-    b.append(s"function(p1, p1) {\r\n")
+    b.append(s"function(p1, p2) {\r\n")
   }
 
   override def variable(v: Any) = if (v == p1) {

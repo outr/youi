@@ -1,29 +1,5 @@
 package org.hyperscala.site
 
-import java.io.File
-
-import com.outr.net.http.filter.PathFilter
-import com.outr.net.http.jetty.JettyApplication
-import com.outr.net.http.request.HttpRequest
-import com.outr.net.http.session.MapSession
-import org.hyperscala.examples.Example
-import org.hyperscala.examples.basic._
-import org.hyperscala.examples.bootstrap.{BootstrapSignin, BootstrapTheme}
-import org.hyperscala.examples.comparison.PlayHelloWorldPage
-import org.hyperscala.examples.connect.ConnectExample
-import org.hyperscala.examples.helloworld.HelloWorldPage
-import org.hyperscala.examples.snapsvg.SnapSVGExample
-import org.hyperscala.examples.svg.{BasicSVGExample, DynamicSVGExample, SVGShapesExample}
-import org.hyperscala.examples.todomvc.TodoMVC
-import org.hyperscala.examples.ui._
-import org.hyperscala.examples.ux.SingleSelectListExample
-import org.hyperscala.hello.HelloSite
-import org.hyperscala.site.extra.HyperscalaGenerator
-import org.hyperscala.web.{Scope, Webpage, WebpageHandler, Website}
-import org.powerscala.log.Logger
-
-import scala.collection.mutable.ListBuffer
-
 /**
  * @author Matt Hicks <matt@outr.com>
  */

@@ -1,25 +1,5 @@
 package org.hyperscala.ui.widgets
 
-import com.outr.net.http.session.{MapSession, Session}
-import org.hyperscala.Container
-import org.hyperscala.css.Style
-import org.hyperscala.html._
-import org.hyperscala.html.attributes.ContentEditable
-import org.hyperscala.io.HTMLToScala
-import org.hyperscala.javascript.JavaScriptContent
-import org.hyperscala.javascript.dsl.{Command, JSFunction1, document}
-import org.hyperscala.jquery.jQuery
-import org.hyperscala.module.Module
-import org.hyperscala.realtime._
-import org.hyperscala.realtime.dsl._
-import org.hyperscala.selector.Selector
-import org.hyperscala.ui.Rangy
-import org.hyperscala.web._
-import org.powerscala.event.processor.UnitProcessor
-import org.powerscala.event.{Intercept, Listenable}
-import org.powerscala.property.Property
-import org.powerscala.{StorageComponent, Version}
-
 /**
  * @author Matt Hicks <matt@outr.com>
  */
@@ -50,10 +30,33 @@ object ContentEditor extends Module with StorageComponent[ContentEditor, HTMLTag
 }
 
 class ContentEditor private(val container: HTMLTag) extends Listenable {
-  val editable = Property(default = Some(true))
-  val contentChanged = new UnitProcessor[String]("contentChanged")
+  private val clientChanging = new AtomicBoolean
+  val content = Property(default = Some(container.outputChildrenString))
+  val updateContainerOnChange = Property(default = Some(true))
 
   init()
+
+  // Handle propagation of content changes to the container
+  content.change.on {
+    case evt => if (updateContainerOnChange()) {    // Make sure changes should propagate to container
+      updateContainer(!clientChanging())            // Only propagate if the client isn't causing this event
+    }
+  }
+
+  /**
+   * Updates the container with the content property.
+   *
+   * @param propagate defines whether the change should propagate up to the client
+   */
+  def updateContainer(propagate: Boolean) = {
+    if (!propagate) {
+      RealtimePage.ignoreStructureChanges {
+        HTMLToScala.replaceChildren(container.asInstanceOf[HTMLTag with Container[_ <: HTMLTag]], content())
+      }
+    } else {
+      HTMLToScala.replaceChildren(container.asInstanceOf[HTMLTag with Container[_ <: HTMLTag]], content())
+    }
+  }
 
   private def init() = {
     // Initialize the container in the browser
@@ -66,11 +69,10 @@ class ContentEditor private(val container: HTMLTag) extends Listenable {
     // Listen for content change events
     container.eventReceived.on {
       case evt => if (evt.event == "contentChanged") {
-        val content = evt.json.string("html")
-        RealtimePage.ignoreStructureChanges {
-          HTMLToScala.replaceChildren(container.asInstanceOf[HTMLTag with Container[_ <: HTMLTag]], content)
+        clientChanging.attempt {
+          val html = evt.json.string("html")
+          content := html
         }
-        contentChanged.fire(content)
         Intercept.Stop
       } else {
         Intercept.Continue
@@ -165,7 +167,7 @@ class ContentEditor private(val container: HTMLTag) extends Listenable {
     }
   }
 
-  def bindInput[S](style: Style[S], input: tag.Input) = {
+  def bindInput[S](style: Style[S], input: tag.Input, format: Boolean, aliases: VisualAlias*) = {
     container.connected[Webpage[MapSession]] {
       case webpage => {
         // Update the input when the selection changes
@@ -173,18 +175,118 @@ class ContentEditor private(val container: HTMLTag) extends Listenable {
           s"""
             |(function() {
             | var input = window.parent.document.getElementById('${input.identity}');
+            | var visual2Internal = {${aliases.map(va => s"'${va.visual}': '${va.internal}'").mkString(", ")}};
+            | var internal2Visual = {${aliases.map(va => s"'${va.internal}': '${va.visual}'").mkString(", ")}};
             |
             | addSelectionStyleChangeListener(document.getElementById('${container.identity}'), '${style.name}', function(oldValue, newValue) {
-            |   input.value = newValue;
+            |   var v = newValue;
+            |   if (v in internal2Visual) {
+            |     v = internal2Visual[v];
+            |   }
+            |   ${if (format) """v = v.capitalize().replace(/\s*,\s*/g, ', ');""" else ""}
+            |   input.value = v;
+            | });
+            | input.addEventListener('change', function(event) {
+            |   var v = input.value;
+            |   if (v in visual2Internal) {
+            |     v = visual2Internal[v];
+            |   }
+            |   setStyle('${container.identity}', '${style.name}', v);
+            |
+            |   return realtimeEvent(event, null, null, true, false, 0);
             | });
             |})();
           """.stripMargin
         Realtime.sendJavaScript(webpage, js, selector = Some(Selector.id(container)), onlyRealtime = false)
 
         // Update the selection style when the input value changes
-        input.changeEvent.onRealtime {
-          case evt => Realtime.sendJavaScript(webpage, s"setStyle('${container.identity}', '${style.name}', ${JavaScriptContent.toJS(input.value())});")
-        }
+//        input.changeEvent.onRealtime {
+//          case evt => Realtime.sendJavaScript(webpage, s"setStyle('${container.identity}', '${style.name}', ${JavaScriptContent.toJS(input.value())});")
+//        }
+      }
+    }
+  }
+
+  def bindFontStyle(input: tag.Input) = {
+    container.connected[Webpage[MapSession]] {
+      case webpage => {
+        val js =
+          s"""
+            |(function() {
+            | var container = document.getElementById('${container.identity}');
+            | var input = window.parent.document.getElementById('${input.identity}');
+            | var weight2Internal = {'Thin': '100', 'Light': '300', 'Medium': '500', 'Extra-Bold': '800', 'Ultra-Bold': '900'};
+            | var weight2Visual = {'100': 'Thin', '300': 'Light', '400': 'Normal', '500': 'Medium', '700': 'Bold', '800': 'Extra-Bold', '900': 'Ultra-Bold'};
+            |
+            | var weight = null;
+            | var style = null;
+            |
+            | var updateInput = function() {
+            |   var s = '';
+            |   if (weight != null && (weight.toLowerCase() != 'normal' || style == null || style.toLowerCase() == 'normal')) {
+            |     s = weight;
+            |   }
+            |   if (style != null && style.toLowerCase() != 'normal') {
+            |     if (s != '') {
+            |       s += ' ';
+            |     }
+            |     s += style;
+            |   }
+            |   input.value = s.capitalize();
+            | };
+            |
+            | addSelectionStyleChangeListener(container, 'fontWeight', function(oldValue, newValue) {
+            |   var w = newValue;
+            |   if (w in weight2Visual) {
+            |     w = weight2Visual[w];
+            |   }
+            |   weight = w;
+            |   updateInput();
+            | });
+            | addSelectionStyleChangeListener(container, 'fontStyle', function(oldValue, newValue) {
+            |   var s = newValue;
+            |   if (s == null) {
+            |     s = 'normal';
+            |   }
+            |   style = s.capitalize();
+            |   updateInput();
+            | });
+            | input.addEventListener('change', function(event) {
+            |   var index = input.value.lastIndexOf(' ');
+            |   var parser = [input.value];
+            |   if (index > 0) {
+            |     parser = [input.value.substring(0, index), input.value.substring(index + 1)];
+            |   }
+            |   for (var i = 0; i < parser.length; i++) {
+            |     parser[i] = parser[i].capitalize();
+            |   }
+            |   var w = 'normal';
+            |   var s = 'normal';
+            |   if (parser.length == 1) {
+            |     if (parser[0].toLowerCase() == 'italic' || parser[0].toLowerCase() == 'oblique') {
+            |       s = parser[0];
+            |     } else {
+            |       w = parser[0];
+            |       if (w in weight2Internal) {
+            |         w = weight2Internal[w];
+            |       }
+            |     }
+            |   } else {
+            |     w = parser[0];
+            |     if (w in weight2Internal) {
+            |       w = weight2Internal[w];
+            |     }
+            |     s = parser[1];
+            |   }
+            |   w = w.toLowerCase();
+            |   s = s.toLowerCase();
+            |   console.log('value: ' + input.value + ' - weight: ' + w + ', style: ' + s);
+            |   setStyle('${container.identity}', 'fontWeight', w);
+            |   setStyle('${container.identity}', 'fontStyle', s);
+            | });
+            |})();
+          """.stripMargin
+        Realtime.sendJavaScript(webpage, js, selector = Some(Selector.id(container)), onlyRealtime = false)
       }
     }
   }
@@ -241,11 +343,6 @@ class ContentEditor private(val container: HTMLTag) extends Listenable {
   def exec(command: Command, value: String = null) = container.connected[Webpage[MapSession]] {
     case webpage => document.execCommand(command, value).send(webpage)
   }
-
-  updateEditable()
-
-  private def updateEditable() = {
-    val value = if (editable()) ContentEditable.True else ContentEditable.False
-    container.contentEditable := value
-  }
 }
+
+case class VisualAlias(visual: String, internal: String)

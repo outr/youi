@@ -1,21 +1,5 @@
 package org.hyperscala.web
 
-import org.hyperscala.html._
-import org.hyperscala.module.ModularPage
-import org.powerscala.concurrent.Temporal
-import org.powerscala.concurrent.Time._
-import org.powerscala.hierarchy.{MutableChildLike, ParentLike}
-import com.outr.net.http.HttpHandler
-import com.outr.net.http.request.HttpRequest
-import com.outr.net.http.response.{HttpResponseStatus, HttpResponse}
-import org.hyperscala.{Tag, Markup}
-import org.powerscala.{Unique, MapStorage}
-import java.io.OutputStream
-import org.powerscala.hierarchy.event.{ChildRemovedProcessor, ChildAddedProcessor, StandardHierarchyEventProcessor}
-import java.util.concurrent.atomic.AtomicBoolean
-import org.powerscala.reflect._
-import com.outr.net.http.session.Session
-
 /**
  * @author Matt Hicks <matt@outr.com>
  */
@@ -105,7 +89,9 @@ class Webpage[S <: Session](val website: Website[S]) extends HttpHandler with HT
   def timeout = 2.minutes
 
   override def checkIn() = {
-    website.session.checkIn()      // Keep the session alive as well
+    if (website.requestOption.nonEmpty) {
+      website.session.checkIn()             // Keep the session alive as well
+    }
     super.checkIn()
   }
 

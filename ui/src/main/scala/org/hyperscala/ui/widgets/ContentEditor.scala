@@ -1,5 +1,26 @@
 package org.hyperscala.ui.widgets
 
+import com.outr.net.http.session.{MapSession, Session}
+import org.hyperscala.Container
+import org.hyperscala.css.Style
+import org.hyperscala.html._
+import org.hyperscala.io.HTMLToScala
+import org.hyperscala.javascript.JavaScriptContent
+import org.hyperscala.javascript.dsl.{document, Command, JSFunction1}
+import org.hyperscala.jquery.jQuery
+import org.hyperscala.module.Module
+import org.hyperscala.realtime.{RealtimePage, Realtime}
+import org.hyperscala.selector.Selector
+import org.hyperscala.ui.Rangy
+import org.hyperscala.web.{Webpage, Website}
+import org.powerscala.concurrent.AtomicBoolean
+import org.powerscala.event.{Intercept, Listenable}
+import org.powerscala.property.Property
+import org.powerscala.{Version, StorageComponent}
+import org.hyperscala.web._
+import org.hyperscala.realtime._
+import org.hyperscala.realtime.dsl._
+
 /**
  * @author Matt Hicks <matt@outr.com>
  */
@@ -171,38 +192,9 @@ class ContentEditor private(val container: HTMLTag) extends Listenable {
     container.connected[Webpage[MapSession]] {
       case webpage => {
         // Update the input when the selection changes
-        val js =
-          s"""
-            |(function() {
-            | var input = window.parent.document.getElementById('${input.identity}');
-            | var visual2Internal = {${aliases.map(va => s"'${va.visual}': '${va.internal}'").mkString(", ")}};
-            | var internal2Visual = {${aliases.map(va => s"'${va.internal}': '${va.visual}'").mkString(", ")}};
-            |
-            | addSelectionStyleChangeListener(document.getElementById('${container.identity}'), '${style.name}', function(oldValue, newValue) {
-            |   var v = newValue;
-            |   if (v in internal2Visual) {
-            |     v = internal2Visual[v];
-            |   }
-            |   ${if (format) """v = v.capitalize().replace(/\s*,\s*/g, ', ');""" else ""}
-            |   input.value = v;
-            | });
-            | input.addEventListener('change', function(event) {
-            |   var v = input.value;
-            |   if (v in visual2Internal) {
-            |     v = visual2Internal[v];
-            |   }
-            |   setStyle('${container.identity}', '${style.name}', v);
-            |
-            |   return realtimeEvent(event, null, null, true, false, 0);
-            | });
-            |})();
-          """.stripMargin
-        Realtime.sendJavaScript(webpage, js, selector = Some(Selector.id(container)), onlyRealtime = false)
-
-        // Update the selection style when the input value changes
-//        input.changeEvent.onRealtime {
-//          case evt => Realtime.sendJavaScript(webpage, s"setStyle('${container.identity}', '${style.name}', ${JavaScriptContent.toJS(input.value())});")
-//        }
+        val content = s"""{${aliases.map(va => s"'${va.visual}': '${va.internal}'").mkString(", ")}}"""
+        val js = s"contentEditorBindInput('${input.identity}', '${container.identity}', '${style.name}', $format, content);"
+        Realtime.sendJavaScript(webpage, js, content = Some(content), selector = Some(Selector.id(container)), onlyRealtime = false)
       }
     }
   }
@@ -210,82 +202,7 @@ class ContentEditor private(val container: HTMLTag) extends Listenable {
   def bindFontStyle(input: tag.Input) = {
     container.connected[Webpage[MapSession]] {
       case webpage => {
-        val js =
-          s"""
-            |(function() {
-            | var container = document.getElementById('${container.identity}');
-            | var input = window.parent.document.getElementById('${input.identity}');
-            | var weight2Internal = {'Thin': '100', 'Light': '300', 'Medium': '500', 'Extra-Bold': '800', 'Ultra-Bold': '900'};
-            | var weight2Visual = {'100': 'Thin', '300': 'Light', '400': 'Normal', '500': 'Medium', '700': 'Bold', '800': 'Extra-Bold', '900': 'Ultra-Bold'};
-            |
-            | var weight = null;
-            | var style = null;
-            |
-            | var updateInput = function() {
-            |   var s = '';
-            |   if (weight != null && (weight.toLowerCase() != 'normal' || style == null || style.toLowerCase() == 'normal')) {
-            |     s = weight;
-            |   }
-            |   if (style != null && style.toLowerCase() != 'normal') {
-            |     if (s != '') {
-            |       s += ' ';
-            |     }
-            |     s += style;
-            |   }
-            |   input.value = s.capitalize();
-            | };
-            |
-            | addSelectionStyleChangeListener(container, 'fontWeight', function(oldValue, newValue) {
-            |   var w = newValue;
-            |   if (w in weight2Visual) {
-            |     w = weight2Visual[w];
-            |   }
-            |   weight = w;
-            |   updateInput();
-            | });
-            | addSelectionStyleChangeListener(container, 'fontStyle', function(oldValue, newValue) {
-            |   var s = newValue;
-            |   if (s == null) {
-            |     s = 'normal';
-            |   }
-            |   style = s.capitalize();
-            |   updateInput();
-            | });
-            | input.addEventListener('change', function(event) {
-            |   var index = input.value.lastIndexOf(' ');
-            |   var parser = [input.value];
-            |   if (index > 0) {
-            |     parser = [input.value.substring(0, index), input.value.substring(index + 1)];
-            |   }
-            |   for (var i = 0; i < parser.length; i++) {
-            |     parser[i] = parser[i].capitalize();
-            |   }
-            |   var w = 'normal';
-            |   var s = 'normal';
-            |   if (parser.length == 1) {
-            |     if (parser[0].toLowerCase() == 'italic' || parser[0].toLowerCase() == 'oblique') {
-            |       s = parser[0];
-            |     } else {
-            |       w = parser[0];
-            |       if (w in weight2Internal) {
-            |         w = weight2Internal[w];
-            |       }
-            |     }
-            |   } else {
-            |     w = parser[0];
-            |     if (w in weight2Internal) {
-            |       w = weight2Internal[w];
-            |     }
-            |     s = parser[1];
-            |   }
-            |   w = w.toLowerCase();
-            |   s = s.toLowerCase();
-            |   console.log('value: ' + input.value + ' - weight: ' + w + ', style: ' + s);
-            |   setStyle('${container.identity}', 'fontWeight', w);
-            |   setStyle('${container.identity}', 'fontStyle', s);
-            | });
-            |})();
-          """.stripMargin
+        val js = s"contentEditorBindFontStyle('${input.identity}', '${container.identity}');"
         Realtime.sendJavaScript(webpage, js, selector = Some(Selector.id(container)), onlyRealtime = false)
       }
     }
@@ -304,33 +221,7 @@ class ContentEditor private(val container: HTMLTag) extends Listenable {
         }
 
         // Update the class when the style is set
-        val js =
-          s"""
-            |(function() {
-            | var tag = $$(window.parent.document.getElementById('${t.identity}'));
-            | var styleValues = [${values.map(JavaScriptContent.toJS).mkString(", ")}];
-            | var activeClass = ${JavaScriptContent.toJS(activeClass.orNull)};
-            | var inactiveClass = ${JavaScriptContent.toJS(inactiveClass.orNull)};
-            |
-            | addSelectionStyleChangeListener(document.getElementById('${container.identity}'), '${style.name}', function(oldValue, newValue) {
-            |  if (${if (block) "selectionBlockHasStyle" else "selectionHasStyle"}('${style.name}', styleValues)) {
-            |    if (inactiveClass != null) {
-            |      tag.removeClass(inactiveClass);
-            |    }
-            |    if (activeClass != null) {
-            |      tag.addClass(activeClass);
-            |    }
-            |  } else {
-            |    if (activeClass != null) {
-            |      tag.removeClass(activeClass);
-            |    }
-            |    if (inactiveClass != null) {
-            |      tag.addClass(inactiveClass);
-            |    }
-            |  }
-            | });
-            |})();
-          """.stripMargin
+        val js = s"contentEditorBindToggle('${t.identity}', '${container.identity}', '${style.name}', [${values.map(JavaScriptContent.toJS).mkString(", ")}], ${JavaScriptContent.toJS(activeClass.orNull)}, ${JavaScriptContent.toJS(inactiveClass.orNull)}, $block);"
         Realtime.sendJavaScript(webpage, js, selector = Some(Selector.id(container)), onlyRealtime = false)
       }
     }

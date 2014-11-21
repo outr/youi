@@ -1,5 +1,9 @@
 package org.hyperscala.javascript.dsl
 
+import org.hyperscala.html.HTMLTag
+import org.hyperscala.selector.Selector
+import org.powerscala.enum.{Enumerated, EnumEntry}
+
 /**
  * @author Matt Hicks <matt@outr.com>
  */

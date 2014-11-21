@@ -1,15 +1,31 @@
 package org.hyperscala.web
 
+import java.io.OutputStream
+
+import com.outr.net.http.HttpHandler
+import com.outr.net.http.request.HttpRequest
+import com.outr.net.http.response.{HttpResponseStatus, HttpResponse}
+import com.outr.net.http.session.Session
+import org.hyperscala.{Tag, Markup}
+import org.hyperscala.html._
+import org.hyperscala.module.ModularPage
+import org.powerscala.hierarchy.event.{StandardHierarchyEventProcessor, ChildRemovedProcessor, ChildAddedProcessor}
+import org.powerscala.reflect._
+import org.powerscala.{MapStorage, Unique}
+import org.powerscala.concurrent.AtomicBoolean
+import org.powerscala.hierarchy.{MutableChildLike, ParentLike}
+import org.powerscala.concurrent.Time._
+
 /**
  * @author Matt Hicks <matt@outr.com>
  */
 class Webpage[S <: Session](val website: Website[S]) extends HttpHandler with HTMLPage with ModularPage[S] with ParentLike[tag.HTML] {
-  implicit def manifest = website.manifest
+  implicit def manifest: Manifest[S] = website.manifest
 
   // Make the webpage logger's parent reference the website's logger
   logger.parent = Some(website.logger)
 
-  private val _rendered = new AtomicBoolean(false)
+  private val _rendered = new AtomicBoolean
   def rendered = _rendered.get()
 
   val pageId = Unique()

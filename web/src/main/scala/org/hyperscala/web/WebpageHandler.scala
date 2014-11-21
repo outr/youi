@@ -1,5 +1,15 @@
 package org.hyperscala.web
 
+import com.outr.net.http.HttpHandler
+import com.outr.net.http.handler.HandlerProcessor
+import com.outr.net.http.request.HttpRequest
+import com.outr.net.http.response.{HttpResponseStatus, HttpResponse}
+import com.outr.net.http.session.Session
+import org.powerscala.Unique
+import org.powerscala.event.Listenable
+import org.powerscala.log.Logging
+import org.powerscala.property.Property
+
 /**
  * @author Matt Hicks <matt@outr.com>
  */
@@ -21,7 +31,7 @@ class WebpageHandler[S <: Session](pageCreator: () => Webpage[S],
 
   val id = Unique()
 
-  def link = uris.headOption.getOrElse(null)
+  def link = uris.headOption.orNull
 
   final def onReceive(request: HttpRequest, response: HttpResponse) = try {
     val updatedResponse = handlers.fire(request -> response)

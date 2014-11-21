@@ -1,5 +1,10 @@
 package org.hyperscala.javascript.dsl
 
+import org.hyperscala.html.HTMLTag
+import org.hyperscala.html.attributes.Target
+import org.hyperscala.javascript.JavaScriptString
+import org.hyperscala.selector.Selector
+
 /**
  * @author Matt Hicks <matt@outr.com>
  */

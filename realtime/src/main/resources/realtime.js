@@ -20,6 +20,11 @@ HyperscalaConnect.on('jquery.call', function(data) {
     }
 });
 
+window.error = function(msg, url, line, col, error) {
+    console.log('Error occurred: ' + msg + ' (' + url + ':' + line + ',' + col + ')');
+    console.log(error.stack);
+};
+
 realtimeSend(null, 'init', {});
 
 /**
@@ -207,7 +212,7 @@ function realtimeEvaluate(json, debug) {
                 if (debug) {
                     log('evaluating: ' + instruction + ' (content: ' + content + ')');
                 }
-                globalEval(instruction);
+                evaluateGlobally(instruction);
             } catch (err) {
                 log('Error occurred (' + err.message + ') while attempting to evaluate instruction: [' + instruction + '] with content: [' + content + ']. Stack: ' + err.stack);
             }
@@ -215,7 +220,7 @@ function realtimeEvaluate(json, debug) {
     }
 }
 
-function globalEval(src) {
+function evaluateGlobally(src) {
     if (window.execScript) {        // eval in global scope for IE
         window.execScript(src);
     } else {                        // other browsers

@@ -1,11 +1,11 @@
 // Support finding the index of a Node in the parent
-Node.prototype.getParentIndex = function() {
-  return Array.prototype.indexOf.call(this.parentNode.childNodes, this);
+Node.prototype.getParentIndex = function () {
+    return Array.prototype.indexOf.call(this.parentNode.childNodes, this);
 };
 
 // Support capitalizing text
-String.prototype.capitalize = function() {
-    return this.replace(/[a-zA-Z0-9]+/g, function(txt) {
+String.prototype.capitalize = function () {
+    return this.replace(/[a-zA-Z0-9]+/g, function (txt) {
         return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
     });
 };
@@ -16,7 +16,7 @@ function initContentEditor(containerId) {
     var previousValue = container.innerHTML;
     var threshold = 500;
     // TODO: allow setting the threshold
-    var checkContentEditorChange = function() {
+    var checkContentEditorChange = function () {
         var currentValue = container.innerHTML;
         if (currentValue != previousValue) {
             groupedSend(containerId, threshold, 'contentChanged', containerId, {
@@ -60,7 +60,7 @@ function toggleBlockStyle(containerId, styleName, styleValues, disabled) {
     if (containerId != null) {
         if (!selectionInContainer(containerId)) return;       // Don't allow style toggling if outside the container
     }
-    var blockContainer = findAncestor(rangy.getSelection().getRangeAt(0).commonAncestorContainer, function(n) {
+    var blockContainer = findAncestor(rangy.getSelection().getRangeAt(0).commonAncestorContainer, function (n) {
         var displayValue = n.style['display'];
         return displayValue == 'block' || (displayValue == '' && blockRegex.test(n.nodeName));
     });
@@ -164,7 +164,7 @@ function manipulateSelection(containerId, manipulator) {
 }
 
 function removeFormattingFromSelection(containerId) {
-    manipulateSelection(containerId, function(spans) {
+    manipulateSelection(containerId, function (spans) {
         for (var i = 0; i < spans.length; i++) {
             spans[i].style.cssText = '';            // Clear the style
         }
@@ -284,6 +284,7 @@ function selectedSpans() {
         }
         return span;
     }
+
     function appendAfter(before, after) {
         if (before.nextSibling != null) {
             before.parentNode.insertBefore(after, before.nextSibling);
@@ -345,7 +346,7 @@ function selectedSpans() {
 
 /**
  * Returns an array of text nodes for the current selection. Splits boundaries so no partial nodes are represented.
- * 
+ *
  * @returns Array[Text]
  */
 function selectedTextNodes() {
@@ -466,25 +467,25 @@ function removeFromBlock(containerId, tagName) {
     var startOffset = range.startOffset;
     var endOffset = range.endOffset;
     var tag = findByTagName(range.startContainer, tagName);
-    var parent = tag.parentNode;
     if (tag != null) {
+        var parent = tag.parentNode;
         var $tag = $(tag);
         $tag.replaceWith($tag.html());
+
+        // Re-select
+        var newRange = rangy.createRange();
+        newRange.setStart(node, startOffset);
+        newRange.setEnd(node, endOffset);
+        var s = rangy.getSelection();
+        s.removeAllRanges();
+        s.addRange(newRange);
+
+        editorFor(parent).dispatchEvent(new CustomEvent('input'));
     }
-
-    // Re-select
-    var newRange = rangy.createRange();
-    newRange.setStart(node, startOffset);
-    newRange.setEnd(node, endOffset);
-    var s = rangy.getSelection();
-    s.removeAllRanges();
-    s.addRange(newRange);
-
-    editorFor(parent).dispatchEvent(new CustomEvent('input'));
 }
 
 function findByTagName(node, tagName) {
-    return findAncestor(node, function(n) {
+    return findAncestor(node, function (n) {
         return n.nodeName.toLowerCase() == tagName.toLowerCase();
     });
 }
@@ -509,7 +510,7 @@ function findAncestor(node, validator) {
  */
 function addSelectionStyleChangeListener(container, styleName, listener) {
     var previousStyle = null;
-    var checkStyle = function() {
+    var checkStyle = function () {
         var currentStyle = selectionStyle(styleName);           // Get the current style on the selection
         if (currentStyle != previousStyle) {
             listener(previousStyle, currentStyle);
@@ -519,4 +520,138 @@ function addSelectionStyleChangeListener(container, styleName, listener) {
     container.addEventListener('mouseup', checkStyle);
     container.addEventListener('keyup', checkStyle);
     container.addEventListener('styleChanged', checkStyle);
+}
+
+function contentEditorBindInput(inputId, containerId, styleName, format, visual2Internal) {
+    var container = document.getElementById(containerId);
+    var input = window.parent.document.getElementById(inputId);
+    var internal2Visual = {};
+    for (var key in visual2Internal) {
+        var value = visual2Internal[key];
+        internal2Visual[value] = key;
+    }
+
+    addSelectionStyleChangeListener(container, styleName, function (oldValue, newValue) {
+        var v = newValue;
+        if (v == null) {
+            v = '';
+        }
+        if (internal2Visual.hasOwnProperty(v)) {
+            v = internal2Visual[v];
+        }
+        if (format) {
+            v = v.capitalize().replace(/\s*,\s*/g, ', ');
+        }
+        input.value = v;
+    });
+    input.addEventListener('change', function (event) {
+        var v = input.value;
+        if (visual2Internal.hasOwnProperty(v)) {
+            v = visual2Internal[v];
+        }
+        setStyle(containerId, styleName, v);
+        return realtimeEvent(event, null, null, true, false, 0);
+    });
+}
+
+function contentEditorBindFontStyle(inputId, containerId) {
+    var container = document.getElementById(containerId);
+    var input = window.parent.document.getElementById(inputId);
+    var weight2Internal = {'Thin': '100', 'Light': '300', 'Medium': '500', 'Extra-Bold': '800', 'Ultra-Bold': '900'};
+    var weight2Visual = {
+        '100': 'Thin',
+        '300': 'Light',
+        '400': 'Normal',
+        '500': 'Medium',
+        '700': 'Bold',
+        '800': 'Extra-Bold',
+        '900': 'Ultra-Bold'
+    };
+    var weight = null;
+    var style = null;
+    var updateInput = function () {
+        var s = '';
+        if (weight != null && (weight.toLowerCase() != 'normal' || style == null || style.toLowerCase() == 'normal')) {
+            s = weight;
+        }
+        if (style != null && style.toLowerCase() != 'normal') {
+            if (s != '') {
+                s += ' ';
+            }
+            s += style;
+        }
+        input.value = s.capitalize();
+    };
+    addSelectionStyleChangeListener(container, 'fontWeight', function (oldValue, newValue) {
+        var w = newValue;
+        if (w in weight2Visual) {
+            w = weight2Visual[w];
+        }
+        weight = w;
+        updateInput();
+    });
+    addSelectionStyleChangeListener(container, 'fontStyle', function (oldValue, newValue) {
+        var s = newValue;
+        if (s == null) {
+            s = 'normal';
+        }
+        style = s.capitalize();
+        updateInput();
+    });
+    input.addEventListener('change', function () {
+        var index = input.value.lastIndexOf(' ');
+        var parser = [input.value];
+        if (index > 0) {
+            parser = [input.value.substring(0, index), input.value.substring(index + 1)];
+        }
+        for (var i = 0; i < parser.length; i++) {
+            parser[i] = parser[i].capitalize();
+        }
+        var w = 'normal';
+        var s = 'normal';
+        if (parser.length == 1) {
+            if (parser[0].toLowerCase() == 'italic' || parser[0].toLowerCase() == 'oblique') {
+                s = parser[0];
+            } else {
+                w = parser[0];
+                if (w in weight2Internal) {
+                    w = weight2Internal[w];
+                }
+            }
+        } else {
+            w = parser[0];
+            if (w in weight2Internal) {
+                w = weight2Internal[w];
+            }
+            s = parser[1];
+        }
+        w = w.toLowerCase();
+        s = s.toLowerCase();
+        console.log('value: ' + input.value + ' - weight: ' + w + ', style: ' + s);
+        setStyle(containerId, 'fontWeight', w);
+        setStyle(containerId, 'fontStyle', s);
+    });
+}
+
+function contentEditorBindToggle(tagId, containerId, styleName, styleValues, activeClass, inactiveClass, block) {
+    var tag = $(window.parent.document.getElementById(tagId));
+    addSelectionStyleChangeListener(document.getElementById(containerId), styleName, function () {
+        var hasStyleFunction = selectionHasStyle;
+        if (block) hasStyleFunction = selectionBlockHasStyle;
+        if (hasStyleFunction(styleName, styleValues)) {
+            if (inactiveClass != null) {
+                tag.removeClass(inactiveClass);
+            }
+            if (activeClass != null) {
+                tag.addClass(activeClass);
+            }
+        } else {
+            if (activeClass != null) {
+                tag.removeClass(activeClass);
+            }
+            if (inactiveClass != null) {
+                tag.addClass(inactiveClass);
+            }
+        }
+    });
 }

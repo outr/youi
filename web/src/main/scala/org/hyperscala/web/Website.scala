@@ -1,5 +1,16 @@
 package org.hyperscala.web
 
+import com.outr.net.http.WebApplication
+import com.outr.net.http.content.{ContentType, StringContent}
+import com.outr.net.http.handler.CachedHandler
+import com.outr.net.http.request.HttpRequest
+import com.outr.net.http.response.{HttpResponse, HttpResponseStatus}
+import com.outr.net.http.session.Session
+import org.powerscala.MapStorage
+import org.powerscala.event.processor.UnitProcessor
+import org.powerscala.log.Logging
+import org.powerscala.reflect._
+
 /**
  * @author Matt Hicks <matt@outr.com>
  */

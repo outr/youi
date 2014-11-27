@@ -543,8 +543,9 @@ function contentEditorBindInput(inputId, containerId, styleName, format, visual2
             v = v.capitalize().replace(/\s*,\s*/g, ', ');
         }
         input.value = v;
+        input.dispatchEvent(new CustomEvent('valueChanged'));
     });
-    input.addEventListener('change', function (event) {
+    $(input).change(function(event) {
         var v = input.value;
         if (visual2Internal.hasOwnProperty(v)) {
             v = visual2Internal[v];

@@ -10,11 +10,11 @@ import com.outr.net.http.session.Session
  *
  * @author Matt Hicks <matt@outr.com>
  */
-class ScopedReplacement[T <: HTMLTag, S <: Session](website: Website[S], scope: Scope, original: T, processor: T => Unit = (t: T) => Unit) {
+class ScopedReplacement[T <: HTMLTag, S <: Session](webpage: Webpage[S], scope: Scope, original: T, processor: T => Unit = (t: T) => Unit) {
   val originalParent = original.parent.asInstanceOf[Container[BodyChild]]
   original.removeFromParent()
 
-  originalParent.contents += Scoped(scope, website) {
+  originalParent.contents += Scoped(scope, webpage) {
     val cloned = HTMLCloner.clone(original, idHandler = HTMLCloner.RetainIdHandler).asInstanceOf[T]
     processor(cloned)
     cloned
@@ -22,7 +22,7 @@ class ScopedReplacement[T <: HTMLTag, S <: Session](website: Website[S], scope: 
 }
 
 object ScopedReplacement {
-  def apply[T <: HTMLTag, S <: Session](website: Website[S], scope: Scope, original: T)(processor: T => Unit) = {
-    new ScopedReplacement(website, scope, original, processor)
+  def apply[T <: HTMLTag, S <: Session](webpage: Webpage[S], scope: Scope, original: T)(processor: T => Unit) = {
+    new ScopedReplacement(webpage, scope, original, processor)
   }
 }

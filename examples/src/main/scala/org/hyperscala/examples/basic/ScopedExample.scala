@@ -16,20 +16,20 @@ object ScopedExample extends Example {
 
   connected[Webpage[Session]] {
     case webpage => {
-      ScopedReplacement(webpage.website, Scope.Page, getById[tag.Div]("replaceable")) {
+      ScopedReplacement(webpage, Scope.Page, getById[tag.Div]("replaceable")) {
         case t => t.contents += s" ${loaded()}"
       }
 
       contents += new tag.Div(content = s"First Load: ${loaded()}")
 
-      contents += Scoped(Scope.Page, webpage.website) {
+      contents += Scoped(Scope.Page, webpage) {
         loaded := loaded() + 1
         new tag.Div(content = s"Page Loaded ${loaded()} times!")
       }
-      contents += Scoped(Scope.Session, webpage.website) {
+      contents += Scoped(Scope.Session, webpage) {
         new tag.Div(content = s"Session Updated at ${loaded()}")
       }
-      contents += Scoped(Scope.Application, webpage.website) {
+      contents += Scoped(Scope.Application, webpage) {
         new tag.Div(content = s"Application Updated at ${loaded()}")
       }
 

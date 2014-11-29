@@ -92,6 +92,8 @@ class WebpageHandler[S <: Session](pageCreator: () => Webpage[S],
   private def sessionId = s"$id.${website.session.id}"
 }
 
+// TODO: get or create a new RequestScope (only for the page request, not subsequent requests), SessionScope, and ApplicationScope
+
 object WebpageHandler {
   def pageById[W <: Webpage[S], S <: Session](pageId: String, website: Website[S]) = website._pages.get[W](pageId)
 

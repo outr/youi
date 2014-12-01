@@ -19,6 +19,8 @@ object HyperScalaBuild extends Build {
       jdom,
       jaxen,
       htmlcleaner,
+      musterJawn,
+      musterJackson,
       akkaActors,
       scalaTest
     ),

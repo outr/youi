@@ -10,6 +10,7 @@ import org.hyperscala.examples.bootstrap.{BootstrapTheme, BootstrapSignin}
 import org.hyperscala.examples.comparison.PlayHelloWorldPage
 import org.hyperscala.examples.connect.ConnectExample
 import org.hyperscala.examples.helloworld.HelloWorldPage
+import org.hyperscala.examples.service.{MessageService, ServiceExample}
 import org.hyperscala.examples.snapsvg.SnapSVGExample
 import org.hyperscala.examples.svg.{DynamicSVGExample, SVGShapesExample, BasicSVGExample}
 import org.hyperscala.examples.todomvc.TodoMVC
@@ -56,6 +57,7 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication {
   val static = example(new StaticHTMLExample, "Basic", "Static HTML", Scope.Request)
   val form = example(new FormExample, "Basic", "Form", Scope.Request)
   val dynamic = example(new DynamicContentExample, "Basic", "DynamicContent", Scope.Page)
+  val service = example(new ServiceExample, "Basic", "Service", Scope.Request)
 
   // Web
   val userAgent = example(new UserAgentExample, "Web", "UserAgent", Scope.Request)
@@ -148,6 +150,7 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication {
   handlers.add(PathFilter("/hello", HelloSite))
 
 //  TestService.register(this)    // Register the test service
+  addHandler(MessageService, "/message")
 
   addClassPath("/images/", "images/")
   addClassPath("/css/", "css/")

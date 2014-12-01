@@ -26,6 +26,8 @@ object Dependencies {
 
   val githubCore = "org.eclipse.mylyn.github" % "org.eclipse.egit.github.core" % "2.1.5"
   val argonaut = "io.argonaut" %% "argonaut" % "latest.release"
+  val musterJawn = "org.json4s" %% "muster-codec-jawn" % "0.3.0"
+  val musterJackson = "org.json4s" %% "muster-codec-jackson" % "0.3.0"
 
   val scalaTest = "org.scalatest" %% "scalatest" % "2.2.2" % "test"
 }

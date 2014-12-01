@@ -7,7 +7,7 @@ import org.hyperscala.connect.{Connect, Connection, Message}
 import org.hyperscala.html._
 import org.hyperscala.html.attributes.InputType
 import org.hyperscala.javascript.dsl.Statement
-import org.hyperscala.jquery.jQuery
+import org.hyperscala.jquery.{jQuerySerializeForm, jQuery}
 import org.hyperscala.jquery.stylesheet.jQueryStyleSheet
 import org.hyperscala.module._
 import org.hyperscala.selector.Selector
@@ -31,7 +31,7 @@ object Realtime extends Module with Logging with Listenable {
 
   def version = Version(1, 1)
 
-  override def dependencies = List(jQuery, jQueryStyleSheet, IdentifyTags, Connect)
+  override def dependencies = List(jQuery, jQuerySerializeForm, jQueryStyleSheet, IdentifyTags, Connect)
 
   override def init[S <: Session](website: Website[S]) = {
     // Register realtime.js to actually establish the connection

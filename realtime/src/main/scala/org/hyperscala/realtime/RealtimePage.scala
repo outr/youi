@@ -58,7 +58,7 @@ class RealtimePage[S <: Session] private(page: Webpage[S]) extends Logging {
       }
       t match {
         case Some(element) => element.receive(message.event, json)
-        case None => warn(s"Unable to find tag by id: $id to fire event: ${message.event} for message: ${message.data}")
+        case None => warn(s"Unable to find tag by id: $id to fire event: ${message.event} for message: ${message.data} on page: ${page.getClass.getSimpleName}")
       }
     }
   }

@@ -63,12 +63,12 @@ object Bounding extends Module with StorageComponent[Bounding, HTMLTag] with Log
     } else {
       "null"
     }
-    val js = s"window.bounding.monitor(${selector.content}, ${Time.millis(frequency)}, $sf);"
+    val js = s"bounding.monitor(${selector.content}, ${Time.millis(frequency)}, $sf);"
     Realtime.sendJavaScript(webpage, js, onlyRealtime = false)
   }
 
   def disable[S <: Session](webpage: Webpage[S], selector: Selector) = {
-    Realtime.sendJavaScript(webpage, s"window.bounding.remove(${selector.content});", onlyRealtime = false)
+    Realtime.sendJavaScript(webpage, s"bounding.remove(${selector.content});", onlyRealtime = false)
   }
 
   protected def create(t: HTMLTag) = new Bounding(t)

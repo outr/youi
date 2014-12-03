@@ -214,7 +214,7 @@ function realtimeEvaluate(json, debug) {
                 }
                 evaluateGlobally(instruction);
             } catch (err) {
-                log('Error occurred (' + err.message + ') while attempting to evaluate instruction: [' + instruction + '] with content: [' + content + ']. Stack: ' + err.stack);
+                log('Error occurred (' + err.message + ') while attempting to evaluate instruction: [' + instruction + '] on URL: ' + window.location.href + ' with content: [' + content + ']. Stack: ' + err.stack);
             }
         }
     }

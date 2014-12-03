@@ -91,5 +91,3 @@ var bounding = {
         }
     }
 };
-
-window.bounding = bounding;

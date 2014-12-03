@@ -6,6 +6,8 @@ import org.hyperscala.css.Style
 import org.hyperscala.javascript.{JavaScriptString, JavaScriptContent}
 import org.hyperscala.event.{SubmitEvent, KeyboardEvent}
 
+import scala.collection.mutable.ListBuffer
+
 /**
  * @author Matt Hicks <matt@outr.com>
  */
@@ -84,6 +86,19 @@ class jQuerySelector(val selector: Selector) extends Statement[Selector] {
   def serializeForm() = {
     ExistingStatement[Any](s"$content.serializeForm()")
   }
+
+  def html(statements: Statement[String]*) = {
+    val b = ListBuffer.empty[Any]
+    b.append(content)
+    b.append(".html(")
+    b.append(statements.head)
+    b.appendAll(statements.tail.map(s => List(" + ", s)).flatten)
+    b.append(")")
+    MultiStatement[Unit](sideEffects = true, b.toList: _*)
+  }
+
+  def show() = MultiStatement[Unit](sideEffects = true, content, ".show()")
+  def hide() = MultiStatement[Unit](sideEffects = true, content, ".hide()")
 }
 
 class jQueryOffset(jqs: jQuerySelector) {

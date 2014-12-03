@@ -1,10 +1,10 @@
 package org.hyperscala.jquery.dsl
 
 import org.hyperscala.selector.Selector
-import org.hyperscala.javascript.dsl.{JSFunction1, WrappedStatement, ExistingStatement, Statement}
+import org.hyperscala.javascript.dsl._
 import org.hyperscala.css.Style
 import org.hyperscala.javascript.{JavaScriptString, JavaScriptContent}
-import org.hyperscala.event.KeyboardEvent
+import org.hyperscala.event.{SubmitEvent, KeyboardEvent}
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -20,6 +20,10 @@ class jQuerySelector(val selector: Selector) extends Statement[Selector] {
   def focus() = call("focus()")
   def select() = call("select()")
   def submit() = call("submit()")
+
+  def submit(handler: JSFunction1[SubmitEvent, Unit]) = {
+    MultiStatement[Unit](sideEffects = true, content, ".submit(", handler, ")")
+  }
 
   def width() = ExistingStatement[Double](s"$content.width()")
   def height() = ExistingStatement[Double](s"$content.height()")
@@ -75,6 +79,10 @@ class jQuerySelector(val selector: Selector) extends Statement[Selector] {
 
   def on(eventType: String, function: JavaScriptContent) = {
     call(s"on('$eventType', ${function.content})")
+  }
+
+  def serializeForm() = {
+    ExistingStatement[Any](s"$content.serializeForm()")
   }
 }
 

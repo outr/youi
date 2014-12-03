@@ -17,6 +17,12 @@ abstract class JavaScriptContext extends Statement[JavaScriptContent] {
 
   JavaScriptContext.stack.push(this)
 
+  def stopPropagation() = {
+    ExistingStatement("p1.stopPropagation();", sideEffects = true)
+    ExistingStatement("return false;", sideEffects = true)
+    end()
+  }
+
   /**
    * Unfortunately because of bugs in getDeclaringClass and DelayedInit this is a necessary evil to be called at the end
    * of all context blocks to allow proper layering.

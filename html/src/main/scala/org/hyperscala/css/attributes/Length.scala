@@ -12,6 +12,8 @@ import org.hyperscala.EnumEntryAttributeValue
  * @author Matt Hicks <matt@outr.com>
  */
 sealed trait Length extends EnumEntryAttributeValue {
+  def +(value: Double): Length
+
   override def toString() = if (name != null) {
     super.toString()
   } else {
@@ -24,12 +26,13 @@ trait NumericLength extends Length with FontSize with VerticalAlignment {
   def lengthType: String
 
   lazy val value = s"$number$lengthType"
+  def +(value: Double) = NumericLength(s"${number + value}$lengthType")
 }
 
 object NumericLength {
   val Regex = """([-\d.]+)([%a-zA-Z]*+)""".r
 
-  def apply(name: String) = get(name).getOrElse(throw new RuntimeException(s"NumericLength not found for value: $name."))
+  def apply(name: String): Length = get(name).getOrElse(throw new RuntimeException(s"NumericLength not found for value: $name."))
 
   def get(name: String) = name match {
     case Regex(n, t) => t match {
@@ -55,10 +58,14 @@ object NumericLength {
 
 object AutoLength extends Length with FontSize with VerticalAlignment {
   val value = "auto"
+
+  def +(value: Double) = NumericLength(s"${value}px")
 }
 
 object InheritLength extends Length with FontSize with VerticalAlignment {
   val value = "inherit"
+
+  def +(value: Double) = NumericLength(s"${value}px")
 }
 
 case class ChLength(number: Double) extends NumericLength {

@@ -3,7 +3,7 @@ package org.hyperscala.connect
 import akka.actor.{Actor, ActorSystem, Props}
 import argonaut.Argonaut._
 import argonaut._
-import com.outr.net.http.HttpHandler
+import com.outr.net.http.{HttpApplication, HttpHandler}
 import com.outr.net.http.content.StringContent
 import com.outr.net.http.request.HttpRequest
 import com.outr.net.http.response.{HttpResponse, HttpResponseStatus}
@@ -219,7 +219,7 @@ class Connection[S <: Session](connections: Connections[S]) extends Logging {
       val website = webpage.website
       val request = website.request          // Get the request for the current thread
       val f = () => {
-          website.contextualize(request) {
+          HttpApplication.around(request) {
             connections.messageEvent.fire(this -> message)
           }
         }

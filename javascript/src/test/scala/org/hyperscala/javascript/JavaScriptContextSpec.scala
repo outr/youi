@@ -1,5 +1,8 @@
 package org.hyperscala.javascript
 
+import org.hyperscala.javascript.dsl._
+import org.scalatest.{Matchers, WordSpec}
+
 /**
  * @author Matt Hicks <matt@outr.com>
  */

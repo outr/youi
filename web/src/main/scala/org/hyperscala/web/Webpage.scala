@@ -2,7 +2,7 @@ package org.hyperscala.web
 
 import java.io.OutputStream
 
-import com.outr.net.http.HttpHandler
+import com.outr.net.http.{HttpApplication, HttpHandler}
 import com.outr.net.http.request.HttpRequest
 import com.outr.net.http.response.{HttpResponseStatus, HttpResponse}
 import com.outr.net.http.session.Session
@@ -87,7 +87,7 @@ class Webpage[S <: Session](val website: Website[S]) extends HttpHandler with HT
   def onReceive(request: HttpRequest, response: HttpResponse) = errorSupport {
     val status = HttpResponseStatus.OK
     val content = new HTMLStreamer(html) {
-      override def stream(output: OutputStream) = website.contextualize(request) {
+      override def stream(output: OutputStream) = HttpApplication.around(request) {
         pageLoading()
         super.stream(output)
         pageLoaded()

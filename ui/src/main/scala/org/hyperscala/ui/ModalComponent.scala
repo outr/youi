@@ -61,10 +61,10 @@ class ModalComponent(webpage: Webpage[_ <: Session]) extends Listenable {
   }
 
 //  webpage.body.contents.addAll(left, right, top, bottom)
-  webpage.body.contents += left
-  webpage.body.contents += right
-  webpage.body.contents += top
-  webpage.body.contents += bottom
+  webpage.body.contents.insert(0, left)
+  webpage.body.contents.insert(0, right)
+  webpage.body.contents.insert(0, top)
+  webpage.body.contents.insert(0, bottom)
 
   val selected = Property[Selector]()
   selected.change.on {

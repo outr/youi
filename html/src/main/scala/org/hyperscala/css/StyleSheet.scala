@@ -312,6 +312,10 @@ class StyleSheet(val hierarchicalParent: Listenable,
     }
   }
 
+  def get[T](style: Style[T]) = attributes.get(style.cssName).map(ssa => ssa.value.asInstanceOf[T])
+
+  def update[T](style: Style[T], value: T) = apply[T](style, default = None) := value
+
   def apply(css: String) = try {
     css.split(";").map(s => s.trim()).collect {
       case s if s.nonEmpty => {

@@ -18,8 +18,13 @@ object ZIndex extends Enumerated[ZIndex] with EnumEntryPersistence[ZIndex] {
   val Inherit = new ZIndex()
   def Numeric(n: Int) = new ZIndex(n)
 
-  override def apply(name: String) = name match {
-    case Regex(n) => Numeric(n.toInt)
-    case _ => super.apply(name)
+  override def apply(name: String) = get(name).getOrElse(Auto)
+
+  override def get(name: String, caseSensitive: Boolean) = name.toLowerCase match {
+    case null | "" => None
+    case "auto" => Some(Auto)
+    case "inherit" => Some(Inherit)
+    case Regex(n) => Some(Numeric(n.toInt))
+    case _ => None
   }
 }

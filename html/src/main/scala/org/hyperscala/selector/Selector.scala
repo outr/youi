@@ -4,6 +4,8 @@ import org.hyperscala.IdentifiableTag
 import org.hyperscala.html.{HTMLTag, HTMLTagType}
 import org.hyperscala.persistence.ValuePersistence
 
+import scala.annotation.tailrec
+
 /**
  * @author Matt Hicks <matt@outr.com>
  */
@@ -39,6 +41,11 @@ trait Selector {
 
   def toList = buildList(this)
 
+  /**
+   * Generates a flat itemized list broken out by multiple separators (,)
+   */
+  def items = value.split(",").map(s => Selector(s.trim)).toList
+
   def duplicate(parent: Option[Selector]): Selector
 
   def addRoot(newRoot: Selector): Selector = parentSelector match {
@@ -46,11 +53,12 @@ trait Selector {
     case None => duplicate(Some(newRoot))
   }
 
+  @tailrec
   private def buildList(selector: Selector, list: List[Selector] = Nil): List[Selector] = {
     val updated = selector :: list
     selector.parentSelector match {
-      case Some(p) => buildList(p, updated)
       case None => updated
+      case Some(p) => buildList(p, updated)
     }
   }
 }

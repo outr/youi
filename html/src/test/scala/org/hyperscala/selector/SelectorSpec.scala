@@ -116,6 +116,12 @@ class SelectorSpec extends WordSpec with Matchers {
 
         selector.value should be("div.test:hover, span#other:active, #awesome:focus")
       }
+      "verify 'items' properly handles two-way conversion" in {
+        val selectorString = "div.test:hover, span#other:active, #awesome:focus, .test, #myDiv"
+        val selector = Selector(selectorString)
+        selector.value should be(selectorString)
+        selector.items should be(List(Selector("div.test:hover"), Selector("span#other:active"), Selector("#awesome:focus"), Selector(".test"), Selector("#myDiv")))
+      }
     }
   }
 }

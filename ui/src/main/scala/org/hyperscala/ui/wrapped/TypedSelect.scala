@@ -19,7 +19,7 @@ abstract class TypedSelect[T](select: tag.Select)(implicit manifest: Manifest[T]
     case evt => select.selectedOptions := typedOptions.find(o => o.t == evt.newValue).toList
   }
   select.selectedOptions.change.on {
-    case evt => selected := evt.newValue.asInstanceOf[TypedOption[T]].t
+    case evt => selected := evt.newValue.headOption.map(o => o.asInstanceOf[TypedOption[T]].t).getOrElse(null.asInstanceOf[T])
   }
 
   def t2String(t: T): String
@@ -27,7 +27,9 @@ abstract class TypedSelect[T](select: tag.Select)(implicit manifest: Manifest[T]
   def typedOptions = select.byTag[TypedOption[T]]
   def options = typedOptions.map(o => o.t).toList
   def options_=(options: Seq[T]) = {
+    val s = selected()
     select.contents.replaceWith(options.map(t => new TypedOption(t, this)): _*)
+    selected := s
   }
 }
 
@@ -39,4 +41,6 @@ object TypedSelect {
   }
 }
 
-class TypedOption[T](val t: T, select: TypedSelect[T]) extends tag.Option(value = Unique(), content = select.t2String(t))
+class TypedOption[T](val t: T, select: TypedSelect[T]) extends tag.Option(value = Unique(), content = select.t2String(t)) {
+  override def toString = s"TypedOption($t)"
+}

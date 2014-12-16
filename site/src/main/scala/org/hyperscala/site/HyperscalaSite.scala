@@ -84,7 +84,6 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication {
   val clipboard = example(new ClipboardExample, "UI", "Clipboard", Scope.Page)
   val multiSelect = example(new MultiSelectExample, "UI", "Multi Select", Scope.Page)
   val caseForm = example(new CaseFormExample, "UI", "Case Form", Scope.Page)
-  val selectWrapper = example(new SelectWrapperExample, "UI", "Select Wrapper", Scope.Page)
   val typedSelect = example(new TypedSelectExample, "UI", "Typed Select", Scope.Page)
   val gallery = example(new GalleryExample, "UI", "Gallery", Scope.Page)
   val modalComponent = example(new ModalComponentExample, "UI", "Modal Component", Scope.Page)

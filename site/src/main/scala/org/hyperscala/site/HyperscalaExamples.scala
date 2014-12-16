@@ -13,7 +13,7 @@ object HyperscalaExamples extends HyperscalaPage {
   val map = HyperscalaSite.examples.groupBy(ep => ep.group)
   groups.foreach {
     case group => {
-      val pages = map(group)
+      val pages = map(group).sortBy(e => e.name)
       val title = new tag.Span {
         contents += new tag.Span(content = s"$group&#160;&#160;", clazz = List("example-heading"))
         contents += new Badge(pages.length.toString)

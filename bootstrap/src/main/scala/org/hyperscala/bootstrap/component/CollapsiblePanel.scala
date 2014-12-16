@@ -9,6 +9,9 @@ trait CollapsiblePanel extends Panel {
   outer.clazz += "panel-collapse"
   outer.clazz += "collapse"
 
+  if (collapsed) {
+    heading.clazz += "collapsed"
+  }
   heading.data("toggle", "collapse")
   heading.data("target", s"#${outer.identity}")
 }

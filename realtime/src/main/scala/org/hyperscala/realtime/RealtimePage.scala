@@ -162,8 +162,8 @@ class RealtimePage[S <: Session] private(page: Webpage[S]) extends Logging {
             case input: tag.Input if property.name == "value" => send(JavaScriptMessage("$('#%s').val(content);".format(t.id()), Some(property.attributeValue)))
             case input: tag.Input if property.name == "checked" => send(JavaScriptMessage(s"$$('#${t.identity}').prop('checked', ${property()});"))
             case select: tag.Select if property.name == "selectedOptions" => {
-              val option = select.selected().map(id => "\"" + id + "\"").mkString("[", ", ", "]")
-              send(JavaScriptMessage(s"$$('#${select.identity}').val($option);"))
+              val options = select.selectedOptions().map(o => s""""${o.value()}"""").mkString("[", ", ", "]")
+              send(JavaScriptMessage(s"$$('#${select.identity}').val($options);"))
             }
             case _ if property() == false => send(JavaScriptMessage("$('#%s').removeAttr('%s');".format(t.id(), property.name)))
             case _ => send(JavaScriptMessage("$('#%s').attr('%s', content);".format(t.id(), property.name), Some(property.attributeValue)))

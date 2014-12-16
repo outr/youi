@@ -61,28 +61,15 @@ class Select extends Container[Option] with BodyChild with HTMLTag with FormFiel
   lazy val size = PropertyAttribute[Int]("size", -1)
   lazy val placeHolder = PropertyAttribute[String]("placeholder", null)
 
-  implicit def optionsPersistence = new ValuePersistence[List[Option]] {
+  implicit def optionsPersistence: ValuePersistence[List[Option]] = new ValuePersistence[List[Option]] {
     override def fromString(s: String, name: String, clazz: Class[_]): List[Option] = s.split("|").map(optionByValue).flatten.toList
 
     override def toString(t: List[Option], name: String, clazz: Class[_]) = t.map(_.value()).mkString("|")
   }
+
   val selectedOptions = new PropertyAttribute[List[Option]]("selectedOptions", Nil) with ListProperty[Option]
-  val selected = new Property[List[String]](default = Some(Nil)) with ListProperty[String] with PropertyView[List[String], List[Option]] {
-    override def viewing = selectedOptions
-
-    override def convertFrom(value: List[Option]) = value.map(_.value())
-    override def convertTo(value: List[String]) = value.map(optionByValue).flatten
-  }
-  val value = new Property[String]() with PropertyView[String, List[Option]] {
-    override def viewing = selectedOptions
-
-    override def convertFrom(value: List[Option]) = value.map(_.value()).mkString("|")
-    override def convertTo(value: String) = if (value == null) {
-      Nil
-    } else {
-      value.split("|").map(v => optionByValue(v)).toList.flatten
-    }
-  }
+  val selected = new Property[List[String]](default = Some(Nil)) with ListProperty[String]
+  val value = new Property[String]()
 
   private val updating = new AtomicBoolean(false)
   private def tryUpdating(f: => Unit) = if (updating.compareAndSet(false, true)) {
@@ -94,20 +81,6 @@ class Select extends Container[Option] with BodyChild with HTMLTag with FormFiel
   }
 
   def optionByValue(value: String) = contents.find(o => o.value() == value)
-
-  private[html] def updateSelectionFromOptions() = tryUpdating {
-    val options = contents.collect {
-      case o if o.selected() => o
-    }.toList
-    selectedOptions := options
-  }
-
-  private def updateOptionsFromSelection() = tryUpdating {
-    val selected = selectedOptions()
-    contents.foreach {
-      case o => o.selected := selected.contains(o)
-    }
-  }
 
   childAdded.on {
     case evt => evt.child match {
@@ -121,6 +94,31 @@ class Select extends Container[Option] with BodyChild with HTMLTag with FormFiel
   }
   selectedOptions.change.on {
     case evt => updateOptionsFromSelection()              // Update the option tags' selected state upon change
+  }
+  selected.change.on {
+    case evt => selectedOptions := evt.newValue.map(s => optionByValue(s)).flatten
+  }
+  value.change.on {
+    case evt => evt.newValue match {
+      case null => selected := Nil
+      case s => selected := List(s)
+    }
+  }
+
+  private[html] def updateSelectionFromOptions() = tryUpdating {
+    val options = contents.collect {
+      case o if o.selected() => o
+    }.toList
+    selectedOptions := options
+    selected := options.map(o => o.value())
+    value := selected().mkString(", ")
+  }
+
+  private def updateOptionsFromSelection() = tryUpdating {
+    val selected = selectedOptions()
+    contents.foreach {
+      case o => o.selected := selected.contains(o)
+    }
   }
 
   override protected def processChange(value: Json) = {

@@ -115,6 +115,8 @@ abstract class JavaScriptContext extends Statement[JavaScriptContent] {
   def content = toJS()
 
   def sideEffects = false
+
+  override def toString = content
 }
 
 object JavaScriptContext {

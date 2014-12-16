@@ -4,7 +4,7 @@ import org.hyperscala.selector.Selector
 import org.hyperscala.javascript.dsl._
 import org.hyperscala.css.Style
 import org.hyperscala.javascript.{JavaScriptString, JavaScriptContent}
-import org.hyperscala.event.{SubmitEvent, KeyboardEvent}
+import org.hyperscala.event.{ClickEvent, SubmitEvent, KeyboardEvent}
 
 import scala.collection.mutable.ListBuffer
 
@@ -40,6 +40,10 @@ class jQuerySelector(val selector: Selector) extends Statement[Selector] {
 
   def keyUp(f: JSFunction1[KeyboardEvent, Boolean]) = {
     WrappedStatement[Unit](s"$content.keyup(", f, ")", sideEffects = true)
+  }
+
+  def click(f: JSFunction1[ClickEvent, Boolean]) = {
+    WrappedStatement[Unit](s"$content.click(", f, ")", sideEffects = true)
   }
 
   def value[T]() = ExistingStatement[T](s"$content.val()")

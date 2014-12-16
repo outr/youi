@@ -25,6 +25,17 @@ import org.hyperscala.realtime.dsl._
  * @author Matt Hicks <matt@outr.com>
  */
 object ContentEditor extends Module with StorageComponent[ContentEditor, HTMLTag] {
+  /**
+   * Provides a conversion strategy to better support numeric values in length styles. Numbers automatically get
+   * amended with a 'px'.
+   */
+  val PixelConversion = JSFunction1[String, String]("""
+                                                      |if (!isNaN(p1)) {
+                                                      |  return p1 + 'px';
+                                                      |}
+                                                      |return p1;
+                                                    """.stripMargin.trim)
+
   val name = "contentEditor"
   val version = Version(1)
 
@@ -188,12 +199,12 @@ class ContentEditor private(val container: HTMLTag) extends Listenable {
     }
   }
 
-  def bindInput[S](style: Style[S], input: tag.Input, format: Boolean, aliases: VisualAlias*) = {
+  def bindInput[S](style: Style[S], input: tag.Input, format: Boolean, converter: JSFunction1[String, String], aliases: VisualAlias*) = {
     container.connected[Webpage[MapSession]] {
       case webpage => {
         // Update the input when the selection changes
         val content = s"""{${aliases.map(va => s"'${va.visual}': '${va.internal}'").mkString(", ")}}"""
-        val js = s"contentEditorBindInput('${input.identity}', '${container.identity}', '${style.name}', $format, content);"
+        val js = s"contentEditorBindInput('${input.identity}', '${container.identity}', '${style.name}', $format, content, ${JavaScriptContent.toJS(converter)});"
         Realtime.sendJavaScript(webpage, js, content = Some(content), selector = Some(Selector.id(container)), onlyRealtime = false)
       }
     }

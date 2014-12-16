@@ -12,6 +12,7 @@ import org.hyperscala.EnumEntryAttributeValue
  * @author Matt Hicks <matt@outr.com>
  */
 sealed trait Length extends EnumEntryAttributeValue {
+  def number: Double
   def +(value: Double): Length
 
   override def toString() = if (name != null) {
@@ -22,10 +23,16 @@ sealed trait Length extends EnumEntryAttributeValue {
 }
 
 trait NumericLength extends Length with FontSize with VerticalAlignment {
-  def number: Double
   def lengthType: String
 
-  lazy val value = s"$number$lengthType"
+  lazy val value = {
+    val n = if (number % 1 == 0) {
+      number.toInt.toString
+    } else {
+      f"$number%2.2f"
+    }
+    s"$n$lengthType"
+  }
   def +(value: Double) = NumericLength(s"${number + value}$lengthType")
 }
 
@@ -57,12 +64,14 @@ object NumericLength {
 }
 
 object AutoLength extends Length with FontSize with VerticalAlignment {
+  val number = 0.0
   val value = "auto"
 
   def +(value: Double) = NumericLength(s"${value}px")
 }
 
 object InheritLength extends Length with FontSize with VerticalAlignment {
+  val number = 0.0
   val value = "inherit"
 
   def +(value: Double) = NumericLength(s"${value}px")

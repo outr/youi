@@ -3,11 +3,11 @@ package org.hyperscala.examples.ui
 import com.outr.net.http.session.MapSession
 import org.hyperscala.bootstrap.component.Button
 import org.hyperscala.css.Style
-import org.hyperscala.css.attributes.{Alignment, FontStyle, FontWeight}
+import org.hyperscala.css.attributes.{FontSize, Alignment, FontStyle, FontWeight}
 import org.hyperscala.examples.Example
 import org.hyperscala.html._
 import org.hyperscala.html.attributes.ContentEditable
-import org.hyperscala.javascript.dsl.Command
+import org.hyperscala.javascript.dsl.{JSFunction1, Command}
 import org.hyperscala.realtime._
 import org.hyperscala.ui.widgets.{ContentEditor, VisualAlias}
 import org.hyperscala.web._
@@ -24,6 +24,7 @@ class ContentEditorExample(site: Website[MapSession]) extends Example {
   val colorInput = new tag.Input(id = "currentColor")
   val fontFamily = new tag.Input(id = "fontFamily")
   val fontStyle = new tag.Input(id = "fontStyle")
+  val fontSize = new tag.Input(id = "fontSize")
   val leftAlign = new Button(label = "Left Align")
   val centerAlign = new Button(label = "Center Align")
   val rightAlign = new Button(label = "Right Align")
@@ -91,6 +92,7 @@ class ContentEditorExample(site: Website[MapSession]) extends Example {
     contents += colorInput
     contents += fontFamily
     contents += fontStyle
+    contents += fontSize
     contents.addAll(leftAlign, centerAlign, rightAlign, justifyAlign)
   }
   contents += controls
@@ -109,9 +111,10 @@ class EditorPage(site: Website[MapSession], example: ContentEditorExample) exten
     contents += new tag.P(content = "Select a portion of this text and try the controls on the bottom of the page.")
   }
   val editor = ContentEditor(div)
-  editor.bindInput(Style.color, example.colorInput, format = true, VisualAlias("Black", "rgb(0, 0, 0)"), VisualAlias("Black", "#000000"), VisualAlias("Red", "rgb(255, 0, 0)"), VisualAlias("Red", "#ff0000"), VisualAlias("Green", "#00ff00"), VisualAlias("Green", "rgb(0, 255, 0)"), VisualAlias("Blue", "#0000ff"), VisualAlias("Blue", "rgb(0, 0, 255)"))
-  editor.bindInput(Style.fontFamily, example.fontFamily, format = true)
+  editor.bindInput(Style.color, example.colorInput, format = true, converter = null, VisualAlias("Black", "rgb(0, 0, 0)"), VisualAlias("Black", "#000000"), VisualAlias("Red", "rgb(255, 0, 0)"), VisualAlias("Red", "#ff0000"), VisualAlias("Green", "#00ff00"), VisualAlias("Green", "rgb(0, 255, 0)"), VisualAlias("Blue", "#0000ff"), VisualAlias("Blue", "rgb(0, 0, 255)"))
+  editor.bindInput(Style.fontFamily, example.fontFamily, format = true, converter = null)
   editor.bindFontStyle(example.fontStyle)
+  editor.bindInput(Style.fontSize, example.fontSize, format = true, converter = ContentEditor.PixelConversion)
   editor.bindToggle(Style.fontWeight, example.boldButton, List(FontWeight.Bold, FontWeight.Weight700), activeClass = Some("active"))
   editor.bindToggle(Style.fontStyle, example.italicButton, List(FontStyle.Italic), activeClass = Some("active"))
   editor.bindToggle(Style.color, example.redButton, List("#ff0000", "rgb(255, 0, 0)", "red"), activeClass = Some("active"))

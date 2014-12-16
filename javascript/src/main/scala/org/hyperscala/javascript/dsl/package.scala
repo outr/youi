@@ -31,6 +31,8 @@ package object dsl {
 
   def parseInt[T](s: Statement[T]) = WrappedStatement[Double]("parseInt(", s, ")", sideEffects = false)
 
+  def isNaN(s: Statement[String]) = WrappedStatement[Boolean]("isNaN(", s, ")", sideEffects = false)
+
   implicit class JSONStatement(statement: Statement[JSON]) {
     def apply[T](key: String) = MultiStatement[T](sideEffects = false, statement, ".", key)
   }

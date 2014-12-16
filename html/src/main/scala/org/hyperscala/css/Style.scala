@@ -153,7 +153,7 @@ object Style extends Enumerated[Style[_]] {
   val listStyle = new Style[String]("list-style")
   val listStyleImage = new Style[String]("list-style-image")
   val listStylePosition = new Style[String]("list-style-position")
-  val listStyleType = new Style[String]("list-style-type")
+  val listStyleType = new Style[ListStyleType]("list-style-type")
   val margin = new Style[String]("margin")
   val marginBottom = new Style[Length]("margin-bottom")
   val marginLeft = new Style[Length]("margin-left")

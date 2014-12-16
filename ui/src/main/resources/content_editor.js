@@ -522,7 +522,7 @@ function addSelectionStyleChangeListener(container, styleName, listener) {
     container.addEventListener('styleChanged', checkStyle);
 }
 
-function contentEditorBindInput(inputId, containerId, styleName, format, visual2Internal) {
+function contentEditorBindInput(inputId, containerId, styleName, format, visual2Internal, converter) {
     var container = document.getElementById(containerId);
     var input = window.parent.document.getElementById(inputId);
     var internal2Visual = {};
@@ -549,6 +549,9 @@ function contentEditorBindInput(inputId, containerId, styleName, format, visual2
         var v = input.value;
         if (visual2Internal.hasOwnProperty(v)) {
             v = visual2Internal[v];
+        }
+        if (converter != null) {
+            v = converter(v);
         }
         setStyle(containerId, styleName, v);
         return realtimeEvent(event, null, null, true, false, 0);

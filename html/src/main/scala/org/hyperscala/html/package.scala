@@ -9,21 +9,18 @@ import argonaut._
 import org.powerscala.Unique
 
 package object html {
-  /**
-   * Support conversion from String to Text instance
-   */
-  implicit def s2Text(s: String) = new Text(s)
+  implicit def s2Text(s: String) = new Text(s)      // Support conversion from String to Text instance
 
-  implicit def int2LengthInt(i: Int) = LengthInt(i)
-  implicit def double2LengthInt(d: Double) = LengthInt(round(d).toInt)
-  implicit def int2FontSizeInt(i: Int) = FontSizeInt(i)
-  implicit def double2FontSizeInt(d: Double) = FontSizeInt(round(d).toInt)
-  implicit def l2Fs(l: Length) = FontSize(l.value)
-  implicit def int2ZIndex(i: Int) = ZIndex.Numeric(i)
+  implicit def int2LengthInt(i: Int): LengthInt = LengthInt(i)
+  implicit def double2LengthInt(d: Double): LengthInt = LengthInt(round(d).toInt)
+  implicit def int2FontSizeInt(i: Int): FontSizeInt = FontSizeInt(i)
+  implicit def double2FontSizeInt(d: Double): FontSizeInt = FontSizeInt(round(d).toInt)
+  implicit def l2Fs(l: Length): FontSize = FontSize(l.value)
+  implicit def int2ZIndex(i: Int): ZIndex = ZIndex.Numeric(i)
 
-  implicit def it2Rit[T <: IdentifiableTag](t: T) = ReIdentifiable[T](t)
+  implicit def it2Rit[T <: IdentifiableTag](t: T): ReIdentifiable[T] = ReIdentifiable[T](t)
 
-  implicit def tag2CopyableTag[T <: HTMLTag](t: T) = new CopyableHTMLTag[T](t)
+  implicit def tag2CopyableTag[T <: HTMLTag](t: T): CopyableHTMLTag[T] = new CopyableHTMLTag[T](t)
 
   implicit class EnhancedJsonObject(json: JsonObject) {
     private def conv[T](key: String, f: Json => Option[T]) = json(key).map(j => f(j)).flatten
@@ -31,7 +28,7 @@ package object html {
     def booleanOption(key: String) = conv(key, j => j.bool)
     def intOption(key: String) = longOption(key).map(l => l.toInt)
     def longOption(key: String) = doubleOption(key).map(d => math.round(d))
-    def doubleOption(key: String) = conv(key, j => j.number)
+    def doubleOption(key: String) = conv(key, j => j.number.map(n => n.toDouble))
     def stringMapOption(key: String) = conv(key, j => j.obj).map(obj => obj.toMap.map {
       case (k, v) => k -> v.stringOrEmpty
     })
@@ -39,7 +36,7 @@ package object html {
     def listOption(key: String) = conv(key, j => j.array).map(array => array.toList)
     def listConvertedOption[T](key: String, converter: Json => T) = listOption(key).map(list => list.map(j => converter(j)))
     def stringsOption(key: String) = listConvertedOption[String](key, (json: Json) => json.stringOrEmpty)
-    def doublesOption(key: String) = listConvertedOption[Double](key, (json: Json) => json.numberOrZero)
+    def doublesOption(key: String) = listConvertedOption[Double](key, (json: Json) => json.numberOrZero.toDouble)
 
     def string(key: String, default: => String = "") = stringOption(key).getOrElse(default)
     def int(key: String, default: => Int = 0) = intOption(key).getOrElse(default)

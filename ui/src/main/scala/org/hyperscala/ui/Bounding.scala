@@ -106,8 +106,8 @@ class Bounding(val tag: HTMLTag) extends Listenable {
   protected def set(evt: EventReceived, propertyName: String, property: Property[Double]) = evt.json.doubleOption(propertyName) match {
     case Some(v) => {
       val oldValue = property()
-      property := v
-      Bounding.modified(tag.webpage[Session]).fire(BoundingEvent(this, propertyName, property, oldValue, v))
+      property := v.toDouble
+      Bounding.modified(tag.webpage[Session]).fire(BoundingEvent(this, propertyName, property, oldValue, v.toDouble))
     }
     case None => // Property not changed
   }

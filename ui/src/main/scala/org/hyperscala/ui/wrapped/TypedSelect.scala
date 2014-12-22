@@ -8,7 +8,7 @@ import org.powerscala.property.Property
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-abstract class TypedSelect[T](select: tag.Select)(implicit manifest: Manifest[T]) {
+abstract class TypedSelect[T](val select: tag.Select)(implicit manifest: Manifest[T]) {
   select.contents.clear()                     // Start with an empty select list
   if (select.changeEvent() == null) {         // Make sure we're able to receive changes
     select.changeEvent := RealtimeEvent()

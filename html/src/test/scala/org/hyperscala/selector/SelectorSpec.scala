@@ -1,5 +1,6 @@
 package org.hyperscala.selector
 
+import org.hyperscala.html._
 import org.scalatest.{Matchers, WordSpec}
 
 /**
@@ -122,6 +123,15 @@ class SelectorSpec extends WordSpec with Matchers {
         selector.value should be(selectorString)
         selector.items should be(List(Selector("div.test:hover"), Selector("span#other:active"), Selector("#awesome:focus"), Selector(".test"), Selector("#myDiv")))
       }
+      /*"verify matching of child selector" in {
+        val container = new tag.Div
+        val child = new tag.Span
+        container.contents += child
+
+        val selector = Selector("div > span")
+        selector.matches(child) should be(true)
+        selector.matches(container) should be(false)
+      }*/
     }
   }
 }

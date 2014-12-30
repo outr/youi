@@ -10,6 +10,8 @@ import scala.annotation.tailrec
  * @author Matt Hicks <matt@outr.com>
  */
 trait Selector {
+  var label: String = null
+
   def root: Selector = parentSelector match {
     case Some(p) => p.root
     case None => this
@@ -40,6 +42,11 @@ trait Selector {
   def generate() = content
 
   def toList = buildList(this)
+
+  def withLabel(label: String) = {
+    this.label = label
+    this
+  }
 
   /**
    * Generates a flat itemized list broken out by multiple separators (,)

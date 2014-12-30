@@ -155,6 +155,11 @@ trait HTMLTag extends IdentifiableTag with AriaSupport with EventSupport {
     b.toString()
   }
 
+  /**
+   * Generates a String representation of the Text descendants.
+   */
+  def outputText = byTag[tag.Text].map(t => t.content()).mkString
+
   def innerHTML = {
     val b = new StringBuilder
     val writer: String => Unit = (s: String) => b.append(s)

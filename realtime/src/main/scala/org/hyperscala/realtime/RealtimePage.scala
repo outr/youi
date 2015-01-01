@@ -166,6 +166,7 @@ class RealtimePage[S <: Session] private(page: Webpage[S]) extends Logging {
               send(JavaScriptMessage(s"$$('#${select.identity}').val($options);"))
             }
             case _ if property() == false => send(JavaScriptMessage("$('#%s').removeAttr('%s');".format(t.id(), property.name)))
+            case _ if property eq t.id => send(JavaScriptMessage(s"$$('#$oldValue').attr('id', '$newValue');"))
             case _ => send(JavaScriptMessage("$('#%s').attr('%s', content);".format(t.id(), property.name), Some(property.attributeValue)))
           }
           case None => // Attribute shouldn't render so we ignore it

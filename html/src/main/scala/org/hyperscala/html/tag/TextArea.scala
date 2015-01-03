@@ -37,9 +37,10 @@ class TextArea extends Textual with BodyChild with HTMLTag with FormField {
            disabled: java.lang.Boolean = null,
            form: String = null,
            maxLength: java.lang.Integer = null,
+           minLength: java.lang.Integer = null,
            placeHolder: String = null,
-           readOnly: String = null,
-           required: String = null,
+           readOnly: java.lang.Boolean = null,
+           required: java.lang.Boolean = null,
            rows: java.lang.Integer = null,
            wrap: TextAreaWrap = null,
            content: String = null) = {
@@ -50,6 +51,7 @@ class TextArea extends Textual with BodyChild with HTMLTag with FormField {
     up(this.disabled, disabled)
     up(this.form, form)
     up(this.maxLength, maxLength)
+    up(this.minLength, minLength)
     up(this.placeHolder, placeHolder)
     up(this.readOnly, readOnly)
     up(this.required, required)
@@ -59,13 +61,14 @@ class TextArea extends Textual with BodyChild with HTMLTag with FormField {
   }
 
   lazy val autoFocus = PropertyAttribute[Boolean]("autofocus", false)
-  lazy val cols = PropertyAttribute[Int]("cols", -1)
+  lazy val cols = PropertyAttribute[Int]("cols", 20)
   lazy val disabled = PropertyAttribute[Boolean]("disabled", false)
   lazy val form = PropertyAttribute[String]("form", null)
   lazy val maxLength = PropertyAttribute[Int]("maxlength", -1)
+  lazy val minLength = PropertyAttribute[Int]("minlength", -1)
   lazy val placeHolder = PropertyAttribute[String]("placeholder", null)
-  lazy val readOnly = PropertyAttribute[String]("readonly", null)
-  lazy val required = PropertyAttribute[String]("required", null)
+  lazy val readOnly = PropertyAttribute[Boolean]("readonly", false)
+  lazy val required = PropertyAttribute[Boolean]("required", false)
   lazy val rows = PropertyAttribute[Int]("rows", -1)
   lazy val wrap = PropertyAttribute[TextAreaWrap]("wrap", null)
 

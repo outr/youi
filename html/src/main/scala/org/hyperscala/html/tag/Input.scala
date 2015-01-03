@@ -50,6 +50,7 @@ class Input extends BodyChild with HTMLTag with FormField {
            max: String = null,
            maxLength: java.lang.Integer = null,
            min: String = null,
+           minLength: java.lang.Integer = null,
            multiple: java.lang.Boolean = null,
            pattern: String = null,
            placeHolder: String = null,
@@ -81,6 +82,7 @@ class Input extends BodyChild with HTMLTag with FormField {
     up(this.max, max)
     up(this.maxLength, maxLength)
     up(this.min, min)
+    up(this.minLength, minLength)
     up(this.multiple, multiple)
     up(this.pattern, pattern)
     up(this.placeHolder, placeHolder)
@@ -111,6 +113,7 @@ class Input extends BodyChild with HTMLTag with FormField {
   lazy val max = PropertyAttribute[String]("max", null)
   lazy val maxLength = PropertyAttribute[Int]("maxlength", -1)
   lazy val min = PropertyAttribute[String]("min", null)
+  lazy val minLength = PropertyAttribute[Int]("minlength", -1)
   lazy val multiple = PropertyAttribute[Boolean]("multiple", false)
   lazy val pattern = PropertyAttribute[String]("pattern", null)
   lazy val placeHolder = PropertyAttribute[String]("placeholder", null)

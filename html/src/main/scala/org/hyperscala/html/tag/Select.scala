@@ -58,7 +58,7 @@ class Select extends Container[Option] with BodyChild with HTMLTag with FormFiel
   lazy val disabled = PropertyAttribute[Boolean]("disabled", false)
   lazy val form = PropertyAttribute[String]("form", null)
   lazy val multiple = PropertyAttribute[Boolean]("multiple", false)
-  lazy val size = PropertyAttribute[Int]("size", -1)
+  lazy val size = PropertyAttribute[Int]("size", 1)
   lazy val placeHolder = PropertyAttribute[String]("placeholder", null)
 
   implicit def optionsPersistence: ValuePersistence[List[Option]] = new ValuePersistence[List[Option]] {

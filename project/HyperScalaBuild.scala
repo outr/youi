@@ -1,7 +1,8 @@
 import sbt.Keys._
 import sbt._
-import sbtassembly.Plugin.AssemblyKeys._
-import sbtassembly.Plugin._
+import sbtassembly.AssemblyKeys._
+import sbtassembly._
+import sbtassembly.AssemblyPlugin._
 import sbtunidoc.Plugin._
 import spray.revolver.RevolverPlugin._
 
@@ -108,13 +109,16 @@ object HyperScalaBuild extends Build {
     .settings(libraryDependencies ++= Seq(outrNetServlet, outrNetJetty))
     .settings(mainClass := Some("org.hyperscala.numberguess.NumberGuessSite"))
   lazy val site = Project("site", file("site"), settings = createSettings("hyperscala-site") ++ Revolver.settings)
-    .settings(jarName in assembly := s"hyperscala-${version.value}.jar", mergeStrategy in assembly <<= (mergeStrategy in assembly) {
+    .settings(assemblyJarName in assembly := s"hyperscala-${version.value}.jar", assemblyMergeStrategy in assembly <<= (assemblyMergeStrategy in assembly) {
       case old => {
         case PathList("about.html") => MergeStrategy.first
         case PathList("META-INF", "jdom-info.xml") => MergeStrategy.first
         case x => old(x)
       }
-    }, mainClass in assembly := Some("org.hyperscala.site.HyperscalaSite"))
+    }, mainClass in assembly := Some("org.hyperscala.site.HyperscalaSite"), assemblyExcludedJars in assembly := {
+        val cp = (fullClasspath in assembly).value
+        cp filter {_.data.getName == "annotations-2.0.1.jar"}
+    })
     .settings(mainClass := Some("org.hyperscala.site.HyperscalaSite"))
     .settings(libraryDependencies ++= Seq(outrNetServlet, outrNetJetty, githubCore))
     .dependsOn(examples)

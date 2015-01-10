@@ -41,6 +41,6 @@ object TypedSelect {
   }
 }
 
-class TypedOption[T](val t: T, select: TypedSelect[T]) extends tag.Option(value = Unique(), content = select.t2String(t)) {
+class TypedOption[T](val t: T, select: TypedSelect[T]) extends tag.Option(value = select.t2String(t), content = select.t2String(t)) {
   override def toString = s"TypedOption($t)"
 }

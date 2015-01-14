@@ -58,40 +58,8 @@ hyperscala site.
 
 #### Create the site
 
-##### `web.xml` 
-  This example uses a `Jetty` container so create the `web.xml` as needed.  This would go into 
-  someplace like `src/main/webapp/WEB-INF/`.
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<web-app
-xmlns="http://java.sun.com/xml/ns/javaee"
-xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
-version="3.0"
->
-<servlet>
-<servlet-name>outrnet</servlet-name>
-<servlet-class>com.outr.net.http.servlet.OUTRNetServlet</servlet-class>
-<init-param>
-<param-name>application</param-name>
-<param-value>hello.HelloSite</param-value>
-</init-param>
-<load-on-startup>1</load-on-startup>
-</servlet>
-<servlet-mapping>
-<servlet-name>outrnet</servlet-name>
-<url-pattern>/*</url-pattern>
-</servlet-mapping>
-<session-config>
-<session-timeout>25</session-timeout>
-</session-config>
-</web-app>
-```
-
-##### Create the Site
-
-Create something like the following.
+This example uses a `Jetty` container so but you can leave the `webapp` directory empty.  Create 
+something like the following.
 
 ```scala
 import org.hyperscala.web.{StaticWebsite, BasicWebsite}

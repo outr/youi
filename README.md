@@ -13,4 +13,4 @@ Statically typed bare-metal HTML, CSS, and JavaScript framework for Scala.
 
 [ScalaDocs](http://build.sgine.org/job/hyperscala/javadoc)
 
-[Tutorial](tutorial.md)
+[Tutorial](tutorial/tutorial.md)

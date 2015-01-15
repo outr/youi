@@ -17,7 +17,7 @@ these things without requiring proprietary configuration files and without makin
 
 ## Quick Start
 
-The hyperscala sources contain numerous examples.  Look for examples here:
+The hyperscala sources contain numerous examples, such as:  
 
 - [Hyperscala examples directory](https://github.com/darkfrog26/hyperscala/tree/master/examples/src/main/scala/org/hyperscala/examples "Hyperscala examples directory shown in github")
   These examples are hosted online [here](http://hyperscala.com/examples.html "Hyperscala examples directory hosted online")
@@ -27,7 +27,7 @@ The hyperscala sources contain numerous examples.  Look for examples here:
 ### [Hello example](id:helloexample)
 
 The following is based on the [hello example from the hyperscala sources](https://github.com/darkfrog26/hyperscala/tree/master/hello "A simple hyperscala hello example shown in github") using 
-hyperscala version `0.9.3-SNAPSHOT`.  Please see [snapshots](snapshots.md) for more detail about using hyperscala snapshot versions. 
+hyperscala version `0.9.3-SNAPSHOT`.  Please see [snapshots](snapshots.md) for more detail about using snapshot versions. 
  
 
 #### Create a simple scala project manually or use a [giter8][3] template.
@@ -59,8 +59,7 @@ hyperscala site.
 
 #### Create the site
 
-This example uses a `Jetty` container so but you can leave the `webapp` directory empty.  Create 
-something like the following.
+This example is hosted, in-place using a `Jetty` container, thus a `webapps/WEB-INF/web.xml`, deployment descriptor, is not needed.  Create something like the following.
 
 ```scala
 import org.hyperscala.web.{StaticWebsite, BasicWebsite}
@@ -72,8 +71,8 @@ object HelloSite extends BasicWebsite with StaticWebsite[MapSession] with JettyA
 }
 ```
 
-This creates a `HelloSite` site that will take requests at `index.html` and the root of the site 
-as expected.  If you add `def foo = new HelloPage` then a `HelloPage` will answer at `foo.html`...
+This creates a site (`HelloSite`) that will take requests at `index.html`, and the root of the site 
+as expected, and reply with the page with created above.  If you add `def foo = new HelloPage` then a `HelloPage` will answer at `foo.html`...
 
 `BasicWebsite` extends [com.outr.net.http.WebApplication](https://github.com/darkfrog26/outrnet/blob/master/core/src/main/scala/com/outr/net/http/WebApplication.scala).
 The `outr.net` library is found [here](https://github.com/darkfrog26/outrnet).
@@ -84,6 +83,87 @@ Run with from sbt with the following.
 
     $ sbt run
 
+## Dynamic Content
+
+The following example is based on 
+[DynamicContentExample](https://github.com/darkfrog26/hyperscala/blob/master/examples/src/main/scala/org/hyperscala/examples/basic/DynamicContentExample.scala 
+"DynamicContentExample at github.com").
+
+First will we create a file called `dynamic.html` in our `resources` directory.  It will look like this.
+
+    <div>
+        <b>Name:</b> <input name="name" id="i1"/><br/>
+        <b>Age:</b> <input name="age" id="i2"/><br/>
+        <button id="b1">Submit</button>
+    </div>
+
+We are only going to take parts of this file so we do not care if the file is valid HTML or that fields exist inside a `form`, etc.  Next we 
+will create a page to demonstrate how content can be read from a resource file, manipulated, and delivered.  Create something like 
+the following.  The comments explain what each part is doing. 
+
+```scala
+import org.hyperscala.html._
+import org.hyperscala.web.Webpage
+import org.powerscala.property.Property
+
+import org.hyperscala.ui.binder._
+import org.hyperscala.ui.dynamic.{DynamicContent, DynamicString}
+import org.hyperscala.realtime.RealtimeEvent
+
+class DynamicContentExample extends Webpage(HelloSite) {
+  title := "Dynamic Content Example"
+  body.contents += new tag.P { contents +=
+    "Content can be extracted and manipulated before hyperscala delivers a response.  "
+  }
+  body.contents += new SimpleDynamicForm
+
+  class SimpleDynamicForm extends DynamicContent("DynamicContentExample") {
+
+    /* Load dynamic.html to dynamicString
+     * Implementing the dynamicString method from DynamicContent trait
+     * with a lazy val because we need not load this more than once.
+     */
+    lazy val dynamicString = DynamicString.url("dynamic.html", getClass.getClassLoader.getResource("dynamic.html"))
+
+    //Person
+    case class Person(name: String, age: Int)
+
+    //Provide a default value for the Person property
+    val person = Property[Person](default = Some(Person("John Doe", 123)))
+
+    //Listen for changes
+    person.change.on {
+      //Lets write to the console when we see the person property change.
+      case evt => println("Person changed from %s to %s".format(evt.oldValue, evt.newValue))
+    }
+
+    //bind form inputs by id to fields in person
+    val nameInput = bind[tag.Input, String]("i1", person, "name")
+    val ageInput  = bind[tag.Input, Int]("i2", person, "age")
+
+    //Listen for button clicks on button with id "b1"
+    val button = load[tag.Button]("b1")
+    button.clickEvent := RealtimeEvent()
+    button.clickEvent.on {
+      //Replace person with a one with new values on button click.
+      case evt => person := Person("Test User", 987)
+    }
+
+    /* Manipulate the button so it reads "Do Something"
+     * It originally looked like this <button id="b1">Submit</button>
+     */
+    button.contents.replaceWith("Do Something")
+  }
+}
+```
+
+Next we include this in our site by adding the following to the `HelloSite.scala` file.
+```scala
+def dynamicContentExample = new DynamicContentExample
+```
+
+Now `sbt run` your project and test this by browsing to `http://localhost:8080/dynamicContentExample.html`.   
+
 ## Modules
 
 The following is a simple module to provide a particular version of `jQuery` to a page.  First put a jQuery file named 
@@ -92,7 +172,7 @@ The following is a simple module to provide a particular version of `jQuery` to 
 Example:  
 `src/main/resources/jquery-1.8.2.min.js`
 
-Then create a new module, such as `jquery182.scala`.  I could look like the following.
+Then create a new module, such as `jquery182.scala`.  It could look like the following.
 
 
 ```scala
@@ -119,7 +199,10 @@ object jQuery182 extends Module {
 }
 ```
 
-Then alter your page to include `require(jQuery182)`.  It might look like this.
+The net of the code above is to supply the module with a name and version, register the `jQuery` script resource when the 
+site initializes the module, then add the given `Script` tag with the page is loaded. 
+
+To actually use the module, you would alter your page to include `require(jQuery182)`.  It might look something like this.  
 
 ```scala
 import org.hyperscala.web.Webpage
@@ -133,7 +216,7 @@ class HelloPage extends Webpage(HelloSite) {
 }
 ```
 
-Then when you try it you can view source and see that your `jQuery182` resource was included as a javascript file in the `HEAD`. 
+When you try the page again, you can view source and see that your `jQuery182` resource was included in the `HEAD`. 
 
     <head>
       <title>Hello world page</title>
@@ -142,11 +225,25 @@ Then when you try it you can view source and see that your `jQuery182` resource 
       <script type="text/javascript" src="/js/jquery-1.8.2.js"></script>
     </head>
 
-## Dynamic Content
+Modules are designed such that even if they are `require`ed more than once in a page, they will still be injected exactly once.  
 
-## Putting it All Together
+- If a particular version of a module is not designated, and more than one version of a module is `require`ed, then the module with 
+the greater version number will be injected.
 
-## Where Do I Go from Here? 
+- If a particular version of a module _is_ designated in only one of multiple `require` actions for a module, then the module with 
+the designated version will be injected.
+
+- If more than one `require` designates a particular version of a module and the versions conflict, then an error will be thrown
+during the page build. 
+
+This encapsulation permits one to create components that can be independently packaged and delivered to pages.  Dependency conflict 
+between modules is minimized to situations where two modules can function only with specific, conflicting versions of a particular 
+resource.  This kind of modularity is a powerful feature of hyperscala and is one characteristic that distinguishes it from many other frameworks.
+
+## Where Do I Go from Here?
+
+Try creating your own examples from the [Hyperscala examples directory](https://github.com/darkfrog26/hyperscala/tree/master/examples/src/main/scala/org/hyperscala/examples 
+"Hyperscala examples directory shown in github") read the links provided above, or hop in `#hyperscala` irc on `freenode`. 
 
 
 - - -

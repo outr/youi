@@ -13,6 +13,7 @@ import org.hyperscala.persistence.ValuePersistence
  */
 class Progress extends Container[BodyChild] with BodyChild with HTMLTag {
   lazy val xmlLabel = "progress"
+  override def xmlExpanded = true
 
   def this(name: String = null,
            accessKey: java.lang.Character = null,

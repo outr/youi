@@ -55,10 +55,10 @@ class RealtimeFrame(pageURL: String, singleConnection: Boolean = true) extends t
     Realtime.sendJavaScript(webpage, s"$$('#$identity').get(0).src = '$url';", selector = Some(Selector.id(this)), onlyRealtime = false)
   }
 
-  override def xmlChildren = currentPage.get match {
+  /*override def xmlChildren = currentPage.get match {
     case Some(page) => page.html.contents.asInstanceOf[VisibleContents]
     case None => super.xmlChildren
-  }
+  }*/
 }
 
 object RealtimeFrame extends Module {

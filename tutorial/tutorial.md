@@ -145,7 +145,7 @@ class DynamicContentExample extends Webpage(HelloSite) {
     val button = load[tag.Button]("b1")
     button.clickEvent := RealtimeEvent()
     button.clickEvent.on {
-      //Replace person with a one with new values on button click.
+      //Replace person with one with new values on button click.
       case evt => person := Person("Test User", 987)
     }
 

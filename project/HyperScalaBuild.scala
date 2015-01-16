@@ -10,7 +10,7 @@ object HyperScalaBuild extends Build {
   import Dependencies._
 
   val baseSettings = Defaults.coreDefaultSettings ++ Seq(
-    version := "0.9.3-SNAPSHOT",
+    version := "0.9.3",
     organization := "org.hyperscala",
     scalaVersion := "2.11.4",
     libraryDependencies ++= Seq(
@@ -27,7 +27,7 @@ object HyperScalaBuild extends Build {
     ),
     fork := true,
     scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature"),
-    scalacOptions in (Compile,doc) ++= Seq("-groups", "-implicits", "-diagrams", "-diagrams-dot-restart", "500"),
+//    scalacOptions in (Compile,doc) ++= Seq("-groups", "-implicits", "-diagrams", "-diagrams-dot-restart", "500"),
     resolvers ++= Seq("Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/",
                       "twitter-repo" at "http://maven.twttr.com",
                       "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/"),

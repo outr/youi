@@ -5,27 +5,30 @@ import sbtassembly._
 import sbtassembly.AssemblyPlugin._
 import sbtunidoc.Plugin._
 import spray.revolver.RevolverPlugin._
+import sbtbuildinfo.Plugin._
 
 object HyperScalaBuild extends Build {
   import Dependencies._
 
-  val baseSettings = Defaults.coreDefaultSettings ++ Seq(
-    version := "0.9.3",
+  val baseSettings = Defaults.coreDefaultSettings ++ buildInfoSettings ++ Seq(
+    version := "0.9.4-SNAPSHOT",
     organization := "org.hyperscala",
-    scalaVersion := "2.11.4",
+    scalaVersion := "2.11.5",
     libraryDependencies ++= Seq(
       powerScalaReflect,
       powerScalaHierarchy,
       powerScalaProperty,
+      powerScalaJson,
       jdom,
       jaxen,
       htmlcleaner,
-      musterJawn,
-      musterJackson,
       akkaActors,
       scalaTest
     ),
     fork := true,
+    sourceGenerators in Compile <+= buildInfo,
+    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion, BuildInfoKey.action("buildTime")(System.currentTimeMillis())),
+    buildInfoPackage := "org.hyperscala",
     scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature"),
 //    scalacOptions in (Compile,doc) ++= Seq("-groups", "-implicits", "-diagrams", "-diagrams-dot-restart", "500"),
     resolvers ++= Seq("Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/",
@@ -68,7 +71,7 @@ object HyperScalaBuild extends Build {
     .settings(publishArtifact in Compile := false, publishArtifact in Test := false)
     .aggregate(core, html, javascript, svg, web, service, jquery, connect, realtime, ui, ux, bootstrap, generator, hello, examples, numberGuess, site)
   lazy val core = Project("core", file("core"), settings = createSettings("hyperscala-core"))
-    .settings(libraryDependencies ++= Seq(outrNetCore, argonaut))
+    .settings(libraryDependencies ++= Seq(outrNetCore))
   lazy val html = Project("html", file("html"), settings = createSettings("hyperscala-html"))
     .dependsOn(core)
   lazy val svg = Project("svg", file("svg"), settings = createSettings("hyperscala-svg"))
@@ -77,10 +80,9 @@ object HyperScalaBuild extends Build {
     .dependsOn(html)
   lazy val web = Project("web", file("web"), settings = createSettings("hyperscala-web"))
     .dependsOn(html, javascript, svg)
-    .settings(libraryDependencies ++= Seq(uaDetector, scalaSwing, commonsCodec))
+    .settings(libraryDependencies ++= Seq(uaDetector, commonsCodec))
   lazy val service = Project("service", file("service"), settings = createSettings("hyperscala-service"))
     .dependsOn(web)
-    .settings(libraryDependencies ++= Seq(powerScalaJson))
   lazy val snapSVG = Project("snapsvg", file("snapsvg"), settings = createSettings("hyperscala-snapsvg"))
     .dependsOn(web)
   lazy val jquery = Project("jquery", file("jquery"), settings = createSettings("hyperscala-jquery"))

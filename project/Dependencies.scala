@@ -1,8 +1,8 @@
 import sbt._
 
 object Dependencies {
-  val powerScalaVersion = "1.6.7"
-  val outrNetVersion = "1.1.3"
+  val powerScalaVersion = "1.6.8-SNAPSHOT"
+  val outrNetVersion = "1.1.4-SNAPSHOT"
 
   val powerScalaReflect = "org.powerscala" %% "powerscala-reflect" % powerScalaVersion
   val powerScalaHierarchy = "org.powerscala" %% "powerscala-hierarchy" % powerScalaVersion
@@ -13,21 +13,16 @@ object Dependencies {
   val outrNetServlet = "com.outr.net" %% "outrnet-servlet" % outrNetVersion
   val outrNetJetty = "com.outr.net" %% "outrnet-jetty" % outrNetVersion
 
-  val scalaSwing = "org.scala-lang.modules" %% "scala-swing" % "latest.release"
-
-  val commonsCodec = "commons-codec" % "commons-codec" % "1.9"
+  val commonsCodec = "commons-codec" % "commons-codec" % "1.10"
 
   val jdom = "org.jdom" % "jdom2" % "2.0.5"
   val jaxen = "jaxen" % "jaxen" % "1.1.6"
 
   val htmlcleaner = "net.sourceforge.htmlcleaner" % "htmlcleaner" % "2.10"
-  val akkaActors = "com.typesafe.akka" %% "akka-actor" % "2.3.6"
-  val uaDetector = "net.sf.uadetector" % "uadetector-resources" % "2014.09"
+  val akkaActors = "com.typesafe.akka" %% "akka-actor" % "2.3.8"
+  val uaDetector = "net.sf.uadetector" % "uadetector-resources" % "2014.10"
 
   val githubCore = "org.eclipse.mylyn.github" % "org.eclipse.egit.github.core" % "2.1.5"
-  val argonaut = "io.argonaut" %% "argonaut" % "latest.release"
-  val musterJawn = "org.json4s" %% "muster-codec-jawn" % "0.3.0"
-  val musterJackson = "org.json4s" %% "muster-codec-jackson" % "0.3.0"
 
-  val scalaTest = "org.scalatest" %% "scalatest" % "2.2.2" % "test"
+  val scalaTest = "org.scalatest" %% "scalatest" % "2.2.3" % "test"
 }

@@ -2,14 +2,14 @@ package org.hyperscala.html
 
 import attributes._
 import org.hyperscala._
+import org.hyperscala.event.processor.EventReceivedProcessor
 import org.hyperscala.html.tag._
 import org.hyperscala.css.StyleSheet
-import scala.collection.{Map => ScalaMap}
+import org.json4s.JValue
 import org.powerscala.property.{ListProperty, Property}
 import org.hyperscala.event._
 import org.jdom2.Attribute
 import org.hyperscala.selector.{ClassSelector, PseudoClass, Selector, TagIdSelector}
-import argonaut.JsonObject
 import org.hyperscala.io.HTMLWriter
 
 /**
@@ -188,9 +188,14 @@ trait HTMLTag extends IdentifiableTag with AriaSupport with EventSupport {
     throw new UnsupportedOperationException("%s doesn't support updating value!".format(xmlLabel))
   }
 
-  override def receive(event: String, json: JsonObject) = event match {
+  handle[JavaScriptClientEvent] {
+    case evt => evt.jsEvent
+  }
+
+  override def receive(event: String, json: JValue) = event match {
     case JavaScriptEvent(creator) => {
-      val target = json.stringOption("target").map(id => root[tag.Body].get.byId[HTMLTag](id)).flatten
+      val jse = JValueFormat.as[JSONJavaScriptEvent](json)
+      val target = jse.target.map(id => root[tag.Body].get.byId[HTMLTag](id)).flatten
       val evt = creator(this, target)
       fire(evt)
     }
@@ -286,6 +291,8 @@ trait HTMLTag extends IdentifiableTag with AriaSupport with EventSupport {
 }
 
 object HTMLTag {
+  EventReceivedProcessor.register[JavaScriptClientEvent]("jsEvent")
+
   /**
    * Creates inline CSS in the tag.
    */
@@ -311,3 +318,5 @@ object HTMLTag {
     HTMLTagType.get(tagName).getOrElse(throw new UnsupportedOperationException(s"Unknown tag: $tagName")).create()
   }
 }
+
+case class JavaScriptClientEvent(jsEvent: String, target: scala.Option[String]) extends ClientEvent

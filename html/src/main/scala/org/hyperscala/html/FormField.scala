@@ -1,6 +1,8 @@
 package org.hyperscala.html
 
 import constraints.BodyChild
+import org.hyperscala.event.ClientEvent
+import org.hyperscala.event.processor.EventReceivedProcessor
 import org.powerscala.property.Property
 import org.hyperscala.ChangeTagMessage
 import argonaut._
@@ -9,22 +11,13 @@ import argonaut._
  * @author Matt Hicks <matt@outr.com>
  */
 trait FormField extends BodyChild {
+  FormField
+
   def disabled: Property[Boolean]
   def value: Property[String]
 
-  override def receive(event: String, json: JsonObject) = event match {
-    case "change" => {
-      val m = json.as[ChangeTagMessage]
-      processChange(m.value.orNull)
-      super.receive(event, json)
-    }
-    case _ => super.receive(event, json)
-  }
-
-  protected def processChange(value: Json) = value match {
-    case _ if value == null || value.isNull => changeTo(null)
-    case _ if value.isString => changeTo(value.stringOrEmpty)
-    case _ => throw new RuntimeException(s"Unsupported Json type: ${value.getClass} ($value) for ${getClass.getName} ($xmlLabel / $identity).")
+  handle[ChangeClientEvent] {
+    case evt => changeTo(evt.value)
   }
 
   def changeTo(newValue: String) = {
@@ -38,7 +31,11 @@ trait FormField extends BodyChild {
   }
 }
 
+case class ChangeClientEvent(value: String) extends ClientEvent
+
 object FormField {
+  EventReceivedProcessor.register[ChangeClientEvent]("change")
+
   private val _changingProperty = new ThreadLocal[Property[_]]()
   private val _changingValue = new ThreadLocal[Any]()
   private def clear() = {

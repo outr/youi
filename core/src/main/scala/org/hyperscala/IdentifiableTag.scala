@@ -1,10 +1,9 @@
 package org.hyperscala
 
-import event.EventReceived
+import org.hyperscala.event.ClientEvent
 import org.hyperscala.event.processor.EventReceivedProcessor
 import org.powerscala.event.Intercept
 import org.hyperscala.io.HTMLWriter
-import argonaut.JsonObject
 import org.powerscala.Unique
 
 /**
@@ -27,22 +26,29 @@ trait IdentifiableTag extends Tag {
     case value => value
   }
 
-  def receive(event: String, json: JsonObject): Unit = {
-    eventReceived.fire(EventReceived(event, json)) match {
+  /**
+   * Called when a ClientEvent is received on behalf of this tag.
+   *
+   * @param event the ClientEvent from the client.
+   */
+  def receive(event: ClientEvent): Unit = {
+    eventReceived.fire(event) match {
       case Intercept.Stop => // Handled
-      case _ => warn("IdentifiableTag.receive: Unhandled inbound message. Event: %s, Tag: %s (%s), Message: %s".format(event, getClass.getName, xmlLabel, json))
+      case _ => warn(s"IdentifiableTag.receive: Unhandled inbound message. Event: $event (${event.getClass.getName}), Tag: ${getClass.getName}.")
     }
   }
 
   /**
-   * Handles received events by name.
+   * Convenience method to inject support for received ClientEvents of a specific type.
    *
-   * @param event the name of the event being received
-   * @param f the function to receive the message
+   * @param f the handler function for a matching type.
+   * @param manifest the manifest of the ClientEvent subclass.
+   * @tparam E the ClientEvent type
+   * @return Unit
    */
-  def handle(event: String)(f: JsonObject => Unit): Unit = eventReceived.on {
-    case evt => if (evt.event == event) {
-      f(evt.json)
+  def handle[E <: ClientEvent](f: E => Unit)(implicit manifest: Manifest[E]): Unit = eventReceived.on {
+    case evt => if (evt.getClass.isAssignableFrom(manifest.runtimeClass)) {
+      f(evt.asInstanceOf[E])
       Intercept.Stop
     } else {
       Intercept.Continue

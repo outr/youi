@@ -15,7 +15,6 @@ import org.jdom2.xpath.XPathFactory
 import org.powerscala.IO
 
 import scala.collection.JavaConversions._
-import scala.swing.FileChooser
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -81,7 +80,8 @@ object HTMLToScala {
     builder.build(new StringReader(content)).getRootElement
   }
 
-  def main(args: Array[String]): Unit = {
+  // TODO: extract this out into its own sub-project to remove the Swing dependency out of web
+  /*def main(args: Array[String]): Unit = {
     val website = new Website[MapSession] {
       override protected def createSession(request: HttpRequest, id: String) = new MapSession(id, this)
     }
@@ -119,5 +119,5 @@ object HTMLToScala {
       }
       case _ => // Cancelled open
     }
-  }
+  }*/
 }

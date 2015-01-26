@@ -6,7 +6,6 @@ import org.hyperscala.html._
 import org.hyperscala.html.attributes._
 import org.hyperscala.html.constraints._
 import java.net.URLDecoder
-import argonaut.JsonObject
 import com.outr.net.Method
 
 /**
@@ -60,23 +59,19 @@ class Form extends Container[BodyChild] with BodyChild with HTMLTag {
   lazy val noValidate = PropertyAttribute[String]("novalidate", null)
   lazy val target = PropertyAttribute[Target]("target", null)
 
-  override def receive(event: String, json: JsonObject) = event match {
-    case "change" => {
-      val v = json.string("value")
-      if (v.nonEmpty) {
-        v.split('&').foreach {
-          case pair => {
-            val split = pair.indexOf('=')
-            val key = URLDecoder.decode(pair.substring(0, split), "UTF-8")
-            val value = URLDecoder.decode(pair.substring(split + 1), "UTF-8")
-            byId[FormField](key) match {
-              case Some(f) => f.changeTo(value)
-              case None => warn(s"Unable to find $key by id with value of: $value")
-            }
+  handle[ChangeClientEvent] {
+    case evt => if (evt.value != null && evt.value.nonEmpty) {
+      evt.value.split('&').foreach {
+        case pair => {
+          val split = pair.indexOf('=')
+          val key = URLDecoder.decode(pair.substring(0, split), "UTF-8")
+          val value = URLDecoder.decode(pair.substring(split + 1), "UTF-8")
+          byId[FormField](key) match {
+            case Some(f) => f.changeTo(value)
+            case None => warn(s"Unable to find $key by id with value of: $value")
           }
         }
       }
     }
-    case _ => super.receive(event, json)
   }
 }

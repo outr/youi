@@ -4,8 +4,6 @@ import constraints.BodyChild
 import org.hyperscala.event.ClientEvent
 import org.hyperscala.event.processor.EventReceivedProcessor
 import org.powerscala.property.Property
-import org.hyperscala.ChangeTagMessage
-import argonaut._
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -31,7 +29,7 @@ trait FormField extends BodyChild {
   }
 }
 
-case class ChangeClientEvent(value: String) extends ClientEvent
+case class ChangeClientEvent(tag: HTMLTag, value: String) extends ClientEvent
 
 object FormField {
   EventReceivedProcessor.register[ChangeClientEvent]("change")

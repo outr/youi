@@ -1,9 +1,9 @@
 package org.hyperscala.realtime
 
-import argonaut.Argonaut._
-import argonaut.{CodecJson, Json}
 import com.outr.net.http.session.Session
 import org.hyperscala.connect.{Connect, Connection, Message}
+import org.hyperscala.event.ClientEvent
+import org.hyperscala.event.processor.EventReceivedProcessor
 import org.hyperscala.html._
 import org.hyperscala.html.attributes.InputType
 import org.hyperscala.javascript.dsl.Statement
@@ -26,6 +26,8 @@ import scala.language.reflectiveCalls
  */
 object Realtime extends Module with Logging with Listenable {
   val debug = Property[Boolean]()
+  EventReceivedProcessor.register[InitClientEvent]("init")
+  EventReceivedProcessor.register[JavaScriptMessage]("eval")
 
   def name = "realtime"
 
@@ -41,13 +43,10 @@ object Realtime extends Module with Logging with Listenable {
   override def load[S <: Session](webpage: Webpage[S]) = {
     webpage.head.contents += new tag.Meta(httpEquiv = "expires", content = "0")
     webpage.head.contents += new tag.Script(src = "/js/realtime.js")
-    webpage.body.eventReceived.on {
-      case evt => if (evt.event == "init") {
+    webpage.body.handle[InitClientEvent] {
+      case evt => {
         val realtime = RealtimePage(webpage)
         realtime.initialized()
-        Intercept.Stop
-      } else {
-        Intercept.Continue
       }
     }
     Connect.event[S](webpage) {
@@ -61,7 +60,7 @@ object Realtime extends Module with Logging with Listenable {
     realtime.received(connection, message)
   }
 
-  def broadcast[S <: Session](event: String, message: Json, sendWhenConnected: Boolean, page: Webpage[S]) = {
+  def broadcast[S <: Session](event: String, message: ClientEvent, sendWhenConnected: Boolean, page: Webpage[S]) = {
     page.require(this)
     val realtime = RealtimePage(page)
     realtime.send(event, message, sendWhenConnected = sendWhenConnected)
@@ -104,7 +103,7 @@ object Realtime extends Module with Logging with Listenable {
                                    selector: Option[Selector] = None,
                                    onlyRealtime: Boolean = true,
                                    delay: Int = 0): Unit = {
-    broadcast("eval", JavaScriptMessage(instruction, content, selector.map(s => s.content), delay, parentFrameId(webpage)).asJson, sendWhenConnected = !onlyRealtime, page = webpage)
+    broadcast("eval", JavaScriptMessage(instruction, content, selector.map(s => s.content), delay, parentFrameId(webpage)), sendWhenConnected = !onlyRealtime, page = webpage)
   }
 
   def parentFrameId[S <: Session](webpage: Webpage[S]) = {
@@ -180,8 +179,6 @@ object Realtime extends Module with Logging with Listenable {
   }
 }
 
-case class JavaScriptMessage(instruction: String, content: Option[String] = None, selector: Option[String] = None, delay: Int = 0, parentFrameId: Option[String] = None)
+case class InitClientEvent() extends ClientEvent
 
-object JavaScriptMessage {
-  implicit def JavaScriptMessageCodecJson: CodecJson[JavaScriptMessage] = casecodec5(JavaScriptMessage.apply, JavaScriptMessage.unapply)("instruction", "content", "selector", "delay", "parentFrameId")
-}
+case class JavaScriptMessage(instruction: String, content: Option[String] = None, selector: Option[String] = None, delay: Int = 0, parentFrameId: Option[String] = None) extends ClientEvent

@@ -1,5 +1,6 @@
 package org.hyperscala.realtime
 
+import org.hyperscala.event.{TagClientEvent, ClientEvent}
 import org.hyperscala.web.Webpage
 import org.hyperscala.html._
 import org.hyperscala.javascript.JavaScriptContent
@@ -12,11 +13,8 @@ import org.hyperscala._
 import org.hyperscala.svg.{Svg, SVGTag}
 import org.powerscala.hierarchy.ChildLike
 import org.hyperscala.connect.{Message, Connection, Connect}
-import argonaut.{Json, CodecJson}
-import argonaut.Argonaut._
 import org.powerscala.property.event.PropertyChangeEvent
 import org.powerscala.hierarchy.event.ChildAddedEvent
-import scala.Some
 import org.powerscala.hierarchy.event.ChildRemovedEvent
 import com.outr.net.http.session.Session
 
@@ -44,23 +42,19 @@ class RealtimePage[S <: Session] private(page: Webpage[S]) extends Logging {
   def initialized() = {
   }
 
-  protected[realtime] def received(connection: Connection[S], message: Message) = {
-    synchronized {
-      val json = message.data.obj.getOrElse(throw new RuntimeException(s"Data is not a JSON object: ${message.data}"))
-      val html = json.string("parentId") match {
-        case null | "" => page.html
-        case parentId => page.body.getById[RealtimeFrame](parentId).currentPage().html
+  protected[realtime] def received(connection: Connection[S], message: Message) = synchronized {
+    val html = message.data match {
+      case evt: TagClientEvent => evt.parent match {
+        case Some(parent) => parent.asInstanceOf[RealtimeFrame].currentPage().html
+        case None => page.html
       }
-      val id = json.string("id")
-      val t = id match {
-        case null | "" => Some(html.body)
-        case _ => html.byId[IdentifiableTag](id)
-      }
-      t match {
-        case Some(element) => element.receive(message.event, json)
-        case None => warn(s"Unable to find tag by id: $id to fire event: ${message.event} for message: ${message.data} on page: ${page.getClass.getSimpleName}")
-      }
+      case _ => page.html
     }
+    val tag = message.data match {
+      case evt: TagClientEvent => evt.tag
+      case _ => html.body
+    }
+    tag.receive(message.data)
   }
 
   private def childAdded(evt: ChildAddedEvent) = synchronized {
@@ -196,7 +190,7 @@ class RealtimePage[S <: Session] private(page: Webpage[S]) extends Logging {
     }
   }
 
-  def send(event: String, message: Json, sendWhenConnected: Boolean): Unit = synchronized {
+  def send(event: String, message: ClientEvent, sendWhenConnected: Boolean): Unit = synchronized {
     page.store.get[Webpage[_ <: Session]]("parentPage") match {
       case Some(pp) => RealtimePage(pp).send(event, message, sendWhenConnected)
       case None => connections.send2Client(event, message, sendWhenConnected)
@@ -208,18 +202,13 @@ class RealtimePage[S <: Session] private(page: Webpage[S]) extends Logging {
       case Some(pp) => RealtimePage(pp).send(js.copy(parentFrameId = page.store.get[RealtimeFrame]("realtimeFrame").map(f => f.identity)))
       case None => if (js.instruction.trim.nonEmpty) {
         val message = EvalMessage(js.instruction, js.content, js.parentFrameId)
-        val data = message.asJson
-        connections.send2Client("eval", data, sendWhenConnected = false)
+        connections.send2Client("eval", message, sendWhenConnected = false)
       }
     }
   }
 }
 
-case class EvalMessage(instruction: String, content: Option[String], parentFrameId: Option[String])
-
-object EvalMessage {
-  implicit def EvalMessageCodecJson: CodecJson[EvalMessage] = casecodec3(EvalMessage.apply, EvalMessage.unapply)("instruction", "content", "parentFrameId")
-}
+case class EvalMessage(instruction: String, content: Option[String], parentFrameId: Option[String]) extends ClientEvent
 
 object RealtimePage {
   private val _ignoringChangeProperty = new ThreadLocal[Property[_]]

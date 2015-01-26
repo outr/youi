@@ -1,21 +1,22 @@
 package org.hyperscala.connect
 
 import akka.actor.{Actor, ActorSystem, Props}
-import argonaut.Argonaut._
-import argonaut._
 import com.outr.net.http.{HttpApplication, HttpHandler}
 import com.outr.net.http.content.StringContent
 import com.outr.net.http.request.HttpRequest
 import com.outr.net.http.response.{HttpResponse, HttpResponseStatus}
 import com.outr.net.http.session.Session
+import org.hyperscala.event.ClientEvent
 import org.hyperscala.html._
 import org.hyperscala.javascript.JavaScriptContent
 import org.hyperscala.jquery.jQuery
 import org.hyperscala.module.Module
 import org.hyperscala.web.{Webpage, Website}
+import org.json4s.JsonAST.JValue
 import org.powerscala.concurrent.Time
 import org.powerscala.event.Listenable
 import org.powerscala.event.processor.UnitProcessor
+import org.powerscala.json.JSON
 import org.powerscala.log.Logging
 import org.powerscala.{Unique, Version}
 
@@ -72,11 +73,11 @@ object Connect extends Module with Logging {
     connections(webpage).on(f)
   }
 
-  def on[S <: Session](webpage: Webpage[S], event: String)(f: Json => Unit)(implicit manifest: Manifest[S]) = {
+  def on[S <: Session](webpage: Webpage[S], event: String)(f: ClientEvent => Unit)(implicit manifest: Manifest[S]) = {
     connections(webpage).on(event)(f)
   }
 
-  def send[S <: Session](webpage: Webpage[S], event: String, data: Json, sendWhenConnected: Boolean = true)(implicit manifest: Manifest[S]) = {
+  def send[S <: Session](webpage: Webpage[S], event: String, data: ClientEvent, sendWhenConnected: Boolean = true)(implicit manifest: Manifest[S]) = {
     connections(webpage).send2Client(event, data, sendWhenConnected)
   }
 
@@ -93,38 +94,34 @@ object Connect extends Module with Logging {
 class ConnectHandler[S <: Session](website: Website[S])(implicit manifest: Manifest[S]) extends HttpHandler {
   def onReceive(request: HttpRequest, response: HttpResponse) = request.contentString match {
     case Some(content) => {
-      val jsonOption = request.url.filename match {
-        case "receive" => content.decodeOption[ReceiveRequest]
-        case "send" => content.decodeOption[SendRequest]
+      val json = JSON.parseJSON(content)
+      val o = request.url.filename match {
+        case "receive" => JSON.readAndGet[ReceiveRequest](json)
+        case "send" => JSON.readAndGet[SendRequest](json)
       }
-      jsonOption match {
-        case Some(json) => {
-          website.pages.byId[Webpage[S]](json.pageId) match {
-            case Some(page) => {
-              page.checkIn() // Let the page know it's still in-use
-              val conns = Connect.connections(page)
-              conns.byId(json.connectionId) match {
-                case Some(connection) => request.url.filename match {
-                  case "receive" => {
-                    val receive = json.asInstanceOf[ReceiveRequest]
-                    connection.receive(response, receive.resend)
-                  }
-                  case "send" => {
-                    val send = json.asInstanceOf[SendRequest]
-                    send.messages.foreach {
-                      case message => connection.send2Server(message)
-                    }
-                    val r = SendResponse("OK")
-                    response.copy(content = StringContent(r.asJson.spaces2), status = HttpResponseStatus.OK)
-                  }
+      website.pages.byId[Webpage[S]](o.pageId) match {
+        case Some(page) => {
+          page.checkIn() // Let the page know it's still in-use
+          val conns = Connect.connections(page)
+          conns.byId(o.connectionId) match {
+            case Some(connection) => request.url.filename match {
+              case "receive" => {
+                val receive = o.asInstanceOf[ReceiveRequest]
+                connection.receive(response, receive.resend)
+              }
+              case "send" => {
+                val send = o.asInstanceOf[SendRequest]
+                send.messages.foreach {
+                  case message => connection.send2Server(message)
                 }
-                case None => Connect.createError(response, Connect.Error.ConnectionNotFound, "Connection not found")
+                val r = SendResponse("OK")
+                response.copy(content = StringContent(JSON.renderJSON(JSON.parseAndGet(r))), status = HttpResponseStatus.OK)
               }
             }
-            case None => Connect.createError(response, Connect.Error.PageNotFound, s"Page not found (id: ${json.pageId})")
+            case None => Connect.createError(response, Connect.Error.ConnectionNotFound, "Connection not found")
           }
         }
-        case None => Connect.createError(response, Connect.Error.InvalidRequest, s"JSON ${request.url.filename} data was invalid. Actual content: [$content]")
+        case None => Connect.createError(response, Connect.Error.PageNotFound, s"Page not found (id: ${o.pageId})")
       }
     }
     case None => Connect.createError(response, Connect.Error.NoContent, "No content was sent in the request.")
@@ -134,7 +131,7 @@ class ConnectHandler[S <: Session](website: Website[S])(implicit manifest: Manif
 class Connections[S <: Session](val webpage: Webpage[S])(implicit manifest: Manifest[S]) extends Listenable with Logging {
   private var map = Map.empty[String, Connection[S]]
 
-  private var _backlog = List.empty[(String, Json)]
+  private var _backlog = List.empty[(String, ClientEvent)]
   def backlog = _backlog
 
   val created = new UnitProcessor[Connection[S]]("created")
@@ -155,7 +152,7 @@ class Connections[S <: Session](val webpage: Webpage[S])(implicit manifest: Mani
 
   def on(f: ((Connection[S], Message)) => Unit) = messageEvent.on(f)
 
-  def on(event: String)(f: Json => Unit) = {
+  def on(event: String)(f: ClientEvent => Unit) = {
     messageEvent.on {
       case (connection, message) => if (message.event == event) {
         f(message.data)
@@ -170,7 +167,7 @@ class Connections[S <: Session](val webpage: Webpage[S])(implicit manifest: Mani
     connection
   }
 
-  def send2Client(event: String, data: Json, sendWhenConnected: Boolean) = synchronized {
+  def send2Client(event: String, data: ClientEvent, sendWhenConnected: Boolean) = synchronized {
     if (webpage.rendered) {
       map.values.foreach(c => c.send2Client(event, data))
     } else if (sendWhenConnected) {
@@ -207,7 +204,7 @@ class Connection[S <: Session](connections: Connections[S]) extends Logging {
 
   def update() = {}
 
-  def send2Client(event: String, data: Json) = synchronized {
+  def send2Client(event: String, data: ClientEvent) = synchronized {
     val m = Message(nextServer2ClientId(), event, data)
     queue = m :: queue
   }
@@ -245,7 +242,7 @@ class Connection[S <: Session](connections: Connections[S]) extends Logging {
     }
     val q = sentQueue
     val r = ReceiveResponse("OK", q)
-    val json = r.asJson.spaces2
+    val json = JSON.renderJSON(JSON.parseAndGet(r))
     response.copy(content = StringContent(json), status = HttpResponseStatus.OK)
   }
 }
@@ -258,33 +255,13 @@ trait Request {
 
 case class ReceiveRequest(pageId: String, connectionId: String, timestamp: Long, resend: Boolean) extends Request
 
-object ReceiveRequest {
-  implicit def ReceiveRequestCodecJson: CodecJson[ReceiveRequest] = casecodec4(ReceiveRequest.apply, ReceiveRequest.unapply)("pageId", "connectionId", "timestamp", "resend")
-}
-
 case class SendRequest(pageId: String, connectionId: String, timestamp: Long, messages: List[Message]) extends Request
-
-object SendRequest {
-  implicit def SendRequestCodecJson: CodecJson[SendRequest] = casecodec4(SendRequest.apply, SendRequest.unapply)("pageId", "connectionId", "timestamp", "messages")
-}
 
 case class SendResponse(status: String)
 
-object SendResponse {
-  implicit def SendResponseCodecJson: CodecJson[SendResponse] = casecodec1(SendResponse.apply, SendResponse.unapply)("status")
-}
-
 case class ReceiveResponse(status: String, messages: List[Message])
 
-object ReceiveResponse {
-  implicit def ReceiveResonseCodecJson: CodecJson[ReceiveResponse] = casecodec2(ReceiveResponse.apply, ReceiveResponse.unapply)("status", "messages")
-}
-
-case class Message(id: Int, event: String, data: Json)
-
-object Message {
-  implicit def MessageCodecJson: CodecJson[Message] = casecodec3(Message.apply, Message.unapply)("id", "event", "data")
-}
+case class Message(id: Int, event: String, data: ClientEvent)
 
 case class ConnectSession[S <: Session](page: Webpage[S]) extends JavaScriptContent {
   def content = {   // Generate a new connection each rendering of the content

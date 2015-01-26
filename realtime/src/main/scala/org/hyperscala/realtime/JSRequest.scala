@@ -8,7 +8,6 @@ import org.powerscala.event.Intercept
 import org.powerscala.log.Logging
 import org.powerscala.reflect._
 import org.hyperscala.javascript.dsl.JSFunction0
-import argonaut.JsonObject
 import com.outr.net.http.session.Session
 
 /**
@@ -17,6 +16,7 @@ import com.outr.net.http.session.Session
  *
  * @author Matt Hicks <matt@outr.com>
  */
+/*
 object JSRequest extends Module with Logging {
   val name = "jsrequest"
   val version = Version(1)
@@ -71,4 +71,4 @@ object JSRequest extends Module with Logging {
       f(responses)
     }
   }
-}
+}*/

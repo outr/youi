@@ -101,7 +101,7 @@ object HyperScalaBuild extends Build {
     .settings(publishArtifact := false)
   // Examples and Site
   lazy val hello = Project("hello", file("hello"), settings = createSettings("hyperscala-hello") ++ Revolver.settings)
-    .dependsOn(web)
+    .dependsOn(web, realtime)
     .settings(libraryDependencies ++= Seq(outrNetServlet, outrNetJetty))
     .settings(mainClass := Some("org.hyperscala.hello.HelloSite"))
   lazy val examples = Project("examples", file("examples"), settings = createSettings("hyperscala-examples"))

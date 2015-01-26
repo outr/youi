@@ -1,6 +1,5 @@
 package org.hyperscala.html.tag
 
-import argonaut.Json
 import org.hyperscala._
 import css.StyleSheet
 import html.{FormField, HTMLTag}
@@ -118,17 +117,6 @@ class Select extends Container[Option] with BodyChild with HTMLTag with FormFiel
     val selected = selectedOptions()
     contents.foreach {
       case o => o.selected := selected.contains(o)
-    }
-  }
-
-  override protected def processChange(value: Json) = {
-    if (value != null && value.isArray) {
-      val options = value.array.fold(List.empty[Option])(a => a.toList.flatMap(j => optionByValue(j.stringOrEmpty)))
-      FormField.ignorePropertyChange(selectedOptions, options) {
-        selectedOptions := options
-      }
-    } else {
-      super.processChange(value)
     }
   }
 

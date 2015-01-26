@@ -5,7 +5,6 @@ import org.hyperscala.javascript.{JavaScriptContent, JavaScriptString}
 import org.hyperscala.selector.Selector
 import org.powerscala.event.processor.UnitProcessor
 import org.powerscala.event.Intercept
-import org.hyperscala.event.EventReceived
 import org.hyperscala.jquery.dsl._
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.javascript.dsl.Statement
@@ -61,7 +60,7 @@ trait jQueryComponent extends WrappedComponent[HTMLTag] {
     }
   }
 
-  def event(eventType: String): UnitProcessor[jQueryEvent] = event(eventType, jQueryEvent.EmptyMapper)
+  /*def event(eventType: String): UnitProcessor[jQueryEvent] = event(eventType, jQueryEvent.EmptyMapper)
 
   def event[Event](eventType: String, mapper: JSMapper[Event])(implicit manifest: Manifest[Event]) = {
     val localizedEventType = s"$eventType.${getClass.getSimpleName}"
@@ -82,13 +81,14 @@ trait jQueryComponent extends WrappedComponent[HTMLTag] {
       case _ => Intercept.Continue
     }
     processor
-  }
+  }*/
 }
 
 class jQueryEvent
 
+/*
 object jQueryEvent extends jQueryEvent {
   val EmptyMapper = JSMapper[jQueryEvent](Nil, JavaScriptString("{}"), (evt: EventReceived) => jQueryEvent)
 }
 
-case class JSMapper[Event](variables: List[String], variables2JSON: JavaScriptContent, converter: EventReceived => Event)
+case class JSMapper[Event](variables: List[String], variables2JSON: JavaScriptContent, converter: EventReceived => Event)*/

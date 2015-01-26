@@ -27,6 +27,7 @@ object EventReceivedProcessor extends JSONConverter[ClientEvent, JObject] {
   }
 
   override def fromJSON(v: JObject) = {
+    println(v.values)
     val eventType = v.values("eventType").asInstanceOf[String]
     val clazz = classMapping(eventType)
     CaseClassSupport.converter(clazz).fromJSON(v).asInstanceOf[ClientEvent]

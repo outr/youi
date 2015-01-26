@@ -7,7 +7,6 @@ import io.HTMLWriter
 import org.hyperscala.html.attributes._
 import org.hyperscala.html.constraints._
 import com.outr.net.Method
-import argonaut.{Json, JsonObject}
 
 /**
  * NOTE: This file has been generated. Do not modify directly!
@@ -135,14 +134,13 @@ class Input extends BodyChild with HTMLTag with FormField {
 
   override def formValue = value
 
-  override protected def processChange(value: Json) = {
-    if (value != null && value.isBool && List(InputType.CheckBox, InputType.Radio).contains(inputType())) {
-      val b = value.bool.getOrElse(false)
-      FormField.ignorePropertyChange(checked, b) {
-        checked := b
-      }
-    } else {
-      super.processChange(value)
+
+  override def changeTo(newValue: String) = if (Set(InputType.CheckBox, InputType.Radio).contains(inputType())) {
+    val b = newValue.toBoolean
+    FormField.ignorePropertyChange(checked, b) {
+      checked := b
     }
+  } else {
+    super.changeTo(newValue)
   }
 }

@@ -17,6 +17,8 @@ import org.hyperscala.io.HTMLWriter
  * @author Matt Hicks <matt@outr.com>
  */
 trait HTMLTag extends IdentifiableTag with AriaSupport with EventSupport {
+  JavaScriptEvent   // Make sure event types are registered in the system
+
   lazy val accessKey = PropertyAttribute[Char]("accesskey", -1.toChar)
   lazy val clazz = new PropertyAttribute[List[String]]("class", Nil) with ListProperty[String] {
     changing.on {     // Make sure there are no duplicates in clazz
@@ -188,35 +190,11 @@ trait HTMLTag extends IdentifiableTag with AriaSupport with EventSupport {
     throw new UnsupportedOperationException("%s doesn't support updating value!".format(xmlLabel))
   }
 
-  handle[JavaScriptClientEvent] {
-    case evt => evt.jsEvent
+  override def receive(event: ClientEvent) = event match {
+    case evt: JavaScriptEvent => fire(evt)
+    case _ => super.receive(event)
   }
 
-  override def receive(event: String, json: JValue) = event match {
-    case JavaScriptEvent(creator) => {
-      val jse = JValueFormat.as[JSONJavaScriptEvent](json)
-      val target = jse.target.map(id => root[tag.Body].get.byId[HTMLTag](id)).flatten
-      val evt = creator(this, target)
-      fire(evt)
-    }
-    case "keydown" | "keyup" | "keypress" => {  // Fires key events on this tag
-      val eventType = event
-      val altKey = json.boolean("altKey")
-      val char = json.int("char")
-      val ctrlKey = json.boolean("ctrlKey")
-      val key = json.int("key")
-      val locale = json.string("locale")
-      val location = json.long("location", 0L)
-      val metaKey = json.boolean("metaKey")
-      val repeat = json.boolean("repeat")
-      val shiftKey = json.boolean("shiftKey")
-      val target = json.stringOption("target").map(id => root[tag.Body].get.byId[HTMLTag](id)).flatten
-      val evt = JavaScriptEvent.createKeyEvent(this, target, eventType, altKey, char, ctrlKey, key, locale, location, metaKey, repeat, shiftKey)
-      fire(evt)
-    }
-    case _ => super.receive(event, json)
-  }
-  
   protected def fire(event: JavaScriptEvent) = event match {
     case evt: AfterPrintEvent => afterPrintEvent.fire(evt)
     case evt: BeforePrintEvent => beforePrintEvent.fire(evt)
@@ -291,8 +269,6 @@ trait HTMLTag extends IdentifiableTag with AriaSupport with EventSupport {
 }
 
 object HTMLTag {
-  EventReceivedProcessor.register[JavaScriptClientEvent]("jsEvent")
-
   /**
    * Creates inline CSS in the tag.
    */
@@ -318,5 +294,3 @@ object HTMLTag {
     HTMLTagType.get(tagName).getOrElse(throw new UnsupportedOperationException(s"Unknown tag: $tagName")).create()
   }
 }
-
-case class JavaScriptClientEvent(jsEvent: String, target: scala.Option[String]) extends ClientEvent

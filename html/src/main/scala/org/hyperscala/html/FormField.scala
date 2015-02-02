@@ -1,8 +1,8 @@
 package org.hyperscala.html
 
 import constraints.BodyChild
-import org.hyperscala.event.ClientEvent
-import org.hyperscala.event.processor.EventReceivedProcessor
+import org.hyperscala.event.BrowserEvent
+import org.powerscala.json.TypedSupport
 import org.powerscala.property.Property
 
 /**
@@ -14,7 +14,7 @@ trait FormField extends BodyChild {
   def disabled: Property[Boolean]
   def value: Property[String]
 
-  handle[ChangeClientEvent] {
+  handle[ChangeBrowserEvent] {
     case evt => changeTo(evt.value)
   }
 
@@ -29,10 +29,10 @@ trait FormField extends BodyChild {
   }
 }
 
-case class ChangeClientEvent(tag: HTMLTag, value: String) extends ClientEvent
+case class ChangeBrowserEvent(tag: HTMLTag, value: String) extends BrowserEvent
 
 object FormField {
-  EventReceivedProcessor.register[ChangeClientEvent]("change")
+  TypedSupport.register("change", classOf[ChangeBrowserEvent])
 
   private val _changingProperty = new ThreadLocal[Property[_]]()
   private val _changingValue = new ThreadLocal[Any]()

@@ -1,6 +1,6 @@
 package org.hyperscala
 
-import org.hyperscala.event.ClientEvent
+import org.hyperscala.event.BrowserEvent
 import org.hyperscala.event.processor.EventReceivedProcessor
 import org.powerscala.event.Intercept
 import org.hyperscala.io.HTMLWriter
@@ -27,18 +27,6 @@ trait IdentifiableTag extends Tag {
   }
 
   /**
-   * Called when a ClientEvent is received on behalf of this tag.
-   *
-   * @param event the ClientEvent from the client.
-   */
-  def receive(event: ClientEvent): Unit = {
-    eventReceived.fire(event) match {
-      case Intercept.Stop => // Handled
-      case _ => warn(s"IdentifiableTag.receive: Unhandled inbound message. Event: $event (${event.getClass.getName}), Tag: ${getClass.getName}.")
-    }
-  }
-
-  /**
    * Convenience method to inject support for received ClientEvents of a specific type.
    *
    * @param f the handler function for a matching type.
@@ -46,10 +34,15 @@ trait IdentifiableTag extends Tag {
    * @tparam E the ClientEvent type
    * @return Unit
    */
-  def handle[E <: ClientEvent](f: E => Unit)(implicit manifest: Manifest[E]): Unit = eventReceived.on {
+  def handle[E <: BrowserEvent](f: E => Unit, condition: E => Boolean = (e: E) => true)(implicit manifest: Manifest[E]): Unit = eventReceived.on {
     case evt => if (evt.getClass.isAssignableFrom(manifest.runtimeClass)) {
-      f(evt.asInstanceOf[E])
-      Intercept.Stop
+      val e = evt.asInstanceOf[E]
+      if (condition(e)) {
+        f(e)
+        Intercept.Stop
+      } else {
+        Intercept.Continue
+      }
     } else {
       Intercept.Continue
     }

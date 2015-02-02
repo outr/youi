@@ -10,8 +10,8 @@ import sbtbuildinfo.Plugin._
 object HyperScalaBuild extends Build {
   import Dependencies._
 
-  val baseSettings = Defaults.coreDefaultSettings ++ buildInfoSettings ++ Seq(
-    version := "0.9.4-SNAPSHOT",
+  val baseSettings = Defaults.coreDefaultSettings ++ Seq(
+    version := "0.10.0-SNAPSHOT",
     organization := "org.hyperscala",
     scalaVersion := "2.11.5",
     libraryDependencies ++= Seq(
@@ -26,9 +26,6 @@ object HyperScalaBuild extends Build {
       scalaTest
     ),
     fork := true,
-    sourceGenerators in Compile <+= buildInfo,
-    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion, BuildInfoKey.action("buildTime")(System.currentTimeMillis())),
-    buildInfoPackage := "org.hyperscala",
     scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature"),
 //    scalacOptions in (Compile,doc) ++= Seq("-groups", "-implicits", "-diagrams", "-diagrams-dot-restart", "500"),
     resolvers ++= Seq("Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/",
@@ -69,9 +66,12 @@ object HyperScalaBuild extends Build {
 
   lazy val root = Project("root", file("."), settings = unidocSettings ++ createSettings("hyperscala-root"))
     .settings(publishArtifact in Compile := false, publishArtifact in Test := false)
-    .aggregate(core, html, javascript, svg, web, service, jquery, connect, realtime, ui, ux, bootstrap, generator, hello, examples, numberGuess, site)
-  lazy val core = Project("core", file("core"), settings = createSettings("hyperscala-core"))
+    .aggregate(core, html, javascript, svg, web, jquery, realtime, ui, ux, bootstrap, generator, hello, examples, numberGuess, site)
+  lazy val core = Project("core", file("core"), settings = createSettings("hyperscala-core") ++ buildInfoSettings)
     .settings(libraryDependencies ++= Seq(outrNetCore))
+    .settings(sourceGenerators in Compile <+= buildInfo,
+      buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion, BuildInfoKey.action("buildTime")(System.currentTimeMillis())),
+      buildInfoPackage := "org.hyperscala")
   lazy val html = Project("html", file("html"), settings = createSettings("hyperscala-html"))
     .dependsOn(core)
   lazy val svg = Project("svg", file("svg"), settings = createSettings("hyperscala-svg"))
@@ -80,17 +80,13 @@ object HyperScalaBuild extends Build {
     .dependsOn(html)
   lazy val web = Project("web", file("web"), settings = createSettings("hyperscala-web"))
     .dependsOn(html, javascript, svg)
-    .settings(libraryDependencies ++= Seq(uaDetector, commonsCodec))
-  lazy val service = Project("service", file("service"), settings = createSettings("hyperscala-service"))
-    .dependsOn(web)
+    .settings(libraryDependencies ++= Seq(uaDetector, commonsCodec, outrNetCommunicate))
   lazy val snapSVG = Project("snapsvg", file("snapsvg"), settings = createSettings("hyperscala-snapsvg"))
     .dependsOn(web)
   lazy val jquery = Project("jquery", file("jquery"), settings = createSettings("hyperscala-jquery"))
     .dependsOn(web)
-  lazy val connect = Project("connect", file("connect"), settings = createSettings("hyperscala-connect"))
-    .dependsOn(jquery)
   lazy val realtime = Project("realtime", file("realtime"), settings = createSettings("hyperscala-realtime"))
-    .dependsOn(web, jquery, connect)
+    .dependsOn(web, jquery)
   lazy val ui = Project("ui", file("ui"), settings = createSettings("hyperscala-ui"))
     .dependsOn(web, realtime, jquery)
   lazy val ux = Project("ux", file("ux"), settings = createSettings("hyperscala-ux"))
@@ -105,7 +101,7 @@ object HyperScalaBuild extends Build {
     .settings(libraryDependencies ++= Seq(outrNetServlet, outrNetJetty))
     .settings(mainClass := Some("org.hyperscala.hello.HelloSite"))
   lazy val examples = Project("examples", file("examples"), settings = createSettings("hyperscala-examples"))
-    .dependsOn(web, ui, ux, bootstrap, snapSVG, connect, hello)
+    .dependsOn(web, ui, ux, bootstrap, snapSVG, hello)
     .settings(libraryDependencies ++= Seq(outrNetServlet))
   lazy val numberGuess = Project("numberguess", file("numberguess"), settings = createSettings("hyperscala-numberguess") ++ Revolver.settings)
     .dependsOn(ui)

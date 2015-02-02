@@ -190,7 +190,7 @@ class RealtimePage[S <: Session] private(page: Webpage[S]) extends Logging {
     }
   }
 
-  def send(event: String, message: ClientEvent, sendWhenConnected: Boolean): Unit = synchronized {
+  def send(event: String, message: ServerEvent, sendWhenConnected: Boolean): Unit = synchronized {
     page.store.get[Webpage[_ <: Session]]("parentPage") match {
       case Some(pp) => RealtimePage(pp).send(event, message, sendWhenConnected)
       case None => connections.send2Client(event, message, sendWhenConnected)

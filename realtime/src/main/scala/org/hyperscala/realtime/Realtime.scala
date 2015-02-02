@@ -2,8 +2,7 @@ package org.hyperscala.realtime
 
 import com.outr.net.http.session.Session
 import org.hyperscala.connect.{Connect, Connection, Message}
-import org.hyperscala.event.ClientEvent
-import org.hyperscala.event.processor.EventReceivedProcessor
+import org.hyperscala.event.BrowserEvent
 import org.hyperscala.html._
 import org.hyperscala.html.attributes.InputType
 import org.hyperscala.javascript.dsl.Statement
@@ -16,6 +15,7 @@ import org.hyperscala.web.{Webpage, Website}
 import org.hyperscala.{Container, Markup}
 import org.powerscala.Version
 import org.powerscala.event.{Intercept, Listenable}
+import org.powerscala.json.TypedSupport
 import org.powerscala.log.Logging
 import org.powerscala.property.Property
 
@@ -26,8 +26,8 @@ import scala.language.reflectiveCalls
  */
 object Realtime extends Module with Logging with Listenable {
   val debug = Property[Boolean]()
-  EventReceivedProcessor.register[InitClientEvent]("init")
-  EventReceivedProcessor.register[JavaScriptMessage]("eval")
+  TypedSupport.register("init", classOf[InitBrowserEvent])
+  TypedSupport.register("eval", classOf[JavaScriptMessage])
 
   def name = "realtime"
 
@@ -43,7 +43,7 @@ object Realtime extends Module with Logging with Listenable {
   override def load[S <: Session](webpage: Webpage[S]) = {
     webpage.head.contents += new tag.Meta(httpEquiv = "expires", content = "0")
     webpage.head.contents += new tag.Script(src = "/js/realtime.js")
-    webpage.body.handle[InitClientEvent] {
+    webpage.body.handle[InitBrowserEvent] {
       case evt => {
         val realtime = RealtimePage(webpage)
         realtime.initialized()
@@ -60,7 +60,7 @@ object Realtime extends Module with Logging with Listenable {
     realtime.received(connection, message)
   }
 
-  def broadcast[S <: Session](event: String, message: ClientEvent, sendWhenConnected: Boolean, page: Webpage[S]) = {
+  def broadcast[S <: Session](event: String, message: ServerEvent, sendWhenConnected: Boolean, page: Webpage[S]) = {
     page.require(this)
     val realtime = RealtimePage(page)
     realtime.send(event, message, sendWhenConnected = sendWhenConnected)
@@ -179,6 +179,6 @@ object Realtime extends Module with Logging with Listenable {
   }
 }
 
-case class InitClientEvent() extends ClientEvent
+case class InitBrowserEvent(tag: HTMLTag) extends BrowserEvent
 
-case class JavaScriptMessage(instruction: String, content: Option[String] = None, selector: Option[String] = None, delay: Int = 0, parentFrameId: Option[String] = None) extends ClientEvent
+case class JavaScriptMessage(instruction: String, content: Option[String] = None, selector: Option[String] = None, delay: Int = 0, parentFrameId: Option[String] = None) extends ServerEvent

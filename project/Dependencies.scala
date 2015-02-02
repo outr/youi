@@ -11,6 +11,8 @@ object Dependencies {
 
   val outrNetCore = "com.outr.net" %% "outrnet-core" % outrNetVersion
   val outrNetServlet = "com.outr.net" %% "outrnet-servlet" % outrNetVersion
+  val outrNetService = "com.outr.net" %% "outrnet-service" % outrNetVersion
+  val outrNetCommunicate = "com.outr.net" %% "outrnet-communicate" % outrNetVersion
   val outrNetJetty = "com.outr.net" %% "outrnet-jetty" % outrNetVersion
 
   val commonsCodec = "commons-codec" % "commons-codec" % "1.10"

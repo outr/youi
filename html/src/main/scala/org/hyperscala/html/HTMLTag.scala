@@ -190,9 +190,8 @@ trait HTMLTag extends IdentifiableTag with AriaSupport with EventSupport {
     throw new UnsupportedOperationException("%s doesn't support updating value!".format(xmlLabel))
   }
 
-  override def receive(event: ClientEvent) = event match {
-    case evt: JavaScriptEvent => fire(evt)
-    case _ => super.receive(event)
+  handle[JavaScriptEvent] {
+    case evt => fire(evt)
   }
 
   protected def fire(event: JavaScriptEvent) = event match {

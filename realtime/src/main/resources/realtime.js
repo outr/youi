@@ -1,358 +1,189 @@
-var debug = false;
+var realtime = {
+    /**
+     * The Communicate instance. Created on call to 'init'.
+     */
+    communicate: null,
+    /**
+     * Message / Event listeners object.
+     */
+    listeners: {},
+    /**
+     * Debug mode logs enabled logs additional information to the console in the browser.
+     */
+    debug: false,
+    /**
+     * Called by Realtime to initialize the communication connection.
+     *
+     * @param settings the settings information for Realtime and Communicate
+     */
+    init: function(settings) {
+        this.debug = settings.debug;
 
-HyperscalaConnect.on('eval', function(data) {
-    try {
-        realtimeEvaluate(data, debug);
-    } catch(err) {
-        log('Failed to evaluate instruction: ' + JSON.stringify(data) + ' - ' + err);
+        var r = this;
+        this.communicate = new Communicate(settings);
+        this.communicate.send({                         // Initialize the connection with Realtime
+            type: 'init',
+            siteId: settings.siteId,
+            pageId: settings.pageId
+        });
+        this.communicate.on('json', function(obj) {
+            if (obj.type != null) {
+                r.fire(obj.type, obj);
+                r.fire('*', obj);
+                r.log('Received JSON', obj);
+            }
+        });
+        this.communicate.on('open', function(evt) {
+            r.fire('open', evt);
+            r.log('Connection opened.');
+        });
+        this.communicate.on('close', function(evt) {
+            r.fire('close', evt);
+            r.log('Connection closed.');
+        });
+        this.communicate.on('error', function(evt) {
+            r.fire('error', evt);
+            r.log('Error occurred.', evt.data);
+        });
+        this.communicate.connect();
+    },
+    /**
+     * Sends a message to the server. Non-String values are stringified via JSON.stringify before sending.
+     *
+     * @param message the message to send
+     */
+    send: function(message) {
+        if (this.communicate == null) {
+            this.error('Unable to send message, Realtime has not yet initialized!', message);
+        } else {
+            this.communicate.send(message);
+        }
+    },
+    /**
+     * Fire an event to the listeners.
+     *
+     * @param type the listeners group type
+     * @param obj the event that is actually fired
+     */
+    fire: function(type, obj) {
+        if (this.listeners[type]) {
+            for (var i = 0; i < this.listeners[type].length; i++) {
+                this.listeners[type][i](obj);
+            }
+        }
+    },
+    /**
+     * Add a listener to a specific type of event.
+     *
+     * @param type the listeners group type
+     * @param handler the function handler for events
+     */
+    on: function(type, handler) {
+        if (this.listeners[type] == null) {
+            this.listeners[type] = [];
+        }
+        this.listeners[type].push(handler);
+    },
+    /**
+     * Used for debug logging. Calls to this function are ignored if 'debug' is disabled.
+     *
+     * @param message the message to log
+     * @param obj optional object that is stringified on the end if provided
+     */
+    log: function(message, obj) {
+        if (this.debug) {
+            console.log('Realtime (' + new Date() + '): ' + message + (obj != null ? ' - ' + JSON.stringify(obj) : ''));
+        }
+    },
+    error: function(message, obj) {
+        console.log('Realtime (' + new Date() + '): ' + message + (obj != null ? ' - ' + JSON.stringify(obj) : ''));
+        // TODO: send message to server via AJAX call!
+    },
+    event: function(evt, data, confirmMessage, preventDefault, fireChange, delay) {
+        try {
+            if (evt.src) evt.target = evt.srcElement;       // Handling for older versions of IE
+
+            var element = evt.currentTarget;                // Current target is where the listener was added, target is what fired it
+            var id = element.getAttribute('id');
+
+            if (id != null) {
+                var content = {
+                    id: id,
+                    type: evt.type,
+                    target: evt.target.getAttribute('id'),
+                    data: data
+                };
+                if ('keydown, keypress, keyup'.indexOf(evt.type) != -1) {
+                    content.altKey = evt.altKey;
+                    content.char = evt.charCode;
+                    content.ctrlKey = evt.ctrlKey;
+                    content.key = evt.keyCode;
+                    content.locale = evt.locale;
+                    content.location = evt.location;
+                    content.metaKey = evt.metaKey;
+                    content.repeat = evt.repeat;
+                    content.shiftKey = evt.shiftKey;
+                } else if (evt.type == 'change') {
+                    content.value = this.changeValue(element);
+                }
+
+                var r = this;
+                var f = function() {
+                    if (fireChange) {
+                        r.send(jQuery.extend(content, {
+                            type: 'change',
+                            value: r.changeValue(element)
+                        }));
+                    }
+                    r.send(content);
+                };
+
+                if (confirmMessage == null || confirm(confirmMessage)) {
+                    if (delay != 0) {
+                        setTimeout(f, delay);
+                    } else {
+                        f();
+                    }
+                }
+            } else {
+                this.error('Element ID is null for realtime.event.' + evt.type);
+            }
+        } catch(err) {
+            this.error('Error occurred handling a JavaScript event: ' + err.message);
+        }
+    },
+    changeValue: function(element) {
+        var tagName = element.tagName.toLowerCase();
+        var value = null;
+        if (tagName == 'input') {
+            var type = element.type.toLowerCase();
+            if (type == 'text') {
+                value = element.value;
+            } else if (type == 'checkbox' || type == 'radio') {
+                value = element.checked;
+            } else {
+                this.error('Unsupported input type for change event: ' + type);
+            }
+        } else if (tagName == 'form') {
+            var formData = $(element).serializeForm();
+            value = '';
+            jQuery.each(formData, function(k, v) {
+                if (value != '') {
+                    value += '&';
+                }
+                value += k;
+                value += '=';
+                value += v;
+            });
+        } else {
+            this.error('Unsupported tag for change event: ' + tagName);
+        }
+        return value;
     }
-});
-
-HyperscalaConnect.on('jquery.call', function(data) {
-    try {
-        var selector = data['selector'];
-        var call = data['call'];
-        var args = data['args'];
-        log('jquery.call: ' + selector + ', ' + call + ', ' + args);
-        $(selector)[call](args);
-    } catch(err) {
-        log('Failed to evaluate instruction: ' + JSON.stringify(data) + ' - ' + err);
-    }
-});
-
-window.error = function(msg, url, line, col, error) {
-    console.log('Error occurred: ' + msg + ' (' + url + ':' + line + ',' + col + ')');
-    console.log(error.stack);
 };
 
-realtimeSend(null, 'init', {});
-
-/**
- * Add this call to a JavaScript event to fire the event down to the server.
- *
- * @param event
- * @param data
- * @param confirmation
- * @param preventDefault
- * @param fireChange
- * @param delay
- */
-function realtimeEvent(event, data, confirmation, preventDefault, fireChange, delay) {
-    try {
-        if (event.srcElement) event.target = event.srcElement;
-
-        var element = $(event.currentTarget);
-        var id = element.attr('id');
-        if (id == null) {
-            element = $(event.target);
-            id = element.attr('id');
-        }
-
-        if (id != null) {
-            var eventType = event.type;
-            var content = {
-                id: id,
-                target: $(event.target).attr('id'),
-                data: data
-            };
-
-            // Update the content with specific data
-            if ('keydown, keypress, keyup'.indexOf(eventType) != -1) {
-                realtimeUpdateKeyEvent(event, content);
-            } else if (eventType == 'change') {
-                content.value = realtimeChangeEventValue(element);
-            }
-
-            var f = function() {
-                if (fireChange) {
-                    realtimeSend(id, 'change', jQuery.extend(content, {
-                        value: realtimeChangeEventValue(element)
-                    }));
-                }
-                HyperscalaConnect.send(eventType, content);
-            };
-
-            if (confirmation == null || confirm(confirmation)) {
-                if (delay != 0) {
-                    setTimeout(f, delay);
-                } else {
-                    f();
-                }
-            }
-
-            return !preventDefault;
-        } else {
-            log('realtimeEvent: element id is null, so not firing event.');
-        }
-    } catch(err) {
-        // TODO: add support to send errors to the server (if possible)
-        alert('An error occurred: ' + err.message);
-    }
-}
-
-function realtimeSend(id, eventType, content) {
-    if (typeof content == 'string') {     // Make sure we're sending JSON, not stringified JSON
-        content = jQuery.parseJSON(content);
-    }
-    var data = {
-        id: id
-    };
-    jQuery.extend(data, content);
-    HyperscalaConnect.send(eventType, data);
-}
-
-/**
- * Retrieves the value for a change event for the supplied element.
- *
- * @param element
- */
-function realtimeChangeEventValue(element) {
-    var id = element.attr('id');
-    var value = element.val();
-    if (element.is('input') && (element.prop('type') == 'checkbox' || element.prop('type') == 'radio')) {
-        value = element.prop('checked');
-    } else if (element.is('form')) {        // Send form data via change event
-        var formData = element.serializeForm();
-        value = '';
-        jQuery.each(formData, function(k, v) {
-            if (value != '') {
-                value += '&';
-            }
-            value += k;
-            value += '=';
-            value += v;
-        });
-    }
-    return value;
-}
-
-/**
- * Called to update 'content' JSON with key event data.
- *
- * @param event
- * @param content
- */
-function realtimeUpdateKeyEvent(event, content) {
-    content.altKey = event.altKey;
-    content.char = event.charCode;
-    content.ctrlKey = event.ctrlKey;
-    content.key = event.keyCode;
-    content.locale = event.locale;
-    content.location = event.location;
-    content.metaKey = event.metaKey;
-    content.repeat = event.repeat;
-    content.shiftKey = event.shiftKey;
-}
-
-var realtimeCache = {};
-var realtimeCaching = true;
-
-function realtimeEvaluate(json, debug) {
-    window.content = json['content'];
-    var instruction = json['instruction'];
-    var selector = json['selector'];
-    var delay = json['delay'];
-    if (json['parentFrameId'] != null) {
-        var parentFrameId = json['parentFrameId'];
-        var parentFrame = $('#' + parentFrameId);
-        json['parentFrameId'] = null;
-        var cache = realtimeCache[parentFrameId];
-        if (parentFrame.length > 0 && parentFrame.get(0).contentWindow.realtimeEvaluate) {
-            if (cache != null) {        // Process the cache before we do anything else (if there is anything in it)
-                cache.evaluate();
-            }
-            parentFrame.get(0).contentWindow.realtimeEvaluate(json, debug);
-        } else if (realtimeCaching) {
-            if (cache == null) {
-                cache = {
-                    backlog: []
-                };
-                cache.evaluate = function() {
-                    var parentFrame = $('#' + parentFrameId);
-                    if (parentFrame.length > 0 && parentFrame.get(0).contentWindow.realtimeEvaluate) {
-//                        console.log('Processing backlog: ' + cache.backlog.length);
-                        for (var i = 0; i < cache.backlog.length; i++) {
-                            parentFrame.get(0).contentWindow.realtimeEvaluate(cache.backlog[i], debug);
-                        }
-                        realtimeCache[parentFrameId] = null;
-                        clearInterval(cache.timer);
-                        return true;
-                    } else {
-                        return false;
-                    }
-                };
-                realtimeCache[parentFrameId] = cache;
-                cache.timer = setInterval(function() {
-                    cache.evaluate();
-                }, 100);
-            }
-            cache.backlog.push(json);
-//            console.log('Unable to find frame by id: ' + parentFrameId + ' for ' + JSON.stringify(json));
-        }
-    } else {
-        if (delay > 0) {                                // Handle delay if specified
-            json['delay'] = 0;
-            setTimeout(function () {
-                realtimeEvaluate(json, debug);
-            }, delay);
-        } else if (selector != null) {
-            if (eval('$(' + selector + ').length') == 0) {              // Selector returned empty, wait a few milliseconds and check again
-                if (debug) {
-                    log('Selector: ' + selector + ' returned empty...waiting...');
-                }
-                setTimeout(function () {
-                    realtimeEvaluate(json, debug);
-                }, 10);
-            } else {                                    // Selector has items, call again without selector
-                json['selector'] = null;
-                realtimeEvaluate(json, debug);
-            }
-        } else {
-            try {
-                if (debug) {
-                    log('evaluating: ' + instruction + ' (content: ' + content + ')');
-                }
-                evaluateGlobally(instruction);
-            } catch (err) {
-                log('Error occurred (' + err.message + ') while attempting to evaluate instruction: [' + instruction + '] on URL: ' + window.location.href + ' with content: [' + content + ']. Stack: ' + err.stack);
-            }
-        }
-    }
-}
-
-function evaluateGlobally(src) {
-    if (window.execScript) {        // eval in global scope for IE
-        window.execScript(src);
-    } else {                        // other browsers
-        eval.call(null, src);
-    }
-}
-
-function log(msg) {
-    var message = new Date().toLocaleString() + ': ' + msg;
-    console.log(message);
-}
-
-// TODO: remove this in favor of a completely new SVG implementation
-function parseSVG(content) {
-    var parser = new DOMParser();
-    parser.async = false;
-    content = content.toString().trim();
-    content = '<svg xmlns=\'http://www.w3.org/2000/svg\'>' + content + '</svg>';
-    var document = parser.parseFromString(content, 'text/xml').documentElement;
-    return document.firstChild;
-}
-
-var realtimeGroup = {};         // Used for grouping
-
-/**
- * Combines messages of a specific id (only sends the last one) and sends at maximum every timeout.
- *
- * @param groupId
- * @param timeout
- * @param event
- * @param id
- * @param message
- */
-function groupedSend(groupId, timeout, event, id, message) {
-    var current = Date.now();
-    var group = realtimeGroup[groupId];
-    if (group == null) {            // Set up group if not already defined
-        group = {
-            lastSend: 0
-        };
-        realtimeGroup[groupId] = group;
-    }
-    group.event = event;
-    group.id = id;
-    group.message = message;
-    if (group.timeoutId == null) {          // Not currently waiting to send something
-        var delay = group.lastSend - current + timeout;
-        if (delay <= 0) {
-            delay = 0;
-        }
-        group.timeoutId = window.setTimeout(function() {
-            delayedGroupSend(groupId);
-        }, delay);
-    }
-}
-
-/**
- * Called internally by groupedSend when a groupId times out.
- *
- * @param groupId
- */
-function delayedGroupSend(groupId) {
-    var group = realtimeGroup[groupId];
-    if (group != null) {
-        realtimeSend(group.id, group.event, group.message);
-        group.timeoutId = null;             // Remove the timeout id so we know it has run
-        group.lastSend = Date.now();
-    }
-}
-
-// Add support for the 'style' alternative to 'css' to allow setting importance
-(function($) {
-  if ($.fn.style) {
-    return;
-  }
-
-  // Escape regex chars with \
-  var escape = function(text) {
-    return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-  };
-
-  // For those who need them (< IE 9), add support for CSS functions
-  var isStyleFuncSupported = !!CSSStyleDeclaration.prototype.getPropertyValue;
-  if (!isStyleFuncSupported) {
-    CSSStyleDeclaration.prototype.getPropertyValue = function(a) {
-      return this.getAttribute(a);
-    };
-    CSSStyleDeclaration.prototype.setProperty = function(styleName, value, priority) {
-      this.setAttribute(styleName, value);
-      var priority = typeof priority != 'undefined' ? priority : '';
-      if (priority != '') {
-        // Add priority manually
-        var rule = new RegExp(escape(styleName) + '\\s*:\\s*' + escape(value) +
-            '(\\s*;)?', 'gmi');
-        this.cssText =
-            this.cssText.replace(rule, styleName + ': ' + value + ' !' + priority + ';');
-      }
-    };
-    CSSStyleDeclaration.prototype.removeProperty = function(a) {
-      return this.removeAttribute(a);
-    };
-    CSSStyleDeclaration.prototype.getPropertyPriority = function(styleName) {
-      var rule = new RegExp(escape(styleName) + '\\s*:\\s*[^\\s]*\\s*!important(\\s*;)?',
-          'gmi');
-      return rule.test(this.cssText) ? 'important' : '';
-    }
-  }
-
-  // The style function
-  $.fn.style = function(styleName, value, priority) {
-    // DOM node
-    var node = this.get(0);
-    // Ensure we have a DOM node
-    if (typeof node == 'undefined') {
-      return this;
-    }
-    // CSSStyleDeclaration
-    var style = this.get(0).style;
-    // Getter/Setter
-    if (typeof styleName != 'undefined') {
-      if (typeof value != 'undefined') {
-        // Set style property
-        priority = typeof priority != 'undefined' ? priority : '';
-        style.setProperty(styleName, value, priority);
-        return this;
-      } else {
-        // Get style property
-        return style.getPropertyValue(styleName);
-      }
-    } else {
-      // Get CSSStyleDeclaration
-      return style;
-    }
-  };
-})(jQuery);
+// Handle page reload support
+realtime.on('reload', function(obj) {
+    realtime.log('Reloading page...');
+    document.location.reload(obj.forcedReload);
+});

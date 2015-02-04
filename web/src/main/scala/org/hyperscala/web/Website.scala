@@ -6,7 +6,7 @@ import com.outr.net.http.handler.CachedHandler
 import com.outr.net.http.request.HttpRequest
 import com.outr.net.http.response.{HttpResponse, HttpResponseStatus}
 import com.outr.net.http.session.Session
-import org.powerscala.MapStorage
+import org.powerscala.{Unique, MapStorage}
 import org.powerscala.event.processor.UnitProcessor
 import org.powerscala.log.Logging
 import org.powerscala.reflect._
@@ -15,6 +15,13 @@ import org.powerscala.reflect._
  * @author Matt Hicks <matt@outr.com>
  */
 abstract class Website[S <: Session](implicit val manifest: Manifest[S]) extends WebApplication[S] with Logging {
+  /**
+   * Unique id for this Website instance. Can be used to lookup the Website.
+   */
+  val id = Unique()
+
+  Website.register(this)      // Make sure the site is registered in the list
+
   /**
    * Application stores content that should be persistent throughout the life of the website.
    */
@@ -63,7 +70,8 @@ abstract class Website[S <: Session](implicit val manifest: Manifest[S]) extends
   override def dispose() = {
     super.dispose()
 
-    application.clear()     // Clear out the application storage at dispose time
+    application.clear()         // Clear out the application storage at dispose time
+    Website.unregister(this)    // Remove from the registry
   }
 
   override def update(delta: Double) = {
@@ -109,4 +117,19 @@ class Pages[S <: Session](website: Website[S]) extends Iterable[Webpage[S]] with
   def apply[W <: Webpage[S]](implicit manifest: Manifest[W]) = iterator.collect {
     case w if w.getClass.hasType(manifest.runtimeClass) => w.asInstanceOf[W]
   }
+}
+
+object Website {
+  private var _sites = Map.empty[String, Website[Session]]
+
+  private def register(website: Website[_ <: Session]) = synchronized {
+    _sites += website.id -> website.asInstanceOf[Website[Session]]
+  }
+  private def unregister(website: Website[_ <: Session]) = synchronized {
+    _sites -= website.id
+  }
+
+  def get(id: String) = _sites.get(id)
+  def apply(id: String) = get(id).getOrElse(throw new RuntimeException(s"Unable to find website by id: $id."))
+  def sites = _sites.values
 }

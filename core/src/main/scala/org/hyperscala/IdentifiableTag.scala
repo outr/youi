@@ -35,7 +35,7 @@ trait IdentifiableTag extends Tag {
    * @return Unit
    */
   def handle[E <: BrowserEvent](f: E => Unit, condition: E => Boolean = (e: E) => true)(implicit manifest: Manifest[E]): Unit = eventReceived.on {
-    case evt => if (evt.getClass.isAssignableFrom(manifest.runtimeClass)) {
+    case evt => if (manifest.runtimeClass.isAssignableFrom(evt.getClass)) {
       val e = evt.asInstanceOf[E]
       if (condition(e)) {
         f(e)

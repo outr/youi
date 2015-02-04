@@ -1,184 +1,95 @@
 package org.hyperscala.realtime
 
+import com.outr.net.communicate.ConnectionHolder
 import com.outr.net.http.session.Session
-import org.hyperscala.connect.{Connect, Connection, Message}
-import org.hyperscala.event.BrowserEvent
-import org.hyperscala.html._
-import org.hyperscala.html.attributes.InputType
-import org.hyperscala.javascript.dsl.Statement
-import org.hyperscala.jquery.{jQuerySerializeForm, jQuery}
+import org.hyperscala.event.{BrowserEvent, JavaScriptEvent}
+import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.jquery.stylesheet.jQueryStyleSheet
-import org.hyperscala.module._
-import org.hyperscala.selector.Selector
-import org.hyperscala.web.module.IdentifyTags
+import org.hyperscala.jquery.{jQuerySerializeForm, jQuery}
+import org.hyperscala.module.Module
+import org.hyperscala.realtime.event.browser.InitBrowserConnection
+import org.hyperscala.realtime.event.server.ReloadPage
 import org.hyperscala.web.{Webpage, Website}
-import org.hyperscala.{Container, Markup}
+import org.hyperscala.web.module.IdentifyTags
 import org.powerscala.Version
-import org.powerscala.event.{Intercept, Listenable}
-import org.powerscala.json.TypedSupport
+import org.hyperscala.html._
 import org.powerscala.log.Logging
 import org.powerscala.property.Property
 
-import scala.language.reflectiveCalls
-
 /**
+ * Realtime is a module that connects real-time communication between client and server so changes to the server
+ * propagate to the client and events (defined to do so) propagate to the server.
+ *
  * @author Matt Hicks <matt@outr.com>
  */
-object Realtime extends Module with Logging with Listenable {
-  val debug = Property[Boolean]()
-  TypedSupport.register("init", classOf[InitBrowserEvent])
-  TypedSupport.register("eval", classOf[JavaScriptMessage])
+object Realtime extends Module with Logging {
+  val debugLogging = Property[Boolean](default = Some(false))
+  val pingDelay = Property[Long](default = Some(60000))
+  val updateFrequency = Property[Long](default = Some(10000))
+
+  debugLogging.change.on {        // Make sure debug info gets spit out when debugLogging is enabled
+    case evt => {
+      logger.multiplier = if (evt.newValue) 2.0 else 1.0
+    }
+  }
+
+  RealtimeJSON.init()
 
   def name = "realtime"
 
   def version = Version(1, 1)
 
-  override def dependencies = List(jQuery, jQuerySerializeForm, jQueryStyleSheet, IdentifyTags, Connect)
+  override def dependencies = List(jQuery, jQuerySerializeForm, jQueryStyleSheet, IdentifyTags)
 
   override def init[S <: Session](website: Website[S]) = {
-    // Register realtime.js to actually establish the connection
+    website.register("/js/communicate.js", "communicate.js")
     website.register("/js/realtime.js", "realtime.js")
   }
 
   override def load[S <: Session](webpage: Webpage[S]) = {
     webpage.head.contents += new tag.Meta(httpEquiv = "expires", content = "0")
+    webpage.head.contents += new tag.Script(src = "/js/communicate.js")
     webpage.head.contents += new tag.Script(src = "/js/realtime.js")
-    webpage.body.handle[InitBrowserEvent] {
-      case evt => {
-        val realtime = RealtimePage(webpage)
-        realtime.initialized()
-      }
-    }
-    Connect.event[S](webpage) {
-      case (connection, message) => received(connection, message)
-    }(webpage.website.manifest)
-  }
 
-  private def received[S <: Session](connection: Connection[S], message: Message) = {
-    val page = connection.webpage
-    val realtime = RealtimePage(page)
-    realtime.received(connection, message)
-  }
+    val js =
+      s"""
+         |realtime.init({
+         |  debug: ${debugLogging()},
+         |  path: '${webpage.website.webSocketPath.get}',
+         |  pingDelay: ${pingDelay()},
+         |  updateFrequency: ${updateFrequency()},
+         |  siteId: '${webpage.website.id}',
+         |  pageId: '${webpage.pageId}'
+         |});""".stripMargin
+    webpage.head.contents += new tag.Script(content = JavaScriptString(js))
 
-  def broadcast[S <: Session](event: String, message: ServerEvent, sendWhenConnected: Boolean, page: Webpage[S]) = {
-    page.require(this)
-    val realtime = RealtimePage(page)
-    realtime.send(event, message, sendWhenConnected = sendWhenConnected)
-  }
-
-  /**
-   * Declare a created element via 'creator' as "existing". This returns the created element connected to the parent
-   * <i>without</i> sending any realtime communication back to the browser to actually create or add it. This presumes
-   * that on the client the element already exists so should not be created. This can be extremely useful when other
-   * systems or libraries are creating or modifying content on the client independent of your server-side DOM.
-   *
-   * @param parent the parent the existing element is already attached to
-   * @param creator the function to create the element
-   * @tparam T the type of the HTMLTag that already exists
-   * @return existing T
-   */
-  def existing[T <: HTMLTag](parent: Container[_], creator: => T) = RealtimePage.ignoreStructureChanges {
-    val element: T = creator
-    if (element.id() == null || element.id() == "") {
-      throw new RuntimeException("The created element must have an existing ID supplied for referencing!")
-    }
-    parent.asInstanceOf[Container[T]].contents += element
-    Markup.rendered(element)      // Mark the element as rendered so it doesn't wait for it
-    element
-  }
-
-  /**
-   * Sends JavaScript to the client.
-   *
-   * @param instruction the instruction to evaluate on the client
-   * @param content optionally contains raw content and can be referenced by name in instruction
-   * @param selector optionally specifies a selector that must be non-empty before the instruction will be invoked
-   * @param onlyRealtime if true the JavaScript will only be sent if the page has already completed rendering (default: true)
-   * @param delay optionally specifies a delay before the instruction is invoked
-   */
-  // TODO: deprecate in favor of $('#busyDialog')['dialog')(json);
-  def sendJavaScript[S <: Session](webpage: Webpage[S],
-                                   instruction: String,
-                                   content: Option[String] = None,
-                                   selector: Option[Selector] = None,
-                                   onlyRealtime: Boolean = true,
-                                   delay: Int = 0): Unit = {
-    broadcast("eval", JavaScriptMessage(instruction, content, selector.map(s => s.content), delay, parentFrameId(webpage)), sendWhenConnected = !onlyRealtime, page = webpage)
-  }
-
-  def parentFrameId[S <: Session](webpage: Webpage[S]) = {
-    webpage.store.get[RealtimeFrame]("realtimeFrame").map(f => f.identity)
-  }
-
-  def sendRedirect[S <: Session](webpage: Webpage[S], url: String) = {
-    sendJavaScript(webpage, "window.location.href = content;", Some(url), onlyRealtime = false)
-  }
-
-  def send[S <: Session](webpage: Webpage[S], statement: Statement[_], selector: Option[Selector] = None, onlyRealtime: Boolean = false) = {
-    sendJavaScript(webpage, statement.content, selector = selector, onlyRealtime = onlyRealtime)
-  }
-
-  def reload[S <: Session](webpage: Webpage[S], fresh: Boolean = false) = {
-    sendJavaScript(webpage, "location.reload(%s);".format(fresh))
-  }
-
-  /**
-   * Connects change events for FormField (input, textarea, and select) as well as click events on button and input.
-   */
-  def connectStandard[S <: Session](webpage: Webpage[S]) = {
-    webpage.live[FormField] {
-      case field => {
-        if (field.changeEvent() == null) field.changeEvent := RealtimeEvent()
-        field match {
-          case i: tag.Input => if (i.clickEvent() == null) field.clickEvent := RealtimeEvent(preventDefault = false)
-          case _ => // Not an input
-        }
-      }
-    }
-    webpage.live[tag.Button] {
-      case b => if (b.clickEvent() == null) b.clickEvent := RealtimeEvent()
+    // Fire all BrowserEvents on the specified tag
+    webpage.json.partial(Unit) {
+      case evt: BrowserEvent => evt.tag.eventReceived.fire(evt)
     }
   }
 
   /**
-   * All change and click events fire events to the server and form submits prevent default and send event to server.
+   * Routes the connection to the webpage.
    */
-  def connectForm[S <: Session](webpage: Webpage[S]) = {
-    webpage.live[FormField] {
-      case field => {
-        if (field.changeEvent() == null) {
-          field.changeEvent := RealtimeEvent(preventDefault = false)
-        }
-        field match {
-          case i: tag.Input if i.inputType() == InputType.Button => {
-            if (field.clickEvent() == null) {
-              field.clickEvent := RealtimeEvent(preventDefault = false)
-            }
+  private[realtime] def connect(init: InitBrowserConnection) = {
+    Website.get(init.siteId) match {
+      case Some(site) => {
+        site.pages.byId[Webpage[Session]](init.pageId) match {
+          case Some(page) => {
+            page.hold(ConnectionHolder.connection)
+            debug(s"Connected to $page.")
           }
-          case _ => // Not a button input
+          case None => {
+            warn(s"Unable to find Webpage for id ${init.pageId} in Realtime.connect on site ${site.getClass.getSimpleName}.")
+            ConnectionHolder.connection.sendJSON(ReloadPage(forcedReload = true))
+          }
         }
       }
-    }
-    webpage.live[tag.Button] {
-      case b => if (b.clickEvent() == null) b.clickEvent := RealtimeEvent(preventDefault = false)
-    }
-    webpage.live[tag.Form] {
-      case f => {
-        if (f.submitEvent() == null) f.submitEvent := RealtimeEvent()
+      case None => {
+        warn(s"Unable to find Website for id ${init.siteId} in Realtime.connect.")
+        ConnectionHolder.connection.sendJSON(ReloadPage(forcedReload = true))
       }
-    }
-  }
-
-  /**
-   * Sends all form data over realtime upon form submit.
-   */
-  def connectPost[S <: Session](webpage: Webpage[S]) = {
-    webpage.live[tag.Form] {
-      case f => if (f.submitEvent() == null) f.submitEvent := RealtimeEvent(fireChange = true)
     }
   }
 }
-
-case class InitBrowserEvent(tag: HTMLTag) extends BrowserEvent
-
-case class JavaScriptMessage(instruction: String, content: Option[String] = None, selector: Option[String] = None, delay: Int = 0, parentFrameId: Option[String] = None) extends ServerEvent

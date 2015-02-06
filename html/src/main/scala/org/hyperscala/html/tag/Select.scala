@@ -66,7 +66,7 @@ class Select extends Container[Option] with BodyChild with HTMLTag with FormFiel
     override def toString(t: List[Option], name: String, clazz: Class[_]) = t.map(_.value()).mkString("|")
   }
 
-  val selectedOptions = new PropertyAttribute[List[Option]]("selectedOptions", Nil) with ListProperty[Option]
+  val selectedOptions = new Property[List[Option]](default = Some(Nil)) with ListProperty[Option]
   val selected = new Property[List[String]](default = Some(Nil)) with ListProperty[String]
   val value = new Property[String]()
 

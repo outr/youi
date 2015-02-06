@@ -14,7 +14,7 @@ trait FormField extends BodyChild {
   def disabled: Property[Boolean]
   def value: Property[String]
 
-  handle[ChangeBrowserEvent] {
+  changeEvent.on {
     case evt => changeTo(evt.value)
   }
 
@@ -29,11 +29,7 @@ trait FormField extends BodyChild {
   }
 }
 
-case class ChangeBrowserEvent(tag: HTMLTag, value: String) extends BrowserEvent
-
 object FormField {
-  TypedSupport.register("change", classOf[ChangeBrowserEvent])
-
   private val _changingProperty = new ThreadLocal[Property[_]]()
   private val _changingValue = new ThreadLocal[Any]()
   private def clear() = {

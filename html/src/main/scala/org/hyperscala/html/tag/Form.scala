@@ -59,7 +59,7 @@ class Form extends Container[BodyChild] with BodyChild with HTMLTag {
   lazy val noValidate = PropertyAttribute[String]("novalidate", null)
   lazy val target = PropertyAttribute[Target]("target", null)
 
-  handle[ChangeBrowserEvent] {
+  changeEvent.on {
     case evt => if (evt.value != null && evt.value.nonEmpty) {
       evt.value.split('&').foreach {
         case pair => {

@@ -134,7 +134,6 @@ class Input extends BodyChild with HTMLTag with FormField {
 
   override def formValue = value
 
-
   override def changeTo(newValue: String) = if (Set(InputType.CheckBox, InputType.Radio).contains(inputType())) {
     val b = newValue.toBoolean
     FormField.ignorePropertyChange(checked, b) {

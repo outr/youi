@@ -1,6 +1,6 @@
 package org.hyperscala.hello
 
-import org.hyperscala.web.{StaticWebsite, BasicWebsite}
+import org.hyperscala.web.{Scope, StaticWebsite, BasicWebsite}
 import com.outr.net.http.jetty.JettyApplication
 import com.outr.net.http.session.MapSession
 
@@ -12,5 +12,7 @@ import com.outr.net.http.session.MapSession
  * @author Matt Hicks <matt@outr.com>
  */
 object HelloSite extends BasicWebsite with StaticWebsite[MapSession] with JettyApplication {
+  override protected def defaultScope = Scope.Application
+
   def index = new HelloPage
 }

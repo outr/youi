@@ -14,6 +14,6 @@ case class RealtimeEvent(confirmation: String = null,
                          delay: Int = 0) extends JavaScriptContent {
   lazy val content = {
     val conf = JavaScriptContent.toJS(confirmation)
-    s"return realtime.event(event, (typeof data === 'undefined') ? null : data, $conf, $preventDefault, $fireChange, $delay);"
+    s"return realtime.event(event, $conf, $preventDefault, $fireChange, $delay);"
   }
 }

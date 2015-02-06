@@ -3,7 +3,7 @@ package org.hyperscala.realtime
 import com.outr.net.communicate.ConnectionHolder
 import org.hyperscala.html.HTMLTag
 import org.hyperscala.realtime.Realtime._
-import org.hyperscala.realtime.event.browser.InitBrowserConnection
+import org.hyperscala.realtime.event.browser.{BrowserError, InitBrowserConnection}
 import org.hyperscala.realtime.event.server.ReloadPage
 import org.hyperscala.web.Webpage
 import org.powerscala.json.{MapSupport, TypedSupport}
@@ -17,8 +17,9 @@ object RealtimeJSON {
   def init() = {
     TypedSupport.register("init", classOf[InitBrowserConnection])
     TypedSupport.register("reload", classOf[ReloadPage])
+    TypedSupport.register("error", classOf[BrowserError])
 
-    // Configure "id" -> "tag" for BrowserEvents
+    // Configure JSON mapping for BrowserEvents
     MapSupport.j2o.on {
       case m if m.contains("id") => ConnectionHolder.connection.holder() match {
         case webpage: Webpage[_] => {

@@ -54,6 +54,8 @@ class PropertyAttribute[T](val name: String,
     case InclusionMode.Modified => modified
     case InclusionMode.ModifiedAndNotEmpty => modified && attributeValue != null && attributeValue.nonEmpty
   }
+
+  override def toString() = s"PropertyAttribute(name: $name, attributeValue: $attributeValue)"
 }
 
 object PropertyAttribute {

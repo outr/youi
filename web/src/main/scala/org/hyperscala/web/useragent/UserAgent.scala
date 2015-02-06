@@ -12,7 +12,7 @@ import com.outr.net.http.session.Session
 object UserAgent {
   private var cache = Map.empty[String, ReadableUserAgent]
 
-  def apply[S <: Session](webpage: Webpage[S]) = webpage.store.getOrSet("userAgentModule", new UserAgent(webpage.website.request.headers.UserAgent.getOrElse(throw new NullPointerException(s"User-Agent was not supplied: ${webpage.website.request.headers.values.keySet}"))))
+  def apply[S <: Session](webpage: Webpage[S]) = webpage.store.getOrSet("userAgentModule", new UserAgent(webpage.website.request.headers.UserAgent.getOrElse(throw new NullPointerException(s"User-Agent was not supplied for url ${webpage.website.request.url}: ${webpage.website.request.headers.values.keySet}"))))
   def apply(userAgent: String) = new UserAgent(userAgent)
 
   private def parse(userAgent: String) = synchronized {

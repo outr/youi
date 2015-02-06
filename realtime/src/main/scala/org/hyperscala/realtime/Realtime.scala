@@ -63,10 +63,7 @@ object Realtime extends Module with Logging {
          |});""".stripMargin
     webpage.head.contents += new tag.Script(content = JavaScriptString(js))
 
-    // Fire all BrowserEvents on the specified tag
-    webpage.json.partial(Unit) {
-      case evt: BrowserEvent => evt.tag.eventReceived.fire(evt)
-    }
+    RealtimePage(webpage)
   }
 
   /**
@@ -77,7 +74,8 @@ object Realtime extends Module with Logging {
       case Some(site) => {
         site.pages.byId[Webpage[Session]](init.pageId) match {
           case Some(page) => {
-            page.hold(ConnectionHolder.connection)
+            page.hold(ConnectionHolder.connection)          // Webpage should hold the connection
+            RealtimePage(page).init()                       // Initialize the RealtimePage
             debug(s"Connected to $page.")
           }
           case None => {

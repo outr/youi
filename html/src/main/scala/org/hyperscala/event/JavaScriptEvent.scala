@@ -122,7 +122,7 @@ case class StorageEvent(tag: HTMLTag, target: Option[HTMLTag], parent: Option[HT
 case class UndoEvent(tag: HTMLTag, target: Option[HTMLTag], parent: Option[HTMLTag] = None) extends JavaScriptEvent
 case class UnLoadEvent(tag: HTMLTag, target: Option[HTMLTag], parent: Option[HTMLTag] = None) extends JavaScriptEvent
 case class BlurEvent(tag: HTMLTag, target: Option[HTMLTag], parent: Option[HTMLTag] = None) extends JavaScriptEvent
-case class ChangeEvent(tag: HTMLTag, target: Option[HTMLTag], parent: Option[HTMLTag] = None) extends JavaScriptEvent
+case class ChangeEvent(tag: HTMLTag, value: String, target: Option[HTMLTag], parent: Option[HTMLTag] = None) extends JavaScriptEvent
 case class ContextMenuEvent(tag: HTMLTag, target: Option[HTMLTag], parent: Option[HTMLTag] = None) extends JavaScriptEvent
 case class FocusEvent(tag: HTMLTag, target: Option[HTMLTag], parent: Option[HTMLTag] = None) extends JavaScriptEvent
 case class FormChangeEvent(tag: HTMLTag, target: Option[HTMLTag], parent: Option[HTMLTag] = None) extends JavaScriptEvent

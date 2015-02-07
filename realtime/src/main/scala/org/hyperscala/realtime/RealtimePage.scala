@@ -7,6 +7,7 @@ import org.hyperscala.javascript.JavaScriptContent
 import org.hyperscala.javascript.dsl.{Statement, JSFunction0}
 import org.hyperscala.realtime.event.server._
 import org.hyperscala.svg.{Svg, SVGTag}
+import org.hyperscala.web.event.server.InvokeJavaScript
 import org.hyperscala.{Textual, PropertyAttribute, Container, IdentifiableTag}
 import org.hyperscala.css.{Style, StyleSheetAttribute, StyleSheet}
 import org.hyperscala.event.BrowserEvent
@@ -123,10 +124,6 @@ class RealtimePage[S <: Session] private(val webpage: Webpage[S]) extends Loggin
     } else {
       webpage.broadcastJSON(message)
     }
-  }
-
-  def eval(js: JavaScriptContent, condition: Option[Statement[Boolean]] = None) = {
-    send(InvokeJavaScript(js.content, condition.map(s => s.content).orNull))
   }
 }
 

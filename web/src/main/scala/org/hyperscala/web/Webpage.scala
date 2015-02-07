@@ -7,6 +7,9 @@ import com.outr.net.http.{HttpApplication, HttpHandler}
 import com.outr.net.http.request.HttpRequest
 import com.outr.net.http.response.{HttpResponseStatus, HttpResponse}
 import com.outr.net.http.session.Session
+import org.hyperscala.javascript.JavaScriptContent
+import org.hyperscala.javascript.dsl.Statement
+import org.hyperscala.web.event.server.InvokeJavaScript
 import org.hyperscala.{Tag, Markup}
 import org.hyperscala.html._
 import org.hyperscala.module.ModularPage
@@ -179,6 +182,18 @@ class Webpage[S <: Session](val website: Website[S]) extends HttpHandler with HT
     super.dispose()
 
     website.pages.remove(this)
+  }
+
+  /**
+   * Sends the supplied JavaScript to the client for execution in the browser.
+   *
+   * NOTE: Requires the use of some Communicate implementation like Realtime for this to actually function.
+   *
+   * @param js the JavaScript to invoke
+   * @param condition optional condition that must return true before the JavaScript is invoked
+   */
+  def eval(js: JavaScriptContent, condition: Option[Statement[Boolean]] = None) = {
+    broadcastJSON(InvokeJavaScript(js.content, condition.map(s => s.content).orNull))
   }
 }
 

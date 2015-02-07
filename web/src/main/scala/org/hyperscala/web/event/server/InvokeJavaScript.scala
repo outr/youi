@@ -1,4 +1,4 @@
-package org.hyperscala.realtime.event.server
+package org.hyperscala.web.event.server
 
 /**
  * InvokeJavaScript is sent to the browser to allow the server the ability to ask it to invoke arbitrary JavaScript.

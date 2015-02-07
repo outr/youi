@@ -57,6 +57,7 @@ var realtime = {
      * @param message the message to send
      */
     send: function(message) {
+        realtime.log('Sending message.', message);
         if (this.communicate == null) {
             realtime.error('Unable to send message, Realtime has not yet initialized!', message);
         } else {

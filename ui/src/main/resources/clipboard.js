@@ -35,11 +35,12 @@ $(document).ready(function() {
         if (current.is('input') || current.is('textarea')) {
             selected = current.getSelection().text;
         }
-        realtimeSend('clipboard_instance', eventType, {
-            eventId: current.attr('id'),
-            selected: selected,
+        realtime.send({
+            id: current.attr('id'),
+            type: 'clipboard.' + eventType,
             mouseX: mouseX,
-            mouseY: mouseY
+            mouseY: mouseY,
+            selected: selected
         });
     }
 });

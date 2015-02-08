@@ -29,7 +29,7 @@ trait FieldErrorClassSupport extends ErrorSupport {
         if (!t.clazz().contains(className)) {
           t.clazz += className
           if (currentFields.isEmpty) {
-            Realtime.send(page, $(t).focus())
+            page.eval($(t).focus())
           }
           currentFields = t :: currentFields
         }

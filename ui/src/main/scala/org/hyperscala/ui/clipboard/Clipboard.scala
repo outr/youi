@@ -2,6 +2,7 @@ package org.hyperscala.ui.clipboard
 
 import com.outr.net.http.session.Session
 import org.hyperscala.css.attributes.Display
+import org.hyperscala.event.BrowserEvent
 import org.hyperscala.html._
 import org.hyperscala.jquery.jQuery
 import org.hyperscala.module.Module
@@ -12,6 +13,7 @@ import org.powerscala.Version
 import org.powerscala.enum.{EnumEntry, Enumerated}
 import org.powerscala.event.Listenable
 import org.powerscala.event.processor.UnitProcessor
+import org.powerscala.json.TypedSupport
 
 /**
  * Clipboard offers a mechanism to manage storage and retrieval of items on the server level as an alternative for a
@@ -20,6 +22,10 @@ import org.powerscala.event.processor.UnitProcessor
  * @author Matt Hicks <matt@outr.com>
  */
 object Clipboard extends Module {
+  TypedSupport.register("clipboard.cut", classOf[ClipboardCutEvent])
+  TypedSupport.register("clipboard.copy", classOf[ClipboardCopyEvent])
+  TypedSupport.register("clipboard.paste", classOf[ClipboardPasteEvent])
+
   /**
    * Creates a new ClipboardInstance each time it is called (once per webpage instance).
    */
@@ -60,14 +66,9 @@ object Clipboard extends Module {
 }
 
 class ClipboardInstance(webpage: Webpage[_ <: Session]) extends Listenable {
-  /**
-   * Fired when an event occurs in the client and is sent to the server. This is primarily caused by a keyboard Cut,
-   * Copy, or Paste action occurring in the browser.
-   *
-   * By default no direct handling is enabled for these events. If you wish to use the built-in default handling then
-   * call <code>configureDefaultHandling()</code>.
-   */
-  val clientEvent = new UnitProcessor[ClipboardEvent]("clipboard_event")
+  val cutEvent = new UnitProcessor[ClipboardCutEvent]("cut")
+  val copyEvent = new UnitProcessor[ClipboardCopyEvent]("copy")
+  val pasteEvent = new UnitProcessor[ClipboardPasteEvent]("paste")
 
   /**
    * Fired when a ClipboardEntry is added to the clipboard. This may occur programmatically or resulting from handling
@@ -79,40 +80,26 @@ class ClipboardInstance(webpage: Webpage[_ <: Session]) extends Listenable {
    * Configures basic handling of clientEvents for Cut, Copy, and Paste.
    */
   def configureDefaultHandling() = {
-    clientEvent.on {
-      case evt => evt.clipType match {
-        case ClipType.Copy => if (evt.selected != null && evt.selected.nonEmpty) {
-          addFromEvent(evt)
-        }
-        case ClipType.Cut => if (evt.selected != null && evt.selected.nonEmpty) {
-          addFromEvent(evt)
-          // TODO: support cutting
-        }
-        case ClipType.Paste => // TODO: support pasting
+    cutEvent.on {
+      case evt => if (evt.selected != null && evt.selected.nonEmpty) {
+        this += BasicClipboardEntry("html", "HTML Content", evt.selected, Option(evt.tag))
+      }
+    }
+    copyEvent.on {
+      case evt => if (evt.selected != null && evt.selected.nonEmpty) {
+        this += BasicClipboardEntry("html", "HTML Content", evt.selected, Option(evt.tag))
       }
     }
   }
 
-  /**
-   * Adds a BasicClipboardEntry based on a ClipboardEvent. The type is defined as "html". This is directly used by
-   * <code>configureDefaultHandling()</code> but can be called by more advanced use-cases.
-   */
-  def addFromEvent(evt: ClipboardEvent) = {
-    this += BasicClipboardEntry("html", "HTML content", evt.selected, evt.element)
-  }
-
   private var _list = List.empty[ClipboardEntry]
-  private val hiddenDiv = new tag.Div(id = "clipboard_instance") {
-    style.display := Display.None
 
-    override def receive(event: String, json: JsonObject) = event match {
-      case "cut" => fireClipEvent(ClipType.Cut, json)
-      case "copy" => fireClipEvent(ClipType.Copy, json)
-      case "paste" => fireClipEvent(ClipType.Paste, json)
-      case _ => super.receive(event, json)
-    }
+  webpage.json.on {
+    case evt: ClipboardCutEvent => cutEvent.fire(evt)
+    case evt: ClipboardCopyEvent => copyEvent.fire(evt)
+    case evt: ClipboardPasteEvent => pasteEvent.fire(evt)
+    case _ => // Ignore others
   }
-  webpage.body.contents += hiddenDiv
 
   def +=(entry: ClipboardEntry): Unit = synchronized {
     _list = entry :: _list
@@ -131,26 +118,11 @@ class ClipboardInstance(webpage: Webpage[_ <: Session]) extends Listenable {
   }
 
   def list = _list
-
-  private def fireClipEvent(clipType: ClipType, json: JsonObject) = {
-    val element = webpage.html.byId[HTMLTag](json.string("id"))
-    val mouseX = json.int("mouseX")
-    val mouseY = json.int("mouseY")
-    val selected = json.string("selected")
-    val evt = ClipboardEvent(clipType, element, mouseX, mouseY, selected)
-    clientEvent.fire(evt)
-  }
 }
 
-class ClipType private() extends EnumEntry
-
-object ClipType extends Enumerated[ClipType] {
-  val Cut = new ClipType
-  val Copy = new ClipType
-  val Paste = new ClipType
-}
-
-case class ClipboardEvent(clipType: ClipType, element: Option[HTMLTag], mouseX: Int, mouseY: Int, selected: String)
+case class ClipboardCutEvent(tag: HTMLTag, mouseX: Int, mouseY: Int, selected: String)
+case class ClipboardCopyEvent(tag: HTMLTag, mouseX: Int, mouseY: Int, selected: String)
+case class ClipboardPasteEvent(tag: HTMLTag, mouseX: Int, mouseY: Int, selected: String)
 
 trait ClipboardEntry {
   def entryType: String

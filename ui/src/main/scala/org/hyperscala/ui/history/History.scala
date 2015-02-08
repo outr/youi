@@ -10,11 +10,9 @@ import org.powerscala.concurrent.AtomicInt
 import org.hyperscala.realtime.Realtime
 
 import org.hyperscala.jquery.dsl._
-import org.hyperscala.realtime.dsl._
 
 import scala.language.postfixOps
 import org.hyperscala.event.Key
-import org.powerscala.enum.{Enumerated, EnumEntry}
 import org.hyperscala.web.useragent.UserAgent
 import com.outr.net.http.session.Session
 import org.hyperscala.javascript.dsl.body

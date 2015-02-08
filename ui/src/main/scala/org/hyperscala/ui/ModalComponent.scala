@@ -7,6 +7,7 @@ import org.hyperscala.jquery.dsl.jQuerySelector
 import org.hyperscala.jquery.jQueryFracs
 import org.hyperscala.module.Module
 import org.hyperscala.realtime._
+import org.hyperscala.javascript.dsl._
 import org.hyperscala.selector.Selector
 import org.hyperscala.web.{Webpage, Website}
 import org.powerscala.Version
@@ -73,7 +74,7 @@ class ModalComponent(webpage: Webpage[_ <: Session]) extends Listenable {
         case null => null
         case s => new jQuerySelector(s).content
       }
-      Realtime.sendJavaScript(webpage, s"modal($selector);")
+      webpage.eval(s"modal($selector);")
     }
   }
 }

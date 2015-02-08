@@ -1,6 +1,5 @@
 package org.hyperscala.ui.clipboard
 
-import argonaut.JsonObject
 import com.outr.net.http.session.Session
 import org.hyperscala.css.attributes.Display
 import org.hyperscala.html._

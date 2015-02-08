@@ -42,31 +42,21 @@ var bounding = {
                 var width = element.outerWidth();
                 var height = element.outerHeight();
 
-                var json = {};
-                if (entry.localX != localX) {
-                    json.localX = localX;
-                }
-                if (entry.localY != localY) {
-                    json.localY = localY;
-                }
-                if (entry.absoluteX != absoluteX) {
-                    json.absoluteX = absoluteX;
-                }
-                if (entry.absoluteY != absoluteY) {
-                    json.absoluteY = absoluteY;
-                }
-                if (entry.width != width) {
-                    json.width = width;
-                }
-                if (entry.height != height) {
-                    json.height = height;
-                }
-                if (Object.keys(json).length > 0) {
-                    json.elementId = id;
+                // Check if anything has changed
+                if (entry.localX != localX || entry.localY != localY || entry.absoluteX != absoluteX || entry.absoluteY != absoluteY || entry.width != width || entry.height != height) {
+                    // Send a message to the server
+                    realtime.send({
+                        id: id,
+                        type: 'bounding',
+                        localX: localX,
+                        localY: localY,
+                        absoluteX: absoluteX,
+                        absoluteY: absoluteY,
+                        width: width,
+                        height: height
+                    });
 
-//                    console.log('Sending: ' + JSON.stringify(json));
-                    realtimeSend(null, 'bounding', json);
-
+                    // Update local values
                     entry.localX = localX;
                     entry.localY = localY;
                     entry.absoluteX = absoluteX;

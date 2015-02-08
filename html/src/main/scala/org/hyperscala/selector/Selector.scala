@@ -2,6 +2,7 @@ package org.hyperscala.selector
 
 import org.hyperscala.IdentifiableTag
 import org.hyperscala.html.{HTMLTag, HTMLTagType}
+import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.persistence.ValuePersistence
 
 import scala.annotation.tailrec
@@ -68,6 +69,8 @@ trait Selector {
       case Some(p) => buildList(p, updated)
     }
   }
+
+  def toCondition = JavaScriptString(s"$$('$content).length > 0")
 }
 
 object Selector extends ValuePersistence[List[Selector]] {

@@ -188,7 +188,7 @@ class Spectrum private(val wrapped: Input, val autoInit: Boolean = true) extends
 
   override def option(key: String, value: Any) = key match {
     case "color" => wrapped.connected[Webpage[_ <: Session]] {
-      case webpage => Realtime.send(webpage, $(wrapped).call(s"spectrum('set', ${JavaScriptContent.toJS(value)})"))
+      case webpage => webpage.eval($(wrapped).call(s"spectrum('set', ${JavaScriptContent.toJS(value)})"))
     }
     case _ => super.option(key, value)
   }

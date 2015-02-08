@@ -1,5 +1,6 @@
 package org.hyperscala.ui
 
+import org.hyperscala.event.BrowserEvent
 import org.hyperscala.html._
 import org.hyperscala.module.Module
 import org.powerscala.Version
@@ -7,6 +8,7 @@ import org.hyperscala.realtime.Realtime
 import org.hyperscala.web.{Website, Webpage}
 import org.hyperscala.javascript.JavaScriptString
 import org.powerscala.event.{Listenable, Intercept}
+import org.powerscala.json.TypedSupport
 import org.powerscala.property.Property
 import com.outr.net.http.session.Session
 
@@ -16,6 +18,8 @@ import com.outr.net.http.session.Session
  * @author Matt Hicks <matt@outr.com>
  */
 object WindowSize extends Module with Listenable {
+  TypedSupport.register("windowSize", classOf[WindowSize])
+
   val name = "windowSize"
   val version = Version(1)
 
@@ -34,22 +38,18 @@ object WindowSize extends Module with Listenable {
   override def init[S <: Session](website: Website[S]) = {}
 
   override def load[S <: Session](webpage: Webpage[S]) = {
-    webpage.body.eventReceived.on {
-      case evt => if (evt.event == "window_size") {
-        val width = evt.json.int("width")
-        val height = evt.json.int("height")
-
-        this.width(webpage) := width
-        this.height(webpage) := height
-
-        Intercept.Stop
-      } else {
-        Intercept.Continue
+    webpage.body.handle[WindowSize] {
+      case evt => {
+        width(webpage) := evt.width
+        height(webpage) := evt.height
       }
     }
+    // TODO: modify to send at a maximum frequency
     val js =
-      """
-        |groupedSend('windowSizeChange', 250, 'window_size', null, {
+      s"""
+        |realtime.send({
+        | id: '${webpage.body.identity}',
+        | type: 'windowSize',
         | width: windowWidth,
         | height: windowHeight
         |});
@@ -57,3 +57,5 @@ object WindowSize extends Module with Listenable {
     WindowSized.resized(webpage, JavaScriptString(js))
   }
 }
+
+case class WindowSize(tag: HTMLTag, width: Int, height: Int) extends BrowserEvent

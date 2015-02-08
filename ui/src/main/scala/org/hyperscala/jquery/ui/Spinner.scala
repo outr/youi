@@ -1,11 +1,9 @@
 package org.hyperscala.jquery.ui
 
-import argonaut.Argonaut._
-import argonaut.CodecJson
-import org.hyperscala.event.EventReceived
+import org.hyperscala.event.BrowserEvent
 import org.hyperscala.html._
 import org.hyperscala.javascript.JavaScriptString
-import org.hyperscala.jquery.{JSMapper, JavaScriptCaller, jQueryComponent}
+import org.hyperscala.jquery.{MappedEvent, JavaScriptCaller, jQueryComponent}
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.web._
 import org.powerscala.StorageComponent
@@ -44,13 +42,8 @@ class Spinner private(val wrapped: tag.Input, val autoInit: Boolean = true) exte
   val page = property("page", 10.0)
   val step = property("step", 1.0)
 
-  val changeEvent = event("change", JSMapper[ChangeEvent](List("event", "ui"), JavaScriptString("{'value': $(this).spinner('value') }"), (evt: EventReceived) => {
-    evt.json.as[ChangeEvent]
-  }))
-
-  val spinEvent = event("spin", JSMapper[SpinEvent](List("event", "ui"), JavaScriptString("{'value': ui.value}"), (evt: EventReceived) => {
-    evt.json.as[SpinEvent]
-  }))
+  val changeEvent = event(ChangeEvent)
+  val spinEvent = event(SpinEvent)
 
   changeEvent.on {
     case evt => valueChanging.attempt {
@@ -77,14 +70,10 @@ class Spinner private(val wrapped: tag.Input, val autoInit: Boolean = true) exte
   }
 }
 
-case class ChangeEvent(value: Double)
+case class ChangeEvent(tag: HTMLTag, value: Double) extends BrowserEvent
 
-object ChangeEvent {
-  implicit def codec: CodecJson[ChangeEvent] = casecodec1(ChangeEvent.apply, ChangeEvent.unapply)("value")
-}
+object ChangeEvent extends MappedEvent[ChangeEvent](Map("value" -> JavaScriptString("$(this).spinner('value')")))
 
-case class SpinEvent(value: Double)
+case class SpinEvent(tag: HTMLTag, value: Double) extends BrowserEvent
 
-object SpinEvent {
-  implicit def codec: CodecJson[SpinEvent] = casecodec1(SpinEvent.apply, SpinEvent.unapply)("value")
-}
+object SpinEvent extends MappedEvent[SpinEvent](Map("value" -> JavaScriptString("ui.value")))

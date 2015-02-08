@@ -13,7 +13,9 @@ import org.hyperscala.web._
 import org.powerscala.StorageComponent
 import org.powerscala.event.{Intercept, Listenable}
 import org.powerscala.hierarchy.event.StandardHierarchyEventProcessor
+import org.powerscala.json.TypedSupport
 import org.powerscala.property._
+import org.hyperscala.jquery.dsl._
 
 import scala.language.{implicitConversions, reflectiveCalls}
 
@@ -21,6 +23,8 @@ import scala.language.{implicitConversions, reflectiveCalls}
  * @author Matt Hicks <matt@outr.com>
  */
 object Dialog extends JavaScriptCaller with StorageComponent[Dialog, HTMLTag] {
+  TypedSupport.register("dialogButtonClicked", classOf[ButtonClicked])
+
   implicit def tag2Dialog(tag: HTMLTag): Dialog = apply(tag)
   
   override def apply(tag: HTMLTag) = {
@@ -75,7 +79,7 @@ object Dialog extends JavaScriptCaller with StorageComponent[Dialog, HTMLTag] {
   protected def create(tag: HTMLTag) = new Dialog(tag, autoInit = true)
 
   private val buttonsConverter = (buttons: List[String]) => {
-    JavaScriptString(buttons.map(b => s"'$b': function() { realtimeSend($$(this).attr('id'), 'buttonClicked', { 'name': '$b' }); }").mkString("{ ", ", ", " }"))
+    JavaScriptString(buttons.map(b => s"'$b': function() { realtime.send({ id: $$(this).attr('id'), type: 'dialogButtonClicked', name: '$b'})").mkString("{ ", ", ", " }"))
   }
 
   def show[S <: Session](webpage: Webpage[S], title: String, content: BodyChild, width: Int = 300, height: Int = -1, modal: Boolean = true, buttons: List[String] = null)(f: String => Unit) = {
@@ -98,9 +102,7 @@ object Dialog extends JavaScriptCaller with StorageComponent[Dialog, HTMLTag] {
       case evt => closed()
     }
 
-    def closed() = {
-      Realtime.sendJavaScript(webpage, s"$$('${dialog.dialogSelector.value}').remove();")
-    }
+    def closed() = webpage.eval($(dialog.dialogSelector).remove())
   }
 }
 
@@ -150,12 +152,8 @@ class Dialog private(val wrapped: HTMLTag, val autoInit: Boolean) extends jQuery
   val openEvent = event("open")
   val closeEvent = event("close")
   val buttonEvent = new StandardHierarchyEventProcessor[ButtonClicked]("buttonEvent")
-  wrapped.eventReceived.on {
-    case evt if evt.event == "buttonClicked" => {
-      buttonEvent.fire(ButtonClicked(evt.json.string("name")))
-      Intercept.Stop
-    }
-    case _ => Intercept.Continue
+  wrapped.handle[ButtonClicked] {
+    case evt => buttonEvent.fire(evt)
   }
 
   openEvent.on {

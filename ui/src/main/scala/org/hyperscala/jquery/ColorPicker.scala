@@ -1,6 +1,7 @@
 package org.hyperscala.jquery
 
 import com.outr.net.http.session.Session
+import org.hyperscala.event.BrowserEvent
 import org.hyperscala.html._
 import org.hyperscala.html.tag.Input
 import org.hyperscala.javascript.JavaScriptString
@@ -8,7 +9,7 @@ import org.hyperscala.jquery.ui.jQueryUI
 import org.hyperscala.module.Module
 import org.hyperscala.realtime.RealtimeEvent
 import org.hyperscala.web._
-import org.powerscala.event.Intercept
+import org.powerscala.json.TypedSupport
 import org.powerscala.{Color, StorageComponent, Version}
 
 import scala.language.implicitConversions
@@ -19,10 +20,13 @@ import scala.language.implicitConversions
 object ColorPicker extends Module with JavaScriptCaller with StorageComponent[ColorPicker, tag.Input] {
   implicit def tag2ColorPicker(tag: Input): ColorPicker = apply(tag)
 
+  TypedSupport.register("colorPickerChange", classOf[ColorChange])
+
   private val OkFunction = JavaScriptString(
     """function(event, color) {
       | var id = $(this).attr('id');
-      | realtimeSend(id, 'colorSelected', {
+      | realtime.send({
+      |   id: id,
       |   value: color.formatted
       | });
       |}
@@ -50,23 +54,22 @@ object ColorPicker extends Module with JavaScriptCaller with StorageComponent[Co
   protected def create(t: Input) = new ColorPicker(t)
 }
 
+case class ColorChange(tag: HTMLTag, value: String) extends BrowserEvent
+
 class ColorPicker private(val wrapped: tag.Input, val autoInit: Boolean = true) extends jQueryComponent {
   def functionName = "colorpicker"
 
   // Make sure events fire back to server upon select
   on("ok", ColorPicker.OkFunction)
-  wrapped.eventReceived.on {
-    case evt if evt.event == "colorSelected" => {
-      val value = evt.json.string("value")
+  wrapped.handle[ColorChange] {
+    case evt: ColorChange => {
+      val value = evt.value
       if (value != null && value.trim.nonEmpty) {
         color := Color(value)
       } else {
         color := null
       }
-
-      Intercept.Stop
     }
-    case _ => Intercept.Continue
   }
   option("colorFormat", "#HEX")
 

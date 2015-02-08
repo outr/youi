@@ -38,14 +38,18 @@ function autocompletify(pageId, id, multiple, autoFocus, delay, appendId, disabl
                 var terms = split(this.value);
                 terms.pop();
                 terms.push(ui.item.value);
-                realtimeSend(id, 'autocompleteMultiSelect', {
+                realtime.send({
+                    type: 'autocompleteMultiSelect',
+                    id: id,
                     values: terms
                 });
                 terms.push('');
                 this.value = terms.join(', ');
                 return false;
             }
-            realtimeSend(id, 'autocompleteSelect', {
+            realtime.send({
+                type: 'autocompleteSelect',
+                id: id,
                 value: ui.item.value
             });
         },

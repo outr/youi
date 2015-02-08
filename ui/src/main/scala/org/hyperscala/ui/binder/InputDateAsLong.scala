@@ -41,7 +41,7 @@ class InputDateAsLong(format: String = "MM/dd/yyyy") extends Binder[tag.Input, L
     }
 
     input.connected[Webpage[_ <: Session]] {
-      case webpage => Realtime.send(webpage, $(input).call("datepicker()"))
+      case webpage => webpage.eval($(input).call("datepicker()"))
     }
 
 

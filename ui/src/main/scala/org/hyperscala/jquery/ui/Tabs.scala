@@ -2,6 +2,7 @@ package org.hyperscala.jquery.ui
 
 import com.outr.net.http.session.Session
 import org.hyperscala.html._
+import org.hyperscala.javascript.dsl._
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.selector.Selector
 import org.hyperscala.web._
@@ -20,7 +21,7 @@ class Tabs extends tag.Div {
   contents += navigation
 
   connected[Webpage[_ <: Session]] {
-    case webpage => Realtime.sendJavaScript(webpage, "$('#%s').tabs();".format(id()), selector = Some(Selector.id(identity)), onlyRealtime = false)
+    case webpage => webpage.eval(s"$$('$identity').tabs();", Some(Selector.id(identity).toCondition))
   }
 
   def addTab[T <: tag.Div](label: String)(f: => T) = {

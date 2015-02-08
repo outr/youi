@@ -70,15 +70,15 @@ class jQuerySelector(val selector: Selector) extends Statement[Selector] {
     call(function)
   }
 
-  def options(functionName: String, values: Map[String, String], waitForResults: Boolean = true) = {
+  def options(functionName: String, values: Map[String, String]) = {
     values.foreach {
       case (key, value) => {    // TODO: see if there is a more efficient way to set multiple options at once
-        option(functionName, key, value, waitForResults = waitForResults)
+        option(functionName, key, value)
       }
     }
   }
 
-  def option(functionName: String, key: String, value: Any, waitForResults: Boolean = true) = {
+  def option(functionName: String, key: String, value: Any) = {
     val function = s"$functionName('option', '$key', ${JavaScriptContent.toJS(value)})"
     call(function)
   }
@@ -103,6 +103,7 @@ class jQuerySelector(val selector: Selector) extends Statement[Selector] {
 
   def show() = MultiStatement[Unit](sideEffects = true, content, ".show()")
   def hide() = MultiStatement[Unit](sideEffects = true, content, ".hide()")
+  def remove() = MultiStatement[Unit](sideEffects = true, content, ".remove()")
 }
 
 class jQueryOffset(jqs: jQuerySelector) {

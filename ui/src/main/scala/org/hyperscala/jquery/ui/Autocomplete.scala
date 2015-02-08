@@ -7,12 +7,14 @@ import com.outr.net.http.content.StringContent
 import com.outr.net.http.request.HttpRequest
 import com.outr.net.http.response.{HttpResponse, HttpResponseStatus}
 import com.outr.net.http.session.Session
-import org.hyperscala.event.EventReceived
+import org.hyperscala.event.BrowserEvent
 import org.hyperscala.html._
+import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.module.Module
 import org.hyperscala.realtime.Realtime
+import org.hyperscala.jquery.dsl._
 import org.hyperscala.web._
-import org.powerscala.event.Intercept
+import org.powerscala.json.TypedSupport
 import org.powerscala.property.Property
 import org.powerscala.property.event.PropertyChangeEvent
 import org.powerscala.{Storage, Version}
@@ -104,7 +106,7 @@ class Autocompletified private(val input: FormField) {
       case null => null
       case t => s"'t.id()'"
     }
-    Realtime.sendJavaScript(webpage, s"autocompletify('${webpage.pageId}', '${input.id()}', ${multiple()}, ${autoFocus()}, ${delay()}, $appendId, ${disabled()}, ${minLength()})", onlyRealtime = false)
+    webpage.eval(JavaScriptString(s"autocompletify('${webpage.pageId}', '${input.id()}', ${multiple()}, ${autoFocus()}, ${delay()}, $appendId, ${disabled()}, ${minLength()})"))
     autoFocus.change.on {
       case evt => sendChanges(webpage, evt)
     }
@@ -117,21 +119,15 @@ class Autocompletified private(val input: FormField) {
     minLength.change.on {
       case evt => sendChanges(webpage, evt)
     }
-    input.eventReceived.on {
-      case EventReceived(event, json) if event == "autocompleteSelect" => {
-        val value = json.string("value")
-        selected := List(value)
-        Intercept.Stop
-      }
-      case EventReceived(event, json) if event == "autocompleteMultiSelect" => {
-        val values = json.strings("values")
-        selected := values
-        Intercept.Stop
-      }
+    input.handle[AutocompleteSelect] {
+      case evt => selected := List(evt.value)
+    }
+    input.handle[AutocompleteMultiSelect] {
+      case evt => selected := evt.values
     }
     input.value.change.on {
       case evt => if (!changing.get()) {
-        Realtime.sendJavaScript(webpage, "$('#%s')[0].value = \"%s\";".format(input.id(), input.value()))
+        webpage.eval($(input).value($(input).value()))
         selected := (input.value() match {
           case null | "" => Nil
           case s => s.split(",").map(s => s.trim).toList
@@ -141,14 +137,21 @@ class Autocompletified private(val input: FormField) {
   }
 
   private def sendChanges[S <: Session](webpage: Webpage[S], evt: PropertyChangeEvent[_]) = evt.property match {
-    case p if p == autoFocus => Realtime.sendJavaScript(webpage, "$('#%s').autocomplete('option', 'autoFocus', %s);".format(input.id(), autoFocus()))
-    case p if p == delay => Realtime.sendJavaScript(webpage, "$('#%s').autocomplete('option', 'delay', %s);".format(input.id(), delay()))
-    case p if p == disabled => Realtime.sendJavaScript(webpage, "$('#%s').autocomplete('option', 'disabled', %s);".format(input.id(), disabled()))
-    case p if p == minLength => Realtime.sendJavaScript(webpage, "$('#%s').autocomplete('option', 'minLength', %s);".format(input.id(), minLength()))
+    case p if p == autoFocus => webpage.eval($(input).option("autocomplete", "autoFocus", autoFocus()))
+    case p if p == delay => webpage.eval($(input).option("autocomplete", "delay", delay()))
+    case p if p == disabled => webpage.eval($(input).option("autocomplete", "disabled", disabled()))
+    case p if p == minLength => webpage.eval($(input).option("autocomplete", "minLength", minLength()))
   }
 }
 
+case class AutocompleteSelect(tag: HTMLTag, value: String) extends BrowserEvent
+
+case class AutocompleteMultiSelect(tag: HTMLTag, values: List[String]) extends BrowserEvent
+
 object Autocompletified {
+  TypedSupport.register("autocompleteSelect", classOf[AutocompleteSelect])
+  TypedSupport.register("autocompleteMultiSelect", classOf[AutocompleteMultiSelect])
+
   def apply(input: FormField) = input.synchronized {
     Storage.get[String, Autocompletified](input, "autocompletified") match {
       case Some(a) => a

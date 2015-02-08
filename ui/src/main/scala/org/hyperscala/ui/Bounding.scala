@@ -1,16 +1,18 @@
 package org.hyperscala.ui
 
+import org.hyperscala.event.BrowserEvent
 import org.hyperscala.module.Module
+import org.powerscala.json.TypedSupport
 import org.powerscala.{StorageComponent, Version}
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.html._
+import org.hyperscala.javascript.dsl._
 import org.powerscala.event.{Intercept, Listenable}
 import org.powerscala.property.Property
 import org.hyperscala.web._
 import org.hyperscala.selector.Selector
 import org.powerscala.concurrent.Time
 import org.powerscala.log.Logging
-import org.hyperscala.event.EventReceived
 import org.powerscala.event.processor.UnitProcessor
 import org.hyperscala.javascript.dsl.JSFunction0
 import com.outr.net.http.session.Session
@@ -21,10 +23,10 @@ import com.outr.net.http.session.Session
  * @author Matt Hicks <matt@outr.com>
  */
 object Bounding extends Module with StorageComponent[Bounding, HTMLTag] with Logging with Listenable {
+  TypedSupport.register("bounding", classOf[BoundingEvent])
+
   val name = "bounding"
   val version = Version(1)
-
-  def modified[S <: Session](webpage: Webpage[S]) = webpage.store.getOrSet("boundingEvents", new UnitProcessor[BoundingEvent]("modified"))
 
   override def dependencies = List(Realtime)
 
@@ -33,27 +35,6 @@ object Bounding extends Module with StorageComponent[Bounding, HTMLTag] with Log
   }
 
   override def load[S <: Session](webpage: Webpage[S]) = {
-    webpage.body.eventReceived.on {
-      case evt => if (evt.event == "bounding") {
-        val id = evt.json.string("elementId")
-        webpage.byId[HTMLTag](id) match {
-          case Some(t) => {
-            val b = apply(t)
-            b.set(evt, "localX", b.localX)
-            b.set(evt, "localY", b.localY)
-            b.set(evt, "absoluteX", b.absoluteX)
-            b.set(evt, "absoluteY", b.absoluteY)
-            b.set(evt, "width", b.width)
-            b.set(evt, "height", b.height)
-          }
-          case None => warn(s"Unable to find tag for #$id.")
-        }
-
-        Intercept.Stop
-      } else {
-        Intercept.Continue
-      }
-    }
     webpage.head.contents += new tag.Script(mimeType = "text/javascript", src = "/bounding.js")
   }
 
@@ -64,24 +45,41 @@ object Bounding extends Module with StorageComponent[Bounding, HTMLTag] with Log
       "null"
     }
     val js = s"bounding.monitor(${selector.content}, ${Time.millis(frequency)}, $sf);"
-    Realtime.sendJavaScript(webpage, js, onlyRealtime = false)
+    webpage.eval(js)
   }
 
   def disable[S <: Session](webpage: Webpage[S], selector: Selector) = {
-    Realtime.sendJavaScript(webpage, s"bounding.remove(${selector.content});", onlyRealtime = false)
+    webpage.eval(s"bounding.remove(${selector.content});")
   }
 
   protected def create(t: HTMLTag) = new Bounding(t)
 }
 
 class Bounding(val tag: HTMLTag) extends Listenable {
-  // TODO: create ReadableProperty that cannot be modified
-  val localX = Property[Double](default = Some(0.0))
-  val localY = Property[Double](default = Some(0.0))
-  val absoluteX = Property[Double](default = Some(0.0))
-  val absoluteY = Property[Double](default = Some(0.0))
-  val width = Property[Double](default = Some(0.0))
-  val height = Property[Double](default = Some(0.0))
+  private val _localX = Property[Double](default = Some(0.0))
+  private val _localY = Property[Double](default = Some(0.0))
+  private val _absoluteX = Property[Double](default = Some(0.0))
+  private val _absoluteY = Property[Double](default = Some(0.0))
+  private val _width = Property[Double](default = Some(0.0))
+  private val _height = Property[Double](default = Some(0.0))
+
+  def localX = _localX.readOnlyView
+  def localY = _localY.readOnlyView
+  def absoluteX = _absoluteX.readOnlyView
+  def absoluteY = _absoluteY.readOnlyView
+  def width = _width.readOnlyView
+  def height = _height.readOnlyView
+
+  tag.handle[BoundingEvent] {
+    case evt => {
+      _localX := evt.localX
+      _localY := evt.localY
+      _absoluteX := evt.absoluteX
+      _absoluteY := evt.absoluteY
+      _width := evt.width
+      _height := evt.height
+    }
+  }
 
   def local2AbsoluteX(local: Double) = {
     val diff = absoluteX() - localX()
@@ -102,19 +100,6 @@ class Bounding(val tag: HTMLTag) extends Listenable {
     val diff = absoluteY() - localY()
     absolute - diff
   }
-
-  protected def set(evt: EventReceived, propertyName: String, property: Property[Double]) = evt.json.doubleOption(propertyName) match {
-    case Some(v) => {
-      val oldValue = property()
-      property := v.toDouble
-      Bounding.modified(tag.webpage[Session]).fire(BoundingEvent(this, propertyName, property, oldValue, v.toDouble))
-    }
-    case None => // Property not changed
-  }
 }
 
-case class BoundingEvent(bounding: Bounding,
-                         propertyName: String,
-                         property: Property[Double],
-                         oldValue: Double,
-                         newValue: Double)
+case class BoundingEvent(tag: HTMLTag, localX: Double, localY: Double, absoluteX: Double, absoluteY: Double, width: Double, height: Double) extends BrowserEvent

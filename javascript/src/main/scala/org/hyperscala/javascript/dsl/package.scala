@@ -17,6 +17,7 @@ package object dsl {
   implicit def length2Statement(l: Length): Statement[Length] = s(l)
 
   implicit def js2Statement[T](js: JavaScriptContent): Statement[T] = ExistingStatement[T](js.content)
+  implicit def s2js(s: String): JavaScriptContent = JavaScriptString(s)
 
   implicit def s2ss(s: Statement[_]): Statement[String] = ExistingStatement[String](s.toJS)
   implicit def delayed2Statement[T](d: DelayedStatement[T]): Statement[T] = d.toStatement

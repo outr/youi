@@ -1,5 +1,6 @@
 package org.hyperscala.jquery
 
+import org.hyperscala.event.BrowserEvent
 import org.hyperscala.html.HTMLTag
 import org.hyperscala.javascript.{JavaScriptContent, JavaScriptString}
 import org.hyperscala.javascript.dsl.Statement
@@ -7,6 +8,8 @@ import org.hyperscala.selector.Selector
 import org.hyperscala.web.WrappedComponent
 
 import org.hyperscala.jquery.dsl._
+import org.powerscala.event.processor.UnitProcessor
+import org.powerscala.json.TypedSupport
 
 /**
  * jQueryComponent trait works to provide easier access to making calls to jQuery for extensions like autoComplete and
@@ -57,4 +60,43 @@ trait jQueryComponent extends WrappedComponent[HTMLTag] {
       option(eventType, function)
     }
   }
+
+  def event(eventType: String): UnitProcessor[jQueryEvent] = {
+    val js =
+      s"""var id = $$(this).attr('id');
+        |realtime.send({
+        | id: id,
+        | type: 'jquery'
+        | eventType: 'jquery.$eventType'
+        |});
+      """.stripMargin
+    on(eventType, JavaScriptString(js))
+    val processor = new UnitProcessor[jQueryEvent](s"jquery.$eventType")(wrapped, implicitly[Manifest[jQueryEvent]])
+    wrapped.handle[jQueryEvent]((evt: jQueryEvent) => processor.fire(evt), (evt: jQueryEvent) => evt.eventType == eventType)
+    processor
+  }
+
+  def event[T <: BrowserEvent](mapping: MappedEvent[T]) = {
+    val js =
+      s"""
+        |var id = $$(this).attr('id');
+        |realtime.send({
+        | id: id,
+        | type: '${mapping.eventType}',
+        | ${mapping.mapping.map(t => s"${t._1}: ${t._2.content}").mkString(", ")}
+        |});
+      """.stripMargin
+    on(mapping.eventType, JavaScriptString(js))
+    val processor = new UnitProcessor[T](mapping.eventType)(wrapped, mapping.manifest)
+    wrapped.handle[T]((evt: T) => processor.fire(evt))(mapping.manifest)
+    processor
+  }
+}
+
+case class jQueryEvent(tag: HTMLTag, eventType: String) extends BrowserEvent
+
+class MappedEvent[T <: BrowserEvent](val mapping: Map[String, Statement[_]])(implicit val manifest: Manifest[T]) {
+  val eventType = getClass.getName
+
+  TypedSupport.register(eventType, manifest.runtimeClass)
 }

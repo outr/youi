@@ -2,18 +2,20 @@ package org.hyperscala.ui
 
 import java.io.File
 
-import argonaut.JsonObject
 import com.outr.net.http.content.{ContentType, StringContent}
 import com.outr.net.http.handler.{MultipartSupport, MultipartHandler}
 import com.outr.net.http.mime.MimeType
 import com.outr.net.http.request.HttpRequest
 import com.outr.net.http.response.{HttpResponseStatus, HttpResponse}
+import org.hyperscala.event.BrowserEvent
 import org.hyperscala.html._
 import org.hyperscala.javascript.{JavaScriptContent, JavaScriptString}
+import org.hyperscala.javascript.dsl._
 import org.hyperscala.jquery.jQueryComponent
 import org.hyperscala.module.Module
 import org.powerscala.event.{Intercept, Listenable}
 import org.powerscala.event.processor.UnitProcessor
+import org.powerscala.json.TypedSupport
 import org.powerscala.property.Property
 import org.powerscala.{StorageComponent, Unique, Version}
 import org.hyperscala.web.{Website, Webpage}
@@ -28,10 +30,23 @@ import com.outr.net.http.session.Session
  * @author Matt Hicks <mhicks@outr.com>
  */
 object Dropzone extends Module with StorageComponent[Dropzone, HTMLTag] {
+  TypedSupport.register("dropzoneFileEvent", classOf[DropzoneFileEvent])
+  TypedSupport.register("dropzoneThumbnailEvent", classOf[DropzoneThumbnailEvent])
+  TypedSupport.register("dropzoneProgressEvent", classOf[DropzoneProgressEvent])
+  TypedSupport.register("dropzoneErrorEvent", classOf[DropzoneErrorEvent])
+
   private def FileScript(id: String, eventName: String) =
     new JavaScriptString(s"""
       |function(file) {
-      | realtimeSend('$id', '$eventName', {lastModified: file.lastModifiedDate.getTime(), name: file.name, size: file.size, type: file.type});
+      | realtime.send({
+      |   id: '$id',
+      |   type: 'dropzoneFileEvent',
+      |   event: '$eventName',
+      |   lastModified: file.lastModifiedDate.getTime(),
+      |   name: file.name,
+      |   size: file.size,
+      |   mimeType: file.type
+      | });
       |}
     """.stripMargin)
   private def FileThumbnailScript(id: String, eventName: String) =
@@ -41,23 +56,47 @@ object Dropzone extends Module with StorageComponent[Dropzone, HTMLTag] {
       |   document.dataUrls = {};
       | }
       | document.dataUrls['$id'] = dataUrl;
-      | realtimeSend('$id', '$eventName', {lastModified: file.lastModifiedDate.getTime(), name: file.name, size: file.size, type: file.type});
+      | realtime.send({
+      |   id: '$id',
+      |   type: 'dropzoneThumbnailEvent',
+      |   lastModified: file.lastModifiedDate.getTime(),
+      |   name: file.name,
+      |   size: file.size,
+      |   mimeType: file.type
+      | });
       |}
     """.stripMargin)
   private def FileProgressScript(id: String, eventName: String) =
     new JavaScriptString(s"""
       |function(file, progress, bytesSent) {
-      | realtimeSend('$id', '$eventName', {lastModified: file.lastModifiedDate.getTime(), name: file.name, size: file.size, type: file.type, progress: progress, bytesSent: bytesSent});
+      | realtime.send({
+      |   id: '$id',
+      |   type: 'dropzoneProgressEvent',
+      |   lastModified: file.lastModifiedDate.getTime(),
+      |   name: file.name,
+      |   size: file.size,
+      |   mimeType: file.type,
+      |   progress: progress,
+      |   bytesSent: bytesSent
+      | });
       |}
     """.stripMargin)
   private def FileErrorScript(id: String, eventName: String) =
     new JavaScriptString(s"""
       |function(file, message) {
-      | realtimeSend('$id', '$eventName', {lastModified: file.lastModifiedDate.getTime(), name: file.name, size: file.size, type: file.type, message: message});
+      | realtime.send({
+      |   id: '$id',
+      |   type: 'dropzoneErrorEvent',
+      |   lastModified: file.lastModifiedDate.getTime(),
+      |   name: file.name,
+      |   size: file.size,
+      |   mimeType: file.type,
+      |   message: message
+      | });
       |}
     """.stripMargin)
   private def UseThumbnailScript[S <: Session](webpage: Webpage[S], dropzone: Dropzone, img: tag.Img) = {
-    Realtime.sendJavaScript(webpage,
+    webpage.eval(
       s"""
         |$$('#${img.identity}').attr('src', document.dataUrls['${dropzone.wrapped.identity}']);
         |document.dataUrls['${dropzone.wrapped.identity}'] = null;
@@ -201,66 +240,28 @@ class Dropzone(container: HTMLTag) extends jQueryComponent with Listenable {
     error := Dropzone.FileErrorScript(container.identity, "error")
 
     // Add handler for new events
-    container.eventReceived.on {
+    container.handle[DropzoneFileEvent] {
       case evt => evt.event match {
-        case "addedFile" => {
-          val (lastModified, name, size, mimeType) = fileValues(evt.json)
-          addedFileEvent.fire(DropzoneFileEvent(lastModified, name, size, mimeType))
-          Intercept.Stop
-        }
-        case "removedFile" => {
-          val (lastModified, name, size, mimeType) = fileValues(evt.json)
-          removedFileEvent.fire(DropzoneFileEvent(lastModified, name, size, mimeType))
-          Intercept.Stop
-        }
-        case "thumbnail" => {
-          val (lastModified, name, size, mimeType) = fileValues(evt.json)
-          thumbnailEvent.fire(DropzoneThumbnailEvent(lastModified, name, size, mimeType))
-          Intercept.Stop
-        }
-        case "processing" => {
-          val (lastModified, name, size, mimeType) = fileValues(evt.json)
-          processingEvent.fire(DropzoneFileEvent(lastModified, name, size, mimeType))
-          Intercept.Stop
-        }
-        case "uploadProgress" => {
-          val (lastModified, name, size, mimeType) = fileValues(evt.json)
-          val progress = evt.json.double("progress")
-          val bytesSent = evt.json.long("bytesSent")
-          uploadProgressEvent.fire(DropzoneProgressEvent(lastModified, name, size, mimeType, progress, bytesSent))
-          Intercept.Stop
-        }
-        case "success" => {
-          val (lastModified, name, size, mimeType) = fileValues(evt.json)
-          successEvent.fire(DropzoneFileEvent(lastModified, name, size, mimeType))
-          Intercept.Stop
-        }
-        case "complete" => {
-          val (lastModified, name, size, mimeType) = fileValues(evt.json)
-          completeEvent.fire(DropzoneFileEvent(lastModified, name, size, mimeType))
-          Intercept.Stop
-        }
-        case "error" => {
-          val (lastModified, name, size, mimeType) = fileValues(evt.json)
-          val message = evt.json.string("message")
-          errorEvent.fire(DropzoneErrorEvent(lastModified, name, size, mimeType, message))
-          Intercept.Stop
-        }
-        case _ => Intercept.Continue
+        case "addedFile" => addedFileEvent.fire(evt)
+        case "removedFile" => removedFileEvent.fire(evt)
+        case "processing" => processingEvent.fire(evt)
+        case "success" => successEvent.fire(evt)
+        case "complete" => completeEvent.fire(evt)
       }
+    }
+    container.handle[DropzoneThumbnailEvent] {
+      case evt => thumbnailEvent.fire(evt)
+    }
+    container.handle[DropzoneProgressEvent] {
+      case evt => uploadProgressEvent.fire(evt)
+    }
+    container.handle[DropzoneErrorEvent] {
+      case evt => errorEvent.fire(evt)
     }
   }
 
   def applyThumbnail[S <: Session](img: tag.Img) = {
     Dropzone.UseThumbnailScript(webpage, this, img)
-  }
-
-  private def fileValues(json: JsonObject) = {
-    val lastModified = json.long("lastModified")
-    val name = json.string("name")
-    val size = json.long("size")
-    val mimeType = json.string("type")
-    (lastModified, name, size, mimeType)
   }
 
   override protected def functionName = "dropzone"
@@ -270,10 +271,10 @@ class Dropzone(container: HTMLTag) extends jQueryComponent with Listenable {
   override protected def wrapped = container
 }
 
-case class DropzoneFileEvent(lastModified: Long, name: String, size: Long, mimeType: String)
-case class DropzoneThumbnailEvent(lastModified: Long, name: String, size: Long, mimeType: String)
-case class DropzoneProgressEvent(lastModified: Long, name: String, size: Long, mimeType: String, progress: Double, bytesSent: Long)
-case class DropzoneErrorEvent(lastModified: Long, name: String, size: Long, mimeType: String, message: String)
+case class DropzoneFileEvent(tag: HTMLTag, event: String, lastModified: Long, name: String, size: Long, mimeType: String) extends BrowserEvent
+case class DropzoneThumbnailEvent(tag: HTMLTag, lastModified: Long, name: String, size: Long, mimeType: String) extends BrowserEvent
+case class DropzoneProgressEvent(tag: HTMLTag, lastModified: Long, name: String, size: Long, mimeType: String, progress: Double, bytesSent: Long) extends BrowserEvent
+case class DropzoneErrorEvent(tag: HTMLTag, lastModified: Long, name: String, size: Long, mimeType: String, message: String) extends BrowserEvent
 
 class DropzoneHandler[S <: Session](website: Website[S]) extends MultipartHandler {
   override def create(request: HttpRequest, response: HttpResponse) = {

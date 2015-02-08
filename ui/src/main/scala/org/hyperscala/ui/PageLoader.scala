@@ -3,6 +3,7 @@ package org.hyperscala.ui
 import org.hyperscala.web.{WebpageHandler, Webpage}
 import org.hyperscala.realtime.Realtime
 import com.outr.net.http.session.Session
+import org.hyperscala.javascript.dsl._
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -25,6 +26,6 @@ object PageLoader {
     }
     val newPage = create(webpage)(creator)
     val pageURL = url(newPage, path)
-    Realtime.sendRedirect(webpage, pageURL)          // Redirect to the new page by id
+    webpage.eval(window.location.href := pageURL)      // Redirect to the new page by id
   }
 }

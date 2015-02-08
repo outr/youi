@@ -1,5 +1,6 @@
 package org.hyperscala.javascript.dsl
 
+import com.outr.net.URL
 import org.hyperscala.html.HTMLTag
 import org.hyperscala.html.attributes.Target
 import org.hyperscala.javascript.JavaScriptString
@@ -25,6 +26,8 @@ object window extends DelayedStatement[HTMLTag] with Selector {
   def innerWidth = ExistingStatement[Double]("window.innerWidth")
   def innerHeight = ExistingStatement[Double]("window.innerHeight")
 
+  def location = windowLocation
+
   def duplicate(parent: Option[Selector]) = throw new RuntimeException("window cannot be duplicated")
 
   def open(url: String, target: Target = Target.Self) = {
@@ -39,4 +42,16 @@ object window extends DelayedStatement[HTMLTag] with Selector {
     b.append(")")
     MultiStatement[Unit](sideEffects = true, b.toList: _*)
   }
+}
+
+object windowLocation extends DelayedStatement[URL] {
+  def toStatement = ExistingStatement[URL]("window.location")
+
+  def href = windowLocationHref
+}
+
+object windowLocationHref extends DelayedStatement[String] {
+  def toStatement = ExistingStatement[URL]("window.location.href")
+
+  def :=(s: Statement[String]) = MultiStatement[Unit](sideEffects = true, toStatement, " = ", s)
 }

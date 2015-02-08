@@ -90,7 +90,7 @@ object HyperScalaBuild extends Build {
   lazy val realtime = Project("realtime", file("realtime"), settings = createSettings("hyperscala-realtime"))
     .dependsOn(web, jquery)
   lazy val ui = Project("ui", file("ui"), settings = createSettings("hyperscala-ui"))
-    .dependsOn(web, realtime, jquery)
+    .dependsOn(web, realtime, jquery, jqueryUI)
   lazy val ux = Project("ux", file("ux"), settings = createSettings("hyperscala-ux"))
     .dependsOn(web, realtime, jquery, ui)
   lazy val bootstrap = Project("bootstrap", file("bootstrap"), settings = createSettings("hyperscala-bootstrap"))

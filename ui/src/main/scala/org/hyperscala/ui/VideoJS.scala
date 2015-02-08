@@ -14,6 +14,7 @@ import org.powerscala.{Priority, Version}
 import org.powerscala.event.Listenable
 import org.powerscala.property.Property
 import org.hyperscala.web._
+import org.hyperscala.javascript.dsl._
 import org.powerscala.property.event.PropertyChangeEvent
 
 /**
@@ -42,7 +43,7 @@ class VideoJS extends tag.Video {
           | // TODO: notify the server the video is initialized
           |});
         """.stripMargin
-      Realtime.sendJavaScript(webpage, js, selector = Some(Selector.id(this)), onlyRealtime = false)
+      webpage.eval(js, Some(Selector.id(this).toCondition))
 
       listen[PropertyChangeEvent[_], Unit, Unit]("change", Priority.Normal, Descendants) {
         case evt => evt.property match {
@@ -57,8 +58,8 @@ class VideoJS extends tag.Video {
 
   private def call(method: String, args: Any*) = {
     val argsJS = args.map(a => JavaScriptContent.toJS(a)).mkString(", ")
-    Realtime.sendJavaScript(this.webpage, s"videojs('$identity').$method($argsJS);", onlyRealtime = false, selector = Some(Selector.id(this)))
-    Realtime.sendJavaScript(this.webpage, s"$$('#${identity}_html5_api').attr('$method', $argsJS);", onlyRealtime = false, selector = Some(Selector.id(this)))
+    this.webpage.eval(s"videojs('$identity').$method($argsJS);", Some(Selector.id(this).toCondition))
+    this.webpage.eval(s"$$('#${identity}_html5_api').attr('$method', $argsJS);", Some(Selector.id(this).toCondition))
   }
 
   def currentTime(seconds: Double) = call("currentTime", seconds)
@@ -107,6 +108,6 @@ object VideoJS extends Module {
   override def dependencies = List(Realtime)
 
   def pauseAll[S <: Session](webpage: Webpage[S]) = {
-    Realtime.sendJavaScript(webpage, "$('video').each(function() { $(this).get(0).pause(); });")
+    webpage.eval("$('video').each(function() { $(this).get(0).pause(); });")
   }
 }

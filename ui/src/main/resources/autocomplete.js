@@ -59,7 +59,7 @@ function autocompletify(pageId, id, multiple, autoFocus, delay, appendId, disabl
         disabled: disabled,
         minLength: minLength,
         change: function() {
-            realtimeSend($(this).attr('id'), 'change');
+            realtime.fireChange($(this).get(0));
         }
     }).data('ui-autocomplete')._renderItem = function(ul, item) {
         return $('<li></li>').data('item.autocomplete', item).append($('<a></a>').html(item.label)).appendTo(ul);

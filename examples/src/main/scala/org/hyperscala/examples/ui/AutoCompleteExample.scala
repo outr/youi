@@ -1,9 +1,10 @@
 package org.hyperscala.examples.ui
 
 import org.hyperscala.html._
+import org.hyperscala.jquery.Gritter
 import org.powerscala.Language
 import org.hyperscala.web._
-import org.hyperscala.realtime.RealtimeEvent
+import org.hyperscala.realtime.{Realtime, RealtimeEvent}
 import org.hyperscala.jquery.ui.{AutocompleteResult, Autocomplete}
 import org.hyperscala.examples.Example
 import language.reflectiveCalls
@@ -13,6 +14,7 @@ import language.reflectiveCalls
  */
 class AutoCompleteExample extends Example {
   this.require(Autocomplete)
+  this.require(Gritter)
   connected[tag.Body] {
     case body => body.style.fontFamily := "Arial, sans-serif"
   }
@@ -38,7 +40,7 @@ class AutoCompleteExample extends Example {
       autocomplete.autoFocus := true
 
       changeEvent.on {
-        case evt => println("Input changed to: %s".format(value()))
+        case evt => Gritter.add(this.webpage, "Input Changed", "Input changed to: %s".format(value()))
       }
     }
 
@@ -49,7 +51,7 @@ class AutoCompleteExample extends Example {
 
       clickEvent.on {
         case evt => {
-          println("Clicked! - %s".format(input.autocomplete.selected()))
+          Gritter.add(this.webpage, "Clicked!", input.autocomplete.selected().mkString(", "))
           input.value := "testing"
         }
       }

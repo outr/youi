@@ -26,7 +26,7 @@ trait jQueryComponent extends WrappedComponent[HTMLTag] {
 
   private def send(statement: Statement[_]) = synchronized {
     if (initialized) {
-      webpage.eval(statement, realtimeSelector.map(s => JavaScriptString(s"""$$('${s.content}').length > 0""")))
+      webpage.eval(statement, realtimeSelector.map(s => JavaScriptString(s"""$$(${s.content}).length > 0""")))
     } else {
       throw new RuntimeException("component not initialized!")
     }
@@ -63,13 +63,13 @@ trait jQueryComponent extends WrappedComponent[HTMLTag] {
 
   def event(eventType: String): UnitProcessor[jQueryEvent] = {
     val js =
-      s"""var id = $$(this).attr('id');
-        |realtime.send({
-        | id: id,
-        | type: 'jquery'
-        | eventType: 'jquery.$eventType'
-        |});
-      """.stripMargin
+      s"""function() {
+        | realtime.send({
+        |   id: '${wrapped.identity}',
+        |   type: 'jquery',
+        |   eventType: 'jquery.$eventType'
+        | });
+        |}""".stripMargin
     on(eventType, JavaScriptString(js))
     val processor = new UnitProcessor[jQueryEvent](s"jquery.$eventType")(wrapped, implicitly[Manifest[jQueryEvent]])
     wrapped.handle[jQueryEvent]((evt: jQueryEvent) => processor.fire(evt), (evt: jQueryEvent) => evt.eventType == eventType)
@@ -78,14 +78,13 @@ trait jQueryComponent extends WrappedComponent[HTMLTag] {
 
   def event[T <: BrowserEvent](mapping: MappedEvent[T]) = {
     val js =
-      s"""
-        |var id = $$(this).attr('id');
-        |realtime.send({
-        | id: id,
-        | type: '${mapping.eventType}',
-        | ${mapping.mapping.map(t => s"${t._1}: ${t._2.content}").mkString(", ")}
-        |});
-      """.stripMargin
+      s"""function() {
+        | realtime.send({
+        |  id: '${wrapped.identity}',
+        |  type: '${mapping.eventType}',
+        |  ${mapping.mapping.map(t => s"${t._1}: ${t._2.content}").mkString(", ")}
+        | });
+        |}""".stripMargin
     on(mapping.eventType, JavaScriptString(js))
     val processor = new UnitProcessor[T](mapping.eventType)(wrapped, mapping.manifest)
     wrapped.handle[T]((evt: T) => processor.fire(evt))(mapping.manifest)

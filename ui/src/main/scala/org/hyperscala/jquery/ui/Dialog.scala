@@ -11,7 +11,7 @@ import org.hyperscala.realtime.Realtime
 import org.hyperscala.selector.{AttributeMatcher, Selector}
 import org.hyperscala.web._
 import org.powerscala.StorageComponent
-import org.powerscala.event.{Intercept, Listenable}
+import org.powerscala.event.Listenable
 import org.powerscala.hierarchy.event.StandardHierarchyEventProcessor
 import org.powerscala.json.TypedSupport
 import org.powerscala.property._

@@ -203,7 +203,6 @@ object RealtimePage {
   TypedSupport.register("removeHTML", classOf[RemoveHTMLContent])
   TypedSupport.register("attributeHTML", classOf[SetHTMLAttribute])
   TypedSupport.register("setStyle", classOf[SetSelectorStyle])
-  TypedSupport.register("eval", classOf[InvokeJavaScript])
   TypedSupport.register("tokenEvent", classOf[TokenBrowserEvent])
 
   def apply[S <: Session](webpage: Webpage[S]) = webpage.store.getOrSet[RealtimePage[S]]("realtime", new RealtimePage(webpage))

@@ -139,10 +139,7 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication {
   addClassPath("/css/", "css/")
   addClassPath("/js/", "js/")
 
-  protected def createSession(request: HttpRequest, id: String) = {
-    println(s"Creating new MapSession for id $id")
-    new MapSession(id, this)
-  }
+  protected def createSession(request: HttpRequest, id: String) = new MapSession(id, this)
 
   def run() = main(Array.empty)
 

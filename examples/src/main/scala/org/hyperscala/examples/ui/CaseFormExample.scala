@@ -1,6 +1,7 @@
 package org.hyperscala.examples.ui
 
 import org.hyperscala.examples.Example
+import org.hyperscala.jquery.Gritter
 import org.hyperscala.ui.dynamic.DynamicTag
 import org.hyperscala.html._
 import org.hyperscala.ui.form.CaseForm
@@ -14,6 +15,7 @@ import com.outr.net.http.session.Session
  */
 class CaseFormExample extends Example {
   this.require(Realtime)
+  this.require(Gritter)
   connected[Webpage[Session]] {
     case webpage => {
       webpage.connectForm()
@@ -33,7 +35,7 @@ class CaseFormExample extends Example {
           container.contents += new tag.Li(content = error.message)
         }
       }
-      val caseForm = new CaseForm[CaseFormExampleEntry](form, errorSupport) {
+      new CaseForm[CaseFormExampleEntry](form, errorSupport) {
         fieldValidator[String]("name") {
           case n => if (n.length < 4) {
             Some("Name must be at least four characters")
@@ -44,8 +46,7 @@ class CaseFormExample extends Example {
         property := CaseFormExampleEntry("John Doe", 123)
 
         def submit() = {
-          Thread.sleep(1000)
-          println(s"Submit! ${property()}")
+          Gritter.add(webpage, "Form Submitted", s"Value: ${property()}")
         }
       }
 

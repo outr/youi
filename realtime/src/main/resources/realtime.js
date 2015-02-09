@@ -80,7 +80,7 @@ var realtime = {
                 realtime.error('Nothing listening for events of type [' + type + '].', obj);
             }
         } catch(err) {
-            realtime.error('Failed to fire', obj, err);
+            realtime.error('Failed to fire event ' + type + ' to listeners because ' + err.message, obj, err);
         }
     },
     /**
@@ -108,6 +108,7 @@ var realtime = {
     },
     error: function(message, obj, err) {
         console.log('Realtime (' + new Date() + '): ' + message + (obj != null ? ' - ' + JSON.stringify(obj) : ''));
+        if (err != null) console.log(err.stack);
         this.send({
             type: 'error',
             timestamp: Date.now(),
@@ -147,10 +148,7 @@ var realtime = {
                 var r = this;
                 var f = function() {
                     if (fireChange) {
-                        r.send(jQuery.extend(content, {
-                            type: 'change',
-                            value: r.changeValue(element)
-                        }));
+                        r.fireChange(element);
                     }
                     r.send(content);
                 };
@@ -169,6 +167,13 @@ var realtime = {
         } catch(err) {
             realtime.error('Error occurred handling a JavaScript event: ' + err.message, null, err);
         }
+    },
+    fireChange: function(element) {
+        realtime.send({
+            type: 'change',
+            id: element.getAttribute('id'),
+            value: realtime.changeValue(element)
+        });
     },
     changeValue: function(element) {
         var tagName = element.tagName.toLowerCase();
@@ -322,7 +327,7 @@ realtime.on('eval', function(obj) {
             try {
                 eval(obj.code);
             } catch(err) {
-                realtime.error('Failed to handle eval request', obj, err);
+                realtime.error('Failed to handle eval request (' + err.message + ') - ' + obj.code, null, err);
             }
         } else {
             setTimeout(f, 10);

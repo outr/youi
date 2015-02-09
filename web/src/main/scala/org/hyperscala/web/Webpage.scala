@@ -27,7 +27,7 @@ import org.powerscala.concurrent.Time._
 class Webpage[S <: Session](val website: Website[S]) extends HttpHandler with HTMLPage with ModularPage[S] with ParentLike[tag.HTML] with ConnectionHolder {
   implicit def manifest: Manifest[S] = website.manifest
 
-  TypedSupport.register("page", classOf[WebpageConnect])
+  Webpage
   ConnectionHolder.jsonEvent.partial(Unit) {
     case c: WebpageConnect => ConnectionHolder.connection.holder := this      // Switch the connection to the webpage as the holder
   }
@@ -198,3 +198,8 @@ class Webpage[S <: Session](val website: Website[S]) extends HttpHandler with HT
 }
 
 case class WebpageConnect(pageId: String)
+
+object Webpage {
+  TypedSupport.register("eval", classOf[InvokeJavaScript])
+  TypedSupport.register("page", classOf[WebpageConnect])
+}

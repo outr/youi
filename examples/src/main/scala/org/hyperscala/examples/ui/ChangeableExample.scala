@@ -4,7 +4,7 @@ package org.hyperscala.examples.ui
 import org.hyperscala.html._
 import org.hyperscala.examples.Example
 import language.reflectiveCalls
-import org.hyperscala.realtime.Realtime
+import org.hyperscala.realtime._
 import org.powerscala.Color
 import org.hyperscala.ui.wrapped.{Changes, Changing, Changeable}
 import org.hyperscala.css.attributes.Position
@@ -24,7 +24,7 @@ class ChangeableExample extends Example {
   this.require(Realtime)
 
   connected[Webpage[Session]] {
-    case webpage => Realtime.connectForm(webpage)
+    case webpage => webpage.connectForm()
   }
 
   contents += new tag.P {

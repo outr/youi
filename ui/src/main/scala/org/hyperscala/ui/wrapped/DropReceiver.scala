@@ -1,13 +1,16 @@
 package org.hyperscala.ui.wrapped
 
 import com.outr.net.http.session.Session
+import org.hyperscala.event.BrowserEvent
 import org.hyperscala.html._
 import org.hyperscala.jquery.jQuery
 import org.hyperscala.module.Module
 import org.hyperscala.realtime.Realtime
+import org.hyperscala.javascript.dsl._
 import org.hyperscala.web.{WrappedComponent, _}
 import org.powerscala.event.processor.UnitProcessor
 import org.powerscala.event.{Intercept, Listenable}
+import org.powerscala.json.TypedSupport
 import org.powerscala.{StorageComponent, Version}
 
 /**
@@ -17,23 +20,14 @@ class DropReceiver private(val wrapped: HTMLTag, val autoInit: Boolean = true) e
   initReceiver()
 
   private def initReceiver() = {
-    wrapped.eventReceived.on {
-      case evt if evt.event == "dropped" => {
-        val types = evt.json.strings("types")
-        val data = evt.json.stringMap("data").map {
-          case (key, value) => DropData(key, value.toString)
-        }.toList
-        dropped.fire(DropReceived(types, data))
-
-        Intercept.Stop
-      }
-      case _ => Intercept.Continue
+    wrapped.handle[DropReceived] {
+      case evt => dropped.fire(evt)
     }
   }
 
   protected def initializeComponent(values: Map[String, Any]) = wrapped.connected[Webpage[Session]] {
     case webpage => {
-      Realtime.sendJavaScript(webpage, s"createDropReceiver('${wrapped.identity}');", onlyRealtime = false)
+      webpage.eval(s"createDropReceiver('${wrapped.identity}');")
       values.foreach {
         case (key, value) => modify(key, value)
       }
@@ -58,6 +52,9 @@ class DropReceiver private(val wrapped: HTMLTag, val autoInit: Boolean = true) e
 }
 
 object DropReceiver extends Module with StorageComponent[DropReceiver, HTMLTag] {
+  TypedSupport.register("dropReceived", classOf[DropReceived])
+  TypedSupport.register("dropData", classOf[DropData])
+
   def name = "DropReceiver"
   def version = Version(1)
 
@@ -79,7 +76,7 @@ object DropReceiver extends Module with StorageComponent[DropReceiver, HTMLTag] 
   protected def create(t: HTMLTag) = new DropReceiver(t)
 }
 
-case class DropReceived(types: List[String], data: List[DropData]) {
+case class DropReceived(tag: HTMLTag, types: List[String], data: List[DropData]) extends BrowserEvent {
   def get(mimeType: String) = data.find(dd => dd.mimeType == mimeType).map(dd => dd.data)
 }
 

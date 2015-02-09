@@ -7,7 +7,6 @@ import org.powerscala.Color
 
 import org.hyperscala.jquery.jcanvas._
 import org.hyperscala.jquery.dsl._
-import org.hyperscala.realtime.dsl._
 import com.outr.net.http.session.Session
 import org.hyperscala.web._
 
@@ -23,6 +22,6 @@ class jCanvasExample extends Example {
   contents += canvas
 
   connected[Webpage[Session]] {
-    case webpage => $(canvas).drawArc(strokeStyle = Color.Black, strokeWidth = 5, x = 100, y = 100, radius = 50, start = 90, end = 180).send(webpage)
+    case webpage => webpage.eval($(canvas).drawArc(strokeStyle = Color.Black, strokeWidth = 5, x = 100, y = 100, radius = 50, start = 90, end = 180))
   }
 }

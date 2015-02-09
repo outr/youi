@@ -4,10 +4,12 @@ import com.outr.net.http.session.Session
 import org.hyperscala.css.attributes.LineStyle
 import org.hyperscala.examples.Example
 import org.hyperscala.html._
+import org.hyperscala.javascript.dsl._
 import org.hyperscala.realtime._
 import org.hyperscala.ui.ModalComponent
 import org.hyperscala.web._
 import org.powerscala.Color
+import org.powerscala.property.Property
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -15,13 +17,14 @@ import org.powerscala.Color
 class RealtimeFrameExample extends Example {
   this.require(Realtime)
 
-  private var count = 0
+  println("RealtimeFrameExample...")
+  private val count = Property[Int](default = Some(0))
 
   contents += new tag.P {
     contents += "RealtimeFrame extends an IFrame to allow customized pages to be instantiated and then assigned from within the parent page."
   }
 
-  val frame = new RealtimeFrame("/example/realtime/realtimeframe.html", singleConnection = false) {
+  val frame = new RealtimeFrame("/example/realtime/realtimeframe.html") {
     style.borderColor := Color.Red
     style.borderStyle := LineStyle.Solid
     style.borderWidth := 2.px
@@ -38,8 +41,8 @@ class RealtimeFrameExample extends Example {
   contents += new tag.Button(content = "Load") {
     clickEvent.onRealtime {
       case evt => {
-        count += 1
-        val page = new FramedPage(this.webpage[Session].website, s"Page $count")
+        count := count() + 1
+        val page = new FramedPage(this.webpage[Session].website, s"Page ${count()}")
         frame.currentPage := page
       }
     }
@@ -49,7 +52,7 @@ class RealtimeFrameExample extends Example {
 class FramedPage[S <: Session](website: Website[S], message: String) extends Webpage(website) {
   require(ModalComponent)
 
-  Realtime.sendJavaScript(this, "console.log('Wahoo!');", onlyRealtime = false)
+  this.eval("console.log('Wahoo!');")
   body.contents += new tag.Strong(content = s"Framed page! Message: $message")
 
   body.contents += new tag.Button(content = "Test") {

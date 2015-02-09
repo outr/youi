@@ -1,6 +1,8 @@
 package org.hyperscala.ui.module
 
 import org.hyperscala.module.Module
+import org.powerscala.json.TypedSupport
+import org.powerscala.log.Logging
 import org.powerscala.{Unique, Version}
 import org.hyperscala.realtime.{RealtimePage, Realtime}
 import org.hyperscala.web.{Webpage, Website}
@@ -10,9 +12,7 @@ import org.hyperscala.PropertyAttribute
 import org.hyperscala.persistence.ValuePersistence
 import org.hyperscala.css.StyleSheetAttribute
 
-import org.hyperscala.realtime.dsl._
-import org.hyperscala.javascript.dsl.JSFunction0
-import argonaut.JsonObject
+import org.hyperscala.javascript.dsl._
 import com.outr.net.http.session.Session
 
 /**
@@ -22,7 +22,9 @@ import com.outr.net.http.session.Session
  *
  * @author Matt Hicks <matt@outr.com>
  */
-object Monitor extends Module {
+object Monitor extends Module with Logging {
+  TypedSupport.register("monitor", classOf[MonitorEvent])
+
   val name = "monitor"
   val version = Version(1)
 
@@ -34,21 +36,20 @@ object Monitor extends Module {
 
   override def load[S <: Session](webpage: Webpage[S]) = {
     webpage.head.contents += new tag.Script(mimeType = "text/javascript", src = "/js/monitor.js")
-    val div = apply(webpage)
-    webpage.body.contents += div
+    apply(webpage)
   }
 
   private def apply[S <: Session](webpage: Webpage[S]) = {
-    webpage.store.getOrSet("monitor_div", new MonitorDiv)
+    webpage.store.getOrSet("monitor", new MonitoredPage(webpage))
   }
 
   def create[T, S <: Session](webpage: Webpage[S], frequency: Double, evaluator: JSFunction0[T])
                (implicit manifest: Manifest[T], converter: ValuePersistence[T]) = {
-    apply(webpage).create[T, S](webpage, frequency, evaluator)
+    apply(webpage).create[T](frequency, evaluator)
   }
 
   def remove[T, S <: Session](webpage: Webpage[S], monitor: Monitor[T]) = {
-    apply(webpage).remove[T, S](webpage, monitor)
+    apply(webpage).remove[T](monitor)
   }
 
   def sync[T, S <: Session](webpage: Webpage[S], attribute: PropertyAttribute[T], frequency: Double) = {
@@ -70,10 +71,17 @@ object Monitor extends Module {
     monitor
   }
 
-  private class MonitorDiv extends tag.Div(id = "realtime_monitor") {
+  private class MonitoredPage[S <: Session](webpage: Webpage[S]) {
     private var map = Map.empty[String, Monitor[_]]
 
-    def create[T, S <: Session](webpage: Webpage[S], frequency: Double, evaluator: JSFunction0[T])
+    webpage.jsonEvent.partial(Unit) {
+      case evt: MonitorEvent => map.get(evt.monitorId) match {
+        case Some(monitor) => monitor.receive(evt)
+        case None => warn(s"Monitor ${evt.monitorId} doesn't exist!")
+      }
+    }
+
+    def create[T](frequency: Double, evaluator: JSFunction0[T])
                  (implicit manifest: Manifest[T], converter: ValuePersistence[T]) = {
       val id = Unique()
       val monitor = new Monitor[T](id, frequency, evaluator)
@@ -81,35 +89,25 @@ object Monitor extends Module {
         map += id -> monitor
       }
       val f = math.round(frequency * 1000.0)
-      Realtime.sendJavaScript(webpage, s"window.monitor.createMonitor('$id', $f, ${evaluator.content});", onlyRealtime = false)
+      webpage.eval(s"window.monitor.createMonitor('$id', $f, ${evaluator.content});")
       monitor
     }
 
-    def remove[T, S <: Session](webpage: Webpage[S], monitor: Monitor[T]) = synchronized {
+    def remove[T](monitor: Monitor[T]) = synchronized {
       val id = monitor.id
-      Realtime.sendJavaScript(webpage, s"window.monitor.removeMonitor('$id');", onlyRealtime = false)
+      webpage.eval(s"window.monitor.removeMonitor('$id');")
       map -= id
-    }
-
-    override def receive(event: String, json: JsonObject) = event match {
-      case "monitored" => {
-        val id = json.string("elementId")
-        map.get(id) match {
-          case Some(m) => m.receive(json)
-          case None => warn(s"Monitor $id doesn't exist!")
-        }
-      }
-      case _ => super.receive(event, json)
     }
   }
 }
+
+case class MonitorEvent(monitorId: String, value: String)
 
 class Monitor[T] private(val id: String, val frequency: Double, val evaluator: JSFunction0[T])
                         (implicit manifest: Manifest[T], converter: ValuePersistence[T]) {
   val property = Property[T](default = None)
 
-  def receive(json: JsonObject) = {
-    val value = json.string("value")
-    property := converter.fromString(value, null, manifest.runtimeClass)
+  def receive(evt: MonitorEvent) = {
+    property := converter.fromString(evt.value, null, manifest.runtimeClass)
   }
 }

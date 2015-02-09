@@ -8,9 +8,7 @@ import org.hyperscala.examples.Example
 import org.hyperscala.examples.basic._
 import org.hyperscala.examples.bootstrap.{BootstrapTheme, BootstrapSignin}
 import org.hyperscala.examples.comparison.PlayHelloWorldPage
-import org.hyperscala.examples.connect.ConnectExample
 import org.hyperscala.examples.helloworld.HelloWorldPage
-import org.hyperscala.examples.service.{MessageService, ServiceExample}
 import org.hyperscala.examples.snapsvg.SnapSVGExample
 import org.hyperscala.examples.svg.{DynamicSVGExample, SVGShapesExample, BasicSVGExample}
 import org.hyperscala.examples.todomvc.TodoMVC
@@ -50,27 +48,23 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication {
   val large = pageExample(new LargePageExample(HyperscalaSite.this), "Basic", "Large Page", Scope.Request)
   val dynamicPage = pageExample(new DynamicPageExample(HyperscalaSite.this), "Basic", "Dynamic Page", Scope.Page)
   //    val numberGuess = page(new HyperscalaExample(new NumberGuess), Scope.Page, "/example/number_guess.html")
-  val scoped = example(ScopedExample, "Basic", "Scoped", Scope.Application)
-  val framed = example(new FramedExample, "Basic", "Framed", Scope.Page)
+  val scoped = example(ScopedExample, "Basic", "Scoped", Scope.Page)
   val encodedImage = example(new EncodedImageExample, "Basic", "Encoded Image", Scope.Page)
   val connected = example(new ConnectedExample, "Basic", "Connected", Scope.Page)
   val static = example(new StaticHTMLExample, "Basic", "Static HTML", Scope.Request)
   val form = example(new FormExample, "Basic", "Form", Scope.Request)
   val dynamic = example(new DynamicContentExample, "Basic", "DynamicContent", Scope.Page)
-  val service = example(new ServiceExample, "Basic", "Service", Scope.Request)
 
   // Web
   val userAgent = example(new UserAgentExample, "Web", "UserAgent", Scope.Request)
 
   // Realtime
-  val connect = example(new ConnectExample, "Realtime", "Connect", Scope.Page)
   val realTime = example(new RealtimeExample, "Realtime", "Realtime", Scope.Session)
   val realTimeDate = example(new RealtimeDateExample, "Realtime", "Realtime Date", Scope.Page)
   val realTimeWebpage = example(new RealtimeWebpageExample, "Realtime", "Realtime Webpage", Scope.Session)
   val realTimeForm = example(new RealtimeFormExample, "Realtime", "Realtime Form", Scope.Page)
   val chat = example(new ChatExample, "Realtime", "Chat", Scope.Page)
   val pageChange = example(new PageChangeWarningExample, "Realtime", "Page Change Warning", Scope.Page)
-  val dsl = example(new RealtimeDSLExample, "Realtime", "RealtimeDSL", Scope.Page)
   val realtimeFrame = example(new RealtimeFrameExample, "Realtime", "RealtimeFrame", Scope.Page)
 
   // UI
@@ -80,17 +74,14 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication {
   val autoComplete = example(new AutoCompleteExample, "UI", "AutoComplete", Scope.Page)
   val tabs = example(new TabsExample, "UI", "Tabs", Scope.Page)
   val tree = example(new TreeExample, "UI", "Tree", Scope.Page)
-  val editableContent = example(new EditableContentExample, "UI", "Editable Content", Scope.Page)
   val clipboard = example(new ClipboardExample, "UI", "Clipboard", Scope.Page)
   val multiSelect = example(new MultiSelectExample, "UI", "Multi Select", Scope.Page)
   val caseForm = example(new CaseFormExample, "UI", "Case Form", Scope.Page)
   val typedSelect = example(new TypedSelectExample, "UI", "Typed Select", Scope.Page)
   val gallery = example(new GalleryExample, "UI", "Gallery", Scope.Page)
   val modalComponent = example(new ModalComponentExample, "UI", "Modal Component", Scope.Page)
-  val contentEditor = example(new ContentEditorExample(this), "UI", "Content Editor", Scope.Page)
 
   // Wrapper
-  val richEditor = example(new RichEditorExample, "Wrapper", "Rich Editor", Scope.Page)
   val nivoSlider = example(new NivoSliderExample, "Wrapper", "Nivo Slider", Scope.Page)
   val gritter = example(new GritterExample, "Wrapper", "Gritter", Scope.Page)
   val spectrum = example(new SpectrumExample, "Wrapper", "Spectrum", Scope.Page)
@@ -100,8 +91,6 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication {
   val progressBar = example(new ProgressBarExample, "Wrapper", "Progress Bar", Scope.Page)
   val spinner = example(new SpinnerExample, "Wrapper", "Spinner", Scope.Page)
   val busyDialog = example(new BusyDialogExample, "Wrapper", "Busy Dialog", Scope.Page)
-  val draggable = example(new DraggableExample, "Wrapper", "Draggable", Scope.Page)
-  val droppable = example(new DroppableExample, "Wrapper", "Droppable", Scope.Page)
   val dropReceiver = example(new DropReceiverExample, "Wrapper", "Drop Receiver", Scope.Page)
   val confirmDialog = example(new ConfirmDialogExample, "Wrapper", "Confirm Dialog", Scope.Page)
   val select2 = example(new Select2Example, "Wrapper", "Select2", Scope.Page)
@@ -119,12 +108,9 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication {
   val fileUploader = example(new FileUploaderExample, "Advanced", "File Uploader", Scope.Page)
   val dynamicURL = example(new DynamicURLExample, "Advanced", "Dynamic URL", Scope.Page)
   val history = example(new HistoryExample, "Advanced", "History", Scope.Page)
-  val monitor = example(new MonitorExample, "Advanced", "Monitor", Scope.Page)
   val changeable = example(new ChangeableExample, "Advanced", "Changeable", Scope.Page)
   val compliance = example(new ComplianceExample, "Advanced", "Compliance", Scope.Page)
   val coordinates = example(new CoordinatesExample, "Advanced", "Coordinates", Scope.Page)
-  val jsrequest = example(new JSRequestExample, "Advanced", "JSRequest", Scope.Page)
-  val bounding = example(new BoundingExample, "Advanced", "Bounding", Scope.Page)
   val pageLoader = pageExample(new PageLoaderExample(HyperscalaSite.this), "Advanced", "Page Loader", Scope.Page)
 
   // Module
@@ -149,14 +135,14 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication {
 
   handlers.add(PathFilter("/hello", HelloSite))
 
-//  TestService.register(this)    // Register the test service
-  addHandler(MessageService, "/message")
-
   addClassPath("/images/", "images/")
   addClassPath("/css/", "css/")
   addClassPath("/js/", "js/")
 
-  protected def createSession(request: HttpRequest, id: String) = new MapSession(id, this)
+  protected def createSession(request: HttpRequest, id: String) = {
+    println(s"Creating new MapSession for id $id")
+    new MapSession(id, this)
+  }
 
   def run() = main(Array.empty)
 

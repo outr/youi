@@ -27,8 +27,7 @@ class Scoped[T <: HTMLTag, S <: Session](scope: Scope, creator: () => T, webpage
   }
 
   def apply() = scope match {
-    case Scope.Request => website.request.store.getOrSet(s"scoped$identity", createAndAssign())
-    case Scope.Page => webpage.store.getOrSet(s"scoped$identity", createAndAssign())      // TODO: fix - this will only work if the scope of the page is page
+    case Scope.Request | Scope.Page => website.request.store.getOrSet(s"scoped$identity", createAndAssign())
     case Scope.Application => website.application.getOrSet(s"scoped$identity", createAndAssign())
     case Scope.Session => website.session.getOrSet(s"scoped$identity", createAndAssign())
   }

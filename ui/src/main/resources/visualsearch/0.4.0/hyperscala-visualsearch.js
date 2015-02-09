@@ -20,7 +20,9 @@ function createVisualSearch(pageId, id, url) {
             callbacks  : {
                 search : function(query, searchCollection) {
                     visualSearchCache[facetCacheKey] = null;
-                    realtimeSend(id, 'search', {
+                    realtime.send({
+                        type: 'searchRequest',
+                        id: id,
                         query: query,
                         facets: searchCollection.facets()
                     });

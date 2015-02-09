@@ -3,8 +3,9 @@ package org.hyperscala.realtime
 import com.outr.net.communicate.{ConnectionHolder, Connection}
 import com.outr.net.http.session.Session
 import org.hyperscala.html._
+import org.hyperscala.html.attributes.InputType
 import org.hyperscala.javascript.JavaScriptContent
-import org.hyperscala.javascript.dsl.{Statement, JSFunction0}
+import org.hyperscala.javascript.dsl.{window, Statement, JSFunction0}
 import org.hyperscala.realtime.event.server._
 import org.hyperscala.svg.{Svg, SVGTag}
 import org.hyperscala.web.event.server.InvokeJavaScript
@@ -30,7 +31,7 @@ class RealtimePage[S <: Session] private(val webpage: Webpage[S]) extends Loggin
   def initialized = _initialized.readOnlyView
 
   // Fire all BrowserEvents on the specified tag
-  webpage.json.partial(Unit) {
+  webpage.jsonEvent.partial(Unit) {
     case evt: BrowserEvent => evt.tag.eventReceived.fire(evt)
   }
 
@@ -64,18 +65,23 @@ class RealtimePage[S <: Session] private(val webpage: Webpage[S]) extends Loggin
   }
 
   private def childRemoved(evt: ChildRemovedEvent) = {
-    info(s"childRemoved: $evt")
+    debug(s"childRemoved: $evt")
     evt.child match {
+      case t: tag.Text => {
+        val parent = t.parent.asInstanceOf[HTMLTag with Container[IdentifiableTag]]
+        send(SetHTMLAttribute(parent.identity, "content", parent.outputChildrenString))
+      }
       case t: IdentifiableTag => send(RemoveHTMLContent(t.identity))
     }
   }
 
   private def styleSheetRemoved(styleSheet: StyleSheet) = {
-    info(s"stylesheetRemoved: $styleSheet")
+    debug(s"stylesheetRemoved: $styleSheet")
     send(SetSelectorStyle(styleSheet.selectorString, null, null, important = false, styleSheet = true))
   }
 
   private def propertyChanged(evt: PropertyChangeEvent[_]) = evt.property match {
+    case property if RealtimePage.isIgnoring(property, evt.newValue) => // Ignoring this change
     case property: StyleSheetAttribute[_] => ChildLike.parentOf(property) match {
       case styleSheet: StyleSheet => ChildLike.parentOf(styleSheet) match {
         case styleSpaces: StyleSpaces => styleChanged(styleSheet.selectorString, property.style, evt.newValue.asInstanceOf[AnyRef], property.isImportant, styleSheet = true)
@@ -89,7 +95,7 @@ class RealtimePage[S <: Session] private(val webpage: Webpage[S]) extends Loggin
   }
 
   private def styleChanged(selector: String, style: Style[_], value: AnyRef, important: Boolean, styleSheet: Boolean) = {
-    info(s"styleChanged: $selector, $style, $value, $important")
+    debug(s"styleChanged: $selector, $style, $value, $important")
     val anyStyle = style.asInstanceOf[Style[AnyRef]]
     val cssName = style.cssName
     val cssValue = if (value != null) anyStyle.persistence.toString(value, cssName, value.getClass) else null
@@ -101,10 +107,11 @@ class RealtimePage[S <: Session] private(val webpage: Webpage[S]) extends Loggin
       // Ignore initial id change as it happens right before send
     } else {
       val excludeCurrentConnection = FormField.changingProperty == property && FormField.changingValue == newValue
-      info(s"tagPropertyChanged: ${t.xmlLabel} - $oldValue changed to $newValue, Exclude current connection? $excludeCurrentConnection")
+      debug(s"tagPropertyChanged: ${t.xmlLabel} - $oldValue changed to $newValue, Exclude current connection? $excludeCurrentConnection")
       webpage.intercept.renderAttribute.fire(property) match {
         case Some(attribute) => {
-          if (t.isInstanceOf[Textual] && property.name == "content") {
+          if ((t.isInstanceOf[tag.Text] || t.isInstanceOf[tag.Title]) && property.name == "content") {
+            println(s"Sending textual content change for ${t.xmlLabel} (${t.outputString}")
             val parent = t.parent.asInstanceOf[HTMLTag with Container[IdentifiableTag]]
             send(SetHTMLAttribute(parent.identity, "content", parent.outputChildrenString), excludeCurrentConnection)
           } else if (t.id == property) {
@@ -125,16 +132,79 @@ class RealtimePage[S <: Session] private(val webpage: Webpage[S]) extends Loggin
       webpage.broadcastJSON(message)
     }
   }
+
+  def sendRedirect(url: String) = webpage.eval(window.location.href := url)
+
+  def reload(force: Boolean = false) = webpage.eval(window.location.reload(force))
+
+  /**
+   * Connects change events for FormField (input, textarea, and select) as well as click events on button and input.
+   */
+  def connectStandard() = {
+    webpage.live[FormField] {
+      case field => {
+        if (field.changeEvent() == null) field.changeEvent := RealtimeEvent()
+        field match {
+          case i: tag.Input => if (i.clickEvent() == null) field.clickEvent := RealtimeEvent(preventDefault = false)
+          case _ => // Not an input
+        }
+      }
+    }
+    webpage.live[tag.Button] {
+      case b => if (b.clickEvent() == null) b.clickEvent := RealtimeEvent()
+    }
+  }
+
+  /**
+   * All change and click events fire events to the server and form submits prevent default and send event to server.
+   */
+  def connectForm() = {
+    webpage.live[FormField] {
+      case field => {
+        if (field.changeEvent() == null) {
+          field.changeEvent := RealtimeEvent(preventDefault = false)
+        }
+        field match {
+          case i: tag.Input if i.inputType() == InputType.Button => {
+            if (field.clickEvent() == null) {
+              field.clickEvent := RealtimeEvent(preventDefault = false)
+            }
+          }
+          case _ => // Not a button input
+        }
+      }
+    }
+    webpage.live[tag.Button] {
+      case b => if (b.clickEvent() == null) b.clickEvent := RealtimeEvent(preventDefault = false)
+    }
+    webpage.live[tag.Form] {
+      case f => {
+        if (f.submitEvent() == null) f.submitEvent := RealtimeEvent()
+      }
+    }
+  }
+
+  /**
+   * Sends all form data over realtime upon form submit.
+   */
+  def connectPost() = {
+    webpage.live[tag.Form] {
+      case f => if (f.submitEvent() == null) f.submitEvent := RealtimeEvent(fireChange = true)
+    }
+  }
 }
 
 object RealtimePage {
   private val _dontSend = new LocalStack[Boolean]
+  private val _ignoringChangeProperty = new ThreadLocal[Property[_]]
+  private val _ignoringChangeValue = new ThreadLocal[Any]
 
   TypedSupport.register("insertHTML", classOf[InsertHTMLContent])
   TypedSupport.register("removeHTML", classOf[RemoveHTMLContent])
   TypedSupport.register("attributeHTML", classOf[SetHTMLAttribute])
   TypedSupport.register("setStyle", classOf[SetSelectorStyle])
   TypedSupport.register("eval", classOf[InvokeJavaScript])
+  TypedSupport.register("tokenEvent", classOf[TokenBrowserEvent])
 
   def apply[S <: Session](webpage: Webpage[S]) = webpage.store.getOrSet[RealtimePage[S]]("realtime", new RealtimePage(webpage))
 
@@ -148,4 +218,27 @@ object RealtimePage {
       _dontSend.pop(true)
     }
   }
+
+  def ignoringChange[T](property: Property[T], value: T) = {
+    _ignoringChangeProperty.set(property)
+    _ignoringChangeValue.set(value)
+    try {
+      property := value
+    } finally {
+      _ignoringChangeProperty.remove()
+      _ignoringChangeValue.remove()
+    }
+  }
+
+  def isIgnoring(property: Property[_], value: Any) = {
+    if (_ignoringChangeProperty.get() == property && property() == value) {
+      _ignoringChangeProperty.remove()
+      _ignoringChangeValue.remove()
+      true
+    } else {
+      false
+    }
+  }
 }
+
+case class TokenBrowserEvent(tag: HTMLTag, token: String) extends BrowserEvent

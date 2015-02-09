@@ -6,6 +6,7 @@ import attributes.{InputType, Target}
 import org.hyperscala.javascript.JavaScriptString
 import org.powerscala.Unique
 import org.hyperscala.web._
+import org.hyperscala.javascript.dsl._
 import org.hyperscala.css.attributes.Display
 import org.hyperscala.realtime.{RealtimeEvent, Realtime}
 import org.hyperscala.ui.BusyDialog
@@ -68,7 +69,7 @@ abstract class FileUploader extends tag.Div with MultipartSupport {
         case evt => {
           BusyDialog.show(this.webpage, uploadTitle)
           println(s"UploadFormID: ${uploadForm.id()}")
-          Realtime.sendJavaScript(this.webpage, "$('#%s').submit();".format(uploadForm.id()))
+          this.webpage.eval("$('#%s').submit();".format(uploadForm.id()))
         }
       }
     }

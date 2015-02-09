@@ -58,7 +58,7 @@ class ChatExample extends Example {
       ChatExample.sendMessage(this.website, nickname(), message.value())
     }
     message.value := ""
-    Realtime.send(this.webpage, $(message).focus())
+    this.webpage.eval($(message).focus())
   }
 
   def updateNickname() = {

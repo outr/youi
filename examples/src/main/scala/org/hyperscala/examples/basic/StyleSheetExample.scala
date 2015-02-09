@@ -5,7 +5,7 @@ import org.hyperscala.examples.Example
 import org.hyperscala.html._
 import org.hyperscala.web._
 import org.powerscala.Color
-import org.hyperscala.realtime.Realtime
+import org.hyperscala.realtime._
 import org.hyperscala.selector._
 import org.hyperscala.css.attributes.Decoration
 import com.outr.net.http.session.Session
@@ -16,7 +16,7 @@ import com.outr.net.http.session.Session
 class StyleSheetExample extends Example {
   require(Realtime)
   connected[Webpage[Session]] {
-    case webpage => Realtime.connectStandard(webpage)
+    case webpage => webpage.connectStandard()
   }
 
   implicit def htmlTag: HTMLTag = this

@@ -55,7 +55,7 @@ object jsTree extends Module {
         |})
       """.stripMargin.trim.format(attributes.map(s => "\t\t%s".format(s)).mkString(",\r\n"))
     t.connected[Webpage[_ <: Session]] {
-      case webpage => Realtime.send(webpage, $(t).call(js))
+      case webpage => webpage.eval($(t).call(js))
     }
 
   }

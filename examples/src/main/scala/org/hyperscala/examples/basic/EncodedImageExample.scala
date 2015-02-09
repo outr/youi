@@ -15,10 +15,6 @@ class EncodedImageExample extends Example {
 
   contents += new tag.P {
     contents += new tag.H3(content = "Relative URL:")
-    contents += new tag.Img(src = "../images/slide1.jpg")
-  }
-  contents += new tag.P {
-    contents += new tag.H3(content = "Absolute URL:")
-    contents += new tag.Img(src = "http://hyperscala.org/images/hyperscala.png")
+    contents += new tag.Img(src = "../../images/slide1.jpg")
   }
 }

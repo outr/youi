@@ -5,7 +5,7 @@ import org.powerscala.concurrent.AtomicBoolean
 import org.powerscala.event.Listenable
 import org.powerscala.property.Property
 import org.powerscala.{StorageComponent, Version}
-import org.hyperscala.jquery.{JSMapper, jQueryComponent, JavaScriptCaller, jQuery}
+import org.hyperscala.jquery.{jQueryComponent, JavaScriptCaller}
 import org.hyperscala.web._
 import org.hyperscala.html._
 import org.hyperscala.realtime.Realtime
@@ -25,7 +25,7 @@ object Select2 extends Module with JavaScriptCaller with StorageComponent[Select
   val version = Version(3, 5, 0)
   var debug = false
 
-  implicit def tag2Select(t: tag.Select) = apply(t)
+  implicit def tag2Select(t: tag.Select): Select2 = apply(t)
 
   override def apply(t: tag.Select) = {
     t.require(this)

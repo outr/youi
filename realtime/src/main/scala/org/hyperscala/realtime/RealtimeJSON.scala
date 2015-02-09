@@ -36,7 +36,7 @@ object RealtimeJSON {
       case m => m
     }
 
-    ConnectionHolder.json.partial(Unit) {
+    ConnectionHolder.jsonEvent.partial(Unit) {
       case init: InitBrowserConnection => Realtime.connect(init)
     }
   }

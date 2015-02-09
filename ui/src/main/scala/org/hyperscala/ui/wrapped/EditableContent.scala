@@ -1,3 +1,4 @@
+/*
 package org.hyperscala.ui.wrapped
 
 import com.outr.net.http.session.Session
@@ -501,4 +502,4 @@ class EditableContent private(t: HTMLTag with Container[BodyChild]) {
 
 case class ContentChanged(xml: Element, htmlString: String)
 
-case class SelectionChanged(text: String, html: String, startOffset: Int, endOffset: Int)
+case class SelectionChanged(text: String, html: String, startOffset: Int, endOffset: Int)*/

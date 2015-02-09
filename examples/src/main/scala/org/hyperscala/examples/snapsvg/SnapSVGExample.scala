@@ -6,7 +6,6 @@ import org.hyperscala.svg._
 import org.hyperscala.snapsvg.{SnapElement, Snap}
 import org.hyperscala.javascript.dsl._
 import org.hyperscala.realtime.Realtime
-import org.hyperscala.realtime.dsl._
 import org.powerscala.Color
 import org.hyperscala.web._
 
@@ -37,6 +36,6 @@ class SnapSVGExample extends Example {
   }
   println(js.toJS())
   connected[Webpage[Session]] {
-    case webpage => js.send(webpage)
+    case webpage => webpage.eval(js)
   }
 }

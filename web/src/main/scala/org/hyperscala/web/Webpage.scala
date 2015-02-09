@@ -28,7 +28,7 @@ class Webpage[S <: Session](val website: Website[S]) extends HttpHandler with HT
   implicit def manifest: Manifest[S] = website.manifest
 
   TypedSupport.register("page", classOf[WebpageConnect])
-  ConnectionHolder.json.partial(Unit) {
+  ConnectionHolder.jsonEvent.partial(Unit) {
     case c: WebpageConnect => ConnectionHolder.connection.holder := this      // Switch the connection to the webpage as the holder
   }
 

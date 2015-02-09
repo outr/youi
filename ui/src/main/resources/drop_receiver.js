@@ -17,21 +17,26 @@ function createDropReceiver(id) {
         }
         var files = dataTransfer.files;
         var receiveTypes = receiver.data('receive-types');
-        var data = {};
+        var data = [];
         for (var i = 0; i < types.length; i++) {
             var type = types[i];
             var acceptable = receiveTypes.indexOf(type) > -1;
             if (acceptable) {
                 var s = dataTransfer.getData(type);
                 s = decodeURI(encodeURI(s).replace(/%00/g, ''));
-                data[type] = s;
+                data.push({
+                    mimeType: type,
+                    data: s
+                })
             }
         }
-        // TODO: add support for files
-        realtimeSend(id, 'dropped', {
+        realtime.send({
+            type: 'dropReceived',
+            id: id,
             types: types,
             data: data
         });
+        // TODO: add support for files
     });
 }
 

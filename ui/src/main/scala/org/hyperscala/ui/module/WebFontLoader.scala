@@ -9,7 +9,7 @@ import com.outr.net.http.response.{HttpResponseStatus, HttpResponse}
 import com.outr.net.http.session.Session
 import org.hyperscala.module.{Interface, Module}
 import org.hyperscala.html._
-import org.hyperscala.realtime.Realtime
+import org.hyperscala.javascript.dsl._
 import org.hyperscala.web.{Website, Webpage}
 import org.powerscala.Version
 
@@ -34,7 +34,7 @@ class WebFontLoader[S <: Session] private(webpage: Webpage[S]) {
            |  }
            |});
          """.stripMargin
-      Realtime.sendJavaScript(webpage, js, onlyRealtime = false)
+      webpage.eval(js)
       loaded ++= familyNames
     }
   }
@@ -54,7 +54,7 @@ class WebFontLoader[S <: Session] private(webpage: Webpage[S]) {
            |  }
            |});
          """.stripMargin
-      Realtime.sendJavaScript(webpage, js, onlyRealtime = false)
+      webpage.eval(js)
       loaded += key
     }
   }

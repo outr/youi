@@ -1,8 +1,10 @@
+/*
 package org.hyperscala.ui.widgets
 
 import com.outr.net.http.session.{MapSession, Session}
 import org.hyperscala.Container
 import org.hyperscala.css.Style
+import org.hyperscala.event.BrowserEvent
 import org.hyperscala.html._
 import org.hyperscala.io.HTMLToScala
 import org.hyperscala.javascript.JavaScriptContent
@@ -20,11 +22,14 @@ import org.powerscala.{Version, StorageComponent}
 import org.hyperscala.web._
 import org.hyperscala.realtime._
 import org.hyperscala.realtime.dsl._
+import org.hyperscala.javascript.dsl._
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
 object ContentEditor extends Module with StorageComponent[ContentEditor, HTMLTag] {
+
+
   /**
    * Provides a conversion strategy to better support numeric values in length styles. Numbers automatically get
    * amended with a 'px'.
@@ -61,6 +66,8 @@ object ContentEditor extends Module with StorageComponent[ContentEditor, HTMLTag
   protected def create(t: HTMLTag) = new ContentEditor(t)
 }
 
+case class ContentEditorChanged(tag: HTMLTag, html: String) extends BrowserEvent
+
 class ContentEditor private(val container: HTMLTag) extends Listenable {
   private val clientChanging = new AtomicBoolean
   val content = Property(default = Some(container.outputChildrenString))
@@ -82,7 +89,7 @@ class ContentEditor private(val container: HTMLTag) extends Listenable {
    */
   def updateContainer(propagate: Boolean) = {
     if (!propagate) {
-      RealtimePage.ignoreStructureChanges {
+      RealtimePage.dontSend {
         HTMLToScala.replaceChildren(container.asInstanceOf[HTMLTag with Container[_ <: HTMLTag]], content())
       }
     } else {
@@ -94,7 +101,7 @@ class ContentEditor private(val container: HTMLTag) extends Listenable {
     // Initialize the container in the browser
     container.connected[Webpage[MapSession]] {
       case webpage => {
-        Realtime.sendJavaScript(webpage, s"initContentEditor('${container.identity}')", selector = Some(Selector.id(container)), onlyRealtime = false)
+        webpage.eval(s"initContentEditor('${container.identity}')", Some(Selector.id(container).toCondition))
       }
     }
 
@@ -247,4 +254,4 @@ class ContentEditor private(val container: HTMLTag) extends Listenable {
   }
 }
 
-case class VisualAlias(visual: String, internal: String)
+case class VisualAlias(visual: String, internal: String)*/

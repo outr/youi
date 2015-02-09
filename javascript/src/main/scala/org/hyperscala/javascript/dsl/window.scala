@@ -48,6 +48,8 @@ object windowLocation extends DelayedStatement[URL] {
   def toStatement = ExistingStatement[URL]("window.location")
 
   def href = windowLocationHref
+
+  def reload(force: Boolean) = MultiStatement[Unit](sideEffects = true, toStatement, s".reload($force)")
 }
 
 object windowLocationHref extends DelayedStatement[String] {

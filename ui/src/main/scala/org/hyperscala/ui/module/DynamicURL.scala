@@ -4,7 +4,9 @@ import org.hyperscala.module.Module
 import org.powerscala.Version
 import org.hyperscala.web.{Webpage, Website}
 import org.hyperscala.html._
-import org.hyperscala.realtime.Realtime
+import org.hyperscala.javascript.dsl._
+import org.hyperscala.realtime._
+import org.powerscala.json.TypedSupport
 import org.powerscala.property.Property
 import java.util.concurrent.atomic.AtomicBoolean
 import org.powerscala.event.Listenable
@@ -15,6 +17,8 @@ import org.powerscala.property.event.PropertyChangeEvent
  * @author Matt Hicks <matt@outr.com>
  */
 object DynamicURL extends Module {
+  TypedSupport.register("hashChanged", classOf[HashChanged])
+
   val name = "dynamicURL"
   val version = Version(1)
 
@@ -87,13 +91,9 @@ case class DynamicURLInstance[S <: Session](webpage: Webpage[S]) extends Listena
   }
 
   private def listenForBrowserChanges() = {  // Listen for changes coming from the browser changing the hash
-    webpage.body.handle("hashChanged") {
-      case json => {
-        val hash = json.string("hash") match {
-          case null => ""
-          case "" => ""
-          case s => s.substring(1)
-        }
+    webpage.jsonEvent.partial(Unit) {
+      case evt: HashChanged => {
+        val hash = evt.hash
         val hashMap = if (hash == null || hash.trim.isEmpty) {
           Map.empty[String, String]
         } else {
@@ -130,8 +130,10 @@ case class DynamicURLInstance[S <: Session](webpage: Webpage[S]) extends Listena
         val hashString = map().collect {
           case (key, value) if value != null => "%s%s%s".format(encode(key, "UTF-8"), DynamicURL.splitCharacter, encode(value, "UTF-8"))
         }.mkString(DynamicURL.delineationCharacter.toString)
-        Realtime.sendJavaScript(webpage, "setHash(content);", content = Option(hashString), onlyRealtime = false)
+        webpage.eval(s"setHash('$hashString');")
       }
     }
   }
 }
+
+case class HashChanged(hash: String)

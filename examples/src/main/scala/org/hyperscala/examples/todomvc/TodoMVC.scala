@@ -5,26 +5,26 @@ import org.hyperscala.html._
 import attributes.InputType
 import org.hyperscala.html.extension.ClassBooleanProperty
 import org.hyperscala.jquery.dsl._
+import org.hyperscala.javascript.dsl._
 import org.hyperscala.realtime._
-import org.hyperscala.realtime.dsl._
 import org.hyperscala.web.{Website, Webpage}
 import com.outr.net.http.session.Session
 import org.powerscala.property.Property
 
 class TodoMVC[S <: Session](website: Website[S]) extends Webpage[S](website) {
   require(Realtime)
-  Realtime.connectForm(this)
+  this.connectForm()
 
   val input = new tag.Input(id = "new-todo", placeHolder = "What needs to be done?", autoFocus = true)
   val list = new tag.Ul(id = "todo-list")
 
   input.keyUpEvent := RealtimeEvent(preventDefault = false, fireChange = true)
-  $(input).keyUp(onKey(this, Key.Return) {
+  this.eval($(input).keyUp(onKey(Key.Return)(input.callback {
     if (input.value().trim.nonEmpty) {
       list.contents.insert(0, new TodoItem(input.value()))
       input.value := ""
     }
-  }).send(this)
+  })))
 
   list.contents += new TodoItem("Create a TodoMVC template", completed = true)
   list.contents += new TodoItem("Rule the web")

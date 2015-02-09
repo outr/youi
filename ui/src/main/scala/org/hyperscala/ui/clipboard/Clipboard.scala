@@ -94,7 +94,7 @@ class ClipboardInstance(webpage: Webpage[_ <: Session]) extends Listenable {
 
   private var _list = List.empty[ClipboardEntry]
 
-  webpage.json.on {
+  webpage.jsonEvent.on {
     case evt: ClipboardCutEvent => cutEvent.fire(evt)
     case evt: ClipboardCopyEvent => copyEvent.fire(evt)
     case evt: ClipboardPasteEvent => pasteEvent.fire(evt)

@@ -13,8 +13,9 @@ var monitor = {
         var entry = monitor.entries[id];
         var result = entry.evaluator();
         if (result != entry.lastValue) {
-            realtimeSend('realtime_monitor', 'monitored', {
-                elementId: id,
+            realtime.send({
+                monitorId: id,
+                type: 'monitor',
                 value: result
             });
             entry.lastValue = result;

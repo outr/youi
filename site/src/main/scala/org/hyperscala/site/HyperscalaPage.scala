@@ -1,6 +1,7 @@
 package org.hyperscala.site
 
 
+import org.hyperscala.BuildInfo
 import org.hyperscala.bootstrap.Bootstrap
 import org.hyperscala.bootstrap.component._
 import org.hyperscala.css.SelectorStyleSheet
@@ -62,14 +63,15 @@ class HyperscalaPage extends Webpage(HyperscalaSite) with FormSupport[MapSession
   body.contents += new tag.Footer {
     contents += new tag.I {
       style.display := Display.Block
-      style.width := 185.px
+      style.width := 1170.px
       style.marginLeft := Length.Auto
       style.marginRight := Length.Auto
       style.color := Color.White
       style.fontWeight := FontWeight.Bold
       style.paddingBottom := 30.px
       style.fontSize := FontSize.Small
-      contents += "&copy;2014 Hyperscala.org"
+      style.textAlign := Alignment.Right
+      contents += s"&copy;2014 Hyperscala.org, version: ${BuildInfo.version}, build time: ${f"${BuildInfo.buildTime}%tc"}"
     }
   }
 

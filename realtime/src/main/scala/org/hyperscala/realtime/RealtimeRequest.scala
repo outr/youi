@@ -31,7 +31,7 @@ object RealtimeRequest {
                condition: Option[Statement[Boolean]] = None)
               (f: R => Unit)(implicit manifest: Manifest[R]) = {
     val id = Unique()
-    webpage.json.onceConditional(Unit) {
+    webpage.jsonEvent.onceConditional(Unit) {
       case rr: RealtimeResponse if rr.requestId == id => {
         val result = typedJSON[R](rr.result)
         f(result)
@@ -67,7 +67,7 @@ object RealtimeRequest {
                frequency: Long = 1000L)
               (f: R => Unit)(implicit manifest: Manifest[R]) = {
     val id = Unique()
-    webpage.json.partial(Unit) {
+    webpage.jsonEvent.partial(Unit) {
       case rr: RealtimeResponse if rr.requestId == id => {
         val result = typedJSON[R](rr.result)
         f(result)

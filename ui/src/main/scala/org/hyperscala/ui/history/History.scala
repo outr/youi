@@ -7,9 +7,10 @@ import org.powerscala.event.Listenable
 import scala.collection.immutable.Queue
 import org.powerscala.event.processor.UnitProcessor
 import org.powerscala.concurrent.AtomicInt
-import org.hyperscala.realtime.Realtime
+import org.hyperscala.realtime._
 
 import org.hyperscala.jquery.dsl._
+import org.hyperscala.javascript.dsl._
 
 import scala.language.postfixOps
 import org.hyperscala.event.Key
@@ -63,25 +64,25 @@ class HistoryInstance(webpage: Webpage[_ <: Session]) extends Listenable {
 
   // Configure key bindings on page
   if (UserAgent(webpage).os.family.apple) {
-    $(body).keyDown(onKey(webpage, Key.Z, shiftKey = Some(false), metaKey = Some(true), stopPropagation = true) {
+    webpage.eval($(body).keyDown(onKey(Key.Z, shiftKey = Some(false), metaKey = Some(true), stopPropagation = true)(webpage.body.callback {
       undo()
-    }).send(webpage)
-    $(body).keyDown(onKey(webpage, Key.Z, shiftKey = Some(true), metaKey = Some(true), stopPropagation = true) {
+    })))
+    webpage.eval($(body).keyDown(onKey(Key.Z, shiftKey = Some(true), metaKey = Some(true), stopPropagation = true)(webpage.body.callback {
       redo()
-    }).send(webpage)
-    $(body).keyDown(onKey(webpage, Key.Y, ctrlKey = Some(true), stopPropagation = true) {
+    })))
+    webpage.eval($(body).keyDown(onKey(Key.Y, metaKey = Some(true), stopPropagation = true)(webpage.body.callback {
       redo()
-    }).send(webpage)
+    })))
   } else {
-    $(body).keyDown(onKey(webpage, Key.Z, shiftKey = Some(false), ctrlKey = Some(true), stopPropagation = true) {
+    webpage.eval($(body).keyDown(onKey(Key.Z, shiftKey = Some(false), ctrlKey = Some(true), stopPropagation = true)(webpage.body.callback {
       undo()
-    }).send(webpage)
-    $(body).keyDown(onKey(webpage, Key.Z, shiftKey = Some(true), ctrlKey = Some(true), stopPropagation = true) {
+    })))
+    webpage.eval($(body).keyDown(onKey(Key.Z, shiftKey = Some(true), ctrlKey = Some(true), stopPropagation = true)(webpage.body.callback {
       redo()
-    }).send(webpage)
-    $(body).keyDown(onKey(webpage, Key.Y, ctrlKey = Some(true), stopPropagation = true) {
+    })))
+    webpage.eval($(body).keyDown(onKey(Key.Y, ctrlKey = Some(true), stopPropagation = true)(webpage.body.callback {
       redo()
-    }).send(webpage)
+    })))
   }
 
   def undoList = undos.toList

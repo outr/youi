@@ -1,3 +1,4 @@
+/*
 package org.hyperscala.ui.widgets
 
 import com.outr.net.http.session.Session
@@ -851,4 +852,4 @@ object InsertMode extends Enumerated[InsertMode] {
   val HTML = new InsertMode("html")
   val UnfilteredHTML = new InsertMode("unfiltered_html")
   val Text = new InsertMode("text")
-}
+}*/

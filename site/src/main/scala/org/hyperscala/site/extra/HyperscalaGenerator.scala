@@ -10,12 +10,7 @@ import org.hyperscala.html._
 import org.hyperscala.realtime._
 import org.hyperscala.io.HTMLToScala
 import org.hyperscala.html.attributes.{Target, InputType}
-import com.outr.net.http.client.HttpClient
-import com.outr.net.http.request.HttpRequest
-import com.outr.net.{Method, URL}
-import com.outr.net.http.content.{InputStreamContent, ContentType, StringContent}
 import org.hyperscala.ui.BusyDialog
-import org.powerscala.IO
 import org.hyperscala.jquery.Gritter
 import org.jdom2.input.JDOMParseException
 import org.hyperscala.html.tag.Comment
@@ -29,7 +24,7 @@ class HyperscalaGenerator extends HyperscalaPage {
   require(BusyDialog)
 
   Tag.AutoCreate = true               // Auto-create attributes that don't already exist
-  Realtime.connectStandard(this)
+  this.connectStandard()
 
   val packageInput = new tag.Input(clazz = List("code_generator"))
   val classNameInput = new tag.Input(clazz = List("code_generator"))
@@ -112,7 +107,7 @@ class HyperscalaGenerator extends HyperscalaPage {
             "hyperscala_generated"
           }
           val url = createGist(filename, scala)
-          Realtime.sendRedirect(this, url)
+          this.sendRedirect(url)
         } else {
           text.value := scala
         }

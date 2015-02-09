@@ -5,7 +5,7 @@ import org.hyperscala.ui.dynamic.DynamicTag
 import org.hyperscala.html._
 import org.hyperscala.ui.form.CaseForm
 import org.hyperscala.web._
-import org.hyperscala.realtime.Realtime
+import org.hyperscala.realtime._
 import org.hyperscala.ui.form.error.{FieldErrorClassSupport, ErrorMessage, HTMLErrorSupport}
 import com.outr.net.http.session.Session
 
@@ -16,7 +16,7 @@ class CaseFormExample extends Example {
   this.require(Realtime)
   connected[Webpage[Session]] {
     case webpage => {
-      Realtime.connectForm(webpage)
+      webpage.connectForm()
       webpage.head.contents += new tag.Link(href = "/css/case_form.css")
       contents += new tag.P {
         contents += "CaseForm provides a simple generated form wrapper around a case class allowing visualization and editing of a case class in real-time."

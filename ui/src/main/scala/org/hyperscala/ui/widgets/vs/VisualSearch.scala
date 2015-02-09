@@ -1,12 +1,11 @@
 package org.hyperscala.ui.widgets.vs
 
-import argonaut.Argonaut._
-import argonaut.{CodecJson, JsonObject}
 import com.outr.net.http.HttpHandler
 import com.outr.net.http.content.StringContent
 import com.outr.net.http.request.HttpRequest
 import com.outr.net.http.response.{HttpResponse, HttpResponseStatus}
 import com.outr.net.http.session.Session
+import org.hyperscala.event.BrowserEvent
 import org.hyperscala.html._
 import org.hyperscala.jquery.jQuery
 import org.hyperscala.jquery.ui.jQueryUI
@@ -15,7 +14,9 @@ import org.hyperscala.realtime.Realtime
 import org.hyperscala.selector.Selector
 import org.hyperscala.web._
 import org.powerscala.Version
+import org.powerscala.json.TypedSupport
 import org.powerscala.property._
+import org.hyperscala.javascript.dsl._
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -57,7 +58,7 @@ class VisualSearch extends tag.Div {
     connected[Webpage[Session]] {
       case webpage => {
         val instruction = s"createVisualSearch('${webpage.pageId}', '$identity', '${VisualSearch.Path}');"
-        Realtime.sendJavaScript(webpage, instruction, selector = Some(Selector.id(id())), onlyRealtime = false)
+        webpage.eval(instruction, Some(Selector.id(id()).toCondition))
       }
     }
 
@@ -66,7 +67,7 @@ class VisualSearch extends tag.Div {
         if (query() != modifying.get()) {   // Only send change to client if not the same information sent from client
           val content = "\"%s\"".format(query().query)
           connected[Webpage[Session]] {
-            case webpage => Realtime.sendJavaScript(webpage, "setVisualSearchQuery('%s', content);".format(id()), Option(content))
+            case webpage => webpage.eval(s"setVisualSearchQuery('%s', $content);".format(id()))
           }
         }
         search(query())
@@ -74,11 +75,10 @@ class VisualSearch extends tag.Div {
     }
   }
 
-  override def receive(event: String, json: JsonObject) = event match {
-    case "search" => {
-      val searchRequest = json.as[SearchRequest]
-      val q = searchRequest.query
-      val f = searchRequest.facets.map(m => VisualSearchEntry(facet(m.head._1), m.head._2))
+  handle[SearchRequest] {
+    case evt => {
+      val q = evt.query
+      val f = evt.facets.map(m => VisualSearchEntry(facet(m.head._1), m.head._2))
       val searchQuery = VisualSearchQuery(q, f)
       modifying.set(searchQuery)
       try {
@@ -87,17 +87,14 @@ class VisualSearch extends tag.Div {
         modifying.remove()
       }
     }
-    case _ => super.receive(event, json)
   }
 }
 
-case class SearchRequest(query: String, facets: List[Map[String, String]])
-
-object SearchRequest {
-  implicit def SearchRequestCodecJson: CodecJson[SearchRequest] = casecodec2(SearchRequest.apply, SearchRequest.unapply)("query", "facets")
-}
+case class SearchRequest(tag: HTMLTag, query: String, facets: List[Map[String, String]]) extends BrowserEvent
 
 object VisualSearch extends Module {
+  TypedSupport.register("searchRequest", classOf[SearchRequest])
+
   val Path = "/visualsearch/search"
 
   val name = "visualsearch"

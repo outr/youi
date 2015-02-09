@@ -162,6 +162,7 @@ var realtime = {
                         f();
                     }
                 }
+                return !preventDefault;
             } else {
                 realtime.error('Element ID is null for realtime.event.' + evt.type);
             }
@@ -181,6 +182,8 @@ var realtime = {
             } else {
                 realtime.error('Unsupported input type for change event: ' + type);
             }
+        } else if (tagName == 'textarea') {
+            value = element.value;
         } else if (tagName == 'select') {
             value = element.value;
         } else if (tagName == 'form') {
@@ -261,7 +264,12 @@ realtime.on('attributeHTML', function(obj) {
             if (obj.value == null) {
                 element.removeAttribute(obj.key);
             } else if (obj.key == 'content') {
-                element.innerHTML = obj.value;
+                if (tagName == 'textarea') {
+                    $(element).val(obj.value);
+                } else {
+                    console.log('Setting inner html: ' + obj.value);
+                    element.innerHTML = obj.value;
+                }
             } else {
                 realtime.log('setting attribute: ' + obj.key + ' = ' + obj.value);
                 if (obj.key == 'value') {
@@ -283,16 +291,16 @@ realtime.on('attributeHTML', function(obj) {
 realtime.on('setStyle', function(obj) {
     try {
         realtime.log('setting style!', obj);
-        var selector = $(obj.selector);
-        if (selector.length == 0) {
-            realtime.error('Unable to find element by selector: ' + obj.selector + ' to set style ' + obj.key + ' = ' + obj.value);
+        if (obj.styleSheet) {
+            if (obj.key == null) {          // Clear style sheet
+                $.stylesheet(obj.selector).css(null);
+            } else {
+                $.stylesheet(obj.selector, obj.key, obj.value);
+            }
         } else {
-            if (obj.styleSheet) {
-                if (obj.key == null) {          // Clear style sheet
-                    $.stylesheet(obj.selector).css(null);
-                } else {
-                    $.stylesheet(obj.selector, obj.key, obj.value);
-                }
+            var selector = $(obj.selector);
+            if (selector.length == 0) {
+                realtime.error('Unable to find element by selector: ' + obj.selector + ' to set style ' + obj.key + ' = ' + obj.value);
             } else {
                 if (obj.important) {
                     selector.style(obj.key, obj.value, 'important');

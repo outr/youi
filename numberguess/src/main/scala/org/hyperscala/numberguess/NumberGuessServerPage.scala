@@ -3,7 +3,7 @@ package org.hyperscala.numberguess
 import org.hyperscala.web.{Website, Webpage}
 import org.hyperscala.html._
 import org.hyperscala.html.attributes.{ButtonType, InputType}
-import org.hyperscala.realtime.Realtime
+import org.hyperscala.realtime._
 import scala.util.Random
 import org.hyperscala.ui.wrapped.WrappedInput
 import org.hyperscala.jquery.dsl._
@@ -14,7 +14,7 @@ import com.outr.net.http.session.Session
  */
 class NumberGuessServerPage[S <: Session](website: Website[S]) extends Webpage[S](website) {
   require(Realtime)
-  Realtime.connectForm(this)
+  this.connectForm()
 
   var solution: Int = _
   var guesses: Int = _
@@ -57,8 +57,8 @@ class NumberGuessServerPage[S <: Session](website: Website[S]) extends Webpage[S
     } else {
       solved()
     }
-    Realtime.send(this, $(input).focus())
-    Realtime.send(this, $(input).select())
+    this.eval($(input).focus())
+    this.eval($(input).select())
   }
 
   def reset(): Unit = {

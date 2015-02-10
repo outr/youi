@@ -13,7 +13,7 @@ import org.hyperscala.web.{Website, Webpage}
 class BootstrapSignin[S <: Session](site: Website[S]) extends Webpage(site) {
   require(Bootstrap)
 
-  head.contents += new tag.Link(href = "form.css")
+  head.contents += new tag.Link(href = "/form.css")
 
   body.contents += new Container {
     contents += new Form {

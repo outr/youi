@@ -23,7 +23,7 @@ object EnumEntryVisualType extends VisualType[EnumEntry] {
     val list = new ListSelect[Any](enumerated.values, nullAllowed = nullAllowed) {
       this.require(Realtime)
 
-      changeEvent := RealtimeEvent()
+      select.changeEvent := RealtimeEvent()
 
       property.change.on {
         case evt => updateSelect()

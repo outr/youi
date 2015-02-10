@@ -1,0 +1,4 @@
+## WebSockets and Major Updates
+
+hyperscala 0.10.0 is a major refactoring to support better and more efficient communication between client and server via
+the Realtime module. Examples have been updated and deprecated code has been removed in this major update.

@@ -18,7 +18,7 @@ object ListVisualType extends VisualType[Any] {
     val list = new ListSelect[Any](values = details.selection, nullAllowed = details.nullAllowed) {
       this.require(Realtime)
 
-      changeEvent := RealtimeEvent()
+      select.changeEvent := RealtimeEvent()
 
       property.change.on {
         case evt => updateSelect()

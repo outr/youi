@@ -15,7 +15,7 @@ object BooleanVisualType extends VisualType[Boolean] {
 
   def create(property: Property[Boolean], details: VisualBuilder[Boolean]) = {
     new ListSelect[Boolean](List(true, false)) {
-      changeEvent := RealtimeEvent()
+      select.changeEvent := RealtimeEvent()
 
       property.change.on {
         case evt => updateSelect()

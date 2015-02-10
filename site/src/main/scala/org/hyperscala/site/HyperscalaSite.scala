@@ -86,7 +86,6 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication {
   val gritter = example(new GritterExample, "Wrapper", "Gritter", Scope.Page)
   val spectrum = example(new SpectrumExample, "Wrapper", "Spectrum", Scope.Page)
   val colorPicker = example(new ColorPickerExample, "Wrapper", "Color Picker", Scope.Page)
-  val visualSearch = example(new VisualSearchExample, "Wrapper", "Visual Search", Scope.Page)
   val dialog = example(new DialogExample, "Wrapper", "Dialog", Scope.Page)
   val progressBar = example(new ProgressBarExample, "Wrapper", "Progress Bar", Scope.Page)
   val spinner = example(new SpinnerExample, "Wrapper", "Spinner", Scope.Page)
@@ -138,6 +137,8 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication {
   addClassPath("/images/", "images/")
   addClassPath("/css/", "css/")
   addClassPath("/js/", "js/")
+
+  register("/form.css", "form.css")   // For Bootstrap
 
   protected def createSession(request: HttpRequest, id: String) = new MapSession(id, this)
 

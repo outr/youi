@@ -21,7 +21,7 @@ class Tabs extends tag.Div {
   contents += navigation
 
   connected[Webpage[_ <: Session]] {
-    case webpage => webpage.eval(s"$$('$identity').tabs();", Some(Selector.id(identity).toCondition))
+    case webpage => webpage.eval(s"$$('#$identity').tabs();", Some(Selector.id(identity).toCondition))
   }
 
   def addTab[T <: tag.Div](label: String)(f: => T) = {

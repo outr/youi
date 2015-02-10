@@ -33,7 +33,15 @@ $(document).ready(function() {
         rangy.getSelection().refresh();
         var selected = rangy.getSelection().toHtml();
         if (current.is('input') || current.is('textarea')) {
-            selected = current.getSelection().text;
+            var start = current.get(0).selectionStart;
+            var end = current.get(0).selectionEnd;
+            if (end < start) {
+                start = current.get(0).selectionEnd;
+                end = current.get(0).selectionStart;
+            }
+            if (end - start > 0) {
+                selected = current.val().substring(start, end);
+            }
         }
         realtime.send({
             id: current.attr('id'),

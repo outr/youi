@@ -23,7 +23,7 @@ object RealtimeJSON {
     MapSupport.j2o.on {
       case m if m.contains("id") => ConnectionHolder.connection.holder() match {
         case webpage: Webpage[_] => {
-          val parent = m.get("parent").map(v => webpage.byId[HTMLTag](v.asInstanceOf[String])).flatten.getOrElse(webpage.body)
+          val parent = m.get("parent").map(v => webpage.byId[HTMLTag](v.asInstanceOf[String])).flatten.getOrElse(webpage.html)
           val target = m.get("target").map(v => parent.byId[HTMLTag](v.asInstanceOf[String])).flatten
           val tag = m.get("id").map(v => parent.byId[HTMLTag](v.asInstanceOf[String])).flatten
           m ++ Map("parent" -> parent, "target" -> target, "tag" -> tag)

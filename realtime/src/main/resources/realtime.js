@@ -36,11 +36,11 @@ var realtime = {
             });
             this.communicate.on('open', function (evt) {
                 r.fire('open', evt);
-                r.log('Connection opened.');
+                console.log('WebSocket Connection opened.');
             });
             this.communicate.on('close', function (evt) {
                 r.fire('close', evt);
-                r.log('Connection closed.');
+                console.log('WebSocket Connection closed.');
             });
             this.communicate.on('error', function (evt) {
                 r.fire('error', evt);
@@ -123,49 +123,56 @@ var realtime = {
             if (evt.src) evt.target = evt.srcElement;       // Handling for older versions of IE
 
             var element = evt.currentTarget;                // Current target is where the listener was added, target is what fired it
-            var id = element.getAttribute('id');
-
-            if (id != null) {
-                var content = {
-                    id: id,
-                    type: evt.type,
-                    target: evt.target.getAttribute('id')
-                };
-                if ('keydown, keypress, keyup'.indexOf(evt.type) != -1) {
-                    content.altKey = evt.altKey;
-                    content.char = evt.charCode;
-                    content.ctrlKey = evt.ctrlKey;
-                    content.key = evt.keyCode;
-                    content.locale = evt.locale;
-                    content.location = evt.location;
-                    content.metaKey = evt.metaKey;
-                    content.repeat = evt.repeat;
-                    content.shiftKey = evt.shiftKey;
-                } else if (evt.type == 'change') {
-                    content.value = this.changeValue(element);
-                }
-
-                var r = this;
-                var f = function() {
-                    if (fireChange) {
-                        r.fireChange(element);
-                    }
-                    r.send(content);
-                };
-
-                if (confirmMessage == null || confirm(confirmMessage)) {
-                    if (delay != 0) {
-                        setTimeout(f, delay);
-                    } else {
-                        f();
-                    }
-                }
-                return !preventDefault;
+            if (element == null) {
+                element = evt.target;
+            }
+            if (element == null) {
+                realtime.error('Current target is null in event: ' + JSON.stringify(evt));
             } else {
-                realtime.error('Element ID is null for realtime.event.' + evt.type);
+                var id = element.getAttribute('id');
+
+                if (id != null) {
+                    var content = {
+                        id: id,
+                        type: evt.type,
+                        target: evt.target.getAttribute('id')
+                    };
+                    if ('keydown, keypress, keyup'.indexOf(evt.type) != -1) {
+                        content.altKey = evt.altKey;
+                        content.char = evt.charCode;
+                        content.ctrlKey = evt.ctrlKey;
+                        content.key = evt.keyCode;
+                        content.locale = evt.locale;
+                        content.location = evt.location;
+                        content.metaKey = evt.metaKey;
+                        content.repeat = evt.repeat;
+                        content.shiftKey = evt.shiftKey;
+                    } else if (evt.type == 'change') {
+                        content.value = this.changeValue(element);
+                    }
+
+                    var r = this;
+                    var f = function () {
+                        if (fireChange) {
+                            r.fireChange(element);
+                        }
+                        r.send(content);
+                    };
+
+                    if (confirmMessage == null || confirm(confirmMessage)) {
+                        if (delay != 0) {
+                            setTimeout(f, delay);
+                        } else {
+                            f();
+                        }
+                    }
+                    return !preventDefault;
+                } else {
+                    realtime.error('Element ID is null for realtime.event.' + evt.type);
+                }
             }
         } catch(err) {
-            realtime.error('Error occurred handling a JavaScript event: ' + err.message, null, err);
+            realtime.error('Error occurred handling a JavaScript event: ' + err.message + ' for ' + JSON.stringify(evt), null, err);
         }
     },
     fireChange: function(element) {
@@ -203,7 +210,7 @@ var realtime = {
                 value += v;
             });
         } else {
-            realtime.error('Unsupported tag for change event: ' + tagName);
+            realtime.error('Unsupported tag for change event: ' + tagName + ' (' + element.getAttribute('id') + ')');
         }
         return value;
     }
@@ -243,6 +250,31 @@ realtime.on('insertHTML', function(obj) {
     }
 });
 
+// Handle InsertSVG
+realtime.on('insertSVG', function(obj) {
+    try {
+        // TODO: re-write this to
+        realtime.log('Insert SVG after: ' + obj.after + ', parent: ' + obj.parent + ', HTML: ' + obj.svg);
+        if (obj.after != null) {
+            var after = $('#' + obj.after);
+            if (after.length == 0) {
+                realtime.error('Unable to insert SVG after ' + obj.after + ' as the element is not in the hierarchy.');
+            } else {
+                after.after(parseSVG(obj.svg));
+            }
+        } else {
+            var parent = $('#' + obj.parent);
+            if (parent.length == 0) {
+                realtime.error('Unable to insert SVG under parent ' + obj.parent + ' as the element is not in the hierarchy.');
+            } else {
+                parent.append(parseSVG(obj.svg));
+            }
+        }
+    } catch(err) {
+        realtime.error('Failed to handle insertSVG request', obj, err);
+    }
+});
+
 // Handle RemoveHTML
 realtime.on('removeHTML', function(obj) {
     try {
@@ -267,16 +299,20 @@ realtime.on('attributeHTML', function(obj) {
         } else {
             var tagName = element.tagName.toLowerCase();
             if (obj.value == null) {
-                element.removeAttribute(obj.key);
+                if (obj.key == 'checked') {
+                    $(element).prop('checked', false);
+                } else {
+                    element.removeAttribute(obj.key);
+                }
             } else if (obj.key == 'content') {
                 if (tagName == 'textarea') {
                     $(element).val(obj.value);
                 } else {
-                    console.log('Setting inner html: ' + obj.value);
+                    realtime.log('Setting inner html: ' + obj.value);
                     element.innerHTML = obj.value;
                 }
             } else {
-                realtime.log('setting attribute: ' + obj.key + ' = ' + obj.value);
+                realtime.log('setting attribute: ' + obj.key + ' = ' + obj.value + ' on ' + obj.id);
                 if (obj.key == 'value') {
                     $(element).val(obj.value);
                 } else {
@@ -401,3 +437,13 @@ realtime.on('eval', function(obj) {
         }
     };
 })(jQuery);
+
+// TODO: remove this in favor of a completely new SVG implementation
+function parseSVG(content) {
+    var parser = new DOMParser();
+    parser.async = false;
+    content = content.toString().trim();
+    content = '<svg xmlns=\'http://www.w3.org/2000/svg\'>' + content + '</svg>';
+    var document = parser.parseFromString(content, 'text/xml').documentElement;
+    return document.firstChild;
+}

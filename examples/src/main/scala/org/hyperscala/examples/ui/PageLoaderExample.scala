@@ -23,7 +23,7 @@ class PageLoaderExample[S <: Session](website: Website[S]) extends Webpage(websi
   }
 
   def reloadPage() = {
-    PageLoader(this, "Test Page Loader...", "/example/page_loader.html", {
+    PageLoader(this, "Test Page Loader...", "/example/advanced/page_loader.html", {
       info("Loading next page...")
       Thread.sleep(2000)
       val next = new PageLoaderExample(website)

@@ -11,16 +11,19 @@ import org.hyperscala.selector.Selector
 import org.hyperscala.web.useragent.{BrowserFamily, UserAgent}
 import org.hyperscala.web.{Webpage, Website}
 import org.powerscala.Version
+import org.powerscala.json.TypedSupport
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
 object jQuery extends Module {
+  TypedSupport.register("jquery", classOf[jQueryEvent])
+
   val name = "jquery"
   def version = version2
 
-  val version1 = Version(1, 11, 0)
-  val version2 = Version(2, 1, 1)
+  val version1 = Version(1, 11, 2)
+  val version2 = Version(2, 1, 3)
 
   override def init[S <: Session](website: Website[S]) = {}
 

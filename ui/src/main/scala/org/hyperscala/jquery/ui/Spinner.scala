@@ -72,8 +72,8 @@ class Spinner private(val wrapped: tag.Input, val autoInit: Boolean = true) exte
 
 case class ChangeEvent(tag: HTMLTag, value: Double) extends BrowserEvent
 
-object ChangeEvent extends MappedEvent[ChangeEvent](Map("value" -> JavaScriptString("$(this).spinner('value')")))
+object ChangeEvent extends MappedEvent[ChangeEvent]("change", List("event", "ui"), Map("value" -> JavaScriptString("$(this).spinner('value')")))
 
 case class SpinEvent(tag: HTMLTag, value: Double) extends BrowserEvent
 
-object SpinEvent extends MappedEvent[SpinEvent](Map("value" -> JavaScriptString("ui.value")))
+object SpinEvent extends MappedEvent[SpinEvent]("spin", List("event", "ui"), Map("value" -> JavaScriptString("ui.value")))

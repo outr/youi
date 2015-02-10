@@ -72,20 +72,21 @@ trait jQueryComponent extends WrappedComponent[HTMLTag] {
         |}""".stripMargin
     on(eventType, JavaScriptString(js))
     val processor = new UnitProcessor[jQueryEvent](s"jquery.$eventType")(wrapped, implicitly[Manifest[jQueryEvent]])
-    wrapped.handle[jQueryEvent]((evt: jQueryEvent) => processor.fire(evt), (evt: jQueryEvent) => evt.eventType == eventType)
+//    wrapped.handle[jQueryEvent]((evt: jQueryEvent) => println(s"jQueryEvent! ${evt.eventType} == $eventType"))
+    wrapped.handle[jQueryEvent]((evt: jQueryEvent) => processor.fire(evt), (evt: jQueryEvent) => evt.eventType == s"jquery.$eventType")
     processor
   }
 
   def event[T <: BrowserEvent](mapping: MappedEvent[T]) = {
     val js =
-      s"""function() {
+      s"""function(${mapping.eventKeys.mkString(", ")}) {
         | realtime.send({
         |  id: '${wrapped.identity}',
         |  type: '${mapping.eventType}',
         |  ${mapping.mapping.map(t => s"${t._1}: ${t._2.content}").mkString(", ")}
         | });
         |}""".stripMargin
-    on(mapping.eventType, JavaScriptString(js))
+    on(mapping.name, JavaScriptString(js))
     val processor = new UnitProcessor[T](mapping.eventType)(wrapped, mapping.manifest)
     wrapped.handle[T]((evt: T) => processor.fire(evt))(mapping.manifest)
     processor
@@ -94,8 +95,8 @@ trait jQueryComponent extends WrappedComponent[HTMLTag] {
 
 case class jQueryEvent(tag: HTMLTag, eventType: String) extends BrowserEvent
 
-class MappedEvent[T <: BrowserEvent](val mapping: Map[String, Statement[_]])(implicit val manifest: Manifest[T]) {
-  val eventType = getClass.getName
+class MappedEvent[T <: BrowserEvent](val name: String, val eventKeys: List[String], val mapping: Map[String, Statement[_]])(implicit val manifest: Manifest[T]) {
+  val eventType = s"jquery.$name"
 
   TypedSupport.register(eventType, manifest.runtimeClass)
 }

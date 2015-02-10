@@ -32,7 +32,11 @@ class RealtimePage[S <: Session] private(val webpage: Webpage[S]) extends Loggin
 
   // Fire all BrowserEvents on the specified tag
   webpage.jsonEvent.partial(Unit) {
-    case evt: BrowserEvent => evt.tag.eventReceived.fire(evt)
+    case evt: BrowserEvent => if (evt.tag != null) {
+      evt.tag.eventReceived.fire(evt)
+    } else {
+      warn(s"BrowserEvent without tag: $evt")
+    }
   }
 
   def init() = synchronized {
@@ -52,7 +56,13 @@ class RealtimePage[S <: Session] private(val webpage: Webpage[S]) extends Loggin
     // TODO: provide exclusion to avoid synchronizing data coming from client back to server (one Connection - should send to all other connections)
     val parent = evt.parent.asInstanceOf[IdentifiableTag with Container[IdentifiableTag]]
     evt.child match {
-      case child: SVGTag if !child.isInstanceOf[Svg] => throw new RuntimeException(s"SVG not yet supported!")
+      case child: SVGTag if !child.isInstanceOf[Svg] => {
+        val index = parent.contents.indexOf(child)
+        val afterId = if (index == 0) null else parent.contents(index - 1).identity
+        val parentId = if (index == 0) parent.identity else null
+        val svg = child.outputString
+        send(InsertSVGContent(svg, afterId, parentId))
+      }
       case child: HTMLTag => {
         val index = parent.contents.indexOf(child)
         val afterId = if (index == 0) null else parent.contents(index - 1).identity
@@ -204,6 +214,8 @@ object RealtimePage {
   TypedSupport.register("attributeHTML", classOf[SetHTMLAttribute])
   TypedSupport.register("setStyle", classOf[SetSelectorStyle])
   TypedSupport.register("tokenEvent", classOf[TokenBrowserEvent])
+
+  TypedSupport.register("insertSVG", classOf[InsertSVGContent])
 
   def apply[S <: Session](webpage: Webpage[S]) = webpage.store.getOrSet[RealtimePage[S]]("realtime", new RealtimePage(webpage))
 

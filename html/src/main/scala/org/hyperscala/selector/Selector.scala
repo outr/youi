@@ -70,7 +70,7 @@ trait Selector {
     }
   }
 
-  def toCondition = JavaScriptString(s"$$('$content).length > 0")
+  def toCondition = JavaScriptString(s"$$($content).length > 0")
 }
 
 object Selector extends ValuePersistence[List[Selector]] {

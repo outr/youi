@@ -12,6 +12,7 @@ import org.hyperscala.realtime._
  */
 class WebFontLoaderExample extends Example {
   this.require(WebFontLoader)
+  this.require(Realtime)
 
   loadFont("Pacifico")
 

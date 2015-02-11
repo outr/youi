@@ -18,7 +18,7 @@ object RealtimeJSON extends Logging {
   def init() = {
     TypedSupport.register("init", classOf[InitBrowserConnection])
     TypedSupport.register("reload", classOf[ReloadPage])
-    TypedSupport.register("error", classOf[BrowserError])
+    TypedSupport.register("browserError", classOf[BrowserError])
 
     // Configure JSON mapping for BrowserEvents
     MapSupport.j2o.on {

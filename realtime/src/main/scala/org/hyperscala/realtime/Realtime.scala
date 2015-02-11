@@ -9,6 +9,7 @@ import org.hyperscala.jquery.{jQuerySerializeForm, jQuery}
 import org.hyperscala.module.Module
 import org.hyperscala.realtime.event.browser.{BrowserError, InitBrowserConnection}
 import org.hyperscala.realtime.event.server.ReloadPage
+import org.hyperscala.web.useragent.UserAgent
 import org.hyperscala.web.{Webpage, Website}
 import org.hyperscala.web.module.IdentifyTags
 import org.powerscala.Version
@@ -27,7 +28,7 @@ object Realtime extends Module with Logging {
   val pingDelay = Property[Long](default = Some(60000))
   val updateFrequency = Property[Long](default = Some(10000))
   val reconnect = Property[Boolean](default = Some(true))
-  val errorLogger = Property[BrowserError => Unit](default = Some((message: BrowserError) => error(message)))
+  val errorLogger = Property[BrowserErrorEvent => Unit](default = Some((evt: BrowserErrorEvent) => error(evt)))
 
   // TODO: support reconnect and error logging
 
@@ -69,5 +70,12 @@ object Realtime extends Module with Logging {
     webpage.head.contents += new tag.Script(content = JavaScriptString(js))
 
     RealtimePage(webpage)
+  }
+}
+
+case class BrowserErrorEvent(webpage: Webpage[Session], error: BrowserError) {
+  override def toString = {
+    val ua = UserAgent(webpage)
+    s"Page: ${webpage.getClass.getName}, $ua, Remote: ${webpage.website.request.derivedRemoteHost} - $error"
   }
 }

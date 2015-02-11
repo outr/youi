@@ -58,4 +58,6 @@ class UserAgent private(userAgent: String) {
       maintenance = s2Int(v.getBugfix),
       extra = v.getExtension)
   }
+
+  override def toString = s"Browser: ${browser.family.friendlyName} (${browser.version}), OS: ${os.family.friendlyName} (${os.name} / ${os.version}), Type: ${agentType.friendlyName}"
 }

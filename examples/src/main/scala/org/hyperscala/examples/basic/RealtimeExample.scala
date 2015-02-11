@@ -22,7 +22,6 @@ class RealtimeExample extends Example {
 
     clickEvent.on {
       case evt => {
-        info(s"I've been clicked! Target: ${evt.target.map(t => t.identity)}")
         message.contents.replaceWith(new tag.Span(content = f"Button last clicked: ${System.currentTimeMillis()}%tr"))
       }
     }

@@ -109,7 +109,7 @@ var realtime = {
         console.log('Realtime (' + new Date() + '): ' + message + (obj != null ? ' - ' + JSON.stringify(obj) : ''));
         if (err != null) console.log(err.stack);
         this.send({
-            type: 'error',
+            type: 'browserError',
             timestamp: Date.now(),
             message: message,
             obj: JSON.stringify(obj),
@@ -362,7 +362,7 @@ realtime.on('eval', function(obj) {
             try {
                 eval(obj.code);
             } catch(err) {
-                realtime.error('Failed to handle eval request (' + err.message + ') - ' + obj.code, null, err);
+                realtime.error('Failed to handle eval request (' + err.message + ') - Code: "' + obj.code + '"', null, err);
             }
         } else {
             setTimeout(f, 10);

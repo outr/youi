@@ -31,10 +31,6 @@ class RealtimePage[S <: Session] private(val webpage: Webpage[S]) extends Loggin
   private val _initialized = Property[Boolean](default = Some(false))
   def initialized = _initialized.readOnlyView
 
-  webpage.textEvent.on {
-    case evt => println(s"webpage textEvent: ${evt.message}")
-  }
-
   // Fire all BrowserEvents on the specified tag
   webpage.jsonEvent.partial(Unit) {
     case evt: BrowserEvent => if (evt.tag != null) {
@@ -130,7 +126,6 @@ class RealtimePage[S <: Session] private(val webpage: Webpage[S]) extends Loggin
       webpage.intercept.renderAttribute.fire(property) match {
         case Some(attribute) => {
           if ((t.isInstanceOf[tag.Text] || t.isInstanceOf[tag.Title]) && property.name == "content") {
-            println(s"Sending textual content change for ${t.xmlLabel} (${t.outputString}")
             val parent = t.parent.asInstanceOf[HTMLTag with Container[IdentifiableTag]]
             send(SetHTMLAttribute(parent.identity, "content", parent.outputChildrenString), excludeCurrentConnection)
           } else if (t.id == property) {

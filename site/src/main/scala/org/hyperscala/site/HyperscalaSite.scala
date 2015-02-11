@@ -15,6 +15,7 @@ import org.hyperscala.examples.todomvc.TodoMVC
 import org.hyperscala.examples.ui._
 import org.hyperscala.examples.ux.SingleSelectListExample
 import org.hyperscala.hello.HelloSite
+import org.hyperscala.realtime.Realtime
 import org.hyperscala.site.extra.HyperscalaGenerator
 import org.hyperscala.web.{Webpage, WebpageHandler, Scope, Website}
 import org.powerscala.log.Logger
@@ -25,6 +26,8 @@ import scala.collection.mutable.ListBuffer
  * @author Matt Hicks <matt@outr.com>
  */
 object HyperscalaSite extends Website[MapSession] with JettyApplication {
+  Realtime      // Make sure Realtime is initialized
+
   // Setup file logging
   Logger.Root.configureFileLogging("hyp")
   // Configure System.out and System.err to go to logger

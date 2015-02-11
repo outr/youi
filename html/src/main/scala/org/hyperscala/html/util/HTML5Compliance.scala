@@ -6,6 +6,7 @@ import org.powerscala.event.Intercept
 import org.hyperscala.html._
 import org.hyperscala.css.attributes.{VerticalAlignment, Length, BorderCollapse}
 import org.powerscala.Priority
+import org.powerscala.log.Logging
 
 /**
  * HTML5Compliance, when enabled, will dynamically convert previous version of HTML and XHTML to HTML5 compliance during
@@ -13,7 +14,7 @@ import org.powerscala.Priority
  *
  * @author Matt Hicks <matt@outr.com>
  */
-object HTML5Compliance {
+object HTML5Compliance extends Logging {
   private val listener = Markup.attributeSet.create(Priority.Normal) {
     case (markup, attribute) => process(markup, attribute)
   }
@@ -54,7 +55,7 @@ object HTML5Compliance {
         }
       }
       case _ => {
-        println(s"Markup: ${markup.getClass} - ${attribute.getName} - [${attribute.getValue}]")
+        debug(s"Markup: ${markup.getClass} - ${attribute.getName} - [${attribute.getValue}]")
         Intercept.Continue
       }
     }

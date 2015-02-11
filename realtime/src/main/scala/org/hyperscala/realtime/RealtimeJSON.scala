@@ -3,18 +3,18 @@ package org.hyperscala.realtime
 import com.outr.net.communicate.ConnectionHolder
 import com.outr.net.http.session.Session
 import org.hyperscala.html.HTMLTag
-import org.hyperscala.realtime.Realtime._
 import org.hyperscala.realtime.event.browser.{BrowserError, InitBrowserConnection}
 import org.hyperscala.realtime.event.server.ReloadPage
 import org.hyperscala.web.{Website, Webpage}
 import org.powerscala.json.{MapSupport, TypedSupport}
+import org.powerscala.log.Logging
 
 /**
  * RealtimeJSON sets up support for all the JSON types in Realtime.
  *
  * @author Matt Hicks <matt@outr.com>
  */
-object RealtimeJSON {
+object RealtimeJSON extends Logging {
   def init() = {
     TypedSupport.register("init", classOf[InitBrowserConnection])
     TypedSupport.register("reload", classOf[ReloadPage])
@@ -37,9 +37,6 @@ object RealtimeJSON {
       case m => m
     }
 
-    ConnectionHolder.textEvent.on {
-      case evt => println(evt.message)
-    }
     ConnectionHolder.jsonEvent.partial(Unit) {
       case init: InitBrowserConnection => connect(init)
     }
@@ -49,7 +46,6 @@ object RealtimeJSON {
    * Routes the connection to the webpage.
    */
   private[realtime] def connect(init: InitBrowserConnection) = {
-    println(s"InitBrowserConnection: $init")
     Website.get(init.siteId) match {
       case Some(site) => {
         site.pages.byId[Webpage[Session]](init.pageId) match {
@@ -59,13 +55,13 @@ object RealtimeJSON {
             debug(s"Connected to $page.")
           }
           case None => {
-            warn(s"Unable to find Webpage for id ${init.pageId} in Realtime.connect on site ${site.getClass.getSimpleName}.")
+            warn(s"Unable to find Webpage for id ${init.pageId} in RealtimeJSON.connect on site ${site.getClass.getSimpleName}.")
             ConnectionHolder.connection.sendJSON(ReloadPage(forcedReload = true))
           }
         }
       }
       case None => {
-        warn(s"Unable to find Website for id ${init.siteId} in Realtime.connect.")
+        warn(s"Unable to find Website for id ${init.siteId} in RealtimeJSON.connect.")
         ConnectionHolder.connection.sendJSON(ReloadPage(forcedReload = true))
       }
     }

@@ -71,7 +71,7 @@ class HyperscalaPage extends Webpage(HyperscalaSite) with FormSupport[MapSession
       style.paddingBottom := 30.px
       style.fontSize := FontSize.Small
       style.textAlign := Alignment.Right
-      contents += s"&copy;2014 Hyperscala.org, version: ${BuildInfo.version}, build time: ${f"${BuildInfo.buildTime}%tc"}"
+      contents += s"&copy;2015 Hyperscala.org, version: ${BuildInfo.version}, build time: ${f"${BuildInfo.buildTime}%tc"}"
     }
   }
 

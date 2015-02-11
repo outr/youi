@@ -20,32 +20,30 @@ var realtime = {
         try {
             this.debug = settings.debug;
 
-            var r = this;
             this.communicate = new Communicate(settings);
             this.communicate.on('json', function (obj) {
                 if (obj.type != null) {
-                    r.fire(obj.type, obj);
-                    r.fire('*', obj);
+                    realtime.fire(obj.type, obj);
+                    realtime.fire('*', obj);
                     //r.log('Received JSON', obj);
                 }
             });
             this.communicate.on('open', function (evt) {
-                console.log('initializing...');
-                r.fire('open', evt);
+                realtime.fire('open', evt);
                 console.log('WebSocket Connection opened.');
-                r.send({                         // Initialize the connection with Realtime
+                realtime.send({                         // Initialize the connection with Realtime
                     type: 'init',
                     siteId: settings.siteId,
                     pageId: settings.pageId
                 });
             });
             this.communicate.on('close', function (evt) {
-                r.fire('close', evt);
+                realtime.fire('close', evt);
                 console.log('WebSocket Connection closed.');
             });
             this.communicate.on('error', function (evt) {
-                r.fire('error', evt);
-                r.log('Error occurred.', evt.data);
+                realtime.fire('error', evt);
+                realtime.log('Error occurred.', evt.data);
             });
             this.communicate.connect();
         } catch(err) {

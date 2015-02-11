@@ -1,11 +1,12 @@
 package org.hyperscala.realtime
 
 import com.outr.net.communicate.ConnectionHolder
+import com.outr.net.http.session.Session
 import org.hyperscala.html.HTMLTag
 import org.hyperscala.realtime.Realtime._
 import org.hyperscala.realtime.event.browser.{BrowserError, InitBrowserConnection}
 import org.hyperscala.realtime.event.server.ReloadPage
-import org.hyperscala.web.Webpage
+import org.hyperscala.web.{Website, Webpage}
 import org.powerscala.json.{MapSupport, TypedSupport}
 
 /**
@@ -36,8 +37,37 @@ object RealtimeJSON {
       case m => m
     }
 
+    ConnectionHolder.textEvent.on {
+      case evt => println(evt.message)
+    }
     ConnectionHolder.jsonEvent.partial(Unit) {
-      case init: InitBrowserConnection => Realtime.connect(init)
+      case init: InitBrowserConnection => connect(init)
+    }
+  }
+
+  /**
+   * Routes the connection to the webpage.
+   */
+  private[realtime] def connect(init: InitBrowserConnection) = {
+    println(s"InitBrowserConnection: $init")
+    Website.get(init.siteId) match {
+      case Some(site) => {
+        site.pages.byId[Webpage[Session]](init.pageId) match {
+          case Some(page) => {
+            page.hold(ConnectionHolder.connection)          // Webpage should hold the connection
+            RealtimePage(page).init()                       // Initialize the RealtimePage
+            debug(s"Connected to $page.")
+          }
+          case None => {
+            warn(s"Unable to find Webpage for id ${init.pageId} in Realtime.connect on site ${site.getClass.getSimpleName}.")
+            ConnectionHolder.connection.sendJSON(ReloadPage(forcedReload = true))
+          }
+        }
+      }
+      case None => {
+        warn(s"Unable to find Website for id ${init.siteId} in Realtime.connect.")
+        ConnectionHolder.connection.sendJSON(ReloadPage(forcedReload = true))
+      }
     }
   }
 }

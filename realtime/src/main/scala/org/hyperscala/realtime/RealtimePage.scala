@@ -6,6 +6,7 @@ import org.hyperscala.html._
 import org.hyperscala.html.attributes.InputType
 import org.hyperscala.javascript.JavaScriptContent
 import org.hyperscala.javascript.dsl.{window, Statement, JSFunction0}
+import org.hyperscala.realtime.event.browser.BrowserError
 import org.hyperscala.realtime.event.server._
 import org.hyperscala.svg.{Svg, SVGTag}
 import org.hyperscala.web.event.server.InvokeJavaScript
@@ -30,12 +31,20 @@ class RealtimePage[S <: Session] private(val webpage: Webpage[S]) extends Loggin
   private val _initialized = Property[Boolean](default = Some(false))
   def initialized = _initialized.readOnlyView
 
+  webpage.textEvent.on {
+    case evt => println(s"webpage textEvent: ${evt.message}")
+  }
+
   // Fire all BrowserEvents on the specified tag
   webpage.jsonEvent.partial(Unit) {
     case evt: BrowserEvent => if (evt.tag != null) {
       evt.tag.eventReceived.fire(evt)
     } else {
       warn(s"BrowserEvent without tag: $evt")
+    }
+    case evt: BrowserError => Realtime.errorLogger.get match {
+      case Some(f) => f(evt)
+      case None => // No default handler
     }
   }
 

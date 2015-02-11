@@ -1,13 +1,13 @@
 package org.hyperscala.realtime
 
-import com.outr.net.communicate.ConnectionHolder
+import com.outr.net.communicate.{ErrorMessage, ConnectionHolder}
 import com.outr.net.http.session.Session
 import org.hyperscala.event.{BrowserEvent, JavaScriptEvent}
 import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.jquery.stylesheet.jQueryStyleSheet
 import org.hyperscala.jquery.{jQuerySerializeForm, jQuery}
 import org.hyperscala.module.Module
-import org.hyperscala.realtime.event.browser.InitBrowserConnection
+import org.hyperscala.realtime.event.browser.{BrowserError, InitBrowserConnection}
 import org.hyperscala.realtime.event.server.ReloadPage
 import org.hyperscala.web.{Webpage, Website}
 import org.hyperscala.web.module.IdentifyTags
@@ -26,6 +26,10 @@ object Realtime extends Module with Logging {
   val debugLogging = Property[Boolean](default = Some(false))
   val pingDelay = Property[Long](default = Some(60000))
   val updateFrequency = Property[Long](default = Some(10000))
+  val reconnect = Property[Boolean](default = Some(true))
+  val errorLogger = Property[BrowserError => Unit](default = Some((message: BrowserError) => error(message)))
+
+  // TODO: support reconnect and error logging
 
   debugLogging.change.on {        // Make sure debug info gets spit out when debugLogging is enabled
     case evt => {
@@ -55,6 +59,7 @@ object Realtime extends Module with Logging {
       s"""
          |realtime.init({
          |  debug: ${debugLogging()},
+         |  reconnect: ${reconnect()},
          |  path: '${webpage.website.webSocketPath.get}',
          |  pingDelay: ${pingDelay()},
          |  updateFrequency: ${updateFrequency()},
@@ -64,30 +69,5 @@ object Realtime extends Module with Logging {
     webpage.head.contents += new tag.Script(content = JavaScriptString(js))
 
     RealtimePage(webpage)
-  }
-
-  /**
-   * Routes the connection to the webpage.
-   */
-  private[realtime] def connect(init: InitBrowserConnection) = {
-    Website.get(init.siteId) match {
-      case Some(site) => {
-        site.pages.byId[Webpage[Session]](init.pageId) match {
-          case Some(page) => {
-            page.hold(ConnectionHolder.connection)          // Webpage should hold the connection
-            RealtimePage(page).init()                       // Initialize the RealtimePage
-            debug(s"Connected to $page.")
-          }
-          case None => {
-            warn(s"Unable to find Webpage for id ${init.pageId} in Realtime.connect on site ${site.getClass.getSimpleName}.")
-            ConnectionHolder.connection.sendJSON(ReloadPage(forcedReload = true))
-          }
-        }
-      }
-      case None => {
-        warn(s"Unable to find Website for id ${init.siteId} in Realtime.connect.")
-        ConnectionHolder.connection.sendJSON(ReloadPage(forcedReload = true))
-      }
-    }
   }
 }

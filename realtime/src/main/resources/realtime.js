@@ -22,11 +22,6 @@ var realtime = {
 
             var r = this;
             this.communicate = new Communicate(settings);
-            this.communicate.send({                         // Initialize the connection with Realtime
-                type: 'init',
-                siteId: settings.siteId,
-                pageId: settings.pageId
-            });
             this.communicate.on('json', function (obj) {
                 if (obj.type != null) {
                     r.fire(obj.type, obj);
@@ -35,8 +30,14 @@ var realtime = {
                 }
             });
             this.communicate.on('open', function (evt) {
+                console.log('initializing...');
                 r.fire('open', evt);
                 console.log('WebSocket Connection opened.');
+                r.send({                         // Initialize the connection with Realtime
+                    type: 'init',
+                    siteId: settings.siteId,
+                    pageId: settings.pageId
+                });
             });
             this.communicate.on('close', function (evt) {
                 r.fire('close', evt);

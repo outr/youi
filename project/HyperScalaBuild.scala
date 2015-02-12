@@ -66,7 +66,7 @@ object HyperScalaBuild extends Build {
 
   lazy val root = Project("root", file("."), settings = unidocSettings ++ createSettings("hyperscala-root"))
     .settings(publishArtifact in Compile := false, publishArtifact in Test := false)
-    .aggregate(core, html, javascript, svg, web, jquery, realtime, ui, ux, bootstrap, generator, hello, examples, numberGuess, site)
+    .aggregate(core, html, javascript, svg, web, jquery, realtime, ui, contentEditor, ux, bootstrap, generator, hello, examples, numberGuess, site)
   lazy val core = Project("core", file("core"), settings = createSettings("hyperscala-core") ++ buildInfoSettings)
     .settings(libraryDependencies ++= Seq(outrNetCore))
     .settings(sourceGenerators in Compile <+= buildInfo,
@@ -91,19 +91,22 @@ object HyperScalaBuild extends Build {
     .dependsOn(web, jquery)
   lazy val ui = Project("ui", file("ui"), settings = createSettings("hyperscala-ui"))
     .dependsOn(web, realtime, jquery, jqueryUI)
+  lazy val contentEditor = Project("contenteditor", file("contenteditor"), settings = createSettings("hyperscala-contenteditor"))
+    .dependsOn(ui)
   lazy val ux = Project("ux", file("ux"), settings = createSettings("hyperscala-ux"))
     .dependsOn(web, realtime, jquery, ui)
   lazy val bootstrap = Project("bootstrap", file("bootstrap"), settings = createSettings("hyperscala-bootstrap"))
     .dependsOn(ui)
   lazy val generator = Project("generator", file("generator"), settings = createSettings("hyperscala-generator"))
     .settings(publishArtifact := false)
+
   // Examples and Site
   lazy val hello = Project("hello", file("hello"), settings = createSettings("hyperscala-hello") ++ Revolver.settings)
     .dependsOn(web)
     .settings(libraryDependencies ++= Seq(outrNetServlet, outrNetJetty))
     .settings(mainClass := Some("org.hyperscala.hello.HelloSite"))
   lazy val examples = Project("examples", file("examples"), settings = createSettings("hyperscala-examples"))
-    .dependsOn(web, ui, ux, bootstrap, snapSVG, hello)
+    .dependsOn(web, ui, contentEditor, ux, bootstrap, snapSVG, hello)
     .settings(libraryDependencies ++= Seq(outrNetServlet))
   lazy val numberGuess = Project("numberguess", file("numberguess"), settings = createSettings("hyperscala-numberguess") ++ Revolver.settings)
     .dependsOn(ui)

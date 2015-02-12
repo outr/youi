@@ -19,15 +19,15 @@ class SnapSVGExample extends Example {
   this.require(Snap)
   this.require(Realtime)
 
-  implicit def color2Statement(c: Color) = s(c)
-  implicit def element2Statement(e: SnapElement) = s(e)
+  implicit def color2Statement(c: Color): Statement[Color] = s(c)
+  implicit def element2Statement(e: SnapElement): Statement[SnapElement] = s(e)
 
   val svg = new Svg(id = "svg", width = 300.px, height = 300.px)
   contents += svg
 
   val js = new JavaScriptContext {
-    var snap = Snap(svg)
-    var bigCircle = snap.circle(150, 150, 100)
+    val snap = Snap(svg)
+    val bigCircle = snap.circle(150, 150, 100)
     bigCircle.attr(fill = Color.immutable("#bada55"), stroke = Color.immutable("#000"), strokeWidth = 5)
     var smallCircle = snap.circle(100, 150, 70)
     var discs = snap.group(smallCircle, snap.circle(200, 150, 70))

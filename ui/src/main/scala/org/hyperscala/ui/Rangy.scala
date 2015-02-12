@@ -24,5 +24,6 @@ object Rangy extends Module {
     page.head.contents += new tag.Script(src = s"$path/rangy-cssclassapplier.js")
     page.head.contents += new tag.Script(src = s"$path/rangy-selectionsaverestore.js")
     page.head.contents += new tag.Script(src = s"$path/rangy-serializer.js")
+    page.head.contents += new tag.Script(src = s"$path/rangy-textrange.js")
   }
 }

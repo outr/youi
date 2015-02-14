@@ -174,21 +174,39 @@ global.contentEditor = {
     * @param {Function} filter Filter function used to filter out nodes styles that will be returned by 'nodesStyles' property of 'selectionInfo' object.
     */
     selectionInfo: function(scope, filter) {
-        var node = rangy.getSelection().getRangeAt(0).startContainer,
+        var range = rangy.getSelection().getRangeAt(0),
+            startContainer = range.startContainer,
+            endContainer = range.endContainer,
+            startNode,
             selectionInfo = {},
             computedStyle,
             scopedStyle,
             className,
             tagName;
 
-        node = node.nodeType === 1 ? node : node.parentElement;
+        if (startContainer !== endContainer &&
+            startContainer.parentElement === endContainer.parentElement &&
+            startContainer.length === range.startOffset) {
+            startContainer = startContainer.nextSibling;
+        }
+
+        if (startContainer.nodeType === 1) {
+            startNode = startContainer;
+
+            while (startNode.firstElementChild) {
+                startNode = startNode.firstElementChild;
+            }
+        } else {
+            startNode = startContainer.parentElement;
+        }
+
         scope = scope || document.body;
 
-        selectionInfo.className = node.className;
-        selectionInfo.tagName = node.tagName;
-        selectionInfo.computedStyle = window.getComputedStyle(node);
-        scopedStyle = node.cloneNode().style;
-        for (var i = 0, elementStyle; node.parentElement !== scope;) {
+        selectionInfo.className = startNode.className;
+        selectionInfo.tagName = startNode.tagName;
+        selectionInfo.computedStyle = window.getComputedStyle(startNode);
+        scopedStyle = startNode.cloneNode().style;
+        for (var i = 0, node = startNode, elementStyle; node.parentElement !== scope;) {
             node = node.parentElement;
             elementStyle = node.style;
             for (var style in elementStyle) {
@@ -385,7 +403,16 @@ function createClassWrapper(className, options) {
         },
         style: {
             get: function() {return rangyClassApplier.elementProperties.style;},
-            set: function(style) {rangyClassApplier.elementProperties.style = style;}
+            set: function(style) {
+                if (style.color && style.color[0] === "#") {
+                    var cssDeclaration = document.createElement("style").style
+                    cssDeclaration.color = style.color;
+                    style.color = cssDeclaration.color;
+                    console.log(cssDeclaration, cssDeclaration.color)
+                }
+
+                rangyClassApplier.elementProperties.style = style;
+            }
         },
         properties: {
             get: function() {return rangyClassApplier.elementProperties;},
@@ -490,31 +517,35 @@ function createClassWrapper(className, options) {
                 range = selection.getRangeAt(0);
                 nodes = range.getNodes([1], function(node) {return node.className === className});
 
-                if (selection.isBackwards()) {
-                    startNode = nodes[nodes.length - 1];
+                if (nodes[0]) {
+                    if (nodes.length > 1) {
+                        if (selection.isBackwards()) {
+                            startNode = nodes[nodes.length - 1];
 
-                    for (var style in styles) { // check for style consistency
-                        if (startNode.style[style] !== styles[style]) {
-                            startNode = nodes[nodes.length - 2];
-                            break;
+                            for (var style in styles) { // check for style consistency
+                                if (startNode.style[style] !== styles[style]) {
+                                    startNode = nodes[nodes.length - 2];
+                                    break;
+                                }
+                            }
+                        } else {
+                            startNode = nodes[0];
+
+                            for (var style in styles) { // check for style consistency
+                                if (startNode.style[style] !== styles[style]) {
+                                    startNode = nodes[1];
+                                    break;
+                                }
+                            }
                         }
+                        range.setStart(startNode.childNodes[0]);
+                    } else {
+                        range.setStart(nodes[0].childNodes[0]);
                     }
 
-                    range.setStart(startNode.childNodes[0]);
-                } else {
-                    startNode = nodes[0];
-
-                    for (var style in styles) { // check for style consistency
-                        if (startNode.style[style] !== styles[style]) {
-                            startNode = nodes[1];
-                            break;
-                        }
-                    }
-
-                    range.setStart(startNode.childNodes[0]);
+                    selection.setSingleRange(range);
                 }
 
-                selection.setSingleRange(range);
                 dispatchStyleChange(range, this);
             }
         }
@@ -575,31 +606,34 @@ function createClassWrapper(className, options) {
                     range = selection.getRangeAt(0);
                     nodes = range.getNodes([1], function(node) {return node.className === className});
 
-                    if (selection.isBackwards()) {
-                        startNode = nodes[nodes.length - 1];
+                    if (nodes[0]) {
+                        if (nodes.length > 1) {
+                            if (selection.isBackwards()) {
+                                startNode = nodes[nodes.length - 1];
 
-                        for (var style in styles) { // check for style consistency
-                            if (startNode.style[style] !== styles[style]) {
-                                startNode = nodes[nodes.length - 2];
-                                break;
+                                for (var style in styles) { // check for style consistency
+                                    if (startNode.style[style] !== styles[style]) {
+                                        startNode = nodes[nodes.length - 2];
+                                        break;
+                                    }
+                                }
+                            } else {
+                                startNode = nodes[0];
+
+                                for (var style in styles) { // check for style consistency
+                                    if (startNode.style[style] !== styles[style]) {
+                                        startNode = nodes[1];
+                                        break;
+                                    }
+                                }
                             }
+                            range.setStart(startNode.childNodes[0]);
+                        } else {
+                            range.setStart(nodes[0].childNodes[0]);
                         }
 
-                        range.setStart(startNode.childNodes[0]);
-                    } else {
-                        startNode = nodes[0];
-
-                        for (var style in styles) { // check for style consistency
-                            if (startNode.style[style] !== styles[style]) {
-                                startNode = nodes[1];
-                                break;
-                            }
-                        }
-
-                        range.setStart(startNode.childNodes[0]);
+                        selection.setSingleRange(range);
                     }
-
-                    selection.setSingleRange(range);
                 }
 
                 dispatchStyleChange(range, this);

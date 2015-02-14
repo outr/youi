@@ -1,8 +1,10 @@
 package org.hyperscala.contenteditor
 
 import com.outr.net.http.session.Session
+import org.hyperscala.css.Style
 import org.hyperscala.html._
-import org.hyperscala.module.{Interface, Module}
+import org.hyperscala.javascript.JavaScriptContent
+import org.hyperscala.module.Module
 import org.hyperscala.realtime._
 import org.hyperscala.ui.Rangy
 import org.hyperscala.web._
@@ -39,9 +41,16 @@ object ContentEditor extends Module with StorageComponent[ContentEditor, HTMLTag
 }
 
 class ContentEditor private(val container: HTMLTag) extends Listenable {
-  def toggleBold() = send(s"ContentEditor.byId('${container.identity}').toggleBold();")
+  def toggle[T, S <: Style[T]](style: S, value: T) = call(s"toggle('${style.cssName}', '${style.value(value)}')")
+  def set[T, S <: Style[T]](style: S, value: T) = call(s"set('${style.cssName}', '${style.value(value)}')")
+  def insertImage(url: String) = call(s"insert('img', { src: '$url' })")
 
-  private def send(js: String) = container.connected[Webpage[Session]] {
+  def indent() = send(ifFocused(document.execCommand(Command.indent)))
+  def unIndent() = send(ifFocused(document.execCommand(Command.outdent)))
+
+  private def ifFocused[R](statement: Statement[R]) = MultiStatement(sideEffects = true, s"if (ContentEditor.byId('${container.identity}').focused()) { ", statement, " }")
+  private def call(function: String) = send(s"ContentEditor.byId('${container.identity}').$function;")
+  private def send(js: JavaScriptContent) = container.connected[Webpage[Session]] {
     case webpage => webpage.eval(js)
   }
 }

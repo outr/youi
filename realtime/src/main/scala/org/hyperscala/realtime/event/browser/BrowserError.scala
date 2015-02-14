@@ -6,5 +6,5 @@ package org.hyperscala.realtime.event.browser
  * @author Matt Hicks <matt@outr.com>
  */
 case class BrowserError(timestamp: Long, message: String, obj: String, errorMessage: String, stackTrace: String) {
-  override def toString = s"${f"$timestamp%tc"}: $message, Object: $obj, Error: $errorMessage, Stack: $stackTrace"
+  override def toString = s"${f"$timestamp%tc"}: $message, Object: $obj\r\nError: $errorMessage @ $stackTrace"
 }

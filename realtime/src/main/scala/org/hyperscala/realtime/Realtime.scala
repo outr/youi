@@ -30,8 +30,6 @@ object Realtime extends Module with Logging {
   val reconnect = Property[Boolean](default = Some(true))
   val errorLogger = Property[BrowserErrorEvent => Unit](default = Some((evt: BrowserErrorEvent) => error(evt)))
 
-  // TODO: support reconnect and error logging
-
   debugLogging.change.on {        // Make sure debug info gets spit out when debugLogging is enabled
     case evt => {
       logger.multiplier = if (evt.newValue) 2.0 else 1.0

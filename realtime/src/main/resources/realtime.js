@@ -34,7 +34,8 @@ var realtime = {
                 realtime.send({                         // Initialize the connection with Realtime
                     type: 'init',
                     siteId: settings.siteId,
-                    pageId: settings.pageId
+                    pageId: settings.pageId,
+                    url: document.location.href
                 });
             });
             this.communicate.on('close', function (evt) {

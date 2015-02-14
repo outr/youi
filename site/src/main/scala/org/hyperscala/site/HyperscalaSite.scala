@@ -8,7 +8,7 @@ import org.hyperscala.examples.Example
 import org.hyperscala.examples.basic._
 import org.hyperscala.examples.bootstrap.{BootstrapTheme, BootstrapSignin}
 import org.hyperscala.examples.comparison.PlayHelloWorldPage
-import org.hyperscala.examples.contenteditor.ContentEditorExample
+import org.hyperscala.examples.contenteditor.{EditablePageExample, ContentEditorExample}
 import org.hyperscala.examples.helloworld.HelloWorldPage
 import org.hyperscala.examples.snapsvg.SnapSVGExample
 import org.hyperscala.examples.svg.{DynamicSVGExample, SVGShapesExample, BasicSVGExample}
@@ -107,6 +107,7 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication {
   val webFontLoader = example(new WebFontLoaderExample, "Wrapper", "WebFontLoader", Scope.Page)
   val snapsvg = example(new SnapSVGExample, "Wrapper", "SnapSVG", Scope.Page)
   val contentEditor = example(new ContentEditorExample(this), "Wrapper", "Content Editor", Scope.Page)
+  val contentEditorContent = page(new EditablePageExample(this), Scope.Page, "/example/wrapper/content_editor_content.html")
 
   // Advanced
   val fileUploader = example(new FileUploaderExample, "Advanced", "File Uploader", Scope.Page)

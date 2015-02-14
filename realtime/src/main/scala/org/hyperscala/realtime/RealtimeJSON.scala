@@ -55,13 +55,13 @@ object RealtimeJSON extends Logging {
             debug(s"Connected to $page.")
           }
           case None => {
-            warn(s"Unable to find Webpage for id ${init.pageId} in RealtimeJSON.connect on site ${site.getClass.getSimpleName}.")
+            warn(s"Unable to find Webpage for id ${init.pageId} in RealtimeJSON.connect on site ${site.getClass.getSimpleName} for ${init.url}.")
             ConnectionHolder.connection.sendJSON(ReloadPage(forcedReload = true))
           }
         }
       }
       case None => {
-        warn(s"Unable to find Website for id ${init.siteId} in RealtimeJSON.connect.")
+        warn(s"Unable to find Website for id ${init.siteId} in RealtimeJSON.connect for ${init.url}.")
         ConnectionHolder.connection.sendJSON(ReloadPage(forcedReload = true))
       }
     }

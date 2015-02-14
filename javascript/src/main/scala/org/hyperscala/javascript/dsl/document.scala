@@ -7,10 +7,18 @@ import org.powerscala.enum.{Enumerated, EnumEntry}
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-object document extends DelayedStatement[HTMLTag] with Selector {
-  def thisValue = "document"
+object document extends Document()
+
+class Document(prefix: String = null) extends DelayedStatement[HTMLTag] with Selector {
+  def thisValue = if (prefix != null) {
+    s"$prefix.document"
+  } else {
+    "document"
+  }
 
   def parentSelector = None
+
+  def parent = documentParent
 
   def thisMatches(t: HTMLTag) = false
 
@@ -32,6 +40,8 @@ object document extends DelayedStatement[HTMLTag] with Selector {
     MultiStatement[Unit](sideEffects = true, s"document.execCommand('${command.name}'", ", ", value, ")")
   }
 }
+
+object documentParent extends ExistingStatement[HTMLTag]("parent", sideEffects = false)
 
 class Command extends EnumEntry
 

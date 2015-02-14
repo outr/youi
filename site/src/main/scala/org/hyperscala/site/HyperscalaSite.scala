@@ -39,7 +39,7 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication {
     HelloSite.initialize()    // Make sure HelloSite is initialized
   }
 
-  override def defaultPort = 8889
+  override def defaultPort = 8080
 
   val siteAbout = page(HyperscalaAbout, Scope.Application, "/about.html", "/")
   val siteExamples = page(HyperscalaExamples, Scope.Application, "/examples.html")
@@ -107,7 +107,7 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication {
   val webFontLoader = example(new WebFontLoaderExample, "Wrapper", "WebFontLoader", Scope.Page)
   val snapsvg = example(new SnapSVGExample, "Wrapper", "SnapSVG", Scope.Page)
   val contentEditor = example(new ContentEditorExample(this), "Wrapper", "Content Editor", Scope.Page)
-  val contentEditorContent = page(new EditablePageExample(this), Scope.Page, "/example/wrapper/content_editor_content.html")
+  val contentEditorContent = page(new EditablePageExample(null, this), Scope.Page, "/example/wrapper/content_editor_content.html")
 
   // Advanced
   val fileUploader = example(new FileUploaderExample, "Advanced", "File Uploader", Scope.Page)

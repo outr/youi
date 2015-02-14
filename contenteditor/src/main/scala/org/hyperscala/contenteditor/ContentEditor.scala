@@ -48,9 +48,15 @@ class ContentEditor private(val container: HTMLTag) extends Listenable {
   def indent() = send(ifFocused(document.execCommand(Command.indent)))
   def unIndent() = send(ifFocused(document.execCommand(Command.outdent)))
 
+  def bind[S <: Style[_]](t: HTMLTag, style: S, document: Statement[HTMLTag] = document) = {
+    send(s"ContentEditor.bind('${t.identity}', '${style.cssName}', ${document.content});")
+  }
+
   private def ifFocused[R](statement: Statement[R]) = MultiStatement(sideEffects = true, s"if (ContentEditor.byId('${container.identity}').focused()) { ", statement, " }")
   private def call(function: String) = send(s"ContentEditor.byId('${container.identity}').$function;")
   private def send(js: JavaScriptContent) = container.connected[Webpage[Session]] {
     case webpage => webpage.eval(js)
   }
+
+  send(s"ContentEditor.byId('${container.identity}')")    // Initialize it
 }

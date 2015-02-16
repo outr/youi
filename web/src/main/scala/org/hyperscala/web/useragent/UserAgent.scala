@@ -14,29 +14,32 @@ object UserAgent extends Logging {
   private var cache = Map.empty[String, ReadableUserAgent]
 
   def get[S <: Session](webpage: Webpage[S]) = try {
-    webpage.website.request.headers.UserAgent.map(s => webpage.store.getOrSet("userAgentModule", new UserAgent(s)))
+    val ua = new UserAgent(webpage.website.request.headers.UserAgent)
+    webpage.store.getOrSet("userAgentModule", ua)
+    Some(ua)
   } catch {
     case t: Throwable => {
       warn(s"Unable to process UserAgent from: ${webpage.website.request.headers.UserAgent}.", t)
       None
     }
   }
-  def apply[S <: Session](webpage: Webpage[S]) = webpage.store.getOrSet("userAgentModule", new UserAgent(webpage.website.request.headers.UserAgent.getOrElse(throw new NullPointerException(s"User-Agent was not supplied for url ${webpage.website.request.url}: ${webpage.website.request.headers.values.keySet}"))))
-  def apply(userAgent: String) = new UserAgent(userAgent)
+  def apply[S <: Session](webpage: Webpage[S]) = webpage.store.getOrSet("userAgentModule", new UserAgent(webpage.website.request.headers.UserAgent))
+  def apply(userAgent: String) = new UserAgent(Some(userAgent))
 
-  private def parse(userAgent: String) = synchronized {
-    cache.get(userAgent) match {
+  private def parse(userAgent: Option[String]) = synchronized {
+    val userAgentStr = userAgent.getOrElse("")
+    cache.get(userAgentStr) match {
       case Some(agent) => agent
       case None => {
-        val agent = UADetectorServiceFactory.getResourceModuleParser.parse(userAgent)
-        cache += userAgent -> agent
+        val agent = UADetectorServiceFactory.getResourceModuleParser.parse(userAgentStr)
+        cache += userAgentStr -> agent
         agent
       }
     }
   }
 }
 
-class UserAgent private(userAgent: String) {
+class UserAgent private(userAgent: Option[String]) {
   val agent = UserAgent.parse(userAgent)
 
   val browser = Browser(
@@ -69,4 +72,5 @@ class UserAgent private(userAgent: String) {
   }
 
   override def toString = s"Browser: ${browser.family.friendlyName} (${browser.version}), OS: ${os.family.friendlyName} (${os.name} / ${os.version}), Type: ${agentType.friendlyName}"
+
 }

@@ -5,13 +5,22 @@ import org.hyperscala.web.Webpage
 import net.sf.uadetector.service.UADetectorServiceFactory
 import net.sf.uadetector.{UserAgentType, VersionNumber, ReadableUserAgent}
 import com.outr.net.http.session.Session
+import org.powerscala.log.Logging
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-object UserAgent {
+object UserAgent extends Logging {
   private var cache = Map.empty[String, ReadableUserAgent]
 
+  def get[S <: Session](webpage: Webpage[S]) = try {
+    webpage.website.request.headers.UserAgent.map(s => webpage.store.getOrSet("userAgentModule", new UserAgent(s)))
+  } catch {
+    case t: Throwable => {
+      warn(s"Unable to process UserAgent from: ${webpage.website.request.headers.UserAgent}.", t)
+      None
+    }
+  }
   def apply[S <: Session](webpage: Webpage[S]) = webpage.store.getOrSet("userAgentModule", new UserAgent(webpage.website.request.headers.UserAgent.getOrElse(throw new NullPointerException(s"User-Agent was not supplied for url ${webpage.website.request.url}: ${webpage.website.request.headers.values.keySet}"))))
   def apply(userAgent: String) = new UserAgent(userAgent)
 

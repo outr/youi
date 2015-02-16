@@ -5,12 +5,12 @@ import org.hyperscala.bootstrap.Bootstrap
 import org.hyperscala.bootstrap.component.Button
 import org.hyperscala.contenteditor.ContentEditor
 import org.hyperscala.css.Style
-import org.hyperscala.css.attributes.{FontStyle, FontWeight}
+import org.hyperscala.css.attributes.{Alignment, FontStyle, FontWeight}
 import org.hyperscala.examples.Example
 import org.hyperscala.html._
 import org.hyperscala.html.attributes.ContentEditable
 import org.hyperscala.javascript.JavaScriptString
-import org.hyperscala.javascript.dsl.{parent, document}
+import org.hyperscala.javascript.dsl._
 import org.hyperscala.realtime._
 import org.hyperscala.web.{Webpage, Website}
 import org.powerscala.Color
@@ -31,10 +31,6 @@ class ContentEditorExample(site: Website[MapSession]) extends Example {
   val fontFamily = new tag.Input(id = "fontFamily")
   val fontStyle = new tag.Input(id = "fontStyle")
   val fontSize = new tag.Input(id = "fontSize")
-  val leftAlign = new Button(label = "Left Align")
-  val centerAlign = new Button(label = "Center Align")
-  val rightAlign = new Button(label = "Right Align")
-  val justifyAlign = new Button(label = "Justify Align")
 
   val frame = new RealtimeFrame("/example/wrapper/content_editor_content.html") {
     style.width := 100.pct
@@ -71,7 +67,7 @@ class ContentEditorExample(site: Website[MapSession]) extends Example {
     contents += new Button(label = "Insert Kitty") {
       mouseDownEvent.onRealtime {
         case evt => {
-          editorPage.editor.insertImage("http://www.freesmileys.org/emoticons/emoticon-animal-038.gif")
+          editorPage.editor.insert(new tag.Img(src = "http://www.freesmileys.org/emoticons/emoticon-animal-038.gif"))
         }
       }
     }
@@ -85,36 +81,45 @@ class ContentEditorExample(site: Website[MapSession]) extends Example {
         case evt => editorPage.editor.indent()
       }
     }
-    contents += new Button(label = "Decrease Size") {
-      mouseDownEvent.onRealtime {
-        case evt =>
-      }
-    }
-    contents += new Button(label = "Increase Size") {
-      mouseDownEvent.onRealtime {
-        case evt =>
-      }
-    }
     contents += new Button(label = "Ordered List") {
       mouseDownEvent.onRealtime {
-        case evt =>
+        case evt => editorPage.editor.orderedList()
       }
     }
     contents += new Button(label = "Unordered List") {
       mouseDownEvent.onRealtime {
-        case evt =>
+        case evt => editorPage.editor.unorderedList()
       }
     }
     contents += new Button(label = "Clear Formatting") {
       mouseDownEvent.onRealtime {
-        case evt =>
+        case evt => editorPage.editor.clearFormatting()
       }
     }
     contents += colorInput
     contents += fontFamily
     contents += fontStyle
     contents += fontSize
-    contents.addAll(leftAlign, centerAlign, rightAlign, justifyAlign)
+    contents += new Button(label = "Align Left") {
+      mouseDownEvent.onRealtime {
+        case evt => editorPage.editor.align(Alignment.Left)
+      }
+    }
+    contents += new Button(label = "Align Center") {
+      mouseDownEvent.onRealtime {
+        case evt => editorPage.editor.align(Alignment.Center)
+      }
+    }
+    contents += new Button(label = "Align Right") {
+      mouseDownEvent.onRealtime {
+        case evt => editorPage.editor.align(Alignment.Right)
+      }
+    }
+    contents += new Button(label = "Align Justify") {
+      mouseDownEvent.onRealtime {
+        case evt => editorPage.editor.align(Alignment.Justify)
+      }
+    }
   }
   contents += controls
 }
@@ -136,6 +141,14 @@ class EditablePageExample(example: ContentEditorExample, site: Website[MapSessio
 
   if (example != null) {
     editor.bind(example.colorInput, Style.color, parent)
+    editor.bind(example.fontFamily, Style.fontFamily, parent)
+    editor.bindFontStyle(example.fontStyle, parent)
+    editor.bind(example.fontSize, Style.fontSize, parent, JSFunction1[String, String](
+      """if (isNaN(p1)) {
+        |  return p1;
+        |} else {
+        |  return p1 + 'px';
+        |}""".stripMargin))
   }
 
   body.contents += new Button("Test Red") {

@@ -9,6 +9,7 @@ import org.hyperscala.examples.basic._
 import org.hyperscala.examples.bootstrap.{BootstrapTheme, BootstrapSignin}
 import org.hyperscala.examples.comparison.PlayHelloWorldPage
 import org.hyperscala.examples.contenteditor.{EditablePageExample, ContentEditorExample}
+import org.hyperscala.examples.createjs.CreateJSExample
 import org.hyperscala.examples.helloworld.HelloWorldPage
 import org.hyperscala.examples.snapsvg.SnapSVGExample
 import org.hyperscala.examples.svg.{DynamicSVGExample, SVGShapesExample, BasicSVGExample}
@@ -133,6 +134,8 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication {
 
   // UX
   val singleSelectList = example(new SingleSelectListExample, "UX", "SingleSelectList", Scope.Page)
+
+  val createJS = example(new CreateJSExample, "CreateJS", "EaselJS", Scope.Page)
 
   // Comparison
   val playComparison = pageExample(new PlayHelloWorldPage(HyperscalaSite.this), "Comparison", "Play - Hello World", Scope.Page)

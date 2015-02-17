@@ -40,7 +40,7 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication {
     HelloSite.initialize()    // Make sure HelloSite is initialized
   }
 
-  override def defaultPort = 8080
+  override def defaultPort = 8889
 
   val siteAbout = page(HyperscalaAbout, Scope.Application, "/about.html", "/")
   val siteExamples = page(HyperscalaExamples, Scope.Application, "/examples.html")

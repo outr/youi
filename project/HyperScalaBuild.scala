@@ -28,9 +28,10 @@ object HyperScalaBuild extends Build {
     fork := true,
     scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature"),
 //    scalacOptions in (Compile,doc) ++= Seq("-groups", "-implicits", "-diagrams", "-diagrams-dot-restart", "500"),
-    resolvers ++= Seq("Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/",
-                      "twitter-repo" at "http://maven.twttr.com",
-                      "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/"),
+    resolvers ++= Seq(
+      "Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/",
+      "Typesafe Repository" at "https://repo.typesafe.com/typesafe/releases/"
+    ),
     publishTo <<= version {
       (v: String) =>
         val nexus = "https://oss.sonatype.org/"
@@ -66,7 +67,7 @@ object HyperScalaBuild extends Build {
 
   lazy val root = Project("root", file("."), settings = unidocSettings ++ createSettings("hyperscala-root"))
     .settings(publishArtifact in Compile := false, publishArtifact in Test := false)
-    .aggregate(core, html, javascript, svg, web, jquery, realtime, ui, contentEditor, ux, bootstrap, createJS, generator, hello, examples, numberGuess, site)
+    .aggregate(core, html, javascript, svg, web, snapSVG, jquery, jqueryUI, realtime, ui, contentEditor, ux, bootstrap, createJS, generator, hello, examples, numberGuess, site)
   lazy val core = Project("core", file("core"), settings = createSettings("hyperscala-core") ++ buildInfoSettings)
     .settings(libraryDependencies ++= Seq(outrNetCore))
     .settings(sourceGenerators in Compile <+= buildInfo,

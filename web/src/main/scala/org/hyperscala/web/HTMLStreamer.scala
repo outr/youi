@@ -29,6 +29,6 @@ class HTMLStreamer(html: HTML) extends StreamingContent {
   override def asString = {
     val baos = new ByteArrayOutputStream
     stream(baos)
-    new String(baos.toByteArray, contentType.charSet).replaceAll("""\s""", "")
+    new String(baos.toByteArray, contentType.charSet)
   }
 }

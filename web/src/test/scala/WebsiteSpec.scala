@@ -29,5 +29,19 @@ class WebsiteSpec extends WordSpec with Matchers {
       response.status shouldEqual(HttpResponseStatus.OK)
       response.content.asString.replaceAll("""\s""", "") shouldEqual ("""<!DOCTYPEhtml><html><head><title>Webpage</title><metaname="generator"content="Hyperscala"/><metacharset="UTF-8"/></head></html>""")
     }
+
+    "handle not found requests" in {
+      val website = new Website[MapSession] {
+        protected def createSession(request: HttpRequest, id: String) = new MapSession(id, this)
+      }
+
+      website.init()
+
+      val request = new HttpRequest(new URL(path = "/test"), Method.Get, HttpRequestHeaders.Empty, Map.empty)
+      val response = website.onReceive(request, HttpResponse.NotFound)
+
+      response.status shouldEqual(HttpResponseStatus.NotFound)
+      response.content.asString.replaceAll("""\s""", "") shouldEqual ("""<html><head><title>404NotFound</title></head><body><h1><b>404</b>:NotFound</h1></body></html>""")
+    }
   }
 }

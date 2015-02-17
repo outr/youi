@@ -17,7 +17,7 @@ class HTMLStreamer(html: HTML) extends StreamingContent {
 
   def stream(output: OutputStream) = {
     val writer = HTMLWriter {
-      case s => output.write(s.getBytes(contentType.charSet))
+      case s => output.write(s.getBytes(Charset.forName("UTF-8")))
     }
     writer.writeLine("<!DOCTYPE html>\r\n")
     html.write(writer)

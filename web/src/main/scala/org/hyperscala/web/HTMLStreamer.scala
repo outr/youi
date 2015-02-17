@@ -23,9 +23,6 @@ class HTMLStreamer(html: HTML) extends StreamingContent {
     html.write(writer)
   }
 
-  /**
-   * Convenience method to get the stream as a string.
-   */
   override def asString = {
     val baos = new ByteArrayOutputStream
     stream(baos)

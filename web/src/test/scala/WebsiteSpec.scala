@@ -24,7 +24,7 @@ class WebsiteSpec extends WordSpec with Matchers {
       val webpage = new Webpage(website)
       website.addHandler(webpage, "/test")
       val request = new HttpRequest(new URL(path = "/test"), Method.Get, HttpRequestHeaders.Empty, Map.empty)
-      val response = website.onReceive(request, new HttpResponse)
+      val response = website.onReceive(request, HttpResponse.NotFound)
       
       response.status shouldEqual(HttpResponseStatus.OK)
       response.content.asString shouldEqual ("")

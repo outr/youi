@@ -28,9 +28,10 @@ object HyperScalaBuild extends Build {
     fork := true,
     scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature"),
 //    scalacOptions in (Compile,doc) ++= Seq("-groups", "-implicits", "-diagrams", "-diagrams-dot-restart", "500"),
-    resolvers ++= Seq("Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/",
-                      "twitter-repo" at "http://maven.twttr.com",
-                      "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/"),
+    resolvers ++= Seq(
+      "Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/",
+      "Typesafe Repository" at "https://repo.typesafe.com/typesafe/releases/"
+    ),
     publishTo <<= version {
       (v: String) =>
         val nexus = "https://oss.sonatype.org/"

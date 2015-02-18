@@ -23,11 +23,24 @@ class WebsiteSpec extends WordSpec with Matchers {
 
       val webpage = new Webpage(website)
       website.addHandler(webpage, "/test")
-      val request = new HttpRequest(new URL(path = "/test"), Method.Get, HttpRequestHeaders.Empty, Map.empty)
-      val response = website.onReceive(request, HttpResponse.NotFound)
 
-      response.status shouldEqual(HttpResponseStatus.OK)
-      response.content.asString.replaceAll("""\s""", "") shouldEqual ("""<!DOCTYPEhtml><html><head><title>Webpage</title><metaname="generator"content="Hyperscala"/><metacharset="UTF-8"/></head></html>""")
+      {
+        val request = new HttpRequest(new URL(path = "/test"), Method.Get, HttpRequestHeaders.Empty, Map.empty)
+        val response = website.onReceive(request, HttpResponse.NotFound)
+
+        response.status shouldEqual (HttpResponseStatus.OK)
+        response.content.asString.replaceAll("""\s""", "") shouldEqual ("""<!DOCTYPEhtml><html><head><title>Webpage</title><metaname="generator"content="Hyperscala"/><metacharset="UTF-8"/></head></html>""")
+      }
+
+      website.removeContent("/test")
+
+      {
+        val request = new HttpRequest(new URL(path = "/test"), Method.Get, HttpRequestHeaders.Empty, Map.empty)
+        val response = website.onReceive(request, HttpResponse.NotFound)
+
+        response.status shouldEqual (HttpResponseStatus.NotFound)
+        response.content.asString shouldBe ("404 Page not found: http://localhost/test")
+      }
     }
 
     "handle not found requests" in {

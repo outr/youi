@@ -64,6 +64,35 @@ var realtime = {
             this.communicate.send(message);
         }
     },
+    limited: {},
+    /**
+     * Uses send but limits the frequency of sends to a maximum rate for the specified key. Additional calls to this for
+     * the same key within the maximum rate are delayed and only send the latest message.
+     *
+     * @param key unique identifier for the group
+     * @param message the current message to send
+     * @param maximumRate the maximum rate of sending in milliseconds
+     */
+    sendLimited: function(key, message, maximumRate) {
+        var limit = this.limited[key];
+        var now = Date.now();
+        if (limit == null || (limit.message == null && limit.lastSend <= now - maximumRate)) {     // Send immediately
+            this.send(message);
+            this.limited[key] = {
+                lastSend: now
+            }
+        } else if (limit.message != null) {                                                        // Waiting to send, update message
+            limit.message = message;
+        } else {                                                                                   // Delay sending
+            var delay = (limit.lastSend + maximumRate) - now;
+            limit.message = message;
+            setTimeout(function() {
+                realtime.send(limit.message);
+                limit.message = null;
+                limit.lastSend = Date.now();
+            }, delay);
+        }
+    },
     /**
      * Fire an event to the listeners.
      *
@@ -118,7 +147,7 @@ var realtime = {
             stackTrace: err != null ? err.stack : null
         });
     },
-    event: function(evt, confirmMessage, preventDefault, fireChange, delay) {
+    event: function(evt, confirmMessage, preventDefault, fireChange, delay, maximumRate) {
         try {
             if (evt.src) evt.target = evt.srcElement;       // Handling for older versions of IE
 
@@ -156,7 +185,11 @@ var realtime = {
                         if (fireChange) {
                             r.fireChange(element);
                         }
-                        r.send(content);
+                        if (maximumRate && maximumRate > 0) {
+                            r.sendLimited(content.type + '.' + content.id, content, maximumRate);
+                        } else {
+                            r.send(content);
+                        }
                     };
 
                     if (confirmMessage == null || confirm(confirmMessage)) {

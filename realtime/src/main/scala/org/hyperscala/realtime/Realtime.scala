@@ -55,15 +55,16 @@ object Realtime extends Module with Logging {
     webpage.head.contents += new tag.Script(src = "/js/realtime.js")
 
     val js =
-      s"""
-         |realtime.init({
-         |  debug: ${debugLogging()},
-         |  reconnect: ${reconnect()},
-         |  path: '${webpage.website.webSocketPath.get}',
-         |  pingDelay: ${pingDelay()},
-         |  updateFrequency: ${updateFrequency()},
-         |  siteId: '${webpage.website.id}',
-         |  pageId: '${webpage.pageId}'
+      s"""$$(document).ready(function() {
+         |  realtime.init({
+         |    debug: ${debugLogging()},
+         |    reconnect: ${reconnect()},
+         |    path: '${webpage.website.webSocketPath.get}',
+         |    pingDelay: ${pingDelay()},
+         |    updateFrequency: ${updateFrequency()},
+         |    siteId: '${webpage.website.id}',
+         |    pageId: '${webpage.pageId}'
+         |  });
          |});""".stripMargin
     webpage.head.contents += new tag.Script(content = JavaScriptString(js))
 

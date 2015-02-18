@@ -8,9 +8,11 @@ import org.hyperscala.css.Style
 import org.hyperscala.css.attributes.{Alignment, FontStyle, FontWeight}
 import org.hyperscala.examples.Example
 import org.hyperscala.html._
+import org.hyperscala.web._
 import org.hyperscala.html.attributes.ContentEditable
 import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.javascript.dsl._
+import org.hyperscala.jquery.Gritter
 import org.hyperscala.realtime._
 import org.hyperscala.web.{Webpage, Website}
 import org.powerscala.Color
@@ -21,6 +23,7 @@ import org.powerscala.Color
 class ContentEditorExample(site: Website[MapSession]) extends Example {
   require(Realtime)
   require(Bootstrap)
+  require(Gritter)
 
   val boldButton = styleToggleButton("Bold", Style.fontWeight, FontWeight.Bold)
   val italicButton = styleToggleButton("Italic", Style.fontStyle, FontStyle.Italic)
@@ -81,6 +84,16 @@ class ContentEditorExample(site: Website[MapSession]) extends Example {
         case evt => editorPage.editor.indent()
       }
     }
+    contents += new Button(label = "Decrease Size") {
+      mouseDownEvent.onRealtime {
+        case evt => editorPage.editor.adjustStyleSize(Style.fontSize, -2, 6, 120)
+      }
+    }
+    contents += new Button(label = "Increase Size") {
+      mouseDownEvent.onRealtime {
+        case evt => editorPage.editor.adjustStyleSize(Style.fontSize, 2, 6, 120)
+      }
+    }
     contents += new Button(label = "Ordered List") {
       mouseDownEvent.onRealtime {
         case evt => editorPage.editor.orderedList()
@@ -126,6 +139,7 @@ class ContentEditorExample(site: Website[MapSession]) extends Example {
 
 class EditablePageExample(example: ContentEditorExample, site: Website[MapSession]) extends Webpage[MapSession](site) {
   require(ContentEditor)
+  require(Gritter)
 
   val editableStyle = head.selector( """[contenteditable="true"]:active, [contenteditable="true"]:focus""")
   editableStyle.border := "none"
@@ -136,19 +150,18 @@ class EditablePageExample(example: ContentEditorExample, site: Website[MapSessio
     contents += new tag.P(content = "Select a portion of this text and try the controls on the bottom of the page.")
   }
   val editor = ContentEditor(div)
+  editor.autoApply := true
+  editor.change.on {
+    case evt => message("Contents Changed", div.outputText)
+  }
 
   body.contents += div
 
   if (example != null) {
-    editor.bind(example.colorInput, Style.color, parent)
-    editor.bind(example.fontFamily, Style.fontFamily, parent)
+    editor.bindInput(example.colorInput, Style.color, parent)
+    editor.bindInput(example.fontFamily, Style.fontFamily, parent)
     editor.bindFontStyle(example.fontStyle, parent)
-    editor.bind(example.fontSize, Style.fontSize, parent, JSFunction1[String, String](
-      """if (isNaN(p1)) {
-        |  return p1;
-        |} else {
-        |  return p1 + 'px';
-        |}""".stripMargin))
+    editor.bindInput(example.fontSize, Style.fontSize, parent, ContentEditor.PixelConversion)
   }
 
   body.contents += new Button("Test Red") {
@@ -177,5 +190,11 @@ class EditablePageExample(example: ContentEditorExample, site: Website[MapSessio
         | };
         |};
       """.stripMargin)
+  }
+
+  def message(title: String, message: String) = if (example != null) {
+    Gritter.add(example.webpage, title, message, time = 5000)
+  } else {
+    Gritter.add(this, title, message, time = 5000)
   }
 }

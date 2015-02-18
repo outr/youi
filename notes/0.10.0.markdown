@@ -1,4 +1,5 @@
-## WebSockets and Major Updates
+## WebSockets, ContentEditor, and Major Refactor
 
 hyperscala 0.10.0 is a major refactoring to support better and more efficient communication between client and server via
-the Realtime module. Examples have been updated and deprecated code has been removed in this major update.
+the Realtime module. New ContentEditor feature has been added to better support rich content editing in the browser. Examples
+have been updated and deprecated code has been removed in this major update.

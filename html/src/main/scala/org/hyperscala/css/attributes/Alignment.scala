@@ -8,7 +8,7 @@ import org.hyperscala.EnumEntryAttributeValue
  * NOTE: This file has been generated. Do not modify directly!
  * @author Matt Hicks <matt@outr.com>
  */
-sealed class Alignment(val value: String) extends EnumEntryAttributeValue
+class Alignment private(val value: String) extends EnumEntryAttributeValue
 
 object Alignment extends Enumerated[Alignment] with EnumEntryPersistence[Alignment] {
   val Justify = new Alignment("justify")

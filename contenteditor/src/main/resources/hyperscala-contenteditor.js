@@ -39,18 +39,34 @@ var ContentEditor = {
             activeId = $(document.activeElement).attr('id');
         }
         if (this.instances[activeId]) {       // Only fire change if editable is focused
+            var instance = this.instances[activeId];
+
+            // Check style changes
             var currentStyle = this.style2JSON(contentEditor.selectionInfo().scopedStyle);
             if (JSON.stringify(currentStyle) != JSON.stringify(this.lastStyle)) {
                 this.fire('styleChanged', {
-                    instance: this.instances[document.activeElement],
+                    instance: instance,
                     style: currentStyle,
                     previous: this.lastStyle
                 });
                 this.lastStyle = currentStyle;
             }
+
+            // Check content changes
+            var currentContent = instance.$element.html();
+            if (currentContent != instance.content) {
+                if (instance.content != null) {         // Don't send changes when content is first set
+                    this.fire('contentChanged', {
+                        instance: instance,
+                        content: currentContent,
+                        previous: instance.content
+                    });
+                }
+                instance.content = currentContent;
+            }
         }
     },
-    bind: function(id, key, doc, valueCleaner) {
+    bindInput: function(id, key, doc, valueCleaner) {
         if (doc == null) doc = document;
         var element = doc.jQuery('#' + id);
         if (element.size() == 0) {
@@ -171,6 +187,16 @@ var ContentEditor = {
         };
         this.bindCustom(id, doc, fromString, toString);
     },
+    bindChanges: function() {
+        ContentEditor.on('contentChanged', function(evt) {
+            realtime.sendLimited('contentChanged.' + evt.instance.id, {
+                type: 'contentChanged',
+                id: evt.instance.id,
+                oldValue: evt.previous,
+                newValue: evt.content
+            }, 500);        // TODO: configure per-instance maximumRate
+        });
+    },
     style2JSON: function(style) {
         var json = {};
         for (var i = 0; i < style.length; i++) {
@@ -183,9 +209,17 @@ var ContentEditor = {
 $(document).on('selectionchange', function() {
     ContentEditor.check();
 });
+$(document).keyup(function() {
+    ContentEditor.check();
+});
+
+ContentEditor.bindChanges();        // TODO: allow optionally disabling this or making it limited to specific instances.
 
 var ContentEditorInstance = function(id) {
+    this.id = id;
     this.element = document.getElementById(id);
+    this.$element = $(this.element);
+    this.content = null;
     if (this.element == null) {
         throw 'Element not found by id: ' + id;
     }
@@ -212,6 +246,10 @@ ContentEditorInstance.prototype.stylize = function(key, value) {
 
 ContentEditorInstance.prototype.style = function(key) {
     return contentEditor.selectionInfo().scopedStyle[key];
+};
+
+ContentEditorInstance.prototype.computedStyle = function(key) {
+    return contentEditor.selectionInfo().computedStyle[key];
 };
 
 ContentEditorInstance.prototype.hasStyle = function(key, value) {
@@ -260,5 +298,13 @@ ContentEditorInstance.prototype.wrap = function(tagName, details) {
 ContentEditorInstance.prototype.clearFormatting = function() {
     if (this.focused()) {
         contentEditor.clearFormating();
+    }
+};
+
+ContentEditorInstance.prototype.adjustStyle = function(styleName, adjuster) {
+    if (this.focused()) {
+        var current = this.computedStyle(styleName);
+        var updated = adjuster(current);
+        this.set(styleName, updated);
     }
 };

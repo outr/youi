@@ -160,7 +160,7 @@ trait HTMLTag extends IdentifiableTag with AriaSupport with EventSupport {
   /**
    * Generates a String representation of the Text descendants.
    */
-  def outputText = byTag[tag.Text].map(t => t.content()).mkString
+  def outputText = byTag[tag.Text].map(t => t.content()).mkString.replaceAll("""\s+""", " ")
 
   def innerHTML = {
     val b = new StringBuilder

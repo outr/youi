@@ -262,7 +262,7 @@ realtime.on('reload', function(obj) {
 // Handle InsertHTML
 realtime.on('insertHTML', function(obj) {
     try {
-        realtime.log('Insert HTML after: ' + obj.after + ', parent: ' + obj.parent + ', HTML: ' + obj.html);
+        realtime.log('Insert HTML after: ' + obj.after + ', parent: ' + obj.parent + ', HTML: ' + obj.html + ', Append: ' + obj.append);
         if (obj.after != null) {
             var after = $('#' + obj.after);
             if (after.length == 0) {
@@ -274,8 +274,10 @@ realtime.on('insertHTML', function(obj) {
             var parent = $('#' + obj.parent);
             if (parent.length == 0) {
                 realtime.error('Unable to insert HTML under parent ' + obj.parent + ' as the element is not in the hierarchy.');
-            } else {
+            } else if (obj.append) {
                 parent.append(obj.html);
+            } else {
+                parent.prepend(obj.html);
             }
         }
     } catch(err) {

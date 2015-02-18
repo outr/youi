@@ -3,6 +3,7 @@ package org.hyperscala.ui
 import com.outr.net.http.session.Session
 import org.hyperscala.html._
 import org.hyperscala.javascript.{JavaScriptContent, JavaScriptString}
+import org.hyperscala.javascript.dsl._
 import org.hyperscala.jquery.jQuery
 import org.hyperscala.module._
 import org.hyperscala.web.{Webpage, Website}
@@ -28,14 +29,12 @@ object WindowSized extends Module {
 
   def resized[S <: Session](webpage: Webpage[S], script: JavaScriptContent) = {
     webpage.require(this)
-    webpage.head.contents += new tag.Script {
-      contents += new JavaScriptString(
-        """
-          |$(window).bind('windowSized', function(event, windowWidth, windowHeight) {
-          |   %s
-          |});
-        """.stripMargin.format(script.content))
-    }
+    webpage.eval(
+      s"""
+        |$$(window).bind('windowSized', function(event, windowWidth, windowHeight) {
+        |   ${script.content}
+        |});
+      """.stripMargin)
   }
 
   def widthAlgorithm[S <: Session](webpage: Webpage[S], id: String, algorithm: String) = resized(webpage, new JavaScriptString(

@@ -10,7 +10,7 @@ import org.hyperscala.realtime.event.browser.BrowserError
 import org.hyperscala.realtime.event.server._
 import org.hyperscala.svg.{Svg, SVGTag}
 import org.hyperscala.web.event.server.InvokeJavaScript
-import org.hyperscala.{Textual, PropertyAttribute, Container, IdentifiableTag}
+import org.hyperscala._
 import org.hyperscala.css.{Style, StyleSheetAttribute, StyleSheet}
 import org.hyperscala.event.BrowserEvent
 import org.hyperscala.web.Webpage
@@ -58,7 +58,6 @@ class RealtimePage[S <: Session] private(val webpage: Webpage[S]) extends Loggin
   }
 
   private def childAdded(evt: ChildAddedEvent) = {
-    // TODO: provide exclusion to avoid synchronizing data coming from client back to server (one Connection - should send to all other connections)
     val parent = evt.parent.asInstanceOf[IdentifiableTag with Container[IdentifiableTag]]
     evt.child match {
       case child: SVGTag if !child.isInstanceOf[Svg] => {
@@ -70,10 +69,16 @@ class RealtimePage[S <: Session] private(val webpage: Webpage[S]) extends Loggin
       }
       case child: HTMLTag => {
         val index = parent.contents.indexOf(child)
-        val afterId = if (index == 0) null else parent.contents(index - 1).identity
-        val parentId = if (index == 0) parent.identity else null
+        val append = index == parent.contents.length - 1
+        val afterId = if (index == 0 || append) null else parent.contents(index - 1).identity
+        val parentId = parent.identity
         val html = child.outputString
-        send(InsertHTMLContent(html, afterId, parentId))
+        send(InsertHTMLContent(html, afterId, parentId, append))
+
+        if (webpage.rendered) {                             // Only do this if the page has already rendered
+          Markup.rendered(child)                            // Mark child tag as rendered
+          child.byTag[HTMLTag].foreach(Markup.rendered)     // Mark all tags children of child tag as rendered
+        }
       }
       case js: JavaScriptContent => throw new RuntimeException(s"JS not yet supported! ${js.content}")
     }
@@ -120,7 +125,7 @@ class RealtimePage[S <: Session] private(val webpage: Webpage[S]) extends Loggin
   private def tagPropertyChanged(t: IdentifiableTag, property: PropertyAttribute[_], oldValue: Any, newValue: Any) = {
     if (!t.rendered) {
       // Ignore property changes until the item has been rendered
-      debug(s"Ignoring tagPropertyChanged (not rendered): ${t.xmlLabel} - $oldValue changed to $newValue")
+      debug(s"Ignoring tagPropertyChanged (not rendered): ${t.xmlLabel}, attribute: ${property.name} - $oldValue changed to $newValue")
     } else if (property == t.id && oldValue == null) {
       // Ignore initial id change as it happens right before send
     } else {

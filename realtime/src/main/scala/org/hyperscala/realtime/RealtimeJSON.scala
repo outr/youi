@@ -30,7 +30,7 @@ object RealtimeJSON extends Logging {
           m ++ Map("parent" -> parent, "target" -> target, "tag" -> tag)
         }
         case holder => {
-          warn(s"Unable to handle $m, message not sent for webpage: $holder.")
+          warn(s"Unable to handle $m, message not connected to a webpage (Holder: $holder).")
           m
         }
       }

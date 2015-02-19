@@ -98,8 +98,8 @@ class ContentEditor private(val container: HTMLTag) extends Listenable {
     call(s"insert('${t.xmlLabel}', $entries)")
   }
 
-  def insertHTML(html: String) = {
-    throw new RuntimeException(s"Unable to insert: $html. Not supported!")
+  def insertHTML(t: HTMLTag) = {
+    call(s"insertHTML(${JavaScriptContent.toJS(t.outputString)})")
   }
 
   def wrap(t: HTMLTag) = {

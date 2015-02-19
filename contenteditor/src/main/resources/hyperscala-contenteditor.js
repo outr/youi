@@ -283,6 +283,14 @@ ContentEditorInstance.prototype.insert = function(tagName, details) {
     }
 };
 
+ContentEditorInstance.prototype.insertHTML = function(html) {
+    if (this.focused()) {
+        var formatter = contentEditor.createHtmlWrapper(html);
+        formatter.insert();
+        ContentEditor.check();
+    }
+};
+
 ContentEditorInstance.prototype.wrap = function(tagName, details) {
     if (this.focused()) {
         var formatter = this.formatters[tagName];

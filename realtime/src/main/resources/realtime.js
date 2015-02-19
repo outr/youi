@@ -28,14 +28,16 @@ var realtime = {
                     //r.log('Received JSON', obj);
                 }
             });
-            this.communicate.on('open', function (evt) {
-                realtime.fire('open', evt);
-                console.log('WebSocket Connection opened.');
+            this.communicate.on('init', function (evt) {
                 realtime.send({                         // Initialize the connection with Realtime
                     type: 'init',
                     pageId: settings.pageId,
                     url: document.location.href
                 });
+            });
+            this.communicate.on('open', function (evt) {
+                realtime.fire('open', evt);
+                console.log('WebSocket Connection opened.');
             });
             this.communicate.on('close', function (evt) {
                 realtime.fire('close', evt);
@@ -219,12 +221,10 @@ var realtime = {
         var value = null;
         if (tagName == 'input') {
             var type = element.type.toLowerCase();
-            if (type == 'text') {
-                value = element.value;
-            } else if (type == 'checkbox' || type == 'radio') {
+            if (type == 'checkbox' || type == 'radio') {
                 value = element.checked;
             } else {
-                realtime.error('Unsupported input type for change event: ' + type);
+                value = element.value;
             }
         } else if (tagName == 'textarea') {
             value = element.value;

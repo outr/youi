@@ -677,15 +677,19 @@ function createHtmlWrapper(tagName, properties, title) {
 }
 
 function HtmlWrapper(tagName, properties) {
-    this.tagName = tagName;
-    this.properties = properties || {};
+    if (typeof tagName === "object") {
+        this.predefined = tagName;
+    } else {
+        this.tagName = tagName;
+        this.properties = properties || {};
+    }
 }
 
 HtmlWrapper.prototype = {
     insert: function(properties, range) {
         var range = range || rangy.getSelection().getRangeAt(0),
             selection = rangy.getSelection().getRangeAt(0),
-            newElement = document.createElement(this.tagName),
+            newElement = this.predefined || document.createElement(this.tagName),
             newElements = [];
 
         if (properties) {
@@ -736,7 +740,7 @@ HtmlWrapper.prototype = {
     },
     wrap: function(properties, range) {
         var range = range || rangy.getSelection().getRangeAt(0),
-            newElement = document.createElement(this.tagName),
+            newElement = this.predefined || document.createElement(this.tagName),
             newElements = [];
 
         if (properties) {

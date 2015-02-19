@@ -74,6 +74,18 @@ class ContentEditorExample(site: Website[MapSession]) extends Example {
         }
       }
     }
+    contents += new Button(label = "Insert Custom HTML") {
+      mouseDownEvent.onRealtime {
+        case evt => {
+          editorPage.editor.insertHTML(new tag.P {
+            contents += "Buttons: "
+            contents += new tag.Button(content = "Button 1")
+            contents += new tag.Button(content = "Button 2")
+            contents += new tag.Button(content = "Button 3")
+          })
+        }
+      }
+    }
     contents += new Button(label = "Unindent") {
       mouseDownEvent.onRealtime {
         case evt => editorPage.editor.unIndent()
@@ -164,29 +176,17 @@ class EditablePageExample(example: ContentEditorExample, site: Website[MapSessio
     editor.bindInput(example.fontSize, Style.fontSize, parent, ContentEditor.PixelConversion)
   }
 
-  body.contents += new Button("Test Red") {
+  body.contents += new Button("Test") {
     id := "testButton1"
-  }
-
-  body.contents += new Button("Test Green") {
-    id := "testButton2"
   }
 
   head.contents += new tag.Script {
     contents += new JavaScriptString(
       """
         |window.onload = function() {
-        | var fmtColor = contentEditor.createClassWrapper("stylized-color");
         | document.getElementById('testButton1').onclick = function(evt) {
-        |  fmtColor.undo();
-        |  fmtColor.style = { color: '#ff0000' };
-        |  fmtColor.apply()
-        | };
-        |
-        | document.getElementById('testButton2').onclick = function(evt) {
-        |  fmtColor.undo();
-        |  fmtColor.style = { color: 'green' };
-        |  fmtColor.apply()
+        |  var fmtMyHtml = contentEditor.createHtmlWrapper('<p><button>Button 1</button><button>Button 2</button></p>');
+        |  fmtMyHtml.insert();
         | };
         |};
       """.stripMargin)

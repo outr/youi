@@ -104,7 +104,7 @@ object HyperScalaBuild extends Build {
     .settings(publishArtifact := false)
 
   // Examples and Site
-  lazy val hello = Project("hello", file("hello"), settings = createSettings("hyperscala-hello") ++ Revolver.settings)
+  lazy val hello = Project("hello", file("hello"), settings = createSettings("hyperscala-hello") ++ Revolver.settings ++ com.earldouglas.xwp.XwpPlugin.jetty())
     .dependsOn(web)
     .settings(libraryDependencies ++= Seq(outrNetServlet, outrNetJetty))
     .settings(mainClass := Some("org.hyperscala.hello.HelloSite"))
@@ -115,7 +115,7 @@ object HyperScalaBuild extends Build {
     .dependsOn(ui)
     .settings(libraryDependencies ++= Seq(outrNetServlet, outrNetJetty))
     .settings(mainClass := Some("org.hyperscala.numberguess.NumberGuessSite"))
-  lazy val site = Project("site", file("site"), settings = createSettings("hyperscala-site") ++ Revolver.settings)
+  lazy val site = Project("site", file("site"), settings = createSettings("hyperscala-site") ++ Revolver.settings ++ com.earldouglas.xwp.XwpPlugin.jetty())
     .settings(assemblyJarName in assembly := s"hyperscala-${version.value}.jar", assemblyMergeStrategy in assembly <<= (assemblyMergeStrategy in assembly) {
       case old => {
         case PathList("about.html") => MergeStrategy.first

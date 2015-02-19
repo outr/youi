@@ -46,22 +46,16 @@ object RealtimeJSON extends Logging {
    * Routes the connection to the webpage.
    */
   private[realtime] def connect(init: InitBrowserConnection) = {
-    Website.get(init.siteId) match {
-      case Some(site) => {
-        site.pages.byId[Webpage[Session]](init.pageId) match {
-          case Some(page) => {
-            page.hold(ConnectionHolder.connection)          // Webpage should hold the connection
-            RealtimePage(page).init()                       // Initialize the RealtimePage
-            debug(s"Connected to $page.")
-          }
-          case None => {
-            warn(s"Unable to find Webpage for id ${init.pageId} in RealtimeJSON.connect on site ${site.getClass.getSimpleName} for ${init.url}.")
-            ConnectionHolder.connection.sendJSON(ReloadPage(forcedReload = true))
-          }
-        }
+    val connection = ConnectionHolder.connection
+    val site = connection.application.asInstanceOf[Website[Session]]
+    site.pages.byId[Webpage[Session]](init.pageId) match {
+      case Some(page) => {
+        page.hold(connection)                           // Webpage should hold the connection
+        RealtimePage(page).init()                       // Initialize the RealtimePage
+        debug(s"Connected to $page.")
       }
       case None => {
-        warn(s"Unable to find Website for id ${init.siteId} in RealtimeJSON.connect for ${init.url}.")
+        warn(s"Unable to find Webpage for id ${init.pageId} in RealtimeJSON.connect on site ${site.getClass.getSimpleName} for ${init.url}.")
         ConnectionHolder.connection.sendJSON(ReloadPage(forcedReload = true))
       }
     }

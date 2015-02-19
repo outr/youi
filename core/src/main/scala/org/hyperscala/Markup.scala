@@ -209,10 +209,11 @@ trait Markup extends XMLContent with Listenable with Logging {
   protected def attributeFromXML(a: Attribute): Boolean
 
   protected def unsupportedAttribute(name: String, value: String) = {
+    val message = s"${getClass.getName}: Unsupported attribute: $name = $value"
     if (Markup.UnsupportedAttributeException) {
-      throw new RuntimeException("%s: Unsupported attribute: %s = %s".format(getClass.getName, name, value))
+      throw new RuntimeException(message)
     } else {
-      warn("%s: Unsupported attribute: %s = %s".format(getClass.getName, name, value))
+      warn(message)
     }
   }
 }

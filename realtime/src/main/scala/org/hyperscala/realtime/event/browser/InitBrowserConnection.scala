@@ -6,4 +6,4 @@ package org.hyperscala.realtime.event.browser
  *
  * @author Matt Hicks <matt@outr.com>
  */
-case class InitBrowserConnection(siteId: String, pageId: String, url: String)
+case class InitBrowserConnection(pageId: String, url: String)

@@ -33,7 +33,6 @@ var realtime = {
                 console.log('WebSocket Connection opened.');
                 realtime.send({                         // Initialize the connection with Realtime
                     type: 'init',
-                    siteId: settings.siteId,
                     pageId: settings.pageId,
                     url: document.location.href
                 });

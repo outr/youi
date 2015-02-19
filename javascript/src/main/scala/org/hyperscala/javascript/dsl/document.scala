@@ -7,9 +7,9 @@ import org.powerscala.enum.{Enumerated, EnumEntry}
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-object document extends Document()
+object document extends document(prefix = null)
 
-class Document(prefix: String = null) extends DelayedStatement[HTMLTag] with Selector {
+class document(prefix: String = null) extends DelayedStatement[HTMLTag] with Selector {
   def thisValue = if (prefix != null) {
     s"$prefix.document"
   } else {

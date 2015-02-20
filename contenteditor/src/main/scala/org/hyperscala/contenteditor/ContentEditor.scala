@@ -91,9 +91,9 @@ class ContentEditor private(val container: HTMLTag) extends Listenable {
   def toggle[T, S <: Style[T]](style: S, value: T) = call(s"toggle('${style.cssName}', '${style.value(value)}')")
   def set[T, S <: Style[T]](style: S, value: T) = call(s"set('${style.cssName}', '${style.value(value)}')")
 
-  def insert(t: HTMLTag) = {
-    call(s"insertHTML(${JavaScriptContent.toJS(t.outputString)})")
-  }
+  def insert(t: HTMLTag) = insertHTML(t.outputString)
+
+  def insertHTML(html: String) = call(s"insertHTML(${JavaScriptContent.toJS(html)})")
 
   def wrap(t: HTMLTag) = {
     val entries = t.attributes.collect {

@@ -2,10 +2,12 @@ package org.hyperscala.realtime
 
 import com.outr.net.communicate.ConnectionHolder
 import com.outr.net.http.session.Session
+import org.hyperscala.IdentifiableTag
 import org.hyperscala.html.HTMLTag
 import org.hyperscala.realtime.event.browser.{BrowserError, InitBrowserConnection}
 import org.hyperscala.realtime.event.server.ReloadPage
 import org.hyperscala.web.{Website, Webpage}
+import org.json4s.JsonAST.JString
 import org.powerscala.json.{MapSupport, TypedSupport}
 import org.powerscala.log.Logging
 
@@ -34,6 +36,13 @@ object RealtimeJSON extends Logging {
           m
         }
       }
+      case m => m
+    }
+    org.powerscala.json.o2j.partial(None) {
+      case t: IdentifiableTag => Option(JString(t.identity))
+    }
+    MapSupport.o2j.on {
+      case m if m.contains("tag") => m + ("id" -> m("tag")) - "tag"
       case m => m
     }
 

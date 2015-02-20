@@ -1,14 +1,12 @@
 package org.hyperscala.realtime
 
-import com.outr.net.communicate.{ErrorMessage, ConnectionHolder}
 import com.outr.net.http.session.Session
-import org.hyperscala.event.{BrowserEvent, JavaScriptEvent}
-import org.hyperscala.javascript.JavaScriptString
+import org.hyperscala.event.BrowserEvent
+import org.hyperscala.javascript.{JavaScriptContent, JavaScriptString}
 import org.hyperscala.jquery.stylesheet.jQueryStyleSheet
 import org.hyperscala.jquery.{jQuerySerializeForm, jQuery}
 import org.hyperscala.module.Module
-import org.hyperscala.realtime.event.browser.{BrowserError, InitBrowserConnection}
-import org.hyperscala.realtime.event.server.ReloadPage
+import org.hyperscala.realtime.event.browser.BrowserError
 import org.hyperscala.web.useragent.UserAgent
 import org.hyperscala.web.{Webpage, Website}
 import org.hyperscala.web.module.IdentifyTags
@@ -16,6 +14,7 @@ import org.powerscala.Version
 import org.hyperscala.html._
 import org.powerscala.log.Logging
 import org.powerscala.property.Property
+import org.powerscala.json._
 
 /**
  * Realtime is a module that connects real-time communication between client and server so changes to the server
@@ -70,6 +69,8 @@ object Realtime extends Module with Logging {
 
     RealtimePage(webpage)
   }
+
+  def send[Event <: BrowserEvent](event: Event): JavaScriptContent = JavaScriptString(s"realtime.send(${toJSON(event).compact.replaceAll("'", """\'""").replaceAll("\"", "'")});")
 }
 
 case class BrowserErrorEvent(webpage: Webpage[Session], error: BrowserError) {

@@ -285,7 +285,9 @@ ContentEditorInstance.prototype.insert = function(tagName, details) {
 
 ContentEditorInstance.prototype.insertHTML = function(html) {
     if (this.focused()) {
-        var formatter = contentEditor.createHtmlWrapper(html);
+        var template = document.createElement('template');
+        template.innerHTML = html;
+        var formatter = contentEditor.createHtmlWrapper(template.content);
         formatter.insert();
         ContentEditor.check();
     }

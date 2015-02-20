@@ -658,7 +658,7 @@ function createClassWrapper(className, options) {
 
 /**
  * Creates HrmlWrapper object with specified options
- * @param   {String}        tagName    Tag name that HtmlWrapper will use in  insert, wrap and edit methods when creating and editing HtmlElements.
+ * @param   {String/Object}        tagName    Tag name that HtmlWrapper will use in  insert, wrap and edit methods when creating and editing HtmlElements. Alternatively you can supply DOM fragment that be used instead creating new one.
  * @param   {Object/String} properties Either options object for ClassWrapper or src/href string (if tagName is "a" or "img").
  * @param   {String}        title      Title string (if tagName is either "a" or "img").
  * @returns {Object}        HtmlWrapper object with adjustable properties and insert/wrap/edit/clear methods.

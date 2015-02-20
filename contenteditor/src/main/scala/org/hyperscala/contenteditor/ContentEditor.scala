@@ -92,13 +92,6 @@ class ContentEditor private(val container: HTMLTag) extends Listenable {
   def set[T, S <: Style[T]](style: S, value: T) = call(s"set('${style.cssName}', '${style.value(value)}')")
 
   def insert(t: HTMLTag) = {
-    val entries = t.attributes.collect {
-      case (name, attribute) if name != "id" || attribute.attributeValue.nonEmpty => s"$name: '${attribute.attributeValue}'"
-    }.mkString("{", ", ", "}")
-    call(s"insert('${t.xmlLabel}', $entries)")
-  }
-
-  def insertHTML(t: HTMLTag) = {
     call(s"insertHTML(${JavaScriptContent.toJS(t.outputString)})")
   }
 

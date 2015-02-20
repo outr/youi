@@ -74,10 +74,10 @@ class ContentEditorExample(site: Website[MapSession]) extends Example {
         }
       }
     }
-    contents += new Button(label = "Insert Custom HTML") {
+    contents += new Button(label = "Insert a Custom HTML Block") {
       mouseDownEvent.onRealtime {
         case evt => {
-          editorPage.editor.insertHTML(new tag.P {
+          editorPage.editor.insert(new tag.P {
             contents += "Buttons: "
             contents += new tag.Button(content = "Button 1")
             contents += new tag.Button(content = "Button 2")
@@ -174,22 +174,6 @@ class EditablePageExample(example: ContentEditorExample, site: Website[MapSessio
     editor.bindInput(example.fontFamily, Style.fontFamily, parent)
     editor.bindFontStyle(example.fontStyle, parent)
     editor.bindInput(example.fontSize, Style.fontSize, parent, ContentEditor.PixelConversion)
-  }
-
-  body.contents += new Button("Test") {
-    id := "testButton1"
-  }
-
-  head.contents += new tag.Script {
-    contents += new JavaScriptString(
-      """
-        |window.onload = function() {
-        | document.getElementById('testButton1').onclick = function(evt) {
-        |  var fmtMyHtml = contentEditor.createHtmlWrapper('<p><button>Button 1</button><button>Button 2</button></p>');
-        |  fmtMyHtml.insert();
-        | };
-        |};
-      """.stripMargin)
   }
 
   def message(title: String, message: String) = if (example != null) {

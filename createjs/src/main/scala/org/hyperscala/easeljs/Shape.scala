@@ -1,6 +1,7 @@
 package org.hyperscala.easeljs
 
 import org.hyperscala.javascript.{JavaScriptContent, JavaScriptString}
+import org.powerscala.enum.{Enumerated, EnumEntry}
 import org.powerscala.event.Listenable
 import org.powerscala.property.Property
 import org.powerscala.{Color, Unique}
@@ -11,22 +12,23 @@ import org.powerscala.{Color, Unique}
 class Shape private[easeljs](val stage: Stage) extends Listenable {
   val id = Unique()
 
-  lazy val alpha = new ShapeProperty[Double]("alpha", 1.0, this)
-  lazy val cursor = new ShapeProperty[String]("cursor", null, this)
-  lazy val mouseEnabled = new ShapeProperty[Boolean]("mouseEnabled", true, this)
-  lazy val name = new ShapeProperty[String]("name", null, this)
-  lazy val regX = new ShapeProperty[Double]("regX", 0.0, this)
-  lazy val regY = new ShapeProperty[Double]("regY", 0.0, this)
-  lazy val rotation = new ShapeProperty[Double]("rotation", 0.0, this)
-  lazy val scaleX = new ShapeProperty[Double]("scaleX", 1.0, this)
-  lazy val scaleY = new ShapeProperty[Double]("scaleY", 1.0, this)
-  lazy val skewX = new ShapeProperty[Double]("skewX", 1.0, this)
-  lazy val skewY = new ShapeProperty[Double]("skewY", 1.0, this)
-  lazy val snapToPixel = new ShapeProperty[Boolean]("snapToPixel", true, this)
-  lazy val tickEnabled = new ShapeProperty[Boolean]("tickEnabled", true, this)
-  lazy val visible = new ShapeProperty[Boolean]("visible", true, this)
-  lazy val x = new ShapeProperty[Double]("x", 0.0, this)
-  lazy val y = new ShapeProperty[Double]("y", 0.0, this)
+  import ShapeProperty._
+  lazy val alpha = new ShapeAttribute(Alpha, this)
+  lazy val cursor = new ShapeAttribute(Cursor, this)
+  lazy val mouseEnabled = new ShapeAttribute(MouseEnabled, this)
+  lazy val name = new ShapeAttribute(Name, this)
+  lazy val regX = new ShapeAttribute(RegX, this)
+  lazy val regY = new ShapeAttribute(RegY, this)
+  lazy val rotation = new ShapeAttribute(Rotation, this)
+  lazy val scaleX = new ShapeAttribute(ScaleX, this)
+  lazy val scaleY = new ShapeAttribute(ScaleY, this)
+  lazy val skewX = new ShapeAttribute(SkewX, this)
+  lazy val skewY = new ShapeAttribute(SkewY, this)
+  lazy val snapToPixel = new ShapeAttribute(SnapToPixel, this)
+  lazy val tickEnabled = new ShapeAttribute(TickEnabled, this)
+  lazy val visible = new ShapeAttribute(Visible, this)
+  lazy val x = new ShapeAttribute(X, this)
+  lazy val y = new ShapeAttribute(Y, this)
 
   lazy val graphics = new ShapeGraphics(this)
 
@@ -160,8 +162,35 @@ class ShapeGraphics private[easeljs](shape: Shape) {
   }
 }
 
-class ShapeProperty[T](name: String, default: T, shape: Shape, val stringify: T => String = (t: T) => JavaScriptContent.toJS(t))(implicit manifest: Manifest[T]) extends Property[T](default = Option(default))(shape, manifest) {
+class ShapeAttribute[T](val property: ShapeProperty[T], shape: Shape, val stringify: T => String = (t: T) => JavaScriptContent.toJS(t)) extends Property[T](default = Option(property.default))(shape, property.manifest) {
   change.on {
-    case evt => shape.call(s"$name = ${stringify(evt.newValue)}")
+    case evt => shape.call(s"${property.attributeName} = ${stringify(evt.newValue)}")
   }
 }
+
+class ShapeProperty[T] private(val default: T)(implicit val manifest: Manifest[T]) extends EnumEntry {
+  def attributeName = name.charAt(0).toLower + name.substring(1)
+
+  def value(t: T) = ShapePropertyValue(this, t)
+}
+
+object ShapeProperty extends Enumerated[ShapeProperty[_]] {
+  val Alpha = new ShapeProperty[Double](1.0)
+  val Cursor = new ShapeProperty[String](null)
+  val MouseEnabled = new ShapeProperty[Boolean](true)
+  val Name = new ShapeProperty[String](null)
+  val RegX = new ShapeProperty[Double](0.0)
+  val RegY = new ShapeProperty[Double](0.0)
+  val Rotation = new ShapeProperty[Double](0.0)
+  val ScaleX = new ShapeProperty[Double](1.0)
+  val ScaleY = new ShapeProperty[Double](1.0)
+  val SkewX = new ShapeProperty[Double](1.0)
+  val SkewY = new ShapeProperty[Double](1.0)
+  val SnapToPixel = new ShapeProperty[Boolean](true)
+  val TickEnabled = new ShapeProperty[Boolean](true)
+  val Visible = new ShapeProperty[Boolean](true)
+  val X = new ShapeProperty[Double](0.0)
+  val Y = new ShapeProperty[Double](0.0)
+}
+
+case class ShapePropertyValue[T](property: ShapeProperty[T], value: T)

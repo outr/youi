@@ -128,9 +128,11 @@ class RealtimePage[S <: Session] private(val webpage: Webpage[S]) extends Loggin
       debug(s"Ignoring tagPropertyChanged (not rendered): ${t.xmlLabel}, attribute: ${property.name} - $oldValue changed to $newValue")
     } else if (property == t.id && oldValue == null) {
       // Ignore initial id change as it happens right before send
+    } else if (oldValue == null && newValue == Nil) {
+      // Ignore initialization of List property
     } else {
       val excludeCurrentConnection = FormField.changingProperty == property && FormField.changingValue == newValue
-      debug(s"tagPropertyChanged: ${t.xmlLabel} - $oldValue changed to $newValue, Exclude current connection? $excludeCurrentConnection, Initted: ${t.rendered}")
+      debug(s"tagPropertyChanged: ${t.xmlLabel}.${property.name} - $oldValue changed to $newValue, Exclude current connection? $excludeCurrentConnection, Initted: ${t.rendered}")
       webpage.intercept.renderAttribute.fire(property) match {
         case Some(attribute) => {
           if ((t.isInstanceOf[tag.Text] || t.isInstanceOf[tag.Title]) && property.name == "content") {

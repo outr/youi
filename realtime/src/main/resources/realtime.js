@@ -138,7 +138,7 @@ var realtime = {
     },
     error: function(message, obj, err) {
         console.log('Realtime (' + new Date() + '): ' + message + (obj != null ? ' - ' + JSON.stringify(obj) : ''));
-        if (err != null) console.log(err.stack);
+        if (err != null) console.log('Stack Trace: ' + err.stack);
         this.send({
             type: 'browserError',
             timestamp: Date.now(),

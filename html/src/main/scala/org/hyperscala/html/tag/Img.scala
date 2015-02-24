@@ -32,11 +32,11 @@ class Img extends Container[BodyChild] with BodyChild with HTMLTag {
            tabIndex: java.lang.Integer = null,
            titleText: String = null,
            alt: String = null,
-           height: String = null,
+           height: Length = null,
            isMap: String = null,
            src: String = null,
            useMap: String = null,
-           width: String = null,
+           width: Length = null,
            content: BodyChild = null) = {
     this()
     init(name, accessKey, clazz, contentEditable, contextMenu, dir, draggable, dropZone, hidden, id, lang, role, spellCheck, style, tabIndex, titleText)
@@ -50,11 +50,11 @@ class Img extends Container[BodyChild] with BodyChild with HTMLTag {
   }
 
   lazy val alt = PropertyAttribute[String]("alt", null)
-  lazy val height = PropertyAttribute[String]("height", null)
+  lazy val height = PropertyAttribute[Length]("height", null)
   lazy val isMap = PropertyAttribute[String]("ismap", null)
   lazy val src = PropertyAttribute[String]("src", null)
   lazy val useMap = PropertyAttribute[String]("usemap", null)
-  lazy val width = PropertyAttribute[String]("width", null)
+  lazy val width = PropertyAttribute[Length]("width", null)
 
   override protected def attributeFromXML(a: Attribute) = {
     if (a.getName == "align") {

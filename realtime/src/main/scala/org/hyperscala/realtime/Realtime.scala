@@ -70,7 +70,7 @@ object Realtime extends Module with Logging {
     RealtimePage(webpage)
   }
 
-  def send[Event <: BrowserEvent](event: Event): JavaScriptContent = JavaScriptString(s"realtime.send(${toJSON(event).compact.replaceAll("'", """\'""").replaceAll("\"", "'")});")
+  def send[Event <: AnyRef](event: Event): JavaScriptContent = JavaScriptString(s"realtime.send(${toJSON(event).compact.replaceAll("'", """\'""").replaceAll("\"", "'")});")
 }
 
 case class BrowserErrorEvent(webpage: Webpage[Session], error: BrowserError) {

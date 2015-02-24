@@ -106,7 +106,7 @@ var realtime = {
                 for (var i = 0; i < this.listeners[type].length; i++) {
                     this.listeners[type][i](obj);
                 }
-            } else if ('open, close, *'.indexOf(type) == -1) {
+            } else if ('open, close, error, *'.indexOf(type) == -1) {
                 realtime.error('Nothing listening for events of type [' + type + '].', obj);
             }
         } catch(err) {
@@ -145,7 +145,8 @@ var realtime = {
             message: message,
             obj: JSON.stringify(obj),
             errorMessage: err != null ? err.message : null,
-            stackTrace: err != null ? err.stack : null
+            stackTrace: err != null ? err.stack : null,
+            url: document.location.href
         });
     },
     event: function(evt, confirmMessage, preventDefault, fireChange, delay, maximumRate) {

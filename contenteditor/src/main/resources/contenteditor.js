@@ -202,6 +202,7 @@ global.contentEditor = {
 
         scope = scope || document.body;
 
+        selectionInfo.startNode = startNode;
         selectionInfo.className = startNode.className;
         selectionInfo.tagName = startNode.tagName;
         selectionInfo.computedStyle = window.getComputedStyle(startNode);

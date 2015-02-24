@@ -30,10 +30,14 @@ object WindowSized extends Module {
   def resized[S <: Session](webpage: Webpage[S], script: JavaScriptContent) = {
     webpage.require(this)
     webpage.eval(
-      s"""
-        |$$(window).bind('windowSized', function(event, windowWidth, windowHeight) {
+      s"""(function() {
+        | var f = function(event, windowWidth, windowHeight) {
         |   ${script.content}
-        |});
+        | };
+        | var $$window = $$(window);
+        | f('windowSized', $$window.width(), $$window.height());
+        | $$window.bind('windowSized', f);
+        |})();
       """.stripMargin)
   }
 

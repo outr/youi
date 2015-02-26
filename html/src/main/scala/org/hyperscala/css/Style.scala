@@ -1,6 +1,7 @@
 package org.hyperscala.css
 
 import attributes._
+import org.hyperscala.html.attributes.Direction
 import org.powerscala.Color
 import org.powerscala.enum.{EnumEntry, Enumerated}
 import org.hyperscala.persistence._
@@ -107,7 +108,7 @@ object Style extends Enumerated[Style[_]] {
   val counterReset = new Style[String]("counter-reset")
   val crop = new Style[String]("crop")
   val cursor = new Style[String]("cursor")
-  val direction = new Style[String]("direction")
+  val direction = new Style[Direction]("direction")
   val display = new Style[Display]("display")
   val dominantBaseline = new Style[String]("dominant-baseline")
   val dropInitialAfterAdjust = new Style[String]("drop-initial-after-adjust")

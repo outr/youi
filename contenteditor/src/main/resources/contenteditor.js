@@ -190,7 +190,7 @@ global.contentEditor = {
             startContainer = startContainer.nextSibling;
         }
 
-        if (startContainer.nodeType === 1) {
+        if (startContainer.nodeType === 1 && !range.collapsed) {
             startNode = startContainer;
 
             while (startNode.firstElementChild) {

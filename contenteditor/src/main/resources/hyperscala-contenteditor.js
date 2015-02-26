@@ -230,11 +230,13 @@ ContentEditorInstance.prototype.focused = function() {
     return this.element == document.activeElement;
 };
 
-ContentEditorInstance.prototype.stylize = function(key, value) {
+ContentEditorInstance.prototype.stylize = function(key, value, tagName) {
     if (this.focused()) {
         var formatter = this.formatters[key];
         if (formatter == null) {
-            formatter = contentEditor.createClassWrapper('stylized-' + key);
+            formatter = contentEditor.createClassWrapper('stylized-' + key, {
+                tagName: tagName
+            });
             this.formatters[key] = formatter;
         }
         formatter.undo();
@@ -256,19 +258,19 @@ ContentEditorInstance.prototype.hasStyle = function(key, value) {
     return this.style(key) == value;
 };
 
-ContentEditorInstance.prototype.toggle = function(key, value, reverse) {
+ContentEditorInstance.prototype.toggle = function(key, value, reverse, tagName) {
     if (reverse == null) {
         reverse = '';
     }
     if (this.hasStyle(key, value)) {
-        this.stylize(key, reverse);
+        this.stylize(key, reverse, tagName);
     } else {
-        this.stylize(key, value);
+        this.stylize(key, value, tagName);
     }
 };
 
-ContentEditorInstance.prototype.set = function(key, value) {
-    this.stylize(key, value);
+ContentEditorInstance.prototype.set = function(key, value, tagName) {
+    this.stylize(key, value, tagName);
 };
 
 ContentEditorInstance.prototype.insert = function(tagName, details) {

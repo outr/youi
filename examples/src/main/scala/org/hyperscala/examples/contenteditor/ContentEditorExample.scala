@@ -25,8 +25,8 @@ class ContentEditorExample(site: Website[MapSession]) extends Example {
   require(Bootstrap)
   require(Gritter)
 
-  val boldButton = styleToggleButton("Bold", Style.fontWeight, FontWeight.Bold)
-  val italicButton = styleToggleButton("Italic", Style.fontStyle, FontStyle.Italic)
+  val boldButton = styleToggleButton("Bold", Style.fontWeight, FontWeight.Bold, FontWeight.Inherit)
+  val italicButton = styleToggleButton("Italic", Style.fontStyle, FontStyle.Italic, FontStyle.Inherit)
   val redButton = styleSetButton("Red", Style.color, Color.Red)
   val greenButton = styleSetButton("Green", Style.color, Color.Green)
   val blueButton = styleSetButton("Blue", Style.color, Color.Blue)
@@ -45,10 +45,10 @@ class ContentEditorExample(site: Website[MapSession]) extends Example {
   frame.currentPage := editorPage
   contents += frame
 
-  def styleToggleButton[T, S <: Style[T]](label: String, style: S, value: T) = {
+  def styleToggleButton[T, S <: Style[T]](label: String, style: S, value: T, reverse: T) = {
     val b = new Button(label = label)
     b.clickEvent.onRealtime {
-      case evt => editorPage.editor.toggle(style, value)
+      case evt => editorPage.editor.toggle(style, value, reverse)
     }
     b
   }

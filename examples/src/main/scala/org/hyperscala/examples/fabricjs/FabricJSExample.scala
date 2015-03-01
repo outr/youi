@@ -11,7 +11,8 @@ import org.powerscala.Color
 class FabricJSExample extends Example {
   require(FabricJS)
 
-  val t = new tag.Canvas(id = "myCanvas")
+  val t = new tag.Canvas(id = "myCanvas", width = 200, height = 200)
+  t.style.border := "1px solid black"
   contents += t
 
   val canvas = new Canvas(t)

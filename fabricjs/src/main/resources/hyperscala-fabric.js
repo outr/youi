@@ -1,0 +1,4 @@
+var FabricJS = {
+    canvas: {},
+    object: {}
+};

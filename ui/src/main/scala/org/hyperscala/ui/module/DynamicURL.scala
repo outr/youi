@@ -111,7 +111,7 @@ case class DynamicURLInstance[S <: Session](webpage: Webpage[S]) extends Listena
         }
         changing.set(true)
         try {
-          if (map() == hashMap) {     // Make sure a change even is always fired
+          if (map() == hashMap) {     // Make sure a change event is always fired
             map.change.fire(PropertyChangeEvent(map, map(), hashMap))
           } else {                    // New value is not equal
             map := hashMap

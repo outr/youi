@@ -25,8 +25,8 @@ class ContentEditorExample(site: Website[MapSession]) extends Example {
   require(Bootstrap)
   require(Gritter)
 
-  val boldButton = styleToggleButton("Bold", Style.fontWeight, FontWeight.Bold)
-  val italicButton = styleToggleButton("Italic", Style.fontStyle, FontStyle.Italic)
+  val boldButton = styleToggleButton("Bold", Style.fontWeight, FontWeight.Bold, FontWeight.Inherit)
+  val italicButton = styleToggleButton("Italic", Style.fontStyle, FontStyle.Italic, FontStyle.Inherit)
   val redButton = styleSetButton("Red", Style.color, Color.Red)
   val greenButton = styleSetButton("Green", Style.color, Color.Green)
   val blueButton = styleSetButton("Blue", Style.color, Color.Blue)
@@ -45,10 +45,10 @@ class ContentEditorExample(site: Website[MapSession]) extends Example {
   frame.currentPage := editorPage
   contents += frame
 
-  def styleToggleButton[T, S <: Style[T]](label: String, style: S, value: T) = {
+  def styleToggleButton[T, S <: Style[T]](label: String, style: S, value: T, reverse: T) = {
     val b = new Button(label = label)
     b.clickEvent.onRealtime {
-      case evt => editorPage.editor.toggle(style, value)
+      case evt => editorPage.editor.toggle(style, value, reverse)
     }
     b
   }
@@ -71,6 +71,18 @@ class ContentEditorExample(site: Website[MapSession]) extends Example {
       mouseDownEvent.onRealtime {
         case evt => {
           editorPage.editor.insert(new tag.Img(src = "http://www.freesmileys.org/emoticons/emoticon-animal-038.gif"))
+        }
+      }
+    }
+    contents += new Button(label = "Insert a Custom HTML Block") {
+      mouseDownEvent.onRealtime {
+        case evt => {
+          editorPage.editor.insert(new tag.P {
+            contents += "Buttons: "
+            contents += new tag.Button(content = "Button 1")
+            contents += new tag.Button(content = "Button 2")
+            contents += new tag.Button(content = "Button 3")
+          })
         }
       }
     }
@@ -162,34 +174,6 @@ class EditablePageExample(example: ContentEditorExample, site: Website[MapSessio
     editor.bindInput(example.fontFamily, Style.fontFamily, parent)
     editor.bindFontStyle(example.fontStyle, parent)
     editor.bindInput(example.fontSize, Style.fontSize, parent, ContentEditor.PixelConversion)
-  }
-
-  body.contents += new Button("Test Red") {
-    id := "testButton1"
-  }
-
-  body.contents += new Button("Test Green") {
-    id := "testButton2"
-  }
-
-  head.contents += new tag.Script {
-    contents += new JavaScriptString(
-      """
-        |window.onload = function() {
-        | var fmtColor = contentEditor.createClassWrapper("stylized-color");
-        | document.getElementById('testButton1').onclick = function(evt) {
-        |  fmtColor.undo();
-        |  fmtColor.style = { color: '#ff0000' };
-        |  fmtColor.apply()
-        | };
-        |
-        | document.getElementById('testButton2').onclick = function(evt) {
-        |  fmtColor.undo();
-        |  fmtColor.style = { color: 'green' };
-        |  fmtColor.apply()
-        | };
-        |};
-      """.stripMargin)
   }
 
   def message(title: String, message: String) = if (example != null) {

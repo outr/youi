@@ -190,7 +190,7 @@ global.contentEditor = {
             startContainer = startContainer.nextSibling;
         }
 
-        if (startContainer.nodeType === 1) {
+        if (startContainer.nodeType === 1 && !range.collapsed) {
             startNode = startContainer;
 
             while (startNode.firstElementChild) {
@@ -202,6 +202,7 @@ global.contentEditor = {
 
         scope = scope || document.body;
 
+        selectionInfo.startNode = startNode;
         selectionInfo.className = startNode.className;
         selectionInfo.tagName = startNode.tagName;
         selectionInfo.computedStyle = window.getComputedStyle(startNode);
@@ -658,7 +659,7 @@ function createClassWrapper(className, options) {
 
 /**
  * Creates HrmlWrapper object with specified options
- * @param   {String}        tagName    Tag name that HtmlWrapper will use in  insert, wrap and edit methods when creating and editing HtmlElements.
+ * @param   {String/Object}        tagName    Tag name that HtmlWrapper will use in  insert, wrap and edit methods when creating and editing HtmlElements. Alternatively you can supply DOM fragment that be used instead creating new one.
  * @param   {Object/String} properties Either options object for ClassWrapper or src/href string (if tagName is "a" or "img").
  * @param   {String}        title      Title string (if tagName is either "a" or "img").
  * @returns {Object}        HtmlWrapper object with adjustable properties and insert/wrap/edit/clear methods.
@@ -677,15 +678,19 @@ function createHtmlWrapper(tagName, properties, title) {
 }
 
 function HtmlWrapper(tagName, properties) {
-    this.tagName = tagName;
-    this.properties = properties || {};
+    if (typeof tagName === "object") {
+        this.predefined = tagName;
+    } else {
+        this.tagName = tagName;
+        this.properties = properties || {};
+    }
 }
 
 HtmlWrapper.prototype = {
     insert: function(properties, range) {
         var range = range || rangy.getSelection().getRangeAt(0),
             selection = rangy.getSelection().getRangeAt(0),
-            newElement = document.createElement(this.tagName),
+            newElement = this.predefined || document.createElement(this.tagName),
             newElements = [];
 
         if (properties) {
@@ -736,7 +741,7 @@ HtmlWrapper.prototype = {
     },
     wrap: function(properties, range) {
         var range = range || rangy.getSelection().getRangeAt(0),
-            newElement = document.createElement(this.tagName),
+            newElement = this.predefined || document.createElement(this.tagName),
             newElements = [];
 
         if (properties) {

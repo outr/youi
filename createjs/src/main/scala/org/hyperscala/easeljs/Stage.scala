@@ -10,11 +10,13 @@ import org.powerscala.Storage
  * Matt Hicks <matt@outr.com>
  */
 class Stage private(val canvas: tag.Canvas) {
+  def id = canvas.identity
+
   def createShape() = new Shape(this)
 
   def update() = send(JavaScriptString(s"EaselJS.stage('${canvas.identity}').update();"))
 
-  private[easeljs] def send(js: JavaScriptContent) = canvas.connected[Webpage[Session]] {
+  def send(js: JavaScriptContent) = canvas.connected[Webpage[Session]] {
     case webpage => webpage.eval(js)
   }
 }

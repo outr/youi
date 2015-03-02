@@ -1,5 +1,6 @@
 package org.hyperscala.examples.ui
 
+import com.outr.net.communicate.ConnectionHolder
 import org.hyperscala.html._
 import org.hyperscala.examples.Example
 import org.hyperscala.ui.module.DynamicURL
@@ -15,12 +16,16 @@ import com.outr.net.http.session.Session
  * @author Matt Hicks <matt@outr.com>
  */
 class DynamicURLExample extends Example {
+  ConnectionHolder.jsonEvent.on {
+    case evt => println(s"ConnectionHolder received: $evt")
+  }
+
   this.require(DynamicURL)
   this.require(Gritter)
 
-  implicit def i2s(i: Int) = i.toString
-  implicit def s2i(s: String) = try {
-    s.toInt
+  implicit def i2s(i: Int): String = i.toString
+  implicit def s2i(s: String): Int = try {
+    Integer.parseInt(s)
   } catch {
     case t: Throwable => 0
   }
@@ -31,13 +36,18 @@ class DynamicURLExample extends Example {
 
   connected[Webpage[Session]] {
     case webpage => {
-      val test = DynamicURL(webpage).property("test", "")
-      val num = DynamicURL(webpage).property("num", 2)
+      val durl = DynamicURL(webpage)
+      val test = durl.property("test", "")
+      val num = durl.property("num", 2)
       test.change.on {
-        case evt => writeValues()
+        case evt => {
+          writeMessage(s"Test changed from ${evt.oldValue} to ${evt.newValue}")
+        }
       }
       num.change.on {
-        case evt => writeValues()
+        case evt => {
+          writeMessage(s"Num changed from ${evt.oldValue} to ${evt.newValue}")
+        }
       }
 
       contents += new tag.Button(content = "Set Hash") {
@@ -51,7 +61,7 @@ class DynamicURLExample extends Example {
         }
       }
 
-      def writeValues() = Gritter.add(webpage, "Hash Changed", "Test: %s, Num: %s".format(test(), num()))
+      def writeMessage(message: String) = Gritter.add(webpage, "Hash Changed", message)
     }
   }
 

@@ -88,19 +88,12 @@ class ContentEditor private(val container: HTMLTag) extends Listenable {
     }
   }
 
-  def toggle[T, S <: Style[T]](style: S, value: T) = call(s"toggle('${style.cssName}', '${style.value(value)}')")
-  def set[T, S <: Style[T]](style: S, value: T) = call(s"set('${style.cssName}', '${style.value(value)}')")
+  def toggle[T, S <: Style[T]](style: S, value: T, reverse: T, tagName: String = "span") = call(s"toggle('${style.cssName}', '${style.value(value)}', '${style.value(reverse)}', '$tagName')")
+  def set[T, S <: Style[T]](style: S, value: T, tagName: String = "span") = call(s"set('${style.cssName}', '${style.value(value)}', '$tagName')")
 
-  def insert(t: HTMLTag) = {
-    val entries = t.attributes.collect {
-      case (name, attribute) if name != "id" || attribute.attributeValue.nonEmpty => s"$name: '${attribute.attributeValue}'"
-    }.mkString("{", ", ", "}")
-    call(s"insert('${t.xmlLabel}', $entries)")
-  }
+  def insert(t: HTMLTag) = insertHTML(t.outputString.trim)
 
-  def insertHTML(html: String) = {
-    throw new RuntimeException(s"Unable to insert: $html. Not supported!")
-  }
+  def insertHTML(html: String) = call(s"insertHTML(${JavaScriptContent.toJS(html)})")
 
   def wrap(t: HTMLTag) = {
     val entries = t.attributes.collect {
@@ -134,8 +127,8 @@ class ContentEditor private(val container: HTMLTag) extends Listenable {
     send(s"ContentEditor.bindFontStyle('${t.identity}', ${document.content});")
   }
 
-  def bindToggle[T, S <: Style[T]](t: HTMLTag, style: S, value: T) = t.clickEvent.onRealtime {
-    case evt => toggle(style, value)
+  def bindToggle[T, S <: Style[T]](t: HTMLTag, style: S, value: T, reverse: T, tagName: String = "span") = t.clickEvent.onRealtime {
+    case evt => toggle(style, value, reverse, tagName)
   }
 
   def exec(command: Command) = {

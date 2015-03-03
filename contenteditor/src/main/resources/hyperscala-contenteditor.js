@@ -307,6 +307,16 @@ ContentEditorInstance.prototype.wrap = function(tagName, details) {
     }
 };
 
+ContentEditorInstance.prototype.wrapHTML = function(html) {
+    if (this.focused()) {
+        var template = document.createElement('template');
+        template.innerHTML = html;
+        var formatter = contentEditor.createHtmlWrapper(template.content);
+        formatter.wrap();
+        ContentEditor.check();
+    }
+};
+
 ContentEditorInstance.prototype.clearFormatting = function() {
     if (this.focused()) {
         contentEditor.clearFormating();

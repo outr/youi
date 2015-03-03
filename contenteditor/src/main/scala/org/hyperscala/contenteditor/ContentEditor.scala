@@ -102,6 +102,8 @@ class ContentEditor private(val container: HTMLTag) extends Listenable {
     call(s"wrap('${t.xmlLabel}', $entries)")
   }
 
+  def wrapHTML(t: HTMLTag) = call(s"wrapHTML(${JavaScriptContent.toJS(t.outputString)})")
+
   def indent() = exec(Command.indent)
   def unIndent() = exec(Command.outdent)
 

@@ -71,12 +71,13 @@ global.contentEditor = {
 
     /**
      * Creates rangy range object for node provided or entire document if node is not provided
-     * @param   {Node}   node Node on for which to create a range.
+     * @param   {Node/String}   node Node or Css selector representing node for which range will be created.
      * @returns {Object} Range object representing provided node (or document.body if none is provided) contents.
      */
     getRange: function(node) {
         var range = rangy.createRange();
 
+        if (typeof node === "string") node = document.querySelector(node);
         range.selectNodeContents(node || document.body);
         return range;
     },
@@ -568,8 +569,10 @@ function createClassWrapper(className, options) {
                 }
             }
         } else {
-            range = rangy.getSelection().getRangeAt(0);
-            if (!_scope || checkScope(_scope, range)) {
+            var selection = rangy.getSelection();
+
+            if ((!_scope || checkScope(_scope, range)) && selection.rangeCount) {
+                range = selection.getRangeAt(0);
                 this.tagName.toLowerCase() === "a" ? document.execCommand("unlink") : classWrapper.rangy.undoToSelection();
                 dispatchStyleChange(range, this);
             }
@@ -690,8 +693,14 @@ HtmlWrapper.prototype = {
     insert: function(properties, range) {
         var range = range || rangy.getSelection().getRangeAt(0),
             selection = rangy.getSelection().getRangeAt(0),
-            newElement = this.predefined || document.createElement(this.tagName),
-            newElements = [];
+            newElements = [],
+            newElement;
+
+        if (this.predefined) {
+            newElement = this.predefined.cloneNode();
+        } else {
+            newElement = document.createElement(this.tagName);
+        }
 
         if (properties) {
             if (typeof properties === "string") {
@@ -741,8 +750,15 @@ HtmlWrapper.prototype = {
     },
     wrap: function(properties, range) {
         var range = range || rangy.getSelection().getRangeAt(0),
-            newElement = this.predefined || document.createElement(this.tagName),
-            newElements = [];
+            newElements = [],
+            newElement;
+
+        if (this.predefined) {
+            if (this.predefined.nodeType === 11) return false;
+            newElement = this.predefined.cloneNode();
+        } else {
+            newElement = document.createElement(this.tagName);
+        }
 
         if (properties) {
             if (typeof properties === "string") {
@@ -772,23 +788,23 @@ HtmlWrapper.prototype = {
             }
         }
 
-            if (Array.isArray(range)) {
-                range.forEach(function(rn) {
-                    var clonedElement = newElement.cloneNode()
+        if (Array.isArray(range)) {
+            range.forEach(function(rn) {
+                var clonedElement = newElement.cloneNode()
 
-                    rn.surroundContents(clonedElement);
-                    newElements.push(clonedElement);
-                });
-                return newElements;
-            } else {
-                if (this.tagName.toLowerCase() === "a") {
-                    document.execCommand("unlink");
-                    range = rangy.getSelection().getRangeAt(0);
-                }
-                range.surroundContents(newElement);
-                rangy.getSelection().setSingleRange(range);
-                return newElement;
+                rn.surroundContents(clonedElement);
+                newElements.push(clonedElement);
+            });
+            return newElements;
+        } else {
+            if (!this.predefined && this.tagName.toLowerCase() === "a") {
+                document.execCommand("unlink");
+                range = rangy.getSelection().getRangeAt(0);
             }
+            range.surroundContents(newElement);
+            rangy.getSelection().setSingleRange(range);
+            return newElement;
+        }
     },
     edit: function(properties, range) {
         var range = range || rangy.getSelection().getRangeAt(0),

@@ -108,7 +108,7 @@ class ContentEditorExample(site: Website[MapSession]) extends Example {
     }
     contents += new Button(label = "Ordered List") {
       mouseDownEvent.onRealtime {
-        case evt => editorPage.editor.orderedList()
+        case evt => editorPage.editor.wrapHTML(new tag.Ol(content = new tag.Li)) //editorPage.editor.orderedList()
       }
     }
     contents += new Button(label = "Unordered List") {

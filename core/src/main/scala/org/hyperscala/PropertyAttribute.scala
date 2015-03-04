@@ -42,6 +42,7 @@ class PropertyAttribute[T](val name: String,
         val value = a.persister.toString(a(), a.name, a.manifest.runtimeClass)
         writer.write(s""" ${pa.name}="${xml.Utility.escape(value)}"""")
       }
+      case _ => // renderAttribute listener intercepted or value is null, don't render
     }
   }
 

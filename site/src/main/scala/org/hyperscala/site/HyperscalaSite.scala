@@ -12,6 +12,7 @@ import org.hyperscala.examples.contenteditor.{EditablePageExample, ContentEditor
 import org.hyperscala.examples.createjs.CreateJSExample
 import org.hyperscala.examples.fabricjs.FabricJSExample
 import org.hyperscala.examples.helloworld.HelloWorldPage
+import org.hyperscala.examples.screen.ScreenExample
 import org.hyperscala.examples.snapsvg.SnapSVGExample
 import org.hyperscala.examples.svg.{DynamicSVGExample, SVGShapesExample, BasicSVGExample}
 import org.hyperscala.examples.todomvc.TodoMVC
@@ -119,6 +120,9 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication {
   val compliance = example(new ComplianceExample, "Advanced", "Compliance", Scope.Page)
   val coordinates = example(new CoordinatesExample, "Advanced", "Coordinates", Scope.Page)
   val pageLoader = pageExample(new PageLoaderExample(HyperscalaSite.this), "Advanced", "Page Loader", Scope.Page)
+  val screen = example(new ScreenExample, "Advanced", "Screen", Scope.Page)
+  addHandler(screen, "/example/advanced/screen2.html")
+  addHandler(screen, "/example/advanced/screen3.html")
 
   // Module
   val externalStyle = example(new ExternalStyleExample, "Module", "External Style", Scope.Page)

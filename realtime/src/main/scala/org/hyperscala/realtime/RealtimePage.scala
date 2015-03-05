@@ -36,7 +36,7 @@ class RealtimePage[S <: Session] private(val webpage: Webpage[S]) extends Loggin
     case evt: BrowserEvent => if (evt.tag != null) {
       evt.tag.eventReceived.fire(evt)
     } else {
-      warn(s"BrowserEvent without tag: $evt")
+      webpage.body.eventReceived.fire(evt)
     }
     case error: BrowserError => Realtime.errorLogger.get match {
       case Some(f) => f(BrowserErrorEvent(webpage.asInstanceOf[Webpage[Session]], error))

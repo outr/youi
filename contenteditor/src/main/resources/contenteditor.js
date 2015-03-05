@@ -60,17 +60,26 @@ global.contentEditor = {
      * Replace function
      * @param {String/Object}  replaceTerm   String used to search replace candidates or range object used during replace.
      * @param {String}  replaceString String to mathes with.
-     * @param {String}  replaceScope  Scope of replace.
+     * @param {HtmlElement}  replaceScope  HtmlElement reprenting Scope of replace.
      * @param {Boolean} replaceAll    Defines type of replace.
      * @param {Boolean} caseSensitive Defines case sensitivity of replace.
      */
     replace: function(replaceTerm, replaceString, replaceScope, replaceAll, caseSensitive) {
-        var searchResult;
+        var nodeIterator, currentNode, searchResult;
+
+        replaceScope = replaceScope || document.body;
 
         if (replaceAll) {
-            while (searchResult = contentEditor.find(replaceTerm, replaceScope, false, caseSensitive)[0]) {
-                searchResult.deleteContents();
-                searchResult.insertNode(document.createTextNode(replaceString));
+            nodeIterator = document.createNodeIterator(
+            replaceScope,
+            NodeFilter.SHOW_TEXT,
+            { acceptNode: function(node) { return NodeFilter.FILTER_ACCEPT; } },
+            false);
+            while (currentNode = nodeIterator.nextNode()) {
+                while (searchResult = contentEditor.find(replaceTerm, currentNode, false, caseSensitive)[0]) {
+                    searchResult.deleteContents();
+                    searchResult.insertNode(document.createTextNode(replaceString));
+                }
             }
         } else {
             if (typeof replaceTerm === "string") {

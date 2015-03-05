@@ -71,48 +71,7 @@ class HyperscalaPage extends Webpage(HyperscalaSite) with FormSupport[MapSession
       style.paddingBottom := 30.px
       style.fontSize := FontSize.Small
       style.textAlign := Alignment.Right
-      contents += s"&copy;2015 Hyperscala.org, version: ${BuildInfo.version}, build time: ${f"${BuildInfo.buildTime}%tc"}"
+      contents += s"&copy;2015 Hyperscala.org, version: ${BuildInfo.version}, built: ${f"${BuildInfo.buildTime}%tc"}"
     }
   }
-
-  /*head.contents += new tag.Link(rel = "stylesheet", href = "/css/style.css")
-
-  val main = new tag.Div(id = "main") {
-    WindowSized.heightAlgorithm(HyperscalaPage.this, "main", "windowHeight - 235")
-  }
-  val middle = new tag.Div(id = "middle") {
-    contents += new tag.Img(id = "logo", src = "/images/hyperscala.png", alt = "Hyperscala") {
-      style.float := Float.Left
-    }
-    if (sourceURL != null) {
-      val filename = sourceURL.substring(sourceURL.lastIndexOf('/') + 1)
-      contents += new tag.A(href = sourceURL, target = Target.Blank, content = s"View $filename on GitHub") {
-        clazz += "view_source"
-        style.float := Float.Right
-      }
-    }
-    contents += new Bar {
-      contents += MenuItem("About", site.site.about.link)
-      contents += MenuItem("Examples", site.site.examples.link)
-      contents += MenuItem("Generator", site.site.generator.link)
-      contents += MenuItem("Documentation", site.site.documentation.link)
-      contents += MenuItem("Project", "https://github.com/darkfrog26/hyperscala/")
-    }
-    contents += main
-    contents += new Bar {
-      contents += new tag.I {
-        style.float := Float.Right
-        style.color := Color.White
-        style.paddingTop := 3.px
-        style.paddingRight := 30.px
-        style.fontSize := FontSize.Small
-        contents += "&copy;2014 Hyperscala.org"
-      }
-    }
-  }
-  val wrapper = new tag.Div(id = "wrap") {
-    contents += middle
-  }
-
-  body.contents += wrapper*/
 }

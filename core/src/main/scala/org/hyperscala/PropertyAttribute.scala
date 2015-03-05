@@ -32,14 +32,17 @@ class PropertyAttribute[T](val name: String,
   def shouldRender = include
 
   def write(markup: Markup, writer: HTMLWriter) = if (shouldRender) {
-    markup.root[Page] match {
-      case Some(page) => {
-        page.intercept.renderAttribute.fire(PropertyAttribute.this) match {
-          case Some(pa) if pa() != null => writer.write(" %s=\"%s\"".format(pa.name, persister.toString(pa().asInstanceOf[T], pa.name, manifest.runtimeClass)))
-          case _ => // Told not to render by intercept
-        }
+    val paOption = markup.root[Page] match {
+      case Some(page) => page.intercept.renderAttribute.fire(this)
+      case None => Some(this)
+    }
+    paOption match {
+      case Some(pa) if pa() != null => {
+        val a = pa.asInstanceOf[PropertyAttribute[T]]
+        val value = a.persister.toString(a(), a.name, a.manifest.runtimeClass)
+        writer.write(s""" ${pa.name}="${xml.Utility.escape(value)}"""")
       }
-      case None => writer.write(" %s=\"%s\"".format(name, persister.toString(apply(), name, manifest.runtimeClass)))
+      case _ => // renderAttribute listener intercepted or value is null, don't render
     }
   }
 

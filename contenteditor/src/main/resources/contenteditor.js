@@ -8,10 +8,11 @@ global.contentEditor = {
      * Find function for text search.
      * @param   {String/RegExp}              searchTerm  Search term as a string or RegEx object.
      * @param   {String/Array/NodeList/Node} searchScope Scope set in terms of CSS query string/Node/NodeList under which sarch will be taken.
-     * @param   {Object}                     options     Options, which determine search behavior.
+     * @param   {Boolean}                    searchAll   Defines type of search.
+     * @param   {Boolean}                    caseSensitive Defines case sensitivity of search.
      * @returns {Boolean}                    Search results Array with range objects.
      */
-    find: function(searchTerm, searchScope, caseSensitive) {
+    find: function(searchTerm, searchScope, searchAll, caseSensitive) {
         var options = options || {},
             result = [];
 
@@ -41,9 +42,14 @@ global.contentEditor = {
             options.withinRange = searchScopeRange;
             searchResultRange = rangy.createRange();
 
-            while (searchResultRange.findText(searchTerm, options)) {
-                result.push(searchResultRange.cloneRange());
-                searchResultRange.collapse(false);
+            if (searchAll) {
+                while (searchResultRange.findText(searchTerm, options)) {
+                    result.push(searchResultRange.cloneRange());
+                    searchResultRange.collapse(false);
+                }
+            } else {
+                searchResultRange.findText(searchTerm, options);
+                if (!searchResultRange.collapsed) result.push(searchResultRange.cloneRange());
             }
         }
 
@@ -52,20 +58,28 @@ global.contentEditor = {
 
     /**
      * Replace function
-     * @param {String}   replaceString  String to replace range(s) with.
-     * @param {[[Type]]} range Range object/Array of Range objects on which replace will happen.
+     * @param {String/Object}  replaceTerm   String used to search replace candidates or range object used during replace.
+     * @param {String}  replaceString String to mathes with.
+     * @param {String}  replaceScope  Scope of replace.
+     * @param {Boolean} replaceAll    Defines type of replace.
+     * @param {Boolean} caseSensitive Defines case sensitivity of replace.
      */
-    replace: function(replaceString, range) {
-        range = range || rangy.getSelection().getRangeAt(0);
+    replace: function(replaceTerm, replaceString, replaceScope, replaceAll, caseSensitive) {
+        var searchResult;
 
-        if (Array.isArray(range)) {
-            range.forEach(function(rn) {
-                rn.deleteContents();
-                rn.insertNode(document.createTextNode(replaceString));
-            });
+        if (replaceAll) {
+            while (searchResult = contentEditor.find(replaceTerm, replaceScope, false, caseSensitive)[0]) {
+                searchResult.deleteContents();
+                searchResult.insertNode(document.createTextNode(replaceString));
+            }
         } else {
-            range.deleteContents();
-            range.insertNode(document.createTextNode(replaceString));
+            if (typeof replaceTerm === "string") {
+                searchResult = contentEditor.find(replaceTerm, replaceScope, false, caseSensitive)[0];
+            } else {
+                searchResult = replaceTerm;
+            }
+            searchResult.deleteContents();
+            searchResult.insertNode(document.createTextNode(replaceString));
         }
     },
 

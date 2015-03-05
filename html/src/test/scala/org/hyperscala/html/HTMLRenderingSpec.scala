@@ -22,6 +22,12 @@ class HTMLRenderingSpec extends WordSpec with Matchers {
       val out = html.outputString
       out should equal("\n<html name=\"testing\"></html>")
     }
+    "render properly with one attribute set with quotes" in {
+      val html = new HTML()
+      html.name := "testing \"this\""
+      val out = html.outputString
+      out should equal("\n<html name=\"testing &quot;this&quot;\"></html>")
+    }
     "have correct parent for attributes" in {
       val html = new HTML()
       html.name.parent should equal(html)

@@ -29,45 +29,4 @@ object FabricJS extends Module {
   }
 }
 
-class StaticCanvas(canvas: tag.Canvas) {
-  val id = Unique()
-  protected def className = "StaticCanvas"
-
-  eval(JavaScriptString(s"FabricJS.canvas['$id'] = new fabric.$className('${canvas.identity}');"))
-
-  def add(o: Object) = {
-    val props = o.properties.map(p => p.get.map(v => p.name -> v)).flatten.map(v => s"${v._1}: ${JavaScriptContent.toJS(v._2)}").mkString("{ ", ", ", " }")
-    eval(JavaScriptString(s"FabricJS.add('$id', '${o.id}', new fabric.${o.name}($props));"))
-  }
-
-  protected def eval(js: JavaScriptContent) = canvas.connected[Webpage[_]] {
-    case webpage => webpage.eval(js)
-  }
-}
-
-class Canvas(canvas: tag.Canvas) extends StaticCanvas(canvas) {
-  override protected def className = "Canvas"
-}
-
-abstract class Object(val name: String) extends Listenable {
-  val id = Unique()
-
-  private var _properties = List.empty[ObjectProperty[_]]
-  def properties = _properties
-
-  protected def prop[T](name: String)(implicit manifest: Manifest[T]) = synchronized {
-    val p = new ObjectProperty[T](name, this)(manifest)
-    _properties = p :: _properties
-    p
-  }
-}
-
-class Rect extends Object("Rect") {
-  lazy val left = prop[Double]("left")
-  lazy val top = prop[Double]("top")
-  lazy val fill = prop[Color]("fill")
-  lazy val width = prop[Double]("width")
-  lazy val height = prop[Double]("height")
-}
-
 class ObjectProperty[T](val name: String, o: Object)(implicit manifest: Manifest[T]) extends Property[T](default = None)(o, manifest)

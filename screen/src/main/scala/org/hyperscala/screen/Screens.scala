@@ -23,6 +23,8 @@ class Screens(webpage: Webpage[_ <: Session]) extends Logging {
   webpage.require(Screens)
 
   val url = Property[URL](default = Some(webpage.website.request.url.decoded))
+  private val _screen = Property[Screen]()
+  val screen = _screen.readOnlyView
 
   private var loaders = Map.empty[String, ScreenLoader]
   private[screen] var screens = Map.empty[Screen, String]
@@ -32,8 +34,18 @@ class Screens(webpage: Webpage[_ <: Session]) extends Logging {
   }
   url.change.on {
     case evt => loaders.get(evt.newValue.path) match {
-      case Some(loader) => loader.activate()
+      case Some(loader) => _screen := loader.screen
       case None => warn(s"No screen associated with ${evt.newValue}.")
+    }
+  }
+  screen.change.on {
+    case evt => {
+      if (evt.oldValue != null) {
+        evt.oldValue.deactivate()
+      }
+      if (evt.newValue != null) {
+        evt.newValue.activate()
+      }
     }
   }
 
@@ -46,7 +58,7 @@ class Screens(webpage: Webpage[_ <: Session]) extends Logging {
       loaders += uri -> loader
     }
     if (uri == url().path) {
-      loader.activate()
+      _screen := loader.screen
     }
   }
 
@@ -67,9 +79,6 @@ class ScreenLoader(val uri: String, screens: Screens, loader: => Screen) {
     }
     s
   }
-
-  def activate() = screen.activate()
-  def deactivate() = screen.deactivate()
 }
 
 object Screens extends Module {

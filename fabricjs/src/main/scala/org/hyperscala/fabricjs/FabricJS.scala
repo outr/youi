@@ -28,5 +28,3 @@ object FabricJS extends Module {
     webpage.head.contents += new tag.Script(src = "/js/hyperscala-fabric.js")
   }
 }
-
-class ObjectProperty[T](val name: String, o: Object)(implicit manifest: Manifest[T]) extends Property[T](default = None)(o, manifest)

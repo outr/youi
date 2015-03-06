@@ -1,13 +1,15 @@
 package org.hyperscala.fabricjs
 
+import org.hyperscala.fabricjs.prop.ObjectProperty
 import org.hyperscala.javascript.JavaScriptContent
+import org.powerscala.hierarchy.{Element, ChildLike}
 import org.powerscala.{Color, Unique}
 import org.powerscala.event.Listenable
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-abstract class Object(val name: String) extends Listenable {
+abstract class Object(val name: String) extends Listenable with Element[Listenable] {
   val id = Unique()
 
   private var _properties = List.empty[ObjectProperty[_]]

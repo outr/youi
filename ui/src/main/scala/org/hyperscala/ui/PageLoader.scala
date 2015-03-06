@@ -1,6 +1,6 @@
 package org.hyperscala.ui
 
-import org.hyperscala.web.{WebpageHandler, Webpage}
+import org.hyperscala.web.{Scope, WebpageHandler, Webpage}
 import org.hyperscala.realtime.Realtime
 import com.outr.net.http.session.Session
 import org.hyperscala.javascript.dsl._
@@ -11,7 +11,7 @@ import org.hyperscala.javascript.dsl._
 object PageLoader {
   def create[S <: Session](webpage: Webpage[S])(creator: => Webpage[S]) = {
     val newPage: Webpage[S] = creator                                         // Instantiate our new page
-    WebpageHandler.cachePage(newPage)                                         // Cache it in the WebpageHandler
+    WebpageHandler.cachePage(newPage, Scope.Page, None)                       // Cache it in the WebpageHandler
     newPage
   }
 

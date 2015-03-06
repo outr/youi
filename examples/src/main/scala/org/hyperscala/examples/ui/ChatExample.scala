@@ -86,7 +86,7 @@ object ChatExample {
 
   def instances[S <: Session](website: Website[S]) = {
     implicit val sessionManifest = website.manifest
-    website.pages[ExamplePage[S]].map(p => p.example).collect {
+    website.pages.byType[ExamplePage[S]].map(p => p.example).collect {
       case chat: ChatExample => chat
     }.toList
   }

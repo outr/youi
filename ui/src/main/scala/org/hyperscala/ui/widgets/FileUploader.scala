@@ -99,7 +99,7 @@ class FileUploadHandler[S <: Session](website: Website[S]) extends MultipartHand
   def create(request: HttpRequest, response: HttpResponse) = {
     val pageId = request.url.parameters.first("pageId")
     val fieldId = request.url.parameters.first("fieldId")
-    val page = website.pages.byId[Webpage[S]](pageId).getOrElse(throw new NullPointerException(s"Cannot find page by id: $pageId"))
+    val page = website.pages.byPageId[Webpage[S]](pageId).getOrElse(throw new NullPointerException(s"Cannot find page by id: $pageId"))
     page.getById[FileUploader](fieldId)
   }
 }

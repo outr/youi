@@ -290,7 +290,7 @@ class DropzoneSupport[S <: Session](website: Website[S]) extends MultipartSuppor
   override def begin(request: HttpRequest, response: HttpResponse) = {}
 
   override def onField(name: String, value: String) = name match {
-    case "pageId" => page = website.pages.byId[Webpage[S]](value).getOrElse(throw new NullPointerException(s"Cannot find page by id: $value."))
+    case "pageId" => page = website.pages.byPageId[Webpage[S]](value).getOrElse(throw new NullPointerException(s"Cannot find page by id: $value."))
     case "tagId" => {
       t = page.getById[HTMLTag](value)
       dropzone = Dropzone(t)

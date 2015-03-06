@@ -63,41 +63,28 @@ class WebpageHandler[S <: Session](pageCreator: () => Webpage[S],
     }
   }
 
-  def load(request: HttpRequest): Option[Webpage[S]] = scope match {
-    case Scope.Request => None
-    case Scope.Page => request.url.parameters.getFirst("pageId") match {
-      case Some(pageId) => website._pages.get(pageId)
-      case None => None
+  def load(request: HttpRequest): Option[Webpage[S]] = request.url.parameters.getFirst("pageId") match {
+    case Some(pageId) => website.pages.byPageId[Webpage[S]](pageId)
+    case None => scope match {
+      case Scope.Request => None                                            // Always get a new page on new request
+      case Scope.Page => None                                               // If no pageId is supplied, we have no way to find it
+      case Scope.Session => website.pages.bySessionHandlerId(id)            // Referenced in session by handler id
+      case Scope.Application => website.pages.byApplicationHandlerId(id)    // Referenced by handler id
     }
-    case Scope.Session => website._pages.get(sessionId)
-    case Scope.Application => website._pages.get(id)
   }
 
   def cache(page: Webpage[S]) = {
-    scope match {
-      case Scope.Request => // Nothing to do
-      case Scope.Page => // Nothing to do
-      case Scope.Session => website._pages(sessionId) = page
-      case Scope.Application => {
-        website._pages(id) = page
-        website.synchronized {
-          website._applicationPages = page :: website._applicationPages
-        }
-      }
-    }
-    debug(s"Caching page: ${page.pageId}!")
-    WebpageHandler.cachePage(page)         // All pages are stored at least by their id
+    debug(s"Caching page: ${page.pageId} with Scope: $scope")
+    WebpageHandler.cachePage(page, scope, Some(id))
   }
-
-  private def sessionId = s"$id.${website.session.id}"
 }
 
 // TODO: get or create a new RequestScope (only for the page request, not subsequent requests), SessionScope, and ApplicationScope
 
 object WebpageHandler {
-  def pageById[W <: Webpage[S], S <: Session](pageId: String, website: Website[S]) = website._pages.get[W](pageId)
+  def pageById[W <: Webpage[S], S <: Session](pageId: String, website: Website[S]) = website.pages.byPageId[W](pageId)
 
-  def cachePage[S <: Session](page: Webpage[S]) = page.website._pages(page.pageId) = page
+  def cachePage[S <: Session](page: Webpage[S], scope: Scope, handlerId: Option[String]) = page.website.pages.add(page, scope, handlerId)
 
   def handle[S <: Session](request: HttpRequest, response: HttpResponse, page: Webpage[S]) = {
     page.checkIn()

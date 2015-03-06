@@ -57,7 +57,7 @@ object RealtimeJSON extends Logging {
   private[realtime] def connect(init: InitBrowserConnection) = {
     val connection = ConnectionHolder.connection
     val site = connection.application.asInstanceOf[Website[Session]]
-    site.pages.byId[Webpage[Session]](init.pageId) match {
+    site.pages.byPageId[Webpage[Session]](init.pageId) match {
       case Some(page) => {
         page.hold(connection)                           // Webpage should hold the connection
         RealtimePage(page).init()                       // Initialize the RealtimePage

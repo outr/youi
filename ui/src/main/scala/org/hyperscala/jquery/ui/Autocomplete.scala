@@ -196,7 +196,7 @@ class AutocompleteHandler[S <: Session](website: Website[S]) extends HttpHandler
     val fieldId = request.url.parameters.first("fieldId")
     val term = request.url.parameters.first("term")
 
-    val page = website.pages.byId[Webpage[S]](pageId).getOrElse(throw new NullPointerException(s"Cannot find page by id: $pageId"))
+    val page = website.pages.byPageId[Webpage[S]](pageId).getOrElse(throw new NullPointerException(s"Cannot find page by id: $pageId"))
     val input = page.getById[FormField](fieldId)
     val autocompletified = Autocompletified(input)
     val results = autocompletified.submit(term).map(Autocompletified.Result2JSON).mkString("[", ", ", "]")

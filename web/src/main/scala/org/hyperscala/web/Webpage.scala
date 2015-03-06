@@ -63,6 +63,7 @@ class Webpage[S <: Session](val website: Website[S]) extends HttpHandler with HT
 
   title := defaultTitle
   head.meta("generator", "Hyperscala")
+  head.meta("pageId", pageId)
   head.charset("UTF-8")
 
   def byName[T <: HTMLTag](name: String)(implicit manifest: Manifest[T]) = html.byName[T](name)(manifest)

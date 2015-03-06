@@ -31,11 +31,6 @@ abstract class Website[S <: Session](implicit val manifest: Manifest[S]) extends
    */
   val pageError = new UnitProcessor[(Webpage[S], Throwable)]("pageError")
   /**
-   * Keeps a reference to all currently loaded pages referenced by id.
-   */
-  private[web] val _pages = new MapStorage[String, Webpage[S]]
-  private[web] var _applicationPages = List.empty[Webpage[S]]
-  /**
    * Access to all currently loaded pages.
    */
   lazy val pages = new Pages[S](this)
@@ -81,41 +76,10 @@ abstract class Website[S <: Session](implicit val manifest: Manifest[S]) extends
       pages.foreach {
         case page => page.update(delta)
       }
-      _applicationPages.foreach {
-        case page => page.checkIn()         // Make sure application pages never timeout
-      }
+      pages.byScope(Scope.Application).foreach(_.checkIn())     // Keep Application scoped elements from timing out
     } catch {
       case t: Throwable => error("Exception thrown while updating pages.", t)
     }
-  }
-}
-
-class Pages[S <: Session](website: Website[S]) extends Iterable[Webpage[S]] with Logging {
-  def ids = website._pages.map.keys
-
-  def byId[W <: Webpage[S]](pageId: String) = website._pages.get[W](pageId)
-
-  // TODO: this is broken currently - references that website.session references the current context session
-//  def bySession(session: Session) = website._pages.values.filter(wp => wp.website.session eq session).toList
-
-  // TODO: is there a better way to avoid updating duplicates of the same page?
-  def iterator = website._pages.values.toSet[Webpage[S]].iterator
-
-  def remove(page: Webpage[S]) = synchronized {
-    debug(s"Removing webpage: ${page.pageId} (${page.getClass.getSimpleName})")
-    website._pages.map.foreach {
-      case (id, p) if p eq page => website._pages.remove(id)      // Clear all references of the page
-      case _ => // Ignore others
-    }
-  }
-
-//  def removeBySession(session: Session) = synchronized {
-//    // TODO: restrict this to Scopes that don't span sessions (everything but Application)
-//    bySession(session).foreach(remove)
-//  }
-
-  def apply[W <: Webpage[S]](implicit manifest: Manifest[W]) = iterator.collect {
-    case w if w.getClass.hasType(manifest.runtimeClass) => w.asInstanceOf[W]
   }
 }
 

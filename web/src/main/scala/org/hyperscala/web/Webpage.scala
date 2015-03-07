@@ -31,6 +31,12 @@ class Webpage[S <: Session](val website: Website[S]) extends HttpHandler with HT
   ConnectionHolder.jsonEvent.partial(Unit) {
     case c: WebpageConnect => ConnectionHolder.connection.holder := this      // Switch the connection to the webpage as the holder
   }
+  textEvent.on {
+    case evt => checkIn()       // Any event should keep the page alive
+  }
+  binaryEvent.on {
+    case evt => checkIn()       // Any event should keep the page alive
+  }
 
   // Make the webpage logger's parent reference the website's logger
   logger.parent = Some(website.logger)

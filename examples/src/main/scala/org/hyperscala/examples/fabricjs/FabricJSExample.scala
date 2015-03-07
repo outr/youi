@@ -1,7 +1,7 @@
 package org.hyperscala.examples.fabricjs
 
 import org.hyperscala.examples.Example
-import org.hyperscala.fabricjs.{StaticCanvas, Rect, Canvas, FabricJS}
+import org.hyperscala.fabricjs._
 import org.hyperscala.html._
 import org.powerscala.Color
 import org.hyperscala.realtime._
@@ -12,7 +12,7 @@ import org.hyperscala.realtime._
 class FabricJSExample extends Example {
   require(FabricJS)
 
-  val t = new tag.Canvas(id = "myCanvas", width = 200, height = 200)
+  val t = new tag.Canvas(id = "myCanvas", width = 400, height = 200)
   t.style.border := "1px solid black"
   contents += t
 
@@ -28,6 +28,26 @@ class FabricJSExample extends Example {
     originY := "center"
   }
   canvas.contents += rect
+
+  val image = new Image("/images/hyperscala.png") {
+    left := 10.0
+    top := 100.0
+    width := 124.0
+    height := 45.0
+    angle := -45.0
+  }
+  canvas.contents += image
+
+  val path = new Path("M 0 0 L 200 100 L 170 200 z") {
+    left := 100.0
+    originX := "center"
+    originY := "center"
+    fill := Color.Red
+    strokeWidth := 5.0
+    stroke := Color.Green
+    opacity := 0.5
+  }
+  canvas.contents += path
 
   contents += new tag.Button(content = "Rotate") {
     clickEvent.onRealtime {

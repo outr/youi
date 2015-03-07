@@ -2,6 +2,7 @@ package org.hyperscala.fabricjs
 
 import org.hyperscala.fabricjs.prop.ObjectProperty
 import org.hyperscala.javascript.JavaScriptContent
+import org.hyperscala.javascript.dsl._
 import org.powerscala.hierarchy.{Element, ChildLike}
 import org.powerscala.{Color, Unique}
 import org.powerscala.event.Listenable
@@ -69,6 +70,12 @@ abstract class Object(val name: String) extends Listenable with Element[Listenab
   lazy val transparentCorners = prop("transparentCorners", true)
   lazy val visible = prop("visible", true)
   lazy val width = prop("width", 0.0)
+
+  protected[fabricjs] def addToCanvas(canvas: StaticCanvas) = canvas.eval(s"FabricJS.add('${canvas.id}', '$id', $construct);")
+
+  protected[fabricjs] def construct = s"new fabric.$name($props)"
+
+  protected[fabricjs] def props = properties.map(p => p.get.map(v => p.name -> v)).flatten.map(v => s"${v._1}: ${JavaScriptContent.toJS(v._2)}").mkString("{ ", ", ", " }")
 
   protected def prop[T](name: String, default: T)(implicit manifest: Manifest[T]) = synchronized {
     val p = new ObjectProperty[T](name, this)(manifest)

@@ -51,16 +51,13 @@ class StaticCanvas(canvas: tag.Canvas) extends MutableContainer[Object] {
     case evt => remove(evt.child.asInstanceOf[Object])
   }
 
-  private def add(o: Object) = {
-    val props = o.properties.map(p => p.get.map(v => p.name -> v)).flatten.map(v => s"${v._1}: ${JavaScriptContent.toJS(v._2)}").mkString("{ ", ", ", " }")
-    eval(s"FabricJS.add('$id', '${o.id}', new fabric.${o.name}($props));")
-  }
+  private def add(o: Object) = o.addToCanvas(this)
 
   private def remove(o: Object) = {
     eval(s"FabricJS.remove('$id', '${o.id}');")
   }
 
-  protected def eval(js: JavaScriptContent) = canvas.connected[Webpage[_]] {
+  protected[fabricjs] def eval(js: JavaScriptContent) = canvas.connected[Webpage[_]] {
     case webpage => webpage.eval(js)
   }
 

@@ -11,8 +11,15 @@ var FabricJS = {
     set: function(canvasId, objectId, key, value) {
         var canvas = FabricJS.canvas[canvasId];
         if (objectId != null) {
-            var obj = FabricJS.object[objectId];
-            obj.set(key, value);
+            var f = function() {
+                var obj = FabricJS.object[objectId];
+                if (obj != null) {
+                    obj.set(key, value);
+                } else {
+                    setTimeout(f, 10);
+                }
+            };
+            f();
         } else {
             canvas[key] = value;
         }

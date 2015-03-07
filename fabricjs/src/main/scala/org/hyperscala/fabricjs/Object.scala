@@ -71,6 +71,8 @@ abstract class Object(val name: String) extends Listenable with Element[Listenab
   lazy val visible = prop("visible", true)
   lazy val width = prop("width", 0.0)
 
+  def canvas = root[StaticCanvas]
+
   protected[fabricjs] def addToCanvas(canvas: StaticCanvas) = canvas.eval(s"FabricJS.add('${canvas.id}', '$id', $construct);")
 
   protected[fabricjs] def construct = s"new fabric.$name($props)"

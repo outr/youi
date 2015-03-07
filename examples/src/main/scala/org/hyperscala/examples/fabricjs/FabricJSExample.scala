@@ -2,6 +2,7 @@ package org.hyperscala.examples.fabricjs
 
 import org.hyperscala.examples.Example
 import org.hyperscala.fabricjs._
+import org.hyperscala.fabricjs.prop.Adjust
 import org.hyperscala.html._
 import org.powerscala.Color
 import org.hyperscala.realtime._
@@ -51,7 +52,10 @@ class FabricJSExample extends Example {
 
   contents += new tag.Button(content = "Rotate") {
     clickEvent.onRealtime {
-      case evt => rect.angle := rect.angle() + 22.5
+      case evt => {
+//        rect.angle := rect.angle() + 22.
+        rect.angle.animate(Adjust += 180.0, duration = 1.0)
+      }
     }
   }
   contents += new tag.Button(content = "Remove") {

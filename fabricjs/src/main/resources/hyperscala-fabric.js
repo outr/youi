@@ -30,5 +30,11 @@ var FabricJS = {
         var object = FabricJS.object[objectId];
         canvas.remove(object);
         FabricJS.object[objectId] = null;
+    },
+    animate: function(canvasId, objectId, property, adjust, options) {
+        var canvas = FabricJS.canvas[canvasId];
+        var object = FabricJS.object[objectId];
+        options.onChange = canvas.renderAll.bind(canvas);
+        object.animate(property, adjust, options);
     }
 };

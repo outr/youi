@@ -30,7 +30,7 @@ class Screens(webpage: Webpage[_ <: Session]) extends Logging {
   private[screen] var screens = Map.empty[Screen, String]
 
   webpage.body.handle[URLChange] {
-    case change => url := URL(change.url).decoded
+    case change => url := URL.encoded(change.url).decoded
   }
   url.change.on {
     case evt => loaders.get(evt.newValue.path) match {

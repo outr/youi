@@ -40,7 +40,7 @@ object EncodedImages extends Module with Logging {
           } else {
             webpage.website.request.url.baseAndPath.substring(0, webpage.website.request.url.baseAndPath.lastIndexOf('/') + 1)
           }
-          URL(s"$baseURL${image.src()}").javaURL
+          URL.encoded(s"$baseURL${image.src()}").javaURL
         } else {
           new JavaURL(image.src())
         }

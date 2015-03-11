@@ -7,4 +7,6 @@ trait Screen {
   def activate(): Unit
 
   def deactivate(): Unit
+
+  def dispose(): Unit
 }

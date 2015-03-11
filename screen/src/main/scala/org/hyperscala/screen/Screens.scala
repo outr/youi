@@ -23,18 +23,17 @@ class Screens(webpage: Webpage[_ <: Session]) extends Logging {
   webpage.require(Screens)
 
   val url = Property[URL](default = Some(webpage.website.request.url.decoded))
-  private val _screen = Property[Screen]()
-  val screen = _screen.readOnlyView
+  private[screen] val _screen = Property[Screen]()
+  def screen = _screen.readOnlyView
 
-  private var loaders = Map.empty[String, ScreenLoader]
-  private[screen] var screens = Map.empty[Screen, String]
+  private var keeperURIs = Map.empty[String, ScreenKeeper[_ <: Screen]]
 
   webpage.body.handle[URLChange] {
     case change => url := URL.encoded(change.url).decoded
   }
   url.change.on {
-    case evt => loaders.get(evt.newValue.path) match {
-      case Some(loader) => _screen := loader.screen
+    case evt => keeperURIs.get(evt.newValue.path) match {
+      case Some(keeper) => keeper.activate()
       case None => warn(s"No screen associated with ${evt.newValue}.")
     }
   }
@@ -49,35 +48,19 @@ class Screens(webpage: Webpage[_ <: Session]) extends Logging {
     }
   }
 
-  def addScreen(uri: String, screen: => Screen, lazyLoad: Boolean = true): Unit = {
-    val loader = new ScreenLoader(uri, this, screen)
-    if (!lazyLoad) {
-      loader.screen   // Load immediately
-    }
+  def screen[S <: Screen](uri: String, loader: => S, preLoad: Boolean = false, replace: Boolean = false)(implicit manifest: Manifest[S]) = {
+    val keeper = new ScreenKeeper[S](uri, preLoad, replace, this, loader)(manifest)
     synchronized {
-      loaders += uri -> loader
+      keeperURIs += uri -> keeper
     }
-    if (uri == url().path) {
-      _screen := loader.screen
+    if (uri == url().path) {          // This screen matches the current URL, load immediately!
+      keeper.activate()
     }
+    keeper
   }
 
-  def activate(uri: String, replace: Boolean): Unit = {
+  def activate(uri: String, replace: Boolean): Unit = if (!url().toString().toLowerCase.endsWith(uri.toLowerCase)) {
     webpage.eval(JavaScriptString(s"Screen.activate('$uri', $replace);"))
-  }
-
-  def activate(screen: Screen, replace: Boolean): Unit = {
-    activate(screens(screen), replace)
-  }
-}
-
-class ScreenLoader(val uri: String, screens: Screens, loader: => Screen) {
-  lazy val screen: Screen = {
-    val s: Screen = loader
-    screens.synchronized {
-      screens.screens += s -> uri
-    }
-    s
   }
 }
 

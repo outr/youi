@@ -227,7 +227,8 @@ var ContentEditorInstance = function(id) {
 };
 
 ContentEditorInstance.prototype.focused = function() {
-    return this.element == document.activeElement;
+    $(this.element).focus();
+    return true;
 };
 
 ContentEditorInstance.prototype.stylize = function(key, value, tagName) {

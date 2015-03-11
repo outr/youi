@@ -120,6 +120,19 @@ class ContentEditor private(val container: HTMLTag) extends Listenable {
 
   def clearFormatting() = call("clearFormatting()")
 
+  def bindStyle[T](t: HTMLTag, style: Style[T], styleToSet: Style[T], default: T, document: Statement[HTMLTag] = document) = {
+    val js =
+      s"""ContentEditor.on('styleChanged', function(evt) {
+        | var tag = ${document.content}.jQuery('#${t.identity}');
+        | var value = evt.style['${style.cssName}'];
+        | if (value == null || value == '') {
+        |   value = '${style.persistence.toString(default, style.name, default.getClass)}';
+        | }
+        | tag.css('${styleToSet.cssName}', value);
+        |});""".stripMargin
+    send(js)
+  }
+
   def bindInput[S <: Style[_]](t: HTMLTag, style: S, document: Statement[HTMLTag] = document, valueCleaner: JSFunction1[String, String] = null) = {
     val cleanerFunction = if (valueCleaner != null) valueCleaner.content else "null"
     send(s"ContentEditor.bindInput('${t.identity}', '${style.cssName}', ${document.content}, $cleanerFunction);")

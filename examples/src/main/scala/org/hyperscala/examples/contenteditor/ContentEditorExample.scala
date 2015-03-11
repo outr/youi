@@ -171,6 +171,7 @@ class EditablePageExample(example: ContentEditorExample, site: Website[MapSessio
 
   if (example != null) {
     editor.bindInput(example.colorInput, Style.color, parent)
+    editor.bindStyle(example.colorInput, Style.color, Style.backgroundColor, Color.White, parent)
     editor.bindInput(example.fontFamily, Style.fontFamily, parent)
     editor.bindFontStyle(example.fontStyle, parent)
     editor.bindInput(example.fontSize, Style.fontSize, parent, ContentEditor.PixelConversion)

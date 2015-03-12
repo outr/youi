@@ -720,7 +720,7 @@ HtmlWrapper.prototype = {
             newElement;
 
         if (this.predefined) {
-            newElement = this.predefined.cloneNode();
+            newElement = this.predefined.nodeType === 11 ? this.predefined : this.predefined.cloneNode();
         } else {
             newElement = document.createElement(this.tagName);
         }

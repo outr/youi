@@ -13,7 +13,6 @@ import org.hyperscala.examples.createjs.CreateJSExample
 import org.hyperscala.examples.fabricjs.FabricJSExample
 import org.hyperscala.examples.helloworld.HelloWorldPage
 import org.hyperscala.examples.screen.ScreenExample
-import org.hyperscala.examples.snapsvg.SnapSVGExample
 import org.hyperscala.examples.svg.{DynamicSVGExample, SVGShapesExample, BasicSVGExample}
 import org.hyperscala.examples.todomvc.TodoMVC
 import org.hyperscala.examples.ui._
@@ -108,7 +107,6 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication {
   val dropzone = example(new DropzoneExample, "Wrapper", "Dropzone", Scope.Page)
   val videoJS = example(new VideoJSExample, "Wrapper", "VideoJS", Scope.Page)
   val webFontLoader = example(new WebFontLoaderExample, "Wrapper", "WebFontLoader", Scope.Page)
-  val snapsvg = example(new SnapSVGExample, "Wrapper", "SnapSVG", Scope.Page)
   val contentEditor = example(new ContentEditorExample(this), "Wrapper", "Content Editor", Scope.Page)
   val contentEditorContent = page(new EditablePageExample(null, this), Scope.Page, "/example/wrapper/content_editor_content.html")
 

@@ -133,9 +133,9 @@ class ContentEditor private(val container: HTMLTag) extends Listenable {
     send(js)
   }
 
-  def bindInput[S <: Style[_]](t: HTMLTag, style: S, document: Statement[HTMLTag] = document, valueCleaner: JSFunction1[String, String] = null) = {
+  def bindInput[S <: Style[_]](t: HTMLTag, style: S, document: Statement[HTMLTag] = document, valueCleaner: JSFunction1[String, String] = null, tagName: String = "span") = {
     val cleanerFunction = if (valueCleaner != null) valueCleaner.content else "null"
-    send(s"ContentEditor.bindInput('${t.identity}', '${style.cssName}', ${document.content}, $cleanerFunction);")
+    send(s"ContentEditor.bindInput('${t.identity}', '${style.cssName}', ${document.content}, $cleanerFunction, '$tagName');")
   }
 
   def bindFontStyle(t: HTMLTag, document: Statement[HTMLTag] = document) = {
@@ -150,11 +150,11 @@ class ContentEditor private(val container: HTMLTag) extends Listenable {
     send(ifFocused(document.execCommand(command)))
   }
 
-  def adjustStyle[S](style: Style[S], adjuster: JSFunction1[S, S]) = {
-    call(s"adjustStyle('${style.name}', ${adjuster.content})")
+  def adjustStyle[S](style: Style[S], adjuster: JSFunction1[S, S], tagName: String = "span") = {
+    call(s"adjustStyle('${style.name}', ${adjuster.content}, '$tagName')")
   }
 
-  def adjustStyleSize[S](style: Style[S], adjustment: Int, min: Int = 0, max: Int = Int.MaxValue)(implicit manifest: Manifest[S]) = {
+  def adjustStyleSize[S](style: Style[S], adjustment: Int, min: Int = 0, max: Int = Int.MaxValue, tagName: String = "span")(implicit manifest: Manifest[S]) = {
     val js =
       """
         |var regex = /(-?\d+[.]?\d*)(.*)/;
@@ -170,7 +170,7 @@ class ContentEditor private(val container: HTMLTag) extends Listenable {
         |}
         |return value + type;
       """.stripMargin.replaceAll("[$]adjustment", adjustment.toString).replaceAll("[$]min", min.toString).replaceAll("[$]max", max.toString)
-    adjustStyle[S](style, JSFunction1[S, S](js))
+    adjustStyle[S](style, JSFunction1[S, S](js), tagName)
   }
 
 

@@ -8,6 +8,14 @@ String.prototype.capitalize = function () {
 var ContentEditor = {
     instances: {},
     listeners: {},
+    current: null,
+    focused: function() {
+        if (ContentEditor.current != null && $(ContentEditor.current).is("[contenteditable='true']")) {
+            return ContentEditor.current;
+        } else {
+            return null;
+        }
+    },
     byId: function(id) {
         var instance = this.instances[id];
         if (instance == null) {
@@ -34,9 +42,10 @@ var ContentEditor = {
     },
     lastStyle: null,
     check: function() {
+        var focused = ContentEditor.focused();
         var activeId = null;
-        if (document.activeElement != null) {
-            activeId = $(document.activeElement).attr('id');
+        if (focused != null) {
+            activeId = $(focused).attr('id');
         }
         if (this.instances[activeId]) {       // Only fire change if editable is focused
             var instance = this.instances[activeId];
@@ -66,16 +75,17 @@ var ContentEditor = {
             }
         }
     },
-    bindInput: function(id, key, doc, valueCleaner) {
+    bindInput: function(id, key, doc, valueCleaner, tagName) {
         if (doc == null) doc = document;
         var element = doc.jQuery('#' + id);
         if (element.size() == 0) {
             realtime.error('ContentEditorInstance.bind: Unable to find element by id ' + id + ' (style: ' + key + ')');
         } else {
             element.change(function() {
+                var focused = ContentEditor.focused();
                 var activeId = null;
-                if (document.activeElement != null) {
-                    activeId = $(document.activeElement).attr('id');
+                if (focused != null) {
+                    activeId = $(focused).attr('id');
                 }
                 if (ContentEditor.exists(activeId)) {
                     var value = element.val();
@@ -83,7 +93,7 @@ var ContentEditor = {
                         value = valueCleaner(value);
                         element.val(value);
                     }
-                    ContentEditor.byId(activeId).set(key, value);
+                    ContentEditor.byId(activeId).set(key, value, tagName);
                 }
             });
             ContentEditor.on('styleChanged', function(evt) {
@@ -106,9 +116,10 @@ var ContentEditor = {
             realtime.error('ContentEditorInstance.bind: Unable to find element by id ' + id + ' (style: ' + key + ')');
         } else {
             element.change(function() {
+                var focused = ContentEditor.focused();
                 var activeId = null;
-                if (document.activeElement != null) {
-                    activeId = $(document.activeElement).attr('id');
+                if (focused != null) {
+                    activeId = $(focused).attr('id');
                 }
                 if (ContentEditor.exists(activeId)) {
                     fromString(element.val(), ContentEditor.byId(activeId));
@@ -211,6 +222,9 @@ $(document).on('selectionchange', function() {
 });
 $(document).keyup(function() {
     ContentEditor.check();
+});
+$(document).on('focus', "[contenteditable='true']", function() {
+    ContentEditor.current = this;
 });
 
 ContentEditor.bindChanges();        // TODO: allow optionally disabling this or making it limited to specific instances.
@@ -324,10 +338,10 @@ ContentEditorInstance.prototype.clearFormatting = function() {
     }
 };
 
-ContentEditorInstance.prototype.adjustStyle = function(styleName, adjuster) {
+ContentEditorInstance.prototype.adjustStyle = function(styleName, adjuster, tagName) {
     if (this.focused()) {
         var current = this.computedStyle(styleName);
         var updated = adjuster(current);
-        this.set(styleName, updated);
+        this.set(styleName, updated, tagName);
     }
 };

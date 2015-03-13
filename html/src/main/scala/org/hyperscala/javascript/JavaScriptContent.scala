@@ -32,7 +32,7 @@ object JavaScriptContent {
     case null => "null"
     case a: AttributeValue => s"'${a.value}'"
     case js: JavaScriptContent => js.content
-    case s: String => "'%s'".format(s.replaceAll("\n", " ").replaceAll("\r", " ").replaceAll("'", """\\\'"""))
+    case s: String => "'%s'".format(s.replaceAll("""\\""", """\\\\""").replaceAll("\n", " ").replaceAll("\r", " ").replaceAll("'", """\\\'"""))
     case l: List[_] => l.map(toJS).mkString("[", ", ", "]")
     case d: Date => s"new Date(${d.getTime})"
     case c: Color => s"'${c.hex.rgb}'"

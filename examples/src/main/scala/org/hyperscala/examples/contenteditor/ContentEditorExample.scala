@@ -30,10 +30,11 @@ class ContentEditorExample(site: Website[MapSession]) extends Example {
   val redButton = styleSetButton("Red", Style.color, Color.Red)
   val greenButton = styleSetButton("Green", Style.color, Color.Green)
   val blueButton = styleSetButton("Blue", Style.color, Color.Blue)
-  val colorInput = new tag.Input(id = "currentColor")
-  val fontFamily = new tag.Input(id = "fontFamily")
-  val fontStyle = new tag.Input(id = "fontStyle")
-  val fontSize = new tag.Input(id = "fontSize")
+  val colorInput = new tag.Input(id = "currentColor", placeHolder = "Color")
+  val fontFamily = new tag.Input(id = "fontFamily", placeHolder = "Font Family")
+  val fontStyle = new tag.Input(id = "fontStyle", placeHolder = "Font Style")
+  val fontSize = new tag.Input(id = "fontSize", placeHolder = "Font Size")
+  val lineHeight = new tag.Input(id = "lineHeight", placeHolder = "Line Height")
 
   val frame = new RealtimeFrame("/example/wrapper/content_editor_content.html") {
     style.width := 100.pct
@@ -125,6 +126,7 @@ class ContentEditorExample(site: Website[MapSession]) extends Example {
     contents += fontFamily
     contents += fontStyle
     contents += fontSize
+    contents += lineHeight
     contents += new Button(label = "Align Left") {
       mouseDownEvent.onRealtime {
         case evt => editorPage.editor.align(Alignment.Left)
@@ -175,6 +177,7 @@ class EditablePageExample(example: ContentEditorExample, site: Website[MapSessio
     editor.bindInput(example.fontFamily, Style.fontFamily, parent)
     editor.bindFontStyle(example.fontStyle, parent)
     editor.bindInput(example.fontSize, Style.fontSize, parent, ContentEditor.PixelConversion)
+    editor.bindInput(example.lineHeight, Style.lineHeight, parent, valueCleaner = ContentEditor.PixelConversion, "div")
   }
 
   def message(title: String, message: String) = if (example != null) {

@@ -1,6 +1,7 @@
 var FabricJS = {
     canvas: {},
     object: {},
+    filters: {},
     add: function(canvasId, objectId, object) {
         var canvas = FabricJS.canvas[canvasId];
         FabricJS.object[objectId] = object;
@@ -36,5 +37,13 @@ var FabricJS = {
         var object = FabricJS.object[objectId];
         options.onChange = canvas.renderAll.bind(canvas);
         object.animate(property, adjust, options);
+    },
+    addFilter: function(image, filterId, filter) {
+        FabricJS.filters[filterId] = filter;
+        image.filters.push(filter);
+    },
+    removeFilter: function(image, filterId) {
+        var filter = FabricJS.filters[filterId];
+        image.filters.splice(image.filters.indexOf(filter), 1);
     }
 };

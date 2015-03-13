@@ -10,7 +10,7 @@ import org.hyperscala.examples.bootstrap.{BootstrapTheme, BootstrapSignin}
 import org.hyperscala.examples.comparison.PlayHelloWorldPage
 import org.hyperscala.examples.contenteditor.{EditablePageExample, ContentEditorExample}
 import org.hyperscala.examples.createjs.CreateJSExample
-import org.hyperscala.examples.fabricjs.FabricJSExample
+import org.hyperscala.examples.fabricjs.{TileBoardExample, FabricJSExample}
 import org.hyperscala.examples.helloworld.HelloWorldPage
 import org.hyperscala.examples.screen.ScreenExample
 import org.hyperscala.examples.svg.{DynamicSVGExample, SVGShapesExample, BasicSVGExample}
@@ -141,6 +141,7 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication {
   val createJS = example(new CreateJSExample, "CreateJS", "EaselJS", Scope.Page)
 
   val fabricJS = example(new FabricJSExample, "FabricJS", "FabricJS", Scope.Page)
+  val tileBoard = example(new TileBoardExample, "FabricJS", "TileBoard", Scope.Page)
 
   // Comparison
   val playComparison = pageExample(new PlayHelloWorldPage(HyperscalaSite.this), "Comparison", "Play - Hello World", Scope.Page)

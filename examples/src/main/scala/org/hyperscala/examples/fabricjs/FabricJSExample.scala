@@ -2,6 +2,7 @@ package org.hyperscala.examples.fabricjs
 
 import org.hyperscala.examples.Example
 import org.hyperscala.fabricjs._
+import org.hyperscala.fabricjs.filters.{Brightness, Grayscale}
 import org.hyperscala.fabricjs.prop.Adjust
 import org.hyperscala.html._
 import org.powerscala.Color
@@ -36,6 +37,7 @@ class FabricJSExample extends Example {
     width := 124.0
     height := 45.0
     angle := -45.0
+    filters.contents += Grayscale
   }
   canvas.contents += image
 
@@ -61,6 +63,18 @@ class FabricJSExample extends Example {
   contents += new tag.Button(content = "Remove") {
     clickEvent.onRealtime {
       case evt => canvas.contents -= rect
+    }
+  }
+
+  val brightness = Brightness(255)
+
+  contents += new tag.Button(content = "Test") {
+    clickEvent.onRealtime {
+      case evt => if (image.filters.contents.contains(brightness)) {
+        image.filters.contents -= brightness
+      } else {
+        image.filters.contents += brightness
+      }
     }
   }
 }

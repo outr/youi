@@ -13,7 +13,7 @@ import org.powerscala.{Color, Priority, Unique}
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class StaticCanvas(canvas: tag.Canvas) extends MutableContainer[Object] {
+class StaticCanvas(val canvas: tag.Canvas) extends MutableContainer[Object] {
   val id = Unique()
   protected def className = "StaticCanvas"
 

@@ -7,11 +7,11 @@ import org.powerscala.reflect._
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class Pages[S <: Session] private[web](website: Website[S]) extends Iterable[Webpage[S]] with Logging {
-  private var pageIdMap = Map.empty[String, Webpage[S]]
+class Pages private[web](website: Website) extends Iterable[Webpage] with Logging {
+  private var pageIdMap = Map.empty[String, Webpage]
   private var pageIdScopeMap = Map.empty[String, Scope]
   private var pageIdSessionIdMap = Map.empty[String, String]
-  private var sessionIdMap = Map.empty[String, SessionPages[S]]
+  private var sessionIdMap = Map.empty[String, SessionPages]
   private var handlerIdPageIdMap = Map.empty[String, String]
   private var pageIdHandlerIdMap = Map.empty[String, String]
 
@@ -27,7 +27,7 @@ class Pages[S <: Session] private[web](website: Website[S]) extends Iterable[Web
    * @tparam W the type of Webpage
    * @return Option[W]
    */
-  def byPageId[W <: Webpage[S]](pageId: String) = pageIdMap.get(pageId).asInstanceOf[Option[W]]
+  def byPageId[W <: Webpage](pageId: String) = pageIdMap.get(pageId).asInstanceOf[Option[W]]
 
   /**
    * Gets the page by pageId or throws a RuntimeException if the page is unable to be found.
@@ -36,7 +36,7 @@ class Pages[S <: Session] private[web](website: Website[S]) extends Iterable[Web
    * @tparam W the type of Webpage
    * @return W
    */
-  def getByPageId[W <: Webpage[S]](pageId: String) = byPageId[W](pageId).getOrElse(throw new RuntimeException(s"Unable to find page by id: $pageId."))
+  def getByPageId[W <: Webpage](pageId: String) = byPageId[W](pageId).getOrElse(throw new RuntimeException(s"Unable to find page by id: $pageId."))
 
   /**
    * Gets all pages by the sessionId.
@@ -53,7 +53,7 @@ class Pages[S <: Session] private[web](website: Website[S]) extends Iterable[Web
    * @tparam W the type of Webpage
    * @return Option[W]
    */
-  def bySessionHandlerId[W <: Webpage[S]](handlerId: String) = sessionPages.byHandlerId(handlerId).asInstanceOf[Option[W]]
+  def bySessionHandlerId[W <: Webpage](handlerId: String) = sessionPages.byHandlerId(handlerId).asInstanceOf[Option[W]]
 
   /**
    * Gets the page associated with the handler id in the application scope.
@@ -62,13 +62,13 @@ class Pages[S <: Session] private[web](website: Website[S]) extends Iterable[Web
    * @tparam W the type of Webpage
    * @return Option[W]
    */
-  def byApplicationHandlerId[W <: Webpage[S]](handlerId: String) = handlerIdPageIdMap.get(handlerId).map(pageId => pageIdMap(pageId)).asInstanceOf[Option[W]]
+  def byApplicationHandlerId[W <: Webpage](handlerId: String) = handlerIdPageIdMap.get(handlerId).map(pageId => pageIdMap(pageId)).asInstanceOf[Option[W]]
 
   /**
    * Gets all the currently loaded pages by the supplied Scope.
    *
    * @param scope the Scope to filter by
-   * @return Iterable[Webpage[S]]
+   * @return Iterable[Webpage]
    */
   def byScope(scope: Scope) = withScope.collect {
     case (page, pageScope) if pageScope == scope => page
@@ -86,7 +86,7 @@ class Pages[S <: Session] private[web](website: Website[S]) extends Iterable[Web
    * @tparam W the type of Webpage
    * @return Iterator[W]
    */
-  def byType[W <: Webpage[S]](implicit manifest: Manifest[W]) = iterator.collect {
+  def byType[W <: Webpage](implicit manifest: Manifest[W]) = iterator.collect {
     case w if w.getClass.hasType(manifest.runtimeClass) => w.asInstanceOf[W]
   }
 
@@ -96,14 +96,14 @@ class Pages[S <: Session] private[web](website: Website[S]) extends Iterable[Web
     sessionIdMap.get(website.session.id) match {
       case Some(sp) => sp
       case None => {
-        val sp = new SessionPages[S](website)
+        val sp = new SessionPages(website)
         sessionIdMap += sp.sessionId -> sp
         sp
       }
     }
   }
 
-  private[web] def add(page: Webpage[S], scope: Scope, handlerId: Option[String]) = synchronized {
+  private[web] def add(page: Webpage, scope: Scope, handlerId: Option[String]) = synchronized {
     pageIdMap += page.pageId -> page
     pageIdScopeMap += page.pageId -> scope
     if (scope != Scope.Application) {
@@ -121,7 +121,7 @@ class Pages[S <: Session] private[web](website: Website[S]) extends Iterable[Web
     }
   }
 
-  private[web] def remove(page: Webpage[S]) = synchronized {
+  private[web] def remove(page: Webpage) = synchronized {
     pageIdMap -= page.pageId
     pageIdScopeMap -= page.pageId
     val sessionPages = sessionIdMap(pageIdSessionIdMap(page.pageId))

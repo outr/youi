@@ -6,7 +6,6 @@ import com.outr.net.communicate.ConnectionHolder
 import com.outr.net.http.{HttpApplication, HttpHandler}
 import com.outr.net.http.request.HttpRequest
 import com.outr.net.http.response.{HttpResponseStatus, HttpResponse}
-import com.outr.net.http.session.Session
 import org.hyperscala.javascript.JavaScriptContent
 import org.hyperscala.javascript.dsl.Statement
 import org.hyperscala.web.event.server.InvokeJavaScript
@@ -15,19 +14,18 @@ import org.hyperscala.html._
 import org.hyperscala.module.ModularPage
 import org.powerscala.hierarchy.event.{StandardHierarchyEventProcessor, ChildRemovedProcessor, ChildAddedProcessor}
 import org.powerscala.json.TypedSupport
+import org.powerscala.property.Property
 import org.powerscala.reflect._
 import org.powerscala.{MapStorage, Unique}
-import org.powerscala.concurrent.AtomicBoolean
 import org.powerscala.hierarchy.{MutableChildLike, ParentLike}
 import org.powerscala.concurrent.Time._
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class Webpage[S <: Session](val website: Website[S]) extends HttpHandler with HTMLPage with ModularPage[S] with ParentLike[tag.HTML] with ConnectionHolder {
-  implicit def manifest: Manifest[S] = website.manifest
-
+class Webpage extends HttpHandler with HTMLPage with ModularPage with ParentLike[tag.HTML] with MutableChildLike[Website] with ConnectionHolder {
   Webpage
+
   ConnectionHolder.jsonEvent.partial(Unit) {
     case c: WebpageConnect => ConnectionHolder.connection.holder := this      // Switch the connection to the webpage as the holder
   }
@@ -38,19 +36,20 @@ class Webpage[S <: Session](val website: Website[S]) extends HttpHandler with HT
     case evt => checkIn()       // Any event should keep the page alive
   }
 
-  // Make the webpage logger's parent reference the website's logger
-  logger.parent = Some(website.logger)
+  private val _initialized = Property[Boolean](default = Some(false))
+  private val _rendered = Property[Boolean](default = Some(false))
 
-  private val _rendered = new AtomicBoolean
-  def rendered = _rendered.get()
+  // TODO: replace with PageStatus enum - Created, Initialized, Rendered, Disposed
+  def initialized = _initialized.readOnlyView
+  def rendered = _rendered.readOnlyView
 
   val pageId = Unique()
   val store = new MapStorage[Any, Any]
 
   val childAdded = new ChildAddedProcessor
   val childRemoved = new ChildRemovedProcessor
-  val pageLoadingEvent = new StandardHierarchyEventProcessor[Webpage[S]]("pageLoading")
-  val pageLoadedEvent = new StandardHierarchyEventProcessor[Webpage[S]]("pageLoaded")
+  val pageLoadingEvent = new StandardHierarchyEventProcessor[Webpage]("pageLoading")
+  val pageLoadedEvent = new StandardHierarchyEventProcessor[Webpage]("pageLoaded")
 
   def defaultTitle = CaseValue.generateLabel(getClass.getSimpleName.replaceAll("\\$", ""))
 
@@ -60,6 +59,8 @@ class Webpage[S <: Session](val website: Website[S]) extends HttpHandler with HT
 
   def head = html.head
   def body = html.body
+
+  def website = hierarchicalParent
 
   MutableChildLike.assignParent(html, this)
 
@@ -79,6 +80,17 @@ class Webpage[S <: Session](val website: Website[S]) extends HttpHandler with HT
   def byId[T <: Tag](id: String)(implicit manifest: Manifest[T]) = html.byId[T](id)(manifest)
 
   def getById[T <: Tag](id: String)(implicit manifest: Manifest[T]) = html.getById[T](id)(manifest)
+
+  def init(website: Website) = _initialized.synchronized {
+    if (!initialized()) {
+      // Make the webpage logger's parent reference the website's logger
+      logger.parent = Some(website.logger)
+      // Make sure the website is the page's parent
+      website.addChild(this)
+
+      _initialized := true
+    }
+  }
 
   /**
    * Invokes the supplied function once-per session at page loading time.
@@ -140,7 +152,7 @@ class Webpage[S <: Session](val website: Website[S]) extends HttpHandler with HT
    */
   def pageLoaded() = {
     html.byTag[HTMLTag].foreach(Markup.rendered)
-    _rendered.set(true)
+    _rendered := true
     pageLoadedEvent.fire(this)
   }
 
@@ -189,6 +201,7 @@ class Webpage[S <: Session](val website: Website[S]) extends HttpHandler with HT
     super.dispose()
 
     website.pages.remove(this)
+    website.removeChild(this)
   }
 
   /**

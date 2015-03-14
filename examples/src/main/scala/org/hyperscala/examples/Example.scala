@@ -10,7 +10,7 @@ import org.hyperscala.web.Webpage
 trait Example extends tag.Div {
   def exampleName = getClass.getSimpleName
 
-  def require(interface: Interface) = connected[Webpage[_]] {
+  def require(interface: Interface) = connected[Webpage] {
     case webpage => webpage.require(interface)
   }
 

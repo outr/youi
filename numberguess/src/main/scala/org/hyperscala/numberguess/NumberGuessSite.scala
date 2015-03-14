@@ -10,6 +10,6 @@ import com.outr.net.http.session.MapSession
  *
  * @author Matt Hicks <matt@outr.com>
  */
-object NumberGuessSite extends BasicWebsite with StaticWebsite[MapSession] with JettyApplication {
-  def numberGuessServer = new NumberGuessServerPage(this)
+object NumberGuessSite extends BasicWebsite with StaticWebsite with JettyApplication {
+  def numberGuessServer = new NumberGuessServerPage
 }

@@ -31,11 +31,11 @@ object EditableContent extends Module with StorageComponent[EditableContent, HTM
 
   override def dependencies = List(jQuery, Realtime)
 
-  override def init[S <: Session](website: Website[S]) = {
+  override def init(website: Website) = {
     website.register("/js/editable_content.js", "editable_content.js")
   }
 
-  override def load[S <: Session](webpage: Webpage[S]) = {
+  override def load(webpage: Webpage) = {
     webpage.head.contents += new tag.Script(src = "/js/editable_content.js")
   }
 
@@ -55,7 +55,7 @@ class EditableContent private(t: HTMLTag with Container[BodyChild]) {
 
   init()
 
-  private def init() = t.connected[Webpage[Session]] {
+  private def init() = t.connected[Webpage] {
     case webpage => {
       t.contentEditable := ContentEditable.True
 
@@ -495,7 +495,7 @@ class EditableContent private(t: HTMLTag with Container[BodyChild]) {
    */
   def styleWithCSS(flag: Boolean) = execCommand("styleWithCSS", flag)
 
-  def execCommand(command: String, value: Any = null): Unit = t.connected[Webpage[Session]] {
+  def execCommand(command: String, value: Any = null): Unit = t.connected[Webpage] {
     case webpage => Realtime.sendJavaScript(webpage, s"editableContentExecCommand('${t.identity}', '$command', ${JavaScriptContent.toJS(value)});")
   }
 }

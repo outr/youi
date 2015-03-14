@@ -67,11 +67,11 @@ object NivoSlider extends Module {
 
   override def dependencies = List(jQuery)
 
-  override def init[S <: Session](website: Website[S]) = {
+  override def init(website: Website) = {
     website.addClassPath("/nivo-slider/", "nivo-slider/")
   }
 
-  override def load[S <: Session](page: Webpage[S]) = {
+  override def load(page: Webpage) = {
     page.head.contents += new tag.Link(rel = "stylesheet", href = "/nivo-slider/themes/default/default.css", mimeType = "text/css", media = "screen")
     page.head.contents += new tag.Link(rel = "stylesheet", href = "/nivo-slider/themes/light/light.css", mimeType = "text/css", media = "screen")
     page.head.contents += new tag.Link(rel = "stylesheet", href = "/nivo-slider/themes/dark/dark.css", mimeType = "text/css", media = "screen")

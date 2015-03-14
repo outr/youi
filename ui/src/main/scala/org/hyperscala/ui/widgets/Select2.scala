@@ -38,11 +38,11 @@ object Select2 extends Module with JavaScriptCaller with StorageComponent[Select
 
   override def dependencies = List(Realtime)
 
-  override def init[S <: Session](website: Website[S]) = {
+  override def init(website: Website) = {
     website.addClassPath("/select2/", "select2-3.5.0/")
   }
 
-  override def load[S <: Session](page: Webpage[S]) = {
+  override def load(page: Webpage) = {
     page.head.contents += new tag.Link(href = "/select2/select2.css", rel = "stylesheet")
     if (debug) {
       page.head.contents += new tag.Script(mimeType = "text/javascript", src = "/select2/select2.js")

@@ -82,7 +82,7 @@ object Dialog extends JavaScriptCaller with StorageComponent[Dialog, HTMLTag] {
     JavaScriptString(buttons.map(b => s"'$b': function() { realtime.send({ id: $$(this).attr('id'), type: 'dialogButtonClicked', name: '$b'}) }").mkString("{ ", ", ", " }"))
   }
 
-  def show[S <: Session](webpage: Webpage[S], title: String, content: BodyChild, width: Int = 300, height: Int = -1, modal: Boolean = true, buttons: List[String] = null)(f: String => Unit) = {
+  def show(webpage: Webpage, title: String, content: BodyChild, width: Int = 300, height: Int = -1, modal: Boolean = true, buttons: List[String] = null)(f: String => Unit) = {
     webpage.body.contents += content
     val dialog = Dialog(content)
     dialog.title := title

@@ -12,8 +12,8 @@ import com.outr.net.http.session.Session
  *
  * @author Matt Hicks <matt@outr.com>
  */
-trait ModularPage[S <: Session] {
-  this: Webpage[S] =>
+trait ModularPage {
+  this: Webpage =>
 
   private val modularPageLoaded = new AtomicBoolean(false)
   private var interfaces = List.empty[Interface]

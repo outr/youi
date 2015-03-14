@@ -9,7 +9,7 @@ import com.outr.net.http.session.Session
  * @author Matt Hicks <matt@outr.com>
  */
 trait ErrorSupport {
-  protected def page: Webpage[_ <: Session]
+  protected def page: Webpage
   private var errors = ListBuffer.empty[ErrorMessage]
 
   final def add(message: String, elements: HTMLTag*) = synchronized {

@@ -11,6 +11,6 @@ import com.outr.net.http.session.MapSession
  *
  * @author Matt Hicks <matt@outr.com>
  */
-object HelloSite extends BasicWebsite with StaticWebsite[MapSession] with JettyApplication {
+object HelloSite extends BasicWebsite with StaticWebsite with JettyApplication {
   def index = new HelloPage
 }

@@ -65,7 +65,7 @@ class CoordinatesExample extends Example {
     style.height := 6.px
     style.zIndex := 100
     style.backgroundColor := Color.Red
-    connected[Webpage[Session]] {
+    connected[Webpage] {
       case webpage => {
         WindowSized.resized(webpage, new JavaScriptString(
           """
@@ -78,7 +78,7 @@ class CoordinatesExample extends Example {
   }
   contents += centerDiv
 
-  connected[Webpage[Session]] {
+  connected[Webpage] {
     case webpage => {
       Bounding.monitor(webpage, Selector.clazz("bounding"), 0.5)
 

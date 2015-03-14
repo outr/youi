@@ -18,15 +18,15 @@ object PageChangeWarning extends Module {
 
   override def dependencies = List(Realtime)
 
-  override def init[S <: Session](website: Website[S]) = {
+  override def init(website: Website) = {
     website.register("/js/page_change_warning.js", "page_change_warning.js")
   }
 
-  override def load[S <: Session](webpage: Webpage[S]) = {
+  override def load(webpage: Webpage) = {
     webpage.head.contents += new tag.Script(src = "/js/page_change_warning.js")
   }
 
-  def warn[S <: Session](webpage: Webpage[S], message: String) = {
+  def warn(webpage: Webpage, message: String) = {
     val m = message match {
       case null => "null"
       case _ => "'%s'".format(message)

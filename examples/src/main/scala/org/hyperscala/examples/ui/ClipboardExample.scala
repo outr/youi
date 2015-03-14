@@ -22,7 +22,7 @@ class ClipboardExample extends Example {
   val input = new tag.Input(id = "myInput")
   val textArea = new tag.TextArea(id = "myTextArea", content = "My Text Area!")
 
-  connected[Webpage[Session]] {
+  connected[Webpage] {
     case webpage => {
       Clipboard.connect(page.body)
       Clipboard(webpage).configureDefaultHandling()

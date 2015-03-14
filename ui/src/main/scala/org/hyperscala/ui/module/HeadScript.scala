@@ -21,9 +21,9 @@ object HeadScript extends Module {
 
   override def dependencies = List(jQuery)
 
-  override def init[S <: Session](website: Website[S]) = {}
+  override def init(website: Website) = {}
 
-  override def load[S <: Session](page: Webpage[S]) = {
+  override def load(page: Webpage) = {
     page.intercept.renderAttribute.on {
       case ep: EventProperty => None    // Don't render JavaScript in HTML
       case pa => Some(pa)
@@ -39,7 +39,7 @@ object HeadScript extends Module {
   }
 }
 
-class HeadScriptTag[S <: Session](page: Webpage[S], tag: HTMLTag) {
+class HeadScriptTag(page: Webpage, tag: HTMLTag) {
   private var script: Script = null
 
   // TODO: support id changing

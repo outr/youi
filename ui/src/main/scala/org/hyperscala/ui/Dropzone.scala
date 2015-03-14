@@ -95,7 +95,7 @@ object Dropzone extends Module with StorageComponent[Dropzone, HTMLTag] {
       | });
       |}
     """.stripMargin)
-  private def UseThumbnailScript[S <: Session](webpage: Webpage[S], dropzone: Dropzone, img: tag.Img) = {
+  private def UseThumbnailScript(webpage: Webpage, dropzone: Dropzone, img: tag.Img) = {
     webpage.eval(
       s"""
         |$$('#${img.identity}').attr('src', document.dataUrls['${dropzone.wrapped.identity}']);
@@ -111,12 +111,12 @@ object Dropzone extends Module with StorageComponent[Dropzone, HTMLTag] {
 
   override def dependencies = List(Realtime)
 
-  override def init[S <: Session](website: Website[S]) = {
+  override def init(website: Website) = {
     website.register("/js/dropzone.js", "dropzone.js")
-    website.addHandler(new DropzoneHandler[S](website), path())
+    website.addHandler(new DropzoneHandler(website), path())
   }
 
-  override def load[S <: Session](webpage: Webpage[S]) = {
+  override def load(webpage: Webpage) = {
     webpage.head.contents += new tag.Script(mimeType = "text/javascript", src = "/js/dropzone.js")
   }
 
@@ -221,7 +221,7 @@ class Dropzone(container: HTMLTag) extends jQueryComponent with Listenable {
   val completeMultiple = property[JavaScriptContent]("completemultiple", null)
   val cancelMultiple = property[JavaScriptContent]("cancelmultiple", null)
 
-  container.connected[Webpage[_]] {
+  container.connected[Webpage] {
     case webpage => {
       params := params() ::: List("pageId" -> webpage.pageId, "tagId" -> container.identity)
       init()
@@ -260,7 +260,7 @@ class Dropzone(container: HTMLTag) extends jQueryComponent with Listenable {
     }
   }
 
-  def applyThumbnail[S <: Session](img: tag.Img) = {
+  def applyThumbnail(img: tag.Img) = {
     Dropzone.UseThumbnailScript(webpage, this, img)
   }
 
@@ -276,21 +276,21 @@ case class DropzoneThumbnailEvent(tag: HTMLTag, lastModified: Long, name: String
 case class DropzoneProgressEvent(tag: HTMLTag, lastModified: Long, name: String, size: Long, mimeType: String, progress: Double, bytesSent: Long) extends BrowserEvent
 case class DropzoneErrorEvent(tag: HTMLTag, lastModified: Long, name: String, size: Long, mimeType: String, message: String) extends BrowserEvent
 
-class DropzoneHandler[S <: Session](website: Website[S]) extends MultipartHandler {
+class DropzoneHandler(website: Website) extends MultipartHandler {
   override def create(request: HttpRequest, response: HttpResponse) = {
-    new DropzoneSupport[S](website)
+    new DropzoneSupport(website)
   }
 }
 
-class DropzoneSupport[S <: Session](website: Website[S]) extends MultipartSupport {
-  private var page: Webpage[S] = _
+class DropzoneSupport(website: Website) extends MultipartSupport {
+  private var page: Webpage = _
   private var t: HTMLTag = _
   private var dropzone: Dropzone = _
 
   override def begin(request: HttpRequest, response: HttpResponse) = {}
 
   override def onField(name: String, value: String) = name match {
-    case "pageId" => page = website.pages.byPageId[Webpage[S]](value).getOrElse(throw new NullPointerException(s"Cannot find page by id: $value."))
+    case "pageId" => page = website.pages.byPageId[Webpage](value).getOrElse(throw new NullPointerException(s"Cannot find page by id: $value."))
     case "tagId" => {
       t = page.getById[HTMLTag](value)
       dropzone = Dropzone(t)

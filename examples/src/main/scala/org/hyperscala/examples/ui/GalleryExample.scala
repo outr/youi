@@ -27,7 +27,7 @@ class GalleryExample extends Example {
   val div = new tag.Div(id = "gallery")
   contents += div
 
-  connected[Webpage[Session]] {
+  connected[Webpage] {
     case webpage => Monitor.sync(webpage, div.style.width, 1.0)
   }
 

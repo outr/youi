@@ -9,7 +9,7 @@ import org.powerscala.concurrent.AtomicInt
  */
 object IdCreator {
   @tailrec
-  final def assignId(webpage: Webpage[_], t: HTMLTag, pre: String = null, index: Int = 1): String = {
+  final def assignId(webpage: Webpage, t: HTMLTag, pre: String = null, index: Int = 1): String = {
     val name = pre match {
       case null => t.xmlLabel
       case _ => pre
@@ -27,7 +27,7 @@ object IdCreator {
     }
   }
 
-  def checkAndSet(webpage: Webpage[_], t: HTMLTag, id: String, f: => Unit) = webpage.synchronized {
+  def checkAndSet(webpage: Webpage, t: HTMLTag, id: String, f: => Unit) = webpage.synchronized {
     if (webpage.body.byId[HTMLTag](id).isEmpty) {
       t.id := id
       true

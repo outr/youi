@@ -29,11 +29,11 @@ object Clipboard extends Module {
   /**
    * Creates a new ClipboardInstance each time it is called (once per webpage instance).
    */
-  val WebpageInstanceCreator = (webpage: Webpage[_ <: Session]) => new ClipboardInstance(webpage)
+  val WebpageInstanceCreator = (webpage: Webpage) => new ClipboardInstance(webpage)
   /**
    * Stores the ClipboardInstance in the session.
    */
-  val SessionInstanceCreator = (webpage: Webpage[_ <: Session]) => webpage.website.session.getOrSet("clipboard_module", new ClipboardInstance(webpage))
+  val SessionInstanceCreator = (webpage: Webpage) => webpage.website.session.getOrSet("clipboard_module", new ClipboardInstance(webpage))
 
   val name = "clipboard"
   val version = Version(1)
@@ -45,18 +45,18 @@ object Clipboard extends Module {
    *
    * By default a single instance is tied to a single webpage instance (WebpageInstanceCreator).
    */
-  var creator: (Webpage[_ <: Session]) => ClipboardInstance = WebpageInstanceCreator
+  var creator: (Webpage) => ClipboardInstance = WebpageInstanceCreator
 
-  override def init[S <: Session](website: Website[S]) = {
+  override def init(website: Website) = {
     website.register("/js/clipboard.js", "clipboard.js")
   }
 
-  override def load[S <: Session](webpage: Webpage[S]) = {
+  override def load(webpage: Webpage) = {
     webpage.head.contents += new tag.Script(mimeType = "text/javascript", src = "/js/clipboard.js")
     apply(webpage)   // Make sure the clipboard instance is created
   }
 
-  def apply[S <: Session](webpage: Webpage[S]) = webpage.store.getOrSet("clipboard_module", creator(webpage))
+  def apply(webpage: Webpage) = webpage.store.getOrSet("clipboard_module", creator(webpage))
 
   def connect(tags: HTMLTag*) = tags.foreach {
     case t => if (!t.clazz.contains("use-clipboard")) {
@@ -65,7 +65,7 @@ object Clipboard extends Module {
   }
 }
 
-class ClipboardInstance(webpage: Webpage[_ <: Session]) extends Listenable {
+class ClipboardInstance(webpage: Webpage) extends Listenable {
   val cutEvent = new UnitProcessor[ClipboardCutEvent]("cut")
   val copyEvent = new UnitProcessor[ClipboardCopyEvent]("copy")
   val pasteEvent = new UnitProcessor[ClipboardPasteEvent]("paste")

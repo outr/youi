@@ -8,8 +8,8 @@ import com.outr.net.http.session.Session
  *
  * @author Matt Hicks <matt@outr.com>
  */
-trait StaticWebsite[S <: Session] {
-  this: Website[S] =>
+trait StaticWebsite {
+  this: Website =>
 
   registerStaticPages()
 
@@ -17,7 +17,7 @@ trait StaticWebsite[S <: Session] {
 
   private def registerStaticPages() = {
     val c = EnhancedClass(getClass)
-    c.methods.filter(em => em.returnType.`type`.hasType(classOf[Webpage[S]]) && em.name != "webpage").foreach(registerMethod)
+    c.methods.filter(em => em.returnType.`type`.hasType(classOf[Webpage]) && em.name != "webpage").foreach(registerMethod)
   }
 
   private def registerMethod(em: EnhancedMethod) = {
@@ -27,6 +27,6 @@ trait StaticWebsite[S <: Session] {
     } else {
       List(path)
     }
-    page(em[Webpage[S]](this), defaultScope, uris: _*)
+    page(em[Webpage](this), defaultScope, uris: _*)
   }
 }

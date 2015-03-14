@@ -34,7 +34,7 @@ class DynamicURLExample extends Example {
     contents += "DynamicURL module allows a convenient mechanism to modify and monitor changes to hash values applied to a URL."
   }
 
-  connected[Webpage[Session]] {
+  connected[Webpage] {
     case webpage => {
       val durl = DynamicURL(webpage)
       val test = durl.property("test", "")

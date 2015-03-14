@@ -10,7 +10,7 @@ import com.outr.net.http.session.Session
  * @author Matt Hicks <mhicks@outr.com>
  */
 class UserAgentExample extends Example {
-  connected[Webpage[Session]] {
+  connected[Webpage] {
     case webpage => {
       contents += new tag.Div(content = s"Operating System: ${UserAgent(webpage).os}")
       contents += new tag.Div(content = s"Browser: ${UserAgent(webpage).browser}")

@@ -10,7 +10,7 @@ import com.outr.net.http.session.Session
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class LargePageExample[S <: Session](website: Website[S]) extends Webpage(website) {
+class LargePageExample extends Webpage {
   require(PageTimer)
 
   val table = new tag.Table

@@ -25,7 +25,7 @@ object RealtimeJSON extends Logging {
     // Configure JSON mapping for BrowserEvents
     MapSupport.j2o.on {
       case m if m.contains("id") => ConnectionHolder.connection.holder() match {
-        case webpage: Webpage[_] => {
+        case webpage: Webpage => {
           val parent = m.get("parent").map(v => webpage.byId[HTMLTag](v.asInstanceOf[String])).flatten.getOrElse(webpage.html)
           val target = m.get("target").map(v => parent.byId[HTMLTag](v.asInstanceOf[String])).flatten
           val tag = m.get("id").map(v => parent.byId[HTMLTag](v.asInstanceOf[String])).flatten
@@ -56,8 +56,8 @@ object RealtimeJSON extends Logging {
    */
   private[realtime] def connect(init: InitBrowserConnection) = {
     val connection = ConnectionHolder.connection
-    val site = connection.application.asInstanceOf[Website[Session]]
-    site.pages.byPageId[Webpage[Session]](init.pageId) match {
+    val site = connection.application.asInstanceOf[Website]
+    site.pages.byPageId[Webpage](init.pageId) match {
       case Some(page) => {
         page.hold(connection)                           // Webpage should hold the connection
         RealtimePage(page).init()                       // Initialize the RealtimePage

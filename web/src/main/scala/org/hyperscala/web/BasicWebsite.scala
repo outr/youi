@@ -9,6 +9,8 @@ import com.outr.net.http.request.HttpRequest
  *
  * @author Matt Hicks <matt@outr.com>
  */
-trait BasicWebsite extends Website[MapSession] {
+trait BasicWebsite extends Website {
+  override type S = MapSession
+
   protected def createSession(request: HttpRequest, id: String) = new MapSession(id, this)
 }

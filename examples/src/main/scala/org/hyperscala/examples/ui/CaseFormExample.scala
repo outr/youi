@@ -16,7 +16,7 @@ import com.outr.net.http.session.Session
 class CaseFormExample extends Example {
   this.require(Realtime)
   this.require(Gritter)
-  connected[Webpage[Session]] {
+  connected[Webpage] {
     case webpage => {
       webpage.connectForm()
       webpage.head.contents += new tag.Link(href = "/css/case_form.css")

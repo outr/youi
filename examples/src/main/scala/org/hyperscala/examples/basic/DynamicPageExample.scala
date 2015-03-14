@@ -8,7 +8,7 @@ import org.hyperscala.web.Website
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */
-class DynamicPageExample[S <: Session](website: Website[S]) extends DynamicWebpage(website) {
+class DynamicPageExample extends DynamicWebpage {
   def dynamicTag = DynamicTag.url[tag.HTML](getClass.getName, getClass.getClassLoader.getResource("dynamic_page.html"))
 
   val message = getById[tag.Strong]("message")

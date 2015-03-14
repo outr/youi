@@ -52,7 +52,7 @@ abstract class FileUploader extends tag.Div with MultipartSupport {
   private var _input = createInput()
   def input = _input
 
-  connected[Webpage[_ <: Session]] {
+  connected[Webpage] {
     case webpage => {
       val uploadPath = s"${FileUploader.Path}?pageId=${webpage.pageId}&fieldId=$identity"
       uploadForm.action := uploadPath
@@ -88,18 +88,18 @@ object FileUploader extends Module {
 
   override def dependencies = List(BusyDialog)
 
-  override def init[S <: Session](website: Website[S]) = {
+  override def init(website: Website) = {
     website.addHandler(new FileUploadHandler(website), Path)
   }
 
-  override def load[S <: Session](webpage: Webpage[S]) = {}
+  override def load(webpage: Webpage) = {}
 }
 
-class FileUploadHandler[S <: Session](website: Website[S]) extends MultipartHandler {
+class FileUploadHandler(website: Website) extends MultipartHandler {
   def create(request: HttpRequest, response: HttpResponse) = {
     val pageId = request.url.parameters.first("pageId")
     val fieldId = request.url.parameters.first("fieldId")
-    val page = website.pages.byPageId[Webpage[S]](pageId).getOrElse(throw new NullPointerException(s"Cannot find page by id: $pageId"))
+    val page = website.pages.byPageId[Webpage](pageId).getOrElse(throw new NullPointerException(s"Cannot find page by id: $pageId"))
     page.getById[FileUploader](fieldId)
   }
 }

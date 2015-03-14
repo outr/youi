@@ -16,7 +16,7 @@ import com.outr.net.http.HttpParameters
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-trait FormSupport[S <: Session] extends Webpage[S] {
+trait FormSupport extends Webpage {
   override def onReceive(request: HttpRequest, response: HttpResponse) = {
     var form: Form = null
     val parameters = if (request.method == Method.Post) {

@@ -24,7 +24,7 @@ class ScreenExample extends Example {
   val heading = new tag.H1(content = "Example")
   contents += heading
 
-  connected[Webpage[Session]] {
+  connected[Webpage] {
     case webpage => screens = new ExampleScreens(webpage, ScreenExample.this)
   }
 
@@ -57,7 +57,7 @@ class ScreenExample extends Example {
   def notify(message: String) = Gritter.add(this.webpage, "Screen Change", message)
 }
 
-class ExampleScreens(webpage: Webpage[Session], example: ScreenExample) extends Screens(webpage) {
+class ExampleScreens(webpage: Webpage, example: ScreenExample) extends Screens(webpage) {
   val screen1 = screen(example.screen1URI, new HeadingScreen(example, "Screen 1"))
   val screen2 = screen(example.screen2URI, new HeadingScreen(example, "Screen 2"))
   val screen3 = screen(example.screen3URI, new HeadingScreen(example, "Screen 3"))

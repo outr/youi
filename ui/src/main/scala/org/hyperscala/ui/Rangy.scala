@@ -16,11 +16,11 @@ object Rangy extends Module {
 
   override def dependencies = List(jQuery)
 
-  override def init[S <: Session](website: Website[S]) = {
+  override def init(website: Website) = {
     website.addClassPath("/rangy/", "rangy/")
   }
 
-  override def load[S <: Session](page: Webpage[S]) = {
+  override def load(page: Webpage) = {
     val path = "/rangy"
     page.head.contents += new tag.Script(src = s"$path/rangy-core.js")
     page.head.contents += new tag.Script(src = s"$path/rangy-classapplier.js")

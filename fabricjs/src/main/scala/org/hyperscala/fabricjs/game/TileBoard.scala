@@ -10,7 +10,7 @@ import org.hyperscala.web.Webpage
  * @author Matt Hicks <matt@outr.com>
  */
 class TileBoard[Tile <: Object](canvas: StaticCanvas, tileWidth: Double, tileHeight: Double) {
-  canvas.canvas.connected[Webpage[Session]] {
+  canvas.canvas.connected[Webpage] {
     case webpage => {
       webpage.require(Monitor)
       println(s"Monitoring...")

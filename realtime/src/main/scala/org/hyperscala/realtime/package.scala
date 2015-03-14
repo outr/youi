@@ -20,7 +20,7 @@ package object realtime {
     }
   }
 
-  implicit def realtimePage[S <: Session](webpage: Webpage[S]): RealtimePage[S] = RealtimePage(webpage)
+  implicit def realtimePage(webpage: Webpage): RealtimePage = RealtimePage(webpage)
 
   implicit def realtimeTag[Tag <: HTMLTag](tag: Tag): RealtimeTag = Storage.getOrSet(tag, "realtimeTag", new RealtimeTag(tag))
 }

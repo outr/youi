@@ -6,6 +6,7 @@ import com.outr.net.http.handler.CachedHandler
 import com.outr.net.http.request.HttpRequest
 import com.outr.net.http.response.{HttpResponse, HttpResponseStatus}
 import com.outr.net.http.session.Session
+import org.powerscala.hierarchy.AbstractMutableContainer
 import org.powerscala.{Unique, MapStorage}
 import org.powerscala.event.processor.UnitProcessor
 import org.powerscala.log.Logging
@@ -14,7 +15,7 @@ import org.powerscala.reflect._
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-abstract class Website[S <: Session](implicit val manifest: Manifest[S]) extends WebApplication[S] with Logging {
+abstract class Website extends WebApplication with Logging with AbstractMutableContainer[Webpage] {
   /**
    * Unique id for this Website instance. Can be used to lookup the Website.
    */
@@ -29,11 +30,11 @@ abstract class Website[S <: Session](implicit val manifest: Manifest[S]) extends
   /**
    * Invoked when a page throws an error.
    */
-  val pageError = new UnitProcessor[(Webpage[S], Throwable)]("pageError")
+  val pageError = new UnitProcessor[(Webpage, Throwable)]("pageError")
   /**
    * Access to all currently loaded pages.
    */
-  lazy val pages = new Pages[S](this)
+  lazy val pages = new Pages(this)
 
   def init(): Unit = {
     handlers += CachedHandler               // Add caching support
@@ -43,7 +44,7 @@ abstract class Website[S <: Session](implicit val manifest: Manifest[S]) extends
     }
   }
 
-  def page(creator: => Webpage[S], scope: Scope, uris: String*) = {
+  def page(creator: => Webpage, scope: Scope, uris: String*) = {
     val handler = new WebpageHandler(() => creator, scope, this, uris.toList)
     if (uris.nonEmpty) {
       addHandler(handler, uris: _*)
@@ -81,15 +82,18 @@ abstract class Website[S <: Session](implicit val manifest: Manifest[S]) extends
       case t: Throwable => error("Exception thrown while updating pages.", t)
     }
   }
+
+  override protected[web] def addChild(child: Webpage): Unit = super.addChild(child)
+  override protected[web] def removeChild(child: Webpage): Unit = super.removeChild(child)
 }
 
 object Website {
-  private var _sites = Map.empty[String, Website[Session]]
+  private var _sites = Map.empty[String, Website]
 
-  private def register(website: Website[_ <: Session]) = synchronized {
-    _sites += website.id -> website.asInstanceOf[Website[Session]]
+  private def register(website: Website) = synchronized {
+    _sites += website.id -> website.asInstanceOf[Website]
   }
-  private def unregister(website: Website[_ <: Session]) = synchronized {
+  private def unregister(website: Website) = synchronized {
     _sites -= website.id
   }
 

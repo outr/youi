@@ -66,7 +66,7 @@ import org.hyperscala.web.{StaticWebsite, BasicWebsite}
 import com.outr.net.http.jetty.JettyApplication
 import com.outr.net.http.session.MapSession
 
-object HelloSite extends BasicWebsite with StaticWebsite[MapSession] with JettyApplication {
+object HelloSite extends BasicWebsite with StaticWebsite with JettyApplication {
   def index = new HelloPage
 }
 ```
@@ -182,11 +182,11 @@ object jQuery182 extends Module {
   def name = "jQuery182"
   def version = Version(1,8,2)
 
-  override def init[S <: Session](website: Website[S]) = {
+  override def init(website: Website) = {
     website.register("/js/jquery-1.8.2.js", "jquery-1.8.2.min.js")
   }
 
-  override def load[S <: Session](webpage: Webpage[S]) = {
+  override def load(webpage: Webpage) = {
     webpage.head.contents += new tag.Script(mimeType = "text/javascript", src = "/js/jquery-1.8.2.js")
   }
 

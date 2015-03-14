@@ -13,9 +13,9 @@ import org.powerscala.property.Property
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class WebpageHandler[S <: Session](pageCreator: () => Webpage[S],
+class WebpageHandler(pageCreator: () => Webpage,
                                    val scope: Scope,
-                                   val website: Website[S],
+                                   val website: Website,
                                    val uris: List[String]) extends HttpHandler with Logging with Listenable {
   /**
    * Allows pre-management of the response before handling by a webpage. If the HttpResponseStatus is not NotFound then
@@ -52,6 +52,7 @@ class WebpageHandler[S <: Session](pageCreator: () => Webpage[S],
       case Some(p) => Some(p)                        // Found page cached, just return it
       case None if !onlyById() => {                  // Page not found, create and cache it
         val p = pageCreator()
+        p.init(website)
         cache(p)
         Some(p)
       }
@@ -63,8 +64,8 @@ class WebpageHandler[S <: Session](pageCreator: () => Webpage[S],
     }
   }
 
-  def load(request: HttpRequest): Option[Webpage[S]] = request.url.parameters.getFirst("pageId") match {
-    case Some(pageId) => website.pages.byPageId[Webpage[S]](pageId)
+  def load(request: HttpRequest): Option[Webpage] = request.url.parameters.getFirst("pageId") match {
+    case Some(pageId) => website.pages.byPageId[Webpage](pageId)
     case None => scope match {
       case Scope.Request => None                                            // Always get a new page on new request
       case Scope.Page => None                                               // If no pageId is supplied, we have no way to find it
@@ -73,7 +74,7 @@ class WebpageHandler[S <: Session](pageCreator: () => Webpage[S],
     }
   }
 
-  def cache(page: Webpage[S]) = {
+  def cache(page: Webpage) = {
     debug(s"Caching page: ${page.pageId} with Scope: $scope")
     WebpageHandler.cachePage(page, scope, Some(id))
   }
@@ -82,11 +83,11 @@ class WebpageHandler[S <: Session](pageCreator: () => Webpage[S],
 // TODO: get or create a new RequestScope (only for the page request, not subsequent requests), SessionScope, and ApplicationScope
 
 object WebpageHandler {
-  def pageById[W <: Webpage[S], S <: Session](pageId: String, website: Website[S]) = website.pages.byPageId[W](pageId)
+  def pageById[W <: Webpage](pageId: String, website: Website) = website.pages.byPageId[W](pageId)
 
-  def cachePage[S <: Session](page: Webpage[S], scope: Scope, handlerId: Option[String]) = page.website.pages.add(page, scope, handlerId)
+  def cachePage(page: Webpage, scope: Scope, handlerId: Option[String]) = page.website.pages.add(page, scope, handlerId)
 
-  def handle[S <: Session](request: HttpRequest, response: HttpResponse, page: Webpage[S]) = {
+  def handle(request: HttpRequest, response: HttpResponse, page: Webpage) = {
     page.checkIn()
     page.onReceive(request, response)
   }

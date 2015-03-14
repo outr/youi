@@ -97,11 +97,11 @@ class Autocompletified private(val input: FormField) {
     }
   }
 
-  input.connected[Webpage[_ <: Session]] {
+  input.connected[Webpage] {
     case webpage => autoCompletify(webpage)
   }
 
-  private def autoCompletify[S <: Session](webpage: Webpage[S]) = {
+  private def autoCompletify(webpage: Webpage) = {
     val appendId = appendTo() match {
       case null => null
       case t => s"'t.id()'"
@@ -136,7 +136,7 @@ class Autocompletified private(val input: FormField) {
     }
   }
 
-  private def sendChanges[S <: Session](webpage: Webpage[S], evt: PropertyChangeEvent[_]) = evt.property match {
+  private def sendChanges(webpage: Webpage, evt: PropertyChangeEvent[_]) = evt.property match {
     case p if p == autoFocus => webpage.eval($(input).option("autocomplete", "autoFocus", autoFocus()))
     case p if p == delay => webpage.eval($(input).option("autocomplete", "delay", delay()))
     case p if p == disabled => webpage.eval($(input).option("autocomplete", "disabled", disabled()))
@@ -180,23 +180,23 @@ object Autocomplete extends Module {
 
   override def dependencies = List(jQueryUI, Realtime)
 
-  override def init[S <: Session](website: Website[S]) = {
+  override def init(website: Website) = {
     website.addHandler(new AutocompleteHandler(website), "/autocomplete/request")
     website.register("/js/autocomplete.js", "autocomplete.js")
   }
 
-  override def load[S <: Session](webpage: Webpage[S]) = {
+  override def load(webpage: Webpage) = {
     webpage.head.contents += new tag.Script(src = "/js/autocomplete.js")
   }
 }
 
-class AutocompleteHandler[S <: Session](website: Website[S]) extends HttpHandler {
+class AutocompleteHandler(website: Website) extends HttpHandler {
   def onReceive(request: HttpRequest, response: HttpResponse) = {
     val pageId = request.url.parameters.first("pageId")
     val fieldId = request.url.parameters.first("fieldId")
     val term = request.url.parameters.first("term")
 
-    val page = website.pages.byPageId[Webpage[S]](pageId).getOrElse(throw new NullPointerException(s"Cannot find page by id: $pageId"))
+    val page = website.pages.byPageId[Webpage](pageId).getOrElse(throw new NullPointerException(s"Cannot find page by id: $pageId"))
     val input = page.getById[FormField](fieldId)
     val autocompletified = Autocompletified(input)
     val results = autocompletified.submit(term).map(Autocompletified.Result2JSON).mkString("[", ", ", "]")

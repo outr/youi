@@ -42,11 +42,11 @@ object JustifiedGallery extends Module with JavaScriptCaller with StorageCompone
 
   override def dependencies = List(jQuery, Realtime)
 
-  override def init[S <: Session](website: Website[S]) = {
+  override def init(website: Website) = {
     website.addClassPath("/justified-gallery", "justified-gallery")
   }
 
-  override def load[S <: Session](webpage: Webpage[S]) = {
+  override def load(webpage: Webpage) = {
     webpage.head.contents += new tag.Link(href = "/justified-gallery/justifiedGallery.min.css")
     webpage.head.contents += new tag.Script(mimeType = "text/javascript", src = "/justified-gallery/jquery.justifiedGallery.min.js")
   }

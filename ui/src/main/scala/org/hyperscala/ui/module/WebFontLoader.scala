@@ -18,7 +18,7 @@ import org.powerscala.Version
  *
  * @author Matt Hicks <matt@outr.com>
  */
-class WebFontLoader[S <: Session] private(webpage: Webpage[S]) {
+class WebFontLoader private(webpage: Webpage) {
   webpage.head.contents += new tag.Script(src = s"//ajax.googleapis.com/ajax/libs/webfont/${WebFontLoader.version}/webfont.js")
 
   private var loaded = Set.empty[String]
@@ -72,15 +72,15 @@ object WebFontLoader extends Module with HttpHandler {
 
   override def dependencies: List[Interface] = super.dependencies
 
-  override def init[S <: Session](website: Website[S]) = {
+  override def init(website: Website) = {
     website.addHandler(this, "/webfontloader.css")
   }
 
-  override def load[S <: Session](webpage: Webpage[S]) = {
+  override def load(webpage: Webpage) = {
     apply(webpage)      // Instantiate the WebFontLoader for this webpage
   }
 
-  def apply[S <: Session](webpage: Webpage[S]) = webpage.store.getOrSet("webfontloader", new WebFontLoader(webpage))
+  def apply(webpage: Webpage) = webpage.store.getOrSet("webfontloader", new WebFontLoader(webpage))
 
   override def onReceive(request: HttpRequest, response: HttpResponse) = {
     val family = request.url.parameters.first("family")

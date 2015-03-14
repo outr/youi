@@ -16,7 +16,7 @@ import org.powerscala.Color
 class ModalComponentExample extends Example {
   require(ModalComponent)
 
-  connected[Webpage[_ <: Session]] {
+  connected[Webpage] {
     case webpage => ModalComponent(webpage).modalClicked.on {
       case evt => ModalComponent(webpage).selected := null
     }

@@ -17,9 +17,9 @@ object Bootstrap extends Module {
 
   override def dependencies = List(jQuery)
 
-  override def init[S <: Session](website: Website[S]) = {}
+  override def init(website: Website) = {}
 
-  override def load[S <: Session](webpage: Webpage[S]) = {
+  override def load(webpage: Webpage) = {
     webpage.head.contents += new tag.Meta(httpEquiv = "X-UA-Compatible", content = "IE=edge")
     webpage.head.meta("viewport", "width=device-width, initial-scale=1")
 

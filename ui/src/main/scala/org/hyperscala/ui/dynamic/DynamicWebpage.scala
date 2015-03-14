@@ -7,7 +7,7 @@ import com.outr.net.http.session.Session
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */
-abstract class DynamicWebpage[S <: Session](website: Website[S]) extends Webpage[S](website) {
+abstract class DynamicWebpage extends Webpage {
   def dynamicTag: DynamicTag[tag.HTML]
 
   private lazy val dynamicHTML = dynamicTag.create()

@@ -14,11 +14,11 @@ object StyleChange extends Module {
 
   def version = Version(1)
 
-  def init[S <: Session](website: Website[S]) = {
+  def init(website: Website) = {
     website.register("/js/stylechange.js", "stylechange.js")
   }
 
-  def load[S <: Session](webpage: Webpage[S]) = {
+  def load(webpage: Webpage) = {
     webpage.head.contents += new tag.Script(mimeType = "text/javascript", src = "/js/stylechange.js")
   }
 }

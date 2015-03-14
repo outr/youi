@@ -26,22 +26,22 @@ trait WebJarModule extends Module {
     }
   }
 
-  def init[S <: Session](website: Website[S]) = jarResources.foreach(r => r.init(website))
+  def init(website: Website) = jarResources.foreach(r => r.init(website))
 
-  def load[S <: Session](webpage: Webpage[S]) = jarResources.foreach(r => r.load(webpage))
+  def load(webpage: Webpage) = jarResources.foreach(r => r.load(webpage))
 }
 
 case class WebJarResource(path: String, resource: URL, resourceType: WebJarType) {
-  def init[S <: Session](website: Website[S]) = {
+  def init(website: Website) = {
     website.register(path, resource)
   }
 
-  def load[S <: Session](webpage: Webpage[S]) = {
+  def load(webpage: Webpage) = {
     resourceType.load(this, webpage)
   }
 }
 
-class WebJarType private(val load: (WebJarResource, Webpage[_]) => Unit) extends EnumEntry
+class WebJarType private(val load: (WebJarResource, Webpage) => Unit) extends EnumEntry
 
 object WebJarType extends Enumerated[WebJarType] {
   /**

@@ -16,7 +16,7 @@ class Stage private(val canvas: tag.Canvas) {
 
   def update() = send(JavaScriptString(s"EaselJS.stage('${canvas.identity}').update();"))
 
-  def send(js: JavaScriptContent) = canvas.connected[Webpage[Session]] {
+  def send(js: JavaScriptContent) = canvas.connected[Webpage] {
     case webpage => webpage.eval(js)
   }
 }

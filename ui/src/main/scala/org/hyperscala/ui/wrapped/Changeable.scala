@@ -22,11 +22,11 @@ object Changeable extends Module with StorageComponent[Changeable, HTMLTag] {
 
   override def dependencies = List(jQuery)
 
-  override def init[S <: Session](website: Website[S]) = {
+  override def init(website: Website) = {
     website.register("/js/changeable.js", "changeable.js")
   }
 
-  override def load[S <: Session](webpage: Webpage[S]) = {
+  override def load(webpage: Webpage) = {
     webpage.head.contents += new tag.Script(mimeType = "text/javascript", src = "/js/changeable.js")
   }
 

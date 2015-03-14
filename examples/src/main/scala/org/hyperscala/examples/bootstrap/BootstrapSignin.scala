@@ -10,7 +10,7 @@ import org.hyperscala.web.{Website, Webpage}
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class BootstrapSignin[S <: Session](site: Website[S]) extends Webpage(site) {
+class BootstrapSignin extends Webpage {
   require(Bootstrap)
 
   head.contents += new tag.Link(href = "/form.css")

@@ -28,16 +28,16 @@ object WindowSize extends Module with Listenable {
   /**
    * Should always reflect the width of the webpage window.
    */
-  def width[S <: Session](webpage: Webpage[S]) = webpage.store.getOrSet("windowWidth", new Property[Int]())
+  def width(webpage: Webpage) = webpage.store.getOrSet("windowWidth", new Property[Int]())
 
   /**
    * Should always reflect the height of the webpage window.
    */
-  def height[S <: Session](webpage: Webpage[S]) = webpage.store.getOrSet("windowHeight", new Property[Int]())
+  def height(webpage: Webpage) = webpage.store.getOrSet("windowHeight", new Property[Int]())
 
-  override def init[S <: Session](website: Website[S]) = {}
+  override def init(website: Website) = {}
 
-  override def load[S <: Session](webpage: Webpage[S]) = {
+  override def load(webpage: Webpage) = {
     webpage.body.handle[WindowSize] {
       case evt => {
         width(webpage) := evt.width

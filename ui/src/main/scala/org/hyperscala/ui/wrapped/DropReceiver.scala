@@ -25,7 +25,7 @@ class DropReceiver private(val wrapped: HTMLTag, val autoInit: Boolean = true) e
     }
   }
 
-  protected def initializeComponent(values: Map[String, Any]) = wrapped.connected[Webpage[Session]] {
+  protected def initializeComponent(values: Map[String, Any]) = wrapped.connected[Webpage] {
     case webpage => {
       webpage.eval(s"createDropReceiver('${wrapped.identity}');")
       values.foreach {
@@ -60,11 +60,11 @@ object DropReceiver extends Module with StorageComponent[DropReceiver, HTMLTag] 
 
   override def dependencies = List(jQuery, Realtime)
 
-  override def init[S <: Session](website: Website[S]) = {
+  override def init(website: Website) = {
     website.register("/js/drop_receiver.js", "drop_receiver.js")
   }
 
-  override def load[S <: Session](webpage: Webpage[S]) = {
+  override def load(webpage: Webpage) = {
     webpage.head.contents += new tag.Script(mimeType = "text/javascript", src = "/js/drop_receiver.js")
   }
 

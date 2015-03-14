@@ -13,9 +13,9 @@ object PageTimer extends Module with Logging {
   val name = "pageTimer"
   val version = Version(1)
 
-  override def init[S <: Session](website: Website[S]) = {}
+  override def init(website: Website) = {}
 
-  override def load[S <: Session](page: Webpage[S]) = {
+  override def load(page: Webpage) = {
     page.store("pageLoadingStart") = System.currentTimeMillis()
     page.pageLoadedEvent.on {
       case webpage => {

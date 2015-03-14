@@ -34,12 +34,12 @@ trait Module extends Interface {
   /**
    * Init is invoked only once per Website and is guaranteed to occur before "load".
    */
-  def init[S <: Session](website: Website[S]): Unit
+  def init(website: Website): Unit
 
   /**
    * Load is invoked only once per Webpage and is guaranteed to occur after "init".
    */
-  def load[S <: Session](webpage: Webpage[S]): Unit
+  def load(webpage: Webpage): Unit
 
-  override def toString() = "Module(name = %s, version = %s)".format(name, version)
+  override def toString = "Module(name = %s, version = %s)".format(name, version)
 }

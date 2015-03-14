@@ -13,7 +13,7 @@ import org.powerscala.concurrent.Time
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-trait LoggedWebpage[S <: Session] extends Webpage[S] {
+trait LoggedWebpage extends Webpage {
   override def onReceive(request: HttpRequest, response: HttpResponse) = {
     val (result, time) = Time.elapsedReturn {
       super.onReceive(request, response)

@@ -13,11 +13,11 @@ object jQuerySerializeForm extends Module {
   val name = "jquery-serializeform"
   val version = Version(1)
 
-  override def init[S <: Session](website: Website[S]) = {
+  override def init(website: Website) = {
     website.register("/js/jquery.serializeform.js", "jquery.serializeform.js")
   }
 
-  override def load[S <: Session](webpage: Webpage[S]) = {
+  override def load(webpage: Webpage) = {
     webpage.head.contents += new tag.Script(src = "/js/jquery.serializeform.js")
   }
 }

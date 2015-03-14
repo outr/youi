@@ -20,17 +20,17 @@ object BusyDialog extends Module {
 
   override def dependencies = List(Realtime, jQueryUI)
 
-  override def init[S <: Session](website: Website[S]) = {
+  override def init(website: Website) = {
   }
 
-  override def load[S <: Session](webpage: Webpage[S]) = {
+  override def load(webpage: Webpage) = {
     val div = new BusyDialog
     webpage.body.contents += div
 
     Dialog.assign(div, autoOpen = false, closeOnEscape = false, modal = true, width = 320, height = 120, resizable = false)
   }
 
-  def disabled[T, S <: Session](webpage: Webpage[S])(f: => T): T = {
+  def disabled[T, S <: Session](webpage: Webpage)(f: => T): T = {
     disable(webpage)
     try {
       f
@@ -39,18 +39,18 @@ object BusyDialog extends Module {
     }
   }
 
-  def enable[S <: Session](webpage: Webpage[S]) = {
+  def enable(webpage: Webpage) = {
     webpage.store.remove("BusyDialog.disabled")
   }
 
-  def disable[S <: Session](webpage: Webpage[S]) = {
+  def disable(webpage: Webpage) = {
     hide(webpage)
     webpage.store("BusyDialog.disabled") = true
   }
 
-  def isDisabled[S <: Session](webpage: Webpage[S]) = webpage.store.getOrElse("BusyDialog.disabled", false)
+  def isDisabled(webpage: Webpage) = webpage.store.getOrElse("BusyDialog.disabled", false)
 
-  def show[S <: Session](webpage: Webpage[S], title: String, progress: Option[Double] = None) = if (!isDisabled(webpage)) {
+  def show(webpage: Webpage, title: String, progress: Option[Double] = None) = if (!isDisabled(webpage)) {
     webpage.body.byId[BusyDialog]("busyDialog") match {
       case Some(window) => {
         Dialog(window).title := title
@@ -63,7 +63,7 @@ object BusyDialog extends Module {
     }
   }
 
-  def hide[S <: Session](webpage: Webpage[S]) = if (!isDisabled(webpage)) {
+  def hide(webpage: Webpage) = if (!isDisabled(webpage)) {
     webpage.body.byId[tag.Div]("busyDialog") match {
       case Some(window) => {
         if (Dialog(window).isOpen()) {
@@ -74,7 +74,7 @@ object BusyDialog extends Module {
     }
   }
 
-  def apply[T, S <: Session](webpage: Webpage[S], title: String, progress: Option[Double] = None)(f: => T): T = {
+  def apply[T, S <: Session](webpage: Webpage, title: String, progress: Option[Double] = None)(f: => T): T = {
     BusyDialog.show(webpage, title, progress)
     try {
       f

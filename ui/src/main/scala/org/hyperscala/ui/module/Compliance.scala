@@ -21,10 +21,10 @@ class Compliance(t: HTMLTag) {
   val WebkitTransform = new Style[Transform]("-webkit-transform")
   val WebkitTransformOrigin = new Style[Double]("-webkit-transform-origin")
 
-  def scalePercent[S <: Session](webpage: Webpage[S], v: Int) = scale(webpage, v / 100.0)
-  def scalePercent[S <: Session](webpage: Webpage[S]) = math.round(scale(webpage) * 100.0).toInt
+  def scalePercent(webpage: Webpage, v: Int) = scale(webpage, v / 100.0)
+  def scalePercent(webpage: Webpage) = math.round(scale(webpage) * 100.0).toInt
 
-  def scale[S <: Session](webpage: Webpage[S], v: Double) = if (UserAgent(webpage).browser.family == BrowserFamily.IE) {
+  def scale(webpage: Webpage, v: Double) = if (UserAgent(webpage).browser.family == BrowserFamily.IE) {
     t.style(IEZoom, None) := v
   } else if (UserAgent(webpage).browser.family == BrowserFamily.Firefox) {
     t.style(FirefoxTransform, None) := Scale(v)
@@ -37,7 +37,7 @@ class Compliance(t: HTMLTag) {
     t.style(WebkitTransformOrigin, None) := 0.0
   }
 
-  def scale[S <: Session](webpage: Webpage[S]) = if (UserAgent(webpage).browser.family == BrowserFamily.IE) {
+  def scale(webpage: Webpage) = if (UserAgent(webpage).browser.family == BrowserFamily.IE) {
     t.style(IEZoom, Some(1.0)).value
   } else if (UserAgent(webpage).browser.family == BrowserFamily.Firefox) {
     t.style(FirefoxTransform, Some(Scale(1.0))).value match {

@@ -20,7 +20,7 @@ class SingleSelectListExample extends Example {
   this.require(Realtime)
   this.require(Gritter)
 
-  connected[Webpage[_]] {
+  connected[Webpage] {
     case webpage => {
       val style = webpage.head.selector(Selector("#dropdown div, #inputDropdown div"))
       style.border := "1px solid black"

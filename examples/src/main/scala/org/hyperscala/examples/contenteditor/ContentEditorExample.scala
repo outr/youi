@@ -20,7 +20,7 @@ import org.powerscala.Color
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class ContentEditorExample(site: Website[MapSession]) extends Example {
+class ContentEditorExample(site: Website) extends Example {
   require(Realtime)
   require(Bootstrap)
   require(Gritter)
@@ -42,7 +42,7 @@ class ContentEditorExample(site: Website[MapSession]) extends Example {
     style.border := "none"
     style.outline := "none"
   }
-  val editorPage = new EditablePageExample(this, site)
+  val editorPage = new EditablePageExample(this)
   frame.currentPage := editorPage
   contents += frame
 
@@ -151,7 +151,7 @@ class ContentEditorExample(site: Website[MapSession]) extends Example {
   contents += controls
 }
 
-class EditablePageExample(example: ContentEditorExample, site: Website[MapSession]) extends Webpage[MapSession](site) {
+class EditablePageExample(example: ContentEditorExample) extends Webpage {
   require(ContentEditor)
   require(Gritter)
 

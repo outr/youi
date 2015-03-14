@@ -20,7 +20,7 @@ class Tabs extends tag.Div {
   val navigation = new tag.Ul(id = Unique())
   contents += navigation
 
-  connected[Webpage[_ <: Session]] {
+  connected[Webpage] {
     case webpage => webpage.eval(s"$$('#$identity').tabs();", Some(Selector.id(identity).toCondition))
   }
 

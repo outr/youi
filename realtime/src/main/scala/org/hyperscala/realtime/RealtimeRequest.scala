@@ -1,6 +1,5 @@
 package org.hyperscala.realtime
 
-import com.outr.net.http.session.Session
 import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.javascript.dsl.Statement
 import org.hyperscala.web.Webpage
@@ -26,7 +25,7 @@ object RealtimeRequest {
    * @param manifest result Manifest
    * @tparam R result type
    */
-  def apply[R](webpage: Webpage[_ <: Session],
+  def apply[R](webpage: Webpage,
                request: Statement[R],
                condition: Option[Statement[Boolean]] = None)
               (f: R => Unit)(implicit manifest: Manifest[R]) = {
@@ -61,7 +60,7 @@ object RealtimeRequest {
    * @param manifest result manifest
    * @tparam R result type
    */
-  def monitor[R](webpage: Webpage[_ <: Session],
+  def monitor[R](webpage: Webpage,
                request: Statement[R],
                condition: Option[Statement[Boolean]] = None,
                frequency: Long = 1000L)

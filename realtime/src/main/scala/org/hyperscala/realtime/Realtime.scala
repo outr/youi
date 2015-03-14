@@ -43,12 +43,12 @@ object Realtime extends Module with Logging {
 
   override def dependencies = List(jQuery, jQuerySerializeForm, jQueryStyleSheet, IdentifyTags)
 
-  override def init[S <: Session](website: Website[S]) = {
+  override def init(website: Website) = {
     website.register("/js/communicate.js", "communicate.js")
     website.register("/js/realtime.js", "realtime.js")
   }
 
-  override def load[S <: Session](webpage: Webpage[S]) = {
+  override def load(webpage: Webpage) = {
     webpage.head.contents += new tag.Meta(httpEquiv = "expires", content = "0")
     webpage.head.contents += new tag.Script(src = "/js/communicate.js")
     webpage.head.contents += new tag.Script(src = "/js/realtime.js")
@@ -73,7 +73,7 @@ object Realtime extends Module with Logging {
   def send[Event <: AnyRef](event: Event): JavaScriptContent = JavaScriptString(s"realtime.send(${toJSON(event).compact.replaceAll("'", """\'""").replaceAll("\"", "'")});")
 }
 
-case class BrowserErrorEvent(webpage: Webpage[Session], error: BrowserError) {
+case class BrowserErrorEvent(webpage: Webpage, error: BrowserError) {
   override def toString = {
     val ua = UserAgent(webpage)
     s"Page: ${webpage.getClass.getName}, $ua, Remote: ${webpage.website.request.derivedRemoteHost} - $error"

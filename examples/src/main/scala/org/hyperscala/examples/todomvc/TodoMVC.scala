@@ -11,7 +11,7 @@ import org.hyperscala.web.{Website, Webpage}
 import com.outr.net.http.session.Session
 import org.powerscala.property.Property
 
-class TodoMVC[S <: Session](website: Website[S]) extends Webpage[S](website) {
+class TodoMVC(website: Website) extends Webpage {
   require(Realtime)
   this.connectForm()
 

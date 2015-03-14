@@ -31,11 +31,11 @@ object Spectrum extends Module with JavaScriptCaller with StorageComponent[Spect
 
   override def dependencies = List(jQuery)
 
-  override def init[S <: Session](website: Website[S]) = {
+  override def init(website: Website) = {
     website.addClassPath("/spectrum/", "spectrum/")
   }
 
-  override def load[S <: Session](webpage: Webpage[S]) = {
+  override def load(webpage: Webpage) = {
     webpage.head.contents += new tag.Link(href = "/spectrum/spectrum.css", rel = "stylesheet")
     webpage.head.contents += new tag.Script(mimeType = "text/javascript", src = "/spectrum/spectrum.js")
   }
@@ -187,7 +187,7 @@ class Spectrum private(val wrapped: Input, val autoInit: Boolean = true) extends
   }
 
   override def option(key: String, value: Any) = key match {
-    case "color" => wrapped.connected[Webpage[_ <: Session]] {
+    case "color" => wrapped.connected[Webpage] {
       case webpage => webpage.eval($(wrapped).call(s"spectrum('set', ${JavaScriptContent.toJS(value)})"))
     }
     case _ => super.option(key, value)

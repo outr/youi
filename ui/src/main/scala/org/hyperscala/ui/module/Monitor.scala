@@ -30,29 +30,29 @@ object Monitor extends Module with Logging {
 
   override def dependencies = List(Realtime)
 
-  override def init[S <: Session](website: Website[S]) = {
+  override def init(website: Website) = {
     website.register("/js/monitor.js", "monitor.js")
   }
 
-  override def load[S <: Session](webpage: Webpage[S]) = {
+  override def load(webpage: Webpage) = {
     webpage.head.contents += new tag.Script(mimeType = "text/javascript", src = "/js/monitor.js")
     apply(webpage)
   }
 
-  private def apply[S <: Session](webpage: Webpage[S]) = {
+  private def apply(webpage: Webpage) = {
     webpage.store.getOrSet("monitor", new MonitoredPage(webpage))
   }
 
-  def create[T, S <: Session](webpage: Webpage[S], frequency: Double, evaluator: JSFunction0[T])
+  def create[T, S <: Session](webpage: Webpage, frequency: Double, evaluator: JSFunction0[T])
                (implicit manifest: Manifest[T], converter: ValuePersistence[T]) = {
     apply(webpage).create[T](frequency, evaluator)
   }
 
-  def remove[T, S <: Session](webpage: Webpage[S], monitor: Monitor[T]) = {
+  def remove[T, S <: Session](webpage: Webpage, monitor: Monitor[T]) = {
     apply(webpage).remove[T](monitor)
   }
 
-  def sync[T, S <: Session](webpage: Webpage[S], attribute: PropertyAttribute[T], frequency: Double) = {
+  def sync[T, S <: Session](webpage: Webpage, attribute: PropertyAttribute[T], frequency: Double) = {
     val function = attribute match {
       case ssa: StyleSheetAttribute[T] => {
         val t = ssa.ss.hierarchicalParent.asInstanceOf[HTMLTag]
@@ -71,7 +71,7 @@ object Monitor extends Module with Logging {
     monitor
   }
 
-  private class MonitoredPage[S <: Session](webpage: Webpage[S]) {
+  private class MonitoredPage(webpage: Webpage) {
     private var map = Map.empty[String, Monitor[_]]
 
     webpage.jsonEvent.partial(Unit) {

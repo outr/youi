@@ -17,19 +17,19 @@ object BasketJS extends Module {
 
   def version = Version(0, 4, 0)
 
-  override def init[S <: Session](website: Website[S]) = {
+  override def init(website: Website) = {
     website.register("/js/basket.full.min.js", "basketjs/basket.full.min.js")
     website.register("/js/basket.full.map", "basketjs/basket.full.map")
   }
 
-  override def load[S <: Session](webpage: Webpage[S]) = {
+  override def load(webpage: Webpage) = {
     webpage.head.onBeforeRender {
       webpage.store("basketjs") = new BasketJSPage(webpage)
     }
   }
 }
 
-class BasketJSPage[S <: Session](page: Webpage[S]) {
+class BasketJSPage(page: Webpage) {
   val basketScriptURLS = ListBuffer.empty[String]
   val basketScriptContents = ListBuffer.empty[String]
 

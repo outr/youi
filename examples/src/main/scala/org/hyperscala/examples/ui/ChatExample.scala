@@ -49,8 +49,8 @@ class ChatExample extends Example {
     case (nick, text) => messages.contents += new ChatEntry(nick, text)
   }
 
-  connected[Webpage[Session]] {
-    case webpage => updateNickname()
+  connected[Website] {
+    case website => updateNickname()
   }
 
   def sendMessage() = {
@@ -62,7 +62,7 @@ class ChatExample extends Example {
   }
 
   def updateNickname() = {
-    val website = this.website[MapSession]
+    val website = this.website
     val sessionNickname = website.session.getOrElse[String]("chatNickname", null)
     val current = chatName.value() match {
       case "" | null => website.session.getOrElse[String]("chatNickname", "guest")
@@ -84,14 +84,13 @@ object ChatExample {
 
   private var history = List.empty[(String, String)]
 
-  def instances[S <: Session](website: Website[S]) = {
-    implicit val sessionManifest = website.manifest
-    website.pages.byType[ExamplePage[S]].map(p => p.example).collect {
+  def instances(website: Website) = {
+    website.pages.byType[ExamplePage].map(p => p.example).collect {
       case chat: ChatExample => chat
     }.toList
   }
   @tailrec
-  def generateNick[S <: Session](website: Website[S], nickname: String, increment: Int = 0): String = {
+  def generateNick(website: Website, nickname: String, increment: Int = 0): String = {
     val nick = increment match {
       case 0 => nickname
       case _ => s"$nickname$increment"
@@ -102,7 +101,7 @@ object ChatExample {
       generateNick(website, nickname, increment + 1)
     }
   }
-  def sendMessage[S <: Session](website: Website[S], nickname: String, message: String) = synchronized {
+  def sendMessage(website: Website, nickname: String, message: String) = synchronized {
     instances(website).foreach {
       case chat => chat.messages.contents.insert(0, new ChatEntry(nickname, message))
     }

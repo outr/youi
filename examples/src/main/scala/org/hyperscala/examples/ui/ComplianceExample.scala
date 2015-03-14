@@ -14,7 +14,7 @@ import com.outr.net.http.session.Session
  * @author Matt Hicks <matt@outr.com>
  */
 class ComplianceExample extends Example {
-  connected[Webpage[Session]] {
+  connected[Webpage] {
     case webpage => {
       webpage.require(Realtime)
 

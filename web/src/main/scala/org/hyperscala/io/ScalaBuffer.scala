@@ -188,7 +188,7 @@ object ScalaBuffer {
   }
 }
 
-class ScalaWebpageBuffer[S <: Session](packageName: String, className: String, page: Webpage[S]) extends ScalaBuffer {
+class ScalaWebpageBuffer(packageName: String, className: String, page: Webpage) extends ScalaBuffer {
   writeAttributes(page.head, all = true, prefix = "head")
   page.head.contents.foreach(t => writeTag(t, "head"))
   writeAttributes(page.body, all = true, prefix = "body")

@@ -35,7 +35,7 @@ class VideoJS extends tag.Video {
     override def toClass(c: Boolean) = if (c) Some("vjs-big-play-centered") else None
   }
 
-  connected[Webpage[_ <: Session]] {
+  connected[Webpage] {
     case webpage => {
       val js =
         s"""
@@ -97,9 +97,9 @@ object VideoJS extends Module {
 
   val skin = Property[String](default = Some("default"))
 
-  override def init[S <: Session](website: Website[S]) = {}
+  override def init(website: Website) = {}
 
-  override def load[S <: Session](webpage: Webpage[S]) = {
+  override def load(webpage: Webpage) = {
     val v = s"${version.major}.${version.minor}"
     webpage.head.contents += new tag.Link(href = s"//vjs.zencdn.net/$v/video-js.css")
     webpage.head.contents += new tag.Script(src = s"//vjs.zencdn.net/$v/video.js")
@@ -107,7 +107,7 @@ object VideoJS extends Module {
 
   override def dependencies = List(Realtime)
 
-  def pauseAll[S <: Session](webpage: Webpage[S]) = {
+  def pauseAll(webpage: Webpage) = {
     webpage.eval("$('video').each(function() { $(this).get(0).pause(); });")
   }
 }

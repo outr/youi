@@ -15,7 +15,7 @@ import com.outr.net.http.session.Session
  */
 class StyleSheetExample extends Example {
   require(Realtime)
-  connected[Webpage[Session]] {
+  connected[Webpage] {
     case webpage => webpage.connectStandard()
   }
 

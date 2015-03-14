@@ -17,7 +17,7 @@ import com.outr.net.http.session.Session
  *
  * @author Matt Hicks <mhicks@outr.com>
  */
-class PlayHelloWorldPage[S <: Session](website: Website[S]) extends Webpage(website) {
+class PlayHelloWorldPage extends Webpage {
   require(Realtime)
   this.connectStandard()
 
@@ -85,7 +85,7 @@ class PlayHelloWorldPage[S <: Session](website: Website[S]) extends Webpage(webs
   }
 }
 
-class PlayHelloWorldConfiguration[S <: Session](page: PlayHelloWorldPage[S]) extends DynamicContent("configure") {
+class PlayHelloWorldConfiguration(page: PlayHelloWorldPage) extends DynamicContent("configure") {
   def dynamicString = DynamicString.url("play_hello_world_configuration.html", PlayHelloWorldPage.configuration)
 
   val nameContainer = load[tag.Dl]("name_field")

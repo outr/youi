@@ -1,6 +1,5 @@
 package org.hyperscala.web
 
-import org.hyperscala.XMLContent
 import org.hyperscala.html.HTMLTag
 import org.hyperscala.html.constraints.BodyChild
 import org.hyperscala.io.HTMLWriter
@@ -15,7 +14,7 @@ import org.powerscala.hierarchy.MutableChildLike
  *
  * @author Matt Hicks <matt@outr.com>
  */
-class Scoped[T <: HTMLTag, S <: Session](scope: Scope, creator: () => T, webpage: Webpage[S]) extends BodyChild {
+class Scoped[T <: HTMLTag](scope: Scope, creator: () => T, webpage: Webpage) extends BodyChild {
   private def website = webpage.website
 
   identity      // Give this element a unique id
@@ -40,7 +39,7 @@ class Scoped[T <: HTMLTag, S <: Session](scope: Scope, creator: () => T, webpage
 }
 
 object Scoped {
-  def apply[T <: HTMLTag, S <: Session](scope: Scope, webpage: Webpage[S])(creator: => T) = new Scoped[T, S](scope, () => creator, webpage)
+  def apply[T <: HTMLTag](scope: Scope, webpage: Webpage)(creator: => T) = new Scoped[T](scope, () => creator, webpage)
 }
 
 // TODO: scoped blocks of code that get invoked each time that scope is created?

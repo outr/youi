@@ -16,7 +16,7 @@ import scala.language.reflectiveCalls
 class ConfirmDialogExample extends Example {
   this.require(Realtime)
   this.require(jQueryUI)
-  connected[Webpage[Session]] {
+  connected[Webpage] {
     case webpage => webpage.connectForm()
   }
 

@@ -27,11 +27,11 @@ object History extends Module {
   /**
    * Creates a new HistoryInstance each time it is called (once per webpage instance).
    */
-  val WebpageInstanceCreator = (webpage: Webpage[_ <: Session]) => new HistoryInstance(webpage)
+  val WebpageInstanceCreator = (webpage: Webpage) => new HistoryInstance(webpage)
   /**
    * Stores the HistoryInstance in the session so each webpage has a persistent instance.
    */
-  val SessionInstanceCreator = (webpage: Webpage[_ <: Session]) => {
+  val SessionInstanceCreator = (webpage: Webpage) => {
     webpage.website.session.getOrSet(s"${webpage.getClass.getName}.history_module", new HistoryInstance(webpage))
   }
 
@@ -40,21 +40,21 @@ object History extends Module {
 
   override def dependencies = List(Realtime)
 
-  override def init[S <: Session](website: Website[S]) = {}
+  override def init(website: Website) = {}
 
-  override def load[S <: Session](webpage: Webpage[S]) = apply(webpage)
+  override def load(webpage: Webpage) = apply(webpage)
 
   /**
    * Creates new HistoryInstances. This can be overridden to pre-populate or share instances across multiple pages.
    *
    * By default a single instance is tied to a single webpage instance (WebpageInstanceCreator).
    */
-  var creator: (Webpage[_ <: Session]) => HistoryInstance = WebpageInstanceCreator
+  var creator: (Webpage) => HistoryInstance = WebpageInstanceCreator
 
-  def apply[S <: Session](webpage: Webpage[S]) = webpage.store.getOrSet("history_module", creator(webpage))
+  def apply(webpage: Webpage) = webpage.store.getOrSet("history_module", creator(webpage))
 }
 
-class HistoryInstance(webpage: Webpage[_ <: Session]) extends Listenable {
+class HistoryInstance(webpage: Webpage) extends Listenable {
   private var undos = Queue.empty[HistoryEntry]
   private var redos = Queue.empty[HistoryEntry]
   private val changing = new AtomicInt(0)

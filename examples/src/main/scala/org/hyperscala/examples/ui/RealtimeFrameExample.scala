@@ -1,6 +1,5 @@
 package org.hyperscala.examples.ui
 
-import com.outr.net.http.session.Session
 import org.hyperscala.css.attributes.LineStyle
 import org.hyperscala.examples.Example
 import org.hyperscala.html._
@@ -32,8 +31,8 @@ class RealtimeFrameExample extends Example {
     style.width := 400.px
     style.height := 200.px
 
-    connected[Webpage[Session]] {
-      case webpage => currentPage := new FramedPage(webpage.website, "Preloaded Page")
+    connected[Webpage] {
+      case webpage => currentPage := new FramedPage("Preloaded Page")
     }
   }
 
@@ -42,14 +41,14 @@ class RealtimeFrameExample extends Example {
     clickEvent.onRealtime {
       case evt => {
         count := count() + 1
-        val page = new FramedPage(this.webpage[Session].website, s"Page ${count()}")
+        val page = new FramedPage(s"Page ${count()}")
         frame.currentPage := page
       }
     }
   }
 }
 
-class FramedPage[S <: Session](website: Website[S], message: String) extends Webpage(website) {
+class FramedPage(message: String) extends Webpage {
   require(ModalComponent)
 
   this.eval("console.log('Wahoo!');")

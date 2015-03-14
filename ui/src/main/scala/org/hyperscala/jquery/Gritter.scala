@@ -18,16 +18,16 @@ object Gritter extends Module with JavaScriptCaller {
 
   override def dependencies = List(jQuery, Realtime)
 
-  override def init[S <: Session](website: Website[S]) = {
+  override def init(website: Website) = {
     website.addClassPath("/gritter/", "gritter/")
   }
 
-  override def load[S <: Session](webpage: Webpage[S]) = {
+  override def load(webpage: Webpage) = {
     webpage.head.contents += new tag.Link(href = "/gritter/css/jquery.gritter.css", rel = "stylesheet")
     webpage.head.contents += new tag.Script(mimeType = "text/javascript", src = "/gritter/js/jquery.gritter.min.js")
   }
 
-  def add[S <: Session](webpage: Webpage[S],
+  def add(webpage: Webpage,
                         title: String,
                         text: String,
                         image: String = null,

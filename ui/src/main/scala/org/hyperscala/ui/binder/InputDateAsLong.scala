@@ -40,7 +40,7 @@ class InputDateAsLong(format: String = "MM/dd/yyyy") extends Binder[tag.Input, L
       }
     }
 
-    input.connected[Webpage[_ <: Session]] {
+    input.connected[Webpage] {
       case webpage => webpage.eval($(input).call("datepicker()"))
     }
 

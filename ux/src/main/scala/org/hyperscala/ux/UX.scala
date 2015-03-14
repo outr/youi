@@ -16,11 +16,11 @@ object UX extends Module {
 
   override def dependencies = List(jQuery)
 
-  override def init[S <: Session](website: Website[S]) = {
+  override def init(website: Website) = {
     website.addClassPath("/ux", "ux")
   }
 
-  override def load[S <: Session](webpage: Webpage[S]) = {
+  override def load(webpage: Webpage) = {
     webpage.head.contents += new tag.Script(src = "/ux/dropdown.js")
   }
 }

@@ -21,7 +21,7 @@ class jCanvasExample extends Example {
   }
   contents += canvas
 
-  connected[Webpage[Session]] {
+  connected[Webpage] {
     case webpage => webpage.eval($(canvas).drawArc(strokeStyle = Color.Black, strokeWidth = 5, x = 100, y = 100, radius = 50, start = 90, end = 180))
   }
 }

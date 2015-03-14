@@ -14,9 +14,9 @@ class GoogleAnalytics(key: String) extends Module {
   val name = "google-analytics"
   val version = Version(1, 0)
 
-  override def init[S <: Session](website: Website[S]) = {}
+  override def init(website: Website) = {}
 
-  override def load[S <: Session](webpage: Webpage[S]) = {
+  override def load(webpage: Webpage) = {
     webpage.head.contents += new Script(mimeType = "text/javascript") {
       contents += JavaScriptString("""var _gaq = _gaq || [];
                                      |  _gaq.push(['_setAccount', '%s']);

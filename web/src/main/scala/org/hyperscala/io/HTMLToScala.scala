@@ -32,7 +32,7 @@ object HTMLToScala {
     parent.read(body)                                  // Read the new data back in
   }
 
-  def toScala[S <: Session](page: Webpage[S], packageName: String, className: String) = {
+  def toScala(page: Webpage, packageName: String, className: String) = {
     val b = new ScalaWebpageBuffer(packageName, className, page)
     b.code
   }
@@ -47,8 +47,8 @@ object HTMLToScala {
     b.code
   }
 
-  def toPage[S <: Session](website: Website[S], source: String, clean: Boolean = true)(implicit manifest: Manifest[S]) = {
-    val page = new Webpage(website)
+  def toPage(website: Website, source: String, clean: Boolean = true) = {
+    val page = new Webpage
     page.html.read(toXML(source, clean))
     page
   }
@@ -82,7 +82,7 @@ object HTMLToScala {
 
   // TODO: extract this out into its own sub-project to remove the Swing dependency out of web
   /*def main(args: Array[String]): Unit = {
-    val website = new Website[MapSession] {
+    val website = new Website {
       override protected def createSession(request: HttpRequest, id: String) = new MapSession(id, this)
     }
     Markup.UnsupportedAttributeException = false

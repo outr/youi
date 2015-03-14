@@ -20,7 +20,7 @@ import com.outr.net.http.session.MapSession
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class HyperscalaPage extends Webpage(HyperscalaSite) with FormSupport[MapSession] {
+class HyperscalaPage extends Webpage with FormSupport {
   def site = HyperscalaSite
 
   require(Bootstrap)

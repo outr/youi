@@ -16,9 +16,9 @@ object IdentifyTags extends Module {
 
   def version = Version(1)
 
-  def init[S <: Session](website: Website[S]) = {}
+  def init(website: Website) = {}
 
-  def load[S <: Session](webpage: Webpage[S]) = {
+  def load(webpage: Webpage) = {
     // TODO: only apply to body, not head
     webpage.html.byTag[IdentifiableTag].foreach {
       case t => if (t.id() == null && shouldIdentify(t)) {

@@ -19,15 +19,15 @@ object WindowSized extends Module {
 
   override def dependencies = List(jQuery)
 
-  override def init[S <: Session](website: Website[S]) = {
+  override def init(website: Website) = {
     website.register("/window_size.js", "window_size.js")
   }
 
-  override def load[S <: Session](webpage: Webpage[S]) = {
+  override def load(webpage: Webpage) = {
     webpage.head.contents += new tag.Script(mimeType = "text/javascript", src = "/window_size.js")
   }
 
-  def resized[S <: Session](webpage: Webpage[S], script: JavaScriptContent) = {
+  def resized(webpage: Webpage, script: JavaScriptContent) = {
     webpage.require(this)
     webpage.eval(
       s"""(function() {
@@ -41,12 +41,12 @@ object WindowSized extends Module {
       """.stripMargin)
   }
 
-  def widthAlgorithm[S <: Session](webpage: Webpage[S], id: String, algorithm: String) = resized(webpage, new JavaScriptString(
+  def widthAlgorithm(webpage: Webpage, id: String, algorithm: String) = resized(webpage, new JavaScriptString(
     """
       |$('#%s').width(%s);
     """.stripMargin.format(id, algorithm)))
 
-  def heightAlgorithm[S <: Session](webpage: Webpage[S], id: String, algorithm: String) = resized(webpage, new JavaScriptString(
+  def heightAlgorithm(webpage: Webpage, id: String, algorithm: String) = resized(webpage, new JavaScriptString(
     """
       |$('#%s').height(%s);
     """.stripMargin.format(id, algorithm)))

@@ -27,7 +27,7 @@ import org.powerscala.property.event.PropertyChangeEvent
  *
  * @author Matt Hicks <matt@outr.com>
  */
-class RealtimePage[S <: Session] private(val webpage: Webpage[S]) extends Logging {
+class RealtimePage private(val webpage: Webpage) extends Logging {
   private val _initialized = Property[Boolean](default = Some(false))
   def initialized = _initialized.readOnlyView
 
@@ -39,7 +39,7 @@ class RealtimePage[S <: Session] private(val webpage: Webpage[S]) extends Loggin
       webpage.body.eventReceived.fire(evt)
     }
     case error: BrowserError => Realtime.errorLogger.get match {
-      case Some(f) => f(BrowserErrorEvent(webpage.asInstanceOf[Webpage[Session]], error))
+      case Some(f) => f(BrowserErrorEvent(webpage, error))
       case None => // No default handler
     }
   }
@@ -75,7 +75,7 @@ class RealtimePage[S <: Session] private(val webpage: Webpage[S]) extends Loggin
         val html = child.outputString
         send(InsertHTMLContent(html, afterId, parentId, append))
 
-        if (webpage.rendered) {                             // Only do this if the page has already rendered
+        if (webpage.rendered()) {                             // Only do this if the page has already rendered
           Markup.rendered(child)                            // Mark child tag as rendered
           child.byTag[HTMLTag].foreach(Markup.rendered)     // Mark all tags children of child tag as rendered
         }
@@ -231,7 +231,7 @@ object RealtimePage {
 
   TypedSupport.register("insertSVG", classOf[InsertSVGContent])
 
-  def apply[S <: Session](webpage: Webpage[S]) = webpage.store.getOrSet[RealtimePage[S]]("realtime", new RealtimePage(webpage))
+  def apply(webpage: Webpage) = webpage.store.getOrSet[RealtimePage]("realtime", new RealtimePage(webpage))
 
   def dontSend = _dontSend.get().getOrElse(false)
 

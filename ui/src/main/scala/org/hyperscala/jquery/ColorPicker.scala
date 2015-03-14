@@ -37,11 +37,11 @@ object ColorPicker extends Module with JavaScriptCaller with StorageComponent[Co
 
   override def dependencies = List(jQuery, jQueryUI)
 
-  override def init[S <: Session](website: Website[S]) = {
+  override def init(website: Website) = {
     website.addClassPath("/colorpicker-1.0.4/", "colorpicker-1.0.4/")
   }
 
-  override def load[S <: Session](webpage: Webpage[S]) = {
+  override def load(webpage: Webpage) = {
     webpage.head.contents += new tag.Link(href = "/colorpicker-1.0.4/jquery.colorpicker.css", rel = "stylesheet")
     webpage.head.contents += new tag.Script(mimeType = "text/javascript", src = "/colorpicker-1.0.4/jquery.colorpicker.js")
   }

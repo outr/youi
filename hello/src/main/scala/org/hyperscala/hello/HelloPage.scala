@@ -6,6 +6,6 @@ import org.hyperscala.html._
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class HelloPage extends Webpage(HelloSite) {
+class HelloPage extends Webpage {
   body.contents += new tag.H1(content = "Hello, World!")
 }

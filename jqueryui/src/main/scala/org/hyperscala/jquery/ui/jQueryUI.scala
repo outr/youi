@@ -19,11 +19,11 @@ object jQueryUI extends Module {
 
   override def dependencies = List(jQuery)
 
-  override def init[S <: Session](website: Website[S]) = {}
+  override def init(website: Website) = {}
 
   private def v = version.general
 
-  override def load[S <: Session](webpage: Webpage[S]) = {
+  override def load(webpage: Webpage) = {
     webpage.head.contents += new tag.Link(href = themeCSS, rel = "stylesheet")
     //    webpage.head.contents += new tag.Link(href = "/jquery-ui-1.10.4/css/jquery-ui-fixes.css", rel = "stylesheet")
     webpage.head.contents += new tag.Script(src = s"//code.jquery.com/ui/$v/jquery-ui.min.js")
@@ -40,21 +40,21 @@ object jQueryUI extends Module {
 
   def tabs(t: HTMLTag) = {
     t.require(this)
-    t.connected[Webpage[_ <: Session]] {
+    t.connected[Webpage] {
       case webpage => webpage.eval($(t).call("tabs()"))
     }
   }
 
   def menu(t: HTMLTag) = {
     t.require(this)
-    t.connected[Webpage[_ <: Session]] {
+    t.connected[Webpage] {
       case webpage => webpage.eval($(t).call("menu()"))
     }
   }
 
   def datepicker(t: HTMLTag) = {
     t.require(this)
-    t.connected[Webpage[_ <: Session]] {
+    t.connected[Webpage] {
       case webpage => webpage.eval($(t).call("datepicker()"))
     }
   }

@@ -25,11 +25,11 @@ object jsTree extends Module {
 
   override val dependencies = List(jQuery)
 
-  override def init[S <: Session](website: Website[S]) = {
+  override def init(website: Website) = {
     website.addClassPath("/js/jstree/", "jstree/")
   }
 
-  override def load[S <: Session](webpage: Webpage[S]) = {
+  override def load(webpage: Webpage) = {
     webpage.head.contents += new tag.Script(mimeType = "text/javascript", src = "/js/jstree/jquery.jstree.js")
   }
 
@@ -54,7 +54,7 @@ object jsTree extends Module {
         |%s
         |})
       """.stripMargin.trim.format(attributes.map(s => "\t\t%s".format(s)).mkString(",\r\n"))
-    t.connected[Webpage[_ <: Session]] {
+    t.connected[Webpage] {
       case webpage => webpage.eval($(t).call(js))
     }
 

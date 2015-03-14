@@ -16,7 +16,7 @@ class RealtimeFormExample extends Example {
   this.require(Realtime)
   this.require(Gritter)
 
-  connected[Webpage[Session]] {
+  connected[Webpage] {
     case webpage => webpage.connectForm()
   }
 

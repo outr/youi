@@ -25,9 +25,9 @@ object jQuery extends Module {
   val version1 = Version(1, 11, 2)
   val version2 = Version(2, 1, 3)
 
-  override def init[S <: Session](website: Website[S]) = {}
+  override def init(website: Website) = {}
 
-  override def load[S <: Session](webpage: Webpage[S]) = {
+  override def load(webpage: Webpage) = {
     val v = UserAgent.get(webpage) match {
       case Some(userAgent) if userAgent.browser.family != BrowserFamily.IE || userAgent.browser.version.major >= 9 => version2.general
       case _ => version1.general

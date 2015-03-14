@@ -13,7 +13,7 @@ import org.powerscala.log.Logging
 object UserAgent extends Logging {
   private var cache = Map.empty[String, ReadableUserAgent]
 
-  def get[S <: Session](webpage: Webpage[S]) = try {
+  def get(webpage: Webpage) = try {
     val ua = new UserAgent(webpage.website.request.headers.UserAgent)
     webpage.store.getOrSet("userAgentModule", ua)
     Some(ua)
@@ -23,7 +23,7 @@ object UserAgent extends Logging {
       None
     }
   }
-  def apply[S <: Session](webpage: Webpage[S]) = webpage.store.getOrSet("userAgentModule", new UserAgent(webpage.website.request.headers.UserAgent))
+  def apply(webpage: Webpage) = webpage.store.getOrSet("userAgentModule", new UserAgent(webpage.website.request.headers.UserAgent))
   def apply(userAgent: String) = new UserAgent(Some(userAgent))
 
   private def parse(userAgent: Option[String]) = synchronized {

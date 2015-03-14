@@ -28,13 +28,15 @@ import scala.collection.mutable.ListBuffer
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-object HyperscalaSite extends Website[MapSession] with JettyApplication {
+object HyperscalaSite extends Website with JettyApplication {
   Realtime      // Make sure Realtime is initialized
 
   // Setup file logging
   Logger.Root.configureFileLogging("hyp")
   // Configure System.out and System.err to go to logger
   Logger.configureSystem()
+
+  override type S = MapSession
 
   override def init() = {
     super.init()
@@ -51,8 +53,8 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication {
   // Basic
   val hello = example(new HelloWorldPage, "Basic", "Hello World", Scope.Request)
   val style = example(new StyleSheetExample, "Basic", "Style Sheet", Scope.Request)
-  val large = pageExample(new LargePageExample(HyperscalaSite.this), "Basic", "Large Page", Scope.Request)
-  val dynamicPage = pageExample(new DynamicPageExample(HyperscalaSite.this), "Basic", "Dynamic Page", Scope.Page)
+  val large = pageExample(new LargePageExample, "Basic", "Large Page", Scope.Request)
+  val dynamicPage = pageExample(new DynamicPageExample, "Basic", "Dynamic Page", Scope.Page)
   //    val numberGuess = page(new HyperscalaExample(new NumberGuess), Scope.Page, "/example/number_guess.html")
   val scoped = example(ScopedExample, "Basic", "Scoped", Scope.Page)
   val encodedImage = example(new EncodedImageExample, "Basic", "Encoded Image", Scope.Page)
@@ -108,7 +110,7 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication {
   val videoJS = example(new VideoJSExample, "Wrapper", "VideoJS", Scope.Page)
   val webFontLoader = example(new WebFontLoaderExample, "Wrapper", "WebFontLoader", Scope.Page)
   val contentEditor = example(new ContentEditorExample(this), "Wrapper", "Content Editor", Scope.Page)
-  val contentEditorContent = page(new EditablePageExample(null, this), Scope.Page, "/example/wrapper/content_editor_content.html")
+  val contentEditorContent = page(new EditablePageExample(null), Scope.Page, "/example/wrapper/content_editor_content.html")
 
   // Advanced
   val fileUploader = example(new FileUploaderExample, "Advanced", "File Uploader", Scope.Page)
@@ -117,7 +119,7 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication {
   val changeable = example(new ChangeableExample, "Advanced", "Changeable", Scope.Page)
   val compliance = example(new ComplianceExample, "Advanced", "Compliance", Scope.Page)
   val coordinates = example(new CoordinatesExample, "Advanced", "Coordinates", Scope.Page)
-  val pageLoader = pageExample(new PageLoaderExample(HyperscalaSite.this), "Advanced", "Page Loader", Scope.Page)
+  val pageLoader = pageExample(new PageLoaderExample, "Advanced", "Page Loader", Scope.Page)
   val screen = example(new ScreenExample, "Advanced", "Screen", Scope.Page)
   addHandler(screen, "/example/advanced/screen2.html")
   addHandler(screen, "/example/advanced/screen3.html")
@@ -132,8 +134,8 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication {
   val dynamicSVG = example(new DynamicSVGExample, "SVG", "DynamicSVG", Scope.Page)
 
   // Bootstrap
-  val bootstrapSignIn = pageExample(new BootstrapSignin(HyperscalaSite.this), "Bootstrap", "Sign In", Scope.Page)
-  val bootstrapTheme = pageExample(new BootstrapTheme(HyperscalaSite.this), "Bootstrap", "Theme", Scope.Page)
+  val bootstrapSignIn = pageExample(new BootstrapSignin, "Bootstrap", "Sign In", Scope.Page)
+  val bootstrapTheme = pageExample(new BootstrapTheme, "Bootstrap", "Theme", Scope.Page)
 
   // UX
   val singleSelectList = example(new SingleSelectListExample, "UX", "SingleSelectList", Scope.Page)
@@ -144,7 +146,7 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication {
   val tileBoard = example(new TileBoardExample, "FabricJS", "TileBoard", Scope.Page)
 
   // Comparison
-  val playComparison = pageExample(new PlayHelloWorldPage(HyperscalaSite.this), "Comparison", "Play - Hello World", Scope.Page)
+  val playComparison = pageExample(new PlayHelloWorldPage, "Comparison", "Play - Hello World", Scope.Page)
   val todoMVC = pageExample(new TodoMVC(HyperscalaSite.this), "Comparison", "TODO MVC", Scope.Session)
 
   handlers.add(PathFilter("/hello", HelloSite))
@@ -162,11 +164,11 @@ object HyperscalaSite extends Website[MapSession] with JettyApplication {
   private lazy val _examples = ListBuffer.empty[ExampleEntry]
   def examples = _examples.toList
 
-  def example(creator: => Example, group: String, name: String, scope: Scope = Scope.Page): WebpageHandler[MapSession] = {
+  def example(creator: => Example, group: String, name: String, scope: Scope = Scope.Page): WebpageHandler = {
     pageExample(new HyperscalaExample(creator), group, name, scope)
   }
 
-  def pageExample(creator: => Webpage[MapSession], group: String, name: String, scope: Scope = Scope.Page): WebpageHandler[MapSession] = {
+  def pageExample(creator: => Webpage, group: String, name: String, scope: Scope = Scope.Page): WebpageHandler = {
     val filename = s"${group.toLowerCase}/${name.replaceAll(" ", "_").toLowerCase}.html"
     val path = s"/example/$filename"
     _examples += ExampleEntry(group, name, path)

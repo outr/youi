@@ -16,12 +16,12 @@ object jQueryFracs extends Module {
 
   override def dependencies = List(Realtime)
 
-  override def init[S <: Session](website: Website[S]) = {
+  override def init(website: Website) = {
     val v = s"${version.major}.${version.minor}.${version.maintenance}"
     website.register("/js/jquery.fracs.min.js", s"jquery-fracs-${v}/jquery.fracs-${v}.min.js")
   }
 
-  override def load[S <: Session](webpage: Webpage[S]) = {
+  override def load(webpage: Webpage) = {
     webpage.head.contents += new tag.Script(src = "/js/jquery.fracs.min.js")
   }
 }

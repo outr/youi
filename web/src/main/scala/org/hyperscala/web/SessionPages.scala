@@ -6,9 +6,9 @@ import org.powerscala.log.Logging
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class SessionPages[S <: Session] private[web](website: Website[S]) extends Iterable[Webpage[S]] with Logging {
+class SessionPages private[web](website: Website) extends Iterable[Webpage] with Logging {
   val sessionId = website.session.id
-  private var pageIdMap = Map.empty[String, Webpage[S]]
+  private var pageIdMap = Map.empty[String, Webpage]
   private var handlerIdPageIdMap = Map.empty[String, String]
   private var pageIdHandlerIdMap = Map.empty[String, String]
 
@@ -16,7 +16,7 @@ class SessionPages[S <: Session] private[web](website: Website[S]) extends Itera
 
   def byHandlerId(handlerId: String) = handlerIdPageIdMap.get(handlerId).map(pageId => pageIdMap(pageId))
 
-  private[web] def add(page: Webpage[S], scope: Scope, handlerId: Option[String]) = synchronized {
+  private[web] def add(page: Webpage, scope: Scope, handlerId: Option[String]) = synchronized {
     if (scope != Scope.Application) {
       pageIdMap += page.pageId -> page
       if (scope == Scope.Session) {               // Store handler reference if it's Session scoped
@@ -31,7 +31,7 @@ class SessionPages[S <: Session] private[web](website: Website[S]) extends Itera
     }
   }
 
-  private[web] def remove(page: Webpage[S]) = synchronized {
+  private[web] def remove(page: Webpage) = synchronized {
     pageIdMap -= page.pageId
     pageIdHandlerIdMap.get(page.pageId) match {
       case Some(handlerId) => {

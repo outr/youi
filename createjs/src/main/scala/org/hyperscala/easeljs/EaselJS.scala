@@ -16,11 +16,11 @@ object EaselJS extends Module {
 
   override def dependencies = List(Realtime)
 
-  override def init[S <: Session](website: Website[S]) = {
+  override def init(website: Website) = {
     website.register("/js/hyperscala-easel.js", "hyperscala-easel.js")
   }
 
-  override def load[S <: Session](webpage: Webpage[S]) = {
+  override def load(webpage: Webpage) = {
     webpage.head.contents += new tag.Script(src = s"https://code.createjs.com/easeljs-0.8.0.min.js")
     webpage.head.contents += new tag.Script(src = "/js/hyperscala-easel.js")
   }

@@ -17,9 +17,9 @@ object CKEditor extends Module {
 
   override def dependencies = List(Realtime)
 
-  override def init[S <: Session](website: Website[S]) = {}
+  override def init(website: Website) = {}
 
-  override def load[S <: Session](webpage: Webpage[S]) = {
+  override def load(webpage: Webpage) = {
     webpage.head.contents += new tag.Script(mimeType = "text/javascript", src = s"//cdn.ckeditor.com/$version/full/ckeditor.js")
   }
 }

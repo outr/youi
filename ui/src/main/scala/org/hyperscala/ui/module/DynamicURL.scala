@@ -27,23 +27,23 @@ object DynamicURL extends Module {
 
   override val dependencies = List(Realtime)
 
-  override def init[S <: Session](website: Website[S]) = {
+  override def init(website: Website) = {
     website.register("/js/dynamic_url.js", "dynamic_url.js")
   }
 
-  override def load[S <: Session](webpage: Webpage[S]) = {
+  override def load(webpage: Webpage) = {
     webpage.head.contents += new tag.Script(mimeType = "text/javascript", src = "/js/dynamic_url.js")
     apply(webpage)    // Make sure the instance has been created
   }
 
-  def apply[S <: Session](webpage: Webpage[S]) = {
+  def apply(webpage: Webpage) = {
     webpage.synchronized {
       webpage.store.getOrSet("dynamicURLInstance", new DynamicURLInstance(webpage))
     }
   }
 }
 
-case class DynamicURLInstance[S <: Session](webpage: Webpage[S]) extends Listenable {
+case class DynamicURLInstance(webpage: Webpage) extends Listenable {
   val name = () => "DynamicURLInstance"
   def parent = null
 

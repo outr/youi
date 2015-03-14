@@ -19,11 +19,11 @@ object FabricJS extends Module {
 
   override def dependencies = List(Realtime)
 
-  override def init[S <: Session](website: Website[S]) = {
+  override def init(website: Website) = {
     website.register("/js/hyperscala-fabric.js", "hyperscala-fabric.js")
   }
 
-  override def load[S <: Session](webpage: Webpage[S]) = {
+  override def load(webpage: Webpage) = {
     webpage.head.contents += new tag.Script(src = "http://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.4.0/fabric.min.js")
     webpage.head.contents += new tag.Script(src = "/js/hyperscala-fabric.js")
   }

@@ -10,7 +10,7 @@ import com.outr.net.http.session.Session
  *
  * @author Matt Hicks <matt@outr.com>
  */
-class ScopedReplacement[T <: HTMLTag, S <: Session](webpage: Webpage[S], scope: Scope, original: T, processor: T => Unit = (t: T) => Unit) {
+class ScopedReplacement[T <: HTMLTag](webpage: Webpage, scope: Scope, original: T, processor: T => Unit = (t: T) => Unit) {
   val originalParent = original.parent.asInstanceOf[Container[BodyChild]]
   original.removeFromParent()
 
@@ -22,7 +22,7 @@ class ScopedReplacement[T <: HTMLTag, S <: Session](webpage: Webpage[S], scope: 
 }
 
 object ScopedReplacement {
-  def apply[T <: HTMLTag, S <: Session](webpage: Webpage[S], scope: Scope, original: T)(processor: T => Unit) = {
+  def apply[T <: HTMLTag](webpage: Webpage, scope: Scope, original: T)(processor: T => Unit) = {
     new ScopedReplacement(webpage, scope, original, processor)
   }
 }

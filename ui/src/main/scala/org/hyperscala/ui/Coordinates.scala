@@ -13,7 +13,7 @@ import com.outr.net.http.session.Session
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-abstract class Coordinates[S <: Session](val webpage: Webpage[S]) extends Listenable with StorageComponent[CoordinatesTag[S], HTMLTag] {
+abstract class Coordinates(val webpage: Webpage) extends Listenable with StorageComponent[CoordinatesTag, HTMLTag] {
   val id = Unique()
 
   override protected def componentIdentifier = s"coordinates-$id"
@@ -38,28 +38,28 @@ abstract class Coordinates[S <: Session](val webpage: Webpage[S]) extends Listen
     }
   }
 
-  def localizeX(x: Double, ct: CoordinatesTag[S]): Double
-  def localizeY(y: Double, ct: CoordinatesTag[S]): Double
+  def localizeX(x: Double, ct: CoordinatesTag): Double
+  def localizeY(y: Double, ct: CoordinatesTag): Double
 
   protected def create(t: HTMLTag) = synchronized {
-    new CoordinatesTag[S](this, Bounding(t), t)
+    new CoordinatesTag(this, Bounding(t), t)
   }
 }
 
-abstract class CoordinatesFromZero[S <: Session](webpage: Webpage[S]) extends Coordinates(webpage) {
+abstract class CoordinatesFromZero(webpage: Webpage) extends Coordinates(webpage) {
   def coordinateX(absolute: Double, width: Double) = absolute - zeroX
 
   def coordinateY(absolute: Double, height: Double) = absolute - zeroY
 
-  def localizeX(x: Double, ct: CoordinatesTag[S]) = x + zeroX
+  def localizeX(x: Double, ct: CoordinatesTag) = x + zeroX
 
-  def localizeY(y: Double, ct: CoordinatesTag[S]) = y + zeroY
+  def localizeY(y: Double, ct: CoordinatesTag) = y + zeroY
 
   def zeroX: Double
   def zeroY: Double
 }
 
-class Coordinates960[S <: Session](webpage: Webpage[S]) extends CoordinatesFromZero(webpage) {
+class Coordinates960(webpage: Webpage) extends CoordinatesFromZero(webpage) {
   def zeroX = (WindowSize.width(webpage)() / 2.0) - 480.0
 
   def zeroY = 0.0
@@ -74,14 +74,14 @@ class Coordinates960[S <: Session](webpage: Webpage[S]) extends CoordinatesFromZ
   }
 }
 
-class CoordinatesOffsetFromCenter[S <: Session](webpage: Webpage[S], offsetX: Double = 0.0, offsetY: Double = 0.0) extends Coordinates(webpage) {
+class CoordinatesOffsetFromCenter(webpage: Webpage, offsetX: Double = 0.0, offsetY: Double = 0.0) extends Coordinates(webpage) {
   def coordinateX(absolute: Double, width: Double) = absolute - (WindowSize.width(webpage)() / 2.0)
 
   def coordinateY(absolute: Double, height: Double) = absolute - (WindowSize.height(webpage)() / 2.0)
 
-  def localizeX(x: Double, ct: CoordinatesTag[S]) = x + (WindowSize.width(webpage)() / 2.0)
+  def localizeX(x: Double, ct: CoordinatesTag) = x + (WindowSize.width(webpage)() / 2.0)
 
-  def localizeY(y: Double, ct: CoordinatesTag[S]) = y + (WindowSize.height(webpage)() / 2.0)
+  def localizeY(y: Double, ct: CoordinatesTag) = y + (WindowSize.height(webpage)() / 2.0)
 
   override protected def create(t: HTMLTag) = {
     val ct = super.create(t)
@@ -92,7 +92,7 @@ class CoordinatesOffsetFromCenter[S <: Session](webpage: Webpage[S], offsetX: Do
   }
 }
 
-class CoordinatesTag[S <: Session](val coordinates: Coordinates[S], val b: Bounding, val t: HTMLTag) extends Listenable with Logging {
+class CoordinatesTag(val coordinates: Coordinates, val b: Bounding, val t: HTMLTag) extends Listenable with Logging {
   private val updatingCoordinates = new ThreadLocal[Boolean] {
     override def initialValue() = false
   }

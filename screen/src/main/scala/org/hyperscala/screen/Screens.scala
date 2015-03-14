@@ -19,7 +19,7 @@ import org.powerscala.property.Property
  *
  * @author Matt Hicks <matt@outr.com>
  */
-class Screens(webpage: Webpage[_ <: Session]) extends Logging {
+class Screens(webpage: Webpage) extends Logging {
   webpage.require(Screens)
 
   val url = Property[URL](default = Some(webpage.website.request.url.decoded))
@@ -72,11 +72,11 @@ object Screens extends Module {
 
   override def dependencies = List(Realtime)
 
-  override def init[S <: Session](website: Website[S]) = {
+  override def init(website: Website) = {
     website.register("/js/hyperscala-screen.js", "hyperscala-screen.js")
   }
 
-  override def load[S <: Session](webpage: Webpage[S]) = {
+  override def load(webpage: Webpage) = {
     webpage.head.contents += new tag.Script(src = "/js/hyperscala-screen.js")
   }
 }

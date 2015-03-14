@@ -24,23 +24,23 @@ object ModalComponent extends Module {
 
   override def dependencies = List(Realtime, jQueryFracs)
 
-  override def init[S <: Session](website: Website[S]) = {
+  override def init(website: Website) = {
     website.register("/js/modal_component.js", "modal_component.js")
     website.register("/css/modal_component.css", "modal_component.css")
   }
 
-  override def load[S <: Session](webpage: Webpage[S]) = {
+  override def load(webpage: Webpage) = {
     webpage.head.contents += new tag.Script(mimeType = "text/javascript", src = "/js/modal_component.js")
     webpage.head.contents += new tag.Link(href = "/css/modal_component.css")
     apply(webpage)
   }
 
-  def apply[S <: Session](webpage: Webpage[S]) = webpage.synchronized {
+  def apply(webpage: Webpage) = webpage.synchronized {
     webpage.store.getOrSet(name, new ModalComponent(webpage))
   }
 }
 
-class ModalComponent(webpage: Webpage[_ <: Session]) extends Listenable {
+class ModalComponent(webpage: Webpage) extends Listenable {
   val left = new tag.Div(id = "modal_left", clazz = List("modal_component"))
   val right = new tag.Div(id = "modal_right", clazz = List("modal_component"))
   val top = new tag.Div(id = "modal_top", clazz = List("modal_component"))

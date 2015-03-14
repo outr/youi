@@ -20,7 +20,7 @@ object ScopedExample extends Example {
 
   contents += new tag.Div(id = "replaceable", content = "Original Content")
 
-  connected[Webpage[Session]] {
+  connected[Webpage] {
     case webpage => {
       ScopedReplacement(webpage, Scope.Page, getById[tag.Div]("replaceable")) {
         case t => t.contents += s": ${loaded()}"

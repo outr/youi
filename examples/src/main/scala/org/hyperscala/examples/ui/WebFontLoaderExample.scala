@@ -44,7 +44,7 @@ class WebFontLoaderExample extends Example {
   contents += new tag.Button(content = "Load Inconsolata Font") {
     clickEvent.onRealtime {
       case evt => {
-        connected[Webpage[_ <: Session]] {
+        connected[Webpage] {
           case webpage => WebFontLoader(webpage).custom("Inconsolata", "normal", "400", "http://fonts.gstatic.com/s/inconsolata/v9/BjAYBlHtW3CJxDcjzrnZCIbN6UDyHWBl620a-IRfuBk.woff", List("Inconsolata"))
         }
         removeFromParent()
@@ -52,7 +52,7 @@ class WebFontLoaderExample extends Example {
     }
   }
 
-  def loadFont(family: String) = connected[Webpage[_ <: Session]] {
+  def loadFont(family: String) = connected[Webpage] {
     case webpage => WebFontLoader(webpage).google(List(family))
   }
 }

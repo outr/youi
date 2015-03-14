@@ -11,7 +11,7 @@ import org.hyperscala.web.{Website, Webpage}
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class BootstrapTheme[S <: Session](site: Website[S]) extends Webpage(site) {
+class BootstrapTheme extends Webpage {
   require(Bootstrap)
 
   body.role := "document"

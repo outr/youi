@@ -22,13 +22,13 @@ object EncodedImages extends Module with Logging {
   override val name = "encoded-images"
   override def version = Version(1)
 
-  override def init[S <: Session](website: Website[S]) = {}
+  override def init(website: Website) = {}
 
-  override def load[S <: Session](webpage: Webpage[S]) = {
+  override def load(webpage: Webpage) = {
     encode(webpage)
   }
 
-  def encode[S <: Session](webpage: Webpage[S]): Unit = {
+  def encode(webpage: Webpage): Unit = {
     webpage.byTag[tag.Img].foreach {
       case image if image.src() != null && !image.src().trim.isEmpty => {
         val relative = !image.src().contains("://")

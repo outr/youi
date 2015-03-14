@@ -66,7 +66,7 @@ class StaticCanvas(val canvas: tag.Canvas) extends MutableContainer[Object] {
     eval(s"FabricJS.remove('$id', '${o.id}');")
   }
 
-  protected[fabricjs] def eval(js: JavaScriptContent) = canvas.connected[Webpage[_]] {
+  protected[fabricjs] def eval(js: JavaScriptContent) = canvas.connected[Webpage] {
     case webpage => webpage.eval(js)
   }
 

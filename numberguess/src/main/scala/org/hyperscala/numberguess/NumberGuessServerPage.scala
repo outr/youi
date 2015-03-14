@@ -12,7 +12,7 @@ import com.outr.net.http.session.Session
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class NumberGuessServerPage[S <: Session](website: Website[S]) extends Webpage[S](website) {
+class NumberGuessServerPage extends Webpage {
   require(Realtime)
   this.connectForm()
 

@@ -16,7 +16,7 @@ object CreateJS extends Module {
 
   override def dependencies = List(EaselJS, TweenJS)
 
-  override def init[S <: Session](website: Website[S]) = {}
+  override def init(website: Website) = {}
 
-  override def load[S <: Session](webpage: Webpage[S]) = {}
+  override def load(webpage: Webpage) = {}
 }

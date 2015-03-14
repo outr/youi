@@ -17,20 +17,20 @@ object TweenJS extends Module {
 
   override def dependencies = List(EaselJS)
 
-  override def init[S <: Session](website: Website[S]) = {
+  override def init(website: Website) = {
   }
 
-  override def load[S <: Session](webpage: Webpage[S]) = {
+  override def load(webpage: Webpage) = {
     webpage.head.contents += new tag.Script(src = s"https://code.createjs.com/tweenjs-0.6.0.min.js")
   }
 }
 
 object Ticker {
-  def setFPS(stage: Stage, fps: Int) = stage.canvas.connected[Webpage[Session]] {
+  def setFPS(stage: Stage, fps: Int) = stage.canvas.connected[Webpage] {
     case webpage => webpage.eval(JavaScriptString(s"createjs.Ticker.setFPS($fps);"))
   }
 
-  def addEventListener(eventType: String, stage: Stage) = stage.canvas.connected[Webpage[Session]] {
+  def addEventListener(eventType: String, stage: Stage) = stage.canvas.connected[Webpage] {
     case webpage => webpage.eval(JavaScriptString(s"createjs.Ticker.addEventListener('$eventType', EaselJS.stage('${stage.id}'));"))
   }
 }

@@ -14,16 +14,16 @@ object ExternalStyle extends Module {
   val name = "external-style"
   val version = Version(1)
 
-  override def init[S <: Session](website: Website[S]) = {}
+  override def init(website: Website) = {}
 
-  override def load[S <: Session](webpage: Webpage[S]) = {
+  override def load(webpage: Webpage) = {
     webpage.byTag[HTMLTag].foreach(t => convertToSelector(webpage, t))      // Convert all tags to use selector
     webpage.intercept.init.on {                            // Convert all future tags to use selector
       case t: HTMLTag => convertToSelector(webpage, t)
     }
   }
 
-  def convertToSelector[S <: Session](webpage: Webpage[S], t: HTMLTag) = if (t.style.selector == null) {     // Local style sheet, must be changed
+  def convertToSelector(webpage: Webpage, t: HTMLTag) = if (t.style.selector == null) {     // Local style sheet, must be changed
     val styleSheet = webpage.head.selector(Selector.id(t))      // Based on the id as of render-time
     styleSheet(t.style)                                      // Apply existing CSS from the local style sheet
     t.styleProperty := styleSheet                            // Swap the property value so all future style changes are applied to the selector

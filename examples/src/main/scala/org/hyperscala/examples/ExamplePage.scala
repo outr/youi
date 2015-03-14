@@ -6,6 +6,6 @@ import com.outr.net.http.session.Session
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-trait ExamplePage[S <: Session] extends Webpage[S] {
+trait ExamplePage extends Webpage {
   def example: Example
 }

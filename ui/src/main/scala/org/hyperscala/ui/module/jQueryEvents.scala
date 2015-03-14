@@ -19,9 +19,9 @@ object jQueryEvents extends Module with Logging {
 
   override val dependencies = List(jQuery)
 
-  override def init[S <: Session](website: Website[S]) = {}
+  override def init(website: Website) = {}
 
-  override def load[S <: Session](webpage: Webpage[S]) = {
+  override def load(webpage: Webpage) = {
     val html = webpage.html
     val b = new StringBuilder
     html.byTag[HTMLTag].foreach {

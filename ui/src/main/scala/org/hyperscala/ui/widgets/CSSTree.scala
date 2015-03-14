@@ -45,11 +45,11 @@ object CSSTree extends Module {
   val name = "csstree"
   val version = Version(1)
 
-  override def init[S <: Session](website: Website[S]) = {
+  override def init(website: Website) = {
     website.addClassPath("/csstree/", "csstree/")
   }
 
-  override def load[S <: Session](webpage: Webpage[S]) = {
+  override def load(webpage: Webpage) = {
     webpage.head.contents += new tag.Link(href = "/csstree/style.css", rel = "stylesheet")
   }
 }

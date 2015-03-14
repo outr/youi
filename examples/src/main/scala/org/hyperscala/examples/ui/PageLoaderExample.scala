@@ -10,7 +10,7 @@ import com.outr.net.http.session.Session
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class PageLoaderExample[S <: Session](website: Website[S]) extends Webpage(website) {
+class PageLoaderExample extends Webpage {
   require(BusyDialog)
   require(Realtime)
 
@@ -26,7 +26,7 @@ class PageLoaderExample[S <: Session](website: Website[S]) extends Webpage(websi
     PageLoader(this, "Test Page Loader...", "/example/advanced/page_loader.html", {
       info("Loading next page...")
       Thread.sleep(2000)
-      val next = new PageLoaderExample(website)
+      val next = new PageLoaderExample
       next.body.contents += new tag.Br
       next.body.contents += new tag.Br
       next.body.contents += new tag.Div(content = "Loaded explicitly by PageLoader!!!")

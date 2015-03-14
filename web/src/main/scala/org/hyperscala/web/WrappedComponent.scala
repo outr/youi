@@ -13,7 +13,7 @@ import com.outr.net.http.session.Session
 trait WrappedComponent[Tag <: HTMLTag] {
   private val storage = new MappedStorage[String, Any] {}
 
-  @volatile private var _webpage: Webpage[Session] = _
+  @volatile private var _webpage: Webpage = _
   protected def webpage = _webpage
   def initialized = webpage != null
 
@@ -27,7 +27,7 @@ trait WrappedComponent[Tag <: HTMLTag] {
   if (autoInit) init()
 
   def init() = {
-    wrapped.connected[Webpage[Session]] {
+    wrapped.connected[Webpage] {
       case w => synchronized {
         if (_webpage == null) {
           _webpage = w

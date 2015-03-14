@@ -30,15 +30,15 @@ object Bounding extends Module with StorageComponent[Bounding, HTMLTag] with Log
 
   override def dependencies = List(Realtime)
 
-  override def init[S <: Session](website: Website[S]) = {
+  override def init(website: Website) = {
     website.register("/bounding.js", "bounding.js")
   }
 
-  override def load[S <: Session](webpage: Webpage[S]) = {
+  override def load(webpage: Webpage) = {
     webpage.head.contents += new tag.Script(mimeType = "text/javascript", src = "/bounding.js")
   }
 
-  def monitor[S <: Session](webpage: Webpage[S], selector: Selector, frequency: Double = 0.5, selectorFunction: JSFunction0[Selector] = null) = {
+  def monitor(webpage: Webpage, selector: Selector, frequency: Double = 0.5, selectorFunction: JSFunction0[Selector] = null) = {
     val sf = if (selectorFunction != null) {
       selectorFunction.toJS(1)
     } else {
@@ -48,7 +48,7 @@ object Bounding extends Module with StorageComponent[Bounding, HTMLTag] with Log
     webpage.eval(js)
   }
 
-  def disable[S <: Session](webpage: Webpage[S], selector: Selector) = {
+  def disable(webpage: Webpage, selector: Selector) = {
     webpage.eval(s"bounding.remove(${selector.content});")
   }
 

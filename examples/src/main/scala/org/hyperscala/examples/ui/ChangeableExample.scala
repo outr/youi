@@ -23,7 +23,7 @@ class ChangeableExample extends Example {
   this.require(Changeable)
   this.require(Realtime)
 
-  connected[Webpage[Session]] {
+  connected[Webpage] {
     case webpage => webpage.connectForm()
   }
 

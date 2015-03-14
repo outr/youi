@@ -31,12 +31,12 @@ object ContentEditor extends Module with StorageComponent[ContentEditor, HTMLTag
 
   override def dependencies = List(Rangy, Realtime)
 
-  override def init[S <: Session](website: Website[S]) = {
+  override def init(website: Website) = {
     website.register("/js/contenteditor.js", "contenteditor.js")
     website.register("/js/hyperscala-contenteditor.js", "hyperscala-contenteditor.js")
   }
 
-  override def load[S <: Session](webpage: Webpage[S]) = {
+  override def load(webpage: Webpage) = {
     webpage.head.contents += new tag.Script(src = "/js/contenteditor.js")
     webpage.head.contents += new tag.Script(src = "/js/hyperscala-contenteditor.js")
   }
@@ -176,7 +176,7 @@ class ContentEditor private(val container: HTMLTag) extends Listenable {
 
   private def ifFocused[R](statement: Statement[R]) = MultiStatement(sideEffects = true, s"if (ContentEditor.byId('${container.identity}').focused()) { ", statement, " }")
   private def call(function: String) = send(s"ContentEditor.byId('${container.identity}').$function;")
-  private def send(js: JavaScriptContent) = container.connected[Webpage[Session]] {
+  private def send(js: JavaScriptContent) = container.connected[Webpage] {
     case webpage => webpage.eval(js)
   }
 

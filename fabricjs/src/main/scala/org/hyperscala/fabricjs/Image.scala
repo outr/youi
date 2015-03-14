@@ -30,7 +30,6 @@ class Image(val url: String) extends Object("Image") {
          |  FabricJS.add('${canvas.id}', '$id', image);
          |  $reRender
          |});""".stripMargin
-    println(js)
     canvas.eval(js)
   }
 }

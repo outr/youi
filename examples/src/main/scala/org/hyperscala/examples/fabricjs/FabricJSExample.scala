@@ -3,6 +3,7 @@ package org.hyperscala.examples.fabricjs
 import org.hyperscala.examples.Example
 import org.hyperscala.fabricjs._
 import org.hyperscala.fabricjs.filters.{Brightness, Grayscale}
+import org.hyperscala.fabricjs.paint.{ColorStop, LinearGradient}
 import org.hyperscala.fabricjs.prop.Adjust
 import org.hyperscala.html._
 import org.powerscala.Color
@@ -14,7 +15,7 @@ import org.hyperscala.realtime._
 class FabricJSExample extends Example {
   require(FabricJS)
 
-  val t = new tag.Canvas(id = "myCanvas", width = 400, height = 200)
+  val t = new tag.Canvas(id = "myCanvas", width = 600, height = 200)
   t.style.border := "1px solid black"
   contents += t
 
@@ -29,6 +30,7 @@ class FabricJSExample extends Example {
     originX := "center"
     originY := "center"
   }
+  println(rect.fill().toJS(rect, "fill"))
   canvas.contents += rect
 
   val image = new Image("/images/hyperscala.png") {
@@ -52,28 +54,36 @@ class FabricJSExample extends Example {
   }
   canvas.contents += path
 
-  contents += new tag.Button(content = "Rotate") {
-    clickEvent.onRealtime {
-      case evt => {
-//        rect.angle := rect.angle() + 22.
-        rect.angle.animate(Adjust += 180.0, duration = 1.0)
+  val circle = new Circle {
+    left := 100.0
+    top := 100.0
+    radius := 50.0
+    fill := LinearGradient(-50.0, 0.0, 50.0, 0.0, List(ColorStop(0.0, Color.Red), ColorStop(0.2, Color.Orange), ColorStop(0.4, Color.Yellow), ColorStop(0.6, Color.Green), ColorStop(0.8, Color.Blue), ColorStop(1.0, Color.Purple)))
+  }
+  canvas.contents += circle
+
+  contents += new tag.Div {
+    contents += new tag.Button(content = "Rotate") {
+      clickEvent.onRealtime {
+        case evt => {
+          //        rect.angle := rect.angle() + 22.
+          rect.angle.animate(Adjust += 180.0, duration = 1.0)
+        }
       }
     }
-  }
-  contents += new tag.Button(content = "Remove") {
-    clickEvent.onRealtime {
-      case evt => canvas.contents -= rect
+    contents += new tag.Button(content = "Remove") {
+      clickEvent.onRealtime {
+        case evt => canvas.contents -= rect
+      }
     }
-  }
 
-  val brightness = Brightness(255)
+    val brightness = Brightness(255)
 
-  contents += new tag.Button(content = "Test") {
-    clickEvent.onRealtime {
-      case evt => if (image.filters.contents.contains(brightness)) {
-        image.filters.contents -= brightness
-      } else {
-        image.filters.contents += brightness
+    contents += new tag.Button(content = "Test") {
+      clickEvent.onRealtime {
+        case evt => {
+          circle.fill := LinearGradient(-50.0, 0.0, 50.0, 0.0, List(ColorStop(0.0, Color.Red), ColorStop(1.0, Color.Blue)))
+        }
       }
     }
   }

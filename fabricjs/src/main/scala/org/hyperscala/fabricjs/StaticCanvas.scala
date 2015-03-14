@@ -1,5 +1,6 @@
 package org.hyperscala.fabricjs
 
+import org.hyperscala.fabricjs.paint.GradientPaint
 import org.hyperscala.fabricjs.prop.{CanvasProperty, ObjectProperty}
 import org.hyperscala.html.tag
 import org.hyperscala.javascript._
@@ -40,7 +41,13 @@ class StaticCanvas(val canvas: tag.Canvas) extends MutableContainer[Object] {
   listen[PropertyChangeEvent[_], Unit, Unit]("change", Priority.Normal, Descendants) {
     case evt => evt.property match {
       case cp: CanvasProperty[_] => eval(s"FabricJS.set('$id', null, '${cp.name}', ${JavaScriptContent.toJS(evt.newValue)});")
-      case op: ObjectProperty[_] => eval(s"FabricJS.set('$id', '${op.o.id}', '${op.name}', ${JavaScriptContent.toJS(evt.newValue)});")
+      case op: ObjectProperty[_] => evt.newValue match {
+        case gradient: GradientPaint => {
+          eval(gradient.toJS(op.o, op.name))
+          renderAll()
+        }
+        case value => eval(s"FabricJS.set('$id', '${op.o.id}', '${op.name}', ${op.o.toJS(op.name, value)});")
+      }
     }
   }
 
@@ -50,6 +57,8 @@ class StaticCanvas(val canvas: tag.Canvas) extends MutableContainer[Object] {
   childRemoved.on {
     case evt => remove(evt.child.asInstanceOf[Object])
   }
+
+  def renderAll() = eval(s"FabricJS.canvas['$id'].renderAll();")
 
   private def add(o: Object) = o.addToCanvas(this)
 

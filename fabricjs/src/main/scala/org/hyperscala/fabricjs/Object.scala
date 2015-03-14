@@ -1,5 +1,6 @@
 package org.hyperscala.fabricjs
 
+import org.hyperscala.fabricjs.paint.{GradientPaint, Paint}
 import org.hyperscala.fabricjs.prop.ObjectProperty
 import org.hyperscala.javascript.JavaScriptContent
 import org.hyperscala.javascript.dsl._
@@ -27,7 +28,7 @@ abstract class Object(val name: String) extends Listenable with Element[Listenab
   lazy val cornerColor = prop[Color]("cornerColor", Color.immutable(102, 153, 255, 0.5))
   lazy val cornerSize = prop("cornerSize", 12.0)
   lazy val evented = prop("evented", true)
-  lazy val fill = prop[Color]("fill", Color.Black)
+  lazy val fill = prop[Paint]("fill", Color.Black)
   lazy val fillRule = prop("fillRule", "nonzero")
   lazy val flipX = prop("flipX", false)
   lazy val flipY = prop("flipY", false)
@@ -59,7 +60,7 @@ abstract class Object(val name: String) extends Listenable with Element[Listenab
   lazy val selectable = prop("selectable", true)
   lazy val shadow = prop[JavaScriptContent]("shadow", null)
   lazy val stateProperties = prop[JavaScriptContent]("stateProperties", null)
-  lazy val stroke = prop[Color]("stroke", null)
+  lazy val stroke = prop[Paint]("stroke", null)
   lazy val strokeDashArray = prop[JavaScriptContent]("strokeDashArray", null)
   lazy val strokeLineCap = prop[String]("strokeLineCap", "butt")
   lazy val strokeLineJoin = prop[String]("strokeLineJoin", "miter")
@@ -73,11 +74,28 @@ abstract class Object(val name: String) extends Listenable with Element[Listenab
 
   def canvas = root[StaticCanvas]
 
-  protected[fabricjs] def addToCanvas(canvas: StaticCanvas) = canvas.eval(s"FabricJS.add('${canvas.id}', '$id', $construct);")
+  protected[fabricjs] def addToCanvas(canvas: StaticCanvas) = {
+    canvas.eval(s"FabricJS.add('${canvas.id}', '$id', $construct);")
+    val special = specialProps
+    if (special.nonEmpty) {
+      canvas.eval(special.mkString("\n"))
+    }
+  }
 
   protected[fabricjs] def construct = s"new fabric.$name($props)"
 
-  protected[fabricjs] def props = properties.map(p => p.get.map(v => p.name -> v)).flatten.map(v => s"${v._1}: ${JavaScriptContent.toJS(v._2)}").mkString("{ ", ", ", " }")
+  protected[fabricjs] def props = properties.map(p => p.get.map(v => p.name -> v)).flatten.collect {
+    case (key, value) if value == null || !value.isInstanceOf[GradientPaint] => s"$key: ${toJS(key, value)}"
+  }.mkString("{", ", ", "}")
+
+  protected[fabricjs] def specialProps = properties.map(p => p.get.map(v => p.name -> v)).flatten.collect {
+    case (key, value) if value.isInstanceOf[GradientPaint] => toJS(key, value)
+  }
+
+  protected[fabricjs] def toJS(key: String, value: Any) = value match {
+    case paint: Paint => paint.toJS(this, key)
+    case _ => JavaScriptContent.toJS(value)
+  }
 
   protected def prop[T](name: String, default: T)(implicit manifest: Manifest[T]) = synchronized {
     val p = new ObjectProperty[T](name, this)(manifest)

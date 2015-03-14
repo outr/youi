@@ -62,6 +62,13 @@ class FabricJSExample extends Example {
   }
   canvas.contents += circle
 
+  val text = new Text("Hello World!") {
+    left := 250.0
+    top := 50.0
+    fontFamily := "sans-serif"
+  }
+  canvas.contents += text
+
   contents += new tag.Div {
     contents += new tag.Button(content = "Rotate") {
       clickEvent.onRealtime {

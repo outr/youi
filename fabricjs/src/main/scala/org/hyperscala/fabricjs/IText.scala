@@ -6,7 +6,7 @@ import org.powerscala.Color
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class IText extends Text("IText") {
+class IText(text: String) extends Text(text, "IText") {
   lazy val caching = prop("caching", true)
   lazy val cursorColor = prop[Color]("cursorColor", Color.immutable("#333"))
   lazy val cursorDelay = prop("cursorDelay", 1000)

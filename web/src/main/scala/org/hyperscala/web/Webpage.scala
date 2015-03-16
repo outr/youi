@@ -17,13 +17,13 @@ import org.powerscala.json.TypedSupport
 import org.powerscala.property.Property
 import org.powerscala.reflect._
 import org.powerscala.{MapStorage, Unique}
-import org.powerscala.hierarchy.{MutableChildLike, ParentLike}
+import org.powerscala.hierarchy.{Element, MutableChildLike, ParentLike}
 import org.powerscala.concurrent.Time._
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class Webpage extends HttpHandler with HTMLPage with ModularPage with ParentLike[tag.HTML] with MutableChildLike[Website] with ConnectionHolder {
+class Webpage extends HttpHandler with HTMLPage with ModularPage with ParentLike[tag.HTML] with Element[Website] with ConnectionHolder {
   Webpage
 
   ConnectionHolder.jsonEvent.partial(Unit) {

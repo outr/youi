@@ -172,12 +172,12 @@ class EditablePageExample(example: ContentEditorExample) extends Webpage {
   body.contents += div
 
   if (example != null) {
-    editor.bindInput(example.colorInput, Style.color, parent)
-    editor.bindStyle(example.colorInput, Style.color, Style.backgroundColor, Color.White, parent)
-    editor.bindInput(example.fontFamily, Style.fontFamily, parent)
-    editor.bindFontStyle(example.fontStyle, parent)
-    editor.bindInput(example.fontSize, Style.fontSize, parent, ContentEditor.PixelConversion)
-    editor.bindInput(example.lineHeight, Style.lineHeight, parent, valueCleaner = ContentEditor.PixelConversion, "div")
+    editor.bindInput(example.colorInput, Style.color, document.parent)
+    editor.bindStyle(example.colorInput, Style.color, Style.backgroundColor, Color.White, document.parent)
+    editor.bindInput(example.fontFamily, Style.fontFamily, document.parent)
+    editor.bindFontStyle(example.fontStyle, document.parent)
+    editor.bindInput(example.fontSize, Style.fontSize, document.parent, ContentEditor.PixelConversion)
+    editor.bindInput(example.lineHeight, Style.lineHeight, document.parent, valueCleaner = ContentEditor.PixelConversion, "div")
   }
 
   def message(title: String, message: String) = if (example != null) {

@@ -1,6 +1,5 @@
 package org.hyperscala.examples.screen
 
-import com.outr.net.http.session.Session
 import org.hyperscala.examples.Example
 import org.hyperscala.jquery.Gritter
 import org.hyperscala.realtime._
@@ -19,14 +18,10 @@ class ScreenExample extends Example {
   val screen2URI = s"$baseURI/screen2.html"
   val screen3URI = s"$baseURI/screen3.html"
 
-  private var screens: ExampleScreens = _
+  val screens = new ExampleScreens(this)
 
   val heading = new tag.H1(content = "Example")
   contents += heading
-
-  connected[Webpage] {
-    case webpage => screens = new ExampleScreens(webpage, ScreenExample.this)
-  }
 
   contents += new tag.Button(content = "Screen 1") {
     clickEvent.onRealtime {
@@ -57,7 +52,7 @@ class ScreenExample extends Example {
   def notify(message: String) = Gritter.add(this.webpage, "Screen Change", message)
 }
 
-class ExampleScreens(webpage: Webpage, example: ScreenExample) extends Screens(webpage) {
+class ExampleScreens(example: ScreenExample) extends Screens(example) {
   val screen1 = screen(example.screen1URI, new HeadingScreen(example, "Screen 1"))
   val screen2 = screen(example.screen2URI, new HeadingScreen(example, "Screen 2"))
   val screen3 = screen(example.screen3URI, new HeadingScreen(example, "Screen 3"))

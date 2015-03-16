@@ -8,10 +8,12 @@ import org.hyperscala.realtime.Realtime
 import org.hyperscala.web._
 import org.powerscala.Version
 import org.hyperscala.html._
-import org.powerscala.hierarchy.Element
+import org.powerscala.hierarchy.{AbstractMutableContainer, Element}
 import org.powerscala.json.TypedSupport
 import org.powerscala.log.Logging
 import org.powerscala.property.Property
+
+import scala.language.implicitConversions
 
 /**
  * Screens can be mixed into a Webpage to support multiple screens that offer a dynamic alternative to individual page
@@ -19,7 +21,7 @@ import org.powerscala.property.Property
  *
  * @author Matt Hicks <matt@outr.com>
  */
-class Screens private() extends Logging {
+class Screens private() extends Logging with AbstractMutableContainer[ScreenKeeper[_ <: Screen]] {
   private var entry: Either[Webpage, HTMLTag] = _
 
   def this(webpage: Webpage) = {
@@ -50,8 +52,8 @@ class Screens private() extends Logging {
       }
     }
     url.change.on {
-      case evt => keeperURIs.get(evt.newValue.path) match {
-        case Some(keeper) => keeper.activate()
+      case evt => keeper(evt.newValue) match {
+        case Some(keeper) => keeper.activate(evt.newValue.toString())
         case None => warn(s"No screen associated with ${evt.newValue}.")
       }
     }
@@ -66,6 +68,8 @@ class Screens private() extends Logging {
       }
     }
   }
+
+  def keeper(url: URL) = contents.find(keeper => keeper.matcher(url))
 
   private def withWebpage(f: Webpage => Unit) = entry match {
     case Left(webpage) => f(webpage)
@@ -82,18 +86,23 @@ class Screens private() extends Logging {
   private[screen] val _screen = Property[Screen]()
   def screen = _screen.readOnlyView
 
-  private var keeperURIs = Map.empty[String, ScreenKeeper[_ <: Screen]]
+  childAdded.on {
+    case evt => if (url() != null && evt.child.asInstanceOf[ScreenKeeper[Screen]].matcher(url())) {
+      evt.child.asInstanceOf[ScreenKeeper[Screen]].activate(url().toString())
+    }
+  }
 
-  def screen[S <: Screen](uri: String, loader: => S, preLoad: Boolean = false, replace: Boolean = false)(implicit manifest: Manifest[S]) = {
-    val keeper = new ScreenKeeper[S](uri, preLoad, replace, this, loader)(manifest)
-    synchronized {
-      keeperURIs += uri -> keeper
-    }
-    if (url() != null && uri == url().path) {          // This screen matches the current URL, load immediately!
-      keeper.activate()
-    }
+  implicit def uri2Matcher(uri: String): URL => Boolean = ScreenKeeper.pathMatcher(uri)
+
+  def screen[S <: Screen](matcher: URL => Boolean, loader: => S, preLoad: Boolean = false, replace: Boolean = false)(implicit manifest: Manifest[S]) = {
+    val keeper = new ScreenKeeper[S](matcher, preLoad, replace, this, loader)(manifest)
+    this += keeper
     keeper
   }
+
+  def +=[S <: Screen](keeper: ScreenKeeper[S]) = addChild(keeper)
+
+  def -=[S <: Screen](keeper: ScreenKeeper[S]) = removeChild(keeper)
 
   def activate(uri: String, replace: Boolean): Unit = if (!url().toString().toLowerCase.endsWith(uri.toLowerCase)) {
     withWebpage {

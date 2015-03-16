@@ -1,8 +1,7 @@
 package org.hyperscala.realtime
 
-import com.outr.net.http.session.Session
 import org.hyperscala.html._
-import org.hyperscala.web.{Scope, WebpageHandler, Webpage}
+import org.hyperscala.web.{Website, Scope, WebpageHandler, Webpage}
 import org.powerscala.property.Property
 
 /**
@@ -12,9 +11,9 @@ class RealtimeFrame(pageURL: String) extends tag.IFrame(src = "about:blank") {
   var currentPage = Property[Webpage]()
   @volatile private var webpage: Webpage = _
 
-  connected[Webpage] {
-    case page => {
-      webpage = page
+  connected[Website] {
+    case site => {
+      webpage = root[Webpage].get
       updatePage()
       currentPage.change.on {
         case evt => updatePage()

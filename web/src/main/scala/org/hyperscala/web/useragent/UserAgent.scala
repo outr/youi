@@ -4,7 +4,6 @@ import org.powerscala.Version
 import org.hyperscala.web.Webpage
 import net.sf.uadetector.service.UADetectorServiceFactory
 import net.sf.uadetector.{UserAgentType, VersionNumber, ReadableUserAgent}
-import com.outr.net.http.session.Session
 import org.powerscala.log.Logging
 
 /**

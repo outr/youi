@@ -1,12 +1,11 @@
 package org.hyperscala.screen
 
 import com.outr.net.URL
-import com.outr.net.http.session.Session
 import org.hyperscala.event.BrowserEvent
 import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.module.{Interface, Module}
 import org.hyperscala.realtime.Realtime
-import org.hyperscala.web.{Website, Webpage}
+import org.hyperscala.web._
 import org.powerscala.Version
 import org.hyperscala.html._
 import org.powerscala.json.TypedSupport
@@ -19,17 +18,44 @@ import org.powerscala.property.Property
  *
  * @author Matt Hicks <matt@outr.com>
  */
-class Screens(webpage: Webpage) extends Logging {
-  webpage.require(Screens)
+class Screens private() extends Logging {
+  private var entry: Either[Webpage, HTMLTag] = _
 
-  val url = Property[URL](default = Some(webpage.website.request.url.decoded))
+  def this(webpage: Webpage) = {
+    this()
+    entry = Left(webpage)
+  }
+
+  def this(tag: HTMLTag) = {
+    this()
+    entry = Right(tag)
+  }
+
+  entry match {
+    case Left(webpage) => webpage.require(Screens)
+    case Right(tag) => tag.require(Screens)
+  }
+
+  private def withWebpage(f: Webpage => Unit) = entry match {
+    case Left(webpage) => f(webpage)
+    case Right(tag) => tag.connected[Webpage] {
+      case webpage => f(webpage)
+    }
+  }
+
+  val url = Property[URL]()
+  withWebpage {
+    case webpage => url := webpage.website.request.url.decoded
+  }
   private[screen] val _screen = Property[Screen]()
   def screen = _screen.readOnlyView
 
   private var keeperURIs = Map.empty[String, ScreenKeeper[_ <: Screen]]
 
-  webpage.body.handle[URLChange] {
-    case change => url := URL.encoded(change.url).decoded
+  withWebpage {
+    case webpage => webpage.body.handle[URLChange] {
+      case change => url := URL.encoded(change.url).decoded
+    }
   }
   url.change.on {
     case evt => keeperURIs.get(evt.newValue.path) match {
@@ -60,7 +86,9 @@ class Screens(webpage: Webpage) extends Logging {
   }
 
   def activate(uri: String, replace: Boolean): Unit = if (!url().toString().toLowerCase.endsWith(uri.toLowerCase)) {
-    webpage.eval(JavaScriptString(s"Screen.activate('$uri', $replace);"))
+    withWebpage {
+      case webpage => webpage.eval(JavaScriptString(s"Screen.activate('$uri', $replace);"))
+    }
   }
 }
 

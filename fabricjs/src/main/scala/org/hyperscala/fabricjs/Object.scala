@@ -58,7 +58,7 @@ abstract class Object(val name: String) extends Listenable with Element[Listenab
   lazy val scaleX = prop("scaleX", 1.0)
   lazy val scaleY = prop("scaleY", 1.0)
   lazy val selectable = prop("selectable", true)
-  lazy val shadow = prop[JavaScriptContent]("shadow", null)
+  lazy val shadow = prop[String]("shadow", null)
   lazy val stateProperties = prop[JavaScriptContent]("stateProperties", null)
   lazy val stroke = prop[Paint]("stroke", null)
   lazy val strokeDashArray = prop[JavaScriptContent]("strokeDashArray", null)

@@ -14,17 +14,17 @@ import java.io.ByteArrayOutputStream
  * @author Matt Hicks <matt@outr.com>
  */
 class HelloSiteSpec extends WordSpec with Matchers {
-  val ExpectedHTML = """<html><head><title>HelloPage</title><metaname="generator"content="Hyperscala"/><metacharset="UTF-8"/></head><body><h1>Hello,World!</h1></body></html>"""
-
   "HelloPage" when {
+    val page = new HelloPage
+    val expectedHTML = s"""<html><head><title>HelloPage</title><metaname="generator"content="Hyperscala"/><metaname="pageId"content="${page.pageId}"/><metacharset="UTF-8"/></head><body><h1>Hello,World!</h1></body></html>"""
+
     "instantiated directly" should {
-      lazy val page = new HelloPage
       lazy val body = page.body
       "load correctly" in {
         page should not be null
       }
       "render the expected HTML" in {
-        page.html.outputString.replaceAll("""\s""", "") should be(ExpectedHTML)
+        page.html.outputString.replaceAll("""\s""", "") should be(expectedHTML)
       }
       "add a div" in {
         body.contents += new tag.Div(id = "testDiv", content = "Test Div")
@@ -50,7 +50,7 @@ class HelloSiteSpec extends WordSpec with Matchers {
     "referenced through an HTTP request" should {
       var response: HttpResponse = null
       "submit an HttpRequest and get an HttpResponse from HelloSite" in {
-        val request = HttpRequest(URL("http://localhost/"))
+        val request = HttpRequest(URL.encoded("http://localhost/"))
         response = HelloSite.onReceive(request, HttpResponse.NotFound)
       }
       "validate the response status" in {

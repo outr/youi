@@ -66,6 +66,7 @@ class FabricJSExample extends Example {
     left := 250.0
     top := 50.0
     fontFamily := "sans-serif"
+    shadow := "rgba(0,0,0,0.3) 5px 5px 5px"
   }
   canvas.contents += text
 

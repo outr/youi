@@ -1,14 +1,14 @@
 package org.hyperscala
 
+import org.hyperscala.javascript.JavaScriptContent
 import org.hyperscala.web.{Webpage, VisualException}
 
 import language.implicitConversions
 import org.hyperscala.html._
 import org.hyperscala.module.{Interface, Module}
-import com.outr.net.http.session.Session
 
 /**
- * @author Matt Hicks <mhicks@outr.com>
+ * @author Matt Hicks <matt@outr.com>
  */
 package object web {
   implicit class VisualExceptionCreator(t: Throwable) {
@@ -36,5 +36,9 @@ package object web {
     def website = webpage.website
     def request = website.request
     def session = website.session
+
+    def eval(js: JavaScriptContent) = t.connected[Webpage] {
+      case webpage => webpage.eval(js)
+    }
   }
 }

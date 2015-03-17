@@ -125,7 +125,9 @@ object HyperscalaSite extends Website with JettyApplication {
   addHandler(screen, "/example/advanced/screen3.html")
   val singlePageSite = example(new SinglePageSiteExample, "Advanced", "Single Page Site", Scope.Page)
   addHandler(singlePageSite, "/example/advanced/login.html")
-  addHandler(singlePageSite, "/example/advanced/authenticated.html")
+  addHandler(singlePageSite, "/example/advanced/authenticated1.html")
+  addHandler(singlePageSite, "/example/advanced/authenticated2.html")
+  addHandler(singlePageSite, "/example/advanced/authenticated3.html")
 
   // Module
   val externalStyle = example(new ExternalStyleExample, "Module", "External Style", Scope.Page)

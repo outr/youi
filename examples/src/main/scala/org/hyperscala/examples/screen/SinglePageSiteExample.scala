@@ -26,7 +26,9 @@ class SinglePageSiteExample extends Example {
 
   val loginLink = "/example/advanced/login.html"
   val welcomeLink = "/example/advanced/single_page_site.html"
-  val authenticatedLink = "/example/advanced/authenticated.html"
+  val authenticatedLink1 = "/example/advanced/authenticated1.html"
+  val authenticatedLink2 = "/example/advanced/authenticated2.html"
+  val authenticatedLink3 = "/example/advanced/authenticated3.html"
 
   val screens = new Screens(this)
 
@@ -39,7 +41,7 @@ class SinglePageSiteExample extends Example {
 
   val loginScreen = screens.screen(loginLink, new LoginScreen(this))
   val welcomeScreen = screens.screen(welcomeLink, new WelcomeScreen(this))
-  val authenticatedScreen = screens.screen(authenticatedLink, new AuthenticatedScreen(this), verify = userVerify)
+  val authenticatedScreen = screens.screen(List(authenticatedLink1, authenticatedLink2, authenticatedLink3), new AuthenticatedScreen(this), verify = userVerify)
 
   val main = new tag.Div
   contents += main
@@ -57,7 +59,7 @@ class SinglePageSiteExample extends Example {
     }
     contents += new Button("Authenticated") {
       clickEvent.onRealtime {
-        case evt => screens.activate(authenticatedLink, replace = false)
+        case evt => screens.activate(authenticatedLink1, replace = false)
       }
     }
   }
@@ -92,7 +94,7 @@ class LoginScreen(example: SinglePageSiteExample) extends SinglePageScreen(examp
   private def logIn() = {
     example.website.session.update("username", usernameInput.value())
     example.authenticatedScreen.dispose()         // Remove any existing instances of authenticated screen
-    example.screens.activate(example.authenticatedLink, replace = true)
+    example.screens.activate(example.authenticatedLink1, replace = true)
   }
 }
 
@@ -104,8 +106,49 @@ class WelcomeScreen(example: SinglePageSiteExample) extends SinglePageScreen(exa
 }
 
 class AuthenticatedScreen(example: SinglePageSiteExample) extends SinglePageScreen(example) {
+  val main = new tag.Div
+
   contents += new Form {
     contents += new tag.H2(clazz = List("form-heading"), content = "Authenticated Page")
     contents += new tag.P(content = s"This is an authenticated screen. Welcome ${example.website.session[String]("username")}.")
+
+    contents += main
+
+    contents += new ButtonGroup {
+      contents += new Button("Auth 1") {
+        clickEvent.onRealtime {
+          case evt => screens.activate("/example/advanced/authenticated1.html", replace = false)
+        }
+      }
+      contents += new Button("Auth 2") {
+        clickEvent.onRealtime {
+          case evt => screens.activate("/example/advanced/authenticated2.html", replace = false)
+        }
+      }
+      contents += new Button("Auth 3") {
+        clickEvent.onRealtime {
+          case evt => screens.activate("/example/advanced/authenticated3.html", replace = false)
+        }
+      }
+    }
   }
+
+  val screens = new Screens(this)
+  val auth1 = screens.screen("/example/advanced/authenticated1.html", new SubScreen("Authenticated Sub-Screen 1", this))
+  val auth2 = screens.screen("/example/advanced/authenticated2.html", new SubScreen("Authenticated Sub-Screen 2", this))
+  val auth3 = screens.screen("/example/advanced/authenticated3.html", new SubScreen("Authenticated Sub-Screen 3", this))
+}
+
+class SubScreen(message: String, auth: AuthenticatedScreen) extends Container with Screen {
+  style.display := Display.None
+
+  contents += new tag.Strong(content = message)
+
+  auth.main.contents += this
+
+  override def activate() = style.display := Display.Block
+
+  override def deactivate() = style.display := Display.None
+
+  override def dispose() = removeFromParent()
 }

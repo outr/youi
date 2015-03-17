@@ -3,6 +3,8 @@ package org.hyperscala.screen
 import com.outr.net.URL
 import org.powerscala.property.Property
 
+import scala.util.matching.Regex
+
 /**
  * @author Matt Hicks <matt@outr.com>
  */
@@ -53,4 +55,6 @@ object ScreenHandler {
   val DefaultVerify = (url: URL) => true
 
   def pathMatcher(path: String) = (url: URL) => url.path.equalsIgnoreCase(path)
+  def pathsMatcher(paths: List[String]) = (url: URL) => paths.find(uri => url.path.equalsIgnoreCase(uri)).nonEmpty
+  def regexMatcher(regex: Regex) = (url: URL) => regex.pattern.matcher(url.toString()).matches()
 }

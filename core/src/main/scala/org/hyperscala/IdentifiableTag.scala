@@ -30,16 +30,18 @@ trait IdentifiableTag extends Tag {
    * Convenience method to inject support for received ClientEvents of a specific type.
    *
    * @param f the handler function for a matching type.
+   * @param condition the condition that must validate to true before handling an event of this type.
+   * @param intercept the Intercept result that will occur from handling this event. Defaults to Stop.
    * @param manifest the manifest of the ClientEvent subclass.
    * @tparam E the ClientEvent type
    * @return Unit
    */
-  def handle[E <: BrowserEvent](f: E => Unit, condition: E => Boolean = (e: E) => true)(implicit manifest: Manifest[E]): Unit = eventReceived.on {
+  def handle[E <: BrowserEvent](f: E => Unit, condition: E => Boolean = (e: E) => true, intercept: Intercept = Intercept.Stop)(implicit manifest: Manifest[E]): Unit = eventReceived.on {
     case evt => if (manifest.runtimeClass.isAssignableFrom(evt.getClass)) {
       val e = evt.asInstanceOf[E]
       if (condition(e)) {
         f(e)
-        Intercept.Stop
+        intercept
       } else {
         Intercept.Continue
       }

@@ -8,6 +8,7 @@ import org.hyperscala.realtime.Realtime
 import org.hyperscala.web._
 import org.powerscala.Version
 import org.hyperscala.html._
+import org.powerscala.event.Intercept
 import org.powerscala.hierarchy.{AbstractMutableContainer, Element}
 import org.powerscala.json.TypedSupport
 import org.powerscala.log.Logging
@@ -43,18 +44,21 @@ class Screens private() extends Logging with AbstractMutableContainer[ScreenHand
     }
 
     element.connected[Website] {
-      case website => url := website.request.url.decoded
+      case website => if (url() == null) url := website.request.url.decoded
     }
 
     withWebpage {
-      case webpage => webpage.body.handle[URLChange] {
-        case change => url := URL.encoded(change.url).decoded
-      }
-    }
-    url.change.on {
-      case evt => keeper(evt.newValue) match {
-        case Some(keeper) => keeper.activate(evt.newValue.toString())
-        case None => warn(s"No screen associated with ${evt.newValue}.")
+      case webpage => {
+        webpage.body.handle[URLChange]({
+          case change => url := URL.encoded(change.url).decoded
+        }, intercept = Intercept.Continue)
+
+        url.change.on {
+          case evt => keeper(evt.newValue) match {
+            case Some(keeper) => keeper.activate(evt.newValue.toString())
+            case None => warn(s"No screen associated with ${evt.newValue}.")
+          }
+        }
       }
     }
     screen.change.on {
@@ -82,13 +86,19 @@ class Screens private() extends Logging with AbstractMutableContainer[ScreenHand
     case Right(tag) => tag
   }
 
-  val url = Property[URL]()
+  def url = (entry match {
+    case Left(webpage) => Some(webpage.store.getOrSet("screenURL", Property[URL]()))
+    case Right(tag) => tag.root[Webpage].map(webpage => webpage.store.getOrSet("screenURL", Property[URL]()))
+  }).orNull
   private[screen] val _screen = Property[Screen]()
   def screen = _screen.readOnlyView
 
   childAdded.on {
-    case evt => if (url() != null && evt.child.asInstanceOf[ScreenHandler[Screen]].matcher(url())) {
-      evt.child.asInstanceOf[ScreenHandler[Screen]].activate(url().toString())
+    case evt => {
+      if (url != null && url() != null && evt.child.asInstanceOf[ScreenHandler[Screen]].matcher(url())) {
+        println(s"activating! ${evt.child}")
+        evt.child.asInstanceOf[ScreenHandler[Screen]].activate(url().toString())
+      }
     }
   }
 

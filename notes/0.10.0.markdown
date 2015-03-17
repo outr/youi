@@ -1,6 +1,7 @@
 ## WebSockets, ContentEditor, FabricJS, Screen, and Major Refactor
 
 hyperscala 0.10.0 is a major refactoring to support better and more efficient communication between client and server via
-the Realtime module. New ContentEditor feature has been added to better support rich content editing in the browser.
+the Realtime module. Additionally, the architecture has been simplified and cleaned up to make creating web pages even
+easier than before. New ContentEditor feature has been added to better support rich content editing in the browser.
 Added wrapper support for FabricJS. Created new interface for dynamic multi-page representations without loading a new
 page in the browser called Screen. Examples have been updated and deprecated code has been removed in this major update.

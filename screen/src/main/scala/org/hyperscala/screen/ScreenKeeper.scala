@@ -6,14 +6,14 @@ import org.powerscala.property.Property
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class ScreenKeeper[S <: Screen](val matcher: URL => Boolean, preLoad: Boolean, replace: Boolean, screens: Screens, loader: => S)(implicit manifest: Manifest[S]) {
+class ScreenKeeper[S <: Screen](val matcher: URL => Boolean, preLoad: Boolean, replace: Boolean, screens: Screens, loader: => S, verify: URL => Boolean = ScreenKeeper.DefaultVerify)(implicit manifest: Manifest[S]) {
   private val _screen = Property[S](default = None)
   if (preLoad) {
     _screen := loader
   }
   def screen = _screen.readOnlyView
 
-  def activate(uri: String): Unit = if (!isActive) {
+  def activate(uri: String): Unit = if (!isActive && verify(screens.url())) {
     if (!isLoaded) {
       _screen := loader
     }
@@ -50,5 +50,7 @@ class ScreenKeeper[S <: Screen](val matcher: URL => Boolean, preLoad: Boolean, r
 }
 
 object ScreenKeeper {
+  val DefaultVerify = (url: URL) => true
+
   def pathMatcher(path: String) = (url: URL) => url.path.equalsIgnoreCase(path)
 }

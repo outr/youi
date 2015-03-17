@@ -90,8 +90,8 @@ class Screens private() extends Logging with AbstractMutableContainer[ScreenKeep
     }
   }
 
-  def screen[S <: Screen](matcher: URL => Boolean, loader: => S, preLoad: Boolean = false, replace: Boolean = false)(implicit manifest: Manifest[S]) = {
-    val keeper = new ScreenKeeper[S](matcher, preLoad, replace, this, loader)(manifest)
+  def screen[S <: Screen](matcher: URL => Boolean, loader: => S, preLoad: Boolean = false, replace: Boolean = false, verify: URL => Boolean = ScreenKeeper.DefaultVerify)(implicit manifest: Manifest[S]) = {
+    val keeper = new ScreenKeeper[S](matcher, preLoad, replace, this, loader, verify)(manifest)
     this += keeper
     keeper
   }

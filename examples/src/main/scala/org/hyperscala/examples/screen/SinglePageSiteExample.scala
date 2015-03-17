@@ -1,5 +1,6 @@
 package org.hyperscala.examples.screen
 
+import com.outr.net.URL
 import org.hyperscala.bootstrap.Bootstrap
 import org.hyperscala.bootstrap.component._
 import org.hyperscala.css.attributes.Display
@@ -29,11 +30,16 @@ class SinglePageSiteExample extends Example {
 
   val screens = new Screens(this)
 
-  val loginScreen = screens.screen(loginLink, new LoginScreen(this), replace = true)
-  val welcomeScreen = screens.screen(welcomeLink, new WelcomeScreen(this))
-  val authenticatedScreen = screens.screen(authenticatedLink, new AuthenticatedScreen(this))
+  val userVerify = (url: URL) => if (this.website.session.contains("username")) {
+    true
+  } else {
+    screens.activate(loginLink, replace = true)
+    false
+  }
 
-  // TODO: authenicated screen shouldn't load until authenticated, redirect to login until then
+  val loginScreen = screens.screen(loginLink, new LoginScreen(this))
+  val welcomeScreen = screens.screen(welcomeLink, new WelcomeScreen(this))
+  val authenticatedScreen = screens.screen(authenticatedLink, new AuthenticatedScreen(this), verify = userVerify)
 
   val main = new tag.Div
   contents += main

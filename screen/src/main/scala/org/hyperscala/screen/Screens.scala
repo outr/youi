@@ -54,8 +54,8 @@ class Screens private() extends Logging with AbstractMutableContainer[ScreenHand
         }, intercept = Intercept.Continue)
 
         url.change.on {
-          case evt => keeper(evt.newValue) match {
-            case Some(keeper) => keeper.activate(evt.newValue.toString())
+          case evt => handler(evt.newValue) match {
+            case Some(handler) => handler.activate(evt.newValue.toString())
             case None => warn(s"No screen associated with ${evt.newValue}.")
           }
         }
@@ -73,7 +73,7 @@ class Screens private() extends Logging with AbstractMutableContainer[ScreenHand
     }
   }
 
-  def keeper(url: URL) = contents.find(keeper => keeper.matcher(url))
+  def handler(url: URL) = contents.find(handler => handler.matcher(url))
 
   private def withWebpage(f: Webpage => Unit) = entry match {
     case Left(webpage) => f(webpage)
@@ -102,14 +102,14 @@ class Screens private() extends Logging with AbstractMutableContainer[ScreenHand
   }
 
   def screen[S <: Screen](matcher: URL => Boolean, loader: => S, preLoad: Boolean = false, replace: Boolean = false, verify: URL => Boolean = ScreenHandler.DefaultVerify)(implicit manifest: Manifest[S]) = {
-    val keeper = new ScreenHandler[S](matcher, preLoad, replace, this, loader, verify)(manifest)
-    this += keeper
-    keeper
+    val handler = new ScreenHandler[S](matcher, preLoad, replace, this, loader, verify)(manifest)
+    this += handler
+    handler
   }
 
-  def +=[S <: Screen](keeper: ScreenHandler[S]) = addChild(keeper)
+  def +=[S <: Screen](handler: ScreenHandler[S]) = addChild(handler)
 
-  def -=[S <: Screen](keeper: ScreenHandler[S]) = removeChild(keeper)
+  def -=[S <: Screen](handler: ScreenHandler[S]) = removeChild(handler)
 
   def activate(uri: String, replace: Boolean): Unit = if (!url().toString().toLowerCase.endsWith(uri.toLowerCase)) {
     withWebpage {

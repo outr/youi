@@ -5,6 +5,8 @@ import org.hyperscala.javascript.dsl._
 import org.powerscala.hierarchy.MutableContainer
 import org.powerscala.property.{ListProperty, Property}
 
+import scala.reflect.ManifestFactory
+
 /**
  * @author Matt Hicks <matt@outr.com>
  */
@@ -35,6 +37,8 @@ class Image(val url: String) extends Object("Image") {
 }
 
 class ImageFilters(image: Image) extends MutableContainer[BaseFilter] {
+  implicit val childManifest = ManifestFactory.classType[BaseFilter](classOf[BaseFilter])
+
   childAdded.on {
     case evt => image.canvas match {
       case Some(canvas) => {

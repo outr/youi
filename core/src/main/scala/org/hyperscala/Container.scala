@@ -7,7 +7,7 @@ import scala.collection.JavaConversions._
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-trait Container[C <: XMLContent] extends MutableContainer[C] with Markup {
+abstract class Container[C <: XMLContent](implicit val childManifest: Manifest[C]) extends MutableContainer[C] with Markup {
   override def xmlChildren = contents
 
   override def read(xml: Content) {

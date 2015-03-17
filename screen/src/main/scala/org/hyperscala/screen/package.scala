@@ -8,5 +8,5 @@ import scala.language.implicitConversions
  * @author Matt Hicks <matt@outr.com>
  */
 package object screen {
-  implicit def uri2Matcher(uri: String): URL => Boolean = ScreenKeeper.pathMatcher(uri)
+  implicit def uri2Matcher(uri: String): URL => Boolean = ScreenHandler.pathMatcher(uri)
 }

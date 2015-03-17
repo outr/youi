@@ -11,10 +11,14 @@ import org.powerscala.hierarchy.event.Descendants
 import org.powerscala.property.event.PropertyChangeEvent
 import org.powerscala.{Color, Priority, Unique}
 
+import scala.reflect.ManifestFactory
+
 /**
  * @author Matt Hicks <matt@outr.com>
  */
 class StaticCanvas(val canvas: tag.Canvas) extends MutableContainer[Object] {
+  implicit val childManifest = ManifestFactory.classType[Object](classOf[Object])
+
   val id = Unique()
   protected def className = "StaticCanvas"
 

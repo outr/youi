@@ -57,7 +57,7 @@ class RealtimePage private(val webpage: Webpage) extends Logging {
     }
   }
 
-  private def childAdded(evt: ChildAddedEvent) = {
+  private def childAdded(evt: ChildAddedEvent[XMLContent]) = {
     val parent = evt.parent.asInstanceOf[IdentifiableTag with Container[IdentifiableTag]]
     evt.child match {
       case child: SVGTag if !child.isInstanceOf[Svg] => {
@@ -84,7 +84,7 @@ class RealtimePage private(val webpage: Webpage) extends Logging {
     }
   }
 
-  private def childRemoved(evt: ChildRemovedEvent) = {
+  private def childRemoved(evt: ChildRemovedEvent[XMLContent]) = {
     debug(s"childRemoved: $evt")
     evt.child match {
       case t: tag.Text => {

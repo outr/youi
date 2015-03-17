@@ -16,6 +16,8 @@ import org.powerscala.reflect._
  * @author Matt Hicks <matt@outr.com>
  */
 abstract class Website extends WebApplication with Logging with AbstractMutableContainer[Webpage] {
+  implicit def childManifest: Manifest[Webpage] = Website.webpageManifest
+
   /**
    * Unique id for this Website instance. Can be used to lookup the Website.
    */
@@ -88,6 +90,8 @@ abstract class Website extends WebApplication with Logging with AbstractMutableC
 }
 
 object Website {
+  private val webpageManifest = implicitly[Manifest[Webpage]]
+
   private var _sites = Map.empty[String, Website]
 
   private def register(website: Website) = synchronized {

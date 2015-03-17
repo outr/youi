@@ -19,7 +19,9 @@ import org.powerscala.property.Property
  *
  * @author Matt Hicks <matt@outr.com>
  */
-class Screens private() extends Logging with AbstractMutableContainer[ScreenKeeper[_ <: Screen]] {
+class Screens private() extends Logging with AbstractMutableContainer[ScreenHandler[_ <: Screen]] {
+  implicit def childManifest: Manifest[ScreenHandler[_ <: Screen]] = Screens.screenHandlerManifest
+
   private var entry: Either[Webpage, HTMLTag] = _
 
   def this(webpage: Webpage) = {
@@ -85,20 +87,20 @@ class Screens private() extends Logging with AbstractMutableContainer[ScreenKeep
   def screen = _screen.readOnlyView
 
   childAdded.on {
-    case evt => if (url() != null && evt.child.asInstanceOf[ScreenKeeper[Screen]].matcher(url())) {
-      evt.child.asInstanceOf[ScreenKeeper[Screen]].activate(url().toString())
+    case evt => if (url() != null && evt.child.asInstanceOf[ScreenHandler[Screen]].matcher(url())) {
+      evt.child.asInstanceOf[ScreenHandler[Screen]].activate(url().toString())
     }
   }
 
-  def screen[S <: Screen](matcher: URL => Boolean, loader: => S, preLoad: Boolean = false, replace: Boolean = false, verify: URL => Boolean = ScreenKeeper.DefaultVerify)(implicit manifest: Manifest[S]) = {
-    val keeper = new ScreenKeeper[S](matcher, preLoad, replace, this, loader, verify)(manifest)
+  def screen[S <: Screen](matcher: URL => Boolean, loader: => S, preLoad: Boolean = false, replace: Boolean = false, verify: URL => Boolean = ScreenHandler.DefaultVerify)(implicit manifest: Manifest[S]) = {
+    val keeper = new ScreenHandler[S](matcher, preLoad, replace, this, loader, verify)(manifest)
     this += keeper
     keeper
   }
 
-  def +=[S <: Screen](keeper: ScreenKeeper[S]) = addChild(keeper)
+  def +=[S <: Screen](keeper: ScreenHandler[S]) = addChild(keeper)
 
-  def -=[S <: Screen](keeper: ScreenKeeper[S]) = removeChild(keeper)
+  def -=[S <: Screen](keeper: ScreenHandler[S]) = removeChild(keeper)
 
   def activate(uri: String, replace: Boolean): Unit = if (!url().toString().toLowerCase.endsWith(uri.toLowerCase)) {
     withWebpage {
@@ -108,6 +110,8 @@ class Screens private() extends Logging with AbstractMutableContainer[ScreenKeep
 }
 
 object Screens extends Module {
+  private val screenHandlerManifest = implicitly[Manifest[ScreenHandler[_ <: Screen]]]
+
   TypedSupport.register("urlChange", classOf[URLChange])
 
   val name = "screens"

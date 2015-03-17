@@ -9,7 +9,7 @@ import com.outr.net.http.response.{HttpResponseStatus, HttpResponse}
 import org.hyperscala.javascript.JavaScriptContent
 import org.hyperscala.javascript.dsl.Statement
 import org.hyperscala.web.event.server.InvokeJavaScript
-import org.hyperscala.{Tag, Markup}
+import org.hyperscala.{XMLContent, Tag, Markup}
 import org.hyperscala.html._
 import org.hyperscala.module.ModularPage
 import org.powerscala.hierarchy.event.{StandardHierarchyEventProcessor, ChildRemovedProcessor, ChildAddedProcessor}
@@ -46,8 +46,8 @@ class Webpage extends HttpHandler with HTMLPage with ModularPage with ParentLike
   val pageId = Unique()
   val store = new MapStorage[Any, Any]
 
-  val childAdded = new ChildAddedProcessor
-  val childRemoved = new ChildRemovedProcessor
+  val childAdded = new ChildAddedProcessor[XMLContent]
+  val childRemoved = new ChildRemovedProcessor[XMLContent]
   val pageLoadingEvent = new StandardHierarchyEventProcessor[Webpage]("pageLoading")
   val pageLoadedEvent = new StandardHierarchyEventProcessor[Webpage]("pageLoaded")
 

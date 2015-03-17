@@ -13,8 +13,6 @@ import org.powerscala.json.TypedSupport
 import org.powerscala.log.Logging
 import org.powerscala.property.Property
 
-import scala.language.implicitConversions
-
 /**
  * Screens can be mixed into a Webpage to support multiple screens that offer a dynamic alternative to individual page
  * loads.
@@ -91,8 +89,6 @@ class Screens private() extends Logging with AbstractMutableContainer[ScreenKeep
       evt.child.asInstanceOf[ScreenKeeper[Screen]].activate(url().toString())
     }
   }
-
-  implicit def uri2Matcher(uri: String): URL => Boolean = ScreenKeeper.pathMatcher(uri)
 
   def screen[S <: Screen](matcher: URL => Boolean, loader: => S, preLoad: Boolean = false, replace: Boolean = false)(implicit manifest: Manifest[S]) = {
     val keeper = new ScreenKeeper[S](matcher, preLoad, replace, this, loader)(manifest)

@@ -3,7 +3,7 @@ package org.hyperscala.examples.screen
 import org.hyperscala.examples.Example
 import org.hyperscala.jquery.Gritter
 import org.hyperscala.realtime._
-import org.hyperscala.screen.{Screen, Screens}
+import org.hyperscala.screen._
 import org.hyperscala.web._
 import org.hyperscala.html._
 

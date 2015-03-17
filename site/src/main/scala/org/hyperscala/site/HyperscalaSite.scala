@@ -12,7 +12,7 @@ import org.hyperscala.examples.contenteditor.{EditablePageExample, ContentEditor
 import org.hyperscala.examples.createjs.CreateJSExample
 import org.hyperscala.examples.fabricjs.{TileBoardExample, FabricJSExample}
 import org.hyperscala.examples.helloworld.HelloWorldPage
-import org.hyperscala.examples.screen.ScreenExample
+import org.hyperscala.examples.screen.{SinglePageSiteExample, ScreenExample}
 import org.hyperscala.examples.svg.{DynamicSVGExample, SVGShapesExample, BasicSVGExample}
 import org.hyperscala.examples.todomvc.TodoMVC
 import org.hyperscala.examples.ui._
@@ -123,6 +123,9 @@ object HyperscalaSite extends Website with JettyApplication {
   val screen = example(new ScreenExample, "Advanced", "Screen", Scope.Page)
   addHandler(screen, "/example/advanced/screen2.html")
   addHandler(screen, "/example/advanced/screen3.html")
+  val singlePageSite = example(new SinglePageSiteExample, "Advanced", "Single Page Site", Scope.Page)
+  addHandler(singlePageSite, "/example/advanced/login.html")
+  addHandler(singlePageSite, "/example/advanced/authenticated.html")
 
   // Module
   val externalStyle = example(new ExternalStyleExample, "Module", "External Style", Scope.Page)

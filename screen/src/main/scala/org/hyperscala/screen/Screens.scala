@@ -96,7 +96,6 @@ class Screens private() extends Logging with AbstractMutableContainer[ScreenHand
   childAdded.on {
     case evt => {
       if (url != null && url() != null && evt.child.asInstanceOf[ScreenHandler[Screen]].matcher(url())) {
-        println(s"activating! ${evt.child}")
         evt.child.asInstanceOf[ScreenHandler[Screen]].activate(url().toString())
       }
     }

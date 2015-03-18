@@ -56,7 +56,10 @@ class Screens private() extends Logging with AbstractMutableContainer[ScreenHand
         url.change.on {
           case evt => handler(evt.newValue) match {
             case Some(handler) => handler.activate(evt.newValue.toString())
-            case None => warn(s"No screen associated with ${evt.newValue}.")
+            case None => {
+              warn(s"No screen associated with ${evt.newValue}.")
+              _screen := null
+            }
           }
         }
       }

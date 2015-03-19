@@ -33,15 +33,21 @@ class SinglePageSiteExample extends Example {
   val screens = new Screens(this)
 
   val userVerify = (url: URL) => if (this.website.session.contains("username")) {
-    true
+    None
   } else {
-    screens.activate(loginLink, replace = true)
-    false
+    Some(url.copy(path = loginLink))
   }
 
   val loginScreen = screens.screen(loginLink, new LoginScreen(this))
   val welcomeScreen = screens.screen(welcomeLink, new WelcomeScreen(this))
-  val authenticatedScreen = screens.screen(List(authenticatedLink1, authenticatedLink2, authenticatedLink3), new AuthenticatedScreen(this), verify = userVerify)
+  val authenticatedScreen = screens.screen(
+    ScreenValidatorBuilder[AuthenticatedScreen]()
+      .uri(authenticatedLink1)
+      .uri(authenticatedLink2)
+      .uri(authenticatedLink3)
+      .load(new AuthenticatedScreen(this))
+      .redirect(userVerify, replace = true)
+  )
 
   val main = new tag.Div
   contents += main
@@ -133,7 +139,7 @@ class AuthenticatedScreen(example: SinglePageSiteExample) extends SinglePageScre
     }
   }
 
-  val screens = new Screens(this)
+  val screens = new Screens(example)
   val auth1 = screens.screen("/example/advanced/authenticated1.html", new SubScreen("Authenticated Sub-Screen 1", this))
   val auth2 = screens.screen("/example/advanced/authenticated2.html", new SubScreen("Authenticated Sub-Screen 2", this))
   val auth3 = screens.screen("/example/advanced/authenticated3.html", new SubScreen("Authenticated Sub-Screen 3", this))

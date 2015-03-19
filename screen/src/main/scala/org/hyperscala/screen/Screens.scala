@@ -3,6 +3,7 @@ package org.hyperscala.screen
 import com.outr.net.URL
 import org.hyperscala.event.BrowserEvent
 import org.hyperscala.javascript.JavaScriptString
+import org.hyperscala.javascript.dsl._
 import org.hyperscala.module.{Interface, Module}
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.web._
@@ -50,17 +51,13 @@ class Screens private() extends Logging with AbstractMutableContainer[ScreenHand
     withWebpage {
       case webpage => {
         webpage.body.handle[URLChange]({
-          case change => url := URL.encoded(change.url).decoded
+          case change => if (url != null) {
+            url := URL.encoded(change.url).decoded
+          }
         }, intercept = Intercept.Continue)
 
         url.change.on {
-          case evt => handler(evt.newValue) match {
-            case Some(handler) => handler.activate(evt.newValue.toString())
-            case None => {
-              warn(s"No screen associated with ${evt.newValue}.")
-              _screen := null
-            }
-          }
+          case evt => contents.toStream.map(handler => handler.handle(evt.newValue)).filter(b => b)
         }
       }
     }
@@ -76,7 +73,7 @@ class Screens private() extends Logging with AbstractMutableContainer[ScreenHand
     }
   }
 
-  def handler(url: URL) = contents.find(handler => handler.matcher(url))
+  def handlerFor(url: URL) = contents.find(handler => handler.validator.matches(url))
 
   private def withWebpage(f: Webpage => Unit) = entry match {
     case Left(webpage) => f(webpage)
@@ -98,25 +95,32 @@ class Screens private() extends Logging with AbstractMutableContainer[ScreenHand
 
   childAdded.on {
     case evt => {
-      if (url != null && url() != null && evt.child.asInstanceOf[ScreenHandler[Screen]].matcher(url())) {
-        evt.child.asInstanceOf[ScreenHandler[Screen]].activate(url().toString())
+      if (url != null && url() != null) {
+        evt.child.asInstanceOf[ScreenHandler[Screen]].handle(url())
       }
     }
   }
 
-  def screen[S <: Screen](matcher: URL => Boolean, loader: => S, preLoad: Boolean = false, replace: Boolean = false, verify: URL => Boolean = ScreenHandler.DefaultVerify)(implicit manifest: Manifest[S]) = {
-    val handler = new ScreenHandler[S](matcher, preLoad, replace, this, loader, verify)(manifest)
+  def screen[S <: Screen](validator: ScreenValidator[S])(implicit manifest: Manifest[S]): ScreenHandler[S] = {
+    val handler = new ScreenHandler[S](validator, this)(manifest)
     this += handler
     handler
+  }
+
+  def screen[S <: Screen](matcher: URL => Boolean, loader: => S)(implicit manifest: Manifest[S]): ScreenHandler[S] = {
+    val validator = ScreenValidatorBuilder[S](matchers = List(matcher)).load(loader)
+    screen(validator)(manifest)
   }
 
   def +=[S <: Screen](handler: ScreenHandler[S]) = addChild(handler)
 
   def -=[S <: Screen](handler: ScreenHandler[S]) = removeChild(handler)
 
-  def activate(uri: String, replace: Boolean): Unit = if (!url().toString().toLowerCase.endsWith(uri.toLowerCase)) {
+  def activate(path: String, replace: Boolean): Unit = activate(url().copy(path = path), replace)
+
+  def activate(url: URL, replace: Boolean): Unit = if (this.url().toString().toLowerCase != url.toString().toLowerCase) {
     withWebpage {
-      case webpage => webpage.eval(JavaScriptString(s"Screen.activate('$uri', $replace);"))
+      case webpage => webpage.eval(s"Screen.activate('$url', $replace);")
     }
   }
 }

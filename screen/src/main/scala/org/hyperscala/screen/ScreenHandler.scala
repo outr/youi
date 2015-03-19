@@ -8,19 +8,39 @@ import scala.util.matching.Regex
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class ScreenHandler[S <: Screen](val matcher: URL => Boolean, preLoad: Boolean, replace: Boolean, screens: Screens, loader: => S, verify: URL => Boolean = ScreenHandler.DefaultVerify)(implicit manifest: Manifest[S]) {
+class ScreenHandler[S <: Screen](val validator: ScreenValidator[S], screens: Screens)(implicit manifest: Manifest[S]) {
   private val _screen = Property[S](default = None)
-  if (preLoad) {
-    _screen := loader
-  }
   def screen = _screen.readOnlyView
 
-  def activate(uri: String): Unit = if (!isActive && verify(screens.url())) {
-    if (!isLoaded) {
-      _screen := loader
+  def handle(path: String): Boolean = handle(screens.url().copy(path = path))
+
+  def handle(url: URL): Boolean = validator.validate(url, screen.get) match {
+    case UseScreen(screen) => if (screen != this.screen()) {      // Different screen supplied
+      this.screen.get match {
+        case Some(s) => {
+          if (isActive) {
+            s.deactivate()
+          }
+          s.dispose()
+        }
+        case None => // No previous screen
+      }
+      _screen := screen
+      screens._screen := screen
+      screens.activate(url, replace = false)
+      true
+    } else if (!isActive) {                                      // Existing screen, but it's not currently active
+      screens._screen := this.screen()
+      screens.activate(url, replace = false)
+      true
+    } else {                                                     // Existing screen and already active, nothing to do
+      true
     }
-    screens._screen := screen()
-    screens.activate(uri, replace)
+    case RedirectURL(redirectURL, replace) => {                  // Matched this screen, but redirecting to another URL
+      screens.activate(redirectURL, replace)
+      true
+    }
+    case validator.noMatch => false
   }
 
   def isLoaded = screen.get.nonEmpty
@@ -36,8 +56,8 @@ class ScreenHandler[S <: Screen](val matcher: URL => Boolean, preLoad: Boolean, 
       s.dispose()
       _screen := null.asInstanceOf[S]
       if (active) {
-        _screen := loader
-        activate(screens.url().toString())
+        _screen := validator.load(screens.url())
+        handle(screens.url())
       }
     }
     case None => // Not loaded, nothing to do
@@ -46,7 +66,7 @@ class ScreenHandler[S <: Screen](val matcher: URL => Boolean, preLoad: Boolean, 
   def reLoad() = {
     dispose()
     if (screen.get.isEmpty) {
-      _screen := loader
+      _screen := validator.load(screens.url())
     }
   }
 }

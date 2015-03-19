@@ -30,7 +30,7 @@ class ScreenExample extends Example {
   }
   contents += new tag.Button(content = "Screen 2") {
     clickEvent.onRealtime {
-      case evt => screens.screen2.activate(screen2URI)
+      case evt => screens.screen2.handle(screen2URI)
     }
   }
   contents += new tag.Button(content = "Screen 3") {

@@ -2,6 +2,8 @@ package org.hyperscala.screen
 
 import com.outr.net.URL
 
+import scala.util.matching.Regex
+
 /**
  * ScreenValidator provides the ability to match a specific URL and manage how the screen will be initialized.
  *
@@ -35,25 +37,27 @@ case class ScreenValidatorBuilder[S <: Screen](loader: URL => S = null, matchers
   def load(f: => S) = copy[S](loader = (url: URL) => f)
   def load(f: URL => S) = copy[S](loader = f)
   def uri(s: String) = copy[S](matchers = ((url: URL) => url.path.equalsIgnoreCase(s)) :: matchers)
-  def url(matching: URL) = copy[S](matchers = ((url: URL) =>  url.toString().toLowerCase == matching.toString().toLowerCase) :: matchers)
+  def uri(r: Regex) = copy[S](matchers = ((url: URL) => r.pattern.matcher(url.path).matches()) :: matchers)
+  def url(matching: URL) = copy[S](matchers = ((url: URL) => url.toString().toLowerCase == matching.toString().toLowerCase) :: matchers)
+  def url(r: Regex) = copy[S](matchers = ((url: URL) => r.pattern.matcher(url.toString()).matches()) :: matchers)
   def redirect(uri: String, redirect: URL) = copy[S](redirects = ((url: URL) => if (url.path.equalsIgnoreCase(uri)) Some((redirect, false)) else None) :: redirects)
   def replace(uri: String, redirect: URL) = copy[S](redirects = ((url: URL) => if (url.path.equalsIgnoreCase(uri)) Some((redirect, true)) else None) :: redirects)
   def redirect(f: URL => Option[URL], replace: Boolean) = copy[S](redirects = ((url: URL) => f(url).map(u => u -> replace)) :: redirects)
 
   override def matches(url: URL) = matchers.find(m => m(url)).nonEmpty || redirects.find(r => r(url).nonEmpty).nonEmpty
 
-  override def validate(url: URL, existing: Option[S]) = redirects.toStream.map(f => f(url)).collectFirst {
-    case Some((uri, replace)) => redirect(uri, replace)
-  } match {
-    case Some(redirect) => redirect
-    case None => if (matchers.find(m => m(url)).nonEmpty) {
-      existing match {
+  override def validate(url: URL, existing: Option[S]) = if (matchers.find(m => m(url)).nonEmpty) {
+    redirects.toStream.map(f => f(url)).collectFirst {
+      case Some((uri, replace)) => redirect(uri, replace)
+    } match {
+      case Some(redirect) => redirect
+      case None => existing match {
         case Some(screen) => use(screen)
         case None => use(loader(url))
       }
-    } else {
-      noMatch
     }
+  } else {
+    noMatch
   }
 
   override def load(url: URL) = loader(url)

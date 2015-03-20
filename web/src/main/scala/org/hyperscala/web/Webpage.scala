@@ -26,6 +26,8 @@ import org.powerscala.concurrent.Time._
 class Webpage extends HttpHandler with HTMLPage with ModularPage with ParentLike[tag.HTML] with Element[Website] with ConnectionHolder {
   Webpage
 
+  val debugLogging = Property[Boolean](default = Some(false))
+
   ConnectionHolder.jsonEvent.partial(Unit) {
     case c: WebpageConnect => ConnectionHolder.connection.holder := this      // Switch the connection to the webpage as the holder
   }
@@ -213,6 +215,9 @@ class Webpage extends HttpHandler with HTMLPage with ModularPage with ParentLike
    * @param condition optional condition that must return true before the JavaScript is invoked
    */
   def eval(js: JavaScriptContent, condition: Option[Statement[Boolean]] = None) = {
+    if (debugLogging()) {
+      warn(s"eval: ${js.content}", new RuntimeException("Processing JavaScript eval."))
+    }
     broadcastJSON(InvokeJavaScript(js.content, condition.map(s => s.content).orNull))
   }
 }

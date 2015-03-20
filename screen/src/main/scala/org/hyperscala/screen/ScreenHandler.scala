@@ -70,11 +70,3 @@ class ScreenHandler[S <: Screen](val validator: ScreenValidator[S], screens: Scr
     }
   }
 }
-
-object ScreenHandler {
-  val DefaultVerify = (url: URL) => true
-
-  def pathMatcher(path: String) = (url: URL) => url.path.equalsIgnoreCase(path)
-  def pathsMatcher(paths: List[String]) = (url: URL) => paths.find(uri => url.path.equalsIgnoreCase(uri)).nonEmpty
-  def regexMatcher(regex: Regex) = (url: URL) => regex.pattern.matcher(url.toString()).matches()
-}

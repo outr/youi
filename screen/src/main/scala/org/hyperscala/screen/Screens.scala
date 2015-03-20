@@ -15,6 +15,8 @@ import org.powerscala.json.TypedSupport
 import org.powerscala.log.Logging
 import org.powerscala.property.Property
 
+import scala.util.matching.Regex
+
 /**
  * Screens can be mixed into a Webpage to support multiple screens that offer a dynamic alternative to individual page
  * loads.
@@ -111,6 +113,18 @@ class Screens private() extends Logging with AbstractMutableContainer[ScreenHand
     val validator = ScreenValidatorBuilder[S](matchers = List(matcher)).load(loader)
     screen(validator)(manifest)
   }
+
+  def screen[S <: Screen](uri: String, loader: => S)(implicit manifest: Manifest[S]): ScreenHandler[S] = {
+    val validator = ScreenValidatorBuilder[S]().uri(uri).load(loader)
+    screen(validator)(manifest)
+  }
+
+  def screen[S <: Screen](url: Regex, loader: => S)(implicit manifest: Manifest[S]): ScreenHandler[S] = {
+    val validator = ScreenValidatorBuilder[S]().url(url).load(loader)
+    screen(validator)(manifest)
+  }
+
+  def builder[S <: Screen] = ScreenValidatorBuilder[S]()
 
   def +=[S <: Screen](handler: ScreenHandler[S]) = addChild(handler)
 

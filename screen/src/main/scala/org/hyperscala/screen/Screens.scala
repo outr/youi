@@ -69,7 +69,7 @@ class Screens private() extends Logging with AbstractMutableContainer[ScreenHand
           evt.oldValue.deactivate()
         }
         if (evt.newValue != null) {
-          evt.newValue.activate()
+          evt.newValue.activate(alreadyActive = false)
         }
       }
     }

@@ -12,6 +12,18 @@ class ScreenHandler[S <: Screen](val validator: ScreenValidator[S], screens: Scr
   private val _screen = Property[S](default = None)
   def screen = _screen.readOnlyView
 
+  /**
+   * Returns an instance of the enclosed Screen. If no instance is loaded yet, it will be created before returning.
+   *
+   * @return S
+   */
+  def apply() = {
+    if (screen.get.isEmpty) {
+      _screen := validator.load()
+    }
+    screen()
+  }
+
   def handle(path: String): Boolean = handle(screens.url().copy(path = path))
 
   def handle(url: URL): Boolean = validator.validate(url, screen.get) match {
@@ -33,7 +45,8 @@ class ScreenHandler[S <: Screen](val validator: ScreenValidator[S], screens: Scr
       screens._screen := this.screen()
       screens.activate(url, replace = false)
       true
-    } else {                                                     // Existing screen and already active, nothing to do
+    } else {                                                     // Existing screen and already active, call activate again
+      screen.activate(alreadyActive = true)
       true
     }
     case RedirectURL(redirectURL, replace) => {                  // Matched this screen, but redirecting to another URL
@@ -56,7 +69,7 @@ class ScreenHandler[S <: Screen](val validator: ScreenValidator[S], screens: Scr
       s.dispose()
       _screen := null.asInstanceOf[S]
       if (active) {
-        _screen := validator.load(screens.url())
+        _screen := validator.load()
         handle(screens.url())
       }
     }
@@ -66,7 +79,7 @@ class ScreenHandler[S <: Screen](val validator: ScreenValidator[S], screens: Scr
   def reLoad() = {
     dispose()
     if (screen.get.isEmpty) {
-      _screen := validator.load(screens.url())
+      _screen := validator.load()
     }
   }
 }

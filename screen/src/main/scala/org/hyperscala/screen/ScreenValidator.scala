@@ -12,7 +12,7 @@ import scala.util.matching.Regex
 trait ScreenValidator[S <: Screen] {
   def matches(url: URL): Boolean
   def validate(url: URL, existing: Option[S]): ValidationResponse[S]
-  def load(url: URL): S
+  def load(): S
 
   protected def use(screen: S) = UseScreen[S](screen)
   protected def redirect(url: URL, replace: Boolean = false) = RedirectURL[S](url, replace)
@@ -33,9 +33,8 @@ object ScreenValidator {
   def apply[S <: Screen](uri: String, loader: => S) = builder[S].load(loader).uri(uri)
 }
 
-case class ScreenValidatorBuilder[S <: Screen](loader: URL => S = null, matchers: List[URL => Boolean] = Nil, redirects: List[URL => Option[(URL, Boolean)]] = Nil) extends ScreenValidator[S] {
-  def load(f: => S) = copy[S](loader = (url: URL) => f)
-  def load(f: URL => S) = copy[S](loader = f)
+case class ScreenValidatorBuilder[S <: Screen](loader: () => S = null, matchers: List[URL => Boolean] = Nil, redirects: List[URL => Option[(URL, Boolean)]] = Nil) extends ScreenValidator[S] {
+  def load(f: => S) = copy[S](loader = () => f)
   def uri(s: String) = copy[S](matchers = ((url: URL) => url.path.equalsIgnoreCase(s)) :: matchers)
   def uri(r: Regex) = copy[S](matchers = ((url: URL) => r.pattern.matcher(url.path).matches()) :: matchers)
   def url(matching: URL) = copy[S](matchers = ((url: URL) => url.toString().toLowerCase == matching.toString().toLowerCase) :: matchers)
@@ -53,12 +52,12 @@ case class ScreenValidatorBuilder[S <: Screen](loader: URL => S = null, matchers
       case Some(redirect) => redirect
       case None => existing match {
         case Some(screen) => use(screen)
-        case None => use(loader(url))
+        case None => use(loader())
       }
     }
   } else {
     noMatch
   }
 
-  override def load(url: URL) = loader(url)
+  override def load() = loader()
 }

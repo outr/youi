@@ -24,7 +24,7 @@ trait jQueryComponent extends WrappedComponent[HTMLTag] {
 
   protected def realtimeSelector: Option[Selector] = Some(tagSelector.selector)
 
-  private def send(statement: Statement[_]) = synchronized {
+  protected def send(statement: Statement[_]) = synchronized {
     if (initialized) {
       webpage.eval(statement, realtimeSelector.map(s => JavaScriptString(s"""$$(${s.content}).length > 0""")))
     } else {

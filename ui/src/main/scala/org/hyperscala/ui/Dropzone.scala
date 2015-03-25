@@ -107,7 +107,7 @@ object Dropzone extends Module with StorageComponent[Dropzone, HTMLTag] {
 
   def name = "dropzone"
 
-  def version = Version(3, 10, 2)
+  def version = Version(4, 0, 1)
 
   override def dependencies = List(Realtime)
 
@@ -221,10 +221,12 @@ class Dropzone(container: HTMLTag) extends jQueryComponent with Listenable {
   val completeMultiple = property[JavaScriptContent]("completemultiple", null)
   val cancelMultiple = property[JavaScriptContent]("cancelmultiple", null)
 
-  container.connected[Webpage] {
-    case webpage => {
-      params := params() ::: List("pageId" -> webpage.pageId, "tagId" -> container.identity)
-      init()
+  def ready() = {
+    container.connected[Webpage] {
+      case webpage => {
+        params := params() ::: List("pageId" -> webpage.pageId, "tagId" -> container.identity)
+        init()
+      }
     }
   }
 
@@ -262,6 +264,11 @@ class Dropzone(container: HTMLTag) extends jQueryComponent with Listenable {
 
   def applyThumbnail(img: tag.Img) = {
     Dropzone.UseThumbnailScript(webpage, this, img)
+  }
+
+  override protected def modify(key: String, value: Any) = {
+    println(s"Modify: $key = $value")
+    send(s"Dropzone.options.${container.identity} = { $key: ${JavaScriptContent.toJS(value)} };")
   }
 
   override protected def functionName = "dropzone"

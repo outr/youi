@@ -4,7 +4,7 @@ package org.hyperscala.screen
  * @author Matt Hicks <matt@outr.com>
  */
 trait Screen {
-  def activate(): Unit
+  def activate(alreadyActive: Boolean): Unit
 
   def deactivate(): Unit
 

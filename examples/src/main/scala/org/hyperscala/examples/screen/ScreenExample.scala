@@ -63,7 +63,7 @@ class HeadingScreen(example: ScreenExample, text: String) extends Screen {
 
   example.notify(s"Creating $text")
 
-  override def activate() = {
+  override def activate(alreadyActive: Boolean) = {
     example.notify(s"Activating $text")
     example.heading.contents.replaceWith(textMessage)
   }

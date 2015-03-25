@@ -75,7 +75,7 @@ abstract class SinglePageScreen(val example: SinglePageSiteExample) extends Cont
   style.display := Display.None
   example.main.contents += this
 
-  override def activate() = style.display := Display.Block
+  override def activate(alreadyActive: Boolean) = style.display := Display.Block
 
   override def deactivate() = style.display := Display.None
 
@@ -152,7 +152,7 @@ class SubScreen(message: String, auth: AuthenticatedScreen) extends Container wi
 
   auth.main.contents += this
 
-  override def activate() = style.display := Display.Block
+  override def activate(alreadyActive: Boolean) = style.display := Display.Block
 
   override def deactivate() = style.display := Display.None
 

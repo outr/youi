@@ -125,6 +125,16 @@ class Head extends Container[HeadChild] with HTMLChild with HTMLTag {
     contents += script
   }
 
+  def verifyScript(url: String) = byType[Script].find(s => url.equalsIgnoreCase(s.src())) match {
+    case Some(s) => // Already included
+    case None => contents += new Script(src = url)
+  }
+
+  def verifyCSS(url: String) = byType[Link].find(l => url.equalsIgnoreCase(l.href())) match {
+    case Some(l) => // Already included
+    case None => contents += new Link(href = url)
+  }
+
   def meta(name: String, content: String) = {
     contents.collectFirst {
       case m: Meta if m.name() == name => m

@@ -105,6 +105,7 @@ class DropzoneExample extends Example {
   }
   dropzone.thumbnailWidth := 150
   dropzone.thumbnailHeight := 150
+  dropzone.ready()
 }
 
 class DropzoneEntry(dropzone: Dropzone, evt: Option[DropzoneFileEvent] = None) extends tag.Div {

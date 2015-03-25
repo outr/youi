@@ -8,7 +8,7 @@ import org.powerscala.property.Property
  * @author Matt Hicks <matt@outr.com>
  */
 class RealtimeFrame(pageURL: String) extends tag.IFrame(src = "about:blank") {
-  var currentPage = Property[Webpage]()
+  val currentPage = Property[Webpage]()
   @volatile private var webpage: Webpage = _
 
   connected[Website] {

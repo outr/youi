@@ -14,7 +14,7 @@ class ObjectEventProcessor[T <: ObjectEvent](name: String, obj: Object)(implicit
   with WriteProperty[JavaScriptContent] {
   obj._events = this :: obj._events
 
-  val js = new EventProperty(name)(obj)
+  val js = new EventProperty(name)
 
   def apply() = js()
 

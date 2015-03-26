@@ -23,7 +23,7 @@ object Rect extends ValuePersistence[Rect] {
     case RegexStandard(t, r, b, l) => new Rect(Length(t), Length(r), Length(b), Length(l))
     case RegexNoCommas(t, r, b, l) => new Rect(Length(t), Length(r), Length(b), Length(l))
     case "auto" => new Rect()
-    case "" => new Rect()
+    case "" | "null" | null => new Rect()
     case _ => throw new RuntimeException(s"Unsupported rect format: [$s]")
   }
 

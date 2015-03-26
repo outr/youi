@@ -14,7 +14,7 @@ class CanvasEventProcessor[T <: CanvasEvent](name: String, canvas: StaticCanvas)
   with WriteProperty[JavaScriptContent] {
   canvas._events = this :: canvas._events
 
-  val js = new EventProperty(name)(canvas)
+  val js = new EventProperty(name)
 
   def apply() = js()
 

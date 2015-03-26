@@ -164,13 +164,13 @@ object Autocompletified {
   }
 
   val Result2JSON = (r: AutocompleteResult) => {
-    """
+    s"""
       |{
-      | "label": "%s",
-      | "value": "%s",
-      | "category": "%s"
+      | "label": "${r.label}",
+      | "value": "${r.value}",
+      | "category": "${r.category}"
       |}
-    """.stripMargin.format(r.label, r.value, r.category)
+    """.stripMargin
   }
 }
 

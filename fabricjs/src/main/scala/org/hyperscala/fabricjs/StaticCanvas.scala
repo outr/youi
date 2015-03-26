@@ -1,8 +1,9 @@
 package org.hyperscala.fabricjs
 
+import org.hyperscala.fabricjs.event._
 import org.hyperscala.fabricjs.paint.GradientPaint
 import org.hyperscala.fabricjs.prop.{CanvasProperty, ObjectProperty}
-import org.hyperscala.html.tag
+import org.hyperscala.html._
 import org.hyperscala.javascript._
 import org.hyperscala.javascript.dsl._
 import org.hyperscala.web.Webpage
@@ -23,6 +24,8 @@ class StaticCanvas(val canvas: tag.Canvas) extends MutableContainer[Object] {
   protected def className = "StaticCanvas"
 
   private var _properties = List.empty[CanvasProperty[_]]
+  private[fabricjs] var _events = List.empty[CanvasEventProcessor[_ <: CanvasEvent]]
+
   def properties = _properties
 
   lazy val allowTouchScrolling = prop("allowTouchScrolling", false)
@@ -39,6 +42,12 @@ class StaticCanvas(val canvas: tag.Canvas) extends MutableContainer[Object] {
   lazy val stateful = prop("stateful", true)
   lazy val svgViewportTransformation = prop("svgViewportTransformation", true)
   lazy val viewportTransform = prop[Array[Double]]("viewportTransform", null)
+
+  lazy val beforeRenderEvent = new BeforeRenderEventProcessor(this)
+  lazy val afterRenderEvent = new AfterRenderEventProcessor(this)
+  lazy val canvasClearedEvent = new CanvasClearedEventProcessor(this)
+  lazy val objectAddedEvent = new ObjectAddedEventProcessor(this)
+  lazy val objectRemovedEvent = new ObjectRemovedEventProcessor(this)
 
   eval(JavaScriptString(s"FabricJS.canvas['$id'] = new fabric.$className('${canvas.identity}');"))
 

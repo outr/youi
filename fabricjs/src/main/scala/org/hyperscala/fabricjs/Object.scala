@@ -1,5 +1,6 @@
 package org.hyperscala.fabricjs
 
+import org.hyperscala.fabricjs.event._
 import org.hyperscala.fabricjs.paint.{GradientPaint, Paint}
 import org.hyperscala.fabricjs.prop.ObjectProperty
 import org.hyperscala.javascript.JavaScriptContent
@@ -15,6 +16,8 @@ abstract class Object(val name: String) extends Listenable with Element[Listenab
   val id = Unique()
 
   private var _properties = List.empty[ObjectProperty[_]]
+  private[fabricjs] var _events = List.empty[ObjectEventProcessor[_ <: ObjectEvent]]
+
   def properties = _properties
 
   lazy val angle = prop("angle", 0.0)
@@ -72,6 +75,16 @@ abstract class Object(val name: String) extends Listenable with Element[Listenab
   lazy val visible = prop("visible", true)
   lazy val width = prop("width", 0.0)
 
+  lazy val addedEvent = new AddedEventProcessor(this)
+  lazy val removedEvent = new RemovedEventProcessor(this)
+  lazy val selectedEvent = new SelectedEventProcessor(this)
+  lazy val modifiedEvent = new ModifiedEventProcessor(this)
+  lazy val rotatingEvent = new RotatingEventProcessor(this)
+  lazy val scalingEvent = new ScalingEventProcessor(this)
+  lazy val movingEvent = new MovingEventProcessor(this)
+  lazy val mouseDownEvent = new MouseDownEventProcessor(this)
+  lazy val mouseUpEvent = new MouseUpEventProcessor(this)
+
   def canvas = root[StaticCanvas]
 
   protected[fabricjs] def addToCanvas(canvas: StaticCanvas) = {
@@ -79,6 +92,16 @@ abstract class Object(val name: String) extends Listenable with Element[Listenab
     val special = specialProps
     if (special.nonEmpty) {
       canvas.eval(special.mkString("\n"))
+    }
+    _events.foreach {
+      case processor if processor.js() != null => {
+        println(s"FabricJS.event('$id', '${processor.name}', ${toJS(processor.name, processor.js())});")
+        val handler =
+          s"""function() {
+             |  ${toJS(processor.name, processor.js())}
+             |}""".stripMargin
+        canvas.eval(s"FabricJS.event('$id', '${processor.name}', $handler);")
+      }
     }
   }
 

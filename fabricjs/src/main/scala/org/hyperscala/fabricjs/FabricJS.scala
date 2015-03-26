@@ -15,16 +15,18 @@ import org.hyperscala.html._
  */
 object FabricJS extends Module {
   val name = "fabric.js"
-  val version = Version(1, 4, 0)
+  val version = Version(1, 4, 3)
 
   override def dependencies = List(Realtime)
 
   override def init(website: Website) = {
+    website.register("/js/fabric.js", "fabric.js")
+    website.register("/js/fabric.min.js", "fabric.min.js")
     website.register("/js/hyperscala-fabric.js", "hyperscala-fabric.js")
   }
 
   override def load(webpage: Webpage) = {
-    webpage.head.contents += new tag.Script(src = "http://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.4.0/fabric.min.js")
+    webpage.head.contents += new tag.Script(src = "/js/fabric.min.js")
     webpage.head.contents += new tag.Script(src = "/js/hyperscala-fabric.js")
   }
 }

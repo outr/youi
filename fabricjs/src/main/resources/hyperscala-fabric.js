@@ -26,6 +26,13 @@ var FabricJS = {
         }
         canvas.renderAll();
     },
+    event: function(objectId, eventName, handler) {
+        var object = FabricJS.object[objectId];
+        //object.__eventListeners[eventName] = [];        // Clear existing listeners
+        console.log('Object: ' + object + ', Listeners: ' + object.__eventListeners);
+        console.log('Event: ' + eventName + ' - ' + handler);
+        object.on(eventName, handler);
+    },
     remove: function(canvasId, objectId) {
         var canvas = FabricJS.canvas[canvasId];
         var object = FabricJS.object[objectId];

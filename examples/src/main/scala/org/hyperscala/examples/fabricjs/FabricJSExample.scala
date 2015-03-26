@@ -6,6 +6,7 @@ import org.hyperscala.fabricjs.filters.{Brightness, Grayscale}
 import org.hyperscala.fabricjs.paint.{ColorStop, LinearGradient}
 import org.hyperscala.fabricjs.prop.Adjust
 import org.hyperscala.html._
+import org.hyperscala.javascript.{JavaScriptString, JavaScriptContent}
 import org.powerscala.Color
 import org.hyperscala.realtime._
 
@@ -19,7 +20,10 @@ class FabricJSExample extends Example {
   t.style.border := "1px solid black"
   contents += t
 
-  val canvas = new StaticCanvas(t)
+  val canvas = new Canvas(t) {
+    selection := false
+    afterRenderEvent := JavaScriptString("console.log('rendered!');")
+  }
   canvas.backgroundColor := Color.immutable(100, 100, 200, 255)   // TODO: make Alpha Double
   val rect = new Rect {
     left := 100.0
@@ -30,7 +34,6 @@ class FabricJSExample extends Example {
     originX := "center"
     originY := "center"
   }
-  println(rect.fill().toJS(rect, "fill"))
   canvas.contents += rect
 
   val image = new Image("/images/hyperscala.png") {
@@ -44,7 +47,7 @@ class FabricJSExample extends Example {
   canvas.contents += image
 
   val path = new Path("M 0 0 L 200 100 L 170 200 z") {
-    left := 100.0
+    left := 200.0
     originX := "center"
     originY := "center"
     fill := Color.Red
@@ -58,7 +61,9 @@ class FabricJSExample extends Example {
     left := 100.0
     top := 100.0
     radius := 50.0
-    fill := LinearGradient(-50.0, 0.0, 50.0, 0.0, List(ColorStop(0.0, Color.Red), ColorStop(0.2, Color.Orange), ColorStop(0.4, Color.Yellow), ColorStop(0.6, Color.Green), ColorStop(0.8, Color.Blue), ColorStop(1.0, Color.Purple)))
+    hasControls := false
+    fill := LinearGradient(0.0, 0.0, 100.0, 0.0, List(ColorStop(0.0, Color.Red), ColorStop(0.2, Color.Orange), ColorStop(0.4, Color.Yellow), ColorStop(0.6, Color.Green), ColorStop(0.8, Color.Blue), ColorStop(1.0, Color.Purple)))
+    mouseUpEvent := JavaScriptString("alert('Circle clicked!');")
   }
   canvas.contents += circle
 
@@ -74,7 +79,6 @@ class FabricJSExample extends Example {
     contents += new tag.Button(content = "Rotate") {
       clickEvent.onRealtime {
         case evt => {
-          //        rect.angle := rect.angle() + 22.
           rect.angle.animate(Adjust += 180.0, duration = 1.0)
         }
       }

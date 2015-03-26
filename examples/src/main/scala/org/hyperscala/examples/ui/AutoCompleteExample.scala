@@ -20,7 +20,7 @@ class AutoCompleteExample extends Example {
   }
 
   contents += new tag.P {
-    contents += "Wrapper around jQuery UI's autocomplete functionality. Start typing a spoken language below to see it in action."
+    contents += "Wrapper around jQuery UI's autocomplete functionality. Start typing a spoken language (like 'English') below to see it in action."
   }
 
   contents += new tag.Div {
@@ -34,26 +34,23 @@ class AutoCompleteExample extends Example {
       autocomplete.search := ((query: String) => {
         val v = query.toLowerCase
         Language.values.collect {
-          case l if l.name.toLowerCase.contains(v) => l
-        }.slice(0, 10).map(l => AutocompleteResult(l.name, l.name))
+          case l if l.label.toLowerCase.contains(v) => l
+        }.slice(0, 10).map(l => AutocompleteResult(l.label, l.label))
       })
       autocomplete.autoFocus := true
 
-      changeEvent.on {
-        case evt => Gritter.add(this.webpage, "Input Changed", "Input changed to: %s".format(value()))
+      autocomplete.selected.change.on {
+        case evt => Gritter.add(this.webpage, "Selection Changed", s"Selection changed from ${evt.oldValue} to ${evt.newValue}.")
       }
     }
 
     contents += input
 
-    contents += new tag.Button(content = "Test") {
+    contents += new tag.Button(content = "Set to Testing") {
       clickEvent := RealtimeEvent()
 
       clickEvent.on {
-        case evt => {
-          Gritter.add(this.webpage, "Clicked!", input.autocomplete.selected().mkString(", "))
-          input.value := "testing"
-        }
+        case evt => input.value := "Testing"
       }
     }
   }

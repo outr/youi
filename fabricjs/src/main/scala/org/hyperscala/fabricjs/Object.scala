@@ -85,6 +85,12 @@ abstract class Object(val name: String) extends Listenable with Element[Listenab
   lazy val mouseDownEvent = new MouseDownEventProcessor(this)
   lazy val mouseUpEvent = new MouseUpEventProcessor(this)
 
+  def basic() = {
+    hasBorders := false
+    hasControls := false
+    selectable := false
+  }
+
   def canvas = root[StaticCanvas]
 
   protected[fabricjs] def addToCanvas(canvas: StaticCanvas) = {
@@ -95,12 +101,11 @@ abstract class Object(val name: String) extends Listenable with Element[Listenab
     }
     _events.foreach {
       case processor if processor.js() != null => {
-        println(s"FabricJS.event('$id', '${processor.name}', ${toJS(processor.name, processor.js())});")
         val handler =
           s"""function() {
              |  ${toJS(processor.name, processor.js())}
              |}""".stripMargin
-        canvas.eval(s"FabricJS.event('$id', '${processor.name}', $handler);")
+        canvas.eval(s"FabricJS.objectEvent('$id', '${processor.name}', $handler);")
       }
     }
   }

@@ -26,11 +26,18 @@ var FabricJS = {
         }
         canvas.renderAll();
     },
-    event: function(objectId, eventName, handler) {
+    canvasEvent: function(canvasId, eventName, handler) {
+        var canvas = FabricJS.canvas[canvasId];
+        if (canvas.__eventListeners != null) {              // Clear existing listeners
+            canvas.__eventListeners[eventName] = [];
+        }
+        canvas.on(eventName, handler);
+    },
+    objectEvent: function(objectId, eventName, handler) {
         var object = FabricJS.object[objectId];
-        //object.__eventListeners[eventName] = [];        // Clear existing listeners
-        console.log('Object: ' + object + ', Listeners: ' + object.__eventListeners);
-        console.log('Event: ' + eventName + ' - ' + handler);
+        if (object.__eventListeners != null) {              // Clear existing listeners
+            object.__eventListeners[eventName] = [];
+        }
         object.on(eventName, handler);
     },
     remove: function(canvasId, objectId) {

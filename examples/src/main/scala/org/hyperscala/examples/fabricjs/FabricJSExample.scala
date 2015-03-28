@@ -22,7 +22,6 @@ class FabricJSExample extends Example {
 
   val canvas = new Canvas(t) {
     selection := false
-    afterRenderEvent := JavaScriptString("console.log('rendered!');")
   }
   canvas.backgroundColor := Color.immutable(100, 100, 200, 255)   // TODO: make Alpha Double
   val rect = new Rect {
@@ -61,7 +60,7 @@ class FabricJSExample extends Example {
     left := 100.0
     top := 100.0
     radius := 50.0
-    hasControls := false
+    basic()
     fill := LinearGradient(0.0, 0.0, 100.0, 0.0, List(ColorStop(0.0, Color.Red), ColorStop(0.2, Color.Orange), ColorStop(0.4, Color.Yellow), ColorStop(0.6, Color.Green), ColorStop(0.8, Color.Blue), ColorStop(1.0, Color.Purple)))
     mouseUpEvent := JavaScriptString("alert('Circle clicked!');")
   }
@@ -90,13 +89,5 @@ class FabricJSExample extends Example {
     }
 
     val brightness = Brightness(255)
-
-    contents += new tag.Button(content = "Test") {
-      clickEvent.onRealtime {
-        case evt => {
-          circle.fill := LinearGradient(-50.0, 0.0, 50.0, 0.0, List(ColorStop(0.0, Color.Red), ColorStop(1.0, Color.Blue)))
-        }
-      }
-    }
   }
 }

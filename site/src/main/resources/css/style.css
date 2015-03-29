@@ -135,6 +135,7 @@ h2 {
 
 hr {
     border-color: #243441 !important;
+    clear: both;
 }
 
 .panel-heading {

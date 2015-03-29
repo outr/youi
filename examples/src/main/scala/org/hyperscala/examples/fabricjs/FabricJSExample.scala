@@ -6,7 +6,7 @@ import org.hyperscala.fabricjs.filters.{Brightness, Grayscale}
 import org.hyperscala.fabricjs.paint.{ColorStop, LinearGradient}
 import org.hyperscala.fabricjs.prop.Adjust
 import org.hyperscala.html._
-import org.hyperscala.javascript.{JavaScriptString, JavaScriptContent}
+import org.hyperscala.javascript.JavaScriptString
 import org.powerscala.Color
 import org.hyperscala.realtime._
 

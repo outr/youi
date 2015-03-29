@@ -1,7 +1,9 @@
 package org.hyperscala.fabricjs
 
+import org.hyperscala.Container
+import org.hyperscala.html.constraints.BodyChild
 import org.hyperscala.html.tag
-import org.powerscala.Color
+import org.powerscala.{Unique, Color}
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -26,4 +28,13 @@ class Canvas(canvas: tag.Canvas) extends StaticCanvas(canvas) {
   lazy val skipTargetFind = prop("skipTargetFind", false)
   lazy val targetFindTolerance = prop("targetFindTolerance", 0.0)
   lazy val uniScaleTransform = prop("uniScaleTransform", false)
+}
+
+object Canvas {
+  def apply(container: Container[BodyChild], width: Int, height: Int, id: String = Unique()) = {
+    val t = new tag.Canvas(id = id, width = width, height = height)
+    container.contents += t
+
+    new Canvas(t)
+  }
 }

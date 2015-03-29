@@ -2,7 +2,7 @@ package org.hyperscala.examples.fabricjs
 
 import org.hyperscala.bootstrap.component.Button
 import org.hyperscala.css.SelectorStyleSheet
-import org.hyperscala.css.attributes.{Float, LineStyle}
+import org.hyperscala.css.attributes.{Clear, Float, LineStyle}
 import org.hyperscala.examples.Example
 import org.hyperscala.fabricjs._
 import org.hyperscala.fabricjs.filters.{Brightness, Sepia, Grayscale}
@@ -32,12 +32,12 @@ class FabricIntroPart2 extends Example {
     marginAll(10.px)
   }
 
-  val canvases = new tag.Div {
-    style.height := 660.px
-  }
+  val canvases = new tag.Div
   contents += canvases
 
-  val buttons = new tag.Div
+  val buttons = new tag.Div {
+    style.clear := Clear.Both
+  }
   contents += buttons
 
   first()
@@ -53,6 +53,9 @@ class FabricIntroPart2 extends Example {
   eleventh()
   twelfth()
   thirteenth()
+  fourteenth()
+  fifteenth()
+  sixteenth()
 
   def first() = {
     val canvas = Canvas(canvases, 200, 200)
@@ -324,5 +327,97 @@ class FabricIntroPart2 extends Example {
     }
 
     canvas.contents.addAll(text1, text2, text3)
+  }
+
+  def fourteenth() = {
+    val canvas = Canvas(canvases, 200, 200)
+
+    val scale = 0.5
+
+    val text1 = new Text("I'm a text with shadow") {
+      fontSize := 40.0
+      left := 5.0
+      top := 25.0
+      scaleX := scale
+      scaleY := scale
+      shadow := "rgba(0, 0, 0, 0.3) 5px 5px 5px"
+    }
+
+    val text2 = new Text("And another shadow...") {
+      fontSize := 40.0
+      left := 5.0
+      top := 80.0
+      scaleX := scale
+      scaleY := scale
+      shadow := "rgba(0, 0, 0, 0.2) 0 0 5px"
+      fill := Color.Blue
+    }
+
+    val text3 = new Text("I'm an overlined text") {
+      fontSize := 40.0
+      left := 5.0
+      top := 135.0
+      scaleX := scale
+      scaleY := scale
+      shadow := "green -5px -5px 3px"
+      fill := Color.Red
+    }
+
+    canvas.contents.addAll(text1, text2, text3)
+  }
+
+  def fifteenth() = {
+    val canvas = Canvas(canvases, 200, 200)
+
+    val scale = 0.5
+
+    val text1 = new Text("A very fancy italic text") {
+      fontSize := 40.0
+      left := 5.0
+      top := 25.0
+      scaleX := scale
+      scaleY := scale
+      fontStyle := "italic"
+    }
+
+    val text2 = new Text("another italic text") {
+      fontSize := 40.0
+      left := 5.0
+      top := 80.0
+      scaleX := scale
+      scaleY := scale
+      fill := Color.Blue
+      fontStyle := "italic"
+    }
+
+    canvas.contents.addAll(text1, text2)
+  }
+
+  def sixteenth() = {
+    val canvas = Canvas(canvases, 200, 200)
+
+    val scale = 0.5
+
+    val text1 = new Text("Text with a stroke") {
+      fontSize := 40.0
+      left := 5.0
+      top := 25.0
+      scaleX := scale
+      scaleY := scale
+      stroke := Color.immutable("#ff1318")
+      strokeWidth := 1.0
+    }
+
+    val text2 = new Text("Lorem ipsum dolor") {
+      fontSize := 40.0
+      left := 5.0
+      top := 80.0
+      scaleX := scale
+      scaleY := scale
+      stroke := Color.immutable("#c3bfbf")
+      strokeWidth := 3.0
+    }
+
+    canvas.contents.addAll(text1, text2)
   }
 }

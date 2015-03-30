@@ -10,9 +10,12 @@ import org.hyperscala.fabricjs.paint.{ColorStop, LinearGradient}
 import org.hyperscala.fabricjs.prop.Adjust
 import org.hyperscala.fabricjs.util.Ease
 import org.hyperscala.html._
+import org.hyperscala.javascript.JavaScriptString
+import org.hyperscala.jquery.Gritter
 import org.hyperscala.realtime._
 import org.hyperscala.selector.Selector
 import org.powerscala.Color
+import org.hyperscala.web._
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -56,6 +59,8 @@ class FabricIntroPart2 extends Example {
   fourteenth()
   fifteenth()
   sixteenth()
+  seventeenth()
+  eighteenth()
 
   def first() = {
     val canvas = Canvas(canvases, 200, 200)
@@ -419,5 +424,46 @@ class FabricIntroPart2 extends Example {
     }
 
     canvas.contents.addAll(text1, text2)
+  }
+
+  def seventeenth() = {
+    val canvas = Canvas(canvases, 200, 200)
+    canvas.mouseDownEvent := JavaScriptString(
+      """var type = 'nothing';
+        |if (options.target) {
+        | type = options.target.type;
+        |}
+        |console.log(type, 'was clicked.');""".stripMargin)
+
+    val circle = new Circle {
+      radius := 50.0
+      fill := Color.Green
+      left := 100.0
+      top := 100.0
+      originX := "center"
+      originY := "center"
+    }
+    canvas.contents += circle
+  }
+
+  def eighteenth() = {
+    val canvas = Canvas(canvases, 200, 200)
+
+    val rect = new Rect {
+      left := 100.0
+      top := 100.0
+      fill := Color.Red
+      width := 20.0
+      height := 20.0
+      originX := "center"
+      originY := "center"
+    }
+
+    rect.selectedEvent := RealtimeEvent()
+    rect.selectedEvent.on {
+      case evt => Gritter.add(this.webpage, "Rectangle selected!", "Selected")
+    }
+
+    canvas.contents += rect
   }
 }

@@ -1,6 +1,7 @@
 package org.hyperscala.fabricjs
 
 import org.hyperscala.Container
+import org.hyperscala.fabricjs.event._
 import org.hyperscala.html.constraints.BodyChild
 import org.hyperscala.html.tag
 import org.powerscala.{Unique, Color}
@@ -28,6 +29,21 @@ class Canvas(canvas: tag.Canvas) extends StaticCanvas(canvas) {
   lazy val skipTargetFind = prop("skipTargetFind", false)
   lazy val targetFindTolerance = prop("targetFindTolerance", 0.0)
   lazy val uniScaleTransform = prop("uniScaleTransform", false)
+
+  lazy val objectModifiedEvent = new ObjectModifiedEventProcessor(this)
+  lazy val objectRotatingEvent = new ObjectRotatingEventProcessor(this)
+  lazy val objectScalingEvent = new ObjectScalingEventProcessor(this)
+  lazy val objectMovingEvent = new ObjectMovingEventProcessor(this)
+  lazy val objectSelectedEvent = new ObjectSelectedEventProcessor(this)
+  lazy val beforeSelectionClearedEvent = new BeforeSelectionClearedEventProcessor(this)
+  lazy val selectionClearedEvent = new SelectionClearedEventProcessor(this)
+  lazy val selectionCreatedEvent = new SelectionCreatedEventProcessor(this)
+  lazy val pathCreatedEvent = new PathCreatedEventProcessor(this)
+  lazy val mouseDownEvent = new CanvasMouseDownEventProcessor(this)
+  lazy val mouseMoveEvent = new CanvasMouseMoveEventProcessor(this)
+  lazy val mouseUpEvent = new CanvasMouseUpEventProcessor(this)
+  lazy val mouseOverEvent = new CanvasMouseOverEventProcessor(this)
+  lazy val mouseOutEvent = new CanvasMouseOutEventProcessor(this)
 }
 
 object Canvas {

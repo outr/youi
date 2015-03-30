@@ -63,14 +63,14 @@ class StaticCanvas(val canvas: tag.Canvas) extends MutableContainer[Object] {
       }
       case cep: CanvasEventProperty[_] => {
         val handler =
-          s"""function() {
+          s"""function(options) {
              |  ${JavaScriptContent.toJS(cep.p.js())}
               |}""".stripMargin
         eval(s"FabricJS.canvasEvent('${cep.p.canvas.id}', '${cep.p.name}', $handler)")
       }
       case oep: ObjectEventProperty[_] => {
         val handler =
-          s"""function() {
+          s"""function(options) {
              |  ${oep.p.obj.toJS(oep.p.name, oep.p.js())}
               |}""".stripMargin
         eval(s"FabricJS.objectEvent('${oep.p.obj.id}', '${oep.p.name}', $handler);")

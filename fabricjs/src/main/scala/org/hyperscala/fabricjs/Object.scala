@@ -102,7 +102,7 @@ abstract class Object(val name: String) extends Listenable with Element[Listenab
     _events.foreach {
       case processor if processor.js() != null => {
         val handler =
-          s"""function() {
+          s"""function(options) {
              |  ${toJS(processor.name, processor.js())}
              |}""".stripMargin
         canvas.eval(s"FabricJS.objectEvent('$id', '${processor.name}', $handler);")

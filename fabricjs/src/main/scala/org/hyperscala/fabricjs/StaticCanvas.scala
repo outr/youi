@@ -28,6 +28,12 @@ class StaticCanvas(val canvas: tag.Canvas) extends MutableContainer[Object] {
       case None => throw new RuntimeException(s"Unable to find processor for type: ${evt.eventType}")
     }
   }
+  canvas.handle[ObjectEvent] {
+    case evt => evt.obj._events.find(p => p.name == evt.eventType) match {
+      case Some(p) => p.asInstanceOf[ObjectEventProcessor[ObjectEvent]].fire(evt)
+      case None => throw new RuntimeException(s"Unable to find processor for type: ${evt.eventType}")
+    }
+  }
 
   implicit val childManifest = ManifestFactory.classType[Object](classOf[Object])
 

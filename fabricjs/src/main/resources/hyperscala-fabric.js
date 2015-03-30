@@ -66,12 +66,19 @@ var FabricJS = {
         image.filters.splice(image.filters.indexOf(filter), 1);
     },
     canvasEventToServer: function(tagId, canvasId, type, options) {
-        console.log('Sending: ' + type);
         realtime.send({
             type: type,
             id: tagId,
             canvasId: canvasId,
             objectId: FabricJS.object[options.target]
         });
+    },
+    objectEventToServer: function(tagId, canvasId, objectId, type, options) {
+        realtime.send({
+            type: type,
+            id: tagId,
+            canvasId: canvasId,
+            objectId: objectId
+        })
     }
 };

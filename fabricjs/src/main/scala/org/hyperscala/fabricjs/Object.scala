@@ -107,6 +107,7 @@ abstract class Object(val name: String) extends Listenable with Element[Listenab
              |}""".stripMargin
         canvas.eval(s"FabricJS.objectEvent('$id', '${processor.name}', $handler);")
       }
+      case _ => // Value must not be null
     }
   }
 

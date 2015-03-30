@@ -22,6 +22,7 @@ import org.hyperscala.web._
  */
 class FabricIntroPart2 extends Example {
   require(FabricJS)
+  require(Gritter)
 
   connected[tag.HTML] {
     case html => html.head.verifyCSS("http://fonts.googleapis.com/css?family=Pacifico")
@@ -436,8 +437,7 @@ class FabricIntroPart2 extends Example {
         |console.log(type, 'was clicked.');""".stripMargin)
     canvas.mouseOverEvent.sendToServer().on {
       case evt => {
-        println(s"MouseOver: ${evt.canvas}, ${evt.obj}, ${evt.tag}")
-//        Gritter.add(this.webpage, "Mouse over the canvas!", "Hover")
+        Gritter.add(this.webpage, s"Mouse over: ${evt.obj.name}", "Hover")
       }
     }
 
@@ -465,9 +465,9 @@ class FabricIntroPart2 extends Example {
       originY := "center"
     }
 
-//    rect.selectedEvent..on {
-//      case evt => Gritter.add(this.webpage, "Rectangle selected!", "Selected")
-//    }
+    rect.selectedEvent.sendToServer().on {
+      case evt => Gritter.add(this.webpage, "Message from Server", "Rectangle Selected!")
+    }
 
     canvas.contents += rect
   }

@@ -63,7 +63,7 @@ class HelloSiteSpec extends WordSpec with Matchers {
         val baos = new ByteArrayOutputStream
         response.content.asInstanceOf[StreamingContent].stream(baos)
         val contentString = new String(baos.toByteArray, response.content.contentType.charSet).replaceAll("""\s""", "")
-        contentString should be("""<!DOCTYPEhtml><html><head><title>HelloPage</title><metaname="generator"content="Hyperscala"/><metacharset="UTF-8"/></head><body><h1>Hello,World!</h1></body></html>""")
+        contentString should fullyMatch regex """<!DOCTYPEhtml><html><head><title>HelloPage</title><metaname="generator"content="Hyperscala"/><metaname="pageId"content="([a-zA-Z0-9]{32})"/><metacharset="UTF-8"/></head><body><h1>Hello,World!</h1></body></html>""".r
       }
     }
   }

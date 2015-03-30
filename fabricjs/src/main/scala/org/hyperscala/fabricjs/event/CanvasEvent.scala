@@ -1,31 +1,36 @@
 package org.hyperscala.fabricjs.event
 
+import org.hyperscala.event.BrowserEvent
 import org.hyperscala.fabricjs._
+import org.hyperscala.html.tag.{Canvas => HTMLCanvas}
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-trait CanvasEvent {
+trait CanvasEvent extends BrowserEvent {
+  def tag: HTMLCanvas
   def canvas: StaticCanvas
+  def obj: Object
+  def eventType: String
 }
 
-case class BeforeRenderEvent(canvas: StaticCanvas) extends CanvasEvent
-case class AfterRenderEvent(canvas: StaticCanvas) extends CanvasEvent
-case class CanvasClearedEvent(canvas: StaticCanvas) extends CanvasEvent
-case class ObjectAddedEvent(canvas: StaticCanvas) extends CanvasEvent
-case class ObjectRemovedEvent(canvas: StaticCanvas) extends CanvasEvent
+case class BeforeRenderEvent(tag: HTMLCanvas, canvas: StaticCanvas, obj: Object, eventType: String) extends CanvasEvent
+case class AfterRenderEvent(tag: HTMLCanvas, canvas: StaticCanvas, obj: Object, eventType: String) extends CanvasEvent
+case class CanvasClearedEvent(tag: HTMLCanvas, canvas: StaticCanvas, obj: Object, eventType: String) extends CanvasEvent
+case class ObjectAddedEvent(tag: HTMLCanvas, canvas: StaticCanvas, obj: Object, eventType: String) extends CanvasEvent
+case class ObjectRemovedEvent(tag: HTMLCanvas, canvas: StaticCanvas, obj: Object, eventType: String) extends CanvasEvent
 
-case class ObjectModifiedEvent(canvas: Canvas) extends CanvasEvent
-case class ObjectRotatingEvent(canvas: Canvas) extends CanvasEvent
-case class ObjectScalingEvent(canvas: Canvas) extends CanvasEvent
-case class ObjectMovingEvent(canvas: Canvas) extends CanvasEvent
-case class ObjectSelectedEvent(canvas: Canvas) extends CanvasEvent
-case class BeforeSelectionClearedEvent(canvas: Canvas) extends CanvasEvent
-case class SelectionClearedEvent(canvas: Canvas) extends CanvasEvent
-case class SelectionCreatedEvent(canvas: Canvas) extends CanvasEvent
-case class PathCreatedEvent(canvas: Canvas) extends CanvasEvent
-case class CanvasMouseDownEvent(canvas: Canvas) extends CanvasEvent
-case class CanvasMouseMoveEvent(canvas: Canvas) extends CanvasEvent
-case class CanvasMouseUpEvent(canvas: Canvas) extends CanvasEvent
-case class CanvasMouseOverEvent(canvas: Canvas) extends CanvasEvent
-case class CanvasMouseOutEvent(canvas: Canvas) extends CanvasEvent
+case class ObjectModifiedEvent(tag: HTMLCanvas, canvas: Canvas, obj: Object, eventType: String) extends CanvasEvent
+case class ObjectRotatingEvent(tag: HTMLCanvas, canvas: Canvas, obj: Object, eventType: String) extends CanvasEvent
+case class ObjectScalingEvent(tag: HTMLCanvas, canvas: Canvas, obj: Object, eventType: String) extends CanvasEvent
+case class ObjectMovingEvent(tag: HTMLCanvas, canvas: Canvas, obj: Object, eventType: String) extends CanvasEvent
+case class ObjectSelectedEvent(tag: HTMLCanvas, canvas: Canvas, obj: Object, eventType: String) extends CanvasEvent
+case class BeforeSelectionClearedEvent(tag: HTMLCanvas, canvas: Canvas, obj: Object, eventType: String) extends CanvasEvent
+case class SelectionClearedEvent(tag: HTMLCanvas, canvas: Canvas, obj: Object, eventType: String) extends CanvasEvent
+case class SelectionCreatedEvent(tag: HTMLCanvas, canvas: Canvas, obj: Object, eventType: String) extends CanvasEvent
+case class PathCreatedEvent(tag: HTMLCanvas, canvas: Canvas, obj: Object, eventType: String) extends CanvasEvent
+case class CanvasMouseDownEvent(tag: HTMLCanvas, canvas: Canvas, obj: Object, eventType: String) extends CanvasEvent
+case class CanvasMouseMoveEvent(tag: HTMLCanvas, canvas: Canvas, obj: Object, eventType: String) extends CanvasEvent
+case class CanvasMouseUpEvent(tag: HTMLCanvas, canvas: Canvas, obj: Object, eventType: String) extends CanvasEvent
+case class CanvasMouseOverEvent(tag: HTMLCanvas, canvas: Canvas, obj: Object, eventType: String) extends CanvasEvent
+case class CanvasMouseOutEvent(tag: HTMLCanvas, canvas: Canvas, obj: Object, eventType: String) extends CanvasEvent

@@ -29,7 +29,7 @@ object RealtimeJSON extends Logging {
           val parent = m.get("parent").map(v => webpage.byId[HTMLTag](v.asInstanceOf[String])).flatten.getOrElse(webpage.html)
           val target = m.get("target").map(v => parent.byId[HTMLTag](v.asInstanceOf[String])).flatten
           val tag = m.get("id").map(v => parent.byId[HTMLTag](v.asInstanceOf[String])).flatten
-          m ++ Map("parent" -> parent, "target" -> target, "tag" -> tag)
+          m ++ Map("parent" -> parent, "target" -> target, "tag" -> tag.orNull)
         }
         case holder => {
           warn(s"Unable to handle $m, message not connected to a webpage (Holder: $holder).")

@@ -2,9 +2,14 @@ var FabricJS = {
     canvas: {},
     object: {},
     filters: {},
+    init: function(canvasId, canvas) {
+        FabricJS.canvas[canvasId] = canvas;
+        FabricJS.canvas[canvas] = canvasId;
+    },
     add: function(canvasId, objectId, object) {
         var canvas = FabricJS.canvas[canvasId];
         FabricJS.object[objectId] = object;
+        FabricJS.object[object] = objectId;
         canvas.add(object);
         // TODO: listen to changes and propagate back to server for non-static entries
         return object;
@@ -59,5 +64,14 @@ var FabricJS = {
     removeFilter: function(image, filterId) {
         var filter = FabricJS.filters[filterId];
         image.filters.splice(image.filters.indexOf(filter), 1);
+    },
+    canvasEventToServer: function(tagId, canvasId, type, options) {
+        console.log('Sending: ' + type);
+        realtime.send({
+            type: type,
+            id: tagId,
+            canvasId: canvasId,
+            objectId: FabricJS.object[options.target]
+        });
     }
 };

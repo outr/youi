@@ -1,16 +1,18 @@
 package org.hyperscala.fabricjs
 
+import org.hyperscala.Container
 import org.hyperscala.fabricjs.event._
 import org.hyperscala.fabricjs.paint.GradientPaint
 import org.hyperscala.fabricjs.prop.{CanvasProperty, ObjectProperty}
 import org.hyperscala.html._
+import org.hyperscala.html.constraints.BodyChild
 import org.hyperscala.javascript._
 import org.hyperscala.javascript.dsl._
 import org.hyperscala.web.Webpage
-import org.powerscala.hierarchy.MutableContainer
+import org.powerscala.hierarchy.{ParentLike, MutableContainer}
 import org.powerscala.hierarchy.event.Descendants
 import org.powerscala.property.event.PropertyChangeEvent
-import org.powerscala.{Color, Priority, Unique}
+import org.powerscala._
 
 import scala.reflect.ManifestFactory
 
@@ -18,6 +20,15 @@ import scala.reflect.ManifestFactory
  * @author Matt Hicks <matt@outr.com>
  */
 class StaticCanvas(val canvas: tag.Canvas) extends MutableContainer[Object] {
+  Storage.set(canvas, "fabricjs.StaticCanvas", this)
+
+  canvas.handle[CanvasEvent] {
+    case evt => _events.find(p => p.name == evt.eventType) match {
+      case Some(p) => p.asInstanceOf[CanvasEventProcessor[CanvasEvent]].fire(evt)
+      case None => throw new RuntimeException(s"Unable to find processor for type: ${evt.eventType}")
+    }
+  }
+
   implicit val childManifest = ManifestFactory.classType[Object](classOf[Object])
 
   val id = Unique()
@@ -49,7 +60,7 @@ class StaticCanvas(val canvas: tag.Canvas) extends MutableContainer[Object] {
   lazy val objectAddedEvent = new ObjectAddedEventProcessor(this)
   lazy val objectRemovedEvent = new ObjectRemovedEventProcessor(this)
 
-  eval(JavaScriptString(s"FabricJS.canvas['$id'] = new fabric.$className('${canvas.identity}');"))
+  eval(JavaScriptString(s"FabricJS.init('$id', new fabric.$className('${canvas.identity}'));"))
 
   listen[PropertyChangeEvent[_], Unit, Unit]("change", Priority.Normal, Descendants) {
     case evt => evt.property match {
@@ -103,4 +114,26 @@ class StaticCanvas(val canvas: tag.Canvas) extends MutableContainer[Object] {
     _properties = p :: _properties
     p
   }
+
+  def byId[T <: Object](id: String)(implicit manifest: Manifest[T]) = TypeFilteredIterator[T](ParentLike.descendants(this)).find {
+    case obj: Object => obj.id == id
+    case _ => false
+  }
+
+  def getById[T <: Object](id: String)(implicit manifest: Manifest[T]) = {
+    byId[T](id)(manifest).getOrElse(throw new NullPointerException("Unable to find '%s' by id.".format(id)))
+  }
+
+  def byType[T](implicit manifest: Manifest[T]) = TypeFilteredIterator[T](ParentLike.descendants(this)).toStream
+}
+
+object StaticCanvas {
+  def apply(container: Container[BodyChild], width: Int, height: Int, id: String = Unique()) = {
+    val t = new tag.Canvas(id = id, width = width, height = height)
+    container.contents += t
+
+    new StaticCanvas(t)
+  }
+
+  def get(t: tag.Canvas) = Storage.get[String, StaticCanvas](t, "fabricjs.StaticCanvas")
 }

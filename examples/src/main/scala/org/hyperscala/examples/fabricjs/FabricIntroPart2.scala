@@ -434,6 +434,12 @@ class FabricIntroPart2 extends Example {
         | type = options.target.type;
         |}
         |console.log(type, 'was clicked.');""".stripMargin)
+    canvas.mouseOverEvent.sendToServer().on {
+      case evt => {
+        println(s"MouseOver: ${evt.canvas}, ${evt.obj}, ${evt.tag}")
+//        Gritter.add(this.webpage, "Mouse over the canvas!", "Hover")
+      }
+    }
 
     val circle = new Circle {
       radius := 50.0
@@ -459,10 +465,9 @@ class FabricIntroPart2 extends Example {
       originY := "center"
     }
 
-    rect.selectedEvent := RealtimeEvent()
-    rect.selectedEvent.on {
-      case evt => Gritter.add(this.webpage, "Rectangle selected!", "Selected")
-    }
+//    rect.selectedEvent..on {
+//      case evt => Gritter.add(this.webpage, "Rectangle selected!", "Selected")
+//    }
 
     canvas.contents += rect
   }

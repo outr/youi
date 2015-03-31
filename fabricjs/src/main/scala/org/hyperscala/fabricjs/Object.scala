@@ -109,6 +109,7 @@ abstract class Object(val name: String) extends Listenable with Element[Listenab
       }
       case _ => // Value must not be null
     }
+    canvas.renderAll()
   }
 
   protected[fabricjs] def construct = s"new fabric.$name($props)"

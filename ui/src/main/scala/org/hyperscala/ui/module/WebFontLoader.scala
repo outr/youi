@@ -66,7 +66,7 @@ case class CustomFont(family: String, style: String, weight: String, woff: Strin
 
 object WebFontLoader extends Module with HttpHandler {
   val name = "webfontloader"
-  val version = Version(1, 4, 7)
+  val version = Version(1, 5, 10)
 
   private var customFonts = Map.empty[String, CustomFont]
 

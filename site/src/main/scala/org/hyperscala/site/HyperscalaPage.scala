@@ -8,6 +8,7 @@ import org.hyperscala.css.SelectorStyleSheet
 import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.javascript.dsl.window
 import org.hyperscala.selector.Selector
+import org.hyperscala.ui.module.{GoogleTagManager, GoogleAnalytics}
 import org.powerscala.Color
 import org.hyperscala.html._
 import attributes.Target
@@ -24,6 +25,7 @@ class HyperscalaPage extends Webpage with FormSupport {
   def site = HyperscalaSite
 
   require(Bootstrap)
+  require(new GoogleTagManager("GTM-5BNN4T"))
 
   title := "Hyperscala - Statically typed bare-metal HTML, CSS, and JavaScript framework for Scala."
 

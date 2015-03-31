@@ -11,9 +11,9 @@ object HyperScalaBuild extends Build {
   import Dependencies._
 
   val baseSettings = Defaults.coreDefaultSettings ++ Seq(
-    version := "0.10.0-SNAPSHOT",
+    version := "0.10.0",
     organization := "org.hyperscala",
-    scalaVersion := "2.11.5",
+    scalaVersion := "2.11.6",
     libraryDependencies ++= Seq(
       powerScalaReflect,
       powerScalaHierarchy,

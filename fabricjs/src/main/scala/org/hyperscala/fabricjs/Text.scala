@@ -6,7 +6,8 @@ import org.powerscala.Color
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class Text(val text: String, name: String = "Text") extends Object(name) {
+class Text(initialText: String, name: String = "Text") extends Object(name) {
+  val text = prop("text", initialText)
   lazy val fontFamily = prop("fontFamily", "Times New Roman")
   lazy val fontSize = prop("fontSize", 40.0)
   lazy val fontStyle = prop("fontStyle", "normal")
@@ -18,5 +19,5 @@ class Text(val text: String, name: String = "Text") extends Object(name) {
   lazy val textDecoration = prop("textDecoration", "")
   lazy val useNative = prop("useNative", true)
 
-  override protected[fabricjs] def construct = s"new fabric.$name(${JavaScriptContent.toJS(text)}, $props)"
+  override protected[fabricjs] def construct = s"new fabric.$name(${JavaScriptContent.toJS(text())}, $props)"
 }

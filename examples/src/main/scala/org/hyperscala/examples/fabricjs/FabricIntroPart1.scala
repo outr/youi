@@ -13,25 +13,7 @@ import org.hyperscala.realtime._
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class FabricIntroPart1 extends Example {
-  require(FabricJS)
-
-  new SelectorStyleSheet(Selector.clazz("canvas-container"))(this) {
-    borderWidth := 1.px
-    borderColor := Color.Black
-    borderStyle := LineStyle.Solid
-    float := Float.Left
-    marginAll(10.px)
-  }
-
-  val canvases = new tag.Div {
-    style.height := 440.px
-  }
-  contents += canvases
-
-  val buttons = new tag.Div
-  contents += buttons
-
+class FabricIntroPart1 extends FabricIntroExample {
   first()
   second()
   third()

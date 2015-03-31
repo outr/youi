@@ -14,36 +14,14 @@ import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.jquery.Gritter
 import org.hyperscala.realtime._
 import org.hyperscala.selector.Selector
+import org.hyperscala.ui.module.WebFontLoader
 import org.powerscala.Color
 import org.hyperscala.web._
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class FabricIntroPart2 extends Example {
-  require(FabricJS)
-  require(Gritter)
-
-  connected[tag.HTML] {
-    case html => html.head.verifyCSS("http://fonts.googleapis.com/css?family=Pacifico")
-  }
-
-  new SelectorStyleSheet(Selector.clazz("canvas-container"))(this) {
-    borderWidth := 1.px
-    borderColor := Color.Black
-    borderStyle := LineStyle.Solid
-    float := Float.Left
-    marginAll(10.px)
-  }
-
-  val canvases = new tag.Div
-  contents += canvases
-
-  val buttons = new tag.Div {
-    style.clear := Clear.Both
-  }
-  contents += buttons
-
+class FabricIntroPart2 extends FabricIntroExample {
   first()
   second()
   third()
@@ -190,7 +168,7 @@ class FabricIntroPart2 extends Example {
     canvas.contents += image
   }
 
-  def seventh() = {       // TODO: re-render after linear gradient defined
+  def seventh() = {
     val canvas = Canvas(canvases, 200, 200)
 
     val circle = new Circle {
@@ -205,7 +183,7 @@ class FabricIntroPart2 extends Example {
     canvas.contents += circle
   }
 
-  def eighth() = {       // TODO: re-render after linear gradient defined
+  def eighth() = {
     val canvas = Canvas(canvases, 200, 200)
 
     val circle = new Circle {
@@ -220,7 +198,7 @@ class FabricIntroPart2 extends Example {
     canvas.contents += circle
   }
 
-  def ninth() = {       // TODO: re-render after linear gradient defined
+  def ninth() = {
     val canvas = Canvas(canvases, 200, 200)
 
     val circle = new Circle {
@@ -235,7 +213,7 @@ class FabricIntroPart2 extends Example {
     canvas.contents += circle
   }
 
-  def tenth() = {       // TODO: re-render after Google Font loads
+  def tenth() = {
     val canvas = Canvas(canvases, 200, 200)
 
     val text = new Text("I'm in Pacifico") {
@@ -247,6 +225,15 @@ class FabricIntroPart2 extends Example {
       originY := "center"
       scaleX := 0.5
       scaleY := 0.5
+    }
+
+    connected[Webpage] {
+      case webpage => {
+        WebFontLoader(webpage).google(List("Pacifico"))
+        WebFontLoader(webpage).onLoad("Pacifico") {
+          canvas.renderAll()
+        }
+      }
     }
 
     canvas.contents += text
@@ -402,9 +389,10 @@ class FabricIntroPart2 extends Example {
   def sixteenth() = {
     val canvas = Canvas(canvases, 200, 200)
 
-    val scale = 0.5
+    val scale = 1.0
 
     val text1 = new Text("Text with a stroke") {
+      fontFamily := "sans-serif"
       fontSize := 40.0
       left := 5.0
       top := 25.0
@@ -412,16 +400,18 @@ class FabricIntroPart2 extends Example {
       scaleY := scale
       stroke := Color.immutable("#ff1318")
       strokeWidth := 1.0
+      fill := Color.White
     }
 
     val text2 = new Text("Lorem ipsum dolor") {
+      fontFamily := "sans-serif"
       fontSize := 40.0
       left := 5.0
       top := 80.0
       scaleX := scale
       scaleY := scale
       stroke := Color.immutable("#c3bfbf")
-      strokeWidth := 3.0
+      strokeWidth := 2.0
     }
 
     canvas.contents.addAll(text1, text2)

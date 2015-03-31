@@ -14,6 +14,17 @@ var FabricJS = {
         // TODO: listen to changes and propagate back to server for non-static entries
         return object;
     },
+    addToGroup: function(groupId, objectId, object) {
+        var group = FabricJS.object[groupId];
+        FabricJS.object[objectId] = object;
+        FabricJS.object[object] = objectId;
+        group.addWithUpdate(object);
+    },
+    removeFromGroup: function(groupId, objectId) {
+        var group = FabricJS.object[groupId];
+        var object = FabricJS.object[objectId];
+        group.removeWithUpdate(object);
+    },
     set: function(canvasId, objectId, key, value) {
         var canvas = FabricJS.canvas[canvasId];
         if (objectId != null) {

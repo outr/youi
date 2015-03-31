@@ -17,20 +17,25 @@ class Image(val url: String) extends Object("Image") {
   lazy val meetOrSlice = prop("meetOrSlice", "meet")
   val filters = new ImageFilters(this)
 
-  override protected[fabricjs] def addToCanvas(canvas: StaticCanvas) = {
+  override protected[fabricjs] def addToCanvas(canvas: StaticCanvas, group: Option[Group]) = {
     val filtersJS = filters.contents.toList.map(bf => bf.addFilterJS(this)).mkString("\r\n  ")
     val reRender = if (filters.contents.nonEmpty) {
       s"image.applyFilters(canvas.renderAll.bind(canvas));"
     } else {
       ""
     }
+    val add = group match {
+      case Some(g) => s"FabricJS.addToGroup('${g.id}', '$id', image);"
+      case None => s"FabricJS.add('${canvas.id}', '$id', image);"
+    }
     val js =
       s"""fabric.Image.fromURL('$url', function(image) {
          |  image.set(${props});
          |  var canvas = FabricJS.canvas['${canvas.id}'];
          |  $filtersJS
-         |  FabricJS.add('${canvas.id}', '$id', image);
+         |  $add
          |  $reRender
+         |  canvas.renderAll();
          |});""".stripMargin
     canvas.eval(js)
   }

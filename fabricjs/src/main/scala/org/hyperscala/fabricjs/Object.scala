@@ -93,8 +93,11 @@ abstract class Object(val name: String) extends Listenable with Element[Listenab
 
   def canvas = root[StaticCanvas]
 
-  protected[fabricjs] def addToCanvas(canvas: StaticCanvas) = {
-    canvas.eval(s"FabricJS.add('${canvas.id}', '$id', $construct);")
+  protected[fabricjs] def addToCanvas(canvas: StaticCanvas, group: Option[Group]) = {
+    group match {
+      case Some(g) => canvas.eval(s"FabricJS.addToGroup('${g.id}', '$id', $construct);")
+      case None => canvas.eval(s"FabricJS.add('${canvas.id}', '$id', $construct);")
+    }
     val special = specialProps
     if (special.nonEmpty) {
       canvas.eval(special.mkString("\n"))

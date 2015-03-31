@@ -104,7 +104,10 @@ class StaticCanvas(val canvas: tag.Canvas) extends MutableContainer[Object] {
 
   def renderAll() = eval(s"FabricJS.canvas['$id'].renderAll();")
 
-  private def add(o: Object) = o.addToCanvas(this)
+  private def add(o: Object) = o.parent match {
+    case group: Group => o.addToCanvas(this, Some(group))
+    case _ => o.addToCanvas(this, None)
+  }
 
   private def remove(o: Object) = {
     eval(s"FabricJS.remove('$id', '${o.id}');")

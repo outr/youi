@@ -15,7 +15,7 @@ import org.hyperscala.html._
  */
 object FabricJS extends Module {
   val name = "fabric.js"
-  val version = Version(1, 4, 3)
+  val version = Version(1, 4, 13)
 
   override def dependencies = List(Realtime)
 

@@ -10,7 +10,7 @@ import org.hyperscala.examples.bootstrap.{BootstrapTheme, BootstrapSignin}
 import org.hyperscala.examples.comparison.PlayHelloWorldPage
 import org.hyperscala.examples.contenteditor.{EditablePageExample, ContentEditorExample}
 import org.hyperscala.examples.createjs.CreateJSExample
-import org.hyperscala.examples.fabricjs.{FabricIntroPart2, FabricIntroPart1, TileBoardExample, FabricJSExample}
+import org.hyperscala.examples.fabricjs._
 import org.hyperscala.examples.helloworld.HelloWorldPage
 import org.hyperscala.examples.screen.{SinglePageSiteExample, ScreenExample}
 import org.hyperscala.examples.svg.{DynamicSVGExample, SVGShapesExample, BasicSVGExample}
@@ -150,8 +150,9 @@ object HyperscalaSite extends Website with JettyApplication {
 
   val fabricJS = example(new FabricJSExample, "FabricJS", "FabricJS", Scope.Page)
   val tileBoard = example(new TileBoardExample, "FabricJS", "TileBoard", Scope.Page)
-  val fabricInto1 = example(new FabricIntroPart1, "FabricJS", "Intro Part 1", Scope.Page)
-  val fabricInto2 = example(new FabricIntroPart2, "FabricJS", "Intro Part 2", Scope.Page)
+  val fabricIntro1 = example(new FabricIntroPart1, "FabricJS", "Intro Part 1", Scope.Page)
+  val fabricIntro2 = example(new FabricIntroPart2, "FabricJS", "Intro Part 2", Scope.Page)
+  val fabricIntro3 = example(new FabricIntroPart3, "FabricJS", "Intro Part 3", Scope.Page)
 
   // Comparison
   val playComparison = pageExample(new PlayHelloWorldPage, "Comparison", "Play - Hello World", Scope.Page)

@@ -22,17 +22,24 @@ object HyperscalaExamples extends HyperscalaPage {
         override def collapsed = true
 
         body.contents += new Row {
-          pages.grouped(math.max(1, (pages.length + 2) / 3)).foreach {
-            case entries => contents += new Column(medium = Some(4)) {
-              contents += new ListGroup {
-                entries.foreach {
-                  case entry => addLink(entry.path, entry.name)
-                }
-              }
-            }
+          pages.foreach {
+            case entry => contents += new ExampleEntryDisplay(entry)
           }
+//          pages.grouped(math.max(1, (pages.length + 2) / 3)).foreach {
+//            case entries => contents += new Column(medium = Some(4)) {
+//              contents += new ListGroup {
+//                entries.foreach {
+//                  case entry => addLink(entry.path, entry.name)
+//                }
+//              }
+//            }
+//          }
         }
       }
     }
   }
+}
+
+class ExampleEntryDisplay(entry: ExampleEntry) extends tag.Div(clazz = List("example-entry")) {
+  contents += new tag.A(href = entry.path, content = entry.name)
 }

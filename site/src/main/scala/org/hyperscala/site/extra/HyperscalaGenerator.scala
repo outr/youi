@@ -5,6 +5,7 @@ import java.util.Collections
 import org.eclipse.egit.github.core.service.GistService
 import org.eclipse.egit.github.core.{Gist, GistFile}
 import org.hyperscala.Tag
+import org.hyperscala.css.attributes.Display
 import org.hyperscala.site.HyperscalaPage
 import org.hyperscala.html._
 import org.hyperscala.realtime._
@@ -28,7 +29,10 @@ class HyperscalaGenerator extends HyperscalaPage {
 
   val packageInput = new tag.Input(clazz = List("code_generator"))
   val classNameInput = new tag.Input(clazz = List("code_generator"))
-  val text = new tag.TextArea(clazz = List("code_generator"))
+  val text = new tag.TextArea(clazz = List("code_generator"), placeHolder = "Put HTML here to convert to Hyperscala code")
+  val result = new tag.TextArea(clazz = List("code_generator")) {
+    style.display := Display.None
+  }
   val createGist = new tag.Input(inputType = InputType.CheckBox, checked = true)
   val cleanHTML = new tag.Input(inputType = InputType.CheckBox, checked = false)
   val removeComments = new tag.Input(inputType = InputType.CheckBox, checked = true)
@@ -52,6 +56,7 @@ class HyperscalaGenerator extends HyperscalaPage {
     contents += new tag.Em(content = "(Optional)")
   }
   main.contents += text
+  main.contents += result
   main.contents += new tag.Label(clazz = List("code_generator")) {
     contents += "Create Gist:"
     contents += createGist
@@ -109,7 +114,8 @@ class HyperscalaGenerator extends HyperscalaPage {
           val url = createGist(filename, scala)
           this.sendRedirect(url)
         } else {
-          text.value := scala
+          result.value := scala
+          result.style.display := Display.Block
         }
       } catch {
         case exc: JDOMParseException => Gritter.add(this, "Parse Failure", "The content did not resolve to valid XHTML. The HTML content must be able to be loaded as XML. Try enabling 'Clean HTML' or make sure your HTML tags are properly terminating.")

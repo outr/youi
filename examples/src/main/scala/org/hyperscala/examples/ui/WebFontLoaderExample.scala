@@ -1,8 +1,8 @@
 package org.hyperscala.examples.ui
 
-import com.outr.net.http.session.Session
 import org.hyperscala.examples.Example
 import org.hyperscala.html._
+import org.hyperscala.jquery.Gritter
 import org.hyperscala.ui.module.WebFontLoader
 import org.hyperscala.web._
 import org.hyperscala.realtime._
@@ -12,7 +12,7 @@ import org.hyperscala.realtime._
  */
 class WebFontLoaderExample extends Example {
   this.require(WebFontLoader)
-  this.require(Realtime)
+  this.require(Gritter)
 
   loadFont("Pacifico")
 
@@ -51,8 +51,22 @@ class WebFontLoaderExample extends Example {
       }
     }
   }
+  contents += new tag.Button(content = "Load Bangers Font") {
+    clickEvent.onRealtime {
+      case evt => {
+        loadFont("Bangers")
+        removeFromParent()
+      }
+    }
+  }
 
   def loadFont(family: String) = connected[Webpage] {
-    case webpage => WebFontLoader(webpage).google(List(family))
+    case webpage => {
+      val loader = WebFontLoader(webpage)
+      loader.onLoad(family) {
+        Gritter.add(webpage, "Font Loaded", s"$family successfully loaded")
+      }
+      loader.google(List(family))
+    }
   }
 }

@@ -10,16 +10,38 @@ import com.outr.net.http.session.Session
 import org.hyperscala.module.{Interface, Module}
 import org.hyperscala.html._
 import org.hyperscala.javascript.dsl._
+import org.hyperscala.realtime.Realtime
 import org.hyperscala.web.{Website, Webpage}
 import org.powerscala.Version
+import org.powerscala.event.Listenable
+import org.powerscala.event.processor.UnitProcessor
+import org.powerscala.json.TypedSupport
 
 /**
  * WebFontLoader is a wrapper around TypeKit's WebFontLoader: https://github.com/typekit/webfontloader
  *
  * @author Matt Hicks <matt@outr.com>
  */
-class WebFontLoader private(webpage: Webpage) {
+class WebFontLoader private(webpage: Webpage) extends Listenable {
   webpage.head.contents += new tag.Script(src = s"//ajax.googleapis.com/ajax/libs/webfont/${WebFontLoader.version}/webfont.js")
+  webpage.head.contents += new tag.Script(src = "/js/hyperscala-webfont.js")
+
+  webpage.jsonEvent.partial(Unit) {
+    case wfa: WebFontActive => active.fire(wfa)
+  }
+
+  val active = new UnitProcessor[WebFontActive]("active")
+
+  def onLoad(fontFamily: String)(f: => Unit) = {
+    active.onceConditional(Unit) {
+      case wfa => if (wfa.fontFamily == fontFamily) {
+        f
+        Some(Unit)
+      } else {
+        None
+      }
+    }
+  }
 
   private var loaded = Set.empty[String]
 
@@ -28,11 +50,12 @@ class WebFontLoader private(webpage: Webpage) {
     if (familyNames.nonEmpty) {
       val js =
         s"""
-           |WebFont.load({
+           |var json = $$.extend(WebFontConfig, {
            |  google: {
            |    families: [${familyNames.map(f => s"'$f'").mkString(", ")}]
            |  }
            |});
+           |WebFont.load(json);
          """.stripMargin
       webpage.eval(js)
       loaded ++= familyNames
@@ -47,12 +70,13 @@ class WebFontLoader private(webpage: Webpage) {
       }
       val js =
         s"""
-           |WebFont.load({
+           |var json = $$.extend(WebFontConfig, {
            |  custom: {
            |    families: ['$family'],
            |    urls: ['/webfontloader.css?family=${URLEncoder.encode(family, "UTF-8")}&style=${URLEncoder.encode(style, "UTF-8")}&weight=${URLEncoder.encode(weight, "UTF-8")}']
            |  }
            |});
+           |WebFont.load(json);
          """.stripMargin
       webpage.eval(js)
       loaded += key
@@ -65,15 +89,18 @@ class WebFontLoader private(webpage: Webpage) {
 case class CustomFont(family: String, style: String, weight: String, woff: String, aliases: List[String])
 
 object WebFontLoader extends Module with HttpHandler {
+  TypedSupport.register("webFontActive", classOf[WebFontActive])
+
   val name = "webfontloader"
   val version = Version(1, 5, 10)
 
   private var customFonts = Map.empty[String, CustomFont]
 
-  override def dependencies: List[Interface] = super.dependencies
+  override def dependencies = List(Realtime)
 
   override def init(website: Website) = {
     website.addHandler(this, "/webfontloader.css")
+    website.register("/js/hyperscala-webfont.js", "hyperscala-webfont.js")
   }
 
   override def load(webpage: Webpage) = {
@@ -100,3 +127,5 @@ object WebFontLoader extends Module with HttpHandler {
     response.copy(status = HttpResponseStatus.OK, content = StringContent(css, ContentType("text/css")))
   }
 }
+
+case class WebFontActive(fontFamily: String, fontVariationDescription: String)

@@ -1,8 +1,8 @@
 import sbt._
 
 object Dependencies {
-  val powerScalaVersion = "1.6.8"
-  val outrNetVersion = "1.1.4"
+  val powerScalaVersion = "1.6.9-SNAPSHOT"
+  val outrNetVersion = "1.1.5-SNAPSHOT"
 
   val powerScalaReflect = "org.powerscala" %% "powerscala-reflect" % powerScalaVersion
   val powerScalaHierarchy = "org.powerscala" %% "powerscala-hierarchy" % powerScalaVersion
@@ -17,14 +17,14 @@ object Dependencies {
 
   val commonsCodec = "commons-codec" % "commons-codec" % "1.10"
 
-  val jdom = "org.jdom" % "jdom2" % "2.0.5"
+  val jdom = "org.jdom" % "jdom2" % "2.0.6"
   val jaxen = "jaxen" % "jaxen" % "1.1.6"
 
   val htmlcleaner = "net.sourceforge.htmlcleaner" % "htmlcleaner" % "2.10"
-  val akkaActors = "com.typesafe.akka" %% "akka-actor" % "2.3.8"
+  val akkaActors = "com.typesafe.akka" %% "akka-actor" % "2.3.9"
   val uaDetector = "net.sf.uadetector" % "uadetector-resources" % "2014.10"
 
   val githubCore = "org.eclipse.mylyn.github" % "org.eclipse.egit.github.core" % "2.1.5"
 
-  val scalaTest = "org.scalatest" %% "scalatest" % "2.2.3" % "test"
+  val scalaTest = "org.scalatest" %% "scalatest" % "2.2.4" % "test"
 }

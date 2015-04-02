@@ -8,7 +8,6 @@ import org.hyperscala.jquery.dsl._
 import org.hyperscala.javascript.dsl._
 import org.hyperscala.realtime._
 import org.hyperscala.web.{Website, Webpage}
-import com.outr.net.http.session.Session
 import org.powerscala.property.Property
 
 class TodoMVC(website: Website) extends Webpage {
@@ -17,17 +16,27 @@ class TodoMVC(website: Website) extends Webpage {
 
   val input = new tag.Input(id = "new-todo", placeHolder = "What needs to be done?", autoFocus = true)
   val list = new tag.Ul(id = "todo-list")
+  val count = new tag.Span(id = "todo-count") {
+    contents += new tag.Strong(content = "1")
+    contents += " item left"
+  }
+  val clearCompletedButton = new tag.Button(id = "clear-completed", content = "Clear completed (1)") {
+    clickEvent.onRealtime {
+      case evt => clearCompleted()
+    }
+  }
 
   input.keyUpEvent := RealtimeEvent(preventDefault = false, fireChange = true)
   this.eval($(input).keyUp(onKey(Key.Return)(input.callback {
     if (input.value().trim.nonEmpty) {
-      list.contents.insert(0, new TodoItem(input.value()))
+      list.contents.insert(0, new TodoItem(this, input.value(), completed = false))
       input.value := ""
+      update()
     }
   })))
 
-  list.contents += new TodoItem("Create a TodoMVC template", completed = true)
-  list.contents += new TodoItem("Rule the web")
+  list.contents += new TodoItem(this, "Create a TodoMVC template", completed = true)
+  list.contents += new TodoItem(this, "Rule the web", completed = false)
 
   title := "Webframework - TodoMVC"
   head.contents += new tag.Link(href = "/css/base.css")
@@ -43,22 +52,35 @@ class TodoMVC(website: Website) extends Webpage {
       contents += list
     }
     contents += new tag.Footer(id = "footer") {
-      contents += new tag.Span(id = "todo-count") {
-        contents += new tag.Strong(content = "1")
-        contents += " item left"
-      }
+      contents += count
       contents += new tag.Ul(id = "filters") {
-        contents += new tag.Li {
-          contents += new tag.A(clazz = List("selected"), href = "#", content = "All")
+        def selected(listClass: List[String], link: tag.A) = {
+          byType[tag.A].foreach(a => if (a == link) a.clazz += "selected" else a.clazz -= "selected")
+          list.clazz := listClass
         }
         contents += new tag.Li {
-          contents += new tag.A(href = "#/active", content = "Active")
+          contents += new tag.A(clazz = List("selected"), href = "#", content = "All") {
+            clickEvent.onRealtime {
+              case evt => selected(Nil, this)
+            }
+          }
         }
         contents += new tag.Li {
-          contents += new tag.A(href = "#/completed", content = "Completed")
+          contents += new tag.A(href = "#/active", content = "Active") {
+            clickEvent.onRealtime {
+              case evt => selected(List("active"), this)
+            }
+          }
+        }
+        contents += new tag.Li {
+          contents += new tag.A(href = "#/completed", content = "Completed") {
+            clickEvent.onRealtime {
+              case evt => selected(List("completed"), this)
+            }
+          }
         }
       }
-      contents += new tag.Button(id = "clear-completed", content = "Clear completed (1)")
+      contents += clearCompletedButton
     }
   }
   body.contents += new tag.Footer(id = "info") {
@@ -76,9 +98,25 @@ class TodoMVC(website: Website) extends Webpage {
       contents += new tag.A(href = "http://www.todomvc.com", content = "TodoMVC")
     }
   }
+
+  update()
+
+  def active = list.byType[TodoItem].filter(ti => !ti.completed())
+  def completed = list.byType[TodoItem].filter(ti => ti.completed())
+
+  def clearCompleted(): Unit = {
+    completed.foreach(_.removeFromParent())
+    update()
+  }
+
+  def update() = {
+    val active = this.active.size
+    count.contents.replaceWith(new tag.Strong(content = active.toString), if (active == 1) " item left" else " items left")
+    clearCompletedButton.contents.replaceWith(s"Clear completed (${completed.size})")
+  }
 }
 
-class TodoItem extends tag.Li {
+class TodoItem(mvc: TodoMVC) extends tag.Li {
   val completed = new ClassBooleanProperty(this, enabled = Some("completed"))
   val value = Property[String]()
 
@@ -87,14 +125,17 @@ class TodoItem extends tag.Li {
   val input = new tag.Input(clazz = List("edit"))
   val destroy = new tag.Button(clazz = List("destroy"))
 
-  def this(value: String, completed: Boolean = false) = {
-    this()
+  def this(mvc: TodoMVC, value: String, completed: Boolean) = {
+    this(mvc)
     this.value := value
     this.completed := completed
   }
 
   checkBox.checked.bind(completed)
   completed.bind(checkBox.checked)
+  completed.change.on {
+    case evt => mvc.update()
+  }
   value.change.on {
     case evt => {
       label.contents.replaceWith(new tag.Span(content = evt.newValue))
@@ -102,7 +143,10 @@ class TodoItem extends tag.Li {
     }
   }
   destroy.clickEvent.onRealtime {
-    case evt => removeFromParent()
+    case evt => {
+      removeFromParent()
+      mvc.update()
+    }
   }
 
   contents += new tag.Div(clazz = List("view")) {

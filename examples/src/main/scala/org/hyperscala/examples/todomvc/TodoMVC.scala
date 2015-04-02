@@ -7,31 +7,25 @@ import org.hyperscala.html.extension.ClassBooleanProperty
 import org.hyperscala.jquery.dsl._
 import org.hyperscala.javascript.dsl._
 import org.hyperscala.realtime._
-import org.hyperscala.web.{Website, Webpage}
+import org.hyperscala.web.Website
 import org.powerscala.property.Property
 
-class TodoMVC(website: Website) extends Webpage {
-  require(Realtime)
-  this.connectForm()
-
+class TodoMVC(website: Website) extends RealtimeWebpage {
   val input = new tag.Input(id = "new-todo", placeHolder = "What needs to be done?", autoFocus = true)
   val list = new tag.Ul(id = "todo-list")
-  val count = new tag.Span(id = "todo-count") {
-    contents += new tag.Strong(content = "1")
-    contents += " item left"
-  }
+  val count = new tag.Span(id = "todo-count", content = "<strong>1</strong> item left")
   val clearCompletedButton = new tag.Button(id = "clear-completed", content = "Clear completed (1)").onClick {
     clearCompleted()
   }
 
   input.keyUpEvent := RealtimeEvent(preventDefault = false, fireChange = true)
-  this.eval($(input).keyUp(onKey(Key.Return)(input.callback {
+  $(input).keyUp(onKey(Key.Return)(input.callback {
     if (input.value().trim.nonEmpty) {
       list.contents.insert(0, new TodoItem(this, input.value(), complete = false))
       input.value := ""
       update()
     }
-  })))
+  })).send(this)
 
   list.contents += new TodoItem(this, "Create a TodoMVC template", complete = true)
   list.contents += new TodoItem(this, "Rule the web", complete = false)
@@ -77,14 +71,7 @@ class TodoMVC(website: Website) extends Webpage {
   }
   body.contents += new tag.Footer(id = "info") {
     contents += new tag.P(content = "Double-click to edit a todo")
-    contents += new tag.P {
-      contents += "Template by "
-      contents += new tag.A(href = "http://github.com/sindresorhus", content = "Sindre Sorhus")
-    }
-    contents += new tag.P {
-      contents += "Part of "
-      contents += new tag.A(href = "http://www.todomvc.com", content = "TodoMVC")
-    }
+    contents += new tag.P(content = """Part of <a href="http://www.todomvc.com">TodoMVC</a>""")
   }
 
   update()
@@ -114,9 +101,9 @@ class TodoItem(mvc: TodoMVC, initialValue: String, complete: Boolean) extends ta
   val input = new tag.Input(clazz = List("edit"))
   val destroy = new tag.Button(clazz = List("destroy"))
 
-  mvc.eval($(input).keyUp(onKey(Key.Return)(input.callback {
+  $(input).keyUp(onKey(Key.Return)(input.callback {
     display()
-  })))
+  })).send(mvc)
 
   doubleClickEvent.onRealtime {
     case evt => edit()

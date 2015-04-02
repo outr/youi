@@ -3,6 +3,7 @@ package org.hyperscala
 import org.hyperscala.event.JavaScriptEvent
 import org.hyperscala.event.processor.JavaScriptEventProcessor
 import org.hyperscala.html.HTMLTag
+import org.hyperscala.javascript.dsl.Statement
 import org.hyperscala.web.Webpage
 import org.powerscala.Storage
 
@@ -16,6 +17,13 @@ package object realtime {
     def onRealtime(f: T => Unit) = {
       p := RealtimeEvent()
       p.on(f)
+    }
+  }
+
+  implicit class RealtimeStatement[T](statement: Statement[T]) {
+    def send(webpage: Webpage) = webpage.eval(statement)
+    def send(t: HTMLTag) = t.connected[Webpage] {
+      case webpage => webpage.eval(statement)
     }
   }
 

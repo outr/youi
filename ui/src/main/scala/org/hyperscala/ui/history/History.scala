@@ -15,7 +15,6 @@ import org.hyperscala.javascript.dsl._
 import scala.language.postfixOps
 import org.hyperscala.event.Key
 import org.hyperscala.web.useragent.UserAgent
-import com.outr.net.http.session.Session
 import org.hyperscala.javascript.dsl.body
 
 /**

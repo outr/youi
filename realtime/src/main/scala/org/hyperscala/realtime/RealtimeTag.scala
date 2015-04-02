@@ -9,7 +9,7 @@ import org.powerscala.Unique
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class RealtimeTag private[realtime](t: HTMLTag) {
+class RealtimeTag[Tag <: HTMLTag] private[realtime](t: Tag) {
   /**
    * Callback creates a Statement that can invoked on the client to asynchronously call the supplied function on the
    * server.
@@ -30,5 +30,21 @@ class RealtimeTag private[realtime](t: HTMLTag) {
     val js = s"realtime.send({ id: '${t.identity}', type: 'tokenEvent', token: '$id'});"
     t.handle[TokenBrowserEvent]((evt: TokenBrowserEvent) => f, (evt: TokenBrowserEvent) => evt.token == id)
     ExistingStatement[Unit](js, sideEffects = true)
+  }
+
+  def onClick(f: => Unit) = {
+    t.clickEvent := RealtimeEvent()
+    t.clickEvent.on {
+      case evt => f
+    }
+    t
+  }
+
+  def onChange(f: => Unit) = {
+    t.changeEvent := RealtimeEvent(preventDefault = false)
+    t.changeEvent.on {
+      case evt => f
+    }
+    t
   }
 }

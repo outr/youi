@@ -1,6 +1,5 @@
 package org.hyperscala
 
-import com.outr.net.http.session.Session
 import org.hyperscala.event.JavaScriptEvent
 import org.hyperscala.event.processor.JavaScriptEventProcessor
 import org.hyperscala.html.HTMLTag
@@ -22,5 +21,5 @@ package object realtime {
 
   implicit def realtimePage(webpage: Webpage): RealtimePage = RealtimePage(webpage)
 
-  implicit def realtimeTag[Tag <: HTMLTag](tag: Tag): RealtimeTag = Storage.getOrSet(tag, "realtimeTag", new RealtimeTag(tag))
+  implicit def realtimeTag[Tag <: HTMLTag](tag: Tag): RealtimeTag[Tag] = Storage.getOrSet[String, RealtimeTag[Tag]](tag, "realtimeTag", new RealtimeTag[Tag](tag))
 }

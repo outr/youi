@@ -131,6 +131,13 @@ class TodoItem(mvc: TodoMVC) extends tag.Li {
     this.completed := completed
   }
 
+  mvc.eval($(input).keyUp(onKey(Key.Return)(input.callback {
+    display()
+  })))
+
+  doubleClickEvent.onRealtime {
+    case evt => edit()
+  }
   checkBox.checked.bind(completed)
   completed.bind(checkBox.checked)
   completed.change.on {
@@ -155,4 +162,13 @@ class TodoItem(mvc: TodoMVC) extends tag.Li {
     contents += destroy
   }
   contents += input
+
+  def edit() = {
+    clazz += "editing"
+  }
+
+  def display() = {
+    label.contents.replaceWith(input.value())
+    clazz -= "editing"
+  }
 }

@@ -23,7 +23,7 @@ object SocialSharing extends Module {
    * The version reflects the tagged release as found here
    * https://github.com/kni-labs/rrssb/tags
    */
-  val version = Version(1,6,5)
+  val version = Version(1,7,5)
 
   override def dependencies = List(jQuery)
 

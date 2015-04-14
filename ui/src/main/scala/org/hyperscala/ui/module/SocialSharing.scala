@@ -2,7 +2,6 @@ package org.hyperscala.ui.module
 
 import org.hyperscala.html.tag.{Ul, Span, A}
 import org.hyperscala.module.Module
-import org.powerscala.log.Logging
 import org.powerscala.{IO, Version}
 import org.hyperscala.web.{Website,Webpage}
 import org.hyperscala.html.tag
@@ -13,7 +12,7 @@ import org.hyperscala.ui.convert.MapQueryStringable._
  * Created by mmynsted on 4/6/15.
  * code@growingliberty.com
  */
-object SocialSharing extends Module with Logging {
+object SocialSharing extends Module {
   /*
    * Add rrssb  Ridiculously Responsive Social Sharing Buttons
    *  http://kurtnoble.com/labs/rrssb
@@ -30,16 +29,12 @@ object SocialSharing extends Module with Logging {
 
   val cdnBase = s"//oss.maxcdn.com/rrssb/${version.general}/"
 
+  //Basic information used by messages
+  type MessageData = Map[String, String]
 
-//  def getIconLink(name: String) = s"/rrssb/icons/${name}.svg"
-
-  def listTag(buttons: Seq[SocialMediaButton] = Seq.empty[SocialMediaButton]): tag.Ul = {
+  def listTag(md: MessageData, buttons: Seq[SocialMediaButton] = Seq.empty[SocialMediaButton]): tag.Ul = {
     val mediaButtons: Seq[SocialMediaButton] = if (buttons.isEmpty) {
-      val md: MessageData = Map("title" -> "Check out Hyperscala.com",
-        "description" -> "Hyperscala is a statically typed bare-metal HTML, CSS, and JavaScript framework for Scala.",
-        "imageLink" -> "http://hyperscala.com/images/hyperscala.png",
-        "shareLink" -> "http://hyperscala.com",
-        "githubLink" -> "https://github.com/darkfrog26/hyperscala")
+
       Seq(new EmailButton(md), new FacebookButton(md), new LinkedinButton(md), new TwitterButton(md),
         new GoogleplusButton(md), new PinterestButton(md), new GithubButton(md))
     }
@@ -51,15 +46,6 @@ object SocialSharing extends Module with Logging {
     }
   }
 
-  //Basic information used by messages and page meta-data
-  type MessageData = Map[String, String]
-
-  /* Information used for building a query string.  If a key exists then a key should be
-   * be created in the query string, even in value is empty.  If a key does not exist, then
-   * neither the key nor the value will exist in the resulting query string.
-   */
-  type LinkData = Map[String, String]
-
   abstract class SocialMediaButton (messageData: MessageData, customIcon: String = null,
                                     customClazz: Seq[String] = null) {
     def name: String
@@ -67,10 +53,10 @@ object SocialSharing extends Module with Logging {
     def anchorSpanContent: String = name
     def getDefaultIcon = IO.copy(getClass.getClassLoader.getResource(s"rrssb/icons/${name}.svg"))
     def icon: String = Option(customIcon).getOrElse(getDefaultIcon)
-    def clazz: Seq[String] = Option(customClazz).getOrElse(Seq("popup"))
+    def anchorClazz: Seq[String] = Option(customClazz).getOrElse(Seq("popup"))
     def link: String = buildLink(messageData)
     def anchorTag: tag.A = new A(href = link) {
-      clazz += "popup"
+      clazz ++= anchorClazz
       contents += new Span() {
         contents += icon
         clazz += "rrssb-icon"
@@ -98,7 +84,7 @@ object SocialSharing extends Module with Logging {
     def name = null
   }
 
-  class EmailButton(messageData: MessageData, customIcon: String = null, customClazz: Seq[String] = null)
+  class EmailButton(messageData: MessageData, customIcon: String = null, customClazz: Seq[String] = Seq.empty[String])
     extends SocialMediaButton(messageData, customIcon, customClazz) {
     val name = "mail"
     override def itemTagClassDesc(n: String) = super.itemTagClassDesc("email")
@@ -117,7 +103,7 @@ object SocialSharing extends Module with Logging {
 
     def buildLink(md: MessageData): String = {
       val ld = Map("u" -> md.getOrElse("shareLink", ""))
-      s"https://www.facebook.com/share/sharer.php?${toQueryString(ld)}"
+      s"https://www.facebook.com/sharer/sharer.php?${toQueryString(ld)}"
     }
   }
 

@@ -3,7 +3,7 @@ package org.hyperscala.examples.ui
 import org.hyperscala.examples.Example
 import org.hyperscala.html.StaticHTML
 import org.hyperscala.ui.module.SocialSharing
-import org.hyperscala.ui.module.SocialSharing.MessageData
+import org.hyperscala.ui.module.SocialSharing._
 import org.powerscala.IO
 import org.hyperscala.html._
 
@@ -14,16 +14,23 @@ import org.hyperscala.html._
 class SocialSharingExample extends Example {
   this.require(SocialSharing)
 
-  val messageData: MessageData = Map("title" -> "Check out Hyperscala.com",
-    "description" -> "Hyperscala is a statically typed bare-metal HTML, CSS, and JavaScript framework for Scala.",
-    "imageLink" -> "http://hyperscala.com/images/hyperscala.png",
-    "shareLink" -> "http://hyperscala.com",
-    "githubLink" -> "https://github.com/darkfrog26/hyperscala")
+  val title = "Check out Hyperscala.com"
+  val description = "Hyperscala is a statically typed bare-metal HTML, CSS, and JavaScript framework for Scala."
+  val imageLink = "http://hyperscala.com/images/hyperscala.png"
+  val shareLink = "http://hyperscala.com"
 
   contents += new tag.Div {
     style.padding := "1em"
     contents += s"Social sharing buttons (${SocialSharing.version.general}):"
-    contents += SocialSharing.listTag(messageData)
+    contents += new SocialSharingLinks {
+      contents += new EmailButton(title, s"$description $shareLink")
+      contents += new FacebookButton(shareLink)
+      contents += new LinkedInButton(shareLink, title, Some(description))
+      contents += new TwitterButton(s"$description $shareLink $imageLink")
+      contents += new GoogleplusButton(s"$description $shareLink")
+      contents += new PinterestButton(shareLink, Some(description), Some(imageLink))
+      contents += new GithubButton(username = "darkfrog26", project = "hyperscala")
+    }
   }
   contents += new StaticHTML(IO.copy(getClass.getClassLoader.getResource("social_sharing.html")))
 }

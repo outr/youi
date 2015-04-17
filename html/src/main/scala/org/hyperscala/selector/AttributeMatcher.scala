@@ -22,4 +22,8 @@ object AttributeMatcher extends Enumerated[AttributeMatcher] {
   case object begins extends AttributeMatcher("|=")
 
   val values = findValues.toVector
+
+  def byValue(value: String) = values.find(m => m.value == value)
+
+  override def get(name: String, caseSensitive: Boolean) = super.get(name, caseSensitive).orElse(byValue(name))
 }

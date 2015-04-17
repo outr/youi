@@ -13,6 +13,8 @@ object Resource extends CaseClassPersistence[Resource] {
   val None = new Resource("none")
   val Inherit = new Resource("inherit")
 
+  def url(url: String) = Resource(s"url('$url')")
+
   def get(name: String) = if (name != null) {
     name.toLowerCase match {
       case "none" => Some(None)

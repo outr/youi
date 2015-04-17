@@ -9,6 +9,7 @@ import org.hyperscala.web.{Website,Webpage}
 import org.hyperscala.html.tag
 import org.hyperscala.jquery.jQuery
 import org.hyperscala.ui.convert.MapQueryStringable._
+import com.outr.net.URL
 
 /**
  * Created by mmynsted on 4/6/15.
@@ -36,6 +37,14 @@ object SocialSharing extends Module with Logging {
     webpage.head.contents += new tag.Script(mimeType = "text/javascript", src = "/rrssb/js/rrssb.min.js")
   }
 
+  def encodeLink(base: String, parms: (String, Option[String])*): String = {
+    val decURL = parms.foldLeft(URL.decoded(base))((b,a) => a match {
+      case (k, Some(v)) => b.param(k,v)
+      case _ => b
+    })
+    decURL.encoded.toString()
+  }
+
   class SocialSharingLinks extends tag.Ul(clazz = Seq("rrssb-buttons", "clearfix"))
 
   abstract class SocialSharingLink extends tag.Li {
@@ -45,11 +54,6 @@ object SocialSharing extends Module with Logging {
     def anchorClazz: Seq[String] = Seq("popup")
     def anchorSpanContent: String = iconName
     protected def createIcon: BodyChild = IO.copy(getClass.getClassLoader.getResource(s"rrssb/icons/${iconName}.svg"))
-    protected def joinOptionals(m: Map[String, String], optionalPairs: (String, Option[String])*): Map[String, String] =
-      optionalPairs.foldLeft(m)((b,a) => a match {
-        case (k, Some(v)) => b + (k -> v)
-        case _  => b
-      })
 
     clazz += s"rrssb-$liClazzSuffix"
     contents += new tag.A(href = link) {
@@ -77,18 +81,18 @@ object SocialSharing extends Module with Logging {
    */
   class FacebookButton(u: String) extends {
     val iconName = "facebook"
-    val link = s"https://www.facebook.com/sharer/sharer.php?${toQueryString(Map("u" -> u))}"
+    val link = encodeLink("https://www.facebook.com/sharer/sharer.php", ("u", Some(u)))
   } with SocialSharingLink
 
-  class LinkedInButton(url: String, title: String, summary: Option[String] = None) extends SocialSharingLink {
-    lazy val iconName = "linkedin"
-    lazy val ld = joinOptionals(Map("mini" -> "true", "url" -> url, "title" -> title), ("summary", summary))
-    lazy val link = s"http://www.linkedin.com/shareArticle?${toQueryString(ld)}"
-  }
+  class LinkedInButton(url: String, title: String, summary: Option[String] = None) extends {
+    val iconName = "linkedin"
+    val link = encodeLink("http://www.linkedin.com/shareArticle", ("mini", Some("true")),
+      ("url", Some(url)), ("title", Some(title)), ("summary", summary))
+  } with SocialSharingLink
   
   class TwitterButton(status: String) extends {
     val iconName = "twitter"
-    val link = s"http://twitter.com/home?${toQueryString(Map("status" -> status))}"
+    val link = encodeLink("http://twitter.com/home", ("status", Some(status)))
   } with SocialSharingLink
 
   /** Google+ identifies the parameter as "url", but it seems that it may include other content
@@ -99,15 +103,15 @@ object SocialSharing extends Module with Logging {
     val iconName = "google_plus"
     override val liClazzSuffix = "googleplus"
     override val anchorSpanContent = "google+"
-    val link = s"https://plus.google.com/share?${toQueryString(Map("url" -> url))}"
+    val link = encodeLink("https://plus.google.com/share", ("url", Some(url)))
   } with SocialSharingLink
 
   class PinterestButton(url: String, description: Option[String] = None, media: Option[String] = None)
-    extends SocialSharingLink {
-    lazy val iconName = "pinterest"
-    lazy val ld = joinOptionals(Map("url" -> url), ("description", description), ("media", media))
-    lazy val link = s"http://pinterest.com/pin/create/button/?${toQueryString(ld)}"
-  }
+    extends {
+    val iconName = "pinterest"
+      val link = encodeLink("http://pinterest.com/pin/create/button/", ("url" -> Some(url)),
+        ("description", description), ("media", media))
+  } with SocialSharingLink
 
   class GithubButton(username: String, project: String) extends {
     val iconName = "github"

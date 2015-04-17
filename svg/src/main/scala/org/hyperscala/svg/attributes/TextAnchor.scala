@@ -3,11 +3,13 @@ package org.hyperscala.svg.attributes
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */
-sealed class TextAnchor extends AttributeEntry[TextAnchor](parent = TextAnchor)
+sealed abstract class TextAnchor extends AttributeEntry[TextAnchor](parent = TextAnchor)
 
 object TextAnchor extends AttributeObject[TextAnchor] {
-  val Start = new TextAnchor
-  val Middle = new TextAnchor
-  val End = new TextAnchor
-  val Inherit = new TextAnchor
+  case object Start extends TextAnchor
+  case object Middle extends TextAnchor
+  case object End extends TextAnchor
+  case object Inherit extends TextAnchor
+
+  val values = findValues.toVector
 }

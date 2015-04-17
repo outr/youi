@@ -3,11 +3,13 @@ package org.hyperscala.svg.attributes
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */
-sealed class FontStyle extends AttributeEntry[FontStyle](parent = FontStyle)
+sealed abstract class FontStyle extends AttributeEntry[FontStyle](parent = FontStyle)
 
 object FontStyle extends AttributeObject[FontStyle] {
-  val Normal = new FontStyle
-  val Italic = new FontStyle
-  val Oblique = new FontStyle
-  val Inherit = new FontStyle
+  case object Normal extends FontStyle
+  case object Italic extends FontStyle
+  case object Oblique extends FontStyle
+  case object Inherit extends FontStyle
+
+  val values = findValues.toVector
 }

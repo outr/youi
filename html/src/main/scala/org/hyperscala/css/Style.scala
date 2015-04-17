@@ -2,14 +2,20 @@ package org.hyperscala.css
 
 import attributes._
 import org.hyperscala.html.attributes.Direction
-import org.powerscala.Color
+import org.powerscala.{StringUtil, Color}
 import org.powerscala.enum.{EnumEntry, Enumerated}
 import org.hyperscala.persistence._
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */
-class Style[T](val cssName: String)(implicit val manifest: Manifest[T], val persistence: ValuePersistence[T]) extends EnumEntry {
+case class Style[T](cssName: String)(implicit val manifest: Manifest[T], val persistence: ValuePersistence[T]) {
+  Style.synchronized {
+    Style.map += cssName -> this
+  }
+
+  lazy val name = StringUtil.toCamelCase(cssName)
+
   def value(v: T) = persistence.toString(v, cssName, manifest.runtimeClass)
 
   def assignment(value: T) = StyleAssignment(this, value)
@@ -17,7 +23,9 @@ class Style[T](val cssName: String)(implicit val manifest: Manifest[T], val pers
 
 case class StyleAssignment[T](style: Style[T], value: T)
 
-object Style extends Enumerated[Style[_]] {
+object Style {
+  private var map = Map.empty[String, Style[_]]
+
   val alignmentAdjust = new Style[String]("alignment-adjust")
   val alignmentBaseline = new Style[String]("alignment-baseline")
   val animation = new Style[String]("animation")
@@ -262,5 +270,7 @@ object Style extends Enumerated[Style[_]] {
   val wordWrap = new Style[String]("word-wrap")
   val zIndex = new Style[ZIndex]("z-index")
 
-  def byCSSName(name: String) = values.find(s => s.cssName == name)
+  def values = map.values
+
+  def byCSSName(name: String) = map.get(name.toLowerCase)
 }

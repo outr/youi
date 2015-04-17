@@ -3,10 +3,12 @@ package org.hyperscala.svg.attributes
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */
-sealed class FontVariant extends AttributeEntry[FontVariant](parent = FontVariant)
+sealed abstract class FontVariant extends AttributeEntry[FontVariant](parent = FontVariant)
 
 object FontVariant extends AttributeObject[FontVariant] {
-  val Normal = new FontVariant
-  val SmallCaps = new FontVariant
-  val Inherit = new FontVariant
+  case object Normal extends FontVariant
+  case object SmallCaps extends FontVariant
+  case object Inherit extends FontVariant
+
+  val values = findValues.toVector
 }

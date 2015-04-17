@@ -1,19 +1,13 @@
 package org.hyperscala.css.attributes
 
-import org.hyperscala.EnumEntryAttributeValue
-import org.hyperscala.persistence.EnumEntryPersistence
+import org.hyperscala.{AttributeValue, EnumEntryAttributeValue}
+import org.hyperscala.persistence.{CaseClassPersistence, EnumEntryPersistence}
 import org.powerscala.enum.Enumerated
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-trait VerticalAlignment extends EnumEntryAttributeValue {
-  override def toString() = if (name != null) {
-    super.toString()
-  } else {
-    value
-  }
-}
+trait VerticalAlignment extends AttributeValue
 
 object BaselineVerticalAlignment extends VerticalAlignment {
   val value = "baseline"
@@ -47,7 +41,7 @@ object BottomVerticalAlignment extends VerticalAlignment {
   val value = "bottom"
 }
 
-object VerticalAlignment extends Enumerated[VerticalAlignment] with EnumEntryPersistence[VerticalAlignment] {
+object VerticalAlignment extends CaseClassPersistence[VerticalAlignment] {
   val Baseline = BaselineVerticalAlignment
   val Sub = SubVerticalAlignment
   val Super = SuperVerticalAlignment
@@ -62,23 +56,19 @@ object VerticalAlignment extends Enumerated[VerticalAlignment] with EnumEntryPer
   def Percent(v: Double) = PercentLength(v)
   def Points(v: Double) = PointLength(v)
 
-  override def apply(name: String) = get(name).getOrElse(throw new RuntimeException(s"VerticalAlignment not found for value: $name."))
+  def apply(name: String) = get(name).getOrElse(throw new RuntimeException(s"VerticalAlignment not found for value: $name."))
 
-  override def get(name: String, caseSensitive: Boolean = false) = super.get(name, caseSensitive) match {
-    case Some(l) => Some(l)
-    case None if name == null => None
-    case None => name.toLowerCase match {
-      case Baseline.value => Some(Baseline)
-      case Sub.value => Some(Sub)
-      case Super.value => Some(Super)
-      case TextTop.value => Some(TextTop)
-      case TextBottom.value => Some(TextBottom)
-      case Middle.value => Some(Middle)
-      case Top.value => Some(Top)
-      case Bottom.value => Some(Bottom)
-      case "auto" => Some(AutoLength)
-      case "inherit" => Some(InheritLength)
-      case _ => NumericLength.get(name.toLowerCase)
-    }
+  def get(name: String) = name.toLowerCase match {
+    case Baseline.value => Some(Baseline)
+    case Sub.value => Some(Sub)
+    case Super.value => Some(Super)
+    case TextTop.value => Some(TextTop)
+    case TextBottom.value => Some(TextBottom)
+    case Middle.value => Some(Middle)
+    case Top.value => Some(Top)
+    case Bottom.value => Some(Bottom)
+    case "auto" => Some(AutoLength)
+    case "inherit" => Some(InheritLength)
+    case _ => NumericLength.get(name.toLowerCase)
   }
 }

@@ -50,9 +50,11 @@ object Adjust {
   def -=(value: Double) = Adjust(-value, AdjustType.Relative)
 }
 
-class AdjustType private() extends EnumEntry
+sealed abstract class AdjustType extends EnumEntry
 
 object AdjustType extends Enumerated[AdjustType] {
-  val Absolute = new AdjustType
-  val Relative = new AdjustType
+  case object Absolute extends AdjustType
+  case object Relative extends AdjustType
+
+  val values = findValues.toVector
 }

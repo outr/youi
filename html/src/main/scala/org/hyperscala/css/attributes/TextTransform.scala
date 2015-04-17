@@ -7,13 +7,15 @@ import org.hyperscala.persistence.EnumEntryPersistence
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class TextTransform private(val value: String) extends EnumEntryAttributeValue
+sealed abstract class TextTransform(val value: String) extends EnumEntryAttributeValue
 
 object TextTransform extends Enumerated[TextTransform] with EnumEntryPersistence[TextTransform] {
-  val None = new TextTransform("none")
-  val Capitalize = new TextTransform("capitalize")
-  val Uppercase = new TextTransform("uppercase")
-  val Lowercase = new TextTransform("lowercase")
-  val FullWidth = new TextTransform("full-width")
-  val Inherit = new TextTransform("inherit")
+  case object None extends TextTransform("none")
+  case object Capitalize extends TextTransform("capitalize")
+  case object Uppercase extends TextTransform("uppercase")
+  case object Lowercase extends TextTransform("lowercase")
+  case object FullWidth extends TextTransform("full-width")
+  case object Inherit extends TextTransform("inherit")
+
+  val values = findValues.toVector
 }

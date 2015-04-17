@@ -8,12 +8,14 @@ import org.hyperscala.EnumEntryAttributeValue
  * NOTE: This file has been generated. Do not modify directly!
  * @author Matt Hicks <matt@outr.com>
  */
-class Position private(val value: String) extends EnumEntryAttributeValue
+sealed abstract class Position(val value: String) extends EnumEntryAttributeValue
 
 object Position extends Enumerated[Position] with EnumEntryPersistence[Position] {
-  val Static = new Position("static")
-  val Inherit = new Position("inherit")
-  val Absolute = new Position("absolute")
-  val Fixed = new Position("fixed")
-  val Relative = new Position("relative")
+  case object Static extends Position("static")
+  case object Inherit extends Position("inherit")
+  case object Absolute extends Position("absolute")
+  case object Fixed extends Position("fixed")
+  case object Relative extends Position("relative")
+
+  val values = findValues.toVector
 }

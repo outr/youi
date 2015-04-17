@@ -34,13 +34,15 @@ class Panel extends tag.Div {
   contents.addAll(heading, outer)
 }
 
-class PanelType(val className: Option[String]) extends EnumEntry with ClassName
+sealed abstract class PanelType(val className: Option[String]) extends EnumEntry with ClassName
 
 object PanelType extends Enumerated[PanelType] {
-  val Default = new PanelType(Option("panel-default"))
-  val Primary = new PanelType(Option("panel-primary"))
-  val Success = new PanelType(Option("panel-success"))
-  val Info = new PanelType(Option("panel-info"))
-  val Warning = new PanelType(Option("panel-warning"))
-  val Danger = new PanelType(Option("panel-danger"))
+  case object Default extends PanelType(Option("panel-default"))
+  case object Primary extends PanelType(Option("panel-primary"))
+  case object Success extends PanelType(Option("panel-success"))
+  case object Info extends PanelType(Option("panel-info"))
+  case object Warning extends PanelType(Option("panel-warning"))
+  case object Danger extends PanelType(Option("panel-danger"))
+
+  val values = findValues.toVector
 }

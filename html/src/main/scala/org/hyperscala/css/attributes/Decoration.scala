@@ -7,11 +7,13 @@ import org.hyperscala.persistence.EnumEntryPersistence
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class Decoration private(val value: String) extends EnumEntryAttributeValue
+sealed abstract class Decoration(val value: String) extends EnumEntryAttributeValue
 
 object Decoration extends Enumerated[Decoration] with EnumEntryPersistence[Decoration] {
-  val None = new Decoration("none")
-  val Underline = new Decoration("underline")
-  val Overline = new Decoration("overline")
-  val LineThrough = new Decoration("line-through")
+  case object None extends Decoration("none")
+  case object Underline extends Decoration("underline")
+  case object Overline extends Decoration("overline")
+  case object LineThrough extends Decoration("line-through")
+
+  val values = findValues.toVector
 }

@@ -5,10 +5,12 @@ import org.powerscala.enum.{Enumerated, EnumEntry}
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class Vertical private() extends EnumEntry
+sealed abstract class Vertical extends EnumEntry
 
 object Vertical extends Enumerated[Vertical] {
-  val Top = new Vertical
-  val Middle = new Vertical
-  val Bottom = new Vertical
+  case object Top extends Vertical
+  case object Middle extends Vertical
+  case object Bottom extends Vertical
+
+  val values = findValues.toVector
 }

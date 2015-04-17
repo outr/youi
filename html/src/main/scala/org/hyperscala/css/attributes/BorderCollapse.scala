@@ -7,10 +7,12 @@ import org.hyperscala.persistence.EnumEntryPersistence
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class BorderCollapse private(val value: String) extends EnumEntryAttributeValue
+sealed abstract class BorderCollapse(val value: String) extends EnumEntryAttributeValue
 
 object BorderCollapse extends Enumerated[BorderCollapse] with EnumEntryPersistence[BorderCollapse] {
-  val Separate = new BorderCollapse("separate")
-  val Collapse = new BorderCollapse("Collapse")
-  val Inherit = new BorderCollapse("inherit")
+  case object Separate extends BorderCollapse("separate")
+  case object Collapse extends BorderCollapse("Collapse")
+  case object Inherit extends BorderCollapse("inherit")
+
+  val values = findValues.toVector
 }

@@ -21,13 +21,15 @@ class Label extends tag.Span {
   val labelStyle = new ClassProperty[LabelStyle](this, LabelStyle.Default)
 }
 
-class LabelStyle(val className: Option[String]) extends EnumEntry with ClassName
+sealed abstract class LabelStyle(val className: Option[String]) extends EnumEntry with ClassName
 
 object LabelStyle extends Enumerated[LabelStyle] {
-  val Default = new LabelStyle(Some("label-default"))
-  val Primary = new LabelStyle(Some("label-primary"))
-  val Success = new LabelStyle(Some("label-success"))
-  val Info = new LabelStyle(Some("label-info"))
-  val Warning = new LabelStyle(Some("label-warning"))
-  val Danger = new LabelStyle(Some("label-danger"))
+  case object Default extends LabelStyle(Some("label-default"))
+  case object Primary extends LabelStyle(Some("label-primary"))
+  case object Success extends LabelStyle(Some("label-success"))
+  case object Info extends LabelStyle(Some("label-info"))
+  case object Warning extends LabelStyle(Some("label-warning"))
+  case object Danger extends LabelStyle(Some("label-danger"))
+
+  val values = findValues.toVector
 }

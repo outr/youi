@@ -13,7 +13,7 @@ class TypedSelectExample extends Example {
   require(Realtime)
 
   val select = new tag.Select(id = "select")
-  val typedSelect = TypedSelect[Country](select, null :: Country.values) {
+  val typedSelect = TypedSelect[Country](select, null :: Country.values.toList) {
     case c => if (c == null) "--- Select a Country ---" else c.fullName
   }
   typedSelect.selected.change.on {
@@ -33,7 +33,7 @@ class TypedSelectExample extends Example {
   contents += new tag.Button(content = "Repopulate") {
     clickEvent := RealtimeEvent()
     clickEvent.on {
-      case evt => typedSelect.options = null :: Country.values
+      case evt => typedSelect.options = null :: Country.values.toList
     }
   }
 }

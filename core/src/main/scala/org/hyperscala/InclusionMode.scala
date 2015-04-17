@@ -5,12 +5,14 @@ import org.powerscala.enum.{Enumerated, EnumEntry}
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class InclusionMode protected() extends EnumEntry
+sealed abstract class InclusionMode extends EnumEntry
 
 object InclusionMode extends Enumerated[InclusionMode] {
-  val NotEmpty = new InclusionMode
-  val Exclude = new InclusionMode
-  val Always = new InclusionMode
-  val Modified = new InclusionMode
-  val ModifiedAndNotEmpty = new InclusionMode
+  case object NotEmpty extends InclusionMode
+  case object Exclude extends InclusionMode
+  case object Always extends InclusionMode
+  case object Modified extends InclusionMode
+  case object ModifiedAndNotEmpty extends InclusionMode
+
+  val values = findValues.toVector
 }

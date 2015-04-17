@@ -7,10 +7,12 @@ import org.hyperscala.persistence.EnumEntryPersistence
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class TextClip private(val value: String) extends EnumEntryAttributeValue
+sealed abstract class TextClip(val value: String) extends EnumEntryAttributeValue
 
 object TextClip extends Enumerated[TextClip] with EnumEntryPersistence[TextClip] {
-  val Clip = new TextClip("clip")
-  val Ellipsis = new TextClip("ellipsis")
-  val Inherit = new TextClip("inherit")
+  case object Clip extends TextClip("clip")
+  case object Ellipsis extends TextClip("ellipsis")
+  case object Inherit extends TextClip("inherit")
+
+  val values = findValues.toVector
 }

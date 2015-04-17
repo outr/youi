@@ -5,10 +5,12 @@ import org.powerscala.enum.{Enumerated, EnumEntry}
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class Horizontal private() extends EnumEntry
+sealed abstract class Horizontal extends EnumEntry
 
 object Horizontal extends Enumerated[Horizontal] {
-  val Left = new Horizontal
-  val Center = new Horizontal
-  val Right = new Horizontal
+  case object Left extends Horizontal
+  case object Center extends Horizontal
+  case object Right extends Horizontal
+
+  val values = findValues.toVector
 }

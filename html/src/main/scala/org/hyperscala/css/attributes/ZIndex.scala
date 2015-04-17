@@ -1,26 +1,28 @@
 package org.hyperscala.css.attributes
 
-import org.powerscala.enum.Enumerated
-import org.hyperscala.EnumEntryAttributeValue
-import org.hyperscala.persistence.EnumEntryPersistence
+import org.hyperscala.AttributeValue
+import org.hyperscala.persistence.CaseClassPersistence
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class ZIndex private(val n: Int = -1) extends EnumEntryAttributeValue {
-  def value = if (n != -1) n.toString else name
+case class ZIndex(n: Int = -1, name: Option[String] = None) extends AttributeValue {
+  def value = name match {
+    case Some(nme) => nme
+    case None => n.toString
+  }
 }
 
-object ZIndex extends Enumerated[ZIndex] with EnumEntryPersistence[ZIndex] {
+object ZIndex extends CaseClassPersistence[ZIndex] {
   private val Regex = """(\d+)""".r
 
   val Auto = new ZIndex()
   val Inherit = new ZIndex()
   def Numeric(n: Int) = new ZIndex(n)
 
-  override def apply(name: String) = get(name).getOrElse(Auto)
+  def apply(name: String) = get(name).getOrElse(Auto)
 
-  override def get(name: String, caseSensitive: Boolean) = name.toLowerCase match {
+  def get(name: String) = name.toLowerCase match {
     case null | "" => None
     case "auto" => Some(Auto)
     case "inherit" => Some(Inherit)

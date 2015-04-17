@@ -8,13 +8,15 @@ import org.hyperscala.EnumEntryAttributeValue
  * NOTE: This file has been generated. Do not modify directly!
  * @author Matt Hicks <matt@outr.com>
  */
-sealed class WhiteSpace(val value: String) extends EnumEntryAttributeValue
+sealed abstract class WhiteSpace(val value: String) extends EnumEntryAttributeValue
 
 object WhiteSpace extends Enumerated[WhiteSpace] with EnumEntryPersistence[WhiteSpace] {
-  val Normal = new WhiteSpace("normal")
-  val NoWrap = new WhiteSpace("nowrap")
-  val Pre = new WhiteSpace("pre")
-  val PreWrap = new WhiteSpace("pre-wrap")
-  val PreLine = new WhiteSpace("pre-line")
-  val Inherit = new WhiteSpace("inherit")
+  case object Normal extends WhiteSpace("normal")
+  case object NoWrap extends WhiteSpace("nowrap")
+  case object Pre extends WhiteSpace("pre")
+  case object PreWrap extends WhiteSpace("pre-wrap")
+  case object PreLine extends WhiteSpace("pre-line")
+  case object Inherit extends WhiteSpace("inherit")
+
+  val values = findValues.toVector
 }

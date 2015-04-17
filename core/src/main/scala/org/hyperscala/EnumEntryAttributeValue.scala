@@ -8,8 +8,6 @@ import org.powerscala.enum.EnumEntry
 trait EnumEntryAttributeValue extends EnumEntry with AttributeValue {
   override def isMatch(s: String) = value.equalsIgnoreCase(s)
 
-  override def toString() = value
-
   override def equals(obj: scala.Any) = obj match {
     case av: AttributeValue => av.value == value
     case _ => false

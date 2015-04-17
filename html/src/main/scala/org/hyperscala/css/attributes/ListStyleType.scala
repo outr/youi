@@ -7,24 +7,26 @@ import org.hyperscala.persistence.EnumEntryPersistence
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class ListStyleType private(val value: String, val description: String, val ordered: Boolean = false, val unordered: Boolean = false) extends EnumEntryAttributeValue
+sealed abstract class ListStyleType(val value: String, val description: String, val ordered: Boolean = false, val unordered: Boolean = false) extends EnumEntryAttributeValue
 
 object ListStyleType extends Enumerated[ListStyleType] with EnumEntryPersistence[ListStyleType] {
-  val None = new ListStyleType("none", "No marker is shown")
-  val Initial = new ListStyleType("initial", "Restores default value")
-  val Inherit = new ListStyleType("inherit", "Inherits from its parent")
-  val Disc = new ListStyleType("disc", "Marker is a filled circle", unordered = true)
-  val Circle = new ListStyleType("circle", "Marker is a circle", unordered = true)
-  val Square = new ListStyleType("square", "Marker is a square", unordered = true)
-  val Decimal = new ListStyleType("decimal", "Numeric (1, 2, 3, ...)", ordered = true)
-  val LowerAlpha = new ListStyleType("lower-alpha", "Lowercase Alphabet (a, b, c, ...)", ordered = true)
-  val UpperAlpha = new ListStyleType("upper-alpha", "Uppercase Alphabet (A, B, C, ...)", ordered = true)
-  val LowerRoman = new ListStyleType("lower-roman", "Lowercase Roman (i, ii, iii, ...)", ordered = true)
-  val UpperRoman = new ListStyleType("upper-roman", "Uppercase Roman (I, II, III, ...)", ordered = true)
-  val LowerLatin = new ListStyleType("lower-latin", "Lowercase Latin (a, b, c, ...)", ordered = true)
-  val UpperLatin = new ListStyleType("upper-latin", "Uppercase Latin (A, B, C, ...)", ordered = true)
-  val LowerGreek = new ListStyleType("lower-greek", "Lowercase Greek Marker", ordered = true)
-  val Armenian = new ListStyleType("armenian", "Armenian Numbering", ordered = true)
-  val Georgian = new ListStyleType("georgian", "Georgian Numbering", ordered = true)
-  val DecimalLeadingZero = new ListStyleType("decimal-leading-zero", "Numeric Leading Zero (01, 02, 03, ...)", ordered = true)
+  case object None extends ListStyleType("none", "No marker is shown")
+  case object Initial extends ListStyleType("initial", "Restores default value")
+  case object Inherit extends ListStyleType("inherit", "Inherits from its parent")
+  case object Disc extends ListStyleType("disc", "Marker is a filled circle", unordered = true)
+  case object Circle extends ListStyleType("circle", "Marker is a circle", unordered = true)
+  case object Square extends ListStyleType("square", "Marker is a square", unordered = true)
+  case object Decimal extends ListStyleType("decimal", "Numeric (1, 2, 3, ...)", ordered = true)
+  case object LowerAlpha extends ListStyleType("lower-alpha", "Lowercase Alphabet (a, b, c, ...)", ordered = true)
+  case object UpperAlpha extends ListStyleType("upper-alpha", "Uppercase Alphabet (A, B, C, ...)", ordered = true)
+  case object LowerRoman extends ListStyleType("lower-roman", "Lowercase Roman (i, ii, iii, ...)", ordered = true)
+  case object UpperRoman extends ListStyleType("upper-roman", "Uppercase Roman (I, II, III, ...)", ordered = true)
+  case object LowerLatin extends ListStyleType("lower-latin", "Lowercase Latin (a, b, c, ...)", ordered = true)
+  case object UpperLatin extends ListStyleType("upper-latin", "Uppercase Latin (A, B, C, ...)", ordered = true)
+  case object LowerGreek extends ListStyleType("lower-greek", "Lowercase Greek Marker", ordered = true)
+  case object Armenian extends ListStyleType("armenian", "Armenian Numbering", ordered = true)
+  case object Georgian extends ListStyleType("georgian", "Georgian Numbering", ordered = true)
+  case object DecimalLeadingZero extends ListStyleType("decimal-leading-zero", "Numeric Leading Zero (01, 02, 03, ...)", ordered = true)
+
+  val values = findValues.toVector
 }

@@ -168,29 +168,31 @@ class ShapeAttribute[T](val property: ShapeProperty[T], shape: Shape, val string
   }
 }
 
-class ShapeProperty[T] private(val default: T)(implicit val manifest: Manifest[T]) extends EnumEntry {
+sealed abstract class ShapeProperty[T](val default: T)(implicit val manifest: Manifest[T]) extends EnumEntry {
   def attributeName = name.charAt(0).toLower + name.substring(1)
 
   def value(t: T) = ShapePropertyValue(this, t)
 }
 
 object ShapeProperty extends Enumerated[ShapeProperty[_]] {
-  val Alpha = new ShapeProperty[Double](1.0)
-  val Cursor = new ShapeProperty[String](null)
-  val MouseEnabled = new ShapeProperty[Boolean](true)
-  val Name = new ShapeProperty[String](null)
-  val RegX = new ShapeProperty[Double](0.0)
-  val RegY = new ShapeProperty[Double](0.0)
-  val Rotation = new ShapeProperty[Double](0.0)
-  val ScaleX = new ShapeProperty[Double](1.0)
-  val ScaleY = new ShapeProperty[Double](1.0)
-  val SkewX = new ShapeProperty[Double](1.0)
-  val SkewY = new ShapeProperty[Double](1.0)
-  val SnapToPixel = new ShapeProperty[Boolean](true)
-  val TickEnabled = new ShapeProperty[Boolean](true)
-  val Visible = new ShapeProperty[Boolean](true)
-  val X = new ShapeProperty[Double](0.0)
-  val Y = new ShapeProperty[Double](0.0)
+  case object Alpha extends ShapeProperty[Double](1.0)
+  case object Cursor extends ShapeProperty[String](null)
+  case object MouseEnabled extends ShapeProperty[Boolean](true)
+  case object Name extends ShapeProperty[String](null)
+  case object RegX extends ShapeProperty[Double](0.0)
+  case object RegY extends ShapeProperty[Double](0.0)
+  case object Rotation extends ShapeProperty[Double](0.0)
+  case object ScaleX extends ShapeProperty[Double](1.0)
+  case object ScaleY extends ShapeProperty[Double](1.0)
+  case object SkewX extends ShapeProperty[Double](1.0)
+  case object SkewY extends ShapeProperty[Double](1.0)
+  case object SnapToPixel extends ShapeProperty[Boolean](true)
+  case object TickEnabled extends ShapeProperty[Boolean](true)
+  case object Visible extends ShapeProperty[Boolean](true)
+  case object X extends ShapeProperty[Double](0.0)
+  case object Y extends ShapeProperty[Double](0.0)
+
+  val values = findValues.toVector
 }
 
 case class ShapePropertyValue[T](property: ShapeProperty[T], value: T)

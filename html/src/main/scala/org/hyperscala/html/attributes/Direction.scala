@@ -8,10 +8,12 @@ import org.hyperscala.EnumEntryAttributeValue
  * NOTE: This file has been generated. Do not modify directly!
  * @author Matt Hicks <matt@outr.com>
  */
-sealed class Direction(val value: String) extends EnumEntryAttributeValue
+sealed abstract class Direction(val value: String) extends EnumEntryAttributeValue
 
 object Direction extends Enumerated[Direction] with EnumEntryPersistence[Direction] {
-  val LeftToRight = new Direction("ltr")
-  val RightToLeft = new Direction("rtl")
-  val Auto = new Direction("auto")
+  case object LeftToRight extends Direction("ltr")
+  case object RightToLeft extends Direction("rtl")
+  case object Auto extends Direction("auto")
+
+  val values = findValues.toVector
 }

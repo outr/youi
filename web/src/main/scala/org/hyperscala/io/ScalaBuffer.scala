@@ -151,8 +151,8 @@ abstract class ScalaBuffer {
     case l: List[_] if name == "class" => "List(%s)".format(l.map(v => "\"%s\"".format(v)).mkString(", "))
     case js: JavaScriptString => "JavaScriptString(%s)".format(createWrappedString(js.content))
     case l: NumericLength => s"${l.number}.${l.lengthType}"
-    case e: EnumEntry if e.name != null => s"${e.parent.name}.${e.name}"
-    case e: EnumEntryAttributeValue => s"""${e.parent.name}("${e.value}")"""
+    case e: EnumEntry if e.name != null => s"${e.parentName}.${e.name}"
+    case e: EnumEntryAttributeValue => s"""${e.parentName}("${e.value}")"""
     case i: Int => i.toString
     case _ => throw new RuntimeException(s"Unsupported value in ${tag.xmlLabel} for name: $name, value: $v of type ${v.asInstanceOf[AnyRef].getClass.getName}")
   }

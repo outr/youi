@@ -1,9 +1,7 @@
 package org.hyperscala.css.attributes
 
-import org.powerscala.enum.Enumerated
-import org.hyperscala.persistence.EnumEntryPersistence
-import org.hyperscala.EnumEntryAttributeValue
-import scala.util.matching.Regex
+import org.hyperscala.persistence.ValuePersistence
+import org.hyperscala.AttributeValue
 
 /**
  * Represents CSS font-size as represented here:
@@ -12,12 +10,8 @@ import scala.util.matching.Regex
  *
  * @author Matt Hicks <matt@outr.com>
  */
-trait FontSize extends EnumEntryAttributeValue {
-  override def toString() = if (name != null) {
-    super.toString()
-  } else {
-    value
-  }
+trait FontSize extends AttributeValue {
+  override def toString = value
 }
 
 object XSmallFontSize extends FontSize {
@@ -55,7 +49,7 @@ object XLargeFontSize extends FontSize {
   val value = "x-large"
 }
 
-object FontSize extends Enumerated[FontSize] with EnumEntryPersistence[FontSize] {
+object FontSize extends ValuePersistence[FontSize] {
   val XSmall = XSmallFontSize
   val Small = SmallFontSize
   val Large = LargeFontSize
@@ -71,12 +65,14 @@ object FontSize extends Enumerated[FontSize] with EnumEntryPersistence[FontSize]
   def Percent(v: Double) = PercentLength(v)
   def Points(v: Double) = PointLength(v)
 
-  override def apply(name: String) = get(name).getOrElse(throw new RuntimeException(s"FontSize not found for value: $name."))
+  override def fromString(s: String, name: String, clazz: Class[_]) = apply(s)
 
-  override def get(name: String, caseSensitive: Boolean = false) = super.get(name, caseSensitive) match {
-    case Some(l) => Some(l)
-    case None if name == null => None
-    case None => name.toLowerCase match {
+  override def toString(t: FontSize, name: String, clazz: Class[_]) = t.value
+
+  def apply(name: String) = get(name).getOrElse(throw new RuntimeException(s"FontSize not found for value: $name."))
+
+  def get(name: String) = if (name != null) {
+    name.toLowerCase match {
       case "x-small" => Some(XSmall)
       case "small" => Some(Small)
       case "large" => Some(Large)
@@ -88,5 +84,7 @@ object FontSize extends Enumerated[FontSize] with EnumEntryPersistence[FontSize]
       case "inherit" => Some(InheritLength)
       case _ => NumericLength.get(name.toLowerCase)
     }
+  } else {
+    None
   }
 }

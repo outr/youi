@@ -169,15 +169,11 @@ trait Tag extends Markup with AttributeContainer[PropertyAttribute[_]] {
     }
   }
 
-  private var _dataAttributes = List.empty[PropertyAttribute[_]]
-
-  def dataAttributes = _dataAttributes
+  def dataAttributes = _attributes.filter(t => t._1.startsWith("data-")).map(t => t._2)
 
   private def createAttribute[T](name: String, value: T, inclusionMode: InclusionMode = InclusionMode.NotEmpty)
                         (implicit persister: ValuePersistence[T], manifest: Manifest[T]) = {
-    val a = PropertyAttribute[T](name, value, inclusionMode, dynamic = true)
-    _dataAttributes = (a :: _dataAttributes.reverse).reverse
-    a
+    PropertyAttribute[T](name, value, inclusionMode, dynamic = true)
   }
 
   def byId[T <: Tag](id: String)(implicit manifest: Manifest[T]) = TypeFilteredIterator[T](ParentLike.descendants(this)).find {

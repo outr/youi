@@ -31,11 +31,13 @@ object Alert {
   def danger(title: String, message: String) = apply(title, message, AlertType.Danger)
 }
 
-class AlertType(val className: Option[String]) extends EnumEntry with ClassName
+sealed abstract class AlertType(val className: Option[String]) extends EnumEntry with ClassName
 
 object AlertType extends Enumerated[AlertType] {
-  val Success = new AlertType(Option("alert-success"))
-  val Info = new AlertType(Option("alert-info"))
-  val Warning = new AlertType(Option("alert-warning"))
-  val Danger = new AlertType(Option("alert-danger"))
+  case object Success extends AlertType(Option("alert-success"))
+  case object Info extends AlertType(Option("alert-info"))
+  case object Warning extends AlertType(Option("alert-warning"))
+  case object Danger extends AlertType(Option("alert-danger"))
+
+  val values = findValues.toVector
 }

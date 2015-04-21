@@ -5,10 +5,12 @@ import org.powerscala.enum.{Enumerated, EnumEntry}
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */
-sealed class MouseButton extends EnumEntry
+sealed abstract class MouseButton extends EnumEntry
 
 object MouseButton extends Enumerated[MouseButton] {
-  val Left = new MouseButton
-  val Middle = new MouseButton
-  val Right = new MouseButton
+  case object Left extends MouseButton
+  case object Middle extends MouseButton
+  case object Right extends MouseButton
+
+  val values = findValues.toVector
 }

@@ -7,12 +7,14 @@ import org.hyperscala.persistence.EnumEntryPersistence
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class Repeat private(val value: String) extends EnumEntryAttributeValue
+sealed abstract class Repeat(val value: String) extends EnumEntryAttributeValue
 
 object Repeat extends Enumerated[Repeat] with EnumEntryPersistence[Repeat] {
-  val Repeat = new Repeat("repeat")
-  val Space = new Repeat("space")
-  val Round = new Repeat("round")
-  val NoRepeat = new Repeat("no-repeat")
-  val Inherit = new Repeat("inherit")
+  case object Repeat extends Repeat("repeat")
+  case object Space extends Repeat("space")
+  case object Round extends Repeat("round")
+  case object NoRepeat extends Repeat("no-repeat")
+  case object Inherit extends Repeat("inherit")
+
+  val values = findValues.toVector
 }

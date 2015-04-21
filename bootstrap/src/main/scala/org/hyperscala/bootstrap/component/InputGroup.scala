@@ -16,10 +16,12 @@ class InputGroup extends tag.Div {
   def addOn(content: BodyChild) = contents += new tag.Span(clazz = List("input-group-addon"), content = content)
 }
 
-class InputGroupSize(val className: Option[String]) extends EnumEntry with ClassName
+sealed abstract class InputGroupSize(val className: Option[String]) extends EnumEntry with ClassName
 
 object InputGroupSize extends Enumerated[InputGroupSize] {
-  val Default = new InputGroupSize(None)
-  val Large = new InputGroupSize(Some("input-group-lg"))
-  val Small = new InputGroupSize(Some("input-group-sm"))
+  case object Default extends InputGroupSize(None)
+  case object Large extends InputGroupSize(Some("input-group-lg"))
+  case object Small extends InputGroupSize(Some("input-group-sm"))
+
+  val values = findValues.toVector
 }

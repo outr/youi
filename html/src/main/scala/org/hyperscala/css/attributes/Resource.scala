@@ -1,25 +1,27 @@
 package org.hyperscala.css.attributes
 
-import org.powerscala.enum.Enumerated
-import org.hyperscala.persistence.EnumEntryPersistence
-import org.hyperscala.EnumEntryAttributeValue
+import org.hyperscala.AttributeValue
+import org.hyperscala.persistence.CaseClassPersistence
 
 /**
  * NOTE: This file has been generated. Do not modify directly!
  * @author Matt Hicks <matt@outr.com>
  */
-class Resource(val value: String) extends EnumEntryAttributeValue
+case class Resource(value: String) extends AttributeValue
 
-object Resource extends Enumerated[Resource] with EnumEntryPersistence[Resource] {
+object Resource extends CaseClassPersistence[Resource] {
   val None = new Resource("none")
   val Inherit = new Resource("inherit")
 
-  override def get(name: String, caseSensitive: Boolean = false) = super.get(name, caseSensitive) match {
-    case Some(v) => Some(v)
-    case scala.None => if (name.toLowerCase.startsWith("url(")) {
-      Some(new Resource(name))
-    } else {
-      Some(new Resource("url('%s')".format(name)))
+  def url(url: String) = Resource(s"url('$url')")
+
+  def get(name: String) = if (name != null) {
+    name.toLowerCase match {
+      case "none" => Some(None)
+      case "inherit" => Some(Inherit)
+      case _ => Some(Resource(name))
     }
+  } else {
+    scala.None
   }
 }

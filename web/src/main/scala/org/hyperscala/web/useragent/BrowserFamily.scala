@@ -5,7 +5,7 @@ import org.powerscala.enum.{EnumEntry, Enumerated}
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class BrowserFamily private(val friendlyName: String) extends EnumEntry {
+sealed abstract class BrowserFamily(val friendlyName: String) extends EnumEntry {
   override def toString() = friendlyName
 }
 
@@ -16,4338 +16,4340 @@ object BrowserFamily extends Enumerated[BrowserFamily] {
    * <p>
    * <strong>Attention</strong>: This is not a known User-Agent family, but only a placeholder.
    */
-  val Unknown = new BrowserFamily("unknown")
+  case object Unknown extends BrowserFamily("unknown")
 
   /**
    * 192.comAgent
    */
-  val ComAgent192 = new BrowserFamily("192.comAgent")
+  case object ComAgent192 extends BrowserFamily("192.comAgent")
 
   /**
    * 2Bone LinkChecker
    */
-  val TwoBoneLinkChecker = new BrowserFamily("2Bone LinkChecker")
+  case object TwoBoneLinkChecker extends BrowserFamily("2Bone LinkChecker")
 
   /**
    * 50.nu
    */
-  val Fiftynu = new BrowserFamily("50.nu")
+  case object Fiftynu extends BrowserFamily("50.nu")
 
   /**
    * 80legs
    */
-  val Eightylegs = new BrowserFamily("80legs")
+  case object Eightylegs extends BrowserFamily("80legs")
 
   /**
    * A1 Sitemap Generator
    */
-  val A1SitemapGenerator = new BrowserFamily("A1 Sitemap Generator")
+  case object A1SitemapGenerator extends BrowserFamily("A1 Sitemap Generator")
 
   /**
    * AB (Apache Bench)
    */
-  val ApacheBench = new BrowserFamily("AB (Apache Bench)")
+  case object ApacheBench extends BrowserFamily("AB (Apache Bench)")
 
   /**
    * abby
    */
-  val Abby = new BrowserFamily("abby")
+  case object Abby extends BrowserFamily("abby")
 
   /**
    * Abilon
    */
-  val Abilon = new BrowserFamily("Abilon")
+  case object Abilon extends BrowserFamily("Abilon")
 
   /**
    * Abolimba
    */
-  val Abolimba = new BrowserFamily("Abolimba")
+  case object Abolimba extends BrowserFamily("Abolimba")
 
   /**
    * Aboundexbot
    */
-  val Aboundexbot = new BrowserFamily("Aboundexbot")
+  case object Aboundexbot extends BrowserFamily("Aboundexbot")
 
   /**
    * AboutUsBot
    */
-  val AboutUsBot = new BrowserFamily("AboutUsBot")
+  case object AboutUsBot extends BrowserFamily("AboutUsBot")
 
   /**
    * Abrave Spider
    */
-  val AbraveSpider = new BrowserFamily("Abrave Spider")
+  case object AbraveSpider extends BrowserFamily("Abrave Spider")
 
   /**
    * ABrowse
    */
-  val ABrowse = new BrowserFamily("ABrowse")
+  case object ABrowse extends BrowserFamily("ABrowse")
 
   /**
    * Accelobot
    */
-  val Accelobot = new BrowserFamily("Accelobot")
+  case object Accelobot extends BrowserFamily("Accelobot")
 
   /**
    * Accoona-AI-Agent
    */
-  val AccoonaAIAgent = new BrowserFamily("Accoona-AI-Agent")
+  case object AccoonaAIAgent extends BrowserFamily("Accoona-AI-Agent")
 
   /**
    * Acoo Browser
    */
-  val AcooBrowser = new BrowserFamily("Acoo Browser")
+  case object AcooBrowser extends BrowserFamily("Acoo Browser")
 
   /**
    * AcoonBot
    */
-  val AcoonBot = new BrowserFamily("AcoonBot")
+  case object AcoonBot extends BrowserFamily("AcoonBot")
 
   /**
    * Acorn
    */
-  val Acorn = new BrowserFamily("Acorn")
+  case object Acorn extends BrowserFamily("Acorn")
 
   /**
    * ActiveXperts Network Monitor
    */
-  val ActiveXpertsNetworkMonitor = new BrowserFamily("ActiveXperts Network Monitor")
+  case object ActiveXpertsNetworkMonitor extends BrowserFamily("ActiveXperts Network Monitor")
 
   /**
    * AddThis.com
    */
-  val AddThisCom = new BrowserFamily("AddThis.com")
+  case object AddThisCom extends BrowserFamily("AddThis.com")
 
   /**
    * Adobe AIR runtime
    */
-  val AdobeAIRRuntime = new BrowserFamily("Adobe AIR runtime")
+  case object AdobeAIRRuntime extends BrowserFamily("Adobe AIR runtime")
 
   /**
    * adressendeutschland.de
    */
-  val Adressendeutschlandde = new BrowserFamily("adressendeutschland.de")
+  case object Adressendeutschlandde extends BrowserFamily("adressendeutschland.de")
 
   /**
    * AdsBot-Google
    */
-  val AdsBotGoogle = new BrowserFamily("AdsBot-Google")
+  case object AdsBotGoogle extends BrowserFamily("AdsBot-Google")
 
   /**
    * AhrefsBot
    */
-  val AhrefsBot = new BrowserFamily("AhrefsBot")
+  case object AhrefsBot extends BrowserFamily("AhrefsBot")
 
   /**
    * aiHitBot
    */
-  val aiHitBot = new BrowserFamily("aiHitBot")
+  case object aiHitBot extends BrowserFamily("aiHitBot")
 
   /**
    * aippie
    */
-  val aippie = new BrowserFamily("aippie")
+  case object aippie extends BrowserFamily("aippie")
 
   /**
    * Akregator
    */
-  val Akregator = new BrowserFamily("Akregator")
+  case object Akregator extends BrowserFamily("Akregator")
 
   /**
    * akula
    */
-  val akula = new BrowserFamily("akula")
+  case object akula extends BrowserFamily("akula")
 
   /**
    * Alienforce
    */
-  val Alienforce = new BrowserFamily("Alienforce")
+  case object Alienforce extends BrowserFamily("Alienforce")
 
   /**
    * Almaden
    */
-  val Almaden = new BrowserFamily("Almaden")
+  case object Almaden extends BrowserFamily("Almaden")
 
   /**
    * Amagit.COM
    */
-  val AmagitCOM = new BrowserFamily("Amagit.COM")
+  case object AmagitCOM extends BrowserFamily("Amagit.COM")
 
   /**
    * Amaya
    */
-  val Amaya = new BrowserFamily("Amaya")
+  case object Amaya extends BrowserFamily("Amaya")
 
   /**
    * Amazon Silk
    */
-  val AmazonSilk = new BrowserFamily("Amazon Silk")
+  case object AmazonSilk extends BrowserFamily("Amazon Silk")
 
   /**
    * Amfibibot
    */
-  val Amfibibot = new BrowserFamily("Amfibibot")
+  case object Amfibibot extends BrowserFamily("Amfibibot")
 
   /**
    * amibot
    */
-  val amibot = new BrowserFamily("amibot")
+  case object amibot extends BrowserFamily("amibot")
 
   /**
    * Amiga Aweb
    */
-  val AmigaAweb = new BrowserFamily("Amiga Aweb")
+  case object AmigaAweb extends BrowserFamily("Amiga Aweb")
 
   /**
    * Amiga Voyager
    */
-  val AmigaVoyager = new BrowserFamily("Amiga Voyager")
+  case object AmigaVoyager extends BrowserFamily("Amiga Voyager")
 
   /**
    * Android Webkit
    */
-  val AndroidWebkit = new BrowserFamily("Android Webkit")
+  case object AndroidWebkit extends BrowserFamily("Android Webkit")
 
   /**
    * Anemone
    */
-  val Anemone = new BrowserFamily("Anemone")
+  case object Anemone extends BrowserFamily("Anemone")
 
   /**
    * Anonymouse.org
    */
-  val Anonymouse = new BrowserFamily("Anonymouse.org")
+  case object Anonymouse extends BrowserFamily("Anonymouse.org")
 
   /**
    * AntBot
    */
-  val AntBot = new BrowserFamily("AntBot")
+  case object AntBot extends BrowserFamily("AntBot")
 
   /**
    * anw HTMLChecker
    */
-  val anwHTMLChecker = new BrowserFamily("anw HTMLChecker")
+  case object anwHTMLChecker extends BrowserFamily("anw HTMLChecker")
 
   /**
    * anw LoadControl
    */
-  val anwLoadControl = new BrowserFamily("anw LoadControl")
+  case object anwLoadControl extends BrowserFamily("anw LoadControl")
 
   /**
    * AOL Explorer
    */
-  val AOLExplorer = new BrowserFamily("AOL Explorer")
+  case object AOLExplorer extends BrowserFamily("AOL Explorer")
 
   /**
    * Apache internal dummy connection
    */
-  val ApacheInternalDummyConnection = new BrowserFamily("Apache internal dummy connection")
+  case object ApacheInternalDummyConnection extends BrowserFamily("Apache internal dummy connection")
 
   /**
    * Apache Synapse
    */
-  val ApacheSynapse = new BrowserFamily("Apache Synapse")
+  case object ApacheSynapse extends BrowserFamily("Apache Synapse")
 
   /**
    * Apercite
    */
-  val Apercite = new BrowserFamily("Apercite")
+  case object Apercite extends BrowserFamily("Apercite")
 
   /**
    * AportWorm
    */
-  val AportWorm = new BrowserFamily("AportWorm")
+  case object AportWorm extends BrowserFamily("AportWorm")
 
   /**
    * Apple-PubSub
    */
-  val AppleMail = new BrowserFamily("Apple Mail")
+  case object AppleMail extends BrowserFamily("Apple Mail")
 
   /**
    * Apple-PubSub
    */
-  val ApplePubSub = new BrowserFamily("Apple-PubSub")
+  case object ApplePubSub extends BrowserFamily("Apple-PubSub")
 
   /**
    * arachnode.net
    */
-  val Arachnode = new BrowserFamily("arachnode.net")
+  case object Arachnode extends BrowserFamily("arachnode.net")
 
   /**
    * archive.org_bot
    */
-  val ArchiveOrgBot = new BrowserFamily("archive.org_bot")
+  case object ArchiveOrgBot extends BrowserFamily("archive.org_bot")
 
   /**
    * Arora
    */
-  val Arora = new BrowserFamily("Arora")
+  case object Arora extends BrowserFamily("Arora")
 
   /**
    * ASAHA Search Engine Turkey
    */
-  val ASAHASearchEngineTurkey = new BrowserFamily("ASAHA Search Engine Turkey")
+  case object ASAHASearchEngineTurkey extends BrowserFamily("ASAHA Search Engine Turkey")
 
   /**
    * Ask Jeeves/Teoma
    */
-  val AskJeevesTeoma = new BrowserFamily("Ask Jeeves/Teoma")
+  case object AskJeevesTeoma extends BrowserFamily("Ask Jeeves/Teoma")
 
   /**
    * Atomic Email Hunter
    */
-  val AtomicEmailHunter = new BrowserFamily("Atomic Email Hunter")
+  case object AtomicEmailHunter extends BrowserFamily("Atomic Email Hunter")
 
   /**
    * Atomic Web Browser
    */
-  val AtomicWebBrowser = new BrowserFamily("Atomic Web Browser")
+  case object AtomicWebBrowser extends BrowserFamily("Atomic Web Browser")
 
   /**
    * Avant Browser
    */
-  val AvantBrowser = new BrowserFamily("Avant Browser")
+  case object AvantBrowser extends BrowserFamily("Avant Browser")
 
   /**
    * AvantGo
    */
-  val AvantGo = new BrowserFamily("AvantGo")
+  case object AvantGo extends BrowserFamily("AvantGo")
 
   /**
    * Awasu
    */
-  val Awasu = new BrowserFamily("Awasu")
+  case object Awasu extends BrowserFamily("Awasu")
 
   /**
    * Axel
    */
-  val Axel = new BrowserFamily("Axel")
+  case object Axel extends BrowserFamily("Axel")
 
   /**
    * BabalooSpider
    */
-  val BabalooSpider = new BrowserFamily("BabalooSpider")
+  case object BabalooSpider extends BrowserFamily("BabalooSpider")
 
   /**
    * BacklinkCrawler
    */
-  val BacklinkCrawler = new BrowserFamily("BacklinkCrawler")
+  case object BacklinkCrawler extends BrowserFamily("BacklinkCrawler")
 
   /**
    * Bad-Neighborhood
    */
-  val BadNeighborhood = new BrowserFamily("Bad-Neighborhood")
+  case object BadNeighborhood extends BrowserFamily("Bad-Neighborhood")
 
   /**
    * Baidu Browser
    */
-  val BaiduBrowser = new BrowserFamily("Baidu Browser")
+  case object BaiduBrowser extends BrowserFamily("Baidu Browser")
 
   /**
    * Baiduspider
    */
-  val Baiduspider = new BrowserFamily("Baiduspider")
+  case object Baiduspider extends BrowserFamily("Baiduspider")
 
   /**
    * Banshee
    */
-  val Banshee = new BrowserFamily("Banshee")
+  case object Banshee extends BrowserFamily("Banshee")
 
   /**
    * Barca
    */
-  val Barca = new BrowserFamily("Barca")
+  case object Barca extends BrowserFamily("Barca")
 
   /**
    * baypup
    */
-  val baypup = new BrowserFamily("baypup")
+  case object baypup extends BrowserFamily("baypup")
 
   /**
    * BDFetch
    */
-  val BDFetch = new BrowserFamily("BDFetch")
+  case object BDFetch extends BrowserFamily("BDFetch")
 
   /**
    * Beamrise
    */
-  val Beamrise = new BrowserFamily("Beamrise")
+  case object Beamrise extends BrowserFamily("Beamrise")
 
   /**
    * BecomeBot
    */
-  val BecomeBot = new BrowserFamily("BecomeBot")
+  case object BecomeBot extends BrowserFamily("BecomeBot")
 
   /**
    * Beonex
    */
-  val Beonex = new BrowserFamily("Beonex")
+  case object Beonex extends BrowserFamily("Beonex")
 
   /**
    * Bigsearch.ca
    */
-  val BigsearchCa = new BrowserFamily("Bigsearch.ca")
+  case object BigsearchCa extends BrowserFamily("Bigsearch.ca")
 
   /**
    * bingbot
    */
-  val BingBot = new BrowserFamily("bingbot")
+  case object BingBot extends BrowserFamily("bingbot")
 
   /**
    * BinGet
    */
-  val BinGet = new BrowserFamily("BinGet")
+  case object BinGet extends BrowserFamily("BinGet")
 
   /**
    * bitlybot
    */
-  val bitlybot = new BrowserFamily("bitlybot")
+  case object bitlybot extends BrowserFamily("bitlybot")
 
   /**
    * biwec
    */
-  val biwec = new BrowserFamily("biwec")
+  case object biwec extends BrowserFamily("biwec")
 
   /**
    * bixo
    */
-  val bixo = new BrowserFamily("bixo")
+  case object bixo extends BrowserFamily("bixo")
 
   /**
    * bixolabs
    */
-  val bixocrawler = new BrowserFamily("bixocrawler")
+  case object bixocrawler extends BrowserFamily("bixocrawler")
 
   /**
    * BlackBerry Browser
    */
-  val BlackBerryBrowser = new BrowserFamily("BlackBerry Browser")
+  case object BlackBerryBrowser extends BrowserFamily("BlackBerry Browser")
 
   /**
    * Blackbird
    */
-  val Blackbird = new BrowserFamily("Blackbird")
+  case object Blackbird extends BrowserFamily("Blackbird")
 
   /**
    * BlackHawk
    */
-  val BlackHawk = new BrowserFamily("BlackHawk")
+  case object BlackHawk extends BrowserFamily("BlackHawk")
 
   /**
    * Blaiz-Bee
    */
-  val BlaizBee = new BrowserFamily("Blaiz-Bee")
+  case object BlaizBee extends BrowserFamily("Blaiz-Bee")
 
   /**
    * Blazer
    */
-  val Blazer = new BrowserFamily("Blazer")
+  case object Blazer extends BrowserFamily("Blazer")
 
   /**
    * Blekkobot
    */
-  val Blekkobot = new BrowserFamily("Blekkobot")
+  case object Blekkobot extends BrowserFamily("Blekkobot")
 
   /**
    * BlinkaCrawler
    */
-  val BlinkaCrawler = new BrowserFamily("BlinkaCrawler")
+  case object BlinkaCrawler extends BrowserFamily("BlinkaCrawler")
 
   /**
    * BlogBridge
    */
-  val BlogBridge = new BrowserFamily("BlogBridge")
+  case object BlogBridge extends BrowserFamily("BlogBridge")
 
   /**
    * Bloggsi
    */
-  val Bloggsi = new BrowserFamily("Bloggsi")
+  case object Bloggsi extends BrowserFamily("Bloggsi")
 
   /**
    * Bloglines
    */
-  val Bloglines = new BrowserFamily("Bloglines")
+  case object Bloglines extends BrowserFamily("Bloglines")
 
   /**
    * BlogPulse
    */
-  val BlogPulse = new BrowserFamily("BlogPulse")
+  case object BlogPulse extends BrowserFamily("BlogPulse")
 
   /**
    * bnf.fr_bot
    */
-  val bnffrbot = new BrowserFamily("bnf.fr_bot")
+  case object bnffrbot extends BrowserFamily("bnf.fr_bot")
 
   /**
    * boitho.com-dc
    */
-  val boithocomdc = new BrowserFamily("boitho.com-dc")
+  case object boithocomdc extends BrowserFamily("boitho.com-dc")
 
   /**
    * Bolt
    */
-  val Bolt = new BrowserFamily("Bolt")
+  case object Bolt extends BrowserFamily("Bolt")
 
   /**
    * Bookdog
    */
-  val Bookdog = new BrowserFamily("Bookdog")
+  case object Bookdog extends BrowserFamily("Bookdog")
 
   /**
    * BookmarkTracker
    */
-  val BookmarkTracker = new BrowserFamily("BookmarkTracker")
+  case object BookmarkTracker extends BrowserFamily("BookmarkTracker")
 
   /**
    * bot-pge.chlooe.com
    */
-  val botpgechlooecom = new BrowserFamily("bot-pge.chlooe.com")
+  case object botpgechlooecom extends BrowserFamily("bot-pge.chlooe.com")
 
   /**
    * botmobi
    */
-  val botmobi = new BrowserFamily("botmobi")
+  case object botmobi extends BrowserFamily("botmobi")
 
   /**
    * BotOnParade
    */
-  val BotOnParade = new BrowserFamily("BotOnParade")
+  case object BotOnParade extends BrowserFamily("BotOnParade")
 
   /**
    * Boxxe
    */
-  val Boxxe = new BrowserFamily("Boxxe")
+  case object Boxxe extends BrowserFamily("Boxxe")
 
   /**
    * BrownRecluse
    */
-  val BrownRecluse = new BrowserFamily("BrownRecluse")
+  case object BrownRecluse extends BrowserFamily("BrownRecluse")
 
   /**
    * Browsershots
    */
-  val Browsershots = new BrowserFamily("Browsershots")
+  case object Browsershots extends BrowserFamily("Browsershots")
 
   /**
    * BrowseX
    */
-  val BrowseX = new BrowserFamily("BrowseX")
+  case object BrowseX extends BrowserFamily("BrowseX")
 
   /**
    * Browzar
    */
-  val Browzar = new BrowserFamily("Browzar")
+  case object Browzar extends BrowserFamily("Browzar")
 
   /**
    * btbot
    */
-  val btbot = new BrowserFamily("btbot")
+  case object btbot extends BrowserFamily("btbot")
 
   /**
    * Bunjalloo
    */
-  val Bunjalloo = new BrowserFamily("Bunjalloo")
+  case object Bunjalloo extends BrowserFamily("Bunjalloo")
 
   /**
    * Butterfly
    */
-  val Butterfly = new BrowserFamily("Butterfly")
+  case object Butterfly extends BrowserFamily("Butterfly")
 
   /**
    * BuzzRankingBot
    */
-  val BuzzRankingBot = new BrowserFamily("BuzzRankingBot")
+  case object BuzzRankingBot extends BrowserFamily("BuzzRankingBot")
 
   /**
    * Camino
    */
-  val Camino = new BrowserFamily("Camino")
+  case object Camino extends BrowserFamily("Camino")
 
   /**
    * CamontSpider
    */
-  val CamontSpider = new BrowserFamily("CamontSpider")
+  case object CamontSpider extends BrowserFamily("CamontSpider")
 
   /**
    * CareerBot
    */
-  val CareerBot = new BrowserFamily("CareerBot")
+  case object CareerBot extends BrowserFamily("CareerBot")
 
   /**
    * Nail
    */
-  val Nail = new BrowserFamily("^Nail")
+  case object Nail extends BrowserFamily("^Nail")
 
   /**
    * Castabot
    */
-  val Castabot = new BrowserFamily("Castabot")
+  case object Castabot extends BrowserFamily("Castabot")
 
   /**
    * CatchBot
    */
-  val CatchBot = new BrowserFamily("CatchBot")
+  case object CatchBot extends BrowserFamily("CatchBot")
 
   /**
    * CazoodleBot
    */
-  val CazoodleBot = new BrowserFamily("CazoodleBot")
+  case object CazoodleBot extends BrowserFamily("CazoodleBot")
 
   /**
    * CCBot
    */
-  val CCBot = new BrowserFamily("CCBot")
+  case object CCBot extends BrowserFamily("CCBot")
 
   /**
    * ccubee
    */
-  val ccubee = new BrowserFamily("ccubee")
+  case object ccubee extends BrowserFamily("ccubee")
 
   /**
    * ChangeDetection
    */
-  val ChangeDetection = new BrowserFamily("ChangeDetection")
+  case object ChangeDetection extends BrowserFamily("ChangeDetection")
 
   /**
    * Charlotte
    */
-  val Charlotte = new BrowserFamily("Charlotte")
+  case object Charlotte extends BrowserFamily("Charlotte")
 
   /**
    * Charon
    */
-  val Charon = new BrowserFamily("Charon")
+  case object Charon extends BrowserFamily("Charon")
 
   /**
    * Checkbot
    */
-  val Checkbot = new BrowserFamily("Checkbot")
+  case object Checkbot extends BrowserFamily("Checkbot")
 
   /**
    * Cheshire
    */
-  val Cheshire = new BrowserFamily("Cheshire")
+  case object Cheshire extends BrowserFamily("Cheshire")
 
   /**
    * Chilkat HTTP .NET
    */
-  val ChilkatHTTP = new BrowserFamily("Chilkat HTTP .NET")
+  case object ChilkatHTTP extends BrowserFamily("Chilkat HTTP .NET")
 
   /**
    * Chrome
    */
-  val Chrome = new BrowserFamily("Chrome")
+  case object Chrome extends BrowserFamily("Chrome")
 
   /**
    * Chrome Mobile
    */
-  val ChromeMobile = new BrowserFamily("Chrome Mobile")
+  case object ChromeMobile extends BrowserFamily("Chrome Mobile")
 
   /**
    * Chromium
    */
-  val Chromium = new BrowserFamily("Chromium")
+  case object Chromium extends BrowserFamily("Chromium")
 
   /**
    * City4you
    */
-  val City4you = new BrowserFamily("City4you")
+  case object City4you extends BrowserFamily("City4you")
 
   /**
    * cityreview
    */
-  val cityreview = new BrowserFamily("cityreview")
+  case object cityreview extends BrowserFamily("cityreview")
 
   /**
    * CJB.NET Proxy
    */
-  val CJBNETProxy = new BrowserFamily("CJB.NET Proxy")
+  case object CJBNETProxy extends BrowserFamily("CJB.NET Proxy")
 
   /**
    * Claws Mail GtkHtml2 plugin
    */
-  val ClawsMailGtkHtml2Plugin = new BrowserFamily("Claws Mail GtkHtml2 plugin")
+  case object ClawsMailGtkHtml2Plugin extends BrowserFamily("Claws Mail GtkHtml2 plugin")
 
   /**
    * CligooRobot
    */
-  val CligooRobot = new BrowserFamily("CligooRobot")
+  case object CligooRobot extends BrowserFamily("CligooRobot")
 
   /**
    * coccoc
    */
-  val coccoc = new BrowserFamily("coccoc")
+  case object coccoc extends BrowserFamily("coccoc")
 
   /**
    * Columbus
    */
-  val Columbus = new BrowserFamily("Columbus")
+  case object Columbus extends BrowserFamily("Columbus")
 
   /**
    * Combine
    */
-  val Combine = new BrowserFamily("Combine")
+  case object Combine extends BrowserFamily("Combine")
 
   /**
    * CometBird
    */
-  val CometBird = new BrowserFamily("CometBird")
+  case object CometBird extends BrowserFamily("CometBird")
 
   /**
    * Comodo Dragon
    */
-  val ComodoDragon = new BrowserFamily("Comodo Dragon")
+  case object ComodoDragon extends BrowserFamily("Comodo Dragon")
 
   /**
    * CompSpyBot - Competitive Spying and Scraping
    */
-  val CompSpyBot1 = new BrowserFamily("CompSpyBot/1.0")
+  case object CompSpyBot1 extends BrowserFamily("CompSpyBot/1.0")
 
   /**
    * Conkeror
    */
-  val Conkeror = new BrowserFamily("Conkeror")
+  case object Conkeror extends BrowserFamily("Conkeror")
 
   /**
    * ConveraCrawler
    */
-  val ConveraCrawler = new BrowserFamily("ConveraCrawler")
+  case object ConveraCrawler extends BrowserFamily("ConveraCrawler")
 
   /**
    * CoolNovo
    */
-  val CoolNovo = new BrowserFamily("CoolNovo")
+  case object CoolNovo extends BrowserFamily("CoolNovo")
 
   /**
    * copyright sheriff
    */
-  val CopyrightSheriff = new BrowserFamily("copyright sheriff")
+  case object CopyrightSheriff extends BrowserFamily("copyright sheriff")
 
   /**
    * CorePlayer
    */
-  val CorePlayer = new BrowserFamily("CorePlayer")
+  case object CorePlayer extends BrowserFamily("CorePlayer")
 
   /**
    * CorpusCrawler
    */
-  val CorpusCrawler = new BrowserFamily("CorpusCrawler")
+  case object CorpusCrawler extends BrowserFamily("CorpusCrawler")
 
   /**
    * Covario-IDS
    */
-  val CovarioIDS = new BrowserFamily("Covario-IDS")
+  case object CovarioIDS extends BrowserFamily("Covario-IDS")
 
   /**
    * CPG Dragonfly RSS Module
    */
-  val CPGDragonflyRSSModule = new BrowserFamily("CPG Dragonfly RSS Module")
+  case object CPGDragonflyRSSModule extends BrowserFamily("CPG Dragonfly RSS Module")
 
   /**
    * Crawler4j
    */
-  val Crawler4j = new BrowserFamily("Crawler4j")
+  case object Crawler4j extends BrowserFamily("Crawler4j")
 
   /**
    * Crazy Browser
    */
-  val CrazyBrowser = new BrowserFamily("Crazy Browser")
+  case object CrazyBrowser extends BrowserFamily("Crazy Browser")
 
   /**
    * csci_b659
    */
-  val cscib659 = new BrowserFamily("csci_b659")
+  case object cscib659 extends BrowserFamily("csci_b659")
 
   /**
    * CSE HTML Validator
    */
-  val CSEHTMLValidator = new BrowserFamily("CSE HTML Validator")
+  case object CSEHTMLValidator extends BrowserFamily("CSE HTML Validator")
 
   /**
    * cURL
    */
-  val cURL = new BrowserFamily("cURL")
+  case object cURL extends BrowserFamily("cURL")
 
   /**
    * Cyberduck
    */
-  val Cyberduck = new BrowserFamily("Cyberduck")
+  case object Cyberduck extends BrowserFamily("Cyberduck")
 
   /**
    * Cynthia
    */
-  val Cynthia = new BrowserFamily("Cynthia")
+  case object Cynthia extends BrowserFamily("Cynthia")
 
   /**
    * D+
    */
-  val DPlus = new BrowserFamily("D+")
+  case object DPlus extends BrowserFamily("D+")
 
   /**
    * DataFountains
    */
-  val DataFountains = new BrowserFamily("DataFountains")
+  case object DataFountains extends BrowserFamily("DataFountains")
 
   /**
    * DataparkSearch
    */
-  val DataparkSearch = new BrowserFamily("DataparkSearch")
+  case object DataparkSearch extends BrowserFamily("DataparkSearch")
 
   /**
    * Daumoa
    */
-  val Daumoa = new BrowserFamily("Daumoa")
+  case object Daumoa extends BrowserFamily("Daumoa")
 
   /**
    * DBLBot
    */
-  val DBLBot = new BrowserFamily("DBLBot")
+  case object DBLBot extends BrowserFamily("DBLBot")
 
   /**
    * DCPbot
    */
-  val DCPbot = new BrowserFamily("DCPbot")
+  case object DCPbot extends BrowserFamily("DCPbot")
 
   /**
    * DealGates Bot
    */
-  val DealGatesBot = new BrowserFamily("DealGates Bot")
+  case object DealGatesBot extends BrowserFamily("DealGates Bot")
 
   /**
    * Deepnet Explorer
    */
-  val DeepnetExplorer = new BrowserFamily("Deepnet Explorer")
+  case object DeepnetExplorer extends BrowserFamily("Deepnet Explorer")
 
   /**
    * del.icio.us-thumbnails
    */
-  val deliciousThumbnails = new BrowserFamily("del.icio.us-thumbnails")
+  case object deliciousThumbnails extends BrowserFamily("del.icio.us-thumbnails")
 
   /**
    * Dell Web Monitor
    */
-  val DellWebMonitor = new BrowserFamily("Dell Web Monitor")
+  case object DellWebMonitor extends BrowserFamily("Dell Web Monitor")
 
   /**
    * Demeter
    */
-  val Demeter = new BrowserFamily("Demeter")
+  case object Demeter extends BrowserFamily("Demeter")
 
   /**
    * DepSpid
    */
-  val DepSpid = new BrowserFamily("DepSpid")
+  case object DepSpid extends BrowserFamily("DepSpid")
 
   /**
    * DeskBrowse
    */
-  val DeskBrowse = new BrowserFamily("DeskBrowse")
+  case object DeskBrowse extends BrowserFamily("DeskBrowse")
 
   /**
    * Dillo
    */
-  val Dillo = new BrowserFamily("Dillo")
+  case object Dillo extends BrowserFamily("Dillo")
 
   /**
    * Discoverybot is Discovery Engine's web crawler. It downloads text/html documents for use in building our full web
    * search engine.
    */
-  val discobot = new BrowserFamily("discobot")
+  case object discobot extends BrowserFamily("discobot")
 
   /**
    * DKIMRepBot
    */
-  val DKIMRepBot = new BrowserFamily("DKIMRepBot")
+  case object DKIMRepBot extends BrowserFamily("DKIMRepBot")
 
   /**
    * DNS-Digger-Explorer
    */
-  val DNSDiggerExplorer = new BrowserFamily("DNS-Digger-Explorer")
+  case object DNSDiggerExplorer extends BrowserFamily("DNS-Digger-Explorer")
 
   /**
    * DocZilla
    */
-  val DocZilla = new BrowserFamily("DocZilla")
+  case object DocZilla extends BrowserFamily("DocZilla")
 
   /**
    * Dolphin
    */
-  val Dolphin = new BrowserFamily("Dolphin")
+  case object Dolphin extends BrowserFamily("Dolphin")
 
   /**
    * DomainDB
    */
-  val DomainDB = new BrowserFamily("DomainDB")
+  case object DomainDB extends BrowserFamily("DomainDB")
 
   /**
    * Dooble
    */
-  val Dooble = new BrowserFamily("Dooble")
+  case object Dooble extends BrowserFamily("Dooble")
 
   /**
    * Doris
    */
-  val Doris = new BrowserFamily("Doris")
+  case object Doris extends BrowserFamily("Doris")
 
   /**
    * Dot TK - spider
    */
-  val DotTKSpider = new BrowserFamily("Dot TK - spider")
+  case object DotTKSpider extends BrowserFamily("Dot TK - spider")
 
   /**
    * DotBot
    */
-  val DotBot = new BrowserFamily("DotBot")
+  case object DotBot extends BrowserFamily("DotBot")
 
   /**
    * dotSemantic
    */
-  val dotSemantic = new BrowserFamily("dotSemantic")
+  case object dotSemantic extends BrowserFamily("dotSemantic")
 
   /**
    * DownloadStudio
    */
-  val DownloadStudio = new BrowserFamily("DownloadStudio")
+  case object DownloadStudio extends BrowserFamily("DownloadStudio")
 
   /**
    * DripfeedBot
    */
-  val DripfeedBot = new BrowserFamily("DripfeedBot")
+  case object DripfeedBot extends BrowserFamily("DripfeedBot")
 
   /**
    * DuckDuckBot
    */
-  val DuckDuckBot = new BrowserFamily("DuckDuckBot")
+  case object DuckDuckBot extends BrowserFamily("DuckDuckBot")
 
   /**
    * DuckDuckPreview
    */
-  val DuckDuckPreview = new BrowserFamily("DuckDuckPreview")
+  case object DuckDuckPreview extends BrowserFamily("DuckDuckPreview")
 
   /**
    * e-SocietyRobot
    */
-  val eSocietyRobot = new BrowserFamily("e-SocietyRobot")
+  case object eSocietyRobot extends BrowserFamily("e-SocietyRobot")
 
   /**
    * EasyBib AutoCite
    */
-  val EasyBibAutoCite = new BrowserFamily("EasyBib AutoCite")
+  case object EasyBibAutoCite extends BrowserFamily("EasyBib AutoCite")
 
   /**
    * eCairn-Grabber
    */
-  val eCairnGrabber = new BrowserFamily("eCairn-Grabber")
+  case object eCairnGrabber extends BrowserFamily("eCairn-Grabber")
 
   /**
    * Edbrowse
    */
-  val Edbrowse = new BrowserFamily("Edbrowse")
+  case object Edbrowse extends BrowserFamily("Edbrowse")
 
   /**
    * EDI
    */
-  val EDI = new BrowserFamily("EDI")
+  case object EDI extends BrowserFamily("EDI")
 
   /**
    * EdisterBot
    */
-  val EdisterBot = new BrowserFamily("EdisterBot")
+  case object EdisterBot extends BrowserFamily("EdisterBot")
 
   /**
    * egothor
    */
-  val egothor = new BrowserFamily("egothor")
+  case object egothor extends BrowserFamily("egothor")
 
   /**
    * ejupiter.com
    */
-  val ejupiter = new BrowserFamily("ejupiter.com")
+  case object ejupiter extends BrowserFamily("ejupiter.com")
 
   /**
    * Element Browser
    */
-  val ElementBrowser = new BrowserFamily("Element Browser")
+  case object ElementBrowser extends BrowserFamily("Element Browser")
 
   /**
    * Elinks
    */
-  val Elinks = new BrowserFamily("Elinks")
+  case object Elinks extends BrowserFamily("Elinks")
 
   /**
    * EnaBot
    */
-  val EnaBot = new BrowserFamily("EnaBot")
+  case object EnaBot extends BrowserFamily("EnaBot")
 
   /**
    * Enigma browser
    */
-  val Enigmabrowser = new BrowserFamily("Enigma browser")
+  case object Enigmabrowser extends BrowserFamily("Enigma browser")
 
   /**
    * Enterprise_Search
    */
-  val EnterpriseSearch = new BrowserFamily("Enterprise_Search")
+  case object EnterpriseSearch extends BrowserFamily("Enterprise_Search")
 
   /**
    * envolk
    */
-  val envolk = new BrowserFamily("envolk")
+  case object envolk extends BrowserFamily("envolk")
 
   /**
    * Epic
    */
-  val Epic = new BrowserFamily("Epic")
+  case object Epic extends BrowserFamily("Epic")
 
   /**
    * Epiphany
    */
-  val Epiphany = new BrowserFamily("Epiphany")
+  case object Epiphany extends BrowserFamily("Epiphany")
 
   /**
    * Espial TV Browser
    */
-  val EspialTVBrowser = new BrowserFamily("Espial TV Browser")
+  case object EspialTVBrowser extends BrowserFamily("Espial TV Browser")
 
   /**
    * Eudora
    */
-  val Eudora = new BrowserFamily("Eudora")
+  case object Eudora extends BrowserFamily("Eudora")
 
   /**
    * EuripBot
    */
-  val EuripBot = new BrowserFamily("EuripBot")
+  case object EuripBot extends BrowserFamily("EuripBot")
 
   /**
    * Eurobot
    */
-  val Eurobot = new BrowserFamily("Eurobot")
+  case object Eurobot extends BrowserFamily("Eurobot")
 
   /**
    * EventGuruBot
    */
-  val EventGuruBot = new BrowserFamily("EventGuruBot")
+  case object EventGuruBot extends BrowserFamily("EventGuruBot")
 
   /**
    * EventMachine
    */
-  val EventMachine = new BrowserFamily("EventMachine")
+  case object EventMachine extends BrowserFamily("EventMachine")
 
   /**
    * Evolution/Camel.Stream
    */
-  val EvolutionCamelStream = new BrowserFamily("Evolution/Camel.Stream")
+  case object EvolutionCamelStream extends BrowserFamily("Evolution/Camel.Stream")
 
   /**
    * EvriNid
    */
-  val EvriNid = new BrowserFamily("EvriNid")
+  case object EvriNid extends BrowserFamily("EvriNid")
 
   /**
    * Exabot
    */
-  val Exabot = new BrowserFamily("Exabot")
+  case object Exabot extends BrowserFamily("Exabot")
 
   /**
    * ExactSEEK
    */
-  val ExactSEEK = new BrowserFamily("ExactSEEK")
+  case object ExactSEEK extends BrowserFamily("ExactSEEK")
 
   /**
    * Ezooms
    */
-  val Ezooms = new BrowserFamily("Ezooms")
+  case object Ezooms extends BrowserFamily("Ezooms")
 
   /**
    * FacebookExternalHit
    */
-  val FacebookExternalHit = new BrowserFamily("FacebookExternalHit")
+  case object FacebookExternalHit extends BrowserFamily("FacebookExternalHit")
 
   /**
    * factbot
    */
-  val factbot = new BrowserFamily("factbot")
+  case object factbot extends BrowserFamily("factbot")
 
   /**
    * FairShare
    */
-  val FairShare = new BrowserFamily("FairShare")
+  case object FairShare extends BrowserFamily("FairShare")
 
   /**
    * Falconsbot
    */
-  val Falconsbot = new BrowserFamily("Falconsbot")
+  case object Falconsbot extends BrowserFamily("Falconsbot")
 
   /**
    * FAST Enterprise Crawler
    */
-  val FASTEnterpriseCrawler = new BrowserFamily("FAST Enterprise Crawler")
+  case object FASTEnterpriseCrawler extends BrowserFamily("FAST Enterprise Crawler")
 
   /**
    * FAST MetaWeb Crawler
    */
-  val FASTMetaWebCrawler = new BrowserFamily("FAST MetaWeb Crawler")
+  case object FASTMetaWebCrawler extends BrowserFamily("FAST MetaWeb Crawler")
 
   /**
    * Fastladder FeedFetcher
    */
-  val FastladderFeedFetcher = new BrowserFamily("Fastladder FeedFetcher")
+  case object FastladderFeedFetcher extends BrowserFamily("Fastladder FeedFetcher")
 
   /**
    * FauBot
    */
-  val FauBot = new BrowserFamily("FauBot")
+  case object FauBot extends BrowserFamily("FauBot")
 
   /**
    * favorstarbot
    */
-  val favorstarbot = new BrowserFamily("favorstarbot")
+  case object favorstarbot extends BrowserFamily("favorstarbot")
 
   /**
    * Feed::Find
    */
-  val FeedFind = new BrowserFamily("Feed::Find")
+  case object FeedFind extends BrowserFamily("Feed::Find")
 
   /**
    * Feed Viewer
    */
-  val FeedViewer = new BrowserFamily("Feed Viewer")
+  case object FeedViewer extends BrowserFamily("Feed Viewer")
 
   /**
    * FeedCatBot
    */
-  val FeedCatBot = new BrowserFamily("FeedCatBot")
+  case object FeedCatBot extends BrowserFamily("FeedCatBot")
 
   /**
    * FeedDemon
    */
-  val FeedDemon = new BrowserFamily("FeedDemon")
+  case object FeedDemon extends BrowserFamily("FeedDemon")
 
   /**
    * Feedfetcher-Google
    */
-  val FeedfetcherGoogle = new BrowserFamily("Feedfetcher-Google")
+  case object FeedfetcherGoogle extends BrowserFamily("Feedfetcher-Google")
 
   /**
    * FeedFinder/bloggz.se
    */
-  val FeedFinderbloggzse = new BrowserFamily("FeedFinder/bloggz.se")
+  case object FeedFinderbloggzse extends BrowserFamily("FeedFinder/bloggz.se")
 
   /**
    * FeedParser
    */
-  val FeedParser = new BrowserFamily("FeedParser")
+  case object FeedParser extends BrowserFamily("FeedParser")
 
   /**
    * FeedValidator
    */
-  val FeedValidator = new BrowserFamily("FeedValidator")
+  case object FeedValidator extends BrowserFamily("FeedValidator")
 
   /**
    * Findexa Crawler
    */
-  val FindexaCrawler = new BrowserFamily("Findexa Crawler")
+  case object FindexaCrawler extends BrowserFamily("Findexa Crawler")
 
   /**
    * findlinks
    */
-  val findlinks = new BrowserFamily("findlinks")
+  case object findlinks extends BrowserFamily("findlinks")
 
   /**
    * Firebird (old name for Firefox)
    */
-  val Firebird = new BrowserFamily("Firebird (old name for Firefox)")
+  case object Firebird extends BrowserFamily("Firebird (old name for Firefox)")
 
   /**
    * Firefox
    */
-  val Firefox = new BrowserFamily("Firefox")
+  case object Firefox extends BrowserFamily("Firefox")
 
   /**
    * Firefox (BonEcho)
    */
-  val FirefoxBonEcho = new BrowserFamily("Firefox (BonEcho)")
+  case object FirefoxBonEcho extends BrowserFamily("Firefox (BonEcho)")
 
   /**
    * Firefox (GranParadiso)
    */
-  val FirefoxGranParadiso = new BrowserFamily("Firefox (GranParadiso)")
+  case object FirefoxGranParadiso extends BrowserFamily("Firefox (GranParadiso)")
 
   /**
    * Firefox (Lorentz)
    */
-  val FirefoxLorentz = new BrowserFamily("Firefox (Lorentz)")
+  case object FirefoxLorentz extends BrowserFamily("Firefox (Lorentz)")
 
   /**
    * Firefox (Minefield)
    */
-  val FirefoxMinefield = new BrowserFamily("Firefox (Minefield)")
+  case object FirefoxMinefield extends BrowserFamily("Firefox (Minefield)")
 
   /**
    * Firefox (Namoroka)
    */
-  val FirefoxNamoroka = new BrowserFamily("Firefox (Namoroka)")
+  case object FirefoxNamoroka extends BrowserFamily("Firefox (Namoroka)")
 
   /**
    * Firefox (Shiretoko)
    */
-  val FirefoxShiretoko = new BrowserFamily("Firefox (Shiretoko)")
+  case object FirefoxShiretoko extends BrowserFamily("Firefox (Shiretoko)")
 
   /**
    * Fireweb Navigator
    */
-  val FirewebNavigator = new BrowserFamily("Fireweb Navigator")
+  case object FirewebNavigator extends BrowserFamily("Fireweb Navigator")
 
   /**
    * Flatland Industries Web Spider
    */
-  val FlatlandIndustriesWebSpider = new BrowserFamily("Flatland Industries Web Spider")
+  case object FlatlandIndustriesWebSpider extends BrowserFamily("Flatland Industries Web Spider")
 
   /**
    * flatlandbot
    */
-  val flatlandbot = new BrowserFamily("flatlandbot")
+  case object flatlandbot extends BrowserFamily("flatlandbot")
 
   /**
    * FlightDeckReportsBot
    */
-  val FlightDeckReportsBot = new BrowserFamily("FlightDeckReportsBot")
+  case object FlightDeckReportsBot extends BrowserFamily("FlightDeckReportsBot")
 
   /**
    * FlipboardProxy
    */
-  val FlipboardProxy = new BrowserFamily("FlipboardProxy")
+  case object FlipboardProxy extends BrowserFamily("FlipboardProxy")
 
   /**
    * Flock
    */
-  val Flock = new BrowserFamily("Flock")
+  case object Flock extends BrowserFamily("Flock")
 
   /**
    * Flocke bot
    */
-  val Flockebot = new BrowserFamily("Flocke bot")
+  case object Flockebot extends BrowserFamily("Flocke bot")
 
   /**
    * Fluid
    */
-  val Fluid = new BrowserFamily("Fluid")
+  case object Fluid extends BrowserFamily("Fluid")
 
   /**
    * FlyCast
    */
-  val FlyCast = new BrowserFamily("FlyCast")
+  case object FlyCast extends BrowserFamily("FlyCast")
 
   /**
    * FollowSite Bot
    */
-  val FollowSiteBot = new BrowserFamily("FollowSite Bot")
+  case object FollowSiteBot extends BrowserFamily("FollowSite Bot")
 
   /**
    * foobar2000
    */
-  val foobar2000 = new BrowserFamily("foobar2000")
+  case object foobar2000 extends BrowserFamily("foobar2000")
 
   /**
    * Fooooo_Web_Video_Crawl
    */
-  val Fooooo_WebVideoCrawl = new BrowserFamily("Fooooo_Web_Video_Crawl")
+  case object Fooooo_WebVideoCrawl extends BrowserFamily("Fooooo_Web_Video_Crawl")
 
   /**
    * Forschungsportal
    */
-  val Forschungsportal = new BrowserFamily("Forschungsportal")
+  case object Forschungsportal extends BrowserFamily("Forschungsportal")
 
   /**
    * Francis
    */
-  val Francis = new BrowserFamily("Francis")
+  case object Francis extends BrowserFamily("Francis")
 
   /**
    * Funambol Mozilla Sync Client
    */
-  val FunambolMozillaSyncClient = new BrowserFamily("Funambol Mozilla Sync Client")
+  case object FunambolMozillaSyncClient extends BrowserFamily("Funambol Mozilla Sync Client")
 
   /**
    * Funambol Outlook Sync Client
    */
-  val FunambolOutlookSyncClient = new BrowserFamily("Funambol Outlook Sync Client")
+  case object FunambolOutlookSyncClient extends BrowserFamily("Funambol Outlook Sync Client")
 
   /**
    * FunnelBack
    */
-  val FunnelBack = new BrowserFamily("FunnelBack")
+  case object FunnelBack extends BrowserFamily("FunnelBack")
 
   /**
    * FurlBot
    */
-  val FurlBot = new BrowserFamily("FurlBot")
+  case object FurlBot extends BrowserFamily("FurlBot")
 
   /**
    * FyberSpider
    */
-  val FyberSpider = new BrowserFamily("FyberSpider")
+  case object FyberSpider extends BrowserFamily("FyberSpider")
 
   /**
    * g2crawler
    */
-  val g2crawler = new BrowserFamily("g2crawler")
+  case object g2crawler extends BrowserFamily("g2crawler")
 
   /**
    * Gaisbot
    */
-  val Gaisbot = new BrowserFamily("Gaisbot")
+  case object Gaisbot extends BrowserFamily("Gaisbot")
 
   /**
    * Galeon
    */
-  val Galeon = new BrowserFamily("Galeon")
+  case object Galeon extends BrowserFamily("Galeon")
 
   /**
    * Gallent Search Spider
    */
-  val GallentSearchSpider = new BrowserFamily("Gallent Search Spider")
+  case object GallentSearchSpider extends BrowserFamily("Gallent Search Spider")
 
   /**
    * GarlikCrawler
    */
-  val GarlikCrawler = new BrowserFamily("GarlikCrawler")
+  case object GarlikCrawler extends BrowserFamily("GarlikCrawler")
 
   /**
    * GcMail
    */
-  val GcMail = new BrowserFamily("GcMail")
+  case object GcMail extends BrowserFamily("GcMail")
 
   /**
    * genieBot
    */
-  val genieBot = new BrowserFamily("genieBot")
+  case object genieBot extends BrowserFamily("genieBot")
 
   /**
    * GeonaBot
    */
-  val GeonaBot = new BrowserFamily("GeonaBot")
+  case object GeonaBot extends BrowserFamily("GeonaBot")
 
   /**
    * GetRight
    */
-  val GetRight = new BrowserFamily("GetRight")
+  case object GetRight extends BrowserFamily("GetRight")
 
   /**
    * Giant/1.0
    */
-  val Giant = new BrowserFamily("Giant")
+  case object Giant extends BrowserFamily("Giant")
 
   /**
    * Gigabot
    */
-  val Gigabot = new BrowserFamily("Gigabot")
+  case object Gigabot extends BrowserFamily("Gigabot")
 
   /**
    * GingerCrawler
    */
-  val GingerCrawler = new BrowserFamily("GingerCrawler")
+  case object GingerCrawler extends BrowserFamily("GingerCrawler")
 
   /**
    * Girafabot
    */
-  val Girafabot = new BrowserFamily("Girafabot")
+  case object Girafabot extends BrowserFamily("Girafabot")
 
   /**
    * GlobalMojo
    */
-  val GlobalMojo = new BrowserFamily("GlobalMojo")
+  case object GlobalMojo extends BrowserFamily("GlobalMojo")
 
   /**
    * GnomeVFS
    */
-  val GnomeVFS = new BrowserFamily("GnomeVFS")
+  case object GnomeVFS extends BrowserFamily("GnomeVFS")
 
   /**
    * GO Browser
    */
-  val GOBrowser = new BrowserFamily("GO Browser")
+  case object GOBrowser extends BrowserFamily("GO Browser")
 
   /**
    * GOFORITBOT
    */
-  val GOFORITBOT = new BrowserFamily("GOFORITBOT")
+  case object GOFORITBOT extends BrowserFamily("GOFORITBOT")
 
   /**
    * GoldenPod
    */
-  val GoldenPod = new BrowserFamily("GoldenPod")
+  case object GoldenPod extends BrowserFamily("GoldenPod")
 
   /**
    * GOM Player
    */
-  val GOMPlayer = new BrowserFamily("GOM Player")
+  case object GOMPlayer extends BrowserFamily("GOM Player")
 
   /**
    * gonzo
    */
-  val gonzo = new BrowserFamily("gonzo")
+  case object gonzo extends BrowserFamily("gonzo")
 
   /**
    * Google App Engine
    */
-  val GoogleAppEngine = new BrowserFamily("Google App Engine")
+  case object GoogleAppEngine extends BrowserFamily("Google App Engine")
 
   /**
    * Google Earth
    */
-  val GoogleEarth = new BrowserFamily("Google Earth")
+  case object GoogleEarth extends BrowserFamily("Google Earth")
 
   /**
    * Google Friend Connect
    */
-  val GoogleFriendConnect = new BrowserFamily("Google Friend Connect")
+  case object GoogleFriendConnect extends BrowserFamily("Google Friend Connect")
 
   /**
    * Google Listen
    */
-  val GoogleListen = new BrowserFamily("Google Listen")
+  case object GoogleListen extends BrowserFamily("Google Listen")
 
   /**
    * Google Rich Snippets Testing Tool
    */
-  val GoogleRichSnippetsTestingTool = new BrowserFamily("Google Rich Snippets Testing Tool")
+  case object GoogleRichSnippetsTestingTool extends BrowserFamily("Google Rich Snippets Testing Tool")
 
   /**
    * Google Wireless Transcoder
    */
-  val GoogleWirelessTranscoder = new BrowserFamily("Google Wireless Transcoder")
+  case object GoogleWirelessTranscoder extends BrowserFamily("Google Wireless Transcoder")
 
   /**
    * Googlebot
    */
-  val Googlebot = new BrowserFamily("Googlebot")
+  case object Googlebot extends BrowserFamily("Googlebot")
 
   /**
    * Googlebot-Mobile
    */
-  val GooglebotMobile = new BrowserFamily("Googlebot-Mobile")
+  case object GooglebotMobile extends BrowserFamily("Googlebot-Mobile")
 
   /**
    * gPodder
    */
-  val gPodder = new BrowserFamily("gPodder")
+  case object gPodder extends BrowserFamily("gPodder")
 
   /**
    * GrapeshotCrawler
    */
-  val GrapeshotCrawler = new BrowserFamily("GrapeshotCrawler")
+  case object GrapeshotCrawler extends BrowserFamily("GrapeshotCrawler")
 
   /**
    * GreatNews
    */
-  val GreatNews = new BrowserFamily("GreatNews")
+  case object GreatNews extends BrowserFamily("GreatNews")
 
   /**
    * GreenBrowser
    */
-  val GreenBrowser = new BrowserFamily("GreenBrowser")
+  case object GreenBrowser extends BrowserFamily("GreenBrowser")
 
   /**
    * Gregarius
    */
-  val Gregarius = new BrowserFamily("Gregarius")
+  case object Gregarius extends BrowserFamily("Gregarius")
 
   /**
    * GSiteCrawler
    */
-  val GSiteCrawler = new BrowserFamily("GSiteCrawler")
+  case object GSiteCrawler extends BrowserFamily("GSiteCrawler")
 
   /**
    * GStreamer
    */
-  val GStreamer = new BrowserFamily("GStreamer")
+  case object GStreamer extends BrowserFamily("GStreamer")
 
   /**
    * GurujiBot
    */
-  val GurujiBot = new BrowserFamily("GurujiBot")
+  case object GurujiBot extends BrowserFamily("GurujiBot")
 
   /**
    * Hailoobot
    */
-  val Hailoobot = new BrowserFamily("Hailoobot")
+  case object Hailoobot extends BrowserFamily("Hailoobot")
 
   /**
    * HatenaScreenshot
    */
-  val HatenaScreenshot = new BrowserFamily("HatenaScreenshot")
+  case object HatenaScreenshot extends BrowserFamily("HatenaScreenshot")
 
   /**
    * HeartRails_Capture
    */
-  val HeartRailsCapture = new BrowserFamily("HeartRails_Capture")
+  case object HeartRailsCapture extends BrowserFamily("HeartRails_Capture")
 
   /**
    * heritrix
    */
-  val heritrix = new BrowserFamily("heritrix")
+  case object heritrix extends BrowserFamily("heritrix")
 
   /**
    * HiddenMarket
    */
-  val HiddenMarket = new BrowserFamily("HiddenMarket")
+  case object HiddenMarket extends BrowserFamily("HiddenMarket")
 
   /**
    * Holmes
    */
-  val Holmes = new BrowserFamily("Holmes")
+  case object Holmes extends BrowserFamily("Holmes")
 
   /**
    * HolmesBot
    */
-  val HolmesBot = new BrowserFamily("HolmesBot")
+  case object HolmesBot extends BrowserFamily("HolmesBot")
 
   /**
    * HomeTags
    */
-  val HomeTags = new BrowserFamily("HomeTags")
+  case object HomeTags extends BrowserFamily("HomeTags")
 
   /**
    * HooWWWer
    */
-  val HooWWWer = new BrowserFamily("HooWWWer")
+  case object HooWWWer extends BrowserFamily("HooWWWer")
 
   /**
    * HostTracker.com
    */
-  val HostTrackercom = new BrowserFamily("HostTracker.com")
+  case object HostTrackercom extends BrowserFamily("HostTracker.com")
 
   /**
    * HotJava
    */
-  val HotJava = new BrowserFamily("HotJava")
+  case object HotJava extends BrowserFamily("HotJava")
 
   /**
    * ht://Dig
    */
-  val htDig = new BrowserFamily("ht://Dig")
+  case object htDig extends BrowserFamily("ht://Dig")
 
   /**
    * HTML2JPG
    */
-  val HTML2JPG = new BrowserFamily("HTML2JPG")
+  case object HTML2JPG extends BrowserFamily("HTML2JPG")
 
   /**
    * HTMLayout
    */
-  val HTMLayout = new BrowserFamily("HTMLayout")
+  case object HTMLayout extends BrowserFamily("HTMLayout")
 
   /**
    * HTMLParser
    */
-  val HTMLParser = new BrowserFamily("HTMLParser")
+  case object HTMLParser extends BrowserFamily("HTMLParser")
 
   /**
    * HTTP nagios plugin
    */
-  val HTTPnagiosplugin = new BrowserFamily("HTTP nagios plugin")
+  case object HTTPnagiosplugin extends BrowserFamily("HTTP nagios plugin")
 
   /**
    * HTTP_Request2
    */
-  val HTTPRequest2 = new BrowserFamily("HTTP_Request2")
+  case object HTTPRequest2 extends BrowserFamily("HTTP_Request2")
 
   /**
    * HTTrack
    */
-  val HTTrack = new BrowserFamily("HTTrack")
+  case object HTTrack extends BrowserFamily("HTTrack")
 
   /**
    * HuaweiSymantecSpider
    */
-  val HuaweiSymantecSpider = new BrowserFamily("HuaweiSymantecSpider")
+  case object HuaweiSymantecSpider extends BrowserFamily("HuaweiSymantecSpider")
 
   /**
    * Hv3
    */
-  val Hv3 = new BrowserFamily("Hv3")
+  case object Hv3 extends BrowserFamily("Hv3")
 
   /**
    * Hydra Browser
    */
-  val HydraBrowser = new BrowserFamily("Hydra Browser")
+  case object HydraBrowser extends BrowserFamily("Hydra Browser")
 
   /**
    * ia_archiver
    */
-  val iaarchiver = new BrowserFamily("ia_archiver")
+  case object iaarchiver extends BrowserFamily("ia_archiver")
 
   /**
    * iaskspider
    */
-  val iaskspider = new BrowserFamily("iaskspider")
+  case object iaskspider extends BrowserFamily("iaskspider")
 
   /**
    * IBrowse
    */
-  val IBrowse = new BrowserFamily("IBrowse")
+  case object IBrowse extends BrowserFamily("IBrowse")
 
   /**
    * iCab
    */
-  val iCab = new BrowserFamily("iCab")
+  case object iCab extends BrowserFamily("iCab")
 
   /**
    * iCatcher!
    */
-  val iCatcher = new BrowserFamily("iCatcher!")
+  case object iCatcher extends BrowserFamily("iCatcher!")
 
   /**
    * ICC-Crawler
    */
-  val ICCCrawler = new BrowserFamily("ICC-Crawler")
+  case object ICCCrawler extends BrowserFamily("ICC-Crawler")
 
   /**
    * ICE browser
    */
-  val ICEbrowser = new BrowserFamily("ICE browser")
+  case object ICEbrowser extends BrowserFamily("ICE browser")
 
   /**
    * IceApe
    */
-  val IceApe = new BrowserFamily("IceApe")
+  case object IceApe extends BrowserFamily("IceApe")
 
   /**
    * IceCat
    */
-  val IceCat = new BrowserFamily("IceCat")
+  case object IceCat extends BrowserFamily("IceCat")
 
   /**
    * IceDragon: A faster, more secure version of Firefox
    */
-  val IceDragon = new BrowserFamily("IceDragon")
+  case object IceDragon extends BrowserFamily("IceDragon")
 
   /**
    * IceWeasel
    */
-  val IceWeasel = new BrowserFamily("IceWeasel")
+  case object IceWeasel extends BrowserFamily("IceWeasel")
 
   /**
    * ICF_Site_Crawler
    */
-  val ICFSiteCrawler = new BrowserFamily("ICF_Site_Crawler")
+  case object ICFSiteCrawler extends BrowserFamily("ICF_Site_Crawler")
 
   /**
    * ichiro
    */
-  val ichiro = new BrowserFamily("ichiro")
+  case object ichiro extends BrowserFamily("ichiro")
 
   /**
    * iCjobs
    */
-  val iCjobs = new BrowserFamily("iCjobs")
+  case object iCjobs extends BrowserFamily("iCjobs")
 
   /**
    * Internet Explorer
    */
-  val IE = new BrowserFamily("IE")
+  case object IE extends BrowserFamily("IE")
 
   /**
    * Internet Explorer Mobile
    */
-  val IEMobile = new BrowserFamily("IE Mobile")
+  case object IEMobile extends BrowserFamily("IE Mobile")
 
   /**
    * Internet Explorer RSS reader
    */
-  val IERSSreader = new BrowserFamily("IE RSS reader")
+  case object IERSSreader extends BrowserFamily("IE RSS reader")
 
   /**
    * iGetter
    */
-  val iGetter = new BrowserFamily("iGetter")
+  case object iGetter extends BrowserFamily("iGetter")
 
   /**
    * iGooMap
    */
-  val iGooMap = new BrowserFamily("iGooMap")
+  case object iGooMap extends BrowserFamily("iGooMap")
 
   /**
    * IlseBot
    */
-  val IlseBot = new BrowserFamily("IlseBot")
+  case object IlseBot extends BrowserFamily("IlseBot")
 
   /**
    * IlTrovatore
    */
-  val IlTrovatore = new BrowserFamily("IlTrovatore")
+  case object IlTrovatore extends BrowserFamily("IlTrovatore")
 
   /**
    * IlTrovatore-Setaccio
    */
-  val IlTrovatoreSetaccio = new BrowserFamily("IlTrovatore-Setaccio")
+  case object IlTrovatoreSetaccio extends BrowserFamily("IlTrovatore-Setaccio")
 
   /**
    * imbot
    */
-  val imbot = new BrowserFamily("imbot")
+  case object imbot extends BrowserFamily("imbot")
 
   /**
    * Indy Library
    */
-  val IndyLibrary = new BrowserFamily("Indy Library")
+  case object IndyLibrary extends BrowserFamily("Indy Library")
 
   /**
    * Influencebot
    */
-  val Influencebot = new BrowserFamily("Influencebot")
+  case object Influencebot extends BrowserFamily("Influencebot")
 
   /**
    * InfociousBot
    */
-  val InfociousBot = new BrowserFamily("InfociousBot")
+  case object InfociousBot extends BrowserFamily("InfociousBot")
 
   /**
    * Infohelfer
    */
-  val Infohelfer = new BrowserFamily("Infohelfer")
+  case object Infohelfer extends BrowserFamily("Infohelfer")
 
   /**
    * InternetSeer
    */
-  val InternetSeer = new BrowserFamily("InternetSeer")
+  case object InternetSeer extends BrowserFamily("InternetSeer")
 
   /**
    * InternetSurfboard
    */
-  val InternetSurfboard = new BrowserFamily("InternetSurfboard")
+  case object InternetSurfboard extends BrowserFamily("InternetSurfboard")
 
   /**
    * Ipselonbot
    */
-  val Ipselonbot = new BrowserFamily("Ipselonbot")
+  case object Ipselonbot extends BrowserFamily("Ipselonbot")
 
   /**
    * iRider
    */
-  val iRider = new BrowserFamily("iRider")
+  case object iRider extends BrowserFamily("iRider")
 
   /**
    * IRLbot
    */
-  val IRLbot = new BrowserFamily("IRLbot")
+  case object IRLbot extends BrowserFamily("IRLbot")
 
   /**
    * Iron
    */
-  val Iron = new BrowserFamily("Iron")
+  case object Iron extends BrowserFamily("Iron")
 
   /**
    * iSiloX
    */
-  val iSiloX = new BrowserFamily("iSiloX")
+  case object iSiloX extends BrowserFamily("iSiloX")
 
   /**
    * iSiloXC
    */
-  val iSiloXC = new BrowserFamily("iSiloXC")
+  case object iSiloXC extends BrowserFamily("iSiloXC")
 
   /**
    * iTunes
    */
-  val iTunes = new BrowserFamily("iTunes")
+  case object iTunes extends BrowserFamily("iTunes")
 
   /**
    * iVideo
    */
-  val iVideo = new BrowserFamily("iVideo")
+  case object iVideo extends BrowserFamily("iVideo")
 
   /**
    * IXR lib
    */
-  val IXRlib = new BrowserFamily("IXR lib")
+  case object IXRlib extends BrowserFamily("IXR lib")
 
   /**
    * JadynAve
    */
-  val JadynAve = new BrowserFamily("JadynAve")
+  case object JadynAve extends BrowserFamily("JadynAve")
 
   /**
    * JadynAveBot
    */
-  val JadynAveBot = new BrowserFamily("JadynAveBot")
+  case object JadynAveBot extends BrowserFamily("JadynAveBot")
 
   /**
    * Jakarta Commons-HttpClient
    */
-  val JakartaCommonsHttpClient = new BrowserFamily("Jakarta Commons-HttpClient")
+  case object JakartaCommonsHttpClient extends BrowserFamily("Jakarta Commons-HttpClient")
 
   /**
    * Jambot
    */
-  val Jambot = new BrowserFamily("Jambot")
+  case object Jambot extends BrowserFamily("Jambot")
 
   /**
    * Jamcast
    */
-  val Jamcast = new BrowserFamily("Jamcast")
+  case object Jamcast extends BrowserFamily("Jamcast")
 
   /**
    * Jasmine
    */
-  val Jasmine = new BrowserFamily("Jasmine")
+  case object Jasmine extends BrowserFamily("Jasmine")
 
   /**
    * Java
    */
-  val Java = new BrowserFamily("Java")
+  case object Java extends BrowserFamily("Java")
 
   /**
    * JikeSpider
    */
-  val JikeSpider = new BrowserFamily("JikeSpider")
+  case object JikeSpider extends BrowserFamily("JikeSpider")
 
   /**
    * Job Roboter Spider
    */
-  val JobRoboterSpider = new BrowserFamily("Job Roboter Spider")
+  case object JobRoboterSpider extends BrowserFamily("Job Roboter Spider")
 
   /**
    * JoBo
    */
-  val JoBo = new BrowserFamily("JoBo")
+  case object JoBo extends BrowserFamily("JoBo")
 
   /**
    * JS-Kit/Echo
    */
-  val JSKitEcho = new BrowserFamily("JS-Kit/Echo")
+  case object JSKitEcho extends BrowserFamily("JS-Kit/Echo")
 
   /**
    * JUST-CRAWLER
    */
-  val JUSTCRAWLER = new BrowserFamily("JUST-CRAWLER")
+  case object JUSTCRAWLER extends BrowserFamily("JUST-CRAWLER")
 
   /**
    * Jyxobot
    */
-  val Jyxobot = new BrowserFamily("Jyxobot")
+  case object Jyxobot extends BrowserFamily("Jyxobot")
 
   /**
    * K-Meleon
    */
-  val KMeleon = new BrowserFamily("K-Meleon")
+  case object KMeleon extends BrowserFamily("K-Meleon")
 
   /**
    * K-Ninja
    */
-  val KNinja = new BrowserFamily("K-Ninja")
+  case object KNinja extends BrowserFamily("K-Ninja")
 
   /**
    * Kakle Bot
    */
-  val KakleBot = new BrowserFamily("Kakle Bot")
+  case object KakleBot extends BrowserFamily("Kakle Bot")
 
   /**
    * Kalooga
    */
-  val Kalooga = new BrowserFamily("Kalooga")
+  case object Kalooga extends BrowserFamily("Kalooga")
 
   /**
    * Kapiko
    */
-  val Kapiko = new BrowserFamily("Kapiko")
+  case object Kapiko extends BrowserFamily("Kapiko")
 
   /**
    * Karneval-Bot
    */
-  val KarnevalBot = new BrowserFamily("Karneval-Bot")
+  case object KarnevalBot extends BrowserFamily("Karneval-Bot")
 
   /**
    * Kazehakase
    */
-  val Kazehakase = new BrowserFamily("Kazehakase")
+  case object Kazehakase extends BrowserFamily("Kazehakase")
 
   /**
    * KeywenBot
    */
-  val KeywenBot = new BrowserFamily("KeywenBot")
+  case object KeywenBot extends BrowserFamily("KeywenBot")
 
   /**
    * KeywordDensityRobot
    */
-  val KeywordDensityRobot = new BrowserFamily("KeywordDensityRobot")
+  case object KeywordDensityRobot extends BrowserFamily("KeywordDensityRobot")
 
   /**
    * Kindle Browser
    */
-  val KindleBrowser = new BrowserFamily("Kindle Browser")
+  case object KindleBrowser extends BrowserFamily("Kindle Browser")
 
   /**
    * Kirix Strata
    */
-  val KirixStrata = new BrowserFamily("Kirix Strata")
+  case object KirixStrata extends BrowserFamily("Kirix Strata")
 
   /**
    * KKman
    */
-  val KKman = new BrowserFamily("KKman")
+  case object KKman extends BrowserFamily("KKman")
 
   /**
    * Klondike
    */
-  val Klondike = new BrowserFamily("Klondike")
+  case object Klondike extends BrowserFamily("Klondike")
 
   /**
    * Kongulo
    */
-  val Kongulo = new BrowserFamily("Kongulo")
+  case object Kongulo extends BrowserFamily("Kongulo")
 
   /**
    * Konqueror
    */
-  val Konqueror = new BrowserFamily("Konqueror")
+  case object Konqueror extends BrowserFamily("Konqueror")
 
   /**
    * KRetrieve
    */
-  val KRetrieve = new BrowserFamily("KRetrieve")
+  case object KRetrieve extends BrowserFamily("KRetrieve")
 
   /**
    * Krugle
    */
-  val Krugle = new BrowserFamily("Krugle")
+  case object Krugle extends BrowserFamily("Krugle")
 
   /**
    * ksibot
    */
-  val ksibot = new BrowserFamily("ksibot")
+  case object ksibot extends BrowserFamily("ksibot")
 
   /**
    * Kylo
    */
-  val Kylo = new BrowserFamily("Kylo")
+  case object Kylo extends BrowserFamily("Kylo")
 
   /**
    * L.webis
    */
-  val Lwebis = new BrowserFamily("L.webis")
+  case object Lwebis extends BrowserFamily("L.webis")
 
   /**
    * LapozzBot
    */
-  val LapozzBot = new BrowserFamily("LapozzBot")
+  case object LapozzBot extends BrowserFamily("LapozzBot")
 
   /**
    * Larbin
    */
-  val Larbin = new BrowserFamily("Larbin")
+  case object Larbin extends BrowserFamily("Larbin")
 
   /**
    * LBrowser
    */
-  val LBrowser = new BrowserFamily("LBrowser")
+  case object LBrowser extends BrowserFamily("LBrowser")
 
   /**
    * LeechCraft
    */
-  val LeechCraft = new BrowserFamily("LeechCraft")
+  case object LeechCraft extends BrowserFamily("LeechCraft")
 
   /**
    * LemurWebCrawler
    */
-  val LemurWebCrawler = new BrowserFamily("LemurWebCrawler")
+  case object LemurWebCrawler extends BrowserFamily("LemurWebCrawler")
 
   /**
    * LexxeBot
    */
-  val LexxeBot = new BrowserFamily("LexxeBot")
+  case object LexxeBot extends BrowserFamily("LexxeBot")
 
   /**
    * LFTP
    */
-  val LFTP = new BrowserFamily("LFTP")
+  case object LFTP extends BrowserFamily("LFTP")
 
   /**
    * LibSoup
    */
-  val LibSoup = new BrowserFamily("LibSoup")
+  case object LibSoup extends BrowserFamily("LibSoup")
 
   /**
    * libwww-perl
    */
-  val libwwwperl = new BrowserFamily("libwww-perl")
+  case object libwwwperl extends BrowserFamily("libwww-perl")
 
   /**
    * Liferea
    */
-  val Liferea = new BrowserFamily("Liferea")
+  case object Liferea extends BrowserFamily("Liferea")
 
   /**
    * Lijit
    */
-  val Lijit = new BrowserFamily("Lijit")
+  case object Lijit extends BrowserFamily("Lijit")
 
   /**
    * LinguaBot
    */
-  val LinguaBot = new BrowserFamily("LinguaBot")
+  case object LinguaBot extends BrowserFamily("LinguaBot")
 
   /**
    * Linguee Bot
    */
-  val LingueeBot = new BrowserFamily("Linguee Bot")
+  case object LingueeBot extends BrowserFamily("Linguee Bot")
 
   /**
    * Link Valet Online
    */
-  val LinkValetOnline = new BrowserFamily("Link Valet Online")
+  case object LinkValetOnline extends BrowserFamily("Link Valet Online")
 
   /**
    * LinkAider
    */
-  val LinkAider = new BrowserFamily("LinkAider")
+  case object LinkAider extends BrowserFamily("LinkAider")
 
   /**
    * LinkbackPlugin for Laconica
    */
-  val LinkbackPluginforLaconica = new BrowserFamily("LinkbackPlugin for Laconica")
+  case object LinkbackPluginforLaconica extends BrowserFamily("LinkbackPlugin for Laconica")
 
   /**
    * LinkChecker
    */
-  val LinkChecker = new BrowserFamily("LinkChecker")
+  case object LinkChecker extends BrowserFamily("LinkChecker")
 
   /**
    * linkdex.com
    */
-  val linkdexcom = new BrowserFamily("linkdex.com")
+  case object linkdexcom extends BrowserFamily("linkdex.com")
 
   /**
    * LinkExaminer
    */
-  val LinkExaminer = new BrowserFamily("LinkExaminer")
+  case object LinkExaminer extends BrowserFamily("LinkExaminer")
 
   /**
    * Links
    */
-  val Links = new BrowserFamily("Links")
+  case object Links extends BrowserFamily("Links")
 
   /**
    * linksmanager_bot
    */
-  val linksmanagerbot = new BrowserFamily("linksmanager_bot")
+  case object linksmanagerbot extends BrowserFamily("linksmanager_bot")
 
   /**
    * LinkWalker
    */
-  val LinkWalker = new BrowserFamily("LinkWalker")
+  case object LinkWalker extends BrowserFamily("LinkWalker")
 
   /**
    * livedoor ScreenShot
    */
-  val livedoorScreenShot = new BrowserFamily("livedoor ScreenShot")
+  case object livedoorScreenShot extends BrowserFamily("livedoor ScreenShot")
 
   /**
    * lmspider
    */
-  val lmspider = new BrowserFamily("lmspider")
+  case object lmspider extends BrowserFamily("lmspider")
 
   /**
    * Lobo
    */
-  val Lobo = new BrowserFamily("Lobo")
+  case object Lobo extends BrowserFamily("Lobo")
 
   /**
    * lolifox
    */
-  val lolifox = new BrowserFamily("lolifox")
+  case object lolifox extends BrowserFamily("lolifox")
 
   /**
    * Lotus Notes
    */
-  val LotusNotes = new BrowserFamily("Lotus Notes")
+  case object LotusNotes extends BrowserFamily("Lotus Notes")
 
   /**
    * Lunascape
    */
-  val Lunascape = new BrowserFamily("Lunascape")
+  case object Lunascape extends BrowserFamily("Lunascape")
 
   /**
    * LWP::Simple
    */
-  val LWPSimple = new BrowserFamily("LWP::Simple")
+  case object LWPSimple extends BrowserFamily("LWP::Simple")
 
   /**
    * Lynx
    */
-  val Lynx = new BrowserFamily("Lynx")
+  case object Lynx extends BrowserFamily("Lynx")
 
   /**
    * Madfox
    */
-  val Madfox = new BrowserFamily("Madfox")
+  case object Madfox extends BrowserFamily("Madfox")
 
   /**
    * magpie-crawler
    */
-  val magpiecrawler = new BrowserFamily("magpie-crawler")
+  case object magpiecrawler extends BrowserFamily("magpie-crawler")
 
   /**
    * MagpieRSS
    */
-  val MagpieRSS = new BrowserFamily("MagpieRSS")
+  case object MagpieRSS extends BrowserFamily("MagpieRSS")
 
   /**
    * Mahiti Crawler
    */
-  val MahitiCrawler = new BrowserFamily("Mahiti Crawler")
+  case object MahitiCrawler extends BrowserFamily("Mahiti Crawler")
 
   /**
    * Mail.RU
    */
-  val MAILRU = new BrowserFamily("Mail.Ru")
+  case object MAILRU extends BrowserFamily("Mail.Ru")
 
   /**
    * Maple browser
    */
-  val Maplebrowser = new BrowserFamily("Maple browser")
+  case object Maplebrowser extends BrowserFamily("Maple browser")
 
   /**
    * Maxthon
    */
-  val Maxthon = new BrowserFamily("Maxthon")
+  case object Maxthon extends BrowserFamily("Maxthon")
 
   /**
    * Mechanize
    */
-  val Mechanize = new BrowserFamily("Mechanize")
+  case object Mechanize extends BrowserFamily("Mechanize")
 
   /**
    * Megatext
    */
-  val Megatext = new BrowserFamily("Megatext")
+  case object Megatext extends BrowserFamily("Megatext")
 
   /**
    * MetaGeneratorCrawler
    */
-  val MetaGeneratorCrawler = new BrowserFamily("MetaGeneratorCrawler")
+  case object MetaGeneratorCrawler extends BrowserFamily("MetaGeneratorCrawler")
 
   /**
    * MetaJobBot
    */
-  val MetaJobBot = new BrowserFamily("MetaJobBot")
+  case object MetaJobBot extends BrowserFamily("MetaJobBot")
 
   /**
    * MetamojiCrawler
    */
-  val MetamojiCrawler = new BrowserFamily("MetamojiCrawler")
+  case object MetamojiCrawler extends BrowserFamily("MetamojiCrawler")
 
   /**
    * Metaspinner/0.01
    */
-  val Metaspinner = new BrowserFamily("Metaspinner")
+  case object Metaspinner extends BrowserFamily("Metaspinner")
 
   /**
    * MetaTagRobot
    */
-  val MetaTagRobot = new BrowserFamily("MetaTagRobot")
+  case object MetaTagRobot extends BrowserFamily("MetaTagRobot")
 
   /**
    * MetaURI
    */
-  val MetaURI = new BrowserFamily("MetaURI")
+  case object MetaURI extends BrowserFamily("MetaURI")
 
   /**
    * MIA Bot
    */
-  val MIABot = new BrowserFamily("MIA Bot")
+  case object MIABot extends BrowserFamily("MIA Bot")
 
   /**
    * MicroB
    */
-  val MicroB = new BrowserFamily("MicroB")
+  case object MicroB extends BrowserFamily("MicroB")
 
   /**
    * Microsoft Office Existence Discovery
    */
-  val MicrosoftOfficeExistenceDiscovery = new BrowserFamily("Microsoft Office Existence Discovery")
+  case object MicrosoftOfficeExistenceDiscovery extends BrowserFamily("Microsoft Office Existence Discovery")
 
   /**
    * Microsoft WebDAV client
    */
-  val MicrosoftWebDAVclient = new BrowserFamily("Microsoft WebDAV client")
+  case object MicrosoftWebDAVclient extends BrowserFamily("Microsoft WebDAV client")
 
   /**
    * Midori
    */
-  val Midori = new BrowserFamily("Midori")
+  case object Midori extends BrowserFamily("Midori")
 
   /**
    * Mini Browser
    */
-  val MiniBrowser = new BrowserFamily("Mini Browser")
+  case object MiniBrowser extends BrowserFamily("Mini Browser")
 
   /**
    * Minimo
    */
-  val Minimo = new BrowserFamily("Minimo")
+  case object Minimo extends BrowserFamily("Minimo")
 
   /**
    * miniRank
    */
-  val miniRank = new BrowserFamily("miniRank")
+  case object miniRank extends BrowserFamily("miniRank")
 
   /**
    * Miro
    */
-  val Miro = new BrowserFamily("Miro")
+  case object Miro extends BrowserFamily("Miro")
 
   /**
    * MJ12bot
    */
-  val MJ12bot = new BrowserFamily("MJ12bot")
+  case object MJ12bot extends BrowserFamily("MJ12bot")
 
   /**
    * MLBot
    */
-  val MLBot = new BrowserFamily("MLBot")
+  case object MLBot extends BrowserFamily("MLBot")
 
   /**
    * MnoGoSearch
    */
-  val MnoGoSearch = new BrowserFamily("MnoGoSearch")
+  case object MnoGoSearch extends BrowserFamily("MnoGoSearch")
 
   /**
    * Moatbot
    */
-  val Moatbot = new BrowserFamily("Moatbot")
+  case object Moatbot extends BrowserFamily("Moatbot")
 
   /**
    * moba-crawler
    */
-  val mobacrawler = new BrowserFamily("moba-crawler")
+  case object mobacrawler extends BrowserFamily("moba-crawler")
 
   /**
    * Mobile Firefox
    */
-  val MobileFirefox = new BrowserFamily("Mobile Firefox")
+  case object MobileFirefox extends BrowserFamily("Mobile Firefox")
 
   /**
    * Mobile Safari
    */
-  val MobileSafari = new BrowserFamily("Mobile Safari")
+  case object MobileSafari extends BrowserFamily("Mobile Safari")
 
   /**
    * MojeekBot
    */
-  val MojeekBot = new BrowserFamily("MojeekBot")
+  case object MojeekBot extends BrowserFamily("MojeekBot")
 
   /**
    * Motoricerca-Robots.txt-Checker
    */
-  val MotoricercaRobotstxtChecker = new BrowserFamily("Motoricerca-Robots.txt-Checker")
+  case object MotoricercaRobotstxtChecker extends BrowserFamily("Motoricerca-Robots.txt-Checker")
 
   /**
    * Motorola Internet Browser
    */
-  val MotorolaInternetBrowser = new BrowserFamily("Motorola Internet Browser")
+  case object MotorolaInternetBrowser extends BrowserFamily("Motorola Internet Browser")
 
   /**
    * mozDex
    */
-  val mozDex = new BrowserFamily("mozDex")
+  case object mozDex extends BrowserFamily("mozDex")
 
   /**
    * Mozilla
    */
-  val Mozilla = new BrowserFamily("Mozilla")
+  case object Mozilla extends BrowserFamily("Mozilla")
 
   /**
    * Mp3Bot
    */
-  val Mp3Bot = new BrowserFamily("Mp3Bot")
+  case object Mp3Bot extends BrowserFamily("Mp3Bot")
 
   /**
    * MPlayer
    */
-  val MPlayer = new BrowserFamily("MPlayer")
+  case object MPlayer extends BrowserFamily("MPlayer")
 
   /**
    * MPlayer2
    */
-  val MPlayer2 = new BrowserFamily("MPlayer2")
+  case object MPlayer2 extends BrowserFamily("MPlayer2")
 
   /**
    * MQbot
    */
-  val MQbot = new BrowserFamily("MQbot")
+  case object MQbot extends BrowserFamily("MQbot")
 
   /**
    * MSNBot
    */
-  val MSNBot = new BrowserFamily("MSNBot")
+  case object MSNBot extends BrowserFamily("MSNBot")
 
   /**
    * MSRBOT
    */
-  val MSRBOT = new BrowserFamily("MSRBOT")
+  case object MSRBOT extends BrowserFamily("MSRBOT")
 
   /**
    * muCommander
    */
-  val muCommander = new BrowserFamily("muCommander")
+  case object muCommander extends BrowserFamily("muCommander")
 
   /**
    * Multi-Browser XP
    */
-  val MultiBrowserXP = new BrowserFamily("Multi-Browser XP")
+  case object MultiBrowserXP extends BrowserFamily("Multi-Browser XP")
 
   /**
    * MultiCrawler
    */
-  val MultiCrawler = new BrowserFamily("MultiCrawler")
+  case object MultiCrawler extends BrowserFamily("MultiCrawler")
 
   /**
    * Multipage Validator
    */
-  val MultipageValidator = new BrowserFamily("Multipage Validator")
+  case object MultipageValidator extends BrowserFamily("Multipage Validator")
 
   /**
    * MultiZilla
    */
-  val MultiZilla = new BrowserFamily("MultiZilla")
+  case object MultiZilla extends BrowserFamily("MultiZilla")
 
   /**
    * My Internet Browser
    */
-  val MyInternetBrowser = new BrowserFamily("My Internet Browser")
+  case object MyInternetBrowser extends BrowserFamily("My Internet Browser")
 
   /**
    * MyFamilyBot
    */
-  val MyFamilyBot = new BrowserFamily("MyFamilyBot")
+  case object MyFamilyBot extends BrowserFamily("MyFamilyBot")
 
   /**
    * Najdi.si
    */
-  val Najdisi = new BrowserFamily("Najdi.si")
+  case object Najdisi extends BrowserFamily("Najdi.si")
 
   /**
    * NaverBot
    */
-  val NaverBot = new BrowserFamily("NaverBot")
+  case object NaverBot extends BrowserFamily("NaverBot")
 
   /**
    * navissobot
    */
-  val navissobot = new BrowserFamily("navissobot")
+  case object navissobot extends BrowserFamily("navissobot")
 
   /**
    * NCSA Mosaic
    */
-  val NCSAMosaic = new BrowserFamily("NCSA Mosaic")
+  case object NCSAMosaic extends BrowserFamily("NCSA Mosaic")
 
   /**
    * NerdByNature.Bot
    */
-  val NerdByNatureBot = new BrowserFamily("NerdByNature.Bot")
+  case object NerdByNatureBot extends BrowserFamily("NerdByNature.Bot")
 
   /**
    * nestReader
    */
-  val nestReader = new BrowserFamily("nestReader")
+  case object nestReader extends BrowserFamily("nestReader")
 
   /**
    * NetBox
    */
-  val NetBox = new BrowserFamily("NetBox")
+  case object NetBox extends BrowserFamily("NetBox")
 
   /**
    * NetCaptor
    */
-  val NetCaptor = new BrowserFamily("NetCaptor")
+  case object NetCaptor extends BrowserFamily("NetCaptor")
 
   /**
    * NetcraftSurveyAgent
    */
-  val NetcraftSurveyAgent = new BrowserFamily("NetcraftSurveyAgent")
+  case object NetcraftSurveyAgent extends BrowserFamily("NetcraftSurveyAgent")
 
   /**
    * netEstate Crawler
    */
-  val netEstateCrawler = new BrowserFamily("netEstate Crawler")
+  case object netEstateCrawler extends BrowserFamily("netEstate Crawler")
 
   /**
    * NetFront
    */
-  val NetFront = new BrowserFamily("NetFront")
+  case object NetFront extends BrowserFamily("NetFront")
 
   /**
    * NetFront Mobile Content Viewer
    */
-  val NetFrontMobileContentViewer = new BrowserFamily("NetFront Mobile Content Viewer")
+  case object NetFrontMobileContentViewer extends BrowserFamily("NetFront Mobile Content Viewer")
 
   /**
    * Netintelligence LiveAssessment
    */
-  val NetintelligenceLiveAssessment = new BrowserFamily("Netintelligence LiveAssessment")
+  case object NetintelligenceLiveAssessment extends BrowserFamily("Netintelligence LiveAssessment")
 
   /**
    * NetNewsWire
    */
-  val NetNewsWire = new BrowserFamily("NetNewsWire")
+  case object NetNewsWire extends BrowserFamily("NetNewsWire")
 
   /**
    * NetPositive
    */
-  val NetPositive = new BrowserFamily("NetPositive")
+  case object NetPositive extends BrowserFamily("NetPositive")
 
   /**
    * NetResearchServer
    */
-  val NetResearchServer = new BrowserFamily("NetResearchServer")
+  case object NetResearchServer extends BrowserFamily("NetResearchServer")
 
   /**
    * Netscape Navigator
    */
-  val NetscapeNavigator = new BrowserFamily("Netscape Navigator")
+  case object NetscapeNavigator extends BrowserFamily("Netscape Navigator")
 
   /**
    * Netseer
    */
-  val Netseer = new BrowserFamily("Netseer")
+  case object Netseer extends BrowserFamily("Netseer")
 
   /**
    * NetSurf
    */
-  val NetSurf = new BrowserFamily("NetSurf")
+  case object NetSurf extends BrowserFamily("NetSurf")
 
   /**
    * Netvibes feed reader
    */
-  val Netvibesfeedreader = new BrowserFamily("Netvibes feed reader")
+  case object Netvibesfeedreader extends BrowserFamily("Netvibes feed reader")
 
   /**
    * NetWhatCrawler
    */
-  val NetWhatCrawler = new BrowserFamily("NetWhatCrawler")
+  case object NetWhatCrawler extends BrowserFamily("NetWhatCrawler")
 
   /**
    * Newsbeuter
    */
-  val Newsbeuter = new BrowserFamily("Newsbeuter")
+  case object Newsbeuter extends BrowserFamily("Newsbeuter")
 
   /**
    * NewsBreak
    */
-  val NewsBreak = new BrowserFamily("NewsBreak")
+  case object NewsBreak extends BrowserFamily("NewsBreak")
 
   /**
    * NewsFox
    */
-  val NewsFox = new BrowserFamily("NewsFox")
+  case object NewsFox extends BrowserFamily("NewsFox")
 
   /**
    * NewsGatorOnline
    */
-  val NewsGatorOnline = new BrowserFamily("NewsGatorOnline")
+  case object NewsGatorOnline extends BrowserFamily("NewsGatorOnline")
 
   /**
    * NextGenSearchBot
    */
-  val NextGenSearchBot = new BrowserFamily("NextGenSearchBot")
+  case object NextGenSearchBot extends BrowserFamily("NextGenSearchBot")
 
   /**
    * nextthing.org
    */
-  val nextthingorg = new BrowserFamily("nextthing.org")
+  case object nextthingorg extends BrowserFamily("nextthing.org")
 
   /**
    * NFReader
    */
-  val NFReader = new BrowserFamily("NFReader")
+  case object NFReader extends BrowserFamily("NFReader")
 
   /**
    * NG
    */
-  val NG = new BrowserFamily("NG")
+  case object NG extends BrowserFamily("NG")
 
   /**
    * NG-Search
    */
-  val NGSearch = new BrowserFamily("NG-Search")
+  case object NGSearch extends BrowserFamily("NG-Search")
 
   /**
    * Nigma.ru
    */
-  val Nigmaru = new BrowserFamily("Nigma.ru")
+  case object Nigmaru extends BrowserFamily("Nigma.ru")
 
   /**
    * NimbleCrawler
    */
-  val NimbleCrawler = new BrowserFamily("NimbleCrawler")
+  case object NimbleCrawler extends BrowserFamily("NimbleCrawler")
 
   /**
    * NineSky
    */
-  val NineSky = new BrowserFamily("NineSky")
+  case object NineSky extends BrowserFamily("NineSky")
 
   /**
    * Nintendo Browser
    */
-  val NintendoBrowser = new BrowserFamily("Nintendo Browser")
+  case object NintendoBrowser extends BrowserFamily("Nintendo Browser")
 
   /**
    * nodestackbot
    */
-  val nodestackbot = new BrowserFamily("nodestackbot")
+  case object nodestackbot extends BrowserFamily("nodestackbot")
 
   /**
    * Nokia SyncML Client
    */
-  val NokiaSyncMLClient = new BrowserFamily("Nokia SyncML Client")
+  case object NokiaSyncMLClient extends BrowserFamily("Nokia SyncML Client")
 
   /**
    * Nokia Web Browser
    */
-  val NokiaWebBrowser = new BrowserFamily("Nokia Web Browser")
+  case object NokiaWebBrowser extends BrowserFamily("Nokia Web Browser")
 
   /**
    * Novell BorderManager
    */
-  val NovellBorderManager = new BrowserFamily("Novell BorderManager")
+  case object NovellBorderManager extends BrowserFamily("Novell BorderManager")
 
   /**
    * noyona
    */
-  val noyona = new BrowserFamily("noyona")
+  case object noyona extends BrowserFamily("noyona")
 
   /**
    * NPBot
    */
-  val NPBot = new BrowserFamily("NPBot")
+  case object NPBot extends BrowserFamily("NPBot")
 
   /**
    * Nuhk
    */
-  val Nuhk = new BrowserFamily("Nuhk")
+  case object Nuhk extends BrowserFamily("Nuhk")
 
   /**
    * NuSearch Spider
    */
-  val NuSearchSpider = new BrowserFamily("NuSearch Spider")
+  case object NuSearchSpider extends BrowserFamily("NuSearch Spider")
 
   /**
    * Nutch
    */
-  val Nutch = new BrowserFamily("Nutch")
+  case object Nutch extends BrowserFamily("Nutch")
 
   /**
    * nworm
    */
-  val nworm = new BrowserFamily("nworm")
+  case object nworm extends BrowserFamily("nworm")
 
   /**
    * Nymesis
    */
-  val Nymesis = new BrowserFamily("Nymesis")
+  case object Nymesis extends BrowserFamily("Nymesis")
 
   /**
    * Obigo
    */
-  val Obigo = new BrowserFamily("Obigo")
+  case object Obigo extends BrowserFamily("Obigo")
 
   /**
    * oBot
    */
-  val oBot = new BrowserFamily("oBot")
+  case object oBot extends BrowserFamily("oBot")
 
   /**
    * Ocelli
    */
-  val Ocelli = new BrowserFamily("Ocelli")
+  case object Ocelli extends BrowserFamily("Ocelli")
 
   /**
    * Off By One
    */
-  val OffByOne = new BrowserFamily("Off By One")
+  case object OffByOne extends BrowserFamily("Off By One")
 
   /**
    * Offline Explorer
    */
-  val OfflineExplorer = new BrowserFamily("Offline Explorer")
+  case object OfflineExplorer extends BrowserFamily("Offline Explorer")
 
   /**
    * Omea Reader
    */
-  val OmeaReader = new BrowserFamily("Omea Reader")
+  case object OmeaReader extends BrowserFamily("Omea Reader")
 
   /**
    * OmniExplorer_Bot
    */
-  val OmniExplorerBot = new BrowserFamily("OmniExplorer_Bot")
+  case object OmniExplorerBot extends BrowserFamily("OmniExplorer_Bot")
 
   /**
    * OmniWeb
    */
-  val OmniWeb = new BrowserFamily("OmniWeb")
+  case object OmniWeb extends BrowserFamily("OmniWeb")
 
   /**
    * OnetSzukaj
    */
-  val OnetSzukaj = new BrowserFamily("OnetSzukaj")
+  case object OnetSzukaj extends BrowserFamily("OnetSzukaj")
 
   /**
    * Openbot
    */
-  val Openbot = new BrowserFamily("Openbot")
+  case object Openbot extends BrowserFamily("Openbot")
 
   /**
    * OpenCalaisSemanticProxy
    */
-  val OpenCalaisSemanticProxy = new BrowserFamily("OpenCalaisSemanticProxy")
+  case object OpenCalaisSemanticProxy extends BrowserFamily("OpenCalaisSemanticProxy")
 
   /**
    * OpenindexSpider
    */
-  val OpenindexSpider = new BrowserFamily("OpenindexSpider")
+  case object OpenindexSpider extends BrowserFamily("OpenindexSpider")
 
   /**
    * Openwave Mobile Browser
    */
-  val OpenwaveMobileBrowser = new BrowserFamily("Openwave Mobile Browser")
+  case object OpenwaveMobileBrowser extends BrowserFamily("Openwave Mobile Browser")
 
   /**
    * Opera
    */
-  val Opera = new BrowserFamily("Opera")
+  case object Opera extends BrowserFamily("Opera")
 
   /**
    * Opera Mini
    */
-  val OperaMini = new BrowserFamily("Opera Mini")
+  case object OperaMini extends BrowserFamily("Opera Mini")
 
   /**
    * Opera Mobile
    */
-  val OperaMobile = new BrowserFamily("Opera Mobile")
+  case object OperaMobile extends BrowserFamily("Opera Mobile")
 
   /**
    * Orbiter
    */
-  val Orbiter = new BrowserFamily("Orbiter")
+  case object Orbiter extends BrowserFamily("Orbiter")
 
   /**
    * Orca
    */
-  val Orca = new BrowserFamily("Orca")
+  case object Orca extends BrowserFamily("Orca")
 
   /**
    * Oregano
    */
-  val Oregano = new BrowserFamily("Oregano")
+  case object Oregano extends BrowserFamily("Oregano")
 
   /**
    * OrgbyBot
    */
-  val OrgbyBot = new BrowserFamily("OrgbyBot")
+  case object OrgbyBot extends BrowserFamily("OrgbyBot")
 
   /**
    * OsObot
    */
-  val OsObot = new BrowserFamily("OsObot")
+  case object OsObot extends BrowserFamily("OsObot")
 
   /**
    * Outlook 2007
    */
-  val Outlook2007 = new BrowserFamily("Outlook 2007")
+  case object Outlook2007 extends BrowserFamily("Outlook 2007")
 
   /**
    * Outlook 2010
    */
-  val Outlook2010 = new BrowserFamily("Outlook 2010")
+  case object Outlook2010 extends BrowserFamily("Outlook 2010")
 
   /**
    * Outlook 2013
    */
-  val Outlook2013 = new BrowserFamily("Outlook 2013")
+  case object Outlook2013 extends BrowserFamily("Outlook 2013")
 
   /**
    * OWB
    */
-  val OWB = new BrowserFamily("OWB")
+  case object OWB extends BrowserFamily("OWB")
 
   /**
    * owsBot
    */
-  val owsBot = new BrowserFamily("owsBot")
+  case object owsBot extends BrowserFamily("owsBot")
 
   /**
    * P3P Validator
    */
-  val P3PValidator = new BrowserFamily("P3P Validator")
+  case object P3PValidator extends BrowserFamily("P3P Validator")
 
   /**
    * page_verifier
    */
-  val pageverifier = new BrowserFamily("page_verifier")
+  case object pageverifier extends BrowserFamily("page_verifier")
 
   /**
    * Page2RSS
    */
-  val Page2RSS = new BrowserFamily("Page2RSS")
+  case object Page2RSS extends BrowserFamily("Page2RSS")
 
   /**
    * PageBitesHyperBot
    */
-  val PageBitesHyperBot = new BrowserFamily("PageBitesHyperBot")
+  case object PageBitesHyperBot extends BrowserFamily("PageBitesHyperBot")
 
   /**
    * PagePeeker
    */
-  val PagePeeker = new BrowserFamily("PagePeeker")
+  case object PagePeeker extends BrowserFamily("PagePeeker")
 
   /**
    * Pale Moon
    */
-  val PaleMoon = new BrowserFamily("Pale Moon")
+  case object PaleMoon extends BrowserFamily("Pale Moon")
 
   /**
    * Palm Pre web browser
    */
-  val PalmPrewebbrowser = new BrowserFamily("Palm Pre web browser")
+  case object PalmPrewebbrowser extends BrowserFamily("Palm Pre web browser")
 
   /**
    * Panscient web crawler
    */
-  val Panscientwebcrawler = new BrowserFamily("Panscient web crawler")
+  case object Panscientwebcrawler extends BrowserFamily("Panscient web crawler")
 
   /**
    * Paparazzi!
    */
-  val Paparazzi = new BrowserFamily("Paparazzi!")
+  case object Paparazzi extends BrowserFamily("Paparazzi!")
 
   /**
    * PaperLiBot
    */
-  val PaperLiBot = new BrowserFamily("PaperLiBot")
+  case object PaperLiBot extends BrowserFamily("PaperLiBot")
 
   /**
    * ParchBot
    */
-  val ParchBot = new BrowserFamily("ParchBot")
+  case object ParchBot extends BrowserFamily("ParchBot")
 
   /**
    * Patriott
    */
-  val Patriott = new BrowserFamily("Patriott")
+  case object Patriott extends BrowserFamily("Patriott")
 
   /**
    * Pattern is a web mining module for the Python programming language.
    */
-  val Pattern = new BrowserFamily("Pattern")
+  case object Pattern extends BrowserFamily("Pattern")
 
   /**
    * PEAR HTTP_Request
    */
-  val PEARHTTPRequest = new BrowserFamily("PEAR HTTP_Request")
+  case object PEARHTTPRequest extends BrowserFamily("PEAR HTTP_Request")
 
   /**
    * Peew
    */
-  val Peew = new BrowserFamily("Peew")
+  case object Peew extends BrowserFamily("Peew")
 
   /**
    * percbotspider
    */
-  val percbotspider = new BrowserFamily("percbotspider")
+  case object percbotspider extends BrowserFamily("percbotspider")
 
   /**
    * Phaseout
    */
-  val Phaseout = new BrowserFamily("Phaseout")
+  case object Phaseout extends BrowserFamily("Phaseout")
 
   /**
    * Phoenix (old name for Firefox)
    */
-  val PhoenixoldnameforFirefox = new BrowserFamily("Phoenix (old name for Firefox)")
+  case object PhoenixoldnameforFirefox extends BrowserFamily("Phoenix (old name for Firefox)")
 
   /**
    * PHP
    */
-  val PHP = new BrowserFamily("PHP")
+  case object PHP extends BrowserFamily("PHP")
 
   /**
    * PHP link checker
    */
-  val PHPlinkchecker = new BrowserFamily("PHP link checker")
+  case object PHPlinkchecker extends BrowserFamily("PHP link checker")
 
   /**
    * PHP OpenID library
    */
-  val PHPOpenIDlibrary = new BrowserFamily("PHP OpenID library")
+  case object PHPOpenIDlibrary extends BrowserFamily("PHP OpenID library")
 
   /**
    * PHPcrawl
    */
-  val PHPcrawl = new BrowserFamily("PHPcrawl")
+  case object PHPcrawl extends BrowserFamily("PHPcrawl")
 
   /**
    * pingdom.com_bot
    */
-  val pingdomcombot = new BrowserFamily("pingdom.com_bot")
+  case object pingdomcombot extends BrowserFamily("pingdom.com_bot")
 
   /**
    * Pixray-Seeker
    */
-  val PixraySeeker = new BrowserFamily("Pixray-Seeker")
+  case object PixraySeeker extends BrowserFamily("Pixray-Seeker")
 
   /**
    * Plex Media Center
    */
-  val PlexMediaCenter = new BrowserFamily("Plex Media Center")
+  case object PlexMediaCenter extends BrowserFamily("Plex Media Center")
 
   /**
    * Plukkie
    */
-  val Plukkie = new BrowserFamily("Plukkie")
+  case object Plukkie extends BrowserFamily("Plukkie")
 
   /**
    * Pocket Tunes
    */
-  val PocketTunes = new BrowserFamily("Pocket Tunes")
+  case object PocketTunes extends BrowserFamily("Pocket Tunes")
 
   /**
    * PocoMail
    */
-  val PocoMail = new BrowserFamily("PocoMail")
+  case object PocoMail extends BrowserFamily("PocoMail")
 
   /**
    * Podkicker
    */
-  val Podkicker = new BrowserFamily("Podkicker")
+  case object Podkicker extends BrowserFamily("Podkicker")
 
   /**
    * POE-Component-Client-HTTP
    */
-  val POEComponentClientHTTP = new BrowserFamily("POE-Component-Client-HTTP")
+  case object POEComponentClientHTTP extends BrowserFamily("POE-Component-Client-HTTP")
 
   /**
    * Pogodak.co.yu
    */
-  val Pogodakcoyu = new BrowserFamily("Pogodak.co.yu")
+  case object Pogodakcoyu extends BrowserFamily("Pogodak.co.yu")
 
   /**
    * Polaris
    */
-  val Polaris = new BrowserFamily("Polaris")
+  case object Polaris extends BrowserFamily("Polaris")
 
   /**
    * polixea.de
    */
-  val polixeade = new BrowserFamily("polixea.de")
+  case object polixeade extends BrowserFamily("polixea.de")
 
   /**
    * Pompos
    */
-  val Pompos = new BrowserFamily("Pompos")
+  case object Pompos extends BrowserFamily("Pompos")
 
   /**
    * Postbox
    */
-  val Postbox = new BrowserFamily("Postbox")
+  case object Postbox extends BrowserFamily("Postbox")
 
   /**
    * posterus
    */
-  val posterus = new BrowserFamily("posterus")
+  case object posterus extends BrowserFamily("posterus")
 
   /**
    * PostPost
    */
-  val PostPost = new BrowserFamily("PostPost")
+  case object PostPost extends BrowserFamily("PostPost")
 
   /**
    * Powermarks
    */
-  val Powermarks = new BrowserFamily("Powermarks")
+  case object Powermarks extends BrowserFamily("Powermarks")
 
   /**
    * Prism
    */
-  val Prism = new BrowserFamily("Prism")
+  case object Prism extends BrowserFamily("Prism")
 
   /**
    * ProCogBot
    */
-  val ProCogBot = new BrowserFamily("ProCogBot")
+  case object ProCogBot extends BrowserFamily("ProCogBot")
 
   /**
    * proximic
    */
-  val proximic = new BrowserFamily("proximic")
+  case object proximic extends BrowserFamily("proximic")
 
   /**
    * PRTG Network Monitor
    */
-  val PRTGNetworkMonitor = new BrowserFamily("PRTG Network Monitor")
+  case object PRTGNetworkMonitor extends BrowserFamily("PRTG Network Monitor")
 
   /**
    * PS Vita browser
    */
-  val PSVitabrowser = new BrowserFamily("PS Vita browser")
+  case object PSVitabrowser extends BrowserFamily("PS Vita browser")
 
   /**
    * psbot
    */
-  val psbot = new BrowserFamily("psbot")
+  case object psbot extends BrowserFamily("psbot")
 
   /**
    * ptd-crawler
    */
-  val ptdcrawler = new BrowserFamily("ptd-crawler")
+  case object ptdcrawler extends BrowserFamily("ptd-crawler")
 
   /**
    * Public Radio Player
    */
-  val PublicRadioPlayer = new BrowserFamily("Public Radio Player")
+  case object PublicRadioPlayer extends BrowserFamily("Public Radio Player")
 
   /**
    * PycURL
    */
-  val PycURL = new BrowserFamily("PycURL")
+  case object PycURL extends BrowserFamily("PycURL")
 
   /**
    * Python-requests
    */
-  val Pythonrequests = new BrowserFamily("Python-requests")
+  case object Pythonrequests extends BrowserFamily("Python-requests")
 
   /**
    * Python-urllib
    */
-  val Pythonurllib = new BrowserFamily("Python-urllib")
+  case object Pythonurllib extends BrowserFamily("Python-urllib")
 
   /**
    * Python-webchecker
    */
-  val Pythonwebchecker = new BrowserFamily("Python-webchecker")
+  case object Pythonwebchecker extends BrowserFamily("Python-webchecker")
 
   /**
    * Qirina Hurdler
    */
-  val QirinaHurdler = new BrowserFamily("Qirina Hurdler")
+  case object QirinaHurdler extends BrowserFamily("Qirina Hurdler")
 
   /**
    * QQbrowser
    */
-  val QQbrowser = new BrowserFamily("QQbrowser")
+  case object QQbrowser extends BrowserFamily("QQbrowser")
 
   /**
    * Qseero
    */
-  val Qseero = new BrowserFamily("Qseero")
+  case object Qseero extends BrowserFamily("Qseero")
 
   /**
    * QtWeb
    */
-  val QtWeb = new BrowserFamily("QtWeb")
+  case object QtWeb extends BrowserFamily("QtWeb")
 
   /**
    * Qualidator.com Bot
    */
-  val QualidatorcomBot = new BrowserFamily("Qualidator.com Bot")
+  case object QualidatorcomBot extends BrowserFamily("Qualidator.com Bot")
 
   /**
    * Quantcastbot
    */
-  val Quantcastbot = new BrowserFamily("Quantcastbot")
+  case object Quantcastbot extends BrowserFamily("Quantcastbot")
 
   /**
    * quickobot
    */
-  val quickobot = new BrowserFamily("quickobot")
+  case object quickobot extends BrowserFamily("quickobot")
 
   /**
    * QuickTime
    */
-  val QuickTime = new BrowserFamily("QuickTime")
+  case object QuickTime extends BrowserFamily("QuickTime")
 
   /**
    * QupZilla
    */
-  val QupZilla = new BrowserFamily("QupZilla")
+  case object QupZilla extends BrowserFamily("QupZilla")
 
   /**
    * R6 bot
    */
-  val R6bot = new BrowserFamily("R6 bot")
+  case object R6bot extends BrowserFamily("R6 bot")
 
   /**
    * RADaR-Bot
    */
-  val RADaRBot = new BrowserFamily("RADaR-Bot")
+  case object RADaRBot extends BrowserFamily("RADaR-Bot")
 
   /**
    * Radio Downloader
    */
-  val RadioDownloader = new BrowserFamily("Radio Downloader")
+  case object RadioDownloader extends BrowserFamily("Radio Downloader")
 
   /**
    * RankurBot
    */
-  val RankurBot = new BrowserFamily("RankurBot")
+  case object RankurBot extends BrowserFamily("RankurBot")
 
   /**
    * RedBot
    */
-  val RedBot = new BrowserFamily("RedBot")
+  case object RedBot extends BrowserFamily("RedBot")
 
   /**
    * Reeder
    */
-  val Reeder = new BrowserFamily("Reeder")
+  case object Reeder extends BrowserFamily("Reeder")
 
   /**
    * Rekonq
    */
-  val Rekonq = new BrowserFamily("Rekonq")
+  case object Rekonq extends BrowserFamily("Rekonq")
 
   /**
    * REL Link Checker Lite
    */
-  val RELLinkCheckerLite = new BrowserFamily("REL Link Checker Lite")
+  case object RELLinkCheckerLite extends BrowserFamily("REL Link Checker Lite")
 
   /**
    * retawq
    */
-  val retawq = new BrowserFamily("retawq")
+  case object retawq extends BrowserFamily("retawq")
 
   /**
    * Robo Crawler
    */
-  val RoboCrawler = new BrowserFamily("Robo Crawler")
+  case object RoboCrawler extends BrowserFamily("Robo Crawler")
 
   /**
    * Robots_Tester
    */
-  val RobotsTester = new BrowserFamily("Robots_Tester")
+  case object RobotsTester extends BrowserFamily("Robots_Tester")
 
   /**
    * Robozilla
    */
-  val Robozilla = new BrowserFamily("Robozilla")
+  case object Robozilla extends BrowserFamily("Robozilla")
 
   /**
    * RockMelt
    */
-  val RockMelt = new BrowserFamily("RockMelt")
+  case object RockMelt extends BrowserFamily("RockMelt")
 
   /**
    * ROME library
    */
-  val ROMElibrary = new BrowserFamily("ROME library")
+  case object ROMElibrary extends BrowserFamily("ROME library")
 
   /**
    * Ronzoobot
    */
-  val Ronzoobot = new BrowserFamily("Ronzoobot")
+  case object Ronzoobot extends BrowserFamily("Ronzoobot")
 
   /**
    * Rss Bandit
    */
-  val RssBandit = new BrowserFamily("Rss Bandit")
+  case object RssBandit extends BrowserFamily("Rss Bandit")
 
   /**
    * RSS Menu
    */
-  val RSSMenu = new BrowserFamily("RSS Menu")
+  case object RSSMenu extends BrowserFamily("RSS Menu")
 
   /**
    * RSS Popper
    */
-  val RSSPopper = new BrowserFamily("RSS Popper")
+  case object RSSPopper extends BrowserFamily("RSS Popper")
 
   /**
    * RSS Radio
    */
-  val RSSRadio = new BrowserFamily("RSS Radio")
+  case object RSSRadio extends BrowserFamily("RSS Radio")
 
   /**
    * RSSMicro.com RSS/Atom Feed Robot
    */
-  val RSSMicrocomRSSAtomFeedRobot = new BrowserFamily("RSSMicro.com RSS/Atom Feed Robot")
+  case object RSSMicrocomRSSAtomFeedRobot extends BrowserFamily("RSSMicro.com RSS/Atom Feed Robot")
 
   /**
    * RSSOwl
    */
-  val RSSOwl = new BrowserFamily("RSSOwl")
+  case object RSSOwl extends BrowserFamily("RSSOwl")
 
   /**
    * Ruky-Roboter
    */
-  val RukyRoboter = new BrowserFamily("Ruky-Roboter")
+  case object RukyRoboter extends BrowserFamily("Ruky-Roboter")
 
   /**
    * Ryouko
    */
-  val Ryouko = new BrowserFamily("Ryouko")
+  case object Ryouko extends BrowserFamily("Ryouko")
 
   /**
    * RyzeCrawler
    */
-  val RyzeCrawler = new BrowserFamily("RyzeCrawler")
+  case object RyzeCrawler extends BrowserFamily("RyzeCrawler")
 
   /**
    * SaaYaa Explorer
    */
-  val SaaYaaExplorer = new BrowserFamily("SaaYaa Explorer")
+  case object SaaYaaExplorer extends BrowserFamily("SaaYaa Explorer")
 
   /**
    * Safari
    */
-  val Safari = new BrowserFamily("Safari")
+  case object Safari extends BrowserFamily("Safari")
 
   /**
    * Safari RSS reader
    */
-  val SafariRSSreader = new BrowserFamily("Safari RSS reader")
+  case object SafariRSSreader extends BrowserFamily("Safari RSS reader")
 
   /**
    * Sage
    */
-  val Sage = new BrowserFamily("Sage")
+  case object Sage extends BrowserFamily("Sage")
 
   /**
    * SAI Crawler
    */
-  val SAICrawler = new BrowserFamily("SAI Crawler")
+  case object SAICrawler extends BrowserFamily("SAI Crawler")
 
   /**
    * SanszBot
    */
-  val SanszBot = new BrowserFamily("SanszBot")
+  case object SanszBot extends BrowserFamily("SanszBot")
 
   /**
    * SBIder
    */
-  val SBIder = new BrowserFamily("SBIder")
+  case object SBIder extends BrowserFamily("SBIder")
 
   /**
    * SBSearch
    */
-  val SBSearch = new BrowserFamily("SBSearch")
+  case object SBSearch extends BrowserFamily("SBSearch")
 
   /**
    * Scarlett
    */
-  val Scarlett = new BrowserFamily("Scarlett")
+  case object Scarlett extends BrowserFamily("Scarlett")
 
   /**
    * schibstedsokbot
    */
-  val schibstedsokbot = new BrowserFamily("schibstedsokbot")
+  case object schibstedsokbot extends BrowserFamily("schibstedsokbot")
 
   /**
    * ScollSpider
    */
-  val ScollSpider = new BrowserFamily("ScollSpider")
+  case object ScollSpider extends BrowserFamily("ScollSpider")
 
   /**
    * Scooter
    */
-  val Scooter = new BrowserFamily("Scooter")
+  case object Scooter extends BrowserFamily("Scooter")
 
   /**
    * ScoutJet
    */
-  val ScoutJet = new BrowserFamily("ScoutJet")
+  case object ScoutJet extends BrowserFamily("ScoutJet")
 
   /**
    * SeaMonkey
    */
-  val SeaMonkey = new BrowserFamily("SeaMonkey")
+  case object SeaMonkey extends BrowserFamily("SeaMonkey")
 
   /**
    * Search Engine World Robots.txt Validator
    */
-  val SearchEngineWorldRobotsTextValidator = new BrowserFamily("Search Engine World Robots.txt Validator")
+  case object SearchEngineWorldRobotsTextValidator extends BrowserFamily("Search Engine World Robots.txt Validator")
 
   /**
    * search.KumKie.com
    */
-  val searchKumKiecom = new BrowserFamily("search.KumKie.com")
+  case object searchKumKiecom extends BrowserFamily("search.KumKie.com")
 
   /**
    * Search17Bot
    */
-  val Search17Bot = new BrowserFamily("Search17Bot")
+  case object Search17Bot extends BrowserFamily("Search17Bot")
 
   /**
    * Semager
    */
-  val Semager = new BrowserFamily("Semager")
+  case object Semager extends BrowserFamily("Semager")
 
   /**
    * SEMC Browser
    */
-  val SEMCBrowser = new BrowserFamily("SEMC Browser")
+  case object SEMCBrowser extends BrowserFamily("SEMC Browser")
 
   /**
    * SemrushBot
    */
-  val SemrushBot = new BrowserFamily("SemrushBot")
+  case object SemrushBot extends BrowserFamily("SemrushBot")
 
   /**
    * Sensis Web Crawler
    */
-  val SensisWebCrawler = new BrowserFamily("Sensis Web Crawler")
+  case object SensisWebCrawler extends BrowserFamily("Sensis Web Crawler")
 
   /**
    * SEODat
    */
-  val SEODat = new BrowserFamily("SEODat")
+  case object SEODat extends BrowserFamily("SEODat")
 
   /**
    * SEOENGBot
    */
-  val SEOENGBot = new BrowserFamily("SEOENGBot")
+  case object SEOENGBot extends BrowserFamily("SEOENGBot")
 
   /**
    * SEOkicks-Robot
    */
-  val SEOkicksRobot = new BrowserFamily("SEOkicks-Robot")
+  case object SEOkicksRobot extends BrowserFamily("SEOkicks-Robot")
 
   /**
    * Setoozbot
    */
-  val Setoozbot = new BrowserFamily("Setoozbot")
+  case object Setoozbot extends BrowserFamily("Setoozbot")
 
   /**
    * Seznam RSS reader
    */
-  val SeznamRSSreader = new BrowserFamily("Seznam RSS reader")
+  case object SeznamRSSreader extends BrowserFamily("Seznam RSS reader")
 
   /**
    * Seznam WAP Proxy
    */
-  val SeznamWAPProxy = new BrowserFamily("Seznam WAP Proxy")
+  case object SeznamWAPProxy extends BrowserFamily("Seznam WAP Proxy")
 
   /**
    * SeznamBot
    */
-  val SeznamBot = new BrowserFamily("SeznamBot")
+  case object SeznamBot extends BrowserFamily("SeznamBot")
 
   /**
    * SharpReader
    */
-  val SharpReader = new BrowserFamily("SharpReader")
+  case object SharpReader extends BrowserFamily("SharpReader")
 
   /**
    * Shelob
    */
-  val Shelob = new BrowserFamily("Shelob")
+  case object Shelob extends BrowserFamily("Shelob")
 
   /**
    * Shiira
    */
-  val Shiira = new BrowserFamily("Shiira")
+  case object Shiira extends BrowserFamily("Shiira")
 
   /**
    * Shim-Crawler
    */
-  val ShimCrawler = new BrowserFamily("Shim-Crawler")
+  case object ShimCrawler extends BrowserFamily("Shim-Crawler")
 
   /**
    * ShopWiki
    */
-  val ShopWiki = new BrowserFamily("ShopWiki")
+  case object ShopWiki extends BrowserFamily("ShopWiki")
 
   /**
    * ShowyouBot
    */
-  val ShowyouBot = new BrowserFamily("ShowyouBot")
+  case object ShowyouBot extends BrowserFamily("ShowyouBot")
 
   /**
    * Shredder
    */
-  val Shredder = new BrowserFamily("Shredder")
+  case object Shredder extends BrowserFamily("Shredder")
 
   /**
    * Siege
    */
-  val Siege = new BrowserFamily("Siege")
+  case object Siege extends BrowserFamily("Siege")
 
   /**
    * silk
    */
-  val silk = new BrowserFamily("silk")
+  case object silk extends BrowserFamily("silk")
 
   /**
    * SimplePie
    */
-  val SimplePie = new BrowserFamily("SimplePie")
+  case object SimplePie extends BrowserFamily("SimplePie")
 
   /**
    * Sirketce/Busiverse
    */
-  val SirketceBusiverse = new BrowserFamily("Sirketce/Busiverse")
+  case object SirketceBusiverse extends BrowserFamily("Sirketce/Busiverse")
 
   /**
    * sistrix
    */
-  val sistrix = new BrowserFamily("sistrix")
+  case object sistrix extends BrowserFamily("sistrix")
 
   /**
    * Sitedomain-Bot
    */
-  val SitedomainBot = new BrowserFamily("Sitedomain-Bot")
+  case object SitedomainBot extends BrowserFamily("Sitedomain-Bot")
 
   /**
    * SiteKiosk
    */
-  val SiteKiosk = new BrowserFamily("SiteKiosk")
+  case object SiteKiosk extends BrowserFamily("SiteKiosk")
 
   /**
    * SiteSucker
    */
-  val SiteSucker = new BrowserFamily("SiteSucker")
+  case object SiteSucker extends BrowserFamily("SiteSucker")
 
   /**
    * SkipStone
    */
-  val SkipStone = new BrowserFamily("SkipStone")
+  case object SkipStone extends BrowserFamily("SkipStone")
 
   /**
    * SkreemRBot
    */
-  val SkreemRBot = new BrowserFamily("SkreemRBot")
+  case object SkreemRBot extends BrowserFamily("SkreemRBot")
 
   /**
    * Skyfire
    */
-  val Skyfire = new BrowserFamily("Skyfire")
+  case object Skyfire extends BrowserFamily("Skyfire")
 
   /**
    * Sleipnir
    */
-  val Sleipnir = new BrowserFamily("Sleipnir")
+  case object Sleipnir extends BrowserFamily("Sleipnir")
 
   /**
    * SlimBoat
    */
-  val SlimBoat = new BrowserFamily("SlimBoat")
+  case object SlimBoat extends BrowserFamily("SlimBoat")
 
   /**
    * SlimBrowser
    */
-  val SlimBrowser = new BrowserFamily("SlimBrowser")
+  case object SlimBrowser extends BrowserFamily("SlimBrowser")
 
   /**
    * smart.apnoti.com Robot
    */
-  val smartapnoticomRobot = new BrowserFamily("smart.apnoti.com Robot")
+  case object smartapnoticomRobot extends BrowserFamily("smart.apnoti.com Robot")
 
   /**
    * snap.com
    */
-  val snapcom = new BrowserFamily("snap.com")
+  case object snapcom extends BrowserFamily("snap.com")
 
   /**
    * SnapBot
    */
-  val SnapBot = new BrowserFamily("SnapBot")
+  case object SnapBot extends BrowserFamily("SnapBot")
 
   /**
    * Snappy
    */
-  val Snappy = new BrowserFamily("Snappy")
+  case object Snappy extends BrowserFamily("Snappy")
 
   /**
    * SniffRSS
    */
-  val SniffRSS = new BrowserFamily("SniffRSS")
+  case object SniffRSS extends BrowserFamily("SniffRSS")
 
   /**
    * Snoopy
    */
-  val Snoopy = new BrowserFamily("Snoopy")
+  case object Snoopy extends BrowserFamily("Snoopy")
 
   /**
    * Sogou
    */
-  val Sogou = new BrowserFamily("Sogou")
+  case object Sogou extends BrowserFamily("Sogou")
 
   /**
    * Sogou Explorer
    */
-  val SogouExplorer = new BrowserFamily("Sogou Explorer")
+  case object SogouExplorer extends BrowserFamily("Sogou Explorer")
 
   /**
    * sogou spider
    */
-  val sogouspider = new BrowserFamily("sogou spider")
+  case object sogouspider extends BrowserFamily("sogou spider")
 
   /**
    * Songbird
    */
-  val Songbird = new BrowserFamily("Songbird")
+  case object Songbird extends BrowserFamily("Songbird")
 
   /**
    * Sosospider
    */
-  val Sosospider = new BrowserFamily("Sosospider")
+  case object Sosospider extends BrowserFamily("Sosospider")
 
   /**
    * Sparrow
    */
-  val Sparrow = new BrowserFamily("Sparrow")
+  case object Sparrow extends BrowserFamily("Sparrow")
 
   /**
    * spbot
    */
-  val spbot = new BrowserFamily("spbot")
+  case object spbot extends BrowserFamily("spbot")
 
   /**
    * Speedy
    */
-  val Speedy = new BrowserFamily("Speedy")
+  case object Speedy extends BrowserFamily("Speedy")
 
   /**
    * Spicebird
    */
-  val Spicebird = new BrowserFamily("Spicebird")
+  case object Spicebird extends BrowserFamily("Spicebird")
 
   /**
    * SpiderLing
    */
-  val SpiderLing = new BrowserFamily("SpiderLing")
+  case object SpiderLing extends BrowserFamily("SpiderLing")
 
   /**
    * Spinn3r
    */
-  val Spinn3r = new BrowserFamily("Spinn3r")
+  case object Spinn3r extends BrowserFamily("Spinn3r")
 
   /**
    * Spock Crawler
    */
-  val SpockCrawler = new BrowserFamily("Spock Crawler")
+  case object SpockCrawler extends BrowserFamily("Spock Crawler")
 
   /**
    * SpokeSpider
    */
-  val SpokeSpider = new BrowserFamily("SpokeSpider")
+  case object SpokeSpider extends BrowserFamily("SpokeSpider")
 
   /**
    * Sproose
    */
-  val Sproose = new BrowserFamily("Sproose")
+  case object Sproose extends BrowserFamily("Sproose")
 
   /**
    * SrevBot
    */
-  val SrevBot = new BrowserFamily("SrevBot")
+  case object SrevBot extends BrowserFamily("SrevBot")
 
   /**
    * SSLBot
    */
-  val SSLBot = new BrowserFamily("SSLBot")
+  case object SSLBot extends BrowserFamily("SSLBot")
 
   /**
    * StackRambler
    */
-  val StackRambler = new BrowserFamily("StackRambler")
+  case object StackRambler extends BrowserFamily("StackRambler")
 
   /**
    * Stainless
    */
-  val Stainless = new BrowserFamily("Stainless")
+  case object Stainless extends BrowserFamily("Stainless")
 
   /**
    * StatoolsBot
    */
-  val StatoolsBot = new BrowserFamily("StatoolsBot")
+  case object StatoolsBot extends BrowserFamily("StatoolsBot")
 
   /**
    * Steeler
    */
-  val Steeler = new BrowserFamily("Steeler")
+  case object Steeler extends BrowserFamily("Steeler")
 
   /**
    * Strokebot
    */
-  val Strokebot = new BrowserFamily("Strokebot")
+  case object Strokebot extends BrowserFamily("Strokebot")
 
   /**
    * SubStream
    */
-  val SubStream = new BrowserFamily("SubStream")
+  case object SubStream extends BrowserFamily("SubStream")
 
   /**
    * suggybot
    */
-  val suggybot = new BrowserFamily("suggybot")
+  case object suggybot extends BrowserFamily("suggybot")
 
   /**
    * Summer
    */
-  val Summer = new BrowserFamily("Summer")
+  case object Summer extends BrowserFamily("Summer")
 
   /**
    * Sundance
    */
-  val Sundance = new BrowserFamily("Sundance")
+  case object Sundance extends BrowserFamily("Sundance")
 
   /**
    * Sundial
    */
-  val Sundial = new BrowserFamily("Sundial")
+  case object Sundial extends BrowserFamily("Sundial")
 
   /**
    * Sunrise
    */
-  val Sunrise = new BrowserFamily("Sunrise")
+  case object Sunrise extends BrowserFamily("Sunrise")
 
   /**
    * SuperBot
    */
-  val SuperBot = new BrowserFamily("SuperBot")
+  case object SuperBot extends BrowserFamily("SuperBot")
 
   /**
    * Surf
    */
-  val Surf = new BrowserFamily("Surf")
+  case object Surf extends BrowserFamily("Surf")
 
   /**
    * Surphace Scout
    */
-  val SurphaceScout = new BrowserFamily("Surphace Scout")
+  case object SurphaceScout extends BrowserFamily("Surphace Scout")
 
   /**
    * SurveyBot
    */
-  val SurveyBot = new BrowserFamily("SurveyBot")
+  case object SurveyBot extends BrowserFamily("SurveyBot")
 
   /**
    * SWEBot
    */
-  val SWEBot = new BrowserFamily("SWEBot")
+  case object SWEBot extends BrowserFamily("SWEBot")
 
   /**
    * Swiftfox
    */
-  val Swiftfox = new BrowserFamily("Swiftfox")
+  case object Swiftfox extends BrowserFamily("Swiftfox")
 
   /**
    * Swiftweasel
    */
-  val Swiftweasel = new BrowserFamily("Swiftweasel")
+  case object Swiftweasel extends BrowserFamily("Swiftweasel")
 
   /**
    * SygolBot
    */
-  val SygolBot = new BrowserFamily("SygolBot")
+  case object SygolBot extends BrowserFamily("SygolBot")
 
   /**
    * SynooBot
    */
-  val SynooBot = new BrowserFamily("SynooBot")
+  case object SynooBot extends BrowserFamily("SynooBot")
 
   /**
    * Szukacz
    */
-  val Szukacz = new BrowserFamily("Szukacz")
+  case object Szukacz extends BrowserFamily("Szukacz")
 
   /**
    * Szukankobot
    */
-  val Szukankobot = new BrowserFamily("Szukankobot")
+  case object Szukankobot extends BrowserFamily("Szukankobot")
 
   /**
    * Tagoobot
    */
-  val Tagoobot = new BrowserFamily("Tagoobot")
+  case object Tagoobot extends BrowserFamily("Tagoobot")
 
   /**
    * taptubot
    */
-  val taptubot = new BrowserFamily("taptubot")
+  case object taptubot extends BrowserFamily("taptubot")
 
   /**
    * Tear
    */
-  val Tear = new BrowserFamily("Tear")
+  case object Tear extends BrowserFamily("Tear")
 
   /**
    * TeaShark
    */
-  val TeaShark = new BrowserFamily("TeaShark")
+  case object TeaShark extends BrowserFamily("TeaShark")
 
   /**
    * Technoratibot
    */
-  val Technoratibot = new BrowserFamily("Technoratibot")
+  case object Technoratibot extends BrowserFamily("Technoratibot")
 
   /**
    * Teleport Pro
    */
-  val TeleportPro = new BrowserFamily("Teleport Pro")
+  case object TeleportPro extends BrowserFamily("Teleport Pro")
 
   /**
    * TenFourFox
    */
-  val TenFourFox = new BrowserFamily("TenFourFox")
+  case object TenFourFox extends BrowserFamily("TenFourFox")
 
   /**
    * TeragramCrawler
    */
-  val TeragramCrawler = new BrowserFamily("TeragramCrawler")
+  case object TeragramCrawler extends BrowserFamily("TeragramCrawler")
 
   /**
    * textractor
    */
-  val textractor = new BrowserFamily("textractor")
+  case object textractor extends BrowserFamily("textractor")
 
   /**
    * The Bat!
    */
-  val TheBat = new BrowserFamily("The Bat!")
+  case object TheBat extends BrowserFamily("The Bat!")
 
   /**
    * Theophrastus
    */
-  val Theophrastus = new BrowserFamily("Theophrastus")
+  case object Theophrastus extends BrowserFamily("Theophrastus")
 
   /**
    * TheWorld Browser
    */
-  val TheWorldBrowser = new BrowserFamily("TheWorld Browser")
+  case object TheWorldBrowser extends BrowserFamily("TheWorld Browser")
 
   /**
    * Thumbnail.CZ robot
    */
-  val ThumbnailCZrobot = new BrowserFamily("Thumbnail.CZ robot")
+  case object ThumbnailCZrobot extends BrowserFamily("Thumbnail.CZ robot")
 
   /**
    * ThumbShots-Bot
    */
-  val ThumbShotsBot = new BrowserFamily("ThumbShots-Bot")
+  case object ThumbShotsBot extends BrowserFamily("ThumbShots-Bot")
 
   /**
    * thumbshots-de-Bot
    */
-  val thumbshotsdeBot = new BrowserFamily("thumbshots-de-Bot")
+  case object thumbshotsdeBot extends BrowserFamily("thumbshots-de-Bot")
 
   /**
    * Thumbshots.ru
    */
-  val Thumbshotsru = new BrowserFamily("Thumbshots.ru")
+  case object Thumbshotsru extends BrowserFamily("Thumbshots.ru")
 
   /**
    * Thunderbird
    */
-  val Thunderbird = new BrowserFamily("Thunderbird")
+  case object Thunderbird extends BrowserFamily("Thunderbird")
 
   /**
    * TinEye
    */
-  val TinEye = new BrowserFamily("TinEye")
+  case object TinEye extends BrowserFamily("TinEye")
 
   /**
    * Tizen Browser
    */
-  val TizenBrowser = new BrowserFamily("Tizen Browser")
+  case object TizenBrowser extends BrowserFamily("Tizen Browser")
 
   /**
    * Tjusig
    */
-  val Tjusig = new BrowserFamily("Tjusig")
+  case object Tjusig extends BrowserFamily("Tjusig")
 
   /**
    * Topicbot
    */
-  val Topicbot = new BrowserFamily("Topicbot")
+  case object Topicbot extends BrowserFamily("Topicbot")
 
   /**
    * Toread-Crawler
    */
-  val ToreadCrawler = new BrowserFamily("Toread-Crawler")
+  case object ToreadCrawler extends BrowserFamily("Toread-Crawler")
 
   /**
    * Touche
    */
-  val Touche = new BrowserFamily("Touche")
+  case object Touche extends BrowserFamily("Touche")
 
   /**
    * trendictionbot
    */
-  val trendictionbot = new BrowserFamily("trendictionbot")
+  case object trendictionbot extends BrowserFamily("trendictionbot")
 
   /**
    * Trileet NewsRoom
    */
-  val TrileetNewsRoom = new BrowserFamily("Trileet NewsRoom")
+  case object TrileetNewsRoom extends BrowserFamily("Trileet NewsRoom")
 
   /**
    * TT Explorer
    */
-  val TTExplorer = new BrowserFamily("TT Explorer")
+  case object TTExplorer extends BrowserFamily("TT Explorer")
 
   /**
    * Tulip Chain
    */
-  val TulipChain = new BrowserFamily("Tulip Chain")
+  case object TulipChain extends BrowserFamily("Tulip Chain")
 
   /**
    * TurnitinBot
    */
-  val TurnitinBot = new BrowserFamily("TurnitinBot")
+  case object TurnitinBot extends BrowserFamily("TurnitinBot")
 
   /**
    * TutorGigBot
    */
-  val TutorGigBot = new BrowserFamily("TutorGigBot")
+  case object TutorGigBot extends BrowserFamily("TutorGigBot")
 
   /**
    * TwengaBot
    */
-  val TwengaBot = new BrowserFamily("TwengaBot")
+  case object TwengaBot extends BrowserFamily("TwengaBot")
 
   /**
    * Twiceler
    */
-  val Twiceler = new BrowserFamily("Twiceler")
+  case object Twiceler extends BrowserFamily("Twiceler")
 
   /**
    * Twikle
    */
-  val Twikle = new BrowserFamily("Twikle")
+  case object Twikle extends BrowserFamily("Twikle")
 
   /**
    * Typhoeus
    */
-  val Typhoeus = new BrowserFamily("Typhoeus")
+  case object Typhoeus extends BrowserFamily("Typhoeus")
 
   /**
    * UASlinkChecker
    */
-  val UASlinkChecker = new BrowserFamily("UASlinkChecker")
+  case object UASlinkChecker extends BrowserFamily("UASlinkChecker")
 
   /**
    * UC Browser
    */
-  val UCBrowser = new BrowserFamily("UC Browser")
+  case object UCBrowser extends BrowserFamily("UC Browser")
 
   /**
    * UltraBrowser
    */
-  val UltraBrowser = new BrowserFamily("UltraBrowser ")
+  case object UltraBrowser extends BrowserFamily("UltraBrowser ")
 
   /**
    * UnisterBot
    */
-  val UnisterBot = new BrowserFamily("UnisterBot")
+  case object UnisterBot extends BrowserFamily("UnisterBot")
 
   /**
    * UnwindFetchor
    */
-  val UnwindFetchor = new BrowserFamily("UnwindFetchor")
+  case object UnwindFetchor extends BrowserFamily("UnwindFetchor")
 
   /**
    * updated
    */
-  val updated = new BrowserFamily("updated")
+  case object updated extends BrowserFamily("updated")
 
   /**
    * Updownerbot
    */
-  val Updownerbot = new BrowserFamily("Updownerbot")
+  case object Updownerbot extends BrowserFamily("Updownerbot")
 
   /**
    * UptimeDog
    */
-  val UptimeDog = new BrowserFamily("UptimeDog")
+  case object UptimeDog extends BrowserFamily("UptimeDog")
 
   /**
    * UptimeRobot
    */
-  val UptimeRobot = new BrowserFamily("UptimeRobot")
+  case object UptimeRobot extends BrowserFamily("UptimeRobot")
 
   /**
    * urlfan-bot
    */
-  val urlfanbot = new BrowserFamily("urlfan-bot")
+  case object urlfanbot extends BrowserFamily("urlfan-bot")
 
   /**
    * Urlfilebot (Urlbot)
    */
-  val UrlfilebotUrlbot = new BrowserFamily("Urlfilebot (Urlbot)")
+  case object UrlfilebotUrlbot extends BrowserFamily("Urlfilebot (Urlbot)")
 
   /**
    * urlgrabber
    */
-  val urlgrabber = new BrowserFamily("urlgrabber")
+  case object urlgrabber extends BrowserFamily("urlgrabber")
 
   /**
    * Usejump
    */
-  val Usejump = new BrowserFamily("Usejump")
+  case object Usejump extends BrowserFamily("Usejump")
 
   /**
    * uZard Web
    */
-  val uZardWeb = new BrowserFamily("uZard Web")
+  case object uZardWeb extends BrowserFamily("uZard Web")
 
   /**
    * Uzbl
    */
-  val Uzbl = new BrowserFamily("Uzbl")
+  case object Uzbl extends BrowserFamily("Uzbl")
 
   /**
    * Vagabondo
    */
-  val Vagabondo = new BrowserFamily("Vagabondo")
+  case object Vagabondo extends BrowserFamily("Vagabondo")
 
   /**
    * Validator.nu
    */
-  val Validatornu = new BrowserFamily("Validator.nu")
+  case object Validatornu extends BrowserFamily("Validator.nu")
 
   /**
    * VERASYS 2k
    */
-  val VERASYS2k = new BrowserFamily("VERASYS 2k")
+  case object VERASYS2k extends BrowserFamily("VERASYS 2k")
 
   /**
    * Vermut
    */
-  val Vermut = new BrowserFamily("Vermut")
+  case object Vermut extends BrowserFamily("Vermut")
 
   /**
    * Vespa Crawler
    */
-  val VespaCrawler = new BrowserFamily("Vespa Crawler")
+  case object VespaCrawler extends BrowserFamily("Vespa Crawler")
 
   /**
    * VideoSurf_bot
    */
-  val VideoSurfbot = new BrowserFamily("VideoSurf_bot")
+  case object VideoSurfbot extends BrowserFamily("VideoSurf_bot")
 
   /**
    * virus_detector
    */
-  val virusdetector = new BrowserFamily("virus_detector")
+  case object virusdetector extends BrowserFamily("virus_detector")
 
   /**
    * Visbot
    */
-  val Visbot = new BrowserFamily("Visbot")
+  case object Visbot extends BrowserFamily("Visbot")
 
   /**
    * VLC media player
    */
-  val VLCmediaplayer = new BrowserFamily("VLC media player")
+  case object VLCmediaplayer extends BrowserFamily("VLC media player")
 
   /**
    * VMBot
    */
-  val VMBot = new BrowserFamily("VMBot")
+  case object VMBot extends BrowserFamily("VMBot")
 
   /**
    * void-bot
    */
-  val voidbot = new BrowserFamily("void-bot")
+  case object voidbot extends BrowserFamily("void-bot")
 
   /**
    * VoilaBot
    */
-  val VoilaBot = new BrowserFamily("VoilaBot")
+  case object VoilaBot extends BrowserFamily("VoilaBot")
 
   /**
    * Vonkeror
    */
-  val Vonkeror = new BrowserFamily("Vonkeror")
+  case object Vonkeror extends BrowserFamily("Vonkeror")
 
   /**
    * VORTEX
    */
-  val VORTEX = new BrowserFamily("VORTEX")
+  case object VORTEX extends BrowserFamily("VORTEX")
 
   /**
    * voyager
    */
-  val voyager = new BrowserFamily("voyager")
+  case object voyager extends BrowserFamily("voyager")
 
   /**
    * Vuze
    */
-  val Vuze = new BrowserFamily("Vuze")
+  case object Vuze extends BrowserFamily("Vuze")
 
   /**
    * VWBot
    */
-  val VWBot = new BrowserFamily("VWBot")
+  case object VWBot extends BrowserFamily("VWBot")
 
   /**
    * W3C Checklink
    */
-  val W3CChecklink = new BrowserFamily("W3C Checklink")
+  case object W3CChecklink extends BrowserFamily("W3C Checklink")
 
   /**
    * W3C CSS Validator
    */
-  val W3CCSSValidator = new BrowserFamily("W3C CSS Validator")
+  case object W3CCSSValidator extends BrowserFamily("W3C CSS Validator")
 
   /**
    * W3C mobileOK Checker
    */
-  val W3CmobileOKChecker = new BrowserFamily("W3C mobileOK Checker")
+  case object W3CmobileOKChecker extends BrowserFamily("W3C mobileOK Checker")
 
   /**
    * W3C Validator
    */
-  val W3CValidator = new BrowserFamily("W3C Validator")
+  case object W3CValidator extends BrowserFamily("W3C Validator")
 
   /**
    * w3m
    */
-  val w3m = new BrowserFamily("w3m")
+  case object w3m extends BrowserFamily("w3m")
 
   /**
    * WapTiger
    */
-  val WapTiger = new BrowserFamily("WapTiger")
+  case object WapTiger extends BrowserFamily("WapTiger")
 
   /**
    * WASALive-Bot
    */
-  val WASALiveBot = new BrowserFamily("WASALive-Bot")
+  case object WASALiveBot extends BrowserFamily("WASALive-Bot")
 
   /**
    * WatchMouse
    */
-  val WatchMouse = new BrowserFamily("WatchMouse")
+  case object WatchMouse extends BrowserFamily("WatchMouse")
 
   /**
    * WBSearchBot
    */
-  val WBSearchBot = new BrowserFamily("WBSearchBot")
+  case object WBSearchBot extends BrowserFamily("WBSearchBot")
 
   /**
    * WDG CSSCheck
    */
-  val WDGCSSCheck = new BrowserFamily("WDG CSSCheck")
+  case object WDGCSSCheck extends BrowserFamily("WDG CSSCheck")
 
   /**
    * WDG Page Valet
    */
-  val WDGPageValet = new BrowserFamily("WDG Page Valet")
+  case object WDGPageValet extends BrowserFamily("WDG Page Valet")
 
   /**
    * WDG Validator
    */
-  val WDGValidator = new BrowserFamily("WDG Validator")
+  case object WDGValidator extends BrowserFamily("WDG Validator")
 
   /**
    * Web-sniffer
    */
-  val Websniffer = new BrowserFamily("Web-sniffer")
+  case object Websniffer extends BrowserFamily("Web-sniffer")
 
   /**
    * WebAlta Crawler
    */
-  val WebAltaCrawler = new BrowserFamily("WebAlta Crawler")
+  case object WebAltaCrawler extends BrowserFamily("WebAlta Crawler")
 
   /**
    * WebarooBot
    */
-  val WebarooBot = new BrowserFamily("WebarooBot")
+  case object WebarooBot extends BrowserFamily("WebarooBot")
 
   /**
    * WebCollage
    */
-  val WebCollage = new BrowserFamily("WebCollage")
+  case object WebCollage extends BrowserFamily("WebCollage")
 
   /**
    * WebCopier
    */
-  val WebCopier = new BrowserFamily("WebCopier")
+  case object WebCopier extends BrowserFamily("WebCopier")
 
   /**
    * webfetch
    */
-  val webfetch = new BrowserFamily("webfetch")
+  case object webfetch extends BrowserFamily("webfetch")
 
   /**
    * webfs
    */
-  val webfs = new BrowserFamily("webfs")
+  case object webfs extends BrowserFamily("webfs")
 
   /**
    * Webian Shell
    */
-  val WebianShell = new BrowserFamily("Webian Shell")
+  case object WebianShell extends BrowserFamily("Webian Shell")
 
   /**
    * WebImages
    */
-  val WebImages = new BrowserFamily("WebImages")
+  case object WebImages extends BrowserFamily("WebImages")
 
   /**
    * webinatorbot
    */
-  val webinatorbot = new BrowserFamily("webinatorbot")
+  case object webinatorbot extends BrowserFamily("webinatorbot")
 
   /**
    * webmastercoffee
    */
-  val webmastercoffee = new BrowserFamily("webmastercoffee")
+  case object webmastercoffee extends BrowserFamily("webmastercoffee")
 
   /**
    * WebNL
    */
-  val WebNL = new BrowserFamily("WebNL")
+  case object WebNL extends BrowserFamily("WebNL")
 
   /**
    * WebRankSpider
    */
-  val WebRankSpider = new BrowserFamily("WebRankSpider")
+  case object WebRankSpider extends BrowserFamily("WebRankSpider")
 
   /**
    * WebRender
    */
-  val WebRender = new BrowserFamily("WebRender")
+  case object WebRender extends BrowserFamily("WebRender")
 
   /**
    * Webscope Crawler
    */
-  val WebscopeCrawler = new BrowserFamily("Webscope Crawler")
+  case object WebscopeCrawler extends BrowserFamily("Webscope Crawler")
 
   /**
    * WebStripper
    */
-  val WebStripper = new BrowserFamily("WebStripper")
+  case object WebStripper extends BrowserFamily("WebStripper")
 
   /**
    * WebWatch/Robot_txtChecker
    */
-  val WebWatchRobottxtChecker = new BrowserFamily("WebWatch/Robot_txtChecker")
+  case object WebWatchRobottxtChecker extends BrowserFamily("WebWatch/Robot_txtChecker")
 
   /**
    * WebZIP
    */
-  val WebZIP = new BrowserFamily("WebZIP")
+  case object WebZIP extends BrowserFamily("WebZIP")
 
   /**
    * wectar
    */
-  val wectar = new BrowserFamily("wectar")
+  case object wectar extends BrowserFamily("wectar")
 
   /**
    * Weltweitimnetz Browser
    */
-  val WeltweitimnetzBrowser = new BrowserFamily("Weltweitimnetz Browser")
+  case object WeltweitimnetzBrowser extends BrowserFamily("Weltweitimnetz Browser")
 
   /**
    * WeSEE:Search
    */
-  val WeSEESearch = new BrowserFamily("WeSEE:Search")
+  case object WeSEESearch extends BrowserFamily("WeSEE:Search")
 
   /**
    * Wget
    */
-  val Wget = new BrowserFamily("Wget")
+  case object Wget extends BrowserFamily("Wget")
 
   /**
    * Whoismindbot
    */
-  val Whoismindbot = new BrowserFamily("Whoismindbot")
+  case object Whoismindbot extends BrowserFamily("Whoismindbot")
 
   /**
    * WikioFeedBot
    */
-  val WikioFeedBot = new BrowserFamily("WikioFeedBot")
+  case object WikioFeedBot extends BrowserFamily("WikioFeedBot")
 
   /**
    * wikiwix-bot
    */
-  val wikiwixbot = new BrowserFamily("wikiwix-bot")
+  case object wikiwixbot extends BrowserFamily("wikiwix-bot")
 
   /**
    * Willow Internet Crawler
    */
-  val WillowInternetCrawler = new BrowserFamily("Willow Internet Crawler")
+  case object WillowInternetCrawler extends BrowserFamily("Willow Internet Crawler")
 
   /**
    * Winamp for Android
    */
-  val WinampforAndroid = new BrowserFamily("Winamp for Android")
+  case object WinampforAndroid extends BrowserFamily("Winamp for Android")
 
   /**
    * Windows Live Mail
    */
-  val WindowsLiveMail = new BrowserFamily("Windows Live Mail")
+  case object WindowsLiveMail extends BrowserFamily("Windows Live Mail")
 
   /**
    * Windows Media Player
    */
-  val WindowsMediaPlayer = new BrowserFamily("Windows Media Player")
+  case object WindowsMediaPlayer extends BrowserFamily("Windows Media Player")
 
   /**
    * WinHTTP
    */
-  val WinHTTP = new BrowserFamily("WinHTTP")
+  case object WinHTTP extends BrowserFamily("WinHTTP")
 
   /**
    * WinkBot
    */
-  val WinkBot = new BrowserFamily("WinkBot")
+  case object WinkBot extends BrowserFamily("WinkBot")
 
   /**
    * WinPodder
    */
-  val WinPodder = new BrowserFamily("WinPodder")
+  case object WinPodder extends BrowserFamily("WinPodder")
 
   /**
    * WinWap
    */
-  val WinWap = new BrowserFamily("WinWap")
+  case object WinWap extends BrowserFamily("WinWap")
 
   /**
    * WinWebBot
    */
-  val WinWebBot = new BrowserFamily("WinWebBot")
+  case object WinWebBot extends BrowserFamily("WinWebBot")
 
   /**
    * WIRE
    */
-  val WIRE = new BrowserFamily("WIRE")
+  case object WIRE extends BrowserFamily("WIRE")
 
   /**
    * wKiosk
    */
-  val wKiosk = new BrowserFamily("wKiosk")
+  case object wKiosk extends BrowserFamily("wKiosk")
 
   /**
    * WMCAI_robot
    */
-  val WMCAIrobot = new BrowserFamily("WMCAI_robot")
+  case object WMCAIrobot extends BrowserFamily("WMCAI_robot")
 
   /**
    * Woko
    */
-  val Woko = new BrowserFamily("Woko")
+  case object Woko extends BrowserFamily("Woko")
 
   /**
    * WordPress pingback
    */
-  val WordPresspingback = new BrowserFamily("WordPress pingback")
+  case object WordPresspingback extends BrowserFamily("WordPress pingback")
 
   /**
    * woriobot
    */
-  val woriobot = new BrowserFamily("woriobot")
+  case object woriobot extends BrowserFamily("woriobot")
 
   /**
    * WorldWideWeb
    */
-  val WorldWideWeb = new BrowserFamily("WorldWideWeb")
+  case object WorldWideWeb extends BrowserFamily("WorldWideWeb")
 
   /**
    * wOSBrowser
    */
-  val wOSBrowser = new BrowserFamily("wOSBrowser")
+  case object wOSBrowser extends BrowserFamily("wOSBrowser")
 
   /**
    * Wotbox
    */
-  val Wotbox = new BrowserFamily("Wotbox")
+  case object Wotbox extends BrowserFamily("Wotbox")
 
   /**
    * wsAnalyzer
    */
-  val wsAnalyzer = new BrowserFamily("wsAnalyzer")
+  case object wsAnalyzer extends BrowserFamily("wsAnalyzer")
 
   /**
    * www.fi crawler
    */
-  val wwwficrawler = new BrowserFamily("www.fi crawler")
+  case object wwwficrawler extends BrowserFamily("www.fi crawler")
 
   /**
    * WWW::Mechanize
    */
-  val WWWMechanize = new BrowserFamily("WWW::Mechanize")
+  case object WWWMechanize extends BrowserFamily("WWW::Mechanize")
 
   /**
    * wwwster
    */
-  val wwwster = new BrowserFamily("wwwster")
+  case object wwwster extends BrowserFamily("wwwster")
 
   /**
    * Wyzo
    */
-  val Wyzo = new BrowserFamily("Wyzo")
+  case object Wyzo extends BrowserFamily("Wyzo")
 
   /**
    * X-Smiles
    */
-  val XSmiles = new BrowserFamily("X-Smiles")
+  case object XSmiles extends BrowserFamily("X-Smiles")
 
   /**
    * Xaldon WebSpider
    */
-  val XaldonWebSpider = new BrowserFamily("Xaldon WebSpider")
+  case object XaldonWebSpider extends BrowserFamily("Xaldon WebSpider")
 
   /**
    * XBMC
    */
-  val XBMC = new BrowserFamily("XBMC")
+  case object XBMC extends BrowserFamily("XBMC")
 
   /**
    * Xenu
    */
-  val Xenu = new BrowserFamily("Xenu")
+  case object Xenu extends BrowserFamily("Xenu")
 
   /**
    * xine
    */
-  val xine = new BrowserFamily("xine")
+  case object xine extends BrowserFamily("xine")
 
   /**
    * XmarksFetch
    */
-  val XmarksFetch = new BrowserFamily("XmarksFetch")
+  case object XmarksFetch extends BrowserFamily("XmarksFetch")
 
   /**
    * XML-RPC for PHP
    */
-  val XMLRPCforPHP = new BrowserFamily("XML-RPC for PHP")
+  case object XMLRPCforPHP extends BrowserFamily("XML-RPC for PHP")
 
   /**
    * XML-RPC for Ruby
    */
-  val XMLRPCforRuby = new BrowserFamily("XML-RPC for Ruby")
+  case object XMLRPCforRuby extends BrowserFamily("XML-RPC for Ruby")
 
   /**
    * XML Sitemaps Generator
    */
-  val XMLSitemapsGenerator = new BrowserFamily("XML Sitemaps Generator")
+  case object XMLSitemapsGenerator extends BrowserFamily("XML Sitemaps Generator")
 
   /**
    * XMPlay
    */
-  val XMPlay = new BrowserFamily("XMPlay")
+  case object XMPlay extends BrowserFamily("XMPlay")
 
   /**
    * Yaanb
    */
-  val Yaanb = new BrowserFamily("Yaanb")
+  case object Yaanb extends BrowserFamily("Yaanb")
 
   /**
    * yacybot
    */
-  val yacybot = new BrowserFamily("yacybot")
+  case object yacybot extends BrowserFamily("yacybot")
 
   /**
    * Yahoo!
    */
-  val Yahoo = new BrowserFamily("Yahoo!")
+  case object Yahoo extends BrowserFamily("Yahoo!")
 
   /**
    * Yahoo! JAPAN
    */
-  val YahooJAPAN = new BrowserFamily("Yahoo! JAPAN")
+  case object YahooJAPAN extends BrowserFamily("Yahoo! JAPAN")
 
   /**
    * YahooFeedSeeker
    */
-  val YahooFeedSeeker = new BrowserFamily("YahooFeedSeeker")
+  case object YahooFeedSeeker extends BrowserFamily("YahooFeedSeeker")
 
   /**
    * Yandex.Browser
    */
-  val YandexBrowser = new BrowserFamily("Yandex.Browser")
+  case object YandexBrowser extends BrowserFamily("Yandex.Browser")
 
   /**
    * YandexBot
    */
-  val YandexBot = new BrowserFamily("YandexBot")
+  case object YandexBot extends BrowserFamily("YandexBot")
 
   /**
    * Yanga
    */
-  val Yanga = new BrowserFamily("Yanga")
+  case object Yanga extends BrowserFamily("Yanga")
 
   /**
    * YeahReader
    */
-  val YeahReader = new BrowserFamily("YeahReader")
+  case object YeahReader extends BrowserFamily("YeahReader")
 
   /**
    * YioopBot
    */
-  val YioopBot = new BrowserFamily("YioopBot")
+  case object YioopBot extends BrowserFamily("YioopBot")
 
   /**
    * YodaoBot
    */
-  val YodaoBot = new BrowserFamily("YodaoBot")
+  case object YodaoBot extends BrowserFamily("YodaoBot")
 
   /**
    * Yoono Bot
    */
-  val YoonoBot = new BrowserFamily("Yoono Bot")
+  case object YoonoBot extends BrowserFamily("Yoono Bot")
 
   /**
    * YoudaoBot
    */
-  val YoudaoBot = new BrowserFamily("YoudaoBot")
+  case object YoudaoBot extends BrowserFamily("YoudaoBot")
 
   /**
    * YowedoBot
    */
-  val YowedoBot = new BrowserFamily("YowedoBot")
+  case object YowedoBot extends BrowserFamily("YowedoBot")
 
   /**
    * YRSpider
    */
-  val YRSpider = new BrowserFamily("YRSpider")
+  case object YRSpider extends BrowserFamily("YRSpider")
 
   /**
    * ZACATEK_CZ
    */
-  val ZACATEKCZ = new BrowserFamily("ZACATEK_CZ")
+  case object ZACATEKCZ extends BrowserFamily("ZACATEK_CZ")
 
   /**
    * zBrowser
    */
-  val zBrowser = new BrowserFamily("zBrowser")
+  case object zBrowser extends BrowserFamily("zBrowser")
 
   /**
    * Zend_Http_Client
    */
-  val ZendHttpClient = new BrowserFamily("Zend_Http_Client")
+  case object ZendHttpClient extends BrowserFamily("Zend_Http_Client")
 
   /**
    * Zeusbot
    */
-  val Zeusbot = new BrowserFamily("Zeusbot")
+  case object Zeusbot extends BrowserFamily("Zeusbot")
 
   /**
    * ZipZap
    */
-  val ZipZap = new BrowserFamily("ZipZap")
+  case object ZipZap extends BrowserFamily("ZipZap")
 
   /**
    * ZookaBot
    */
-  val ZookaBot = new BrowserFamily("ZookaBot")
+  case object ZookaBot extends BrowserFamily("ZookaBot")
 
   /**
    * ZoomSpider (ZSEBOT)
    */
-  val ZoomSpiderZSEBOT = new BrowserFamily("ZoomSpider (ZSEBOT)")
+  case object ZoomSpiderZSEBOT extends BrowserFamily("ZoomSpider (ZSEBOT)")
 
   /**
    * ZyBorg
    */
-  val Zyborg = new BrowserFamily("ZyBorg")
+  case object Zyborg extends BrowserFamily("ZyBorg")
+
+  val values = findValues.toVector
 
   def byFriendlyName(name: String) = values.find(b => b.friendlyName == name).getOrElse(Unknown)
 }

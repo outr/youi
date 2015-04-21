@@ -5,10 +5,12 @@ import org.powerscala.enum.{Enumerated, EnumEntry}
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */
-sealed class ValidationResult extends EnumEntry
+sealed abstract class ValidationResult extends EnumEntry
 
 object ValidationResult extends Enumerated[ValidationResult] {
-  val Success = new ValidationResult
-  val Error = new ValidationResult
-  val Warning = new ValidationResult
+  case object Success extends ValidationResult
+  case object Error extends ValidationResult
+  case object Warning extends ValidationResult
+
+  val values = findValues.toVector
 }

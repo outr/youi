@@ -59,7 +59,7 @@ class StyleSheetParsingSpec extends WordSpec with Matchers {
       sheets.length should be(1)
       val sheet1 = sheets.head
       sheet1.selectorString should be("div .test")
-      sheet1.backgroundColor() should be(Color("#00ff00"))
+      sheet1.backgroundColor() should be(Color.byName("#00ff00").get)
     }
     "properly parse out a single-line two-part selector" in {
       val sheets = StyleSheet.parse(null, css4)
@@ -127,7 +127,7 @@ class StyleSheetParsingSpec extends WordSpec with Matchers {
       val sheets = StyleSheet.parse(null, css9)
       sheets.length should be(1)
       val sheet1 = sheets.head
-      sheet1.backgroundImage() should be(Resource("http://www.testimage.com/test.jpg"))
+      sheet1.backgroundImage() should be(Resource.url("http://www.testimage.com/test.jpg"))
     }
     "properly parse out background-position" in {
       val sheets = StyleSheet.parse(null, css10)

@@ -70,11 +70,11 @@ class NavBar(brand: Option[BodyChild] = None, brandLink: Option[String] = None, 
   }
 }
 
-class NavBarTheme(val className: String) extends EnumEntry
+case class NavBarTheme(className: String)
 
-object NavBarTheme extends Enumerated[NavBarTheme] {
-  val Light = new NavBarTheme("navbar-default")
-  val Dark = new NavBarTheme("navbar-inverse")
+object NavBarTheme {
+  val Light = NavBarTheme("navbar-default")
+  val Dark = NavBarTheme("navbar-inverse")
 }
 
 class NavBarDropdown(navBar: NavBar, label: BodyChild) extends ListItem {

@@ -7,11 +7,13 @@ import org.hyperscala.persistence.EnumEntryPersistence
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class Visibility private(val value: String) extends EnumEntryAttributeValue
+sealed abstract class Visibility private(val value: String) extends EnumEntryAttributeValue
 
 object Visibility extends Enumerated[Visibility] with EnumEntryPersistence[Visibility] {
-  val Visible = new Visibility("visible")
-  val Hidden = new Visibility("hidden")
-  val Collapse = new Visibility("collapse")
-  val Inherit = new Visibility("inherit")
+  case object Visible extends Visibility("visible")
+  case object Hidden extends Visibility("hidden")
+  case object Collapse extends Visibility("collapse")
+  case object Inherit extends Visibility("inherit")
+
+  val values = findValues.toVector
 }

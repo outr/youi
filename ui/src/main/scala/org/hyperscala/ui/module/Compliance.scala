@@ -11,15 +11,15 @@ import org.hyperscala.web.Webpage
  * @author Matt Hicks <matt@outr.com>
  */
 class Compliance(t: HTMLTag) {
-  implicit def transformPersistence = Transform
+  implicit def transformPersistence: ValuePersistence[Transform] = Transform
 
-  val IEZoom = new Style[Double]("zoom")
-  val FirefoxTransform = new Style[Transform]("-moz-transform")
-  val FirefoxTransformOrigin = new Style[Double]("-moz-transform-origin")
-  val OperaTransform = new Style[Transform]("-o-transform")
-  val OperaTransformOrigin = new Style[Double]("-o-transform-origin")
-  val WebkitTransform = new Style[Transform]("-webkit-transform")
-  val WebkitTransformOrigin = new Style[Double]("-webkit-transform-origin")
+  val IEZoom = Style[Double]("zoom")
+  val FirefoxTransform = Style[Transform]("-moz-transform")
+  val FirefoxTransformOrigin = Style[Double]("-moz-transform-origin")
+  val OperaTransform = Style[Transform]("-o-transform")
+  val OperaTransformOrigin = Style[Double]("-o-transform-origin")
+  val WebkitTransform = Style[Transform]("-webkit-transform")
+  val WebkitTransformOrigin = Style[Double]("-webkit-transform-origin")
 
   def scalePercent(webpage: Webpage, v: Int) = scale(webpage, v / 100.0)
   def scalePercent(webpage: Webpage) = math.round(scale(webpage) * 100.0).toInt

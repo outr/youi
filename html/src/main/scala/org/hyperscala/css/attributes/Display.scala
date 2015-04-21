@@ -8,23 +8,25 @@ import org.hyperscala.EnumEntryAttributeValue
  * NOTE: This file has been generated. Do not modify directly!
  * @author Matt Hicks <matt@outr.com>
  */
-sealed class Display(val value: String) extends EnumEntryAttributeValue
+sealed abstract class Display(val value: String) extends EnumEntryAttributeValue
 
 object Display extends Enumerated[Display] with EnumEntryPersistence[Display] {
-  val ListItem = new Display("list-item")
-  val Inline = new Display("inline")
-  val TableRowGroup = new Display("table-row-group")
-  val TableCell = new Display("table-cell")
-  val InlineBlock = new Display("inline-block")
-  val TableCaption = new Display("table-caption")
-  val TableColumn = new Display("table-column")
-  val TableRow = new Display("table-row")
-  val Inherit = new Display("inherit")
-  val Table = new Display("table")
-  val TableFooterGroup = new Display("table-footer-group")
-  val InlineTable = new Display("inline-table")
-  val None = new Display("none")
-  val TableColumnGroup = new Display("table-column-group")
-  val Block = new Display("block")
-  val TableHeaderGroup = new Display("table-header-group")
+  case object ListItem extends Display("list-item")
+  case object Inline extends Display("inline")
+  case object TableRowGroup extends Display("table-row-group")
+  case object TableCell extends Display("table-cell")
+  case object InlineBlock extends Display("inline-block")
+  case object TableCaption extends Display("table-caption")
+  case object TableColumn extends Display("table-column")
+  case object TableRow extends Display("table-row")
+  case object Inherit extends Display("inherit")
+  case object Table extends Display("table")
+  case object TableFooterGroup extends Display("table-footer-group")
+  case object InlineTable extends Display("inline-table")
+  case object None extends Display("none")
+  case object TableColumnGroup extends Display("table-column-group")
+  case object Block extends Display("block")
+  case object TableHeaderGroup extends Display("table-header-group")
+
+  val values = findValues.toVector
 }

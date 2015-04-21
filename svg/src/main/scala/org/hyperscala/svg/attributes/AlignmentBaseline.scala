@@ -4,20 +4,22 @@ package org.hyperscala.svg.attributes
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */
-sealed class AlignmentBaseline extends AttributeEntry[AlignmentBaseline](parent = AlignmentBaseline)
+sealed abstract class AlignmentBaseline extends AttributeEntry[AlignmentBaseline](parent = AlignmentBaseline)
 
 object AlignmentBaseline extends AttributeObject[AlignmentBaseline] {
-  val Auto = new AlignmentBaseline
-  val Baseline = new AlignmentBaseline
-  val BeforeEdge = new AlignmentBaseline
-  val TextBeforeEdge = new AlignmentBaseline
-  val Middle = new AlignmentBaseline
-  val Central = new AlignmentBaseline
-  val AfterEdge = new AlignmentBaseline
-  val TextAfterEdge = new AlignmentBaseline
-  val Ideographic = new AlignmentBaseline
-  val Alphabetic = new AlignmentBaseline
-  val Hanging = new AlignmentBaseline
-  val Mathematical = new AlignmentBaseline
-  val Inherit = new AlignmentBaseline
+  case object Auto extends AlignmentBaseline
+  case object Baseline extends AlignmentBaseline
+  case object BeforeEdge extends AlignmentBaseline
+  case object TextBeforeEdge extends AlignmentBaseline
+  case object Middle extends AlignmentBaseline
+  case object Central extends AlignmentBaseline
+  case object AfterEdge extends AlignmentBaseline
+  case object TextAfterEdge extends AlignmentBaseline
+  case object Ideographic extends AlignmentBaseline
+  case object Alphabetic extends AlignmentBaseline
+  case object Hanging extends AlignmentBaseline
+  case object Mathematical extends AlignmentBaseline
+  case object Inherit extends AlignmentBaseline
+
+  val values = findValues.toVector
 }

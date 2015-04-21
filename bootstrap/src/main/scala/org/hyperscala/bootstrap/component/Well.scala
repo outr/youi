@@ -18,10 +18,12 @@ class Well extends tag.Div {
   val wellType = new ClassProperty[WellType](this, WellType.Default)
 }
 
-class WellType(val className: Option[String]) extends EnumEntry with ClassName
+sealed abstract class WellType(val className: Option[String]) extends EnumEntry with ClassName
 
 object WellType extends Enumerated[WellType] {
-  val Default = new WellType(Some("well-default"))
-  val Small = new WellType(Some("well-sm"))
-  val Larger = new WellType(Some("well-lg"))
+  case object Default extends WellType(Some("well-default"))
+  case object Small extends WellType(Some("well-sm"))
+  case object Larger extends WellType(Some("well-lg"))
+
+  val values = findValues.toVector
 }

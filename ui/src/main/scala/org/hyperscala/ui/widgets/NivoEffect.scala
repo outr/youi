@@ -5,25 +5,27 @@ import org.powerscala.enum.{Enumerated, EnumEntry}
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-sealed class NivoEffect extends EnumEntry {
+sealed abstract class NivoEffect extends EnumEntry {
   def value = name.charAt(0).toLower + name.substring(1)
 }
 
 object NivoEffect extends Enumerated[NivoEffect] {
-  val SliceDown = new NivoEffect
-  val SlideDownLeft = new NivoEffect
-  val SliceUp = new NivoEffect
-  val SliceUpLeft = new NivoEffect
-  val SliceUpDown = new NivoEffect
-  val SliceUpDownLeft = new NivoEffect
-  val Fold = new NivoEffect
-  val Fade = new NivoEffect
-  val Random = new NivoEffect
-  val SlideInRight = new NivoEffect
-  val SlideInLeft = new NivoEffect
-  val BoxRandom = new NivoEffect
-  val BoxRain = new NivoEffect
-  val BoxRainReverse = new NivoEffect
-  val BoxRainGrow = new NivoEffect
-  val BoxRainGrowReverse = new NivoEffect
+  case object SliceDown extends NivoEffect
+  case object SlideDownLeft extends NivoEffect
+  case object SliceUp extends NivoEffect
+  case object SliceUpLeft extends NivoEffect
+  case object SliceUpDown extends NivoEffect
+  case object SliceUpDownLeft extends NivoEffect
+  case object Fold extends NivoEffect
+  case object Fade extends NivoEffect
+  case object Random extends NivoEffect
+  case object SlideInRight extends NivoEffect
+  case object SlideInLeft extends NivoEffect
+  case object BoxRandom extends NivoEffect
+  case object BoxRain extends NivoEffect
+  case object BoxRainReverse extends NivoEffect
+  case object BoxRainGrow extends NivoEffect
+  case object BoxRainGrowReverse extends NivoEffect
+
+  val values = findValues.toVector
 }

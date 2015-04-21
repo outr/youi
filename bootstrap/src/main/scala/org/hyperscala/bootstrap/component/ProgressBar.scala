@@ -67,12 +67,14 @@ object ProgressBar {
   }
 }
 
-class ProgressType(val className: String) extends EnumEntry
+sealed abstract class ProgressType(val className: String) extends EnumEntry
 
 object ProgressType extends Enumerated[ProgressType] {
-  val Default = new ProgressType("progress-bar-default")
-  val Success = new ProgressType("progress-bar-success")
-  val Info = new ProgressType("progress-bar-info")
-  val Warning = new ProgressType("progress-bar-warning")
-  val Danger = new ProgressType("progress-bar-danger")
+  case object Default extends ProgressType("progress-bar-default")
+  case object Success extends ProgressType("progress-bar-success")
+  case object Info extends ProgressType("progress-bar-info")
+  case object Warning extends ProgressType("progress-bar-warning")
+  case object Danger extends ProgressType("progress-bar-danger")
+
+  val values = findValues.toVector
 }

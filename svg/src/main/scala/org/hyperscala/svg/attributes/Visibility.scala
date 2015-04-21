@@ -3,10 +3,12 @@ package org.hyperscala.svg.attributes
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-sealed class Visibility extends AttributeEntry[Visibility](parent = Visibility)
+sealed abstract class Visibility extends AttributeEntry[Visibility](parent = Visibility)
 
 object Visibility extends AttributeObject[Visibility] {
-  val Visible = new Visibility
-  val Hidden = new Visibility
-  val Inherit = new Visibility
+  case object Visible extends Visibility
+  case object Hidden extends Visibility
+  case object Inherit extends Visibility
+
+  val values = findValues.toVector
 }

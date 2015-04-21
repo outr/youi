@@ -3,13 +3,15 @@ package org.hyperscala.svg.attributes
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */
-sealed class TextDecoration extends AttributeEntry[TextDecoration](parent = TextDecoration)
+sealed abstract class TextDecoration extends AttributeEntry[TextDecoration](parent = TextDecoration)
 
 object TextDecoration extends AttributeObject[TextDecoration] {
-  val None = new TextDecoration
-  val Underline = new TextDecoration
-  val Overline = new TextDecoration
-  val LineThrough = new TextDecoration
-  val Blink = new TextDecoration
-  val Inherit = new TextDecoration
+  case object None extends TextDecoration
+  case object Underline extends TextDecoration
+  case object Overline extends TextDecoration
+  case object LineThrough extends TextDecoration
+  case object Blink extends TextDecoration
+  case object Inherit extends TextDecoration
+
+  val values = findValues.toVector
 }

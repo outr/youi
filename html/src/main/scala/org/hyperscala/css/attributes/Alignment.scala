@@ -8,12 +8,14 @@ import org.hyperscala.EnumEntryAttributeValue
  * NOTE: This file has been generated. Do not modify directly!
  * @author Matt Hicks <matt@outr.com>
  */
-class Alignment private(val value: String) extends EnumEntryAttributeValue
+sealed abstract class Alignment(val value: String) extends EnumEntryAttributeValue
 
 object Alignment extends Enumerated[Alignment] with EnumEntryPersistence[Alignment] {
-  val Justify = new Alignment("justify")
-  val Center = new Alignment("center")
-  val Inherit = new Alignment("inherit")
-  val Left = new Alignment("left")
-  val Right = new Alignment("right")
+  case object Justify extends Alignment("justify")
+  case object Center extends Alignment("center")
+  case object Inherit extends Alignment("inherit")
+  case object Left extends Alignment("left")
+  case object Right extends Alignment("right")
+
+  val values = findValues.toVector
 }

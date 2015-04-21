@@ -1,8 +1,8 @@
 package org.hyperscala.css.attributes
 
-import org.powerscala.enum.{EnumEntry, Enumerated}
-import org.hyperscala.persistence.EnumEntryPersistence
-import org.hyperscala.EnumEntryAttributeValue
+import org.hyperscala.AttributeValue
+import org.hyperscala.persistence.ValuePersistence
+import org.powerscala.enum.{Enumerated, EnumEntry}
 
 /**
  * Represents CSS length as specified here:
@@ -11,15 +11,11 @@ import org.hyperscala.EnumEntryAttributeValue
  *
  * @author Matt Hicks <matt@outr.com>
  */
-sealed trait Length extends EnumEntryAttributeValue {
+sealed trait Length extends AttributeValue {
   def number: Double
   def +(value: Double): Length
 
-  override def toString() = if (name != null) {
-    super.toString()
-  } else {
-    value
-  }
+  override def toString = value
 }
 
 trait NumericLength extends Length with FontSize with VerticalAlignment {
@@ -137,37 +133,49 @@ case class ViewportWidthLength(number: Double) extends NumericLength {
   def lengthType = "vw"
 }
 
-object Length extends Enumerated[Length] with EnumEntryPersistence[Length] {
+object Length extends ValuePersistence[Length] {
   val Auto = AutoLength
   val Inherit = InheritLength
   def Pixels(v: Double) = PixelLength(v)
   def Centimeters(v: Double) = CentimeterLength(v)
   def Percent(v: Double) = PercentLength(v)
 
-  override def apply(name: String) = get(name).getOrElse(throw new RuntimeException(s"Length not found for value: $name."))
+  def apply(name: String) = get(name).getOrElse(throw new RuntimeException(s"Length not found for value: $name."))
 
-  override def get(name: String, caseSensitive: Boolean = false) = super.get(name, caseSensitive) match {
-    case Some(l) => Some(l)
-    case None if name == null => None
-    case None => NumericLength.get(name.toLowerCase)
+  def get(name: String) = if (name != null) {
+    name.toLowerCase match {
+      case "auto" => Some(Auto)
+      case "inherit" => Some(Inherit)
+      case n => NumericLength.get(n)
+    }
+  } else {
+    None
   }
+
+  def unapply(name: String) = get(name)
+
+  override def fromString(s: String, name: String, clazz: Class[_]) = apply(s)
+
+  override def toString(t: Length, name: String, clazz: Class[_]) = t.value
 }
 
-class LengthType private(val value: String) extends EnumEntry
+sealed abstract class LengthType(val value: String) extends EnumEntry
 
 object LengthType extends Enumerated[LengthType] {
-  val Ch = new LengthType("ch")
-  val Centimeter = new LengthType("cm")
-  val Em = new LengthType("em")
-  val Ex = new LengthType("ex")
-  val Inch = new LengthType("in")
-  val Millimeter = new LengthType("mm")
-  val Pica = new LengthType("pc")
-  val Pixel = new LengthType("px")
-  val Point = new LengthType("pt")
-  val Rem = new LengthType("rem")
-  val ViewportHeight = new LengthType("vh")
-  val ViewportMinimum = new LengthType("vmin")
-  val ViewportMaximum = new LengthType("vmax")
-  val ViewportWidth = new LengthType("vw")
+  case object Ch extends LengthType("ch")
+  case object Centimeter extends LengthType("cm")
+  case object Em extends LengthType("em")
+  case object Ex extends LengthType("ex")
+  case object Inch extends LengthType("in")
+  case object Millimeter extends LengthType("mm")
+  case object Pica extends LengthType("pc")
+  case object Pixel extends LengthType("px")
+  case object Point extends LengthType("pt")
+  case object Rem extends LengthType("rem")
+  case object ViewportHeight extends LengthType("vh")
+  case object ViewportMinimum extends LengthType("vmin")
+  case object ViewportMaximum extends LengthType("vmax")
+  case object ViewportWidth extends LengthType("vw")
+
+  val values = findValues.toVector
 }

@@ -1,16 +1,15 @@
 package org.hyperscala.html.attributes
 
-import org.powerscala.enum.Enumerated
-import org.hyperscala.persistence.EnumEntryPersistence
-import org.hyperscala.EnumEntryAttributeValue
+import org.hyperscala.persistence.CaseClassPersistence
+import org.hyperscala.AttributeValue
 
 /**
  * NOTE: This file has been generated. Do not modify directly!
  * @author Matt Hicks <matt@outr.com>
  */
-class Relationship private(val value: String) extends EnumEntryAttributeValue
+case class Relationship(value: String) extends AttributeValue
 
-object Relationship extends Enumerated[Relationship] with EnumEntryPersistence[Relationship] {
+object Relationship extends CaseClassPersistence[Relationship] {
   val Alternate = new Relationship("alternate")
   val Archives = new Relationship("archives")
   val Author = new Relationship("author")
@@ -33,9 +32,4 @@ object Relationship extends Enumerated[Relationship] with EnumEntryPersistence[R
   val SideBar = new Relationship("sidebar")
   val Tag = new Relationship("tag")
   val Up = new Relationship("up")
-
-  override def apply(name: String) = get(name) match {
-    case Some(r) => r
-    case None => new Relationship(name)
-  }
 }

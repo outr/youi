@@ -5,24 +5,26 @@ import org.powerscala.enum.{Enumerated, EnumEntry}
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class Scope private() extends EnumEntry
+sealed abstract class Scope extends EnumEntry
 
 object Scope extends Enumerated[Scope] {
   /**
    * Defines a single instance that is shared across all sessions, users, and browsers.
    */
-  val Application = new Scope
+  case object Application extends Scope
   /**
    * Defines an instance per browser session.
    */
-  val Session = new Scope
+  case object Session extends Scope
   /**
    * A new instance is created for every request. No caching.
    */
-  val Request = new Scope
+  case object Request extends Scope
   /**
    * Works like Request in that a new instance is created for every request. However, the page is cached temporarily to
    * allow real-time communication with it.
    */
-  val Page = new Scope
+  case object Page extends Scope
+
+  val values = findValues.toVector
 }

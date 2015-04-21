@@ -6,11 +6,19 @@ import org.hyperscala.html.tag._
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-case class HTMLTagType[T <: HTMLTag] protected(htmlName: String, clazz: Class[T]) extends EnumEntry {
+case class HTMLTagType[T <: HTMLTag](htmlName: String, clazz: Class[T]) {
+  HTMLTagType.synchronized {
+    HTMLTagType.names += htmlName -> this
+    HTMLTagType.classes += clazz -> this
+  }
+
   def create() = clazz.newInstance()
 }
 
-object HTMLTagType extends Enumerated[HTMLTagType[_ <: HTMLTag]] {
+object HTMLTagType {
+  private var names = scala.collection.Map.empty[String, HTMLTagType[_ <: HTMLTag]]
+  private var classes = scala.collection.Map.empty[Class[_], HTMLTagType[_ <: HTMLTag]]
+
   val html = new HTMLTagType("html", classOf[HTML])
   val head = new HTMLTagType("head", classOf[Head])
   val title = new HTMLTagType("title", classOf[Title])
@@ -121,5 +129,6 @@ object HTMLTagType extends Enumerated[HTMLTagType[_ <: HTMLTag]] {
   val video = new HTMLTagType("video", classOf[Video])
   val wbr = new HTMLTagType("wbr", classOf[Wbr])
 
-  def byClass[T <: HTMLTag](clazz: Class[T]) = values.find(htt => htt.clazz == clazz).asInstanceOf[scala.Option[HTMLTagType[T]]]
+  def byClass[T <: HTMLTag](clazz: Class[T]) = classes.get(clazz)
+  def get(name: String) = names.get(name)
 }

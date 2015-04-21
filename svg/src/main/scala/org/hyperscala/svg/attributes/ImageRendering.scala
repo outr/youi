@@ -3,11 +3,13 @@ package org.hyperscala.svg.attributes
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */
-sealed class ImageRendering extends AttributeEntry[ImageRendering](parent = ImageRendering)
+sealed abstract class ImageRendering extends AttributeEntry[ImageRendering](parent = ImageRendering)
 
 object ImageRendering extends AttributeObject[ImageRendering] {
-  val Auto = new ImageRendering
-  val OptimizeSpeed = new ImageRendering
-  val OptimizeQuality = new ImageRendering
-  val Inherit = new ImageRendering
+  case object Auto extends ImageRendering
+  case object OptimizeSpeed extends ImageRendering
+  case object OptimizeQuality extends ImageRendering
+  case object Inherit extends ImageRendering
+
+  val values = findValues.toVector
 }

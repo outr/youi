@@ -7,11 +7,13 @@ import org.hyperscala.persistence.EnumEntryPersistence
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class Origin private(val value: String) extends EnumEntryAttributeValue
+sealed abstract class Origin(val value: String) extends EnumEntryAttributeValue
 
 object Origin extends Enumerated[Origin] with EnumEntryPersistence[Origin] {
-  val BorderBox = new Origin("border-box")
-  val PaddingBox = new Origin("padding-box")
-  val ContentBox = new Origin("content-box")
-  val Inherit = new Origin("inherit")
+  case object BorderBox extends Origin("border-box")
+  case object PaddingBox extends Origin("padding-box")
+  case object ContentBox extends Origin("content-box")
+  case object Inherit extends Origin("inherit")
+
+  val values = findValues.toVector
 }

@@ -26,23 +26,27 @@ class Button extends tag.Button {
   }
 }
 
-class ButtonStyle(val className: Option[String]) extends EnumEntry with ClassName
+sealed abstract class ButtonStyle(val className: Option[String]) extends EnumEntry with ClassName
 
 object ButtonStyle extends Enumerated[ButtonStyle] {
-  val Default = new ButtonStyle(Some("btn-default"))
-  val Primary = new ButtonStyle(Some("btn-primary"))
-  val Success = new ButtonStyle(Some("btn-success"))
-  val Info = new ButtonStyle(Some("btn-info"))
-  val Warning = new ButtonStyle(Some("btn-warning"))
-  val Danger = new ButtonStyle(Some("btn-danger"))
-  val Link = new ButtonStyle(Some("btn-link"))
+  case object Default extends ButtonStyle(Some("btn-default"))
+  case object Primary extends ButtonStyle(Some("btn-primary"))
+  case object Success extends ButtonStyle(Some("btn-success"))
+  case object Info extends ButtonStyle(Some("btn-info"))
+  case object Warning extends ButtonStyle(Some("btn-warning"))
+  case object Danger extends ButtonStyle(Some("btn-danger"))
+  case object Link extends ButtonStyle(Some("btn-link"))
+
+  val values = findValues.toVector
 }
 
-class ButtonSize(val className: Option[String]) extends EnumEntry with ClassName
+sealed abstract class ButtonSize(val className: Option[String]) extends EnumEntry with ClassName
 
 object ButtonSize extends Enumerated[ButtonSize] {
-  val Default = new ButtonSize(None)
-  val Large = new ButtonSize(Some("btn-lg"))
-  val Small = new ButtonSize(Some("btn-sm"))
-  val ExtraSmall = new ButtonSize(Some("btn-xs"))
+  case object Default extends ButtonSize(None)
+  case object Large extends ButtonSize(Some("btn-lg"))
+  case object Small extends ButtonSize(Some("btn-sm"))
+  case object ExtraSmall extends ButtonSize(Some("btn-xs"))
+
+  val values = findValues.toVector
 }

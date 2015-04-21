@@ -5,48 +5,50 @@ import org.powerscala.enum.{Enumerated, EnumEntry}
 /**
  * Matt Hicks <matt@outr.com>
  */
-trait Ease extends EnumEntry
+sealed trait Ease extends EnumEntry
 
-class BlankEase private[tweenjs]() extends Ease {
+sealed abstract class BlankEase private[tweenjs]() extends Ease {
   def apply() = BlankEaseInstance(this)
 }
 
-class AmountEase private[tweenjs]() extends Ease {
+sealed abstract class AmountEase private[tweenjs]() extends Ease {
   def apply(amount: Double) = AmountEaseInstance(this, amount)
 }
 
-class AmplitudePeriodEase private[tweenjs]() extends Ease {
+sealed abstract class AmplitudePeriodEase private[tweenjs]() extends Ease {
   def apply(amplitude: Double, period: Double) = AmplitudePeriodEaseInstance(this, amplitude, period)
 }
 
-class PowerEase private[tweenjs]() extends Ease {
+sealed abstract class PowerEase private[tweenjs]() extends Ease {
   def apply(pow: Double) = PowerEaseInstance(this, pow)
 }
 
 object Ease extends Enumerated[Ease] {
-  val BackIn = new AmountEase
-  val BackInOut = new AmountEase
-  val BackOut = new AmountEase
-  val ElasticIn = new AmplitudePeriodEase
-  val ElasticInOut = new AmplitudePeriodEase
-  val ElasticOut = new AmplitudePeriodEase
-  val PowIn = new PowerEase
-  val PowInOut = new PowerEase
-  val PowOut = new PowerEase
-  val Linear = new BlankEase
-  val None = new BlankEase
-  val QuadIn = new BlankEase
-  val QuadInOut = new BlankEase
-  val QuadOut = new BlankEase
-  val QuartIn = new BlankEase
-  val QuartInOut = new BlankEase
-  val QuartOut = new BlankEase
-  val QuintIn = new BlankEase
-  val QuintInOut = new BlankEase
-  val QuintOut = new BlankEase
-  val SineIn = new BlankEase
-  val SineInOut = new BlankEase
-  val SineOut = new BlankEase
+  case object BackIn extends AmountEase
+  case object BackInOut extends AmountEase
+  case object BackOut extends AmountEase
+  case object ElasticIn extends AmplitudePeriodEase
+  case object ElasticInOut extends AmplitudePeriodEase
+  case object ElasticOut extends AmplitudePeriodEase
+  case object PowIn extends PowerEase
+  case object PowInOut extends PowerEase
+  case object PowOut extends PowerEase
+  case object Linear extends BlankEase
+  case object None extends BlankEase
+  case object QuadIn extends BlankEase
+  case object QuadInOut extends BlankEase
+  case object QuadOut extends BlankEase
+  case object QuartIn extends BlankEase
+  case object QuartInOut extends BlankEase
+  case object QuartOut extends BlankEase
+  case object QuintIn extends BlankEase
+  case object QuintInOut extends BlankEase
+  case object QuintOut extends BlankEase
+  case object SineIn extends BlankEase
+  case object SineInOut extends BlankEase
+  case object SineOut extends BlankEase
+
+  val values = findValues.toVector
 }
 
 trait EaseInstance {

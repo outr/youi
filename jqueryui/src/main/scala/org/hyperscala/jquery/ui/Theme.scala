@@ -1,38 +1,34 @@
 package org.hyperscala.jquery.ui
 
-import org.powerscala.enum.{Enumerated, EnumEntry}
-
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class Theme private(val cssPath: String = null) extends EnumEntry {
-  def directory = label.replace(" ", "-").toLowerCase
-}
+case class Theme(directory: String, cssPath: String = null)
 
-object Theme extends Enumerated[Theme] {
-  val BlackTie = new Theme
-  val Blitzer = new Theme
-  val Cupertino = new Theme
-  val DarkHive = new Theme
-  val DotLuv = new Theme
-  val Eggplant = new Theme
-  val ExciteBike = new Theme
-  val Flick = new Theme
-  val HotSneaks = new Theme
-  val Humanity = new Theme
-  val LeFrog = new Theme
-  val MintChoc = new Theme
-  val Overcast = new Theme
-  val PepperGrinder = new Theme
-  val Redmond = new Theme
-  val Smoothness = new Theme
-  val SouthStreet = new Theme
-  val Start = new Theme
-  val Sunny = new Theme
-  val SwankyPurse = new Theme
-  val Trontastic = new Theme
-  val UIDarkness = new Theme
-  val UILightness = new Theme
-  val Vader = new Theme
-  def Custom(cssPath: String) = new Theme(cssPath)
+object Theme {
+  val BlackTie = new Theme("black-tie")
+  val Blitzer = new Theme("blitzer")
+  val Cupertino = new Theme("cupertino")
+  val DarkHive = new Theme("dark-hive")
+  val DotLuv = new Theme("dot-luv")
+  val Eggplant = new Theme("eggplant")
+  val ExciteBike = new Theme("excite-bike")
+  val Flick = new Theme("flick")
+  val HotSneaks = new Theme("hot-sneaks")
+  val Humanity = new Theme("humanity")
+  val LeFrog = new Theme("le-frog")
+  val MintChoc = new Theme("mint-choc")
+  val Overcast = new Theme("overcast")
+  val PepperGrinder = new Theme("pepper-grinder")
+  val Redmond = new Theme("redmond")
+  val Smoothness = new Theme("smoothness")
+  val SouthStreet = new Theme("south-street")
+  val Start = new Theme("start")
+  val Sunny = new Theme("sunny")
+  val SwankyPurse = new Theme("swanky-purse")
+  val Trontastic = new Theme("tronstastic")
+  val UIDarkness = new Theme("ui-darkness")
+  val UILightness = new Theme("ui-lightness")
+  val Vader = new Theme("vader")
+  def Custom(cssPath: String) = new Theme(null, cssPath)
 }

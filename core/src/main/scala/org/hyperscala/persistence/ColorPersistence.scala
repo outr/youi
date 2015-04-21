@@ -6,7 +6,7 @@ import org.powerscala.Color
  * @author Matt Hicks <matt@outr.com>
  */
 object ColorPersistence extends ValuePersistence[Color] {
-  def fromString(s: String, name: String, clazz: Class[_]) = Color(s)
+  def fromString(s: String, name: String, clazz: Class[_]) = Color.byName(s).orNull
 
   def toString(t: Color, name: String, clazz: Class[_]) = t match {
     case null => null

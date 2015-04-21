@@ -27,9 +27,9 @@ class ContentEditorExample(site: Website) extends Example {
 
   val boldButton = styleToggleButton("Bold", Style.fontWeight, FontWeight.Bold, FontWeight.Inherit)
   val italicButton = styleToggleButton("Italic", Style.fontStyle, FontStyle.Italic, FontStyle.Inherit)
-  val redButton = styleSetButton("Red", Style.color, Color.Red)
-  val greenButton = styleSetButton("Green", Style.color, Color.Green)
-  val blueButton = styleSetButton("Blue", Style.color, Color.Blue)
+  val redButton = styleSetButton[Color, Style[Color]]("Red", Style.color, Color.Red)
+  val greenButton = styleSetButton[Color, Style[Color]]("Green", Style.color, Color.Green)
+  val blueButton = styleSetButton[Color, Style[Color]]("Blue", Style.color, Color.Blue)
   val colorInput = new tag.Input(id = "currentColor", placeHolder = "Color")
   val fontFamily = new tag.Input(id = "fontFamily", placeHolder = "Font Family")
   val fontStyle = new tag.Input(id = "fontStyle", placeHolder = "Font Style")

@@ -41,19 +41,21 @@ case class WebJarResource(path: String, resource: URL, resourceType: WebJarType)
   }
 }
 
-class WebJarType private(val load: (WebJarResource, Webpage) => Unit) extends EnumEntry
+sealed abstract class WebJarType(val load: (WebJarResource, Webpage) => Unit) extends EnumEntry
 
 object WebJarType extends Enumerated[WebJarType] {
   /**
    * Resource does absolutely nothing except make the resource available at the path.
    */
-  val Resource = new WebJarType((r, w) => Unit)
+  case object Resource extends WebJarType((r, w) => Unit)
   /**
    * Adds a script entry to head referencing the path.
    */
-  val Script = new WebJarType((r, w) => w.head.contents += new tag.Script(src = r.path))
+  case object Script extends WebJarType((r, w) => w.head.contents += new tag.Script(src = r.path))
   /**
    * Adds a link to the StyleSheet path in head.
    */
-  val Style = new WebJarType((r, w) => w.head.contents += new tag.Link(href = r.path))
+  case object Style extends WebJarType((r, w) => w.head.contents += new tag.Link(href = r.path))
+
+  val values = findValues.toVector
 }

@@ -7,18 +7,20 @@ import org.hyperscala.persistence.EnumEntryPersistence
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class LineStyle private(val value: String) extends EnumEntryAttributeValue
+sealed abstract class LineStyle(val value: String) extends EnumEntryAttributeValue
 
 object LineStyle extends Enumerated[LineStyle] with EnumEntryPersistence[LineStyle] {
-  val None = new LineStyle("none")
-  val Hidden = new LineStyle("hidden")
-  val Dotted = new LineStyle("dotted")
-  val Dashed = new LineStyle("dashed")
-  val Solid = new LineStyle("solid")
-  val Double = new LineStyle("double")
-  val Groove = new LineStyle("groove")
-  val Ridge = new LineStyle("ridge")
-  val Inset = new LineStyle("inset")
-  val Outset = new LineStyle("outset")
-  val Inherit = new LineStyle("inherit")
+  case object None extends LineStyle("none")
+  case object Hidden extends LineStyle("hidden")
+  case object Dotted extends LineStyle("dotted")
+  case object Dashed extends LineStyle("dashed")
+  case object Solid extends LineStyle("solid")
+  case object Double extends LineStyle("double")
+  case object Groove extends LineStyle("groove")
+  case object Ridge extends LineStyle("ridge")
+  case object Inset extends LineStyle("inset")
+  case object Outset extends LineStyle("outset")
+  case object Inherit extends LineStyle("inherit")
+
+  val values = findValues.toVector
 }

@@ -3,19 +3,21 @@ package org.hyperscala.svg.attributes
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */
-sealed class FontStretch extends AttributeEntry[FontStretch](parent = FontStretch)
+sealed abstract class FontStretch extends AttributeEntry[FontStretch](parent = FontStretch)
 
 object FontStretch extends AttributeObject[FontStretch] {
-  val Normal = new FontStretch
-  val Wider = new FontStretch
-  val Narrower = new FontStretch
-  val UltraCondensed = new FontStretch
-  val ExtraCondensed = new FontStretch
-  val Condensed = new FontStretch
-  val SemiCondensed = new FontStretch
-  val SemiExpanded = new FontStretch
-  val Expanded = new FontStretch
-  val ExtraExpanded = new FontStretch
-  val UltraExpanded = new FontStretch
-  val Inherit = new FontStretch
+  case object Normal extends FontStretch
+  case object Wider extends FontStretch
+  case object Narrower extends FontStretch
+  case object UltraCondensed extends FontStretch
+  case object ExtraCondensed extends FontStretch
+  case object Condensed extends FontStretch
+  case object SemiCondensed extends FontStretch
+  case object SemiExpanded extends FontStretch
+  case object Expanded extends FontStretch
+  case object ExtraExpanded extends FontStretch
+  case object UltraExpanded extends FontStretch
+  case object Inherit extends FontStretch
+
+  val values = findValues.toVector
 }

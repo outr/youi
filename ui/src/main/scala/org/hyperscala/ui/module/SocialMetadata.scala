@@ -31,7 +31,7 @@ object SocialMetadata extends Module {
       content := v
       name := k
     })
-    def toOptionalValues(s: Seq[(String, String)]): Seq[(String, Option[String])] = s map{case (k,v) => (k, Option(v))}
+    def toOptionalValues(s: Seq[(String, String)]) = s map{case (k,v) => (k, Option(v))}
   }
 
   /**
@@ -48,9 +48,8 @@ object SocialMetadata extends Module {
                       copyright: Option[String] = None, applicationName: Option[String] = None,
                       extras: Seq[(String, String)] = Seq.empty[(String, String)]) extends SMData {
     def tags = {
-      val items = Seq(("description", Some(description)),
-      ("keywords", keywords), ("author", author), ("copyright", copyright),
-        ("application-name", applicationName)) ++ toOptionalValues(extras)
+      val items = Seq(("description", Some(description)), ("keywords", keywords), ("author", author),
+        ("copyright", copyright), ("application-name", applicationName)) ++ toOptionalValues(extras)
       buildMetaData(maybeDatum)(items: _*)
     }
   }
@@ -86,14 +85,13 @@ object SocialMetadata extends Module {
    */
   case class OpenGraphData(title: String, contentType: String, image: String, canonicalUrl: String,
                            description: String, siteName: Option[String] = None,
-                            extras: Seq[(String, String)] = Seq.empty[(String, String)]) extends SMData {
-    override def maybeDatum(k: String, maybeV: Option[String]) = maybeV map (v => {
-      val meta = new Meta { content := v }
-      meta.attribute[String]("property", true) foreach(_ := s"og:$k")
-      meta
-    })
+                           extras: Seq[(String, String)] = Seq.empty[(String, String)]) extends SMData {
+    override def maybeDatum(k: String, maybeV: Option[String]) = maybeV map (v => new Meta {
+        content := v
+        this.attribute[String]("property", true) foreach (_ := s"og:$k")
+      })
     def tags = {
-      val items = Seq(("title", Some(title)),("type", Some(contentType)),
+      val items = Seq(("title", Some(title)), ("type", Some(contentType)),
         ("image", Some(image)), ("url", Some(canonicalUrl)), ("description", Some(description)),
         ("site_name", siteName)) ++ toOptionalValues(extras)
       buildMetaData(maybeDatum)(items: _*)
@@ -111,10 +109,9 @@ object SocialMetadata extends Module {
    */
   case class SchemaDotOrg(name: String, description: String, image: String,
                           extras: Seq[(String, String)] = Seq.empty[(String, String)]) extends SMData {
-    override def maybeDatum(k: String, maybeV: Option[String]) = maybeV map (v => {
-      val meta = new Meta { content := v }
-      meta.attribute[String]("itemprop", true) foreach(_ := k)
-      meta
+    override def maybeDatum(k: String, maybeV: Option[String]) = maybeV map (v => new Meta {
+      content := v
+      this.attribute[String]("itemprop", true) foreach (_ := k)
     })
     def tags = {
       val items = Seq(("name", Some(name)), ("description", Some(description)),
@@ -128,13 +125,12 @@ object SocialMetadata extends Module {
    * expectation is that this will be used on the `HTML` tag and the page level schema.org markup will be added to
    * the `HEAD` with Meta tags via [[SchemaDotOrg]] method.
    *
-   * @param t is the tag, likely `HTML` to be decorated with the scope identifer and the itemtype.
+   * @param t is the tag, likely `HTML` to be decorated with the scope identifier and the itemtype.
    */
-  implicit class ScopedTag(t: Tag) {
+  implicit class ScopedTag(val t: Tag) extends AnyVal {
     def makeScoped(itemType: String): Unit = {
       t.attribute[Boolean]("itemscope", true) foreach(_ := true)
       t.attribute[String]("itemtype", true) foreach(_:= s"http://schema.org/$itemType")
     }
   }
-
 }

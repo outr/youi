@@ -2,7 +2,6 @@ package org.hyperscala.examples.ui
 
 import org.hyperscala.bootstrap.component._
 import org.hyperscala.html.tag
-import org.hyperscala.html.tag.HTML
 import org.hyperscala.javascript.dsl.window
 import org.hyperscala.selector.Selector
 import org.hyperscala.ui.module.SocialMetadata
@@ -21,7 +20,7 @@ import org.hyperscala.ui.module.SocialMetadata._
  * Created by mmynsted on 4/17/15.
  * code@growingliberty.com
  *
- * Example for Social Media Meta data {{org.hyperscala.ui.module.SocialMetadata}}
+ * Example for Social Media Meta data [[org.hyperscala.ui.module.SocialMetadata]]
  *
  */
 class SocialMetadataExample extends Webpage {
@@ -30,11 +29,8 @@ class SocialMetadataExample extends Webpage {
 
   //Common Social Meta Data values
   val smTitle = "Hyperscala - SocialMetadata module"
-  val smDescription =
-    """
-      |Hyperscala module, SocialMetadata provides meta data in meta tags to improve social media
-      |site linking and semantic search engine crawls.
-    """.stripMargin
+  val smDescription = """Hyperscala module, SocialMetadata provides meta data in meta tags to improve social media
+                        |site linking and semantic search engine crawls.""".stripMargin
   val smKeyWords = "Hyperscala, module, social, media, data, twitter, facebook, open, graph"
   val smApplicationName = "Hyperscala"
   val smImage = "http://hyperscala.org/images/hyperscala.png"
@@ -43,11 +39,6 @@ class SocialMetadataExample extends Webpage {
   title := smTitle
   head.contents += new tag.Link(rel = "stylesheet", href = "/css/style.css")
   head.contents += new tag.Link(href = "/css/social_meta_data.css")
-
-  //main body content
-  val main = new tag.Div {
-    contents += new StaticHTML(IO.copy(getClass.getClassLoader.getResource("social_meta_data.html")))
-  }
 
   //Meta data
   head.contents += new tag.Comment("Social Meta Data: START")
@@ -76,6 +67,10 @@ class SocialMetadataExample extends Webpage {
 
   head.contents += new tag.Comment("Social Meta Data: END")
 
+  //main body content
+  val main = new tag.Div {
+    contents += new StaticHTML(IO.copy(getClass.getClassLoader.getResource("social_meta_data.html")))
+  }
 
   /* Cosmetic (Just make the content a little more readable)
    */

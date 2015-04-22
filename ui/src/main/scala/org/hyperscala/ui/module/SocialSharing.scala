@@ -8,7 +8,6 @@ import org.powerscala.{IO, Version}
 import org.hyperscala.web.{Website,Webpage}
 import org.hyperscala.html.tag
 import org.hyperscala.jquery.jQuery
-import org.hyperscala.ui.convert.MapQueryStringable._
 import com.outr.net.URL
 
 /**
@@ -45,6 +44,12 @@ object SocialSharing extends Module with Logging {
     decURL.encoded.toString()
   }
 
+  implicit class MapToQueryString(val m: Map[String, String]) extends AnyVal {
+    def asQueryString: String = m.foldLeft("") {
+      case (s, (k, v)) => s"$s$k=${java.net.URLEncoder.encode(v, "UTF-8").replaceAllLiterally("+", "%20")}&"
+    }
+  }
+
   class SocialSharingLinks extends tag.Ul(clazz = Seq("rrssb-buttons", "clearfix"))
 
   abstract class SocialSharingLink extends tag.Li {
@@ -72,7 +77,7 @@ object SocialSharing extends Module with Logging {
     override val anchorClazz = Seq.empty[String]
     override val anchorSpanContent = "email"
     override val liClazzSuffix = "email"
-    val link = s"mailto:?${toQueryString(Map("subject" -> subject, "body" -> body))}"
+    val link = s"mailto:?${Map("subject" -> subject, "body" -> body).asQueryString}"
   } with SocialSharingLink
 
   /**

@@ -7,7 +7,9 @@ import org.hyperscala.persistence.CaseClassPersistence
  * NOTE: This file has been generated. Do not modify directly!
  * @author Matt Hicks <matt@outr.com>
  */
-case class Target(value: String) extends AttributeValue
+case class Target(value: String) extends AttributeValue {
+  def name = value.substring(1).capitalize
+}
 
 object Target extends CaseClassPersistence[Target] {
   val Blank = new Target("_blank")

@@ -15,6 +15,7 @@ case class Style[T](cssName: String)(implicit val manifest: Manifest[T], val per
   }
 
   lazy val name = StringUtil.toCamelCase(cssName)
+  lazy val label = StringUtil.generateLabel(name)
 
   def value(v: T) = persistence.toString(v, cssName, manifest.runtimeClass)
 
@@ -273,4 +274,6 @@ object Style {
   def values = map.values
 
   def byCSSName(name: String) = map.get(name.toLowerCase)
+
+  def get(name: String) = byCSSName(name).orElse(values.find(s => s.name.equalsIgnoreCase(name)))
 }

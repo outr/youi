@@ -156,7 +156,7 @@ object Length extends ValuePersistence[Length] {
 
   override def fromString(s: String, name: String, clazz: Class[_]) = apply(s)
 
-  override def toString(t: Length, name: String, clazz: Class[_]) = t.value
+  override def toString(t: Length, name: String, clazz: Class[_]) = if (t != null) t.value else null
 }
 
 sealed abstract class LengthType(val value: String) extends EnumEntry

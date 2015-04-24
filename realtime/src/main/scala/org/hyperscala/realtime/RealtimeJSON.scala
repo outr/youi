@@ -17,6 +17,11 @@ import org.powerscala.log.Logging
  * @author Matt Hicks <matt@outr.com>
  */
 object RealtimeJSON extends Logging {
+  def webpageOption = Webpage.stack.get().orElse(ConnectionHolder.connection.holder() match {
+    case webpage: Webpage => Some(webpage)
+    case _ => None
+  })
+
   def init() = {
     TypedSupport.register("init", classOf[InitBrowserConnection])
     TypedSupport.register("reload", classOf[ReloadPage])
@@ -24,15 +29,15 @@ object RealtimeJSON extends Logging {
 
     // Configure JSON mapping for BrowserEvents
     MapSupport.j2o.on {
-      case m if m.contains("id") => ConnectionHolder.connection.holder() match {
-        case webpage: Webpage => {
+      case m if m.contains("id") => webpageOption match {
+        case Some(webpage) => {
           val parent = m.get("parent").map(v => webpage.byId[HTMLTag](v.asInstanceOf[String])).flatten.getOrElse(webpage.html)
           val target = m.get("target").map(v => parent.byId[HTMLTag](v.asInstanceOf[String])).flatten
           val tag = m.get("id").map(v => parent.byId[HTMLTag](v.asInstanceOf[String])).flatten
           m ++ Map("parent" -> parent, "target" -> target, "tag" -> tag.orNull)
         }
-        case holder => {
-          warn(s"Unable to handle $m, message not connected to a webpage (Holder: $holder).")
+        case None => {
+          warn(s"Unable to handle $m, message not connected to a webpage.")
           m
         }
       }

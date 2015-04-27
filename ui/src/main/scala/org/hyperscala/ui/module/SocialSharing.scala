@@ -9,6 +9,7 @@ import org.hyperscala.web.{Website,Webpage}
 import org.hyperscala.html.tag
 import org.hyperscala.jquery.jQuery
 import com.outr.net.URL
+import org.hyperscala.module.Interface
 
 /**
  * Created by mmynsted on 4/6/15.
@@ -35,15 +36,16 @@ object SocialSharing {
      */
     val version = Version(1,7,5)
 
-    override def dependencies = List(jQuery)
+    override def dependencies: List[Interface] = List(jQuery)
 
     def stylesheetRef = "/rrssb/css/rrssb.css"
+    def javascriptRef = "/rrssb/js/rrssb.min.js"
 
     override def init(website: Website) =  website.addClassPath("/rrssb/", "rrssb/")
 
     override def load(webpage: Webpage) = {
       webpage.head.contents += new tag.Link(href = stylesheetRef, rel = "stylesheet")
-      webpage.head.contents += new tag.Script(mimeType = "text/javascript", src = "/rrssb/js/rrssb.min.js")
+      webpage.head.contents += new tag.Script(mimeType = "text/javascript", src = javascriptRef)
     }
 
     def encodeLink(base: String, parms: (String, Option[String])*): String = {

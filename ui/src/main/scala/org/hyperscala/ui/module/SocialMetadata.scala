@@ -42,7 +42,7 @@ object SocialMetadata extends Module {
    * @param author of the page when applicable
    * @param copyright when applicable
    * @param applicationName is the application-name for the site
-   * @param extras is an optional [[scala.collection.immutable.Seq]] of extra parameters
+   * @param extras is an optional Seq of extra parameters
    */
   case class BaseData(description: String, keywords: Option[String] = None, author: Option[String] = None,
                       copyright: Option[String] = None, applicationName: Option[String] = None,
@@ -60,7 +60,7 @@ object SocialMetadata extends Module {
    * @param title of page
    * @param description of page content
    * @param image that illustrates the meaning of the page
-   * @param extras is an optional [[scala.collection.immutable.Seq]] of extra parameters
+   * @param extras is an optional Seq of extra parameters
    */
   case class TwitterData(title: String, description: String, image: Option[String] = None,
                           extras: Seq[(String, String)] = Seq.empty[(String, String)]) extends SMData {
@@ -81,7 +81,7 @@ object SocialMetadata extends Module {
    * @param canonicalUrl is the single authoritative URL (in String format) for the given item of the given contentType.
    * @param description of the item and page
    * @param siteName where this page resides. "site_name"
-   * @param extras is an optional [[scala.collection.immutable.Seq]] of extra parameters
+   * @param extras is an optional Seq of extra parameters
    */
   case class OpenGraphData(title: String, contentType: String, image: String, canonicalUrl: String,
                            description: String, siteName: Option[String] = None,
@@ -105,7 +105,7 @@ object SocialMetadata extends Module {
    * @param name of the item
    * @param description of the item
    * @param image can be URL or an ImageObject. (URL would be more compatible with other meta data)
-   * @param extras optional [[scala.collection.immutable.Seq]] of extra parameters
+   * @param extras optional Seq of extra parameters
    */
   case class SchemaDotOrg(name: String, description: String, image: String,
                           extras: Seq[(String, String)] = Seq.empty[(String, String)]) extends SMData {

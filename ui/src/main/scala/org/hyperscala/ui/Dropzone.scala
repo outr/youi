@@ -2,6 +2,7 @@ package org.hyperscala.ui
 
 import java.io.File
 
+import com.outr.net.communicate.ConnectionHolder
 import com.outr.net.http.content.{ContentType, StringContent}
 import com.outr.net.http.handler.{MultipartSupport, MultipartHandler}
 import com.outr.net.http.mime.MimeType
@@ -308,5 +309,7 @@ class DropzoneSupport(website: Website) extends MultipartSupport {
     response.copy(content = StringContent("Success", ContentType.Plain), status = HttpResponseStatus.OK)
   }
 
-  override def onFile(filename: String, file: File) = dropzone.fileReceived.fire(filename -> file)
+  override def onFile(filename: String, file: File) = Webpage.stack.context(page) {
+    dropzone.fileReceived.fire(filename -> file)
+  }
 }

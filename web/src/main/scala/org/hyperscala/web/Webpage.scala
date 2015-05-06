@@ -16,7 +16,7 @@ import org.powerscala.hierarchy.event.{StandardHierarchyEventProcessor, ChildRem
 import org.powerscala.json.TypedSupport
 import org.powerscala.property.Property
 import org.powerscala.reflect._
-import org.powerscala.{MapStorage, Unique}
+import org.powerscala.{LocalStack, MapStorage, Unique}
 import org.powerscala.hierarchy.{Element, MutableChildLike, ParentLike}
 import org.powerscala.concurrent.Time._
 
@@ -225,6 +225,8 @@ class Webpage extends HttpHandler with HTMLPage with ModularPage with ParentLike
 case class WebpageConnect(pageId: String)
 
 object Webpage {
+  val stack = new LocalStack[Webpage]
+
   TypedSupport.register("eval", classOf[InvokeJavaScript])
   TypedSupport.register("page", classOf[WebpageConnect])
 }

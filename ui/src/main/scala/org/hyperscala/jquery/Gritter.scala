@@ -46,7 +46,7 @@ object Gritter extends Module with JavaScriptCaller {
         |    'class_name': ${value2String(className)}
         |  });
         |});
-      """
+      """.stripMargin
     ))
   }
 

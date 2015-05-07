@@ -35,24 +35,18 @@ object Gritter extends Module with JavaScriptCaller {
                         time: Int = 8000,
                         className: String = null) = {
     webpage.require(this)
-    webpage.body.contents += new tag.Script(content = new JavaScriptString(
-      """$(function() {
-        |  $.gritter.add({
-        |    'title': %s,
-        |    'text': %s,
-        |    'image': %s,
-        |    'sticky': %s,
-        |    'time': %s,
-        |    'class_name': %s
+    webpage.eval(JavaScriptString(
+      s"""$$(function() {
+        |  $$.gritter.add({
+        |    'title': ${value2String(title)},
+        |    'text': ${value2String(text)},
+        |    'image': ${value2String(image)},
+        |    'sticky': $sticky,
+        |    'time': $time,
+        |    'class_name': ${value2String(className)}
         |  });
         |});
-      """.stripMargin.format(value2String(title),       // Title
-                             value2String(text),        // Text
-                             value2String(image),       // Image
-                             sticky,                    // Sticky
-                             time,                      // Time
-                             value2String(className)    // Class Name
-          )
+      """
     ))
   }
 

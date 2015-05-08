@@ -7,8 +7,7 @@ import org.hyperscala.web.{Website, Webpage}
 import org.powerscala.Version
 
 /**
- * Created by mmynsted on 4/17/15.
- * code@growingliberty.com
+ * @author Mark Mynsted code@growingliberty.com
  *
  * Provide simple meta data to improve social media linking
  */

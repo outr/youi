@@ -12,8 +12,7 @@ import com.outr.net.URL
 import org.hyperscala.module.Interface
 
 /**
- * Created by mmynsted on 4/6/15.
- * code@growingliberty.com
+  * @author Mark Mynsted code@growingliberty.com
  */
 object SocialSharing {
 

@@ -17,8 +17,7 @@ import language.reflectiveCalls
 import org.hyperscala.ui.module.SocialMetadata._
 
 /**
- * Created by mmynsted on 4/17/15.
- * code@growingliberty.com
+ * @author Mark Mynsted code@growingliberty.com
  *
  * Example for Social Media Meta data [[org.hyperscala.ui.module.SocialMetadata]]
  *

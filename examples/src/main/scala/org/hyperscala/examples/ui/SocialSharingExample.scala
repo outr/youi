@@ -7,8 +7,7 @@ import org.powerscala.IO
 import org.hyperscala.html._
 
 /**
- * Created by mmynsted on 4/6/15.
- * code@growingliberty.com
+ * @author Mark Mynsted code@growingliberty.com
  */
 class SocialSharingExample extends Example {
   this.require(SocialSharingModule)

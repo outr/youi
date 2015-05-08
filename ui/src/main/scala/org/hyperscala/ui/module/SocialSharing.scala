@@ -57,76 +57,54 @@ object SocialSharing {
 
     class SocialSharingLinks extends tag.Ul(clazz = Seq("rrssb-buttons", "clearfix"))
 
-    abstract class SocialSharingLink extends tag.Li {
-      def iconName: String
-      def link: String
-      def liClazzSuffix: String = iconName
-      def anchorClazz: Seq[String] = Seq("popup")
-      def anchorSpanContent: String = iconName
+    class SocialSharingLink(iconName: String, link: String, liClazzSuffix: Option[String] = None,
+                            anchorClazz: Seq[String] = Seq("popup"), anchorSpanContent: Option[String] = None)
+      extends tag.Li {
       protected def createIcon: BodyChild = IO.copy(getClass.getClassLoader.getResource(s"rrssb/icons/${iconName}.svg"))
-
-      clazz += s"rrssb-$liClazzSuffix"
+      clazz += s"rrssb-${liClazzSuffix.getOrElse(iconName)}"
       contents += new tag.A(href = link) {
         clazz ++= anchorClazz
         contents += new tag.Span(clazz = List("rrssb-icon")) {
           contents += createIcon
         }
-        contents += new Span(content = anchorSpanContent) {
+        contents += new Span(content = new tag.Text(anchorSpanContent.getOrElse(iconName))) {
           clazz += "rrssb-text"
         }
       }
     }
 
-    class EmailButton(subject: String, body: String) extends {
-      val iconName = "mail"
-      override val anchorClazz = Seq.empty[String]
-      override val anchorSpanContent = "email"
-      override val liClazzSuffix = "email"
-      val link = s"mailto:?${Map("subject" -> subject, "body" -> body).asQueryString}"
-    } with SocialSharingLink
+    class EmailButton(subject: String, body: String) extends SocialSharingLink(iconName = "mail",
+      link = s"mailto:?${Map("subject" -> subject, "body" -> body).asQueryString}", liClazzSuffix = Some("email"),
+      anchorClazz = Seq.empty[String], anchorSpanContent = Some("email"))
 
     /**
      * Customization must come from Open Graph tags in the shared URL.
      * @param u is for the link url.
      */
-    class FacebookButton(u: String) extends {
-      val iconName = "facebook"
-      val link = encodeLink("https://www.facebook.com/sharer/sharer.php", ("u", Some(u)))
-    } with SocialSharingLink
+    class FacebookButton(u: String) extends SocialSharingLink("facebook",
+      encodeLink("https://www.facebook.com/sharer/sharer.php", ("u", Some(u))))
 
-    class LinkedInButton(url: String, title: String, summary: Option[String] = None) extends {
-      val iconName = "linkedin"
-      val link = encodeLink("http://www.linkedin.com/shareArticle", ("mini", Some("true")),
-        ("url", Some(url)), ("title", Some(title)), ("summary", summary))
-    } with SocialSharingLink
+    class LinkedInButton(url: String, title: String, summary: Option[String] = None)
+      extends SocialSharingLink("linkedin", encodeLink("http://www.linkedin.com/shareArticle", ("mini", Some("true")),
+        ("url", Some(url)), ("title", Some(title)), ("summary", summary)))
 
-    class TwitterButton(status: String) extends {
-      val iconName = "twitter"
-      val link = encodeLink("http://twitter.com/home", ("status", Some(status)))
-    } with SocialSharingLink
+    class TwitterButton(status: String) extends SocialSharingLink("twitter",
+      encodeLink("http://twitter.com/home", ("status", Some(status))))
 
     /** Google+ identifies the parameter as "url", but it seems that it may include other content
       *
       * @param url the link to share as well as other information
       */
-    class GoogleplusButton(url: String) extends {
-      val iconName = "google_plus"
-      override val liClazzSuffix = "googleplus"
-      override val anchorSpanContent = "google+"
-      val link = encodeLink("https://plus.google.com/share", ("url", Some(url)))
-    } with SocialSharingLink
+    class GoogleplusButton(url: String) extends SocialSharingLink(iconName = "google_plus",
+      link = encodeLink("https://plus.google.com/share", ("url", Some(url))),
+      liClazzSuffix = Some("googleplus"), anchorSpanContent = Some("google+"))
 
     class PinterestButton(url: String, description: Option[String] = None, media: Option[String] = None)
-      extends {
-        val iconName = "pinterest"
-        val link = encodeLink("http://pinterest.com/pin/create/button/", ("url" -> Some(url)),
-          ("description", description), ("media", media))
-      } with SocialSharingLink
+      extends SocialSharingLink("pinterest", encodeLink("http://pinterest.com/pin/create/button/", ("url" -> Some(url)),
+          ("description", description), ("media", media)))
 
-    class GithubButton(username: String, project: String) extends {
-      val iconName = "github"
-      val link = s"https://github.com/$username/$project"
-    } with SocialSharingLink
+    class GithubButton(username: String, project: String)
+      extends SocialSharingLink("github",s"https://github.com/$username/$project")
   }
   object SocialSharingModule extends SocialSharingBase
 }

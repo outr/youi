@@ -89,6 +89,8 @@ object HyperscalaSite extends Website with JettyApplication {
   val gallery = example(new GalleryExample, "UI", "Gallery", Scope.Page)
   val modalComponent = example(new ModalComponentExample, "UI", "Modal Component", Scope.Page)
   val scriptLoader = example(new ScriptLoaderExample, "UI", "Script Loader", Scope.Page)
+  val socialSharing = example(new SocialSharingExample, "UI", "Social Sharing", Scope.Page)
+  val socialMetadata = pageExample(new SocialMetadataExample, "UI", "Social Meta Data", Scope.Page)
 
   // Wrapper
   val nivoSlider = example(new NivoSliderExample, "Wrapper", "Nivo Slider", Scope.Page)

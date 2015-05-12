@@ -57,39 +57,43 @@ object SocialSharing {
 
     class SocialSharingLinks extends tag.Ul(clazz = Seq("rrssb-buttons", "clearfix"))
 
-    class SocialSharingLink(val iconName: String, val link: String, val liClazzSuffix: Option[String] = None,
-                            val anchorClazz: Seq[String] = Seq("popup"), val anchorSpanContent: Option[String] = None)
+    class SocialSharingLink(val iconName: String, val link: String, val liClazzSuffix: String,
+                            val anchorSpanContent: String, val anchorClazz: Seq[String] = Seq("popup"))
       extends tag.Li {
+
       protected def createIcon: BodyChild = IO.copy(getClass.getClassLoader.getResource(s"rrssb/icons/${iconName}.svg"))
-      clazz += s"rrssb-${liClazzSuffix.getOrElse(iconName)}"
+      clazz += s"rrssb-${liClazzSuffix}"
       contents += new tag.A(href = link) {
         clazz ++= anchorClazz
         contents += new tag.Span(clazz = List("rrssb-icon")) {
           contents += createIcon
         }
-        contents += new Span(content = new tag.Text(anchorSpanContent.getOrElse(iconName))) {
+        contents += new Span(content = new tag.Text(anchorSpanContent)) {
           clazz += "rrssb-text"
         }
       }
     }
 
     class EmailButton(subject: String, body: String) extends SocialSharingLink(iconName = "mail",
-      link = s"mailto:?${Map("subject" -> subject, "body" -> body).asQueryString}", liClazzSuffix = Some("email"),
-      anchorClazz = Seq.empty[String], anchorSpanContent = Some("email"))
+      link = s"mailto:?${Map("subject" -> subject, "body" -> body).asQueryString}", liClazzSuffix = "email",
+      anchorClazz = Seq.empty[String], anchorSpanContent = "email")
 
     /**
      * Customization must come from Open Graph tags in the shared URL.
      * @param u is for the link url.
      */
-    class FacebookButton(u: String) extends SocialSharingLink("facebook",
-      encodeLink("https://www.facebook.com/sharer/sharer.php", ("u", Some(u))))
+    class FacebookButton(u: String) extends SocialSharingLink(iconName = "facebook",
+      link = encodeLink("https://www.facebook.com/sharer/sharer.php", ("u", Some(u))),
+    liClazzSuffix = "facebook", anchorSpanContent = "facebook")
 
     class LinkedInButton(url: String, title: String, summary: Option[String] = None)
-      extends SocialSharingLink("linkedin", encodeLink("http://www.linkedin.com/shareArticle", ("mini", Some("true")),
-        ("url", Some(url)), ("title", Some(title)), ("summary", summary)))
+      extends SocialSharingLink(iconName = "linkedin", link = encodeLink("http://www.linkedin.com/shareArticle", ("mini", Some("true")),
+        ("url", Some(url)), ("title", Some(title)), ("summary", summary)), liClazzSuffix = "linkedin",
+        anchorSpanContent = "linkedin")
 
-    class TwitterButton(status: String) extends SocialSharingLink("twitter",
-      encodeLink("http://twitter.com/home", ("status", Some(status))))
+    class TwitterButton(status: String) extends SocialSharingLink(iconName = "twitter",
+      link = encodeLink("http://twitter.com/home", ("status", Some(status))), liClazzSuffix = "twitter",
+      anchorSpanContent = "twitter")
 
     /** Google+ identifies the parameter as "url", but it seems that it may include other content
       *
@@ -97,14 +101,16 @@ object SocialSharing {
       */
     class GoogleplusButton(url: String) extends SocialSharingLink(iconName = "google_plus",
       link = encodeLink("https://plus.google.com/share", ("url", Some(url))),
-      liClazzSuffix = Some("googleplus"), anchorSpanContent = Some("google+"))
+      liClazzSuffix = "googleplus", anchorSpanContent = "google+")
 
     class PinterestButton(url: String, description: Option[String] = None, media: Option[String] = None)
-      extends SocialSharingLink("pinterest", encodeLink("http://pinterest.com/pin/create/button/", ("url" -> Some(url)),
-          ("description", description), ("media", media)))
+      extends SocialSharingLink(iconName = "pinterest",
+        link = encodeLink("http://pinterest.com/pin/create/button/", ("url" -> Some(url)), ("description", description),
+          ("media", media)), liClazzSuffix = "pinterest", anchorSpanContent = "pinterest")
 
     class GithubButton(username: String, project: String)
-      extends SocialSharingLink("github",s"https://github.com/$username/$project")
+      extends SocialSharingLink(iconName = "github", link = s"https://github.com/$username/$project",
+      liClazzSuffix = "github", anchorSpanContent = "github")
   }
   object SocialSharingModule extends SocialSharingBase
 }

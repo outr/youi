@@ -57,8 +57,8 @@ object SocialSharing {
 
     class SocialSharingLinks extends tag.Ul(clazz = Seq("rrssb-buttons", "clearfix"))
 
-    class SocialSharingLink(iconName: String, link: String, liClazzSuffix: Option[String] = None,
-                            anchorClazz: Seq[String] = Seq("popup"), anchorSpanContent: Option[String] = None)
+    class SocialSharingLink(val iconName: String, val link: String, val liClazzSuffix: Option[String] = None,
+                            val anchorClazz: Seq[String] = Seq("popup"), val anchorSpanContent: Option[String] = None)
       extends tag.Li {
       protected def createIcon: BodyChild = IO.copy(getClass.getClassLoader.getResource(s"rrssb/icons/${iconName}.svg"))
       clazz += s"rrssb-${liClazzSuffix.getOrElse(iconName)}"

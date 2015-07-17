@@ -16,15 +16,11 @@ object Dependencies {
   val outrNetJetty = "com.outr.net" %% "outrnet-jetty" % outrNetVersion
 
   val commonsCodec = "commons-codec" % "commons-codec" % "1.10"
-
   val jdom = "org.jdom" % "jdom2" % "2.0.6"
   val jaxen = "jaxen" % "jaxen" % "1.1.6"
-
   val htmlcleaner = "net.sourceforge.htmlcleaner" % "htmlcleaner" % "2.13"
   val akkaActors = "com.typesafe.akka" %% "akka-actor" % "2.3.12"
   val uaDetector = "net.sf.uadetector" % "uadetector-resources" % "2014.10"
-
   val githubCore = "org.eclipse.mylyn.github" % "org.eclipse.egit.github.core" % "2.1.5"
-
   val scalaTest = "org.scalatest" %% "scalatest" % "2.2.5" % "test"
 }

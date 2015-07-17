@@ -3,10 +3,9 @@ package org.hyperscala.ui
 import java.io.File
 
 import akka.actor.{Props, ActorSystem, Actor}
-import com.outr.net.communicate.ConnectionHolder
+import com.outr.net.http.HttpApplication
 import com.outr.net.http.content.{ContentType, StringContent}
 import com.outr.net.http.handler.{MultipartSupport, MultipartHandler}
-import com.outr.net.http.mime.MimeType
 import com.outr.net.http.request.HttpRequest
 import com.outr.net.http.response.{HttpResponseStatus, HttpResponse}
 import org.hyperscala.event.BrowserEvent
@@ -15,17 +14,15 @@ import org.hyperscala.javascript.{JavaScriptContent, JavaScriptString}
 import org.hyperscala.javascript.dsl._
 import org.hyperscala.jquery.jQueryComponent
 import org.hyperscala.module.Module
-import org.powerscala.event.{Intercept, Listenable}
+import org.powerscala.event.Listenable
 import org.powerscala.event.processor.UnitProcessor
 import org.powerscala.json.TypedSupport
 import org.powerscala.log.Logging
 import org.powerscala.property.Property
 import org.powerscala.{StorageComponent, Unique, Version}
 import org.hyperscala.web.{Website, Webpage}
-import org.hyperscala.jquery.ui.{ProgressBar, jQueryUI, Dialog}
 import org.hyperscala.realtime.Realtime
 import language.reflectiveCalls
-import com.outr.net.http.session.Session
 
 /**
  * Hyperscala wrapper around Dropzone.js (http://www.dropzonejs.com/).
@@ -130,23 +127,25 @@ object Dropzone extends Module with StorageComponent[Dropzone, HTMLTag] {
 
 class DropzoneActor extends Actor with Logging {
   def receive = {
-    case dae: DropzoneActorEvent => dae.evt match {
-      case evt: DropzoneFileEvent => evt.event match {
-        case "addedFile" => dae.dropzone.addedFileEvent.fire(evt)
-        case "removedFile" => dae.dropzone.removedFileEvent.fire(evt)
-        case "processing" => dae.dropzone.processingEvent.fire(evt)
-        case "success" => dae.dropzone.successEvent.fire(evt)
-        case "complete" => dae.dropzone.completeEvent.fire(evt)
+    case dae: DropzoneActorEvent => HttpApplication.around(dae.request) {
+      dae.evt match {
+        case evt: DropzoneFileEvent => evt.event match {
+          case "addedFile" => dae.dropzone.addedFileEvent.fire(evt)
+          case "removedFile" => dae.dropzone.removedFileEvent.fire(evt)
+          case "processing" => dae.dropzone.processingEvent.fire(evt)
+          case "success" => dae.dropzone.successEvent.fire(evt)
+          case "complete" => dae.dropzone.completeEvent.fire(evt)
+        }
+        case evt: DropzoneThumbnailEvent => dae.dropzone.thumbnailEvent.fire(evt)
+        case evt: DropzoneProgressEvent => dae.dropzone.uploadProgressEvent.fire(evt)
+        case evt: DropzoneErrorEvent => dae.dropzone.errorEvent.fire(evt)
       }
-      case evt: DropzoneThumbnailEvent => dae.dropzone.thumbnailEvent.fire(evt)
-      case evt: DropzoneProgressEvent => dae.dropzone.uploadProgressEvent.fire(evt)
-      case evt: DropzoneErrorEvent => dae.dropzone.errorEvent.fire(evt)
     }
     case m => warn(s"Unhandled message: $m")
   }
 }
 
-case class DropzoneActorEvent(dropzone: Dropzone, evt: BrowserEvent)
+case class DropzoneActorEvent(dropzone: Dropzone, evt: BrowserEvent, request: HttpRequest)
 
 class Dropzone(container: HTMLTag) extends jQueryComponent with Listenable with Logging {
   val id = Unique()
@@ -270,16 +269,16 @@ class Dropzone(container: HTMLTag) extends jQueryComponent with Listenable with 
 
     // Add handler for new events
     container.handle[DropzoneFileEvent] {
-      case evt => actor ! DropzoneActorEvent(this, evt)
+      case evt => actor ! DropzoneActorEvent(this, evt, this.webpage.website.request)
     }
     container.handle[DropzoneThumbnailEvent] {
-      case evt => actor ! DropzoneActorEvent(this, evt)
+      case evt => actor ! DropzoneActorEvent(this, evt, this.webpage.website.request)
     }
     container.handle[DropzoneProgressEvent] {
-      case evt => actor ! DropzoneActorEvent(this, evt)
+      case evt => actor ! DropzoneActorEvent(this, evt, this.webpage.website.request)
     }
     container.handle[DropzoneErrorEvent] {
-      case evt => actor ! DropzoneActorEvent(this, evt)
+      case evt => actor ! DropzoneActorEvent(this, evt, this.webpage.website.request)
     }
   }
 

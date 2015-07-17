@@ -3,6 +3,7 @@ package org.hyperscala.examples.ui
 import org.hyperscala.css.attributes.{Alignment, VerticalAlignment, Display, LineStyle}
 import org.hyperscala.examples.Example
 import org.hyperscala.javascript.JavaScriptString
+import org.hyperscala.jquery.Gritter
 import org.hyperscala.web._
 import org.hyperscala.ui.{DropzoneFileEvent, Dropzone}
 import org.hyperscala.html._
@@ -15,7 +16,8 @@ import org.hyperscala.selector._
 class DropzoneExample extends Example {
   val ServerMode = true
 
-  this.require(Dropzone)
+  require(Dropzone)
+  require(Gritter)
 
   connected[tag.HTML] {
     case html => {
@@ -74,7 +76,7 @@ class DropzoneExample extends Example {
   s.borderRadius := 5.px
   s.fontSize := 36.px
   s.textAlign := Alignment.Center
-  s.paddingTop := 50.px
+  s.paddingTop := 25.px
   container.contents += "Drop Files Here"
   contents += container
 
@@ -93,6 +95,30 @@ class DropzoneExample extends Example {
   val dropzone = Dropzone(container)
   if (ServerMode) {
     dropzone.connectEventsToServer()
+    dropzone.addedFileEvent.on {
+      case evt => Gritter.add(this.webpage, "Event Received", s"Added file: ${evt.name}")
+    }
+    dropzone.completeEvent.on {
+      case evt => Gritter.add(this.webpage, "Event Received", "Complete")
+    }
+    dropzone.errorEvent.on {
+      case evt => Gritter.add(this.webpage, "Event Received", "Error")
+    }
+    dropzone.processingEvent.on {
+      case evt => Gritter.add(this.webpage, "Event Received", "Processing")
+    }
+    dropzone.removedFileEvent.on {
+      case evt => Gritter.add(this.webpage, "Event Received", s"Removed File: ${evt.name}")
+    }
+    dropzone.successEvent.on {
+      case evt => Gritter.add(this.webpage, "Event Received", "Success")
+    }
+    dropzone.thumbnailEvent.on {
+      case evt => Gritter.add(this.webpage, "Event Received", "Thumbnail")
+    }
+    dropzone.uploadProgressEvent.on {
+      case evt => Gritter.add(this.webpage, "Event Received", s"Upload Progress: ${evt.progress}")
+    }
     dropzone.addedFileEvent.on {
       case evt => previews.contents += new DropzoneEntry(dropzone, Some(evt))
     }

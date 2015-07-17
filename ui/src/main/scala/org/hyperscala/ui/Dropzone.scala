@@ -266,7 +266,7 @@ class Dropzone(container: HTMLTag) extends jQueryComponent with Listenable with 
     complete := Dropzone.FileScript(container.identity, "complete")
     error := Dropzone.FileErrorScript(container.identity, "error")
 
-    val actor = Dropzone.actorSystem.actorOf(Props[DropzoneActor], name = "dropzoneActor")
+    val actor = Dropzone.actorSystem.actorOf(Props[DropzoneActor], name = s"dropzoneActor${Unique()}")
 
     // Add handler for new events
     container.handle[DropzoneFileEvent] {

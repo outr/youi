@@ -2,6 +2,7 @@ package org.hyperscala.ui
 
 import java.io.File
 
+import akka.actor.{Props, ActorSystem, Actor}
 import com.outr.net.communicate.ConnectionHolder
 import com.outr.net.http.content.{ContentType, StringContent}
 import com.outr.net.http.handler.{MultipartSupport, MultipartHandler}
@@ -17,6 +18,7 @@ import org.hyperscala.module.Module
 import org.powerscala.event.{Intercept, Listenable}
 import org.powerscala.event.processor.UnitProcessor
 import org.powerscala.json.TypedSupport
+import org.powerscala.log.Logging
 import org.powerscala.property.Property
 import org.powerscala.{StorageComponent, Unique, Version}
 import org.hyperscala.web.{Website, Webpage}
@@ -31,6 +33,8 @@ import com.outr.net.http.session.Session
  * @author Matt Hicks <mhicks@outr.com>
  */
 object Dropzone extends Module with StorageComponent[Dropzone, HTMLTag] {
+  private val actorSystem = ActorSystem("DropzoneSystem")
+
   TypedSupport.register("dropzoneFileEvent", classOf[DropzoneFileEvent])
   TypedSupport.register("dropzoneThumbnailEvent", classOf[DropzoneThumbnailEvent])
   TypedSupport.register("dropzoneProgressEvent", classOf[DropzoneProgressEvent])
@@ -124,7 +128,27 @@ object Dropzone extends Module with StorageComponent[Dropzone, HTMLTag] {
   override protected def create(t: HTMLTag) = new Dropzone(t)
 }
 
-class Dropzone(container: HTMLTag) extends jQueryComponent with Listenable {
+class DropzoneActor extends Actor with Logging {
+  def receive = {
+    case dae: DropzoneActorEvent => dae.evt match {
+      case evt: DropzoneFileEvent => evt.event match {
+        case "addedFile" => dae.dropzone.addedFileEvent.fire(evt)
+        case "removedFile" => dae.dropzone.removedFileEvent.fire(evt)
+        case "processing" => dae.dropzone.processingEvent.fire(evt)
+        case "success" => dae.dropzone.successEvent.fire(evt)
+        case "complete" => dae.dropzone.completeEvent.fire(evt)
+      }
+      case evt: DropzoneThumbnailEvent => dae.dropzone.thumbnailEvent.fire(evt)
+      case evt: DropzoneProgressEvent => dae.dropzone.uploadProgressEvent.fire(evt)
+      case evt: DropzoneErrorEvent => dae.dropzone.errorEvent.fire(evt)
+    }
+    case m => warn(s"Unhandled message: $m")
+  }
+}
+
+case class DropzoneActorEvent(dropzone: Dropzone, evt: BrowserEvent)
+
+class Dropzone(container: HTMLTag) extends jQueryComponent with Listenable with Logging {
   val id = Unique()
   val fileReceived = new UnitProcessor[(String, File)]("fileReceived")
 
@@ -242,24 +266,20 @@ class Dropzone(container: HTMLTag) extends jQueryComponent with Listenable {
     complete := Dropzone.FileScript(container.identity, "complete")
     error := Dropzone.FileErrorScript(container.identity, "error")
 
+    val actor = Dropzone.actorSystem.actorOf(Props[DropzoneActor], name = "dropzoneActor")
+
     // Add handler for new events
     container.handle[DropzoneFileEvent] {
-      case evt => evt.event match {
-        case "addedFile" => addedFileEvent.fire(evt)
-        case "removedFile" => removedFileEvent.fire(evt)
-        case "processing" => processingEvent.fire(evt)
-        case "success" => successEvent.fire(evt)
-        case "complete" => completeEvent.fire(evt)
-      }
+      case evt => actor ! DropzoneActorEvent(this, evt)
     }
     container.handle[DropzoneThumbnailEvent] {
-      case evt => thumbnailEvent.fire(evt)
+      case evt => actor ! DropzoneActorEvent(this, evt)
     }
     container.handle[DropzoneProgressEvent] {
-      case evt => uploadProgressEvent.fire(evt)
+      case evt => actor ! DropzoneActorEvent(this, evt)
     }
     container.handle[DropzoneErrorEvent] {
-      case evt => errorEvent.fire(evt)
+      case evt => actor ! DropzoneActorEvent(this, evt)
     }
   }
 

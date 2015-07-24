@@ -8,17 +8,18 @@ import org.hyperscala.html._
 import org.hyperscala.jquery.Gritter
 import org.hyperscala.selector.Selector
 import org.hyperscala.ui.module.WebFontLoader
+import org.hyperscala.web.Webpage
 import org.powerscala.Color
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-abstract class FabricIntroExample extends Example {
+abstract class FabricIntroExample extends Webpage with Example {
   require(FabricJS)
   require(Gritter)
   require(WebFontLoader)
 
-  new SelectorStyleSheet(Selector.clazz("canvas-container"))(this) {
+  new SelectorStyleSheet(Selector.clazz("canvas-container"))(body) {
     borderWidth := 1.px
     borderColor := Color.Black
     borderStyle := LineStyle.Solid
@@ -28,10 +29,10 @@ abstract class FabricIntroExample extends Example {
   }
 
   val canvases = new tag.Div
-  contents += canvases
+  body.contents += canvases
 
   val buttons = new tag.Div {
     style.clear := Clear.Both
   }
-  contents += buttons
+  body.contents += buttons
 }

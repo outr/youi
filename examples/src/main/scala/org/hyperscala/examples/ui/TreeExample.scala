@@ -2,12 +2,13 @@ package org.hyperscala.examples.ui
 
 import org.hyperscala.examples.Example
 import org.hyperscala.html._
-import org.hyperscala.ui.widgets.{CSSLeaf, CSSBranch, CSSTree}
+import org.hyperscala.ui.widgets.{CSSBranch, CSSLeaf, CSSTree}
+import org.hyperscala.web.Webpage
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class TreeExample extends Example {
+class TreeExample extends Webpage with Example {
 //  val tree = new tag.Div(id = "tree") {
 //    contents += new tag.Ul {
 //      contents += new tag.Li(content = l("One"), role = "leaf")
@@ -31,7 +32,7 @@ class TreeExample extends Example {
 //
 //  def l(name: String) = new tag.A(href = "#", content = name)
 
-  contents += new CSSTree {
+  body.contents += new CSSTree {
     this += new CSSLeaf("One")
     this += new CSSLeaf("Two")
     this += new CSSLeaf("Three")

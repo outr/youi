@@ -13,13 +13,13 @@ import org.powerscala.property.Property
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class RealtimeFrameExample extends Example {
-  this.require(Realtime)
+class RealtimeFrameExample extends Webpage with Example {
+  require(Realtime)
 
   println("RealtimeFrameExample...")
   private val count = Property[Int](default = Some(0))
 
-  contents += new tag.P {
+  body.contents += new tag.P {
     contents += "RealtimeFrame extends an IFrame to allow customized pages to be instantiated and then assigned from within the parent page."
   }
 
@@ -36,8 +36,8 @@ class RealtimeFrameExample extends Example {
     }
   }
 
-  contents += frame
-  contents += new tag.Button(content = "Load") {
+  body.contents += frame
+  body.contents += new tag.Button(content = "Load") {
     clickEvent.onRealtime {
       case evt => {
         count := count() + 1

@@ -1,17 +1,18 @@
 package org.hyperscala.examples.basic
 
-import org.hyperscala.html._
-import org.powerscala.Color
-import org.hyperscala.realtime.{RealtimeEvent, Realtime}
 import org.hyperscala.examples.Example
+import org.hyperscala.html._
+import org.hyperscala.realtime.{Realtime, RealtimeEvent}
 import org.hyperscala.web._
-import language.reflectiveCalls
+import org.powerscala.Color
+
+import scala.language.reflectiveCalls
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class RealtimeWebpageExample extends Example {
-  this.require(Realtime)
+class RealtimeWebpageExample extends Webpage with Example {
+  require(Realtime)
 
   var count = 0
   var reversed = false
@@ -23,7 +24,7 @@ class RealtimeWebpageExample extends Example {
       case evt => println("Input value changed: %s".format(value()))
     }
   }
-  contents += input
+  body.contents += input
 
   val select = new tag.Select(id = "realtimeSelect") {
     changeEvent := RealtimeEvent()
@@ -39,7 +40,7 @@ class RealtimeWebpageExample extends Example {
   select.value := "dos"
   printSelected()
 
-  contents += select
+  body.contents += select
 
   def printSelected(): Unit = println(s"Options: ${select.selectedOptions()}, Selected: ${select.selected()}, Value: ${select.value()}")
 
@@ -50,9 +51,9 @@ class RealtimeWebpageExample extends Example {
       case evt => println(content())
     }
   }
-  contents += textArea
+  body.contents += textArea
 
-  contents += new tag.Button(content = "Test Button") {
+  body.contents += new tag.Button(content = "Test Button") {
     clickEvent := RealtimeEvent()
 
     clickEvent.on {
@@ -75,10 +76,10 @@ class RealtimeWebpageExample extends Example {
         }
         if (reversed) {
           count -= 1
-          RealtimeWebpageExample.this.contents -= RealtimeWebpageExample.this.contents.last
+          body.contents -= body.contents.last
         } else {
           count += 1
-          RealtimeWebpageExample.this.contents += new tag.Div {
+          body.contents += new tag.Div {
             contents += "Testing %s!".format(count)
           }
         }

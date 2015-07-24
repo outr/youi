@@ -7,18 +7,19 @@ import org.hyperscala.fabricjs.paint.{ColorStop, LinearGradient}
 import org.hyperscala.fabricjs.prop.Adjust
 import org.hyperscala.html._
 import org.hyperscala.javascript.JavaScriptString
-import org.powerscala.Color
 import org.hyperscala.realtime._
+import org.hyperscala.web.Webpage
+import org.powerscala.Color
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class FabricJSExample extends Example {
+class FabricJSExample extends Webpage with Example {
   require(FabricJS)
 
   val t = new tag.Canvas(id = "myCanvas", width = 600, height = 200)
   t.style.border := "1px solid black"
-  contents += t
+  body.contents += t
 
   val canvas = new Canvas(t) {
     selection := false
@@ -74,7 +75,7 @@ class FabricJSExample extends Example {
   }
   canvas.contents += text
 
-  contents += new tag.Div {
+  body.contents += new tag.Div {
     contents += new tag.Button(content = "Rotate") {
       clickEvent.onRealtime {
         case evt => {

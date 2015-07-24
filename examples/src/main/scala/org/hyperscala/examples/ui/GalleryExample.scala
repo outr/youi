@@ -1,31 +1,29 @@
 package org.hyperscala.examples.ui
 
-import com.outr.net.http.session.Session
 import org.hyperscala.css.attributes._
 import org.hyperscala.examples.Example
 import org.hyperscala.html._
 import org.hyperscala.jquery.Gritter
 import org.hyperscala.ui.module.Monitor
 import org.hyperscala.web._
-import org.powerscala.property.Property
 
 import scala.annotation.tailrec
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class GalleryExample extends Example {
-  this.require(Monitor)
-  this.require(Gritter)
+class GalleryExample extends Webpage with Example {
+  require(Monitor)
+  require(Gritter)
 
   val preferredHeight = 250
 
-  contents += new tag.P {
+  body.contents += new tag.P {
     contents += "Gallery provides a server-side determination of sizing and row count."
   }
 
   val div = new tag.Div(id = "gallery")
-  contents += div
+  body.contents += div
 
   connected[Webpage] {
     case webpage => Monitor.sync(webpage, div.style.width, 1.0)
@@ -68,7 +66,7 @@ class GalleryExample extends Example {
 //      case sized => sized.height := preferredHeight
 //    }
     val unused = layoutRows(entries)
-    Gritter.add(this.webpage, "Excluded Results", s"Excluded last $unused entries.")
+    Gritter.add(this, "Excluded Results", s"Excluded last $unused entries.")
   }
 
   @tailrec

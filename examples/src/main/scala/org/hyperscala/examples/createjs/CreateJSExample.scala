@@ -1,20 +1,21 @@
 package org.hyperscala.examples.createjs
 
 import org.hyperscala.createjs.CreateJS
-import org.hyperscala.easeljs.{ShapeProperty, Stage, EaselJS}
+import org.hyperscala.easeljs.{ShapeProperty, Stage}
 import org.hyperscala.examples.Example
 import org.hyperscala.html._
-import org.hyperscala.tweenjs.{Ticker, Ease, Tween}
+import org.hyperscala.tweenjs.{Ease, Ticker, Tween}
+import org.hyperscala.web.Webpage
 import org.powerscala.Color
 
 /**
  * Matt Hicks <matt@outr.com>
  */
-class CreateJSExample extends Example {
+class CreateJSExample extends Webpage with Example {
   require(CreateJS)
 
   val canvas = new tag.Canvas(id = "testCanvas", width = 500, height = 200)
-  contents += canvas
+  body.contents += canvas
 
   val stage = Stage(canvas)
   val circle = stage.createShape()

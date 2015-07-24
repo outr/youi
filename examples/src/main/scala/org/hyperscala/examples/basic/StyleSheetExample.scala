@@ -1,25 +1,22 @@
 package org.hyperscala.examples.basic
 
 import org.hyperscala.css.SelectorStyleSheet
+import org.hyperscala.css.attributes.Decoration
 import org.hyperscala.examples.Example
 import org.hyperscala.html._
-import org.hyperscala.web._
-import org.powerscala.Color
 import org.hyperscala.realtime._
 import org.hyperscala.selector._
-import org.hyperscala.css.attributes.Decoration
-import com.outr.net.http.session.Session
+import org.hyperscala.web._
+import org.powerscala.Color
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class StyleSheetExample extends Example {
+class StyleSheetExample extends Webpage with Example {
   require(Realtime)
-  connected[Webpage] {
-    case webpage => webpage.connectStandard()
-  }
+  this.connectStandard()
 
-  implicit def htmlTag: HTMLTag = this
+  implicit def htmlTag: HTMLTag = body
 
   new SelectorStyleSheet(Selector.all) {
     fontFamily := "sans-serif"
@@ -43,7 +40,7 @@ class StyleSheetExample extends Example {
     style.textDecoration := Decoration.Underline
     style.textDecoration.important := false
   }
-  contents += h1
+  body.contents += h1
 
   val b = new tag.Button(id = "colorButton", content = "Change Color") {
     clickEvent.on {
@@ -57,8 +54,8 @@ class StyleSheetExample extends Example {
       }
     }
   }
-  contents += b
-  contents += new tag.Button(id = "removeButton", content = "Remove Hover Style") {
+  body.contents += b
+  body.contents += new tag.Button(id = "removeButton", content = "Remove Hover Style") {
     clickEvent.on {
       case evt => this.webpage.head.deleteSelector(h1HoverStyle.selector)
     }

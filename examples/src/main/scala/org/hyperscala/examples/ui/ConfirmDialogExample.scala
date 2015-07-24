@@ -1,6 +1,5 @@
 package org.hyperscala.examples.ui
 
-import com.outr.net.http.session.Session
 import org.hyperscala.examples.Example
 import org.hyperscala.html._
 import org.hyperscala.jquery.ui.jQueryUI
@@ -13,14 +12,14 @@ import scala.language.reflectiveCalls
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class ConfirmDialogExample extends Example {
+class ConfirmDialogExample extends Webpage with Example {
   this.require(Realtime)
   this.require(jQueryUI)
   connected[Webpage] {
     case webpage => webpage.connectForm()
   }
 
-  contents += new tag.P {
+  body.contents += new tag.P {
     contents += "ConfirmDialog offers an extension to jQuery UI's Dialog to provide simple true/false confirmation."
   }
 
@@ -29,10 +28,10 @@ class ConfirmDialogExample extends Example {
     case evt => showDialog()
   }
 
-  contents += button
+  body.contents += button
 
   def showDialog() = {
-    contents += new ConfirmDialog {
+    body.contents += new ConfirmDialog {
       dialog.title := "Are you sure?"
       dialog.modal := true
       def body = new tag.Div {

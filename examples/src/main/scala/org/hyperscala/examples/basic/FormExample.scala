@@ -6,19 +6,20 @@ import org.hyperscala.html._
 import org.hyperscala.html.attributes.{ButtonType, InputType}
 import org.hyperscala.html.tag._
 import org.hyperscala.jquery.jQuery
+import org.hyperscala.web.Webpage
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class FormExample extends Example {
-  this.require(jQuery)
+class FormExample extends Webpage with Example {
+  require(jQuery)
 
   val messages = new Div {
     style.paddingBottom := 10.px
   }
-  contents += messages
+  body.contents += messages
 
-  contents += new Form(id = "form", method = Method.Post) {
+  body.contents += new Form(id = "form", method = Method.Post) {
     val items = List("Name", "Phone", "Email")
     items.foreach {
       case item => {

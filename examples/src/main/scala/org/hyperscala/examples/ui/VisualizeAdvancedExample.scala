@@ -1,20 +1,20 @@
 package org.hyperscala.examples.ui
 
+import org.hyperscala.examples.Example
 import org.hyperscala.html._
-
+import org.hyperscala.ui.widgets.visual.Visualize
+import org.hyperscala.web.Webpage
 import org.powerscala.property._
 import org.powerscala.{Country, Language}
-import org.hyperscala.ui.widgets.visual.Visualize
-import org.hyperscala.examples.Example
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class VisualizeAdvancedExample extends Example {
+class VisualizeAdvancedExample extends Webpage with Example {
   val messages = new tag.Div {
     style.paddingBottom := 10.px
   }
-  contents += messages
+  body.contents += messages
 
   val instance = Property[Company](default = Some(Company("Doeco",
                                                       "contact@doeco.com",
@@ -32,7 +32,7 @@ class VisualizeAdvancedExample extends Example {
   }.field[List[CompanyEmail]]("Company.address.emails") {
     case vb => vb.itemizedType[CompanyEmail]()
   }.renameGroup("address", "Mailing Address")
-  contents += visualize.build()
+  body.contents += visualize.build()
 
   instance.change.on {
     case evt => {

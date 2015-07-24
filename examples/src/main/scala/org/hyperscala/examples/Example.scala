@@ -1,18 +1,12 @@
 package org.hyperscala.examples
 
-import org.hyperscala.html._
-import org.hyperscala.module.Interface
 import org.hyperscala.web.Webpage
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */
-trait Example extends tag.Div {
+trait Example extends Webpage {
   def exampleName = getClass.getSimpleName
-
-  def require(interface: Interface) = connected[Webpage] {
-    case webpage => webpage.require(interface)
-  }
 
   final def sourceURL = Example.URL.format(getClass.getName.replaceAll("[.]", "/"))
 }

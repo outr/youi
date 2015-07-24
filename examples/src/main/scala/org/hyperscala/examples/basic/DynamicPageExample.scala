@@ -1,14 +1,13 @@
 package org.hyperscala.examples.basic
 
+import org.hyperscala.examples.Example
 import org.hyperscala.html._
-import org.hyperscala.ui.dynamic.{DynamicWebpage, DynamicTag}
-import com.outr.net.http.session.Session
-import org.hyperscala.web.Website
+import org.hyperscala.ui.dynamic.{DynamicTag, DynamicWebpage}
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */
-class DynamicPageExample extends DynamicWebpage {
+class DynamicPageExample extends DynamicWebpage with Example {
   def dynamicTag = DynamicTag.url[tag.HTML](getClass.getName, getClass.getClassLoader.getResource("dynamic_page.html"))
 
   val message = getById[tag.Strong]("message")

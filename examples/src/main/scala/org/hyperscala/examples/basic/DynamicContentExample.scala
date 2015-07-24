@@ -1,23 +1,23 @@
 package org.hyperscala.examples.basic
 
+import org.hyperscala.examples.Example
 import org.hyperscala.html._
-import org.powerscala.property.Property
-
+import org.hyperscala.realtime.RealtimeEvent
 import org.hyperscala.ui.binder._
 import org.hyperscala.ui.dynamic.{DynamicContent, DynamicString}
-import org.hyperscala.examples.Example
-import org.hyperscala.realtime.RealtimeEvent
+import org.hyperscala.web.Webpage
+import org.powerscala.property.Property
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */
-class DynamicContentExample extends Example {
-  contents += new tag.P {
+class DynamicContentExample extends Webpage with Example {
+  body.contents += new tag.P {
     contents += "DynamicContent provides a mechanism to dynamically load and parse existing HTML content that can then be manipulated in Hyperscala before rendering to the browser."
   }
 
   val form = new SimpleDynamicForm
-  contents += form
+  body.contents += form
 }
 
 class SimpleDynamicForm extends DynamicContent(null) {

@@ -1,16 +1,16 @@
 package org.hyperscala.examples.bootstrap
 
-import com.outr.net.http.session.{MapSession, Session}
 import org.hyperscala.bootstrap.Bootstrap
 import org.hyperscala.bootstrap.component._
+import org.hyperscala.examples.Example
 import org.hyperscala.html._
 import org.hyperscala.html.attributes.InputType
-import org.hyperscala.web.{Website, Webpage}
+import org.hyperscala.web.Webpage
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class BootstrapSignin extends Webpage {
+class BootstrapSignin extends Webpage with Example {
   require(Bootstrap)
 
   head.contents += new tag.Link(href = "/form.css")

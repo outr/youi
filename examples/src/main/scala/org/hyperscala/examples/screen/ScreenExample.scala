@@ -1,16 +1,16 @@
 package org.hyperscala.examples.screen
 
 import org.hyperscala.examples.Example
+import org.hyperscala.html._
 import org.hyperscala.jquery.Gritter
 import org.hyperscala.realtime._
 import org.hyperscala.screen._
 import org.hyperscala.web._
-import org.hyperscala.html._
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class ScreenExample extends Example {
+class ScreenExample extends Webpage with Example {
   require(Gritter)
 
   private val baseURI = "/example/advanced"
@@ -21,29 +21,29 @@ class ScreenExample extends Example {
   val screens = new ExampleScreens(this)
 
   val heading = new tag.H1(content = "Example")
-  contents += heading
+  body.contents += heading
 
-  contents += new tag.Button(content = "Screen 1") {
+  body.contents += new tag.Button(content = "Screen 1") {
     clickEvent.onRealtime {
       case evt => screens.activate(screen1URI, replace = false)
     }
   }
-  contents += new tag.Button(content = "Screen 2") {
+  body.contents += new tag.Button(content = "Screen 2") {
     clickEvent.onRealtime {
       case evt => screens.screen2.handle(screen2URI)
     }
   }
-  contents += new tag.Button(content = "Screen 3") {
+  body.contents += new tag.Button(content = "Screen 3") {
     clickEvent.onRealtime {
       case evt => screens.activate(screen3URI, replace = false)
     }
   }
-  contents += new tag.Button(content = "Reload Screen 1") {
+  body.contents += new tag.Button(content = "Reload Screen 1") {
     clickEvent.onRealtime {
       case evt => screens.screen1.reLoad()
     }
   }
-  contents += new tag.Button(content = "Dispose Screen 3") {
+  body.contents += new tag.Button(content = "Dispose Screen 3") {
     clickEvent.onRealtime {
       case evt => screens.screen3.dispose()
     }

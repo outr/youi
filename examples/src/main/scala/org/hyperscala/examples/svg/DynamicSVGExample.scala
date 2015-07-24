@@ -1,20 +1,21 @@
 package org.hyperscala.examples.svg
 
+import java.util.Random
+
 import org.hyperscala.examples.Example
+import org.hyperscala.html._
+import org.hyperscala.realtime.{Realtime, RealtimeEvent}
 import org.hyperscala.svg
 import org.hyperscala.svg._
-import org.powerscala.Color
-import org.hyperscala.html._
 import org.hyperscala.web._
-import org.hyperscala.realtime.{RealtimeEvent, Realtime}
+import org.powerscala.Color
 
-import language.reflectiveCalls
-import java.util.Random
+import scala.language.reflectiveCalls
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */
-class DynamicSVGExample extends Example {
+class DynamicSVGExample extends Webpage with Example {
   val r = new Random()
   this.require(Realtime)
 
@@ -24,9 +25,9 @@ class DynamicSVGExample extends Example {
   val canvas = new svg.Svg(id = "canvas", width = canvasWidth.px, height = canvasHeight.px) {
     style.backgroundColor := Color.Yellow
   }
-  contents += canvas
+  body.contents += canvas
 
-  contents += new tag.Button(content = "Add Circle") {
+  body.contents += new tag.Button(content = "Add Circle") {
     clickEvent := RealtimeEvent()
     clickEvent.on {
       case evt => addCircle()

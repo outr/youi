@@ -1,19 +1,20 @@
 package org.hyperscala.examples.ui
 
-import org.hyperscala.html._
-import org.hyperscala.examples.Example
-import org.hyperscala.ui.widgets.{Selectable, MultiSelect}
-import org.hyperscala.jquery.Gritter
-import org.hyperscala.web._
 import org.hyperscala.css.attributes._
-import language.reflectiveCalls
+import org.hyperscala.examples.Example
+import org.hyperscala.html._
+import org.hyperscala.jquery.Gritter
 import org.hyperscala.realtime.RealtimeEvent
+import org.hyperscala.ui.widgets.{MultiSelect, Selectable}
+import org.hyperscala.web._
+
+import scala.language.reflectiveCalls
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class MultiSelectExample extends Example {
-  this.require(Gritter)
+class MultiSelectExample extends Webpage with Example {
+  require(Gritter)
 
   val select = new MultiSelect[Int] {
     style.height := 100.px
@@ -42,11 +43,11 @@ class MultiSelectExample extends Example {
       e
     }
   }
-  contents += select
+  body.contents += select
 
   select.selected := List(3, 4)
 
-  contents += new tag.Button(content = "Select 1 and 5") {
+  body.contents += new tag.Button(content = "Select 1 and 5") {
     clickEvent := RealtimeEvent()
 
     clickEvent.on {
@@ -54,7 +55,7 @@ class MultiSelectExample extends Example {
     }
   }
 
-  contents += new tag.Button(content = "Output Selected") {
+  body.contents += new tag.Button(content = "Output Selected") {
     clickEvent := RealtimeEvent()
 
     clickEvent.on {

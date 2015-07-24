@@ -1,23 +1,22 @@
 package org.hyperscala.examples.ui
 
-import org.hyperscala.html._
-
 import org.hyperscala.examples.Example
-import org.hyperscala.web._
-import org.hyperscala.realtime.{RealtimeEvent, Realtime}
-import org.hyperscala.ui.widgets.Select2
+import org.hyperscala.html._
 import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.jquery.Gritter
+import org.hyperscala.realtime.{Realtime, RealtimeEvent}
+import org.hyperscala.ui.widgets.Select2
+import org.hyperscala.web._
 import org.powerscala.Language
 
-import language.reflectiveCalls
+import scala.language.reflectiveCalls
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class Select2Example extends Example {
-  this.require(Realtime)
-  this.require(Gritter)
+class Select2Example extends Webpage with Example {
+  require(Realtime)
+  require(Gritter)
 
   val select = new tag.Select(id = "test") {
     contents += new tag.Option(value = "apple", content = "Apple")
@@ -29,9 +28,9 @@ class Select2Example extends Example {
       case evt => Gritter.add(this.webpage, "Selection Changed", s"Value changed to ${value()}.")
     }
   }
-  contents += select
+  body.contents += select
 
-  contents += new tag.Button(content = "Add Grape") {
+  body.contents += new tag.Button(content = "Add Grape") {
     clickEvent := RealtimeEvent()
     clickEvent.on {
       case evt => {
@@ -40,15 +39,15 @@ class Select2Example extends Example {
       }
     }
   }
-  contents += new tag.Button(content = "Select Banana") {
+  body.contents += new tag.Button(content = "Select Banana") {
     clickEvent := RealtimeEvent()
     clickEvent.on {
       case evt => select2.value := "banana"
     }
   }
 
-  contents += new tag.Br
-  contents += new tag.Br
+  body.contents += new tag.Br
+  body.contents += new tag.Br
 
   val multiSelect = new tag.Select(id = "testMultiple", multiple = true) {
     style.minWidth := 120.px
@@ -59,8 +58,8 @@ class Select2Example extends Example {
       case evt => Gritter.add(this.webpage, "Multiple Selection Changed", s"Values changed to ${evt.newValue.mkString(", ")}.")
     }
   }
-  contents += multiSelect
-  contents += new tag.Button(content = "Select English and French") {
+  body.contents += multiSelect
+  body.contents += new tag.Button(content = "Select English and French") {
     clickEvent := RealtimeEvent()
     clickEvent.on {
       case evt => select2Multi.values := List(Language.English.name, Language.French.name)

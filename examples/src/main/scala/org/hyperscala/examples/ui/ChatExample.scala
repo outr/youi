@@ -1,24 +1,24 @@
 package org.hyperscala.examples.ui
 
+import org.hyperscala.examples.Example
 import org.hyperscala.html._
-import org.powerscala.property.Property
-import org.hyperscala.realtime.{RealtimeEvent, Realtime}
-import org.hyperscala.ui.dynamic.{DynamicTagged, DynamicTag, DynamicContent}
-import language.reflectiveCalls
 import org.hyperscala.jquery.dsl._
-import org.powerscala.Unique
-import org.hyperscala.examples.{ExamplePage, Example}
+import org.hyperscala.realtime.{Realtime, RealtimeEvent}
+import org.hyperscala.ui.dynamic.{DynamicContent, DynamicTag, DynamicTagged}
 import org.hyperscala.web._
+import org.powerscala.Unique
+import org.powerscala.property.Property
+
 import scala.annotation.tailrec
-import com.outr.net.http.session.{MapSession, Session}
+import scala.language.reflectiveCalls
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */
-class ChatExample extends Example {
-  this.require(Realtime)
+class ChatExample extends Webpage with Example {
+  require(Realtime)
 
-  contents += new tag.P {
+  body.contents += new tag.P {
     contents += "Simple real-time chat example with basic user management and history."
   }
 
@@ -43,7 +43,7 @@ class ChatExample extends Example {
     case evt => sendMessage()
   }
 
-  contents += chatMain
+  body.contents += chatMain
 
   ChatExample.chatHistory.foreach {   // Load history
     case (nick, text) => messages.contents += new ChatEntry(nick, text)
@@ -58,7 +58,7 @@ class ChatExample extends Example {
       ChatExample.sendMessage(this.website, nickname(), message.value())
     }
     message.value := ""
-    this.webpage.eval($(message).focus())
+    eval($(message).focus())
   }
 
   def updateNickname() = {
@@ -84,18 +84,15 @@ object ChatExample {
 
   private var history = List.empty[(String, String)]
 
-  def instances(website: Website) = {
-    website.pages.byType[ExamplePage].map(p => p.example).collect {
-      case chat: ChatExample => chat
-    }.toList
-  }
+  def instances(website: Website) = website.pages.byType[ChatExample].toList
+
   @tailrec
   def generateNick(website: Website, nickname: String, increment: Int = 0): String = {
     val nick = increment match {
       case 0 => nickname
       case _ => s"$nickname$increment"
     }
-    if (instances(website).find(c => c.nickname() == nick).isEmpty) {
+    if (!instances(website).exists(c => c.nickname() == nick)) {
       nick
     } else {
       generateNick(website, nickname, increment + 1)

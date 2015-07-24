@@ -6,21 +6,21 @@ import com.outr.net.http.request.HttpRequest
 import com.outr.net.http.session.MapSession
 import org.hyperscala.examples.Example
 import org.hyperscala.examples.basic._
-import org.hyperscala.examples.bootstrap.{BootstrapTheme, BootstrapSignin}
+import org.hyperscala.examples.bootstrap.{BootstrapSignin, BootstrapTheme}
 import org.hyperscala.examples.comparison.PlayHelloWorldPage
-import org.hyperscala.examples.contenteditor.{EditablePageExample, ContentEditorExample}
+import org.hyperscala.examples.contenteditor.{ContentEditorExample, EditablePageExample}
 import org.hyperscala.examples.createjs.CreateJSExample
 import org.hyperscala.examples.fabricjs._
 import org.hyperscala.examples.helloworld.HelloWorldPage
-import org.hyperscala.examples.screen.{SinglePageSiteExample, ScreenExample}
-import org.hyperscala.examples.svg.{DynamicSVGExample, SVGShapesExample, BasicSVGExample}
+import org.hyperscala.examples.screen.{ScreenExample, SinglePageSiteExample}
+import org.hyperscala.examples.svg.{BasicSVGExample, DynamicSVGExample, SVGShapesExample}
 import org.hyperscala.examples.todomvc.TodoMVC
 import org.hyperscala.examples.ui._
 import org.hyperscala.examples.ux.SingleSelectListExample
 import org.hyperscala.hello.HelloSite
 import org.hyperscala.realtime.Realtime
 import org.hyperscala.site.extra.HyperscalaGenerator
-import org.hyperscala.web.{Webpage, WebpageHandler, Scope, Website}
+import org.hyperscala.web.{Scope, WebpageHandler, Website}
 import org.powerscala.log.Logger
 
 import scala.collection.mutable.ListBuffer
@@ -53,8 +53,8 @@ object HyperscalaSite extends Website with JettyApplication {
   // Basic
   val hello = example(new HelloWorldPage, "Basic", "Hello World", Scope.Request)
   val style = example(new StyleSheetExample, "Basic", "Style Sheet", Scope.Request)
-  val large = pageExample(new LargePageExample, "Basic", "Large Page", Scope.Request)
-  val dynamicPage = pageExample(new DynamicPageExample, "Basic", "Dynamic Page", Scope.Page)
+  val large = example(new LargePageExample, "Basic", "Large Page", Scope.Request)
+  val dynamicPage = example(new DynamicPageExample, "Basic", "Dynamic Page", Scope.Page)
   //    val numberGuess = page(new HyperscalaExample(new NumberGuess), Scope.Page, "/example/number_guess.html")
   val scoped = example(ScopedExample, "Basic", "Scoped", Scope.Page)
   val encodedImage = example(new EncodedImageExample, "Basic", "Encoded Image", Scope.Page)
@@ -90,7 +90,7 @@ object HyperscalaSite extends Website with JettyApplication {
   val modalComponent = example(new ModalComponentExample, "UI", "Modal Component", Scope.Page)
   val scriptLoader = example(new ScriptLoaderExample, "UI", "Script Loader", Scope.Page)
   val socialSharing = example(new SocialSharingExample, "UI", "Social Sharing", Scope.Page)
-  val socialMetadata = pageExample(new SocialMetadataExample, "UI", "Social Meta Data", Scope.Page)
+  val socialMetadata = example(new SocialMetadataExample, "UI", "Social Meta Data", Scope.Page)
 
   // Wrapper
   val nivoSlider = example(new NivoSliderExample, "Wrapper", "Nivo Slider", Scope.Page)
@@ -122,7 +122,7 @@ object HyperscalaSite extends Website with JettyApplication {
   val changeable = example(new ChangeableExample, "Advanced", "Changeable", Scope.Page)
   val compliance = example(new ComplianceExample, "Advanced", "Compliance", Scope.Page)
   val coordinates = example(new CoordinatesExample, "Advanced", "Coordinates", Scope.Page)
-  val pageLoader = pageExample(new PageLoaderExample, "Advanced", "Page Loader", Scope.Page)
+  val pageLoader = example(new PageLoaderExample, "Advanced", "Page Loader", Scope.Page)
   val screen = example(new ScreenExample, "Advanced", "Screen", Scope.Page)
   addHandler(screen, "/example/advanced/screen2.html")
   addHandler(screen, "/example/advanced/screen3.html")
@@ -142,8 +142,8 @@ object HyperscalaSite extends Website with JettyApplication {
   val dynamicSVG = example(new DynamicSVGExample, "SVG", "DynamicSVG", Scope.Page)
 
   // Bootstrap
-  val bootstrapSignIn = pageExample(new BootstrapSignin, "Bootstrap", "Sign In", Scope.Page)
-  val bootstrapTheme = pageExample(new BootstrapTheme, "Bootstrap", "Theme", Scope.Page)
+  val bootstrapSignIn = example(new BootstrapSignin, "Bootstrap", "Sign In", Scope.Page)
+  val bootstrapTheme = example(new BootstrapTheme, "Bootstrap", "Theme", Scope.Page)
 
   // UX
   val singleSelectList = example(new SingleSelectListExample, "UX", "SingleSelectList", Scope.Page)
@@ -157,8 +157,8 @@ object HyperscalaSite extends Website with JettyApplication {
   val fabricIntro3 = example(new FabricIntroPart3, "FabricJS", "Intro Part 3", Scope.Page)
 
   // Comparison
-  val playComparison = pageExample(new PlayHelloWorldPage, "Comparison", "Play - Hello World", Scope.Page)
-  val todoMVC = pageExample(new TodoMVC(HyperscalaSite.this), "Comparison", "TODO MVC", Scope.Session)
+  val playComparison = example(new PlayHelloWorldPage, "Comparison", "Play - Hello World", Scope.Page)
+  val todoMVC = example(new TodoMVC(HyperscalaSite.this), "Comparison", "TODO MVC", Scope.Session)
 
   handlers.add(PathFilter("/hello", HelloSite))
 
@@ -176,14 +176,15 @@ object HyperscalaSite extends Website with JettyApplication {
   def examples = _examples.toList
 
   def example(creator: => Example, group: String, name: String, scope: Scope = Scope.Page): WebpageHandler = {
-    pageExample(new HyperscalaExample(creator), group, name, scope)
-  }
-
-  def pageExample(creator: => Webpage, group: String, name: String, scope: Scope = Scope.Page): WebpageHandler = {
     val filename = s"${group.toLowerCase}/${name.replaceAll(" ", "_").toLowerCase}.html"
     val path = s"/example/$filename"
     _examples += ExampleEntry(group, name, path)
-    page(creator, scope, path)
+    val pageCreator = () => {
+      val e = creator
+      e.require(HyperscalaExample)
+      e
+    }
+    page(pageCreator(), scope, path)
   }
 }
 

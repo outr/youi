@@ -142,8 +142,8 @@ object HyperscalaSite extends Website with JettyApplication {
   val dynamicSVG = example(new DynamicSVGExample, "SVG", "DynamicSVG", Scope.Page)
 
   // Bootstrap
-  val bootstrapSignIn = example(new BootstrapSignin, "Bootstrap", "Sign In", Scope.Page)
-  val bootstrapTheme = example(new BootstrapTheme, "Bootstrap", "Theme", Scope.Page)
+  val bootstrapSignIn = example(new BootstrapSignin, "Bootstrap", "Sign In", Scope.Page, minimalistic = true)
+  val bootstrapTheme = example(new BootstrapTheme, "Bootstrap", "Theme", Scope.Page, minimalistic = true)
 
   // UX
   val singleSelectList = example(new SingleSelectListExample, "UX", "SingleSelectList", Scope.Page)
@@ -158,7 +158,7 @@ object HyperscalaSite extends Website with JettyApplication {
 
   // Comparison
   val playComparison = example(new PlayHelloWorldPage, "Comparison", "Play - Hello World", Scope.Page)
-  val todoMVC = example(new TodoMVC(HyperscalaSite.this), "Comparison", "TODO MVC", Scope.Session)
+  val todoMVC = example(new TodoMVC(HyperscalaSite.this), "Comparison", "TODO MVC", Scope.Session, minimalistic = true)
 
   handlers.add(PathFilter("/hello", HelloSite))
 
@@ -175,13 +175,13 @@ object HyperscalaSite extends Website with JettyApplication {
   private lazy val _examples = ListBuffer.empty[ExampleEntry]
   def examples = _examples.toList
 
-  def example(creator: => Example, group: String, name: String, scope: Scope = Scope.Page): WebpageHandler = {
+  def example(creator: => Example, group: String, name: String, scope: Scope = Scope.Page, minimalistic: Boolean = false): WebpageHandler = {
     val filename = s"${group.toLowerCase}/${name.replaceAll(" ", "_").toLowerCase}.html"
     val path = s"/example/$filename"
     _examples += ExampleEntry(group, name, path)
     val pageCreator = () => {
       val e = creator
-      e.require(HyperscalaExample)
+      if (!minimalistic) e.require(HyperscalaExample)
       e
     }
     page(pageCreator(), scope, path)

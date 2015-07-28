@@ -1,17 +1,17 @@
 package org.hyperscala.io
 
+import scala.util.Try
+
+import org.powerscala.reflect._
+
 import org.hyperscala.web.Webpage
 import org.hyperscala.html.HTMLTag
-import org.hyperscala.{EnumEntryAttributeValue, PropertyAttribute, Container}
+import org.hyperscala._
 import org.hyperscala.html.tag.{Comment, Text, Title}
 import org.hyperscala.css.StyleSheetAttribute
 import org.hyperscala.javascript.{EventProperty, JavaScriptString}
-import org.hyperscala.css.attributes.{PixelLength, NumericLength, Length}
+import org.hyperscala.css.attributes.NumericLength
 import org.powerscala.enum.EnumEntry
-
-import org.powerscala.reflect._
-import com.outr.net.http.session.Session
-import scala.collection.immutable.ListSet
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -20,34 +20,13 @@ abstract class ScalaBuffer {
   var depth = 1
   val b = new StringBuilder
 
-  def createWrappedString(s: String) = if (s.trim.nonEmpty) {
-    val preWhitespace = s.charAt(0).isWhitespace
-    val postWhitespace = s.charAt(s.length - 1).isWhitespace
-    val b = new StringBuilder
-    if (preWhitespace) {
-      b.append(' ')
-    }
-    b.append(s.trim)
-    if (postWhitespace) {
-      b.append(' ')
-    }
-    val trimmed = b.toString()
-    if (s.indexOf('\n') != -1) {
-      "\"\"\"%s\"\"\"".format(trimmed)
-    } else {
-      "\"%s\"".format(trimmed.replaceAll("\"", "\\\\\""))
-    }
-  } else if (s.isEmpty) {
-    "\"\""
-  } else {
-    "\" \""
-  }
-
   def tagName(clazz: Class[_]): String = if (clazz.getName.startsWith("org.hyperscala.html.tag.") && !clazz.getName.contains("$")) {
     clazz.getSimpleName
   } else {
     tagName(clazz.getSuperclass)
   }
+
+  import ScalaBuffer.createWrappedString
 
   def writeTag(tag: HTMLTag, prefix: String = null): Unit = {
     if (tag.render) {
@@ -146,16 +125,9 @@ abstract class ScalaBuffer {
     case None => s"""attribute("${a.name}")"""      // Dynamically defined attribute
   }
 
-  def valuify(tag: HTMLTag, name: String, v: Any) = v match {
-    case s: String => createWrappedString(s)
-    case l: List[_] if name == "class" => "List(%s)".format(l.map(v => "\"%s\"".format(v)).mkString(", "))
-    case js: JavaScriptString => "JavaScriptString(%s)".format(createWrappedString(js.content))
-    case l: NumericLength => s"${l.number}.${l.lengthType}"
-    case e: EnumEntry if e.name != null => s"${e.parentName}.${e.name}"
-    case e: EnumEntryAttributeValue => s"""${e.parentName}("${e.value}")"""
-    case i: Int => i.toString
-    case b: Boolean => b.toString
-    case _ => throw new RuntimeException(s"Unsupported value in '${tag.xmlLabel}' for name: $name, value: '$v' of type ${v.asInstanceOf[AnyRef].getClass.getName}")
+  def valuify(tag: HTMLTag, name: String, v: Any): String = {
+    Try(ScalaBuffer.encode(v))
+      .getOrElse(throw new RuntimeException(s"Unsupported value in '${tag.xmlLabel}' for name: $name, value: '$v' of type ${v.asInstanceOf[AnyRef].getClass.getName}"))
   }
 }
 
@@ -182,6 +154,42 @@ object ScalaBuffer {
         m.name
       }
     }
+  }
+
+  def createWrappedString(s: String) = if (s.trim.nonEmpty) {
+    val preWhitespace = s.charAt(0).isWhitespace
+    val postWhitespace = s.charAt(s.length - 1).isWhitespace
+    val b = new StringBuilder
+    if (preWhitespace) {
+      b.append(' ')
+    }
+    b.append(s.trim)
+    if (postWhitespace) {
+      b.append(' ')
+    }
+    val trimmed = b.toString()
+    if (s.indexOf('\n') != -1) {
+      "\"\"\"%s\"\"\"".format(trimmed)
+    } else {
+      "\"%s\"".format(trimmed.replaceAll("\"", "\\\\\""))
+    }
+  } else if (s.isEmpty) {
+    "\"\""
+  } else {
+    "\" \""
+  }
+
+  def encode(v: Any): String = v match {
+    case s: String => createWrappedString(s)
+    case l: List[_] => "List(%s)".format(l.map(v => encode(v)).mkString(", "))
+    case js: JavaScriptString => "JavaScriptString(%s)".format(createWrappedString(js.content))
+    case l: NumericLength => s"${l.number}.${l.lengthType}"
+    case e: EnumEntry if e.name != null => s"${e.parentName}.${e.name}"
+    case e: EnumEntryAttributeValue => s"""${e.parentName}("${e.value}")"""
+    case c: ToScala => c.toScala.toString()
+    case i: Int => i.toString
+    case b: Boolean => b.toString
+    case _ => throw new RuntimeException(s"Unsupported value '$v' of type ${v.getClass.getName}")
   }
 }
 

@@ -154,6 +154,7 @@ abstract class ScalaBuffer {
     case e: EnumEntry if e.name != null => s"${e.parentName}.${e.name}"
     case e: EnumEntryAttributeValue => s"""${e.parentName}("${e.value}")"""
     case i: Int => i.toString
+    case b: Boolean => b.toString
     case _ => throw new RuntimeException(s"Unsupported value in '${tag.xmlLabel}' for name: $name, value: '$v' of type ${v.asInstanceOf[AnyRef].getClass.getName}")
   }
 }

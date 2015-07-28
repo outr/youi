@@ -69,7 +69,7 @@ abstract class ScalaBuffer {
           val children = tag match {
             case container: Container[_] if container.contents.nonEmpty => true
             case _ if style.trim.nonEmpty => true
-            case _ if tag.attributes.keys.find(name => name.startsWith("aria-") || name.startsWith("data-")).nonEmpty => true
+            case _ if tag.attributes.keys.exists(name => name.startsWith("aria-") || name.startsWith("data-")) => true
             case _ => false
           }
           val opening = if (children) {
@@ -154,35 +154,31 @@ abstract class ScalaBuffer {
     case e: EnumEntry if e.name != null => s"${e.parentName}.${e.name}"
     case e: EnumEntryAttributeValue => s"""${e.parentName}("${e.value}")"""
     case i: Int => i.toString
-    case _ => throw new RuntimeException(s"Unsupported value in ${tag.xmlLabel} for name: $name, value: $v of type ${v.asInstanceOf[AnyRef].getClass.getName}")
+    case _ => throw new RuntimeException(s"Unsupported value in '${tag.xmlLabel}' for name: $name, value: '$v' of type ${v.asInstanceOf[AnyRef].getClass.getName}")
   }
 }
 
 object ScalaBuffer {
   private var attributes = Map.empty[String, String]
 
-  def attributeName(tag: HTMLTag, attribute: PropertyAttribute[_]) = synchronized {
+  def attributeName(tag: HTMLTag, attribute: PropertyAttribute[_]): Option[String] = synchronized {
     val key = "%s.%s".format(tag.xmlLabel, attribute.name)
-    attributes.get(key) match {
-      case Some(alias) => Some(alias)
-      case None => {
-        val methodOption = tag.getClass.methods.find {
-          case m if m.name.indexOf('$') != -1 => false
-          case m if m.name == "formValue" => false
-          case m if m.returnType.`type`.hasType(classOf[PropertyAttribute[_]]) && m.args.isEmpty => try {
-            m.invoke[AnyRef](tag) eq attribute
-          } catch {
-            case t: Throwable => throw new RuntimeException(s"Failed to invoke ${m.absoluteSignature} on $key.", t)
-          }
-          case _ => false
+    attributes.get(key).orElse {
+      val methodOption = tag.getClass.methods.find {
+        case m if m.name.indexOf('$') != -1 => false
+        case m if m.name == "formValue" => false
+        case m if m.returnType.`type`.hasType(classOf[PropertyAttribute[_]]) && m.args.isEmpty => try {
+          m.invoke[AnyRef](tag) eq attribute
+        } catch {
+          case t: Throwable => throw new RuntimeException(s"Failed to invoke ${m.absoluteSignature} on $key.", t)
         }
-        methodOption match {
-          case Some(m) => {
-            attributes += key -> m.name
-            Some(m.name)
-          }
-          case None => None // Ignore, attribute is dynamically defined
-        }
+        case _ => false
+      }
+
+      // If `methodOption` is empty, ignore as attribute is dynamically defined
+      methodOption.map { m =>
+        attributes += key -> m.name
+        m.name
       }
     }
   }

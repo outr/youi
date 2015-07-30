@@ -33,8 +33,8 @@ object HTMLToScala {
     parent.read(body)                                  // Read the new data back in
   }
 
-  def toScala(page: tag.HTML, packageName: Option[String], className: String): String = {
-    val b = new ScalaWebpageBuffer(packageName, className, page)
+  def toScala(html: tag.HTML, packageName: Option[String], className: String): String = {
+    val b = new ScalaWebpageBuffer(packageName, className, html)
     b.code
   }
 

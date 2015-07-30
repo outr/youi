@@ -235,13 +235,13 @@ object ScalaBuffer {
  */
 class ScalaWebpageBuffer(packageName: Option[String],
                          className: String,
-                         page: HTML,
+                         html: HTML,
                          mapping: Map[String, String] = Map.empty) extends ScalaBuffer {
-  writeAttributes(page.head, all = true, prefix = "head", context = attrs)
-  page.head.contents.foreach(t => writeTag(t, "head", b, mapping))
+  writeAttributes(html.head, all = true, prefix = "head", context = attrs)
+  html.head.contents.foreach(t => writeTag(t, "head", b, mapping))
 
-  writeAttributes(page.body, all = true, prefix = "body", context = attrs)
-  page.body.contents.foreach(t => writeTag(t, "body", b, mapping))
+  writeAttributes(html.body, all = true, prefix = "body", context = attrs)
+  html.body.contents.foreach(t => writeTag(t, "body", b, mapping))
 
   private def pkg = packageName.map("package %s".format(_)).getOrElse("")
   val code = HTMLToScala.WebpageTemplate.format(pkg, className,

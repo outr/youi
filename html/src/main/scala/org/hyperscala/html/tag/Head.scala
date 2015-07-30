@@ -135,6 +135,11 @@ class Head extends Container[HeadChild] with HTMLChild with HTMLTag {
     case None => contents += new Link(href = url)
   }
 
+  def meta(name: String): scala.Option[String] =
+    contents.collectFirst {
+      case m: Meta if m.name().toLowerCase == name => m.content()
+    }
+
   def meta(name: String, content: String) = {
     contents.collectFirst {
       case m: Meta if m.name() == name => m

@@ -22,6 +22,7 @@ import scala.collection.JavaConversions._
 object HTMLToScala {
   lazy val WebpageTemplate = IO.copy(getClass.getClassLoader.getResource("webpage.template"))
   lazy val TagTemplate = IO.copy(getClass.getClassLoader.getResource("tag.template"))
+  lazy val ScreenTemplate = IO.copy(getClass.getClassLoader.getResource("screen.template"))
 
   val builder = new SAXBuilder()
 
@@ -32,17 +33,19 @@ object HTMLToScala {
     parent.read(body)                                  // Read the new data back in
   }
 
-  def toScala(page: Webpage, packageName: String, className: String) = {
+  def toScala(page: tag.HTML, packageName: Option[String], className: String): String = {
     val b = new ScalaWebpageBuffer(packageName, className, page)
     b.code
   }
 
-  def toScala(tag: HTMLTag, packageName: String, className: String) = {
+  def toScala(tag: HTMLTag,
+              packageName: Option[String],
+              className: String): String = {
     val b = new ScalaTagBuffer(packageName, className, tag)
     b.code
   }
 
-  def toScala(tag: HTMLTag) = {
+  def toScala(tag: HTMLTag): String = {
     val b = new ScalaInstanceBuffer(tag)
     b.code
   }

@@ -101,7 +101,7 @@ class HyperscalaGenerator extends HyperscalaPage {
           html.byTag[Comment].foreach(_.removeFromParent())
         }
         val scala = if (packageName != null && className != null) {
-          HTMLToScala.toScala(html, packageName, className)
+          HTMLToScala.toScala(html, Some(packageName), className)
         } else {
           HTMLToScala.toScala(html)
         }

@@ -1,16 +1,21 @@
 package org.hyperscala.css.attributes
 
-import org.hyperscala.AttributeValue
+import org.hyperscala.{ToScala, AttributeValue}
 import org.hyperscala.persistence.CaseClassPersistence
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-case class ZIndex(n: Int = -1, name: Option[String] = None) extends AttributeValue {
-  def value = name match {
-    case Some(nme) => nme
-    case None => n.toString
-  }
+case class ZIndex(n: Int = -1, name: Option[String] = None) extends AttributeValue with ToScala {
+  def value = name.getOrElse(n.toString)
+
+  import scala.reflect.runtime.universe._
+  def toScala: Tree =
+    this match {
+      case ZIndex.Auto => q"ZIndex.Auto"
+      case ZIndex.Inherit => q"ZIndex.Inherit"
+      case _ => q"ZIndex.Numeric($n)"
+    }
 }
 
 object ZIndex extends CaseClassPersistence[ZIndex] {

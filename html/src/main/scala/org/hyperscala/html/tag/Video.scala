@@ -10,7 +10,7 @@ import org.hyperscala.html.constraints._
  * NOTE: This file has been generated. Do not modify directly!
  * @author Matt Hicks <matt@outr.com>
  */
-class Video extends Container[Source] with BodyChild with HTMLTag {
+class Video extends Container[BodyChild] with BodyChild with HTMLTag {
   lazy val xmlLabel = "video"
   override def xmlExpanded = true
 

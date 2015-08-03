@@ -1,4 +1,6 @@
-package org.hyperscala.bootstrap.component
+package org.hyperscala.bootstrap.component.extra
+
+import org.hyperscala.bootstrap.component.Panel
 
 /**
  * @author Matt Hicks <matt@outr.com>

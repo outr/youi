@@ -1,6 +1,7 @@
 package org.hyperscala.site
 
 import org.hyperscala.bootstrap.component._
+import org.hyperscala.bootstrap.component.extra.CollapsiblePanel
 import org.hyperscala.html._
 
 /**

@@ -1,11 +1,9 @@
 package org.hyperscala.bootstrap.component.extra
 
-import org.hyperscala.bootstrap.component.Panel
-
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-trait CollapsiblePanel extends Panel {
+trait CollapsiblePanel extends PanelFactory {
   def collapsed: Boolean
 
   outer.clazz += "panel-collapse"

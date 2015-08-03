@@ -3,7 +3,7 @@ package org.hyperscala.examples.bootstrap
 import com.outr.net.http.session.{MapSession, Session}
 import org.hyperscala.bootstrap.Bootstrap
 import org.hyperscala.bootstrap.component._
-import org.hyperscala.bootstrap.component.extra.{HolderImage, PageTitle}
+import org.hyperscala.bootstrap.component.extra._
 import org.hyperscala.css.attributes.{Display, Position}
 import org.hyperscala.html._
 import org.hyperscala.selector.Selector
@@ -29,19 +29,29 @@ class BootstrapTheme extends Webpage {
   val showcaseStyle = head.selector(Selector(".theme-showcase > p > .btn"))
   showcaseStyle.margin := "5px 0"
 
-  body.contents += new NavBar(brand = Some("Bootstrap theme"), theme = NavBarTheme.Dark) {
-    addLink("#", "Home", active = true)
-    addLink("#", "About")
-    addLink("#", "Contact")
-    val dropdown = addDropdown("Dropdown")
-    dropdown.addLink("#", "Action")
-    dropdown.addLink("#", "Another Action")
-    dropdown.addLink("#", "Something else here")
-    dropdown.addDivider()
-    dropdown.addHeader("Nav header")
-    dropdown.addLink("#", "Separated link")
-    dropdown.addLink("#", "One more separated link")
-  }
+  body.contents += NavBarFactory(
+    brand = "Bootstrap theme",
+
+    theme = NavBarTheme.Inverse,
+
+    links = Seq(
+      NavBarFactory.Link("#", "Home", active = true),
+      NavBarFactory.Link("#", "About"),
+      NavBarFactory.Link("#", "Contact")
+    ),
+
+    dropdown = Some(new NavBarDropdown(
+      NavBarFactory.Link("#", "Action", active = true).li,
+      NavBarFactory.Link("#", "Another action").li,
+      NavBarFactory.Link("#", "Something else here").li,
+      new Divider,
+      new DropdownHeader {
+        contents += "Nav header"
+      },
+      NavBarFactory.Link("#", "Sepated link").li,
+      NavBarFactory.Link("#", "One more separated link").li
+    ))
+  )
 
   body.contents += new Container {
     clazz += "theme-showcase"
@@ -393,32 +403,30 @@ class BootstrapTheme extends Webpage {
     }
 
     contents += new PageTitle("Navbars")
-    contents += new NavBar(brand = Some("Project name"), top = false) {
-      addLink("#", "Home", active = true)
-      addLink("#", "About")
-      addLink("#", "Contact")
-      val dropdown = addDropdown("Dropdown")
-      dropdown.addLink("#", "Action")
-      dropdown.addLink("#", "Another Action")
-      dropdown.addLink("#", "Something else here")
-      dropdown.addDivider()
-      dropdown.addHeader("Nav header")
-      dropdown.addLink("#", "Separated link")
-      dropdown.addLink("#", "One more separated link")
-    }
-    contents += new NavBar(brand = Some("Project name"), theme = NavBarTheme.Dark, top = false) {
-      addLink("#", "Home", active = true)
-      addLink("#", "About")
-      addLink("#", "Contact")
-      val dropdown = addDropdown("Dropdown")
-      dropdown.addLink("#", "Action")
-      dropdown.addLink("#", "Another Action")
-      dropdown.addLink("#", "Something else here")
-      dropdown.addDivider()
-      dropdown.addHeader("Nav header")
-      dropdown.addLink("#", "Separated link")
-      dropdown.addLink("#", "One more separated link")
-    }
+
+    body.contents += NavBarFactory(
+      brand = "Project name",
+
+      theme = NavBarTheme.Default,
+
+      links = Seq(
+        NavBarFactory.Link("#", "Home", active = true),
+        NavBarFactory.Link("#", "About"),
+        NavBarFactory.Link("#", "Contact")
+      )
+    )
+
+    body.contents += NavBarFactory(
+      brand = "Project name",
+
+      theme = NavBarTheme.Inverse,
+
+      links = Seq(
+        NavBarFactory.Link("#", "Home", active = true),
+        NavBarFactory.Link("#", "About"),
+        NavBarFactory.Link("#", "Contact")
+      )
+    )
 
     contents += new PageTitle("Alerts")
     contents += Alert.success("Well done!", "You successfully read this important alert message.")
@@ -490,16 +498,16 @@ class BootstrapTheme extends Webpage {
     contents += new PageTitle("Panels")
     contents += new Row {
       contents += new Column(small = Some(4)) {
-        contents += new Panel("Panel title", Some("Panel content"), PanelType.Default)
-        contents += new Panel("Panel title", Some("Panel content"), PanelType.Primary)
+        contents += PanelFactory("Panel title", Some("Panel content"), PanelType.Default)
+        contents += PanelFactory("Panel title", Some("Panel content"), PanelType.Primary)
       }
       contents += new Column(small = Some(4)) {
-        contents += new Panel("Panel title", Some("Panel content"), PanelType.Success)
-        contents += new Panel("Panel title", Some("Panel content"), PanelType.Info)
+        contents += PanelFactory("Panel title", Some("Panel content"), PanelType.Success)
+        contents += PanelFactory("Panel title", Some("Panel content"), PanelType.Info)
       }
       contents += new Column(small = Some(4)) {
-        contents += new Panel("Panel title", Some("Panel content"), PanelType.Warning)
-        contents += new Panel("Panel title", Some("Panel content"), PanelType.Danger)
+        contents += PanelFactory("Panel title", Some("Panel content"), PanelType.Warning)
+        contents += PanelFactory("Panel title", Some("Panel content"), PanelType.Danger)
       }
     }
 

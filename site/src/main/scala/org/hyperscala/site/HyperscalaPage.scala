@@ -40,12 +40,56 @@ class HyperscalaPage extends Webpage with FormSupport {
     paddingBottom := 30.px
   }
 
-  body.contents += new NavBar(brand = Some(new tag.Img(id = "logo", src = "/images/hyperscala.png", alt = "Hyperscala")), brandLink = Some("/"), theme = new NavBarTheme("navbar-light"), right = true) {
-    addLink(site.siteAbout.link, "About")
-    addLink(site.siteExamples.link, "Examples")
-    addLink(site.siteGenerator.link, "Generator")
-    addLink(site.siteDocumentation.link, "Documentation")
-    addLink("https://github.com/darkfrog26/hyperscala/", "Project")
+  body.contents += new NavBar {
+    theme := NavBarTheme.Light
+
+    val navigation = new NavBarNav {
+      pullRight := true
+
+      contents += new ListItem {
+        contents += new tag.A(href = site.siteAbout.link, content = "About")
+      }
+
+      contents += new ListItem {
+        contents += new tag.A(href = site.siteExamples.link, content = "Examples")
+      }
+
+      contents += new ListItem {
+        contents += new tag.A(href = site.siteGenerator.link, content = "Generator")
+      }
+
+      contents += new ListItem {
+        contents += new tag.A(href = site.siteDocumentation.link, content = "Documentation")
+      }
+
+      contents += new ListItem {
+        contents += new tag.A(href = "https://github.com/darkfrog26/hyperscala/", content = "Project")
+      }
+    }
+
+    val header = new NavBarHeader {
+      contents += new NavBarToggle {
+        contents += new tag.Span(clazz = List("sr-only")) {
+          contents += "Toggle navigation"
+        }
+        contents += new tag.Span(clazz = List("icon-bar"))
+        contents += new tag.Span(clazz = List("icon-bar"))
+        contents += new tag.Span(clazz = List("icon-bar"))
+        contents += new NavbarBrand {
+          href := "/"
+          contents += new tag.Img(id = "logo", src = "/images/hyperscala.png", alt = "Hyperscala")
+        }
+      }
+    }
+
+    val bar = new NavBarCollapse {
+      contents += navigation
+    }
+
+    contents += new Container {
+      contents += header
+      contents += bar
+    }
   }
 
   val main = new tag.Div

@@ -182,13 +182,64 @@ object Specification {
       _ => true,
       Property("active", Value.Boolean("active"))),
 
-    // TODO Detect children
     DefComponent("NavBar",
       Some("div"),
       _ == "navbar",
+      Property("top", Value.Boolean("top")),
+      Property("theme",
+        Value.Set("NavBarTheme",
+          Value.Option("Default", "navbar-default"),
+          Value.Option("Light", "navbar-light"),
+          Value.Option("Inverse", "navbar-inverse")
+        )
+      )),
+
+    DefComponent("NavBarDropdown",
+      Some("li"),
+      _ == "dropdown",
       Property("active", Value.Boolean("active"))),
 
-    // TODO Detect heading, panelTitle, outer, body
+    DefComponent("NavBarNav",
+      Some("ul"),
+      s => s == "nav" || s == "navbar-nav",
+      Property("pullRight", Value.Boolean("pull-right"))),
+
+    DefComponent("NavBarBrand",
+      Some("a"),
+      _ == "navbar-brand"),
+
+    DefComponent("NavBarHeader",
+      Some("div"),
+      _ == "navbar-header"),
+
+    DefComponent("NavBarCollapse",
+      Some("div"),
+      s => s == "navbar-collapse" || s == "collapse"),
+
+    DefComponent("NavBarToggle",
+      Some("button"),
+      _ == "navbar-toggle"),
+
+    DefComponent("Caret",
+      Some("b"),
+      _ == "caret"),
+
+    DefComponent("Divider",
+      Some("li"),
+      _ == "divider"),
+
+    DefComponent("DropdownMenu",
+      Some("ul"),
+      _ == "dropdown-menu"),
+
+    DefComponent("DropdownToggle",
+      Some("a"),
+      _ == "dropdown-toggle"),
+
+    DefComponent("DropdownHeader",
+      Some("li"),
+      _ == "dropdown-header"),
+
     DefComponent("Panel",
       Some("div"),
       _ == "panel",
@@ -204,7 +255,6 @@ object Specification {
       )
     ),
 
-    // TODO Call addProgress()
     DefComponent("ProgressBar",
       Some("div"),
       _ == "progress",

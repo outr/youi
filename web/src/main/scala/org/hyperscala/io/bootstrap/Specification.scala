@@ -125,7 +125,6 @@ object Specification {
       Some("div"),
       _ == "page-header"),
 
-    // TODO Call addOn()
     DefComponent("InputGroup",
       Some("div"),
       _ == "input-group",
@@ -136,6 +135,10 @@ object Specification {
         )
       )
     ),
+
+    DefComponent("InputGroupAddon",
+      Some("span"),
+      _ == "input-group-addon"),
 
     DefComponent("Jumbotron",
       Some("div"),

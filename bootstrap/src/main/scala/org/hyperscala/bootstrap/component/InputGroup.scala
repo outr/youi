@@ -10,11 +10,10 @@ import org.hyperscala.html.constraints.BodyChild
  */
 class InputGroup extends tag.Div {
   clazz += "input-group"
-
   val size = new ClassProperty[InputGroupSize](this, InputGroupSize.Default)
-
-  def addOn(content: BodyChild) = contents += new tag.Span(clazz = List("input-group-addon"), content = content)
 }
+
+class InputGroupAddon extends tag.Span(clazz = List("input-group-addon"))
 
 sealed abstract class InputGroupSize(val className: Option[String]) extends EnumEntry with ClassName
 

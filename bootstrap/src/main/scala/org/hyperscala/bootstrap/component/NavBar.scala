@@ -14,13 +14,13 @@ class NavBar extends tag.Div(clazz = List("navbar"), role = "navigation") {
   val theme = new ClassProperty[NavBarTheme](this, NavBarTheme.Default)
 }
 
-sealed abstract class NavBarTheme(val className: String)
+sealed abstract class NavBarTheme(val className: Option[String])
   extends EnumEntry with ClassName
 
 object NavBarTheme extends Enumerated[AlertType] {
-  case object Default extends NavBarTheme("navbar-default")
-  case object Light extends NavBarTheme("navbar-light")
-  case object Inverse extends NavBarTheme("navbar-inverse")
+  case object Default extends NavBarTheme(Some("navbar-default"))
+  case object Light extends NavBarTheme(Some("navbar-light"))
+  case object Inverse extends NavBarTheme(Some("navbar-inverse"))
 
   val values = findValues.toVector
 }

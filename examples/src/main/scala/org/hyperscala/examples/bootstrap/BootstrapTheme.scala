@@ -498,16 +498,16 @@ class BootstrapTheme extends Webpage {
     contents += new PageTitle("Panels")
     contents += new Row {
       contents += new Column(small = Some(4)) {
-        contents += PanelFactory("Panel title", Some("Panel content"), PanelType.Default)
-        contents += PanelFactory("Panel title", Some("Panel content"), PanelType.Primary)
+        contents += new PanelFactory("Panel title", Some("Panel content"), PanelType.Default)
+        contents += new PanelFactory("Panel title", Some("Panel content"), PanelType.Primary)
       }
       contents += new Column(small = Some(4)) {
-        contents += PanelFactory("Panel title", Some("Panel content"), PanelType.Success)
-        contents += PanelFactory("Panel title", Some("Panel content"), PanelType.Info)
+        contents += new PanelFactory("Panel title", Some("Panel content"), PanelType.Success)
+        contents += new PanelFactory("Panel title", Some("Panel content"), PanelType.Info)
       }
       contents += new Column(small = Some(4)) {
-        contents += PanelFactory("Panel title", Some("Panel content"), PanelType.Warning)
-        contents += PanelFactory("Panel title", Some("Panel content"), PanelType.Danger)
+        contents += new PanelFactory("Panel title", Some("Panel content"), PanelType.Warning)
+        contents += new PanelFactory("Panel title", Some("Panel content"), PanelType.Danger)
       }
     }
 

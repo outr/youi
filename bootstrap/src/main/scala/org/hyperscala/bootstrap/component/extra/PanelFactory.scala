@@ -9,7 +9,6 @@ class PanelFactory(title: BodyChild,
             thatPanelType: PanelType = PanelType.Default) extends Panel {
   panelType := thatPanelType
 
-  panelTitle.contents += title
   content.foreach(body.contents += _)
 
   val heading = new PanelHeading
@@ -19,5 +18,6 @@ class PanelFactory(title: BodyChild,
 
   heading.contents += panelTitle
   outer.contents += body
+  panelTitle.contents += title
   contents.addAll(heading, outer)
 }

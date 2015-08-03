@@ -125,9 +125,6 @@ object Specification {
       Some("div"),
       _ == "page-header"),
 
-    // TODO Support Header
-    // TODO Support HolderImage
-
     // TODO Call addOn()
     DefComponent("InputGroup",
       Some("div"),

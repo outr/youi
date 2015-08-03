@@ -3,7 +3,7 @@ package org.hyperscala.examples.bootstrap
 import com.outr.net.http.session.{MapSession, Session}
 import org.hyperscala.bootstrap.Bootstrap
 import org.hyperscala.bootstrap.component._
-import org.hyperscala.bootstrap.component.extra.PageTitle
+import org.hyperscala.bootstrap.component.extra.{HolderImage, PageTitle}
 import org.hyperscala.css.attributes.{Display, Position}
 import org.hyperscala.html._
 import org.hyperscala.selector.Selector

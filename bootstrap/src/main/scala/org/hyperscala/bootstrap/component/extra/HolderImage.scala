@@ -1,4 +1,4 @@
-package org.hyperscala.bootstrap.component
+package org.hyperscala.bootstrap.component.extra
 
 import org.hyperscala.css.attributes.Length
 import org.hyperscala.html._

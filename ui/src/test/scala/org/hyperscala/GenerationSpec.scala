@@ -42,6 +42,17 @@ class GenerationSpec extends WordSpec with Matchers {
     """<div class="jumbotron"><span class="label label-primary">42</span></div>"""
   ).create()
 
+  val listGroupHtml = DynamicTag.from[tag.Div](
+    """
+      |<div class="list-group">
+      |  <a href="#" class="list-group-item active">
+      |    <h4 class="list-group-item-heading">List group item heading</h4>
+      |    <p class="list-group-item-text">...</p>
+      |  </a>
+      |</div>
+    """.stripMargin
+  ).create()
+
   def testConversion(html: HTMLTag, resourceName: String) {
     val component = Generation.findComponent(html).get
     Generation.isConvertable(html, component) should be (true)
@@ -136,6 +147,17 @@ class GenerationSpec extends WordSpec with Matchers {
 
     "not be converted" in {
       testConversion(nestedHtml, "/nested.scala")
+    }
+  }
+
+  "ListGroup component" should {
+    "be recognised" in {
+      val component = Generation.findComponent(listGroupHtml).get
+      component.name should be ("ListGroup")
+    }
+
+    "not be converted" in {
+      testConversion(listGroupHtml, "/listGroup.scala")
     }
   }
 

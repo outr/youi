@@ -17,15 +17,27 @@ object Generation {
 
   /** If `tag` contains more CSS classes than specified, we cannot convert it. */
   def isConvertable(tag: HTMLTag, component: Component): Boolean = {
-    component match {
-      case c @ DefComponent(name, t, css, properties @ _*) => true
-      case EnumComponent(name, t, css, values @ _*) =>
-        val allClassesCovered = tag.clazz().forall(t =>
-          css(t) || values.exists(_.css == t)
-        )
+    val allClassesCovered = component match {
+      case c @ DefComponent(name, t, cssF, properties @ _*) =>
+        tag.clazz().forall(t => cssF(t) || properties.exists { property =>
+          property.values.exists {
+            case v @ Value.Boolean(css)
+              if tag.clazz().contains(css) => true
+            case v @ Value.Set(name, options @ _*)
+              if options.exists(o => tag.clazz().contains(o.css)) => true
+            case v @ Value.Enum(values, css)
+              if values.map(css).exists(tag.clazz().contains(_)) => true
+            case v @ Value.Option(name, css)
+              if tag.clazz().contains(css) => true
+            case _ => false
+          }
+        })
 
-        allClassesCovered
+      case EnumComponent(name, t, css, values @ _*) =>
+        tag.clazz().forall(t => css(t) || values.exists(_.css == t))
     }
+
+    allClassesCovered
   }
 
   def extractProperties(tag: HTMLTag, component: DefComponent): Seq[(Property, Value)] = {
@@ -75,8 +87,15 @@ object Generation {
           s"${p.name} := $valueTree"
         }
 
-        context.writeLine(s"new $name {", indent = false)
+        if (t.nonEmpty) context.writeLine(s"new $name {", indent = false)
+        else {
+          val scalaTag = tag.xmlLabel.head.toUpper + tag.xmlLabel.tail
+          context.writeLine(s"new tag.$scalaTag with $name {", indent = false)
+        }
+
         context.depth += 1
+        ScalaBuffer.writeAttributes(tag, all = true, prefix = null, context = context,
+          withoutAttributes = Set("clazz", "role"))
         props.foreach(context.writeLine(_))
         ScalaBuffer.writeChildren(tag, context, vals, mapping)
         context.depth -= 1

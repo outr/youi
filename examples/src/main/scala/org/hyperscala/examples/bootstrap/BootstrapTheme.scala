@@ -443,27 +443,46 @@ class BootstrapTheme extends Webpage {
     contents += new Row {
       contents += new Column(small = Some(4)) {
         contents += new ListGroup {
-          addText("Cras justo odio")
-          addText("Dapibus ac facilisis in")
-          addText("Morbi leo risus")
-          addText("Porta ac consectetur ac")
-          addText("Vestibulum at eros")
+          contents += new tag.Span("Cras justo odio") with ListGroupItem
+          contents += new tag.Span("Dapibus ac facilisis in") with ListGroupItem
+          contents += new tag.Span("Morbi leo risus") with ListGroupItem
+          contents += new tag.Span("Porta ac consectetur ac") with ListGroupItem
+          contents += new tag.Span("Vestibulum at eros") with ListGroupItem
         }
       }
       contents += new Column(small = Some(4)) {
         contents += new ListGroup {
-          addLink("#", "Cras justo odio", active = true)
-          addLink("#", "Dapibus ac facilisis in")
-          addLink("#", "Morbi leo risus")
-          addLink("#", "Porta ac consectetur ac")
-          addLink("#", "Vestibulum at eros")
+          contents += new tag.A(href = "#", content = "Cras justo odio") with ListGroupItem {
+            active := true
+          }
+          contents += new tag.A(href = "#", content = "Dapibus ac facilisis in") with ListGroupItem
+          contents += new tag.A(href = "#", content = "Morbi leo risus") with ListGroupItem
+          contents += new tag.A(href = "#", content = "Porta ac consectetur ac") with ListGroupItem
+          contents += new tag.A(href = "#", content = "Vestibulum at eros") with ListGroupItem
         }
       }
       contents += new Column(small = Some(4)) {
         contents += new ListGroup {
-          add("#", "List group item heading", "Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.", active = true)
-          add("#", "List group item heading", "Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.")
-          add("#", "List group item heading", "Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.")
+          contents += new tag.A(href = "#") with ListGroupItem {
+            active := true
+            contents += new ListGroupItemHeading("List group item heading")
+            contents += new ListGroupItemText("Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.")
+          }
+
+          contents += new tag.A(href = "#") with ListGroupItem {
+            contents += new ListGroupItemHeading("List group item heading")
+            contents += new ListGroupItemText("Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.")
+          }
+
+          contents += new tag.A(href = "#") with ListGroupItem {
+            contents += new ListGroupItemHeading("List group item heading")
+            contents += new ListGroupItemText("Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.")
+          }
+
+          contents += new tag.A(href = "#") with ListGroupItem {
+            contents += new ListGroupItemHeading("List group item heading")
+            contents += new ListGroupItemText("Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.")
+          }
         }
       }
     }

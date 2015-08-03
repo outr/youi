@@ -9,6 +9,7 @@ import org.powerscala.enum.{Enumerated, EnumEntry}
  */
 class Alert extends tag.Div {
   clazz += "alert"
+  role := "alert"
 
   val alertType = new ClassProperty[AlertType](this, AlertType.Info)
 

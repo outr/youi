@@ -83,7 +83,7 @@ object Specification {
       _ == "btn-group"),
 
     DefComponent("Column",
-      None,
+      Some("div"),
       _.startsWith("col-"),
       Property("large", Value.Enum[Int](1 to 12, columns => s"col-lg-$columns")),
       Property("largeOffset", Value.Enum[Int](1 to 12, columns => s"col-lg-offset-$columns")),
@@ -159,10 +159,23 @@ object Specification {
       )
     ),
 
-    // TODO Call addItem() etc.
     DefComponent("ListGroup",
       Some("div"),
       _ == "list-group"),
+
+    DefComponent("ListGroupItem",
+      None,  // TODO only within ListGroup
+      _ == "list-group-item",
+      Property("active", Value.Boolean("active")),
+      Property("disabled", Value.Boolean("disabled"))),
+
+    DefComponent("ListGroupItemHeading",
+      Some("h4"),  // TODO only within ListGroupItem
+      _ == "list-group-item-heading"),
+
+    DefComponent("ListGroupItemText",
+      Some("p"),  // TODO only within ListGroupItem
+      _ == "list-group-item-text"),
 
     DefComponent("ListItem",
       Some("li"),

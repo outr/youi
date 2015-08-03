@@ -128,9 +128,12 @@ object ScalaBuffer {
     }
   }
 
-  def writeAttributes(tag: HTMLTag, all: Boolean, prefix: String, context: WriterContext) = {
+  def writeAttributes(tag: HTMLTag,
+                      all: Boolean,
+                      prefix: String,
+                      context: WriterContext,
+                      withoutAttributes: Set[String] = Set.empty) = {
     // Write style data
-//    throw new RuntimeException("writeAttributes disabled")
     tag.style.attributes.values.foreach {
       case a: StyleSheetAttribute[_] if a.shouldRender => {
         context.writeLine(s"style.${a.style.name} := ${valuify(tag, a.name, a())}", prefix)
@@ -138,7 +141,9 @@ object ScalaBuffer {
       case _ => // Ignore
     }
     // Write event data
-    tag.xmlAttributes.foreach {
+    tag.xmlAttributes
+      .filter(attr => !withoutAttributes.contains(namify(tag, attr)))
+      .foreach {
       case a: PropertyAttribute[_] with EventProperty if a.shouldRender => {
         context.writeLine(s"${a.name.substring(2)}Event := ${valuify(tag, a.name, a())}", prefix)
       }

@@ -12,33 +12,33 @@ import org.scalatest.{Matchers, WordSpec}
  */
 class GenerationSpec extends WordSpec with Matchers {
   val alertHtml =
-    DynamicTag.static[tag.Div]("test",
+    DynamicTag.from[tag.Div](
       """
         |<div class="alert alert-danger" role="alert">
         |  Enter a valid e-mail address
         |</div>
       """.stripMargin).create()
 
-  val badgeHtml = DynamicTag.static[tag.Span]("test2",
+  val badgeHtml = DynamicTag.from[tag.Span](
     """<span class="badge pull-right">42</span>"""
   ).create()
 
-  val columnHtml = DynamicTag.static[tag.Div]("test3",
+  val columnHtml = DynamicTag.from[tag.Div](
     """<div class="col-md-8">test</div>"""
   ).create()
 
-  val glyphiconHtml = DynamicTag.static[tag.Span]("test4",
+  val glyphiconHtml = DynamicTag.from[tag.Span](
     """<span class="glyphicon glyphicon-ok"></span>"""
   ).create()
 
-  val glyphiconHtml2 = DynamicTag.static[tag.Span]("test5",
+  val glyphiconHtml2 = DynamicTag.from[tag.Span](
     """<span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>"""
   ).create()
 
   val invalidComponentHtml =
-    DynamicTag.static[tag.Div]("test6", "<div></div>").create()
+    DynamicTag.from[tag.Div]("<div></div>").create()
 
-  val nestedHtml = DynamicTag.static[tag.Div]("test7",
+  val nestedHtml = DynamicTag.from[tag.Div](
     """<div class="jumbotron"><span class="label label-primary">42</span></div>"""
   ).create()
 

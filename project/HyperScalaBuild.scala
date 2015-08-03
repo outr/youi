@@ -6,6 +6,8 @@ import sbtassembly.AssemblyPlugin._
 import sbtunidoc.Plugin._
 import spray.revolver.RevolverPlugin._
 import sbtbuildinfo.Plugin._
+import com.typesafe.sbt.web.SbtWeb
+import com.typesafe.sbt.web.Import._
 
 object HyperScalaBuild extends Build {
   import Dependencies._
@@ -23,7 +25,8 @@ object HyperScalaBuild extends Build {
       jaxen,
       htmlcleaner,
       akkaActors,
-      scalaTest
+      scalaTest,
+      webJarsBootstrap
     ),
     fork := true,
     scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature"),
@@ -63,43 +66,129 @@ object HyperScalaBuild extends Build {
       </developers>
   )
 
+  def between(subject: String, left: String, right: String): Option[String] = {
+    val ofs = subject.indexOf(left)
+    val end = subject.indexOf(right, ofs + left.length + 1)
+    if (ofs == -1 || end == -1) None
+    else Some(subject.slice(ofs + left.length, end))
+  }
+
+  def objectName(cssTag: String): String =
+    cssTag.foldLeft("") { case (acc, cur) =>
+      if (acc.length == 0) "" + cur.toUpper
+      else if (acc.last == '-') acc.dropRight(1) + cur.toUpper
+      else acc + cur
+    }
+
+  def generateBootstrap(sourceGen: File, webJars: File): Seq[File] = {
+    val prefix = "glyphicon"
+
+    val file = sourceGen / "org" / "hyperscala" / "bootstrap" / "component" / "Glyphicon.scala"
+
+    val objects = io.Source.fromFile(webJars / "lib" / "bootstrap" / "less" / "glyphicons.less")
+      .getLines()
+      .filter(_.startsWith(s".$prefix-"))
+      .map { line =>
+      val icon =
+        between(line, "-", "{")
+          .orElse(between(line, "-", ","))
+          .get.trim
+      val obj = objectName(icon)
+
+      s"""
+       case object $obj extends Glyphicon("$prefix-$icon")
+       """
+    }
+      .mkString("\n")
+
+    IO.write(file,
+      """
+      package org.hyperscala.bootstrap.component
+      import org.powerscala.enum.{Enumerated, EnumEntry}
+      import org.hyperscala.html.HTMLTag
+      sealed abstract class Glyphicon(val className: String) extends EnumEntry {
+        def apply[T <: HTMLTag](t: T) = {
+          t.clazz := t.clazz().filter(s => s.startsWith("glyphicon"))
+          t.clazz += "glyphicon"
+          t.clazz += s"glyphicon-$className"
+          t
+        }
+        def create() = apply(new org.hyperscala.html.tag.Span)
+      }
+      """ +
+        s"""
+      object Glyphicon extends Enumerated[Glyphicon] {
+        $objects
+        val values = findValues.toVector
+      }
+      """
+    )
+
+    Seq(file)
+  }
+
+  val extractGlyphicons = {
+    val source = sourceManaged in Compile
+    val zipped = source.zip(WebKeys.webJarsDirectory in Assets)
+    zipped.map { case (src, web) =>
+      generateBootstrap(src, web)
+    }
+  }.dependsOn(WebKeys.webJars in Assets)
+
   private def createSettings(_name: String) = baseSettings ++ assemblySettings ++ Seq(name := _name)
 
   lazy val root = Project("root", file("."), settings = unidocSettings ++ createSettings("hyperscala-root"))
     .settings(publishArtifact in Compile := false, publishArtifact in Test := false)
     .aggregate(core, html, javascript, svg, web, screen, jquery, jqueryUI, realtime, ui, contentEditor, ux, bootstrap, createJS, fabricJS, hello, examples, numberGuess, site)
+
   lazy val core = Project("core", file("core"), settings = createSettings("hyperscala-core") ++ buildInfoSettings)
     .settings(libraryDependencies ++= Seq(outrNetCore))
     .settings(sourceGenerators in Compile <+= buildInfo,
       buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion, BuildInfoKey.action("buildTime")(System.currentTimeMillis())),
       buildInfoPackage := "org.hyperscala")
+
   lazy val html = Project("html", file("html"), settings = createSettings("hyperscala-html"))
     .dependsOn(core)
+
   lazy val svg = Project("svg", file("svg"), settings = createSettings("hyperscala-svg"))
     .dependsOn(html)
+
   lazy val javascript = Project("javascript", file("javascript"), settings = createSettings("hyperscala-javascript"))
     .dependsOn(html)
+
   lazy val web = Project("web", file("web"), settings = createSettings("hyperscala-web"))
     .dependsOn(html, javascript, svg)
     .settings(libraryDependencies ++= Seq(uaDetector, commonsCodec, outrNetCommunicate))
+
   lazy val jquery = Project("jquery", file("jquery"), settings = createSettings("hyperscala-jquery"))
     .dependsOn(web)
+
   lazy val jqueryUI = Project("jqueryui", file("jqueryui"), settings = createSettings("hyperscala-jqueryui"))
     .dependsOn(jquery)
+
   lazy val realtime = Project("realtime", file("realtime"), settings = createSettings("hyperscala-realtime"))
     .dependsOn(web, jquery)
+
   lazy val screen = Project("screen", file("screen"), settings = createSettings("hyperscala-screen"))
     .dependsOn(realtime)
+
   lazy val ui = Project("ui", file("ui"), settings = createSettings("hyperscala-ui"))
     .dependsOn(web, realtime, jquery, jqueryUI)
+
   lazy val contentEditor = Project("contenteditor", file("contenteditor"), settings = createSettings("hyperscala-contenteditor"))
     .dependsOn(ui)
+
   lazy val ux = Project("ux", file("ux"), settings = createSettings("hyperscala-ux"))
     .dependsOn(web, realtime, jquery, ui)
+
   lazy val bootstrap = Project("bootstrap", file("bootstrap"), settings = createSettings("hyperscala-bootstrap"))
+    .enablePlugins(SbtWeb)
     .dependsOn(ui)
+    .settings(sourceGenerators in Compile <+= extractGlyphicons)
+
   lazy val createJS = Project("createjs", file("createjs"), settings = createSettings("hyperscala-createjs"))
     .dependsOn(ui)
+
   lazy val fabricJS = Project("fabricjs", file("fabricjs"), settings = createSettings("hyperscala-fabricjs"))
     .dependsOn(ui)
 

@@ -23,4 +23,5 @@ object Dependencies {
   val uaDetector = "net.sf.uadetector" % "uadetector-resources" % "2014.10"
   val githubCore = "org.eclipse.mylyn.github" % "org.eclipse.egit.github.core" % "2.1.5"
   val scalaTest = "org.scalatest" %% "scalatest" % "2.2.5" % "test"
+  val webJarsBootstrap = "org.webjars" % "bootstrap" % "3.3.5"
 }

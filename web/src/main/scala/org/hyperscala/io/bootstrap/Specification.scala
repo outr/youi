@@ -99,7 +99,6 @@ object Specification {
       Some("div"),
       _ == "container"),
 
-    // TODO Call add()
     DefComponent("Description",
       Some("dl"),
       _ => true,

@@ -9,3 +9,5 @@ addSbtPlugin("com.eed3si9n" % "sbt-unidoc" % "0.3.2")
 addSbtPlugin("com.eed3si9n" % "sbt-buildinfo" % "0.3.2")
 
 addSbtPlugin("com.earldouglas" % "xsbt-web-plugin" % "1.0.0")
+
+addSbtPlugin("com.typesafe.sbt" % "sbt-web" % "1.2.2")

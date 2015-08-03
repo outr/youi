@@ -14,9 +14,4 @@ class Table extends tag.Table {
   lazy val bordered = new ClassBooleanProperty(this, enabled = Some("table-bordered"))
   lazy val hover = new ClassBooleanProperty(this, enabled = Some("table-hover"))
   lazy val condensed = new ClassBooleanProperty(this, enabled = Some("table-condensed"))
-
-  val head = new tag.THead
-  val body = new tag.TBody
-
-  contents.addAll(head, body)
 }

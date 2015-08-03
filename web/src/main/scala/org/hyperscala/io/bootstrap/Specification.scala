@@ -264,7 +264,6 @@ object Specification {
 
     DefComponent("Row", Some("div"), _ == "row"),
 
-    // TODO Detect head and body
     DefComponent("Table",
       Some("table"),
       _ == "table",

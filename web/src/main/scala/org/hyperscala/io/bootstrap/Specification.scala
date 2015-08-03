@@ -316,7 +316,7 @@ object Specification {
     )
   )
 
-  // TODO Read from Bootstrap CSS file
+  // TODO How can we refer to org.hyperscala.bootstrap.component.Glyphicon?
   sealed abstract class Glyphicon(val className: String) extends EnumEntry
   object Glyphicon extends Enumerated[Glyphicon] {
     case object Asterisk extends Glyphicon("asterisk")

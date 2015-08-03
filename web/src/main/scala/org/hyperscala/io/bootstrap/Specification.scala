@@ -82,8 +82,6 @@ object Specification {
       Some("div"),
       _ == "btn-group"),
 
-    // TODO Support CollapsiblePanel
-
     DefComponent("Column",
       None,
       _.startsWith("col-"),
@@ -122,6 +120,10 @@ object Specification {
       _ == "glyphicon",
       Glyphicon.values.map(g =>
         Value.Option(g.toString, s"glyphicon-${g.className}")): _*),
+
+    DefComponent("PageHeader",
+      Some("div"),
+      _ == "page-header"),
 
     // TODO Support Header
     // TODO Support HolderImage

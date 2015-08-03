@@ -3,6 +3,7 @@ package org.hyperscala.examples.bootstrap
 import com.outr.net.http.session.{MapSession, Session}
 import org.hyperscala.bootstrap.Bootstrap
 import org.hyperscala.bootstrap.component._
+import org.hyperscala.bootstrap.component.extra.PageTitle
 import org.hyperscala.css.attributes.{Display, Position}
 import org.hyperscala.html._
 import org.hyperscala.selector.Selector
@@ -58,7 +59,7 @@ class BootstrapTheme extends Webpage {
       }
     }
 
-    contents += new Header("Buttons")
+    contents += new PageTitle("Buttons")
     contents += new tag.P {
       contents += new Button("Default", buttonStyle = ButtonStyle.Default, buttonSize = ButtonSize.Large)
       contents += new Button("Primary", buttonStyle = ButtonStyle.Primary, buttonSize = ButtonSize.Large)
@@ -96,7 +97,7 @@ class BootstrapTheme extends Webpage {
       contents += new Button("Link", buttonStyle = ButtonStyle.Link, buttonSize = ButtonSize.ExtraSmall)
     }
 
-    contents += new Header("Tables")
+    contents += new PageTitle("Tables")
     contents += new Row {
       contents += new Column {
         medium := Some(6)
@@ -231,10 +232,10 @@ class BootstrapTheme extends Webpage {
       }
     }
 
-    contents += new Header("Thumbnails")
+    contents += new PageTitle("Thumbnails")
     contents += new HolderImage(200, 200, "A generic square placeholder image with a white border around it, making it resemble a photograph taken with an old instant camera")
 
-    contents += new Header("Labels")
+    contents += new PageTitle("Labels")
     contents += new tag.H1 {
       contents += new Label(LabelStyle.Default, "Default")
       contents += new Label(LabelStyle.Primary, "Primary")
@@ -292,7 +293,7 @@ class BootstrapTheme extends Webpage {
       contents += new Label(LabelStyle.Danger, "Danger")
     }
 
-    contents += new Header("Badges")
+    contents += new PageTitle("Badges")
     contents += new tag.P {
       contents += new tag.A(href = "#") {
         contents += "Inbox"
@@ -324,7 +325,7 @@ class BootstrapTheme extends Webpage {
       }
     }
 
-    contents += new Header("Dropdown menus")
+    contents += new PageTitle("Dropdown menus")
     contents += new tag.Div(clazz = List("dropdown", "theme-dropdown", "clearfix")) {
       contents += new tag.A(id = "dropdownMenu1", href = "#", role = "button", clazz = List("sr-only", "dropdown-toggle")) {
         data("toggle", "dropdown")
@@ -358,7 +359,7 @@ class BootstrapTheme extends Webpage {
       }
     }
 
-    contents += new Header("Navs")
+    contents += new PageTitle("Navs")
     contents += new Tabs {
       role := "tablist"
 
@@ -391,7 +392,7 @@ class BootstrapTheme extends Webpage {
       }
     }
 
-    contents += new Header("Navbars")
+    contents += new PageTitle("Navbars")
     contents += new NavBar(brand = Some("Project name"), top = false) {
       addLink("#", "Home", active = true)
       addLink("#", "About")
@@ -419,13 +420,13 @@ class BootstrapTheme extends Webpage {
       dropdown.addLink("#", "One more separated link")
     }
 
-    contents += new Header("Alerts")
+    contents += new PageTitle("Alerts")
     contents += Alert.success("Well done!", "You successfully read this important alert message.")
     contents += Alert.info("Heads up!", "This alert needs your attention, but it's not super important.")
     contents += Alert.warning("Warning!", "Best check yo self, you're not looking too good.")
     contents += Alert.danger("Oh snap!", "Change a few things up and try submitting again.")
 
-    contents += new Header("Progress bars")
+    contents += new PageTitle("Progress bars")
     contents += ProgressBar(0.6, ProgressType.Default)
     contents += ProgressBar(0.4, ProgressType.Success)
     contents += ProgressBar(0.2, ProgressType.Info)
@@ -438,7 +439,7 @@ class BootstrapTheme extends Webpage {
       addProgress(0.1, ProgressType.Danger)
     }
 
-    contents += new Header("List groups")
+    contents += new PageTitle("List groups")
     contents += new Row {
       contents += new Column(small = Some(4)) {
         contents += new ListGroup {
@@ -467,7 +468,7 @@ class BootstrapTheme extends Webpage {
       }
     }
 
-    contents += new Header("Panels")
+    contents += new PageTitle("Panels")
     contents += new Row {
       contents += new Column(small = Some(4)) {
         contents += new Panel("Panel title", Some("Panel content"), PanelType.Default)
@@ -483,7 +484,7 @@ class BootstrapTheme extends Webpage {
       }
     }
 
-    contents += new Header("Wells")
+    contents += new PageTitle("Wells")
     contents += new Well {
       contents += new tag.P {
         contents += "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas sed diam eget risus varius blandit sit amet non magna. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Cras mattis consectetur purus sit amet fermentum. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Aenean lacinia bibendum nulla sed consectetur."

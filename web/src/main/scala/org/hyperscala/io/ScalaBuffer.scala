@@ -17,17 +17,13 @@ case class WriterContext(
   content: StringBuilder = new StringBuilder
 ) {
   def writeLine(line: String = "", prefix: String = null, nlbr: Boolean = true, indent: Boolean = true) {
-    if (indent) (0 until depth).foreach(i => content.append("  "))
+    if (indent) (0 until depth).foreach(_ => content.append("  "))
     if (prefix != null) {
-      write(prefix)
-      write(".")
+      content.append(prefix)
+      content.append(".")
     }
-    write(line)
+    content.append(line)
     if (nlbr) content.append('\n')
-  }
-
-  def write(c: String) {
-    content.append(c)
   }
 }
 
@@ -64,7 +60,7 @@ object ScalaBuffer {
             instantiateTag(tag, valContext, vals, mapping)
 
             vals.writeLine(s"val ${tag.id()} = ", nlbr = false)
-            vals.write(valContext.content.toString())
+            vals.writeLine(valContext.content.toString(), nlbr = false, indent = false)
 
             context.writeLine(s"contents += ${tag.id()}", prefix)
           }
@@ -75,7 +71,7 @@ object ScalaBuffer {
 
   def instantiateTag(tag: HTMLTag, context: WriterContext, vals: WriterContext, mapping: Map[String, String]) {
     bootstrap.Generation.findComponent(tag) match {
-      case Some(component) if bootstrap.Generation.isConvertable(tag, component) =>
+      case Some(component) =>
         bootstrap.Generation.applyComponent(tag, component, context, vals, mapping)
 
       case _ =>
@@ -104,7 +100,8 @@ object ScalaBuffer {
         }
 
         context.writeLine(
-          "new tag.%s%s%s".format(tagName(tag.getClass), constructor, opening))
+          "new tag.%s%s%s".format(tagName(tag.getClass), constructor, opening),
+           indent = false)
 
         if (hasBody) {
           context.depth += 1

@@ -8,33 +8,46 @@ object Generation {
 
   def findComponent(tag: HTMLTag): Option[Component] = {
     components.find { component =>
-      component.tag
-        .map(t => (s: String) => s == t)
-        .getOrElse((_: String) => true)(tag.xmlLabel) &&
-        tag.clazz().exists(component.cssMatcher)
+      tagMatches(tag, component) &&
+        cssMatches(tag, component)
     }
   }
 
+  def tagMatches(tag: HTMLTag, component: Component): Boolean =
+    component.tag
+      .map(t => (s: String) => s == t)
+      .getOrElse((_: String) => true)(tag.xmlLabel)
+
   /** If `tag` contains more CSS classes than specified, we cannot convert it. */
-  def isConvertable(tag: HTMLTag, component: Component): Boolean = {
+  def cssMatches(tag: HTMLTag, component: Component): Boolean = {
+    val classes = tag.clazz().toSet
+
     val allClassesCovered = component match {
-      case c @ DefComponent(name, t, cssF, properties @ _*) =>
-        tag.clazz().forall(t => cssF(t) || properties.exists { property =>
-          property.values.exists {
-            case v @ Value.Boolean(css)
-              if tag.clazz().contains(css) => true
-            case v @ Value.Set(name, options @ _*)
-              if options.exists(o => tag.clazz().contains(o.css)) => true
-            case v @ Value.Enum(values, css)
-              if values.map(css).exists(tag.clazz().contains(_)) => true
-            case v @ Value.Option(name, css)
-              if tag.clazz().contains(css) => true
-            case _ => false
-          }
-        })
+      case c @ DefComponent(name, parent, t, attributes, cssF, properties @ _*) =>
+        cssF(classes) match {
+          case None => false
+          case Some(matches) =>
+            classes.diff(matches).forall(t => properties.exists { property =>
+              property.values.exists {
+                case v @ Value.Boolean(css)
+                  if t == css => true
+                case v @ Value.Set(name, options @ _*)
+                  if options.exists(_.css == t) => true
+                case v @ Value.Enum(values, css)
+                  if values.map(css).contains(t) => true
+                case v @ Value.Option(name, css)
+                  if t == css => true
+                case _ => false
+              }
+            })
+        }
 
       case EnumComponent(name, t, css, values @ _*) =>
-        tag.clazz().forall(t => css(t) || values.exists(_.css == t))
+        css(classes) match {
+          case None => false
+          case Some(matches) =>
+            classes.diff(matches).forall(t => values.exists(_.css == t))
+        }
     }
 
     allClassesCovered
@@ -81,7 +94,7 @@ object Generation {
                      vals: WriterContext,
                      mapping: Map[String, String]) {
     component match {
-      case c @ DefComponent(name, t, css, properties @ _*) =>
+      case c @ DefComponent(name, parent, t, attributes, css, properties @ _*) =>
         val props = extractProperties(tag, c).map { case (p, v) =>
           val valueTree = encodePropertyValue(tag, p, v)
           s"${p.name} := $valueTree"
@@ -95,7 +108,7 @@ object Generation {
 
         context.depth += 1
         ScalaBuffer.writeAttributes(tag, all = true, prefix = null, context = context,
-          withoutAttributes = Set("clazz", "role"))
+          withoutAttributes = Set("clazz") ++ attributes)
         props.foreach(context.writeLine(_))
         ScalaBuffer.writeChildren(tag, context, vals, mapping)
         context.depth -= 1

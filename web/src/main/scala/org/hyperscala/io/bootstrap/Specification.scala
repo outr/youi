@@ -6,18 +6,21 @@ object Specification {
   sealed trait Component {
     def name: String
     def tag: Option[String]
-    def cssMatcher: String => Boolean
+    // input = tag's CSS classes, output = None if no match, matched tags otherwise
+    def cssMatcher: Set[String] => Option[Set[String]]
   }
 
   case class DefComponent(name: String,
+                          parentComponent: Option[String],  // TODO Should not be ignored
                           tag: Option[String],
-                          cssMatcher: String => Boolean,
+                          attributes: Set[String],  // Attributes to remove (apart from `class`)
+                          cssMatcher: Set[String] => Option[Set[String]],
                           properties: Property*)
     extends Component
 
   case class EnumComponent(name: String,
                            tag: Option[String],
-                           cssMatcher: String => Boolean,
+                           cssMatcher: Set[String] => Option[Set[String]],
                            values: Value.Option*)
     extends Component
 
@@ -32,10 +35,20 @@ object Specification {
     case class Instance[T](value: T) extends Value
   }
 
+  def matchOrFail(matched: String*)(input: Set[String]): Option[Set[String]] =
+    if (matched.forall(input.contains)) Some(matched.toSet)
+    else None
+
+  def matchOrFailF(matches: String => Boolean)(input: Set[String]): Option[Set[String]] =
+    if (input.exists(matches)) Some(input.filter(matches))
+    else None
+
+  // Note that the order matters
   val components = Seq(
-    DefComponent("Alert",
+    DefComponent("Alert", None,
       Some("div"),
-      _ == "alert",
+      Set("role"),
+      matchOrFail("alert"),
       Property("alertType",
         Value.Set("AlertType",
           Value.Option("Success", "alert-success"),
@@ -46,14 +59,16 @@ object Specification {
       )
     ),
 
-    DefComponent("Badge",
+    DefComponent("Badge", None,
       Some("span"),
-      _ == "badge",
+      Set.empty,
+      matchOrFail("badge"),
       Property("pullRight", Value.Boolean("pull-right"))),
 
-    DefComponent("Button",
+    DefComponent("Button", None,
       Some("button"),
-      _ == "btn",
+      Set.empty,
+      matchOrFail("btn"),
       Property("buttonStyle",
         Value.Set("ButtonStyle",
           Value.Option("Default", "btn-default"),
@@ -78,13 +93,15 @@ object Specification {
       Property("active", Value.Boolean("active"))
     ),
 
-    DefComponent("ButtonGroup",
+    DefComponent("ButtonGroup", None,
       Some("div"),
-      _ == "btn-group"),
+      Set.empty,
+      matchOrFail("btn-group")),
 
-    DefComponent("Column",
+    DefComponent("Column", None,
       Some("div"),
-      _.startsWith("col-"),
+      Set.empty,
+      matchOrFailF(_.startsWith("col-")),
       Property("large", Value.Enum[Int](1 to 12, columns => s"col-lg-$columns")),
       Property("largeOffset", Value.Enum[Int](1 to 12, columns => s"col-lg-offset-$columns")),
       Property("medium", Value.Enum[Int](1 to 12, columns => s"col-md-$columns")),
@@ -95,38 +112,44 @@ object Specification {
       Property("extraSmallOffset", Value.Enum[Int](1 to 12, columns => s"col-xs-offset-$columns"))
     ),
 
-    DefComponent("Container",
+    DefComponent("Container", None,
       Some("div"),
-      _ == "container"),
+      Set.empty,
+      matchOrFail("container")),
 
-    DefComponent("Description",
+    DefComponent("Description", None,
       Some("dl"),
-      _ => true,
+      Set.empty,
+      matchOrFail(),
       Property("horizontal", Value.Boolean("dl-horizontal"))),
 
-    DefComponent("Form",
+    DefComponent("Form", None,
       Some("form"),
-      _ == "form",
+      Set.empty,
+      matchOrFail("form"),
       Property("inline", Value.Boolean("form-inline")),
       Property("horizontal", Value.Boolean("form-horizontal"))),
 
-    DefComponent("FormGroup",
+    DefComponent("FormGroup", Some("Form"),
       Some("div"),
-      _ == "form-group"),
+      Set.empty,
+      matchOrFail("form-group")),
 
     EnumComponent("Glyphicon",
       Some("span"),
-      _ == "glyphicon",
+      matchOrFail("glyphicon"),
       Glyphicon.values.map(g =>
         Value.Option(g.toString, s"glyphicon-${g.className}")): _*),
 
-    DefComponent("PageHeader",
+    DefComponent("PageHeader", None,
       Some("div"),
-      _ == "page-header"),
+      Set.empty,
+      matchOrFail("page-header")),
 
-    DefComponent("InputGroup",
+    DefComponent("InputGroup", None,
       Some("div"),
-      _ == "input-group",
+      Set.empty,
+      matchOrFail("input-group"),
       Property("size",
         Value.Set("InputGroupSize",
           Value.Option("Large", "input-group-lg"),
@@ -135,17 +158,20 @@ object Specification {
       )
     ),
 
-    DefComponent("InputGroupAddon",
+    DefComponent("InputGroupAddon", Some("InputGroup"),
       Some("span"),
-      _ == "input-group-addon"),
+      Set.empty,
+      matchOrFail("input-group-addon")),
 
-    DefComponent("Jumbotron",
+    DefComponent("Jumbotron", None,
       Some("div"),
-      _ == "jumbotron"),
+      Set.empty,
+      matchOrFail("jumbotron")),
 
-    DefComponent("Label",
+    DefComponent("Label", None,
       Some("span"),
-      _ == "label",
+      Set.empty,
+      matchOrFail("label"),
       Property("labelStyle",
         Value.Set("LabelStyle",
           Value.Option("Default", "label-default"),
@@ -158,32 +184,32 @@ object Specification {
       )
     ),
 
-    DefComponent("ListGroup",
+    DefComponent("ListGroup", None,
       Some("div"),
-      _ == "list-group"),
+      Set.empty,
+      matchOrFail("list-group")),
 
-    DefComponent("ListGroupItem",
-      None,  // TODO only within ListGroup
-      _ == "list-group-item",
+    DefComponent("ListGroupItem", Some("ListGroup"),
+      None,
+      Set.empty,
+      matchOrFail("list-group-item"),
       Property("active", Value.Boolean("active")),
       Property("disabled", Value.Boolean("disabled"))),
 
-    DefComponent("ListGroupItemHeading",
-      Some("h4"),  // TODO only within ListGroupItem
-      _ == "list-group-item-heading"),
+    DefComponent("ListGroupItemHeading", Some("ListGroupItem"),
+      Some("h4"),
+      Set.empty,
+      matchOrFail("list-group-item-heading")),
 
-    DefComponent("ListGroupItemText",
-      Some("p"),  // TODO only within ListGroupItem
-      _ == "list-group-item-text"),
+    DefComponent("ListGroupItemText", Some("ListGroupItem"),
+      Some("p"),
+      Set.empty,
+      matchOrFail("list-group-item-text")),
 
-    DefComponent("ListItem",
-      Some("li"),
-      _ => true,
-      Property("active", Value.Boolean("active"))),
-
-    DefComponent("NavBar",
+    DefComponent("NavBar", None,
       Some("div"),
-      _ == "navbar",
+      Set.empty,
+      matchOrFail("navbar"),
       Property("top", Value.Boolean("top")),
       Property("theme",
         Value.Set("NavBarTheme",
@@ -193,55 +219,68 @@ object Specification {
         )
       )),
 
-    DefComponent("NavBarDropdown",
+    DefComponent("NavBarDropdown", None,
       Some("li"),
-      _ == "dropdown",
+      Set.empty,
+      matchOrFail("dropdown"),
       Property("active", Value.Boolean("active"))),
 
-    DefComponent("NavBarNav",
+    DefComponent("NavBarNav", None,
       Some("ul"),
-      s => s == "nav" || s == "navbar-nav",
-      Property("pullRight", Value.Boolean("pull-right"))),
+      Set.empty,
+      matchOrFail("nav", "navbar-nav"),
+      Property("pullRight", Value.Boolean("pull-right")),
+      Property("right", Value.Boolean("navbar-right"))),
 
-    DefComponent("NavBarBrand",
+    DefComponent("NavBarBrand", None,
       Some("a"),
-      _ == "navbar-brand"),
+      Set.empty,
+      matchOrFail("navbar-brand")),
 
-    DefComponent("NavBarHeader",
+    DefComponent("NavBarHeader", None,
       Some("div"),
-      _ == "navbar-header"),
+      Set.empty,
+      matchOrFail("navbar-header")),
 
-    DefComponent("NavBarCollapse",
+    DefComponent("NavBarCollapse", None,
       Some("div"),
-      s => s == "navbar-collapse" || s == "collapse"),
+      Set.empty,
+      matchOrFail("navbar-collapse", "collapse")),
 
-    DefComponent("NavBarToggle",
+    DefComponent("NavBarToggle", None,
       Some("button"),
-      _ == "navbar-toggle"),
+      Set.empty,
+      matchOrFail("navbar-toggle")),
 
-    DefComponent("Caret",
+    DefComponent("Caret", None,
       Some("b"),
-      _ == "caret"),
+      Set.empty,
+      matchOrFail("caret")),
 
-    DefComponent("Divider",
+    DefComponent("Divider", None,
       Some("li"),
-      _ == "divider"),
+      Set.empty,
+      matchOrFail("divider")),
 
-    DefComponent("DropdownMenu",
+    DefComponent("DropdownMenu", None,
       Some("ul"),
-      _ == "dropdown-menu"),
+      Set.empty,
+      matchOrFail("dropdown-menu")),
 
-    DefComponent("DropdownToggle",
+    DefComponent("DropdownToggle", None,
       Some("a"),
-      _ == "dropdown-toggle"),
+      Set.empty,
+      matchOrFail("dropdown-toggle")),
 
-    DefComponent("DropdownHeader",
+    DefComponent("DropdownHeader", None,
       Some("li"),
-      _ == "dropdown-header"),
+      Set.empty,
+      matchOrFail("dropdown-header")),
 
-    DefComponent("Panel",
+    DefComponent("Panel", None,
       Some("div"),
-      _ == "panel",
+      Set.empty,
+      matchOrFail("panel"),
       Property("panelType",
         Value.Set("PanelType",
           Value.Option("Default", "panel-default"),
@@ -254,27 +293,30 @@ object Specification {
       )
     ),
 
-    DefComponent("ProgressBar",
+    DefComponent("ProgressBar", None,
       Some("div"),
-      _ == "progress",
+      Set.empty,
+      matchOrFail("progress"),
       Property("striped", Value.Boolean("progress-striped")),
       Property("active", Value.Boolean("progress-active"))
     ),
 
-    DefComponent("Row", Some("div"), _ == "row"),
+    DefComponent("Row", None, Some("div"), Set.empty, matchOrFail("row")),
 
-    DefComponent("Table",
+    DefComponent("Table", None,
       Some("table"),
-      _ == "table",
+      Set.empty,
+      matchOrFail("table"),
       Property("striped", Value.Boolean("table-striped")),
       Property("bordered", Value.Boolean("table-bordered")),
       Property("hover", Value.Boolean("table-hover")),
       Property("condensed", Value.Boolean("table-condensed"))
     ),
 
-    DefComponent("TableRow",
+    DefComponent("TableRow", Some("Table"),
       Some("tr"),
-      _ => true,  // TODO only within Table
+      Set.empty,
+      matchOrFail(),
       Property("rowStyle",
         Value.Set("RowStyle",
           Value.Option("Default", "default"),
@@ -287,25 +329,28 @@ object Specification {
       )
     ),
 
-    DefComponent("Tabs",
+    DefComponent("Tabs", None,
       Some("ul"),
-      _ == "nav",
+      Set.empty,
+      matchOrFail("nav"),
       Property("tabs", Value.Boolean("nav-tabs")),
       Property("pills", Value.Boolean("nav-pills")),
       Property("stacked", Value.Boolean("nav-stacked")),
       Property("justified", Value.Boolean("nav-justified"))
     ),
 
-    DefComponent("TabEntry",
+    DefComponent("TabEntry", Some("Tabs"),
       Some("li"),
-      _ => true,  // TODO only within Tabs
+      Set.empty,
+      matchOrFail(),
       Property("active", Value.Boolean("active")),
       Property("disabled", Value.Boolean("disabled"))
     ),
 
-    DefComponent("Well",
+    DefComponent("Well", None,
       Some("div"),
-      _ == "well",
+      Set.empty,
+      matchOrFail("well"),
       Property("wellType",
         Value.Set("WellType",
           Value.Option("Default", "well-default"),
@@ -313,7 +358,13 @@ object Specification {
           Value.Option("Larger", "well-lg")
         )
       )
-    )
+    ),
+
+    DefComponent("ListItem", None,
+      Some("li"),
+      Set.empty,
+      matchOrFail(),
+      Property("active", Value.Boolean("active")))
   )
 
   // TODO How can we refer to org.hyperscala.bootstrap.component.Glyphicon?

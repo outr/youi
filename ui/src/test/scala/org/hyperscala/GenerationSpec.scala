@@ -53,9 +53,18 @@ class GenerationSpec extends WordSpec with Matchers {
     """.stripMargin
   ).create()
 
+  val tabsHtml = DynamicTag.from[tag.Ul](
+    """
+      |<ul class="nav nav-tabs">
+      |  <li role="presentation" class="active"><a href="#">Home</a></li>
+      |  <li role="presentation"><a href="#">Profile</a></li>
+      |  <li role="presentation"><a href="#">Messages</a></li>
+      |</ul>
+    """.stripMargin
+  ).create()
+
   def testConversion(html: HTMLTag, resourceName: String) {
     val component = Generation.findComponent(html).get
-    Generation.isConvertable(html, component) should be (true)
 
     val code = WriterContext(0)
     val vals = WriterContext(0)
@@ -65,11 +74,6 @@ class GenerationSpec extends WordSpec with Matchers {
       scala.io.Source.fromInputStream(getClass.getResourceAsStream(resourceName))
         .mkString
     (vals.content.toString() ++ code.content.toString()).trim should be (stream.trim)
-  }
-
-  def failConversion(html: HTMLTag) {
-    val component = Generation.findComponent(html).get
-    Generation.isConvertable(html, component) should be (false)
   }
 
   "Danger component" should {
@@ -127,14 +131,10 @@ class GenerationSpec extends WordSpec with Matchers {
   }
 
   "Glyphicon component with additional attributes" should {
-    "be recognised" in {
-      val component = Generation.findComponent(glyphiconHtml2).get
-      component.name should be ("Glyphicon")
-    }
-
-    "not be converted" in {
+    "not be recognised" in {
       // Additional attributes cannot be represented in glyphicon objects
-      failConversion(glyphiconHtml2)
+      val component = Generation.findComponent(glyphiconHtml2)
+      component should be (None)
     }
   }
 
@@ -156,14 +156,26 @@ class GenerationSpec extends WordSpec with Matchers {
       component.name should be ("ListGroup")
     }
 
-    "not be converted" in {
+    "be converted" in {
       testConversion(listGroupHtml, "/listGroup.scala")
+    }
+  }
+
+  "Tabs component" should {
+    "be recognised" in {
+      val component = Generation.findComponent(tabsHtml).get
+      component.name should be ("Tabs")
+    }
+
+    "be converted" in {
+      testConversion(tabsHtml, "/tabs.scala")
     }
   }
 
   "Invalid component" should {
     "not be recognised" in {
-      Generation.findComponent(invalidComponentHtml) should be (None)
+      val component = Generation.findComponent(invalidComponentHtml)
+      component should be (None)
     }
   }
 }

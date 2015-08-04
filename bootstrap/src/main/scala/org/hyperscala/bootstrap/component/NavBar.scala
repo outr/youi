@@ -31,6 +31,7 @@ class NavBarDropdown(body: BodyChild*) extends ListItem {
 }
 
 class NavBarNav extends tag.Ul(clazz = List("nav", "navbar-nav")) {
+  val right = new ClassBooleanProperty(this, enabled = Some("navbar-right"))
   val pullRight = new ClassBooleanProperty(this, enabled = Some("pull-right"))
 }
 

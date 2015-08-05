@@ -3,21 +3,21 @@ package org.hyperscala.examples.basic
 import java.util.Calendar
 
 import org.hyperscala.examples.Example
-import org.hyperscala.realtime.Realtime
-
 import org.hyperscala.html._
+import org.hyperscala.realtime.Realtime
+import org.hyperscala.web.Webpage
 import org.powerscala.Updatable
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class RealtimeDateExample extends Example with Updatable {
-  this.require(Realtime)
+class RealtimeDateExample extends Webpage with Example with Updatable {
+  require(Realtime)
 
-  contents += new tag.P(content = "Updates the clock every five seconds on the server.")
+  body.contents += new tag.P(content = "Updates the clock every five seconds on the server.")
 
   val div = new tag.Div
-  contents += div
+  body.contents += div
 
   updateTime()
 

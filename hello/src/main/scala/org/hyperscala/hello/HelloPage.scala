@@ -1,7 +1,7 @@
 package org.hyperscala.hello
 
-import org.hyperscala.web.Webpage
 import org.hyperscala.html._
+import org.hyperscala.web.Webpage
 
 /**
  * @author Matt Hicks <matt@outr.com>

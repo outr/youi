@@ -1,15 +1,16 @@
 package org.hyperscala.examples.ui
 
-import org.hyperscala.html._
 import org.hyperscala.examples.Example
-import org.hyperscala.realtime.{RealtimeEvent, Realtime}
+import org.hyperscala.html._
+import org.hyperscala.realtime.{Realtime, RealtimeEvent}
 import org.hyperscala.ui.wrapped.TypedSelect
+import org.hyperscala.web.Webpage
 import org.powerscala.Country
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class TypedSelectExample extends Example {
+class TypedSelectExample extends Webpage with Example {
   require(Realtime)
 
   val select = new tag.Select(id = "select")
@@ -20,17 +21,17 @@ class TypedSelectExample extends Example {
     case evt => println(s"Selected changed from: ${evt.oldValue} to: ${evt.newValue}")
   }
 
-  contents += select
+  body.contents += select
 
-  contents += new tag.Br
+  body.contents += new tag.Br
 
-  contents += new tag.Button(content = "Select USA") {
+  body.contents += new tag.Button(content = "Select USA") {
     clickEvent := RealtimeEvent()
     clickEvent.on {
       case evt => typedSelect.selected := Country.US
     }
   }
-  contents += new tag.Button(content = "Repopulate") {
+  body.contents += new tag.Button(content = "Repopulate") {
     clickEvent := RealtimeEvent()
     clickEvent.on {
       case evt => typedSelect.options = null :: Country.values.toList

@@ -2,17 +2,17 @@ package org.hyperscala.examples.ui
 
 import org.hyperscala.css.SelectorStyleSheet
 import org.hyperscala.css.attributes.Display
+import org.hyperscala.examples.Example
 import org.hyperscala.html._
 import org.hyperscala.realtime._
-import org.hyperscala.examples.Example
-import org.hyperscala.selector.Selector
 import org.hyperscala.ui.VideoJS
+import org.hyperscala.web.Webpage
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class VideoJSExample extends Example {
-  new SelectorStyleSheet(".vjs-default-skin .vjs-seek-handle, .vjs-default-skin .vjs-volume-handle")(this) {
+class VideoJSExample extends Webpage with Example {
+  new SelectorStyleSheet(".vjs-default-skin .vjs-seek-handle, .vjs-default-skin .vjs-volume-handle")(body) {
     display := Display.None
   }
 
@@ -30,9 +30,9 @@ class VideoJSExample extends Example {
     source("http://video-js.zencoder.com/oceans-clip.ogv", "video/ogg")
   }
 
-  contents += video
+  body.contents += video
 
-  contents += new tag.Button {
+  body.contents += new tag.Button {
     contents += "Change Video"
     clickEvent.onRealtime {
       case evt => {

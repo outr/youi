@@ -5,16 +5,16 @@ import org.hyperscala.bootstrap.Bootstrap
 import org.hyperscala.bootstrap.component._
 import org.hyperscala.css.attributes.Display
 import org.hyperscala.examples.Example
-import org.hyperscala.html.attributes.InputType
 import org.hyperscala.html._
-import org.hyperscala.screen._
+import org.hyperscala.html.attributes.InputType
 import org.hyperscala.realtime._
+import org.hyperscala.screen._
 import org.hyperscala.web._
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class SinglePageSiteExample extends Example {
+class SinglePageSiteExample extends Webpage with Example {
   require(Bootstrap)
 
   connected[Webpage] {
@@ -50,9 +50,9 @@ class SinglePageSiteExample extends Example {
   )
 
   val main = new tag.Div
-  contents += main
+  body.contents += main
 
-  contents += new ButtonGroup {
+  body.contents += new ButtonGroup {
     contents += new Button("Welcome") {
       clickEvent.onRealtime {
         case evt => screens.activate(welcomeLink, replace = false)

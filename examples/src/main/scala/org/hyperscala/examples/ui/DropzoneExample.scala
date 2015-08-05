@@ -1,68 +1,63 @@
 package org.hyperscala.examples.ui
 
-import org.hyperscala.css.attributes.{Alignment, VerticalAlignment, Display, LineStyle}
+import org.hyperscala.css.attributes.{Alignment, Display, LineStyle, VerticalAlignment}
 import org.hyperscala.examples.Example
-import org.hyperscala.javascript.JavaScriptString
-import org.hyperscala.jquery.Gritter
-import org.hyperscala.web._
-import org.hyperscala.ui.{DropzoneFileEvent, Dropzone}
 import org.hyperscala.html._
-import org.powerscala.Color
+import org.hyperscala.jquery.Gritter
 import org.hyperscala.selector._
+import org.hyperscala.ui.{Dropzone, DropzoneFileEvent}
+import org.hyperscala.web._
+import org.powerscala.Color
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class DropzoneExample extends Example {
+class DropzoneExample extends Webpage with Example {
   val ServerMode = true
 
   require(Dropzone)
   require(Gritter)
 
-  connected[tag.HTML] {
-    case html => {
-      html.head.useStyle(".dz-preview") {
-        case style => {
-          style.paddingAll(5.px)
-          style.marginAll(5.px)
-          style.borderWidth := 1.px
-          style.borderStyle := LineStyle.Ridge
-          style.borderColor := Color.Black
-          style.borderRadius := 5.px
-          style.width := 150.px
-          style.height := 350.px
-          style.display := Display.InlineBlock
-          style.verticalAlign := VerticalAlignment.Top
-        }
-      }
-      html.head.useStyle(".dz-preview .dz-progress") {
-        case style => {
-          style.borderWidth := 1.px
-          style.borderStyle := LineStyle.Solid
-          style.borderColor := Color.Black
-          style.borderRadius := 5.px
-          style.width := 140.px
-          style.height := 25.px
-        }
-      }
-      html.head.useStyle(".dz-preview .dz-progress .dz-upload") {
-        case style => {
-          style.borderRadius := 5.px
-          style.height := 25.px
-          style.backgroundColor := Color.Blue
-          style.display := Display.Block
-        }
-      }
-      html.head.useStyle(".dz-preview .dz-success-mark, .dz-preview .dz-error-mark") {
-        case style => style.display := Display.None
-      }
-      html.head.useStyle(".dz-preview.dz-success .dz-success-mark") {
-        case style => style.display := Display.Block
-      }
-      html.head.useStyle(".dz-preview.dz-error .dz-error-mark") {
-        case style => style.display := Display.Block
-      }
+  html.head.useStyle(".dz-preview") {
+    case style => {
+      style.paddingAll(5.px)
+      style.marginAll(5.px)
+      style.borderWidth := 1.px
+      style.borderStyle := LineStyle.Ridge
+      style.borderColor := Color.Black
+      style.borderRadius := 5.px
+      style.width := 150.px
+      style.height := 350.px
+      style.display := Display.InlineBlock
+      style.verticalAlign := VerticalAlignment.Top
     }
+  }
+  html.head.useStyle(".dz-preview .dz-progress") {
+    case style => {
+      style.borderWidth := 1.px
+      style.borderStyle := LineStyle.Solid
+      style.borderColor := Color.Black
+      style.borderRadius := 5.px
+      style.width := 140.px
+      style.height := 25.px
+    }
+  }
+  html.head.useStyle(".dz-preview .dz-progress .dz-upload") {
+    case style => {
+      style.borderRadius := 5.px
+      style.height := 25.px
+      style.backgroundColor := Color.Blue
+      style.display := Display.Block
+    }
+  }
+  html.head.useStyle(".dz-preview .dz-success-mark, .dz-preview .dz-error-mark") {
+    case style => style.display := Display.None
+  }
+  html.head.useStyle(".dz-preview.dz-success .dz-success-mark") {
+    case style => style.display := Display.Block
+  }
+  html.head.useStyle(".dz-preview.dz-error .dz-error-mark") {
+    case style => style.display := Display.Block
   }
 
   val container = new tag.Div(id = "container")
@@ -78,7 +73,7 @@ class DropzoneExample extends Example {
   s.textAlign := Alignment.Center
   s.paddingTop := 25.px
   container.contents += "Drop Files Here"
-  contents += container
+  body.contents += container
 
   val previews = new tag.Div {
     id := "previews"
@@ -90,34 +85,34 @@ class DropzoneExample extends Example {
     style.borderColor := Color.Blue
     style.borderRadius := 5.px
   }
-  contents += previews
+  body.contents += previews
 
   val dropzone = Dropzone(container)
   if (ServerMode) {
     dropzone.connectEventsToServer()
     dropzone.addedFileEvent.on {
-      case evt => Gritter.add(this.webpage, "Event Received", s"Added file: ${evt.name}")
+      case evt => Gritter.add(this, "Event Received", s"Added file: ${evt.name}")
     }
     dropzone.completeEvent.on {
-      case evt => Gritter.add(this.webpage, "Event Received", "Complete")
+      case evt => Gritter.add(this, "Event Received", "Complete")
     }
     dropzone.errorEvent.on {
-      case evt => Gritter.add(this.webpage, "Event Received", "Error")
+      case evt => Gritter.add(this, "Event Received", "Error")
     }
     dropzone.processingEvent.on {
-      case evt => Gritter.add(this.webpage, "Event Received", "Processing")
+      case evt => Gritter.add(this, "Event Received", "Processing")
     }
     dropzone.removedFileEvent.on {
-      case evt => Gritter.add(this.webpage, "Event Received", s"Removed File: ${evt.name}")
+      case evt => Gritter.add(this, "Event Received", s"Removed File: ${evt.name}")
     }
     dropzone.successEvent.on {
-      case evt => Gritter.add(this.webpage, "Event Received", "Success")
+      case evt => Gritter.add(this, "Event Received", "Success")
     }
     dropzone.thumbnailEvent.on {
-      case evt => Gritter.add(this.webpage, "Event Received", "Thumbnail")
+      case evt => Gritter.add(this, "Event Received", "Thumbnail")
     }
     dropzone.uploadProgressEvent.on {
-      case evt => Gritter.add(this.webpage, "Event Received", s"Upload Progress: ${evt.progress}")
+      case evt => Gritter.add(this, "Event Received", s"Upload Progress: ${evt.progress}")
     }
     dropzone.addedFileEvent.on {
       case evt => previews.contents += new DropzoneEntry(dropzone, Some(evt))

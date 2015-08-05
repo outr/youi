@@ -1,33 +1,31 @@
 package org.hyperscala.examples.ui
 
 
-import org.hyperscala.html._
-import org.hyperscala.examples.Example
-import language.reflectiveCalls
-import org.hyperscala.realtime._
-import org.powerscala.Color
-import org.hyperscala.ui.wrapped.{Changes, Changing, Changeable}
+import org.hyperscala.css.Style
 import org.hyperscala.css.attributes.Position
+import org.hyperscala.examples.Example
+import org.hyperscala.html._
 import org.hyperscala.javascript.dsl._
 import org.hyperscala.jquery.dsl._
-import org.hyperscala.css.Style
+import org.hyperscala.realtime._
+import org.hyperscala.ui.wrapped.{Changeable, Changes, Changing}
 import org.hyperscala.web._
-import com.outr.net.http.session.Session
+import org.powerscala.Color
+
+import scala.language.reflectiveCalls
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class ChangeableExample extends Example {
+class ChangeableExample extends Webpage with Example {
   import ChangeableExample._
 
-  this.require(Changeable)
-  this.require(Realtime)
+  require(Changeable)
+  require(Realtime)
 
-  connected[Webpage] {
-    case webpage => webpage.connectForm()
-  }
+  this.connectForm()
 
-  contents += new tag.P {
+  body.contents += new tag.P {
     contents += "Changeable module allows the use of a JavaScript DSL to define style changes to be applied a tag."
   }
 
@@ -37,7 +35,7 @@ class ChangeableExample extends Example {
   div.style.paddingAll(5.px)
   div.style.position := Position.Absolute
   div.style.backgroundColor := Color.LightBlue
-  contents += div
+  body.contents += div
 
   var horizontal: JSFunction1[Changes, Unit] = HorizontalCenter
   var vertical: JSFunction1[Changes, Unit] = VerticalMiddle
@@ -46,7 +44,7 @@ class ChangeableExample extends Example {
   changeable.frequency := 0.1
   updatePositioning()
 
-  contents += new tag.Div {
+  body.contents += new tag.Div {
     contents += new tag.Button(content = "Left") {
       clickEvent.on {
         case evt => updatePositioning(x = HorizontalLeft)
@@ -64,7 +62,7 @@ class ChangeableExample extends Example {
     }
   }
 
-  contents += new tag.Div {
+  body.contents += new tag.Div {
     contents += new tag.Button(content = "Top") {
       clickEvent.on {
         case evt => updatePositioning(y = VerticalTop)
@@ -82,7 +80,7 @@ class ChangeableExample extends Example {
     }
   }
 
-  contents += new tag.Div {
+  body.contents += new tag.Div {
     contents += new tag.Button(content = "Under Logo") {
       clickEvent.on {
         case evt => updatePositioning(x = HorizontalLeftLogo, y = VerticalUnderLogo)

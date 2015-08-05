@@ -4,16 +4,17 @@ import org.hyperscala.examples.Example
 import org.hyperscala.html._
 import org.hyperscala.jquery.ui._
 import org.hyperscala.realtime.RealtimeEvent
+import org.hyperscala.web.Webpage
 
 import scala.language.reflectiveCalls
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class DialogExample extends Example {
-  this.require(jQueryUI)
+class DialogExample extends Webpage with Example {
+  require(jQueryUI)
 
-  contents += new tag.P {
+  body.contents += new tag.P {
     contents += "Dialog provides a simple wrapper around jQuery UI's Dialog."
   }
 
@@ -25,9 +26,9 @@ class DialogExample extends Example {
   myDialog.autoOpen := false
   myDialog.hide := Effect.Explode(duration = 1500, easing = Easing.EaseInBounce)
   myDialog.show := Effect.Fold
-  contents += myDiv
+  body.contents += myDiv
 
-  contents += new tag.Button(content = "Toggle Dialog Visible") {
+  body.contents += new tag.Button(content = "Toggle Dialog Visible") {
     clickEvent := RealtimeEvent()
 
     clickEvent.on {

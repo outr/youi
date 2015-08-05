@@ -1,26 +1,24 @@
 package org.hyperscala.examples.ui
 
-import org.hyperscala.html._
-import org.hyperscala.ui.widgets.visual.Visual
 import org.hyperscala.css.attributes._
-
-import org.powerscala.property._
-import org.powerscala.Country
-import org.hyperscala.web._
-import org.hyperscala.realtime.{RealtimeEvent, Realtime}
 import org.hyperscala.examples.Example
-import language.reflectiveCalls
+import org.hyperscala.html._
+import org.hyperscala.realtime.{Realtime, RealtimeEvent}
+import org.hyperscala.ui.widgets.visual.Visual
 import org.hyperscala.ui.widgets.visual.types.DateInputVisualType
+import org.hyperscala.web._
+import org.powerscala.Country
+import org.powerscala.property._
+
+import scala.language.reflectiveCalls
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class VisualExample extends Example {
-  this.require(Realtime)
+class VisualExample extends Webpage with Example {
+  require(Realtime)
 
-  connected[tag.Body] {
-    case body => body.style.fontFamily := "sans-serif"
-  }
+  body.style.fontFamily := "sans-serif"
 
   val property = Property[TestPerson](default = Some(new TestPerson(name = "John Doe", age = 21)))
   property.change.on {
@@ -65,9 +63,9 @@ class VisualExample extends Example {
     case evt => println("Case Classes Changed: %s -> %s".format(evt.oldValue, evt.newValue))
   }
 
-  contents.addAll(stringVisual, bindingVisual, enumVisual, booleanVisual, dateVisual, enumsVisual, stringsVisual, caseClassesVisual)
+  body.contents.addAll(stringVisual, bindingVisual, enumVisual, booleanVisual, dateVisual, enumsVisual, stringsVisual, caseClassesVisual)
 
-  contents += new tag.Div {
+  body.contents += new tag.Div {
     style.clear := Clear.Both
 
     contents += new tag.Button(content = "Toggle Editing") {
@@ -75,7 +73,7 @@ class VisualExample extends Example {
 
       clickEvent.on {
         case evt => {
-          Visual.toggleEditing(VisualExample.this)
+          Visual.toggleEditing(body)
         }
       }
     }

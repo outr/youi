@@ -4,20 +4,21 @@ import org.hyperscala.examples.Example
 import org.hyperscala.html._
 import org.hyperscala.html.tag.P
 import org.hyperscala.realtime.{Realtime, RealtimeEvent}
+import org.hyperscala.web.Webpage
 
 import scala.language.reflectiveCalls
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */
-class RealtimeExample extends Example {
+class RealtimeExample extends Webpage with Example {
   require(Realtime)
 
   val message = new P
-  contents += message
+  body.contents += message
   message.contents += new tag.Span(content = "Click the button below.")
 
-  contents += new tag.Button(id = "button", content = "Click Me!") {
+  body.contents += new tag.Button(id = "button", content = "Click Me!") {
     clickEvent := RealtimeEvent()
 
     clickEvent.on {

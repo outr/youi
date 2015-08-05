@@ -1,16 +1,17 @@
 package org.hyperscala.examples.ui
 
+import org.hyperscala.examples.Example
 import org.hyperscala.html._
-import org.hyperscala.web.{Website, Webpage}
-import org.hyperscala.ui.{PageLoader, BusyDialog}
-import org.hyperscala.realtime.{RealtimeEvent, Realtime}
-import language.reflectiveCalls
-import com.outr.net.http.session.Session
+import org.hyperscala.realtime.{Realtime, RealtimeEvent}
+import org.hyperscala.ui.{BusyDialog, PageLoader}
+import org.hyperscala.web.Webpage
+
+import scala.language.reflectiveCalls
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class PageLoaderExample extends Webpage {
+class PageLoaderExample extends Webpage with Example {
   require(BusyDialog)
   require(Realtime)
 

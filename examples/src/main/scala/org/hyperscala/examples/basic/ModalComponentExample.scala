@@ -1,9 +1,8 @@
 package org.hyperscala.examples.basic
 
-import com.outr.net.http.session.Session
 import org.hyperscala.css.attributes.Position
-import org.hyperscala.html._
 import org.hyperscala.examples.Example
+import org.hyperscala.html._
 import org.hyperscala.realtime._
 import org.hyperscala.selector.Selector
 import org.hyperscala.ui.ModalComponent
@@ -13,7 +12,7 @@ import org.powerscala.Color
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class ModalComponentExample extends Example {
+class ModalComponentExample extends Webpage with Example {
   require(ModalComponent)
 
   connected[Webpage] {
@@ -22,7 +21,7 @@ class ModalComponentExample extends Example {
     }
   }
 
-  contents += new tag.Div {
+  body.contents += new tag.Div {
     style.marginLeft := 100.px
     style.marginTop := 100.px
     contents += new tag.Div(id = "test1") {
@@ -38,7 +37,7 @@ class ModalComponentExample extends Example {
     }
   }
 
-  contents += new tag.Div {
+  body.contents += new tag.Div {
     style.marginLeft := 100.px
     style.marginTop := 100.px
     contents += new tag.Div(id = "test2") {

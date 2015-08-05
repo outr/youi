@@ -1,20 +1,21 @@
 package org.hyperscala.examples.ui
 
+import org.hyperscala.BuildInfo
+import org.hyperscala.bootstrap.Bootstrap
 import org.hyperscala.bootstrap.component._
-import org.hyperscala.html.tag
+import org.hyperscala.css.SelectorStyleSheet
+import org.hyperscala.css.attributes._
+import org.hyperscala.examples.Example
+import org.hyperscala.html.attributes.Target
+import org.hyperscala.html.{tag, _}
 import org.hyperscala.javascript.dsl.window
 import org.hyperscala.selector.Selector
 import org.hyperscala.ui.module.SocialMetadata
-import org.hyperscala.web.Webpage
-import org.powerscala.{IO, Color}
-import org.hyperscala.BuildInfo
-import org.hyperscala.bootstrap.Bootstrap
-import org.hyperscala.css.SelectorStyleSheet
-import org.hyperscala.html._
-import attributes.Target
-import org.hyperscala.css.attributes._
-import language.reflectiveCalls
 import org.hyperscala.ui.module.SocialMetadata._
+import org.hyperscala.web.Webpage
+import org.powerscala.{Color, IO}
+
+import scala.language.reflectiveCalls
 
 /**
  * @author Mark Mynsted code@growingliberty.com
@@ -22,7 +23,7 @@ import org.hyperscala.ui.module.SocialMetadata._
  * Example for Social Media Meta data [[org.hyperscala.ui.module.SocialMetadata]]
  *
  */
-class SocialMetadataExample extends Webpage {
+class SocialMetadataExample extends Webpage with Example {
   this.require(SocialMetadata)
   this.require(Bootstrap)
 
@@ -79,8 +80,6 @@ class SocialMetadataExample extends Webpage {
     paddingTop := 100.px
     paddingBottom := 30.px
   }
-
-  def sourceURL: String = null
 
   val container = new Container {
     clazz += "wrapper"

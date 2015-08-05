@@ -1,19 +1,20 @@
 package org.hyperscala.examples.ui
 
-import org.hyperscala.html._
-import org.hyperscala.web._
-import org.hyperscala.jquery.Gritter
 import org.hyperscala.examples.Example
-import language.reflectiveCalls
+import org.hyperscala.html._
+import org.hyperscala.jquery.Gritter
 import org.hyperscala.realtime.RealtimeEvent
+import org.hyperscala.web._
+
+import scala.language.reflectiveCalls
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class GritterExample extends Example {
-  this.require(Gritter)
+class GritterExample extends Webpage with Example {
+  require(Gritter)
 
-  contents += new tag.Button(content = "Show Message") {
+  body.contents += new tag.Button(content = "Show Message") {
     clickEvent := RealtimeEvent()
 
     clickEvent.on {

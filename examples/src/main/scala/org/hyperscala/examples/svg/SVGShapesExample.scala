@@ -1,17 +1,17 @@
 package org.hyperscala.examples.svg
 
 import org.hyperscala.examples.Example
-
+import org.hyperscala.html._
 import org.hyperscala.svg
 import org.hyperscala.svg._
-import org.powerscala.Color
 import org.hyperscala.svg.attributes._
-import org.hyperscala.html._
+import org.hyperscala.web.Webpage
+import org.powerscala.Color
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */
-class SVGShapesExample extends Example {
+class SVGShapesExample extends Webpage with Example {
   val gradient = new svg.LinearGradient {
     id := "grad1"
     x1 := 0.pct
@@ -44,7 +44,7 @@ class SVGShapesExample extends Example {
     }
   }
 
-  contents += new svg.Svg {
+  body.contents += new svg.Svg {
     width := 800.px
     height := 600.px
     viewBox := ViewBox(0.0, 0.0, 1024.0, 768.0)

@@ -1,19 +1,19 @@
 package org.hyperscala.examples.ui
 
-import org.hyperscala.html._
 import org.hyperscala.examples.Example
-import org.powerscala.Color
-import org.hyperscala.ui.module.ExternalStyle
+import org.hyperscala.html._
 import org.hyperscala.selector.PseudoClass
+import org.hyperscala.ui.module.ExternalStyle
 import org.hyperscala.web._
+import org.powerscala.Color
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class ExternalStyleExample extends Example {
-  this.require(ExternalStyle)
+class ExternalStyleExample extends Webpage with Example {
+  require(ExternalStyle)
 
-  contents += new tag.Div(id = "testDiv") {
+  body.contents += new tag.Div(id = "testDiv") {
     style.width := 150.px
     style.height := 150.px
     style.backgroundColor := Color.Red

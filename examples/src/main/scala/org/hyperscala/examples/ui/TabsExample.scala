@@ -1,14 +1,15 @@
 package org.hyperscala.examples.ui
 
-import org.hyperscala.html._
 import org.hyperscala.examples.Example
+import org.hyperscala.html._
 import org.hyperscala.jquery.ui.Tabs
+import org.hyperscala.web.Webpage
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class TabsExample extends Example {
-  contents += new Tabs {
+class TabsExample extends Webpage with Example {
+  body.contents += new Tabs {
     id := "tabsExample"
 
     val first = addTab("First") {

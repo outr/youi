@@ -1,17 +1,18 @@
 package org.hyperscala.examples.svg
 
 import org.hyperscala.examples.Example
+import org.hyperscala.html._
 import org.hyperscala.svg
 import org.hyperscala.svg._
+import org.hyperscala.svg.attributes.{FontWeight, Transform}
+import org.hyperscala.web.Webpage
 import org.powerscala.Color
-import svg.attributes.{Transform, FontWeight}
-import org.hyperscala.html._
 
 /**
  * @author Matt Hicks <mhicks@outr.com>
  */
-class BasicSVGExample extends Example {
-  contents += new svg.Svg {
+class BasicSVGExample extends Webpage with Example {
+  body.contents += new svg.Svg {
     width := 800.px
 
     contents += new svg.Circle {

@@ -1,6 +1,5 @@
 package org.hyperscala.examples.contenteditor
 
-import com.outr.net.http.session.MapSession
 import org.hyperscala.bootstrap.Bootstrap
 import org.hyperscala.bootstrap.component.Button
 import org.hyperscala.contenteditor.ContentEditor
@@ -8,9 +7,7 @@ import org.hyperscala.css.Style
 import org.hyperscala.css.attributes.{Alignment, FontStyle, FontWeight}
 import org.hyperscala.examples.Example
 import org.hyperscala.html._
-import org.hyperscala.web._
 import org.hyperscala.html.attributes.ContentEditable
-import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.javascript.dsl._
 import org.hyperscala.jquery.Gritter
 import org.hyperscala.realtime._
@@ -20,7 +17,7 @@ import org.powerscala.Color
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class ContentEditorExample(site: Website) extends Example {
+class ContentEditorExample(site: Website) extends Webpage with Example {
   require(Realtime)
   require(Bootstrap)
   require(Gritter)
@@ -44,7 +41,7 @@ class ContentEditorExample(site: Website) extends Example {
   }
   val editorPage = new EditablePageExample(this)
   frame.currentPage := editorPage
-  contents += frame
+  body.contents += frame
 
   def styleToggleButton[T, S <: Style[T]](label: String, style: S, value: T, reverse: T) = {
     val b = new Button(label = label)
@@ -148,7 +145,7 @@ class ContentEditorExample(site: Website) extends Example {
       }
     }
   }
-  contents += controls
+  body.contents += controls
 }
 
 class EditablePageExample(example: ContentEditorExample) extends Webpage {

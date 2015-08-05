@@ -1,16 +1,17 @@
 package org.hyperscala.examples.todomvc
 
 import org.hyperscala.event.Key
+import org.hyperscala.examples.Example
 import org.hyperscala.html._
-import attributes.InputType
+import org.hyperscala.html.attributes.InputType
 import org.hyperscala.html.extension.ClassBooleanProperty
-import org.hyperscala.jquery.dsl._
 import org.hyperscala.javascript.dsl._
+import org.hyperscala.jquery.dsl._
 import org.hyperscala.realtime._
 import org.hyperscala.web.Website
 import org.powerscala.property.Property
 
-class TodoMVC(website: Website) extends RealtimeWebpage {
+class TodoMVC(website: Website) extends RealtimeWebpage with Example {
   val input = new tag.Input(id = "new-todo", placeHolder = "What needs to be done?", autoFocus = true)
   val list = new tag.Ul(id = "todo-list")
   val count = new tag.Span(id = "todo-count", content = "<strong>1</strong> item left")

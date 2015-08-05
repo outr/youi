@@ -1,24 +1,23 @@
 package org.hyperscala.examples.ui
 
 import org.hyperscala.examples.Example
-
 import org.hyperscala.html._
+import org.hyperscala.jquery.Gritter
 import org.hyperscala.jquery.ui.Spinner
 import org.hyperscala.realtime._
 import org.hyperscala.web._
-import org.hyperscala.jquery.Gritter
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class SpinnerExample extends Example {
-  this.require(Realtime)
-  this.require(Gritter)
+class SpinnerExample extends Webpage with Example {
+  require(Realtime)
+  require(Gritter)
 
-  contents += new tag.P(content = "Example usage of a jQuery UI Spinner.")
+  body.contents += new tag.P(content = "Example usage of a jQuery UI Spinner.")
 
   val input = new tag.Input(id = "input", value = "5")
-  contents += input
+  body.contents += input
 
   val spinner = Spinner(input)
   spinner.min := 2
@@ -27,7 +26,7 @@ class SpinnerExample extends Example {
     case evt => valueChanged()
   }
 
-  contents += new tag.Button(content = "Set to 8") {
+  body.contents += new tag.Button(content = "Set to 8") {
     clickEvent.onRealtime {
       case evt => spinner.value := 8.0
     }

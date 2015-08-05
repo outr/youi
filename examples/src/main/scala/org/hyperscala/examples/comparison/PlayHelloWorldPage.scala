@@ -1,14 +1,15 @@
 package org.hyperscala.examples.comparison
 
-import org.hyperscala.html._
-import org.hyperscala.web.{Website, Webpage}
-import org.hyperscala.ui.validation._
-import org.hyperscala.realtime._
 import org.hyperscala.css.attributes.Display
-import org.powerscala.Color
+import org.hyperscala.examples.Example
+import org.hyperscala.html._
+import org.hyperscala.realtime._
 import org.hyperscala.ui.dynamic.{DynamicContent, DynamicString}
-import language.reflectiveCalls
-import com.outr.net.http.session.Session
+import org.hyperscala.ui.validation._
+import org.hyperscala.web.Webpage
+import org.powerscala.Color
+
+import scala.language.reflectiveCalls
 
 /**
  * Comparison port of Play! Framework's Hello World example that's not really a Hello World example.
@@ -17,7 +18,7 @@ import com.outr.net.http.session.Session
  *
  * @author Matt Hicks <mhicks@outr.com>
  */
-class PlayHelloWorldPage extends Webpage {
+class PlayHelloWorldPage extends Webpage with Example {
   require(Realtime)
   this.connectStandard()
 

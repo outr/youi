@@ -1,18 +1,18 @@
 package org.hyperscala.examples.bootstrap
 
-import com.outr.net.http.session.{MapSession, Session}
 import org.hyperscala.bootstrap.Bootstrap
 import org.hyperscala.bootstrap.component._
 import org.hyperscala.bootstrap.component.extra._
 import org.hyperscala.css.attributes.{Display, Position}
+import org.hyperscala.examples.Example
 import org.hyperscala.html._
 import org.hyperscala.selector.Selector
-import org.hyperscala.web.{Website, Webpage}
+import org.hyperscala.web.Webpage
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class BootstrapTheme extends Webpage {
+class BootstrapTheme extends Webpage with Example {
   require(Bootstrap)
 
   body.role := "document"

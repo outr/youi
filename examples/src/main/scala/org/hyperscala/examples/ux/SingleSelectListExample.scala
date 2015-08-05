@@ -1,38 +1,33 @@
 package org.hyperscala.examples.ux
 
+import org.hyperscala.examples.Example
 import org.hyperscala.html._
-import org.hyperscala.html.constraints.BodyChild
 import org.hyperscala.jquery.Gritter
 import org.hyperscala.realtime._
 import org.hyperscala.selector.Selector
 import org.hyperscala.ui.module.ExternalStyle
-import org.hyperscala.ux.{InputSingleSelectList, DropdownSingleSelectList, PredefinedSingleSelectList, UX}
+import org.hyperscala.ux.{InputSingleSelectList, PredefinedSingleSelectList, UX}
 import org.hyperscala.web._
-import org.hyperscala.examples.Example
 import org.powerscala.Color
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class SingleSelectListExample extends Example {
-  this.require(UX)
-  this.require(ExternalStyle)
-  this.require(Realtime)
-  this.require(Gritter)
+class SingleSelectListExample extends Webpage with Example {
+  require(UX)
+  require(ExternalStyle)
+  require(Realtime)
+  require(Gritter)
 
-  connected[Webpage] {
-    case webpage => {
-      val style = webpage.head.selector(Selector("#dropdown div, #inputDropdown div"))
-      style.border := "1px solid black"
-      style.borderRadius := 5.px
-      style.backgroundColor := Color.White
-      style.margin := "5px"
-      style.padding := "5px"
-      style.cursor := "pointer"
-      val hoverStyle = webpage.head.selector(Selector("#dropdown div:hover, #inputDropdown div:hover"))
-      hoverStyle.backgroundColor := Color.LightBlue
-    }
-  }
+  val style = head.selector(Selector("#dropdown div, #inputDropdown div"))
+  style.border := "1px solid black"
+  style.borderRadius := 5.px
+  style.backgroundColor := Color.White
+  style.margin := "5px"
+  style.padding := "5px"
+  style.cursor := "pointer"
+  val hoverStyle = head.selector(Selector("#dropdown div:hover, #inputDropdown div:hover"))
+  hoverStyle.backgroundColor := Color.LightBlue
 
   // Button Single-Select
   val button = new tag.Button(id = "button", content = "Show Dropdown")
@@ -51,8 +46,8 @@ class SingleSelectListExample extends Example {
     }
   }
 
-  contents.addAll(button, dropDownContainer)
-  contents += new tag.Button(content = "Alternative Show Dropdown") {
+  body.contents.addAll(button, dropDownContainer)
+  body.contents += new tag.Button(content = "Alternative Show Dropdown") {
     clickEvent.onRealtime {
       case evt => selectList.open()
     }
@@ -74,7 +69,7 @@ class SingleSelectListExample extends Example {
     style.borderRadius := 5.px
   }
 
-  contents.addAll(input, inputDropDownContainer)
+  body.contents.addAll(input, inputDropDownContainer)
   val inputSelectList = new InputSingleSelectList[Option[String]](input, inputDropDownContainer, validateOnKey = true) {
     override def filter(list: List[Option[String]]) = (if (select.value().isEmpty) {
       list

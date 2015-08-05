@@ -44,6 +44,7 @@ object HyperscalaPage {
 
     webpage.body.contents += new NavBar {
       theme := NavBarTheme.Light
+      top := true
 
       val navigation = new NavBarNav {
         pullRight := true
@@ -77,10 +78,11 @@ object HyperscalaPage {
           contents += new tag.Span(clazz = List("icon-bar"))
           contents += new tag.Span(clazz = List("icon-bar"))
           contents += new tag.Span(clazz = List("icon-bar"))
-          contents += new NavbarBrand {
-            href := "/"
-            contents += new tag.Img(id = "logo", src = "/images/hyperscala.png", alt = "Hyperscala")
-          }
+        }
+
+        contents += new NavbarBrand {
+          href := "/"
+          contents += new tag.Img(id = "logo", src = "/images/hyperscala.png", alt = "Hyperscala")
         }
       }
 

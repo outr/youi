@@ -21,6 +21,7 @@ object NavBarFactory {
 
     new NavBar {
       theme := thatTheme
+      top := true
 
       val navigation = new NavBarNav {
         links.foreach { link =>
@@ -40,10 +41,11 @@ object NavBarFactory {
           contents += new tag.Span(clazz = List("icon-bar"))
           contents += new tag.Span(clazz = List("icon-bar"))
           contents += new tag.Span(clazz = List("icon-bar"))
-          contents += new NavbarBrand {
-            href := "#"
-            contents += brand
-          }
+        }
+
+        contents += new NavbarBrand {
+          href := "#"
+          contents += brand
         }
       }
 

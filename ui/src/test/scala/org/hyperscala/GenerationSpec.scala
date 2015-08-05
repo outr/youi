@@ -53,6 +53,15 @@ class GenerationSpec extends WordSpec with Matchers {
     """.stripMargin
   ).create()
 
+  val listGroupItemHtml = DynamicTag.from[tag.A](
+    """
+      |<a href="#" class="list-group-item active">
+      |  <h4 class="list-group-item-heading">List group item heading</h4>
+      |  <p class="list-group-item-text">...</p>
+      |</a>
+    """.stripMargin
+  ).create()
+
   val tabsHtml = DynamicTag.from[tag.Ul](
     """
       |<ul class="nav nav-tabs">
@@ -158,6 +167,13 @@ class GenerationSpec extends WordSpec with Matchers {
 
     "be converted" in {
       testConversion(listGroupHtml, "/listGroup.scala")
+    }
+  }
+
+  "Invalid ListGroupItem" should {
+    "not be recognised" in {
+      val component = Generation.findComponent(listGroupItemHtml)
+      component should be (None)
     }
   }
 

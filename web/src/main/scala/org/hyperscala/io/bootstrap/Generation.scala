@@ -6,10 +6,12 @@ import org.hyperscala.io.{ScalaBuffer, WriterContext}
 object Generation {
   import Specification._
 
-  def findComponent(tag: HTMLTag): Option[Component] = {
+  def findComponent(tag: HTMLTag, parentComponent: Option[String] = None): Option[Component] = {
     components.find { component =>
       tagMatches(tag, component) &&
-        cssMatches(tag, component)
+        cssMatches(tag, component) &&
+        (component.parentComponent.isEmpty ||
+          component.parentComponent == parentComponent)
     }
   }
 
@@ -42,7 +44,7 @@ object Generation {
             })
         }
 
-      case EnumComponent(name, t, css, values @ _*) =>
+      case EnumComponent(name, parent, t, css, values @ _*) =>
         css(classes) match {
           case None => false
           case Some(matches) =>
@@ -110,11 +112,11 @@ object Generation {
         ScalaBuffer.writeAttributes(tag, all = true, prefix = null, context = context,
           withoutAttributes = Set("clazz") ++ attributes)
         props.foreach(context.writeLine(_))
-        ScalaBuffer.writeChildren(tag, context, vals, mapping)
+        ScalaBuffer.writeChildren(tag, context, vals, mapping, Some(component.name))
         context.depth -= 1
         context.writeLine(s"}")
 
-      case EnumComponent(name, t, fTag, values @ _*) =>
+      case EnumComponent(name, parent, t, fTag, values @ _*) =>
         val opt = values.find(v => tag.clazz().contains(v.css)).get
         context.writeLine(s"$name.${opt.name}", indent = false)
     }

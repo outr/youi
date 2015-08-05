@@ -5,13 +5,14 @@ import org.powerscala.enum.{Enumerated, EnumEntry}
 object Specification {
   sealed trait Component {
     def name: String
+    def parentComponent: Option[String]
     def tag: Option[String]
     // input = tag's CSS classes, output = None if no match, matched tags otherwise
     def cssMatcher: Set[String] => Option[Set[String]]
   }
 
   case class DefComponent(name: String,
-                          parentComponent: Option[String],  // TODO Should not be ignored
+                          parentComponent: Option[String],
                           tag: Option[String],
                           attributes: Set[String],  // Attributes to remove (apart from `class`)
                           cssMatcher: Set[String] => Option[Set[String]],
@@ -19,6 +20,7 @@ object Specification {
     extends Component
 
   case class EnumComponent(name: String,
+                           parentComponent: Option[String],
                            tag: Option[String],
                            cssMatcher: Set[String] => Option[Set[String]],
                            values: Value.Option*)
@@ -135,7 +137,7 @@ object Specification {
       Set.empty,
       matchOrFail("form-group")),
 
-    EnumComponent("Glyphicon",
+    EnumComponent("Glyphicon", None,
       Some("span"),
       matchOrFail("glyphicon"),
       Glyphicon.values.map(g =>

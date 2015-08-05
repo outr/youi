@@ -42,7 +42,8 @@ object ScalaBuffer {
                prefix: String = null,
                context: WriterContext,
                vals: WriterContext,
-               mapping: Map[String, String] = Map.empty): Unit = {
+               mapping: Map[String, String] = Map.empty,
+               parentComponent: Option[String] = None) {
     if (tag.render) {
       tag match {
         case title: Title => context.writeLine("title := \"%s\"".format(title.content()))
@@ -52,12 +53,12 @@ object ScalaBuffer {
         case _ => {
           if (!Option(tag.id()).exists(_.nonEmpty)) {
             context.writeLine("contents += ", prefix, nlbr = false)
-            instantiateTag(tag, context, vals, mapping)
+            instantiateTag(tag, context, vals, mapping, parentComponent)
           } else if (mapping.contains(tag.id())) {
             context.writeLine(s"contents += new ${mapping(tag.id())}()", prefix)
           } else {
             val valContext = WriterContext()
-            instantiateTag(tag, valContext, vals, mapping)
+            instantiateTag(tag, valContext, vals, mapping, parentComponent)
 
             vals.writeLine(s"val ${tag.id()} = ", nlbr = false)
             vals.writeLine(valContext.content.toString(), nlbr = false, indent = false)
@@ -69,14 +70,25 @@ object ScalaBuffer {
     }
   }
 
-  def instantiateTag(tag: HTMLTag, context: WriterContext, vals: WriterContext, mapping: Map[String, String]) {
-    bootstrap.Generation.findComponent(tag) match {
+  def instantiateTag(tag: HTMLTag,
+                     context: WriterContext,
+                     vals: WriterContext,
+                     mapping: Map[String, String],
+                     parentComponent: Option[String]) {
+    bootstrap.Generation.findComponent(tag, parentComponent) match {
       case Some(component) =>
         bootstrap.Generation.applyComponent(tag, component, context, vals, mapping)
 
       case _ =>
         val attributes = tag.xmlAttributes.collect {
-          case a: PropertyAttribute[_] if a.shouldRender && !a.isInstanceOf[EventProperty] && !a.isInstanceOf[StyleSheetAttribute[_]] && a() != null && !a.name.startsWith("data-") && !a.name.startsWith("aria-") && !a.dynamic => {
+          case a: PropertyAttribute[_]
+            if a.shouldRender &&
+              !a.isInstanceOf[EventProperty] &&
+              !a.isInstanceOf[StyleSheetAttribute[_]] &&
+              a() != null &&
+              !a.name.startsWith("data-") &&
+              !a.name.startsWith("aria-") &&
+              !a.dynamic => {
             "%s = %s".format(namify(tag, a), valuify(tag, a.name, a()))
           }
         }.mkString(", ")
@@ -106,17 +118,21 @@ object ScalaBuffer {
         if (hasBody) {
           context.depth += 1
           writeAttributes(tag, all = false, prefix = null, context = context)
-          writeChildren(tag, context, vals, mapping)
+          writeChildren(tag, context, vals, mapping, parentComponent)
           context.depth -= 1
           context.writeLine("}")
         }
     }
   }
 
-  def writeChildren(tag: HTMLTag, context: WriterContext, vals: WriterContext, mapping: Map[String, String]) {
+  def writeChildren(tag: HTMLTag,
+                    context: WriterContext,
+                    vals: WriterContext,
+                    mapping: Map[String, String],
+                    parentComponent: Option[String]) {
     tag match {
       case container: Container[_] => container.contents.foreach {
-        case child: HTMLTag => writeTag(child, context = context, vals = vals, mapping = mapping)
+        case child: HTMLTag => writeTag(child, context = context, vals = vals, mapping = mapping, parentComponent = parentComponent)
         case child: JavaScriptString => if (child.content.trim.nonEmpty) {
           context.writeLine("contents += JavaScriptString(%s)".format(createWrappedString(child.content)))
         }

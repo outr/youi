@@ -92,7 +92,7 @@ object Generation {
 
   def applyComponent(tag: HTMLTag,
                      component: Component,
-                     context: WriterContext,
+                     code: WriterContext,
                      vals: WriterContext,
                      mapping: Map[String, String]) {
     component match {
@@ -102,23 +102,23 @@ object Generation {
           s"${p.name} := $valueTree"
         }
 
-        if (t.nonEmpty) context.writeLine(s"new $name {", indent = false)
+        if (t.nonEmpty) code.writeLine(s"new $name {", indent = false)
         else {
           val scalaTag = tag.xmlLabel.head.toUpper + tag.xmlLabel.tail
-          context.writeLine(s"new tag.$scalaTag with $name {", indent = false)
+          code.writeLine(s"new tag.$scalaTag with $name {", indent = false)
         }
 
-        context.depth += 1
-        ScalaBuffer.writeAttributes(tag, all = true, prefix = null, context = context,
+        code.depth += 1
+        ScalaBuffer.writeAttributes(tag, all = true, code = code,
           withoutAttributes = Set("clazz") ++ attributes)
-        props.foreach(context.writeLine(_))
-        ScalaBuffer.writeChildren(tag, context, vals, mapping, Some(component.name))
-        context.depth -= 1
-        context.writeLine(s"}")
+        props.foreach(code.writeLine(_))
+        ScalaBuffer.writeChildren(tag, code, vals, mapping, Some(component.name))
+        code.depth -= 1
+        code.writeLine(s"}")
 
       case EnumComponent(name, parent, t, fTag, values @ _*) =>
         val opt = values.find(v => tag.clazz().contains(v.css)).get
-        context.writeLine(s"$name.${opt.name}", indent = false)
+        code.writeLine(s"$name.${opt.name}", indent = false)
     }
   }
 }

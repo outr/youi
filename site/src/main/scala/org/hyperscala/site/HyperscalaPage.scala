@@ -4,6 +4,7 @@ package org.hyperscala.site
 import org.hyperscala.BuildInfo
 import org.hyperscala.bootstrap.Bootstrap
 import org.hyperscala.bootstrap.component._
+import org.hyperscala.bootstrap.component.extra.NavBarFactory
 import org.hyperscala.css.SelectorStyleSheet
 import org.hyperscala.css.attributes._
 import org.hyperscala.html._
@@ -42,59 +43,18 @@ object HyperscalaPage {
       paddingBottom := 30.px
     }
 
-    webpage.body.contents += new NavBar {
-      theme := NavBarTheme.Light
-      top := true
-
-      val navigation = new NavBarNav {
-        pullRight := true
-
-        contents += new ListItem {
-          contents += new tag.A(href = HyperscalaSite.siteAbout.link, content = "About")
-        }
-
-        contents += new ListItem {
-          contents += new tag.A(href = HyperscalaSite.siteExamples.link, content = "Examples")
-        }
-
-        contents += new ListItem {
-          contents += new tag.A(href = HyperscalaSite.siteGenerator.link, content = "Generator")
-        }
-
-        contents += new ListItem {
-          contents += new tag.A(href = HyperscalaSite.siteDocumentation.link, content = "Documentation")
-        }
-
-        contents += new ListItem {
-          contents += new tag.A(href = "https://github.com/darkfrog26/hyperscala/", content = "Project")
-        }
-      }
-
-      val header = new NavBarHeader {
-        contents += new NavBarToggle {
-          contents += new tag.Span(clazz = List("sr-only")) {
-            contents += "Toggle navigation"
-          }
-          contents += new tag.Span(clazz = List("icon-bar"))
-          contents += new tag.Span(clazz = List("icon-bar"))
-          contents += new tag.Span(clazz = List("icon-bar"))
-        }
-
-        contents += new NavbarBrand {
-          href := "/"
-          contents += new tag.Img(id = "logo", src = "/images/hyperscala.png", alt = "Hyperscala")
-        }
-      }
-
-      val bar = new NavBarCollapse {
-        contents += navigation
-      }
-
-      contents += new Container {
-        contents += header
-        contents += bar
-      }
-    }
+    webpage.body.contents += NavBarFactory(
+      new tag.Img(id = "logo", src = "/images/hyperscala.png", alt = "Hyperscala"),
+      NavBarTheme.Light,
+      links = Seq(
+        NavBarFactory.Link(HyperscalaSite.siteAbout.link, "About"),
+        NavBarFactory.Link(HyperscalaSite.siteExamples.link, "Examples"),
+        NavBarFactory.Link(HyperscalaSite.siteGenerator.link, "Generator"),
+        NavBarFactory.Link(HyperscalaSite.siteDocumentation.link, "Documentation"),
+        NavBarFactory.Link("https://github.com/darkfrog26/hyperscala/", "Project")
+      ),
+      brandUrl = "/"
+    )
 
     val main = new tag.Div
     val container = new Container {

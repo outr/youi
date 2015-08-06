@@ -35,6 +35,18 @@ class DynamicTag[T <: HTMLTag] private(dynamicString: DynamicString, converter: 
 object DynamicTag {
   import DynamicString._
 
+  def from[T <: HTMLTag](content: String,
+                         lastModified: Option[Long] = None,
+                         converter: String => String = DynamicString.defaultConverter
+                        ) = {
+    val _content = content
+    val _lastModified = lastModified
+    new DynamicTag[T](new DynamicString {
+      def lastModified: Long = _lastModified.getOrElse(0L)
+      def content: String = _content
+    }, converter)
+  }
+
   def apply[T <: HTMLTag](name: String, dynamicString: DynamicString, converter: String => String = DynamicString.defaultConverter) = {
     getOrSet(name, new DynamicTag[T](dynamicString, converter))
   }

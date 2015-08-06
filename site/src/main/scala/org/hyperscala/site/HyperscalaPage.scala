@@ -4,6 +4,7 @@ package org.hyperscala.site
 import org.hyperscala.BuildInfo
 import org.hyperscala.bootstrap.Bootstrap
 import org.hyperscala.bootstrap.component._
+import org.hyperscala.bootstrap.component.extra.NavBarFactory
 import org.hyperscala.css.SelectorStyleSheet
 import org.hyperscala.css.attributes._
 import org.hyperscala.html._
@@ -42,13 +43,18 @@ object HyperscalaPage {
       paddingBottom := 30.px
     }
 
-    webpage.body.contents += new NavBar(brand = Some(new tag.Img(id = "logo", src = "/images/hyperscala.png", alt = "Hyperscala")), brandLink = Some("/"), theme = new NavBarTheme("navbar-light"), right = true) {
-      addLink(HyperscalaSite.siteAbout.link, "About")
-      addLink(HyperscalaSite.siteExamples.link, "Examples")
-      addLink(HyperscalaSite.siteGenerator.link, "Generator")
-      addLink(HyperscalaSite.siteDocumentation.link, "Documentation")
-      addLink("https://github.com/darkfrog26/hyperscala/", "Project")
-    }
+    webpage.body.contents += NavBarFactory(
+      new tag.Img(id = "logo", src = "/images/hyperscala.png", alt = "Hyperscala"),
+      NavBarTheme.Light,
+      links = Seq(
+        NavBarFactory.Link(HyperscalaSite.siteAbout.link, "About"),
+        NavBarFactory.Link(HyperscalaSite.siteExamples.link, "Examples"),
+        NavBarFactory.Link(HyperscalaSite.siteGenerator.link, "Generator"),
+        NavBarFactory.Link(HyperscalaSite.siteDocumentation.link, "Documentation"),
+        NavBarFactory.Link("https://github.com/darkfrog26/hyperscala/", "Project")
+      ),
+      brandUrl = "/"
+    )
 
     val main = new tag.Div
     val container = new Container {

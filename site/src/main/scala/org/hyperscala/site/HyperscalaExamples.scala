@@ -1,6 +1,7 @@
 package org.hyperscala.site
 
 import org.hyperscala.bootstrap.component._
+import org.hyperscala.bootstrap.component.extra.{PanelFactory, CollapsiblePanel}
 import org.hyperscala.html._
 
 /**
@@ -18,7 +19,7 @@ object HyperscalaExamples extends HyperscalaPage {
         contents += new tag.Span(content = s"$group&#160;&#160;", clazz = List("example-heading"))
         contents += new Badge(pages.length.toString)
       }
-      main.contents += new Panel(title, panelType = PanelType.Primary) with CollapsiblePanel {
+      main.contents += new PanelFactory(title, thatPanelType = PanelType.Primary) with CollapsiblePanel {
         override def collapsed = true
 
         body.contents += new Row {

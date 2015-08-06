@@ -16,32 +16,21 @@ case class WriterContext(
   var depth: Int = 1,
   content: StringBuilder = new StringBuilder
 ) {
-  def writeLine(line: String = "", prefix: String = null, nlbr: Boolean = true) {
-    (0 until depth).foreach(i => content.append("  "))
-    if (prefix != null) {
-      write(prefix)
-      write(".")
+  def writeLine(line: String = "", prefix: Option[String] = None, nlbr: Boolean = true, indent: Boolean = true) {
+    if (indent) (0 until depth).foreach(_ => content.append("  "))
+    prefix.foreach { pfx =>
+      content.append(pfx)
+      content.append(".")
     }
-    write(line)
-    if (nlbr) {
-      content.append('\r')
-      content.append('\n')
-    }
-  }
-
-  def write(c: String) {
-    content.append(c)
+    content.append(line)
+    if (nlbr) content.append('\n')
   }
 }
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-abstract class ScalaBuffer {
-  val attrs = WriterContext()
-  val vals = WriterContext(depth = 1)
-  val b = WriterContext()
-
+object ScalaBuffer {
   def tagName(clazz: Class[_]): String =
     if (clazz.getName.startsWith("org.hyperscala.html.tag.") && !clazz.getName.contains("$")) {
       clazz.getSimpleName
@@ -49,108 +38,137 @@ abstract class ScalaBuffer {
       tagName(clazz.getSuperclass)
     }
 
-  import ScalaBuffer.createWrappedString
-
   def writeTag(tag: HTMLTag,
-               prefix: String = null,
-               context: WriterContext,
-               mapping: Map[String, String] = Map.empty): Unit = {
+               prefix: Option[String] = None,
+               code: WriterContext,
+               vals: WriterContext,
+               mapping: Map[String, String] = Map.empty,
+               parentComponent: Option[String] = None) {
     if (tag.render) {
       tag match {
-        case title: Title => context.writeLine("title := \"%s\"".format(title.content()))
-        case comment: Comment => context.writeLine(s"contents += new tag.Comment(${createWrappedString(comment.content())})", prefix)
+        case title: Title => code.writeLine("title := \"%s\"".format(title.content()))
+        case comment: Comment => code.writeLine(s"contents += new tag.Comment(${createWrappedString(comment.content())})", prefix)
         case text: Text if text.content() != null && text.content().trim.length > 0 =>
-          context.writeLine(s"contents += ${createWrappedString(text.content())}", prefix)
+          code.writeLine(s"contents += ${createWrappedString(text.content())}", prefix)
         case _ => {
           if (!Option(tag.id()).exists(_.nonEmpty)) {
-            context.writeLine("contents += ", prefix, nlbr = false)
-            instantiateTag(tag, context, mapping)
-            context.write("\r\n")
+            code.writeLine("contents += ", prefix, nlbr = false)
+            instantiateTag(tag, code, vals, mapping, parentComponent)
           } else if (mapping.contains(tag.id())) {
-            context.writeLine(s"contents += new ${mapping(tag.id())}()", prefix)
+            code.writeLine(s"contents += new ${mapping(tag.id())}()", prefix)
           } else {
             val valContext = WriterContext()
-            instantiateTag(tag, valContext, mapping)
+            instantiateTag(tag, valContext, vals, mapping, parentComponent)
 
             vals.writeLine(s"val ${tag.id()} = ", nlbr = false)
-            vals.write(valContext.content.toString())
+            vals.writeLine(valContext.content.toString(), nlbr = false, indent = false)
 
-            context.writeLine(s"contents += ${tag.id()}", prefix)
+            code.writeLine(s"contents += ${tag.id()}", prefix)
           }
         }
       }
     }
   }
 
-  def instantiateTag(tag: HTMLTag, context: WriterContext, mapping: Map[String, String]) {
-    val attributes = tag.xmlAttributes.collect {
-      case a: PropertyAttribute[_] if a.shouldRender && !a.isInstanceOf[EventProperty] && !a.isInstanceOf[StyleSheetAttribute[_]] && a() != null && !a.name.startsWith("data-") && !a.name.startsWith("aria-") && !a.dynamic => {
-        "%s = %s".format(namify(tag, a), valuify(tag, a.name, a()))
-      }
-    }.mkString(", ")
+  def instantiateTag(tag: HTMLTag,
+                     code: WriterContext,
+                     vals: WriterContext,
+                     mapping: Map[String, String],
+                     parentComponent: Option[String]) {
+    bootstrap.Generation.findComponent(tag, parentComponent) match {
+      case Some(component) =>
+        bootstrap.Generation.applyComponent(tag, component, code, vals, mapping)
 
-    val constructor = attributes.nonEmpty match {
-      case true => "(%s)".format(attributes)
-      case false => ""
-    }
-
-    val style = tag.style.toString
-    val children = tag match {
-      case container: Container[_] if container.contents.nonEmpty => true
-      case _ if style.trim.nonEmpty => true
-      case _ if tag.attributes.keys.exists(name => name.startsWith("aria-") || name.startsWith("data-")) => true
-      case _ => false
-    }
-    val opening = if (children) {
-      " {"
-    } else {
-      ""
-    }
-
-    context.write(
-      "new tag.%s%s%s".format(tagName(tag.getClass), constructor, opening))
-    context.write("\r\n")
-
-    if (children) {
-      context.depth += 1
-      writeAttributes(tag, all = false, prefix = null, context = context)
-      tag match {
-        case container: Container[_] => container.contents.foreach {
-          case child: HTMLTag => writeTag(child, context = context, mapping = mapping)
-          case child: JavaScriptString => if (child.content.trim.nonEmpty) {
-            context.writeLine("contents += JavaScriptString(%s)".format(createWrappedString(child.content)))
+      case _ =>
+        val attributes = tag.xmlAttributes.collect {
+          case a: PropertyAttribute[_]
+            if a.shouldRender &&
+              !a.isInstanceOf[EventProperty] &&
+              !a.isInstanceOf[StyleSheetAttribute[_]] &&
+              a() != null &&
+              !a.name.startsWith("data-") &&
+              !a.name.startsWith("aria-") &&
+              !a.dynamic => {
+            "%s = %s".format(namify(tag, a), valuify(tag, a.name, a()))
           }
+        }.mkString(", ")
+
+        val constructor = attributes.nonEmpty match {
+          case true => "(%s)".format(attributes)
+          case false => ""
         }
-        case _ => // Not a container
-      }
-      context.depth -= 1
-      context.writeLine("}")
+
+        val style = tag.style.toString
+        val hasBody = tag match {
+          case container: Container[_] if container.contents.nonEmpty => true
+          case _ if style.trim.nonEmpty => true
+          case _ if tag.attributes.keys.exists(name => name.startsWith("aria-") || name.startsWith("data-")) => true
+          case _ => false
+        }
+        val opening = if (hasBody) {
+          " {"
+        } else {
+          ""
+        }
+
+        code.writeLine(
+          "new tag.%s%s%s".format(tagName(tag.getClass), constructor, opening),
+           indent = false)
+
+        if (hasBody) {
+          code.depth += 1
+          writeAttributes(tag, all = false, prefix = None, code = code)
+          writeChildren(tag, code, vals, mapping, parentComponent)
+          code.depth -= 1
+          code.writeLine("}")
+        }
     }
   }
 
-  def writeAttributes(tag: HTMLTag, all: Boolean, prefix: String, context: WriterContext) = {
+  def writeChildren(tag: HTMLTag,
+                    code: WriterContext,
+                    vals: WriterContext,
+                    mapping: Map[String, String],
+                    parentComponent: Option[String]) {
+    tag match {
+      case container: Container[_] => container.contents.foreach {
+        case child: HTMLTag => writeTag(child, code = code, vals = vals, mapping = mapping, parentComponent = parentComponent)
+        case child: JavaScriptString => if (child.content.trim.nonEmpty) {
+          code.writeLine("contents += JavaScriptString(%s)".format(createWrappedString(child.content)))
+        }
+      }
+      case _ => // Not a container
+    }
+  }
+
+  def writeAttributes(tag: HTMLTag,
+                      all: Boolean,
+                      prefix: Option[String] = None,
+                      code: WriterContext,
+                      withoutAttributes: Set[String] = Set.empty) = {
     // Write style data
-//    throw new RuntimeException("writeAttributes disabled")
     tag.style.attributes.values.foreach {
       case a: StyleSheetAttribute[_] if a.shouldRender => {
-        context.writeLine(s"style.${a.style.name} := ${valuify(tag, a.name, a())}", prefix)
+        code.writeLine(s"style.${a.style.name} := ${valuify(tag, a.name, a())}", prefix)
       }
       case _ => // Ignore
     }
     // Write event data
-    tag.xmlAttributes.foreach {
+    tag.xmlAttributes
+      .filter(attr => !withoutAttributes.contains(namify(tag, attr)))
+      .foreach {
       case a: PropertyAttribute[_] with EventProperty if a.shouldRender => {
-        context.writeLine(s"${a.name.substring(2)}Event := ${valuify(tag, a.name, a())}", prefix)
+        code.writeLine(s"${a.name.substring(2)}Event := ${valuify(tag, a.name, a())}", prefix)
       }
       case a: PropertyAttribute[_] if a.shouldRender && a.name.startsWith("aria-") => {
-        context.writeLine(s"${namify(tag, a)} := ${valuify(tag, a.name, a())}", prefix)
+        code.writeLine(s"${namify(tag, a)} := ${valuify(tag, a.name, a())}", prefix)
       }
       case a: PropertyAttribute[_] if a.shouldRender && a.name.startsWith("data-") => {
-        context.writeLine(s"""data("${a.name.substring(5)}", ${valuify(tag, a.name, a())})""")
+        code.writeLine(s"""data("${a.name.substring(5)}", ${valuify(tag, a.name, a())})""")
       }
       case a: PropertyAttribute[_] if a.shouldRender && all => {
         // Write out attributes that could be in constructor - used in <body>
-        context.writeLine(s"${namify(tag, a)} := ${valuify(tag, a.name, a())}", prefix)
+        code.writeLine(s"${namify(tag, a)} := ${valuify(tag, a.name, a())}", prefix)
       }
       case _ => // Ignore
     }
@@ -165,9 +183,7 @@ abstract class ScalaBuffer {
     Try(ScalaBuffer.encode(v))
       .getOrElse(throw new RuntimeException(s"Unsupported value in '${tag.xmlLabel}' for name: $name, value: '$v' of type ${v.asInstanceOf[AnyRef].getClass.getName}"))
   }
-}
 
-object ScalaBuffer {
   private var attributes = Map.empty[String, String]
 
   def attributeName(tag: HTMLTag, attribute: PropertyAttribute[_]): Option[String] = synchronized {
@@ -229,6 +245,12 @@ object ScalaBuffer {
   }
 }
 
+trait ScalaBuffer {
+  val attrsContext = WriterContext()
+  val valsContext = WriterContext()
+  val codeContext = WriterContext()
+}
+
 /**
  * @param mapping Mapping of extracted tag IDs to their corresponding Screen
  *                class names
@@ -237,61 +259,65 @@ class ScalaWebpageBuffer(packageName: Option[String],
                          className: String,
                          html: HTML,
                          mapping: Map[String, String] = Map.empty) extends ScalaBuffer {
-  writeAttributes(html.head, all = true, prefix = "head", context = attrs)
-  html.head.contents.foreach(t => writeTag(t, "head", b, mapping))
+  import ScalaBuffer._
+  writeAttributes(html.head, all = true, prefix = Some("head"), code = attrsContext)
+  html.head.contents.foreach(t => writeTag(t, Some("head"), codeContext, valsContext, mapping))
 
-  writeAttributes(html.body, all = true, prefix = "body", context = attrs)
-  html.body.contents.foreach(t => writeTag(t, "body", b, mapping))
+  writeAttributes(html.body, all = true, prefix = Some("body"), code = attrsContext)
+  html.body.contents.foreach(t => writeTag(t, Some("body"), codeContext, valsContext, mapping))
 
   private def pkg = packageName.map("package %s".format(_)).getOrElse("")
   val code = HTMLToScala.WebpageTemplate.format(pkg, className,
-    attrs.content.toString ++ vals.content.toString ++ b.content.toString)
+    attrsContext.content.toString ++ valsContext.content.toString ++ codeContext.content.toString)
 }
 
 class ScalaTagBuffer(packageName: Option[String],
                      className: String,
                      baseTag: HTMLTag) extends ScalaBuffer {
-  writeAttributes(baseTag, all = true, prefix = null, attrs)
+  import ScalaBuffer._
+  writeAttributes(baseTag, all = true, prefix = None, attrsContext)
 
   private def pkg = packageName.map("package %s".format(_)).getOrElse("")
 
   baseTag match {
     case container: Container[_] => container.contents
-      .foreach(tag => writeTag(tag.asInstanceOf[HTMLTag], context = b))
+      .foreach(tag => writeTag(tag.asInstanceOf[HTMLTag], code = codeContext, vals = valsContext))
     case _ => // Not a container
   }
 
   val code = HTMLToScala.TagTemplate.format(pkg, className,
     tagName(baseTag.getClass),
-    attrs.content.toString ++ vals.content.toString ++ b.content.toString)
+    attrsContext.content.toString ++ valsContext.content.toString ++ codeContext.content.toString)
 }
 
 class ScalaScreenBuffer(packageName: Option[String],
                         className: String,
                         baseTag: HTMLTag) extends ScalaBuffer {
-  writeAttributes(baseTag, all = true, prefix = null, context = b)
+  import ScalaBuffer._
+  writeAttributes(baseTag, all = true, prefix = None, code = codeContext)
 
   private def pkg = packageName.map("package %s".format(_)).getOrElse("")
 
   baseTag match {
     case container: Container[_] => container.contents
-      .foreach(tag => writeTag(tag.asInstanceOf[HTMLTag], context = b))
+      .foreach(tag => writeTag(tag.asInstanceOf[HTMLTag], code = codeContext, vals = valsContext))
     case _ => // Not a container
   }
 
   val code = HTMLToScala.ScreenTemplate.format(pkg, className,
     tagName(baseTag.getClass),
-    attrs.content.toString ++ vals.content.toString ++ b.content.toString)
+    attrsContext.content.toString ++ valsContext.content.toString ++ codeContext.content.toString)
 }
 
 class ScalaInstanceBuffer(baseTag: HTMLTag) extends ScalaBuffer {
-  writeAttributes(baseTag, all = true, prefix = null, context = b)
+  import ScalaBuffer._
+  writeAttributes(baseTag, all = true, prefix = None, code = codeContext)
 
   baseTag match {
     case container: Container[_] => container.contents
-      .foreach(tag => writeTag(tag.asInstanceOf[HTMLTag], context = b))
+      .foreach(tag => writeTag(tag.asInstanceOf[HTMLTag], code = codeContext, vals = valsContext))
     case _ => // Not a container
   }
 
-  val code = s"new tag.${tagName(baseTag.getClass)} {\r\n${b.content}}"
+  val code = s"new tag.${tagName(baseTag.getClass)} {\n${codeContext.content}}"
 }

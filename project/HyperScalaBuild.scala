@@ -1,11 +1,13 @@
-import sbt.Keys._
 import sbt._
+import sbt.Keys._
 import sbtassembly.AssemblyKeys._
 import sbtassembly._
 import sbtassembly.AssemblyPlugin._
 import sbtunidoc.Plugin._
 import spray.revolver.RevolverPlugin._
 import sbtbuildinfo.Plugin._
+import com.typesafe.sbt.web.SbtWeb
+import com.typesafe.sbt.web.Import._
 
 object HyperScalaBuild extends Build {
   import Dependencies._
@@ -23,7 +25,8 @@ object HyperScalaBuild extends Build {
       jaxen,
       htmlcleaner,
       akkaActors,
-      scalaTest
+      scalaTest,
+      webJarsBootstrap
     ),
     fork := true,
     scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature"),
@@ -68,38 +71,55 @@ object HyperScalaBuild extends Build {
   lazy val root = Project("root", file("."), settings = unidocSettings ++ createSettings("hyperscala-root"))
     .settings(publishArtifact in Compile := false, publishArtifact in Test := false)
     .aggregate(core, html, javascript, svg, web, screen, jquery, jqueryUI, realtime, ui, contentEditor, ux, bootstrap, createJS, fabricJS, hello, examples, numberGuess, site)
+
   lazy val core = Project("core", file("core"), settings = createSettings("hyperscala-core") ++ buildInfoSettings)
     .settings(libraryDependencies ++= Seq(outrNetCore))
     .settings(sourceGenerators in Compile <+= buildInfo,
       buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion, BuildInfoKey.action("buildTime")(System.currentTimeMillis())),
       buildInfoPackage := "org.hyperscala")
+
   lazy val html = Project("html", file("html"), settings = createSettings("hyperscala-html"))
     .dependsOn(core)
+
   lazy val svg = Project("svg", file("svg"), settings = createSettings("hyperscala-svg"))
     .dependsOn(html)
+
   lazy val javascript = Project("javascript", file("javascript"), settings = createSettings("hyperscala-javascript"))
     .dependsOn(html)
+
   lazy val web = Project("web", file("web"), settings = createSettings("hyperscala-web"))
     .dependsOn(html, javascript, svg)
     .settings(libraryDependencies ++= Seq(uaDetector, commonsCodec, outrNetCommunicate))
+
   lazy val jquery = Project("jquery", file("jquery"), settings = createSettings("hyperscala-jquery"))
     .dependsOn(web)
+
   lazy val jqueryUI = Project("jqueryui", file("jqueryui"), settings = createSettings("hyperscala-jqueryui"))
     .dependsOn(jquery)
+
   lazy val realtime = Project("realtime", file("realtime"), settings = createSettings("hyperscala-realtime"))
     .dependsOn(web, jquery)
+
   lazy val screen = Project("screen", file("screen"), settings = createSettings("hyperscala-screen"))
     .dependsOn(realtime)
+
   lazy val ui = Project("ui", file("ui"), settings = createSettings("hyperscala-ui"))
     .dependsOn(web, realtime, jquery, jqueryUI)
+
   lazy val contentEditor = Project("contenteditor", file("contenteditor"), settings = createSettings("hyperscala-contenteditor"))
     .dependsOn(ui)
+
   lazy val ux = Project("ux", file("ux"), settings = createSettings("hyperscala-ux"))
     .dependsOn(web, realtime, jquery, ui)
+
   lazy val bootstrap = Project("bootstrap", file("bootstrap"), settings = createSettings("hyperscala-bootstrap"))
+    .enablePlugins(SbtWeb)
     .dependsOn(ui)
+    .settings(sourceGenerators in Compile <+= Bootstrap.extractGlyphicons)
+
   lazy val createJS = Project("createjs", file("createjs"), settings = createSettings("hyperscala-createjs"))
     .dependsOn(ui)
+
   lazy val fabricJS = Project("fabricjs", file("fabricjs"), settings = createSettings("hyperscala-fabricjs"))
     .dependsOn(ui)
 

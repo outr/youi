@@ -2,28 +2,26 @@ package org.hyperscala.bootstrap.component
 
 import org.hyperscala.html._
 import org.hyperscala.html.constraints.BodyChild
+import org.hyperscala.html.extension.ClassBooleanProperty
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class ListGroup extends tag.Div(clazz = List("list-group")) {
-  def addItem[T <: BodyChild](item: T, active: Boolean = false) = {
-    item.clazz += "list-group-item"
-    if (active) {
-      item.clazz += "active"
-    }
+class ListGroup extends tag.Div(clazz = List("list-group"))
 
-    contents += item
-    item
-  }
+trait ListGroupItem extends BodyChild {
+  clazz += "list-group-item"
 
-  def addLink(url: String, label: BodyChild, active: Boolean = false) = addItem(new tag.A(href = url, content = label), active = active)
+  val active   = new ClassBooleanProperty(this, enabled = Some("active"))
+  val disabled = new ClassBooleanProperty(this, enabled = Some("disabled"))
+}
 
-  def addText(label: String, active: Boolean = false) = addItem(new tag.Span(content = label), active = active)
+class ListGroupItemHeading(text: String = "") extends tag.H4 {
+  clazz += "list-group-item-heading"
+  contents += text
+}
 
-  def add(url: String, heading: String, content: String, active: Boolean = false) = {
-    val l = addLink(url, null, active = active)
-    l.contents += new tag.H4(clazz = List("list-group-item-heading"), content = heading)
-    l.contents += new tag.P(clazz = List("list-group-item-text"), content = content)
-  }
+class ListGroupItemText(text: String = "") extends tag.P {
+  clazz += "list-group-item-text"
+  contents += text
 }

@@ -1,6 +1,5 @@
 package org.hyperscala.bootstrap
 
-import com.outr.net.http.session.Session
 import org.hyperscala.html._
 import org.hyperscala.jquery.jQuery
 import org.hyperscala.module.Module
@@ -13,7 +12,7 @@ import org.powerscala.Version
 object Bootstrap extends Module {
   override def name = "bootstrap"
 
-  override def version = Version(3, 2, 0)
+  override def version = Version(3, 3, 5)
 
   override def dependencies = List(jQuery)
 

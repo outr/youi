@@ -2,6 +2,7 @@ package org.hyperscala.examples.bootstrap
 
 import org.hyperscala.bootstrap.Bootstrap
 import org.hyperscala.bootstrap.component._
+import org.hyperscala.bootstrap.component.extra._
 import org.hyperscala.css.attributes.{Display, Position}
 import org.hyperscala.examples.Example
 import org.hyperscala.html._
@@ -28,19 +29,29 @@ class BootstrapTheme extends Webpage with Example {
   val showcaseStyle = head.selector(Selector(".theme-showcase > p > .btn"))
   showcaseStyle.margin := "5px 0"
 
-  body.contents += new NavBar(brand = Some("Bootstrap theme"), theme = NavBarTheme.Dark) {
-    addLink("#", "Home", active = true)
-    addLink("#", "About")
-    addLink("#", "Contact")
-    val dropdown = addDropdown("Dropdown")
-    dropdown.addLink("#", "Action")
-    dropdown.addLink("#", "Another Action")
-    dropdown.addLink("#", "Something else here")
-    dropdown.addDivider()
-    dropdown.addHeader("Nav header")
-    dropdown.addLink("#", "Separated link")
-    dropdown.addLink("#", "One more separated link")
-  }
+  body.contents += NavBarFactory(
+    brand = "Bootstrap theme",
+
+    theme = NavBarTheme.Inverse,
+
+    links = Seq(
+      NavBarFactory.Link("#", "Home", active = true),
+      NavBarFactory.Link("#", "About"),
+      NavBarFactory.Link("#", "Contact")
+    ),
+
+    dropdown = Some(new NavBarDropdown(
+      NavBarFactory.Link("#", "Action", active = true).li,
+      NavBarFactory.Link("#", "Another action").li,
+      NavBarFactory.Link("#", "Something else here").li,
+      new Divider,
+      new DropdownHeader {
+        contents += "Nav header"
+      },
+      NavBarFactory.Link("#", "Sepated link").li,
+      NavBarFactory.Link("#", "One more separated link").li
+    ))
+  )
 
   body.contents += new Container {
     clazz += "theme-showcase"
@@ -58,7 +69,7 @@ class BootstrapTheme extends Webpage with Example {
       }
     }
 
-    contents += new Header("Buttons")
+    contents += new PageTitle("Buttons")
     contents += new tag.P {
       contents += new Button("Default", buttonStyle = ButtonStyle.Default, buttonSize = ButtonSize.Large)
       contents += new Button("Primary", buttonStyle = ButtonStyle.Primary, buttonSize = ButtonSize.Large)
@@ -96,7 +107,7 @@ class BootstrapTheme extends Webpage with Example {
       contents += new Button("Link", buttonStyle = ButtonStyle.Link, buttonSize = ButtonSize.ExtraSmall)
     }
 
-    contents += new Header("Tables")
+    contents += new PageTitle("Tables")
     contents += new Row {
       contents += new Column {
         medium := Some(6)
@@ -231,10 +242,10 @@ class BootstrapTheme extends Webpage with Example {
       }
     }
 
-    contents += new Header("Thumbnails")
+    contents += new PageTitle("Thumbnails")
     contents += new HolderImage(200, 200, "A generic square placeholder image with a white border around it, making it resemble a photograph taken with an old instant camera")
 
-    contents += new Header("Labels")
+    contents += new PageTitle("Labels")
     contents += new tag.H1 {
       contents += new Label(LabelStyle.Default, "Default")
       contents += new Label(LabelStyle.Primary, "Primary")
@@ -292,7 +303,7 @@ class BootstrapTheme extends Webpage with Example {
       contents += new Label(LabelStyle.Danger, "Danger")
     }
 
-    contents += new Header("Badges")
+    contents += new PageTitle("Badges")
     contents += new tag.P {
       contents += new tag.A(href = "#") {
         contents += "Inbox"
@@ -324,7 +335,7 @@ class BootstrapTheme extends Webpage with Example {
       }
     }
 
-    contents += new Header("Dropdown menus")
+    contents += new PageTitle("Dropdown menus")
     contents += new tag.Div(clazz = List("dropdown", "theme-dropdown", "clearfix")) {
       contents += new tag.A(id = "dropdownMenu1", href = "#", role = "button", clazz = List("sr-only", "dropdown-toggle")) {
         data("toggle", "dropdown")
@@ -358,7 +369,7 @@ class BootstrapTheme extends Webpage with Example {
       }
     }
 
-    contents += new Header("Navs")
+    contents += new PageTitle("Navs")
     contents += new Tabs {
       role := "tablist"
 
@@ -391,41 +402,39 @@ class BootstrapTheme extends Webpage with Example {
       }
     }
 
-    contents += new Header("Navbars")
-    contents += new NavBar(brand = Some("Project name"), top = false) {
-      addLink("#", "Home", active = true)
-      addLink("#", "About")
-      addLink("#", "Contact")
-      val dropdown = addDropdown("Dropdown")
-      dropdown.addLink("#", "Action")
-      dropdown.addLink("#", "Another Action")
-      dropdown.addLink("#", "Something else here")
-      dropdown.addDivider()
-      dropdown.addHeader("Nav header")
-      dropdown.addLink("#", "Separated link")
-      dropdown.addLink("#", "One more separated link")
-    }
-    contents += new NavBar(brand = Some("Project name"), theme = NavBarTheme.Dark, top = false) {
-      addLink("#", "Home", active = true)
-      addLink("#", "About")
-      addLink("#", "Contact")
-      val dropdown = addDropdown("Dropdown")
-      dropdown.addLink("#", "Action")
-      dropdown.addLink("#", "Another Action")
-      dropdown.addLink("#", "Something else here")
-      dropdown.addDivider()
-      dropdown.addHeader("Nav header")
-      dropdown.addLink("#", "Separated link")
-      dropdown.addLink("#", "One more separated link")
-    }
+    contents += new PageTitle("Navbars")
 
-    contents += new Header("Alerts")
+    body.contents += NavBarFactory(
+      brand = "Project name",
+
+      theme = NavBarTheme.Default,
+
+      links = Seq(
+        NavBarFactory.Link("#", "Home", active = true),
+        NavBarFactory.Link("#", "About"),
+        NavBarFactory.Link("#", "Contact")
+      )
+    )
+
+    body.contents += NavBarFactory(
+      brand = "Project name",
+
+      theme = NavBarTheme.Inverse,
+
+      links = Seq(
+        NavBarFactory.Link("#", "Home", active = true),
+        NavBarFactory.Link("#", "About"),
+        NavBarFactory.Link("#", "Contact")
+      )
+    )
+
+    contents += new PageTitle("Alerts")
     contents += Alert.success("Well done!", "You successfully read this important alert message.")
     contents += Alert.info("Heads up!", "This alert needs your attention, but it's not super important.")
     contents += Alert.warning("Warning!", "Best check yo self, you're not looking too good.")
     contents += Alert.danger("Oh snap!", "Change a few things up and try submitting again.")
 
-    contents += new Header("Progress bars")
+    contents += new PageTitle("Progress bars")
     contents += ProgressBar(0.6, ProgressType.Default)
     contents += ProgressBar(0.4, ProgressType.Success)
     contents += ProgressBar(0.2, ProgressType.Info)
@@ -438,52 +447,71 @@ class BootstrapTheme extends Webpage with Example {
       addProgress(0.1, ProgressType.Danger)
     }
 
-    contents += new Header("List groups")
+    contents += new PageTitle("List groups")
     contents += new Row {
       contents += new Column(small = Some(4)) {
         contents += new ListGroup {
-          addText("Cras justo odio")
-          addText("Dapibus ac facilisis in")
-          addText("Morbi leo risus")
-          addText("Porta ac consectetur ac")
-          addText("Vestibulum at eros")
+          contents += new tag.Span("Cras justo odio") with ListGroupItem
+          contents += new tag.Span("Dapibus ac facilisis in") with ListGroupItem
+          contents += new tag.Span("Morbi leo risus") with ListGroupItem
+          contents += new tag.Span("Porta ac consectetur ac") with ListGroupItem
+          contents += new tag.Span("Vestibulum at eros") with ListGroupItem
         }
       }
       contents += new Column(small = Some(4)) {
         contents += new ListGroup {
-          addLink("#", "Cras justo odio", active = true)
-          addLink("#", "Dapibus ac facilisis in")
-          addLink("#", "Morbi leo risus")
-          addLink("#", "Porta ac consectetur ac")
-          addLink("#", "Vestibulum at eros")
+          contents += new tag.A(href = "#", content = "Cras justo odio") with ListGroupItem {
+            active := true
+          }
+          contents += new tag.A(href = "#", content = "Dapibus ac facilisis in") with ListGroupItem
+          contents += new tag.A(href = "#", content = "Morbi leo risus") with ListGroupItem
+          contents += new tag.A(href = "#", content = "Porta ac consectetur ac") with ListGroupItem
+          contents += new tag.A(href = "#", content = "Vestibulum at eros") with ListGroupItem
         }
       }
       contents += new Column(small = Some(4)) {
         contents += new ListGroup {
-          add("#", "List group item heading", "Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.", active = true)
-          add("#", "List group item heading", "Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.")
-          add("#", "List group item heading", "Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.")
+          contents += new tag.A(href = "#") with ListGroupItem {
+            active := true
+            contents += new ListGroupItemHeading("List group item heading")
+            contents += new ListGroupItemText("Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.")
+          }
+
+          contents += new tag.A(href = "#") with ListGroupItem {
+            contents += new ListGroupItemHeading("List group item heading")
+            contents += new ListGroupItemText("Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.")
+          }
+
+          contents += new tag.A(href = "#") with ListGroupItem {
+            contents += new ListGroupItemHeading("List group item heading")
+            contents += new ListGroupItemText("Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.")
+          }
+
+          contents += new tag.A(href = "#") with ListGroupItem {
+            contents += new ListGroupItemHeading("List group item heading")
+            contents += new ListGroupItemText("Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.")
+          }
         }
       }
     }
 
-    contents += new Header("Panels")
+    contents += new PageTitle("Panels")
     contents += new Row {
       contents += new Column(small = Some(4)) {
-        contents += new Panel("Panel title", Some("Panel content"), PanelType.Default)
-        contents += new Panel("Panel title", Some("Panel content"), PanelType.Primary)
+        contents += new PanelFactory("Panel title", Some("Panel content"), PanelType.Default)
+        contents += new PanelFactory("Panel title", Some("Panel content"), PanelType.Primary)
       }
       contents += new Column(small = Some(4)) {
-        contents += new Panel("Panel title", Some("Panel content"), PanelType.Success)
-        contents += new Panel("Panel title", Some("Panel content"), PanelType.Info)
+        contents += new PanelFactory("Panel title", Some("Panel content"), PanelType.Success)
+        contents += new PanelFactory("Panel title", Some("Panel content"), PanelType.Info)
       }
       contents += new Column(small = Some(4)) {
-        contents += new Panel("Panel title", Some("Panel content"), PanelType.Warning)
-        contents += new Panel("Panel title", Some("Panel content"), PanelType.Danger)
+        contents += new PanelFactory("Panel title", Some("Panel content"), PanelType.Warning)
+        contents += new PanelFactory("Panel title", Some("Panel content"), PanelType.Danger)
       }
     }
 
-    contents += new Header("Wells")
+    contents += new PageTitle("Wells")
     contents += new Well {
       contents += new tag.P {
         contents += "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas sed diam eget risus varius blandit sit amet non magna. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Cras mattis consectetur purus sit amet fermentum. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Aenean lacinia bibendum nulla sed consectetur."

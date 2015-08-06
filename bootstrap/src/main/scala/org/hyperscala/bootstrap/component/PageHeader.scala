@@ -5,6 +5,4 @@ import org.hyperscala.html._
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class Container extends tag.Div {
-  clazz += "container"
-}
+class PageHeader extends tag.Div(clazz = List("page-header"))

@@ -11,13 +11,14 @@ import org.hyperscala.html.constraints.BodyChild
  */
 class NavBar extends tag.Div(clazz = List("navbar"), role = "navigation") {
   val top = new ClassBooleanProperty(this, enabled = Some("navbar-fixed-top"))
-  val theme = new ClassProperty[NavBarTheme](this, NavBarTheme.Default)
+  val theme = new ClassProperty[NavBarTheme](this, NavBarTheme.None)
 }
 
 sealed abstract class NavBarTheme(val className: Option[String])
   extends EnumEntry with ClassName
 
-object NavBarTheme extends Enumerated[AlertType] {
+object NavBarTheme extends Enumerated[NavBarTheme] {
+  case object None extends NavBarTheme(Option.empty)
   case object Default extends NavBarTheme(Some("navbar-default"))
   case object Light extends NavBarTheme(Some("navbar-light"))
   case object Inverse extends NavBarTheme(Some("navbar-inverse"))

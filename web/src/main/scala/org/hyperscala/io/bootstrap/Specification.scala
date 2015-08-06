@@ -2,15 +2,40 @@ package org.hyperscala.io.bootstrap
 
 import org.powerscala.enum.{Enumerated, EnumEntry}
 
+/**
+ * Specifies all Bootstrap components, for which Hyperscala has a Scala mapping.
+ */
 object Specification {
   sealed trait Component {
     def name: String
+
+    /**
+     * Certain CSS classes can only be used within certain components.
+     * [[parentComponent]] designates the direct parent to prevent false
+     * positives.
+     */
     def parentComponent: Option[String]
+
+    /**
+     * HTML tag to match
+     *
+     * @note Some Bootstrap components are applicable to several HTML tags. In
+     *       this case, we set the value to [[None]]. The generated Scala code
+     *       uses a mix-in.
+     */
     def tag: Option[String]
-    // input = tag's CSS classes, output = None if no match, matched tags otherwise
+
+    /**
+     * Function that takes the tag's CSS classes
+     *
+     * @return [[None]] if no match, matched tags otherwise
+     */
     def cssMatcher: Set[String] => Option[Set[String]]
   }
 
+  /**
+   * A regular component with attributes
+   */
   case class DefComponent(name: String,
                           parentComponent: Option[String],
                           tag: Option[String],
@@ -19,6 +44,9 @@ object Specification {
                           properties: Property*)
     extends Component
 
+  /**
+   * An enumeration component which doesn't have any attributes
+   */
   case class EnumComponent(name: String,
                            parentComponent: Option[String],
                            tag: Option[String],

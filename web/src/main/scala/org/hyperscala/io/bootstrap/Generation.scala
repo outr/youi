@@ -3,17 +3,21 @@ package org.hyperscala.io.bootstrap
 import org.hyperscala.html.HTMLTag
 import org.hyperscala.io.{ScalaBuffer, WriterContext}
 
+/**
+ * Takes an [[HTMLTag]] and checks whether it is a valid Bootstrap component.
+ * Bootstrap components are translated to their Scala representation. All
+ * known components are specified in [[Specification.components]].
+ */
 object Generation {
   import Specification._
 
-  def findComponent(tag: HTMLTag, parentComponent: Option[String] = None): Option[Component] = {
+  def findComponent(tag: HTMLTag, parentComponent: Option[String] = None): Option[Component] =
     components.find { component =>
       tagMatches(tag, component) &&
         cssMatches(tag, component) &&
         (component.parentComponent.isEmpty ||
           component.parentComponent == parentComponent)
     }
-  }
 
   def tagMatches(tag: HTMLTag, component: Component): Boolean =
     component.tag

@@ -62,6 +62,11 @@ class VideoJS extends tag.Video {
     this.webpage.eval(s"$$('#${identity}_html5_api').attr('$method', $argsJS);", Some(Selector.id(this).toCondition))
   }
 
+  private[ui] def call2(method: String, argsJS: String) = {
+    this.webpage.eval(s"videojs('$identity').$method($argsJS);", Some(Selector.id(this).toCondition))
+    this.webpage.eval(s"$$('#${identity}_html5_api').attr('$method', $argsJS);", Some(Selector.id(this).toCondition))
+  }
+
   def currentTime(seconds: Double) = call("currentTime", seconds)
 
   def dimensions(width: Int, height: Int) = call("dimensions", width, height)

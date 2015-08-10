@@ -24,15 +24,15 @@ object VideoJSThumbnails extends Module {
     webpage.head.contents += new tag.Link(rel = "stylesheet", href = "/css/videojs.thumbnails.css", mimeType = "text/css")
   }
 
-  case class Thumbnail(seconds: Int, sourceUrl: String, width: Option[String]) {
+  case class Thumbnail(seconds: Int, sourceUrl: String, width: Option[Int]) {
     def toJson: String = {
       val line = s"$seconds: { src: '$sourceUrl'"
       if (width.isDefined) s"$line, width: '${width.get}' }" else s"$line }"
     }
   }
 
-  def setThumbnails(videoJS: VideoJS, thumbnails: Seq[Thumbnail]) = {
+  def setThumbnails(webpage: Webpage, videoJS: VideoJS, thumbnails: Seq[Thumbnail]) = {
     val thumbnailsJson = "{ " + thumbnails.map(_.toJson).mkString(", ") + " }"
-    videoJS.call2("thumbnails", thumbnailsJson)
+    videoJS.callJson(webpage, "thumbnails", thumbnailsJson)
   }
 }

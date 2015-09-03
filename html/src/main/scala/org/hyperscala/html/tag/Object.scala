@@ -1,8 +1,8 @@
 package org.hyperscala.html.tag
 
 import org.hyperscala._
-import css.StyleSheet
-import html.HTMLTag
+import org.hyperscala.css.StyleSheet
+import org.hyperscala.html.HTMLTag
 import org.hyperscala.html.attributes._
 import org.hyperscala.html.constraints._
 
@@ -29,11 +29,13 @@ class Object extends Container[BodyChild] with BodyChild with HTMLTag {
            style: StyleSheet = null,
            tabIndex: java.lang.Integer = null,
            titleText: String = null,
+           mimeType: String = null,
            content: BodyChild = null) = {
     this()
     init(name, accessKey, clazz, contentEditable, contextMenu, dir, draggable, dropZone, hidden, id, lang, role, spellCheck, style, tabIndex, titleText)
+    up(this.mimeType, mimeType)
     if (content != null) contents += content
   }
 
-
+  lazy val mimeType = PropertyAttribute[String]("type", null)
 }

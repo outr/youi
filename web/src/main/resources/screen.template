@@ -6,6 +6,7 @@ import org.hyperscala.css.attributes._
 import org.hyperscala.javascript.JavaScriptString
 import org.hyperscala.web.Webpage
 import org.hyperscala.screen.Screen
+import org.hyperscala.bootstrap
 
 class %s(webpage: Webpage) extends tag.%s with Screen {
   %s

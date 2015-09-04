@@ -1,1 +1,1 @@
-Glyphicon.Ok
+bootstrap.component.Glyphicon.Ok

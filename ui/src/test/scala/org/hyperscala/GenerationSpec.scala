@@ -72,6 +72,15 @@ class GenerationSpec extends WordSpec with Matchers {
     """.stripMargin
   ).create()
 
+  val gridHtml = DynamicTag.from[tag.Div](
+    """
+      |<div class="row">
+      |  <div class="col-xs-12 col-md-8">a</div>
+      |  <div class="col-xs-6 col-md-4">b</div>
+      |</div>
+    """.stripMargin
+  ).create()
+
   def testConversion(html: HTMLTag, resourceName: String) {
     val component = Generation.findComponent(html).get
 
@@ -185,6 +194,17 @@ class GenerationSpec extends WordSpec with Matchers {
 
     "be converted" in {
       testConversion(tabsHtml, "/tabs.scala")
+    }
+  }
+
+  "Grid component" should {
+    "be recognised" in {
+      val component = Generation.findComponent(gridHtml).get
+      component.name should be ("Row")
+    }
+
+    "be converted" in {
+      testConversion(gridHtml, "/grid.scala")
     }
   }
 

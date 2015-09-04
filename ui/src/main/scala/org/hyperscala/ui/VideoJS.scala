@@ -56,10 +56,14 @@ class VideoJS extends tag.Video {
     }
   }
 
-  private def call(method: String, args: Any*) = {
+  def callJson(webpage: Webpage, method: String, argsJS: String) = {
+    webpage.eval(s"videojs('$identity').$method($argsJS);", Some(Selector.id(this).toCondition))
+    webpage.eval(s"$$('#${identity}_html5_api').attr('$method', $argsJS);", Some(Selector.id(this).toCondition))
+  }
+
+  def call(method: String, args: Any*) = {
     val argsJS = args.map(a => JavaScriptContent.toJS(a)).mkString(", ")
-    this.webpage.eval(s"videojs('$identity').$method($argsJS);", Some(Selector.id(this).toCondition))
-    this.webpage.eval(s"$$('#${identity}_html5_api').attr('$method', $argsJS);", Some(Selector.id(this).toCondition))
+    callJson(this.webpage, method, argsJS)
   }
 
   def currentTime(seconds: Double) = call("currentTime", seconds)

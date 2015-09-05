@@ -137,8 +137,11 @@ object ScalaBuffer {
                     mapping: Map[String, String],
                     parentComponent: Option[String]) {
     tag match {
+      case child: Textual =>
+        code.writeLine(s"content := ${createWrappedString(child.content())}")
       case container: Container[_] => container.contents.foreach {
-        case child: HTMLTag => writeTag(child, code = code, vals = vals, mapping = mapping, parentComponent = parentComponent)
+        case child: HTMLTag =>
+          writeTag(child, code = code, vals = vals, mapping = mapping, parentComponent = parentComponent)
         case child: JavaScriptString => if (child.content.trim.nonEmpty) {
           code.writeLine("contents += JavaScriptString(%s)".format(createWrappedString(child.content)))
         }
@@ -176,7 +179,7 @@ object ScalaBuffer {
         // Write out attributes that could be in constructor - used in <body>
         code.writeLine(s"${namify(tag, a)} := ${valuify(tag, a.name, a())}", prefix)
       }
-      case _ => // Ignore
+      case a => // Ignore
     }
   }
 

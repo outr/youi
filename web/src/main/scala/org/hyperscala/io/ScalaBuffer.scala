@@ -50,7 +50,7 @@ object ScalaBuffer {
                parentComponent: Option[String] = None) {
     if (tag.render) {
       tag match {
-        case title: Title => code.writeLine("title := \"%s\"".format(title.content()))
+        case title: Title => code.writeLine("title := \"%s\"".format(title.content()), prefix)
         case comment: Comment => code.writeLine(s"contents += new tag.Comment(${createWrappedString(comment.content())})", prefix)
         case text: Text if text.content() != null && text.content().trim.length > 0 =>
           code.writeLine(s"contents += ${createWrappedString(text.content())}", prefix)
@@ -195,11 +195,11 @@ object ScalaBuffer {
   def attributeName(tag: HTMLTag, attribute: PropertyAttribute[_]): Option[String] = synchronized {
     val key = "%s.%s".format(tag.xmlLabel, attribute.name)
     attributes.get(key).orElse {
-      val methodOption = tag.getClass.methods.find {
+      val methodOption = tag.getClass.getDeclaredMethods.find {
         case m if m.name.indexOf('$') != -1 => false
         case m if m.name == "formValue" => false
         case m if m.returnType.`type`.hasType(classOf[PropertyAttribute[_]]) && m.args.isEmpty => try {
-          m.invoke[AnyRef](tag) eq attribute
+          m.invoke(tag) eq attribute
         } catch {
           case t: Throwable => throw new RuntimeException(s"Failed to invoke ${m.absoluteSignature} on $key.", t)
         }
@@ -310,6 +310,23 @@ class ScalaScreenBuffer(packageName: Option[String],
   private def pkg = packageName.map("package %s".format(_)).getOrElse("")
 
   baseTag match {
+    case html: HTML =>
+      html.head.contents.foreach { child =>
+        writeTag(child,
+          prefix = Some("webpage.head"),
+          code = codeContext,
+          vals = valsContext,
+          mapping = mapping)
+      }
+
+      html.body.contents.foreach { tag =>
+        writeTag(tag,
+          prefix = Some("webpage.body"),
+          code = codeContext,
+          vals = valsContext,
+          mapping = mapping)
+      }
+
     case container: Container[_] => container.contents.foreach(tag =>
       writeTag(tag.asInstanceOf[HTMLTag],
         code = codeContext,

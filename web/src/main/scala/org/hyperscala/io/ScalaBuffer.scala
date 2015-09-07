@@ -177,13 +177,17 @@ object ScalaBuffer {
         // Write out attributes that could be in constructor - used in <body>
         code.writeLine(s"${namify(tag, a)} := ${valuify(tag, a.name, a())}", prefix)
       }
+      case a: PropertyAttribute[_] if a.shouldRender && a.dynamic => {
+        code.writeLine(s"${namify(tag, a)} := ${valuify(tag, a.name, a())}", prefix)
+      }
       case a => // Ignore
     }
   }
 
   def namify(tag: HTMLTag, a: PropertyAttribute[_]) = ScalaBuffer.attributeName(tag, a) match {
     case Some(name) => name
-    case None => s"""attribute("${a.name}")"""      // Dynamically defined attribute
+    case _ if a.name == "value" => a.name
+    case None => s"""attribute[String]("${a.name}").get"""      // Dynamically defined attribute
   }
 
   def valuify(tag: HTMLTag, name: String, v: Any): String = {

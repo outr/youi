@@ -9,7 +9,7 @@ import org.hyperscala.screen.Screen
 import org.hyperscala.bootstrap
 
 class %s(webpage: Webpage) extends tag.%s with Screen {
-  %s
+%s
 
   override def activate(alreadyActive: Boolean) = {
     style.visibility := Visibility.Visible

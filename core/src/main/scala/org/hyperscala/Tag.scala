@@ -86,7 +86,7 @@ trait Tag extends Markup with AttributeContainer[PropertyAttribute[_]] {
       Some(createAttribute[String](name, null, InclusionMode.Always))
     } else {
       val attributeName = name.replaceAll("-", "") match {
-        case "type" if List("link", "script").contains(xmlLabel) => "mimeType"
+        case "type" if List("link", "script", "object").contains(xmlLabel) => "mimeType"
         case "type" => s"${xmlLabel}Type"
         case "class" => "clazz"
         case "for" => "forElement"

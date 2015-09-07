@@ -1,4 +1,4 @@
-new Alert {
-  alertType := AlertType.Danger
+new bootstrap.component.Alert {
+  alertType := bootstrap.component.AlertType.Danger
   contents += """ Enter a valid e-mail address """
 }

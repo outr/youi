@@ -83,14 +83,14 @@ object Generation {
       case Value.Boolean(_) => "true"
       case Value.Set(name, options @ _*) =>
         val option = options.find(o => tag.clazz().contains(o.css)).get
-        s"$name.${option.name}"
+        s"bootstrap.component.$name.${option.name}"
       case Value.Enum(values, css) =>
         val v = values.map(css).find(tag.clazz().contains(_)).get
-        s"$v"
+        s"bootstrap.component.$v"
       case Value.Option(name, css) =>
         val propName = property.values.head.asInstanceOf[Value.Set].name
-        s"$propName.$name"
-      case Value.Instance(v) => s"$v"
+        s"bootstrap.component.$propName.$name"
+      case Value.Instance(v) => s"Some($v)"
     }
   }
 
@@ -106,10 +106,10 @@ object Generation {
           s"${p.name} := $valueTree"
         }
 
-        if (t.nonEmpty) code.writeLine(s"new $name {", indent = false)
+        if (t.nonEmpty) code.writeLine(s"new bootstrap.component.$name {", indent = false)
         else {
           val scalaTag = tag.xmlLabel.head.toUpper + tag.xmlLabel.tail
-          code.writeLine(s"new tag.$scalaTag with $name {", indent = false)
+          code.writeLine(s"new tag.$scalaTag with bootstrap.component.$name {", indent = false)
         }
 
         code.depth += 1
@@ -122,7 +122,7 @@ object Generation {
 
       case EnumComponent(name, parent, t, fTag, values @ _*) =>
         val opt = values.find(v => tag.clazz().contains(v.css)).get
-        code.writeLine(s"$name.${opt.name}", indent = false)
+        code.writeLine(s"bootstrap.component.$name.${opt.name}", indent = false)
     }
   }
 }

@@ -38,6 +38,10 @@ object ScalaBuffer {
       tagName(clazz.getSuperclass)
     }
 
+  def encodeId(id: String): String =
+    if (id.contains('-')) s"`$id`"
+    else id
+
   def writeTag(tag: HTMLTag,
                prefix: Option[String] = None,
                code: WriterContext,
@@ -46,7 +50,7 @@ object ScalaBuffer {
                parentComponent: Option[String] = None) {
     if (tag.render) {
       tag match {
-        case title: Title => code.writeLine("title := \"%s\"".format(title.content()))
+        case title: Title => code.writeLine("title := \"%s\"".format(title.content()), prefix)
         case comment: Comment => code.writeLine(s"contents += new tag.Comment(${createWrappedString(comment.content())})", prefix)
         case text: Text if text.content() != null && text.content().trim.length > 0 =>
           code.writeLine(s"contents += ${createWrappedString(text.content())}", prefix)
@@ -55,15 +59,17 @@ object ScalaBuffer {
             code.writeLine("contents += ", prefix, nlbr = false)
             instantiateTag(tag, code, vals, mapping, parentComponent)
           } else if (mapping.contains(tag.id())) {
-            code.writeLine(s"contents += new ${mapping(tag.id())}()", prefix)
+            code.writeLine(s"contents += new ${mapping(tag.id())}", prefix)
           } else {
             val valContext = WriterContext()
             instantiateTag(tag, valContext, vals, mapping, parentComponent)
 
-            vals.writeLine(s"val ${tag.id()} = ", nlbr = false)
+            val id = encodeId(tag.id())
+
+            vals.writeLine(s"val $id = ", nlbr = false)
             vals.writeLine(valContext.content.toString(), nlbr = false, indent = false)
 
-            code.writeLine(s"contents += ${tag.id()}", prefix)
+            code.writeLine(s"contents += $id", prefix)
           }
         }
       }
@@ -131,8 +137,11 @@ object ScalaBuffer {
                     mapping: Map[String, String],
                     parentComponent: Option[String]) {
     tag match {
+      case child: Textual =>
+        code.writeLine(s"content := ${createWrappedString(child.content())}")
       case container: Container[_] => container.contents.foreach {
-        case child: HTMLTag => writeTag(child, code = code, vals = vals, mapping = mapping, parentComponent = parentComponent)
+        case child: HTMLTag =>
+          writeTag(child, code = code, vals = vals, mapping = mapping, parentComponent = parentComponent)
         case child: JavaScriptString => if (child.content.trim.nonEmpty) {
           code.writeLine("contents += JavaScriptString(%s)".format(createWrappedString(child.content)))
         }
@@ -170,7 +179,7 @@ object ScalaBuffer {
         // Write out attributes that could be in constructor - used in <body>
         code.writeLine(s"${namify(tag, a)} := ${valuify(tag, a.name, a())}", prefix)
       }
-      case _ => // Ignore
+      case a => // Ignore
     }
   }
 
@@ -189,11 +198,11 @@ object ScalaBuffer {
   def attributeName(tag: HTMLTag, attribute: PropertyAttribute[_]): Option[String] = synchronized {
     val key = "%s.%s".format(tag.xmlLabel, attribute.name)
     attributes.get(key).orElse {
-      val methodOption = tag.getClass.methods.find {
+      val methodOption = tag.getClass.getDeclaredMethods.find {
         case m if m.name.indexOf('$') != -1 => false
         case m if m.name == "formValue" => false
         case m if m.returnType.`type`.hasType(classOf[PropertyAttribute[_]]) && m.args.isEmpty => try {
-          m.invoke[AnyRef](tag) eq attribute
+          m.invoke(tag) eq attribute
         } catch {
           case t: Throwable => throw new RuntimeException(s"Failed to invoke ${m.absoluteSignature} on $key.", t)
         }
@@ -273,15 +282,19 @@ class ScalaWebpageBuffer(packageName: Option[String],
 
 class ScalaTagBuffer(packageName: Option[String],
                      className: String,
-                     baseTag: HTMLTag) extends ScalaBuffer {
+                     baseTag: HTMLTag,
+                     mapping: Map[String, String] = Map.empty) extends ScalaBuffer {
   import ScalaBuffer._
   writeAttributes(baseTag, all = true, prefix = None, attrsContext)
 
   private def pkg = packageName.map("package %s".format(_)).getOrElse("")
 
   baseTag match {
-    case container: Container[_] => container.contents
-      .foreach(tag => writeTag(tag.asInstanceOf[HTMLTag], code = codeContext, vals = valsContext))
+    case container: Container[_] => container.contents.foreach(tag =>
+      writeTag(tag.asInstanceOf[HTMLTag],
+        code = codeContext,
+        vals = valsContext,
+        mapping = mapping))
     case _ => // Not a container
   }
 
@@ -292,15 +305,36 @@ class ScalaTagBuffer(packageName: Option[String],
 
 class ScalaScreenBuffer(packageName: Option[String],
                         className: String,
-                        baseTag: HTMLTag) extends ScalaBuffer {
+                        baseTag: HTMLTag,
+                        mapping: Map[String, String] = Map.empty) extends ScalaBuffer {
   import ScalaBuffer._
   writeAttributes(baseTag, all = true, prefix = None, code = codeContext)
 
   private def pkg = packageName.map("package %s".format(_)).getOrElse("")
 
   baseTag match {
-    case container: Container[_] => container.contents
-      .foreach(tag => writeTag(tag.asInstanceOf[HTMLTag], code = codeContext, vals = valsContext))
+    case html: HTML =>
+      html.head.contents.foreach { child =>
+        writeTag(child,
+          prefix = Some("webpage.head"),
+          code = codeContext,
+          vals = valsContext,
+          mapping = mapping)
+      }
+
+      html.body.contents.foreach { tag =>
+        writeTag(tag,
+          prefix = Some("webpage.body"),
+          code = codeContext,
+          vals = valsContext,
+          mapping = mapping)
+      }
+
+    case container: Container[_] => container.contents.foreach(tag =>
+      writeTag(tag.asInstanceOf[HTMLTag],
+        code = codeContext,
+        vals = valsContext,
+        mapping = mapping))
     case _ => // Not a container
   }
 

@@ -1,16 +1,16 @@
 package org.hyperscala.io
 
-import scala.util.Try
-
+import org.hyperscala._
+import org.hyperscala.css.StyleSheetAttribute
+import org.hyperscala.css.attributes.NumericLength
+import org.hyperscala.html.HTMLTag
+import org.hyperscala.html.tag.{Comment, HTML, Text, Title}
+import org.hyperscala.javascript.{EventProperty, JavaScriptString}
+import org.powerscala.StringUtil
+import org.powerscala.enum.EnumEntry
 import org.powerscala.reflect._
 
-import org.hyperscala._
-import org.hyperscala.html.HTMLTag
-import org.hyperscala.html.tag.{HTML, Comment, Text, Title}
-import org.hyperscala.css.StyleSheetAttribute
-import org.hyperscala.javascript.{EventProperty, JavaScriptString}
-import org.hyperscala.css.attributes.NumericLength
-import org.powerscala.enum.EnumEntry
+import scala.util.Try
 
 case class WriterContext(
   var depth: Int = 1,
@@ -38,9 +38,7 @@ object ScalaBuffer {
       tagName(clazz.getSuperclass)
     }
 
-  def encodeId(id: String): String =
-    if (id.contains('-')) s"`$id`"
-    else id
+  def encodeId(id: String): String = StringUtil.toCamelCase(id)
 
   def writeTag(tag: HTMLTag,
                prefix: Option[String] = None,

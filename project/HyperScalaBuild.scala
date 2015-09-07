@@ -1,19 +1,18 @@
-import sbt._
+import com.typesafe.sbt.web.SbtWeb
 import sbt.Keys._
+import sbt._
 import sbtassembly.AssemblyKeys._
-import sbtassembly._
 import sbtassembly.AssemblyPlugin._
+import sbtassembly._
+import sbtbuildinfo.Plugin._
 import sbtunidoc.Plugin._
 import spray.revolver.RevolverPlugin._
-import sbtbuildinfo.Plugin._
-import com.typesafe.sbt.web.SbtWeb
-import com.typesafe.sbt.web.Import._
 
 object HyperScalaBuild extends Build {
   import Dependencies._
 
   val baseSettings = Defaults.coreDefaultSettings ++ Seq(
-    version := "0.10.2-SNAPSHOT",
+    version := "0.10.3-SNAPSHOT",
     organization := "org.hyperscala",
     scalaVersion := "2.11.7",
     libraryDependencies ++= Seq(

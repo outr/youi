@@ -5,6 +5,7 @@ import java.io.OutputStream
 import org.hyperscala.io.HTMLWriter
 import java.nio.charset.Charset
 import org.hyperscala.html.tag.HTML
+import java.io.ByteArrayOutputStream
 
 /**
  * @author Matt Hicks <matt@outr.com>
@@ -20,5 +21,11 @@ class HTMLStreamer(html: HTML) extends StreamingContent {
     }
     writer.writeLine("<!DOCTYPE html>\r\n")
     html.write(writer)
+  }
+
+  override def asString = {
+    val baos = new ByteArrayOutputStream
+    stream(baos)
+    new String(baos.toByteArray, contentType.charSet)
   }
 }

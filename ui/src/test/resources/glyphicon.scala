@@ -1,1 +1,0 @@
-bootstrap.component.Glyphicon.Ok

@@ -14,7 +14,9 @@ lazy val root = project.in(file("."))
 lazy val core = crossProject.in(file("core"))
   .settings(
     name := "core",
-    libraryDependencies += "com.outr.scribe" %%% "scribe" % "1.2.5"
+    libraryDependencies += "com.outr.scribe" %%% "scribe" % "1.2.5",
+    libraryDependencies += "org.scalactic" %%% "scalactic" % "3.0.0",
+    libraryDependencies += "org.scalatest" %%% "scalatest" % "3.0.0" % "test"
   )
 
 lazy val coreJS = core.js

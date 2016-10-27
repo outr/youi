@@ -40,15 +40,15 @@ class URLSpec extends WordSpec with Matchers {
         val url = URL(s)
         url.protocol should equal(Protocol.Http)
         url.host should equal("www.a.com.qa")
-        url.path.encoded should equal("/pps/a/publish/Pages/System+Pages/Document+View+Page")
+        url.path.encoded should equal("/pps/a/publish/Pages/System%20Pages/Document%20View%20Page")
         url.parameters.value("com.a.b.pagesvc.renderParams.sub-53343f7a_1279673d2a9_-78af0a000136") should equal(Some("rp.currentDocumentID=-4591476d_14a4cb0cbbf_-6cb00a000121"))
       }
       "properly create a decoded URL and encode it" in {
         val url = URL("http://test.com/location").withParam("address", "Oklahoma City, OK")
-        url.toString should equal("http://test.com/location?address=Oklahoma+City%2C+OK")
+        url.toString should equal("http://test.com/location?address=Oklahoma%20City%2C%20OK")
         url.parameters.value("address") should equal(Some("Oklahoma City, OK"))
         val encoded = url.encoded
-        encoded should equal("http://test.com/location?address=Oklahoma+City%2C+OK")
+        encoded should equal("http://test.com/location?address=Oklahoma%20City%2C%20OK")
       }
     }
   }

@@ -58,5 +58,5 @@ class Parameters(map: Map[String, Param]) {
 }
 
 object Parameters {
-  val Empty = new Parameters(Map.empty)
+  val empty = new Parameters(Map.empty)
 }

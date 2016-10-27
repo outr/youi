@@ -5,8 +5,8 @@ import io.youi.util.URLUtil
 case class URL(protocol: Protocol = Protocol.Http,
                host: String = "localhost",
                port: Int = 80,
-               path: Path = Path.Empty,
-               parameters: Parameters = Parameters.Empty,
+               path: Path = Path.empty,
+               parameters: Parameters = Parameters.empty,
                fragment: Option[String] = None) {
   def withPath(path: String, absolutize: Boolean = true): URL = {
     val updated = this.path.append(path).absolute

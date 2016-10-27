@@ -31,7 +31,7 @@ case class Path(parts: List[String]) {
 }
 
 object Path {
-  val Empty = Path(Nil)
+  val empty = Path(Nil)
 
   def parse(path: String, absolutize: Boolean = true): Path = {
     val updated = if (path.startsWith("/")) {

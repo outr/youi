@@ -4,5 +4,5 @@ import io.youi.net.URL
 
 case class HttpRequest(method: Method = Method.Get,
                        url: URL = URL(),
-                       headers: Map[String, String] = Map.empty,
+                       headers: Headers = Headers.empty,
                        content: Content = Content.empty)

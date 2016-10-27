@@ -15,6 +15,7 @@ lazy val core = crossProject.in(file("core"))
   .settings(
     name := "core",
     libraryDependencies += "com.outr.scribe" %%% "scribe" % "1.2.5",
+    libraryDependencies += "com.outr" %%% "metarx" % "0.1.8-cyclical",
     libraryDependencies += "org.scalactic" %%% "scalactic" % "3.0.0",
     libraryDependencies += "org.scalatest" %%% "scalatest" % "3.0.0" % "test"
   )

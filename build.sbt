@@ -7,6 +7,7 @@ sbtVersion in ThisBuild := "0.13.11"
 lazy val root = project.in(file("."))
   .aggregate(coreJS, coreJVM, communicateJS, communicateJVM, domJS, domJVM, server, ui)
   .settings(
+    resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases",
     publish := {},
     publishLocal := {}
   )
@@ -14,6 +15,7 @@ lazy val root = project.in(file("."))
 lazy val core = crossProject.in(file("core"))
   .settings(
     name := "core",
+    resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases",
     libraryDependencies += "com.outr.scribe" %%% "scribe" % "1.2.5",
     libraryDependencies += "com.outr" %%% "metarx" % "0.1.8-cyclical",
     libraryDependencies += "org.scalactic" %%% "scalactic" % "3.0.0",

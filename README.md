@@ -16,18 +16,18 @@ into this new framework. If you need a production-ready framework please look at
 
 ### Features for 1.0
 
-[X] Scala JVM and JS support
-[X] URL implementation offering good parsing and flexibility
-[X] Server abstraction with HttpRequest and HttpResponse allowing for multiple implementations
-[X] HttpHandler prioritization and flow to allow handlers to build upon each other
-[ ] IPv4 and IPv6 wrapper classes (see outrnet)
-[ ] TestServerImplementation for easy unit testing
-[ ] Full Cookie support
-[ ] Session support
-[ ] Proxying support and optional ProxyingSupport trait to be mixed into Server
-[ ] Communication implementation supporting client and server with JVM and JS support (see Hyperscala)
-[ ] Undertow implementation for Server (see Hyperscala)
-[ ] User Interface framework for Scala.js (see NextUI)
-[ ] Client / Server Screen support (see Hyperscala)
-[ ] Ajax Request / Response framework for Server (JVM) and Client (JS) (see Hyperscala)
-[ ] Scala JVM and JS Content Modification Streams for any XML / HTML content (see Hyperscala)
+* [X] Scala JVM and JS support
+* [X] URL implementation offering good parsing and flexibility
+* [X] Server abstraction with HttpRequest and HttpResponse allowing for multiple implementations
+* [X] HttpHandler prioritization and flow to allow handlers to build upon each other
+* [ ] IPv4 and IPv6 wrapper classes (see outrnet)
+* [ ] TestServerImplementation for easy unit testing
+* [ ] Full Cookie support
+* [ ] Session support
+* [ ] Proxying support and optional ProxyingSupport trait to be mixed into Server
+* [ ] Communication implementation supporting client and server with JVM and JS support (see Hyperscala)
+* [ ] Undertow implementation for Server (see Hyperscala)
+* [ ] User Interface framework for Scala.js (see NextUI)
+* [ ] Client / Server Screen support (see Hyperscala)
+* [ ] Ajax Request / Response framework for Server (JVM) and Client (JS) (see Hyperscala)
+* [ ] Scala JVM and JS Content Modification Streams for any XML / HTML content (see Hyperscala)

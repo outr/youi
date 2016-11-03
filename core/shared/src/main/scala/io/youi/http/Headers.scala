@@ -5,9 +5,16 @@ import java.util.{Date, Locale}
 
 import scala.util.Try
 
-case class Headers(map: Map[String, Header] = Map.empty) {
-  def get(key: HeaderKey): Option[Header] = map.get(key.key)
-  def withHeader(header: Header): Headers = copy(map + (header.key.key -> header))
+case class Headers(map: Map[String, List[Header]] = Map.empty) {
+  def first(key: HeaderKey): Option[Header] = get(key).headOption
+  def get(key: HeaderKey): List[Header] = map.getOrElse(key.key, Nil)
+  def withHeader(header: Header): Headers = {
+    val list = get(header.key)
+    copy(map + (header.key.key -> (list ::: List(header))))
+  }
+  def setHeader(header: Header): Headers = {
+    copy(map + (header.key.key -> List(header)))
+  }
   def withHeader(key: String, value: String): Headers = withHeader(Header(new StringHeaderKey(key), value))
 
   def merge(headers: Headers): Headers = copy(map ++ headers.map)
@@ -53,7 +60,7 @@ object Headers {
 trait HeaderKey {
   def key: String
 
-  def get(headers: Headers): Option[String] = headers.map.get(key).map(_.value)
+  def get(headers: Headers): Option[String] = headers.first(this).map(_.value)
 }
 
 trait TypedHeaderKey[V] extends HeaderKey {
@@ -77,7 +84,7 @@ class DateHeaderKey(val key: String) extends TypedHeaderKey[Long] {
 }
 
 class LongHeaderKey(val key: String) extends TypedHeaderKey[Long] {
-  override def value(headers: Headers): Option[Long] = Try(headers.get(this).map(_.value.toLong)).getOrElse(None)
+  override def value(headers: Headers): Option[Long] = Try(headers.first(this).map(_.value.toLong)).getOrElse(None)
 
   override def apply(value: Long): Header = Header(this, value.toString)
 }

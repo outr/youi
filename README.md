@@ -20,8 +20,8 @@ into this new framework. If you need a production-ready framework please look at
 * [X] URL implementation offering good parsing and flexibility
 * [X] Server abstraction with HttpRequest and HttpResponse allowing for multiple implementations
 * [X] HttpHandler prioritization and flow to allow handlers to build upon each other
-* [X] IPv4 and IPv6 wrapper classes (see outrnet)
-* [ ] TestServerImplementation for easy unit testing
+* [X] IPv4 and IPv6 wrapper classes
+* [X] TestServerImplementation for easy unit testing
 * [ ] Full Cookie support
 * [ ] Session support
 * [ ] Proxying support and optional ProxyingSupport trait to be mixed into Server

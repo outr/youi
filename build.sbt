@@ -27,12 +27,15 @@ lazy val coreJVM = core.jvm
 
 lazy val communicate = crossProject.in(file("communicate"))
   .settings(
-    name := "communicate"
+    name := "communicate",
+    libraryDependencies += "com.lihaoyi" %% "upickle" % "0.4.3",
+    libraryDependencies += "org.scalactic" %%% "scalactic" % "3.0.0",
+    libraryDependencies += "org.scalatest" %%% "scalatest" % "3.0.0" % "test"
   )
   .dependsOn(core)
 
-lazy val communicateJS = core.js
-lazy val communicateJVM = core.jvm
+lazy val communicateJS = communicate.js
+lazy val communicateJVM = communicate.jvm
 
 lazy val dom = crossProject.in(file("dom"))
   .settings(

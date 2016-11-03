@@ -1,7 +1,8 @@
-package io.youi.http.server
+package io.youi.server
 
 import com.outr.scribe.Logging
-import io.youi.http.{HttpRequest, HttpResponse}
+import io.youi.http.{HttpRequest, HttpResponse, Status}
+import io.youi.net.URLMatcher
 import pl.metastack.metarx.Sub
 
 import scala.collection.immutable.TreeSet
@@ -26,6 +27,19 @@ trait Server extends HttpHandler with Logging {
     }
     def -=(handler: HttpHandler): Unit = synchronized {
       set -= handler
+    }
+    def add(matcher: URLMatcher)(handler: HttpHandler): HttpHandler = {
+      val h = new HttpHandler {
+        override def handle(request: HttpRequest, response: HttpResponse): HttpResponse = {
+          if (matcher.matches(request.url)) {
+            handler.handle(request, response)
+          } else {
+            response
+          }
+        }
+      }
+      this += h
+      h
     }
 
     def apply(): Set[HttpHandler] = set
@@ -64,6 +78,10 @@ trait Server extends HttpHandler with Logging {
     try {
       handlers().foreach { handler =>
         updated = handler.handle(request, updated)
+      }
+      if (updated.content.isEmpty) {
+        updated = updated.copy(status = Status.NotFound)
+        updated = handlers.error.get.handle(request, updated, None)
       }
       updated
     } catch {

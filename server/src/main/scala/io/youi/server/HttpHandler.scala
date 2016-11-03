@@ -1,4 +1,4 @@
-package io.youi.http.server
+package io.youi.server
 
 import io.youi.Priority
 import io.youi.http.{HttpRequest, HttpResponse}

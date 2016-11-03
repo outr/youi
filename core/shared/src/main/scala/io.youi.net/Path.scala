@@ -4,6 +4,7 @@ import io.youi.util.URLUtil
 
 case class Path(parts: List[String]) {
   lazy val encoded: String = absolute.parts.map(URLUtil.encode).mkString("/", "/", "")
+  lazy val decoded: String = absolute.parts.mkString("/", "/", "")
 
   lazy val absolute: Path = {
     var entries = Vector.empty[String]

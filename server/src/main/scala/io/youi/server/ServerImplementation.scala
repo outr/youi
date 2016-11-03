@@ -1,4 +1,4 @@
-package io.youi.http.server
+package io.youi.server
 
 /**
   * ServerImplementations are responsible for managing the underlying server functionality specific to a server

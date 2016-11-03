@@ -5,7 +5,7 @@ scalaVersion in ThisBuild := "2.11.8"
 sbtVersion in ThisBuild := "0.13.11"
 
 lazy val root = project.in(file("."))
-  .aggregate(coreJS, coreJVM, communicateJS, communicateJVM, domJS, domJVM, server, ui)
+  .aggregate(coreJS, coreJVM, communicateJS, communicateJVM, domJS, domJVM, server, serverUndertow, ui)
   .settings(
     resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases",
     publish := {},
@@ -48,9 +48,20 @@ lazy val domJVM = dom.jvm
 
 lazy val server = project.in(file("server"))
   .settings(
-    name := "server"
+    name := "server",
+    libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.0",
+    libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.0" % "test"
   )
   .dependsOn(coreJVM)
+
+lazy val serverUndertow = project.in(file("server-undertow"))
+  .settings(
+    name := "server-undertow",
+    libraryDependencies += "io.undertow" % "undertow-core" % "1.4.4.Final",
+    libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.0",
+    libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.0" % "test"
+  )
+  .dependsOn(server)
 
 lazy val ui = project.in(file("ui"))
   .enablePlugins(ScalaJSPlugin)

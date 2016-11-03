@@ -1,4 +1,4 @@
-package io.youi.http.server
+package io.youi.server
 
 import io.youi.http.{Headers, HttpRequest, HttpResponse, Status}
 

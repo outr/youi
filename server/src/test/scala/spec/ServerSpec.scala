@@ -19,7 +19,7 @@ class ServerSpec extends WordSpec with Matchers {
 }
 
 object TestServer extends Server {
-  handlers.add(URLMatcher.path("/test.html"))(new HttpHandler {
+  handlers.add(URLMatcher.path.exact("/test.html"))(new HttpHandler {
     override def handle(request: HttpRequest, response: HttpResponse): HttpResponse = response.withContent(Content.string("test!"))
   })
 

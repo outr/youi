@@ -1,9 +1,17 @@
 package io.youi.server
 
+import java.io.IOException
+import java.nio.channels.{Channels, FileChannel}
+import java.nio.file.StandardOpenOption
+
+import io.undertow.io.{IoCallback, Sender}
 import io.undertow.{Undertow, UndertowOptions}
 import io.undertow.server.{HttpServerExchange, HttpHandler => UndertowHttpHandler}
-import io.youi.http.{Headers, HttpRequest, HttpResponse, Method}
+import io.undertow.util.HttpString
+import io.youi.http.{FileContent, Headers, HttpRequest, HttpResponse, Method, StringContent, URLContent}
 import io.youi.net.URL
+
+import scala.collection.JavaConversions._
 
 class UndertowServerImplementation(server: Server) extends ServerImplementation with UndertowHttpHandler {
   private var instance: Option[Undertow] = None
@@ -33,19 +41,69 @@ class UndertowServerImplementation(server: Server) extends ServerImplementation 
   override def handleRequest(exchange: HttpServerExchange): Unit = {
     val request = UndertowServerImplementation.request(exchange)
     val response = server.handle(request, HttpResponse())
-    UndertowServerImplementation.response(response, exchange)
+    UndertowServerImplementation.response(server, response, exchange)
   }
 }
 
 object UndertowServerImplementation {
-  def request(exchange: HttpServerExchange): HttpRequest = HttpRequest(
-    method = Method(exchange.getRequestMethod.toString),
-    url = URL(exchange.getRequestURL),
-    headers = Headers.empty,    // TODO: implement
-    content = None              // TODO: implement
-  )
+  def request(exchange: HttpServerExchange): HttpRequest = {
+    val headers = Headers(exchange.getRequestHeaders.map { hv =>
+      hv.getHeaderName.toString -> hv.toList
+    }.toMap)
+    HttpRequest(
+      method = Method(exchange.getRequestMethod.toString),
+      url = URL(exchange.getRequestURL),
+      headers = headers,
+      content = None              // TODO: implement
+    )
+  }
 
-  def response(response: HttpResponse, exchange: HttpServerExchange): Unit = {
-    // TODO: implement
+  def response(server: Server, response: HttpResponse, exchange: HttpServerExchange): Unit = {
+    exchange.setStatusCode(response.status.code)
+    response.headers.map.foreach {
+      case (key, values) => exchange.getResponseHeaders.putAll(new HttpString(key), values)
+    }
+    if (exchange.getRequestMethod.toString != "HEAD") {
+      response.content match {
+        case Some(content) => content match {
+          case StringContent(s, lastModified) => exchange.getResponseSender.send(s)
+          case FileContent(file) => {
+            val channel = FileChannel.open(file.getAbsoluteFile.toPath, StandardOpenOption.READ)
+            exchange.getResponseSender.transferFrom(channel, new IoCallback {
+              override def onComplete(exchange: HttpServerExchange, sender: Sender): Unit = {
+                channel.close()
+                sender.close()
+              }
+
+              override def onException(exchange: HttpServerExchange, sender: Sender, exception: IOException): Unit = {
+                channel.close()
+                sender.close()
+                server.error(exception)
+              }
+            })
+          }
+          case URLContent(url) => {
+            //          val in = url.openConnection().getInputStream
+            //          val channel = Channels.newChannel(in)
+            //          exchange.getResponseSender.transferFrom(channel, new IoCallback {
+            //            override def onComplete(exchange: HttpServerExchange, sender: Sender): Unit = channel.close()
+            //
+            //            override def onException(exchange: HttpServerExchange, sender: Sender, exception: IOException): Unit = server.error(exception)
+            //          })
+            throw new UnsupportedOperationException(s"URLContent is not currently supported!")
+          }
+        }
+        case None => exchange.getResponseSender.send("", new IoCallback {
+          override def onComplete(exchange: HttpServerExchange, sender: Sender): Unit = {
+            sender.close()
+          }
+
+          override def onException(exchange: HttpServerExchange, sender: Sender, exception: IOException): Unit = {
+            sender.close()
+            server.error(exception)
+          }
+        })
+      }
+    }
   }
 }

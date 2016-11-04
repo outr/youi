@@ -2,8 +2,8 @@ package spec
 
 import io.youi.http.{Content, HttpRequest, HttpResponse, Status}
 import io.youi.net.{URL, URLMatcher}
+import io.youi.server.handler.HttpHandler
 import io.youi.server.test.TestServer
-import io.youi.server.HttpHandler
 import org.scalatest.{Matchers, WordSpec}
 
 class ServerSpec extends WordSpec with Matchers {

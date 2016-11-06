@@ -3,6 +3,8 @@ package io.youi.http
 import java.text.SimpleDateFormat
 import java.util.{Date, Locale}
 
+import io.youi.http.cookie.{RequestCookie, ResponseCookie}
+
 import scala.util.Try
 
 case class Headers(map: Map[String, List[String]] = Map.empty) {
@@ -31,7 +33,7 @@ object Headers {
     case object `Accept-Encoding` extends StringHeaderKey("Accept-Encoding")
     case object `Accept-Language` extends StringHeaderKey("Accept-Language")
     case object `Authorization` extends StringHeaderKey("Authorization")
-    case object `Cookie` extends StringHeaderKey("Cookie")
+    def `Cookie` = CookieHeader
     case object `If-Modified-Since` extends DateHeaderKey("If-Modified-Since")
     case object `User-Agent` extends StringHeaderKey("User-Agent")
     case object `X-Forwarded-For` extends StringHeaderKey("X-Forwarded-For")
@@ -46,7 +48,7 @@ object Headers {
         Header(this, value)
       }
     }
-    case object `Set-Cookie` extends StringHeaderKey("Set-Cookie")
+    def `Set-Cookie` = SetCookie
     case object `Content-Disposition` extends HeaderKey {
       override def key: String = "Content-Disposition"
 
@@ -73,6 +75,26 @@ trait TypedHeaderKey[V] extends HeaderKey {
   def apply(value: V): Header
 }
 
+trait ListTypedHeaderKey[V] extends HeaderKey {
+  def value(headers: Headers): List[V]
+
+  def apply(values: List[V], headers: Headers, append: Boolean = false): Headers = {
+    var map = headers.map
+    val list = values.map { v =>
+      val h = apply(v)
+      h.value
+    }
+    if (append) {
+      map += key -> (map.getOrElse(key, Nil) ::: list)
+    } else {
+      map += key -> list
+    }
+    Headers(map)
+  }
+
+  def apply(value: V): Header
+}
+
 trait MultiTypedHeaderKey[V] extends HeaderKey {
   def value(headers: Headers): List[V]
 
@@ -86,11 +108,15 @@ class StringHeaderKey(val key: String) extends TypedHeaderKey[String] {
 }
 
 class DateHeaderKey(val key: String) extends TypedHeaderKey[Long] {
-  def parser: SimpleDateFormat = new SimpleDateFormat("EEE, dd MMMM yyyy HH:mm:ss zzz", Locale.ENGLISH)
+  import DateHeaderKey._
 
   override def value(headers: Headers): Option[Long] = get(headers).map(parser.parse(_).getTime)
 
   override def apply(date: Long): Header = Header(this, parser.format(new Date(date)))
+}
+
+object DateHeaderKey {
+  def parser: SimpleDateFormat = new SimpleDateFormat("EEE, dd MMMM yyyy HH:mm:ss zzz", Locale.ENGLISH)
 }
 
 class LongHeaderKey(val key: String) extends TypedHeaderKey[Long] {
@@ -101,12 +127,55 @@ class LongHeaderKey(val key: String) extends TypedHeaderKey[Long] {
 
 case class Header(key: HeaderKey, value: String)
 
+object CookieHeader extends ListTypedHeaderKey[RequestCookie] {
+  override def key: String = "Cookie"
+
+  override def value(headers: Headers): List[RequestCookie] = {
+    headers.get(this).map {
+      case SetCookie.KeyValueRegex(key, value) => RequestCookie(key, value)
+    }
+  }
+
+  override def apply(value: RequestCookie): Header = Header(this, value.toHTTP())
+}
+
+object SetCookie extends ListTypedHeaderKey[ResponseCookie] {
+  private[http] val KeyValueRegex = """(.+)=(.+)""".r
+  private val ExpiresRegex = """Expires=(.+)""".r
+  private val MaxAgeRegex = """Max-Age=(\d+)""".r
+  private val DomainRegex = """Domain=(.+)""".r
+  private val PathRegex = """Path=(.+)""".r
+
+  override def key: String = "Set-Cookie"
+
+  override def value(headers: Headers): List[ResponseCookie] = {
+    headers.get(this).map { headerValue =>
+      val list = headerValue.split(';').map(_.trim).toList
+      val (name, value) = list.head match {
+        case KeyValueRegex(k, v) => k -> v
+      }
+      var cookie = ResponseCookie(name, value)
+      list.tail.foreach {
+        case ExpiresRegex(date) => cookie = cookie.copy(expires = Some(DateHeaderKey.parser.parse(date).getTime))
+        case MaxAgeRegex(seconds) => cookie = cookie.copy(maxAge = Some(seconds.toLong))
+        case DomainRegex(domain) => cookie = cookie.copy(domain = Some(domain))
+        case PathRegex(path) => cookie = cookie.copy(path = Some(path))
+        case "Secure" => cookie = cookie.copy(secure = true)
+        case "HttpOnly" => cookie = cookie.copy(httpOnly = true)
+      }
+      cookie
+    }
+  }
+
+  override def apply(value: ResponseCookie): Header = Header(this, value.toHTTP())
+}
+
 object CacheControl extends MultiTypedHeaderKey[CacheControlEntry] {
   private val MaxAgeRegex = """max-age=(\d+)""".r
 
   override def key: String = "Cache-Control"
 
-  override def value(headers: Headers): List[CacheControlEntry] = headers.get(this).mkString(", ").split(",").map(_.toLowerCase.trim).map {
+  override def value(headers: Headers): List[CacheControlEntry] = headers.get(this).mkString(", ").split(',').map(_.toLowerCase.trim).map {
     case "public" => Public
     case "private" => Private
     case "no-cache" => NoCache

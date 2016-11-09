@@ -1,8 +1,10 @@
 name := "youi"
 organization in ThisBuild := "com.outr"
 version in ThisBuild := "1.0.0-SNAPSHOT"
-scalaVersion in ThisBuild := "2.11.8"
-sbtVersion in ThisBuild := "0.13.11"
+scalaVersion in ThisBuild := "2.12.0"
+crossScalaVersions in ThisBuild := List("2.12.0", "2.11.8")
+sbtVersion in ThisBuild := "0.13.13"
+resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
 
 lazy val root = project.in(file("."))
   .aggregate(coreJS, coreJVM, communicateJS, communicateJVM, domJS, domJVM, server, serverUndertow, serverExample, ui)
@@ -16,8 +18,9 @@ lazy val core = crossProject.in(file("core"))
   .settings(
     name := "core",
     resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases",
-    libraryDependencies += "com.outr.scribe" %%% "scribe" % "1.2.5",
-    libraryDependencies += "com.outr" %%% "metarx" % "0.1.8-cyclical",
+    libraryDependencies <+= scalaVersion("org.scala-lang" % "scala-reflect" % _),
+    libraryDependencies += "com.outr" %%% "scribe" % "1.2.6",
+    libraryDependencies += "com.outr" %%% "metarx" % "0.2.0",
     libraryDependencies += "org.scalactic" %%% "scalactic" % "3.0.0",
     libraryDependencies += "org.scalatest" %%% "scalatest" % "3.0.0" % "test"
   )
@@ -28,7 +31,7 @@ lazy val coreJVM = core.jvm
 lazy val communicate = crossProject.in(file("communicate"))
   .settings(
     name := "communicate",
-    libraryDependencies += "com.lihaoyi" %% "upickle" % "0.4.3",
+    libraryDependencies += "com.lihaoyi" %% "upickle" % "0.4.4",
     libraryDependencies += "org.scalactic" %%% "scalactic" % "3.0.0",
     libraryDependencies += "org.scalatest" %%% "scalatest" % "3.0.0" % "test"
   )

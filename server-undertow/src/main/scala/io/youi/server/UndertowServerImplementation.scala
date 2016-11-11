@@ -11,7 +11,7 @@ import io.undertow.util.HttpString
 import io.youi.http.{FileContent, Headers, HttpRequest, HttpResponse, Method, StringContent, URLContent}
 import io.youi.net.URL
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 
 class UndertowServerImplementation(server: Server) extends ServerImplementation with UndertowHttpHandler {
   private var instance: Option[Undertow] = None
@@ -47,8 +47,8 @@ class UndertowServerImplementation(server: Server) extends ServerImplementation 
 
 object UndertowServerImplementation {
   def request(exchange: HttpServerExchange): HttpRequest = {
-    val headers = Headers(exchange.getRequestHeaders.map { hv =>
-      hv.getHeaderName.toString -> hv.toList
+    val headers = Headers(exchange.getRequestHeaders.asScala.map { hv =>
+      hv.getHeaderName.toString -> hv.asScala.toList
     }.toMap)
     HttpRequest(
       method = Method(exchange.getRequestMethod.toString),
@@ -61,7 +61,7 @@ object UndertowServerImplementation {
   def response(server: Server, response: HttpResponse, exchange: HttpServerExchange): Unit = {
     exchange.setStatusCode(response.status.code)
     response.headers.map.foreach {
-      case (key, values) => exchange.getResponseHeaders.putAll(new HttpString(key), values)
+      case (key, values) => exchange.getResponseHeaders.putAll(new HttpString(key), values.asJava)
     }
     if (exchange.getRequestMethod.toString != "HEAD") {
       response.content match {

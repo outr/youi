@@ -5,6 +5,7 @@ scalaVersion in ThisBuild := "2.12.0"
 crossScalaVersions in ThisBuild := List("2.12.0", "2.11.8")
 sbtVersion in ThisBuild := "0.13.13"
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
+scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 
 lazy val root = project.in(file("."))
   .aggregate(coreJS, coreJVM, communicateJS, communicateJVM, domJS, domJVM, server, serverUndertow, serverExample, ui)
@@ -18,7 +19,7 @@ lazy val core = crossProject.in(file("core"))
   .settings(
     name := "core",
     resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases",
-    libraryDependencies <+= scalaVersion("org.scala-lang" % "scala-reflect" % _),
+    libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value,
     libraryDependencies += "com.outr" %%% "scribe" % "1.2.6",
     libraryDependencies += "com.outr" %%% "metarx" % "0.2.0",
     libraryDependencies += "org.scalactic" %%% "scalactic" % "3.0.0",

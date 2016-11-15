@@ -69,7 +69,8 @@ lazy val serverUndertow = project.in(file("server-undertow"))
 
 lazy val serverExample = project.in(file("server-example"))
   .settings(
-    name := "server-example"
+    name := "server-example",
+    libraryDependencies += "org.scala-lang.modules" %% "scala-xml" % "1.0.6"
   )
   .dependsOn(serverUndertow)
 

@@ -131,7 +131,7 @@ object CookieHeader extends ListTypedHeaderKey[RequestCookie] {
   override def key: String = "Cookie"
 
   override def value(headers: Headers): List[RequestCookie] = {
-    headers.get(this).map {
+    headers.get(this).flatMap(_.split(';')).map(_.trim).map {
       case SetCookie.KeyValueRegex(key, value) => RequestCookie(key, value)
     }
   }

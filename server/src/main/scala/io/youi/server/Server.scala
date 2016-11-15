@@ -78,7 +78,7 @@ trait Server extends HttpHandler with Logging {
       handlers().foreach { handler =>
         updated = handler.handle(request, updated)
       }
-      if (updated.content.isEmpty && updated.status != Status.NotModified) {
+      if (updated.content.isEmpty && updated.status == Status.OK) {
         updated = updated.copy(status = Status.NotFound)
         updated = handlers.error.get.handle(request, updated, None)
       }

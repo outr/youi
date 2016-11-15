@@ -9,4 +9,5 @@ case class HttpResponse(status: Status = Status.OK,
   def withHeader(key: String, value: String): HttpResponse = copy(headers = headers.withHeader(key, value))
   def setHeader(header: Header): HttpResponse = copy(headers = headers.setHeader(header))
   def withContent(content: Content): HttpResponse = copy(content = Some(content))
+  def withRedirect(uri: String): HttpResponse = copy(status = Status.Found).setHeader(Headers.Response.`Location`(uri))
 }

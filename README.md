@@ -22,9 +22,10 @@ into this new framework. If you need a production-ready framework please look at
 * [X] HttpHandler prioritization and flow to allow handlers to build upon each other
 * [X] IPv4 and IPv6 wrapper classes
 * [X] TestServerImplementation for easy unit testing
-* [ ] Full Cookie support
+* [X] Full Cookie support
 * [ ] Session support
 * [ ] Proxying support and optional ProxyingSupport trait to be mixed into Server
+* [ ] WebSocket support through abstraction
 * [ ] Communication implementation supporting client and server with JVM and JS support (see Hyperscala)
 * [ ] Undertow implementation for Server (see Hyperscala)
 * [ ] User Interface framework for Scala.js (see NextUI)

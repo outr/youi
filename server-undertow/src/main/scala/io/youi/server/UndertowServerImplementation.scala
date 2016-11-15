@@ -52,7 +52,7 @@ object UndertowServerImplementation {
     }.toMap)
     HttpRequest(
       method = Method(exchange.getRequestMethod.toString),
-      url = URL(exchange.getRequestURL),
+      url = URL(s"${exchange.getRequestURL}?${exchange.getQueryString}"),
       headers = headers,
       content = None              // TODO: implement
     )

@@ -1,12 +1,10 @@
 package io.youi.server
 
+import com.outr.props._
 import com.outr.scribe.Logging
 import io.youi.http.{HttpRequest, HttpResponse, Status}
 import io.youi.net.URLMatcher
 import io.youi.server.handler.HttpHandler
-import pl.metastack.metarx.Sub
-
-import scala.collection.immutable.TreeSet
 
 trait Server extends HttpHandler with Logging {
   val config = new ServerConfig(this)
@@ -19,7 +17,7 @@ trait Server extends HttpHandler with Logging {
       *
       * Defaults to DefaultErrorHandler
       */
-    val error: Sub[ErrorHandler] = Sub(DefaultErrorHandler)
+    val error: Var[ErrorHandler] = Var(DefaultErrorHandler)
 
     private var entries = List.empty[HttpHandler]
 

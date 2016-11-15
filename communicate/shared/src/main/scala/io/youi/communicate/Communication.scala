@@ -1,6 +1,6 @@
 package io.youi.communicate
 
-import pl.metastack.metarx.{Channel, ReadChannel}
+import com.outr.props.Channel
 
 import scala.annotation.compileTimeOnly
 import scala.reflect.macros.blackbox

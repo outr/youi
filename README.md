@@ -28,6 +28,6 @@ into this new framework. If you need a production-ready framework please look at
 * [ ] Communication implementation supporting client and server with JVM and JS support (see Hyperscala)
 * [ ] Undertow implementation for Server (see Hyperscala)
 * [ ] User Interface framework for Scala.js (see NextUI)
-* [ ] Client / Server Screen support (see Hyperscala)
+* [ ] Client / Server Page and Screen support (see Hyperscala)
 * [ ] Ajax Request / Response framework for Server (JVM) and Client (JS) (see Hyperscala)
 * [ ] Scala JVM and JS Content Modification Streams for any XML / HTML content (see Hyperscala)

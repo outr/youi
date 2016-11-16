@@ -1,19 +1,20 @@
 package io.youi.server.handler
 
 import io.youi.http.{CacheControl, Content, Headers, HttpRequest, HttpResponse, Status}
+import io.youi.net.ContentType
 
-class SenderHandler private(content: Content, contentType: String, length: Option[Long], caching: CachingManager) extends HttpHandler {
+class SenderHandler private(content: Content, contentType: ContentType, length: Option[Long], caching: CachingManager) extends HttpHandler {
   override def handle(request: HttpRequest, response: HttpResponse): HttpResponse = {
     SenderHandler.handle(request, response, content, contentType, length, caching)
   }
 }
 
 object SenderHandler {
-  def apply(content: Content, contentType: String, length: Option[Long] = None, caching: CachingManager = CachingManager.Default): SenderHandler = {
+  def apply(content: Content, contentType: ContentType, length: Option[Long] = None, caching: CachingManager = CachingManager.Default): SenderHandler = {
     new SenderHandler(content, contentType, length, caching)
   }
 
-  def handle(request: HttpRequest, response: HttpResponse, content: Content, contentType: String, length: Option[Long] = None, caching: CachingManager = CachingManager.Default): HttpResponse = {
+  def handle(request: HttpRequest, response: HttpResponse, content: Content, contentType: ContentType, length: Option[Long] = None, caching: CachingManager = CachingManager.Default): HttpResponse = {
     val contentLength = length.getOrElse(content.length)
     val u = response
       .withHeader(Headers.`Content-Type`(contentType))

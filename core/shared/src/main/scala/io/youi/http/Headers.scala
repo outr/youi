@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat
 import java.util.{Date, Locale}
 
 import io.youi.http.cookie.{RequestCookie, ResponseCookie}
+import io.youi.net.ContentType
 
 import scala.util.Try
 
@@ -26,7 +27,13 @@ object Headers {
   val empty: Headers = Headers()
 
   case object `Content-Length` extends LongHeaderKey("Content-Length")
-  case object `Content-Type` extends StringHeaderKey("Content-Type")
+  case object `Content-Type` extends TypedHeaderKey[ContentType] {
+    override def key: String = "Content-Type"
+
+    override def apply(value: ContentType): Header = Header(this, value.outputString)
+
+    override def value(headers: Headers): Option[ContentType] = headers.first(this).map(ContentType.parse)
+  }
   def `Cache-Control` = CacheControl
 
   object Request {

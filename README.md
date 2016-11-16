@@ -24,7 +24,7 @@ into this new framework. If you need a production-ready framework please look at
 * [X] TestServerImplementation for easy unit testing
 * [X] Full Cookie support
 * [X] Undertow implementation for Server
-* [ ] Wrapper for standard ContentTypes (see outrnet)
+* [X] Wrapper for standard ContentTypes
 * [ ] Session support
 * [ ] Proxying support and optional ProxyingSupport trait to be mixed into Server
 * [ ] WebSocket support through abstraction

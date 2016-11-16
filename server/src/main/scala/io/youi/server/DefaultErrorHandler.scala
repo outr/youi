@@ -1,6 +1,7 @@
 package io.youi.server
 
 import io.youi.http.{Headers, HttpRequest, HttpResponse, Status}
+import io.youi.net.ContentType
 
 object DefaultErrorHandler extends ErrorHandler {
   override def handle(request: HttpRequest, response: HttpResponse, t: Option[Throwable]): HttpResponse = {
@@ -21,7 +22,7 @@ object DefaultErrorHandler extends ErrorHandler {
        """.stripMargin
     response
       .withHeader(Headers.`Content-Length`(html.length))
-      .withHeader(Headers.`Content-Type`("text/html"))
+      .withHeader(Headers.`Content-Type`(ContentType.HTML))
       .withContent(html)
   }
 }

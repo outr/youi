@@ -23,11 +23,12 @@ into this new framework. If you need a production-ready framework please look at
 * [X] IPv4 and IPv6 wrapper classes
 * [X] TestServerImplementation for easy unit testing
 * [X] Full Cookie support
+* [X] Undertow implementation for Server
+* [ ] Wrapper for standard ContentTypes (see outrnet)
 * [ ] Session support
 * [ ] Proxying support and optional ProxyingSupport trait to be mixed into Server
 * [ ] WebSocket support through abstraction
 * [ ] Communication implementation supporting client and server with JVM and JS support (see Hyperscala)
-* [ ] Undertow implementation for Server (see Hyperscala)
 * [ ] User Interface framework for Scala.js (see NextUI)
 * [ ] Client / Server Page and Screen support (see Hyperscala)
 * [ ] Ajax Request / Response framework for Server (JVM) and Client (JS) (see Hyperscala)

@@ -39,7 +39,7 @@ object CookiesExample extends HttpHandler with Logging {
             <li><a href={setCookieURL}>Set a Sample Cookie</a></li>
           </body>
         </html>
-        SenderHandler.handle(request, response, html.toString, ContentType.HTML)
+        SenderHandler.handle(request, response, html.toString, ContentType.`text/html`)
       }
     }
   }

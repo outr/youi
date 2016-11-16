@@ -18,14 +18,14 @@ case class ContentType(mimeType: String, charSet: Option[String] = None, boundar
 }
 
 object ContentType {
-  lazy val Text = new ContentType("text/plain")
-  lazy val HTML = new ContentType("text/html")
-  lazy val XML = new ContentType("text/xml")
-  lazy val JSON = new ContentType("application/json")
-  lazy val CSV = new ContentType("text/csv")
-  lazy val PDF = new ContentType("application/pdf")
-  lazy val FormURLEncoded = new ContentType("application/x-www-form-urlencoded")
-  lazy val MultiPartFormData = new ContentType("multipart/form-data")
+  lazy val `text/plain` = ContentType("text/plain")
+  lazy val `text/html` = ContentType("text/html")
+  lazy val `text/xml` = ContentType("text/xml")
+  lazy val `text/csv` = ContentType("text/csv")
+  lazy val `application/json` = ContentType("application/json")
+  lazy val `application/pdf` = ContentType("application/pdf")
+  lazy val `application/x-www-form-urlencoded` = ContentType("application/x-www-form-urlencoded")
+  lazy val `multipart/form-data` = ContentType("multipart/form-data")
 
   def parse(contentTypeString: String): ContentType = {
     val parts = contentTypeString.split(';')

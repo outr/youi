@@ -22,7 +22,7 @@ object DefaultErrorHandler extends ErrorHandler {
        """.stripMargin
     response
       .withHeader(Headers.`Content-Length`(html.length))
-      .withHeader(Headers.`Content-Type`(ContentType.HTML))
+      .withHeader(Headers.`Content-Type`(ContentType.`text/html`))
       .withContent(html)
   }
 }

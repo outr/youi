@@ -1,7 +1,7 @@
 package io.youi.server
 
-import io.youi.http.{HttpRequest, HttpResponse}
+import io.youi.http.HttpConnection
 
 trait ErrorHandler {
-  def handle(request: HttpRequest, response: HttpResponse, t: Option[Throwable]): HttpResponse
+  def handle(connection: HttpConnection, t: Option[Throwable]): Unit
 }

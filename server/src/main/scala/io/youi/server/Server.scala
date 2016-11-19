@@ -2,7 +2,7 @@ package io.youi.server
 
 import com.outr.props._
 import com.outr.scribe.Logging
-import io.youi.http.{HttpRequest, HttpResponse, Status}
+import io.youi.http.{HttpConnection, HttpRequest, HttpResponse, Status}
 import io.youi.net.URLMatcher
 import io.youi.server.handler.HttpHandler
 
@@ -29,11 +29,9 @@ trait Server extends HttpHandler with Logging {
     }
     def add(matcher: URLMatcher)(handler: HttpHandler): HttpHandler = {
       val h = new HttpHandler {
-        override def handle(request: HttpRequest, response: HttpResponse): HttpResponse = {
-          if (matcher.matches(request.url)) {
-            handler.handle(request, response)
-          } else {
-            response
+        override def handle(connection: HttpConnection): Unit = {
+          if (matcher.matches(connection.request.url)) {
+            handler.handle(connection)
           }
         }
       }
@@ -72,21 +70,19 @@ trait Server extends HttpHandler with Logging {
     }
   }
 
-  override def handle(request: HttpRequest, response: HttpResponse): HttpResponse = {
-    var updated = response
+  override def handle(connection: HttpConnection): Unit = {
     try {
-      handlers().foreach { handler =>
-        updated = handler.handle(request, updated)
+      handlers().foreach(_.handle(connection))
+      if (connection.response.content.isEmpty && connection.response.status == Status.OK) {
+        connection.update { response =>
+          response.copy(status = Status.NotFound)
+        }
+        handlers.error.get.handle(connection, None)
       }
-      if (updated.content.isEmpty && updated.status == Status.OK) {
-        updated = updated.copy(status = Status.NotFound)
-        updated = handlers.error.get.handle(request, updated, None)
-      }
-      updated
     } catch {
       case t: Throwable => {
         error(t)
-        handlers.error.get.handle(request, updated, Some(t))
+        handlers.error.get.handle(connection, Some(t))
       }
     }
   }

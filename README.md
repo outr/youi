@@ -25,9 +25,9 @@ into this new framework. If you need a production-ready framework please look at
 * [X] Full Cookie support
 * [X] Undertow implementation for Server
 * [X] Wrapper for standard ContentTypes
-* [ ] Session support
-* [ ] Proxying support and optional ProxyingSupport trait to be mixed into Server
 * [ ] WebSocket support through abstraction
+* [ ] Proxying support and optional ProxyingSupport trait to be mixed into Server
+* [ ] Session support
 * [ ] Communication implementation supporting client and server with JVM and JS support (see Hyperscala)
 * [ ] User Interface framework for Scala.js (see NextUI)
 * [ ] Client / Server Page and Screen support (see Hyperscala)

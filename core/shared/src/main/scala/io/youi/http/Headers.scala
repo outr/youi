@@ -26,6 +26,8 @@ case class Headers(map: Map[String, List[String]] = Map.empty) {
 object Headers {
   val empty: Headers = Headers()
 
+  def `Cache-Control` = CacheControl
+  case object `Connection` extends StringHeaderKey("Connection")
   case object `Content-Length` extends LongHeaderKey("Content-Length")
   case object `Content-Type` extends TypedHeaderKey[ContentType] {
     override def key: String = "Content-Type"
@@ -34,7 +36,7 @@ object Headers {
 
     override def value(headers: Headers): Option[ContentType] = headers.first(this).map(ContentType.parse)
   }
-  def `Cache-Control` = CacheControl
+  case object `Upgrade` extends StringHeaderKey("Upgrade")
 
   object Request {
     case object `Accept-Encoding` extends StringHeaderKey("Accept-Encoding")

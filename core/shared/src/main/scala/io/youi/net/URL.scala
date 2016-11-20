@@ -69,18 +69,22 @@ object URL {
       hostAndPort.substring(0, colonIndex2) -> hostAndPort.substring(colonIndex2 + 1).toInt
     }
     val questionIndex = url.indexOf('?')
+    val hashIndex = url.indexOf('#')
     val pathString = if (slashIndex == -1) {
       "/"
-    } else if (questionIndex == -1) {
+    } else if (questionIndex == -1 && hashIndex == -1) {
       url.substring(slashIndex)
-    } else {
+    } else if (questionIndex != -1) {
       url.substring(slashIndex, questionIndex)
+    } else {
+      url.substring(slashIndex, hashIndex)
     }
     val path = Path.parse(pathString, absolutizePath)
     val parameters = if (questionIndex == -1) {
       Map.empty[String, Param]
     } else {
-      val query = url.substring(questionIndex + 1)
+      val endIndex = if (hashIndex == -1) url.length else hashIndex
+      val query = url.substring(questionIndex + 1, endIndex)
       var map = Map.empty[String, Param]
       query.split('&').map(param => param.trim.splitAt(param.indexOf('='))).collect {
         case (key, value) if key.nonEmpty => URLUtil.decode(key) -> URLUtil.decode(value.substring(1))
@@ -93,6 +97,11 @@ object URL {
       }
       map
     }
-    URL(protocol = protocol, host = host, port = port, path = path, parameters = new Parameters(parameters))
+    val fragment = if (hashIndex != -1) {
+      Some(url.substring(hashIndex + 1))
+    } else {
+      None
+    }
+    URL(protocol = protocol, host = host, port = port, path = path, parameters = new Parameters(parameters), fragment = fragment)
   }
 }

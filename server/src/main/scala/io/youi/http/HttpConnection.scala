@@ -14,8 +14,8 @@ class HttpConnection(val request: HttpRequest) {
   }
 
   def isWebSocketUpgradeRequest: Boolean = Headers.`Upgrade`.get(request.headers).contains("websocket") && Headers.`Connection`.get(request.headers).contains("Upgrade")
-  def webSocketSupport: Option[WebSocketListener] = store.get(WebSocketListener.key)
-  def webSocketSupport_=(listener: WebSocketListener) = {
+  def webSocketSupport: Option[WebSocketListener] = store.get[WebSocketListener](WebSocketListener.key)
+  def webSocketSupport_=(listener: WebSocketListener): Unit = {
     if (isWebSocketUpgradeRequest) {
       store.update(WebSocketListener.key, listener)
       update { response =>
@@ -24,5 +24,9 @@ class HttpConnection(val request: HttpRequest) {
     } else {
       throw new RuntimeException(s"Not a WebSocket upgrade request!")
     }
+  }
+  def proxySupport: Option[ProxyHandler] = store.get[ProxyHandler](ProxyHandler.key)
+  def proxySupport_=(handler: ProxyHandler): Unit = {
+    store.update(ProxyHandler.key, handler)
   }
 }

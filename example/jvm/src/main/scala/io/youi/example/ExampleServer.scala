@@ -15,6 +15,7 @@ object ExampleServer extends UndertowServer {
     handlers.add(path.exact("/websocket.html"))(SenderHandler(new File("src/main/web/websocket.html"), ContentType.`text/html`, caching = CachingManager.LastModified()))
     handlers.add(path.exact("/cookies.html"))(CookiesExample)
     handlers.add(path.exact("/web-socket-example"))(WebSocketExample)
+    handlers.add(path.exact("/proxy.html"))(ProxyExample)
 
     start()
   }

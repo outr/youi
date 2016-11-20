@@ -45,10 +45,8 @@ object CachingManager {
         case Some(content) => {
           val ifModifiedSince = Headers.Request.`If-Modified-Since`.value(connection.request.headers).getOrElse(0L)
           if (ifModifiedSince == content.lastModified) {
-            println("Not modified!")
             response.copy(status = Status.NotModified, headers = Headers.empty, content = None)
           } else {
-            println(s"Modified: $ifModifiedSince")
             response
               .withHeader(Headers.`Cache-Control`(visibility))
               .withHeader(Headers.Response.`Last-Modified`(content.lastModified))

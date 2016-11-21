@@ -16,6 +16,7 @@ object ExampleServer extends UndertowServer {
     handlers.add(path.exact("/cookies.html"))(CookiesExample)
     handlers.add(path.exact("/web-socket-example"))(WebSocketExample)
     handlers.add(path.exact("/proxy.html"))(ProxyExample)
+    handlers.add(path.exact("/session.html"))(SessionExample)
 
     start()
   }

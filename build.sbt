@@ -25,6 +25,9 @@ lazy val core = crossProject.in(file("core"))
     libraryDependencies += "org.scalactic" %%% "scalactic" % "3.0.0",
     libraryDependencies += "org.scalatest" %%% "scalatest" % "3.0.0" % "test"
   )
+  .jvmSettings(
+    libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.4.13"
+  )
 
 lazy val coreJS = core.js
 lazy val coreJVM = core.jvm

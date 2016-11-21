@@ -27,7 +27,7 @@ into this new framework. If you need a production-ready framework please look at
 * [X] Wrapper for standard ContentTypes
 * [X] WebSocket support through abstraction
 * [X] Proxying support and optional ProxyingSupport trait to be mixed into Server
-* [ ] Session support
+* [X] Session support
 * [ ] Communication implementation supporting client and server with JVM and JS support (see Hyperscala)
 * [ ] User Interface framework for Scala.js (see NextUI)
 * [ ] Client / Server Page and Screen support (see Hyperscala)

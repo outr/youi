@@ -5,8 +5,25 @@ import com.outr.scribe.Logging
 import io.youi.http.{HttpConnection, HttpRequest, HttpResponse, Status}
 import io.youi.net.URLMatcher
 import io.youi.server.handler.HttpHandler
+import io.youi.server.session.SessionStore
 
 trait Server extends HttpHandler with Logging {
+  private val _connection = new ThreadLocal[Option[HttpConnection]] {
+    override def initialValue(): Option[HttpConnection] = None
+  }
+
+  def connectionOption: Option[HttpConnection] = _connection.get()
+  def connection: HttpConnection = connectionOption.getOrElse(throw new RuntimeException("No connection defined on the current thread."))
+  def withConnection[R](connection: HttpConnection)(f: => R): R = {
+    val previous = _connection.get()
+    _connection.set(Some(connection))
+    try {
+      f
+    } finally {
+      _connection.set(previous)
+    }
+  }
+
   val config = new ServerConfig(this)
 
   object handlers {
@@ -70,7 +87,11 @@ trait Server extends HttpHandler with Logging {
     }
   }
 
-  override def handle(connection: HttpConnection): Unit = {
+  def dispose(): Unit = {
+    SessionStore.dispose()
+  }
+
+  override def handle(connection: HttpConnection): Unit = withConnection(connection) {
     try {
       handlers().foreach(_.handle(connection))
       if (connection.response.content.isEmpty && connection.response.status == Status.OK) {

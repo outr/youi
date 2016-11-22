@@ -7,5 +7,5 @@ trait ExampleCommunicator extends Communicator {
 //  val reverse = serverMethod[String, String]("reverseImpl")
   // Ask the client for the browser's URL
 //  val url = clientRequest[String]("urlImpl")
-  val time = serverRequest[Long]("serverTime")
+  val time = serverRequest[Long]
 }

@@ -1,11 +1,17 @@
 package io.youi.example
 
-import io.youi.communicate.Communicator
+import io.youi.communicate.{CommunicationImplementation, Communicator}
 
-object ServerExampleCommunicator {
-  val communicator = Communicator.server[ExampleCommunicator]
+import scala.concurrent.Await
+import scala.concurrent.duration.Duration
+
+object ServerExampleCommunicator extends CommunicationImplementation {
+  val communicator = server[ExampleCommunicator]
+
+  def time: Long = System.currentTimeMillis()
 
   def main(args: Array[String]): Unit = {
-    println(s"Time: ${communicator.time()}")
+    val time = Await.result(communicator.time(), Duration.Inf)
+    println(s"Time: $time")
   }
 }

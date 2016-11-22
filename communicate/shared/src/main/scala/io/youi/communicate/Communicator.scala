@@ -41,14 +41,12 @@ trait Communicator {
 //  def clientMethod[Request, Response](methodName: String): CommunicationMethod[Request, Response]
 
   /**
-    * Client requests `Response` from the Server.
+    * Client requests `Response` from the Server. The Server must implement a method matching the name of val.
     *
-    * @param methodName the method name that must be implemented on the server.
-    *                   (ex. def methodName: Response)
     * @tparam Response the Response type expected from the server method.
     * @return ServerCommunicationCall[Response]
     */
-  def serverRequest[Response](methodName: String): ServerCommunicationCall[Response] = macro CommunicatorMacros.serverRequest[Response]
+  def serverRequest[Response]: ServerCommunicationCall[Response] = macro CommunicatorMacros.serverRequest[Response]
 
   /**
     * Client sends `Request` to the Server and receives `Response` from the Client.
@@ -62,23 +60,18 @@ trait Communicator {
 //  def serverMethod[Request, Response](methodName: String): CommunicationMethod[Request, Response]
 }
 
-object Communicator {
+trait CommunicationImplementation {
   def server[C <: Communicator]: C = macro CommunicatorMacros.server[C]
 }
 
 @compileTimeOnly("Enable Macros for expansion")
 object CommunicatorMacros {
-  def serverRequest[Response](c: blackbox.Context)(methodName: c.Expr[String])(implicit response: c.WeakTypeTag[Response]): c.Expr[ServerCommunicationCall[Response]] = {
+  def serverRequest[Response](c: blackbox.Context)(implicit response: c.WeakTypeTag[Response]): c.Expr[ServerCommunicationCall[Response]] = {
     import c.universe._
 
     c.Expr[ServerCommunicationCall[Response]](
       q"""
-         new io.youi.communicate.ServerCommunicationCall[$response] {
-           override val responsePickler = new io.youi.communicate.Pickler[$response] {
-             override def read(json: String): $response = upickle.default.read[$response](json)
-             override def write(t: $response): String = upickle.default.write[$response](t)
-           }
-         }
+         new io.youi.communicate.ServerCommunicationCall[$response] {}
        """)
   }
 
@@ -86,15 +79,32 @@ object CommunicatorMacros {
     import context.universe._
 
     val typesSet = Set("io.youi.communicate.ServerCommunicationCall")
-    println(s"server: $c, ${context.prefix.tree}")
-    c.tpe.decls.collect {
+    val server = context.prefix.tree
+    val fields = c.tpe.decls.collect {
       case v: TermSymbol if v.isVal && typesSet.contains(v.info.typeSymbol.fullName) => {
         val responseType = v.info.resultType.typeArgs.head
-        println(s"Term: ${responseType}")
+        q"""
+          override val ${v.name} = {
+            new ${v.info.resultType.typeSymbol}[$responseType] {
+              override val responsePickler = new io.youi.communicate.Pickler[$responseType] {
+                override def read(json: String): $responseType = upickle.default.read[$responseType](json)
+                override def write(t: $responseType): String = upickle.default.write[$responseType](t)
+              }
+              override def apply() = scala.concurrent.Future($server.${v.name})
+            }
+          }
+         """
       }
     }
+    val communicator =
+      q"""
+         new $c {
+           import scala.concurrent.ExecutionContext.Implicits.global
 
-    context.abort(context.enclosingPosition, "Server compilation not finished!")
+           ..$fields
+         }
+       """
+    context.Expr[C](communicator)
   }
 }
 
@@ -103,7 +113,7 @@ trait CommunicationMethod[Request, Response] {
 }
 
 trait CommunicationCall[Response] {
-  val responsePickler: Pickler[Response]
+  def responsePickler: Pickler[Response] = throw new UnsupportedOperationException("Not implemented.")
 
   def apply(): Future[Response] = throw new UnsupportedOperationException("Not implemented.")
 }

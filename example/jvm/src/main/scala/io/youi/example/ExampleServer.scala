@@ -17,6 +17,7 @@ object ExampleServer extends UndertowServer {
     handlers.add(path.exact("/web-socket-example"))(WebSocketExample)
     handlers.add(path.exact("/proxy.html"))(ProxyExample)
     handlers.add(path.exact("/session.html"))(SessionExample)
+    handlers.add(path.exact("/communicator"))(ServerExampleCommunicator)
 
     start()
   }

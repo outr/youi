@@ -3,7 +3,7 @@ package io.youi.communicate
 import io.youi.http.{HttpConnection, WebSocketListener}
 import io.youi.server.handler.HttpHandler
 
-trait ServerWebSocketCommunication extends Communication with HttpHandler {
+trait ServerWebSocketCommunication extends WebSocketCommunication with HttpHandler {
   private var connections = Set.empty[WebSocketConnection]
   private val _connection = new ThreadLocal[Option[WebSocketConnection]] {
     override def initialValue(): Option[WebSocketConnection] = None
@@ -11,9 +11,7 @@ trait ServerWebSocketCommunication extends Communication with HttpHandler {
   def connectionOption: Option[WebSocketConnection] = _connection.get()
   def connection: WebSocketConnection = connectionOption.getOrElse(throw new RuntimeException(s"No WebSocketConnection on current thread."))
 
-  override def send(messageId: Int, invocationId: Int, invocationType: InvocationType, message: Option[String]): Unit = {
-    connection.send.text := s"$messageId:$invocationId:${invocationType.id}:${message.getOrElse("")}"
-  }
+  override protected def webSocketListener: WebSocketListener = connection
 
   override def handle(connection: HttpConnection): Unit = synchronized {
     val c = new WebSocketConnection(this)
@@ -33,12 +31,8 @@ trait ServerWebSocketCommunication extends Communication with HttpHandler {
 
 class WebSocketConnection(communication: ServerWebSocketCommunication) extends WebSocketListener {
   receive.text.attach {
-    case WebSocketConnection.MessageRegex(messageId, invocationId, invocationType, message) => communication.withConnection(this) {
-      communication.receive(messageId.toInt, invocationId.toInt, InvocationType(invocationType.toInt), if (message.nonEmpty) Some(message) else None)
+    case CommunicationMessage(message) => communication.withConnection(this) {
+      communication.receive(message)
     }
   }
-}
-
-object WebSocketConnection {
-  private val MessageRegex = """(\d+):(\d+):(\d+):(.*)""".r
 }

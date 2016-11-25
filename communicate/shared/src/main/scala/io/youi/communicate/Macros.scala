@@ -135,4 +135,33 @@ object Macros {
        """
     context.Expr[I](interface)
   }
+
+  def client[I <: Interface](context: blackbox.Context)(implicit i: context.WeakTypeTag[I]): context.Expr[I] = {
+    import context.universe._
+
+    val instance = context.prefix.tree
+    val fields = i.tpe.decls.collect {
+      case v: TermSymbol if v.isVal && v.info.typeSymbol.fullName == "io.youi.communicate.ClientCall" => {
+        localCall(context)(instance, v)
+      }
+      case v: TermSymbol if v.isVal && v.info.typeSymbol.fullName == "io.youi.communicate.ServerCall" => {
+        remoteCall(context)(instance, v)
+      }
+      case v: TermSymbol if v.isVal && v.info.typeSymbol.fullName == "io.youi.communicate.ClientMethod" => {
+        localMethod(context)(instance, v)
+      }
+      case v: TermSymbol if v.isVal && v.info.typeSymbol.fullName == "io.youi.communicate.ServerMethod" => {
+        remoteMethod(context)(instance, v)
+      }
+    }
+    val interface =
+      q"""
+         new $i {
+           import scala.concurrent.ExecutionContext.Implicits.global
+
+           ..$fields
+         }
+       """
+    context.Expr[I](interface)
+  }
 }

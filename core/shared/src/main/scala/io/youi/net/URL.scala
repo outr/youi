@@ -60,11 +60,7 @@ object URL {
     }
     val colonIndex2 = hostAndPort.indexOf(':')
     val (host, port) = if (colonIndex2 == -1) {
-      hostAndPort -> (protocol match {
-        case Protocol.Http => 80
-        case Protocol.Https => 443
-        case _ => throw new RuntimeException(s"Unknown port for $url.")
-      })
+      hostAndPort -> protocol.defaultPort.getOrElse(throw new RuntimeException(s"Unknown port for $url."))
     } else {
       hostAndPort.substring(0, colonIndex2) -> hostAndPort.substring(colonIndex2 + 1).toInt
     }

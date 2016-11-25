@@ -32,18 +32,6 @@ lazy val core = crossProject.in(file("core"))
 lazy val coreJS = core.js
 lazy val coreJVM = core.jvm
 
-lazy val communicate = crossProject.in(file("communicate"))
-  .settings(
-    name := "communicate",
-    libraryDependencies += "com.lihaoyi" %% "upickle" % "0.4.4",
-    libraryDependencies += "org.scalactic" %%% "scalactic" % "3.0.0",
-    libraryDependencies += "org.scalatest" %%% "scalatest" % "3.0.0" % "test"
-  )
-  .dependsOn(core)
-
-lazy val communicateJS = communicate.js
-lazy val communicateJVM = communicate.jvm
-
 lazy val dom = crossProject.in(file("dom"))
   .settings(
     name := "dom"
@@ -69,6 +57,18 @@ lazy val serverUndertow = project.in(file("serverUndertow"))
     libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.0" % "test"
   )
   .dependsOn(server)
+
+lazy val communicate = crossProject.in(file("communicate"))
+  .settings(
+    name := "communicate",
+    libraryDependencies += "com.lihaoyi" %% "upickle" % "0.4.4",
+    libraryDependencies += "org.scalactic" %%% "scalactic" % "3.0.0",
+    libraryDependencies += "org.scalatest" %%% "scalatest" % "3.0.0" % "test"
+  )
+  .dependsOn(core)
+
+lazy val communicateJS = communicate.js
+lazy val communicateJVM = communicate.jvm.dependsOn(server)
 
 lazy val example = crossProject.in(file("example"))
   .settings(

@@ -30,19 +30,25 @@ trait WebSocketListener {
     send.binary.attach(binaryListener)
 
     connected.attach { b =>
+      send.text.detach(textListener)
+      send.binary.detach(binaryListener)
       if (b) {
-        send.text.detach(textListener)
-        send.binary.detach(binaryListener)
         backlog.foreach {
           case s: String => send.text := s
           case b: Array[ByteBuffer] => send.binary := b
         }
         backlog.clear()
+      } else {
+        send.text.attach(textListener)
+        send.binary.attach(binaryListener)
       }
     }
   }
 
-  def close(): Unit = send.close := Unit
+  def close(): Unit = {
+    send.close := Unit
+    _connected := false
+  }
 }
 
 class WebSocketChannels {

@@ -77,6 +77,10 @@ lazy val example = crossProject.in(file("example"))
   .settings(
     name := "server-example"
   )
+  .jsSettings(
+    crossTarget in fastOptJS := baseDirectory.value / ".." / "jvm" / "src" / "main" / "resources" / "app",
+    crossTarget in fullOptJS := baseDirectory.value / ".." / "jvm" / "src" / "main" / "resources" / "app"
+  )
   .jvmSettings(
     libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value,
     libraryDependencies += "org.scala-lang.modules" %% "scala-xml" % "1.0.6"

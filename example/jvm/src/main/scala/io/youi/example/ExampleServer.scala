@@ -18,6 +18,9 @@ object ExampleServer extends UndertowServer {
     handlers.add(path.exact("/proxy.html"))(ProxyExample)
     handlers.add(path.exact("/session.html"))(SessionExample)
     handlers.add(path.exact("/communicator"))(ServerExampleCommunicator)
+//    handlers.add(path.exact("/app/server-example-fastopt.js"))(SenderHandler(getClass.getClassLoader.getResource("app/server-example-fastopt.js")), caching = CachingManager.NotCached)
+    // TODO: URL / Resource handler support
+    // TODO: Path-based for multiple resources
 
     start()
   }

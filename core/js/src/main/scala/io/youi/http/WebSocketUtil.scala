@@ -10,9 +10,6 @@ object WebSocketUtil extends Logging {
     listener.send.text.attach { message =>
       ws.send(message)
     }
-//    listener.send.binary.attach { message =>
-//      ws.send
-//    }
     ws.onopen = (evt: Event) => {
       listener._connected := true
     }

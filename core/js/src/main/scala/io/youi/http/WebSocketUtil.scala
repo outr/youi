@@ -14,7 +14,7 @@ object WebSocketUtil extends Logging {
       listener._connected := true
     }
     ws.onerror = (evt: ErrorEvent) => {
-      listener.error := new RuntimeException(s"${evt.filename}:${evt.lineno}:${evt.colno} - ${evt.message}")
+      listener.error := new RuntimeException("WebSocket error!")
     }
     ws.onclose = (evt: CloseEvent) => {
       listener.close()

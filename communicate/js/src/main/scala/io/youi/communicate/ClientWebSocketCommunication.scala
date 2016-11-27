@@ -20,7 +20,11 @@ abstract class ClientWebSocketCommunication(socketURL: URL) extends WebSocketCom
   }
 
   def disconnect(): Unit = synchronized {
-    webSocket().foreach(_.close())
+    webSocket().foreach { webSocket =>
+      if (webSocket.readyState != WebSocket.CLOSED) {
+        webSocket.close()
+      }
+    }
   }
 
   override protected def webSocketListener: WebSocketListener = this

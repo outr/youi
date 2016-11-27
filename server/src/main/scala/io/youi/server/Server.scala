@@ -2,8 +2,7 @@ package io.youi.server
 
 import com.outr.props._
 import com.outr.scribe.Logging
-import io.youi.http.{HttpConnection, HttpRequest, HttpResponse, Status}
-import io.youi.net.URLMatcher
+import io.youi.http.{HttpConnection, Status}
 import io.youi.server.handler.{HttpHandler, HttpHandlerBuilder}
 import io.youi.server.session.SessionStore
 

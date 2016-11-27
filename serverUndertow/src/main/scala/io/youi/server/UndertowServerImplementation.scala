@@ -2,19 +2,19 @@ package io.youi.server
 
 import java.io.IOException
 import java.net.URI
-import java.nio.channels.{Channels, FileChannel}
+import java.nio.channels.FileChannel
 import java.nio.file.StandardOpenOption
 
 import io.undertow.io.{IoCallback, Sender}
 import io.undertow.server.handlers.proxy.SimpleProxyClientProvider
 import io.undertow.server.handlers.resource.URLResource
-import io.undertow.{Handlers, Undertow, UndertowOptions}
 import io.undertow.server.{HttpServerExchange, HttpHandler => UndertowHttpHandler}
 import io.undertow.util.HttpString
 import io.undertow.websockets.WebSocketConnectionCallback
 import io.undertow.websockets.core._
 import io.undertow.websockets.spi.WebSocketHttpExchange
-import io.youi.http.{FileContent, Headers, HttpConnection, HttpRequest, HttpResponse, Method, StringContent, URLContent, WebSocketListener}
+import io.undertow.{Handlers, Undertow, UndertowOptions}
+import io.youi.http.{FileContent, Headers, HttpConnection, HttpRequest, Method, StringContent, URLContent, WebSocketListener}
 import io.youi.net.{Parameters, Path, URL}
 
 import scala.collection.JavaConverters._

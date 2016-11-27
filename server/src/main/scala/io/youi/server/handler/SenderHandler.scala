@@ -1,7 +1,6 @@
 package io.youi.server.handler
 
-import io.youi.http.{CacheControl, CacheControlEntry, Content, Headers, HttpConnection, HttpRequest, HttpResponse, Status}
-import io.youi.net.ContentType
+import io.youi.http.{CacheControl, CacheControlEntry, Content, Headers, HttpConnection, Status}
 
 class SenderHandler private(content: Content, length: Option[Long], caching: CachingManager) extends HttpHandler {
   override def handle(connection: HttpConnection): Unit = {

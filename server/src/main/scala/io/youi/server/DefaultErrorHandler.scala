@@ -1,6 +1,6 @@
 package io.youi.server
 
-import io.youi.http.{Content, Headers, HttpConnection, Status}
+import io.youi.http.{Content, HttpConnection, Status}
 import io.youi.net.ContentType
 
 object DefaultErrorHandler extends ErrorHandler {

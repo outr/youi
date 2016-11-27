@@ -2,12 +2,12 @@ package io.youi.server.session
 
 import akka.actor.ActorSystem
 import com.outr.props.Var
-import io.youi.{MapStore, Unique}
-import io.youi.http.{Headers, HttpConnection}
 import io.youi.http.cookie.ResponseCookie
+import io.youi.http.{Headers, HttpConnection}
+import io.youi.{MapStore, Unique}
 
-import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration._
 
 class SessionStore(val timeout: FiniteDuration) extends MapStore {
   var lastUsed: Long = System.currentTimeMillis()

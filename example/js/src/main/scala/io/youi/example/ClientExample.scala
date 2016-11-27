@@ -2,10 +2,9 @@ package io.youi.example
 
 import com.outr.scribe.Logging
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.scalajs.js.JSApp
 import scala.util.{Failure, Success}
-
-import scala.concurrent.ExecutionContext.Implicits.global
 
 object ClientExample extends JSApp with Logging {
   override def main(): Unit = {

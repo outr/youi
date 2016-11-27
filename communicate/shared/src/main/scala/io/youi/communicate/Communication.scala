@@ -1,10 +1,8 @@
 package io.youi.communicate
 
-import io.youi.http.WebSocketListener
-
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Future, Promise}
 import scala.language.experimental.macros
-import scala.concurrent.ExecutionContext.Implicits.global
 
 trait Communication[Context] {
   val interface: Interface

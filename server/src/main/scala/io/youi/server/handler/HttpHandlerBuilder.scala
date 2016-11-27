@@ -2,7 +2,7 @@ package io.youi.server.handler
 
 import java.io.File
 
-import io.youi.http.{Content, HttpConnection}
+import io.youi.http._
 import io.youi.net.{URL, URLMatcher}
 import io.youi.server.Server
 
@@ -14,7 +14,7 @@ case class HttpHandlerBuilder(server: Server,
   } else if (urlMatchers.tail.isEmpty) {
     copy(urlMatcher = Some(urlMatchers.head))
   } else {
-    copy(urlMatcher = Some(URLMatcher.combined(urlMatchers: _*)))
+    copy(urlMatcher = Some(combined(urlMatchers: _*)))
   }
 
   def caching(cachingManager: CachingManager): HttpHandlerBuilder = copy(cachingManager = cachingManager)

@@ -1,9 +1,7 @@
 package spec
 
-import io.youi.http.{Content, HttpConnection, HttpRequest, HttpResponse, Status}
-import io.youi.net.{ContentType, URL, URLMatcher}
-import io.youi.net.URLMatcher._
-import io.youi.server.handler.HttpHandler
+import io.youi.http._
+import io.youi.net.{ContentType, URL}
 import io.youi.server.test.TestServer
 import org.scalatest.{Matchers, WordSpec}
 

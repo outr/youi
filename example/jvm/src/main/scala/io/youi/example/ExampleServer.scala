@@ -4,9 +4,8 @@ import java.io.File
 
 import io.youi.http._
 import io.youi.net.ContentType
-import io.youi.net.URLMatcher._
 import io.youi.server.UndertowServer
-import io.youi.server.handler.{CachingManager, HttpHandler, SenderHandler}
+import io.youi.server.handler.CachingManager
 
 object ExampleServer extends UndertowServer {
   def main(args: Array[String]): Unit = {

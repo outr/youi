@@ -5,6 +5,20 @@
     <title>Client Example</title>
 </head>
 <body>
+<h1>Client Example</h1>
+<hr/>
+<h3>Communication Examples:</h3>
+<div>
+    <label>Connected:</label>
+    <input id="communicationConnected" type="text" disabled="disabled" value=""/>
+    <button id="communicationConnectButton">Connect</button>
+</div>
+<div>
+    <label>Reverse:</label>
+    <input id="communicationReverse" type="text"/>
+    <button id="communicationReverseButton">Ask Server to Reverse</button>
+</div>
+<hr/>
 <script type="text/javascript" src="app/server-example-fastopt.js"></script>
 <script type="text/javascript">
   io.youi.example.ClientExample().main();

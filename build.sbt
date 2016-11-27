@@ -85,7 +85,7 @@ lazy val example = crossProject.in(file("example"))
     libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value,
     libraryDependencies += "org.scala-lang.modules" %% "scala-xml" % "1.0.6"
   )
-  .dependsOn(communicate)
+  .dependsOn(communicate, dom)
 
 lazy val exampleJS = example.js
 lazy val exampleJVM = example.jvm.dependsOn(serverUndertow)

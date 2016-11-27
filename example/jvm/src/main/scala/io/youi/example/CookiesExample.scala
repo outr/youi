@@ -2,7 +2,7 @@ package io.youi.example
 
 import com.outr.scribe.Logging
 import io.youi.http.cookie.ResponseCookie
-import io.youi.http.{Headers, HttpConnection, HttpRequest, HttpResponse}
+import io.youi.http.{Content, Headers, HttpConnection, HttpRequest, HttpResponse}
 import io.youi.net.ContentType
 import io.youi.server.handler.{HttpHandler, SenderHandler}
 
@@ -42,7 +42,7 @@ object CookiesExample extends HttpHandler with Logging {
             <li><a href={setCookieURL}>Set a Sample Cookie</a></li>
           </body>
         </html>
-        SenderHandler.handle(connection, html.toString, ContentType.`text/html`)
+        SenderHandler.handle(connection, Content.string(html.toString, ContentType.`text/html`))
       }
     }
   }

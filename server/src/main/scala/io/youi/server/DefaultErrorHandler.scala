@@ -1,6 +1,6 @@
 package io.youi.server
 
-import io.youi.http.{Headers, HttpConnection, Status}
+import io.youi.http.{Content, Headers, HttpConnection, Status}
 import io.youi.net.ContentType
 
 object DefaultErrorHandler extends ErrorHandler {
@@ -20,9 +20,6 @@ object DefaultErrorHandler extends ErrorHandler {
          |  </body>
          |</html>
        """.stripMargin
-    response
-      .withHeader(Headers.`Content-Length`(html.length))
-      .withHeader(Headers.`Content-Type`(ContentType.`text/html`))
-      .withContent(html)
+    response.withContent(Content.string(html, ContentType.`text/html`))
   }
 }

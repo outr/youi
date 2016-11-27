@@ -1,6 +1,6 @@
 package io.youi.example
 
-import io.youi.http.HttpConnection
+import io.youi.http.{Content, HttpConnection}
 import io.youi.net.ContentType
 import io.youi.server.handler.{HttpHandler, SenderHandler}
 import io.youi.server.session.{Session, SessionSessionManager}
@@ -18,7 +18,7 @@ object SessionExample extends HttpHandler {
         <h4>Session Created {(System.currentTimeMillis() - session.created) / 1000} seconds ago.</h4>
       </body>
     </html>
-    SenderHandler.handle(connection, html.toString, ContentType.`text/html`)
+    SenderHandler.handle(connection, Content.string(html.toString, ContentType.`text/html`))
   }
 }
 

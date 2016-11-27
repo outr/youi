@@ -7,6 +7,7 @@ import java.nio.file.StandardOpenOption
 
 import io.undertow.io.{IoCallback, Sender}
 import io.undertow.server.handlers.proxy.SimpleProxyClientProvider
+import io.undertow.server.handlers.resource.URLResource
 import io.undertow.{Handlers, Undertow, UndertowOptions}
 import io.undertow.server.{HttpServerExchange, HttpHandler => UndertowHttpHandler}
 import io.undertow.util.HttpString
@@ -43,7 +44,7 @@ class UndertowServerImplementation(server: Server) extends ServerImplementation 
 
   override def isRunning: Boolean = instance.nonEmpty
 
-  override def handleRequest(exchange: HttpServerExchange): Unit = {
+  override def handleRequest(exchange: HttpServerExchange): Unit = server.errorSupport {
     val request = UndertowServerImplementation.request(exchange)
     val connection = new HttpConnection(request)
     server.handle(connection)
@@ -135,8 +136,8 @@ object UndertowServerImplementation {
     if (exchange.getRequestMethod.toString != "HEAD") {
       response.content match {
         case Some(content) => content match {
-          case StringContent(s, lastModified) => exchange.getResponseSender.send(s)
-          case FileContent(file) => {
+          case StringContent(s, contentType, lastModified) => exchange.getResponseSender.send(s)
+          case FileContent(file, contentType) => {
             val channel = FileChannel.open(file.getAbsoluteFile.toPath, StandardOpenOption.READ)
             exchange.getResponseSender.transferFrom(channel, new IoCallback {
               override def onComplete(exchange: HttpServerExchange, sender: Sender): Unit = {
@@ -151,15 +152,19 @@ object UndertowServerImplementation {
               }
             })
           }
-          case URLContent(url) => {
-            //          val in = url.openConnection().getInputStream
-            //          val channel = Channels.newChannel(in)
-            //          exchange.getResponseSender.transferFrom(channel, new IoCallback {
-            //            override def onComplete(exchange: HttpServerExchange, sender: Sender): Unit = channel.close()
-            //
-            //            override def onException(exchange: HttpServerExchange, sender: Sender, exception: IOException): Unit = server.error(exception)
-            //          })
-            throw new UnsupportedOperationException(s"URLContent is not currently supported!")
+          case URLContent(url, contentType) => {
+            val connection = url.openConnection()
+            val resource = new URLResource(url, connection, "")
+            resource.serve(exchange.getResponseSender, exchange, new IoCallback {
+              override def onComplete(exchange: HttpServerExchange, sender: Sender): Unit = {
+                sender.close()
+              }
+
+              override def onException(exchange: HttpServerExchange, sender: Sender, exception: IOException): Unit = {
+                sender.close()
+                server.error(exception)
+              }
+            })
           }
         }
         case None => exchange.getResponseSender.send("", new IoCallback {

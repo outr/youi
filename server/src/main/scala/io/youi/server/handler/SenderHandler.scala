@@ -1,24 +1,24 @@
 package io.youi.server.handler
 
-import io.youi.http.{CacheControl, Content, Headers, HttpConnection, HttpRequest, HttpResponse, Status}
+import io.youi.http.{CacheControl, CacheControlEntry, Content, Headers, HttpConnection, HttpRequest, HttpResponse, Status}
 import io.youi.net.ContentType
 
-class SenderHandler private(content: Content, contentType: ContentType, length: Option[Long], caching: CachingManager) extends HttpHandler {
+class SenderHandler private(content: Content, length: Option[Long], caching: CachingManager) extends HttpHandler {
   override def handle(connection: HttpConnection): Unit = {
-    SenderHandler.handle(connection, content, contentType, length, caching)
+    SenderHandler.handle(connection, content, length, caching)
   }
 }
 
 object SenderHandler {
-  def apply(content: Content, contentType: ContentType, length: Option[Long] = None, caching: CachingManager = CachingManager.Default): SenderHandler = {
-    new SenderHandler(content, contentType, length, caching)
+  def apply(content: Content, length: Option[Long] = None, caching: CachingManager = CachingManager.Default): SenderHandler = {
+    new SenderHandler(content, length, caching)
   }
 
-  def handle(connection: HttpConnection, content: Content, contentType: ContentType, length: Option[Long] = None, caching: CachingManager = CachingManager.Default): Unit = {
+  def handle(connection: HttpConnection, content: Content, length: Option[Long] = None, caching: CachingManager = CachingManager.Default): Unit = {
     val contentLength = length.getOrElse(content.length)
     connection.update { response =>
       response
-        .withHeader(Headers.`Content-Type`(contentType))
+        .withHeader(Headers.`Content-Type`(content.contentType))
         .withHeader(Headers.`Content-Length`(contentLength))
         .withContent(content)
     }
@@ -38,7 +38,7 @@ object CachingManager {
     }
   }
   case class LastModified(publicCache: Boolean = true) extends CachingManager {
-    val visibility = if (publicCache) CacheControl.Public else CacheControl.Private
+    val visibility: CacheControlEntry = if (publicCache) CacheControl.Public else CacheControl.Private
 
     override def handle(connection: HttpConnection): Unit = connection.update { response =>
       response.content match {

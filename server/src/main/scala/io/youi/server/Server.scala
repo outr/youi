@@ -4,7 +4,7 @@ import com.outr.props._
 import com.outr.scribe.Logging
 import io.youi.http.{HttpConnection, HttpRequest, HttpResponse, Status}
 import io.youi.net.URLMatcher
-import io.youi.server.handler.HttpHandler
+import io.youi.server.handler.{HttpHandler, HttpHandlerBuilder}
 import io.youi.server.session.SessionStore
 
 trait Server extends HttpHandler with Logging {
@@ -26,6 +26,7 @@ trait Server extends HttpHandler with Logging {
 
   val config = new ServerConfig(this)
 
+  val handler = HttpHandlerBuilder(this)
   object handlers {
     /**
       * The error handler if an error is thrown. This is used automatically when an HttpHandler fires a Throwable but

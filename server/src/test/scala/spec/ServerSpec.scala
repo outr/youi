@@ -1,7 +1,7 @@
 package spec
 
 import io.youi.http.{Content, HttpConnection, HttpRequest, HttpResponse, Status}
-import io.youi.net.{URL, URLMatcher}
+import io.youi.net.{ContentType, URL, URLMatcher}
 import io.youi.server.handler.HttpHandler
 import io.youi.server.test.TestServer
 import org.scalatest.{Matchers, WordSpec}
@@ -13,7 +13,7 @@ class ServerSpec extends WordSpec with Matchers {
     "configure the TestServer" in {
       server.handlers.add(URLMatcher.path.exact("/test.html"))(new HttpHandler {
         override def handle(connection: HttpConnection): Unit = connection.update { response =>
-          response.withContent(Content.string("test!"))
+          response.withContent(Content.string("test!", ContentType.`text/plain`))
         }
       })
     }

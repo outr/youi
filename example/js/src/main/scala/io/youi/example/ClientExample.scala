@@ -12,6 +12,8 @@ object ClientExample extends JSApp with Logging {
   def connectedButton: html.Button = byId[html.Button]("communicationConnectButton")
   def reverseInput: html.Input = byId[html.Input]("communicationReverse")
   def reverseButton: html.Button = byId[html.Button]("communicationReverseButton")
+  def timeInput: html.Input = byId[html.Input]("communicationTime")
+  def timeButton: html.Button = byId[html.Button]("communicationTimeButton")
 
   override def main(): Unit = {
     ClientExampleCommunicator.connected.attachAndFire { c =>
@@ -37,6 +39,14 @@ object ClientExample extends JSApp with Logging {
         ClientExampleCommunicator.interface.reverse(value).foreach { reversed =>
           reverseInput.value = reversed
         }
+      }
+    })
+
+    timeButton.addEventListener("click", (evt: Event) => {
+      evt.preventDefault()
+      evt.stopPropagation()
+      ClientExampleCommunicator.interface.time().foreach { time =>
+        timeInput.value = time.toString
       }
     })
   }

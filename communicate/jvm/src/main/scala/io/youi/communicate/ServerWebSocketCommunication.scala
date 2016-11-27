@@ -1,16 +1,28 @@
 package io.youi.communicate
 
+import com.outr.props.Channel
 import io.youi.http.{HttpConnection, WebSocketListener}
 import io.youi.server.handler.HttpHandler
 
 trait ServerWebSocketCommunication extends WebSocketCommunication[WebSocketConnection] with HttpHandler {
-  private var connections = Set.empty[WebSocketConnection]
+  val connected: Channel[WebSocketConnection] = Channel()
+  val disconnected: Channel[WebSocketConnection] = Channel()
+
+  private var _connections = Set.empty[WebSocketConnection]
+  def connections: Set[WebSocketConnection] = _connections
 
   override protected def webSocketListener: WebSocketListener = context
 
   override def handle(connection: HttpConnection): Unit = synchronized {
     val c = new WebSocketConnection(this)
-    connections += c
+    c.connected.attachAndFire { b =>
+      if (b) {
+        connected := c
+      } else {
+        disconnected := c
+      }
+    }
+    _connections += c
     connection.webSocketSupport = c
   }
 }

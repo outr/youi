@@ -112,6 +112,7 @@ object UndertowServerImplementation {
           }
         })
         channel.resumeReceives()
+        webSocketListener._connected := true
       }
     })
     handler.handleRequest(exchange)

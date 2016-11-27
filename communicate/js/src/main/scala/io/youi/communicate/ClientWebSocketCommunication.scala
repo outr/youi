@@ -12,6 +12,8 @@ abstract class ClientWebSocketCommunication(socketURL: URL) extends WebSocketCom
     case CommunicationMessage(message) => receive(message)
   }
 
+  override def contextOption: Option[Unit] = Some(Unit)
+
   def connect(): Unit = synchronized {
     disconnect()
     webSocket := Some(WebSocketUtil.connect(socketURL, this))

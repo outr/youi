@@ -7,7 +7,7 @@ import com.outr.props.{Channel, State, Var}
 import scala.collection.mutable.ListBuffer
 
 trait WebSocketListener {
-  private[http] val _connected = Var[Boolean](false)
+  private[youi] val _connected = Var[Boolean](false)
   val connected: State[Boolean] = _connected.asState
 
   val send = new WebSocketChannels

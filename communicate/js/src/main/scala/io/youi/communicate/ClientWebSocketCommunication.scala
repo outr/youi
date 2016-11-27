@@ -5,7 +5,7 @@ import io.youi.http.{WebSocketListener, WebSocketUtil}
 import io.youi.net.URL
 import org.scalajs.dom.WebSocket
 
-abstract class ClientWebSocketCommunication(socketURL: URL) extends WebSocketCommunication with WebSocketListener {
+abstract class ClientWebSocketCommunication(socketURL: URL) extends WebSocketCommunication[Unit] with WebSocketListener {
   val webSocket: Var[Option[WebSocket]] = Var(None)
 
   receive.text.attach {

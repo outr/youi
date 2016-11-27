@@ -6,20 +6,42 @@ import scala.concurrent.{Future, Promise}
 import scala.language.experimental.macros
 import scala.concurrent.ExecutionContext.Implicits.global
 
-trait Communication {
+trait Communication[Context] {
   val interface: Interface
 
   private var messageIdGenerator = 0
   private var awaitingResponse = Map.empty[Int, Promise[Any]]
 
+  private val _context = new ThreadLocal[Option[Context]] {
+    override def initialValue(): Option[Context] = None
+  }
+  def contextOption: Option[Context] = _context.get
+  def context: Context = contextOption.getOrElse(throw new RuntimeException(s"No context available on current thread."))
+  def contextualize[R](context: Context)(f: => R): R = {
+    val previous = _context.get
+    _context.set(Some(context))
+    try {
+      f
+    } finally {
+      if (previous.nonEmpty) {
+        _context.set(previous)
+      } else {
+        _context.remove()
+      }
+    }
+  }
+
   def send(message: CommunicationMessage): Unit
   def receive(message: CommunicationMessage): Unit = synchronized {
     message.invocationType match {
       case InvocationType.CallRequest => {
+        val context = this.context
         val call = Invocation.byId[Call[Any]](message.invocationId)
         call().foreach { response =>
-          val json = call.responsePickler.write(response)
-          send(message.copy(invocationType = InvocationType.CallResponse, content = Some(json)))
+          contextualize(context) {
+            val json = call.responsePickler.write(response)
+            send(message.copy(invocationType = InvocationType.CallResponse, content = Some(json)))
+          }
         }
       }
       case InvocationType.CallResponse => {
@@ -30,11 +52,14 @@ trait Communication {
         promise.success(response)
       }
       case InvocationType.MethodRequest => {
+        val context = this.context
         val method = Invocation.byId[Method[Any, Any]](message.invocationId)
         val request = method.requestPickler.read(message.content.get)
         method(request).foreach { response =>
-          val json = method.responsePickler.write(response)
-          send(message.copy(invocationType = InvocationType.MethodResponse, content = Some(json)))
+          contextualize(context) {
+            val json = method.responsePickler.write(response)
+            send(message.copy(invocationType = InvocationType.MethodResponse, content = Some(json)))
+          }
         }
       }
       case InvocationType.MethodResponse => {

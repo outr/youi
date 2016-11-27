@@ -64,7 +64,7 @@ lazy val serverUndertow = project.in(file("serverUndertow"))
 lazy val communicate = crossProject.in(file("communicate"))
   .settings(
     name := "communicate",
-    libraryDependencies += "com.lihaoyi" %% "upickle" % "0.4.4",
+    libraryDependencies += "com.lihaoyi" %%% "upickle" % "0.4.4",
     libraryDependencies += "org.scalactic" %%% "scalactic" % "3.0.0",
     libraryDependencies += "org.scalatest" %%% "scalatest" % "3.0.0" % "test"
   )

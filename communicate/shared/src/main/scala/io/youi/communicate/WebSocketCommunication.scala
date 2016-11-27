@@ -2,7 +2,7 @@ package io.youi.communicate
 
 import io.youi.http.WebSocketListener
 
-trait WebSocketCommunication extends Communication {
+trait WebSocketCommunication[Context] extends Communication[Context] {
   protected def webSocketListener: WebSocketListener
 
   override def send(message: CommunicationMessage): Unit = {

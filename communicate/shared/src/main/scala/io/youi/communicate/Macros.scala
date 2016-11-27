@@ -33,6 +33,19 @@ object Macros {
     import context.universe._
 
     val responseType = v.info.resultType.typeArgs.head
+
+    val method =
+      q"""
+        override def apply() = {
+          val context = $instance.context
+          scala.concurrent.Future {
+            $instance.contextualize(context) {
+              $instance.${v.name}
+            }
+          }
+        }
+       """
+
     q"""
       override val ${v.name} = {
         new ${v.info.resultType.typeSymbol}[$responseType] {
@@ -40,7 +53,7 @@ object Macros {
             override def read(json: String): $responseType = upickle.default.read[$responseType](json)
             override def write(t: $responseType): String = upickle.default.write[$responseType](t)
           }
-          override def apply() = scala.concurrent.Future($instance.${v.name})
+          $method
         }
       }
      """
@@ -90,6 +103,17 @@ object Macros {
 
     val requestType = v.info.resultType.typeArgs.head
     val responseType = v.info.resultType.typeArgs.tail.head
+    val method =
+      q"""
+         override def apply(request: $requestType) = {
+          val context = $instance.context
+          scala.concurrent.Future {
+            $instance.contextualize(context) {
+              $instance.${v.name}(request)
+            }
+          }
+         }
+       """
     q"""
       override val ${v.name} = {
         new ${v.info.resultType.typeSymbol}[$requestType, $responseType] {
@@ -101,7 +125,7 @@ object Macros {
             override def read(json: String): $responseType = upickle.default.read[$responseType](json)
             override def write(t: $responseType): String = upickle.default.write[$responseType](t)
           }
-          override def apply(request: $requestType) = scala.concurrent.Future($instance.${v.name}(request))
+          $method
         }
       }
      """

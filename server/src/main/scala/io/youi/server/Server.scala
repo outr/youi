@@ -45,17 +45,6 @@ trait Server extends HttpHandler with Logging {
     def -=(handler: HttpHandler): Unit = synchronized {
       entries = entries.filterNot(_ eq handler)
     }
-    def add(matcher: URLMatcher)(handler: HttpHandler): HttpHandler = {
-      val h = new HttpHandler {
-        override def handle(connection: HttpConnection): Unit = {
-          if (matcher.matches(connection.request.url)) {
-            handler.handle(connection)
-          }
-        }
-      }
-      this += h
-      h
-    }
 
     def apply(): List[HttpHandler] = entries
   }

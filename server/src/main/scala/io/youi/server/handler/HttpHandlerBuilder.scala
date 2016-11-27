@@ -1,5 +1,7 @@
 package io.youi.server.handler
 
+import java.io.File
+
 import io.youi.http.{Content, HttpConnection}
 import io.youi.net.{URL, URLMatcher}
 import io.youi.server.Server
@@ -22,6 +24,38 @@ case class HttpHandlerBuilder(server: Server,
       if (urlMatcher.forall(_.matches(connection.request.url))) {
         f(connection.request.url).foreach { content =>
           SenderHandler(content, caching = cachingManager).handle(connection)
+        }
+      }
+    }
+    server.handlers += handler
+    handler
+  }
+
+  def file(directory: File, pathTransform: String => String = (s: String) => s): HttpHandler = {
+    val handler: HttpHandler = (connection: HttpConnection) => {
+      if (urlMatcher.forall(_.matches(connection.request.url))) {
+        val path = pathTransform(connection.request.url.path.encoded)
+        val file = new File(directory, path)
+        if (file.exists()) {
+          SenderHandler(Content.file(file), caching = cachingManager).handle(connection)
+        }
+      }
+    }
+    server.handlers += handler
+    handler
+  }
+
+  def classLoader(directory: String, pathTransform: String => String = (s: String) => s): HttpHandler = {
+    val dir = if (directory.endsWith("/")) {
+      directory.substring(directory.length - 1)
+    } else {
+      directory
+    }
+    val handler: HttpHandler = (connection: HttpConnection) => {
+      if (urlMatcher.forall(_.matches(connection.request.url))) {
+        val path = pathTransform(connection.request.url.path.encoded)
+        Option(getClass.getClassLoader.getResource(s"$dir$path")).foreach { url =>
+          SenderHandler(Content.classPath(url), caching = cachingManager).handle(connection)
         }
       }
     }

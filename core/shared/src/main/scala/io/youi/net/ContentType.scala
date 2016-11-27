@@ -1800,8 +1800,8 @@ object ContentType {
     contentType
   }
 
-  def byFileName(fileName: String): ContentType = getByFileName(fileName).getOrElse(throw new RuntimeException(s"Unable to determine content-type from filename: $fileName"))
-  def byExtension(extension: String): ContentType = getByExtension(extension).getOrElse(throw new RuntimeException(s"Unable to determine content-type from extension: $extension"))
+  def byFileName(fileName: String): ContentType = getByFileName(fileName).getOrElse(ContentType.`application/octet-stream`)
+  def byExtension(extension: String): ContentType = getByExtension(extension).getOrElse(ContentType.`application/octet-stream`)
 
   def getByFileName(fileName: String): Option[ContentType] = {
     val index = fileName.lastIndexOf('.')

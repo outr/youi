@@ -50,6 +50,7 @@ object Content {
   def file(file: File, contentType: ContentType): Content = FileContent(file, contentType)
   def url(url: URL): Content = URLContent(url, ContentType.byFileName(url.toString))
   def url(url: URL, contentType: ContentType): Content = URLContent(url, contentType)
+  def classPath(url: URL): Content = URLContent(url, ContentType.byFileName(url.toString))
   def classPath(path: String): Content = URLContent(Thread.currentThread().getContextClassLoader.getResource(path), ContentType.byFileName(path))
   def classPath(path: String, contentType: ContentType): Content = URLContent(Thread.currentThread().getContextClassLoader.getResource(path), contentType)
 }

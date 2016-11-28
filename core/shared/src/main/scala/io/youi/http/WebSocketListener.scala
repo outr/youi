@@ -3,10 +3,11 @@ package io.youi.http
 import java.nio.ByteBuffer
 
 import com.outr.props.{Channel, State, Var}
+import com.outr.scribe.Logging
 
 import scala.collection.mutable.ListBuffer
 
-trait WebSocketListener {
+trait WebSocketListener extends Logging {
   private[youi] val _connected = Var[Boolean](false)
   val connected: State[Boolean] = _connected.asState
 
@@ -14,33 +15,35 @@ trait WebSocketListener {
   val receive = new WebSocketChannels
   val error: Channel[Throwable] = Channel[Throwable]
 
+  private val backlog = ListBuffer.empty[Any]
+
   init()
 
   // Set up backlog for sending until connection has been established
   private def init(): Unit = {
-    val backlog = ListBuffer.empty[Any]
-
     val textListener: String => Unit = (t: String) => {
-      backlog += t
+      WebSocketListener.backlog(this, t)
     }
     val binaryListener: Array[ByteBuffer] => Unit = (b: Array[ByteBuffer]) => {
-      backlog += b
+      WebSocketListener.backlog(this, b)
     }
     send.text.attach(textListener)
     send.binary.attach(binaryListener)
 
     connected.attach { b =>
-      send.text.detach(textListener)
-      send.binary.detach(binaryListener)
-      if (b) {
-        backlog.foreach {
-          case s: String => send.text := s
-          case b: Array[ByteBuffer] => send.binary := b
+      synchronized {
+        send.text.detach(textListener)
+        send.binary.detach(binaryListener)
+        if (b) {
+          backlog.foreach {
+            case s: String => send.text := s
+            case b: Array[ByteBuffer] => send.binary := b
+          }
+          backlog.clear()
+        } else {
+          send.text.attach(textListener)
+          send.binary.attach(binaryListener)
         }
-        backlog.clear()
-      } else {
-        send.text.attach(textListener)
-        send.binary.attach(binaryListener)
       }
     }
   }
@@ -59,4 +62,8 @@ class WebSocketChannels {
 
 object WebSocketListener {
   val key = "webSocketListener"
+
+  def backlog(listener: WebSocketListener, message: Any): Unit = listener.synchronized {
+    listener.backlog += message
+  }
 }

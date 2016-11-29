@@ -1,7 +1,7 @@
 package io.youi.example
 
 import com.outr.scribe.Logging
-import io.youi.html._
+import io.youi.dom._
 import org.scalajs.dom._
 
 import scala.concurrent.ExecutionContext.Implicits.global

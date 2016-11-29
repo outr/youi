@@ -5,6 +5,7 @@ import io.youi.net.URL
 import org.scalajs.dom.{CloseEvent, ErrorEvent, Event, MessageEvent, WebSocket}
 
 object WebSocketUtil extends Logging {
+  // TODO: revisit disconnecting, reconnecting, and errors
   def connect(socketURL: URL, listener: WebSocketListener): WebSocket = {
     val ws = new WebSocket(socketURL.toString)
     listener.send.text.attach { message =>

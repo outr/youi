@@ -73,6 +73,13 @@ lazy val communicate = crossProject.in(file("communicate"))
 lazy val communicateJS = communicate.js
 lazy val communicateJVM = communicate.jvm.dependsOn(server)
 
+lazy val ui = project.in(file("ui"))
+  .enablePlugins(ScalaJSPlugin)
+  .settings(
+    name := "ui"
+  )
+  .dependsOn(coreJS)
+
 lazy val example = crossProject.in(file("example"))
   .settings(
     name := "server-example"
@@ -89,10 +96,3 @@ lazy val example = crossProject.in(file("example"))
 
 lazy val exampleJS = example.js
 lazy val exampleJVM = example.jvm.dependsOn(serverUndertow)
-
-lazy val ui = project.in(file("ui"))
-  .enablePlugins(ScalaJSPlugin)
-  .settings(
-    name := "ui"
-  )
-  .dependsOn(coreJS)

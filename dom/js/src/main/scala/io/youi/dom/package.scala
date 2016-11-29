@@ -7,7 +7,7 @@ import org.scalajs.dom.raw.HTMLElement
 import scala.annotation.tailrec
 import scala.language.implicitConversions
 
-package object html extends Logging {
+package object dom extends Logging {
   def byTag[T <: HTMLElement](tagName: String): Vector[T] = {
     document.getElementsByTagName(tagName).toVector.map(_.asInstanceOf[T])
   }

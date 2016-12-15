@@ -8,6 +8,9 @@ case class URL(protocol: Protocol = Protocol.Http,
                path: Path = Path.empty,
                parameters: Parameters = Parameters.empty,
                fragment: Option[String] = None) {
+  def replaceBase(base: String): URL = URL(s"$base${encoded.pathAndArgs}")
+  def replacePathAndParams(pathAndParams: String): URL = URL(s"$base$pathAndParams")
+
   def withPath(path: String, absolutize: Boolean = true): URL = {
     val updated = this.path.append(path).absolute
     copy(path = updated)
@@ -17,7 +20,10 @@ case class URL(protocol: Protocol = Protocol.Http,
     copy(parameters = parameters.withParam(key, value, append))
   }
 
-  lazy val encoded: String = {
+  def paramList(key: String): List[String] = parameters.values(key)
+  def param(key: String): Option[String] = paramList(key).headOption
+
+  lazy val base: String = {
     val b = new StringBuilder
     b.append(protocol.scheme)
     b.append("://")
@@ -25,25 +31,26 @@ case class URL(protocol: Protocol = Protocol.Http,
     if (!protocol.defaultPort.contains(port)) {
       b.append(s":$port")       // Not using the default port for the protocol
     }
-    b.append(path)
-    b.append(parameters.encoded)
     b.toString()
   }
 
-  lazy val decoded: String = {
-    val b = new StringBuilder
-    b.append(protocol.scheme)
-    b.append("://")
-    b.append(host)
-    if (!protocol.defaultPort.contains(port)) {
-      b.append(s":$port")       // Not using the default port for the protocol
+  lazy val encoded: URLParts = new URLParts(encoded = true)
+  lazy val decoded: URLParts = new URLParts(encoded = false)
+
+  override def toString: String = encoded.asString
+
+  class URLParts(encoded: Boolean) {
+    def base: String = URL.this.base
+    lazy val pathAndArgs: String = {
+      val b = new StringBuilder
+      b.append(path)
+      b.append(if (encoded) parameters.encoded else parameters.decoded)
+      b.toString()
     }
-    b.append(path)
-    b.append(parameters.decoded)
-    b.toString()
-  }
+    lazy val asString: String = s"$base$pathAndArgs"
 
-  override def toString: String = encoded
+    override def toString: String = asString
+  }
 }
 
 object URL {

@@ -1,6 +1,6 @@
 package io.youi.net
 
-import io.youi.util.URLUtil
+import scala.util.matching.Regex
 
 case class URL(protocol: Protocol = Protocol.Http,
                host: String = "localhost",
@@ -90,8 +90,8 @@ object URL {
       val query = url.substring(questionIndex + 1, endIndex)
       var map = Map.empty[String, Param]
       query.split('&').map(param => param.trim.splitAt(param.indexOf('='))).collect {
-        case (key, value) if key.nonEmpty => URLUtil.decode(key) -> URLUtil.decode(value.substring(1))
-        case (key, value) if value.nonEmpty => "query" -> URLUtil.decode(value)
+        case (key, value) if key.nonEmpty => URL.decode(key) -> URL.decode(value.substring(1))
+        case (key, value) if value.nonEmpty => "query" -> URL.decode(value)
       }.foreach {
         case (key, value) => map.get(key) match {
           case Some(param) => map += key -> Param(param.values ::: List(value))
@@ -107,4 +107,22 @@ object URL {
     }
     URL(protocol = protocol, host = host, port = port, path = path, parameters = new Parameters(parameters), fragment = fragment)
   }
+
+  private val unreservedCharacters = Set('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
+    'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
+    'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+    '-', '_', '.', '~'
+  )
+
+  private val encodedRegex = """%([a-zA-Z0-9]{2})""".r
+
+  def encode(part: String): String = part.map {
+    case c if unreservedCharacters.contains(c) => c
+    case c => s"%${c.toLong.toHexString.toUpperCase}"
+  }.mkString
+
+  def decode(part: String): String = encodedRegex.replaceAllIn(part, (m: Regex.Match) => {
+    val code = Integer.parseInt(m.group(1), 16)
+    code.toChar.toString
+  })
 }

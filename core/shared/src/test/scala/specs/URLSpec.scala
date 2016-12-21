@@ -47,7 +47,7 @@ class URLSpec extends WordSpec with Matchers {
         val url = URL("http://test.com/location").withParam("address", "Oklahoma City, OK")
         url.toString should equal("http://test.com/location?address=Oklahoma%20City%2C%20OK")
         url.parameters.value("address") should equal(Some("Oklahoma City, OK"))
-        val encoded = url.encoded
+        val encoded = url.encoded.toString
         encoded should equal("http://test.com/location?address=Oklahoma%20City%2C%20OK")
       }
     }

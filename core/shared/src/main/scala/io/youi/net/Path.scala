@@ -1,9 +1,7 @@
 package io.youi.net
 
-import io.youi.util.URLUtil
-
 case class Path(parts: List[String]) {
-  lazy val encoded: String = absolute.parts.map(URLUtil.encode).mkString("/", "/", "")
+  lazy val encoded: String = absolute.parts.map(URL.encode).mkString("/", "/", "")
   lazy val decoded: String = absolute.parts.mkString("/", "/", "")
 
   lazy val absolute: Path = {

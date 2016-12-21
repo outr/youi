@@ -1,7 +1,5 @@
 package io.youi.net
 
-import io.youi.util.URLUtil
-
 class Parameters(map: Map[String, Param]) {
   def isEmpty: Boolean = map.isEmpty
   def nonEmpty: Boolean = map.nonEmpty
@@ -20,9 +18,9 @@ class Parameters(map: Map[String, Param]) {
       b.append('?')
       val params = map.flatMap {
         case (key, param) => {
-          val keyEncoded = URLUtil.encode(key)
+          val keyEncoded = URL.encode(key)
           param.values.map { value =>
-            val valueEncoded = URLUtil.encode(value)
+            val valueEncoded = URL.encode(value)
             s"$keyEncoded=$valueEncoded"
           }
         }

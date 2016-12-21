@@ -1,6 +1,6 @@
 package specs
 
-import io.youi.net.{Protocol, URL}
+import io.youi.net._
 import org.scalatest.{Matchers, WordSpec}
 
 class URLSpec extends WordSpec with Matchers {
@@ -49,6 +49,10 @@ class URLSpec extends WordSpec with Matchers {
         url.parameters.value("address") should equal(Some("Oklahoma City, OK"))
         val encoded = url.encoded.toString
         encoded should equal("http://test.com/location?address=Oklahoma%20City%2C%20OK")
+      }
+      "properly interpolate a URL" in {
+        val url = url"http://www.youi.io"
+        url.encoded.toString should equal("http://www.youi.io/")
       }
     }
   }

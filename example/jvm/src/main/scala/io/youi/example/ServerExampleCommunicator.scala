@@ -11,7 +11,7 @@ object ServerExampleCommunicator extends ServerWebSocketCommunication with Loggi
   connected.attach { connection =>
     contextualize(connection) {
       logger.info("Requesting url from browser...")
-      interface.url().foreach { url =>
+      interface.clientURL().foreach { url =>
         logger.info(s"Browser is connected on $url")
       }
     }

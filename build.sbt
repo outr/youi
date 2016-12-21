@@ -1,6 +1,6 @@
 name := "youi"
 organization in ThisBuild := "io.youi"
-version in ThisBuild := "1.0.0-SNAPSHOT"
+version in ThisBuild := "0.1.0-SNAPSHOT"
 scalaVersion in ThisBuild := "2.12.1"
 crossScalaVersions in ThisBuild := List("2.12.1", "2.11.8")
 sbtVersion in ThisBuild := "0.13.13"
@@ -17,13 +17,13 @@ lazy val root = project.in(file("."))
 
 lazy val core = crossProject.in(file("core"))
   .settings(
-    name := "core",
+    name := "youi-core",
     resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases",
     libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value,
     libraryDependencies += "com.outr" %%% "scribe" % "1.2.6",
     libraryDependencies += "com.outr" %%% "props" % "1.1.0",
-    libraryDependencies += "org.scalactic" %%% "scalactic" % "3.0.0",
-    libraryDependencies += "org.scalatest" %%% "scalatest" % "3.0.0" % "test"
+    libraryDependencies += "org.scalactic" %%% "scalactic" % "3.0.1",
+    libraryDependencies += "org.scalatest" %%% "scalatest" % "3.0.1" % "test"
   )
   .jvmSettings(
     libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.4.13"
@@ -37,7 +37,7 @@ lazy val coreJVM = core.jvm
 
 lazy val dom = crossProject.in(file("dom"))
   .settings(
-    name := "dom"
+    name := "youi-dom"
   )
   .dependsOn(core)
 
@@ -46,27 +46,27 @@ lazy val domJVM = dom.jvm
 
 lazy val server = project.in(file("server"))
   .settings(
-    name := "server",
-    libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.0",
-    libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.0" % "test"
+    name := "youi-server",
+    libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.1",
+    libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % "test"
   )
   .dependsOn(coreJVM)
 
 lazy val serverUndertow = project.in(file("serverUndertow"))
   .settings(
-    name := "server-undertow",
+    name := "youi-server-undertow",
     libraryDependencies += "io.undertow" % "undertow-core" % "1.4.4.Final",
-    libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.0",
-    libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.0" % "test"
+    libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.1",
+    libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % "test"
   )
   .dependsOn(server)
 
 lazy val communicate = crossProject.in(file("communicate"))
   .settings(
-    name := "communicate",
+    name := "youi-communicate",
     libraryDependencies += "com.lihaoyi" %%% "upickle" % "0.4.4",
-    libraryDependencies += "org.scalactic" %%% "scalactic" % "3.0.0",
-    libraryDependencies += "org.scalatest" %%% "scalatest" % "3.0.0" % "test"
+    libraryDependencies += "org.scalactic" %%% "scalactic" % "3.0.1",
+    libraryDependencies += "org.scalatest" %%% "scalatest" % "3.0.1" % "test"
   )
   .dependsOn(core)
 
@@ -76,13 +76,13 @@ lazy val communicateJVM = communicate.jvm.dependsOn(server)
 lazy val ui = project.in(file("ui"))
   .enablePlugins(ScalaJSPlugin)
   .settings(
-    name := "ui"
+    name := "youi-ui"
   )
   .dependsOn(coreJS)
 
 lazy val example = crossProject.in(file("example"))
   .settings(
-    name := "server-example"
+    name := "youi-server-example"
   )
   .jsSettings(
     crossTarget in fastOptJS := baseDirectory.value / ".." / "jvm" / "src" / "main" / "resources" / "app",

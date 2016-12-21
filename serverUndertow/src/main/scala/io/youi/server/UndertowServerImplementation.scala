@@ -123,7 +123,6 @@ object UndertowServerImplementation {
     val handler = Handlers.proxyHandler(client)
     exchange.setRequestPath(destination.path.encoded)
     exchange.setRequestURI(destination.path.encoded)
-    println(s"Request Path: ${exchange.getRequestPath}, ${exchange.getRequestURI}, ${exchange.getRequestURL}")
     handler.handleRequest(exchange)
   }
 

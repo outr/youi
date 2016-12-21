@@ -7,5 +7,5 @@ import org.scalajs.dom._
 object ClientExampleCommunicator extends ClientWebSocketCommunication(URL(s"ws://${window.location.host}/communicator")) {
   override val interface: ExampleInterface = client[ExampleInterface]
 
-  def url: String = window.location.href
+  def clientURL: String = window.location.href
 }

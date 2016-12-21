@@ -1,6 +1,8 @@
 package io.youi.net
 
-class Parameters(map: Map[String, Param]) {
+case class Parameters(entries: List[(String, Param)]) {
+  lazy val map: Map[String, Param] = entries.toMap
+
   def isEmpty: Boolean = map.isEmpty
   def nonEmpty: Boolean = map.nonEmpty
 
@@ -9,7 +11,15 @@ class Parameters(map: Map[String, Param]) {
 
   def withParam(key: String, value: String, append: Boolean = true): Parameters = {
     val param = map.getOrElse(key, Param()).withValue(value, append)
-    new Parameters(map + (key -> param))
+    var found = false
+    val updated = entries.map {
+      case (key, value) if key == key => {
+        found = true
+        key -> param
+      }
+      case t => t
+    }
+    Parameters(if (found) updated else updated ::: List(key -> param))
   }
 
   lazy val encoded: String = {
@@ -56,5 +66,5 @@ class Parameters(map: Map[String, Param]) {
 }
 
 object Parameters {
-  val empty = new Parameters(Map.empty)
+  val empty = Parameters(Nil)
 }

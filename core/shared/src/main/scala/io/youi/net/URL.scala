@@ -84,28 +84,25 @@ object URL {
     }
     val path = Path.parse(pathString, absolutizePath)
     val parameters = if (questionIndex == -1) {
-      Map.empty[String, Param]
+      Parameters.empty
     } else {
       val endIndex = if (hashIndex == -1) url.length else hashIndex
       val query = url.substring(questionIndex + 1, endIndex)
-      var map = Map.empty[String, Param]
+      var params = Parameters.empty
       query.split('&').map(param => param.trim.splitAt(param.indexOf('='))).collect {
         case (key, value) if key.nonEmpty => URL.decode(key) -> URL.decode(value.substring(1))
         case (key, value) if value.nonEmpty => "query" -> URL.decode(value)
       }.foreach {
-        case (key, value) => map.get(key) match {
-          case Some(param) => map += key -> Param(param.values ::: List(value))
-          case None => map += key -> Param(List(value))
-        }
+        case (key, value) => params = params.withParam(key, value)
       }
-      map
+      params
     }
     val fragment = if (hashIndex != -1) {
       Some(url.substring(hashIndex + 1))
     } else {
       None
     }
-    URL(protocol = protocol, host = host, port = port, path = path, parameters = new Parameters(parameters), fragment = fragment)
+    URL(protocol = protocol, host = host, port = port, path = path, parameters = parameters, fragment = fragment)
   }
 
   private val unreservedCharacters = Set('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',

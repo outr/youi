@@ -5,30 +5,6 @@ import scala.reflect.macros.blackbox
 
 @compileTimeOnly("Enable Macros for expansion")
 object Macros {
-  def clientCall[Response](c: blackbox.Context)(implicit response: c.WeakTypeTag[Response]): c.Expr[ClientCall[Response]] = {
-    import c.universe._
-
-    c.Expr[ClientCall[Response]](q"new io.youi.communicate.ClientCall[$response] {}")
-  }
-
-  def serverCall[Response](c: blackbox.Context)(implicit response: c.WeakTypeTag[Response]): c.Expr[ServerCall[Response]] = {
-    import c.universe._
-
-    c.Expr[ServerCall[Response]](q"new io.youi.communicate.ServerCall[$response] {}")
-  }
-
-  def clientMethod[Request, Response](c: blackbox.Context)(implicit request: c.WeakTypeTag[Request], response: c.WeakTypeTag[Response]): c.Expr[ClientMethod[Request, Response]] = {
-    import c.universe._
-
-    c.Expr[ClientMethod[Request, Response]](q"new io.youi.communicate.ClientMethod[$request, $response] {}")
-  }
-
-  def serverMethod[Request, Response](c: blackbox.Context)(implicit request: c.WeakTypeTag[Request], response: c.WeakTypeTag[Response]): c.Expr[ServerMethod[Request, Response]] = {
-    import c.universe._
-
-    c.Expr[ServerMethod[Request, Response]](q"new io.youi.communicate.ServerMethod[$request, $response] {}")
-  }
-
   private def localCall(context: blackbox.Context)(instance: context.universe.Tree, v: context.universe.TermSymbol): context.universe.Tree = {
     import context.universe._
 
@@ -136,16 +112,16 @@ object Macros {
 
     val instance = context.prefix.tree
     val fields = i.tpe.decls.collect {
-      case v: TermSymbol if v.isVal && v.info.typeSymbol.fullName == "io.youi.communicate.ClientCall" => {
+      case v: TermSymbol if v.info.typeSymbol.fullName == "io.youi.communicate.ClientCall" => {
         remoteCall(context)(instance, v)
       }
-      case v: TermSymbol if v.isVal && v.info.typeSymbol.fullName == "io.youi.communicate.ServerCall" => {
+      case v: TermSymbol if v.info.typeSymbol.fullName == "io.youi.communicate.ServerCall" => {
         localCall(context)(instance, v)
       }
-      case v: TermSymbol if v.isVal && v.info.typeSymbol.fullName == "io.youi.communicate.ClientMethod" => {
+      case v: TermSymbol if v.info.typeSymbol.fullName == "io.youi.communicate.ClientMethod" => {
         remoteMethod(context)(instance, v)
       }
-      case v: TermSymbol if v.isVal && v.info.typeSymbol.fullName == "io.youi.communicate.ServerMethod" => {
+      case v: TermSymbol if v.info.typeSymbol.fullName == "io.youi.communicate.ServerMethod" => {
         localMethod(context)(instance, v)
       }
     }
@@ -165,16 +141,16 @@ object Macros {
 
     val instance = context.prefix.tree
     val fields = i.tpe.decls.collect {
-      case v: TermSymbol if v.isVal && v.info.typeSymbol.fullName == "io.youi.communicate.ClientCall" => {
+      case v: TermSymbol if v.info.typeSymbol.fullName == "io.youi.communicate.ClientCall" => {
         localCall(context)(instance, v)
       }
-      case v: TermSymbol if v.isVal && v.info.typeSymbol.fullName == "io.youi.communicate.ServerCall" => {
+      case v: TermSymbol if v.info.typeSymbol.fullName == "io.youi.communicate.ServerCall" => {
         remoteCall(context)(instance, v)
       }
-      case v: TermSymbol if v.isVal && v.info.typeSymbol.fullName == "io.youi.communicate.ClientMethod" => {
+      case v: TermSymbol if v.info.typeSymbol.fullName == "io.youi.communicate.ClientMethod" => {
         localMethod(context)(instance, v)
       }
-      case v: TermSymbol if v.isVal && v.info.typeSymbol.fullName == "io.youi.communicate.ServerMethod" => {
+      case v: TermSymbol if v.info.typeSymbol.fullName == "io.youi.communicate.ServerMethod" => {
         remoteMethod(context)(instance, v)
       }
     }

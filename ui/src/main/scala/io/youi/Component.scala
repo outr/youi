@@ -8,12 +8,12 @@ trait Component {
     lazy val y: Var[Double] = Var(0.0)
 
     lazy val left: Var[Double] = x
-    lazy val center: Dep = Dep(left, size.width / 2.0)
-    lazy val right: Dep = Dep(left, size.width)
+    lazy val center: Dep[Double, Double] = Dep(left, size.width / 2.0)
+    lazy val right: Dep[Double, Double] = Dep(left, size.width)
 
     lazy val top: Var[Double] = y
-    lazy val middle: Dep = Dep(top, size.height / 2.0)
-    lazy val bottom: Dep = Dep(top, size.height)
+    lazy val middle: Dep[Double, Double] = Dep(top, size.height / 2.0)
+    lazy val bottom: Dep[Double, Double] = Dep(top, size.height)
   }
 
   object size {

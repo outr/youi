@@ -1,6 +1,16 @@
 # youi-core
 
-## URL
+## SBT Configuration
+
+youi is published to Sonatype OSS and Maven Central and utilizes JVM and Scala.js with 2.11 and 2.12:
+
+```
+libraryDependencies += "io.youi" %%% "youi-core" % "0.1.0" // Scala and Scala.js
+```
+
+## Main Features
+
+### URL
 
 A fairly simple, but complete representation of a URL. Includes proper parsing, formatting, and manipulation
 functionality.  Finally, URL interpolation at compile-time offers a convenient mechanism to validate URLs at
@@ -8,13 +18,13 @@ compile-time.
 
 Creating a URL can be done in various ways.
 
-### Parsing
+#### Parsing
 
 ```
 val url = URL("http://youi.io")
 ```
 
-### Interpolation
+#### Interpolation
 
 Has the benefit of throwing a compilation error if it fails to validate.
 
@@ -22,13 +32,13 @@ Has the benefit of throwing a compilation error if it fails to validate.
 val url = url"http://youi.io"
 ```
 
-### Manually
+#### Manually
 
 ```
 val url = URL(protocol = Protocol.Http, host = "youi.io")
 ```
 
-## Unique
+### Unique
 
 Generates a unique String. Similar concept to UUID, but much faster, slightly less unique, and configurable. Uses
 `ThreadLocalRandom` to generate the values.

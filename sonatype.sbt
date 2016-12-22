@@ -1,4 +1,4 @@
-sonatypeProfileName := "com.outr"
+sonatypeProfileName := "io.youi"
 
 pomExtra in Global := {
   <url>https://github.com/outr/youi</url>

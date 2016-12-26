@@ -8,7 +8,7 @@ resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 
 lazy val root = project.in(file("."))
-  .aggregate(coreJS, coreJVM, communicateJS, communicateJVM, domJS, domJVM, server, serverUndertow, ui, exampleJS, exampleJVM)
+  .aggregate(coreJS, coreJVM, communicateJS, communicateJVM, dom, server, serverUndertow, ui, exampleJS, exampleJVM)
   .settings(
     resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases",
     publish := {},
@@ -35,14 +35,12 @@ lazy val core = crossProject.in(file("core"))
 lazy val coreJS = core.js
 lazy val coreJVM = core.jvm
 
-lazy val dom = crossProject.in(file("dom"))
+lazy val dom = project.in(file("dom"))
+  .enablePlugins(ScalaJSPlugin)
   .settings(
     name := "youi-dom"
   )
-  .dependsOn(core)
-
-lazy val domJS = dom.js
-lazy val domJVM = dom.jvm
+  .dependsOn(coreJS)
 
 lazy val server = project.in(file("server"))
   .settings(
@@ -92,7 +90,7 @@ lazy val example = crossProject.in(file("example"))
     libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value,
     libraryDependencies += "org.scala-lang.modules" %% "scala-xml" % "1.0.6"
   )
-  .dependsOn(communicate, dom)
+  .dependsOn(communicate)
 
-lazy val exampleJS = example.js
+lazy val exampleJS = example.js.dependsOn(dom)
 lazy val exampleJVM = example.jvm.dependsOn(serverUndertow)

@@ -2,7 +2,7 @@ package io.youi
 
 import com.outr.props._
 
-trait Component {
+trait AbstractComponent {
   object position {
     lazy val x: Var[Double] = Var(0.0)
     lazy val y: Var[Double] = Var(0.0)

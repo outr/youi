@@ -48,6 +48,16 @@ object dom {
         }
       }
     }
+
+    def insertAfter(previous: Element): Unit = Option(previous.nextElementSibling) match {
+      case Some(next) => previous.parentNode.insertBefore(e, next)
+      case None => previous.parentNode.appendChild(e)
+    }
+
+    def insertFirst(parent: Element): Unit = Option(parent.firstElementChild) match {
+      case Some(first) => parent.insertBefore(e, first)
+      case None => parent.appendChild(e)
+    }
   }
 
   implicit def domListToIterator[T](list: DOMList[T]): Iterator[T] = new Iterator[T] {

@@ -21,7 +21,7 @@ lazy val core = crossProject.in(file("core"))
     resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases",
     libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value,
     libraryDependencies += "com.outr" %%% "scribe" % "1.2.6",
-    libraryDependencies += "com.outr" %%% "props" % "1.1.0",
+    libraryDependencies += "com.outr" %%% "props" % "1.2.0-SNAPSHOT",
     libraryDependencies += "org.scalactic" %%% "scalactic" % "3.0.1",
     libraryDependencies += "org.scalatest" %%% "scalatest" % "3.0.1" % "test"
   )
@@ -76,7 +76,7 @@ lazy val ui = project.in(file("ui"))
   .settings(
     name := "youi-ui"
   )
-  .dependsOn(coreJS)
+  .dependsOn(coreJS, dom)
 
 lazy val example = crossProject.in(file("example"))
   .settings(
@@ -92,5 +92,5 @@ lazy val example = crossProject.in(file("example"))
   )
   .dependsOn(communicate)
 
-lazy val exampleJS = example.js.dependsOn(dom)
+lazy val exampleJS = example.js.dependsOn(dom, ui)
 lazy val exampleJVM = example.jvm.dependsOn(serverUndertow)

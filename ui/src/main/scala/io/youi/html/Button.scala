@@ -8,7 +8,7 @@ import org.scalajs.dom.html.{Button => HTMLButton}
 class Button extends Component {
   override protected[youi] val element: HTMLButton = dom.create[HTMLButton]("button")
 
-  lazy val text: Var[String] = prop(element.textContent, value => element.textContent = value)
+  lazy val text: Var[String] = prop(element.textContent, value => element.textContent = value, mayCauseResize = true)
 
   lazy val click: Channel[Event] = events("click", stopPropagation = false)
 

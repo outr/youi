@@ -51,7 +51,7 @@ trait Component extends AbstractComponent with Logging {
   }
 
   protected def updateSize(): Unit = {
-    actualWidth := element.offsetWidth
-    actualHeight := element.offsetHeight
+    if (actualWidth() != element.offsetWidth) actualWidth.setStatic(element.offsetWidth)
+    if (actualHeight() != element.offsetHeight) actualHeight.setStatic(element.offsetHeight)
   }
 }

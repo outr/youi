@@ -2,16 +2,19 @@ package io.youi
 
 import org.scalajs.dom._
 import com.outr.props.{Val, Var}
+import com.outr.scribe.Logging
 import io.youi.html.HTMLContainer
 import org.scalajs.dom.html.Element
 
-trait UI extends HTMLContainer {
+trait UI extends HTMLContainer with Logging {
   def name: String = getClass.getSimpleName.replaceAllLiterally("$", "")
 
   override protected[youi] val element: Element = document.body
 
   def ui: UI = this
   val title: Var[String] = Var(name)
+
+  def init(): Unit = {}
 
   object position {
     lazy val x: Val[Double] = Val(0.0)
@@ -41,12 +44,8 @@ trait UI extends HTMLContainer {
         window.requestAnimationFrame((d: Double) => {
           val w = window.innerWidth
           val h = window.innerHeight
-          if (_width() != w) {
-            _width := w
-          }
-          if (_height() != h) {
-            _height := h
-          }
+          _width := w
+          _height := h
 
           running = false
         })

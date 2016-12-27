@@ -1,24 +1,34 @@
 package io.youi
 
 import com.outr.props._
+import io.youi.html.style.Position
 
 trait AbstractComponent {
   object position {
+    lazy val `type`: Var[Position] = Var(Position.Absolute)
     lazy val x: Var[Double] = Var(0.0)
     lazy val y: Var[Double] = Var(0.0)
 
     lazy val left: Var[Double] = x
-    lazy val center: Dep[Double, Double] = Dep(left, size.width / 2.0)
-    lazy val right: Dep[Double, Double] = Dep(left, size.width)
+    lazy val center: Dep[Double, Double] = Dep(left, size.actual.width / 2.0)
+    lazy val right: Dep[Double, Double] = Dep(left, size.actual.width)
 
     lazy val top: Var[Double] = y
-    lazy val middle: Dep[Double, Double] = Dep(top, size.height / 2.0)
-    lazy val bottom: Dep[Double, Double] = Dep(top, size.height)
+    lazy val middle: Dep[Double, Double] = Dep(top, size.actual.height / 2.0)
+    lazy val bottom: Dep[Double, Double] = Dep(top, size.actual.height)
   }
+
+  protected val actualWidth: Var[Double] = Var(0.0)
+  protected val actualHeight: Var[Double] = Var(0.0)
 
   object size {
     lazy val width: Var[Double] = Var(0.0)
     lazy val height: Var[Double] = Var(0.0)
+
+    object actual {
+      val width: Val[Double] = actualWidth.toVal
+      val height: Val[Double] = actualHeight.toVal
+    }
   }
 
   object scale extends Channel[Double] {
@@ -36,4 +46,6 @@ trait AbstractComponent {
   lazy val rotation: Var[Double] = Var(0.0)
   lazy val opacity: Var[Double] = Var(1.0)
   lazy val visible: Var[Boolean] = Var(true)
+
+  protected def init(): Unit = {}
 }

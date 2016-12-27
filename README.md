@@ -26,9 +26,13 @@ into this new framework. If you need a production-ready framework please look at
 ## Features for 1.0.0 (In-Progress)
 
 * [ ] User Interface framework for Scala.js (see NextUI)
+* [ ] Complete SSL support (See Hyperscala)
 * [ ] Client / Server Page and Screen support (see Hyperscala)
 * [ ] Ajax Request / Response framework for Server (JVM) and Client (JS) (see Hyperscala)
 * [ ] Scala JVM and JS Content Modification Streams for any XML / HTML content (see Hyperscala)
+* [ ] Scala class generation from existing HTML source supporting compile-time and source generation
+* [ ] Existing HTML, CSS, and JavaScript optimization, compression, and obfuscation for production use
+* [ ] Image optimizer for production use supporting compile-time and run-time optimization
 
 ## Features for 0.1.0 (Released 2016.12.22)
 

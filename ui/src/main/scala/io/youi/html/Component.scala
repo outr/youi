@@ -10,7 +10,7 @@ import org.scalajs.dom.raw.Event
 trait Component extends AbstractComponent with Logging {
   protected[youi] val element: Element
 
-  protected def prop[T](get: => T, set: T => Unit, mayCauseResize: Boolean = false): Var[T] = {
+  protected def prop[T](get: => T, set: T => Unit, mayCauseResize: Boolean): Var[T] = {
     val v = Var[T](get)
     v.attach { value =>
       set(value)

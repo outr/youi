@@ -4,15 +4,25 @@ import org.scalajs.dom._
 import com.outr.props.{Val, Var}
 import com.outr.scribe.Logging
 import io.youi.html.HTMLContainer
-import org.scalajs.dom.html.Element
+import org.scalajs.dom.html.{Div, Element}
 
-trait UI extends HTMLContainer with Logging {
+object UI extends HTMLContainer with Logging {
   def name: String = getClass.getSimpleName.replaceAllLiterally("$", "")
 
   override protected[youi] val element: Element = document.body
 
-  def ui: UI = this
   val title: Var[String] = Var(name)
+
+  lazy val ppi: Double = {
+    val div = dom.create[Div]("div")
+    div.style.width = "1in"
+    document.body.appendChild(div)
+    try {
+      element.offsetWidth
+    } finally {
+      document.body.removeChild(div)
+    }
+  }
 
   def init(): Unit = {}
 

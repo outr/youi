@@ -7,6 +7,8 @@ import org.scalajs.dom._
 import org.scalajs.dom.html.Element
 import org.scalajs.dom.raw.Event
 
+import scala.collection.mutable.ListBuffer
+
 trait Component extends AbstractComponent with Logging {
   protected[youi] val element: Element
 
@@ -43,15 +45,34 @@ trait Component extends AbstractComponent with Logging {
     super.init()
 
     position.`type`.attachAndFire(p => element.style.position = p.toString.toLowerCase)
-    position.x.attachAndFire(d => element.style.left = s"${d}px")
-    position.y.attachAndFire(d => element.style.top = s"${d}px")
+    position.x.attach(d => element.style.left = s"${d}px")
+    position.y.attach(d => element.style.top = s"${d}px")
     size.width.attach(d => element.style.width = s"${d}px")
     size.height.attach(d => element.style.height = s"${d}px")
+    rotation.attach(d => updateTransform())
+    scale.x.attach(d => updateTransform())
+    scale.y.attach(d => updateTransform())
+    opacity.attach(d => element.style.opacity = d.toString)
+    visible.attach(b => element.style.visibility = if (b) "visible" else "hidden")
     updateSize()
   }
 
   protected def updateSize(): Unit = {
     if (actualWidth() != element.offsetWidth) actualWidth.setStatic(element.offsetWidth)
     if (actualHeight() != element.offsetHeight) actualHeight.setStatic(element.offsetHeight)
+  }
+
+  protected def updateTransform(): Unit = {
+    val b = ListBuffer.empty[String]
+    if (rotation() != 0.0) {
+      b += s"rotate(${rotation() * 360.0}deg)"
+    }
+    if (scale.x() != 1.0) {
+      b += s"scaleX(${scale.x()})"
+    }
+    if (scale.y() != 1.0) {
+      b += s"scaleY(${scale.y()})"
+    }
+    element.style.transform = b.mkString(" ")
   }
 }

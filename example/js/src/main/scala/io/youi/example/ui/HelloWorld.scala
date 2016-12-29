@@ -7,13 +7,15 @@ import io.youi.html.Button
 
 import scala.scalajs.js.annotation.JSExportTopLevel
 
-object HelloWorld extends UI with Logging {
+object HelloWorld extends Logging {
+  import UI._
+
   title := "Hello World"
 
   children += new Button {
     text := "Say 'Hello World'"
-    position.center := ui.position.center
-    position.middle := ui.position.middle
+    position.center := UI.position.center
+    position.middle := UI.position.middle
 
     click.attach { evt =>
       logger.info("Hello, World!")

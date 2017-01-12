@@ -74,7 +74,8 @@ lazy val communicateJVM = communicate.jvm.dependsOn(server)
 lazy val ui = project.in(file("ui"))
   .enablePlugins(ScalaJSPlugin)
   .settings(
-    name := "youi-ui"
+    name := "youi-ui",
+    libraryDependencies += "io.monix" %%% "monix-execution" % "2.1.2"
   )
   .dependsOn(coreJS, dom)
 

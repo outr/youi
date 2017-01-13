@@ -1,12 +1,12 @@
 package io
 
-import com.outr.props.Val
+import com.outr.reactify.Val
 
 package object youi {
   def ui: UI.type = UI
 
   implicit class NumericSize[T](t: T)(implicit n: Numeric[T]) {
-    private lazy val d = n.toDouble(t)
+    private val d = n.toDouble(t)
 
     /**
       * pixels
@@ -61,6 +61,6 @@ package object youi {
     /**
       * 1/100th of the maximum value between the height and the width of the viewport.
       */
-    def vmax: Val[Double] = Val(math.max((d / 100.0) * ui.size.width, (d / 100.0) * ui.size.height))
+    def vmax: Val[Double] = Val[Double](math.max((d / 100.0) * ui.size.width, (d / 100.0) * ui.size.height))
   }
 }

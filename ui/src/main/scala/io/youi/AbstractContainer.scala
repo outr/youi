@@ -1,9 +1,9 @@
 package io.youi
 
-import com.outr.props._
+import com.outr.reactify._
 
 trait AbstractContainer[C <: AbstractComponent] {
-  val children: Var[Vector[C]] = Var(Vector.empty)
+  val children: Var[Vector[C]] = Var[Vector[C]](Vector.empty)
 
   children.changes(new ChangeListener[Vector[C]] {
     override def change(oldValue: Vector[C], newValue: Vector[C]): Unit = {

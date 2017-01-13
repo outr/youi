@@ -1,7 +1,7 @@
 package io.youi
 
 import org.scalajs.dom._
-import com.outr.props.{Val, Var}
+import com.outr.reactify.{Val, Var}
 import com.outr.scribe.Logging
 import io.youi.html.HTMLContainer
 import org.scalajs.dom.html.{Div, Element}
@@ -43,8 +43,8 @@ object UI extends HTMLContainer with Logging {
     private val _width = Var[Double](window.innerWidth)
     private val _height = Var[Double](window.innerHeight)
 
-    val width: Val[Double] = _width.toVal
-    val height: Val[Double] = _height.toVal
+    val width: Val[Double] = Val(_width)
+    val height: Val[Double] = Val(_height)
 
     private var running = false
     window.addEventListener("resize", (evt: Event) => {

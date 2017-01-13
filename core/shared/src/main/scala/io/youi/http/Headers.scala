@@ -69,6 +69,7 @@ object Headers {
     case object `Expires` extends DateHeaderKey("Expires")
     case object `Last-Modified` extends DateHeaderKey("Last-Modified")
     case object `Location` extends StringHeaderKey("Location")
+    case object `Access-Control-Allow-Origin` extends StringHeaderKey("Access-Control-Allow-Origin")
   }
 }
 

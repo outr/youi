@@ -1,12 +1,12 @@
 package io.youi.server
 
-import com.outr.props._
-import com.outr.scribe.Logging
+import com.outr.reactify._
+import com.outr.scribe._
 import io.youi.http.{HttpConnection, Status}
 import io.youi.server.handler.{HttpHandler, HttpHandlerBuilder}
 import io.youi.server.session.SessionStore
 
-trait Server extends HttpHandler with Logging {
+trait Server extends HttpHandler {
   private val _connection = new ThreadLocal[Option[HttpConnection]] {
     override def initialValue(): Option[HttpConnection] = None
   }

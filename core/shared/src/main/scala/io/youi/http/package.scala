@@ -25,4 +25,8 @@ package object http {
       override def matches(url: URL): Boolean = url.path.decoded == path
     }
   }
+
+  object all extends URLMatcher {
+    override def matches(url: URL): Boolean = true
+  }
 }

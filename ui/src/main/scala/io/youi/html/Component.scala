@@ -1,6 +1,6 @@
 package io.youi.html
 
-import com.outr.props.{Channel, Var}
+import com.outr.reactify.{Channel, Var}
 import com.outr.scribe.Logging
 import io.youi.AbstractComponent
 import org.scalajs.dom._

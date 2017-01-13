@@ -1,6 +1,6 @@
 package io.youi.html
 
-import com.outr.props.{Channel, Var}
+import com.outr.reactify.{Channel, Var}
 import io.youi.dom
 import org.scalajs.dom.Event
 import org.scalajs.dom.html.{Button => HTMLButton}

@@ -1,6 +1,6 @@
 package io.youi.example.ui
 
-import com.outr.props._
+import com.outr.reactify._
 import com.outr.scribe.Logging
 import io.youi.UI
 import io.youi.html.style.Image

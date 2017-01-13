@@ -1,6 +1,6 @@
 package io.youi.communicate
 
-import com.outr.props.Var
+import com.outr.reactify.Var
 import io.youi.http.{WebSocketListener, WebSocketUtil}
 import io.youi.net.URL
 import org.scalajs.dom.WebSocket

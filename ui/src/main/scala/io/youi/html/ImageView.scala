@@ -1,5 +1,5 @@
 package io.youi.html
-import com.outr.props.Var
+import com.outr.reactify.Var
 import io.youi.dom
 import io.youi.html.style.Image
 import org.scalajs.dom.Event

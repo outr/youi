@@ -5,7 +5,7 @@ import java.io.File
 import io.youi.http._
 import io.youi.net.ContentType
 import io.youi.server.UndertowServer
-import io.youi.server.handler.CachingManager
+import io.youi.server.handler.{CachingManager, HttpHandler}
 
 object ExampleServer extends UndertowServer {
   def main(args: Array[String]): Unit = {
@@ -23,7 +23,8 @@ object ExampleServer extends UndertowServer {
     handler.matcher(path.exact("/proxy.html")).wrap(ProxyExample)
     handler.matcher(path.exact("/session.html")).wrap(SessionExample)
     handler.matcher(path.exact("/communicator")).wrap(ServerExampleCommunicator)
-    handler.caching(CachingManager.LastModified()).classLoader("", (path: String) => path.substring(1))
+    handler.caching(CachingManager.LastModified()).classLoader("", (path: String) => s"content$path")
+    handler.caching(CachingManager.LastModified()).classLoader("app", (path: String) => path.substring(4))
 
     start()
   }

@@ -1,12 +1,12 @@
 package io.youi.communicate
 
-import com.outr.props.Channel
+import com.outr.reactify._
 import io.youi.http.{HttpConnection, WebSocketListener}
 import io.youi.server.handler.HttpHandler
 
 trait ServerWebSocketCommunication extends WebSocketCommunication[WebSocketConnection] with HttpHandler {
-  val connected: Channel[WebSocketConnection] = Channel()
-  val disconnected: Channel[WebSocketConnection] = Channel()
+  val connected: Channel[WebSocketConnection] = Channel[WebSocketConnection]
+  val disconnected: Channel[WebSocketConnection] = Channel[WebSocketConnection]
 
   private var _connections = Set.empty[WebSocketConnection]
   def connections: Set[WebSocketConnection] = _connections

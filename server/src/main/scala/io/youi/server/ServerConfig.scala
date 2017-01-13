@@ -1,6 +1,6 @@
 package io.youi.server
 
-import com.outr.props._
+import com.outr.reactify._
 
 class ServerConfig(server: Server) {
   /**

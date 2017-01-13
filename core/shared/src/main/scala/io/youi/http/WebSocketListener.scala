@@ -2,14 +2,13 @@ package io.youi.http
 
 import java.nio.ByteBuffer
 
-import com.outr.props.{Channel, State, Var}
-import com.outr.scribe.Logging
+import com.outr.reactify._
 
 import scala.collection.mutable.ListBuffer
 
-trait WebSocketListener extends Logging {
-  private[youi] val _connected = Var[Boolean](false)
-  val connected: State[Boolean] = _connected.asState
+trait WebSocketListener {
+  private[youi] val _connected: Var[Boolean] = Var[Boolean](false)
+  val connected: Val[Boolean] = Val(_connected)
 
   val send = new WebSocketChannels
   val receive = new WebSocketChannels

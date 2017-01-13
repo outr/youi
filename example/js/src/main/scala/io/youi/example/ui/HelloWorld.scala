@@ -1,13 +1,13 @@
 package io.youi.example.ui
 
 import com.outr.reactify._
-import com.outr.scribe.Logging
+import com.outr.scribe._
 import io.youi.UI
 import io.youi.html.Button
 
 import scala.scalajs.js.annotation.JSExportTopLevel
 
-object HelloWorld extends Logging {
+object HelloWorld {
   import UI._
 
   title := "Hello World"

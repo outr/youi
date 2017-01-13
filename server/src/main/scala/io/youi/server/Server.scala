@@ -54,6 +54,7 @@ trait Server extends HttpHandler {
 
   def start(): Unit = synchronized {
     implementation.start()
+    logger.info(s"Server started on ${config.host()}:${config.port()}")
   }
 
   def stop(): Unit = synchronized {

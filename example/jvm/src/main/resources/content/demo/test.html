@@ -8,7 +8,7 @@
         }
     </style>
 </head>
-<body>
+<body style="margin: 0; overflow: hidden;">
 <canvas id="stage" width="1000" height="800"></canvas>
 <script src="CanvasInput.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.2.2/pixi.min.js"></script>
@@ -54,23 +54,25 @@
        });
        }*/
 
-    var renderer = PIXI.autoDetectRenderer(800, 800, {
-      view: canvas
-    }, true);
+    var renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight, {
+      view: canvas,
+      antialias: true
+    });
+    renderer.backgroundColor = 0xffffff;
     var stage = new PIXI.Container();
     var texture = PIXI.Texture.fromImage('/cuteness.jpg');
     var puppy = new PIXI.Sprite(texture);
     puppy.anchor.x = 0.5;
     puppy.anchor.y = 0.5;
-    puppy.position.x = 200;
-    puppy.position.y = 200;
+    puppy.position.x = 400;
+    puppy.position.y = 400;
     stage.addChild(puppy);
 
     animate();
     function animate() {
       requestAnimationFrame(animate);
 
-      puppy.rotation += 0.1;
+      puppy.rotation += 0.01;
 
       // render the container
       renderer.render(stage);

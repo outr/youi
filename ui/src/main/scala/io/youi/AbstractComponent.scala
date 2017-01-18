@@ -22,8 +22,8 @@ trait AbstractComponent {
   protected val actualHeight: Var[Double] = Var(0.0)
 
   object size {
-    lazy val width: Var[Double] = Var(0.0)
-    lazy val height: Var[Double] = Var(0.0)
+    lazy val width: Var[Size] = Var(Size.Auto)
+    lazy val height: Var[Size] = Var(Size.Auto)
 
     object actual {
       val width: Val[Double] = Val(actualWidth)

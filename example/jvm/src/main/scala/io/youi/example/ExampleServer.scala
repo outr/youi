@@ -9,6 +9,8 @@ import io.youi.server.handler.{CachingManager, HttpHandler}
 
 object ExampleServer extends UndertowServer {
   def main(args: Array[String]): Unit = {
+    config.host := "0.0.0.0"
+
     handler.matcher(path.exact("/hello.txt")).caching(CachingManager.MaxAge(120L)).resource {
       Content.string("Hello World!", ContentType.`text/plain`)
     }

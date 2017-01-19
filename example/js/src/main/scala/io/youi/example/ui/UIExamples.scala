@@ -10,7 +10,8 @@ import org.scalajs.dom._
 object UIExamples {
   val examples = List(
     "Hello World" -> (() => HelloWorld),
-    "Image Example" -> (() => ImageExample)
+    "Image Example" -> (() => ImageExample),
+    "Label Example" -> (() => LabelExample)
   )
   val container: html.Div = dom.create[html.Div]("div")
 
@@ -24,13 +25,10 @@ object UIExamples {
           evt.preventDefault()
           evt.stopPropagation()
 
-          logger.info(s"Hiding...")
           container.style.display = "none"
-          logger.info("Calling function...")
           function()
-          logger.info("Calling init...")
           UI.init()
-          logger.info("Finished!")
+          UI.title := name
         })
         container.appendChild(button)
       }

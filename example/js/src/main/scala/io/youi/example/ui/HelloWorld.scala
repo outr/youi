@@ -10,8 +10,6 @@ import scala.scalajs.js.annotation.JSExportTopLevel
 object HelloWorld {
   import UI._
 
-  title := "Hello World"
-
   children += new Button {
     text := "Say 'Hello World'"
     position.center := UI.position.center

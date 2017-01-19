@@ -3,7 +3,7 @@ package io.youi.html
 import com.outr.reactify.{Channel, Var}
 import com.outr.scribe.Logging
 import io.youi.AbstractComponent
-import org.scalajs.dom._
+import org.scalajs.dom.{Event, _}
 import org.scalajs.dom.html.Element
 import org.scalajs.dom.raw.Event
 
@@ -11,6 +11,8 @@ import scala.collection.mutable.ListBuffer
 
 trait Component extends AbstractComponent with Logging {
   protected[youi] val element: Element
+
+  lazy val click: Channel[Event] = events("click", stopPropagation = false)
 
   protected def prop[T](get: => T, set: T => Unit, mayCauseResize: Boolean): Var[T] = {
     val v = Var[T](get)

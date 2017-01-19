@@ -9,8 +9,6 @@ import io.youi.html.ImageView
 object ImageExample {
   import UI._
 
-  title := "Image Example"
-
   val icon = Image("images/icon.png")
   children += new ImageView {    // Top-Left
     image := icon

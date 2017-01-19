@@ -21,9 +21,4 @@ object HelloWorld {
       logger.info("Hello, World!")
     }
   }
-
-  @JSExportTopLevel("helloWorld")
-  def main(): Unit = {
-    init()
-  }
 }

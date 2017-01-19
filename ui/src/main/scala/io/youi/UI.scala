@@ -24,7 +24,11 @@ object UI extends HTMLContainer with Logging {
     }
   }
 
-  def init(): Unit = {}
+  def init(): Unit = {
+    title.attachAndFire { value =>
+      document.title = value
+    }
+  }
 
   object position {
     lazy val x: Val[Double] = Val(0.0)

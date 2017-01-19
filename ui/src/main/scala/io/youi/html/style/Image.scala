@@ -21,10 +21,15 @@ case class ExistingImage(img: html.Image) extends Image {
   override def src: String = img.src
 }
 
+case class PathImage(path: String) extends Image {
+  override def src: String = path
+}
+
 object Image {
   def empty: Image = EmptyImage
   def apply(url: URL): URLImage = URLImage(url)
   def apply(img: html.Image): ExistingImage = ExistingImage(img)
+  def apply(path: String): PathImage = PathImage(path)
 
   def reload(url: URL): Future[Unit] = {
     val promise = Promise[Unit]()

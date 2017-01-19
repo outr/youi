@@ -2,11 +2,10 @@ sudo: false
 language: scala
 scala:
   - 2.12.1
-  - 2.11.8
 jdk:
   - oraclejdk8
 script:
-  - sbt clean test
+  - sbt clean +test
   - sbt coverage coreJVM/test communicateJVM/test server/test serverUndertow/test
   - sbt coverageReport
   - sbt coverageAggregate

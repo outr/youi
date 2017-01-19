@@ -4,6 +4,13 @@ scala:
   - 2.12.0
 jdk:
   - oraclejdk8
+script:
+  - sbt clean test
+after_success:
+  - sbt coverage coreJVM/test communicateJVM/test server/test serverUndertow/test
+  - sbt coverageReport
+  - sbt coverageAggregate
+  - sbt codacyCoverage
 cache:
   directories:
     - $HOME/.ivy2/cache

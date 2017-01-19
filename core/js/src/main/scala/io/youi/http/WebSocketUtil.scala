@@ -1,10 +1,9 @@
 package io.youi.http
 
-import com.outr.scribe.Logging
 import io.youi.net.URL
 import org.scalajs.dom.{CloseEvent, ErrorEvent, Event, MessageEvent, WebSocket}
 
-object WebSocketUtil extends Logging {
+object WebSocketUtil {
   // TODO: revisit disconnecting, reconnecting, and errors
   def connect(socketURL: URL, listener: WebSocketListener): WebSocket = {
     val ws = new WebSocket(socketURL.toString)

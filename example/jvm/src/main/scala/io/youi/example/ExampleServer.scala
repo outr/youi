@@ -26,7 +26,7 @@ object ExampleServer extends UndertowServer {
     handler.matcher(path.exact("/session.html")).wrap(SessionExample)
     handler.matcher(path.exact("/communicator")).wrap(ServerExampleCommunicator)
     handler.caching(CachingManager.LastModified()).classLoader("", (path: String) => s"content$path")
-    handler.caching(CachingManager.LastModified()).classLoader("app", (path: String) => path.substring(4))
+    handler.caching(CachingManager.LastModified()).classLoader("app", (path: String) => path.drop(4))
 
     start()
   }

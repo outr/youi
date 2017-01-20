@@ -85,6 +85,6 @@ trait Component extends AbstractComponent with Logging {
 
   protected def updateColor(): Unit = {
     def i(d: Double): Int = math.round(d * 255.0).toInt
-    element.style.color = s"rgba(${i(color.red())}, ${i(color.green())}, ${i(color.blue())}, ${i(color.alpha())})"
+    element.style.color = s"rgba(${i(color.red())}, ${i(color.green())}, ${i(color.blue())}, ${color.alpha()})"
   }
 }

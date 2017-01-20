@@ -185,11 +185,7 @@ object Color {
     }
   }
 
-  def toHex(color: Color): String = toHex(color.red, color.green, color.blue, color.alpha)
-
-  def toHex(red: Double, green: Double, blue: Double, alpha: Double): String = {
-    f"#${(red * 255.0).toInt}%02x${(green * 255.0).toInt}%02x${(blue * 255.0).toInt}%02x${(alpha * 255.0).toInt}%02x"
-  }
+  def toHex(color: Color): String = toHex(color.red, color.green, color.blue)
 
   def toHex(red: Double, green: Double, blue: Double): String = {
     f"#${(red * 255.0).toInt}%02x${(green * 255.0).toInt}%02x${(blue * 255.0).toInt}%02x"

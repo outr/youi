@@ -3,6 +3,7 @@ package io.youi.html
 import com.outr.reactify.{Channel, Var}
 import com.outr.scribe.Logging
 import io.youi.AbstractComponent
+import io.youi.html.style.Color
 import org.scalajs.dom.{Event, _}
 import org.scalajs.dom.html.Element
 import org.scalajs.dom.raw.Event
@@ -14,7 +15,7 @@ trait Component extends AbstractComponent with Logging {
 
   lazy val click: Channel[Event] = events("click", stopPropagation = false)
 
-  protected def prop[T](get: => T, set: T => Unit, mayCauseResize: Boolean): Var[T] = {
+  protected[html] def prop[T](get: => T, set: T => Unit, mayCauseResize: Boolean): Var[T] = {
     val v = Var[T](get)
     v.attach { value =>
       set(value)
@@ -56,6 +57,10 @@ trait Component extends AbstractComponent with Logging {
     scale.y.attach(d => updateTransform())
     opacity.attach(d => element.style.opacity = d.toString)
     visible.attach(b => element.style.visibility = if (b) "visible" else "hidden")
+    color.red.attach(d => updateColor())
+    color.green.attach(d => updateColor())
+    color.blue.attach(d => updateColor())
+    color.alpha.attach(d => updateColor())
     updateSize()
   }
 
@@ -76,5 +81,10 @@ trait Component extends AbstractComponent with Logging {
       b += s"scaleY(${scale.y()})"
     }
     element.style.transform = b.mkString(" ")
+  }
+
+  protected def updateColor(): Unit = {
+    def i(d: Double): Int = math.round(d * 255.0).toInt
+    element.style.color = s"rgba(${i(color.red())}, ${i(color.green())}, ${i(color.blue())}, ${i(color.alpha())})"
   }
 }

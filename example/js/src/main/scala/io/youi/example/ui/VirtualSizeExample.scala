@@ -3,7 +3,7 @@ package io.youi.example.ui
 import io.youi.VirtualSizeSupport
 import io.youi._
 import io.youi.html.{ImageView, Label}
-import io.youi.html.style.Image
+import io.youi.html.style.{Color, Image}
 
 object VirtualSizeExample extends VirtualSizeSupport {
   ui.children += new ImageView {
@@ -14,8 +14,11 @@ object VirtualSizeExample extends VirtualSizeSupport {
     size.height := Size(768.vh)
   }
   ui.children += new Label {
-    text := "Virtually Sized"
-    position.center := ui.position.center
+    text := "1024x768"
+    color := Color.White
+    font.family := "sans-serif"
+    font.size := Size(67.vf)
+    position.left := 45.vx
     position.middle := ui.position.middle
   }
 }

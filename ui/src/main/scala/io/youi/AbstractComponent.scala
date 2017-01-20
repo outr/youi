@@ -1,7 +1,7 @@
 package io.youi
 
 import com.outr.reactify._
-import io.youi.html.style.Position
+import io.youi.html.style.{ColorProperties, Position}
 
 trait AbstractComponent {
   object position {
@@ -36,6 +36,7 @@ trait AbstractComponent {
     lazy val y: Var[Double] = Var(1.0)
   }
 
+  lazy val color: ColorProperties = new ColorProperties
   lazy val rotation: Var[Double] = Var(0.0)
   lazy val opacity: Var[Double] = Var(1.0)
   lazy val visible: Var[Boolean] = Var(true)

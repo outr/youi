@@ -34,33 +34,33 @@
 
        ctx.font = '50px "Bungee+Shade"';
        ctx.fillText('Hello World!', 150, 400);
-
-       var input = new CanvasInput({
-       x: 150,
-       y: 420,
-       canvas: canvas,
-       fontSize: 18,
-       fontFamily: 'Arial',
-       fontColor: '#212121',
-       fontWeight: 'bold',
-       width: 300,
-       padding: 8,
-       borderWidth: 1,
-       borderColor: '#000',
-       borderRadius: 3,
-       boxShadow: '1px 1px 0px #fff',
-       innerShadow: '0px 0px 5px rgba(0, 0, 0, 0.5)',
-       placeHolder: 'Enter message here...'
-       });
        }*/
+
+    var input = new CanvasInput({
+      x: 150,
+      y: 420,
+      canvas: canvas,
+      fontSize: 18,
+      fontFamily: 'Arial',
+      fontColor: '#212121',
+      fontWeight: 'bold',
+      width: 300,
+      padding: 8,
+      borderWidth: 1,
+      borderColor: '#000',
+      borderRadius: 3,
+      boxShadow: '1px 1px 0px #fff',
+      innerShadow: '0px 0px 5px rgba(0, 0, 0, 0.5)',
+      placeHolder: 'Enter message here...'
+    });
 
     var renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight, {
       view: canvas,
       antialias: true
-    });
+    }, true);
     renderer.backgroundColor = 0xffffff;
     var stage = new PIXI.Container();
-    var texture = PIXI.Texture.fromImage('/cuteness.jpg');
+    var texture = PIXI.Texture.fromImage('../cuteness.jpg');
     var puppy = new PIXI.Sprite(texture);
     puppy.anchor.x = 0.5;
     puppy.anchor.y = 0.5;
@@ -76,6 +76,9 @@
 
       // render the container
       renderer.render(stage);
+
+      canvas.getContext('2d').setTransform(1, 0, 0, 1, 0, 0);
+      input.render();
     }
   }
   draw();

@@ -6,32 +6,31 @@ import org.scalajs.dom.raw.HTMLElement
 
 import scala.language.implicitConversions
 
-object dom {
-  def byTag[T <: Element](tagName: String): Vector[T] = document.body.byTag[T](tagName)
-  def byClass[T <: Element](className: String): Vector[T] = document.body.byClass[T](className)
-  def getById[T <: Element](id: String): Option[T] = Option(document.getElementById(id).asInstanceOf[T])
-  def byId[T <: Element](id: String): T = {
-    getById[T](id).getOrElse(throw new RuntimeException(s"Unable to find element by id '$id'."))
+object dom extends ExtendedElement(None) {
+  def bySelector[T <: Element](selectors: String, root: Option[Element] = None): Vector[T] = {
+    root.map(_.querySelectorAll(selectors)).getOrElse(document.querySelectorAll(selectors)).toVector.asInstanceOf[Vector[T]]
+  }
+
+  def firstBySelector[T <: Element](selectors: String, root: Option[Element] = None): Option[T] = {
+    bySelector[T](selectors, root).headOption
+  }
+
+  def oneBySelector[T <: Element](selectors: String, root: Option[Element] = None): T = {
+    firstBySelector[T](selectors, root).getOrElse(throw new RuntimeException(s"Unable to find element by selector: $selectors."))
   }
 
   def create[T <: Element](tagName: String): T = document.createElement(tagName).asInstanceOf[T]
 
   implicit class StringExtras(s: String) {
-    def toElement[T <: html.Element]: T = {
+    def toElement[T <: Element]: T = {
       val temp = document.createElement("div")
       temp.innerHTML = s
-      val child = temp.firstChild.asInstanceOf[html.Element]
+      val child = temp.firstChild.asInstanceOf[Element]
       child.asInstanceOf[T]
     }
   }
 
-  implicit class ElementExtras(e: Element) {
-    def byTag[T <: Element](tagName: String): Vector[T] = {
-      e.getElementsByTagName(tagName).toVector.map(_.asInstanceOf[T])
-    }
-    def byClass[T <: Element](className: String): Vector[T] = {
-      e.getElementsByClassName(className).toVector.map(_.asInstanceOf[T])
-    }
+  implicit class ElementExtras(e: Element) extends ExtendedElement(Some(e)) {
     def parentByTag[T <: HTMLElement](tagName: String): Option[T] = findParentRecursive[T](e.asInstanceOf[HTMLElement], (p: HTMLElement) => {
       p.tagName == tagName
     })
@@ -70,4 +69,14 @@ object dom {
       list.item(position)
     }
   }
+}
+
+class ExtendedElement(element: Option[Element]) {
+  def byTag[T <: Element](tagName: String): Vector[T] = dom.bySelector[T](tagName, element)
+  def byClass[T <: Element](className: String): Vector[T] = dom.bySelector[T](s".$className", element)
+  def getById[T <: Element](id: String): Option[T] = dom.firstBySelector[T](s"#$id", element)
+  def byId[T <: Element](id: String): T = dom.oneBySelector[T](s"#$id", element)
+  def bySelector[T <: Element](selectors: String): Vector[T] = dom.bySelector[T](selectors, element)
+  def firstBySelector[T <: Element](selectors: String): Option[T] = dom.firstBySelector[T](selectors, element)
+  def oneBySelector[T <: Element](selectors: String): T = dom.oneBySelector[T](selectors, element)
 }

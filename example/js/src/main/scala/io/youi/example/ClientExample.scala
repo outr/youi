@@ -16,7 +16,7 @@ object ClientExample extends JSApp with Logging {
   def timeButton: html.Button = byId[html.Button]("communicationTimeButton")
 
   override def main(): Unit = {
-    ClientExampleCommunicator.connected.attachAndFire { c =>
+    /*ClientExampleCommunicator.connected.attachAndFire { c =>
       connectedInput.value = if (c) "Yes" else "No"
     }
     connectedButton.addEventListener("click", (evt: Event) => {
@@ -48,6 +48,6 @@ object ClientExample extends JSApp with Logging {
       ClientExampleCommunicator.interface.time().foreach { time =>
         timeInput.value = time.toString
       }
-    })
+    })*/
   }
 }

@@ -1,5 +1,7 @@
 package io.youi.server
 
+import java.io.File
+
 import com.outr.reactify._
 
 class ServerConfig(server: Server) {
@@ -12,18 +14,30 @@ class ServerConfig(server: Server) {
   val autoRestart: Var[Boolean] = Var(true)
 
   /**
-    * The hostname or ip address to bind the server to. Set "0.0.0.0" for all addresses.
+    * Listeners for the server. Support HTTP and HTTPS listeners. Use addHttpListener and addHttpsListener for easier
+    * usage.
     *
-    * Defaults to "127.0.0.1"
+    * Defaults to one HTTP listener on 127.0.0.1:8080
     */
-  val host: Var[String] = prop("127.0.0.1")
+  val listeners: Var[List[ServerSocketListener]] = prop(List(HttpServerListener()))
 
-  /**
-    * The port to bind the server to.
-    *
-    * Defaults to 8080
-    */
-  val port: Var[Int] = prop(8080)
+  def clearListeners(): ServerConfig = {
+    listeners := Nil
+    this
+  }
+
+  def addHttpListener(host: String = "127.0.0.1", port: Int = 8080): ServerConfig = {
+    listeners := HttpServerListener(host, port) :: listeners()
+    this
+  }
+
+  def addHttpsListener(host: String = "127.0.0.1",
+                       port: Int = 8443,
+                       keyStorePassword: String = "password",
+                       keyStoreLocation: File = new File("keystore.jks")): ServerConfig = {
+    listeners := HttpsServerListener(host, port, KeyStore(keyStoreLocation, keyStorePassword)) :: listeners()
+    this
+  }
 
   protected def prop[T](value: T): Var[T] = {
     val v = Var[T](value)
@@ -35,3 +49,17 @@ class ServerConfig(server: Server) {
     v
   }
 }
+
+sealed trait ServerSocketListener
+
+case class HttpServerListener(host: String = "127.0.0.1", port: Int = 8080) extends ServerSocketListener {
+  override def toString: String = s"HTTP $host:$port"
+}
+
+case class HttpsServerListener(host: String = "127.0.0.1",
+                               port: Int = 8443,
+                               keyStore: KeyStore = KeyStore()) extends ServerSocketListener {
+  override def toString: String = s"HTTPS $host:$port"
+}
+
+case class KeyStore(location: File = new File("keystore.jks"), password: String = "password")

@@ -1,12 +1,13 @@
 package io.youi.server
 
-import java.io.IOException
+import java.io.{File, IOException}
 import java.net.URI
 import java.nio.channels.FileChannel
 import java.nio.file.StandardOpenOption
 
 import io.undertow.io.{IoCallback, Sender}
-import io.undertow.server.handlers.proxy.SimpleProxyClientProvider
+import io.undertow.protocols.ssl.UndertowXnioSsl
+import io.undertow.server.handlers.proxy.{LoadBalancingProxyClient, SimpleProxyClientProvider}
 import io.undertow.server.handlers.resource.URLResource
 import io.undertow.server.{HttpServerExchange, HttpHandler => UndertowHttpHandler}
 import io.undertow.util.HttpString
@@ -16,6 +17,8 @@ import io.undertow.websockets.spi.WebSocketHttpExchange
 import io.undertow.{Handlers, Undertow, UndertowOptions}
 import io.youi.http.{FileContent, Headers, HttpConnection, HttpRequest, Method, StringContent, URLContent, WebSocketListener}
 import io.youi.net.{Parameters, Path, URL}
+import io.youi.server.util.SSLUtil
+import org.xnio.{OptionMap, Xnio}
 
 import scala.collection.JavaConverters._
 
@@ -23,11 +26,17 @@ class UndertowServerImplementation(server: Server) extends ServerImplementation 
   private var instance: Option[Undertow] = None
 
   override def start(): Unit = synchronized {
-    val u = Undertow.builder()
+    val builder = Undertow.builder()
       .setServerOption(UndertowOptions.ENABLE_HTTP2, java.lang.Boolean.TRUE)
-      .addHttpListener(server.config.port.get, server.config.host.get)
       .setHandler(this)
-      .build()
+    server.config.listeners.foreach {
+      case HttpServerListener(host, port) => builder.addHttpListener(port, host)
+      case HttpsServerListener(host, port, keyStore) => {
+        val sslContext = SSLUtil.createSSLContext(keyStore.location, keyStore.password)
+        builder.addHttpsListener(port, host, sslContext)
+      }
+    }
+    val u = builder.build()
     u.start()
     instance = Some(u)
   }
@@ -68,8 +77,13 @@ object UndertowServerImplementation {
   def response(server: Server, connection: HttpConnection, exchange: HttpServerExchange): Unit = {
     connection.webSocketSupport match {
       case Some(webSocketListener) => handleWebSocket(webSocketListener, exchange)
-      case None => connection.proxySupport.flatMap(_.proxy(connection)) match {
-        case Some(destination) => handleProxy(server, connection, exchange, destination)
+      case None => connection.proxySupport match {
+        case Some(proxyHandler) => {
+          proxyHandler.proxy(connection) match {
+            case Some(destination) => handleProxy(server, connection, exchange, destination, proxyHandler.keyStore)
+            case None => handleStandard(server, connection, exchange)
+          }
+        }
         case None => handleStandard(server, connection, exchange)
       }
     }
@@ -118,12 +132,22 @@ object UndertowServerImplementation {
     handler.handleRequest(exchange)
   }
 
-  private def handleProxy(server: Server, connection: HttpConnection, exchange: HttpServerExchange, destination: URL): Unit = {
-    val client = new SimpleProxyClientProvider(new URI(destination.copy(path = Path.empty, parameters = Parameters.empty, fragment = None).toString))
-    val handler = Handlers.proxyHandler(client)
+  private def handleProxy(server: Server,
+                          connection: HttpConnection,
+                          exchange: HttpServerExchange,
+                          destination: URL,
+                          keyStore: Option[KeyStore]): Unit = {
+    val proxyClient = new LoadBalancingProxyClient
+    val ssl = keyStore.map { ks =>
+      val sslContext = SSLUtil.createSSLContext(ks.location, ks.password)
+      new UndertowXnioSsl(Xnio.getInstance(), OptionMap.EMPTY, sslContext)
+    }
+    val uri = new URI(destination.copy(path = Path.empty, parameters = Parameters.empty, fragment = None).toString)
+    proxyClient.addHost(uri, ssl.orNull)
+    val proxyHandler = Handlers.proxyHandler(proxyClient)
     exchange.setRequestPath(destination.path.encoded)
     exchange.setRequestURI(destination.path.encoded)
-    handler.handleRequest(exchange)
+    proxyHandler.handleRequest(exchange)
   }
 
   private def handleStandard(server: Server, connection: HttpConnection, exchange: HttpServerExchange): Unit = {

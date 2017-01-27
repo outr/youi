@@ -24,16 +24,21 @@ into this new framework. If you need a production-ready framework please look at
 * [server-undertow](serverUndertow) - implementation of [server](server) using [Undertow](http://undertow.io/) (Scala)
 * [ui](ui) - functionality for user-interface creation and management (Scala.js)
 
+## Features for 1.1.0 (Future)
+
+* [ ] User Interface framework for Scala.js (see NextUI)
+* [ ] Existing HTML, CSS, and JavaScript optimization, compression, and obfuscation for production use
+* [ ] Image optimizer for production use supporting compile-time and run-time optimization
+
 ## Features for 1.0.0 (In-Progress)
 
 * [X] Complete SSL support (binding and proxying)
 * [X] Ajax Request / Response framework
-* [ ] User Interface framework for Scala.js (see NextUI)
+* [ ] Server Val - set on the server and loaded on the client
+* [ ] Shared Var - shared state modifiable on client or server
 * [ ] Client / Server Page and Screen support (see Hyperscala)
 * [ ] Scala JVM and JS Content Modification Streams for any XML / HTML content (see Hyperscala)
 * [ ] Scala class generation from existing HTML source supporting compile-time and source generation
-* [ ] Existing HTML, CSS, and JavaScript optimization, compression, and obfuscation for production use
-* [ ] Image optimizer for production use supporting compile-time and run-time optimization
 
 ## Features for 0.1.0 (Released 2016.12.22)
 
@@ -50,4 +55,4 @@ into this new framework. If you need a production-ready framework please look at
 * [X] WebSocket support through abstraction
 * [X] Proxying support and optional ProxyingSupport trait to be mixed into Server
 * [X] Session support
-* [X] Communication implementation supporting client and server with JVM and JS support (see Hyperscala)
+* [X] Communication implementation supporting client and server with JVM and JS support

@@ -69,7 +69,7 @@ object Macros {
            ..$methods
          }
       """
-    println(instance)
+//    println(instance)
     context.Expr[C](instance)
   }
 }

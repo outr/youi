@@ -15,5 +15,6 @@ trait ServerWebSocketCommunicator[C <: Communication] extends HttpHandler {
     communication.comm.send.attach { message =>
       listener.send.text := message.parsableString
     }
+    connection.webSocketSupport = listener
   }
 }

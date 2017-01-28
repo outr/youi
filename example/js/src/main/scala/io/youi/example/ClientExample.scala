@@ -16,16 +16,16 @@ object ClientExample extends JSApp with Logging {
   def timeButton: html.Button = byId[html.Button]("communicationTimeButton")
 
   override def main(): Unit = {
-    /*ClientExampleCommunicator.connected.attachAndFire { c =>
+    ClientExampleCommunication.connected.attachAndFire { c =>
       connectedInput.value = if (c) "Yes" else "No"
     }
     connectedButton.addEventListener("click", (evt: Event) => {
       evt.preventDefault()
       evt.stopPropagation()
-      if (ClientExampleCommunicator.connected()) {
-        ClientExampleCommunicator.disconnect()
+      if (ClientExampleCommunication.connected()) {
+        ClientExampleCommunication.disconnect()
       } else {
-        ClientExampleCommunicator.connect()
+        ClientExampleCommunication.connect()
       }
     })
 
@@ -36,7 +36,7 @@ object ClientExample extends JSApp with Logging {
       if (value.isEmpty) {
         window.alert("Reverse value must not be empty!")
       } else {
-        ClientExampleCommunicator.interface.reverse(value).foreach { reversed =>
+        ClientExampleCommunication.communication.reverse(value).foreach { reversed =>
           reverseInput.value = reversed
         }
       }
@@ -45,9 +45,9 @@ object ClientExample extends JSApp with Logging {
     timeButton.addEventListener("click", (evt: Event) => {
       evt.preventDefault()
       evt.stopPropagation()
-      ClientExampleCommunicator.interface.time().foreach { time =>
+      ClientExampleCommunication.communication.time.foreach { time =>
         timeInput.value = time.toString
       }
-    })*/
+    })
   }
 }

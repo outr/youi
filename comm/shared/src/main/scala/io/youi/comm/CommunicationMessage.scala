@@ -3,17 +3,17 @@ package io.youi.comm
 case class CommunicationMessage(communicationId: Int,
                                 endPointId: Int,
                                 invocationId: Int,
-                                content: Option[String]) {
-  lazy val parsableString: String = s"$communicationId:$endPointId:$invocationId:${content.getOrElse("")}"
+                                content: List[String]) {
+  lazy val parsableString: String = s"$communicationId:$endPointId:$invocationId:${upickle.default.write(content)}"
 }
 
 object CommunicationMessage {
   private val MessageRegex = """(\d+):(\d+):(\d+):(.*)""".r
 
   def unapply(unparsedMessage: String): Option[CommunicationMessage] = unparsedMessage match {
-    case MessageRegex(communicationId, endPointId, invocationId, message) => {
-      val messageOption = if (message.nonEmpty) Some(message) else None
-      Some(CommunicationMessage(communicationId.toInt, endPointId.toInt, invocationId.toInt, messageOption))
+    case MessageRegex(communicationId, endPointId, invocationId, contentJSON) => {
+      val content = upickle.default.read[List[String]](contentJSON)
+      Some(CommunicationMessage(communicationId.toInt, endPointId.toInt, invocationId.toInt, content))
     }
     case _ => None
   }

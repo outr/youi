@@ -37,7 +37,7 @@ trait Communication {
       receive.attach { message =>
         if (message.endPointId == endPointId) {
           f(message).map { content =>
-            send := CommunicationMessage(id, endPointId, message.invocationId, Some(content))
+            send := CommunicationMessage(id, endPointId, message.invocationId, List(content))
           }
         }
       }

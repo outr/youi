@@ -11,5 +11,5 @@ trait ExampleCommunication extends Communication {
   def url: Future[String]                                       // Client call
   def reverse(value: String): Future[String]                    // Server method
   def time: Future[Long]                                        // Server call
-  def navigateTo(myUrl: String, force: Boolean): Future[Unit]     // Client method
+  def navigateTo(url: String, force: Boolean): Future[Unit]     // Client method
 }

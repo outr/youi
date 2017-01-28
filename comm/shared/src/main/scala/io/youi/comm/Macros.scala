@@ -26,13 +26,23 @@ object Macros {
           val params = args.zipWithIndex.map {
             case (arg, index) => q"upickle.default.read[${arg.typeSignature.resultType}](message.content($index))"
           }
-          q"""
+          if (params.nonEmpty) {
+            q"""
              comm.onEndPoint($endPointId) { message =>
                ${m.name}(..$params).map { response =>
                  upickle.default.write[$resultType](response)
                }
              }
            """
+          } else {
+            q"""
+             comm.onEndPoint($endPointId) { message =>
+               ${m.name}.map { response =>
+                 upickle.default.write[$resultType](response)
+               }
+             }
+           """
+          }
         } else {
           val argList = args.map { arg =>
             q"$arg: ${arg.typeSignature.resultType}"
@@ -59,6 +69,7 @@ object Macros {
            ..$methods
          }
       """
+    println(instance)
     context.Expr[C](instance)
   }
 }

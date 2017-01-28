@@ -11,9 +11,11 @@ object Macros {
 
     implicit val futureTypeTag = typeTag[Future[_]]
 
+    var endPointId: Int = -1
     val declaredMethods = c.tpe.decls.toSet
     val methods = c.tpe.members.collect {
       case symbol if symbol.isMethod & symbol.typeSignature.resultType <:< context.typeOf[Future[_]] => {
+        endPointId += 1
         val m = symbol.asMethod
         val declared = declaredMethods.contains(m)
         val resultType = symbol.typeSignature.resultType.typeArgs.head
@@ -31,16 +33,21 @@ object Macros {
           // TODO: call local method
           // TODO: send message back
           q"""
-             println("Already defined!")
+             comm.onEndPoint($endPointId) { message =>
+               val param = upickle.default.read[$resultType](message.content.get)
+               ${m.name}(param).map { response =>
+                 upickle.default.write[$resultType](response)
+               }
+             }
            """
         } else {
           // TODO: support args
           q"""
              override def ${m.name}(): scala.concurrent.Future[$resultType] = {
-               val id = comm.nextId
+               val invocationId = comm.nextId
                val content: Option[String] = None
-               comm.send := io.youi.comm.CommunicationMessage(id, content)
-               comm.onId[$resultType](id)( message => {
+               comm.send := io.youi.comm.CommunicationMessage(comm.id, $endPointId, invocationId, content)
+               comm.onInvocation[$resultType](invocationId)( message => {
                  upickle.default.read[$resultType](message.content.get)
                })
              }

@@ -1,16 +1,19 @@
 package io.youi.comm
 
-case class CommunicationMessage(id: Int, content: Option[String]) {
-  lazy val parsableString: String = s"$id:${content.getOrElse("")}"
+case class CommunicationMessage(communicationId: Int,
+                                endPointId: Int,
+                                invocationId: Int,
+                                content: Option[String]) {
+  lazy val parsableString: String = s"$communicationId:$endPointId:$invocationId:${content.getOrElse("")}"
 }
 
 object CommunicationMessage {
-  private val MessageRegex = """(\d+):(.*)""".r
+  private val MessageRegex = """(\d+):(\d+):(\d+):(.*)""".r
 
   def unapply(unparsedMessage: String): Option[CommunicationMessage] = unparsedMessage match {
-    case MessageRegex(id, message) => {
+    case MessageRegex(communicationId, endPointId, invocationId, message) => {
       val messageOption = if (message.nonEmpty) Some(message) else None
-      Some(CommunicationMessage(id.toInt, messageOption))
+      Some(CommunicationMessage(communicationId.toInt, endPointId.toInt, invocationId.toInt, messageOption))
     }
     case _ => None
   }

@@ -6,8 +6,11 @@ import com.outr.reactify.Channel
 import scala.concurrent.{Future, Promise}
 import scala.language.experimental.macros
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
 trait Communication {
   object comm {
+    val id: Int = Communication.nextId
     private var increment: Int = -1
     private var queue = Map.empty[Int, CommunicationMessage => Unit]
 
@@ -16,12 +19,12 @@ trait Communication {
 
     receive.attach { message =>
       synchronized {
-        val f = queue.get(message.id)
-        queue -= message.id
+        val f = queue.get(message.invocationId)
+        queue -= message.invocationId
         f
       } match {
         case Some(f) => f(message)
-        case None => logger.warn(s"No entry found for id: ${message.id}, content: ${message.content}.")
+        case None => logger.warn(s"No entry found for communicationId: ${message.communicationId}, endPointId: ${message.endPointId}, invocationId: ${message.invocationId}, content: ${message.content}.")
       }
     }
 
@@ -30,18 +33,35 @@ trait Communication {
       increment
     }
 
-    def onId[T](id: Int)(f: CommunicationMessage => T): Future[T] = synchronized {
+    def onEndPoint[T](endPointId: Int)(f: CommunicationMessage => Future[String]): Unit = {
+      receive.attach { message =>
+        if (message.endPointId == endPointId) {
+          f(message).map { content =>
+            send := CommunicationMessage(id, endPointId, message.invocationId, Some(content))
+          }
+        }
+      }
+    }
+
+    def onInvocation[T](invocationId: Int)(f: CommunicationMessage => T): Future[T] = synchronized {
       val promise = Promise[T]
       val handler: CommunicationMessage => Unit = (m: CommunicationMessage) => {
         val t = f(m)
         promise.success(f(m))
       }
-      queue += id -> handler
+      queue += invocationId -> handler
       promise.future
     }
   }
 }
 
 object Communication {
+  private var increment: Int = -1
+
+  private def nextId: Int = synchronized {
+    increment += 1
+    increment
+  }
+
   def create[C <: Communication]: C = macro Macros.create[C]
 }

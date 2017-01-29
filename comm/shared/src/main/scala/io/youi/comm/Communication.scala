@@ -18,13 +18,15 @@ trait Communication {
     val receive: Channel[CommunicationMessage] = Channel[CommunicationMessage]
 
     receive.attach { message =>
-      synchronized {
-        val f = queue.get(message.invocationId)
-        queue -= message.invocationId
-        f
-      } match {
-        case Some(f) => f(message)
-        case None => logger.warn(s"No entry found for communicationId: ${message.communicationId}, endPointId: ${message.endPointId}, invocationId: ${message.invocationId}, content: ${message.content}.")
+      if (message.messageType == CommunicationMessage.MethodResponse) {
+        synchronized {
+          val f = queue.get(message.invocationId)
+          queue -= message.invocationId
+          f
+        } match {
+          case Some(f) => f(message)
+          case None => logger.warn(s"No entry found for communicationId: ${message.communicationId}, endPointId: ${message.endPointId}, invocationId: ${message.invocationId}, content: ${message.content}.")
+        }
       }
     }
 
@@ -35,9 +37,9 @@ trait Communication {
 
     def onEndPoint[T](endPointId: Int)(f: CommunicationMessage => Future[String]): Unit = {
       receive.attach { message =>
-        if (message.endPointId == endPointId) {
+        if (message.endPointId == endPointId && message.messageType == CommunicationMessage.MethodRequest) {
           f(message).map { content =>
-            send := CommunicationMessage(id, endPointId, message.invocationId, List(content))
+            send := CommunicationMessage(CommunicationMessage.MethodResponse, id, endPointId, message.invocationId, List(content))
           }
         }
       }

@@ -13,7 +13,7 @@ object Macros {
 
     var endPointId: Int = -1
     val declaredMethods = c.tpe.decls.toSet
-    val methods = c.tpe.members.collect {
+    val methods = c.tpe.members.toList.sortBy(_.fullName).collect {
       case symbol if symbol.isMethod & symbol.typeSignature.resultType <:< context.typeOf[Future[_]] => {
         endPointId += 1
         val m = symbol.asMethod
@@ -54,7 +54,7 @@ object Macros {
           q"""
              override def ${m.name}(..$argList): scala.concurrent.Future[$resultType] = {
                val invocationId = comm.nextId
-               comm.send := io.youi.comm.CommunicationMessage(comm.id, $endPointId, invocationId, List(..$params))
+               comm.send := io.youi.comm.CommunicationMessage(io.youi.comm.CommunicationMessage.MethodRequest, comm.id, $endPointId, invocationId, List(..$params))
                comm.onInvocation[$resultType](invocationId)( message => {
                  upickle.default.read[$resultType](message.content.head)
                })
@@ -62,7 +62,7 @@ object Macros {
            """
         }
       }
-    }.toList
+    }
 
     val instance = q"""
          new $c {

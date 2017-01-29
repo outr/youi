@@ -1,16 +1,16 @@
 package io.youi.comm
 
 import com.outr.scribe._
-import com.outr.reactify.Channel
+import com.outr.reactify.{Channel, Var}
 
 import scala.concurrent.{Future, Promise}
 import scala.language.experimental.macros
-
 import scala.concurrent.ExecutionContext.Implicits.global
 
 trait Communication {
+  def shared[T](default: T): Var[T] = macro Macros.shared[T]
+
   object comm {
-    val id: Int = Communication.nextId
     private var increment: Int = -1
     private var queue = Map.empty[Int, CommunicationMessage => Unit]
 
@@ -25,7 +25,7 @@ trait Communication {
           f
         } match {
           case Some(f) => f(message)
-          case None => logger.warn(s"No entry found for communicationId: ${message.communicationId}, endPointId: ${message.endPointId}, invocationId: ${message.invocationId}, content: ${message.content}.")
+          case None => logger.warn(s"No entry found for endPointId: ${message.endPointId}, invocationId: ${message.invocationId}, content: ${message.content}.")
         }
       }
     }
@@ -39,7 +39,7 @@ trait Communication {
       receive.attach { message =>
         if (message.endPointId == endPointId && message.messageType == CommunicationMessage.MethodRequest) {
           f(message).map { content =>
-            send := CommunicationMessage(CommunicationMessage.MethodResponse, id, endPointId, message.invocationId, List(content))
+            send := CommunicationMessage(CommunicationMessage.MethodResponse, endPointId, message.invocationId, List(content))
           }
         }
       }
@@ -60,7 +60,7 @@ trait Communication {
 object Communication {
   private var increment: Int = -1
 
-  private def nextId: Int = synchronized {
+  def nextEndPointId: Int = synchronized {
     increment += 1
     increment
   }

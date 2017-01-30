@@ -1,4 +1,4 @@
-package io.youi.comm
+package io.youi.communication
 
 import com.outr.reactify.Var
 import io.youi.http.{Connection, WebSocketUtil}

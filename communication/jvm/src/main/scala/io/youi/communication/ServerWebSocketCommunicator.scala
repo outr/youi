@@ -1,4 +1,4 @@
-package io.youi.comm
+package io.youi.communication
 
 import io.youi.http.{Connection, HttpConnection}
 import io.youi.server.handler.HttpHandler

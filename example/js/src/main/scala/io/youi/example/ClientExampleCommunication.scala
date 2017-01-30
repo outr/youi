@@ -1,6 +1,6 @@
 package io.youi.example
 
-import io.youi.comm.{ClientWebSocketCommunicator, Communication}
+import io.youi.communication.{ClientWebSocketCommunicator, Communication}
 import org.scalajs.dom._
 import io.youi.net.URL
 

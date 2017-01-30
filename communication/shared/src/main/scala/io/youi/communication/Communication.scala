@@ -1,12 +1,12 @@
-package io.youi.comm
+package io.youi.communication
 
-import com.outr.scribe._
 import com.outr.reactify.{Channel, Var}
+import com.outr.scribe._
 import io.youi.http.Connection
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Future, Promise}
 import scala.language.experimental.macros
-import scala.concurrent.ExecutionContext.Implicits.global
 
 trait Communication {
   def connection: Connection

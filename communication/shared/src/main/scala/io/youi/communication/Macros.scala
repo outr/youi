@@ -1,4 +1,4 @@
-package io.youi.comm
+package io.youi.communication
 
 import com.outr.reactify.Var
 import io.youi.http.Connection
@@ -14,9 +14,9 @@ object Macros {
 
     context.Expr[Var[T]](
       q"""
-         import io.youi.comm._
+         import io.youi.communication._
 
-         val endPointId = io.youi.comm.Communication.nextEndPointId
+         val endPointId = Communication.nextEndPointId
          val v = com.outr.reactify.Var[$t]($default)
          val modifying = new ThreadLocal[Boolean] {
            override def initialValue(): Boolean = false
@@ -65,8 +65,8 @@ object Macros {
 
         val args = symbol.typeSignature.paramLists.headOption.getOrElse(Nil)
         val annotations = symbol.annotations ::: symbol.overrides.flatMap(_.annotations)
-        val isServerMethod = annotations.exists(_.toString == "io.youi.comm.server")
-        val isClientMethod = annotations.exists(_.toString == "io.youi.comm.client")
+        val isServerMethod = annotations.exists(_.toString == "io.youi.communication.server")
+        val isClientMethod = annotations.exists(_.toString == "io.youi.communication.client")
 
         if (!isServerMethod && !isClientMethod) {
           context.abort(context.enclosingPosition, s"$symbol must be annotated with either @client or @server in the base trait to indicate where they will be implemented (${symbol.overrides.map(_.annotations)}).")
@@ -116,7 +116,7 @@ object Macros {
           q"""
              override def ${m.name}(..$argList): scala.concurrent.Future[$resultType] = {
                val invocationId = comm.nextId
-               comm.send := io.youi.comm.CommunicationMessage(io.youi.comm.CommunicationMessage.MethodRequest, $endPointId, invocationId, List(..$params))
+               comm.send := io.youi.communication.CommunicationMessage(io.youi.communication.CommunicationMessage.MethodRequest, $endPointId, invocationId, List(..$params))
                comm.onInvocation[$resultType](invocationId)( message => {
                  upickle.default.read[$resultType](message.content.head)
                })

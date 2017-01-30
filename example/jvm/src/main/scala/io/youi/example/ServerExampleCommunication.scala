@@ -1,6 +1,6 @@
 package io.youi.example
 
-import io.youi.comm.{Communication, ServerWebSocketCommunicator}
+import io.youi.communication.{Communication, ServerWebSocketCommunicator}
 import io.youi.http.Connection
 
 import scala.concurrent.ExecutionContext.Implicits.global

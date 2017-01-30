@@ -1,7 +1,7 @@
 package io.youi.example
 
 import com.outr.reactify.Var
-import io.youi.comm.{Communication, client, server}
+import io.youi.communication.{Communication, client, server}
 
 import scala.concurrent.Future
 import com.outr.scribe._

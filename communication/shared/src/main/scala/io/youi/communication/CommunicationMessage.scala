@@ -1,4 +1,4 @@
-package io.youi.comm
+package io.youi.communication
 
 case class CommunicationMessage(messageType: Int,
                                 endPointId: Int,

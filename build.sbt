@@ -8,7 +8,7 @@ resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 
 lazy val root = project.in(file("."))
-  .aggregate(coreJS, coreJVM, commJS, commJVM, communicateJS, communicateJVM, dom, server, serverUndertow, ui, exampleJS, exampleJVM)
+  .aggregate(coreJS, coreJVM, commJS, commJVM, dom, server, serverUndertow, ui, exampleJS, exampleJVM)
   .settings(
     resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases",
     publish := {},
@@ -58,18 +58,6 @@ lazy val serverUndertow = project.in(file("serverUndertow"))
     libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % "test"
   )
   .dependsOn(server)
-
-lazy val communicate = crossProject.in(file("communicate"))
-  .settings(
-    name := "youi-communicate",
-    libraryDependencies += "com.lihaoyi" %%% "upickle" % "0.4.4",
-    libraryDependencies += "org.scalactic" %%% "scalactic" % "3.0.1",
-    libraryDependencies += "org.scalatest" %%% "scalatest" % "3.0.1" % "test"
-  )
-  .dependsOn(core)
-
-lazy val communicateJS = communicate.js
-lazy val communicateJVM = communicate.jvm.dependsOn(server)
 
 lazy val comm = crossProject.in(file("comm"))
   .settings(

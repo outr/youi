@@ -4,6 +4,8 @@ import com.outr.reactify._
 import io.youi.communication.Communication
 import io.youi.http.Connection
 
+import scala.language.experimental.macros
+
 /**
   * Base trait to define shared client and server information. This trait must be extended in the shared code as a trait
   * and implemented in both client and server implementations.
@@ -20,9 +22,7 @@ trait YouIApplication {
     */
   def connections: Val[Set[Connection]]
 
-  def communication[C <: Communication](create: Connection => C): CommunicationManager[C] = {
-    new CommunicationManager(this, create)
-  }
+  def communication[C <: Communication]: CommunicationManager[C] = macro Macros.communication[C]
 }
 
 class CommunicationManager[C <: Communication](application: YouIApplication, create: Connection => C) {

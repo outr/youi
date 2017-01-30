@@ -54,7 +54,6 @@ object TemplateMacros {
     val parser = HTMLParser(file)
     val template = parser.stream(Nil, selector = Some(ByClass(classValue)), includeAllMatches = true)
 
-    println(s"Template: $template")
     context.Expr[List[E]](
       q"""
          io.youi.dom.fromString[$e]($template)

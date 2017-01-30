@@ -6,7 +6,7 @@ import com.outr.reactify._
 
 import scala.collection.mutable.ListBuffer
 
-trait WebSocketListener {
+class Connection {
   private[youi] val _connected: Var[Boolean] = Var[Boolean](false)
   val connected: Val[Boolean] = Val(_connected)
 
@@ -21,10 +21,10 @@ trait WebSocketListener {
   // Set up backlog for sending until connection has been established
   private def init(): Unit = {
     val textListener: String => Unit = (t: String) => {
-      WebSocketListener.backlog(this, t)
+      Connection.backlog(this, t)
     }
     val binaryListener: Array[ByteBuffer] => Unit = (b: Array[ByteBuffer]) => {
-      WebSocketListener.backlog(this, b)
+      Connection.backlog(this, b)
     }
     send.text.attach(textListener)
     send.binary.attach(binaryListener)
@@ -59,10 +59,10 @@ class WebSocketChannels {
   val close: Channel[Unit] = Channel[Unit]
 }
 
-object WebSocketListener {
-  val key = "webSocketListener"
+object Connection {
+  val key = "webSocketConnection"
 
-  def backlog(listener: WebSocketListener, message: Any): Unit = listener.synchronized {
+  def backlog(listener: Connection, message: Any): Unit = listener.synchronized {
     listener.backlog += message
   }
 }

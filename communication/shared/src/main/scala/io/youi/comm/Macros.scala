@@ -1,6 +1,7 @@
 package io.youi.comm
 
 import com.outr.reactify.Var
+import io.youi.http.Connection
 
 import scala.annotation.compileTimeOnly
 import scala.concurrent.Future
@@ -42,7 +43,7 @@ object Macros {
        """)
   }
 
-  def create[C <: Communication](context: blackbox.Context)(implicit c: context.WeakTypeTag[C]): context.Expr[C] = {
+  def create[C <: Communication](context: blackbox.Context)(connection: context.Expr[Connection])(implicit c: context.WeakTypeTag[C]): context.Expr[C] = {
     import context.universe._
 
     implicit val futureTypeTag = typeTag[Future[_]]
@@ -127,6 +128,8 @@ object Macros {
 
     val instance = q"""
          new $c {
+           override def connection = $connection
+
            ..$methods
          }
       """

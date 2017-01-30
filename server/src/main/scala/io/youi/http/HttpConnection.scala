@@ -14,10 +14,10 @@ class HttpConnection(val request: HttpRequest) {
   }
 
   def isWebSocketUpgradeRequest: Boolean = Headers.`Upgrade`.get(request.headers).contains("websocket") && Headers.`Connection`.get(request.headers).contains("Upgrade")
-  def webSocketSupport: Option[WebSocketListener] = store.get[WebSocketListener](WebSocketListener.key)
-  def webSocketSupport_=(listener: WebSocketListener): Unit = {
+  def webSocketSupport: Option[Connection] = store.get[Connection](Connection.key)
+  def webSocketSupport_=(listener: Connection): Unit = {
     if (isWebSocketUpgradeRequest) {
-      store.update(WebSocketListener.key, listener)
+      store.update(Connection.key, listener)
       update { response =>
         response.copy(status = Status.SwitchingProtocols)
       }

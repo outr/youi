@@ -2,12 +2,15 @@ package io.youi.comm
 
 import com.outr.scribe._
 import com.outr.reactify.{Channel, Var}
+import io.youi.http.Connection
 
 import scala.concurrent.{Future, Promise}
 import scala.language.experimental.macros
 import scala.concurrent.ExecutionContext.Implicits.global
 
 trait Communication {
+  def connection: Connection
+
   def shared[T](default: T): Var[T] = macro Macros.shared[T]
 
   object comm {
@@ -65,5 +68,5 @@ object Communication {
     increment
   }
 
-  def create[C <: Communication]: C = macro Macros.create[C]
+  def create[C <: Communication](connection: Connection): C = macro Macros.create[C]
 }

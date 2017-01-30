@@ -15,7 +15,7 @@ import io.undertow.websockets.WebSocketConnectionCallback
 import io.undertow.websockets.core._
 import io.undertow.websockets.spi.WebSocketHttpExchange
 import io.undertow.{Handlers, Undertow, UndertowOptions}
-import io.youi.http.{FileContent, Headers, HttpConnection, HttpRequest, Method, StringContent, URLContent, WebSocketListener}
+import io.youi.http.{FileContent, Headers, HttpConnection, HttpRequest, Method, StringContent, URLContent, Connection}
 import io.youi.net.{Parameters, Path, URL}
 import io.youi.server.util.SSLUtil
 import org.xnio.{OptionMap, Xnio}
@@ -89,7 +89,7 @@ object UndertowServerImplementation {
     }
   }
 
-  private def handleWebSocket(webSocketListener: WebSocketListener, exchange: HttpServerExchange): Unit = {
+  private def handleWebSocket(webSocketListener: Connection, exchange: HttpServerExchange): Unit = {
     val handler = Handlers.websocket(new WebSocketConnectionCallback {
       override def onConnect(exchange: WebSocketHttpExchange, channel: WebSocketChannel): Unit = {
         // Handle sending messages

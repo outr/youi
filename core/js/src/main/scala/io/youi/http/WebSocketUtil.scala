@@ -5,12 +5,12 @@ import org.scalajs.dom.{CloseEvent, ErrorEvent, Event, MessageEvent, WebSocket}
 
 object WebSocketUtil {
   // TODO: revisit disconnecting, reconnecting, and errors
-  def connect(socketURL: URL, listener: WebSocketListener): WebSocket = {
+  def connect(socketURL: URL, listener: Connection): WebSocket = {
     val ws = new WebSocket(socketURL.toString)
     listener.send.text.attach { message =>
       if (ws.readyState >= WebSocket.CLOSING) {
         listener.close()
-        WebSocketListener.backlog(listener, message)
+        Connection.backlog(listener, message)
       } else {
         ws.send(message)
       }

@@ -1,20 +1,20 @@
 package io.youi.comm
 
-import io.youi.http.{HttpConnection, WebSocketListener}
+import io.youi.http.{Connection, HttpConnection}
 import io.youi.server.handler.HttpHandler
 
 trait ServerWebSocketCommunicator[C <: Communication] extends HttpHandler {
-  protected def create(): C
+  protected def create(connection: Connection): C
 
-  override def handle(connection: HttpConnection): Unit = synchronized {
-    val listener = new WebSocketListener {}
-    val communication = create()
-    listener.receive.text.attach {
+  override def handle(httpConnection: HttpConnection): Unit = synchronized {
+    val connection = new Connection
+    val communication = create(connection)
+    connection.receive.text.attach {
       case CommunicationMessage(message) => communication.comm.receive := message
     }
     communication.comm.send.attach { message =>
-      listener.send.text := message.parsableString
+      connection.send.text := message.parsableString
     }
-    connection.webSocketSupport = listener
+    httpConnection.webSocketSupport = connection
   }
 }

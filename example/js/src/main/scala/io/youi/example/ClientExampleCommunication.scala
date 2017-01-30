@@ -19,5 +19,5 @@ trait ClientExampleCommunication extends ExampleCommunication {
 }
 
 object ClientExampleCommunication extends ClientWebSocketCommunicator[ClientExampleCommunication](URL(s"ws://${window.location.host}/communicator")) {
-  override protected def create(): ClientExampleCommunication = Communication.create[ClientExampleCommunication]
+  override protected def create(): ClientExampleCommunication = Communication.create[ClientExampleCommunication](this)
 }

@@ -36,10 +36,15 @@ into this new framework. If you need a production-ready framework please look at
 * [X] Ajax Request / Response framework
 * [X] XML Content Modification Streams for any XML / HTML content
 * [X] Compile-time HTML injection into Scala.js from existing template
-* [ ] Shared Var - shared state modifiable on client or server
-* [ ] Server Val - set on the server and loaded on the client
-* [ ] Client / Server Page and Screen support (see Hyperscala)
-* [ ] Scala class generation from existing HTML source supporting compile-time and source generation
+* [ ] YouIApplication to simplify client/server functionality
+    * [ ] General WebSocket connectivity support
+    * [ ] Communication support
+    * [ ] Streaming convenience functionality
+    * [ ] Security convenience functionality
+    * [ ] Pages and Screens functionality (Scala.js)
+* [X] Shared Var - shared state modifiable on client or server
+    * [ ] Server-side injection support
+* [ ] History Management convenience functionality (Scala.js)
 
 ## Features for 0.1.0 (Released 2016.12.22)
 

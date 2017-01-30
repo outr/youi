@@ -5,8 +5,8 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Coverage/c0425ea823824cd7ab60659e8b9542dc)](https://www.codacy.com/app/matthicks/youi?utm_source=github.com&utm_medium=referral&utm_content=outr/youi&utm_campaign=Badge_Coverage)
 [![Stories in Ready](https://badge.waffle.io/outr/youi.png?label=ready&title=Ready)](https://waffle.io/outr/youi)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/outr/youi)
-[![Maven Central](https://img.shields.io/maven-central/v/io.youi/youi-core_2.12.svg)](https://maven-badges.herokuapp.com/maven-central/io.youi/youi-core_2.12)
-[![Latest version](https://index.scala-lang.org/io.youi/youi/youi-core/latest.svg)](https://index.scala-lang.org/io.youi/youi/youi-core)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.youi/youi-core_2.12/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.youi/youi-core_2.12)
+[![Latest version](https://index.scala-lang.org/outr/youi/youi-core/latest.svg)](https://index.scala-lang.org/outr/youi)
 
 Next generation user interface and application development in Scala and Scala.js for web, mobile, and desktop.
 
@@ -34,8 +34,8 @@ into this new framework. If you need a production-ready framework please look at
 
 * [X] Complete SSL support (binding and proxying)
 * [X] Ajax Request / Response framework
-* [ ] Server Val - set on the server and loaded on the client
 * [ ] Shared Var - shared state modifiable on client or server
+* [ ] Server Val - set on the server and loaded on the client
 * [ ] Client / Server Page and Screen support (see Hyperscala)
 * [ ] Scala JVM and JS Content Modification Streams for any XML / HTML content (see Hyperscala)
 * [ ] Scala class generation from existing HTML source supporting compile-time and source generation

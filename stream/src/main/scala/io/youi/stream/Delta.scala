@@ -1,7 +1,5 @@
 package io.youi.stream
 
-import com.outr.scribe._
-
 sealed trait Delta {
   def selector: Selector
   def apply(streamer: HTMLStream, tag: OpenTag): Unit

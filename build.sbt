@@ -37,8 +37,7 @@ lazy val coreJVM = core.jvm
 
 lazy val stream = project.in(file("stream"))
   .settings(
-    name := "youi-stream",
-    libraryDependencies += "com.outr" %%% "scribe" % "1.3.2"
+    name := "youi-stream"
   )
 
 lazy val dom = project.in(file("dom"))
@@ -47,6 +46,7 @@ lazy val dom = project.in(file("dom"))
     name := "youi-dom"
   )
   .dependsOn(coreJS)
+  .dependsOn(stream % "compile")
 
 lazy val server = project.in(file("server"))
   .settings(

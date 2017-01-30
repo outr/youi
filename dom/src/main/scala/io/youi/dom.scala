@@ -2,6 +2,7 @@ package io.youi
 
 import org.scalajs.dom._
 import org.scalajs.dom.ext._
+import org.scalajs.dom.html.Div
 import org.scalajs.dom.raw.HTMLElement
 
 import scala.language.implicitConversions
@@ -20,6 +21,14 @@ object dom extends ExtendedElement(None) {
   }
 
   def create[T <: Element](tagName: String): T = document.createElement(tagName).asInstanceOf[T]
+
+  def fromString[T <: Element](htmlString: String): List[T] = {
+    val container: Div = create[Div]("div")
+    container.innerHTML = htmlString
+    container.childNodes.toList.collect {
+      case e: Element => e.asInstanceOf[T]
+    }
+  }
 
   implicit class StringExtras(s: String) {
     def toElement[T <: Element]: T = {

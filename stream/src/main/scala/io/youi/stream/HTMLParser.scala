@@ -4,8 +4,6 @@ import java.io.{File, FileInputStream, InputStream}
 
 import scala.annotation.tailrec
 
-import com.outr.scribe._
-
 object HTMLParser {
   private val SelfClosingTagRegex = """(?s)<(\S+)(.*)/>""".r
   private val OpenTagRegex = """(?s)<(\S+)(.*)>""".r
@@ -94,7 +92,6 @@ object HTMLParser {
       override def isStale: Boolean = lastModified != file.lastModified()
 
       override def buildCache(): CachedInformation = {
-        logger.info(s"Updated file cache for ${file.getName}...")
         val input = new FileInputStream(file)
         try {
           val parser = new HTMLParser(input)

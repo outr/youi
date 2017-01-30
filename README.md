@@ -35,6 +35,7 @@ into this new framework. If you need a production-ready framework please look at
 * [X] Complete SSL support (binding and proxying)
 * [X] Ajax Request / Response framework
 * [X] XML Content Modification Streams for any XML / HTML content
+* [X] Compile-time HTML injection into Scala.js from existing template
 * [ ] Shared Var - shared state modifiable on client or server
 * [ ] Server Val - set on the server and loaded on the client
 * [ ] Client / Server Page and Screen support (see Hyperscala)

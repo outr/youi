@@ -1,6 +1,7 @@
 package io.youi.example
 
 import com.outr.scribe.Logging
+import io.youi.Template
 import io.youi.dom._
 import org.scalajs.dom._
 
@@ -17,7 +18,22 @@ object ClientExample extends JSApp with Logging {
   def nameInput: html.Input = byId[html.Input]("communicationName")
   def nameButton: html.Button = byId[html.Button]("communicationNameButton")
 
+  def content: html.Div = Template.existingById[html.Div]("template.html", "content")
+  def entries: List[html.Div] = Template.existingByClass[html.Div]("template.html", "entry")
+
   override def main(): Unit = {
+    val content1 = content
+    content1.setAttribute("id", "content1")
+    document.body.appendChild(content1)
+
+    val content2 = content
+    content2.setAttribute("id", "content2")
+    document.body.appendChild(content2)
+
+    entries.foreach { entry =>
+      document.body.appendChild(entry)
+    }
+
     ClientExampleCommunication.connected.attachAndFire { c =>
       connectedInput.value = if (c) "Yes" else "No"
     }

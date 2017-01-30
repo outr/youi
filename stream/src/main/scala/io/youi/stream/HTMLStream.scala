@@ -2,8 +2,6 @@ package io.youi.stream
 
 import java.nio.channels.SeekableByteChannel
 
-import com.outr.scribe._
-
 class HTMLStream(val streamable: StreamableHTML) {
   private var actions = Set.empty[StreamAction]
   private var group: Option[Group] = None

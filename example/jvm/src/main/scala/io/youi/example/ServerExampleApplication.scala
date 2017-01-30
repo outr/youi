@@ -2,12 +2,13 @@ package io.youi.example
 
 import java.io.File
 
+import io.youi.app.ServerApplication
 import io.youi.http._
 import io.youi.net.ContentType
 import io.youi.server.UndertowServer
 import io.youi.server.handler.{CachingManager, HttpHandler}
 
-object ExampleServer extends UndertowServer {
+object ServerExampleApplication extends UndertowServer with ExampleApplication with ServerApplication {
   def main(args: Array[String]): Unit = {
     config.clearListeners().addHttpListener("0.0.0.0")
 

@@ -12,6 +12,13 @@ import scala.language.experimental.macros
   */
 trait YouIApplication {
   /**
+    * The absolute path to establish / listen for web socket communication.
+    *
+    * Defaults to "/communication".
+    */
+  def connectionPath: String = "/communication"
+
+  /**
     * Current Connection. On the server this will be defined as part of ThreadLocal. On the client this will represent
     * a singleton.
     */

@@ -1,7 +1,7 @@
 package io.youi.app
 
 import com.outr.reactify._
-import io.youi.comm.Communication
+import io.youi.communication.Communication
 import io.youi.http.Connection
 
 /**

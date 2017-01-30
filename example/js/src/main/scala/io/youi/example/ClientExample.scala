@@ -14,18 +14,20 @@ object ClientExample extends JSApp with Logging {
   def reverseButton: html.Button = byId[html.Button]("communicationReverseButton")
   def timeInput: html.Input = byId[html.Input]("communicationTime")
   def timeButton: html.Button = byId[html.Button]("communicationTimeButton")
+  def nameInput: html.Input = byId[html.Input]("communicationName")
+  def nameButton: html.Button = byId[html.Button]("communicationNameButton")
 
   override def main(): Unit = {
-    ClientExampleCommunicator.connected.attachAndFire { c =>
+    ClientExampleCommunication.connected.attachAndFire { c =>
       connectedInput.value = if (c) "Yes" else "No"
     }
     connectedButton.addEventListener("click", (evt: Event) => {
       evt.preventDefault()
       evt.stopPropagation()
-      if (ClientExampleCommunicator.connected()) {
-        ClientExampleCommunicator.disconnect()
+      if (ClientExampleCommunication.connected()) {
+        ClientExampleCommunication.disconnect()
       } else {
-        ClientExampleCommunicator.connect()
+        ClientExampleCommunication.connect()
       }
     })
 
@@ -36,7 +38,7 @@ object ClientExample extends JSApp with Logging {
       if (value.isEmpty) {
         window.alert("Reverse value must not be empty!")
       } else {
-        ClientExampleCommunicator.interface.reverse(value).foreach { reversed =>
+        ClientExampleCommunication.communication.reverse(value).foreach { reversed =>
           reverseInput.value = reversed
         }
       }
@@ -45,9 +47,16 @@ object ClientExample extends JSApp with Logging {
     timeButton.addEventListener("click", (evt: Event) => {
       evt.preventDefault()
       evt.stopPropagation()
-      ClientExampleCommunicator.interface.time().foreach { time =>
+      ClientExampleCommunication.communication.time.foreach { time =>
         timeInput.value = time.toString
       }
+    })
+
+    nameInput.value = ClientExampleCommunication.communication.name().getOrElse("")
+    nameButton.addEventListener("click", (evt: Event) => {
+      evt.preventDefault()
+      evt.stopPropagation()
+      ClientExampleCommunication.communication.name := Some(nameInput.value)
     })
   }
 }

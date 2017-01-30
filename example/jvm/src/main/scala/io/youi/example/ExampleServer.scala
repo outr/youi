@@ -24,7 +24,7 @@ object ExampleServer extends UndertowServer {
     handler.matcher(path.exact("/web-socket-example")).wrap(WebSocketExample)
     handler.matcher(path.exact("/proxy.html")).wrap(ProxyExample)
     handler.matcher(path.exact("/session.html")).wrap(SessionExample)
-    handler.matcher(path.exact("/communicator")).wrap(ServerExampleCommunicator)
+    handler.matcher(path.exact("/communicator")).wrap(ServerExampleCommunication)
     handler.caching(CachingManager.LastModified()).classLoader("", (path: String) => s"content$path")
     handler.caching(CachingManager.LastModified()).classLoader("app", (path: String) => path.drop(4))
 

@@ -1,6 +1,6 @@
 name := "youi"
 organization in ThisBuild := "io.youi"
-version in ThisBuild := "0.1.0"
+version in ThisBuild := "0.2.0-SNAPSHOT"
 scalaVersion in ThisBuild := "2.12.1"
 crossScalaVersions in ThisBuild := List("2.12.1", "2.11.8")
 sbtVersion in ThisBuild := "0.13.13"
@@ -8,7 +8,7 @@ resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 
 lazy val root = project.in(file("."))
-  .aggregate(coreJS, coreJVM, communicateJS, communicateJVM, dom, server, serverUndertow, ui, exampleJS, exampleJVM)
+  .aggregate(coreJS, coreJVM, communicationJS, communicationJVM, dom, server, serverUndertow, ui, exampleJS, exampleJVM)
   .settings(
     resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases",
     publish := {},
@@ -59,17 +59,17 @@ lazy val serverUndertow = project.in(file("serverUndertow"))
   )
   .dependsOn(server)
 
-lazy val communicate = crossProject.in(file("communicate"))
+lazy val communication = crossProject.in(file("communication"))
   .settings(
-    name := "youi-communicate",
+    name := "youi-comm",
     libraryDependencies += "com.lihaoyi" %%% "upickle" % "0.4.4",
     libraryDependencies += "org.scalactic" %%% "scalactic" % "3.0.1",
     libraryDependencies += "org.scalatest" %%% "scalatest" % "3.0.1" % "test"
   )
   .dependsOn(core)
 
-lazy val communicateJS = communicate.js
-lazy val communicateJVM = communicate.jvm.dependsOn(server)
+lazy val communicationJS = communication.js
+lazy val communicationJVM = communication.jvm.dependsOn(server)
 
 lazy val ui = project.in(file("ui"))
   .enablePlugins(ScalaJSPlugin)
@@ -90,7 +90,7 @@ lazy val example = crossProject.in(file("example"))
     libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value,
     libraryDependencies += "org.scala-lang.modules" %% "scala-xml" % "1.0.6"
   )
-  .dependsOn(communicate)
+  .dependsOn(communication)
 
 lazy val exampleJS = example.js.dependsOn(dom, ui)
 lazy val exampleJVM = example.jvm.dependsOn(serverUndertow)

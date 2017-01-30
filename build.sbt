@@ -8,7 +8,7 @@ resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 
 lazy val root = project.in(file("."))
-  .aggregate(coreJS, coreJVM, commJS, commJVM, dom, server, serverUndertow, ui, exampleJS, exampleJVM)
+  .aggregate(coreJS, coreJVM, communicationJS, communicationJVM, dom, server, serverUndertow, ui, exampleJS, exampleJVM)
   .settings(
     resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases",
     publish := {},
@@ -59,7 +59,7 @@ lazy val serverUndertow = project.in(file("serverUndertow"))
   )
   .dependsOn(server)
 
-lazy val comm = crossProject.in(file("comm"))
+lazy val communication = crossProject.in(file("communication"))
   .settings(
     name := "youi-comm",
     libraryDependencies += "com.lihaoyi" %%% "upickle" % "0.4.4",
@@ -68,8 +68,8 @@ lazy val comm = crossProject.in(file("comm"))
   )
   .dependsOn(core)
 
-lazy val commJS = comm.js
-lazy val commJVM = comm.jvm.dependsOn(server)
+lazy val communicationJS = communication.js
+lazy val communicationJVM = communication.jvm.dependsOn(server)
 
 lazy val ui = project.in(file("ui"))
   .enablePlugins(ScalaJSPlugin)
@@ -90,7 +90,7 @@ lazy val example = crossProject.in(file("example"))
     libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value,
     libraryDependencies += "org.scala-lang.modules" %% "scala-xml" % "1.0.6"
   )
-  .dependsOn(comm)
+  .dependsOn(communication)
 
 lazy val exampleJS = example.js.dependsOn(dom, ui)
 lazy val exampleJVM = example.jvm.dependsOn(serverUndertow)

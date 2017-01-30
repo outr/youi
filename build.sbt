@@ -8,7 +8,7 @@ resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 
 lazy val root = project.in(file("."))
-  .aggregate(coreJS, coreJVM, communicationJS, communicationJVM, dom, server, serverUndertow, ui, exampleJS, exampleJVM)
+  .aggregate(coreJS, coreJVM, stream, communicationJS, communicationJVM, dom, server, serverUndertow, ui, exampleJS, exampleJVM)
   .settings(
     resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases",
     publish := {},
@@ -34,6 +34,12 @@ lazy val core = crossProject.in(file("core"))
 
 lazy val coreJS = core.js
 lazy val coreJVM = core.jvm
+
+lazy val stream = project.in(file("stream"))
+  .settings(
+    name := "youi-stream",
+    libraryDependencies += "com.outr" %%% "scribe" % "1.3.2"
+  )
 
 lazy val dom = project.in(file("dom"))
   .enablePlugins(ScalaJSPlugin)

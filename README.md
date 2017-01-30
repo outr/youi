@@ -34,10 +34,10 @@ into this new framework. If you need a production-ready framework please look at
 
 * [X] Complete SSL support (binding and proxying)
 * [X] Ajax Request / Response framework
+* [X] XML Content Modification Streams for any XML / HTML content
 * [ ] Shared Var - shared state modifiable on client or server
 * [ ] Server Val - set on the server and loaded on the client
 * [ ] Client / Server Page and Screen support (see Hyperscala)
-* [ ] Scala JVM and JS Content Modification Streams for any XML / HTML content (see Hyperscala)
 * [ ] Scala class generation from existing HTML source supporting compile-time and source generation
 
 ## Features for 0.1.0 (Released 2016.12.22)

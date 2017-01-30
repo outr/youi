@@ -9,17 +9,22 @@ import scala.concurrent.{Future, Promise}
 import scala.language.experimental.macros
 
 trait Communication {
+  val comm: CommunicationInternal = new CommunicationInternal(this)
+  comm.init()
+
   def connection: Connection
 
   def shared[T](default: T): Var[T] = macro Macros.shared[T]
+}
 
-  object comm {
-    private var increment: Int = -1
-    private var queue = Map.empty[Int, CommunicationMessage => Unit]
+class CommunicationInternal private[communication](communication: Communication) {
+  private var increment: Int = -1
+  private var queue = Map.empty[Int, CommunicationMessage => Unit]
 
-    val send: Channel[CommunicationMessage] = Channel[CommunicationMessage]
-    val receive: Channel[CommunicationMessage] = Channel[CommunicationMessage]
+  val send: Channel[CommunicationMessage] = Channel[CommunicationMessage]
+  val receive: Channel[CommunicationMessage] = Channel[CommunicationMessage]
 
+  private[communication] def init(): Unit = {
     receive.attach { message =>
       if (message.messageType == CommunicationMessage.MethodResponse) {
         synchronized {
@@ -33,30 +38,37 @@ trait Communication {
       }
     }
 
-    def nextId: Int = synchronized {
-      increment += 1
-      increment
+    communication.connection.receive.text.attach {
+      case CommunicationMessage(message) => receive := message
     }
+    send.attach { message =>
+      communication.connection.send.text := message.parsableString
+    }
+  }
 
-    def onEndPoint[T](endPointId: Int)(f: CommunicationMessage => Future[String]): Unit = {
-      receive.attach { message =>
-        if (message.endPointId == endPointId && message.messageType == CommunicationMessage.MethodRequest) {
-          f(message).map { content =>
-            send := CommunicationMessage(CommunicationMessage.MethodResponse, endPointId, message.invocationId, List(content))
-          }
+  def nextId: Int = synchronized {
+    increment += 1
+    increment
+  }
+
+  def onEndPoint[T](endPointId: Int)(f: CommunicationMessage => Future[String]): Unit = {
+    receive.attach { message =>
+      if (message.endPointId == endPointId && message.messageType == CommunicationMessage.MethodRequest) {
+        f(message).map { content =>
+          send := CommunicationMessage(CommunicationMessage.MethodResponse, endPointId, message.invocationId, List(content))
         }
       }
     }
+  }
 
-    def onInvocation[T](invocationId: Int)(f: CommunicationMessage => T): Future[T] = synchronized {
-      val promise = Promise[T]
-      val handler: CommunicationMessage => Unit = (m: CommunicationMessage) => {
-        val t = f(m)
-        promise.success(f(m))
-      }
-      queue += invocationId -> handler
-      promise.future
+  def onInvocation[T](invocationId: Int)(f: CommunicationMessage => T): Future[T] = synchronized {
+    val promise = Promise[T]
+    val handler: CommunicationMessage => Unit = (m: CommunicationMessage) => {
+      val t = f(m)
+      promise.success(f(m))
     }
+    queue += invocationId -> handler
+    promise.future
   }
 }
 

@@ -8,13 +8,7 @@ import org.scalajs.dom.WebSocket
 abstract class ClientWebSocketCommunicator[C <: Communication](socketURL: URL) extends Connection {
   val webSocket: Var[Option[WebSocket]] = Var(None)
 
-  val communication: C = create()
-  receive.text.attach {
-    case CommunicationMessage(message) => communication.comm.receive := message
-  }
-  communication.comm.send.attach { message =>
-    send.text := message.parsableString
-  }
+  lazy val communication: C = create()
 
   protected def create(): C
 

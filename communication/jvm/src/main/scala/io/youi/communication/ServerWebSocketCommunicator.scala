@@ -9,12 +9,6 @@ trait ServerWebSocketCommunicator[C <: Communication] extends HttpHandler {
   override def handle(httpConnection: HttpConnection): Unit = synchronized {
     val connection = new Connection
     val communication = create(connection)
-    connection.receive.text.attach {
-      case CommunicationMessage(message) => communication.comm.receive := message
-    }
-    communication.comm.send.attach { message =>
-      connection.send.text := message.parsableString
-    }
     httpConnection.webSocketSupport = connection
   }
 }

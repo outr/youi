@@ -47,6 +47,13 @@ object Macros {
 
     implicit val futureTypeTag = typeTag[Future[_]]
 
+    val isJS = try {
+      context.universe.rootMirror.staticClass("scala.scalajs.js.Any")
+      true
+    } catch {
+      case t: Throwable => false
+    }
+
     val declaredMethods = c.tpe.decls.toSet
     val methods = c.tpe.members.toList.sortBy(_.fullName).collect {
       case symbol if symbol.isMethod & symbol.typeSignature.resultType <:< context.typeOf[Future[_]] => {
@@ -56,8 +63,22 @@ object Macros {
         val resultType = symbol.typeSignature.resultType.typeArgs.head
 
         val args = symbol.typeSignature.paramLists.headOption.getOrElse(Nil)
+        val annotations = symbol.annotations ::: symbol.overrides.flatMap(_.annotations)
+        val isServerMethod = annotations.exists(_.toString == "io.youi.comm.server")
+        val isClientMethod = annotations.exists(_.toString == "io.youi.comm.client")
+
+        if (!isServerMethod && !isClientMethod) {
+          context.abort(context.enclosingPosition, s"$symbol must be annotated with either @client or @server in the base trait to indicate where they will be implemented (${symbol.overrides.map(_.annotations)}).")
+        } else if (isServerMethod && isClientMethod) {
+          context.abort(context.enclosingPosition, s"$symbol must have either @client or @server, but not both.")
+        }
 
         if (declared) {
+          if (isJS && isServerMethod) {
+            context.abort(context.enclosingPosition, s"$symbol is defined as a @server method, but is defined in the client.")
+          } else if (!isJS && isClientMethod) {
+            context.abort(context.enclosingPosition, s"$symbol is defined as a @client method, but is defined in the server.")
+          }
           val params = args.zipWithIndex.map {
             case (arg, index) => q"upickle.default.read[${arg.typeSignature.resultType}](message.content($index))"
           }
@@ -79,6 +100,11 @@ object Macros {
            """
           }
         } else {
+          if (isJS && isClientMethod) {
+            context.abort(context.enclosingPosition, s"$symbol is defined as a @client method, but is not defined in the client.")
+          } else if (!isJS && isServerMethod) {
+            context.abort(context.enclosingPosition, s"$symbol is defined as a @server method, but is not defined in the server.")
+          }
           val argList = args.map { arg =>
             q"$arg: ${arg.typeSignature.resultType}"
           }

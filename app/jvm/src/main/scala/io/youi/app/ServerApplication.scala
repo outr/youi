@@ -25,7 +25,7 @@ trait ServerApplication extends YouIApplication with Server {
 
   private object ServerConnectionHandler extends HttpHandler {
     override def handle(httpConnection: HttpConnection): Unit = activeConnections.synchronized {
-      val connection = new Connection
+      val connection = new Connection(ServerApplication.this)
       activeConnections := (activeConnections() + connection)
       connection.connected.distinct.attach { b =>
         if (!b) activeConnections.synchronized {

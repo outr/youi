@@ -4,7 +4,7 @@ import java.util.concurrent.atomic.AtomicInteger
 
 import com.outr.reactify._
 import io.youi.communication.Communication
-import io.youi.http.Connection
+import io.youi.http.{Connection, ConnectionManager}
 import com.outr.scribe._
 
 import scala.language.experimental.macros
@@ -13,7 +13,7 @@ import scala.language.experimental.macros
   * Base trait to define shared client and server information. This trait must be extended in the shared code as a trait
   * and implemented in both client and server implementations.
   */
-trait YouIApplication {
+trait YouIApplication extends ConnectionManager {
   private[app] val activeConnections = Var[Set[Connection]](Set.empty)
 
   /**
@@ -33,8 +33,6 @@ trait YouIApplication {
     * a singleton.
     */
   def connection: Connection
-
-  def withConnection[R](connection: Connection)(f: => R): R = f
 
   def communication[C <: Communication]: CommunicationManager[C] = macro Macros.communication[C]
 }

@@ -8,7 +8,7 @@ import io.youi.{MapStore, Store}
 
 import scala.collection.mutable.ListBuffer
 
-class Connection {
+class Connection(val manager: ConnectionManager) {
   private[youi] val _connected: Var[Boolean] = Var[Boolean](false)
   val connected: Val[Boolean] = Val(_connected)
 

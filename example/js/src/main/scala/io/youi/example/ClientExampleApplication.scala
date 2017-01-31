@@ -18,6 +18,8 @@ object ClientExampleApplication extends JSApp with ExampleApplication with Clien
   def timeButton: html.Button = byId[html.Button]("communicationTimeButton")
   def nameInput: html.Input = byId[html.Input]("communicationName")
   def nameButton: html.Button = byId[html.Button]("communicationNameButton")
+  def counterInput: html.Input = byId[html.Input]("communicationCounter")
+  def counterButton: html.Button = byId[html.Button]("communicationCounterButton")
 
   def content: html.Div = Template.existingById[html.Div]("template.html", "content")
   def entries: List[html.Div] = Template.existingByClass[html.Div]("template.html", "entry")
@@ -74,6 +76,14 @@ object ClientExampleApplication extends JSApp with ExampleApplication with Clien
       evt.preventDefault()
       evt.stopPropagation()
       comm().name := Some(nameInput.value)
+    })
+
+    counterButton.addEventListener("click", (evt: Event) => {
+      evt.preventDefault()
+      evt.stopPropagation()
+      comm().counter.foreach { count =>
+        counterInput.value = count.toString
+      }
     })
   }
 }

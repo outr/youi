@@ -10,6 +10,12 @@ trait ClientApplication extends YouIApplication {
 
   activeConnections := Set(connection)
 
+  if (autoConnect) {
+    connect()
+  }
+
+  def autoConnect: Boolean = true
+
   def connect(): Unit = synchronized {
     disconnect()
     val url = URL(s"ws://${window.location.host}$connectionPath")

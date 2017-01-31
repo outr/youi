@@ -3,10 +3,10 @@ package io.youi.server.handler
 import java.io.File
 
 import io.youi.http._
-import io.youi.net.{URL, URLMatcher}
+import io.youi.net.{ContentType, URL, URLMatcher}
 import io.youi.server.Server
-
 import com.outr.scribe._
+import io.youi.stream.{Delta, HTMLParser, Selector}
 
 case class HttpHandlerBuilder(server: Server,
                               urlMatcher: Option[URLMatcher] = None,
@@ -75,6 +75,27 @@ case class HttpHandlerBuilder(server: Server,
     server.handlers += handler
     handler
   }
+
+  def proxy(handler: ProxyHandler): HttpHandler = handle { connection =>
+    connection.proxySupport = handler
+  }
+
+  def stream(resource: File, allowSelectors: Boolean = false)(deltas: HttpConnection => List[Delta]): HttpHandler = {
+    val parser = HTMLParser(resource)
+    handle { connection =>
+      val selector = if (allowSelectors) connection.request.url.param("selector").map(Selector.parse) else None
+      val mods = deltas(connection)
+      val html = parser.stream(mods, selector)
+      logger.info(s"Stream! Selector: $selector (${connection.request.url.param("selector")} / ${connection.request.url}), HTML: $html")
+      val content = StringContent(html, ContentType.`text/html`, resource.lastModified())
+      val handler = SenderHandler(content, caching = cachingManager)
+      handler.handle(connection)
+    }
+  }
+
+  def handle(f: HttpConnection => Unit): HttpHandler = wrap(new HttpHandler {
+    override def handle(connection: HttpConnection): Unit = f(connection)
+  })
 
   def wrap(handler: HttpHandler): HttpHandler = {
     val wrapper = new HttpHandler {

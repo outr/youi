@@ -29,6 +29,7 @@ into this new framework. If you need a production-ready framework please look at
 * [ ] User Interface framework for Scala.js (see NextUI)
 * [ ] Existing HTML, CSS, and JavaScript optimization, compression, and obfuscation for production use
 * [ ] Image optimizer for production use supporting compile-time and run-time optimization
+* [ ] HTML caching in Local Storage for offline and faster cached loading
 
 ## Features for 1.0.0 (In-Progress)
 
@@ -37,13 +38,13 @@ into this new framework. If you need a production-ready framework please look at
 * [X] XML Content Modification Streams for any XML / HTML content
 * [X] Compile-time HTML injection into Scala.js from existing template
 * [ ] YouIApplication to simplify client/server functionality
-    * [ ] General WebSocket connectivity support
-    * [ ] Communication support
-    * [ ] Streaming convenience functionality
+    * [X] General WebSocket connectivity support
+    * [X] Communication support
+    * [X] Streaming convenience functionality
     * [ ] Security convenience functionality
-    * [ ] Pages and Screens functionality (Scala.js)
+    * [ ] Pages functionality (Scala.js)
+    * [ ] Screens functionality (Scala.js)
 * [X] Shared Var - shared state modifiable on client or server
-    * [ ] Server-side injection support
 * [ ] History Management convenience functionality (Scala.js)
 
 ## Features for 0.1.0 (Released 2016.12.22)

@@ -34,6 +34,13 @@ trait YouIApplication extends ConnectionManager {
     */
   def connection: Connection
 
+  /**
+    * Creates a new CommunicationManager for the Communication trait defined. This should be used to define a val in the
+    * shared application trait that will be utilized in both client and server.
+    *
+    * @tparam C the Communication trait
+    * @return CommunicationManager[C]
+    */
   def communication[C <: Communication]: CommunicationManager[C] = macro Macros.communication[C]
 }
 

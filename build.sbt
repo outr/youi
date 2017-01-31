@@ -54,7 +54,7 @@ lazy val server = project.in(file("server"))
     libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.1",
     libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % "test"
   )
-  .dependsOn(coreJVM)
+  .dependsOn(coreJVM, stream)
 
 lazy val serverUndertow = project.in(file("serverUndertow"))
   .settings(
@@ -84,7 +84,7 @@ lazy val app = crossProject.in(file("app"))
   .dependsOn(core, communication)
 
 lazy val appJS = app.js.dependsOn(dom)
-lazy val appJVM = app.jvm.dependsOn(stream, server)
+lazy val appJVM = app.jvm
 
 lazy val ui = project.in(file("ui"))
   .enablePlugins(ScalaJSPlugin)

@@ -15,3 +15,13 @@ case class ByClass(className: String) extends Selector {
 case class ByTag(tagName: String) extends Selector {
   override def lookup(streamable: StreamableHTML): Set[OpenTag] = streamable.byTag.getOrElse(tagName, Set.empty)
 }
+
+object Selector {
+  def parse(value: String): Selector = if (value.startsWith("#")) {
+    ById(value.substring(1))
+  } else if (value.startsWith(".")) {
+    ByClass(value.substring(1))
+  } else {
+    ByTag(value)
+  }
+}

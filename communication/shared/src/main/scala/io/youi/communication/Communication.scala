@@ -1,5 +1,7 @@
 package io.youi.communication
 
+import java.util.concurrent.atomic.AtomicInteger
+
 import com.outr.reactify.{Channel, Var}
 import com.outr.scribe._
 import io.youi.http.Connection
@@ -18,7 +20,7 @@ trait Communication {
 }
 
 class CommunicationInternal private[communication](communication: Communication) {
-  private var increment: Int = -1
+  private val increment = new AtomicInteger(0)
   private var queue = Map.empty[Int, CommunicationMessage => Unit]
 
   val send: Channel[CommunicationMessage] = Channel[CommunicationMessage]
@@ -46,10 +48,7 @@ class CommunicationInternal private[communication](communication: Communication)
     }
   }
 
-  def nextId: Int = synchronized {
-    increment += 1
-    increment
-  }
+  def nextId(): Int = increment.getAndIncrement()
 
   def onEndPoint[T](endPointId: Int)(f: CommunicationMessage => Future[String]): Unit = {
     receive.attach { message =>
@@ -73,12 +72,9 @@ class CommunicationInternal private[communication](communication: Communication)
 }
 
 object Communication {
-  private var increment: Int = -1
+  private val increment = new AtomicInteger(0)
 
-  def nextEndPointId: Int = synchronized {
-    increment += 1
-    increment
-  }
+  def nextEndPointId: Int = increment.getAndIncrement()
 
   def create[C <: Communication](connection: Connection): C = macro Macros.create[C]
 }

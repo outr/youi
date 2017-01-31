@@ -115,7 +115,7 @@ object Macros {
           }
           q"""
              override def ${m.name}(..$argList): scala.concurrent.Future[$resultType] = {
-               val invocationId = comm.nextId
+               val invocationId = comm.nextId()
                comm.send := io.youi.communication.CommunicationMessage(io.youi.communication.CommunicationMessage.MethodRequest, $endPointId, invocationId, List(..$params))
                comm.onInvocation[$resultType](invocationId)( message => {
                  upickle.default.read[$resultType](message.content.head)

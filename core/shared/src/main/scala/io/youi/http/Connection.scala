@@ -3,6 +3,8 @@ package io.youi.http
 import java.nio.ByteBuffer
 
 import com.outr.reactify._
+import com.outr.scribe._
+import io.youi.{MapStore, Store}
 
 import scala.collection.mutable.ListBuffer
 
@@ -13,6 +15,7 @@ class Connection {
   val send = new WebSocketChannels
   val receive = new WebSocketChannels
   val error: Channel[Throwable] = Channel[Throwable]
+  val store: Store = new MapStore
 
   private val backlog = ListBuffer.empty[Any]
 
@@ -28,6 +31,13 @@ class Connection {
     }
     send.text.attach(textListener)
     send.binary.attach(binaryListener)
+
+    send.text.attach { s =>
+      if (Connection.debug) logger.info(s"Send: $s")
+    }
+    receive.text.attach { s =>
+      if (Connection.debug) logger.info(s"Receive: $s")
+    }
 
     connected.attach { b =>
       synchronized {
@@ -60,6 +70,7 @@ class WebSocketChannels {
 }
 
 object Connection {
+  var debug: Boolean = false
   val key = "webSocketConnection"
 
   def backlog(listener: Connection, message: Any): Unit = listener.synchronized {

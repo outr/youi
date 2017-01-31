@@ -1,10 +1,11 @@
 package io.youi.app
 import com.outr.reactify.{Val, Var}
+import io.youi.app.screen.ScreenManager
 import io.youi.http.{Connection, WebSocketUtil}
 import io.youi.net.URL
 import org.scalajs.dom._
 
-trait ClientApplication extends YouIApplication {
+trait ClientApplication extends YouIApplication with ScreenManager {
   override val connection: Connection = new Connection(this)
   val webSocket: Var[Option[WebSocket]] = Var(None)
 

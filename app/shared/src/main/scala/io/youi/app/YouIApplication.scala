@@ -1,11 +1,8 @@
 package io.youi.app
 
-import java.util.concurrent.atomic.AtomicInteger
-
 import com.outr.reactify._
 import io.youi.communication.Communication
 import io.youi.http.{Connection, ConnectionManager}
-import com.outr.scribe._
 
 import scala.language.experimental.macros
 
@@ -14,7 +11,7 @@ import scala.language.experimental.macros
   * and implemented in both client and server implementations.
   */
 trait YouIApplication extends ConnectionManager {
-  YouIApplication.current = Some(this)
+  YouIApplication.instance = Some(this)
 
   private[app] val activeConnections = Var[Set[Connection]](Set.empty)
 
@@ -47,9 +44,9 @@ trait YouIApplication extends ConnectionManager {
 }
 
 object YouIApplication {
-  private var current: Option[YouIApplication] = None
+  private var instance: Option[YouIApplication] = None
 
-  def get(): Option[YouIApplication] = current
+  def get(): Option[YouIApplication] = instance
 
-  def apply(): YouIApplication = current.getOrElse(throw new RuntimeException("No YouIApplication is initialized!"))
+  def apply(): YouIApplication = instance.getOrElse(throw new RuntimeException("No YouIApplication is initialized!"))
 }

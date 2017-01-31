@@ -23,13 +23,13 @@ object History {
     }
   })
 
-  def set(path: String): Unit = set(url.withPath(path))
+  def setPath(path: String): Unit = set(url.withPath(path))
 
   def set(url: URL): Unit = {
     document.location.href = url.toString
   }
 
-  def push(path: String, state: js.Any = null): Unit = push(url.withPath(path), state)
+  def pushPath(path: String, state: js.Any = null): Unit = push(url.withPath(path), state)
 
   def push(url: URL, state: js.Any = null): Unit = {
     val urlString = url.toString
@@ -38,7 +38,7 @@ object History {
     stateChange := HistoryStateChange(url, state, StateType.Push)
   }
 
-  def replace(path: String, state: js.Any = null): Unit = replace(url.withPath(path), state)
+  def replacePath(path: String, state: js.Any = null): Unit = replace(url.withPath(path), state)
 
   def replace(url: URL, state: js.Any): Unit = {
     val urlString = url.toString

@@ -1,14 +1,10 @@
 package io.youi.app
 
-import com.outr.reactify.{Val, Var}
 import io.youi.http._
 import io.youi.server.Server
 import io.youi.server.handler.HttpHandler
 
 trait ServerApplication extends YouIApplication with Server {
-  private val activeConnections = Var[Set[Connection]](Set.empty)
-  override val connections: Val[Set[Connection]] = Val(activeConnections)
-
   private lazy val _connection = new ThreadLocal[Option[Connection]] {
     override def initialValue(): Option[Connection] = None
   }

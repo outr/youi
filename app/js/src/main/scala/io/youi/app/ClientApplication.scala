@@ -6,8 +6,9 @@ import org.scalajs.dom._
 
 trait ClientApplication extends YouIApplication {
   override val connection: Connection = new Connection
-  override val connections: Val[Set[Connection]] = Val(Set(connection))
   val webSocket: Var[Option[WebSocket]] = Var(None)
+
+  activeConnections := Set(connection)
 
   def connect(): Unit = synchronized {
     disconnect()

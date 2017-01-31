@@ -11,6 +11,13 @@ import scala.language.experimental.macros
   * and implemented in both client and server implementations.
   */
 trait YouIApplication {
+  private[app] val activeConnections = Var[Set[Connection]](Set.empty)
+
+  /**
+    * Listing of all active connections. On the client this will only every have one entry.
+    */
+  val connections: Val[Set[Connection]] = Val(activeConnections)
+
   /**
     * The absolute path to establish / listen for web socket communication.
     *
@@ -25,11 +32,6 @@ trait YouIApplication {
   def connection: Connection
 
   def withConnection[R](connection: Connection)(f: => R): R = f
-
-  /**
-    * Listing of all active connections. On the client this will only every have one entry.
-    */
-  val connections: Val[Set[Connection]]
 
   def communication[C <: Communication]: CommunicationManager[C] = macro Macros.communication[C]
 }

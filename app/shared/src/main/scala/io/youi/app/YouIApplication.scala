@@ -14,6 +14,8 @@ import scala.language.experimental.macros
   * and implemented in both client and server implementations.
   */
 trait YouIApplication extends ConnectionManager {
+  YouIApplication.current = Some(this)
+
   private[app] val activeConnections = Var[Set[Connection]](Set.empty)
 
   /**
@@ -44,20 +46,10 @@ trait YouIApplication extends ConnectionManager {
   def communication[C <: Communication]: CommunicationManager[C] = macro Macros.communication[C]
 }
 
-class CommunicationManager[C <: Communication](application: YouIApplication, create: Connection => C) {
-  val id: Int = CommunicationManager.increment.getAndIncrement()
+object YouIApplication {
+  private var current: Option[YouIApplication] = None
 
-  val instances: Val[Set[C]] = Val {
-    application.connections.map { connection =>
-      connection.store.getOrSet(s"communicationManager$id", create(connection))
-    }
-  }
+  def get(): Option[YouIApplication] = current
 
-  def current: C = instances.find(_.connection eq application.connection).get
-
-  def apply(): C = current
-}
-
-object CommunicationManager {
-  private val increment = new AtomicInteger(0)
+  def apply(): YouIApplication = current.getOrElse(throw new RuntimeException("No YouIApplication is initialized!"))
 }

@@ -86,7 +86,6 @@ case class HttpHandlerBuilder(server: Server,
       val selector = if (allowSelectors) connection.request.url.param("selector").map(Selector.parse) else None
       val mods = deltas(connection)
       val html = parser.stream(mods, selector)
-      logger.info(s"Stream! Selector: $selector (${connection.request.url.param("selector")} / ${connection.request.url}), HTML: $html")
       val content = StringContent(html, ContentType.`text/html`, resource.lastModified())
       val handler = SenderHandler(content, caching = cachingManager)
       handler.handle(connection)

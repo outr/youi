@@ -7,5 +7,5 @@ import scala.concurrent.duration._
 
 trait SessionSessionManager[S <: Session] extends StoreSessionManager[S] {
   protected def timeout: FiniteDuration = 1.hour
-  override protected def store(server: Server): Store = SessionStore(server.connection, timeout)
+  override protected def store(server: Server): Store = SessionStore(server.httpConnection, timeout)
 }

@@ -1,12 +1,7 @@
 package io.youi.example
 
-import io.youi.communication.{ClientWebSocketCommunicator, Communication}
 import org.scalajs.dom._
-import io.youi.net.URL
-
 import scala.concurrent.Future
-
-import scala.concurrent.ExecutionContext.Implicits.global
 
 trait ClientExampleCommunication extends ExampleCommunication {
   override def url: Future[String] = Future.successful(window.location.href)
@@ -17,7 +12,3 @@ trait ClientExampleCommunication extends ExampleCommunication {
     window.location.href = url
   })
 }
-
-//object ClientExampleCommunication extends ClientWebSocketCommunicator[ClientExampleCommunication](URL(s"ws://${window.location.host}/communicator")) {
-//  override protected def create(): ClientExampleCommunication = Communication.create[ClientExampleCommunication](this)
-//}

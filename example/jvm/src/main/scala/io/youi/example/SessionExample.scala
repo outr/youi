@@ -7,7 +7,7 @@ import io.youi.server.session.{Session, SessionSessionManager}
 
 object SessionExample extends HttpHandler {
   override def handle(connection: HttpConnection): Unit = {
-    val session = MySession(ExampleServer)
+    val session = MySession(ServerExampleApplication)
     val html = <html>
       <head>
         <title>Session Example</title>

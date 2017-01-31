@@ -11,9 +11,9 @@ trait Server extends HttpHandler {
     override def initialValue(): Option[HttpConnection] = None
   }
 
-  def connectionOption: Option[HttpConnection] = _connection.get()
-  def connection: HttpConnection = connectionOption.getOrElse(throw new RuntimeException("No connection defined on the current thread."))
-  def withConnection[R](connection: HttpConnection)(f: => R): R = {
+  def httpConnectionOption: Option[HttpConnection] = _connection.get()
+  def httpConnection: HttpConnection = httpConnectionOption.getOrElse(throw new RuntimeException("No connection defined on the current thread."))
+  def withHttpConnection[R](connection: HttpConnection)(f: => R): R = {
     val previous = _connection.get()
     _connection.set(Some(connection))
     try {
@@ -81,7 +81,7 @@ trait Server extends HttpHandler {
     SessionStore.dispose()
   }
 
-  override def handle(connection: HttpConnection): Unit = withConnection(connection) {
+  override def handle(connection: HttpConnection): Unit = withHttpConnection(connection) {
     try {
       handlers().foreach(_.handle(connection))
       if (connection.response.content.isEmpty && connection.response.status == Status.OK) {

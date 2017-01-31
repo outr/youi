@@ -2,13 +2,14 @@ package io.youi.example
 
 import com.outr.scribe.Logging
 import io.youi.Template
+import io.youi.app.ClientApplication
 import io.youi.dom._
 import org.scalajs.dom._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.scalajs.js.JSApp
 
-object ClientExample extends JSApp with Logging {
+object ClientExampleApplication extends JSApp with ExampleApplication with ClientApplication with Logging {
   def connectedInput: html.Input = byId[html.Input]("communicationConnected")
   def connectedButton: html.Button = byId[html.Button]("communicationConnectButton")
   def reverseInput: html.Input = byId[html.Input]("communicationReverse")
@@ -34,16 +35,16 @@ object ClientExample extends JSApp with Logging {
       document.body.appendChild(entry)
     }
 
-    ClientExampleCommunication.connected.attachAndFire { c =>
+    connection.connected.attachAndFire { c =>
       connectedInput.value = if (c) "Yes" else "No"
     }
     connectedButton.addEventListener("click", (evt: Event) => {
       evt.preventDefault()
       evt.stopPropagation()
-      if (ClientExampleCommunication.connected()) {
-        ClientExampleCommunication.disconnect()
+      if (connection.connected()) {
+        disconnect()
       } else {
-        ClientExampleCommunication.connect()
+        connect()
       }
     })
 
@@ -54,7 +55,7 @@ object ClientExample extends JSApp with Logging {
       if (value.isEmpty) {
         window.alert("Reverse value must not be empty!")
       } else {
-        ClientExampleCommunication.communication.reverse(value).foreach { reversed =>
+        comm().reverse(value).foreach { reversed =>
           reverseInput.value = reversed
         }
       }
@@ -63,16 +64,16 @@ object ClientExample extends JSApp with Logging {
     timeButton.addEventListener("click", (evt: Event) => {
       evt.preventDefault()
       evt.stopPropagation()
-      ClientExampleCommunication.communication.time.foreach { time =>
+      comm().time.foreach { time =>
         timeInput.value = time.toString
       }
     })
 
-    nameInput.value = ClientExampleCommunication.communication.name().getOrElse("")
+    nameInput.value = comm().name().getOrElse("")
     nameButton.addEventListener("click", (evt: Event) => {
       evt.preventDefault()
       evt.stopPropagation()
-      ClientExampleCommunication.communication.name := Some(nameInput.value)
+      comm().name := Some(nameInput.value)
     })
   }
 }

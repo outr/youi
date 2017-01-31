@@ -24,10 +24,12 @@ trait YouIApplication {
     */
   def connection: Connection
 
+  def withConnection[R](connection: Connection)(f: => R): R = f
+
   /**
     * Listing of all active connections. On the client this will only every have one entry.
     */
-  def connections: Val[Set[Connection]]
+  val connections: Val[Set[Connection]]
 
   def communication[C <: Communication]: CommunicationManager[C] = macro Macros.communication[C]
 }
@@ -36,4 +38,6 @@ class CommunicationManager[C <: Communication](application: YouIApplication, cre
   val instances: Val[Set[C]] = Val(application.connections.map(create))
 
   def current: C = instances.find(_.connection eq application.connection).get
+
+  def apply(): C = current
 }

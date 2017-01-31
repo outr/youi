@@ -10,6 +10,54 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Future, Promise}
 import scala.language.experimental.macros
 
+/**
+  * Communication provides convenience functionality to communicate between a client and server (two-way) via WebSockets.
+  * The supported mechanisms are methods and shared variables.
+  *
+  * Method Example:
+  *
+  * <pre>@server def time: Future[Long]</pre>
+  *
+  * Notice the <pre>@server</pre> annotation. This represents that this method will be defined in the server
+  * implementation allowing the client to call the method and it is invoked on the server and the result is received on
+  * the client. To create a method in the client that is called from the server simply use the <pre>@client</pre>
+  * annotation instead. The return type of the method must be of <pre>Future</pre> or it will be ignored.
+  *
+  * Shared Var Example:
+  *
+  * <pre>val name: com.outr.reactify.Var[String] = shared[String]("Default")</pre>
+  *
+  * This represents a variable that is shared between the client and server. Either can change the value and it will be
+  * reflected in the other asynchronously. We use Reactify's <pre>Var</pre> because it allows functional reactive
+  * observing of changes.
+  *
+  * Note that three traits must be defined for a <pre>Communication</pre>:
+  * 1. Shared Interface (defined as the definition of each method and shared variable):
+  *   <pre>
+  *     trait ExampleCommunication extends Communication {
+  *       @server def time: Future[Long]
+  *       @client def url: Future[String]
+  *       val name: Var[String] = shared[String]("Default")
+  *     }
+  *   <pre>
+  * 2. Client Interface (defined in Scala.js code):
+  *   <pre>
+  *     trait ClientExampleCommunication extends ExampleCommunication {
+  *       override def url: Future[String] = Future.successful(document.url.href)
+  *     }
+  *   </pre>
+  * 3. Server Interface (defined in JVM code):
+  *   <pre>
+  *     trait ServerExampleCommunication extends ExampleCommunication {
+  *       override def time: Future[Long] = Future.successful(System.currentTimeMillis())
+  *     }
+  *   </pre>
+  *
+  * Notice that only the methods that need to be implemented on the client or server are defined. The rest are generated
+  * at compile-time.
+  *
+  * @see io.youi.app.YouIApplication for usage examples
+  */
 trait Communication {
   val comm: CommunicationInternal = new CommunicationInternal(this)
   comm.init()

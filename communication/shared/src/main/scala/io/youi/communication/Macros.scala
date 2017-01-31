@@ -9,14 +9,19 @@ import scala.reflect.macros.blackbox
 
 @compileTimeOnly("Enable Macros for expansion")
 object Macros {
+  private var counter = 0
+
   def shared[T](context: blackbox.Context)(default: context.Expr[T])(implicit t: context.WeakTypeTag[T]): context.Expr[Var[T]] = {
     import context.universe._
+
+    val endPointId = counter
+    counter += 1
 
     context.Expr[Var[T]](
       q"""
          import io.youi.communication._
 
-         val endPointId = Communication.nextEndPointId
+         val endPointId = $counter
          val v = com.outr.reactify.Var[$t]($default)
          val modifying = new ThreadLocal[Boolean] {
            override def initialValue(): Boolean = false

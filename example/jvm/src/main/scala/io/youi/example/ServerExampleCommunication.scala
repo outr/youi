@@ -4,7 +4,6 @@ import java.util.concurrent.atomic.AtomicInteger
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import com.outr.scribe._
 
 trait ServerExampleCommunication extends ExampleCommunication {
   private val increment = new AtomicInteger(0)
@@ -15,4 +14,6 @@ trait ServerExampleCommunication extends ExampleCommunication {
   override def broadcast(message: String): Future[Unit] = Future(ServerExampleApplication.comm.instances.foreach { instance =>
     instance.show(message)
   })
+
+  name := Some("Pre Defined by Server!")
 }

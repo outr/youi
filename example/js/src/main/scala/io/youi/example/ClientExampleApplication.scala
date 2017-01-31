@@ -79,6 +79,12 @@ object ClientExampleApplication extends JSApp with ExampleApplication with Clien
       evt.stopPropagation()
       comm().name := Some(nameInput.value)
     })
+    comm().name.attach { name =>
+      val s = name.getOrElse("")
+      if (nameInput.value != s) {
+        nameInput.value = s
+      }
+    }
 
     counterButton.addEventListener("click", (evt: Event) => {
       evt.preventDefault()

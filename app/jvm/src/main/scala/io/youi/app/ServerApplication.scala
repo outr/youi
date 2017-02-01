@@ -9,7 +9,7 @@ trait ServerApplication extends YouIApplication with Server {
     override def initialValue(): Option[Connection] = None
   }
 
-  handler.matcher(path.exact(connectionPath)).wrap(ServerConnectionHandler)
+  handler.matchers(path.exact(connectionPath)).wrap(ServerConnectionHandler)
 
   def connectionOption: Option[Connection] = _connection.get()
   override def connection: Connection = connectionOption.getOrElse(throw new RuntimeException("No connection defined on the current thread."))
@@ -21,6 +21,10 @@ trait ServerApplication extends YouIApplication with Server {
     } finally {
       _connection.set(previous)
     }
+  }
+
+  protected def page(page: Page): HttpHandler = {
+    handler.matchers(page.matchers: _*).stream(page.resource, page.allowSelectors)(page.deltas)
   }
 
   private object ServerConnectionHandler extends HttpHandler {

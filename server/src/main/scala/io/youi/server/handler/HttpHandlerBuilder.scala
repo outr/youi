@@ -5,13 +5,12 @@ import java.io.File
 import io.youi.http._
 import io.youi.net.{ContentType, URL, URLMatcher}
 import io.youi.server.Server
-import com.outr.scribe._
 import io.youi.stream.{Delta, HTMLParser, Selector}
 
 case class HttpHandlerBuilder(server: Server,
                               urlMatcher: Option[URLMatcher] = None,
                               cachingManager: CachingManager = CachingManager.Default) {
-  def matcher(urlMatchers: URLMatcher*): HttpHandlerBuilder = if (urlMatchers.isEmpty) {
+  def matchers(urlMatchers: URLMatcher*): HttpHandlerBuilder = if (urlMatchers.isEmpty) {
     copy(urlMatcher = None)
   } else if (urlMatchers.tail.isEmpty) {
     copy(urlMatcher = Some(urlMatchers.head))

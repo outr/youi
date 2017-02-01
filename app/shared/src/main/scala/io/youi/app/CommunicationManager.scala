@@ -15,7 +15,9 @@ class CommunicationManager[C <: Communication](application: YouIApplication, cre
     }
   }
 
-  def current: C = instances.find(_.connection eq application.connection).get
+  def byConnection(connection: Connection): Option[C] = instances.find(_.connection eq connection)
+
+  def current: C = byConnection(application.connection).get
 
   def apply(): C = current
 }

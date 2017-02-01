@@ -2,37 +2,32 @@ package io.youi.example
 
 import java.io.File
 
-import io.youi.app.ServerApplication
+import io.youi.app.{Page, ServerApplication}
 import io.youi.http._
 import io.youi.net.ContentType
 import io.youi.server.UndertowServer
-import io.youi.server.handler.CachingManager
+import io.youi.server.handler.{CachingManager, HttpHandler}
 import io.youi.stream.{ById, Delta}
 
 object ServerExampleApplication extends UndertowServer with ExampleApplication with ServerApplication {
   config.clearListeners().addHttpListener("0.0.0.0")
 
-  handler
-    .matcher(path.exact("/dashboard.html"))
-    .stream(new File("src/main/web/dashboard.html"), allowSelectors = true) { httpConnection =>
-      List(
-        Delta.ReplaceContent(ById("heading"), "Modified Heading")
-      )
-    }
+//  val uiExamples: Page = page(UIExamples)
+  val dashboard: HttpHandler = page(DashboardPage)
 
-  handler.matcher(path.exact("/hello.txt")).caching(CachingManager.MaxAge(120L)).resource {
+  handler.matchers(path.exact("/hello.txt")).caching(CachingManager.MaxAge(120L)).resource {
     Content.string("Hello World!", ContentType.`text/plain`)
   }
-  handler.matcher(path.exact("/test.txt")).caching(CachingManager.LastModified()).resource {
+  handler.matchers(path.exact("/test.txt")).caching(CachingManager.LastModified()).resource {
     new File("src/main/web/test.txt")
   }
-  handler.matcher(path.exact("/websocket.html")).caching(CachingManager.LastModified()).resource {
+  handler.matchers(path.exact("/websocket.html")).caching(CachingManager.LastModified()).resource {
     new File("src/main/web/websocket.html")
   }
-  handler.matcher(path.exact("/cookies.html")).wrap(CookiesExample)
-  handler.matcher(path.exact("/web-socket-example")).wrap(WebSocketExample)
-  handler.matcher(path.exact("/proxy.html")).proxy(ProxyExample)
-  handler.matcher(path.exact("/session.html")).wrap(SessionExample)
+  handler.matchers(path.exact("/cookies.html")).wrap(CookiesExample)
+  handler.matchers(path.exact("/web-socket-example")).wrap(WebSocketExample)
+  handler.matchers(path.exact("/proxy.html")).proxy(ProxyExample)
+  handler.matchers(path.exact("/session.html")).wrap(SessionExample)
   handler.caching(CachingManager.LastModified()).classLoader("", (path: String) => s"content$path")
   handler.caching(CachingManager.LastModified()).classLoader("app", (path: String) => path.drop(4))
 

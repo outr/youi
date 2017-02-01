@@ -7,7 +7,7 @@ import io.youi.html.style.{Color, Image}
 
 object VirtualSizeExample extends VirtualSizeSupport {
   ui.children += new ImageView {
-    image := Image("images/1024.jpg")
+    image := Image("/images/1024.jpg")
     position.left := 0.vx
     position.top := 0.vy
     size.width := Size(1024.vw)

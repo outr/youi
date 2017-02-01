@@ -9,7 +9,7 @@ import io.youi.html.ImageView
 object ImageExample {
   import UI._
 
-  val icon = Image("images/icon.png")
+  val icon = Image("/images/icon.png")
   children += new ImageView {    // Top-Left
     image := icon
     position.left := 50.0

@@ -4,7 +4,7 @@ import java.io.File
 
 import io.youi.http.HttpConnection
 import io.youi.net.URLMatcher
-import io.youi.stream.{ByClass, Delta}
+import io.youi.stream._
 
 trait Page {
   def matchers: List[URLMatcher]
@@ -20,7 +20,7 @@ trait Page {
          |    ${config.function}();
          |</script>
        """.stripMargin
-    List(Delta.InsertLastChild(ByClass("body"), script))
+    List(Delta.InsertLastChild(ByTag("body"), script))
   }.getOrElse(Nil)
 }
 

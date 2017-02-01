@@ -12,7 +12,7 @@ import io.youi.stream.{ById, Delta}
 object ServerExampleApplication extends UndertowServer with ExampleApplication with ServerApplication {
   config.clearListeners().addHttpListener("0.0.0.0")
 
-//  val uiExamples: Page = page(UIExamples)
+  val uiExamples: HttpHandler = page(UIExamples)
   val dashboard: HttpHandler = page(DashboardPage)
 
   handler.matchers(path.exact("/hello.txt")).caching(CachingManager.MaxAge(120L)).resource {

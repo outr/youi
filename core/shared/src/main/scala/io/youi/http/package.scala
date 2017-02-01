@@ -24,6 +24,9 @@ package object http {
     def exact(path: String): URLMatcher = new URLMatcher {
       override def matches(url: URL): Boolean = url.path.decoded == path
     }
+    def matches(regex: String): URLMatcher = new URLMatcher {
+      override def matches(url: URL): Boolean = url.path.decoded.matches(regex)
+    }
   }
 
   object all extends URLMatcher {

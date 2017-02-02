@@ -17,11 +17,13 @@ into this new framework. If you need a production-ready framework please look at
 
 ## Modules
 
+* [app](app) - unification of client and server to write complete applications (Scala and Scala.js)
+* [communication](communication) - communication framework to provide type-safe communication between a client / server (Scala and Scala.js)
 * [core](core) - core features generally useful for web and HTTP (Scala and Scala.js)
-* [communicate](communicate) - communication framework to provide type-safe communication between a client / server (Scala and Scala.js)
 * [dom](dom) - features and functionality related to working with the browser's DOM (Scala.js)
 * [server](server) - base functionality for a web server (Scala)
 * [server-undertow](serverUndertow) - implementation of [server](server) using [Undertow](http://undertow.io/) (Scala)
+* [stream](stream) - streaming functionality for on-the-fly processing and modification of any XML or HTML content (Scala)
 * [ui](ui) - functionality for user-interface creation and management (Scala.js)
 
 ## Features for 1.0.0 (Future)

@@ -10,13 +10,7 @@ import io.youi.stream.{Delta, HTMLParser, Selector}
 case class HttpHandlerBuilder(server: Server,
                               urlMatcher: Option[URLMatcher] = None,
                               cachingManager: CachingManager = CachingManager.Default) {
-  def matchers(urlMatchers: URLMatcher*): HttpHandlerBuilder = if (urlMatchers.isEmpty) {
-    copy(urlMatcher = None)
-  } else if (urlMatchers.tail.isEmpty) {
-    copy(urlMatcher = Some(urlMatchers.head))
-  } else {
-    copy(urlMatcher = Some(combined(urlMatchers: _*)))
-  }
+  def matcher(urlMatcher: URLMatcher): HttpHandlerBuilder = copy(urlMatcher = Some(urlMatcher))
 
   def caching(cachingManager: CachingManager): HttpHandlerBuilder = copy(cachingManager = cachingManager)
 

@@ -2,11 +2,12 @@ package io.youi.server
 
 import com.outr.reactify._
 import com.outr.scribe._
+import io.youi.ErrorSupport
 import io.youi.http.{HttpConnection, Status}
 import io.youi.server.handler.{HttpHandler, HttpHandlerBuilder}
 import io.youi.server.session.SessionStore
 
-trait Server extends HttpHandler {
+trait Server extends HttpHandler with ErrorSupport {
   private val _connection = new ThreadLocal[Option[HttpConnection]] {
     override def initialValue(): Option[HttpConnection] = None
   }
@@ -64,17 +65,6 @@ trait Server extends HttpHandler {
   def restart(): Unit = synchronized {
     stop()
     start()
-  }
-
-  def error(t: Throwable): Unit = logger.error(t)
-
-  def errorSupport[R](f: => R): R = try {
-    f
-  } catch {
-    case t: Throwable => {
-      error(t)
-      throw t
-    }
   }
 
   def dispose(): Unit = {

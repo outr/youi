@@ -10,8 +10,14 @@ package object http {
   implicit def file2Content(file: File): Content = Content.file(file)
   implicit def url2Content(url: java.net.URL): Content = Content.url(url)
 
-  def combined(matchers: URLMatcher*): URLMatcher = new URLMatcher {
-    override def matches(url: URL): Boolean = matchers.forall(_.matches(url))
+  object combined {
+    def all(matchers: URLMatcher*): URLMatcher = new URLMatcher {
+      override def matches(url: URL): Boolean = matchers.forall(_.matches(url))
+    }
+
+    def any(matchers: URLMatcher*): URLMatcher = new URLMatcher {
+      override def matches(url: URL): Boolean = matchers.exists(_.matches(url))
+    }
   }
 
   object url {

@@ -1,4 +1,5 @@
 package io.youi.app
+
 import com.outr.reactify.{Val, Var}
 import io.youi.app.screen.ScreenManager
 import io.youi.http.{Connection, WebSocketUtil}

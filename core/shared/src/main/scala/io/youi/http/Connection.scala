@@ -39,7 +39,7 @@ class Connection(val manager: ConnectionManager) {
       if (Connection.debug) logger.info(s"Receive: $s")
     }
 
-    connected.attach { b =>
+    connected.distinct.attach { b =>
       synchronized {
         send.text.detach(textListener)
         send.binary.detach(binaryListener)
@@ -57,7 +57,7 @@ class Connection(val manager: ConnectionManager) {
     }
   }
 
-  def close(): Unit = {
+  def close(): Unit = if (connected()) {
     send.close := Unit
     _connected := false
   }

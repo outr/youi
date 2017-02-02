@@ -11,8 +11,10 @@ object WebSocketUtil {
       if (ws.readyState >= WebSocket.CLOSING) {
         listener.close()
         Connection.backlog(listener, message)
-      } else {
+      } else if (ws.readyState == WebSocket.OPEN) {
         ws.send(message)
+      } else {
+        Connection.backlog(listener, message)
       }
     }
     ws.onopen = (evt: Event) => {

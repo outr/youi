@@ -13,12 +13,19 @@ object SenderHandler {
     new SenderHandler(content, length, caching)
   }
 
-  def handle(connection: HttpConnection, content: Content, length: Option[Long] = None, caching: CachingManager = CachingManager.Default): Unit = {
+  def handle(connection: HttpConnection,
+             content: Content,
+             length: Option[Long] = None,
+             caching: CachingManager = CachingManager.Default,
+             replace: Boolean = false): Unit = {
+    if (connection.response.content.nonEmpty && !replace) {
+      throw new RuntimeException(s"Content already set for HttpResponse in ${connection.request.url}")
+    }
     val contentLength = length.getOrElse(content.length)
     connection.update { response =>
       response
-        .withHeader(Headers.`Content-Type`(content.contentType))
-        .withHeader(Headers.`Content-Length`(contentLength))
+        .setHeader(Headers.`Content-Type`(content.contentType))
+        .setHeader(Headers.`Content-Length`(contentLength))
         .withContent(content)
     }
     caching.handle(connection)

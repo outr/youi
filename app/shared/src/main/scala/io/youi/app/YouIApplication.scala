@@ -1,6 +1,7 @@
 package io.youi.app
 
 import com.outr.reactify._
+import io.youi.ErrorSupport
 import io.youi.communication.Communication
 import io.youi.http.{Connection, ConnectionManager}
 
@@ -10,7 +11,7 @@ import scala.language.experimental.macros
   * Base trait to define shared client and server information. This trait must be extended in the shared code as a trait
   * and implemented in both client and server implementations.
   */
-trait YouIApplication extends ConnectionManager {
+trait YouIApplication extends ConnectionManager with ErrorSupport {
   YouIApplication.instance = Some(this)
 
   private[app] val activeConnections = Var[Set[Connection]](Set.empty)

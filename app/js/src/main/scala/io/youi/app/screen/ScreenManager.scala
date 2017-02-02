@@ -1,9 +1,9 @@
 package io.youi.app.screen
 
 import com.outr.reactify.{Val, Var}
+import io.youi.app.YouIApplication
 
 import scala.concurrent.Future
-
 import scala.concurrent.ExecutionContext.Implicits.global
 
 trait ScreenManager {
@@ -33,6 +33,7 @@ trait ScreenManager {
     applyState(ScreenState.Initializing, ScreenState.Initialized, Screen.init(screen))
     applyState(ScreenState.Loading, ScreenState.Loaded, Screen.load(screen))
 
+    future.failed.foreach(YouIApplication().error)
     screen.working = future
     future
   }
@@ -55,6 +56,7 @@ trait ScreenManager {
     applyState(ScreenState.Loading, ScreenState.Loaded, Screen.load(screen))
     applyState(ScreenState.Activating, ScreenState.Activated, Screen.activate(screen))
 
+    future.failed.foreach(YouIApplication().error)
     screen.working = future
     future
   }
@@ -66,6 +68,7 @@ trait ScreenManager {
         screen.currentState := ScreenState.Deactivated
       }
 
+      future.failed.foreach(YouIApplication().error)
       screen.working = future
       future
     } else {
@@ -80,6 +83,7 @@ trait ScreenManager {
         screen.currentState := ScreenState.Disposed
       }
 
+      future.failed.foreach(YouIApplication().error)
       screen.working = future
       future
     } else {

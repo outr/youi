@@ -3,8 +3,6 @@ import io.youi.app.{HistoryStateChange, StateType}
 import io.youi.net.URL
 
 trait PathActivation extends URLActivation {
-  this: Screen =>
-
   def path: String
   def stateType: StateType = StateType.Push
   def clearParams: Boolean = false

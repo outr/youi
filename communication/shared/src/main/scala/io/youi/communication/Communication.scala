@@ -4,6 +4,7 @@ import java.util.concurrent.atomic.AtomicInteger
 
 import com.outr.reactify.{Channel, Var}
 import com.outr.scribe._
+import io.youi.ErrorSupport
 import io.youi.http.Connection
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -58,7 +59,7 @@ import scala.language.experimental.macros
   *
   * @see io.youi.app.YouIApplication for usage examples
   */
-trait Communication {
+trait Communication extends ErrorSupport {
   val comm: CommunicationInternal = new CommunicationInternal(this)
   comm.init()
 
@@ -107,6 +108,9 @@ class CommunicationInternal private[communication](communication: Communication)
       if (message.endPointId == endPointId && message.messageType == CommunicationMessage.MethodRequest) {
         f(message).map { content =>
           send := CommunicationMessage(CommunicationMessage.MethodResponse, endPointId, message.invocationId, List(content))
+        }.failed.foreach { t =>
+          // TODO: communicate error back
+          communication.error(t)
         }
       }
     }

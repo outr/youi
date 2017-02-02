@@ -1,5 +1,6 @@
 package io.youi.example
 
+import com.outr.reactify.Var
 import io.youi.http.{Content, HttpConnection}
 import io.youi.net.ContentType
 import io.youi.server.handler.{HttpHandler, SenderHandler}
@@ -20,12 +21,4 @@ object SessionExample extends HttpHandler {
     </html>
     SenderHandler.handle(connection, Content.string(html.toString, ContentType.`text/html`))
   }
-}
-
-class MySession extends Session {
-  val created: Long = System.currentTimeMillis()
-}
-
-object MySession extends SessionSessionManager[MySession] {
-  override protected def create(): MySession = new MySession
 }

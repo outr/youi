@@ -10,8 +10,8 @@ import scala.language.experimental.macros
 import scala.reflect.macros.blackbox
 
 object Template {
-  def existingById[E <: Element](path: String, id: String): E = macro TemplateMacros.existingById[E]
-  def existingByClass[E <: Element](path: String, className: String): List[E] = macro TemplateMacros.existingByClass[E]
+  def byId[E <: Element](path: String, id: String): E = macro TemplateMacros.existingById[E]
+  def byClass[E <: Element](path: String, className: String): List[E] = macro TemplateMacros.existingByClass[E]
 }
 
 @compileTimeOnly("Enable Macros for expansion")

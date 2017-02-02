@@ -55,7 +55,7 @@ class UndertowServerImplementation(server: Server) extends ServerImplementation 
 
   override def handleRequest(exchange: HttpServerExchange): Unit = server.errorSupport {
     val request = UndertowServerImplementation.request(exchange)
-    val connection = new HttpConnection(request)
+    val connection = new HttpConnection(server, request)
     server.handle(connection)
     UndertowServerImplementation.response(server, connection, exchange)
   }

@@ -5,7 +5,7 @@ import io.youi.http
 import io.youi.http._
 import io.youi.net.URLMatcher
 
-trait MultiPage extends Page {
+trait MultiPage extends MatcherPage {
   def pages: List[String]
 
   def page2Path(page: String): String = s"/$page"
@@ -18,9 +18,9 @@ trait MultiPage extends Page {
     path -> PageEntry(path, matcher, resource)
   }.toMap
 
-  override val matcher: URLMatcher = combined.any(paths.values.map(_.matcher).toSeq: _*)
+  override protected val matcher: URLMatcher = combined.any(paths.values.map(_.matcher).toSeq: _*)
 
-  override def resource(httpConnection: HttpConnection): File = paths(httpConnection.request.url.path.decoded).resource
+  override protected def resource(httpConnection: HttpConnection): Option[File] = paths.get(httpConnection.request.url.path.decoded).map(_.resource)
 
   case class PageEntry(path: String, matcher: URLMatcher, resource: File)
 }

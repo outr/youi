@@ -1,7 +1,5 @@
 package io.youi.example.screen
 
-import io.youi.app.History
-import io.youi.app.screen.{ContentScreen, PathActivation}
 import io.youi.dom
 import io.youi.example.ClientExampleApplication
 import org.scalajs.dom._

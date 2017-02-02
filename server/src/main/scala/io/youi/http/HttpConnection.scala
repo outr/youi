@@ -1,8 +1,9 @@
 package io.youi.http
 
+import io.youi.server.Server
 import io.youi.{MapStore, Store}
 
-class HttpConnection(val request: HttpRequest) {
+class HttpConnection(val server: Server, val request: HttpRequest) {
   private var _response: HttpResponse = HttpResponse()
 
   val store: Store = new MapStore()

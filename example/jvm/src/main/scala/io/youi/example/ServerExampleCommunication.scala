@@ -17,11 +17,14 @@ trait ServerExampleCommunication extends ExampleCommunication {
   override def logIn(username: String, password: String): Future[Option[String]] = Future {
     val authorized = username == "user" && password == "password"
     if (authorized) {
+      println("Before...")
+      MySession(ServerExampleApplication).username := Some(username)
+      println("...After")
       None
     } else {
       Some("Invalid username / password combination")
     }
   }
 
-  name := Some("Pre Defined by Server!")
+  name := MySession(ServerExampleApplication).username
 }

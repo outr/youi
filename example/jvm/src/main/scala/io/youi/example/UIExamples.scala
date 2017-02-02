@@ -2,13 +2,16 @@ package io.youi.example
 
 import java.io.File
 
+import io.youi.app.MatcherPage
 import io.youi.http.{HttpConnection, path}
 import io.youi.net.URLMatcher
 
-object UIExamples extends ExamplePage {
-  override def matcher: URLMatcher = path.matches("/examples/.*[.]html")
+object UIExamples extends ExamplePage with MatcherPage {
+  override protected def matcher: URLMatcher = path.matches("/examples/.*[.]html")
 
-  override def resource(httpConnection: HttpConnection): File = new File("src/main/web/ui-examples.html")
+  override protected def resource(httpConnection: HttpConnection): Option[File] = {
+    Some(new File("src/main/web/ui-examples.html"))
+  }
 
-  override def scalaJSFunction: Option[String] = Some("examples")
+  override protected def scalaJSFunction: Option[String] = Some("examples")
 }

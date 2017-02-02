@@ -3,18 +3,19 @@ package io.youi.app
 import java.io.File
 
 import io.youi.http.{HttpConnection, StringContent}
-import io.youi.net.{ContentType, URLMatcher}
-import io.youi.server.handler.{CachingManager, HttpHandler, SenderHandler}
+import io.youi.net.ContentType
+import io.youi.server.handler.{CachingManager, HttpProcessor, SenderHandler}
+import io.youi.server.validation.Validator
 import io.youi.stream._
 
-trait Page extends HttpHandler {
-  def matcher: URLMatcher
-  def resource(httpConnection: HttpConnection): File
-  def scalaJSConfig: Option[ScalaJSConfig]
-  def cachingManager: CachingManager = CachingManager.Default
+trait Page extends HttpProcessor[File] {
+  protected def scalaJSConfig: Option[ScalaJSConfig]
+  protected def cachingManager: CachingManager = CachingManager.Default
 
-  def allowSelectors: Boolean = true
-  def deltas(httpConnection: HttpConnection): List[Delta] = scalaJSConfig.map { config =>
+  override protected def validators: List[Validator] = Nil
+
+  protected def allowSelectors: Boolean = true
+  protected def deltas(httpConnection: HttpConnection): List[Delta] = scalaJSConfig.map { config =>
     val script =
       s"""
          |<script type="application/javascript" src="${config.path}"></script>
@@ -25,8 +26,7 @@ trait Page extends HttpHandler {
     List(Delta.InsertLastChild(ByTag("body"), script))
   }.getOrElse(Nil)
 
-  override def handle(connection: HttpConnection): Unit = if (matcher.matches(connection.request.url)) {
-    val file = resource(connection)
+  override protected def process(connection: HttpConnection, file: File): Unit = {
     val parser = HTMLParser.cache(file)
     val selector = if (allowSelectors) connection.request.url.param("selector").map(Selector.parse) else None
     val mods = deltas(connection)

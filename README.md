@@ -44,9 +44,10 @@ into this new framework. If you need a production-ready framework please look at
     * [X] General WebSocket connectivity support
     * [X] Communication support
     * [X] Streaming convenience functionality
-    * [ ] Security convenience functionality
-    * [ ] Pages functionality (Scala.js)
-    * [ ] Screens functionality (Scala.js)
+    * [X] Pages functionality (JVM)
+    * [ ] Filter support on HttpHandlers
+        * [ ] Security convenience functionality
+    * [X] Screens functionality (Scala.js)
 
 ## Features for 0.1.0 (Released 2016.12.22)
 

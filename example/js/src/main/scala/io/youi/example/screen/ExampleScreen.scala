@@ -1,30 +1,31 @@
 package io.youi.example.screen
 
 import io.youi.Template
-import io.youi.app.screen.{PathActivation, Screen}
-import io.youi.dom.byId
+import io.youi.app.screen.{ContentScreen, PathActivation, Screen}
+import io.youi.dom._
 import io.youi.example.ClientExampleApplication.{comm, connect, connection, disconnect}
 import org.scalajs.dom.{Event, document, html, window}
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-object ExampleScreen extends Screen with PathActivation {
-  def connectedInput: html.Input = byId[html.Input]("communicationConnected")
-  def connectedButton: html.Button = byId[html.Button]("communicationConnectButton")
-  def reverseInput: html.Input = byId[html.Input]("communicationReverse")
-  def reverseButton: html.Button = byId[html.Button]("communicationReverseButton")
-  def timeInput: html.Input = byId[html.Input]("communicationTime")
-  def timeButton: html.Button = byId[html.Button]("communicationTimeButton")
-  def nameInput: html.Input = byId[html.Input]("communicationName")
-  def nameButton: html.Button = byId[html.Button]("communicationNameButton")
-  def counterInput: html.Input = byId[html.Input]("communicationCounter")
-  def counterButton: html.Button = byId[html.Button]("communicationCounterButton")
-  def broadcastInput: html.Input = byId[html.Input]("communicationBroadcast")
-  def broadcastButton: html.Button = byId[html.Button]("communicationBroadcastButton")
+object ExampleScreen extends ContentScreen[html.Div] with PathActivation {
+  def connectedInput: html.Input = content.byId[html.Input]("communicationConnected")
+  def connectedButton: html.Button = content.byId[html.Button]("communicationConnectButton")
+  def reverseInput: html.Input = content.byId[html.Input]("communicationReverse")
+  def reverseButton: html.Button = content.byId[html.Button]("communicationReverseButton")
+  def timeInput: html.Input = content.byId[html.Input]("communicationTime")
+  def timeButton: html.Button = content.byId[html.Button]("communicationTimeButton")
+  def nameInput: html.Input = content.byId[html.Input]("communicationName")
+  def nameButton: html.Button = content.byId[html.Button]("communicationNameButton")
+  def counterInput: html.Input = content.byId[html.Input]("communicationCounter")
+  def counterButton: html.Button = content.byId[html.Button]("communicationCounterButton")
+  def broadcastInput: html.Input = content.byId[html.Input]("communicationBroadcast")
+  def broadcastButton: html.Button = content.byId[html.Button]("communicationBroadcastButton")
 
-  def content: html.Div = Template.existingById[html.Div]("template.html", "content")
-  def entries: List[html.Div] = Template.existingByClass[html.Div]("template.html", "entry")
+  override protected def containerSelector: String = "#content"
+  override protected def contentSelector: String = "#exampleScreen"
+  override protected def contentPath: String = "/template/example.html"
 
   override def path: String = "/example.html"
 
@@ -33,18 +34,6 @@ object ExampleScreen extends Screen with PathActivation {
   }
 
   override protected def load(): Future[Unit] = super.load().map { _ =>
-    val content1 = content
-    content1.setAttribute("id", "content1")
-    document.body.appendChild(content1)
-
-    val content2 = content
-    content2.setAttribute("id", "content2")
-    document.body.appendChild(content2)
-
-    entries.foreach { entry =>
-      document.body.appendChild(entry)
-    }
-
     connection.connected.attachAndFire { c =>
       connectedInput.value = if (c) "Yes" else "No"
     }

@@ -31,6 +31,7 @@ object ServerExampleApplication extends UndertowServer with ExampleApplication w
   handler.caching(CachingManager.LastModified()).classLoader("", (path: String) => s"content$path")
   handler.caching(CachingManager.LastModified()).classLoader("app", (path: String) => path.drop(4))
   handler.caching(CachingManager.LastModified()).file(new File("src/main/web/css"), (path: String) => path.drop(4))
+  handler.stream(new File("src/main/web"), "/template/")
 
   def main(args: Array[String]): Unit = {
     start()

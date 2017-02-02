@@ -1,8 +1,10 @@
 package io.youi.stream
 
 import java.io.{File, FileInputStream, InputStream}
+import java.util.concurrent.ConcurrentHashMap
 
 import scala.annotation.tailrec
+import scala.collection.JavaConverters._
 
 object HTMLParser {
   private val SelfClosingTagRegex = """(?s)<(\S+)(.*)/>""".r
@@ -84,6 +86,10 @@ object HTMLParser {
     val html = streamable.stream(deltas, Some(ById("body")))
     println(html)
   }
+
+  private val parsers = new ConcurrentHashMap[File, StreamableHTML]().asScala
+
+  def cache(file: File): StreamableHTML = parsers.getOrElseUpdate(file, HTMLParser(file))
 
   def apply(file: File): StreamableHTML = {
     val cacheBuilder = new CacheBuilder {

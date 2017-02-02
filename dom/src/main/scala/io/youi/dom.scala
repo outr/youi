@@ -26,7 +26,10 @@ object dom extends ExtendedElement(None) {
     val container: Div = create[Div]("div")
     container.innerHTML = htmlString
     container.childNodes.toList.collect {
-      case e: Element => e.asInstanceOf[T]
+      case e: Element => {
+        container.removeChild(e)
+        e.asInstanceOf[T]
+      }
     }
   }
 

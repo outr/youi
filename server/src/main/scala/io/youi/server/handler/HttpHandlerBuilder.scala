@@ -73,15 +73,21 @@ case class HttpHandlerBuilder(server: Server,
     connection.proxySupport = handler
   }
 
-  def stream(resource: File, allowSelectors: Boolean = false)(deltas: HttpConnection => List[Delta]): HttpHandler = {
-    val parser = HTMLParser(resource)
-    handle { connection =>
-      val selector = if (allowSelectors) connection.request.url.param("selector").map(Selector.parse) else None
-      val mods = deltas(connection)
-      val html = parser.stream(mods, selector)
-      val content = StringContent(html, ContentType.`text/html`, resource.lastModified())
-      val handler = SenderHandler(content, caching = cachingManager)
-      handler.handle(connection)
+  def stream(baseDirectory: File, basePath: String, deltas: HttpConnection => List[Delta] = _ => Nil): HttpHandler = handle { connection =>
+    val url = connection.request.url
+    val path = url.path.decoded
+    if (path.startsWith(basePath)) {
+      val clippedPath = path.substring(basePath.length)
+      val file = new File(baseDirectory, clippedPath)
+      if (file.exists()) {
+        val parser = HTMLParser.cache(file)
+        val selector = url.param("selector").map(Selector.parse)
+        val mods = deltas(connection)
+        val html = parser.stream(mods, selector)
+        val content = StringContent(html, ContentType.`text/html`, file.lastModified())
+        val handler = SenderHandler(content, caching = cachingManager)
+        handler.handle(connection)
+      }
     }
   }
 

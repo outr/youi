@@ -1,14 +1,11 @@
 package io.youi.app
 
 import java.io.File
-import java.util.concurrent.ConcurrentHashMap
 
 import io.youi.http.{HttpConnection, StringContent}
 import io.youi.net.{ContentType, URLMatcher}
 import io.youi.server.handler.{CachingManager, HttpHandler, SenderHandler}
 import io.youi.stream._
-
-import scala.collection.JavaConverters._
 
 trait Page extends HttpHandler {
   def matcher: URLMatcher
@@ -28,11 +25,9 @@ trait Page extends HttpHandler {
     List(Delta.InsertLastChild(ByTag("body"), script))
   }.getOrElse(Nil)
 
-  private val parsers = new ConcurrentHashMap[File, StreamableHTML]().asScala
-
   override def handle(connection: HttpConnection): Unit = if (matcher.matches(connection.request.url)) {
     val file = resource(connection)
-    val parser = parsers.getOrElseUpdate(file, HTMLParser(file))
+    val parser = HTMLParser.cache(file)
     val selector = if (allowSelectors) connection.request.url.param("selector").map(Selector.parse) else None
     val mods = deltas(connection)
     val html = parser.stream(mods, selector)

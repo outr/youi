@@ -43,7 +43,7 @@ trait ScreenManager {
 
     val state = screen.state()
 
-    def applyState(applying: ScreenState, applied: ScreenState, call: => Future[Unit]): Unit = if (state.index < applying.index || state == ScreenState.Disposed) {
+    def applyState(applying: ScreenState, applied: ScreenState, call: => Future[Unit], applyToStates: ScreenState*): Unit = if (applyToStates.contains(state)) {
       future = future.flatMap { _ =>
         screen.currentState := applying
         call.map { _ =>
@@ -52,9 +52,9 @@ trait ScreenManager {
       }
     }
 
-    applyState(ScreenState.Initializing, ScreenState.Initialized, Screen.init(screen))
-    applyState(ScreenState.Loading, ScreenState.Loaded, Screen.load(screen))
-    applyState(ScreenState.Activating, ScreenState.Activated, Screen.activate(screen))
+    applyState(ScreenState.Initializing, ScreenState.Initialized, Screen.init(screen), ScreenState.New, ScreenState.Disposing, ScreenState.Disposed)
+    applyState(ScreenState.Loading, ScreenState.Loaded, Screen.load(screen), ScreenState.New, ScreenState.Disposing, ScreenState.Disposed, ScreenState.Initializing, ScreenState.Initialized)
+    applyState(ScreenState.Activating, ScreenState.Activated, Screen.activate(screen), ScreenState.New, ScreenState.Disposing, ScreenState.Disposed, ScreenState.Initializing, ScreenState.Initialized, ScreenState.Deactivating, ScreenState.Deactivated)
 
     future.failed.foreach(YouIApplication().error)
     screen.working = future

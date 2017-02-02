@@ -14,6 +14,14 @@ trait ServerExampleCommunication extends ExampleCommunication {
   override def broadcast(message: String): Future[Unit] = Future(ServerExampleApplication.comm.instances.foreach { instance =>
     instance.show(message)
   })
+  override def logIn(username: String, password: String): Future[Option[String]] = Future {
+    val authorized = username == "user" && password == "password"
+    if (authorized) {
+      None
+    } else {
+      Some("Invalid username / password combination")
+    }
+  }
 
   name := Some("Pre Defined by Server!")
 }

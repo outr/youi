@@ -15,6 +15,7 @@ trait ExampleCommunication extends Communication {
   @server def counter: Future[Int]
   @server def broadcast(message: String): Future[Unit]
   @client def show(message: String): Future[Unit]
+  @server def logIn(username: String, password: String): Future[Option[String]]
 
   name.attach { value =>
     logger.info(s"Name changed: $value")

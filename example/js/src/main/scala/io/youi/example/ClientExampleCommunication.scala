@@ -16,5 +16,7 @@ trait ClientExampleCommunication extends ExampleCommunication {
     window.location.href = url
   })
 
-  override def show(message: String): Future[Unit] = Future(dom.byId[html.Div]("content").appendChild(dom.fromString[html.Element](s"<h2>$message</h2>").head))
+  override def show(message: String): Future[Unit] = Future {
+    dom.byId[html.Div]("content").appendChild(dom.fromString[html.Element](s"<h2>$message</h2>").head)
+  }
 }

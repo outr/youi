@@ -31,6 +31,12 @@ into this new framework. If you need a production-ready framework please look at
 * [ ] Existing HTML, CSS, and JavaScript optimization, compression, and obfuscation for production use
 * [ ] Image optimizer for production use supporting compile-time and run-time optimization
 * [ ] HTML caching in Local Storage for offline and faster cached loading
+* [ ] Convenience functionality for deploying native applications
+    * [ ] Windows
+    * [ ] Mac
+    * [ ] Linux
+    * [ ] iOS
+    * [ ] Android
 
 ## Features for 0.2.0 (In-Progress)
 

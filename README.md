@@ -61,13 +61,13 @@ into this new framework. If you need a production-ready framework please look at
 
 * [X] Scala JVM and JS support
 * [X] URL implementation offering good parsing and flexibility
-* [X] URL interpolation at compile-time
+    * [X] compile-time interpolation
 * [X] Server abstraction with HttpRequest and HttpResponse allowing for multiple implementations
+    * [X] Undertow implementation
 * [X] HttpHandler prioritization and flow to allow handlers to build upon each other
 * [X] IPv4 and IPv6 wrapper classes
 * [X] TestServerImplementation for easy unit testing
 * [X] Full Cookie support
-* [X] Undertow implementation for Server
 * [X] Wrapper for standard ContentTypes
 * [X] WebSocket support through abstraction
 * [X] Proxying support and optional ProxyingSupport trait to be mixed into Server

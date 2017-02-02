@@ -11,7 +11,7 @@ class ServerSpec extends WordSpec with Matchers {
 
   "TestHttpApplication" should {
     "configure the TestServer" in {
-      server.handler.matchers(path.exact("/test.html")).wrap(new HttpHandler {
+      server.handler.matcher(path.exact("/test.html")).wrap(new HttpHandler {
         override def handle(connection: HttpConnection): Unit = connection.update { response =>
           response.withContent(Content.string("test!", ContentType.`text/plain`))
         }

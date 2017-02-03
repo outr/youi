@@ -29,7 +29,7 @@ object Macros {
          v.attach { value =>
            if (!modifying.get()) {
              val json = upickle.default.write[$t](value)
-             val message = CommunicationMessage(CommunicationMessage.SharedVariable, endPointId, 0, List(json))
+             val message = CommunicationMessage(CommunicationMessage.SharedVariable, endPointId, 0, List(json), None)
              comm.send := message
            }
          }
@@ -121,7 +121,7 @@ object Macros {
           q"""
              override def ${m.name}(..$argList): scala.concurrent.Future[$resultType] = {
                val invocationId = comm.nextId()
-               comm.send := io.youi.communication.CommunicationMessage(io.youi.communication.CommunicationMessage.MethodRequest, $endPointId, invocationId, List(..$params))
+               comm.send := io.youi.communication.CommunicationMessage(io.youi.communication.CommunicationMessage.MethodRequest, $endPointId, invocationId, List(..$params), None)
                comm.onInvocation[$resultType](invocationId)( message => {
                  upickle.default.read[$resultType](message.content.head)
                })

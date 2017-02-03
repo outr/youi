@@ -1,9 +1,10 @@
 package io.youi
 
+import com.outr.reactify.Channel
 import com.outr.scribe.logger
 
 trait ErrorSupport {
-  def error(t: Throwable): Unit = logger.error(t)
+  def error(t: Throwable): Unit = ErrorSupport.error := t
 
   def errorSupport[R](f: => R): R = try {
     f
@@ -13,4 +14,10 @@ trait ErrorSupport {
       throw t
     }
   }
+}
+
+object ErrorSupport {
+  val error: Channel[Throwable] = Channel[Throwable]
+
+  val defaultHandler: (Throwable) => Unit = error.attach(logger.error(_))
 }

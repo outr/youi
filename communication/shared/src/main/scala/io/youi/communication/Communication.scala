@@ -103,24 +103,31 @@ class CommunicationInternal private[communication](communication: Communication)
 
   def nextId(): Int = increment.getAndIncrement()
 
+  // Received remote request for invocation of method
   def onEndPoint[T](endPointId: Int)(f: CommunicationMessage => Future[String]): Unit = {
     receive.attach { message =>
       if (message.endPointId == endPointId && message.messageType == CommunicationMessage.MethodRequest) {
         f(message).map { content =>
-          send := CommunicationMessage(CommunicationMessage.MethodResponse, endPointId, message.invocationId, List(content))
+          send := CommunicationMessage(CommunicationMessage.MethodResponse, endPointId, message.invocationId, List(content), None)
         }.failed.foreach { t =>
-          // TODO: communicate error back
+          send := CommunicationMessage(CommunicationMessage.MethodResponse, endPointId, message.invocationId, Nil, Some(t.getMessage))
           communication.error(t)
         }
       }
     }
   }
 
+  // Wait for invocation response
   def onInvocation[T](invocationId: Int)(f: CommunicationMessage => T): Future[T] = synchronized {
     val promise = Promise[T]
-    val handler: CommunicationMessage => Unit = (m: CommunicationMessage) => {
-      val t = f(m)
-      promise.success(f(m))
+    val handler: CommunicationMessage => Unit = (m: CommunicationMessage) => m.error match {
+      case Some(error) => {
+        promise.failure(new CommunicationException(error))
+      }
+      case None => {
+        val t = f(m)
+        promise.success(f(m))
+      }
     }
     queue += invocationId -> handler
     promise.future
@@ -134,3 +141,5 @@ object Communication {
 
   def create[C <: Communication](connection: Connection): C = macro Macros.create[C]
 }
+
+class CommunicationException(message: String) extends RuntimeException(message)

@@ -76,7 +76,7 @@ object UndertowServerImplementation {
 
   def response(server: Server, connection: HttpConnection, exchange: HttpServerExchange): Unit = {
     connection.webSocketSupport match {
-      case Some(webSocketListener) => handleWebSocket(webSocketListener, exchange)
+      case Some(webSocketListener) => handleWebSocket(server, connection, webSocketListener, exchange)
       case None => connection.proxySupport match {
         case Some(proxyHandler) => {
           proxyHandler.proxy(connection) match {
@@ -89,7 +89,10 @@ object UndertowServerImplementation {
     }
   }
 
-  private def handleWebSocket(webSocketListener: Connection, exchange: HttpServerExchange): Unit = {
+  private def handleWebSocket(server: Server,
+                              httpConnection: HttpConnection,
+                              webSocketListener: Connection,
+                              exchange: HttpServerExchange): Unit = {
     val handler = Handlers.websocket(new WebSocketConnectionCallback {
       override def onConnect(exchange: WebSocketHttpExchange, channel: WebSocketChannel): Unit = {
         // Handle sending messages
@@ -106,22 +109,30 @@ object UndertowServerImplementation {
         // Handle receiving messages
         channel.getReceiveSetter.set(new AbstractReceiveListener {
           override def onFullTextMessage(channel: WebSocketChannel, message: BufferedTextMessage): Unit = {
-            webSocketListener.receive.text := message.getData
+            server.withHttpConnection(httpConnection) {
+              webSocketListener.receive.text := message.getData
+            }
             super.onFullTextMessage(channel, message)
           }
 
           override def onFullBinaryMessage(channel: WebSocketChannel, message: BufferedBinaryMessage): Unit = {
-            webSocketListener.receive.binary := message.getData.getResource
+            server.withHttpConnection(httpConnection) {
+              webSocketListener.receive.binary := message.getData.getResource
+            }
             super.onFullBinaryMessage(channel, message)
           }
 
           override def onError(channel: WebSocketChannel, error: Throwable): Unit = {
-            webSocketListener.error := error
+            server.withHttpConnection(httpConnection) {
+              webSocketListener.error := error
+            }
             super.onError(channel, error)
           }
 
           override def onFullCloseMessage(channel: WebSocketChannel, message: BufferedBinaryMessage): Unit = {
-            webSocketListener.receive.close := Unit
+            server.withHttpConnection(httpConnection) {
+              webSocketListener.receive.close := Unit
+            }
             super.onFullCloseMessage(channel, message)
           }
         })

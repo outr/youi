@@ -10,7 +10,7 @@ import scala.scalajs.js
   * Convenience functionality for working with browser history.
   */
 object History {
-  private val currentURL = Var[URL](URL(document.location.href))
+  private val currentURL = Var.static[URL](URL(document.location.href))
   val url: Val[URL] = Val(currentURL)
   val stateChange: Channel[HistoryStateChange] = Channel[HistoryStateChange]
 

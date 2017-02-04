@@ -12,7 +12,7 @@ trait Page extends HttpProcessor[File] {
   protected def scalaJSConfig: Option[ScalaJSConfig]
   protected def cachingManager: CachingManager = CachingManager.Default
 
-  override protected def validators: List[Validator] = Nil
+  override protected def validators(httpConnection: HttpConnection): List[Validator] = Nil
 
   protected def allowSelectors: Boolean = true
   protected def deltas(httpConnection: HttpConnection): List[Delta] = scalaJSConfig.map { config =>

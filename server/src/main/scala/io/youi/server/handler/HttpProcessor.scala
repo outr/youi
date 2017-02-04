@@ -11,12 +11,12 @@ import io.youi.server.validation.{ValidationError, ValidationResult, Validator}
   * @tparam T the type a match will return to be used by process if validations pass
   */
 trait HttpProcessor[T] extends HttpHandler {
-  protected def validators: List[Validator]
+  protected def validators(connection: HttpConnection): List[Validator]
 
   protected def matches(connection: HttpConnection): Option[T]
 
   protected def validate(connection: HttpConnection): ValidationResult = {
-    val failures = validators.map(_.validate(connection)).collect {
+    val failures = validators(connection).map(_.validate(connection)).collect {
       case result if result != Continue => result
     }
     failures.headOption.getOrElse(Continue)

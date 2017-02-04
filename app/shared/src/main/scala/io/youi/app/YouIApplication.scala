@@ -29,12 +29,6 @@ trait YouIApplication extends ConnectionManager with ErrorSupport {
   def connectionPath: String = "/communication"
 
   /**
-    * Current Connection. On the server this will be defined as part of ThreadLocal. On the client this will represent
-    * a singleton.
-    */
-  def connection: Connection
-
-  /**
     * Creates a new CommunicationManager for the Communication trait defined. This should be used to define a val in the
     * shared application trait that will be utilized in both client and server.
     *

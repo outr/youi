@@ -7,7 +7,7 @@ import io.youi.net.URL
 import org.scalajs.dom._
 
 trait ClientApplication extends YouIApplication with ScreenManager {
-  override val connection: Connection = new Connection(this)
+  val connection: Connection = new Connection(this)
   val webSocket: Var[Option[WebSocket]] = Var(None)
 
   activeConnections := Set(connection)

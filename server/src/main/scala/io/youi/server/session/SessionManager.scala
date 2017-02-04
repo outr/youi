@@ -1,17 +1,17 @@
 package io.youi.server.session
 
-import io.youi.server.Server
+import io.youi.http.HttpConnection
 
 trait SessionManager[S <: Session] {
-  protected def get(server: Server): Option[S]
-  protected def set(server: Server, session: S): Unit
+  protected def get(httpConnection: HttpConnection): Option[S]
+  protected def set(httpConnection: HttpConnection, session: S): Unit
   protected def create(): S
 
-  def apply(server: Server): S = get(server) match {
+  def apply(httpConnection: HttpConnection): S = get(httpConnection) match {
     case Some(session) => session
     case None => {
       val session = create()
-      set(server, session)
+      set(httpConnection, session)
       session
     }
   }

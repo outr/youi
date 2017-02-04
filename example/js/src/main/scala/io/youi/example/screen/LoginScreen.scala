@@ -21,7 +21,7 @@ object LoginScreen extends ExampleScreen {
       evt.stopPropagation()
       evt.preventDefault()
 
-      ClientExampleApplication.comm().logIn(username.value, password.value).onComplete {
+      c.logIn(username.value, password.value).onComplete {
         case Success(error) => {
           message.innerHTML = error.getOrElse("")
           if (error.isEmpty) {

@@ -8,22 +8,6 @@ import io.youi.server.handler.{HttpHandler, HttpHandlerBuilder}
 import io.youi.server.session.SessionStore
 
 trait Server extends HttpHandler with ErrorSupport {
-  private val _connection = new ThreadLocal[Option[HttpConnection]] {
-    override def initialValue(): Option[HttpConnection] = None
-  }
-
-  def httpConnectionOption: Option[HttpConnection] = _connection.get()
-  def httpConnection: HttpConnection = httpConnectionOption.getOrElse(throw new RuntimeException("No connection defined on the current thread."))
-  def withHttpConnection[R](connection: HttpConnection)(f: => R): R = {
-    val previous = _connection.get()
-    _connection.set(Some(connection))
-    try {
-      f
-    } finally {
-      _connection.set(previous)
-    }
-  }
-
   val config = new ServerConfig(this)
 
   val handler = HttpHandlerBuilder(this)
@@ -71,7 +55,7 @@ trait Server extends HttpHandler with ErrorSupport {
     SessionStore.dispose()
   }
 
-  override def handle(connection: HttpConnection): Unit = withHttpConnection(connection) {
+  override def handle(connection: HttpConnection): Unit = {
     try {
       handlers().foreach(_.handle(connection))
       if (connection.response.content.isEmpty && connection.response.status == Status.OK) {

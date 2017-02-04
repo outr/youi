@@ -17,9 +17,7 @@ class CommunicationManager[C <: Communication](application: YouIApplication, cre
 
   def byConnection(connection: Connection): Option[C] = instances.find(_.connection eq connection)
 
-  def current: C = byConnection(application.connection).get
-
-  def apply(): C = current
+  def apply(connection: Connection): C = byConnection(connection).getOrElse(throw new RuntimeException("No CommunicationManager found for connection!"))
 }
 
 object CommunicationManager {

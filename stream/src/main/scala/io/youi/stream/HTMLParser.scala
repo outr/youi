@@ -24,69 +24,6 @@ object HTMLParser {
     */
   var validAttributes = Set("id", "class")
 
-  def main(args: Array[String]): Unit = {
-    complex()
-  }
-
-  def complex(): Unit = {
-    val file = new File("complex.html")
-    println(file.getAbsolutePath)
-    val streamable = apply(file)
-
-    val deltas = List(
-      Delta.ReplaceContent(ByTag("title"), "Modified Title"),
-      Delta.ReplaceContent(ById("list"), ""),
-      Delta.Grouped(ByClass("type1"),
-        Delta.Template(ByClass("type2"), List(
-          Delta.ReplaceContent(ByClass("heading"), "Modified Type 2 Heading"),
-          Delta.ReplaceContent(ByClass("body"), "Modified Type 2 Body")
-        )),
-        Delta.Template(ByClass("type1"), List(
-          Delta.ReplaceContent(ByClass("heading"), "Modified Type 1 Heading"),
-          Delta.ReplaceContent(ByClass("body"), "Modified Type 1 Body")
-        )),
-        Delta.Template(ByClass("type1"), List(
-          Delta.ReplaceContent(ByClass("heading"), "Modified Type 1 Heading B"),
-          Delta.ReplaceContent(ByClass("body"), "Modified Type 1 Body B")
-        )),
-        Delta.Template(ByClass("type2"), List(
-          Delta.ReplaceContent(ByClass("heading"), "Modified Type 2 Heading B"),
-          Delta.ReplaceContent(ByClass("body"), "Modified Type 2 Body B")
-        ))
-      ),
-      Delta.ReplaceAttribute(ById("googleLink"), "href", "http://google.com")
-    )
-    val html = streamable.stream(deltas)
-    println(html)
-  }
-
-  def simple(): Unit = {
-    val file = new File("simple.html")
-    val streamable = apply(file)
-
-    case class ItemData(name: String, value: String)
-
-    val data = List(
-      ItemData("First", "This is the first value."),
-      ItemData("Second", "This is the second value."),
-      ItemData("Third", "This is the third value.")
-    )
-
-    val deltas = List(
-      Delta.ReplaceContent(ByTag("title"), "Modified Title"),
-      Delta.Replace(ById("head"), "<h1>Heading</h1>"),
-      Delta.InsertLastChild(ById("body"), "<b>Last Entry</b>"),
-      Delta.InsertAfter(ById("footer"), "<h5>Copyright (c)</h5>"),
-      Delta.ReplaceContent(ById("footer"), "The updated footer"),
-      Delta.Repeat(ByClass("item"), data, (d: ItemData) => List(
-        Delta.ReplaceContent(ByClass("itemName"), d.name),
-        Delta.ReplaceContent(ByClass("itemValue"), d.value)
-      ))
-    )
-    val html = streamable.stream(deltas, Some(ById("body")))
-    println(html)
-  }
-
   private val parsers = new ConcurrentHashMap[File, StreamableHTML]().asScala
 
   def cache(file: File): StreamableHTML = parsers.getOrElseUpdate(file, HTMLParser(file))

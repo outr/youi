@@ -21,7 +21,7 @@ object Macros {
       q"""
          import io.youi.communication._
 
-         val endPointId = $counter
+         val endPointId = $endPointId
          val v = com.outr.reactify.Var[$t]($default)
          val modifying = new ThreadLocal[Boolean] {
            override def initialValue(): Boolean = false

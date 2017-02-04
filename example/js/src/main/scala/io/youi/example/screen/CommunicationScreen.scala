@@ -1,10 +1,8 @@
 package io.youi.example.screen
 
-import io.youi.Template
-import io.youi.app.screen.{ContentScreen, PathActivation, Screen}
 import io.youi.dom._
-import io.youi.example.ClientExampleApplication.{comm, connect, connection, disconnect}
-import org.scalajs.dom.{Event, document, html, window}
+import io.youi.example.ClientExampleApplication.{connect, connection, disconnect}
+import org.scalajs.dom.{Event, html, window}
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -47,7 +45,7 @@ object CommunicationScreen extends ExampleScreen {
       if (value.isEmpty) {
         window.alert("Reverse value must not be empty!")
       } else {
-        comm().reverse(value).foreach { reversed =>
+        c.reverse(value).foreach { reversed =>
           reverseInput.value = reversed
         }
       }
@@ -56,18 +54,18 @@ object CommunicationScreen extends ExampleScreen {
     timeButton.addEventListener("click", (evt: Event) => {
       evt.preventDefault()
       evt.stopPropagation()
-      comm().time.foreach { time =>
+      c.time.foreach { time =>
         timeInput.value = time.toString
       }
     })
 
-    nameInput.value = comm().name().getOrElse("")
+    nameInput.value = c.name().getOrElse("")
     nameButton.addEventListener("click", (evt: Event) => {
       evt.preventDefault()
       evt.stopPropagation()
-      comm().name := Some(nameInput.value)
+      c.name := Some(nameInput.value)
     })
-    comm().name.attach { name =>
+    c.name.attach { name =>
       val s = name.getOrElse("")
       if (nameInput.value != s) {
         nameInput.value = s
@@ -77,7 +75,7 @@ object CommunicationScreen extends ExampleScreen {
     counterButton.addEventListener("click", (evt: Event) => {
       evt.preventDefault()
       evt.stopPropagation()
-      comm().counter.foreach { count =>
+      c.counter.foreach { count =>
         counterInput.value = count.toString
       }
     })
@@ -85,7 +83,7 @@ object CommunicationScreen extends ExampleScreen {
     broadcastButton.addEventListener("click", (evt: Event) => {
       evt.preventDefault()
       evt.stopPropagation()
-      comm().broadcast(broadcastInput.value)
+      c.broadcast(broadcastInput.value)
     })
   }
 }

@@ -6,7 +6,7 @@ jdk:
   - oraclejdk8
 script:
   - sbt clean +test
-  - sbt coverage coreJVM/test communicationJVM/test server/test serverUndertow/test
+  - sbt coverage coreJVM/test communicationJVM/test server/test serverUndertow/test stream/test appJVM/test
   - sbt coverageReport
   - sbt coverageAggregate
   - sbt codacyCoverage

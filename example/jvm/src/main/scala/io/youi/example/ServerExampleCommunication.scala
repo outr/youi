@@ -2,6 +2,8 @@ package io.youi.example
 
 import java.util.concurrent.atomic.AtomicInteger
 
+import io.youi.http.HttpConnection
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -17,14 +19,12 @@ trait ServerExampleCommunication extends ExampleCommunication {
   override def logIn(username: String, password: String): Future[Option[String]] = Future {
     val authorized = username == "user" && password == "password"
     if (authorized) {
-      println("Before...")
-      MySession(ServerExampleApplication).username := Some(username)
-      println("...After")
+      MySession(connection.store[HttpConnection]("httpConnection")).username := Some(username)
       None
     } else {
       Some("Invalid username / password combination")
     }
   }
 
-  name := MySession(ServerExampleApplication).username
+  name := MySession(connection.store[HttpConnection]("httpConnection")).username
 }

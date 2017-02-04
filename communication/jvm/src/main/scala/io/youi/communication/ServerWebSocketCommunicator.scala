@@ -8,7 +8,8 @@ trait ServerWebSocketCommunicator[C <: Communication] extends HttpHandler with C
 
   override def handle(httpConnection: HttpConnection): Unit = synchronized {
     val connection = new Connection(this)
-    val communication = create(connection)
+    connection.store.update("httpConnection", httpConnection)
+    create(connection)
     httpConnection.webSocketSupport = connection
   }
 }

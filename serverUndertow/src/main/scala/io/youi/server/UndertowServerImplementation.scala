@@ -109,30 +109,22 @@ object UndertowServerImplementation {
         // Handle receiving messages
         channel.getReceiveSetter.set(new AbstractReceiveListener {
           override def onFullTextMessage(channel: WebSocketChannel, message: BufferedTextMessage): Unit = {
-            server.withHttpConnection(httpConnection) {
-              webSocketListener.receive.text := message.getData
-            }
+            webSocketListener.receive.text := message.getData
             super.onFullTextMessage(channel, message)
           }
 
           override def onFullBinaryMessage(channel: WebSocketChannel, message: BufferedBinaryMessage): Unit = {
-            server.withHttpConnection(httpConnection) {
-              webSocketListener.receive.binary := message.getData.getResource
-            }
+            webSocketListener.receive.binary := message.getData.getResource
             super.onFullBinaryMessage(channel, message)
           }
 
           override def onError(channel: WebSocketChannel, error: Throwable): Unit = {
-            server.withHttpConnection(httpConnection) {
-              webSocketListener.error := error
-            }
+            webSocketListener.error := error
             super.onError(channel, error)
           }
 
           override def onFullCloseMessage(channel: WebSocketChannel, message: BufferedBinaryMessage): Unit = {
-            server.withHttpConnection(httpConnection) {
-              webSocketListener.receive.close := Unit
-            }
+            webSocketListener.receive.close := Unit
             super.onFullCloseMessage(channel, message)
           }
         })

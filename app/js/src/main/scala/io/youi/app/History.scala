@@ -58,6 +58,8 @@ object History {
   def back(delta: Int = 1): Unit = window.history.back(delta)
 
   def forward(delta: Int = 1): Unit = window.history.forward(delta)
+
+  def reload(force: Boolean): Unit = window.location.reload(force)
 }
 
 case class HistoryStateChange(url: URL, stateType: StateType, state: js.Any = null)

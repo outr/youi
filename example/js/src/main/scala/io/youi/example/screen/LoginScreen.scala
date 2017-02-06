@@ -21,9 +21,7 @@ object LoginScreen extends ExampleScreen {
       evt.stopPropagation()
       evt.preventDefault()
 
-      ClientExampleApplication.activate(CommunicationScreen)
-
-      /*c.logIn(username.value, password.value).onComplete {
+      c.logIn(username.value, password.value).onComplete {
         case Success(error) => {
           message.innerHTML = error.getOrElse("")
           if (error.isEmpty) {
@@ -31,7 +29,7 @@ object LoginScreen extends ExampleScreen {
           }
         }
         case Failure(exception) => println(s"Failed to log in with exception: ${exception.getMessage}")
-      }*/
+      }
     })
   }
 }

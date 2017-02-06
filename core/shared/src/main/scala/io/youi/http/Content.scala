@@ -45,6 +45,7 @@ case class URLContent(url: URL, contentType: ContentType) extends Content {
 }
 
 object Content {
+  val empty: Content = string("", ContentType.`text/plain`)
   def string(value: String, contentType: ContentType): Content = StringContent(value, contentType)
   def file(file: File): Content = FileContent(file, ContentType.byFileName(file.getName))
   def file(file: File, contentType: ContentType): Content = FileContent(file, contentType)

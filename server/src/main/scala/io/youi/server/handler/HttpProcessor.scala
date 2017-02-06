@@ -1,8 +1,8 @@
 package io.youi.server.handler
 
-import io.youi.http.HttpConnection
+import io.youi.http.{Content, HttpConnection, Status, StringHeaderKey}
 import io.youi.server.validation.ValidationResult._
-import io.youi.server.validation.{ValidationError, ValidationResult, Validator}
+import io.youi.server.validation.{ValidationResult, Validator}
 
 /**
   * HttpProcessor extends HttpHandler to provide a clean and efficient mechanism to manage proper
@@ -26,10 +26,16 @@ trait HttpProcessor[T] extends HttpHandler {
 
   override def handle(connection: HttpConnection): Unit = {
     matches(connection).foreach { value =>
+      val isStreaming = connection.request.headers.first(new StringHeaderKey("streaming")).contains("true")
       validate(connection) match {
         case Continue => process(connection, value)
-        case Redirect(location) => connection.update(_.withRedirect(location))
-        case Error(status, message) => throw new ValidationError(status, message)
+        case Redirect(location) => if (isStreaming) {
+          val status = Status.NetworkAuthenticationRequired(s"Redirect to $location")
+          connection.update(_.withStatus(status).withContent(Content.empty))
+        } else {
+          connection.update(_.withRedirect(location))
+        }
+        case Error(status, message) => connection.update(_.withStatus(Status(status, message)).withContent(Content.empty))
       }
     }
   }

@@ -5,13 +5,13 @@ class Status private(val code: Int, val message: String) {
     Status.codeMap += code -> this
   }
 
-  def isInformation = code >= 100 && code < 200
-  def isSuccess = code >= 200 && code < 300
-  def isRedirection = code >= 300 && code < 400
-  def isClientError = code >= 400 && code < 500
-  def isServerError = code >= 500
+  def isInformation: Boolean = code >= 100 && code < 200
+  def isSuccess: Boolean = code >= 200 && code < 300
+  def isRedirection: Boolean = code >= 300 && code < 400
+  def isClientError: Boolean = code >= 400 && code < 500
+  def isServerError: Boolean = code >= 500
 
-  def isError = isClientError || isServerError
+  def isError: Boolean = isClientError || isServerError
 
   def apply(message: String) = new Status(code, message)
 
@@ -80,6 +80,8 @@ object Status {
   val NotExtended = new Status(510, "Not Extended")
   val NetworkAuthenticationRequired = new Status(511, "Network Authentication Required")
 
-  def getByCode(code: Int) = codeMap.get(code)
-  def byCode(code: Int) = getByCode(code).getOrElse(throw new RuntimeException(s"Unable to find HttpResponseStatus by code: $code"))
+  def getByCode(code: Int): Option[Status] = codeMap.get(code)
+  def byCode(code: Int): Status = getByCode(code).getOrElse(throw new RuntimeException(s"Unable to find HttpResponseStatus by code: $code"))
+
+  def apply(code: Int, message: String): Status = new Status(code, message)
 }

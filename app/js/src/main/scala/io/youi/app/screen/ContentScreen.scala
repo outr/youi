@@ -11,10 +11,9 @@ import org.scalajs.dom.html.Element
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-trait ContentScreen[E <: Element] extends Screen with URLActivation {
+trait ContentScreen[E <: Element] extends Screen with PathActivation {
   protected def containerSelector: String
   protected def contentSelector: String
-  protected def contentPath: String
 
   private def contentContainer: Element = dom.oneBySelector[Element](containerSelector)
 
@@ -24,12 +23,12 @@ trait ContentScreen[E <: Element] extends Screen with URLActivation {
 
   override protected def load(): Future[Unit] = super.load().flatMap { _ =>
     if (contentOption.isEmpty) {      // Content hasn't been loaded yet
-      val url = History.url().replacePathAndParams(s"$contentPath?selector=${URL.encode(contentSelector)}")
+      val url = History.url().replacePathAndParams(path).withParam("part", "true").withParam("selector", contentSelector)
       StreamURL.stream(url).map { html =>
         val content = dom.fromString[E](html).headOption.getOrElse(throw new RuntimeException(s"No content found in: [$html] for URL: $url"))
         contentOptionVar := Some(content)
       }
-    } else {                    // Content has already been loaded either by page load or by previous load
+    } else {                          // Content has already been loaded either by page load or by previous load
       Future.successful(())
     }
   }

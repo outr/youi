@@ -11,7 +11,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 trait ExampleScreen extends ContentScreen[html.Element] with PathActivation {
   override protected def containerSelector: String = "#content"
-  override protected def contentPath: String = s"/template$path"
 
   protected def c: ExampleCommunication = comm(ClientExampleApplication.connection)
 

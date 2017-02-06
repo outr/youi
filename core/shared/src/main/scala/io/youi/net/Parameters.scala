@@ -13,7 +13,7 @@ case class Parameters(entries: List[(String, Param)]) {
     val param = map.getOrElse(key, Param()).withValue(value, append)
     var found = false
     val updated = entries.map {
-      case (key, value) if key == key => {
+      case (k, v) if k == key => {
         found = true
         key -> param
       }

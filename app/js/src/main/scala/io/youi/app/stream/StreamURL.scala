@@ -14,9 +14,8 @@ object StreamURL {
              headers: Map[String, String] = Map.empty,
              withCredentials: Boolean = true,
              responseType: String = ""): Future[String] = {
-    val request = new AjaxRequest(url, data, timeout, headers, withCredentials, responseType)
-    request.send().map { r =>
-      r.responseText
-    }
+    val request = new AjaxRequest(url, data, timeout, headers + ("streaming" -> "true"), withCredentials, responseType)
+    val future = request.send()
+    future.map(_.responseText)
   }
 }

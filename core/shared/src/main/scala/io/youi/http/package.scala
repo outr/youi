@@ -26,6 +26,15 @@ package object http {
     }
   }
 
+  object host {
+    def exact(host: String): URLMatcher = new URLMatcher {
+      override def matches(url: URL): Boolean = url.host.equalsIgnoreCase(host)
+    }
+    def matches(regex: String): URLMatcher = new URLMatcher {
+      override def matches(url: URL): Boolean = url.host.matches(regex)
+    }
+  }
+
   object path {
     def exact(path: String): URLMatcher = new URLMatcher {
       override def matches(url: URL): Boolean = url.path.decoded == path

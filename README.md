@@ -48,14 +48,15 @@ into this new framework. If you need a production-ready framework please look at
 * [X] Compile-time HTML injection into Scala.js from existing template
 * [X] Shared Var - shared state modifiable on client or server
 * [X] History Management convenience functionality (Scala.js)
-* [ ] YouIApplication to simplify client/server functionality
+* [X] YouIApplication to simplify client/server functionality
     * [X] General WebSocket connectivity support
     * [X] Communication support
     * [X] Streaming convenience functionality
     * [X] Pages functionality (JVM)
-    * [ ] Filter support on HttpHandlers
-        * [ ] Security convenience functionality
+    * [X] Filter support on HttpHandlers
     * [X] Screens functionality (Scala.js)
+    * [X] Receive JavaScript errors on server for logging
+    * [X] Client auto reload on server stop / restart
 
 ## Features for 0.1.0 (Released 2016.12.22)
 

@@ -7,16 +7,17 @@ import java.nio.file.StandardOpenOption
 
 import io.undertow.io.{IoCallback, Sender}
 import io.undertow.protocols.ssl.UndertowXnioSsl
+import io.undertow.server.handlers.form.{FormDataParser, FormParserFactory}
 import io.undertow.server.handlers.proxy.{LoadBalancingProxyClient, SimpleProxyClientProvider}
 import io.undertow.server.handlers.resource.URLResource
 import io.undertow.server.{HttpServerExchange, HttpHandler => UndertowHttpHandler}
-import io.undertow.util.HttpString
+import io.undertow.util.{HeaderMap, HttpString}
 import io.undertow.websockets.WebSocketConnectionCallback
 import io.undertow.websockets.core._
 import io.undertow.websockets.spi.WebSocketHttpExchange
 import io.undertow.{Handlers, Undertow, UndertowOptions}
-import io.youi.http.{FileContent, Headers, HttpConnection, HttpRequest, Method, StringContent, URLContent, Connection}
-import io.youi.net.{Parameters, Path, URL}
+import io.youi.http.{Connection, Content, FileContent, FileEntry, FormData, FormDataContent, FormDataEntry, Headers, HttpConnection, HttpRequest, Method, RequestContent, StringContent, StringEntry, URLContent}
+import io.youi.net.{ContentType, IP, Parameters, Path, URL}
 import io.youi.server.util.SSLUtil
 import org.xnio.{OptionMap, Xnio}
 
@@ -53,24 +54,63 @@ class UndertowServerImplementation(server: Server) extends ServerImplementation 
 
   override def isRunning: Boolean = instance.nonEmpty
 
+  private val formParserBuilder = FormParserFactory.builder()
+
   override def handleRequest(exchange: HttpServerExchange): Unit = server.errorSupport {
-    val request = UndertowServerImplementation.request(exchange)
-    val connection = new HttpConnection(server, request)
-    server.handle(connection)
-    UndertowServerImplementation.response(server, connection, exchange)
+    if (exchange.getRequestContentLength > 0L && exchange.getRequestHeaders.getFirst("Content-Type").startsWith("multipart/form-data")) {
+      val formDataParser = formParserBuilder.build().createParser(exchange)
+      formDataParser.parse(requestHandler)
+    } else {
+      requestHandler.handleRequest(exchange)
+    }
+  }
+
+  private val requestHandler = new UndertowHttpHandler {
+    override def handleRequest(exchange: HttpServerExchange): Unit = {
+      val request = UndertowServerImplementation.request(exchange)
+      val connection = new HttpConnection(server, request)
+      server.handle(connection)
+      UndertowServerImplementation.response(server, connection, exchange)
+    }
   }
 }
 
 object UndertowServerImplementation {
+  def parseHeaders(headerMap: HeaderMap): Headers = Headers(headerMap.asScala.map { hv =>
+    hv.getHeaderName.toString -> hv.asScala.toList
+  }.toMap)
+
   def request(exchange: HttpServerExchange): HttpRequest = {
-    val headers = Headers(exchange.getRequestHeaders.asScala.map { hv =>
-      hv.getHeaderName.toString -> hv.asScala.toList
-    }.toMap)
+    val source = IP(exchange.getSourceAddress.getAddress.getHostAddress)
+    val headers = parseHeaders(exchange.getRequestHeaders)
+    val content: Option[RequestContent] = if (exchange.getRequestContentLength > 0L) {
+      Headers.`Content-Type`.value(headers).getOrElse(ContentType.`text/plain`) match {
+        case ContentType.`multipart/form-data` => {
+          val formData = exchange.getAttachment(FormDataParser.FORM_DATA)
+          val data = formData.asScala.toList.map { key =>
+            val entries: List[FormDataEntry] = formData.get(key).asScala.map { entry =>
+              val headers = parseHeaders(entry.getHeaders)
+              if (entry.isFile) {
+                FileEntry(entry.getFileName, entry.getPath.toFile, headers)
+              } else {
+                StringEntry(entry.getValue, headers)
+              }
+            }.toList
+            FormData(key, entries)
+          }
+          Some(FormDataContent(data))
+        }
+        case ct => throw new RuntimeException(s"Only multipart/form-data is supported currently but received $ct")
+      }
+    } else {
+      None
+    }
     HttpRequest(
       method = Method(exchange.getRequestMethod.toString),
+      source = source,
       url = URL(s"${exchange.getRequestURL}?${exchange.getQueryString}"),
       headers = headers,
-      content = None // TODO: implement
+      content = content
     )
   }
 

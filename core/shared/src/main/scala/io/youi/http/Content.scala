@@ -44,6 +44,25 @@ case class URLContent(url: URL, contentType: ContentType) extends Content {
   override def lastModified: Long = contentModified
 }
 
+sealed trait RequestContent
+
+case class FormDataContent(data: List[FormData]) extends RequestContent {
+  def fileOption(key: String): Option[FileEntry] = data.find(_.key == key).map(_.entries.head.asInstanceOf[FileEntry])
+  def stringOption(key: String): Option[StringEntry] = data.find(_.key == key).map(_.entries.head.asInstanceOf[StringEntry])
+  def file(key: String): FileEntry = fileOption(key).getOrElse(throw new RuntimeException(s"Not found: $key"))
+  def string(key: String): StringEntry = stringOption(key).getOrElse(throw new RuntimeException(s"Not found: $key"))
+}
+
+case class FormData(key: String, entries: List[FormDataEntry])
+
+sealed trait FormDataEntry {
+  def headers: Headers
+}
+
+case class StringEntry(value: String, headers: Headers) extends FormDataEntry
+
+case class FileEntry(fileName: String, file: File, headers: Headers) extends FormDataEntry
+
 object Content {
   val empty: Content = string("", ContentType.`text/plain`)
   def string(value: String, contentType: ContentType): Content = StringContent(value, contentType)

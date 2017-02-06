@@ -138,7 +138,6 @@ object Macros {
            ..$methods
          }
       """
-//    println(instance)
     context.Expr[C](instance)
   }
 }

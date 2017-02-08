@@ -13,7 +13,7 @@ case class HttpResponse(status: Status = Status.OK,
   def setHeader(header: Header): HttpResponse = copy(headers = headers.setHeader(header))
   def withContent(content: Content): HttpResponse =
     copy(content = Some(content))
-      .withHeader(Headers.`Content-Type`(content.contentType))
-      .withHeader(Headers.`Content-Length`(content.length))
+      .setHeader(Headers.`Content-Type`(content.contentType))
+      .setHeader(Headers.`Content-Length`(content.length))
   def withRedirect(uri: String): HttpResponse = copy(status = Status.Found).setHeader(Headers.Response.`Location`(uri))
 }

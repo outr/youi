@@ -13,7 +13,7 @@ sealed trait Content {
 }
 
 case class StringContent(value: String, contentType: ContentType, lastModified: Long = System.currentTimeMillis()) extends Content {
-  override def length: Long = value.length
+  override def length: Long = value.getBytes("UTF-8").length
 }
 
 case class FileContent(file: File, contentType: ContentType) extends Content {

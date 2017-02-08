@@ -4,36 +4,58 @@ import java.io.File
 
 import com.outr.scribe._
 import io.youi.Priority
-import io.youi.http.FileContent
+import io.youi.http.{Content, FileContent, Headers}
 import io.youi.net.ContentType
 import io.youi.server.UndertowServer
-import io.youi.server.handler.CachingManager
+import io.youi.server.handler.{CachingManager, SenderHandler}
 import io.youi.stream.{ByTag, Delta, HTMLParser}
 import org.powerscala.io._
 
 import scala.collection.mutable.ListBuffer
+import scala.concurrent.Future
+import scala.io.StdIn
 import scala.sys.process._
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class TemplateCompiler(sourceDirectory: File,
                        destinationDirectory: File,
                        compressCSS: Boolean = false,
-                       removeDotHTML: Boolean = false) {
+                       removeDotHTML: Boolean = false,
+                       consoleCommands: Boolean = true) {
+  private var pages = Set.empty[String]
+
   private val server = new UndertowServer {
     handler.caching(CachingManager.NotCached).file(destinationDirectory)
-    handler.priority(Priority.Low).handle { httpConnection =>
-      httpConnection.response.content match {
-        case Some(content) => content match {
-          case FileContent(file, contentType) => if (contentType == ContentType.`application/octet-stream` && file.getName.indexOf('.') == -1) {
-            httpConnection.update { response =>
-              response.withContent(FileContent(file, ContentType.`text/html`))
+
+    if (removeDotHTML) {
+      // Exclude pages .html
+      handler.priority(Priority.Low).handle { httpConnection =>
+        httpConnection.response.content match {
+          case Some(content) => content match {
+            case FileContent(file, contentType) => if (pages.contains(file.getName)) {
+              httpConnection.update { response =>
+                response.copy(content = None)
+              }
             }
+            case _ =>
           }
-          case _ =>
+          case None =>
         }
-        case None =>
+      }
+
+      // Server pages without .html
+      handler.handle { httpConnection =>
+        val url = httpConnection.request.url
+        val page = s"${url.path.decoded.substring(1)}.html"
+        if (pages.contains(page)) {
+          val stream = HTMLParser.cache(new File(destinationDirectory, page))
+          val deltas = Nil
+          val html = stream.stream(deltas)
+          // TODO: inject Scala.js into HTML files
+          SenderHandler.handle(httpConnection, Content.string(html, ContentType.`text/html`), caching = CachingManager.NotCached)
+        }
       }
     }
-    // TODO: inject Scala.js into HTML files
   }
 
   private val watcher = new Watcher(sourceDirectory.toPath, eventDelay = 3000L) {
@@ -60,7 +82,19 @@ class TemplateCompiler(sourceDirectory: File,
 
   def stopWatching(): Unit = watcher.dispose()
 
-  def startServer(): Unit = server.start()
+  def startServer(): Unit = {
+    server.start()
+
+    if (consoleCommands) {
+      logger.info("Stop the server by pressing ENTER / RETURN on your keyboard.")
+
+      Future {
+        StdIn.readLine()
+
+        stopServer()
+      }
+    }
+  }
 
   def stopServer(): Unit = server.stop()
 
@@ -110,15 +144,13 @@ class TemplateCompiler(sourceDirectory: File,
 
   def compilePage(source: File): Unit = {
     val fileName = source.getName
-    val destinationFileName = if (removeDotHTML) {
-      fileName.substring(0, fileName.lastIndexOf('.'))
-    } else {
-      fileName
-    }
-    val destination = new File(destinationDirectory, destinationFileName)
+    val destination = new File(destinationDirectory, fileName)
     val html = compileHTML(source).replaceAll("""\$\{.*?\}""", "")
     destination.getParentFile.mkdirs()
     IO.stream(html, destination)
+    synchronized {
+      pages += fileName
+    }
   }
 
   def compilePartial(filePath: String): String = {

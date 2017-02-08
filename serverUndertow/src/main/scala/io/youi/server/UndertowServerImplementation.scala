@@ -203,7 +203,18 @@ object UndertowServerImplementation {
     if (exchange.getRequestMethod.toString != "HEAD") {
       response.content match {
         case Some(content) => content match {
-          case StringContent(s, contentType, lastModified) => exchange.getResponseSender.send(s)
+          case StringContent(s, contentType, lastModified) => {
+            exchange.getResponseSender.send(s, new IoCallback {
+              override def onComplete(exchange: HttpServerExchange, sender: Sender): Unit = {
+                sender.close()
+              }
+
+              override def onException(exchange: HttpServerExchange, sender: Sender, exception: IOException): Unit = {
+                sender.close()
+                server.error(exception)
+              }
+            })
+          }
           case FileContent(file, contentType) => {
             val channel = FileChannel.open(file.getAbsoluteFile.toPath, StandardOpenOption.READ)
             exchange.getResponseSender.transferFrom(channel, new IoCallback {

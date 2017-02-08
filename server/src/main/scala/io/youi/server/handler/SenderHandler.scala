@@ -22,12 +22,7 @@ object SenderHandler {
       throw new RuntimeException(s"Content already set for HttpResponse in ${connection.request.url}")
     }
     val contentLength = length.getOrElse(content.length)
-    connection.update { response =>
-      response
-        .setHeader(Headers.`Content-Type`(content.contentType))
-        .setHeader(Headers.`Content-Length`(contentLength))
-        .withContent(content)
-    }
+    connection.update(_.withContent(content))
     caching.handle(connection)
   }
 }

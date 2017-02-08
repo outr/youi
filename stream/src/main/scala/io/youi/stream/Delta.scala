@@ -30,7 +30,11 @@ class ReplaceAttribute(val selector: Selector, attributeName: String, val conten
     })
   }
 }
-class Processor(val selector: Selector, replace: Boolean, onlyOpenTag: Boolean, processor: (OpenTag, String) => String) extends Delta {
+class Processor(val selector: Selector,
+                replace: Boolean,
+                onlyOpenTag: Boolean,
+                processor: (OpenTag, String) => String,
+                closeTagProcessor: Option[(OpenTag, CloseTag, String) => String]) extends Delta {
   override def apply(streamer: HTMLStream, tag: OpenTag): Unit = {
     val end = if (onlyOpenTag) {
       tag.end
@@ -38,6 +42,11 @@ class Processor(val selector: Selector, replace: Boolean, onlyOpenTag: Boolean, 
       tag.close.map(_.end).getOrElse(tag.end)
     }
     streamer.process(tag.start, end, processor.curried(tag), replace = replace)
+    closeTagProcessor.foreach { processor =>
+      tag.close.foreach { closeTag =>
+        streamer.process(closeTag.start, closeTag.end, processor.curried(tag)(closeTag))
+      }
+    }
   }
 }
 class InsertBefore(val selector: Selector, val content: () => String) extends Delta {
@@ -102,7 +111,11 @@ class Grouped(val selector: Selector, deltas: List[Delta]) extends Delta {
 
 object Delta {
   def Replace(selector: Selector, content: => String): Replace = new Replace(selector, () => content)
-  def Process(selector: Selector, replace: Boolean, onlyOpenTag: Boolean, processor: (OpenTag, String) => String): Processor = new Processor(selector, replace, onlyOpenTag, processor)
+  def Process(selector: Selector,
+              replace: Boolean,
+              onlyOpenTag: Boolean,
+              processor: (OpenTag, String) => String,
+              closeTagProcessor: Option[(OpenTag, CloseTag, String) => String] = None): Processor = new Processor(selector, replace, onlyOpenTag, processor, closeTagProcessor)
   def InsertBefore(selector: Selector, content: => String): InsertBefore = new InsertBefore(selector, () => content)
   def InsertFirstChild(selector: Selector, content: => String): InsertFirstChild = new InsertFirstChild(selector, () => content)
   def ReplaceContent(selector: Selector, content: => String): ReplaceContent = new ReplaceContent(selector, () => content)

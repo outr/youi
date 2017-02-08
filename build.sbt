@@ -8,7 +8,10 @@ resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 
 lazy val root = project.in(file("."))
-  .aggregate(coreJS, coreJVM, stream, communicationJS, communicationJVM, dom, server, serverUndertow, ui, appJS, appJVM, exampleJS, exampleJVM)
+  .aggregate(
+    coreJS, coreJVM, stream, communicationJS, communicationJVM, dom, server, serverUndertow, ui, appJS, appJVM,
+    templateJS, templateJVM, exampleJS, exampleJVM
+  )
   .settings(
     resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases",
     publish := {},
@@ -93,6 +96,19 @@ lazy val ui = project.in(file("ui"))
   )
   .dependsOn(coreJS, dom)
 
+lazy val template = crossProject.in(file("template"))
+  .settings(
+    name := "youi-template"
+  )
+  .jvmSettings(
+    fork := true,
+    libraryDependencies += "org.powerscala" %% "powerscala-io" % "2.0.5-SNAPSHOT"
+  )
+  .dependsOn(app)
+
+lazy val templateJS = template.js.dependsOn(ui)
+lazy val templateJVM = template.jvm.dependsOn(serverUndertow)
+
 lazy val example = crossProject.in(file("example"))
   .settings(
     name := "youi-server-example"
@@ -105,7 +121,7 @@ lazy val example = crossProject.in(file("example"))
     libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value,
     libraryDependencies += "org.scala-lang.modules" %% "scala-xml" % "1.0.6"
   )
-  .dependsOn(app)
+  .dependsOn(app, template)
 
 lazy val exampleJS = example.js.dependsOn(ui)
 lazy val exampleJVM = example.jvm.dependsOn(serverUndertow)

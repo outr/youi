@@ -24,6 +24,7 @@ into this new framework. If you need a production-ready framework please look at
 * [server](server) - base functionality for a web server (Scala)
 * [server-undertow](serverUndertow) - implementation of [server](server) using [Undertow](http://undertow.io/) (Scala)
 * [stream](stream) - streaming functionality for on-the-fly processing and modification of any XML or HTML content (Scala)
+* [template](template) - features for creating and managing templates for use in applications (Scala and Scala.js)
 * [ui](ui) - functionality for user-interface creation and management (Scala.js)
 
 ## Features for 1.0.0 (Future)
@@ -57,6 +58,12 @@ into this new framework. If you need a production-ready framework please look at
     * [X] Screens functionality (Scala.js)
     * [X] Receive JavaScript errors on server for logging
     * [X] Client auto reload on server stop / restart
+* [ ] Template features
+    * [ ] Includes
+    * [ ] Server for faster testing
+    * [ ] Real-time updates in browser
+    * [ ] LESS and SASS support
+    * [ ] Single-page application functionality
 
 ## Features for 0.1.0 (Released 2016.12.22)
 

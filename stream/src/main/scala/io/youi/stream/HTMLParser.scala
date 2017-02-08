@@ -60,6 +60,8 @@ object HTMLParser {
           }
           lastModified = file.lastModified()
           CachedInformation(byId, byClass, byTag)
+        } catch {
+          case throwable: Throwable => throw new RuntimeException(s"Error parsing ${file.getAbsolutePath}", throwable)
         } finally {
           input.close()
         }

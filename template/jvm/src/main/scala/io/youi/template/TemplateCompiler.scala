@@ -6,6 +6,7 @@ import com.outr.scribe._
 import com.outr.scribe.formatter.FormatterBuilder
 import io.youi.stream.{ByTag, Delta, HTMLParser}
 import org.powerscala.io._
+import org.powerscala.io.watcher.{PathEvent, Watcher}
 
 import scala.collection.mutable.ListBuffer
 import scala.io.StdIn

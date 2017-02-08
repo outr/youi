@@ -4,7 +4,7 @@ import com.outr.reactify.Var
 import io.youi.communication.{Communication, client, server}
 
 import scala.concurrent.Future
-import com.outr.scribe._
+import scribe._
 
 trait ExampleCommunication extends Communication {
   val name: Var[Option[String]] = shared[Option[String]](None)

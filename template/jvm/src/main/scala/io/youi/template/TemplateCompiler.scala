@@ -2,8 +2,8 @@ package io.youi.template
 
 import java.io.File
 
-import com.outr.scribe._
-import com.outr.scribe.formatter.FormatterBuilder
+import scribe._
+import scribe.formatter.FormatterBuilder
 import io.youi.stream.{ByTag, Delta, HTMLParser}
 import org.powerscala.io._
 import org.powerscala.io.watcher.{PathEvent, Watcher}

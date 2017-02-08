@@ -1,7 +1,7 @@
 package io.youi
 
 import com.outr.reactify._
-import com.outr.scribe._
+import scribe._
 
 trait VirtualSizeSupport {
   val virtualWidth: Var[Double] = Var[Double](1024.0)

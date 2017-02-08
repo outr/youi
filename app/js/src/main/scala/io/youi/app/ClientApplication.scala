@@ -6,7 +6,7 @@ import io.youi.app.stream.StreamURL
 import io.youi.http.{Connection, WebSocketUtil}
 import io.youi.net.URL
 import org.scalajs.dom._
-import com.outr.scribe._
+import scribe._
 import io.youi.ErrorSupport
 import io.youi.ajax.AjaxRequest
 import org.scalajs.dom.ext.AjaxException

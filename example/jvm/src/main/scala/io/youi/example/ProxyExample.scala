@@ -1,6 +1,6 @@
 package io.youi.example
 
-import com.outr.scribe.Logging
+import scribe.Logging
 import io.youi.http.{HttpConnection, ProxyHandler}
 import io.youi.net.URL
 import io.youi.server.handler.HttpHandler

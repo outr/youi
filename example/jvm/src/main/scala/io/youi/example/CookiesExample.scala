@@ -1,6 +1,6 @@
 package io.youi.example
 
-import com.outr.scribe.Logging
+import scribe.Logging
 import io.youi.http.cookie.ResponseCookie
 import io.youi.http.{Content, Headers, HttpConnection}
 import io.youi.net.ContentType

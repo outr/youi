@@ -1,7 +1,7 @@
 package io.youi.example.ui
 
 import com.outr.reactify._
-import com.outr.scribe._
+import scribe._
 import io.youi.{AnimationFrame, UI}
 import io.youi.html.style.Image
 import io.youi.html.ImageView

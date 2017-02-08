@@ -1,7 +1,7 @@
 package io.youi.html
 
 import com.outr.reactify.{Channel, Var}
-import com.outr.scribe.Logging
+import scribe.Logging
 import io.youi.AbstractComponent
 import io.youi.html.style.Color
 import org.scalajs.dom.{Event, _}

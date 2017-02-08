@@ -2,7 +2,7 @@ package io.youi
 
 import org.scalajs.dom._
 import com.outr.reactify.{Val, Var}
-import com.outr.scribe.Logging
+import scribe.Logging
 import io.youi.html.HTMLContainer
 import org.scalajs.dom.html.{Div, Element}
 

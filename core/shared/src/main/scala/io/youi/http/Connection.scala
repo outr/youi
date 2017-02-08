@@ -3,7 +3,7 @@ package io.youi.http
 import java.nio.ByteBuffer
 
 import com.outr.reactify._
-import com.outr.scribe._
+import scribe._
 import io.youi.{MapStore, Store}
 
 import scala.collection.mutable.ListBuffer

@@ -3,7 +3,7 @@ package io.youi.communication
 import java.util.concurrent.atomic.AtomicInteger
 
 import com.outr.reactify.{Channel, Var}
-import com.outr.scribe._
+import scribe._
 import io.youi.ErrorSupport
 import io.youi.http.Connection
 

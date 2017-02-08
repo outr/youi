@@ -2,7 +2,7 @@ package io.youi.example.ui
 
 import io.youi.{UI, dom}
 
-import com.outr.scribe._
+import scribe._
 
 import scala.scalajs.js.annotation.JSExportTopLevel
 import org.scalajs.dom._

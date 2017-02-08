@@ -1,7 +1,7 @@
 package io.youi
 
 import com.outr.reactify.Channel
-import com.outr.scribe.logger
+import scribe.logger
 
 trait ErrorSupport {
   def error(t: Throwable): Unit = ErrorSupport.error := t

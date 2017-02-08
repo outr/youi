@@ -8,7 +8,7 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Failure, Success}
 
-import com.outr.scribe._
+import scribe._
 
 object LoginScreen extends ExampleScreen {
   override protected def contentSelector: String = "#loginScreen"

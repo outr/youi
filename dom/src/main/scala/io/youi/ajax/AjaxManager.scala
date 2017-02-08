@@ -1,6 +1,6 @@
 package io.youi.ajax
 
-import com.outr.scribe.Logging
+import scribe.Logging
 import io.youi.net.URL
 import org.scalajs.dom.XMLHttpRequest
 import org.scalajs.dom.raw.FormData

@@ -1,6 +1,6 @@
 package io.youi.example
 
-import com.outr.scribe.Logging
+import scribe.Logging
 import io.youi.app.ClientApplication
 import io.youi.example.screen.{CommunicationScreen, LoginScreen}
 

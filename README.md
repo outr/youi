@@ -58,12 +58,11 @@ into this new framework. If you need a production-ready framework please look at
     * [X] Screens functionality (Scala.js)
     * [X] Receive JavaScript errors on server for logging
     * [X] Client auto reload on server stop / restart
-* [ ] Template features
-    * [ ] Includes
-    * [ ] Server for faster testing
-    * [ ] Real-time updates in browser
-    * [ ] LESS and SASS support
-    * [ ] Single-page application functionality
+* [X] Template features
+    * [X] Includes
+    * [X] Server for faster testing
+    * [X] Real-time updates in browser
+    * [X] LESS and SASS support
 
 ## Features for 0.1.0 (Released 2016.12.22)
 

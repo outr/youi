@@ -29,14 +29,14 @@ object SessionStore {
     invalidateExpired()
   }
 
-  def apply(connection: HttpConnection, timeout: FiniteDuration): SessionStore = synchronized {
-    val sessionId = connection.request.cookies.find(_.name == cookieName()).map(_.value) match {
+  def getOrCreateSessionId(httpConnection: HttpConnection): String = synchronized {
+    httpConnection.request.cookies.find(_.name == cookieName()).map(_.value) match {
       case Some(id) => id     // Found cookie in request
-      case None => connection.response.cookies.find(_.name == cookieName()).map(_.value) match {
+      case None => httpConnection.response.cookies.find(_.name == cookieName()).map(_.value) match {
         case Some(id) => id   // Found cookie in response
         case None => {        // No cookie found in request or response
-          val id = Unique()
-          connection.update { response =>
+        val id = Unique()
+          httpConnection.update { response =>
             val cookie = ResponseCookie(name = cookieName, value = id, maxAge = cookieMaxAge, domain = cookieDomain, secure = cookieSecure)
             response.withHeader(Headers.Response.`Set-Cookie`(cookie))
           }
@@ -44,6 +44,10 @@ object SessionStore {
         }
       }
     }
+  }
+
+  def apply(connection: HttpConnection, timeout: FiniteDuration): SessionStore = synchronized {
+    val sessionId = getOrCreateSessionId(connection)
     map.get(sessionId) match {
       case Some(store) => {
         store.lastUsed = System.currentTimeMillis()

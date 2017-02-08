@@ -1,6 +1,7 @@
 package io.youi.example
 
 import com.outr.reactify.Var
+import io.youi.http.HttpConnection
 import io.youi.server.session.{Session, SessionSessionManager}
 
 class MySession extends Session {
@@ -9,5 +10,5 @@ class MySession extends Session {
 }
 
 object MySession extends SessionSessionManager[MySession] {
-  override protected def create(): MySession = new MySession
+  override protected def create(httpConnection: HttpConnection): MySession = new MySession
 }

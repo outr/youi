@@ -100,6 +100,10 @@ lazy val template = crossProject.in(file("template"))
   .settings(
     name := "youi-template"
   )
+  .jsSettings(
+    crossTarget in fastOptJS := baseDirectory.value / ".." / "jvm" / "src" / "main" / "resources" / "app",
+    crossTarget in fullOptJS := baseDirectory.value / ".." / "jvm" / "src" / "main" / "resources" / "app"
+  )
   .jvmSettings(
     fork := true,
     libraryDependencies += "org.powerscala" %% "powerscala-io" % "2.0.5-SNAPSHOT"

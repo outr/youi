@@ -3,11 +3,6 @@ package io.youi.template
 import java.io.File
 
 import com.outr.scribe._
-import io.youi.Priority
-import io.youi.http.{Content, FileContent, Headers}
-import io.youi.net.ContentType
-import io.youi.server.UndertowServer
-import io.youi.server.handler.{CachingManager, SenderHandler}
 import io.youi.stream.{ByTag, Delta, HTMLParser}
 import org.powerscala.io._
 
@@ -17,46 +12,14 @@ import scala.io.StdIn
 import scala.sys.process._
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class TemplateCompiler(sourceDirectory: File,
-                       destinationDirectory: File,
-                       compressCSS: Boolean = false,
-                       removeDotHTML: Boolean = false,
-                       consoleCommands: Boolean = true) {
-  private var pages = Set.empty[String]
+class TemplateCompiler(val sourceDirectory: File,
+                       val destinationDirectory: File,
+                       val compressCSS: Boolean = false,
+                       val removeDotHTML: Boolean = false,
+                       val consoleCommands: Boolean = true) {
+  private[template] var pages = Set.empty[String]
 
-  private val server = new UndertowServer {
-    handler.caching(CachingManager.NotCached).file(destinationDirectory)
-
-    if (removeDotHTML) {
-      // Exclude pages .html
-      handler.priority(Priority.Low).handle { httpConnection =>
-        httpConnection.response.content match {
-          case Some(content) => content match {
-            case FileContent(file, contentType) => if (pages.contains(file.getName)) {
-              httpConnection.update { response =>
-                response.copy(content = None)
-              }
-            }
-            case _ =>
-          }
-          case None =>
-        }
-      }
-
-      // Server pages without .html
-      handler.handle { httpConnection =>
-        val url = httpConnection.request.url
-        val page = s"${url.path.decoded.substring(1)}.html"
-        if (pages.contains(page)) {
-          val stream = HTMLParser.cache(new File(destinationDirectory, page))
-          val deltas = Nil
-          val html = stream.stream(deltas)
-          // TODO: inject Scala.js into HTML files
-          SenderHandler.handle(httpConnection, Content.string(html, ContentType.`text/html`), caching = CachingManager.NotCached)
-        }
-      }
-    }
-  }
+  private val server = new ServerTemplateApplication(this)
 
   private val watcher = new Watcher(sourceDirectory.toPath, eventDelay = 3000L) {
     override def fire(pathEvent: PathEvent): Unit = {
@@ -73,8 +36,12 @@ class TemplateCompiler(sourceDirectory: File,
         // TODO: support explicit rebuilding for less, sass, and parts
         case _ => {
           logger.info(s"Modification triggering rebuild: ${pathEvent.path}")
+          compileAll(deleteFirst = false)
         }
       }
+
+      // Reload all active pages
+      server.comm.instances().foreach(_.reload(force = true))
     }
   }
 

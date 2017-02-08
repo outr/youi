@@ -106,7 +106,8 @@ lazy val template = crossProject.in(file("template"))
   )
   .jvmSettings(
     fork := true,
-    libraryDependencies += "org.powerscala" %% "powerscala-io" % "2.0.5-SNAPSHOT"
+    libraryDependencies += "org.powerscala" %% "powerscala-io" % "2.0.5-SNAPSHOT",
+    assemblyJarName in assembly := "youi-template.jar"
   )
   .dependsOn(app)
 

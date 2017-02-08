@@ -1,7 +1,7 @@
 package io.youi.http
 
 import java.io.File
-import java.net.{HttpURLConnection, URL}
+import java.net.{HttpURLConnection, JarURLConnection, URL}
 
 import io.youi.net.ContentType
 import sun.net.www.protocol.file.FileURLConnection
@@ -34,6 +34,9 @@ case class URLContent(url: URL, contentType: ContentType) extends Content {
         c.disconnect()
       }
       case c: FileURLConnection => {
+        c.getContentLengthLong -> c.getLastModified
+      }
+      case c: JarURLConnection => {
         c.getContentLengthLong -> c.getLastModified
       }
     }

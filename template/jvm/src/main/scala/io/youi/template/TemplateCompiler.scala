@@ -3,14 +3,13 @@ package io.youi.template
 import java.io.File
 
 import com.outr.scribe._
+import com.outr.scribe.formatter.FormatterBuilder
 import io.youi.stream.{ByTag, Delta, HTMLParser}
 import org.powerscala.io._
 
 import scala.collection.mutable.ListBuffer
-import scala.concurrent.Future
 import scala.io.StdIn
 import scala.sys.process._
-import scala.concurrent.ExecutionContext.Implicits.global
 
 class TemplateCompiler(val sourceDirectory: File,
                        val destinationDirectory: File,
@@ -23,7 +22,8 @@ class TemplateCompiler(val sourceDirectory: File,
 
   private val watcher = new Watcher(sourceDirectory.toPath, eventDelay = 3000L) {
     override def fire(pathEvent: PathEvent): Unit = {
-      val pathType = pathEvent.directory.toString.substring(sourceDirectory.getAbsolutePath.length + 1) match {
+      val directory = pathEvent.directory.toAbsolutePath.toFile
+      val pathType = directory.getAbsolutePath.substring(sourceDirectory.getAbsolutePath.length + 1) match {
         case s if s.indexOf('/') != -1 => s.substring(0, s.indexOf('/'))
         case s => s
       }
@@ -49,19 +49,7 @@ class TemplateCompiler(val sourceDirectory: File,
 
   def stopWatching(): Unit = watcher.dispose()
 
-  def startServer(): Unit = {
-    server.start()
-
-    if (consoleCommands) {
-      logger.info("Stop the server by pressing ENTER / RETURN on your keyboard.")
-
-      Future {
-        StdIn.readLine()
-
-        stopServer()
-      }
-    }
-  }
+  def startServer(): Unit = server.start()
 
   def stopServer(): Unit = server.stop()
 
@@ -201,4 +189,53 @@ object LoggingProcessLogger extends ProcessLogger {
   override def err(s: => String): Unit = System.err.println(s)
 
   override def buffer[T](f: => T): T = f
+}
+
+object TemplateCompiler {
+  def main(args: Array[String]): Unit = if (args.length == 3) {
+    Logger.root.clearHandlers()
+    Logger.root.addHandler(LogHandler(formatter = FormatterBuilder().date().string(" - ").message.newLine))
+
+    val mode = args(0)
+    val sourceDirectory = new File(args(1))
+    val destinationDirectory = new File(args(2))
+
+    assert(sourceDirectory.isDirectory, s"Source directory must be a directory (${sourceDirectory.getAbsolutePath})")
+    assert(!destinationDirectory.isFile, s"Destination must be a directory, but found a file (${destinationDirectory.getAbsolutePath})")
+    destinationDirectory.mkdirs()
+
+    val compiler = new TemplateCompiler(sourceDirectory, destinationDirectory, removeDotHTML = true, consoleCommands = true)
+    compiler.compileAll(deleteFirst = true)
+    if (mode.equalsIgnoreCase("watch") || mode.equalsIgnoreCase("server")) {
+      compiler.watch()
+    }
+    if (mode.equalsIgnoreCase("server")) {
+      compiler.startServer()
+    }
+    if (mode.equalsIgnoreCase("watch") || mode.equalsIgnoreCase("server")) {
+      if (mode.equalsIgnoreCase("server")) {
+        println("Server started on http://localhost:8080")
+      }
+      println("Press ENTER on your keyboard to stop...")
+      StdIn.readLine()
+      println("Shutting down...")
+      compiler.stopWatching()
+      if (mode.equalsIgnoreCase("server")) {
+        compiler.stopServer()
+      }
+    }
+  } else {
+    println("Usage: youi-template <mode> <source directory> <destination directory>")
+    println("\t<mode> is one of the following options:")
+    println("\t\tcompile - does a full compile and then exit")
+    println("\t\twatch - does a full compile, then watches for changes and compiles on-demand")
+    println("\t\tserver - does a full compile, then starts a server to serve the pages and will auto-reload the page on change")
+    println("\t<source directory> is the location where the source files are stored. Supports the following sub-folders:")
+    println("\t\tassets - files within this directory or copied as-is into the destination directory")
+    println("\t\tless - looks for .less files to compile and put into the css directory of the destination")
+    println("\t\tpages - compiles and copies into the destination")
+    println("\t\tpartials - used during compilation of pages for includes")
+    println("\t\tsass - looks for .sass and .scss files to compile and put into the css directory of the destination")
+    println("\t<destination directory> is the location where the template is compiled to. Note: This directory will be completely deleted during compilation.")
+  }
 }

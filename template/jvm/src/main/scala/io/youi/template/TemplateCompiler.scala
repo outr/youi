@@ -76,11 +76,20 @@ class TemplateCompiler(val sourceDirectory: File,
     compileAllSass()
   }
 
+  private def processRecursively(directory: File)(handler: File => Unit): Unit = directory.listFiles.foreach { file =>
+    if (file.isDirectory) {
+      processRecursively(file)(handler)
+    } else {
+      handler(file)
+    }
+  }
+
   def compileAllPages(): Unit = {
     val pagesDirectory = new File(sourceDirectory, "pages")
-    pagesDirectory.listFiles.foreach {
-      case f if f.getName.endsWith(".html") => compilePage(f)
-      case _ => // Ignore non-html files
+    processRecursively(pagesDirectory) { file =>
+      if (file.getName.endsWith(".html")) {
+        compilePage(file)
+      }
     }
   }
 
@@ -90,7 +99,9 @@ class TemplateCompiler(val sourceDirectory: File,
   }
 
   def compilePage(source: File): Unit = {
-    val fileName = source.getName
+    val fileName = source.getAbsolutePath match {
+      case s => s.substring(s.indexOf("pages/") + 6)
+    }
     val destination = new File(destinationDirectory, fileName)
     val html = compileHTML(source).replaceAll("""\$\{.*?\}""", "")
     destination.getParentFile.mkdirs()

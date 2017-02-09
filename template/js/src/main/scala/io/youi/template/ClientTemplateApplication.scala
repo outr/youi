@@ -3,6 +3,7 @@ package io.youi.template
 import io.youi.app.ClientApplication
 import io.youi.dom
 import org.scalajs.dom._
+import io.youi.dom._
 
 import scala.scalajs.js.annotation.JSExportTopLevel
 
@@ -40,7 +41,8 @@ object ClientTemplateApplication extends TemplateApplication with ClientApplicat
   private val RemoveClassRegex = """(.+)[.]removeClass\("(.+)"\)""".r
 
   private def activate(): Unit = {
-    val activate = dom.byTag[html.Element]("activate").map(_.innerHTML.trim).mkString("\n").split('\n').map(_.trim).toList
+    val tags = dom.byTag[html.Element]("activate")
+    val activate = tags.map(_.innerHTML.trim).mkString("\n").split('\n').map(_.trim).toList
     activate.foreach {
       case SetTitleRegex(title) => document.title = title
       case AddClassRegex(selector, className) => {
@@ -53,5 +55,6 @@ object ClientTemplateApplication extends TemplateApplication with ClientApplicat
       }
       case instruction => println(s"Unknown Instruction: $instruction")
     }
+    tags.foreach(_.remove())
   }
 }

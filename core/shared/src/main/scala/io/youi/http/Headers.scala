@@ -61,8 +61,15 @@ object Headers {
     case object `Content-Disposition` extends HeaderKey {
       override def key: String = "Content-Disposition"
 
-      def apply(dispositionType: String, fileName: String): Header = {
-        Header(this, s"""$dispositionType; filename="$fileName"""")
+      def apply(dispositionType: DispositionType,
+                name: Option[String] = None,
+                fileName: Option[String] = None): Header = {
+        val entries = List(
+          Some(dispositionType.value),
+          name.map(n => s"""name="$n""""),
+          fileName.map(fn => s""" filename="$fn" """)
+        ).flatten
+        Header(this, entries.mkString("; "))
       }
     }
 
@@ -71,6 +78,14 @@ object Headers {
     case object `Location` extends StringHeaderKey("Location")
     case object `Access-Control-Allow-Origin` extends StringHeaderKey("Access-Control-Allow-Origin")
   }
+}
+
+sealed abstract class DispositionType(val value: String)
+
+object DispositionType {
+  case object Inline extends DispositionType("inline")
+  case object Attachment extends DispositionType("attachment")
+  case object FormData extends DispositionType("form-data")
 }
 
 trait HeaderKey {

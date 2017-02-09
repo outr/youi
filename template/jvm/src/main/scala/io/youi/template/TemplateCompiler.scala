@@ -23,22 +23,23 @@ class TemplateCompiler(val sourceDirectory: File,
 
   private val watcher = new Watcher(sourceDirectory.toPath, eventDelay = 3000L) {
     override def fire(pathEvent: PathEvent): Unit = {
-      val directory = pathEvent.directory.toAbsolutePath.toFile
-      val pathType = directory.getAbsolutePath.substring(sourceDirectory.getAbsolutePath.length + 1) match {
-        case s if s.indexOf('/') != -1 => s.substring(0, s.indexOf('/'))
-        case s => s
-      }
-
-      pathType match {
-        case "pages" => {
-          logger.info(s"Compiling page: ${pathEvent.path}")
-          compilePage(pathEvent.path.toFile)
-        }
-        // TODO: support explicit rebuilding for less, sass, and parts
-        case _ => {
-          logger.info(s"Modification triggering rebuild: ${pathEvent.path}")
-          compileAll(deleteFirst = false)
-        }
+      val file = pathEvent.path.toAbsolutePath.toFile
+      val path = file.getCanonicalPath.substring(sourceDirectory.getCanonicalPath.length)
+      if (path.startsWith("/pages")) {
+        logger.info(s"Page changed (${pathEvent.path}), recompiling...")
+        compilePage(pathEvent.path.toFile)
+      } else if (path.startsWith("/less")) {
+        logger.info(s"LESS file changed (${file.getName}), recompiling all LESS files...")
+        compileAllLess()
+      } else if (path.startsWith("/sass")) {
+        logger.info(s"SASS file changed (${file.getName}), recompiling all SASS files...")
+        compileAllSass()
+      } else if (path.startsWith("/partials")) {
+        logger.info(s"Partial page changed (${file.getName}), recompiling all pages...")
+        compileAllPages()
+      } else {
+        logger.info(s"Unknown path: $path, recompiling everything...")
+        compileAll(deleteFirst = false)
       }
 
       // Reload all active pages
@@ -61,35 +62,23 @@ class TemplateCompiler(val sourceDirectory: File,
     }
 
     // Generate pages
-    val pagesDirectory = new File(sourceDirectory, "pages")
-    pagesDirectory.listFiles.foreach {
-      case f if f.getName.endsWith(".html") => compilePage(f)
-      case _ => // Ignore non-html files
-    }
+    compileAllPages()
 
     // Copy assets
     copyAssets()
 
     // Compile LESS
-    val lessDirectory = new File(sourceDirectory, "less")
-    if (lessDirectory.exists()) {
-      lessDirectory.listFiles().foreach {
-        case f if f.isFile && f.getName.endsWith(".less") => {
-          compileLess(f.getName, compressCSS)
-        }
-        case _ => // Ignore others
-      }
-    }
+    compileAllLess()
 
     // Compile SASS files
-    val sassDirectory = new File(sourceDirectory, "sass")
-    if (sassDirectory.exists()) {
-      sassDirectory.listFiles().foreach {
-        case f if f.isFile && (f.getName.endsWith(".sass") || f.getName.endsWith(".scss")) && !f.getName.startsWith("_") => {
-          compileSass(f.getName, compressCSS)
-        }
-        case _ => // Ignore others
-      }
+    compileAllSass()
+  }
+
+  def compileAllPages(): Unit = {
+    val pagesDirectory = new File(sourceDirectory, "pages")
+    pagesDirectory.listFiles.foreach {
+      case f if f.getName.endsWith(".html") => compilePage(f)
+      case _ => // Ignore non-html files
     }
   }
 
@@ -146,6 +135,18 @@ class TemplateCompiler(val sourceDirectory: File,
     IO.delete(destinationDirectory)
   }
 
+  def compileAllLess(): Unit = {
+    val lessDirectory = new File(sourceDirectory, "less")
+    if (lessDirectory.exists()) {
+      lessDirectory.listFiles().foreach {
+        case f if f.isFile && f.getName.endsWith(".less") => {
+          compileLess(f.getName, compressCSS)
+        }
+        case _ => // Ignore others
+      }
+    }
+  }
+
   def compileLess(filePath: String, compress: Boolean): Unit = {
     val input = new File(sourceDirectory, s"less/$filePath")
     val output = new File(destinationDirectory, s"css/${input.getName.substring(0, input.getName.lastIndexOf('.'))}.css")
@@ -161,6 +162,18 @@ class TemplateCompiler(val sourceDirectory: File,
     val exitCode = b ! LoggingProcessLogger
     if (exitCode != 0) {
       throw new RuntimeException(s"Failed to compile LESS code!")
+    }
+  }
+
+  def compileAllSass(): Unit = {
+    val sassDirectory = new File(sourceDirectory, "sass")
+    if (sassDirectory.exists()) {
+      sassDirectory.listFiles().foreach {
+        case f if f.isFile && (f.getName.endsWith(".sass") || f.getName.endsWith(".scss")) && !f.getName.startsWith("_") => {
+          compileSass(f.getName, compressCSS)
+        }
+        case _ => // Ignore others
+      }
     }
   }
 

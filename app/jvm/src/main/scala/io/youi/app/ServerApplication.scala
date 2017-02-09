@@ -49,7 +49,7 @@ trait ServerApplication extends YouIApplication with Server {
 
   private object ServerConnectionHandler extends HttpHandler {
     override def handle(httpConnection: HttpConnection): Unit = activeConnections.synchronized {
-      val connection = new Connection(ServerApplication.this)
+      val connection = new Connection
       connection.store.update("httpConnection", httpConnection)
       activeConnections := (activeConnections() + connection)
       connected := connection

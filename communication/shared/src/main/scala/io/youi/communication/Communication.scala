@@ -90,11 +90,7 @@ class CommunicationInternal private[communication](communication: Communication)
     }
 
     communication.connection.receive.text.attach {
-      case CommunicationMessage(message) => {
-        communication.connection.manager.withConnection(communication.connection) {
-          receive := message
-        }
-      }
+      case CommunicationMessage(message) => receive := message
     }
     send.attach { message =>
       communication.connection.send.text := message.parsableString

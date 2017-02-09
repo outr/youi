@@ -5,7 +5,7 @@ import io.youi.http.{Connection, ConnectionManager, WebSocketUtil}
 import io.youi.net.URL
 import org.scalajs.dom.WebSocket
 
-abstract class ClientWebSocketCommunicator[C <: Communication](socketURL: URL, manager: ConnectionManager) extends Connection(manager) {
+abstract class ClientWebSocketCommunicator[C <: Communication](socketURL: URL) extends Connection(manager) {
   val webSocket: Var[Option[WebSocket]] = Var(None)
 
   lazy val communication: C = create()

@@ -53,11 +53,13 @@ object Macros {
 
     implicit val futureTypeTag = typeTag[Future[_]]
 
-    val isJS = try {
-      context.universe.rootMirror.staticClass("scala.scalajs.js.Any")
-      true
-    } catch {
-      case t: Throwable => false
+    val typeName = c.tpe.toString match {
+      case s => s.substring(s.lastIndexOf('.') + 1)
+    }
+    val isClient = typeName.startsWith("Client")
+    val isServer = typeName.startsWith("Server")
+    if (!isClient && !isServer) {
+      context.abort(context.enclosingPosition, s"${c.tpe} must start with either Client or Server to define what it implements.")
     }
 
     val declaredMethods = c.tpe.decls.toSet
@@ -80,9 +82,9 @@ object Macros {
         }
 
         if (declared) {
-          if (isJS && isServerMethod) {
+          if (isClient && isServerMethod) {
             context.abort(context.enclosingPosition, s"$symbol is defined as a @server method, but is defined in the client.")
-          } else if (!isJS && isClientMethod) {
+          } else if (isServer && isClientMethod) {
             context.abort(context.enclosingPosition, s"$symbol is defined as a @client method, but is defined in the server.")
           }
           val params = args.zipWithIndex.map {
@@ -106,9 +108,9 @@ object Macros {
            """
           }
         } else {
-          if (isJS && isClientMethod) {
+          if (isClient && isClientMethod) {
             context.abort(context.enclosingPosition, s"$symbol is defined as a @client method, but is not defined in the client.")
-          } else if (!isJS && isServerMethod) {
+          } else if (isServer && isServerMethod) {
             context.abort(context.enclosingPosition, s"$symbol is defined as a @server method, but is not defined in the server.")
           }
           val argList = args.map { arg =>

@@ -22,16 +22,16 @@ class TemplateCompiler(val sourceDirectory: File,
   private val server = new ServerTemplateApplication(this)
 
   private val watcher = new Watcher(sourceDirectory.toPath, eventDelay = 3000L) {
-    override def fire(pathEvent: PathEvent): Unit = {
+    override def fire(pathEvent: PathEvent): Unit = try {
       val file = pathEvent.path.toAbsolutePath.toFile
       val path = file.getCanonicalPath.substring(sourceDirectory.getCanonicalPath.length)
-      if (path.startsWith("/pages")) {
+      if (path.startsWith("/pages") && path.endsWith(".html")) {
         logger.info(s"Page changed (${pathEvent.path}), recompiling...")
         compilePage(pathEvent.path.toFile)
-      } else if (path.startsWith("/less")) {
+      } else if (path.startsWith("/less") && path.endsWith(".less")) {
         logger.info(s"LESS file changed (${file.getName}), recompiling all LESS files...")
         compileAllLess()
-      } else if (path.startsWith("/sass")) {
+      } else if (path.startsWith("/sass") && (path.endsWith(".sass") || path.endsWith(".scss"))) {
         logger.info(s"SASS file changed (${file.getName}), recompiling all SASS files...")
         compileAllSass()
       } else if (path.startsWith("/partials")) {
@@ -44,6 +44,8 @@ class TemplateCompiler(val sourceDirectory: File,
 
       // Reload all active pages
       server.comm.instances().foreach(_.reload(force = true))
+    } catch {
+      case t: Throwable => logger.error(t)
     }
   }
 

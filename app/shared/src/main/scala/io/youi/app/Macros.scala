@@ -12,13 +12,6 @@ object Macros {
 
     val app = context.prefix.tree
 
-    val isJS = try {
-      context.universe.rootMirror.staticClass("scala.scalajs.js.Any")
-      true
-    } catch {
-      case t: Throwable => false
-    }
-
     val typeString = c.tpe.toString
     val (preType, postType) = if (typeString.indexOf('.') != -1) {
       val index = typeString.lastIndexOf('.')
@@ -27,15 +20,16 @@ object Macros {
       "" -> typeString
     }
 
-    val communicationTypeString = if (isJS) {
-      s"${preType}Client$postType"
-    } else {
-      s"${preType}Server$postType"
-    }
+    val clientTypeString = s"${preType}Client$postType"
+    val serverTypeString = s"${preType}Server$postType"
     val communicationType = try {
-      context.universe.rootMirror.staticClass(communicationTypeString)
+      context.universe.rootMirror.staticClass(clientTypeString)
     } catch {
-      case exc: ScalaReflectionException => context.abort(context.enclosingPosition, s"Unable to find implementation trait $communicationTypeString for $typeString.")
+      case _: ScalaReflectionException => try {
+        context.universe.rootMirror.staticClass(serverTypeString)
+      } catch {
+        case exc: ScalaReflectionException => context.abort(context.enclosingPosition, s"Unable to find implementation trait $clientTypeString or $serverTypeString for $typeString.")
+      }
     }
 
     context.Expr[CommunicationManager[C]](

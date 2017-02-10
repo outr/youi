@@ -232,23 +232,32 @@ object TemplateCompiler {
     destinationDirectory.mkdirs()
 
     val compiler = new TemplateCompiler(sourceDirectory, destinationDirectory, removeDotHTML = true, consoleCommands = true)
-    compiler.compileAll(deleteFirst = true)
-    if (mode.equalsIgnoreCase("watch") || mode.equalsIgnoreCase("server")) {
-      compiler.watch()
-    }
-    if (mode.equalsIgnoreCase("server")) {
-      compiler.startServer()
-    }
-    if (mode.equalsIgnoreCase("watch") || mode.equalsIgnoreCase("server")) {
-      if (mode.equalsIgnoreCase("server")) {
-        println("Server started on http://localhost:8080")
+    try {
+      compiler.compileAll(deleteFirst = true)
+      if (mode.equalsIgnoreCase("watch") || mode.equalsIgnoreCase("server")) {
+        compiler.watch()
       }
-      println("Press ENTER on your keyboard to stop...")
-      StdIn.readLine()
-      println("Shutting down...")
-      compiler.stopWatching()
       if (mode.equalsIgnoreCase("server")) {
+        compiler.startServer()
+      }
+      if (mode.equalsIgnoreCase("watch") || mode.equalsIgnoreCase("server")) {
+        if (mode.equalsIgnoreCase("server")) {
+          println("Server started on http://localhost:8080")
+        }
+        println("Press ENTER on your keyboard to stop...")
+        StdIn.readLine()
+        println("Shutting down...")
+        compiler.stopWatching()
+        if (mode.equalsIgnoreCase("server")) {
+          compiler.stopServer()
+        }
+      }
+    } catch {
+      case t: Throwable => {
+        logger.error(t)
+        compiler.stopWatching()
         compiler.stopServer()
+        System.exit(0)
       }
     }
   } else {

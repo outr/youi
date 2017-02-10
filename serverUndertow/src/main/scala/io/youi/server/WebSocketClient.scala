@@ -7,7 +7,7 @@ import io.undertow.protocols.ssl.UndertowXnioSsl
 import io.undertow.server.DefaultByteBufferPool
 import io.undertow.util.Headers
 import io.undertow.websockets.client.WebSocketClient.ConnectionBuilder
-import io.undertow.websockets.client.{WebSocketClient, WebSocketClientNegotiation}
+import io.undertow.websockets.client.{WebSocketClient => UndertowWebSocketClient, WebSocketClientNegotiation}
 import io.undertow.websockets.core.{AbstractReceiveListener, BufferedTextMessage, WebSocketCallback, WebSocketChannel, WebSockets}
 import io.youi.http.Connection
 import io.youi.net.URL
@@ -41,7 +41,7 @@ class WebSocketClient(url: URL,
   )
   private lazy val bufferPool = new DefaultByteBufferPool(directBuffer, bufferSize)
   private lazy val connectionBuilder: ConnectionBuilder = {
-    val builder = WebSocketClient.connectionBuilder(worker, bufferPool, new URI(url.toString))
+    val builder = UndertowWebSocketClient.connectionBuilder(worker, bufferPool, new URI(url.toString))
       .setClientNegotiation(new WebSocketClientNegotiation(null, null) {
         override def beforeRequest(headers: java.util.Map[String, java.util.List[String]]): Unit = {
           authorization.foreach { auth =>

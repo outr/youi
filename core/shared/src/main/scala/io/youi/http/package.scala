@@ -42,6 +42,9 @@ package object http {
     def matches(regex: String): URLMatcher = new URLMatcher {
       override def matches(url: URL): Boolean = url.path.decoded.matches(regex)
     }
+    def startsWith(prefix: String): URLMatcher = new URLMatcher {
+      override def matches(url: URL): Boolean = url.path.decoded.startsWith(prefix)
+    }
   }
 
   object all extends URLMatcher {

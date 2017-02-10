@@ -14,12 +14,16 @@ sealed trait Content {
 
 case class StringContent(value: String, contentType: ContentType, lastModified: Long = System.currentTimeMillis()) extends Content {
   override def length: Long = value.getBytes("UTF-8").length
+
+  override def toString: String = s"StringContent(${value.take(100)}, contentType: $contentType)"
 }
 
 case class FileContent(file: File, contentType: ContentType) extends Content {
   override def length: Long = file.length()
 
   override def lastModified: Long = file.lastModified()
+
+  override def toString: String = s"FileContent(file: ${file.getAbsolutePath}, contentType: $contentType)"
 }
 
 case class URLContent(url: URL, contentType: ContentType) extends Content {
@@ -45,6 +49,8 @@ case class URLContent(url: URL, contentType: ContentType) extends Content {
   override def length: Long = contentLength
 
   override def lastModified: Long = contentModified
+
+  override def toString: String = s"URLContent(url: $url, contentType: $contentType)"
 }
 
 sealed trait RequestContent

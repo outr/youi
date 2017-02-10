@@ -38,7 +38,7 @@ case class HttpHandlerBuilder(server: Server,
     }
   }
 
-  def classLoader(directory: String, pathTransform: String => String = (s: String) => s): HttpHandler = {
+  def classLoader(directory: String = "", pathTransform: String => String = (s: String) => s): HttpHandler = {
     val dir = if (directory.endsWith("/")) {
       directory.substring(directory.length - 1)
     } else {
@@ -46,7 +46,11 @@ case class HttpHandlerBuilder(server: Server,
     }
     handle { connection =>
       val path = pathTransform(connection.request.url.path.encoded)
-      Option(getClass.getClassLoader.getResource(s"$dir$path")).foreach { url =>
+      val resourcePath = s"$dir$path" match {
+        case s if s.startsWith("/") => s.substring(1)
+        case s => s
+      }
+      Option(getClass.getClassLoader.getResource(resourcePath)).foreach { url =>
         val file = new File(url.getFile)
         if (!file.isDirectory) {
           SenderHandler(Content.classPath(url), caching = cachingManager).handle(connection)

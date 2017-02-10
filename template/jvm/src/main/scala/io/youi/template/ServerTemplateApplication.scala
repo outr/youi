@@ -4,7 +4,7 @@ import java.io.File
 
 import io.youi.Priority
 import io.youi.app.ServerApplication
-import io.youi.http.{Content, FileContent}
+import io.youi.http._
 import io.youi.net.ContentType
 import io.youi.server.UndertowServer
 import io.youi.server.handler.{CachingManager, SenderHandler}
@@ -12,7 +12,7 @@ import io.youi.stream.{ByTag, Delta, HTMLParser}
 
 class ServerTemplateApplication(compiler: TemplateCompiler) extends UndertowServer with TemplateApplication with ServerApplication {
   handler.caching(CachingManager.NotCached).file(compiler.destinationDirectory)
-  handler.caching(CachingManager.LastModified()).classLoader("app", (path: String) => path.drop(4))
+  handler.matcher(path.startsWith("/app")).caching(CachingManager.LastModified()).classLoader()
 
   if (compiler.removeDotHTML) {
     // Exclude pages .html

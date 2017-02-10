@@ -19,7 +19,7 @@ object SenderHandler {
              caching: CachingManager = CachingManager.Default,
              replace: Boolean = false): Unit = {
     if (connection.response.content.nonEmpty && !replace) {
-      throw new RuntimeException(s"Content already set for HttpResponse in ${connection.request.url}")
+      throw new RuntimeException(s"Content already set (${connection.response.content.get}) for HttpResponse in ${connection.request.url} when attempting to set $content.")
     }
     val contentLength = length.getOrElse(content.length)
     connection.update(_.withContent(content))

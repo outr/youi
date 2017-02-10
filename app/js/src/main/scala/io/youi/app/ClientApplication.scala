@@ -15,7 +15,7 @@ import scala.util.{Failure, Success}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 trait ClientApplication extends YouIApplication with ScreenManager {
-  val connection: Connection = new Connection(this)
+  val connection: Connection = new Connection
   val webSocket: Var[Option[WebSocket]] = Var(None)
 
   activeConnections := Set(connection)

@@ -3,7 +3,6 @@ package io.youi.communication
 import java.util.concurrent.atomic.AtomicInteger
 
 import com.outr.reactify.{Channel, Var}
-import scribe._
 import io.youi.ErrorSupport
 import io.youi.http.Connection
 
@@ -85,7 +84,7 @@ class CommunicationInternal private[communication](communication: Communication)
           f
         } match {
           case Some(f) => f(message)
-          case None => logger.warn(s"No entry found for endPoint: ${message.endPoint}, invocationId: ${message.invocationId}, content: ${message.content}.")
+          case None => scribe.warn(s"No entry found for endPoint: ${message.endPoint}, invocationId: ${message.invocationId}, content: ${message.content}.")
         }
       } else if (message.messageType == CommunicationMessage.MethodRequest) {
         val endPoint = endPoints.getOrElse(message.endPoint, throw new RuntimeException(s"No endPoint found for $message (endPoint ids: ${endPoints.keys.mkString(", ")})."))

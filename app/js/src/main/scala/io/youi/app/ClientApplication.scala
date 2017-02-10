@@ -6,7 +6,6 @@ import io.youi.app.stream.StreamURL
 import io.youi.http.{Connection, WebSocketUtil}
 import io.youi.net.URL
 import org.scalajs.dom._
-import scribe._
 import io.youi.ErrorSupport
 import io.youi.ajax.AjaxRequest
 import org.scalajs.dom.ext.AjaxException
@@ -105,7 +104,7 @@ trait ClientApplication extends YouIApplication with ScreenManager {
                 attemptReload(attempt + 1)
               }, 5000)
             } else {
-              logger.info("Unable to connect to server. Giving up!")
+              scribe.info("Unable to connect to server. Giving up!")
             }
           }
         }

@@ -17,7 +17,7 @@ object ReverseClientExample {
     try {
       val future = comm.reverse("This is a test!")
       val result = Await.result(future, 5.seconds)
-      scribe.logger.info(s"Receive: $result")
+      scribe.info(s"Receive: $result")
     } finally {
       connection.dispose()
     }

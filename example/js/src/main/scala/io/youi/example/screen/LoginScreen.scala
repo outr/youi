@@ -8,8 +8,6 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Failure, Success}
 
-import scribe._
-
 object LoginScreen extends ExampleScreen {
   override protected def contentSelector: String = "#loginScreen"
   override def path: String = "/login.html"
@@ -30,7 +28,7 @@ object LoginScreen extends ExampleScreen {
             ClientExampleApplication.activate(CommunicationScreen)
           }
         }
-        case Failure(exception) => logger.warn(s"Failed to log in with exception: ${exception.getMessage}")
+        case Failure(exception) => scribe.warn(s"Failed to log in with exception: ${exception.getMessage}")
       }
     })
   }

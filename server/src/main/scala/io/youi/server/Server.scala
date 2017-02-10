@@ -1,7 +1,6 @@
 package io.youi.server
 
 import com.outr.reactify._
-import scribe._
 import io.youi.ErrorSupport
 import io.youi.http.{HttpConnection, Status}
 import io.youi.server.handler.{HttpHandler, HttpHandlerBuilder}
@@ -39,7 +38,7 @@ trait Server extends HttpHandler with ErrorSupport {
 
   def start(): Unit = synchronized {
     implementation.start()
-    logger.info(s"Server started on ${config.listeners().mkString(", ")}")
+    scribe.info(s"Server started on ${config.listeners().mkString(", ")}")
   }
 
   def stop(): Unit = synchronized {

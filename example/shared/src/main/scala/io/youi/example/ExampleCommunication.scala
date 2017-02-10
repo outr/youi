@@ -4,7 +4,6 @@ import com.outr.reactify.Var
 import io.youi.communication.{Communication, client, server}
 
 import scala.concurrent.Future
-import scribe._
 
 trait ExampleCommunication extends Communication {
   val name: Var[Option[String]] = shared[Option[String]](None)
@@ -18,6 +17,6 @@ trait ExampleCommunication extends Communication {
   @server def logIn(username: String, password: String): Future[Option[String]]
 
   name.attach { value =>
-    logger.info(s"Name changed: $value")
+    scribe.info(s"Name changed: $value")
   }
 }

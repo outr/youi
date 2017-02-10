@@ -3,7 +3,6 @@ package io.youi.http
 import java.nio.ByteBuffer
 
 import com.outr.reactify._
-import scribe._
 import io.youi.{MapStore, Store}
 
 import scala.collection.mutable.ListBuffer
@@ -33,10 +32,10 @@ class Connection {
     send.binary.attach(binaryListener)
 
     send.text.attach { s =>
-      if (Connection.debug) logger.info(s"Send: $s")
+      if (Connection.debug) scribe.info(s"Send: $s")
     }
     receive.text.attach { s =>
-      if (Connection.debug) logger.info(s"Receive: $s")
+      if (Connection.debug) scribe.info(s"Receive: $s")
     }
 
     connected.distinct.attach { b =>

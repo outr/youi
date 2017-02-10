@@ -2,8 +2,8 @@ package io.youi.template
 
 import java.io.File
 
-import scribe._
 import scribe.formatter.FormatterBuilder
+import scribe.{LogHandler, Logger}
 import io.youi.stream.{ByTag, Delta, HTMLParser}
 import org.powerscala.io._
 import org.powerscala.io.watcher.{PathEvent, Watcher}
@@ -26,26 +26,26 @@ class TemplateCompiler(val sourceDirectory: File,
       val file = pathEvent.path.toAbsolutePath.toFile
       val path = file.getCanonicalPath.substring(sourceDirectory.getCanonicalPath.length)
       if (path.startsWith("/pages") && path.endsWith(".html")) {
-        logger.info(s"Page changed (${pathEvent.path}), recompiling...")
+        scribe.info(s"Page changed (${pathEvent.path}), recompiling...")
         compilePage(pathEvent.path.toFile)
       } else if (path.startsWith("/less") && path.endsWith(".less")) {
-        logger.info(s"LESS file changed (${file.getName}), recompiling all LESS files...")
+        scribe.info(s"LESS file changed (${file.getName}), recompiling all LESS files...")
         compileAllLess()
       } else if (path.startsWith("/sass") && (path.endsWith(".sass") || path.endsWith(".scss"))) {
-        logger.info(s"SASS file changed (${file.getName}), recompiling all SASS files...")
+        scribe.info(s"SASS file changed (${file.getName}), recompiling all SASS files...")
         compileAllSass()
       } else if (path.startsWith("/partials")) {
-        logger.info(s"Partial page changed (${file.getName}), recompiling all pages...")
+        scribe.info(s"Partial page changed (${file.getName}), recompiling all pages...")
         compileAllPages()
       } else {
-        logger.info(s"Unknown path: $path, recompiling everything...")
+        scribe.info(s"Unknown path: $path, recompiling everything...")
         compileAll(deleteFirst = false)
       }
 
       // Reload all active pages
       server.comm.instances().foreach(_.reload(force = true))
     } catch {
-      case t: Throwable => logger.error(t)
+      case t: Throwable => scribe.error(t)
     }
   }
 
@@ -163,7 +163,7 @@ class TemplateCompiler(val sourceDirectory: File,
   def compileLess(filePath: String, compress: Boolean): Unit = {
     val input = new File(sourceDirectory, s"less/$filePath")
     val output = new File(destinationDirectory, s"css/${input.getName.substring(0, input.getName.lastIndexOf('.'))}.css")
-    logger.info(s"Compiling LESS file ${input.getName}...")
+    scribe.info(s"Compiling LESS file ${input.getName}...")
     val command = new File(sourceDirectory.getParentFile, "node_modules/less/bin/lessc").getAbsolutePath
     val b = ListBuffer.empty[String]
     b += command
@@ -194,7 +194,7 @@ class TemplateCompiler(val sourceDirectory: File,
     val input = new File(sourceDirectory, s"sass/$filePath")
     val output = new File(destinationDirectory, s"css/${input.getName.substring(0, input.getName.lastIndexOf('.'))}.css")
 
-    logger.info(s"Compiling SASS file ${input.getName}...")
+    scribe.info(s"Compiling SASS file ${input.getName}...")
     val command = new File(sourceDirectory.getParentFile, "node_modules/node-sass/bin/node-sass").getAbsolutePath
     val b = ListBuffer.empty[String]
     b += command
@@ -254,7 +254,7 @@ object TemplateCompiler {
       }
     } catch {
       case t: Throwable => {
-        logger.error(t)
+        scribe.error(t)
         compiler.stopWatching()
         compiler.stopServer()
         System.exit(0)

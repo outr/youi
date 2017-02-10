@@ -29,8 +29,8 @@ object ServerExampleApplication extends UndertowServer with ExampleApplication w
   handler.matcher(path.exact("/proxy.html")).proxy(ProxyExample)
   handler.matcher(path.exact("/session.html")).wrap(SessionExample)
   handler.caching(CachingManager.LastModified()).classLoader("", (path: String) => s"content$path")
-  handler.caching(CachingManager.LastModified()).classLoader("app", (path: String) => path.drop(4))
-  handler.caching(CachingManager.LastModified()).file(new File("src/main/web/css"), (path: String) => path.drop(4))
+  handler.caching(CachingManager.LastModified()).matcher(path.startsWith("/app")).classLoader()
+  handler.caching(CachingManager.LastModified()).matcher(path.startsWith("/css")).file(new File("src/main/web"))
 
   def main(args: Array[String]): Unit = {
     start()

@@ -14,14 +14,13 @@ object Macros {
   def shared[T](context: blackbox.Context)(default: context.Expr[T])(implicit t: context.WeakTypeTag[T]): context.Expr[Var[T]] = {
     import context.universe._
 
-    val endPointId = counter
+    val endPoint = counter.toString
     counter += 1
 
     context.Expr[Var[T]](
       q"""
          import io.youi.communication._
 
-         val endPointId = $endPointId
          val v = com.outr.reactify.Var[$t]($default)
          val modifying = new ThreadLocal[Boolean] {
            override def initialValue(): Boolean = false
@@ -29,12 +28,12 @@ object Macros {
          v.attach { value =>
            if (!modifying.get()) {
              val json = upickle.default.write[$t](value)
-             val message = CommunicationMessage(CommunicationMessage.SharedVariable, endPointId, 0, List(json), None)
+             val message = CommunicationMessage(CommunicationMessage.SharedVariable, $endPoint, 0, List(json), None)
              comm.send := message
            }
          }
          comm.receive.attach { message =>
-           if (message.endPointId == endPointId && message.messageType == CommunicationMessage.SharedVariable) {
+           if (message.endPoint == $endPoint && message.messageType == CommunicationMessage.SharedVariable) {
              val value = upickle.default.read[$t](message.content.head)
              modifying.set(true)
              try {
@@ -61,11 +60,12 @@ object Macros {
     if (!isClient && !isServer) {
       context.abort(context.enclosingPosition, s"${c.tpe} must start with either Client or Server to define what it implements.")
     }
+    val baseTypeName = s"${c.tpe.toString.substring(0, c.tpe.toString.lastIndexOf('.') + 1)}${typeName.substring(6)}"
 
     val declaredMethods = c.tpe.decls.toSet
     val methods = c.tpe.members.toList.sortBy(_.fullName).collect {
       case symbol if symbol.isMethod & symbol.typeSignature.resultType <:< context.typeOf[Future[_]] => {
-        val endPointId = Communication.nextEndPointId
+        val endPoint = s"${baseTypeName}.${symbol.name}"
         val m = symbol.asMethod
         val declared = declaredMethods.contains(m)
         val resultType = symbol.typeSignature.resultType.typeArgs.head
@@ -92,7 +92,7 @@ object Macros {
           }
           if (params.nonEmpty) {
             q"""
-             comm.onEndPoint($endPointId) { message =>
+             comm.onEndPoint($endPoint) { message =>
                ${m.name}(..$params).map { response =>
                  upickle.default.write[$resultType](response)
                }
@@ -100,7 +100,7 @@ object Macros {
            """
           } else {
             q"""
-             comm.onEndPoint($endPointId) { message =>
+             comm.onEndPoint($endPoint) { message =>
                ${m.name}.map { response =>
                  upickle.default.write[$resultType](response)
                }
@@ -123,7 +123,7 @@ object Macros {
           q"""
              override def ${m.name}(..$argList): scala.concurrent.Future[$resultType] = {
                val invocationId = comm.nextId()
-               comm.send := io.youi.communication.CommunicationMessage(io.youi.communication.CommunicationMessage.MethodRequest, $endPointId, invocationId, List(..$params), None)
+               comm.send := io.youi.communication.CommunicationMessage(io.youi.communication.CommunicationMessage.MethodRequest, $endPoint, invocationId, List(..$params), None)
                comm.onInvocation[$resultType](invocationId)( message => {
                  upickle.default.read[$resultType](message.content.head)
                })

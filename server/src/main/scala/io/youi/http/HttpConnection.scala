@@ -23,7 +23,7 @@ class HttpConnection(val server: Server, val request: HttpRequest) {
         response.copy(status = Status.SwitchingProtocols)
       }
     } else {
-      throw new RuntimeException(s"Not a WebSocket upgrade request!")
+      throw new RuntimeException(s"Not a WebSocket upgrade request! Expected 'Upgrade' header set to 'websocket' and 'Connection' set to 'Upgrade'.")
     }
   }
   def proxySupport: Option[ProxyHandler] = store.get[ProxyHandler](ProxyHandler.key)

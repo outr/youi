@@ -22,13 +22,22 @@ object Macros {
 
     val clientTypeString = s"${preType}Client$postType"
     val serverTypeString = s"${preType}Server$postType"
-    val communicationType = try {
-      context.universe.rootMirror.staticClass(clientTypeString)
+    val clientType = try {
+      Some(context.universe.rootMirror.staticClass(clientTypeString))
     } catch {
-      case _: ScalaReflectionException => try {
-        context.universe.rootMirror.staticClass(serverTypeString)
-      } catch {
-        case exc: ScalaReflectionException => context.abort(context.enclosingPosition, s"Unable to find implementation trait $clientTypeString or $serverTypeString for $typeString.")
+      case _: ScalaReflectionException => None
+    }
+    val serverType = try {
+      Some(context.universe.rootMirror.staticClass(serverTypeString))
+    } catch {
+      case exc: ScalaReflectionException => None
+    }
+
+    val communicationType = serverType match {
+      case Some(t) => t
+      case None => clientType match {
+        case Some(t) => t
+        case None => context.abort(context.enclosingPosition, s"Unable to find implementation trait $clientTypeString or $serverTypeString for $typeString.")
       }
     }
 

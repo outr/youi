@@ -71,6 +71,7 @@ trait Communication extends ErrorSupport {
 class CommunicationInternal private[communication](communication: Communication) {
   private val increment = new AtomicInteger(0)
   private var queue = Map.empty[Int, CommunicationMessage => Unit]
+  private var endPoints = Map.empty[String, CommunicationMessage => Future[String]]
 
   val send: Channel[CommunicationMessage] = Channel[CommunicationMessage]
   val receive: Channel[CommunicationMessage] = Channel[CommunicationMessage]
@@ -84,13 +85,22 @@ class CommunicationInternal private[communication](communication: Communication)
           f
         } match {
           case Some(f) => f(message)
-          case None => logger.warn(s"No entry found for endPointId: ${message.endPointId}, invocationId: ${message.invocationId}, content: ${message.content}.")
+          case None => logger.warn(s"No entry found for endPoint: ${message.endPoint}, invocationId: ${message.invocationId}, content: ${message.content}.")
+        }
+      } else if (message.messageType == CommunicationMessage.MethodRequest) {
+        val endPoint = endPoints.getOrElse(message.endPoint, throw new RuntimeException(s"No endPoint found for $message (endPoint ids: ${endPoints.keys.mkString(", ")})."))
+        endPoint(message).map { content =>
+          send := CommunicationMessage(CommunicationMessage.MethodResponse, message.endPoint, message.invocationId, List(content), None)
+        }.failed.foreach { t =>
+          send := CommunicationMessage(CommunicationMessage.MethodResponse, message.endPoint, message.invocationId, Nil, Some(t.getMessage))
+          communication.error(t)
         }
       }
     }
 
     communication.connection.receive.text.attach {
       case CommunicationMessage(message) => receive := message
+      case message => // Ignore other messages
     }
     send.attach { message =>
       communication.connection.send.text := message.parsableString
@@ -100,17 +110,8 @@ class CommunicationInternal private[communication](communication: Communication)
   def nextId(): Int = increment.getAndIncrement()
 
   // Received remote request for invocation of method
-  def onEndPoint[T](endPointId: Int)(f: CommunicationMessage => Future[String]): Unit = {
-    receive.attach { message =>
-      if (message.endPointId == endPointId && message.messageType == CommunicationMessage.MethodRequest) {
-        f(message).map { content =>
-          send := CommunicationMessage(CommunicationMessage.MethodResponse, endPointId, message.invocationId, List(content), None)
-        }.failed.foreach { t =>
-          send := CommunicationMessage(CommunicationMessage.MethodResponse, endPointId, message.invocationId, Nil, Some(t.getMessage))
-          communication.error(t)
-        }
-      }
-    }
+  def onEndPoint[T](endPoint: String)(f: CommunicationMessage => Future[String]): Unit = synchronized {
+    endPoints += endPoint -> f
   }
 
   // Wait for invocation response
@@ -131,10 +132,6 @@ class CommunicationInternal private[communication](communication: Communication)
 }
 
 object Communication {
-  private val increment = new AtomicInteger(0)
-
-  def nextEndPointId: Int = increment.getAndIncrement()
-
   def create[C <: Communication](connection: Connection): C = macro Macros.create[C]
 }
 

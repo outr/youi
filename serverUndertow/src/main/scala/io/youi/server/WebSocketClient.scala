@@ -47,6 +47,8 @@ class WebSocketClient(url: URL,
           authorization.foreach { auth =>
             headers.put(Headers.AUTHORIZATION_STRING, List(auth).asJava)
           }
+          headers.put(Headers.UPGRADE_STRING, List("websocket").asJava)
+          headers.put(Headers.CONNECTION_STRING, List("Upgrade").asJava)
         }
       })
     keyStore.foreach { ks =>
@@ -62,7 +64,7 @@ class WebSocketClient(url: URL,
   private var backlog = List.empty[String]
 
   def connect(): Unit = if (_channel.get.isEmpty) {
-    _channel := Some(connectionBuilder.connect().get())
+    _channel.setStatic(Some(connectionBuilder.connect().get()))
 
     channel.resumeReceives()
 
@@ -90,6 +92,13 @@ class WebSocketClient(url: URL,
 
   def disconnect(): Unit = {
     channel.close()
+  }
+
+  def dispose(): Unit = {
+    if (connected()) {
+      disconnect()
+    }
+    worker.shutdown()
   }
 
   private def checkBacklog(): Unit = {

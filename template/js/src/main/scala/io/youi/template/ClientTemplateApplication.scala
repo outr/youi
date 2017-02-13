@@ -37,6 +37,7 @@ object ClientTemplateApplication extends TemplateApplication with ClientApplicat
   }
 
   private val ConditionalRegex = """(.+) \? (.+) \: (.+)""".r
+  private val ConditionalPartialRegex = """(.+) \? (.+)""".r
   private val SetTitleRegex = """title = "(.*)"""".r
   private val AddClassRegex = """(.+)[.]addClass\("(.+)"\)""".r
   private val RemoveClassRegex = """(.+)[.]removeClass\("(.+)"\)""".r
@@ -57,6 +58,9 @@ object ClientTemplateApplication extends TemplateApplication with ClientApplicat
       activateInstruction(trueInstruction)
     } else {
       activateInstruction(falseInstruction)
+    }
+    case ConditionalPartialRegex(condition, trueInstruction) => if (conditionInstruction(condition)) {
+      activateInstruction(trueInstruction)
     }
     case SetTitleRegex(title) => document.title = title
     case AddClassRegex(selector, className) => {

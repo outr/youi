@@ -45,7 +45,7 @@ object CommunicationScreen extends ExampleScreen {
       if (value.isEmpty) {
         window.alert("Reverse value must not be empty!")
       } else {
-        c.reverse(value).foreach { reversed =>
+        s.reverse(value).foreach { reversed =>
           reverseInput.value = reversed
         }
       }

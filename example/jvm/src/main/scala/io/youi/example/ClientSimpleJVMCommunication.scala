@@ -1,3 +1,0 @@
-package io.youi.example
-
-trait ClientSimpleJVMCommunication extends SimpleJVMCommunication

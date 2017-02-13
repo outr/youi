@@ -8,7 +8,6 @@ import scala.concurrent.Future
 trait ExampleCommunication extends Communication {
   val name: Var[Option[String]] = shared[Option[String]](None)
   @client def url: Future[String]
-  @server def reverse(value: String): Future[String]
   @server def time: Future[Long]
   @client def navigateTo(url: String, push: Boolean): Future[Unit]
   @server def counter: Future[Int]

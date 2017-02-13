@@ -10,7 +10,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 object ReverseClientExample {
   val connection: WebSocketClient = new WebSocketClient(URL("http://localhost:8080/communication"))
-  val simple: ClientSimpleJVMCommunication = Communication.create[ClientSimpleJVMCommunication](connection)
+  val simple: ClientSimpleCommunication = Communication.create[ClientSimpleCommunication](connection)
 
   def main(args: Array[String]): Unit = {
     connection.connect()

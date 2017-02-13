@@ -2,8 +2,8 @@ package io.youi.example.screen
 
 import io.youi.app.screen.{ContentScreen, PathActivation}
 import io.youi.dom
-import io.youi.example.{ClientExampleApplication, ExampleCommunication}
-import io.youi.example.ClientExampleApplication.comm
+import io.youi.example.{ClientExampleApplication, ExampleCommunication, SimpleCommunication}
+import io.youi.example.ClientExampleApplication._
 import org.scalajs.dom._
 
 import scala.concurrent.Future
@@ -13,6 +13,7 @@ trait ExampleScreen extends ContentScreen[html.Element] with PathActivation {
   override protected def containerSelector: String = "#content"
 
   protected def c: ExampleCommunication = comm(ClientExampleApplication.connection)
+  protected def s: SimpleCommunication = simple(ClientExampleApplication.connection)
 
   def heading: html.Element = dom.byId[html.Element]("heading")
 

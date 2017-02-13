@@ -1,4 +1,4 @@
-package io.youi.html.style
+package io.youi.hypertext.style
 
 sealed abstract class TextOverflow(val value: String)
 

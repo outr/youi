@@ -1,4 +1,4 @@
-package io.youi.html.style
+package io.youi.hypertext.style
 
 object Position {
   case object Static extends Position

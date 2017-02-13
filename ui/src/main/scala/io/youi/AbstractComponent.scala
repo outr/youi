@@ -1,7 +1,7 @@
 package io.youi
 
 import com.outr.reactify._
-import io.youi.html.style.{ColorProperties, Position}
+import io.youi.hypertext.style.{ColorProperties, Position}
 
 trait AbstractComponent {
   object position {

@@ -1,7 +1,7 @@
-package io.youi.html
+package io.youi.hypertext
 import com.outr.reactify.Var
 import io.youi.{Size, dom}
-import io.youi.html.style.{Color, FontProperties, TextOverflow}
+import io.youi.hypertext.style.{Color, FontProperties, TextOverflow}
 import org.scalajs.dom.html.{Span => HTMLSpan}
 
 class Label extends Component {

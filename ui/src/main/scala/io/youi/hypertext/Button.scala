@@ -1,4 +1,4 @@
-package io.youi.html
+package io.youi.hypertext
 
 import com.outr.reactify.Var
 import io.youi.dom

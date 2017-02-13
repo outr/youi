@@ -1,4 +1,4 @@
-package io.youi.html
+package io.youi.hypertext
 
 import io.youi.AbstractContainer
 import org.scalajs.dom.html.Element

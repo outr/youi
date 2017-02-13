@@ -3,7 +3,7 @@ package io.youi
 import org.scalajs.dom._
 import com.outr.reactify.{Val, Var}
 import scribe.Logging
-import io.youi.html.HTMLContainer
+import io.youi.hypertext.HTMLContainer
 import org.scalajs.dom.html.{Div, Element}
 
 object UI extends HTMLContainer with Logging {

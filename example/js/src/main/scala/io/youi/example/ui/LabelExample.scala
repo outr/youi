@@ -1,8 +1,8 @@
 package io.youi.example.ui
 
 import io.youi._
-import io.youi.html.Label
-import io.youi.html.style.Color
+import io.youi.hypertext.Label
+import io.youi.hypertext.style.Color
 
 object LabelExample {
   ui.children += new Label {

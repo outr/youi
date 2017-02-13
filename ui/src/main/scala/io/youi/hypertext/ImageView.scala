@@ -1,7 +1,7 @@
-package io.youi.html
+package io.youi.hypertext
 import com.outr.reactify.Var
 import io.youi.dom
-import io.youi.html.style.Image
+import io.youi.hypertext.style.Image
 import org.scalajs.dom.Event
 import org.scalajs.dom.html.{Image => HTMLImage}
 

@@ -1,4 +1,4 @@
-package io.youi.html.style
+package io.youi.hypertext.style
 
 /**
   * Color provides a simple wrapper around RGBA color information.

@@ -3,7 +3,7 @@ package io.youi.example.ui
 import com.outr.reactify._
 import scribe._
 import io.youi.UI
-import io.youi.html.Button
+import io.youi.hypertext.Button
 
 import scala.scalajs.js.annotation.JSExportTopLevel
 

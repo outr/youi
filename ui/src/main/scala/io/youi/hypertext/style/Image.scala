@@ -1,4 +1,4 @@
-package io.youi.html.style
+package io.youi.hypertext.style
 
 import io.youi.net.URL
 import org.scalajs.dom.{Event, document, html}

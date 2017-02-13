@@ -1,9 +1,9 @@
-package io.youi.html
+package io.youi.hypertext
 
 import com.outr.reactify.{Channel, Var}
 import scribe.Logging
 import io.youi.AbstractComponent
-import io.youi.html.style.Color
+import io.youi.hypertext.style.Color
 import org.scalajs.dom.{Event, _}
 import org.scalajs.dom.html.Element
 import org.scalajs.dom.raw.Event
@@ -15,7 +15,7 @@ trait Component extends AbstractComponent with Logging {
 
   lazy val click: Channel[Event] = events("click", stopPropagation = false)
 
-  protected[html] def prop[T](get: => T, set: T => Unit, mayCauseResize: Boolean): Var[T] = {
+  protected[hypertext] def prop[T](get: => T, set: T => Unit, mayCauseResize: Boolean): Var[T] = {
     val v = Var[T](get)
     v.attach { value =>
       set(value)

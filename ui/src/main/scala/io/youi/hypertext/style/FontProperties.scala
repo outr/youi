@@ -1,8 +1,8 @@
-package io.youi.html.style
+package io.youi.hypertext.style
 
 import com.outr.reactify.Var
 import io.youi.Size
-import io.youi.html.Component
+import io.youi.hypertext.Component
 
 class FontProperties(component: Component) {
   val family: Var[String] = component.prop(component.element.style.fontFamily, component.element.style.fontFamily = _, mayCauseResize = true)

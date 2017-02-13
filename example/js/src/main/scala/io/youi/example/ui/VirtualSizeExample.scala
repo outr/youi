@@ -2,8 +2,8 @@ package io.youi.example.ui
 
 import io.youi.VirtualSizeSupport
 import io.youi._
-import io.youi.html.{ImageView, Label}
-import io.youi.html.style.{Color, Image}
+import io.youi.hypertext.{ImageView, Label}
+import io.youi.hypertext.style.{Color, Image}
 
 object VirtualSizeExample extends VirtualSizeSupport {
   ui.children += new ImageView {

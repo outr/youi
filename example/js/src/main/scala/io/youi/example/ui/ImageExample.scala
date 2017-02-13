@@ -3,8 +3,8 @@ package io.youi.example.ui
 import com.outr.reactify._
 import scribe._
 import io.youi.{AnimationFrame, UI}
-import io.youi.html.style.Image
-import io.youi.html.ImageView
+import io.youi.hypertext.style.Image
+import io.youi.hypertext.ImageView
 
 object ImageExample {
   import UI._

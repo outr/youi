@@ -1,8 +1,7 @@
-package io.youi
-
-import org.scalajs.dom._
+package io.youi.activate
 
 import io.youi.dom._
+import org.scalajs.dom._
 
 /**
   * Instantiate this to find, parse, and remove all activate tags in the body of the HTML.
@@ -59,65 +58,6 @@ object ActivationSupport {
     case HasClassConditionRegex(selector, className) => new HasClassInstruction(selector, className, trueInstruction, falseInstruction)
     case _ => throw new RuntimeException(s"Unknown condition: [$instruction]")
   }
-}
 
-trait ActivateInstruction {
-  def activate(): Unit
-
-  def deactivate(): Unit
-}
-
-abstract class ConditionalInstruction(trueInstruction: ActivateInstruction,
-                                      falseInstruction: Option[ActivateInstruction]) extends ActivateInstruction {
-  def condition: Boolean
-
-  override def activate(): Unit = if (condition) {
-    trueInstruction.activate()
-  } else {
-    falseInstruction.foreach(_.activate())
-  }
-
-  override def deactivate(): Unit = if (condition) {
-    trueInstruction.deactivate()
-  } else {
-    falseInstruction.foreach(_.deactivate())
-  }
-}
-
-class HasClassInstruction(selector: String,
-                          className: String,
-                          trueInstruction: ActivateInstruction,
-                          falseInstruction: Option[ActivateInstruction]) extends ConditionalInstruction(trueInstruction, falseInstruction) {
-  override def condition: Boolean = dom.bySelector[html.Element](selector).forall(_.classList.contains(className))
-}
-
-class SetTitleInstruction(title: String) extends ActivateInstruction {
-  private var previousTitle: String = document.title
-
-  override def activate(): Unit = {
-    previousTitle = document.title
-    document.title = title
-  }
-
-  override def deactivate(): Unit = {
-    document.title = previousTitle
-  }
-}
-
-class AddClassInstruction(selector: String, className: String) extends ActivateInstruction {
-  override def activate(): Unit = dom.bySelector[html.Element](selector).foreach(_.classList.add(className))
-
-  override def deactivate(): Unit = dom.bySelector[html.Element](selector).foreach(_.classList.remove(className))
-}
-
-class RemoveClassInstruction(selector: String, className: String) extends ActivateInstruction {
-  override def activate(): Unit = dom.bySelector[html.Element](selector).foreach(_.classList.remove(className))
-
-  override def deactivate(): Unit = dom.bySelector[html.Element](selector).foreach(_.classList.add(className))
-}
-
-class AlertInstruction(message: String) extends ActivateInstruction {
-  override def activate(): Unit = window.alert(message)
-
-  override def deactivate(): Unit = {}
+  def apply(): ActivationSupport = new ActivationSupport {}
 }

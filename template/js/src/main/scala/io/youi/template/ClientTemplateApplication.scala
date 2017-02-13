@@ -1,7 +1,8 @@
 package io.youi.template
 
+import io.youi.activate.ActivationSupport
 import io.youi.app.ClientApplication
-import io.youi.{ActivationSupport, dom}
+import io.youi.dom
 import org.scalajs.dom._
 
 import scala.scalajs.js.annotation.JSExportTopLevel

@@ -36,25 +36,53 @@ object ClientTemplateApplication extends TemplateApplication with ClientApplicat
     }
   }
 
+  private val ConditionalRegex = """(.+) \? (.+) \: (.+)""".r
   private val SetTitleRegex = """title = "(.*)"""".r
   private val AddClassRegex = """(.+)[.]addClass\("(.+)"\)""".r
   private val RemoveClassRegex = """(.+)[.]removeClass\("(.+)"\)""".r
+  private val ReplaceContentWithRegex = """(.+)[.]replaceContentWith\((.+)\)""".r
+  private val AlertRegex = """alert\("(.+)"\)""".r
+
+  private val HasClassConditionRegex = """(.+).hasClass\("(.+)"\)""".r
 
   private def activate(): Unit = {
     val tags = dom.byTag[html.Element]("activate")
     val activate = tags.map(_.innerHTML.trim).mkString("\n").split('\n').map(_.trim).toList
-    activate.foreach {
-      case SetTitleRegex(title) => document.title = title
-      case AddClassRegex(selector, className) => {
-        val elements = dom.bySelector[html.Element](selector)
-        elements.foreach(_.classList.add(className))
-      }
-      case RemoveClassRegex(selector, className) => {
-        val elements = dom.bySelector[html.Element](selector)
-        elements.foreach(_.classList.remove(className))
-      }
-      case instruction => println(s"Unknown Instruction: $instruction")
-    }
+    activate.foreach(activateInstruction)
     tags.foreach(_.remove())
+  }
+
+  private def activateInstruction(instruction: String): Unit = instruction match {
+    case ConditionalRegex(condition, trueInstruction, falseInstruction) => if (conditionInstruction(condition)) {
+      activateInstruction(trueInstruction)
+    } else {
+      activateInstruction(falseInstruction)
+    }
+    case SetTitleRegex(title) => document.title = title
+    case AddClassRegex(selector, className) => {
+      val elements = dom.bySelector[html.Element](selector)
+      elements.foreach(_.classList.add(className))
+    }
+    case RemoveClassRegex(selector, className) => {
+      val elements = dom.bySelector[html.Element](selector)
+      elements.foreach(_.classList.remove(className))
+    }
+    case ReplaceContentWithRegex(selector1, selector2) => {
+      val elements = dom.bySelector[html.Element](selector1)
+      val replacement = dom.oneBySelector[html.Element](selector2)
+      elements.foreach(_.innerHTML = replacement.innerHTML)
+    }
+    case AlertRegex(message) => window.alert(message)
+    case _ => println(s"Unknown Instruction: $instruction")
+  }
+
+  private def conditionInstruction(instruction: String): Boolean = instruction match {
+    case HasClassConditionRegex(selector, className) => {
+      dom.bySelector[html.Element](selector).forall(_.classList.contains(className))
+    }
+    case _ => {
+      println(s"Unknown Condition: $instruction. Returning false!")
+      false
+    }
   }
 }

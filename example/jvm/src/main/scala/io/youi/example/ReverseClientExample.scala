@@ -10,12 +10,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 object ReverseClientExample {
   val connection: WebSocketClient = new WebSocketClient(URL("http://localhost:8080/communication"))
-  val comm: ClientExampleCommunication = Communication.create[ClientExampleCommunication](connection)
+  val simple: ClientSimpleJVMCommunication = Communication.create[ClientSimpleJVMCommunication](connection)
 
   def main(args: Array[String]): Unit = {
     connection.connect()
     try {
-      val future = comm.reverse("This is a test!")
+      val future = simple.reverse("This is a test!")
       val result = Await.result(future, 5.seconds)
       scribe.info(s"Receive: $result")
     } finally {

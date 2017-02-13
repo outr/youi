@@ -87,12 +87,13 @@ class CommunicationInternal private[communication](communication: Communication)
           case None => scribe.warn(s"No entry found for endPoint: ${message.endPoint}, invocationId: ${message.invocationId}, content: ${message.content}.")
         }
       } else if (message.messageType == CommunicationMessage.MethodRequest) {
-        val endPoint = endPoints.getOrElse(message.endPoint, throw new RuntimeException(s"No endPoint found for $message (endPoint ids: ${endPoints.keys.mkString(", ")})."))
-        endPoint(message).map { content =>
-          send := CommunicationMessage(CommunicationMessage.MethodResponse, message.endPoint, message.invocationId, List(content), None)
-        }.failed.foreach { t =>
-          send := CommunicationMessage(CommunicationMessage.MethodResponse, message.endPoint, message.invocationId, Nil, Some(t.getMessage))
-          communication.error(t)
+        endPoints.get(message.endPoint).foreach { endPoint =>
+          endPoint(message).map { content =>
+            send := CommunicationMessage(CommunicationMessage.MethodResponse, message.endPoint, message.invocationId, List(content), None)
+          }.failed.foreach { t =>
+            send := CommunicationMessage(CommunicationMessage.MethodResponse, message.endPoint, message.invocationId, Nil, Some(t.getMessage))
+            communication.error(t)
+          }
         }
       }
     }

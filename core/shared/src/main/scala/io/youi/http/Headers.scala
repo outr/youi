@@ -77,6 +77,9 @@ object Headers {
     case object `Last-Modified` extends DateHeaderKey("Last-Modified")
     case object `Location` extends StringHeaderKey("Location")
     case object `Access-Control-Allow-Origin` extends StringHeaderKey("Access-Control-Allow-Origin")
+    case object `Access-Control-Allow-Credentials` extends BooleanHeaderKey("Access-Control-Allow-Credentials")
+    case object `Access-Control-Allow-Headers` extends StringHeaderKey("Access-Control-Allow-Headers")
+    case object `Access-Control-Allow-Methods` extends StringHeaderKey("Access-Control-Allow-Methods")
   }
 }
 
@@ -92,6 +95,10 @@ trait HeaderKey {
   def key: String
 
   def get(headers: Headers): Option[String] = headers.first(this)
+}
+
+object HeaderKey {
+  def apply(key: String): StringHeaderKey = new StringHeaderKey(key)
 }
 
 trait TypedHeaderKey[V] extends HeaderKey {
@@ -130,6 +137,12 @@ class StringHeaderKey(val key: String) extends TypedHeaderKey[String] {
   override def value(headers: Headers): Option[String] = get(headers)
 
   override def apply(value: String): Header = Header(this, value)
+}
+
+class BooleanHeaderKey(val key: String) extends TypedHeaderKey[Boolean] {
+  override def value(headers: Headers): Option[Boolean] = get(headers).map(_.toBoolean)
+
+  override def apply(value: Boolean): Header = Header(this, value.toString)
 }
 
 class DateHeaderKey(val key: String) extends TypedHeaderKey[Long] {

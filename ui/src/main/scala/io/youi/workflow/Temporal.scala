@@ -5,7 +5,7 @@ import io.youi.AnimationFrame
 import scala.concurrent.{Future, Promise}
 
 trait Temporal extends Task {
-  def start(): Future[Unit] = {
+  def run(): Future[Unit] = {
     val promise = Promise[Unit]
     var f: Double => Unit = null
     var elapsed = 0.0
@@ -16,7 +16,10 @@ trait Temporal extends Task {
       if (step >= stepSize) {
         update(delta, elapsed) match {
           case Conclusion.Continue => // Keep going
-          case Conclusion.Finished => AnimationFrame.delta.detach(f)
+          case Conclusion.Finished => {
+            AnimationFrame.delta.detach(f)
+            promise.success(())
+          }
         }
         step = 0.0
       }

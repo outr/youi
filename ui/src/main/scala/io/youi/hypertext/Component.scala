@@ -1,16 +1,14 @@
 package io.youi.hypertext
 
 import com.outr.reactify.{Channel, Var}
-import scribe.Logging
 import io.youi.AbstractComponent
-import io.youi.hypertext.style.Color
-import org.scalajs.dom.{Event, _}
+import org.scalajs.dom._
 import org.scalajs.dom.html.Element
 import org.scalajs.dom.raw.Event
 
 import scala.collection.mutable.ListBuffer
 
-trait Component extends AbstractComponent with Logging {
+trait Component extends AbstractComponent {
   protected[youi] val element: Element
 
   lazy val click: Channel[Event] = events("click", stopPropagation = false)

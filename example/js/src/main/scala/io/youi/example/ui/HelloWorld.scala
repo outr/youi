@@ -1,11 +1,8 @@
 package io.youi.example.ui
 
 import com.outr.reactify._
-import scribe._
 import io.youi.UI
 import io.youi.hypertext.Button
-
-import scala.scalajs.js.annotation.JSExportTopLevel
 
 object HelloWorld {
   import UI._
@@ -16,7 +13,7 @@ object HelloWorld {
     position.middle := UI.position.middle
 
     click.attach { evt =>
-      logger.info("Hello, World!")
+      scribe.info("Hello, World!")
     }
   }
 }

@@ -65,4 +65,6 @@ class TemplateScreen(val path: String) extends ContentScreen with ActivationSupp
     println(s"Activating: $path")
     activation.activate()
   }
+
+  override protected def deactivate(): Future[Unit] = Future.successful(activation.deactivate()).map(_ => super.deactivate())
 }

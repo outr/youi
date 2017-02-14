@@ -1,4 +1,4 @@
-package io.youi.app
+package io.youi
 
 import com.outr.reactify.{Channel, Val, Var}
 import io.youi.net.URL

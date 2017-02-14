@@ -1,9 +1,8 @@
 package io.youi.app.screen
 
 import com.outr.reactify.{Val, Var}
-import io.youi.app.History
 import io.youi.app.stream.StreamURL
-import io.youi.dom
+import io.youi.{History, dom}
 import io.youi.dom._
 import org.scalajs.dom._
 

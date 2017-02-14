@@ -1,7 +1,7 @@
 package io.youi.app.screen
 
 import com.outr.reactify.ChangeListener
-import io.youi.app.{History, HistoryStateChange}
+import io.youi.{History, HistoryStateChange}
 import io.youi.net.URL
 
 import scala.concurrent.Future

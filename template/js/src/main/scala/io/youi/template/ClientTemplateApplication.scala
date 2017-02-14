@@ -2,9 +2,9 @@ package io.youi.template
 
 import com.outr.reactify.Var
 import io.youi.activate.ActivationSupport
-import io.youi.app.{ClientApplication, History}
+import io.youi.app.ClientApplication
 import io.youi.app.screen.ContentScreen
-import io.youi.dom
+import io.youi.{History, dom}
 import org.scalajs.dom._
 
 import scala.concurrent.Future
@@ -55,6 +55,8 @@ object ClientTemplateApplication extends TemplateApplication with ClientApplicat
 }
 
 class TemplateScreen(val path: String) extends ContentScreen with ActivationSupport {
+  override protected def testing = true
+
   override protected def load(): Future[Unit] = super.load().map { _ =>
     ClientTemplateApplication.screenFixes()
   }

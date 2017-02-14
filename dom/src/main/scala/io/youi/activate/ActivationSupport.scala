@@ -25,6 +25,7 @@ object ActivationSupport {
   private val RemoveClassRegex = """(.+)[.]removeClass\("(.+)"\)""".r
   private val ReplaceContentWithRegex = """(.+)[.]replaceContentWith\((.+)\)""".r
   private val AlertRegex = """alert\("(.+)"\)""".r
+  private val TestLinkRegex = """(.+)[.]testLink\("(.+)"\)""".r
 
   private val HasClassConditionRegex = """(.+).hasClass\("(.+)"\)""".r
 
@@ -52,6 +53,7 @@ object ActivationSupport {
     case AddClassRegex(selector, className) => Some(new AddClassInstruction(selector, className))
     case RemoveClassRegex(selector, className) => Some(new RemoveClassInstruction(selector, className))
     case AlertRegex(message) => Some(new AlertInstruction(message))
+    case TestLinkRegex(selector, path) => Some(new TestLink(selector, path))
     case _ => throw new RuntimeException(s"Unknown instruction: [$line]")
   }
 

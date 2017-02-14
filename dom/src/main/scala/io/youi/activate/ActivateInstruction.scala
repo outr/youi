@@ -1,7 +1,7 @@
 package io.youi.activate
 
 import io.youi.dom
-import org.scalajs.dom.{document, html, window}
+import org.scalajs.dom.{Event, document, html, window}
 
 sealed trait ActivateInstruction {
   def activate(): Unit
@@ -62,4 +62,17 @@ class AlertInstruction(message: String) extends ActivateInstruction {
   override def activate(): Unit = window.alert(message)
 
   override def deactivate(): Unit = {}
+}
+
+class TestLink(selector: String, path: String) extends ActivateInstruction {
+  private val listener = (evt: Event) => {
+    evt.preventDefault()
+    evt.stopPropagation()
+
+    window.history.pushState(path, path, path)
+  }
+
+  override def activate(): Unit = dom.bySelector[html.Element](selector).head.addEventListener("click", listener)
+
+  override def deactivate(): Unit = dom.bySelector[html.Element](selector).head.removeEventListener("click", listener)
 }

@@ -8,7 +8,7 @@ import io.youi.http._
 import io.youi.net.ContentType
 import io.youi.server.UndertowServer
 import io.youi.server.handler.{CachingManager, SenderHandler}
-import io.youi.stream.{ByTag, Delta, HTMLParser}
+import io.youi.stream.{ByTag, Delta, HTMLParser, Selector}
 
 class ServerTemplateApplication(compiler: TemplateCompiler) extends UndertowServer with TemplateApplication with ServerApplication {
   handler.caching(CachingManager.NotCached).file(compiler.destinationDirectory)
@@ -46,7 +46,8 @@ class ServerTemplateApplication(compiler: TemplateCompiler) extends UndertowServ
               |</script>
             """.stripMargin)
         )
-        val html = stream.stream(deltas)
+        val selector = url.param("selector").map(Selector.parse)
+        val html = stream.stream(deltas, selector)
         SenderHandler.handle(httpConnection, Content.string(html, ContentType.`text/html`), caching = CachingManager.NotCached)
       }
     }

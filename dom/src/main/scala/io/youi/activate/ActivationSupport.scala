@@ -10,8 +10,11 @@ trait ActivationSupport {
   protected def activationRoot: html.Element = document.body
   private lazy val instructions: List[ActivateInstruction] = ActivationSupport.parse(activationRoot)
 
-  def activate(): Unit = instructions.foreach(_.activate())
-  def deactivate(): Unit = instructions.foreach(_.deactivate())
+  object activation {
+    def activate(): Unit = instructions.foreach(_.activate())
+
+    def deactivate(): Unit = instructions.foreach(_.deactivate())
+  }
 }
 
 object ActivationSupport {

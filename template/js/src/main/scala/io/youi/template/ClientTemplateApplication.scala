@@ -1,19 +1,27 @@
 package io.youi.template
 
+import com.outr.reactify.Var
 import io.youi.activate.ActivationSupport
-import io.youi.app.ClientApplication
+import io.youi.app.{ClientApplication, History}
+import io.youi.app.screen.ContentScreen
 import io.youi.dom
 import org.scalajs.dom._
 
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.scalajs.js.annotation.JSExportTopLevel
 
-object ClientTemplateApplication extends TemplateApplication with ClientApplication with ActivationSupport {
+object ClientTemplateApplication extends TemplateApplication with ClientApplication {
+  private lazy val pages = dom.byId[html.Input]("template_pages").value.split(';').toSet
+
   @JSExportTopLevel("application")
   def main(): Unit = {
-    val pages = dom.byId[html.Input]("template_pages").value.split(';').toSet
-    fixAnchors(pages)
-
-    activate()
+    val paths = pages.map { page =>
+      s"/${page.substring(0, page.indexOf('.'))}"
+    }
+    val screens = paths.map { p =>
+      new TemplateScreen(p)
+    }
 
     println("Template initialized!")
   }
@@ -28,11 +36,31 @@ object ClientTemplateApplication extends TemplateApplication with ClientApplicat
       hrefOption match {
         case Some(href) => {
           if (pages.contains(href)) {
-            anchor.href = s"/${href.substring(0, href.length - 5)}"
+            val path = s"/${href.substring(0, href.length - 5)}"
+            anchor.href = path
+            anchor.addEventListener("click", (evt: Event) => {
+              evt.preventDefault()
+              evt.stopPropagation()
+
+              History.pushPath(path)
+            })
           }
         }
         case None => // Ignore
       }
     }
+  }
+
+  def screenFixes(): Unit = fixAnchors(pages)
+}
+
+class TemplateScreen(val path: String) extends ContentScreen with ActivationSupport {
+  override protected def load(): Future[Unit] = super.load().map { _ =>
+    ClientTemplateApplication.screenFixes()
+  }
+
+  override protected def activate(): Future[Unit] = super.activate().map { _ =>
+    println(s"Activating: $path")
+    activation.activate()
   }
 }

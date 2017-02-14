@@ -1,5 +1,7 @@
 package io.youi.workflow
 
+import scala.concurrent.duration.FiniteDuration
+
 trait DurationTemporal extends Temporal {
   def time: FiniteDuration
 

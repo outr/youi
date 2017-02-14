@@ -3,6 +3,8 @@ package io.youi.activate
 import io.youi.{History, dom}
 import org.scalajs.dom.{Event, document, html, window}
 
+import scala.scalajs.js
+
 sealed trait ActivateInstruction {
   def debug: Boolean = true
 
@@ -91,4 +93,10 @@ class TestLink(selector: String, path: String) extends ActivateInstruction {
   override def activate(): Unit = dom.bySelector[html.Element](selector).head.addEventListener("click", listener)
 
   override def deactivate(): Unit = dom.bySelector[html.Element](selector).head.removeEventListener("click", listener)
+}
+
+class Call(code: String) extends ActivateInstruction {
+  override def activate(): Unit = js.eval(code)
+
+  override def deactivate(): Unit = {}
 }

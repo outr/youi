@@ -9,9 +9,7 @@ import org.scalajs.dom._
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-trait ExampleScreen extends ContentScreen[html.Element] with PathActivation {
-  override protected def containerSelector: String = "#content"
-
+trait ExampleScreen extends ContentScreen with PathActivation {
   protected def c: ExampleCommunication = comm(ClientExampleApplication.connection)
   protected def s: SimpleCommunication = simple(ClientExampleApplication.connection)
 

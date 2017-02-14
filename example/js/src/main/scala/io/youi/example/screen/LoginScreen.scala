@@ -9,9 +9,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Failure, Success}
 
 object LoginScreen extends ExampleScreen {
-  override protected def contentSelector: String = "#loginScreen"
   override def path: String = "/login.html"
 
+  def form: html.Form = dom.byId[html.Form]("loginScreen")
   def message: html.Div = dom.byId[html.Div]("message")
   def username: html.Input = dom.byId[html.Input]("username")
   def password: html.Input = dom.byId[html.Input]("password")

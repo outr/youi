@@ -21,10 +21,13 @@ object CommunicationScreen extends ExampleScreen {
   def broadcastInput: html.Input = content.byId[html.Input]("communicationBroadcast")
   def broadcastButton: html.Button = content.byId[html.Button]("communicationBroadcastButton")
 
-  override protected def contentSelector: String = "#exampleScreen"
   override def path: String = "/communication.html"
 
   override protected def load(): Future[Unit] = super.load().map { _ =>
+    configure()
+  }
+
+  private def configure(): Unit = {
     connection.connected.attachAndFire { c =>
       connectedInput.value = if (c) "Yes" else "No"
     }

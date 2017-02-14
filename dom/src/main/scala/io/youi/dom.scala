@@ -70,7 +70,7 @@ object dom extends ExtendedElement(None) {
       case None => parent.appendChild(e)
     }
 
-    def remove(): Unit = e.parentNode.removeChild(e)
+    def remove(): Unit = Option(e.parentNode).foreach(_.removeChild(e))
   }
 
   implicit def domListToIterator[T](list: DOMList[T]): Iterator[T] = new Iterator[T] {

@@ -2,7 +2,7 @@ package io.youi.example
 
 import java.io.File
 
-import io.youi.app.{Page, ServerApplication}
+import io.youi.app._
 import io.youi.http._
 import io.youi.net.ContentType
 import io.youi.server.UndertowServer

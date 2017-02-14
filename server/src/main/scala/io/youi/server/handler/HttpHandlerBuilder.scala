@@ -6,6 +6,7 @@ import io.youi.Priority
 import io.youi.http._
 import io.youi.net.{ContentType, URL, URLMatcher}
 import io.youi.server.Server
+import io.youi.server.validation.Validator
 import io.youi.stream.{Delta, HTMLParser, Selector}
 
 case class HttpHandlerBuilder(server: Server,

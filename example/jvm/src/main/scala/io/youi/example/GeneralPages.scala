@@ -6,7 +6,7 @@ import io.youi.http._
 import io.youi.net.URLMatcher
 import io.youi.server.validation.Validator
 
-object GeneralPages extends ExamplePage with TemplatePage {
+object GeneralPages extends ExamplePage with MatcherPage {
   override protected def matcher: URLMatcher = combined.any(
     path.exact("/dashboard.html"),
     path.exact("/login.html"),
@@ -20,9 +20,7 @@ object GeneralPages extends ExamplePage with TemplatePage {
     super.validators(httpConnection) ::: List(AuthenticationExampleValidator)
   }
 
-  override def templateFor(path: String): Option[File] = Some(new File("src/main/web/template.html"))
-
-  override def partFor(path: String): Option[File] = Some(new File(s"src/main/web$path"))
+  override protected def resource(httpConnection: HttpConnection): Option[File] = Some(new File(s"src/main/web${httpConnection.request.url.path.decoded}"))
 
   override protected def scalaJSFunction: Option[String] = Some("io.youi.example.ClientExampleApplication().main")
 }

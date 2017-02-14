@@ -84,7 +84,10 @@ class CommunicationInternal private[communication](communication: Communication)
           f
         } match {
           case Some(f) => f(message)
-          case None => scribe.warn(s"No entry found for endPoint: ${message.endPoint}, invocationId: ${message.invocationId}, content: ${message.content}.")
+          case None => {
+            // TODO: detect if this is the right Communication instance
+            scribe.debug(s"No entry found for endPoint: ${message.endPoint}, invocationId: ${message.invocationId}, content: ${message.content}.")
+          }
         }
       } else if (message.messageType == CommunicationMessage.MethodRequest) {
         endPoints.get(message.endPoint).foreach { endPoint =>

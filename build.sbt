@@ -80,21 +80,21 @@ lazy val communication = crossProject.in(file("communication"))
 lazy val communicationJS = communication.js
 lazy val communicationJVM = communication.jvm.dependsOn(server)
 
-lazy val app = crossProject.in(file("app"))
-  .settings(
-    name := "youi-app"
-  )
-  .dependsOn(core, communication)
-
-lazy val appJS = app.js.dependsOn(dom)
-lazy val appJVM = app.jvm
-
 lazy val ui = project.in(file("ui"))
   .enablePlugins(ScalaJSPlugin)
   .settings(
     name := "youi-ui"
   )
   .dependsOn(coreJS, dom)
+
+lazy val app = crossProject.in(file("app"))
+  .settings(
+    name := "youi-app"
+  )
+  .dependsOn(core, communication)
+
+lazy val appJS = app.js.dependsOn(ui)
+lazy val appJVM = app.jvm
 
 lazy val template = crossProject.in(file("template"))
   .settings(

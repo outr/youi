@@ -4,8 +4,13 @@ import com.outr.reactify.StateChannel
 
 import scala.concurrent.Future
 import scala.concurrent.duration.FiniteDuration
+import scala.language.implicitConversions
 
 package object workflow {
+  implicit def future2Task(future: => Future[Unit]): Task = new Task {
+    override protected def run(): Future[Unit] = future
+  }
+
   implicit class StateChannelWorkflow(state: StateChannel[Double]) {
     def to(destination: => Double): PartialAnimate = PartialAnimate(state, () => destination)
   }

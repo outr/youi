@@ -45,6 +45,13 @@ trait Component extends AbstractComponent {
   override protected def init(): Unit = {
     super.init()
 
+    opacity := (try {
+      element.style.opacity.toDouble
+    } catch {
+      case t: Throwable => 1.0
+    })
+    visible := element.style.visibility != "hidden"
+
     position.`type`.attachAndFire(p => element.style.position = p.toString.toLowerCase)
     position.x.attach(d => element.style.left = s"${d}px")
     position.y.attach(d => element.style.top = s"${d}px")
@@ -59,6 +66,10 @@ trait Component extends AbstractComponent {
     color.green.attach(d => updateColor())
     color.blue.attach(d => updateColor())
     color.alpha.attach(d => updateColor())
+    backgroundColor.red.attach(d => updateBackgroundColor())
+    backgroundColor.green.attach(d => updateBackgroundColor())
+    backgroundColor.blue.attach(d => updateBackgroundColor())
+    backgroundColor.alpha.attach(d => updateBackgroundColor())
     updateSize()
   }
 
@@ -84,5 +95,25 @@ trait Component extends AbstractComponent {
   protected def updateColor(): Unit = {
     def i(d: Double): Int = math.round(d * 255.0).toInt
     element.style.color = s"rgba(${i(color.red())}, ${i(color.green())}, ${i(color.blue())}, ${color.alpha()})"
+  }
+
+  protected def updateBackgroundColor(): Unit = {
+    def i(d: Double): Int = math.round(d * 255.0).toInt
+    element.style.backgroundColor = s"rgba(${i(backgroundColor.red())}, ${i(backgroundColor.green())}, ${i(backgroundColor.blue())}, ${backgroundColor.alpha()})"
+  }
+}
+
+object Component {
+  private var cache = Map.empty[html.Element, Component]
+
+  def cached[E <: html.Element, T <: Component](element: E, create: E => T): T = synchronized {
+    cache.get(element) match {
+      case Some(c) => c.asInstanceOf[T]
+      case None => {
+        val c = create(element)
+        cache += element -> c
+        c
+      }
+    }
   }
 }

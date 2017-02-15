@@ -37,6 +37,7 @@ trait AbstractComponent {
   }
 
   lazy val color: ColorProperties = new ColorProperties
+  lazy val backgroundColor: ColorProperties = new ColorProperties
   lazy val rotation: Var[Double] = Var(0.0)
   lazy val opacity: Var[Double] = Var(1.0)
   lazy val visible: Var[Boolean] = Var(true)

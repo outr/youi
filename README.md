@@ -30,7 +30,23 @@ into this new framework. If you need a production-ready framework please look at
 ## Features for 1.0.0 (Future)
 
 * [ ] Integration of basic HTML components for UI (Scala.js)
+    * [X] Button
+    * [X] Container
+    * [X] ImageView
+    * [X] Label
+    * [X] TextInput
+    * [X] TextArea
+    * [ ] Full event support
+    * [ ] Styling and Theme functionality
 * [ ] Integration of Pixi.js for more advanced UI functionality (Scala.js)
+* [X] Animation and workflow functionality
+    * [X] Task
+    * [X] Action
+    * [X] Temporal
+    * [X] Parallel and Sequential
+    * [X] Sleep
+    * [X] Easings integration
+    * [X] DSL
 * [ ] Existing HTML, CSS, and JavaScript optimization, compression, and obfuscation for production use
 * [ ] Image optimizer for production use supporting compile-time and run-time optimization
 * [ ] HTML caching in Local Storage for offline and faster cached loading

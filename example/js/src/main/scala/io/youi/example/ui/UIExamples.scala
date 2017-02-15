@@ -12,6 +12,7 @@ object UIExamples {
     "Hello World" -> (() => HelloWorld),
     "Image Example" -> (() => ImageExample),
     "Label Example" -> (() => LabelExample),
+    "Animation Example" -> (() => AnimationExample),
     "Virtual Size Example" -> (() => VirtualSizeExample)
   )
   val container: html.Div = dom.create[html.Div]("div")

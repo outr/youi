@@ -1,29 +1,12 @@
 package io.youi.workflow
 
 import com.outr.reactify.StateChannel
+import io.youi.easing.Easing
 
 import scala.concurrent.duration.FiniteDuration
 
 case class PartialAnimate(state: StateChannel[Double], destination: () => Double) {
-  def in(d: FiniteDuration): DurationTemporal = new DurationTemporal {
-    private var initialPosition: Double = 0.0
-
-    override protected def starting(): Unit = {
-      super.starting()
-
-      initialPosition = state()
-    }
-
-    override def act(delta: Double, elapsed: Double, progress: Double): Unit = {
-      val endPosition = destination()
-      val length = endPosition - initialPosition
-      val adjust = length * progress
-      val value = initialPosition + (length * progress)
-      state := value
-    }
-
-    override def time: FiniteDuration = d
-  }
+  def in(duration: FiniteDuration) = AnimateIn(state, destination, duration, Easing.linear)
 
   def by(stepBy: Double): Temporal = new Temporal {
     override def update(delta: Double, elapsed: Double): Conclusion = {

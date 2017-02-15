@@ -18,4 +18,6 @@ package object workflow {
     f
     Future.successful(())
   }
+  def repeat(task: Task, times: Int = 1): Repeat = new Repeat(task, times)
+  def forever(task: Task): Repeat = new Repeat(task, Int.MaxValue)
 }

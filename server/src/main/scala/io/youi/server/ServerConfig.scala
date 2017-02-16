@@ -5,6 +5,13 @@ import java.io.File
 import com.outr.reactify._
 
 class ServerConfig(server: Server) {
+  object session {
+    val name: Var[String] = Var("JSESSIONID")
+    val maxAge: Var[Option[Long]] = Var(None)
+    val domain: Var[Option[String]] = Var(None)
+    val secure: Var[Boolean] = Var(false)
+  }
+
   /**
     * If set to true the server will automatically restart when any configuration option changes. If set to false
     * the server must be manually restarted before changes will take effect.

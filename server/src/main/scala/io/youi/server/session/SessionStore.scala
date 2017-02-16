@@ -20,24 +20,20 @@ object SessionStore {
   private val scheduler = actorSystem.scheduler
   private var map = Map.empty[String, SessionStore]
 
-  val cookieName: Var[String] = Var("JSESSIONID")
-  val cookieMaxAge: Var[Option[Long]] = Var(None)
-  val cookieDomain: Var[Option[String]] = Var(None)
-  val cookieSecure: Var[Boolean] = Var(false)
-
   private val monitor = scheduler.schedule(1.minute, 1.minute) {
     invalidateExpired()
   }
 
   def getOrCreateSessionId(httpConnection: HttpConnection): String = synchronized {
-    httpConnection.request.cookies.find(_.name == cookieName()).map(_.value) match {
+    import httpConnection.server.config.session
+    httpConnection.request.cookies.find(_.name == session.name()).map(_.value) match {
       case Some(id) => id     // Found cookie in request
-      case None => httpConnection.response.cookies.find(_.name == cookieName()).map(_.value) match {
+      case None => httpConnection.response.cookies.find(_.name == session.name()).map(_.value) match {
         case Some(id) => id   // Found cookie in response
         case None => {        // No cookie found in request or response
         val id = Unique()
           httpConnection.update { response =>
-            val cookie = ResponseCookie(name = cookieName, value = id, maxAge = cookieMaxAge, domain = cookieDomain, secure = cookieSecure)
+            val cookie = ResponseCookie(name = session.name, value = id, maxAge = session.maxAge, domain = session.domain, secure = session.secure)
             response.withHeader(Headers.Response.`Set-Cookie`(cookie))
           }
           id

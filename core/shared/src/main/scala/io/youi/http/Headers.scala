@@ -18,6 +18,9 @@ case class Headers(map: Map[String, List[String]] = Map.empty) {
   def setHeader(header: Header): Headers = {
     copy(map + (header.key.key -> List(header.value)))
   }
+  def removeHeader(header: HeaderKey): Headers = {
+    copy(map - header.key)
+  }
   def withHeader(key: String, value: String): Headers = withHeader(Header(new StringHeaderKey(key), value))
 
   def merge(headers: Headers): Headers = copy(map ++ headers.map)

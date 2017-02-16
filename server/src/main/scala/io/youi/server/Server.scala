@@ -7,6 +7,8 @@ import io.youi.server.handler.{HttpHandler, HttpHandlerBuilder}
 import io.youi.server.session.SessionStore
 
 trait Server extends HttpHandler with ErrorSupport {
+  private var initialized = false
+
   val config = new ServerConfig(this)
 
   val handler = HttpHandlerBuilder(this)
@@ -34,9 +36,21 @@ trait Server extends HttpHandler with ErrorSupport {
 
   protected val implementation: ServerImplementation
 
+  def isInitialized: Boolean = initialized
   def isRunning: Boolean = implementation.isRunning
 
+  /**
+    * Init is called on start(), but only the first time. If the server is restarted it is not invoked again.
+    */
+  protected def init(): Unit = {
+  }
+
   def start(): Unit = synchronized {
+    if (!initialized) {
+      init()
+      initialized = true
+    }
+
     implementation.start()
     scribe.info(s"Server started on ${config.listeners().mkString(", ")}")
   }

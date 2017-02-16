@@ -51,6 +51,7 @@ trait Server extends HttpHandler with ErrorSupport {
   }
 
   def dispose(): Unit = {
+    stop()
     SessionStore.dispose()
   }
 

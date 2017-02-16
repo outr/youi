@@ -1,6 +1,6 @@
 package io.youi.server.session
 
-import io.youi.http.HttpConnection
+import io.youi.http.{Connection, HttpConnection}
 
 trait SessionManager[S <: Session] {
   protected def get(httpConnection: HttpConnection): Option[S]
@@ -15,4 +15,10 @@ trait SessionManager[S <: Session] {
       session
     }
   }
+
+  def apply(connection: Connection): S = apply(connection.store[HttpConnection]("httpConnection"))
+
+  def byHttpConnections(connections: Set[HttpConnection]): Set[S] = connections.map(apply)
+
+  def byConnections(connections: Set[Connection]): Set[S] = connections.map(apply)
 }

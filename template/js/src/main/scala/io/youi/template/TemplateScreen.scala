@@ -7,7 +7,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class TemplateScreen(val path: String) extends ContentScreen with ActivationSupport {
-  override protected def testing = false
+  override protected def testing = true
 
   override protected def load(): Future[Unit] = super.load().map { _ =>
     ClientTemplateApplication.screenFixes()

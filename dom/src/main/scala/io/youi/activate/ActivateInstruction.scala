@@ -6,25 +6,25 @@ import org.scalajs.dom.{Event, document, html, window}
 import scala.scalajs.js
 
 sealed trait ActivateInstruction {
-  def debug: Boolean = true
+  def debug: Boolean = false
 
   def activate(): Unit
 
   def deactivate(): Unit
 }
 
-abstract class ConditionalInstruction(trueInstruction: ActivateInstruction,
+abstract class ConditionalInstruction(trueInstruction: Option[ActivateInstruction],
                                       falseInstruction: Option[ActivateInstruction]) extends ActivateInstruction {
   def condition: Boolean
 
   override def activate(): Unit = if (condition) {
-    trueInstruction.activate()
+    trueInstruction.foreach(_.activate())
   } else {
     falseInstruction.foreach(_.activate())
   }
 
   override def deactivate(): Unit = if (condition) {
-    trueInstruction.deactivate()
+    trueInstruction.foreach(_.deactivate())
   } else {
     falseInstruction.foreach(_.deactivate())
   }
@@ -32,7 +32,7 @@ abstract class ConditionalInstruction(trueInstruction: ActivateInstruction,
 
 class HasClassInstruction(selector: String,
                           className: String,
-                          trueInstruction: ActivateInstruction,
+                          trueInstruction: Option[ActivateInstruction],
                           falseInstruction: Option[ActivateInstruction]) extends ConditionalInstruction(trueInstruction, falseInstruction) {
   override def condition: Boolean = {
     val result = dom.bySelector[html.Element](selector).forall(_.classList.contains(className))
@@ -82,17 +82,23 @@ class AlertInstruction(message: String) extends ActivateInstruction {
   override def deactivate(): Unit = {}
 }
 
-class TestLink(selector: String, path: String) extends ActivateInstruction {
+class OnClick(selector: String, instruction: ActivateInstruction) extends ActivateInstruction {
   private val listener = (evt: Event) => {
     evt.preventDefault()
     evt.stopPropagation()
 
-    History.pushPath(path)
+    instruction.activate()
   }
 
   override def activate(): Unit = dom.bySelector[html.Element](selector).head.addEventListener("click", listener)
 
   override def deactivate(): Unit = dom.bySelector[html.Element](selector).head.removeEventListener("click", listener)
+}
+
+class Link(path: String) extends ActivateInstruction {
+  override def activate(): Unit = History.pushPath(path)
+
+  override def deactivate(): Unit = {}
 }
 
 class Call(code: String) extends ActivateInstruction {

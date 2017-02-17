@@ -12,6 +12,7 @@ trait SinglePageApplication extends ServerApplication {
   protected def templateDirectory: File
   protected def appJSPath: String
   protected def appJSMethod: String
+  protected def scriptPaths: List[String] = Nil
   protected def responseMap(httpConnection: HttpConnection): Map[String, String] = Map.empty
   protected def deltas(httpConnection: HttpConnection): List[Delta] = Nil
 
@@ -49,6 +50,7 @@ trait SinglePageApplication extends ServerApplication {
     val d = List(
       Delta.InsertLastChild(ByTag("body"),
         s"""
+           |${scriptPaths.map(p => s"""<script src="$p"></script>""").mkString("\n")}
            |${responseFields.mkString("\n")}
            |<script src="$appJSPath"></script>
            |<script>

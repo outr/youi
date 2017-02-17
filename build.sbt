@@ -83,7 +83,8 @@ lazy val communicationJVM = communication.jvm.dependsOn(server)
 lazy val ui = project.in(file("ui"))
   .enablePlugins(ScalaJSPlugin)
   .settings(
-    name := "youi-ui"
+    name := "youi-ui",
+    libraryDependencies += "com.outr" %%% "scalajs-pixijs" % "4.3.5"
   )
   .dependsOn(coreJS, dom)
 

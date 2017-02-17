@@ -1,12 +1,12 @@
 package io.youi.hypertext
 
 import io.youi.dom
-import org.scalajs.dom.html.Div
+import org.scalajs.dom._
 
-class Container(val element: Div) extends HTMLContainer with Component {
-  def this() = this(dom.create[Div]("div"))
+class Container(val element: html.Element) extends HTMLContainer with Component {
+  def this() = this(dom.create[html.Element]("div"))
 }
 
 object Container {
-  def cached(element: Div): Container = Component.cached[Div, Container](element, new Container(_))
+  def cached(element: html.Element): Container = Component.cached[html.Element, Container](element, new Container(_))
 }

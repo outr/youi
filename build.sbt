@@ -24,12 +24,12 @@ lazy val core = crossProject.in(file("core"))
     resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases",
     libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value,
     libraryDependencies += "com.outr" %%% "scribe" % "1.4.1",
-    libraryDependencies += "com.outr" %%% "reactify" % "1.3.7",
+    libraryDependencies += "com.outr" %%% "reactify" % "1.3.8",
     libraryDependencies += "org.scalactic" %%% "scalactic" % "3.0.1",
     libraryDependencies += "org.scalatest" %%% "scalatest" % "3.0.1" % "test"
   )
   .jvmSettings(
-    libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.4.16"
+    libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.4.17"
   )
   .jsSettings(
     libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.1"

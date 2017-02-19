@@ -18,6 +18,7 @@ into this new framework. If you need a production-ready framework please look at
 ## Modules
 
 * [app](app) - unification of client and server to write complete applications (Scala and Scala.js)
+* [client](client) - HTTP client for asynchronous request/response and restful support (Scala)
 * [communication](communication) - communication framework to provide type-safe communication between a client / server (Scala and Scala.js)
 * [core](core) - core features generally useful for web and HTTP (Scala and Scala.js)
 * [dom](dom) - features and functionality related to working with the browser's DOM (Scala.js)
@@ -79,6 +80,10 @@ into this new framework. If you need a production-ready framework please look at
     * [X] Server for faster testing
     * [X] Real-time updates in browser
     * [X] LESS and SASS support
+* [X] HTTP Client
+    * [X] Basic HTTP request / response using abstraction
+    * [X] Fully and properly asynchronous and non-blocking
+    * [X] Restful support for case class serialization and deserialization
 
 ## Features for 0.1.0 (Released 2016.12.22)
 

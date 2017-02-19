@@ -9,7 +9,7 @@ scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 
 lazy val root = project.in(file("."))
   .aggregate(
-    coreJS, coreJVM, stream, communicationJS, communicationJVM, dom, server, serverUndertow, ui, appJS, appJVM,
+    coreJS, coreJVM, stream, communicationJS, communicationJVM, dom, client, server, serverUndertow, ui, appJS, appJVM,
     templateJS, templateJVM, exampleJS, exampleJVM
   )
   .settings(
@@ -50,6 +50,19 @@ lazy val dom = project.in(file("dom"))
   )
   .dependsOn(coreJS)
   .dependsOn(stream % "compile")
+
+lazy val client = project.in(file("client"))
+  .settings(
+    name := "youi-client",
+    libraryDependencies += "org.apache.httpcomponents" % "httpasyncclient" % "4.1.3",
+    libraryDependencies += "org.powerscala" %% "powerscala-io" % "2.0.5",
+    libraryDependencies ++= Seq(
+      "io.circe" %% "circe-core",
+      "io.circe" %% "circe-generic",
+      "io.circe" %% "circe-parser"
+    ).map(_ % "0.7.0")
+  )
+  .dependsOn(coreJVM)
 
 lazy val server = project.in(file("server"))
   .settings(

@@ -6,7 +6,7 @@ import java.net.{HttpURLConnection, JarURLConnection, URL}
 import io.youi.net.ContentType
 import sun.net.www.protocol.file.FileURLConnection
 
-sealed trait Content {
+sealed trait Content extends RequestContent {
   def length: Long
   def lastModified: Long
   def contentType: ContentType

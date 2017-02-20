@@ -60,6 +60,35 @@ object History {
   def forward(delta: Int = 1): Unit = window.history.forward(delta)
 
   def reload(force: Boolean): Unit = window.location.reload(force)
+
+  /**
+    * Updates all anchors on the page to internal links to push history instead of loading another page. Essentially
+    * converts all links to be single-page-app compliant.  May be run multiple times and will only change new links.
+    */
+  def fixAnchors(): Unit = {
+    dom.byTag[html.Anchor]("a").foreach { anchor =>
+      if (Option(anchor.onclick).isEmpty && linkType(anchor.href) == LinkType.Internal) {
+        anchor.onclick = (evt: Event) => {
+          evt.preventDefault()
+          evt.stopPropagation()
+
+          push(URL(anchor.href))
+        }
+      }
+    }
+  }
+
+  def linkType(href: String): LinkType = if (href.trim.isEmpty) {
+    LinkType.Empty
+  } else if (href.endsWith("#")) {
+    LinkType.Hash
+  } else if (href.startsWith("javascript:")) {
+    LinkType.JavaScript
+  } else if (href.startsWith(url().base) || href.startsWith("/")) {
+    LinkType.Internal
+  } else {
+    LinkType.External
+  }
 }
 
 case class HistoryStateChange(url: URL, stateType: StateType, state: js.Any = null)
@@ -71,4 +100,14 @@ object StateType {
   case object Replace extends StateType
   case object Set extends StateType
   case object Pop extends StateType
+}
+
+sealed trait LinkType
+
+object LinkType {
+  case object Empty extends LinkType
+  case object JavaScript extends LinkType
+  case object Hash extends LinkType
+  case object Internal extends LinkType
+  case object External extends LinkType
 }

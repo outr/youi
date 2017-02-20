@@ -74,7 +74,12 @@ trait ClientApplication extends YouIApplication with ScreenManager {
 
   def connect(): Unit = synchronized {
     disconnect()
-    val url = URL(s"ws://${window.location.host}$connectionPath")
+    val protocol = if (window.location.protocol == "https:") {
+      "wss"
+    } else {
+      "ws"
+    }
+    val url = URL(s"$protocol://${window.location.host}$connectionPath")
     webSocket := Some(WebSocketUtil.connect(url, connection))
   }
 

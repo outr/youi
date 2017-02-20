@@ -1,8 +1,7 @@
-package io.youi.html
+package io.youi.hypertext
 
 import com.outr.reactify.Var
 import io.youi.dom
-import io.youi.hypertext.Component
 import org.scalajs.dom.html.{Input => HTMLInput}
 
 class TextInput extends Component {

@@ -6,9 +6,10 @@ import java.util.{Date, Locale}
 import io.youi.http.cookie.{RequestCookie, ResponseCookie}
 import io.youi.net.ContentType
 
+import scala.collection.immutable.TreeMap
 import scala.util.Try
 
-case class Headers(map: Map[String, List[String]] = Map.empty) {
+case class Headers(map: TreeMap[String, List[String]] = TreeMap.empty(Ordering.by(_.toLowerCase))) {
   def first(key: HeaderKey): Option[String] = get(key).headOption
   def get(key: HeaderKey): List[String] = map.getOrElse(key.key, Nil)
   def withHeader(header: Header): Headers = {
@@ -28,6 +29,8 @@ case class Headers(map: Map[String, List[String]] = Map.empty) {
 
 object Headers {
   val empty: Headers = Headers()
+
+  def apply(map: Map[String, List[String]]): Headers = apply(TreeMap[String, List[String]](map.toArray: _*)(Ordering.by(_.toLowerCase)))
 
   def `Cache-Control` = CacheControl
   case object `Connection` extends StringHeaderKey("Connection")

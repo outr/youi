@@ -1,7 +1,6 @@
 package io.youi.server.handler
 
-import io.youi.http.{Content, HttpConnection, Status, StringHeaderKey}
-import io.youi.server.validation.ValidationResult._
+import io.youi.http.HttpConnection
 import io.youi.server.validation.{ValidationResult, Validator}
 
 /**
@@ -15,27 +14,13 @@ trait HttpProcessor[T] extends HttpHandler {
 
   protected def matches(connection: HttpConnection): Option[T]
 
-  protected def validate(connection: HttpConnection): ValidationResult = {
-    val failures = validators(connection).map(_.validate(connection)).collect {
-      case result if result != Continue => result
-    }
-    failures.headOption.getOrElse(Continue)
-  }
-
   protected def process(connection: HttpConnection, value: T): Unit
 
   override def handle(connection: HttpConnection): Unit = {
     matches(connection).foreach { value =>
-      val isStreaming = connection.request.headers.first(new StringHeaderKey("streaming")).contains("true")
-      validate(connection) match {
-        case Continue => process(connection, value)
-        case Redirect(location) => if (isStreaming) {
-          val status = Status.NetworkAuthenticationRequired(s"Redirect to $location")
-          connection.update(_.withStatus(status).withContent(Content.empty))
-        } else {
-          connection.update(_.withRedirect(location))
-        }
-        case Error(status, message) => connection.update(_.withStatus(Status(status, message)).withContent(Content.empty))
+      val validationResult = ValidatorHttpHandler.validate(connection, validators(connection))
+      if (validationResult == ValidationResult.Continue) {
+        process(connection, value)
       }
     }
   }

@@ -6,7 +6,7 @@ import io.youi.Priority
 import io.youi.http._
 import io.youi.net.{ContentType, URL, URLMatcher}
 import io.youi.server.Server
-import io.youi.server.validation.Validator
+import io.youi.server.validation.{ValidationResult, Validator}
 import io.youi.stream.{Delta, HTMLParser, Selector}
 
 case class HttpHandlerBuilder(server: Server,
@@ -85,6 +85,12 @@ case class HttpHandlerBuilder(server: Server,
   def handle(f: HttpConnection => Unit): HttpHandler = wrap(new HttpHandler {
     override def handle(connection: HttpConnection): Unit = f(connection)
   })
+
+  def validation(validator: HttpConnection => ValidationResult): HttpHandler = validation(new Validator {
+    override def validate(connection: HttpConnection): ValidationResult = validator(connection)
+  })
+
+  def validation(validators: Validator*): HttpHandler = wrap(new ValidatorHttpHandler(validators.toList))
 
   def wrap(handler: HttpHandler): HttpHandler = {
     val p = priority

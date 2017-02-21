@@ -76,7 +76,7 @@ trait Server extends HttpHandler with ErrorSupport {
       handleRecursive(connection, handlers())
 
       // NotFound handling
-      if (!connection.isFinished && connection.response.content.isEmpty && connection.response.status == Status.OK) {
+      if (connection.response.content.isEmpty && connection.response.status == Status.OK) {
         connection.update { response =>
           response.copy(status = Status.NotFound)
         }

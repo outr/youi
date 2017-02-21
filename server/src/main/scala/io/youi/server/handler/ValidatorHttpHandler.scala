@@ -24,8 +24,12 @@ object ValidatorHttpHandler {
         } else {
           connection.update(_.withRedirect(location))
         }
+        connection.finish()
       }
-      case Error(status, message) => connection.update(_.withStatus(Status(status, message)).withContent(Content.empty))
+      case Error(status, message) => {
+        connection.update(_.withStatus(Status(status, message)).withContent(Content.empty))
+        connection.finish()
+      }
     }
     validationResult
   }

@@ -19,6 +19,8 @@ case class StringContent(value: String, contentType: ContentType, lastModified: 
 }
 
 case class FileContent(file: File, contentType: ContentType) extends Content {
+  assert(file.isFile, s"Cannot send back ${file.getAbsolutePath} as it is not a file reference!")
+
   override def length: Long = file.length()
 
   override def lastModified: Long = file.lastModified()

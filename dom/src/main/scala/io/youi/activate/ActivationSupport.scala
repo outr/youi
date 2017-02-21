@@ -13,13 +13,21 @@ trait ActivationSupport {
   protected def testing: Boolean = false
 
   object activation {
-    def activate(): Unit = instructions.foreach(_.activate())
+    def activate(): Unit = {
+      ActivationSupport.global.foreach(_.activate())
+      instructions.foreach(_.activate())
+    }
 
-    def deactivate(): Unit = instructions.foreach(_.deactivate())
+    def deactivate(): Unit = {
+      ActivationSupport.global.foreach(_.deactivate())
+      instructions.foreach(_.deactivate())
+    }
   }
 }
 
 object ActivationSupport {
+  private var global: List[ActivateInstruction] = Nil
+
   private val ConditionalRegex = """(.+) \? (.+) \: (.+)""".r
   private val ConditionalTrueRegex = """(.+) \? (.+)""".r
   private val ConditionalFalseRegex = """(.+) \: (.+)""".r
@@ -37,10 +45,19 @@ object ActivationSupport {
 
   private def parse(testing: Boolean, root: html.Element): List[ActivateInstruction] = {
     val tags = root.byTag[html.Element]("activate")
-    val activate = tags.map(_.innerHTML.trim).mkString("\n").split('\n').map(_.trim).toList
-    val instructions = activate.flatMap(i => parseInstruction(testing, i))
+    var local: List[ActivateInstruction] = Nil
+    tags.foreach { tag =>
+      val lines = tag.innerHTML.trim.split('\n').map(_.trim).toList
+      val instructions = lines.flatMap(i => parseInstruction(testing, i))
+
+      if (tag.getAttribute("global") == "true") {
+        global = global ::: instructions
+      } else {
+        local = local ::: instructions
+      }
+    }
     tags.foreach(_.remove())
-    instructions
+    local
   }
 
   private def parseInstruction(testing: Boolean, line: String): Option[ActivateInstruction] = line.trim match {

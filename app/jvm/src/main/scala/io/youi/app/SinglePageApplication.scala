@@ -31,7 +31,7 @@ trait SinglePageApplication extends ServerApplication {
           file = new File(templateDirectory, s"$fileName.html")
         }
 
-        if (file.exists()) {
+        if (file.exists() && file.isFile) {
           if (file.getName.endsWith(".html")) {
             serveHTML(httpConnection, file)
           } else {

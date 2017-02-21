@@ -80,7 +80,7 @@ object History {
 
   def linkType(href: String): LinkType = if (href.trim.isEmpty) {
     LinkType.Empty
-  } else if (href.endsWith("#")) {
+  } else if (href.contains("#")) {
     LinkType.Hash
   } else if (href.startsWith("javascript:")) {
     LinkType.JavaScript

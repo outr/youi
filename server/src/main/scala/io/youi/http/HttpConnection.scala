@@ -4,14 +4,15 @@ import io.youi.server.Server
 import io.youi.{MapStore, Store}
 
 class HttpConnection(val server: Server, val request: HttpRequest) {
-  private var _response: HttpResponse = HttpResponse()
+  private var responseVar: HttpResponse = HttpResponse()
+  private var finished = false
 
   val store: Store = new MapStore()
 
-  def response: HttpResponse = _response
+  def response: HttpResponse = responseVar
 
   def update(f: HttpResponse => HttpResponse): Unit = synchronized {
-    _response = f(_response)
+    responseVar = f(responseVar)
   }
 
   def isWebSocketUpgradeRequest: Boolean = Headers.`Upgrade`.get(request.headers).contains("websocket") && Headers.`Connection`.get(request.headers).contains("Upgrade")
@@ -30,4 +31,7 @@ class HttpConnection(val server: Server, val request: HttpRequest) {
   def proxySupport_=(handler: ProxyHandler): Unit = {
     store.update(ProxyHandler.key, handler)
   }
+
+  def isFinished: Boolean = finished
+  def finish(): Unit = finished = true
 }

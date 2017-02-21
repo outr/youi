@@ -6,6 +6,8 @@ import io.youi.http.{HttpConnection, Status}
 import io.youi.server.handler.{HttpHandler, HttpHandlerBuilder}
 import io.youi.server.session.SessionStore
 
+import scala.annotation.tailrec
+
 trait Server extends HttpHandler with ErrorSupport {
   private var initialized = false
 
@@ -71,8 +73,10 @@ trait Server extends HttpHandler with ErrorSupport {
 
   override def handle(connection: HttpConnection): Unit = {
     try {
-      handlers().foreach(_.handle(connection))
-      if (connection.response.content.isEmpty && connection.response.status == Status.OK) {
+      handleRecursive(connection, handlers())
+
+      // NotFound handling
+      if (!connection.isFinished && connection.response.content.isEmpty && connection.response.status == Status.OK) {
         connection.update { response =>
           response.copy(status = Status.NotFound)
         }
@@ -83,6 +87,18 @@ trait Server extends HttpHandler with ErrorSupport {
         error(t)
         handlers.error.get.handle(connection, Some(t))
       }
+    }
+  }
+
+  @tailrec
+  private def handleRecursive(connection: HttpConnection, handlers: List[HttpHandler]): Unit = {
+    if (connection.isFinished || handlers.isEmpty) {
+      // Finished
+    } else {
+      val handler = handlers.head
+      handler.handle(connection)
+
+      handleRecursive(connection, handlers.tail)
     }
   }
 }

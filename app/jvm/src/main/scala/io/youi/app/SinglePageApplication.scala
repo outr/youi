@@ -20,11 +20,11 @@ trait SinglePageApplication extends ServerApplication {
     /**
       * Stores deltas on this connection for use serving HTML.
       *
-      * @param function the function that takes in an HttpRequest and returns a list of Deltas.
+      * @param function the function that takes in an HttpConnection and returns a list of Deltas.
       * @return HttpHandler that has already been added to the server
       */
-    def deltas(function: HttpRequest => List[Delta]): HttpHandler = builder.handle { connection =>
-      val d = function(connection.request)
+    def deltas(function: HttpConnection => List[Delta]): HttpHandler = builder.handle { connection =>
+      val d = function(connection)
       if (d.nonEmpty) {
         val current = connection.store.getOrElse[List[Delta]](SinglePageApplication.DeltaKey, Nil)
         connection.store(SinglePageApplication.DeltaKey) = current ::: d

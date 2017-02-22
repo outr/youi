@@ -56,7 +56,11 @@ case class URL(protocol: Protocol = Protocol.Http,
 object URL {
   def apply(url: String): URL = apply(url, absolutizePath = true)
 
-  def apply(url: String, absolutizePath: Boolean): URL = try {
+  def get(url: String): Option[URL] = get(url, absolutizePath = true)
+
+  def apply(url: String, absolutizePath: Boolean): URL = get(url, absolutizePath).getOrElse(throw new RuntimeException(s"Unable to parse URL: [$url]."))
+
+  def get(url: String, absolutizePath: Boolean): Option[URL] = try {
     val colonIndex1 = url.indexOf(':')
     val protocol = Protocol(url.substring(0, colonIndex1))
     val slashIndex = url.indexOf('/', colonIndex1 + 3)
@@ -102,9 +106,12 @@ object URL {
     } else {
       None
     }
-    URL(protocol = protocol, host = host, port = port, path = path, parameters = parameters, fragment = fragment)
+    Some(URL(protocol = protocol, host = host, port = port, path = path, parameters = parameters, fragment = fragment))
   } catch {
-    case t: Throwable => throw new URLParseException(s"Unable to parse: $url", t)
+    case t: Throwable => {
+      scribe.warn(s"Unable to parse URL [$url]. Exception: ${t.getMessage}")
+      None
+    }
   }
 
   private val unreservedCharacters = Set('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',

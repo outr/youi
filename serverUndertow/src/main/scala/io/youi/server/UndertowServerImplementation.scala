@@ -105,6 +105,7 @@ object UndertowServerImplementation {
     } else {
       None
     }
+
     HttpRequest(
       method = Method(exchange.getRequestMethod.toString),
       source = source,

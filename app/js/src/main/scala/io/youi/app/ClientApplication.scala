@@ -104,13 +104,19 @@ trait ClientApplication extends YouIApplication with ScreenManager {
         exception match {
           case exc: AjaxException if exc.xhr.status > 0 => History.reload(force = true)
           case _ => {
-            if (attempt < 100) {
-              window.setTimeout(() => {
-                attemptReload(attempt + 1)
-              }, 5000)
+            val timeout = if (attempt < 10) {
+              2500
+            } else if (attempt < 25) {
+              5000
+            } else if (attempt < 100) {
+              10000
             } else {
-              scribe.info("Unable to connect to server. Giving up!")
+              30000
             }
+
+            window.setTimeout(() => {
+              attemptReload(attempt + 1)
+            }, timeout)
           }
         }
       }

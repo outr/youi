@@ -43,10 +43,17 @@ object TemplateMacros {
     }
     val parser = HTMLParser(file)
     val template = parser.stream(Nil, selector = Some(ById(idValue)))
+    if (template.trim.isEmpty) {
+      context.abort(context.enclosingPosition, s"No content found for #$idValue in ${file.getAbsolutePath}")
+    }
 
     context.Expr[E](
       q"""
-         io.youi.dom.fromString[$e]($template).head
+         try {
+           io.youi.dom.fromString[$e]($template).head
+         } catch {
+           case t: Throwable => throw new RuntimeException("Error parsing HTML [" + $template + "] byId " + $idValue, t)
+         }
        """)
   }
 
@@ -74,10 +81,17 @@ object TemplateMacros {
     }
     val parser = HTMLParser(file)
     val template = parser.stream(Nil, selector = Some(ByClass(classValue)), includeAllMatches = true)
+    if (template.trim.isEmpty) {
+      context.abort(context.enclosingPosition, s"No content found for .$classValue in ${file.getAbsolutePath}")
+    }
 
     context.Expr[List[E]](
       q"""
-         io.youi.dom.fromString[$e]($template)
+         try {
+           io.youi.dom.fromString[$e]($template)
+         } catch {
+           case t: Throwable => throw new RuntimeException("Error parsing HTML [" + $template + "] byClass " + $classValue, t)
+         }
        """)
   }
 }

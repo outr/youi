@@ -6,7 +6,7 @@ import org.scalajs.dom.{Event, document, html, window}
 import scala.scalajs.js
 
 sealed trait ActivateInstruction {
-  def debug: Boolean = false
+  def debug: Boolean = ActivationSupport.debug
 
   def activate(): Unit
 

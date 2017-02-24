@@ -14,8 +14,9 @@ trait ActivationSupport {
 
   object activation {
     def activate(): Unit = {
+      val local = instructions                          // Necessary before global to make sure all instructions are parsed
       ActivationSupport.global.foreach(_.activate())
-      instructions.foreach(_.activate())
+      local.foreach(_.activate())
     }
 
     def deactivate(): Unit = {
@@ -26,6 +27,8 @@ trait ActivationSupport {
 }
 
 object ActivationSupport {
+  var debug: Boolean = false
+
   private var global: List[ActivateInstruction] = Nil
 
   private val ConditionalRegex = """(.+) \? (.+) \: (.+)""".r

@@ -75,7 +75,7 @@ lazy val server = project.in(file("server"))
 lazy val serverUndertow = project.in(file("serverUndertow"))
   .settings(
     name := "youi-server-undertow",
-    libraryDependencies += "io.undertow" % "undertow-core" % "1.4.10.Final",
+    libraryDependencies += "io.undertow" % "undertow-core" % "1.4.11.Final",
     libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.1",
     libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % "test"
   )

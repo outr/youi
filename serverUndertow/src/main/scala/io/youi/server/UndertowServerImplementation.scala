@@ -217,7 +217,8 @@ object UndertowServerImplementation {
               }
             })
           }
-          case FileContent(file, contentType) => {
+          case fc: FileContent => ResourceServer.serve(exchange, fc)
+          /*case FileContent(file, contentType) => {
             val channel = FileChannel.open(file.getAbsoluteFile.toPath, StandardOpenOption.READ)
             exchange.getResponseSender.transferFrom(channel, new IoCallback {
               override def onComplete(exchange: HttpServerExchange, sender: Sender): Unit = {
@@ -231,7 +232,7 @@ object UndertowServerImplementation {
                 server.error(exception)
               }
             })
-          }
+          }*/
           case URLContent(url, contentType) => {
             val connection = url.openConnection()
             val resource = new URLResource(url, connection, "")

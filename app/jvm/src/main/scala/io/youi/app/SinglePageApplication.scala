@@ -3,7 +3,7 @@ package io.youi.app
 import java.io.File
 
 import io.youi.Priority
-import io.youi.http.{Content, HttpConnection, HttpRequest}
+import io.youi.http.{Content, HttpConnection}
 import io.youi.net.ContentType
 import io.youi.server.handler.{CachingManager, HttpHandler, HttpHandlerBuilder, SenderHandler}
 import io.youi.stream.{ByTag, Delta, HTMLParser, Selector}
@@ -15,6 +15,8 @@ trait SinglePageApplication extends ServerApplication {
   protected def appJSMethod: String
   protected def scriptPaths: List[String] = Nil
   protected def responseMap(httpConnection: HttpConnection): Map[String, String] = Map.empty
+
+  private var mappings = Set.empty[HttpConnection => Option[File]]
 
   implicit class SinglePageHttpHandlerBuilder(builder: HttpHandlerBuilder) {
     /**
@@ -32,6 +34,10 @@ trait SinglePageApplication extends ServerApplication {
     }
   }
 
+  def addMapping(mapper: HttpConnection => Option[File]): Unit = synchronized {
+    mappings += mapper
+  }
+
   override protected def init(): Unit = {
     super.init()
 
@@ -46,8 +52,11 @@ trait SinglePageApplication extends ServerApplication {
         if (excludeDotHTML && !file.exists()) {
           file = new File(templateDirectory, s"$fileName.html")
         }
+        if (!file.isFile) {     // Handle mappings
+          mappings.toStream.flatMap(m => m(httpConnection)).find(_.isFile).foreach(file = _)
+        }
 
-        if (file.exists() && file.isFile) {
+        if (file.isFile) {
           if (file.getName.endsWith(".html")) {
             serveHTML(httpConnection, file)
           } else {

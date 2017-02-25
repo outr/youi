@@ -17,7 +17,8 @@ trait ClientApplication extends YouIApplication with ScreenManager {
   val connection: Connection = new Connection
   val webSocket: Var[Option[WebSocket]] = Var(None)
 
-  activeConnections := Set(connection)
+  // Configure communication end-points
+  private var configuredEndPoints = Set.empty[ApplicationCommunication]
 
   window.addEventListener("error", (evt: ErrorEvent) => {
     error(new JavaScriptError(
@@ -73,12 +74,24 @@ trait ClientApplication extends YouIApplication with ScreenManager {
   def autoReload: Boolean = true
 
   def connect(): Unit = synchronized {
+    communication.attachAndFire { entries =>
+      entries.foreach { appComm =>
+        if (!configuredEndPoints.contains(appComm)) {
+          appComm.activeConnections := Set(connection)
+          configuredEndPoints += appComm
+        }
+      }
+    }
+
     disconnect()
     val protocol = if (window.location.protocol == "https:") {
       "wss"
     } else {
       "ws"
     }
+    val comms = communication()
+    if (comms.isEmpty) throw new RuntimeException(s"Unable to connect, there are no communication instances.")
+    val connectionPath = comms.head.path      // TODO: evaluate supporting more than one in the ClientApplication
     val url = URL(s"$protocol://${window.location.host}$connectionPath")
     webSocket := Some(WebSocketUtil.connect(url, connection))
   }

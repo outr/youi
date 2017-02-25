@@ -9,7 +9,19 @@ trait ServerApplication extends YouIApplication with Server {
   val connected: Channel[Connection] = Channel[Connection]
   val disconnected: Channel[Connection] = Channel[Connection]
 
-  handler.matcher(path.exact(connectionPath)).wrap(ServerConnectionHandler)
+  // Configure communication end-points
+  private var configuredEndPoints = Set.empty[ApplicationCommunication]
+  communication.attachAndFire { entries =>
+    ServerApplication.this.synchronized {
+      entries.foreach { appComm =>
+        if (!configuredEndPoints.contains(appComm)) {
+          val appCommHandler = new ServerConnectionHandler(appComm)
+          handler.matcher(path.exact(appComm.path)).wrap(appCommHandler)
+          configuredEndPoints += appComm
+        }
+      }
+    }
+  }
   handler.matcher(path.exact("/clientError")).handle { httpConnection =>
     val content = httpConnection.request.content
     val formData = content.get.asInstanceOf[FormDataContent]
@@ -47,15 +59,15 @@ trait ServerApplication extends YouIApplication with Server {
     page
   }
 
-  private object ServerConnectionHandler extends HttpHandler {
-    override def handle(httpConnection: HttpConnection): Unit = activeConnections.synchronized {
+  private class ServerConnectionHandler(appComm: ApplicationCommunication) extends HttpHandler {
+    override def handle(httpConnection: HttpConnection): Unit = appComm.activeConnections.synchronized {
       val connection = new Connection
       connection.store.update("httpConnection", httpConnection)
-      activeConnections := (activeConnections() + connection)
+      appComm.activeConnections := (appComm.activeConnections() + connection)
       connected := connection
       connection.connected.distinct.attach { b =>
-        if (!b) activeConnections.synchronized {
-          activeConnections := (activeConnections() - connection)
+        if (!b) appComm.activeConnections.synchronized {
+          appComm.activeConnections := (appComm.activeConnections() - connection)
           disconnected := connection
         }
       }

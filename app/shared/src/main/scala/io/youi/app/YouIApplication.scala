@@ -14,12 +14,30 @@ import scala.language.experimental.macros
 trait YouIApplication extends ErrorSupport {
   YouIApplication.instance = Some(this)
 
+  private[app] val communicationEntries: Var[Set[ApplicationCommunication]] = Var(Set.empty[ApplicationCommunication])
+  val communication: Val[Set[ApplicationCommunication]] = Val(communicationEntries)
+}
+
+/**
+  * ApplicationCommunication defines a communication end-point for Communication instances. More than one can be defined
+  * in an application.
+  *
+  * @param application the application this is associated with
+  * @param path the absolute path to establish or listen for web socket communication. Defaults to "/communication"
+  */
+class ApplicationCommunication(val application: YouIApplication, val path: String = "/communication") {
   private[app] val activeConnections = Var[Set[Connection]](Set.empty)
 
   /**
     * Listing of all active connections. On the client this will only every have one entry.
     */
   val connections: Val[Set[Connection]] = Val(activeConnections)
+
+  // Make sure the application knows about it
+  application.synchronized {
+    val entries = application.communicationEntries()
+    application.communicationEntries := entries + this
+  }
 
   /**
     * The absolute path to establish / listen for web socket communication.

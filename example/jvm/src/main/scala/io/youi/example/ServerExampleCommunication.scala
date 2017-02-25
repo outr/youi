@@ -12,7 +12,7 @@ trait ServerExampleCommunication extends ExampleCommunication {
 
   override def time: Future[Long] = Future(System.currentTimeMillis())
   override def counter: Future[Int] = Future(increment.getAndIncrement())
-  override def broadcast(message: String): Future[Unit] = Future(ServerExampleApplication.comm.instances.foreach { instance =>
+  override def broadcast(message: String): Future[Unit] = Future(ServerExampleApplication.comm.example.instances.foreach { instance =>
     instance.show(message)
   })
   override def logIn(username: String, password: String): Future[Option[String]] = Future {

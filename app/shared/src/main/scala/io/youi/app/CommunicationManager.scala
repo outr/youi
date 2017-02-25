@@ -6,11 +6,11 @@ import com.outr.reactify.Val
 import io.youi.communication.Communication
 import io.youi.http.Connection
 
-class CommunicationManager[C <: Communication](application: YouIApplication, create: Connection => C) {
+class CommunicationManager[C <: Communication](appComm: ApplicationCommunication, create: Connection => C) {
   val id: Int = CommunicationManager.increment.getAndIncrement()
 
   val instances: Val[Set[C]] = Val {
-    application.connections.map { connection =>
+    appComm.connections.map { connection =>
       connection.store.getOrSet(s"communicationManager$id", create(connection))
     }
   }

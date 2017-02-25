@@ -8,7 +8,7 @@ import io.youi.example.ui.UIExamples
 import scala.scalajs.js.JSApp
 
 object ClientExampleApplication extends JSApp with ExampleApplication with ClientApplication with Logging {
-  val communication = CommunicationScreen
+  val communicationScreen = CommunicationScreen
   val login = LoginScreen
 
   val uiExamples = UIExamples

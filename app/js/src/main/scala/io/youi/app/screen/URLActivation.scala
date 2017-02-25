@@ -14,7 +14,11 @@ trait URLActivation extends Screen {
   validateURL(History.url())
 
   private def validateURL(url: URL): Unit = if (isURLMatch(url)) {
-    ScreenManager().activate(this)
+    if (state() == ScreenState.Activated) {
+      urlChanged(url)
+    } else {
+      ScreenManager().activate(this)
+    }
   } else {
     ScreenManager().deactivate(this)
   }
@@ -22,6 +26,13 @@ trait URLActivation extends Screen {
   def isURLMatch(url: URL): Boolean
 
   def updateURL(current: URL): Option[HistoryStateChange]
+
+  /**
+    * Called when the screen is already activated, but the URL has changed and is still a match.
+    *
+    * @param url the new URL
+    */
+  def urlChanged(url: URL): Unit = {}
 
   override protected def activate(): Future[Unit] = {
     super.activate().map { _ =>

@@ -9,18 +9,29 @@ case class Parameters(entries: List[(String, Param)]) {
   def value(key: String): Option[String] = map.get(key).map(_.value)
   def values(key: String): List[String] = map.get(key).map(_.values).getOrElse(Nil)
 
-  def withParam(key: String, value: String, append: Boolean = true): Parameters = {
-    val param = map.getOrElse(key, Param()).withValue(value, append)
-    var found = false
-    val updated = entries.map {
-      case (k, v) if k == key => {
-        found = true
-        key -> param
-      }
-      case t => t
+  def withParam(key: String, value: String, append: Boolean = true): Parameters = if (value.isEmpty) {
+    if (append) {           // Nothing to do
+      this
+    } else {                // Remove the param if not appending and empty
+      removeParam(key)
     }
-    Parameters(if (found) updated else updated ::: List(key -> param))
+  } else if (append) {      // Add to the param for this key
+    appendParam(key, value)
+  } else {                  // Replace the value
+    replaceParam(key, List(value))
   }
+
+  def appendParam(key: String, value: String): Parameters = {
+    val values = this.values(key)
+    replaceParam(key, value :: values)
+  }
+
+  def replaceParam(key: String, values: List[String]): Parameters = {
+    val p = removeParam(key)
+    p.copy(entries = (key -> Param(values)) :: p.entries)
+  }
+
+  def removeParam(key: String): Parameters = copy(entries = entries.filterNot(p => p._1 == key))
 
   lazy val encoded: String = {
     if (nonEmpty) {

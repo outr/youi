@@ -86,6 +86,7 @@ class WebSocketClient(url: URL,
       checkBacklog()
       sendMessage(message)
     }
+    _connected := true
 
     checkBacklog()
   }

@@ -72,6 +72,8 @@ class CommunicationInternal private[communication](communication: Communication)
   private var queue = Map.empty[Int, CommunicationMessage => Unit]
   private var endPoints = Map.empty[String, CommunicationMessage => Future[String]]
 
+  def endPointNames: Set[String] = endPoints.keySet
+
   val send: Channel[CommunicationMessage] = Channel[CommunicationMessage]
   val receive: Channel[CommunicationMessage] = Channel[CommunicationMessage]
 

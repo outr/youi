@@ -65,7 +65,7 @@ object Macros {
     val declaredMethods = c.tpe.decls.toSet
     val methods = c.tpe.members.toList.sortBy(_.fullName).collect {
       case symbol if symbol.isMethod & symbol.typeSignature.resultType <:< context.typeOf[Future[_]] => {
-        val endPoint = s"${baseTypeName}.${symbol.name}"
+        val endPoint = s"$baseTypeName.${symbol.name}"
         val m = symbol.asMethod
         val declared = declaredMethods.contains(m)
         val resultType = symbol.typeSignature.resultType.typeArgs.head

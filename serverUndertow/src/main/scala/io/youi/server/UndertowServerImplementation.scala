@@ -26,7 +26,7 @@ class UndertowServerImplementation(server: Server) extends ServerImplementation 
 
   override def start(): Unit = synchronized {
     val builder = Undertow.builder()
-      .setServerOption(UndertowOptions.ENABLE_HTTP2, java.lang.Boolean.TRUE)
+//      .setServerOption(UndertowOptions.ENABLE_HTTP2, java.lang.Boolean.TRUE)
       .setHandler(this)
     server.config.listeners.foreach {
       case HttpServerListener(host, port) => builder.addHttpListener(port, host)

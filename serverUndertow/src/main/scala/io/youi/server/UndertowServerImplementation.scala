@@ -1,14 +1,12 @@
 package io.youi.server
 
-import java.io.{File, IOException}
+import java.io.IOException
 import java.net.URI
-import java.nio.channels.FileChannel
-import java.nio.file.StandardOpenOption
 
 import io.undertow.io.{IoCallback, Sender}
 import io.undertow.protocols.ssl.UndertowXnioSsl
 import io.undertow.server.handlers.form.{FormDataParser, FormParserFactory}
-import io.undertow.server.handlers.proxy.{LoadBalancingProxyClient, SimpleProxyClientProvider}
+import io.undertow.server.handlers.proxy.LoadBalancingProxyClient
 import io.undertow.server.handlers.resource.URLResource
 import io.undertow.server.{HttpServerExchange, HttpHandler => UndertowHttpHandler}
 import io.undertow.util.{HeaderMap, HttpString}
@@ -16,7 +14,7 @@ import io.undertow.websockets.WebSocketConnectionCallback
 import io.undertow.websockets.core._
 import io.undertow.websockets.spi.WebSocketHttpExchange
 import io.undertow.{Handlers, Undertow, UndertowOptions}
-import io.youi.http.{Connection, Content, FileContent, FileEntry, FormData, FormDataContent, FormDataEntry, Headers, HttpConnection, HttpRequest, Method, RequestContent, StringContent, StringEntry, URLContent}
+import io.youi.http.{Connection, FileContent, FileEntry, FormData, FormDataContent, FormDataEntry, Headers, HttpConnection, HttpRequest, Method, RequestContent, StringContent, StringEntry, URLContent}
 import io.youi.net.{ContentType, IP, Parameters, Path, URL}
 import io.youi.server.util.SSLUtil
 import org.xnio.{OptionMap, Xnio}
@@ -58,8 +56,14 @@ class UndertowServerImplementation(server: Server) extends ServerImplementation 
 
   override def handleRequest(exchange: HttpServerExchange): Unit = server.errorSupport {
     if (exchange.getRequestContentLength > 0L && exchange.getRequestHeaders.getFirst("Content-Type").startsWith("multipart/form-data")) {
-      val formDataParser = formParserBuilder.build().createParser(exchange)
-      formDataParser.parse(requestHandler)
+      if (exchange.isInIoThread) {
+        exchange.dispatch(this)
+      } else {
+        exchange.startBlocking()
+        val formDataParser = formParserBuilder.build().createParser(exchange)
+        formDataParser.parseBlocking()
+        requestHandler.handleRequest(exchange)
+      }
     } else {
       requestHandler.handleRequest(exchange)
     }

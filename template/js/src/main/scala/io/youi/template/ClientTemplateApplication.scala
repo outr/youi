@@ -1,5 +1,6 @@
 package io.youi.template
 
+import io.youi.activate.ActivationSupport
 import io.youi.app.ClientApplication
 import io.youi.dom
 import org.scalajs.dom._
@@ -11,6 +12,7 @@ object ClientTemplateApplication extends TemplateApplication with ClientApplicat
 
   @JSExportTopLevel("application")
   def main(): Unit = {
+    ActivationSupport.debug = true
     val paths = pages.map { page =>
       s"/${page.substring(0, page.indexOf('.'))}"
     }

@@ -27,10 +27,14 @@ trait SinglePageApplication extends ServerApplication {
       */
     def deltas(function: HttpConnection => List[Delta]): HttpHandler = builder.handle { connection =>
       val d = function(connection)
-      if (d.nonEmpty) {
-        val current = connection.store.getOrElse[List[Delta]](SinglePageApplication.DeltaKey, Nil)
-        connection.store(SinglePageApplication.DeltaKey) = current ::: d
-      }
+      addDeltas(connection, d)
+    }
+  }
+
+  def addDeltas(connection: HttpConnection, deltas: List[Delta]): Unit = {
+    if (deltas.nonEmpty) {
+      val current = connection.store.getOrElse[List[Delta]](SinglePageApplication.DeltaKey, Nil)
+      connection.store(SinglePageApplication.DeltaKey) = current ::: deltas
     }
   }
 
@@ -67,7 +71,7 @@ trait SinglePageApplication extends ServerApplication {
     }
   }
 
-  protected def serveHTML(httpConnection: HttpConnection, htmlFile: File): Unit = {
+  def serveHTML(httpConnection: HttpConnection, htmlFile: File): Unit = {
     val stream = HTMLParser.cache(htmlFile)
     val responseFields = responseMap(httpConnection).toList.map {
       case (name, value) => s"""<input type="hidden" id="$name" value="$value"/>"""

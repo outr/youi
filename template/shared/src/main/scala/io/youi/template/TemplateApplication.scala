@@ -3,7 +3,9 @@ package io.youi.template
 import io.youi.app.{ApplicationCommunication, CommunicationManager, YouIApplication}
 
 trait TemplateApplication extends YouIApplication {
-  object comm extends ApplicationCommunication(this) {
-    val template: CommunicationManager[TemplateCommunication] = communication[TemplateCommunication]
-  }
+  val comm = new TemplateComms(this)
+}
+
+class TemplateComms(application: TemplateApplication) extends ApplicationCommunication(application) {
+  val template: CommunicationManager[TemplateCommunication] = communication[TemplateCommunication]
 }

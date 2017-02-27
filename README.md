@@ -12,10 +12,13 @@ Next generation user interface and application development in Scala and Scala.js
 
 ## Status
 
-At the moment we are currently migrating hyperscala (https://github.com/outr/hyperscala) and NextUI (https://github.com/outr/nextui)
-into this new framework. If you need a production-ready framework please look at those for now.
+We have completed migration from Hyperscala (http://github.com/outr/hyperscala) and the base functionality of NextUI
+(https://github.com/outr/nextui) and we've added a lot of new functionality. We're currently being used in production
+environments but are still in heavy development.
 
 ## Modules
+
+YouI is broken out into modules of functionality to minimize the dependencies required for your specific usage:
 
 * [app](app) - unification of client and server to write complete applications (Scala and Scala.js)
 * [client](client) - HTTP client for asynchronous request/response and restful support (Scala)
@@ -28,7 +31,7 @@ into this new framework. If you need a production-ready framework please look at
 * [template](template) - features for creating and managing templates for use in applications (Scala and Scala.js)
 * [ui](ui) - functionality for user-interface creation and management (Scala.js)
 
-## Features for 1.0.0 (Future)
+## Features for 1.0.0 (In-Progress)
 
 * [ ] Integration of basic HTML components for UI (Scala.js)
     * [X] Button
@@ -58,7 +61,7 @@ into this new framework. If you need a production-ready framework please look at
     * [ ] iOS
     * [ ] Android
 
-## Features for 0.2.0 (In-Progress)
+## Features for 0.2.0 (Released 2017.02.27)
 
 * [X] Complete SSL support (binding and proxying)
 * [X] Ajax Request / Response framework

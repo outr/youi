@@ -50,6 +50,7 @@ object Headers {
     case object `Authorization` extends StringHeaderKey("Authorization")
     def `Cookie` = CookieHeader
     case object `If-Modified-Since` extends DateHeaderKey("If-Modified-Since")
+    case object `Origin` extends StringHeaderKey("Origin")
     case object `User-Agent` extends StringHeaderKey("User-Agent")
     case object `X-Forwarded-For` extends StringHeaderKey("X-Forwarded-For")
     case object `X-Forwarded-For-Host` extends StringHeaderKey("X-Forwarded-For-Host")

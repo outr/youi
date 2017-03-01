@@ -22,7 +22,7 @@ class AjaxRequest(url: URL,
   val cancelled: State[Boolean] = Var(false)
 
   req.onreadystatechange = { (e: dom.Event) =>
-    if (req.readyState.toInt == 4) {
+    if (req.readyState == 4) {
       if ((req.status >= 200 && req.status < 300) || req.status == 304) {
         promise.success(req)
       } else {

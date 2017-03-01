@@ -1,6 +1,6 @@
 package io.youi.app
 
-import com.outr.reactify.{ChangeListener, Var}
+import reactify.{ChangeListener, Var}
 import io.youi.app.screen.ScreenManager
 import io.youi.app.stream.StreamURL
 import io.youi.http.{Connection, WebSocketUtil}

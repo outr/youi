@@ -1,6 +1,6 @@
 package io.youi.app.screen
 
-import com.outr.reactify.ChangeListener
+import reactify.ChangeListener
 import io.youi.{History, HistoryStateChange}
 import io.youi.net.URL
 

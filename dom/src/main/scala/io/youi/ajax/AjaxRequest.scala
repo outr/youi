@@ -1,6 +1,6 @@
 package io.youi.ajax
 
-import com.outr.reactify.{StateChannel, Var}
+import reactify._
 import io.youi.net.URL
 import org.scalajs.dom
 import org.scalajs.dom._
@@ -16,10 +16,10 @@ class AjaxRequest(url: URL,
                   responseType: String = "") {
   val req = new dom.XMLHttpRequest()
   val promise: Promise[XMLHttpRequest] = Promise[dom.XMLHttpRequest]()
-  val loaded: StateChannel[Int] = Var(0)
-  val total: StateChannel[Int] = Var(0)
-  val percentage: StateChannel[Int] = Var(0)
-  val cancelled: StateChannel[Boolean] = Var(false)
+  val loaded: State[Int] = Var(0)
+  val total: State[Int] = Var(0)
+  val percentage: State[Int] = Var(0)
+  val cancelled: State[Boolean] = Var(false)
 
   req.onreadystatechange = { (e: dom.Event) =>
     if (req.readyState.toInt == 4) {

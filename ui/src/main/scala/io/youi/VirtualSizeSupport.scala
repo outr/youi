@@ -1,6 +1,6 @@
 package io.youi
 
-import com.outr.reactify._
+import reactify._
 import scribe._
 
 trait VirtualSizeSupport {

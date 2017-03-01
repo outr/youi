@@ -1,6 +1,6 @@
 name := "youi"
 organization in ThisBuild := "io.youi"
-version in ThisBuild := "0.2.0"
+version in ThisBuild := "0.2.1-SNAPSHOT"
 scalaVersion in ThisBuild := "2.12.1"
 crossScalaVersions in ThisBuild := List("2.12.1", "2.11.8")
 sbtVersion in ThisBuild := "0.13.13"
@@ -24,7 +24,7 @@ lazy val core = crossProject.in(file("core"))
     resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases",
     libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value,
     libraryDependencies += "com.outr" %%% "scribe" % "1.4.1",
-    libraryDependencies += "com.outr" %%% "reactify" % "1.3.9",
+    libraryDependencies += "com.outr" %%% "reactify" % "1.4.3",
     libraryDependencies += "org.scalactic" %%% "scalactic" % "3.0.1",
     libraryDependencies += "org.scalatest" %%% "scalatest" % "3.0.1" % "test"
   )

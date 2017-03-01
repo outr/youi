@@ -1,6 +1,6 @@
 package io.youi.app
 
-import com.outr.reactify._
+import reactify._
 import io.youi.ErrorSupport
 import io.youi.communication.Communication
 import io.youi.http.Connection

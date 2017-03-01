@@ -1,6 +1,6 @@
 package io.youi.ajax
 
-import com.outr.reactify.{StateChannel, Var}
+import reactify._
 import org.scalajs.dom.XMLHttpRequest
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -9,11 +9,11 @@ import scala.concurrent.Future
 class AjaxAction(request: AjaxRequest) {
   lazy val future: Future[XMLHttpRequest] = request.promise.future
   private[ajax] val _state = Var[ActionState](ActionState.New)
-  def state: StateChannel[ActionState] = _state
-  def loaded: StateChannel[Int] = request.loaded
-  def total: StateChannel[Int] = request.total
-  def percentage: StateChannel[Int] = request.percentage
-  def cancelled: StateChannel[Boolean] = request.cancelled
+  def state: State[ActionState] = _state
+  def loaded: State[Int] = request.loaded
+  def total: State[Int] = request.total
+  def percentage: State[Int] = request.percentage
+  def cancelled: State[Boolean] = request.cancelled
 
   private[ajax] def start(manager: AjaxManager): Unit = {
     if (!cancelled()) {

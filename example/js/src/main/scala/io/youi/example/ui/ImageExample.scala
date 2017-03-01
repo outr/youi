@@ -1,6 +1,6 @@
 package io.youi.example.ui
 
-import com.outr.reactify._
+import reactify._
 import io.youi.UI
 import io.youi.hypertext.style.Image
 import io.youi.hypertext.ImageView

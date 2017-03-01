@@ -2,7 +2,7 @@ package io.youi.app
 
 import java.util.concurrent.atomic.AtomicInteger
 
-import com.outr.reactify.Val
+import reactify.Val
 import io.youi.communication.Communication
 import io.youi.http.Connection
 

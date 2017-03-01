@@ -1,6 +1,6 @@
 package io.youi.example
 
-import com.outr.reactify.Var
+import reactify.Var
 import io.youi.http.HttpConnection
 import io.youi.server.session.{Session, SessionSessionManager}
 

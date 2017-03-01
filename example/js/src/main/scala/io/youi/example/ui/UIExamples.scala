@@ -3,7 +3,7 @@ package io.youi.example.ui
 import io.youi.hypertext.Button
 import io.youi.{History, UI}
 
-import com.outr.reactify._
+import reactify._
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global

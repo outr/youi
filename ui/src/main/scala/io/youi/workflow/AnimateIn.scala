@@ -1,11 +1,11 @@
 package io.youi.workflow
 
-import com.outr.reactify.StateChannel
+import reactify._
 import io.youi.easing.Easing
 
 import scala.concurrent.duration.FiniteDuration
 
-case class AnimateIn(state: StateChannel[Double],
+case class AnimateIn(state: State[Double] with Channel[Double],
                      destination: () => Double,
                      duration: FiniteDuration,
                      easing: Easing) extends DurationTemporal {

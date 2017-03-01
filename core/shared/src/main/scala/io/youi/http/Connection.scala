@@ -2,7 +2,7 @@ package io.youi.http
 
 import java.nio.ByteBuffer
 
-import com.outr.reactify._
+import reactify._
 import io.youi.{MapStore, Store}
 
 import scala.collection.mutable.ListBuffer
@@ -38,7 +38,7 @@ class Connection {
       if (Connection.debug) scribe.info(s"Receive: $s")
     }
 
-    connected.distinct.attach { b =>
+    connected.attach { b =>
       synchronized {
         send.text.detach(textListener)
         send.binary.detach(binaryListener)

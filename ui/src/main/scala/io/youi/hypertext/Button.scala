@@ -1,6 +1,6 @@
 package io.youi.hypertext
 
-import com.outr.reactify.Var
+import reactify.Var
 import io.youi.dom
 import org.scalajs.dom.html.{Button => HTMLButton}
 

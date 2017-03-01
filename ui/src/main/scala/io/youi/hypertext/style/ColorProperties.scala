@@ -1,6 +1,6 @@
 package io.youi.hypertext.style
 
-import com.outr.reactify.Var
+import reactify.Var
 
 class ColorProperties {
   val red: Var[Double] = Var(1.0)

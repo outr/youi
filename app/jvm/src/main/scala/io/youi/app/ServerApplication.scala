@@ -1,6 +1,6 @@
 package io.youi.app
 
-import com.outr.reactify.Channel
+import reactify.Channel
 import io.youi.http._
 import io.youi.server.Server
 import io.youi.server.handler.HttpHandler
@@ -65,7 +65,7 @@ trait ServerApplication extends YouIApplication with Server {
       connection.store.update("httpConnection", httpConnection)
       appComm.activeConnections := (appComm.activeConnections() + connection)
       connected := connection
-      connection.connected.distinct.attach { b =>
+      connection.connected.attach { b =>
         if (!b) appComm.activeConnections.synchronized {
           appComm.activeConnections := (appComm.activeConnections() - connection)
           disconnected := connection

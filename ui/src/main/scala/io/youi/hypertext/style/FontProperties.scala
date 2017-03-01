@@ -1,6 +1,6 @@
 package io.youi.hypertext.style
 
-import com.outr.reactify.Var
+import reactify.Var
 import io.youi.Size
 import io.youi.hypertext.Component
 

@@ -1,6 +1,6 @@
 package io.youi.hypertext
 
-import com.outr.reactify.{Channel, Var}
+import reactify.{Channel, Var}
 import io.youi.AbstractComponent
 import org.scalajs.dom._
 import org.scalajs.dom.html.Element

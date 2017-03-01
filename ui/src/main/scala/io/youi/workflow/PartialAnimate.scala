@@ -1,6 +1,6 @@
 package io.youi.workflow
 
-import com.outr.reactify.StateChannel
+import reactify._
 import io.youi.easing.Easing
 
 import scala.concurrent.duration.FiniteDuration

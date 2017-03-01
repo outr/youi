@@ -1,6 +1,6 @@
 package io.youi
 
-import com.outr.reactify.Channel
+import reactify.Channel
 
 trait ErrorSupport {
   def error(t: Throwable): Unit = ErrorSupport.error := t

@@ -1,6 +1,6 @@
 package io.youi
 
-import com.outr.reactify._
+import reactify._
 import io.youi.hypertext.style.{ColorProperties, Position}
 
 trait AbstractComponent {
@@ -31,7 +31,7 @@ trait AbstractComponent {
     }
   }
 
-  object scale extends Channel[Double] {
+  object scale {
     lazy val x: Var[Double] = Var(1.0)
     lazy val y: Var[Double] = Var(1.0)
   }

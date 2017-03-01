@@ -2,7 +2,7 @@ package io.youi.server
 
 import java.net.URI
 
-import com.outr.reactify.Var
+import reactify.Var
 import io.undertow.protocols.ssl.UndertowXnioSsl
 import io.undertow.server.DefaultByteBufferPool
 import io.undertow.util.Headers

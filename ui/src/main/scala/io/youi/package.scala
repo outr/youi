@@ -1,6 +1,6 @@
 package io
 
-import com.outr.reactify.Val
+import reactify.{Val, Var}
 
 import scala.language.implicitConversions
 

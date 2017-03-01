@@ -2,7 +2,7 @@ package io.youi.server
 
 import java.io.File
 
-import com.outr.reactify._
+import reactify._
 
 class ServerConfig(server: Server) {
   object session {

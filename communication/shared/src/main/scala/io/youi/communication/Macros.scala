@@ -1,6 +1,6 @@
 package io.youi.communication
 
-import com.outr.reactify.Var
+import reactify.Var
 import io.youi.http.Connection
 
 import scala.annotation.compileTimeOnly
@@ -21,7 +21,7 @@ object Macros {
       q"""
          import io.youi.communication._
 
-         val v = com.outr.reactify.Var[$t]($default)
+         val v = reactify.Var[$t]($default)
          val modifying = new ThreadLocal[Boolean] {
            override def initialValue(): Boolean = false
          }

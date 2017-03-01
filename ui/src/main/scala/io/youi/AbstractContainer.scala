@@ -1,12 +1,9 @@
 package io.youi
 
-import com.outr.reactify._
+import reactify._
 
 trait AbstractContainer[C <: AbstractComponent] {
-  object children extends Var[Vector[C]](Nil, Vector.empty) {
-    def +=(child: C): Unit = this := this() :+ child
-    def -=(child: C): Unit = this := this().filterNot(_ eq child)
-  }
+  val children: Var[Vector[C]] = Var[Vector[C]](Vector.empty)
 
   children.changes(new ChangeListener[Vector[C]] {
     override def change(oldValue: Vector[C], newValue: Vector[C]): Unit = {

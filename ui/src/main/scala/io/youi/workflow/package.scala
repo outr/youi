@@ -1,6 +1,6 @@
 package io.youi
 
-import com.outr.reactify.StateChannel
+import reactify._
 
 import scala.concurrent.Future
 import scala.concurrent.duration.FiniteDuration

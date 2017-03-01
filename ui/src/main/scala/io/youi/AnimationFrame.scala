@@ -1,6 +1,6 @@
 package io.youi
 
-import com.outr.reactify.{Observable, StateChannel, Val, Var}
+import reactify._
 import org.scalajs.dom._
 
 object AnimationFrame {

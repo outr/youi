@@ -1,6 +1,6 @@
 package io.youi.example.ui
 
-import com.outr.reactify._
+import reactify._
 import io.youi._
 import io.youi.example.screen.ExampleScreen
 import io.youi.hypertext.{BasicComponent, Button, Container}

@@ -1,7 +1,7 @@
 package io.youi.server.session
 
 import akka.actor.ActorSystem
-import com.outr.reactify._
+import reactify._
 import io.youi.http.cookie.ResponseCookie
 import io.youi.http.{Headers, HttpConnection}
 import io.youi.{MapStore, Unique}

@@ -1,6 +1,6 @@
 package io.youi.app.screen
 
-import com.outr.reactify.{Val, Var}
+import reactify.{Val, Var}
 import io.youi.app.stream.StreamURL
 import io.youi.{History, dom}
 import io.youi.dom._

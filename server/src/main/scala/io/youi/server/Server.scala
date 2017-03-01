@@ -1,6 +1,6 @@
 package io.youi.server
 
-import com.outr.reactify._
+import reactify._
 import io.youi.ErrorSupport
 import io.youi.http.{HttpConnection, Status}
 import io.youi.server.handler.{HttpHandler, HttpHandlerBuilder}

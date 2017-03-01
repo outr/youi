@@ -1,6 +1,6 @@
 package io.youi
 
-import com.outr.reactify.{Channel, Val, Var}
+import reactify.{Channel, Val, Var}
 import io.youi.net.URL
 import org.scalajs.dom._
 
@@ -10,7 +10,7 @@ import scala.scalajs.js
   * Convenience functionality for working with browser history.
   */
 object History {
-  private val currentURL = Var.static[URL](URL(document.location.href))
+  private val currentURL = Var[URL](URL(document.location.href), static = true)
   val url: Val[URL] = Val(currentURL)
   val stateChange: Channel[HistoryStateChange] = Channel[HistoryStateChange]
 

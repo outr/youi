@@ -1,6 +1,6 @@
 package io.youi.app.screen
 
-import com.outr.reactify.{Val, Var}
+import reactify.{Val, Var}
 import io.youi.app.YouIApplication
 
 import scala.concurrent.Future

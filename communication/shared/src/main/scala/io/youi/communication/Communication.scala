@@ -2,7 +2,7 @@ package io.youi.communication
 
 import java.util.concurrent.atomic.AtomicInteger
 
-import com.outr.reactify.{Channel, Var}
+import reactify.{Channel, Var}
 import io.youi.ErrorSupport
 import io.youi.http.Connection
 
@@ -25,7 +25,7 @@ import scala.language.experimental.macros
   *
   * Shared Var Example:
   *
-  * <pre>val name: com.outr.reactify.Var[String] = shared[String]("Default")</pre>
+  * <pre>val name: reactify.Var[String] = shared[String]("Default")</pre>
   *
   * This represents a variable that is shared between the client and server. Either can change the value and it will be
   * reflected in the other asynchronously. We use Reactify's <pre>Var</pre> because it allows functional reactive

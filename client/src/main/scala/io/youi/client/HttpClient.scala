@@ -143,6 +143,42 @@ class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpd
   }
 
   /**
+    * Builds on the send method by supporting basic restful calls that calls a URL and returns a case class as the
+    * response.
+    *
+    * @param url the URL of the endpoint
+    * @param headers the headers if any to provide
+    * @param errorHandler error handling support if the response status is not Success
+    * @param decoder circe decoding of the Response
+    * @tparam Response the response type
+    * @return Future[Response]
+    */
+  def call[Response](url: URL,
+                     method: Method = Method.Get,
+                     headers: Headers = Headers.empty,
+                     errorHandler: HttpResponse => Response = defaultErrorHandler[Response])
+                    (implicit decoder: Decoder[Response]): Future[Response] = {
+    send(HttpRequest(
+      method = method,
+      url = url,
+      headers = headers
+    )).map { response =>
+      val responseJson = response.content.getOrElse(throw new RuntimeException(s"No content received in response.")) match {
+        case content: StringContent => content.value
+        case content => throw new RuntimeException(s"$content not supported")
+      }
+      if (response.status.isSuccess) {
+        decode[Response](responseJson) match {
+          case Left(error) => throw new RuntimeException(s"JSON decoding error: $responseJson", error)
+          case Right(result) => result
+        }
+      } else {
+        errorHandler(response)
+      }
+    }
+  }
+
+  /**
     * Disposes and cleans up this client instance.
     */
   def dispose(): Unit = asyncClient.close()

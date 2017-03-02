@@ -17,10 +17,8 @@ trait URLActivation extends Screen {
     if (state() == ScreenState.Activated) {
       urlChanged(url)
     } else {
-      ScreenManager().activate(this)
+      ScreenManager().active := this
     }
-  } else {
-    ScreenManager().deactivate(this)
   }
 
   def isURLMatch(url: URL): Boolean

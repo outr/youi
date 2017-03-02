@@ -1,6 +1,6 @@
 package io.youi.app.screen
 
-import reactify.{Val, Var}
+import reactify.{ChangeListener, Val, Var}
 import io.youi.app.YouIApplication
 
 import scala.concurrent.Future
@@ -12,9 +12,24 @@ trait ScreenManager {
   private var managerFuture: Future[Unit] = Future.successful(())
 
   private val allScreens = Var[Set[Screen]](Set.empty)
-  val screens: Val[Set[Screen]] = Val(allScreens)
-  val working: Val[Set[Screen]] = Val(screens.filter(_.state().working), cache = false)
-  val active: Val[Set[Screen]] = Val(screens.filter(_.state() == ScreenState.Activated))
+
+  val active: Var[Screen] = Var(EmptyScreen)
+
+  active.changes(new ChangeListener[Screen] {
+    override def change(oldScreen: Screen, newScreen: Screen): Unit = {
+      managerFuture = managerFuture.flatMap(_ => beforeScreenChange(oldScreen, newScreen))
+      deactivate(oldScreen)
+      activate(newScreen)
+      managerFuture = managerFuture.flatMap(_ => afterScreenChange(oldScreen, newScreen))
+    }
+  })
+
+  protected def beforeScreenChange(oldScreen: Screen, newScreen: Screen): Future[Unit] = {
+    Future.successful(())
+  }
+  protected def afterScreenChange(oldScreen: Screen, newScreen: Screen): Future[Unit] = {
+    Future.successful(())
+  }
 
   private[screen] def addScreen(screen: Screen): Unit = synchronized {
     allScreens := (allScreens() + screen)
@@ -42,7 +57,7 @@ trait ScreenManager {
     future
   }
 
-  def activate(screen: Screen): Future[Unit] = managerFuture.flatMap { _ =>
+  private def activate(screen: Screen): Future[Unit] = managerFuture.flatMap { _ =>
     var future: Future[Unit] = Future.successful(())
 
     val state = screen.state()
@@ -65,7 +80,7 @@ trait ScreenManager {
     future
   }
 
-  def deactivate(screen: Screen): Future[Unit] = managerFuture.flatMap { _ =>
+  private def deactivate(screen: Screen): Future[Unit] = managerFuture.flatMap { _ =>
     if (screen.state() == ScreenState.Activated) {
       screen.currentState := ScreenState.Deactivating
       val future = Screen.deactivate(screen).map { _ =>
@@ -101,3 +116,5 @@ object ScreenManager {
 
   def apply(): ScreenManager = instance.getOrElse(throw new RuntimeException("No ScreenManager is initialized!"))
 }
+
+object EmptyScreen extends Screen

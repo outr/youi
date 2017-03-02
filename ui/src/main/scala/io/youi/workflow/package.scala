@@ -12,7 +12,11 @@ package object workflow {
   }
 
   implicit class StateChannelWorkflow(state: StateChannel[Double]) {
-    def to(destination: => Double): PartialAnimate = PartialAnimate(state, () => destination)
+    def to(destination: => Double): PartialAnimate = PartialAnimate(
+      get = () => state(),
+      apply = (d: Double) => state := d,
+      destination = () => destination
+    )
   }
 
   def parallel(tasks: Task*): Parallel = new Parallel(tasks.toList)

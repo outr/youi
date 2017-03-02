@@ -5,7 +5,7 @@ import reactify.{Val, Var}
 import scala.concurrent.Future
 
 trait Screen {
-  private[screen] var working: Future[Unit] = Future.successful(())
+//  private[screen] var working: Future[Unit] = Future.successful(())
   private[screen] val currentState = Var[ScreenState](ScreenState.New)
 
   val state: Val[ScreenState] = Val(currentState)

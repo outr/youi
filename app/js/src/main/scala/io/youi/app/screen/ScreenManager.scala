@@ -9,14 +9,18 @@ import scala.concurrent.ExecutionContext.Implicits.global
 trait ScreenManager {
   ScreenManager.instance = Some(this)
 
+  private var managerFuture: Future[Unit] = Future.successful(())
+
   private val allScreens = Var[Set[Screen]](Set.empty)
   val screens: Val[Set[Screen]] = Val(allScreens)
+  val working: Val[Set[Screen]] = Val(screens.filter(_.state().working), cache = false)
+  val active: Val[Set[Screen]] = Val(screens.filter(_.state() == ScreenState.Activated))
 
   private[screen] def addScreen(screen: Screen): Unit = synchronized {
     allScreens := (allScreens() + screen)
   }
 
-  def load(screen: Screen): Future[Unit] = screen.working.map { _ =>
+  def load(screen: Screen): Future[Unit] = managerFuture.map { _ =>
     var future: Future[Unit] = Future.successful(())
 
     val state = screen.state()
@@ -34,11 +38,11 @@ trait ScreenManager {
     applyState(ScreenState.Loading, ScreenState.Loaded, Screen.load(screen))
 
     future.failed.foreach(YouIApplication().error)
-    screen.working = future
+    managerFuture = future
     future
   }
 
-  def activate(screen: Screen): Future[Unit] = screen.working.flatMap { _ =>
+  def activate(screen: Screen): Future[Unit] = managerFuture.flatMap { _ =>
     var future: Future[Unit] = Future.successful(())
 
     val state = screen.state()
@@ -57,11 +61,11 @@ trait ScreenManager {
     applyState(ScreenState.Activating, ScreenState.Activated, Screen.activate(screen), ScreenState.New, ScreenState.Disposing, ScreenState.Disposed, ScreenState.Initializing, ScreenState.Initialized, ScreenState.Deactivating, ScreenState.Deactivated)
 
     future.failed.foreach(YouIApplication().error)
-    screen.working = future
+    managerFuture = future
     future
   }
 
-  def deactivate(screen: Screen): Future[Unit] = screen.working.flatMap { _ =>
+  def deactivate(screen: Screen): Future[Unit] = managerFuture.flatMap { _ =>
     if (screen.state() == ScreenState.Activated) {
       screen.currentState := ScreenState.Deactivating
       val future = Screen.deactivate(screen).map { _ =>
@@ -69,14 +73,14 @@ trait ScreenManager {
       }
 
       future.failed.foreach(YouIApplication().error)
-      screen.working = future
+      managerFuture = future
       future
     } else {
       Future.successful(())
     }
   }
 
-  def dispose(screen: Screen): Future[Unit] = screen.working.flatMap { _ =>
+  def dispose(screen: Screen): Future[Unit] = managerFuture.flatMap { _ =>
     if (screen.state() != ScreenState.Disposed) {
       screen.currentState := ScreenState.Disposing
       val future = Screen.dispose(screen).map { _ =>
@@ -84,7 +88,7 @@ trait ScreenManager {
       }
 
       future.failed.foreach(YouIApplication().error)
-      screen.working = future
+      managerFuture = future
       future
     } else {
       Future.successful(())

@@ -1,11 +1,11 @@
 package io.youi.workflow
 
-import reactify._
 import io.youi.easing.Easing
 
 import scala.concurrent.duration.FiniteDuration
 
-case class AnimateIn(state: State[Double] with Channel[Double],
+case class AnimateIn(get: () => Double,
+                     apply: Double => Unit,
                      destination: () => Double,
                      duration: FiniteDuration,
                      easing: Easing) extends DurationTemporal {
@@ -16,7 +16,7 @@ case class AnimateIn(state: State[Double] with Channel[Double],
   override protected def starting(): Unit = {
     super.starting()
 
-    initialPosition = state()
+    initialPosition = get()
   }
 
   override def act(delta: Double, elapsed: Double, progress: Double): Unit = {
@@ -25,7 +25,7 @@ case class AnimateIn(state: State[Double] with Channel[Double],
     val eased = easing.calculate(progress)
     val adjust = length * eased
     val value = initialPosition + adjust
-    state := value
+    apply(value)
   }
 
   override def time: FiniteDuration = duration

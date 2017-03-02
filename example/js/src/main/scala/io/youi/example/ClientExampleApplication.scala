@@ -6,6 +6,8 @@ import io.youi.example.screen.{CommunicationScreen, LoginScreen}
 import io.youi.example.ui.UIExamples
 
 import scala.scalajs.js.JSApp
+import org.scalajs.dom._
+import io.youi.dom._
 
 object ClientExampleApplication extends JSApp with ExampleApplication with ClientApplication with Logging {
   val communicationScreen = CommunicationScreen
@@ -13,7 +15,9 @@ object ClientExampleApplication extends JSApp with ExampleApplication with Clien
 
   val uiExamples = UIExamples
 
+  val loading: html.Div = byId[html.Div]("loading")
+
   override def main(): Unit = {
-    logger.info("Initialized!")
+    scribe.info("Initialized!")
   }
 }

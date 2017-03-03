@@ -22,4 +22,9 @@ object IP {
   }
 
   def apply(address: String): IP = get(address).getOrElse(throw new NullPointerException(s"Unable to parse: $address to IP address."))
+  def apply(address: Array[Byte]): IP = if (address.length == 4) {
+    IPv4(address(0).toInt, address(1).toInt, address(2).toInt, address(3).toInt)
+  } else {
+    throw new RuntimeException(s"Address must have exactly four entries: ${address.mkString("[", ", ", "]")}")
+  }
 }

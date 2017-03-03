@@ -241,9 +241,6 @@ object TemplateCompiler {
         compiler.startServer()
       }
       if (mode.equalsIgnoreCase("watch") || mode.equalsIgnoreCase("server")) {
-        if (mode.equalsIgnoreCase("server")) {
-          println("Server started on http://localhost:8080")
-        }
         println("Press ENTER on your keyboard to stop...")
         StdIn.readLine()
         println("Shutting down...")

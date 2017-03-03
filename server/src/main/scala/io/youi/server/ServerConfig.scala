@@ -60,13 +60,21 @@ class ServerConfig(server: Server) {
 sealed trait ServerSocketListener
 
 case class HttpServerListener(host: String = "127.0.0.1", port: Int = 8080) extends ServerSocketListener {
-  override def toString: String = s"HTTP $host:$port"
+  override def toString: String = if (host == "0.0.0.0") {
+    s"HTTP ${ServerUtil.localIPs().map(ip => s"$ip:$port").mkString(", ")}"
+  } else {
+    s"HTTP $host:$port"
+  }
 }
 
 case class HttpsServerListener(host: String = "127.0.0.1",
                                port: Int = 8443,
                                keyStore: KeyStore = KeyStore()) extends ServerSocketListener {
-  override def toString: String = s"HTTPS $host:$port"
+  override def toString: String = if (host == "0.0.0.0") {
+    s"HTTPS ${ServerUtil.localIPs().map(ip => s"$ip:$port").mkString(", ")}"
+  } else {
+    s"HTTPS $host:$port"
+  }
 }
 
 case class KeyStore(location: File = new File("keystore.jks"), password: String = "password")

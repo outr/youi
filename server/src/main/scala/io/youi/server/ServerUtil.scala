@@ -2,6 +2,8 @@ package io.youi.server
 
 import java.net.{InetAddress, ServerSocket}
 
+import io.youi.net.IP
+
 import scala.annotation.tailrec
 
 object ServerUtil {
@@ -22,5 +24,11 @@ object ServerUtil {
     } catch {
       case t: Throwable => findAvailablePort(ports.tail, host)
     }
+  }
+
+  def localIPs(): List[IP] = {
+    val localhost = InetAddress.getLocalHost.getCanonicalHostName
+    val addresses = InetAddress.getAllByName(localhost)
+    addresses.toList.map(a => IP(a.getHostAddress))
   }
 }

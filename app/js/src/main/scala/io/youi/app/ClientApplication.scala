@@ -20,12 +20,18 @@ trait ClientApplication extends YouIApplication with ScreenManager {
   // Configure communication end-points
   private var configuredEndPoints = Set.empty[ApplicationCommunication]
 
+  private def attempt[T](f: => T, default: => T): T = try {
+    f
+  } catch {
+    case _: Throwable => default
+  }
+
   window.addEventListener("error", (evt: ErrorEvent) => {
     error(new JavaScriptError(
-      column = evt.colno,
-      fileName = evt.filename,
-      line = evt.lineno,
-      message = evt.message,
+      column = attempt(evt.colno, -1),
+      fileName = attempt(evt.filename, ""),
+      line = attempt(evt.lineno, -1),
+      message = attempt(evt.message, ""),
       url = History.url().toString,
       userAgent = window.navigator.userAgent,
       appName = window.navigator.appName,

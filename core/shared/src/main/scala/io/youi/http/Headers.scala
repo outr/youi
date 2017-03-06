@@ -102,6 +102,7 @@ trait HeaderKey {
   def key: String
 
   def get(headers: Headers): Option[String] = headers.first(this)
+  def all(headers: Headers): List[String] = headers.get(this)
 }
 
 object HeaderKey {

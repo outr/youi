@@ -15,7 +15,7 @@ class HttpConnection(val server: Server, val request: HttpRequest) {
     responseVar = f(responseVar)
   }
 
-  def isWebSocketUpgradeRequest: Boolean = Headers.`Connection`.get(request.headers).contains("Upgrade")
+  def isWebSocketUpgradeRequest: Boolean = Headers.`Connection`.all(request.headers).contains("Upgrade")
   def webSocketSupport: Option[Connection] = store.get[Connection](Connection.key)
   def webSocketSupport_=(listener: Connection): Unit = {
     if (isWebSocketUpgradeRequest) {

@@ -19,6 +19,13 @@ case class URL(protocol: Protocol = Protocol.Http,
   def withParam(key: String, value: String, append: Boolean = true): URL = {
     copy(parameters = parameters.withParam(key, value, append))
   }
+  def withParams(params: Map[String, String], append: Boolean = false): URL = {
+    var u = this
+    params.foreach {
+      case (key, value) => u = u.withParam(key, value, append)
+    }
+    u
+  }
   def appendParam(key: String, value: String): URL = copy(parameters = parameters.appendParam(key, value))
   def replaceParam(key: String, values: List[String]): URL = copy(parameters = parameters.replaceParam(key, values))
   def removeParam(key: String): URL = copy(parameters = parameters.removeParam(key))

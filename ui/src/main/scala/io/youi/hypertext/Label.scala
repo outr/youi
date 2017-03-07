@@ -1,6 +1,7 @@
 package io.youi.hypertext
+
 import reactify.Var
-import io.youi.{Size, dom}
+import io.youi.dom
 import io.youi.hypertext.style.{FontProperties, TextOverflow}
 import org.scalajs.dom.html.{Span => HTMLSpan}
 

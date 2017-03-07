@@ -7,8 +7,6 @@ import scala.language.implicitConversions
 package object youi {
   def ui: UI.type = UI
 
-  implicit def double2Size(d: Double): Size = Size(d)
-
   implicit class NumericSize[T](t: T)(implicit n: Numeric[T]) {
     private val d = n.toDouble(t)
 

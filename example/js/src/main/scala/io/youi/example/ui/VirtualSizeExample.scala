@@ -16,14 +16,14 @@ object VirtualSizeExample extends VirtualSizeSupport with UIExampleScreen {
       image := Image("/images/1024.jpg")
       position.left := 0.vx
       position.top := 0.vy
-      size.width := Size(1024.vw)
-      size.height := Size(768.vh)
+      size.width := 1024.vw
+      size.height := 768.vh
     }
     container.children += new Label {
       text := "1024x768"
       color := Color.White
       font.family := "sans-serif"
-      font.size := Size(67.vf)
+      font.size := 67.vf
       position.left := 45.vx
       position.middle := ui.position.middle
     }

@@ -35,8 +35,8 @@ object VirtualMode {
 }
 
 class VirtualSize(screen: VirtualSizeSupport,
-                  width: State[Double] = UI.size.width,
-                  height: State[Double] = UI.size.height) {
+                  width: State[Double] = UI.size.actual.width,
+                  height: State[Double] = UI.size.actual.height) {
   private val size: Val[(Double, Double, Double, Double)] = Val {
     if (width > 0.0 && height > 0.0) {
       screen.virtualMode.get match {

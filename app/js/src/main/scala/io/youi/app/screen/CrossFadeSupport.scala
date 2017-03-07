@@ -26,7 +26,6 @@ trait CrossFadeSupport extends ScreenManager {
           duration = crossFadeDuration,
           easing = crossFadeEaseIn
         ))
-        .andThen(synchronous(scribe.info(s"Begin Transition Complete Opacity: ${crossFadeElement.style.opacity}")))
       workflow.start()
     } else {
       super.beforeScreenChange(oldScreen, newScreen)

@@ -23,7 +23,7 @@ object UIExamples extends UIExampleScreen {
       case (screenName, function) => {
         val button = new Button {
           text := screenName
-          size.actual.height.attach { d =>
+          size.height.attach { d =>
             scribe.info(s"Height changed for $screenName button to $d")
           }
           previous.foreach { p =>

@@ -18,7 +18,7 @@ trait ClientApplication extends YouIApplication with ScreenManager {
   val webSocket: Var[Option[WebSocket]] = Var(None)
 
   // Configure communication end-points
-  private var configuredEndPoints = Set.empty[ApplicationCommunication]
+  private var configuredEndPoints = Set.empty[ApplicationConnectivity]
 
   private def attempt[T](f: => T, default: => T): T = try {
     f
@@ -80,7 +80,7 @@ trait ClientApplication extends YouIApplication with ScreenManager {
   def autoReload: Boolean = true
 
   def connect(): Unit = synchronized {
-    communication.attachAndFire { entries =>
+    communicationEntries.attachAndFire { entries =>
       entries.foreach { appComm =>
         if (!configuredEndPoints.contains(appComm)) {
           appComm.activeConnections := Set(connection)
@@ -95,11 +95,15 @@ trait ClientApplication extends YouIApplication with ScreenManager {
     } else {
       "ws"
     }
-    val comms = communication()
-    if (comms.isEmpty) throw new RuntimeException(s"Unable to connect, there are no communication instances.")
-    val connectionPath = comms.head.path      // TODO: evaluate supporting more than one in the ClientApplication
-    val url = URL(s"$protocol://${window.location.host}$connectionPath")
-    webSocket := Some(WebSocketUtil.connect(url, connection))
+    val comms = communicationEntries()
+    if (comms.isEmpty) {
+      scribe.warn("Unable to connect, there are no communication instances.")
+    } else {
+      val connectionPath = comms.head.path
+      // TODO: evaluate supporting more than one in the ClientApplication
+      val url = URL(s"$protocol://${window.location.host}$connectionPath")
+      webSocket := Some(WebSocketUtil.connect(url, connection))
+    }
   }
 
   def disconnect(): Unit = synchronized {

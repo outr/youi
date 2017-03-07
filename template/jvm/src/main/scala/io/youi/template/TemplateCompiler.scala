@@ -43,7 +43,7 @@ class TemplateCompiler(val sourceDirectory: File,
       }
 
       // Reload all active pages
-      server.comm.template.instances().foreach(_.reload(force = true))
+      server.communication.instances().foreach(_.reload(force = true))
     } catch {
       case t: Throwable => scribe.error(t)
     }

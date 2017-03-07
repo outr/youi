@@ -40,7 +40,8 @@ lazy val coreJVM = core.jvm
 
 lazy val stream = project.in(file("stream"))
   .settings(
-    name := "youi-stream"
+    name := "youi-stream",
+    libraryDependencies += "org.powerscala" %% "powerscala-io" % "2.0.5"
   )
 
 lazy val dom = project.in(file("dom"))

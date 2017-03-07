@@ -10,8 +10,8 @@ trait ServerApplication extends YouIApplication with Server {
   val disconnected: Channel[Connection] = Channel[Connection]
 
   // Configure communication end-points
-  private var configuredEndPoints = Set.empty[ApplicationCommunication]
-  communication.attachAndFire { entries =>
+  private var configuredEndPoints = Set.empty[ApplicationConnectivity]
+  communicationEntries.attachAndFire { entries =>
     ServerApplication.this.synchronized {
       entries.foreach { appComm =>
         if (!configuredEndPoints.contains(appComm)) {
@@ -59,7 +59,7 @@ trait ServerApplication extends YouIApplication with Server {
     page
   }
 
-  private class ServerConnectionHandler(appComm: ApplicationCommunication) extends HttpHandler {
+  private class ServerConnectionHandler(appComm: ApplicationConnectivity) extends HttpHandler {
     override def handle(httpConnection: HttpConnection): Unit = appComm.activeConnections.synchronized {
       val connection = new Connection
       connection.store.update("httpConnection", httpConnection)

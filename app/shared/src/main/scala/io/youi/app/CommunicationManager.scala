@@ -6,7 +6,7 @@ import reactify.Val
 import io.youi.communication.Communication
 import io.youi.http.Connection
 
-class CommunicationManager[C <: Communication](appComm: ApplicationCommunication, create: Connection => C) {
+class CommunicationManager[C <: Communication](appComm: ApplicationConnectivity, create: Connection => C) {
   val id: Int = CommunicationManager.increment.getAndIncrement()
 
   val instances: Val[Set[C]] = Val {

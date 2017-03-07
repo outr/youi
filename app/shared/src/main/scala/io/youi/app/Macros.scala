@@ -7,10 +7,10 @@ import scala.reflect.macros.blackbox
 
 @compileTimeOnly("Enable Macros for expansion")
 object Macros {
-  def communication[C <: Communication](context: blackbox.Context)(implicit c: context.WeakTypeTag[C]): context.Expr[CommunicationManager[C]] = {
+  def createCommunication[C <: Communication](context: blackbox.Context)
+                                             (applicationCommunication: context.Expr[ApplicationConnectivity])
+                                             (implicit c: context.WeakTypeTag[C]): context.Expr[CommunicationManager[C]] = {
     import context.universe._
-
-    val app = context.prefix.tree
 
     val typeString = c.tpe.toString
     val (preType, postType) = if (typeString.indexOf('.') != -1) {
@@ -47,7 +47,7 @@ object Macros {
          import io.youi.communication._
          import scala.concurrent.ExecutionContext.Implicits.global
 
-         new CommunicationManager[$c]($app, c => Communication.create[$communicationType](c))
+         new CommunicationManager[$c]($applicationCommunication, c => Communication.create[$communicationType](c))
        """)
   }
 }

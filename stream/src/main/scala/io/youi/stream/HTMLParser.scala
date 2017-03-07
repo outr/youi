@@ -1,7 +1,10 @@
 package io.youi.stream
 
 import java.io.{File, FileInputStream, InputStream}
+import java.net.URL
 import java.util.concurrent.ConcurrentHashMap
+
+import org.powerscala.io._
 
 import scala.annotation.tailrec
 import scala.collection.JavaConverters._
@@ -27,6 +30,20 @@ object HTMLParser {
   private val parsers = new ConcurrentHashMap[File, StreamableHTML]().asScala
 
   def cache(file: File): StreamableHTML = parsers.getOrElseUpdate(file, HTMLParser(file))
+
+  def cache(url: URL): StreamableHTML = {
+    val file = File.createTempFile("htmlparser", "cache")
+    file.deleteOnExit()
+    IO.stream(url, file)
+    cache(file)
+  }
+
+  def cache(html: String): StreamableHTML = {
+    val file = File.createTempFile("htmlparser", "cache")
+    file.deleteOnExit()
+    IO.stream(html, file)
+    cache(file)
+  }
 
   def apply(file: File): StreamableHTML = {
     val cacheBuilder = new CacheBuilder {

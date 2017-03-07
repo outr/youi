@@ -14,8 +14,23 @@ import scala.language.experimental.macros
 trait YouIApplication extends ErrorSupport {
   YouIApplication.instance = Some(this)
 
-  private[app] val communicationEntries: Var[Set[ApplicationCommunication]] = Var(Set.empty[ApplicationCommunication])
-  val communication: Val[Set[ApplicationCommunication]] = Val(communicationEntries)
+  val communicationEntries: State[Set[ApplicationConnectivity]] = Var(Set.empty[ApplicationConnectivity])
+
+  /**
+    * Default connectivity using "/communication" as the path. Can be overridden if this path is not desirable.
+    */
+  val connectivity: ApplicationConnectivity = createConnectivity()
+
+  def createConnectivity(path: String = "/communication"): ApplicationConnectivity = new ApplicationConnectivity(this, path)
+
+  /**
+    * Creates a new CommunicationManager for the Communication trait defined. This should be used to define a val in the
+    * shared application trait that will be utilized in both client and server.
+    *
+    * @tparam C the Communication trait
+    * @return CommunicationManager[C]
+    */
+  def createCommunication[C <: Communication](applicationCommunication: ApplicationConnectivity = connectivity): CommunicationManager[C] = macro Macros.createCommunication[C]
 }
 
 /**
@@ -25,7 +40,7 @@ trait YouIApplication extends ErrorSupport {
   * @param application the application this is associated with
   * @param path the absolute path to establish or listen for web socket communication. Defaults to "/communication"
   */
-class ApplicationCommunication(val application: YouIApplication, val path: String = "/communication") {
+class ApplicationConnectivity private[app](val application: YouIApplication, val path: String = "/communication") {
   private[app] val activeConnections = Var[Set[Connection]](Set.empty)
 
   /**
@@ -36,24 +51,8 @@ class ApplicationCommunication(val application: YouIApplication, val path: Strin
   // Make sure the application knows about it
   application.synchronized {
     val entries = application.communicationEntries()
-    application.communicationEntries := entries + this
+    application.communicationEntries.asInstanceOf[Var[Set[ApplicationConnectivity]]] := entries + this
   }
-
-  /**
-    * The absolute path to establish / listen for web socket communication.
-    *
-    * Defaults to "/communication".
-    */
-  def connectionPath: String = "/communication"
-
-  /**
-    * Creates a new CommunicationManager for the Communication trait defined. This should be used to define a val in the
-    * shared application trait that will be utilized in both client and server.
-    *
-    * @tparam C the Communication trait
-    * @return CommunicationManager[C]
-    */
-  def communication[C <: Communication]: CommunicationManager[C] = macro Macros.communication[C]
 }
 
 object YouIApplication {

@@ -60,6 +60,15 @@ YouI is broken out into modules of functionality to minimize the dependencies re
     * [ ] Linux
     * [ ] iOS
     * [ ] Android
+    
+## Features for 0.3.0 (In-Progress)
+
+* [ ] Major cleanup and simplification of writing a web application
+    * [X] Simplify connectivity / communication functionality
+    * [ ] Provide simple classes to extend for client, server, and shared
+    * [ ] SBT plugin to simplify build setup (especially management and sharing of generated JS)
+    * [ ] Ability to create an app with only three classes (client, server, and shared)
+    * [ ] Create a template project (maybe Giter8)
 
 ## Features for 0.2.0 (Released 2017.02.27)
 

@@ -24,6 +24,7 @@ object UI extends HTMLContainer with Logging {
     }
   }
 
+  // TODO: either make sure this actually gets called or automatically call it
   def init(): Unit = {
     title.attachAndFire { value =>
       document.title = value

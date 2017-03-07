@@ -1,8 +1,7 @@
 package io.youi.example.ui
 
-import io.youi._
+import io.youi.{Color, _}
 import io.youi.hypertext.Label
-import io.youi.hypertext.style.Color
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global

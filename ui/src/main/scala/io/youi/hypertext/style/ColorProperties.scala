@@ -1,5 +1,6 @@
 package io.youi.hypertext.style
 
+import io.youi.Color
 import reactify.Var
 
 class ColorProperties {

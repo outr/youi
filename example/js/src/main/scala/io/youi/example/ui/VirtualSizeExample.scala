@@ -3,7 +3,7 @@ package io.youi.example.ui
 import io.youi.VirtualSizeSupport
 import io.youi._
 import io.youi.hypertext.{ImageView, Label}
-import io.youi.hypertext.style.{Color, Image}
+import io.youi.hypertext.style.Image
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global

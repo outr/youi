@@ -177,8 +177,16 @@ object CookieHeader extends ListTypedHeaderKey[RequestCookie] {
   override def key: String = "Cookie"
 
   override def value(headers: Headers): List[RequestCookie] = {
-    headers.get(this).flatMap(_.split(';')).map(_.trim).map {
-      case SetCookie.KeyValueRegex(key, value) => RequestCookie(key, value)
+    val cookies = headers.get(this)
+    try {
+      cookies.flatMap(_.split(';')).map(_.trim).map {
+        case SetCookie.KeyValueRegex(key, value) => RequestCookie(key, value)
+      }
+    } catch {
+      case t: Throwable => {
+        scribe.error(new RuntimeException(s"Failed to parse cookie: [${cookies.mkString("|")}]", t))
+        throw t
+      }
     }
   }
 
@@ -186,7 +194,7 @@ object CookieHeader extends ListTypedHeaderKey[RequestCookie] {
 }
 
 object SetCookie extends ListTypedHeaderKey[ResponseCookie] {
-  private[http] val KeyValueRegex = """(.+)=(.+)""".r
+  private[http] val KeyValueRegex = """(.+)=(.*)""".r
   private val ExpiresRegex = """Expires=(.+)""".r
   private val MaxAgeRegex = """Max-Age=(\d+)""".r
   private val DomainRegex = """Domain=(.+)""".r

@@ -1,6 +1,7 @@
 package io.youi.app
 
 import java.io.File
+import java.net.URL
 
 import io.youi.Priority
 import io.youi.http.{Content, FileContent, HttpConnection, StringContent, URLContent, path}
@@ -12,6 +13,11 @@ trait SinglePageApplication extends ServerApplication {
   protected def excludeDotHTML: Boolean = true
   protected def templateDirectory: File
   protected def appJSContent: Content
+  protected def appJSMapContent: Content = appJSContent match {
+    case c: FileContent => c.copy(file = new File(c.file.getParentFile, s"${c.file.getName}.map"))
+    case c: URLContent => c.copy(url = new URL(s"${c.url.toString}.map"))
+    case c => throw new RuntimeException(s"Unsupported Content $c. You must directly override the appJSMapContent method.")
+  }
   protected def appJSFileName: String = s"${getClass.getSimpleName.replaceAllLiterally("$", "").toLowerCase}.js"
   protected def appJSMethod: String
   protected def scriptPaths: List[String] = Nil
@@ -51,7 +57,7 @@ trait SinglePageApplication extends ServerApplication {
     super.init()
 
     handler.matcher(path.exact(s"/$appJSFileName")).resource(appJSContent)
-    // TODO: add js.map
+    handler.matcher(path.exact(s"/$appJSFileName.map")).resource(appJSMapContent)
 
     handler.priority(Priority.Low).handle { httpConnection =>
       val url = httpConnection.request.url

@@ -56,8 +56,11 @@ trait SinglePageApplication extends ServerApplication {
   override protected def init(): Unit = {
     super.init()
 
-    handler.matcher(path.exact(s"/$appJSFileName")).resource(appJSContent)
-    handler.matcher(path.exact(s"/$appJSFileName.map")).resource(appJSMapContent)
+    val neverCacheManager = CachingManager.NotCached
+    val lastModifiedManager = CachingManager.LastModified()
+
+    handler.matcher(path.exact(s"/$appJSFileName")).caching(lastModifiedManager).resource(appJSContent)
+    handler.matcher(path.exact(s"/$appJSFileName.map")).caching(lastModifiedManager).resource(appJSMapContent)
 
     handler.priority(Priority.Low).handle { httpConnection =>
       val url = httpConnection.request.url
@@ -76,8 +79,10 @@ trait SinglePageApplication extends ServerApplication {
 
         if (file.isFile) {
           if (file.getName.endsWith(".html")) {
+            neverCacheManager.handle(httpConnection)
             serveHTML(httpConnection, file)
           } else {
+            lastModifiedManager.handle(httpConnection)
             httpConnection.update(_.withContent(Content.file(file)))
           }
         }

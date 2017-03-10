@@ -1,5 +1,6 @@
 package io.youi.app
 
+import io.youi.{ErrorSupport, JavaScriptError}
 import reactify.Channel
 import io.youi.http._
 import io.youi.server.Server
@@ -9,8 +10,11 @@ trait ServerApplication extends YouIApplication with Server {
   val connected: Channel[Connection] = Channel[Connection]
   val disconnected: Channel[Connection] = Channel[Connection]
 
-  // Configure communication end-points
   private var configuredEndPoints = Set.empty[ApplicationConnectivity]
+
+  ErrorSupport.error.detach(ErrorSupport.defaultHandler)
+  ErrorSupport.error.attach(scribe.error(_))
+
   communicationEntries.attachAndFire { entries =>
     ServerApplication.this.synchronized {
       entries.foreach { appComm =>
@@ -22,12 +26,15 @@ trait ServerApplication extends YouIApplication with Server {
       }
     }
   }
+  handler.matcher(path.exact("/source-map.min.js")).resource(Content.classPath("source-map.min.js"))
   handler.matcher(path.exact("/clientError")).handle { httpConnection =>
     val content = httpConnection.request.content
     val formData = content.get.asInstanceOf[FormDataContent]
     val column = formData.string("column").value.toInt
     val fileName = formData.string("fileName").value
     val lineNumber = formData.string("lineNumber").value.toInt
+    val name = formData.string("name").value
+    val mapped = formData.string("mapped").value.toBoolean
     val url = formData.string("url").value
     val message = formData.string("message").value
     val userAgent = formData.string("userAgent").value
@@ -40,6 +47,8 @@ trait ServerApplication extends YouIApplication with Server {
       column = column,
       fileName = fileName,
       line = lineNumber,
+      name = name,
+      mapped = mapped,
       message = message,
       url = url,
       userAgent = userAgent,

@@ -4,7 +4,9 @@ import java.io.IOException
 import java.net.URI
 
 import io.undertow.io.{IoCallback, Sender}
+import io.undertow.predicate.Predicates
 import io.undertow.protocols.ssl.UndertowXnioSsl
+import io.undertow.server.handlers.encoding.{ContentEncodingRepository, DeflateEncodingProvider, EncodingHandler, GzipEncodingProvider}
 import io.undertow.server.handlers.form.{FormDataParser, FormParserFactory}
 import io.undertow.server.handlers.proxy.LoadBalancingProxyClient
 import io.undertow.server.handlers.resource.URLResource
@@ -25,9 +27,15 @@ class UndertowServerImplementation(server: Server) extends ServerImplementation 
   private var instance: Option[Undertow] = None
 
   override def start(): Unit = synchronized {
+    val contentEncodingRepository = new ContentEncodingRepository()
+      .addEncodingHandler("gzip", new GzipEncodingProvider, 100, Predicates.maxContentSize(5L))
+      .addEncodingHandler("deflate", new DeflateEncodingProvider, 50, Predicates.maxContentSize(5L))
+    val encodingHandler = new EncodingHandler(contentEncodingRepository)
+      .setNext(this)
+
     val builder = Undertow.builder()
 //      .setServerOption(UndertowOptions.ENABLE_HTTP2, java.lang.Boolean.TRUE)
-      .setHandler(this)
+      .setHandler(encodingHandler)
     server.config.listeners.foreach {
       case HttpServerListener(host, port) => builder.addHttpListener(port, host)
       case HttpsServerListener(host, port, keyStore) => {

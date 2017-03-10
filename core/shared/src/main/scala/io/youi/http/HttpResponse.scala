@@ -20,5 +20,5 @@ case class HttpResponse(status: Status = Status.OK,
     copy(content = None)
       .removeHeader(Headers.`Content-Type`)
       .removeHeader(Headers.`Content-Length`)
-  def withRedirect(uri: String): HttpResponse = copy(status = Status.Found).setHeader(Headers.Response.`Location`(uri))
+  def withRedirect(uri: String, status: Status = Status.Found): HttpResponse = copy(status = status).setHeader(Headers.Response.`Location`(uri))
 }

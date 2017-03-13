@@ -3,7 +3,7 @@ package io.youi.client
 import java.io.File
 import java.net.URI
 
-import io.circe.{Decoder, Encoder}
+import io.circe.{Decoder, Encoder, Printer}
 import io.circe.parser._
 import io.circe.syntax._
 import io.youi.http.{Content, FileContent, Headers, HttpRequest, HttpResponse, Method, Status, StringContent}
@@ -26,6 +26,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * @param saveDirectory the directory to save response content of a non-textual type
   */
 class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpdir"))) {
+  private lazy val printer = Printer.spaces2.copy(dropNullKeys = true)
   private val asyncClient: CloseableHttpAsyncClient = {
     val client = HttpAsyncClients.createDefault()
     client.start()
@@ -120,7 +121,7 @@ class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpd
                                  headers: Headers = Headers.empty,
                                  errorHandler: HttpResponse => Response = defaultErrorHandler[Response])
                                 (implicit encoder: Encoder[Request], decoder: Decoder[Response]): Future[Response] = {
-    val requestJson = request.asJson.spaces2
+    val requestJson = printer.pretty(request.asJson)
     send(HttpRequest(
       method = Method.Post,
       url = url,

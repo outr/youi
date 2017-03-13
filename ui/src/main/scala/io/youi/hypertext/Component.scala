@@ -55,8 +55,14 @@ trait Component extends AbstractComponent {
     position.`type`.attachAndFire(p => element.style.position = p.toString.toLowerCase)
     position.x.attach(d => element.style.left = s"${d}px")
     position.y.attach(d => element.style.top = s"${d}px")
-    size.width.attach(d => element.style.width = s"${d}px")
-    size.height.attach(d => element.style.height = s"${d}px")
+    size.width.attach { d =>
+      element.style.width = s"${d}px"
+      onNextFrame(updateSize())
+    }
+    size.height.attach { d =>
+      element.style.height = s"${d}px"
+      onNextFrame(updateSize())
+    }
     rotation.attach(d => updateTransform())
     scale.x.attach(d => updateTransform())
     scale.y.attach(d => updateTransform())

@@ -5,6 +5,8 @@ import org.scalajs.dom._
 
 class Container(val element: html.Element) extends HTMLContainer with Component {
   def this() = this(dom.create[html.Element]("div"))
+
+  init()
 }
 
 object Container {

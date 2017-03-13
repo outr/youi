@@ -7,6 +7,8 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 object LabelExample extends UIExampleScreen {
+  override def name: String = "Label Example"
+
   override def path: String = "/examples/labels.html"
 
   override def load(): Future[Unit] = super.load().map { _ =>

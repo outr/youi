@@ -11,6 +11,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 
 object AnimationExample extends UIExampleScreen {
+  override def name: String = "Animation Example"
   override def path: String = "/examples/animation.html"
 
   override protected def load(): Future[Unit] = super.load().map { _ =>

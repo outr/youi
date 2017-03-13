@@ -9,6 +9,8 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 object HelloWorld extends UIExampleScreen {
+  override def name: String = "Hello World"
+
   override protected def load(): Future[Unit] = super.load().map { _ =>
     container.children += new Button {
       text := "Say 'Hello World'"

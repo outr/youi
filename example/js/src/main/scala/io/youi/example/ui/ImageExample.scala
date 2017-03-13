@@ -9,6 +9,8 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 object ImageExample extends UIExampleScreen {
+  override def name: String = "Image Example"
+
   override protected def load(): Future[Unit] = super.load().map { _ =>
     val icon = Image("/images/icon.png")
     container.children += new ImageView {    // Top-Left

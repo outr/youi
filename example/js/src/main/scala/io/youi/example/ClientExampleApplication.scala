@@ -1,9 +1,10 @@
 package io.youi.example
 
+import io.youi.UI
 import io.youi.app.ClientApplication
 import io.youi.app.screen.CrossFadeSupport
 import io.youi.example.screen.{CommunicationScreen, LoginScreen}
-import io.youi.example.ui.UIExamples
+import io.youi.example.ui._
 
 import scala.scalajs.js.JSApp
 import org.scalajs.dom._
@@ -17,10 +18,17 @@ object ClientExampleApplication extends JSApp with ExampleApplication with Clien
 
   val uiExamples = UIExamples
 
+  val hello = HelloWorld
+  val animation = AnimationExample
+  val images = ImageExample
+  val label = LabelExample
+  val virtual = VirtualSizeExample
+
   override protected val crossFadeElement: html.Div = byId[html.Div]("loading")
   override protected val crossFadeDuration: FiniteDuration = 250.milliseconds
 
   override def main(): Unit = {
     scribe.info("Initialized!")
+    UI.init()
   }
 }

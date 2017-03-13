@@ -1,6 +1,6 @@
 package io.youi.app.screen
 
-import reactify.{ChangeListener, Val, Var}
+import reactify.{ChangeListener, State, Val, Var}
 import io.youi.app.YouIApplication
 
 import scala.concurrent.Future
@@ -11,8 +11,9 @@ trait ScreenManager {
 
   private var managerFuture: Future[Unit] = Future.successful(())
 
-  private val allScreens = Var[Set[Screen]](Set.empty)
+  private val allScreens = Var[List[Screen]](Nil)
 
+  val screens: State[List[Screen]] = allScreens
   val active: Var[Screen] = Var(EmptyScreen)
 
   active.changes(new ChangeListener[Screen] {
@@ -32,7 +33,7 @@ trait ScreenManager {
   }
 
   private[screen] def addScreen(screen: Screen): Unit = synchronized {
-    allScreens := (allScreens() + screen)
+    allScreens := (allScreens() ::: List(screen))
   }
 
   def load(screen: Screen): Future[Unit] = managerFuture.map { _ =>

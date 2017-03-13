@@ -9,6 +9,7 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 object VirtualSizeExample extends VirtualSizeSupport with UIExampleScreen {
+  override def name: String = "Virtual Size Example"
   override def path: String = "/examples/virtual.html"
 
   override protected def load(): Future[Unit] = super.load().map { _ =>
@@ -23,8 +24,8 @@ object VirtualSizeExample extends VirtualSizeSupport with UIExampleScreen {
       text := "1024x768"
       color := Color.White
       font.family := "sans-serif"
-      font.size := 67.vf
-      position.left := 45.vx
+      font.size := 66.5.vf
+      position.left := 44.vx
       position.middle := ui.position.middle
     }
   }

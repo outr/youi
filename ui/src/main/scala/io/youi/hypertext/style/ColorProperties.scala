@@ -3,11 +3,13 @@ package io.youi.hypertext.style
 import io.youi.Color
 import reactify.Var
 
-class ColorProperties {
-  val red: Var[Double] = Var(1.0)
-  val green: Var[Double] = Var(1.0)
-  val blue: Var[Double] = Var(1.0)
-  val alpha: Var[Double] = Var(1.0)
+class ColorProperties(initialRed: Double, initialGreen: Double, initialBlue: Double, initialAlpha: Double) {
+  val red: Var[Double] = Var(initialRed)
+  val green: Var[Double] = Var(initialGreen)
+  val blue: Var[Double] = Var(initialBlue)
+  val alpha: Var[Double] = Var(initialAlpha)
+
+  def isDefault: Boolean = red() == initialRed && green() == initialGreen && blue() == initialBlue && alpha() == initialAlpha
 
   def apply() = Color(red.get, green.get, blue.get, alpha.get)
 

@@ -63,6 +63,9 @@ trait Component extends AbstractComponent {
       element.style.height = s"${d}px"
       onNextFrame(updateSize())
     }
+    parent.attach { p =>
+      onNextFrame(updateSize())
+    }
     rotation.attach(d => updateTransform())
     scale.x.attach(d => updateTransform())
     scale.y.attach(d => updateTransform())

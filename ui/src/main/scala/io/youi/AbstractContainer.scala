@@ -3,7 +3,7 @@ package io.youi
 import io.youi.layout.Layout
 import reactify._
 
-trait AbstractContainer[C <: AbstractComponent] {
+trait AbstractContainer[C <: AbstractComponent] extends AbstractComponent {
   val layoutManager: Var[Option[Layout]] = Var(None)
   val children: Var[Vector[C]] = Var[Vector[C]](Vector.empty)
 
@@ -23,6 +23,7 @@ trait AbstractContainer[C <: AbstractComponent] {
         if (!newValue.contains(c)) {
           modifiedOld = modifiedOld.filterNot(_ == c)
           remove(c)
+          c.parent.asInstanceOf[Var[Option[AbstractComponent]]] := None
         }
       }
       // Iterate over new and deal with changes
@@ -41,6 +42,7 @@ trait AbstractContainer[C <: AbstractComponent] {
           }
           if (shouldAdd) {
             addAfter(c, previous)
+            c.parent.asInstanceOf[Var[Option[AbstractComponent]]] := Some(AbstractContainer.this)
           }
           previous = Some(c)
         }

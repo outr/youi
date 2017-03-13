@@ -36,6 +36,9 @@ object UI extends HTMLContainer with Component with Logging {
     val h = window.innerHeight
     actualWidth := w
     actualHeight := h
+
+    size.width := actualWidth
+    size.height := actualHeight
   }
 
 //  object position {

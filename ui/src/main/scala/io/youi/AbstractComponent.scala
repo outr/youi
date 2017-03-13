@@ -4,6 +4,9 @@ import reactify._
 import io.youi.hypertext.style.{ColorProperties, Position}
 
 trait AbstractComponent {
+  lazy val id: Var[String] = Var(Unique(length = 8, characters = Unique.LettersLower))
+  lazy val parent: State[Option[AbstractComponent]] = Var(None)
+
   object position {
     lazy val `type`: Var[Position] = Var(Position.Absolute)
     lazy val x: Var[Double] = Var(0.0)
@@ -43,4 +46,6 @@ trait AbstractComponent {
   lazy val visible: Var[Boolean] = Var(true)
 
   protected def init(): Unit = {}
+
+  override def toString: String = s"${getClass.getSimpleName}:${id()}"
 }

@@ -194,10 +194,6 @@ object Color {
 
   def toCSS(red: Double, green: Double, blue: Double, alpha: Double): String = {
     def i(d: Double): Int = math.round(d * 255.0).toInt
-    if (alpha != 1.0) {
-      s"rgb(${i(red)}, ${i(green)}, ${i(blue)})"
-    } else {
-      s"rgba(${i(red)}, ${i(green)}, ${i(blue)}, $alpha)"
-    }
+    s"rgba(${i(red)}, ${i(green)}, ${i(blue)}, $alpha)"
   }
 }

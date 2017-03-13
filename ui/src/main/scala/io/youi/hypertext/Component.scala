@@ -1,5 +1,6 @@
 package io.youi.hypertext
 
+import io.youi.hypertext.border.ComponentBorders
 import reactify.{Channel, Var}
 import io.youi.{AbstractComponent, Color}
 import org.scalajs.dom._
@@ -13,82 +14,7 @@ trait Component extends AbstractComponent {
 
   lazy val click: Channel[Event] = events("click", stopPropagation = false)
 
-  object border {
-    private lazy val topLeftRadius = prop[Double](0.0, d => element.style.borderTopLeftRadius = s"${d}px", mayCauseResize = true)
-    private lazy val topRightRadius = prop[Double](0.0, d => element.style.borderTopRightRadius = s"${d}px", mayCauseResize = true)
-    private lazy val bottomLeftRadius = prop[Double](0.0, d => element.style.borderBottomLeftRadius = s"${d}px", mayCauseResize = true)
-    private lazy val bottomRightRadius = prop[Double](0.0, d => element.style.borderBottomRightRadius = s"${d}px", mayCauseResize = true)
-
-    case object top extends Border(Component.this, element.style.borderTopColor = _, element.style.borderTopStyle = _, element.style.borderTopWidth = _) {
-      object left {
-        def radius: Var[Double] = topLeftRadius
-      }
-      object right {
-        def radius: Var[Double] = topRightRadius
-      }
-    }
-    case object bottom extends Border(Component.this, element.style.borderBottomColor = _, element.style.borderBottomStyle = _, element.style.borderBottomWidth = _) {
-      object left {
-        def radius: Var[Double] = bottomLeftRadius
-      }
-      object right {
-        def radius: Var[Double] = bottomRightRadius
-      }
-    }
-    case object left extends Border(Component.this, element.style.borderLeftColor = _, element.style.borderLeftStyle = _, element.style.borderLeftWidth = _) {
-      object top {
-        def radius: Var[Double] = topLeftRadius
-      }
-      object bottom {
-        def radius: Var[Double] = bottomLeftRadius
-      }
-    }
-    case object right extends Border(Component.this, element.style.borderRightColor = _, element.style.borderRightStyle = _, element.style.borderRightWidth = _) {
-      object top {
-        def radius: Var[Double] = topRightRadius
-      }
-      object bottom {
-        def radius: Var[Double] = bottomRightRadius
-      }
-    }
-
-    object color {
-      def :=(value: Option[Color]): Unit = set(value)
-      def set(value: Option[Color]): Unit = {
-        top.color := value
-        bottom.color := value
-        left.color := value
-        right.color := value
-      }
-    }
-    object style {
-      def :=(value: Option[BorderStyle]): Unit = set(value)
-      def set(value: Option[BorderStyle]): Unit = {
-        top.style := value
-        bottom.style := value
-        left.style := value
-        right.style := value
-      }
-    }
-    object width {
-      def :=(value: Option[Double]): Unit = set(value)
-      def set(value: Option[Double]): Unit = {
-        top.width := value
-        bottom.width := value
-        left.width := value
-        right.width := value
-      }
-    }
-    object radius {
-      def :=(value: Double): Unit = set(value)
-      def set(value: Double): Unit = {
-        topLeftRadius := value
-        topRightRadius := value
-        bottomLeftRadius := value
-        bottomRightRadius := value
-      }
-    }
-  }
+  lazy val border: ComponentBorders = new ComponentBorders(this)
 
   protected[hypertext] def prop[T](get: => T, set: T => Unit, mayCauseResize: Boolean): Var[T] = {
     val v = Var[T](get)
@@ -204,28 +130,4 @@ object Component {
       }
     }
   }
-}
-
-class Border(component: Component,
-             updateColor: String => Unit,
-             updateStyle: String => Unit,
-             updateWidth: String => Unit) {
-  lazy val color: Var[Option[Color]] = component.prop(None, o => updateColor(o.map(_.toCSS).getOrElse("")), mayCauseResize = false)
-  lazy val style: Var[Option[BorderStyle]] = component.prop(None, o => updateStyle(o.map(_.value).getOrElse("")), mayCauseResize = true)
-  lazy val width: Var[Option[Double]] = component.prop(None, o => updateWidth(o.map(d => s"${d}px").getOrElse("")), mayCauseResize = true)
-}
-
-sealed abstract class BorderStyle(val value: String)
-
-object BorderStyle {
-  case object None extends BorderStyle("none")
-  case object Hidden extends BorderStyle("hidden")
-  case object Dotted extends BorderStyle("dotted")
-  case object Dashed extends BorderStyle("dashed")
-  case object Solid extends BorderStyle("solid")
-  case object Double extends BorderStyle("double")
-  case object Groove extends BorderStyle("groove")
-  case object Ridge extends BorderStyle("ridge")
-  case object Inset extends BorderStyle("inset")
-  case object Outset extends BorderStyle("outset")
 }

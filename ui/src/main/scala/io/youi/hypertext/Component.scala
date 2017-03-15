@@ -14,6 +14,7 @@ trait Component extends AbstractComponent {
   protected[youi] val element: Element
 
   object event {
+    lazy val change: Channel[Event] = events("change")
     lazy val click: Channel[MouseEvent] = events("click")
     lazy val doubleClick: Channel[MouseEvent] = events("dblclick")
     lazy val contextMenu: Channel[MouseEvent] = events("contextmenu")

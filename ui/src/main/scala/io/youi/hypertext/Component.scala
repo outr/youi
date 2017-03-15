@@ -13,10 +13,35 @@ import scala.collection.mutable.ListBuffer
 trait Component extends AbstractComponent {
   protected[youi] val element: Element
 
-  lazy val click: Channel[Event] = events("click", stopPropagation = false)
+  object event {
+    lazy val click: Channel[MouseEvent] = events("click")
+    lazy val doubleClick: Channel[MouseEvent] = events("dblclick")
+    lazy val contextMenu: Channel[MouseEvent] = events("contextmenu")
+    lazy val focus: Channel[FocusEvent] = events("focus")
+    lazy val blue: Channel[FocusEvent] = events("blue")
+    object key {
+      lazy val down: Channel[KeyboardEvent] = events("keydown")
+      lazy val press: Channel[KeyboardEvent] = events("keypress")
+      lazy val up: Channel[KeyboardEvent] = events("keyup")
+    }
+    object mouse {
+      lazy val enter: Channel[MouseEvent] = events("mouseenter")
+      lazy val over: Channel[MouseEvent] = events("mouseover")
+      lazy val move: Channel[MouseEvent] = events("mousemove")
+      lazy val down: Channel[MouseEvent] = events("mousedown")
+      lazy val up: Channel[MouseEvent] = events("mouseup")
+      lazy val leave: Channel[MouseEvent] = events("mouseleave")
+      lazy val out: Channel[MouseEvent] = events("mouseout")
+      lazy val wheel: Channel[MouseEvent] = events("wheel")
+    }
+  }
 
   lazy val border: ComponentBorders = new ComponentBorders(this)
   lazy val overflow: ComponentOverflow = new ComponentOverflow(this)
+
+  def focus(): Unit = element.focus()
+  def blur(): Unit = element.blur()
+  def click(): Unit = element.click()
 
   protected[hypertext] def prop[T](get: => T, set: T => Unit, mayCauseResize: Boolean): Var[T] = {
     val v = Var[T](get)
@@ -35,9 +60,9 @@ trait Component extends AbstractComponent {
     })
   }
 
-  protected def events(eventType: String, stopPropagation: Boolean): Channel[Event] = {
-    val channel = Channel[Event]
-    element.addEventListener(eventType, (evt: Event) => {
+  protected def events[E <: Event](eventType: String, stopPropagation: Boolean = false): Channel[E] = {
+    val channel = Channel[E]
+    element.addEventListener(eventType, (evt: E) => {
       if (stopPropagation) {
         evt.preventDefault()
         evt.stopPropagation()

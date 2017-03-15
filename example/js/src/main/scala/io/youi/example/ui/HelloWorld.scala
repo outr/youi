@@ -17,7 +17,7 @@ object HelloWorld extends UIExampleScreen {
       position.center := UI.position.center
       position.middle := UI.position.middle
 
-      click.attach { _ =>
+      event.click.attach { _ =>
         scribe.info("Hello, World!")
       }
     }

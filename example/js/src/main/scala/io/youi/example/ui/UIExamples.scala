@@ -26,7 +26,7 @@ object UIExamples extends UIExampleScreen {
           val offset: Double = previous.map(_.position.bottom + 45.0).getOrElse(20.0)
           position.top := offset
           position.center := ui.position.center
-          click.attach { evt =>
+          event.click.attach { evt =>
             evt.stopPropagation()
             evt.preventDefault()
 

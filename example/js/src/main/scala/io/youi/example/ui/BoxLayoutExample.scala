@@ -43,7 +43,7 @@ object BoxLayoutExample extends UIExampleScreen {
     container.children += new Button {
       text := "Jump to Middle"
 
-      click.attach { _ =>
+      event.click.attach { _ =>
         layoutContainer.scrollbar.vertical.percentage := 0.5
       }
     }

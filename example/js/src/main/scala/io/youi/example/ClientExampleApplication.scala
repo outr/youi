@@ -23,13 +23,14 @@ object ClientExampleApplication extends JSApp with ExampleApplication with Clien
   val images = ImageExample
   val label = LabelExample
   val border = BorderExample
+  val boxLayout = BoxLayoutExample
   val virtual = VirtualSizeExample
 
   override protected val crossFadeElement: html.Div = byId[html.Div]("loading")
   override protected val crossFadeDuration: FiniteDuration = 250.milliseconds
 
   override def main(): Unit = {
-    scribe.info("Initialized!")
     UI.init()
+    scribe.info("Initialized!")
   }
 }

@@ -21,16 +21,47 @@ trait AbstractComponent {
     lazy val bottom: Dep[Double, Double] = Dep(top, size.actual.height)
   }
 
+  object scrollbar {
+    object horizontal {
+      /**
+        * Size in pixels of the vertical space used by a horizontal scrollbar. 0 if not showing.
+        */
+      lazy val size: State[Double] = Var(0.0)
+      lazy val visible: Val[Boolean] = Val(size > 0.0)
+      lazy val position: Var[Double] = Var(0.0)
+      lazy val percentage: Var[Double] = Var(0.0)
+    }
+    object vertical {
+      /**
+        * Size in pixels of the horizontal space used by a vertical scrollbar. 0 if not showing.
+        */
+      lazy val size: State[Double] = Var(0.0)
+      lazy val visible: Val[Boolean] = Val(size > 0.0)
+      lazy val position: Var[Double] = Var(0.0)
+      lazy val percentage: Var[Double] = Var(0.0)
+    }
+  }
+
   protected val actualWidth: Var[Double] = Var(0.0)
   protected val actualHeight: Var[Double] = Var(0.0)
+
+  protected val innerWidth: Var[Double] = Var(0.0)
+  protected val innerHeight: Var[Double] = Var(0.0)
 
   object size {
     lazy val width: Var[Double] = Var(0.0)
     lazy val height: Var[Double] = Var(0.0)
 
+    lazy val center: Val[Double] = Val(width / 2.0)
+    lazy val middle: Val[Double] = Val(height / 2.0)
+
     object actual {
       val width: Val[Double] = Val(actualWidth)
       val height: Val[Double] = Val(actualHeight)
+    }
+    object inner {
+      val width: Val[Double] = Val(innerWidth)
+      val height: Val[Double] = Val(innerHeight)
     }
   }
 

@@ -1,7 +1,8 @@
 package io.youi.hypertext
 
 import io.youi.hypertext.border.ComponentBorders
-import reactify.{Channel, Var}
+import io.youi.hypertext.style.{ComponentOverflow, Overflow}
+import reactify.{Channel, State, Val, Var}
 import io.youi.{AbstractComponent, Color}
 import org.scalajs.dom._
 import org.scalajs.dom.html.Element
@@ -15,6 +16,7 @@ trait Component extends AbstractComponent {
   lazy val click: Channel[Event] = events("click", stopPropagation = false)
 
   lazy val border: ComponentBorders = new ComponentBorders(this)
+  lazy val overflow: ComponentOverflow = new ComponentOverflow(this)
 
   protected[hypertext] def prop[T](get: => T, set: T => Unit, mayCauseResize: Boolean): Var[T] = {
     val v = Var[T](get)
@@ -83,14 +85,62 @@ trait Component extends AbstractComponent {
     backgroundColor.blue.attach(d => updateBackgroundColor())
     backgroundColor.alpha.attach(d => updateBackgroundColor())
 
-    updateSize()
+    element.addEventListener("scroll", (evt: Event) => {
+      updateSize()
+    })
+    scrollbar.vertical.position.attach { p =>
+      if (!updatingSize) {
+        element.scrollTop = p
+        updateSize()
+      }
+    }
+    scrollbar.horizontal.position.attach { p =>
+      if (!updatingSize) {
+        element.scrollLeft = p
+        updateSize()
+      }
+    }
+    scrollbar.vertical.percentage.attach { p =>
+      if (!updatingSize) {
+        element.scrollTop = (size.inner.height() - size.actual.height()) * p
+        updateSize()
+      }
+    }
+    scrollbar.horizontal.percentage.attach { p =>
+      if (!updatingSize) {
+        element.scrollLeft = (size.inner.width() - size.actual.width()) * p
+        updateSize()
+      }
+    }
+
     if (!color.isDefault) updateColor()
     if (!backgroundColor.isDefault) updateBackgroundColor()
+    updateSize()
   }
 
-  protected def updateSize(): Unit = {
-    if (actualWidth() != element.offsetWidth) actualWidth.setStatic(element.offsetWidth)
-    if (actualHeight() != element.offsetHeight) actualHeight.setStatic(element.offsetHeight)
+  private var updatingSize: Boolean = false
+
+  protected def determineActualWidth: Double = element.offsetWidth
+  protected def determineActualHeight: Double = element.offsetHeight
+
+  protected def updateSize(): Unit = if (!updatingSize) {
+    updatingSize = true
+    try {
+      if (actualWidth() != determineActualWidth) actualWidth.setStatic(determineActualWidth)
+      if (actualHeight() != determineActualHeight) actualHeight.setStatic(determineActualHeight)
+
+      scrollbar.horizontal.size.asInstanceOf[Var[Double]].set(element.offsetHeight - element.clientHeight)
+      scrollbar.vertical.size.asInstanceOf[Var[Double]].set(element.offsetWidth - element.clientWidth)
+      scrollbar.horizontal.position := element.scrollLeft
+      scrollbar.vertical.position := element.scrollTop
+      innerWidth := element.scrollWidth
+      innerHeight := element.scrollHeight
+
+      scrollbar.vertical.percentage := scrollbar.vertical.position / (size.inner.height() - size.actual.height())
+      scrollbar.horizontal.percentage := scrollbar.horizontal.position / (size.inner.width - size.actual.height)
+    } finally {
+      updatingSize = false
+    }
   }
 
   protected def updateTransform(): Unit = {

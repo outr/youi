@@ -7,9 +7,8 @@ import scala.reflect.macros.blackbox
 
 @compileTimeOnly("Enable Macros for expansion")
 object Macros {
-  def createCommunication[C <: Communication](context: blackbox.Context)
-                                             (applicationCommunication: context.Expr[ApplicationConnectivity])
-                                             (implicit c: context.WeakTypeTag[C]): context.Expr[CommunicationManager[C]] = {
+  def communication[C <: Communication](context: blackbox.Context)
+                                       (implicit c: context.WeakTypeTag[C]): context.Expr[CommunicationManager[C]] = {
     import context.universe._
 
     val typeString = c.tpe.toString
@@ -40,6 +39,8 @@ object Macros {
         case None => context.abort(context.enclosingPosition, s"Unable to find implementation trait $clientTypeString or $serverTypeString for $typeString.")
       }
     }
+
+    val applicationCommunication = context.prefix.tree
 
     context.Expr[CommunicationManager[C]](
       q"""

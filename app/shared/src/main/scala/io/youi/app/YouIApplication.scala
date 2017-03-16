@@ -22,15 +22,6 @@ trait YouIApplication extends ErrorSupport {
   val connectivity: ApplicationConnectivity = createConnectivity()
 
   def createConnectivity(path: String = "/communication"): ApplicationConnectivity = new ApplicationConnectivity(this, path)
-
-  /**
-    * Creates a new CommunicationManager for the Communication trait defined. This should be used to define a val in the
-    * shared application trait that will be utilized in both client and server.
-    *
-    * @tparam C the Communication trait
-    * @return CommunicationManager[C]
-    */
-  def createCommunication[C <: Communication](applicationCommunication: ApplicationConnectivity = connectivity): CommunicationManager[C] = macro Macros.createCommunication[C]
 }
 
 /**
@@ -53,6 +44,14 @@ class ApplicationConnectivity private[app](val application: YouIApplication, val
     val entries = application.communicationEntries()
     application.communicationEntries.asInstanceOf[Var[Set[ApplicationConnectivity]]] := entries + this
   }
+
+  /**
+    * Creates a new CommunicationManager for the Communication trait defined. This should be used to define a val in the
+    * shared application trait that will be utilized in both client and server.
+    *
+    * @return CommunicationManager[C]
+    */
+  def communication[C <: Communication]: CommunicationManager[C] = macro Macros.communication[C]
 }
 
 object YouIApplication {

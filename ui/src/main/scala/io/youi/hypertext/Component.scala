@@ -19,7 +19,7 @@ trait Component extends AbstractComponent {
     lazy val doubleClick: Channel[MouseEvent] = events("dblclick")
     lazy val contextMenu: Channel[MouseEvent] = events("contextmenu")
     lazy val focus: Channel[FocusEvent] = events("focus")
-    lazy val blue: Channel[FocusEvent] = events("blue")
+    lazy val blur: Channel[FocusEvent] = events("blur")
     object key {
       lazy val down: Channel[KeyboardEvent] = events("keydown")
       lazy val press: Channel[KeyboardEvent] = events("keypress")

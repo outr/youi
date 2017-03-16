@@ -24,6 +24,7 @@ object ClientExampleApplication extends JSApp with ExampleApplication with Clien
   val label = LabelExample
   val border = BorderExample
   val boxLayout = BoxLayoutExample
+  val gridLayout = GridLayoutExample
   val virtual = VirtualSizeExample
 
   override protected val crossFadeElement: html.Div = byId[html.Div]("loading")

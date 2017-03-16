@@ -14,12 +14,10 @@ class TextInput extends Component {
   init()
 
   event.change.attach { _ =>
-    changing = true
-    try {
-      value := element.value
-    } finally {
-      changing = false
-    }
+    checkValue()
+  }
+  event.key.up.attach { _ =>
+    checkValue()
   }
 
   private var changing = false
@@ -29,6 +27,18 @@ class TextInput extends Component {
       element.value = value()
     } finally {
       changing = false
+    }
+  }
+
+  private def checkValue(): Unit = {
+    val v = element.value
+    if (value() != v && !changing) {
+      changing = true
+      try {
+        value := v
+      } finally {
+        changing = false
+      }
     }
   }
 }

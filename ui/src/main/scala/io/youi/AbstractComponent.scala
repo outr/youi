@@ -78,5 +78,10 @@ trait AbstractComponent {
 
   protected def init(): Unit = {}
 
+  def removeFromParent(): Boolean = parent().exists { p =>
+    p.asInstanceOf[AbstractContainer[AbstractComponent]].children -= this
+    true
+  }
+
   override def toString: String = s"${getClass.getSimpleName}:${id()}"
 }

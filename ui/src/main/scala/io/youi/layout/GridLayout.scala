@@ -5,16 +5,8 @@ class GridLayout(columns: Int,
                  xOffset: Double = 0.0,
                  yOffset: Double = 0.0,
                  verticalPadding: Double = 0.0,
-                 horizontalPadding: Double = 0.0) extends Layout with (Vector[AbstractComponent] => Unit) {
-  override protected def connect[C <: AbstractComponent](container: AbstractContainer[C]): Unit = {
-    container.children.attachAndFire(this)
-  }
-
-  override protected def disconnect[C <: AbstractComponent](container: AbstractContainer[C]): Unit = {
-    container.children.detach(this)
-  }
-
-  override def apply(children: Vector[AbstractComponent]): Unit = if (children.nonEmpty) {
+                 horizontalPadding: Double = 0.0) extends BasicLayout {
+  override protected def layout(parent: AbstractContainer[AbstractComponent], children: Vector[AbstractComponent]): Unit = {
     val grid = children.grouped(columns).toVector
     grid.zipWithIndex.foreach {
       case (row, rowIndex) => row.zipWithIndex.foreach {

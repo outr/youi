@@ -12,12 +12,15 @@ import io.youi.stream.{Delta, HTMLParser, Selector}
 case class HttpHandlerBuilder(server: Server,
                               urlMatcher: Option[URLMatcher] = None,
                               cachingManager: CachingManager = CachingManager.Default,
-                              priority: Priority = Priority.Normal) {
+                              priority: Priority = Priority.Normal,
+                              validators: List[Validator] = Nil) {
   def priority(priority: Priority): HttpHandlerBuilder = copy(priority = priority)
 
   def matcher(urlMatcher: URLMatcher): HttpHandlerBuilder = copy(urlMatcher = Some(urlMatcher))
 
   def caching(cachingManager: CachingManager): HttpHandlerBuilder = copy(cachingManager = cachingManager)
+
+  def withValidation(validators: Validator*): HttpHandlerBuilder = copy(validators = validators.toList ::: this.validators)
 
   def resource(f: => Content): HttpHandler = resource((_: URL) => Some(f))
 
@@ -99,7 +102,10 @@ case class HttpHandlerBuilder(server: Server,
 
       override def handle(connection: HttpConnection): Unit = {
         if (urlMatcher.forall(_.matches(connection.request.url))) {
-          handler.handle(connection)
+          ValidatorHttpHandler.validate(connection, validators) match {
+            case ValidationResult.Continue => handler.handle(connection)
+            case _ => // Validation failed, handled by ValidatorHttpHandler
+          }
         }
       }
     }

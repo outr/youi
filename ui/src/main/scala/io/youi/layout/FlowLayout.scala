@@ -4,11 +4,11 @@ import io.youi.{AbstractComponent, AbstractContainer}
 class FlowLayout(xOffset: Double = 0.0,
                  yOffset: Double = 0.0,
                  horizontalPadding: Double = 0.0,
-                 verticalPadding: Double = 0.0) extends BasicLayout {
+                 verticalPadding: Double = 0.0) extends BasicLayout(updateOnParentResize = true, updateOnChildResize = true) {
   override protected def layout(parent: AbstractContainer[AbstractComponent],
                                 children: Vector[AbstractComponent]): Unit = {
-    val maxWidth = children.map(_.size.width()).max
-    val maxHeight = children.map(_.size.height()).max
+    val maxWidth = if (children.nonEmpty) children.map(_.size.actual.width()).max else 0.0
+    val maxHeight = if (children.nonEmpty) children.map(_.size.actual.height()).max else 0.0
     val columns = math.floor((parent.size.width - xOffset) / (horizontalPadding + maxWidth)).toInt
     var y = yOffset
     children.grouped(columns).foreach { row =>

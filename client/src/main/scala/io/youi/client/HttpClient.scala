@@ -119,11 +119,12 @@ class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpd
   def restful[Request, Response](url: URL,
                                  request: Request,
                                  headers: Headers = Headers.empty,
-                                 errorHandler: HttpResponse => Response = defaultErrorHandler[Response])
+                                 errorHandler: HttpResponse => Response = defaultErrorHandler[Response],
+                                 method: Method = Method.Post)
                                 (implicit encoder: Encoder[Request], decoder: Decoder[Response]): Future[Response] = {
     val requestJson = printer.pretty(request.asJson)
     send(HttpRequest(
-      method = Method.Post,
+      method = method,
       url = url,
       headers = headers,
       content = Some(StringContent(requestJson, ContentType.`application/json`))

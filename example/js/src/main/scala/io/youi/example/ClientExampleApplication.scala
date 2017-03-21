@@ -1,7 +1,7 @@
 package io.youi.example
 
 import io.youi.UI
-import io.youi.app.ClientApplication
+import io.youi.app.{ClientApplication, ClientConnectivity}
 import io.youi.app.screen.CrossFadeSupport
 import io.youi.example.screen.{CommunicationScreen, LoginScreen}
 import io.youi.example.ui._
@@ -27,6 +27,8 @@ object ClientExampleApplication extends JSApp with ExampleApplication with Clien
   val gridLayout = GridLayoutExample
   val flowLayout = FlowLayoutExample
   val virtual = VirtualSizeExample
+
+  def cc: ClientConnectivity = clientConnectivity(ClientExampleApplication.connectivity)
 
   override protected val crossFadeElement: html.Div = byId[html.Div]("loading")
   override protected val crossFadeDuration: FiniteDuration = 250.milliseconds

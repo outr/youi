@@ -1,7 +1,7 @@
 package io.youi.example.screen
 
 import io.youi.dom._
-import io.youi.example.ClientExampleApplication.{connect, connection, disconnect}
+import io.youi.example.ClientExampleApplication._
 import org.scalajs.dom.{Event, html, window}
 
 import scala.concurrent.Future
@@ -28,16 +28,16 @@ object CommunicationScreen extends ExampleScreen {
   }
 
   private def configure(): Unit = {
-    connection.connected.attachAndFire { c =>
+    cc.connection.connected.attachAndFire { c =>
       connectedInput.value = if (c) "Yes" else "No"
     }
     connectedButton.addEventListener("click", (evt: Event) => {
       evt.preventDefault()
       evt.stopPropagation()
-      if (connection.connected()) {
-        disconnect()
+      if (cc.connection.connected()) {
+        cc.disconnect()
       } else {
-        connect()
+        cc.connect()
       }
     })
 

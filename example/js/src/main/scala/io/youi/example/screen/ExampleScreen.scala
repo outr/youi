@@ -10,8 +10,8 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 trait ExampleScreen extends ContentScreen with PathActivation {
-  protected def c: ExampleCommunication = example(ClientExampleApplication.connection)
-  protected def s: SimpleCommunication = simple(ClientExampleApplication.connection)
+  protected def c: ExampleCommunication = example(ClientExampleApplication.cc.connection)
+  protected def s: SimpleCommunication = simple(ClientExampleApplication.cc.connection)
 
   def heading: Option[html.Element] = dom.getById[html.Element]("heading")
 

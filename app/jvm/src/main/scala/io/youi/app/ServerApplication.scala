@@ -15,7 +15,7 @@ trait ServerApplication extends YouIApplication with Server {
   ErrorSupport.error.detach(ErrorSupport.defaultHandler)
   ErrorSupport.error.attach(scribe.error(_))
 
-  communicationEntries.attachAndFire { entries =>
+  connectivityEntries.attachAndFire { entries =>
     ServerApplication.this.synchronized {
       entries.foreach { appComm =>
         if (!configuredEndPoints.contains(appComm)) {

@@ -1,17 +1,13 @@
 package io.youi.app
 
-import reactify.{ChangeListener, Var}
 import io.youi.app.screen.ScreenManager
 import io.youi.app.stream.StreamURL
-import io.youi.http.{Connection, WebSocketUtil}
 import io.youi.net.URL
-import org.scalajs.dom._
 import io.youi.{ErrorSupport, History, JavaScriptError}
 import io.youi.ajax.AjaxRequest
 import io.youi.app.sourceMap.{SourceMapConsumer, SourcePosition}
 import org.scalajs.dom._
 import io.youi.dom._
-import org.scalajs.dom.ext.AjaxException
 
 import scala.util.{Failure, Success}
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -20,9 +16,6 @@ import scala.scalajs.js
 import scala.scalajs.js.JSON
 
 trait ClientApplication extends YouIApplication with ScreenManager {
-  val connection: Connection = new Connection
-  val webSocket: Var[Option[WebSocket]] = Var(None)
-
   private val script = create[html.Script]("script")
   script.src = "/source-map.min.js"
   document.body.appendChild(script)
@@ -30,7 +23,9 @@ trait ClientApplication extends YouIApplication with ScreenManager {
   private var sourceMaps = Map.empty[String, js.Object]
 
   // Configure communication end-points
-  private var configuredEndPoints = Set.empty[ApplicationConnectivity]
+  private var configuredConnectivity: Map[ApplicationConnectivity, ClientConnectivity] = Map.empty
+
+  def clientConnectivity(connectivity: ApplicationConnectivity): ClientConnectivity = configuredConnectivity(connectivity)
 
   private def attempt[T](f: => T, default: => T): T = try {
     f
@@ -117,83 +112,13 @@ trait ClientApplication extends YouIApplication with ScreenManager {
     }
   }
 
-  if (autoConnect) {
-    connect()
-  }
-  connection.connected.changes(new ChangeListener[Boolean] {
-    override def change(oldValue: Boolean, newValue: Boolean): Unit = if (oldValue && !newValue && autoReload) {
-      attemptReload()
+  connectivityEntries.attachAndFire { entries =>
+    entries.foreach { connectivity =>
+      if (!configuredConnectivity.contains(connectivity)) {
+        configuredConnectivity += connectivity -> new ClientConnectivity(connectivity, this)
+      }
     }
-  })
-
-  def autoConnect: Boolean = true
+  }
 
   def autoReload: Boolean = true
-
-  def connect(): Unit = synchronized {
-    communicationEntries.attachAndFire { entries =>
-      entries.foreach { appComm =>
-        if (!configuredEndPoints.contains(appComm)) {
-          appComm.activeConnections := Set(connection)
-          configuredEndPoints += appComm
-        }
-      }
-    }
-
-    disconnect()
-    val protocol = if (window.location.protocol == "https:") {
-      "wss"
-    } else {
-      "ws"
-    }
-    val comms = communicationEntries()
-    if (comms.isEmpty) {
-      scribe.warn("Unable to connect, there are no communication instances.")
-    } else {
-      val connectionPath = comms.head.path
-      // TODO: evaluate supporting more than one in the ClientApplication
-      val url = URL(s"$protocol://${window.location.host}$connectionPath")
-      webSocket := Some(WebSocketUtil.connect(url, connection))
-    }
-  }
-
-  def disconnect(): Unit = synchronized {
-    webSocket().foreach { ws =>
-      if (ws.readyState == WebSocket.OPEN) {
-        ws.close()
-      }
-      webSocket := None
-    }
-  }
-
-  def close(): Unit = {
-    connection.close()
-    disconnect()
-  }
-
-  private def attemptReload(attempt: Int = 0): Unit = {
-    StreamURL.stream(History.url()).onComplete {
-      case Success(html) => History.reload(force = true)
-      case Failure(exception) => {
-        exception match {
-          case exc: AjaxException if exc.xhr.status > 0 => History.reload(force = true)
-          case _ => {
-            val timeout = if (attempt < 10) {
-              2500
-            } else if (attempt < 25) {
-              5000
-            } else if (attempt < 100) {
-              10000
-            } else {
-              30000
-            }
-
-            window.setTimeout(() => {
-              attemptReload(attempt + 1)
-            }, timeout)
-          }
-        }
-      }
-    }
-  }
 }

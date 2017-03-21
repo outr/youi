@@ -43,6 +43,11 @@ YouI is broken out into modules of functionality to minimize the dependencies re
     * [ ] Full event support
     * [ ] Styling and Theme functionality
 * [ ] Integration of Pixi.js for more advanced UI functionality (Scala.js)
+    * [ ] Canvas / Integration with HTML
+    * [ ] Shapes
+    * [ ] Text
+    * [ ] Image
+    * [ ] Events
 * [X] Animation and workflow functionality
     * [X] Task
     * [X] Action
@@ -51,6 +56,13 @@ YouI is broken out into modules of functionality to minimize the dependencies re
     * [X] Sleep
     * [X] Easings integration
     * [X] DSL
+* [ ] Layout Managers
+    * [X] Core Support
+    * [X] BoxLayout
+    * [X] GridLayout
+    * [X] FlowLayout
+    * [ ] SnapLayout
+    * [ ] TableLayout
 * [ ] Existing HTML, CSS, and JavaScript optimization, compression, and obfuscation for production use
 * [ ] Image optimizer for production use supporting compile-time and run-time optimization
 * [ ] HTML caching in Local Storage for offline and faster cached loading

@@ -6,14 +6,16 @@ import reactify.Val
 import io.youi.communication.Communication
 import io.youi.http.Connection
 
-class CommunicationManager[C <: Communication](appComm: ApplicationConnectivity, create: Connection => C) {
+class CommunicationManager[C <: Communication](connectivity: ApplicationConnectivity, create: Connection => C) {
   val id: Int = CommunicationManager.increment.getAndIncrement()
 
   val instances: Val[Set[C]] = Val {
-    appComm.connections.map { connection =>
+    connectivity.connections.map { connection =>
       connection.store.getOrSet(s"communicationManager$id", create(connection))
     }
   }
+
+  connectivity.registerCommunicationManager(this)
 
   def byConnection(connection: Connection): Option[C] = instances.find(_.connection eq connection)
 

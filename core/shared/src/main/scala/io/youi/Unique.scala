@@ -6,6 +6,7 @@ object Unique {
   val LettersLower = "abcdefghijklmnopqrstuvwxyz"
   val LettersUpper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
   val Numbers = "0123456789"
+  val Readable = "ABCDEFGHJKLMNPQRSTWXYZ23456789"
   val LettersAndNumbers = s"$LettersLower$Numbers"
   val AllLettersAndNumbers = s"$LettersLower$LettersUpper$Numbers"
 

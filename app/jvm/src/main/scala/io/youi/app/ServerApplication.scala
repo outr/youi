@@ -33,7 +33,7 @@ trait ServerApplication extends YouIApplication with Server {
     val column = formData.string("column").value.toInt
     val fileName = formData.string("fileName").value
     val lineNumber = formData.string("lineNumber").value.toInt
-    val name = formData.string("name").value
+    val name = formData.stringOption("name").map(_.value).getOrElse("")
     val mapped = formData.string("mapped").value.toBoolean
     val url = formData.string("url").value
     val message = formData.string("message").value

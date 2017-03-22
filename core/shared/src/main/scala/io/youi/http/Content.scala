@@ -60,8 +60,10 @@ sealed trait RequestContent
 case class FormDataContent(data: List[FormData]) extends RequestContent {
   def fileOption(key: String): Option[FileEntry] = data.find(_.key == key).map(_.entries.head.asInstanceOf[FileEntry])
   def stringOption(key: String): Option[StringEntry] = data.find(_.key == key).map(_.entries.head.asInstanceOf[StringEntry])
-  def file(key: String): FileEntry = fileOption(key).getOrElse(throw new RuntimeException(s"Not found: $key"))
-  def string(key: String): StringEntry = stringOption(key).getOrElse(throw new RuntimeException(s"Not found: $key"))
+  def file(key: String): FileEntry = fileOption(key).getOrElse(throw new RuntimeException(s"Not found: $key in $this."))
+  def string(key: String): StringEntry = stringOption(key).getOrElse(throw new RuntimeException(s"Not found: $key in $this."))
+
+  override def toString: String = s"FormDataContent(${data.map(_.key).mkString(", ")})"
 }
 
 case class FormData(key: String, entries: List[FormDataEntry])

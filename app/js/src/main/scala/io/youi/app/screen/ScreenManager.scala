@@ -3,8 +3,9 @@ package io.youi.app.screen
 import reactify.{ChangeListener, State, Val, Var}
 import io.youi.app.YouIApplication
 
-import scala.concurrent.Future
+import scala.concurrent.{Future, Promise}
 import scala.concurrent.ExecutionContext.Implicits.global
+import org.scalajs.dom._
 
 trait ScreenManager {
   ScreenManager.instance = Some(this)
@@ -15,15 +16,31 @@ trait ScreenManager {
 
   val screens: State[List[Screen]] = allScreens
   val active: Var[Screen] = Var(EmptyScreen)
+  val loaded: Val[Boolean] = Var(false)
+
+  window.addEventListener("load", (evt: Event) => {
+    loaded.asInstanceOf[Var[Boolean]] := true
+  })
 
   active.changes(new ChangeListener[Screen] {
-    override def change(oldScreen: Screen, newScreen: Screen): Unit = {
-      managerFuture = managerFuture.flatMap(_ => beforeScreenChange(oldScreen, newScreen))
-      deactivate(oldScreen)
-      activate(newScreen)
-      managerFuture = managerFuture.flatMap(_ => afterScreenChange(oldScreen, newScreen))
-    }
+    override def change(oldScreen: Screen, newScreen: Screen): Unit = screenChange(oldScreen, newScreen)
   })
+
+  private def screenChange(oldScreen: Screen, newScreen: Screen): Unit = {
+    scribe.info(s"Screen change from $oldScreen to $newScreen...")
+    managerFuture = managerFuture.flatMap(_ => beforeScreenChange(oldScreen, newScreen))
+    deactivate(oldScreen)
+    activate(newScreen)
+    if (!loaded()) {
+      // Wait for the page to fully load before finishing screen change
+      val promise = Promise[Unit]
+      loaded.once { _ =>
+        promise.success(())
+      }
+      managerFuture = managerFuture.flatMap(_ => promise.future)
+    }
+    managerFuture = managerFuture.flatMap(_ => afterScreenChange(oldScreen, newScreen))
+  }
 
   protected def beforeScreenChange(oldScreen: Screen, newScreen: Screen): Future[Unit] = {
     Future.successful(())

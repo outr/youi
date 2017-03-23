@@ -37,6 +37,7 @@ object Headers {
   case object `Content-Length` extends LongHeaderKey("Content-Length")
   case object `Content-Type` extends TypedHeaderKey[ContentType] {
     override def key: String = "Content-Type"
+    override protected def commaSeparated: Boolean = false
 
     override def apply(value: ContentType): Header = Header(this, value.outputString)
 
@@ -59,6 +60,7 @@ object Headers {
   object Response {
     case object `Cache-Control` extends HeaderKey {
       override def key: String = "Cache-Control"
+      override protected def commaSeparated: Boolean = false
 
       def apply(value: String = "no-cache, max-age=0, must-revalidate, no-store"): Header = {
         Header(this, value)
@@ -67,6 +69,7 @@ object Headers {
     def `Set-Cookie` = SetCookie
     case object `Content-Disposition` extends HeaderKey {
       override def key: String = "Content-Disposition"
+      override protected def commaSeparated: Boolean = false
 
       def apply(dispositionType: DispositionType,
                 name: Option[String] = None,
@@ -100,9 +103,14 @@ object DispositionType {
 
 trait HeaderKey {
   def key: String
+  protected def commaSeparated: Boolean
 
-  def get(headers: Headers): Option[String] = headers.first(this)
-  def all(headers: Headers): List[String] = headers.get(this)
+  def get(headers: Headers): Option[String] = all(headers).headOption
+  def all(headers: Headers): List[String] = if (commaSeparated) {
+    headers.get(this).flatMap(_.split(',').map(_.trim))
+  } else {
+    headers.get(this)
+  }
 }
 
 object HeaderKey {
@@ -141,19 +149,19 @@ trait MultiTypedHeaderKey[V] extends HeaderKey {
   def apply(values: V*): Header
 }
 
-class StringHeaderKey(val key: String) extends TypedHeaderKey[String] {
+class StringHeaderKey(val key: String, val commaSeparated: Boolean = true) extends TypedHeaderKey[String] {
   override def value(headers: Headers): Option[String] = get(headers)
 
   override def apply(value: String): Header = Header(this, value)
 }
 
-class BooleanHeaderKey(val key: String) extends TypedHeaderKey[Boolean] {
+class BooleanHeaderKey(val key: String, val commaSeparated: Boolean = true) extends TypedHeaderKey[Boolean] {
   override def value(headers: Headers): Option[Boolean] = get(headers).map(_.toBoolean)
 
   override def apply(value: Boolean): Header = Header(this, value.toString)
 }
 
-class DateHeaderKey(val key: String) extends TypedHeaderKey[Long] {
+class DateHeaderKey(val key: String, val commaSeparated: Boolean = false) extends TypedHeaderKey[Long] {
   import DateHeaderKey._
 
   override def value(headers: Headers): Option[Long] = get(headers).map(parser.parse(_).getTime)
@@ -165,7 +173,7 @@ object DateHeaderKey {
   def parser: SimpleDateFormat = new SimpleDateFormat("EEE, dd MMMM yyyy HH:mm:ss zzz", Locale.ENGLISH)
 }
 
-class LongHeaderKey(val key: String) extends TypedHeaderKey[Long] {
+class LongHeaderKey(val key: String, val commaSeparated: Boolean = true) extends TypedHeaderKey[Long] {
   override def value(headers: Headers): Option[Long] = Try(headers.first(this).map(_.toLong)).getOrElse(None)
 
   override def apply(value: Long): Header = Header(this, value.toString)
@@ -175,6 +183,7 @@ case class Header(key: HeaderKey, value: String)
 
 object CookieHeader extends ListTypedHeaderKey[RequestCookie] {
   override def key: String = "Cookie"
+  override protected def commaSeparated: Boolean = false
 
   override def value(headers: Headers): List[RequestCookie] = {
     val cookies = headers.get(this)
@@ -201,6 +210,7 @@ object SetCookie extends ListTypedHeaderKey[ResponseCookie] {
   private val PathRegex = """Path=(.+)""".r
 
   override def key: String = "Set-Cookie"
+  override protected def commaSeparated: Boolean = false
 
   override def value(headers: Headers): List[ResponseCookie] = {
     headers.get(this).map { headerValue =>
@@ -228,6 +238,7 @@ object CacheControl extends MultiTypedHeaderKey[CacheControlEntry] {
   private val MaxAgeRegex = """max-age=(\d+)""".r
 
   override def key: String = "Cache-Control"
+  override protected def commaSeparated: Boolean = false
 
   override def value(headers: Headers): List[CacheControlEntry] = headers.get(this).mkString(", ").split(',').map(_.toLowerCase.trim).map {
     case "public" => Public

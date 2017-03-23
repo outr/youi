@@ -89,7 +89,7 @@ class UndertowServerImplementation(server: Server) extends ServerImplementation 
 
 object UndertowServerImplementation {
   def parseHeaders(headerMap: HeaderMap): Headers = Headers(headerMap.asScala.map { hv =>
-    hv.getHeaderName.toString -> hv.asScala.toList.flatMap(_.split(',').map(_.trim))
+    hv.getHeaderName.toString -> hv.asScala.toList
   }.toMap)
 
   def request(exchange: HttpServerExchange): HttpRequest = {

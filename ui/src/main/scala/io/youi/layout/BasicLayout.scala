@@ -19,22 +19,6 @@ abstract class BasicLayout(updateOnParentResize: Boolean = false,
       container.size.actual.width.attach(resizeListener)
       container.size.actual.height.attach(resizeListener)
     }
-    if (updateOnChildResize) {
-      val children = container.children().asInstanceOf[Vector[AbstractComponent]].toSet
-      childrenMonitored.foreach { child =>
-        if (!children.contains(child)) {            // Remove children from previous monitored state
-          child.size.actual.width.detach(resizeListener)
-          child.size.actual.height.detach(resizeListener)
-        }
-      }
-      children.foreach { child =>
-        if (!childrenMonitored.contains(child)) {
-          child.size.actual.width.attach(resizeListener)
-          child.size.actual.height.attach(resizeListener)
-        }
-      }
-      childrenMonitored = children
-    }
     parent = Some(container.asInstanceOf[AbstractContainer[AbstractComponent]])
   }
 
@@ -55,6 +39,22 @@ abstract class BasicLayout(updateOnParentResize: Boolean = false,
   }
 
   override def apply(children: Vector[AbstractComponent]): Unit = if (children.nonEmpty) {
+    if (updateOnChildResize) {
+      childrenMonitored.foreach { child =>
+        if (!children.contains(child)) {            // Remove children from previous monitored state
+          child.size.actual.width.detach(resizeListener)
+          child.size.actual.height.detach(resizeListener)
+        }
+      }
+      children.foreach { child =>
+        if (!childrenMonitored.contains(child)) {
+          child.size.actual.width.attach(resizeListener)
+          child.size.actual.height.attach(resizeListener)
+        }
+      }
+      childrenMonitored = children.toSet
+    }
+
     layout(parent.get, children)
   }
 

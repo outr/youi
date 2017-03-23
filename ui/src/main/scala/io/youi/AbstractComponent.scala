@@ -55,6 +55,18 @@ trait AbstractComponent {
     lazy val center: Val[Double] = Val(width / 2.0)
     lazy val middle: Val[Double] = Val(height / 2.0)
 
+    object min {
+      lazy val width: Var[Double] = Var(0.0)
+      lazy val height: Var[Double] = Var(0.0)
+    }
+    object max {
+      lazy val width: Var[Double] = Var(Double.MaxValue)
+      lazy val height: Var[Double] = Var(Double.MaxValue)
+    }
+    object preferred {
+      lazy val width: Val[Double] = Val(math.min(math.max(size.width, min.width), max.width))
+      lazy val height: Val[Double] = Val(math.min(math.max(size.height, min.height), max.height))
+    }
     object actual {
       val width: Val[Double] = Val(actualWidth)
       val height: Val[Double] = Val(actualHeight)

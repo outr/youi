@@ -110,6 +110,14 @@ trait Component extends AbstractComponent {
     backgroundColor.green.attach(d => updateBackgroundColor())
     backgroundColor.blue.attach(d => updateBackgroundColor())
     backgroundColor.alpha.attach(d => updateBackgroundColor())
+    padding.left.attach(d => element.style.paddingLeft = s"${d}px")
+    padding.right.attach(d => element.style.paddingRight = s"${d}px")
+    padding.top.attach(d => element.style.paddingTop = s"${d}px")
+    padding.bottom.attach(d => element.style.paddingBottom = s"${d}px")
+    margin.left.attach(d => element.style.marginLeft = s"${d}px")
+    margin.right.attach(d => element.style.marginRight = s"${d}px")
+    margin.top.attach(d => element.style.marginTop = s"${d}px")
+    margin.bottom.attach(d => element.style.marginBottom = s"${d}px")
 
     element.addEventListener("scroll", (evt: Event) => {
       updateSize()
@@ -146,8 +154,8 @@ trait Component extends AbstractComponent {
 
   private var updatingSize: Boolean = false
 
-  protected def determineActualWidth: Double = element.offsetWidth
-  protected def determineActualHeight: Double = element.offsetHeight
+  protected def determineActualWidth: Double = element.offsetWidth + margin.left() + margin.right()
+  protected def determineActualHeight: Double = element.offsetHeight + margin.top() + margin.bottom()
 
   protected def updateSize(): Unit = if (!updatingSize) {
     updatingSize = true
@@ -155,8 +163,12 @@ trait Component extends AbstractComponent {
       if (actualWidth() != determineActualWidth) actualWidth.setStatic(determineActualWidth)
       if (actualHeight() != determineActualHeight) actualHeight.setStatic(determineActualHeight)
 
-      scrollbar.horizontal.size.asInstanceOf[Var[Double]].set(element.offsetHeight - element.clientHeight)
-      scrollbar.vertical.size.asInstanceOf[Var[Double]].set(element.offsetWidth - element.clientWidth)
+      val h = scrollbar.horizontal.size.asInstanceOf[Var[Double]]
+      val v = scrollbar.vertical.size.asInstanceOf[Var[Double]]
+
+      h.set(math.max(0.0, element.offsetHeight - element.clientHeight - border.top.size().getOrElse(0.0) - border.bottom.size().getOrElse(0.0)))
+      v.set(math.max(0.0, element.offsetWidth - element.clientWidth - border.left.size().getOrElse(0.0) - border.right.size().getOrElse(0.0)))
+
       scrollbar.horizontal.position := element.scrollLeft
       scrollbar.vertical.position := element.scrollTop
       innerWidth := element.scrollWidth

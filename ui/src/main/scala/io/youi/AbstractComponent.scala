@@ -21,6 +21,38 @@ trait AbstractComponent {
     lazy val bottom: Dep[Double, Double] = Dep(top, size.actual.height)
   }
 
+  object padding {
+    lazy val left: Var[Double] = Var(0.0)
+    lazy val right: Var[Double] = Var(0.0)
+    lazy val top: Var[Double] = Var(0.0)
+    lazy val bottom: Var[Double] = Var(0.0)
+
+    def :=(value: => Double): Unit = set(value)
+
+    def set(value: => Double): Unit = {
+      left := value
+      right := value
+      top := value
+      bottom := value
+    }
+  }
+
+  object margin {
+    lazy val left: Var[Double] = Var(0.0)
+    lazy val right: Var[Double] = Var(0.0)
+    lazy val top: Var[Double] = Var(0.0)
+    lazy val bottom: Var[Double] = Var(0.0)
+
+    def :=(value: => Double): Unit = set(value)
+
+    def set(value: => Double): Unit = {
+      left := value
+      right := value
+      top := value
+      bottom := value
+    }
+  }
+
   object scrollbar {
     object horizontal {
       /**

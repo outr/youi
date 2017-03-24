@@ -14,6 +14,15 @@ object GridLayoutExample extends UIExampleScreen {
   override def name: String = "GridLayout Example"
 
   override protected def load(): Future[Unit] = super.load().map { _ =>
+    val box1: Component = createBox("box1", Color.Red)
+    val box2: Component = createBox("box2", Color.Green)
+    val box3: Component = createBox("box3", Color.Blue)
+    val box4: Component = createBox("box4", Color.Magenta)
+    val box5: Component = createBox("box5", Color.Cyan)
+    val box6: Component = createBox("box6", Color.SandyBrown)
+    val box7: Component = createBox("box7", Color.Orange)
+    val box8: Component = createBox("box8", Color.DarkSlateGray)
+
     val layoutContainer = new Container {
       id := "main"
 
@@ -24,15 +33,6 @@ object GridLayoutExample extends UIExampleScreen {
       position.top := 100.0
       overflow.x := Overflow.Hidden
       overflow.y := Overflow.Auto
-
-      val box1: Component = createBox("box1", Color.Red)
-      val box2: Component = createBox("box2", Color.Green)
-      val box3: Component = createBox("box3", Color.Blue)
-      val box4: Component = createBox("box4", Color.Magenta)
-      val box5: Component = createBox("box5", Color.Cyan)
-      val box6: Component = createBox("box6", Color.SandyBrown)
-      val box7: Component = createBox("box7", Color.Orange)
-      val box8: Component = createBox("box8", Color.DarkSlateGray)
 
       children += box1
       children += box2

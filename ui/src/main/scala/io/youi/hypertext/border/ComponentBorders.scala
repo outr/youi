@@ -94,10 +94,10 @@ class ComponentBorders(component: Component) {
   object width {
     def :=(value: Option[Double]): Unit = set(value)
     def set(value: Option[Double]): Unit = {
-      top.width := value
-      bottom.width := value
-      left.width := value
-      right.width := value
+      top.size := value
+      bottom.size := value
+      left.size := value
+      right.size := value
     }
   }
   object radius {

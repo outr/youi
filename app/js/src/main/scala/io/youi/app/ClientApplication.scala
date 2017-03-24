@@ -32,6 +32,7 @@ trait ClientApplication extends YouIApplication with ScreenManager {
       val request = new AjaxRequest(History.url().replacePathAndParams("/clientError"), data = Some(formData))
       request.send()
     }
+    ()
   }
 
   js.Dynamic.global.window.onerror = errorFunction

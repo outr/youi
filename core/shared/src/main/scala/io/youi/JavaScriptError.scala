@@ -6,26 +6,14 @@ case class JavaScriptError(message: String,
                            jsPosition: Position,
                            position: Position,
                            url: String,
-                           userAgent: String,
-                           appName: String,
-                           appVersion: String,
-                           platform: String,
-                           language: String,
-                           referrer: String,
                            cause: Option[JavaScriptCause]) {
   override def toString: String =
     s"""
        |Error {
-       |  message: $message,
+       |  message: $message
        |  jsTrace: $source:${jsPosition.line}:${jsPosition.column}
        |  trace: $fileName:${position.line}:${position.column}
-       |  url: $url,
-       |  userAgent: $userAgent,
-       |  appName: $appName,
-       |  appVersion: $appVersion,
-       |  platform: $platform,
-       |  language: $language,
-       |  referrer: $referrer,
+       |  url: $url
        |  cause: $cause
        |}
      """.stripMargin.trim
@@ -37,10 +25,10 @@ case class JavaScriptCause(message: String,
   override def toString: String =
     s"""
        |Cause {
-       |  message: $message,
-       |  trace:\n${trace.map(s => s"\t$s").mkString("\n")},
-       |  cause: $cause
-       |}
+       |    message: $message
+       |    trace:\n${trace.map(s => s"\t$s").mkString("\n")}
+       |    cause: $cause
+       |  }
      """.stripMargin.trim
 }
 

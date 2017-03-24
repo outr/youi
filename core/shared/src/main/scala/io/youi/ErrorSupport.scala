@@ -18,5 +18,8 @@ trait ErrorSupport {
 object ErrorSupport {
   val error: Channel[Throwable] = Channel[Throwable]
 
-  val defaultHandler: (Throwable) => Unit = error.attach(t => scribe.error(t))
+  val defaultHandler: (Throwable) => Unit = error.attach {
+    case exc: MessageException => scribe.error(exc.message)
+    case t: Throwable => scribe.error(t)
+  }
 }

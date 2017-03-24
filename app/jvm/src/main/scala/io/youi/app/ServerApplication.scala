@@ -5,15 +5,15 @@ import reactify.Channel
 import io.youi.http._
 import io.youi.server.Server
 import io.youi.server.handler.HttpHandler
+import net.sf.uadetector.UserAgentType
+import net.sf.uadetector.service.UADetectorServiceFactory
 
 trait ServerApplication extends YouIApplication with Server {
   val connected: Channel[Connection] = Channel[Connection]
   val disconnected: Channel[Connection] = Channel[Connection]
 
   private var configuredEndPoints = Set.empty[ApplicationConnectivity]
-
-  ErrorSupport.error.detach(ErrorSupport.defaultHandler)
-  ErrorSupport.error.attach(scribe.error(_))
+  private lazy val userAgentParser = UADetectorServiceFactory.getResourceModuleParser
 
   connectivityEntries.attachAndFire { entries =>
     ServerApplication.this.synchronized {
@@ -32,7 +32,14 @@ trait ServerApplication extends YouIApplication with Server {
     val formData = content.get.asInstanceOf[FormDataContent]
     val json = formData.string("json").value
     val jsError = upickle.default.read[JavaScriptError](json)
-    error(new JavaScriptException(jsError))
+
+    val userAgentString = Headers.Request.`User-Agent`.value(httpConnection.request.headers).getOrElse("")
+    val userAgent = userAgentParser.parse(userAgentString)
+
+    val exception = new JavaScriptException(jsError, userAgent, httpConnection.request.source)
+    if (logJavaScriptException(exception)) {
+      error(exception)
+    }
 
     httpConnection.update(_.withContent(Content.empty))
   }
@@ -40,6 +47,11 @@ trait ServerApplication extends YouIApplication with Server {
   protected def page(page: Page): Page = {
     handlers += page
     page
+  }
+
+  protected def logJavaScriptException(exception: JavaScriptException): Boolean = {
+    val ua = exception.userAgent
+    ua.getType != UserAgentType.ROBOT
   }
 
   private class ServerConnectionHandler(appComm: ApplicationConnectivity) extends HttpHandler {

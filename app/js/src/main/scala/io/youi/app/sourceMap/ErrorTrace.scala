@@ -8,7 +8,6 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.scalajs._
 import scala.scalajs.runtime.StackTrace.Implicits._
-import org.scalajs.dom._
 
 object ErrorTrace {
   private var sourceMaps = Map.empty[String, SourceMapConsumer]
@@ -58,12 +57,6 @@ object ErrorTrace {
       jsPosition = Position(line, column),
       position = sourcePosition,
       url = History.url().toString,
-      userAgent = window.navigator.userAgent,
-      appName = window.navigator.appName,
-      appVersion = window.navigator.appVersion,
-      platform = window.navigator.platform,
-      language = window.navigator.language,
-      referrer = document.referrer,
       cause = cause
     )
   }

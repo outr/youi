@@ -22,17 +22,23 @@ lazy val core = crossProject.in(file("core"))
   .settings(
     name := "youi-core",
     resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases",
-    libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-    libraryDependencies += "com.outr" %%% "scribe" % "1.4.1",
-    libraryDependencies += "com.outr" %%% "reactify" % "1.4.7",
-    libraryDependencies += "org.scalactic" %%% "scalactic" % "3.0.1",
-    libraryDependencies += "org.scalatest" %%% "scalatest" % "3.0.1" % "test"
+    libraryDependencies ++= Seq(
+      "org.scala-lang" % "scala-reflect" % scalaVersion.value,
+      "com.outr" %%% "scribe" % "1.4.1",
+      "com.outr" %%% "reactify" % "1.4.7",
+      "org.scalactic" %%% "scalactic" % "3.0.1",
+      "org.scalatest" %%% "scalatest" % "3.0.1" % "test"
+    )
   )
   .jvmSettings(
-    libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.4.17"
+    libraryDependencies ++= Seq(
+      "com.typesafe.akka" %% "akka-actor" % "2.4.17"
+    )
   )
   .jsSettings(
-    libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.1"
+    libraryDependencies ++= Seq(
+      "org.scala-js" %%% "scalajs-dom" % "0.9.1"
+    )
   )
 
 lazy val coreJS = core.js
@@ -41,7 +47,9 @@ lazy val coreJVM = core.jvm
 lazy val stream = project.in(file("stream"))
   .settings(
     name := "youi-stream",
-    libraryDependencies += "org.powerscala" %% "powerscala-io" % "2.0.5"
+    libraryDependencies ++= Seq(
+      "org.powerscala" %% "powerscala-io" % "2.0.5"
+    )
   )
 
 lazy val dom = project.in(file("dom"))
@@ -55,8 +63,10 @@ lazy val dom = project.in(file("dom"))
 lazy val client = project.in(file("client"))
   .settings(
     name := "youi-client",
-    libraryDependencies += "org.apache.httpcomponents" % "httpasyncclient" % "4.1.3",
-    libraryDependencies += "org.powerscala" %% "powerscala-io" % "2.0.5",
+    libraryDependencies ++= Seq(
+      "org.apache.httpcomponents" % "httpasyncclient" % "4.1.3",
+      "org.powerscala" %% "powerscala-io" % "2.0.5"
+    ),
     libraryDependencies ++= Seq(
       "io.circe" %% "circe-core",
       "io.circe" %% "circe-generic",
@@ -68,26 +78,33 @@ lazy val client = project.in(file("client"))
 lazy val server = project.in(file("server"))
   .settings(
     name := "youi-server",
-    libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.1",
-    libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % "test"
+    libraryDependencies ++= Seq(
+      "net.sf.uadetector" % "uadetector-resources" % "2014.10",
+      "org.scalactic" %% "scalactic" % "3.0.1",
+      "org.scalatest" %% "scalatest" % "3.0.1" % "test"
+    )
   )
   .dependsOn(coreJVM, stream)
 
 lazy val serverUndertow = project.in(file("serverUndertow"))
   .settings(
     name := "youi-server-undertow",
-    libraryDependencies += "io.undertow" % "undertow-core" % "1.4.11.Final",
-    libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.1",
-    libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % "test"
+    libraryDependencies ++= Seq(
+      "io.undertow" % "undertow-core" % "1.4.11.Final",
+      "org.scalactic" %% "scalactic" % "3.0.1",
+      "org.scalatest" %% "scalatest" % "3.0.1" % "test"
+    )
   )
   .dependsOn(server)
 
 lazy val communication = crossProject.in(file("communication"))
   .settings(
     name := "youi-communication",
-    libraryDependencies += "com.lihaoyi" %%% "upickle" % "0.4.4",
-    libraryDependencies += "org.scalactic" %%% "scalactic" % "3.0.1",
-    libraryDependencies += "org.scalatest" %%% "scalatest" % "3.0.1" % "test"
+    libraryDependencies ++= Seq(
+      "com.lihaoyi" %%% "upickle" % "0.4.4",
+      "org.scalactic" %%% "scalactic" % "3.0.1",
+      "org.scalatest" %%% "scalatest" % "3.0.1" % "test"
+    )
   )
   .dependsOn(core)
 
@@ -98,7 +115,9 @@ lazy val ui = project.in(file("ui"))
   .enablePlugins(ScalaJSPlugin)
   .settings(
     name := "youi-ui",
-    libraryDependencies += "com.outr" %%% "scalajs-pixijs" % "4.3.5"
+    libraryDependencies ++= Seq(
+      "com.outr" %%% "scalajs-pixijs" % "4.3.5"
+    )
   )
   .dependsOn(coreJS, dom)
 
@@ -121,7 +140,9 @@ lazy val template = crossProject.in(file("template"))
   )
   .jvmSettings(
     fork := true,
-    libraryDependencies += "org.powerscala" %% "powerscala-io" % "2.0.5",
+    libraryDependencies ++= Seq(
+      "org.powerscala" %% "powerscala-io" % "2.0.5"
+    ),
     assemblyJarName in assembly := "youi-template.jar"
   )
   .dependsOn(app)
@@ -138,8 +159,10 @@ lazy val example = crossProject.in(file("example"))
     crossTarget in fullOptJS := baseDirectory.value / ".." / "jvm" / "src" / "main" / "resources" / "app"
   )
   .jvmSettings(
-    libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-    libraryDependencies += "org.scala-lang.modules" %% "scala-xml" % "1.0.6"
+    libraryDependencies ++= Seq(
+      "org.scala-lang" % "scala-reflect" % scalaVersion.value,
+      "org.scala-lang.modules" %% "scala-xml" % "1.0.6"
+    )
   )
   .dependsOn(app, template)
 

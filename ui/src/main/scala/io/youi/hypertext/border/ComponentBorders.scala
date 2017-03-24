@@ -91,7 +91,7 @@ class ComponentBorders(component: Component) {
       right.style := value
     }
   }
-  object width {
+  object size {
     def :=(value: Option[Double]): Unit = set(value)
     def set(value: Option[Double]): Unit = {
       top.size := value
@@ -113,7 +113,7 @@ class ComponentBorders(component: Component) {
   def clear(): Unit = {
     color := Some(Color.Clear)
     style := None
-    width := Some(0.0)
+    size := Some(0.0)
     radius := 0.0
   }
 }

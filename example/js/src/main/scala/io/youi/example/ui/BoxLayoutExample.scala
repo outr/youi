@@ -55,7 +55,7 @@ object BoxLayoutExample extends UIExampleScreen {
     size.height := 250.0
     backgroundColor := c
     border.color := Some(Color.DeepPink)
-    border.width := Some(1.0)
+    border.size := Some(1.0)
     border.style := Some(BorderStyle.Solid)
     border.radius := 5.0
   }

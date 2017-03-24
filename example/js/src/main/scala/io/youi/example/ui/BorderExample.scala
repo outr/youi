@@ -20,7 +20,7 @@ object BorderExample extends UIExampleScreen {
       backgroundColor := Color.DarkCyan
       border.radius := 10.0
       border.color := Some(Color.DarkBlue)
-      border.width := Some(5.0)
+      border.size := Some(5.0)
       border.style := Some(BorderStyle.Dashed)
       border.bottom.right.radius := 0.0
     }

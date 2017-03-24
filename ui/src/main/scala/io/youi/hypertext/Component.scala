@@ -86,12 +86,28 @@ trait Component extends AbstractComponent {
     position.`type`.attachAndFire(p => element.style.position = p.toString.toLowerCase)
     position.x.attach(d => element.style.left = s"${d}px")
     position.y.attach(d => element.style.top = s"${d}px")
-    size.preferred.width.attach { d =>
+    size.width.attach { d =>
       element.style.width = s"${d}px"
       onNextFrame(updateSize())
     }
-    size.preferred.height.attach { d =>
+    size.height.attach { d =>
       element.style.height = s"${d}px"
+      onNextFrame(updateSize())
+    }
+    size.min.width.attach { d =>
+      element.style.minWidth = s"${d}px"
+      onNextFrame(updateSize())
+    }
+    size.min.height.attach { d =>
+      element.style.minHeight = s"${d}px"
+      onNextFrame(updateSize())
+    }
+    size.max.width.attach { d =>
+      element.style.maxWidth = s"${d}px"
+      onNextFrame(updateSize())
+    }
+    size.max.height.attach { d =>
+      element.style.maxHeight = s"${d}px"
       onNextFrame(updateSize())
     }
     parent.attach { p =>

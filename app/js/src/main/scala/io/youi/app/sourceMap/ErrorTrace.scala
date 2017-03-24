@@ -80,6 +80,8 @@ object ErrorTrace {
           jsPosition = Position(element.getLineNumber, element.getColumnNumber()),
           position = Position(tracePosition.line, tracePosition.column)
         )
+      }.collect {
+        case t if !t.source.endsWith("scala/scalajs/runtime/StackTrace.scala") && !t.source.endsWith("java/lang/Throwables.scala") => t
       }
 
       JavaScriptCause(

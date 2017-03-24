@@ -5,11 +5,10 @@ import io.youi.hypertext.style.Image
 import org.scalajs.dom.Event
 import org.scalajs.dom.html.{Image => HTMLImage}
 
-class ImageView extends Component {
-  override protected[youi] val element: HTMLImage = dom.create[HTMLImage]("img")
+class ImageView(val element: HTMLImage) extends Component {
+  def this() = this(dom.create[HTMLImage]("img"))
 
   val image: Var[Image] = prop(Image.empty, i => element.src = i.src, mayCauseResize = true)
-  val preserveAspectRatio: Var[Boolean] = Var(true)
   val loaded: Var[Boolean] = Var(false)
 
   object clip {
@@ -32,4 +31,8 @@ class ImageView extends Component {
       loaded := true
     })
   }
+}
+
+object ImageView {
+  def cached(element: HTMLImage): ImageView = Component.cached[HTMLImage, ImageView](element, new ImageView(_))
 }

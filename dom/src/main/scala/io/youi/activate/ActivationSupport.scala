@@ -43,6 +43,7 @@ object ActivationSupport {
   private val TestRegex = """test\((.+)\)""".r
   private val LinkRegex = """link\("(.+)"\)""".r
   private val OnClickRegex = """(.+).onClick\((.+)\)""".r
+  private val CommentRegex = """(\s*)//(.*)""".r
 
   private val HasClassConditionRegex = """(.+).hasClass\("(.+)"\)""".r
 
@@ -94,6 +95,7 @@ object ActivationSupport {
       val i = parseInstruction(testing, instruction).getOrElse(throw new RuntimeException(s"Failed to parse instruction: [$instruction]"))
       Some(new OnClick(selector, i))
     }
+    case CommentRegex(_) => None
     case _ => throw new RuntimeException(s"Unknown instruction: [$line]")
   }
 

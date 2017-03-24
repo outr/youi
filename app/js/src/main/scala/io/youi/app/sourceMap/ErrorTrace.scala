@@ -40,21 +40,21 @@ object ErrorTrace {
   }
 
   private def map(sourceMapConsumer: SourceMapConsumer, line: Int, column: Int): SourcePosition = {
-    val position = js.JSON.parse(upickle.default.write(Position(line, column))).asInstanceOf[js.Object]
+    val position = js.JSON.parse(upickle.default.write(JavaScriptPosition(line, column))).asInstanceOf[js.Object]
     sourceMapConsumer.originalPositionFor(position)
   }
 
   private def toErrorInternal(consumerOption: Option[SourceMapConsumer], message: String, source: String, line: Int, column: Int, error: Option[Throwable]): JavaScriptError = {
     val (fileName, sourcePosition) = consumerOption.map { consumer =>
       val sourcePosition = map(consumer, line, column)
-      sourcePosition.source -> Position(sourcePosition.line, sourcePosition.column)
-    }.getOrElse(source -> Position(-1, -1))
+      sourcePosition.source -> JavaScriptPosition(sourcePosition.line, sourcePosition.column)
+    }.getOrElse(source -> JavaScriptPosition(-1, -1))
     val cause = error.map(toCause(consumerOption, _))
     JavaScriptError(
       message = message,
       source = source,
       fileName = fileName,
-      jsPosition = Position(line, column),
+      jsPosition = JavaScriptPosition(line, column),
       position = sourcePosition,
       url = History.url().toString,
       cause = cause
@@ -70,8 +70,8 @@ object ErrorTrace {
           methodName = element.getMethodName,
           fileName = element.getFileName,
           source = tracePosition.source,
-          jsPosition = Position(element.getLineNumber, element.getColumnNumber()),
-          position = Position(tracePosition.line, tracePosition.column)
+          jsPosition = JavaScriptPosition(element.getLineNumber, element.getColumnNumber()),
+          position = JavaScriptPosition(tracePosition.line, tracePosition.column)
         )
       }.collect {
         case t if !t.source.endsWith("scala/scalajs/runtime/StackTrace.scala") && !t.source.endsWith("java/lang/Throwables.scala") => t
@@ -89,8 +89,8 @@ object ErrorTrace {
           methodName = element.getMethodName,
           fileName = element.getFileName,
           source = "",
-          jsPosition = Position(element.getLineNumber, element.getColumnNumber()),
-          position = Position(-1, -1)
+          jsPosition = JavaScriptPosition(element.getLineNumber, element.getColumnNumber()),
+          position = JavaScriptPosition(-1, -1)
         )
       }
       JavaScriptCause(throwable.getLocalizedMessage, trace, None)

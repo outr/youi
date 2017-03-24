@@ -32,6 +32,8 @@ object VirtualMode {
   case object Bars extends VirtualMode
   case object Clip extends VirtualMode
   case object Stretch extends VirtualMode
+  case object FitWidth extends VirtualMode
+  case object FitHeight extends VirtualMode
 }
 
 class VirtualSize(screen: VirtualSizeSupport,
@@ -40,12 +42,14 @@ class VirtualSize(screen: VirtualSizeSupport,
   private val size: Val[(Double, Double, Double, Double)] = Val {
     if (width > 0.0 && height > 0.0) {
       screen.virtualMode.get match {
-        case VirtualMode.Bars | VirtualMode.Clip => {
+        case VirtualMode.Bars | VirtualMode.Clip | VirtualMode.FitWidth | VirtualMode.FitHeight => {
           val widthRatio = width / screen.virtualWidth.get
           val heightRatio = height / screen.virtualHeight.get
           val ratio = screen.virtualMode.get match {
             case VirtualMode.Bars => math.min(widthRatio, heightRatio)
             case VirtualMode.Clip => math.max(widthRatio, heightRatio)
+            case VirtualMode.FitWidth => widthRatio
+            case VirtualMode.FitHeight => heightRatio
             case _ => 0.0   // Not possible
           }
           val w = screen.virtualWidth * ratio

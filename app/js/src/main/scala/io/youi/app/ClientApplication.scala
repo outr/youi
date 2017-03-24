@@ -24,7 +24,7 @@ trait ClientApplication extends YouIApplication with ScreenManager {
 
   def clientConnectivity(connectivity: ApplicationConnectivity): ClientConnectivity = configuredConnectivity(connectivity)
 
-  private val errorFunction: js.Function5[String, String, Int, Int, Throwable, Unit] = (message, source, line, column, throwable) => {
+  private val errorFunction: js.Function5[String, String, Int, Int, Throwable, Unit] = (message: String, source: String, line: Int, column: Int, throwable: Throwable) => {
     ErrorTrace.toError(message, source, line, column, Option(throwable)).map { error =>
       val formData = new FormData
       val json = upickle.default.write[JavaScriptError](error)

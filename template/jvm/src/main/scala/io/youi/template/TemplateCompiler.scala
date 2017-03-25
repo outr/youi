@@ -106,6 +106,11 @@ class TemplateCompiler(val sourceDirectory: File,
     val html = compileHTML(source).replaceAll("""\$\{.*?\}""", "")
     destination.getParentFile.mkdirs()
     IO.stream(html, destination)
+
+    // TODO: support JavaScript merging
+    // TODO: support CSS merging
+    // TODO: support HTML minification
+
     synchronized {
       pages += fileName
     }

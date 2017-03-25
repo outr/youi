@@ -5,6 +5,7 @@ import org.scalajs.dom.ext._
 import org.scalajs.dom.html.Div
 import org.scalajs.dom.raw.HTMLElement
 
+import scala.concurrent.{Future, Promise}
 import scala.language.implicitConversions
 
 object dom extends ExtendedElement(None) {
@@ -31,6 +32,21 @@ object dom extends ExtendedElement(None) {
         e.asInstanceOf[T]
       }
     }
+  }
+
+  def addScript(path: String, addToHead: Boolean = false): Future[Unit] = {
+    val promise = Promise[Unit]
+    val script = create[html.Script]("script")
+    script.addEventListener("load", (evt: Event) => {
+      promise.success(())
+    })
+    script.src = path
+    if (addToHead) {
+      document.head.appendChild(script)
+    } else {
+      document.body.appendChild(script)
+    }
+    promise.future
   }
 
   implicit class StringExtras(s: String) {

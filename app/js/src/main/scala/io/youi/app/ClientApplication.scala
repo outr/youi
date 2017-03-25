@@ -13,12 +13,6 @@ import scala.scalajs.js
 trait ClientApplication extends YouIApplication with ScreenManager {
   addScript("/source-map.min.js")
 
-  private def addScript(path: String): Unit = {
-    val script = create[html.Script]("script")
-    script.src = path
-    document.body.appendChild(script)
-  }
-
   // Configure communication end-points
   private var configuredConnectivity: Map[ApplicationConnectivity, ClientConnectivity] = Map.empty
 

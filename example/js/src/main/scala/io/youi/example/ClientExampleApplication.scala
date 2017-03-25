@@ -9,6 +9,7 @@ import io.youi.example.ui._
 import scala.scalajs.js.JSApp
 import org.scalajs.dom._
 import io.youi.dom._
+import io.youi.example.ui.canvas.BasicCanvasExample
 
 import scala.concurrent.duration._
 
@@ -27,6 +28,8 @@ object ClientExampleApplication extends JSApp with ExampleApplication with Clien
   val gridLayout = GridLayoutExample
   val flowLayout = FlowLayoutExample
   val virtual = VirtualSizeExample
+
+  val canvasBasic = BasicCanvasExample
 
   def cc: ClientConnectivity = clientConnectivity(ClientExampleApplication.connectivity)
 

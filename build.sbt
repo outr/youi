@@ -116,7 +116,7 @@ lazy val ui = project.in(file("ui"))
   .settings(
     name := "youi-ui",
     libraryDependencies ++= Seq(
-      "com.outr" %%% "scalajs-pixijs" % "4.3.5"
+      "com.outr" %%% "scalajs-pixijs" % "4.4.3"
     )
   )
   .dependsOn(coreJS, dom)

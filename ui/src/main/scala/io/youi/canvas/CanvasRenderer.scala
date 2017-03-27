@@ -16,8 +16,8 @@ class CanvasRenderer private(canvas: Canvas) {
   val systemRenderer: SystemRenderer = PIXI.autoDetectRenderer(canvas.size.width.toInt, canvas.size.height.toInt, new RendererOptions {
     backgroundColor = 0x1099bb
     view = canvas.element
-//    autoResize = true
-//    antialias = true
+    autoResize = true
+    antialias = true
   })
 
   val stage = new PIXI.Container()

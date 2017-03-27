@@ -29,20 +29,36 @@ trait ServerApplication extends YouIApplication with Server {
   handler.matcher(path.exact("/source-map.min.js")).resource(Content.classPath("source-map.min.js"))
   handler.matcher(path.exact("/clientError")).handle { httpConnection =>
     val content = httpConnection.request.content
-    val formData = content.get.asInstanceOf[FormDataContent]
-    val json = formData.string("json").value
-    val jsError = upickle.default.read[JavaScriptError](json)
+    content match {
+      case Some(requestContent) => requestContent match {
+        case formData: FormDataContent => {
+          val json = formData.string("json").value
+          val jsError = upickle.default.read[JavaScriptError](json)
 
-    val userAgentString = Headers.Request.`User-Agent`.value(httpConnection.request.headers).getOrElse("")
-    val userAgent = userAgentParser.parse(userAgentString)
+          val userAgentString = Headers.Request.`User-Agent`.value(httpConnection.request.headers).getOrElse("")
+          val userAgent = userAgentParser.parse(userAgentString)
 
-    val exception = new JavaScriptException(jsError, userAgent, httpConnection.request.source)
-    if (logJavaScriptException(exception)) {
-      error(exception)
+          val exception = new JavaScriptException(
+            error = jsError,
+            userAgent = userAgent,
+            ip = httpConnection.request.source,
+            request = httpConnection.request,
+            info = errorInfo(jsError, httpConnection)
+          )
+          if (logJavaScriptException(exception)) {
+            error(exception)
+
+          }
+        }
+        case otherContent => scribe.error(s"Unsupported content type: $otherContent (${otherContent.getClass.getName})")
+      }
+      case None => // Ignore
     }
 
     httpConnection.update(_.withContent(Content.empty))
   }
+
+  protected def errorInfo(error: JavaScriptError, httpConnection: HttpConnection): Map[String, String] = Map.empty
 
   protected def page(page: Page): Page = {
     handlers += page

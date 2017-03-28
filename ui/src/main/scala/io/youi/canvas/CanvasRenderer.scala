@@ -33,9 +33,6 @@ class CanvasRenderer private(canvas: Canvas) {
 
   AnimationFrame.delta.attach(render)
 
-//  val width: Var[Int] = Var(800)
-//  val height: Var[Int] = Var(600)
-
   protected def render(delta: Double): Unit = if (running()) {
     systemRenderer.render(stage)
   }
@@ -45,5 +42,7 @@ class CanvasRenderer private(canvas: Canvas) {
 }
 
 object CanvasRenderer {
-  def apply(canvas: Canvas): Future[CanvasRenderer] = dom.addScript(PIXI.Info.cdn).map(_ => new CanvasRenderer(canvas))
+  lazy val Loaded: Future[Unit] = dom.addScript(PIXI.Info.cdn)
+
+  def apply(canvas: Canvas): CanvasRenderer = new CanvasRenderer(canvas)
 }

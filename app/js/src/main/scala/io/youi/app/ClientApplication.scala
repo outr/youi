@@ -29,7 +29,9 @@ trait ClientApplication extends YouIApplication with ScreenManager {
     ()
   }
 
-  js.Dynamic.global.window.onerror = errorFunction
+  if (logJavaScriptErrors) {
+    js.Dynamic.global.window.onerror = errorFunction
+  }
 
   connectivityEntries.attachAndFire { entries =>
     entries.foreach { connectivity =>

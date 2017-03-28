@@ -14,6 +14,13 @@ import scala.language.experimental.macros
 trait YouIApplication extends ErrorSupport {
   YouIApplication.instance = Some(this)
 
+  /**
+    * Returns true if errors that happen in the browser should be logged on the server.
+    *
+    * Defaults to true.
+    */
+  protected def logJavaScriptErrors: Boolean = true
+
   val connectivityEntries: State[Set[ApplicationConnectivity]] = Var(Set.empty[ApplicationConnectivity])
 
   /**

@@ -81,6 +81,8 @@ YouI is broken out into modules of functionality to minimize the dependencies re
     * [ ] SBT plugin to simplify build setup (especially management and sharing of generated JS)
     * [ ] Ability to create an app with only three classes (client, server, and shared)
     * [ ] Create a template project (maybe Giter8)
+* [ ] Hierarchical `update` calls to allow scoping of animations, graphical layout, and other functionality.
+* [X] Complete re-write of JavaScript error logging and support.
 
 ## Features for 0.2.0 (Released 2017.02.27)
 

@@ -3,7 +3,7 @@ package io.youi.example.ui.canvas
 import io.youi.example.ui.UIExampleScreen
 import io.youi._
 import io.youi.canvas.CanvasRenderer
-import io.youi.hypertext.Canvas
+import io.youi.hypertext.{Button, Canvas}
 import io.youi.hypertext.border.BorderStyle
 
 import scala.concurrent.Future
@@ -26,8 +26,21 @@ object BasicCanvasExample extends UIExampleScreen {
     }
     ui.children += canvas
 
-    CanvasRenderer(canvas).map { renderer =>
+    val cr = CanvasRenderer(canvas)
+    val future = cr.map { renderer =>
       renderer.start()
     }
+
+    ui.children += new Button {
+      text := "Resize"
+
+      event.click.attach { _ =>
+        cr.map(_.systemRenderer.resize(400, 768))
+        AnimationFrame.nextFrame {
+          canvas.updateSize()
+        }
+      }
+    }
+    future
   }
 }

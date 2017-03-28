@@ -14,6 +14,8 @@ object AnimationFrame {
 
   window.requestAnimationFrame(updateFunction)
 
+  def nextFrame(f: => Unit): Unit = delta.once(_ => f)
+
   private def update(highResTimeStamp: Double): Unit = {
     val delta = if (lastUpdate == 0.0) {
       0.0

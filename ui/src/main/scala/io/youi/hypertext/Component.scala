@@ -173,7 +173,7 @@ trait Component extends AbstractComponent {
   protected def determineActualWidth: Double = element.offsetWidth + margin.left() + margin.right()
   protected def determineActualHeight: Double = element.offsetHeight + margin.top() + margin.bottom()
 
-  protected def updateSize(): Unit = if (!updatingSize) {
+  def updateSize(): Unit = if (!updatingSize) {
     updatingSize = true
     try {
       if (actualWidth() != determineActualWidth) actualWidth.setStatic(determineActualWidth)

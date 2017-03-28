@@ -7,10 +7,13 @@ sbtVersion in ThisBuild := "0.13.13"
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 
+val scribeVersion = "1.4.1"
+val powerScalaVersion = "2.0.5"
+
 lazy val root = project.in(file("."))
   .aggregate(
-    coreJS, coreJVM, stream, communicationJS, communicationJVM, dom, client, server, serverUndertow, ui, appJS, appJVM,
-    templateJS, templateJVM, exampleJS, exampleJVM
+    coreJS, coreJVM, stream, communicationJS, communicationJVM, dom, client, server, serverUndertow, ui, optimizer,
+    appJS, appJVM, templateJS, templateJVM, exampleJS, exampleJVM
   )
   .settings(
     resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases",
@@ -21,10 +24,11 @@ lazy val root = project.in(file("."))
 lazy val core = crossProject.in(file("core"))
   .settings(
     name := "youi-core",
+    description := "Core functionality leveraged and shared by most other sub-projects of YouI.",
     resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases",
     libraryDependencies ++= Seq(
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-      "com.outr" %%% "scribe" % "1.4.1",
+      "com.outr" %%% "scribe" % scribeVersion,
       "com.outr" %%% "reactify" % "1.4.7",
       "org.scalactic" %%% "scalactic" % "3.0.1",
       "org.scalatest" %%% "scalatest" % "3.0.1" % "test"
@@ -48,7 +52,7 @@ lazy val stream = project.in(file("stream"))
   .settings(
     name := "youi-stream",
     libraryDependencies ++= Seq(
-      "org.powerscala" %% "powerscala-io" % "2.0.5"
+      "org.powerscala" %% "powerscala-io" % powerScalaVersion
     )
   )
 
@@ -65,7 +69,7 @@ lazy val client = project.in(file("client"))
     name := "youi-client",
     libraryDependencies ++= Seq(
       "org.apache.httpcomponents" % "httpasyncclient" % "4.1.3",
-      "org.powerscala" %% "powerscala-io" % "2.0.5"
+      "org.powerscala" %% "powerscala-io" % powerScalaVersion
     ),
     libraryDependencies ++= Seq(
       "io.circe" %% "circe-core",
@@ -120,6 +124,19 @@ lazy val ui = project.in(file("ui"))
     )
   )
   .dependsOn(coreJS, dom)
+
+lazy val optimizer = project.in(file("optimizer"))
+  .settings(
+    name := "youi-optimizer",
+    description := "Provides optimization functionality for application development.",
+    fork := true,
+    libraryDependencies ++= Seq(
+      "com.google.javascript" % "closure-compiler" % "v20170218",
+      "org.powerscala" %% "powerscala-io" % powerScalaVersion,
+      "com.outr" %%% "scribe" % scribeVersion
+    )
+  )
+  .dependsOn(stream)
 
 lazy val app = crossProject.in(file("app"))
   .settings(

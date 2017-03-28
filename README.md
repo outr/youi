@@ -63,8 +63,11 @@ YouI is broken out into modules of functionality to minimize the dependencies re
     * [X] FlowLayout
     * [ ] SnapLayout
     * [ ] TableLayout
-* [ ] Existing HTML, CSS, and JavaScript optimization, compression, and obfuscation for production use
-* [ ] Image optimizer for production use supporting compile-time and run-time optimization
+* [ ] Optimization module
+    * [X] JavaScript merging, cleanup, minification, obfuscation, and optimization support.
+    * [ ] CSS merging, cleanup, minification, and optimization support.
+    * [ ] HTML minification and optimization support.
+    * [ ] Image validator and optimizer for production deployment.
 * [ ] HTML caching in Local Storage for offline and faster cached loading
 * [ ] Convenience functionality for deploying native applications
     * [ ] Windows

@@ -1,6 +1,6 @@
 name := "youi"
 organization in ThisBuild := "io.youi"
-version in ThisBuild := "0.2.5"
+version in ThisBuild := "0.2.6-SNAPSHOT"
 scalaVersion in ThisBuild := "2.12.1"
 crossScalaVersions in ThisBuild := List("2.12.1", "2.11.8")
 sbtVersion in ThisBuild := "0.13.13"
@@ -133,7 +133,8 @@ lazy val optimizer = project.in(file("optimizer"))
     libraryDependencies ++= Seq(
       "com.google.javascript" % "closure-compiler" % "v20170218",
       "org.powerscala" %% "powerscala-io" % powerScalaVersion,
-      "com.outr" %%% "scribe" % scribeVersion
+      "com.outr" %% "scribe" % scribeVersion,
+      "com.outr" %% "hasher" % "1.2.1"
     )
   )
   .dependsOn(stream)
@@ -165,7 +166,7 @@ lazy val template = crossProject.in(file("template"))
   .dependsOn(app)
 
 lazy val templateJS = template.js.dependsOn(ui)
-lazy val templateJVM = template.jvm.dependsOn(serverUndertow)
+lazy val templateJVM = template.jvm.dependsOn(serverUndertow, optimizer)
 
 lazy val example = crossProject.in(file("example"))
   .settings(

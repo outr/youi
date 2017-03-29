@@ -56,21 +56,33 @@ class SetTitleInstruction(title: String) extends ActivateInstruction {
 }
 
 class AddClassInstruction(selector: String, className: String) extends ActivateInstruction {
+  private var activated = Vector.empty[html.Element]
+
   override def activate(): Unit = {
     if (debug) println(s"AddClass(selector: $selector, className: $className)")
-    dom.bySelector[html.Element](selector).foreach(_.classList.add(className))
+    activated = dom.bySelector[html.Element](selector).filter(!_.classList.contains(className))
+    activated.foreach(_.classList.add(className))
   }
 
-  override def deactivate(): Unit = dom.bySelector[html.Element](selector).foreach(_.classList.remove(className))
+  override def deactivate(): Unit = {
+    activated.foreach(_.classList.remove(className))
+    activated = Vector.empty
+  }
 }
 
 class RemoveClassInstruction(selector: String, className: String) extends ActivateInstruction {
+  private var activated = Vector.empty[html.Element]
+
   override def activate(): Unit = {
     if (debug) println(s"RemoveClass(selector: $selector, className: $className)")
-    dom.bySelector[html.Element](selector).foreach(_.classList.remove(className))
+    activated = dom.bySelector[html.Element](selector).filter(_.classList.contains(className))
+    activated.foreach(_.classList.remove(className))
   }
 
-  override def deactivate(): Unit = dom.bySelector[html.Element](selector).foreach(_.classList.add(className))
+  override def deactivate(): Unit = {
+    activated.foreach(_.classList.add(className))
+    activated = Vector.empty
+  }
 }
 
 class AlertInstruction(message: String) extends ActivateInstruction {

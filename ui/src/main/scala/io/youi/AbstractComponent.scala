@@ -3,7 +3,7 @@ package io.youi
 import reactify._
 import io.youi.hypertext.style.{ColorProperties, Position}
 
-trait AbstractComponent {
+trait AbstractComponent extends Updates {
   lazy val id: Var[String] = Var(Unique(length = 8, characters = Unique.LettersLower))
   lazy val parent: State[Option[AbstractComponent]] = Var(None)
 

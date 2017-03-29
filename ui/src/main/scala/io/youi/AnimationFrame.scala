@@ -3,31 +3,25 @@ package io.youi
 import reactify._
 import org.scalajs.dom._
 
-object AnimationFrame {
+object AnimationFrame extends Updates {
   private var lastUpdate: Double = 0.0
-  private val updateFunction: Double => Unit = update
-  private val _delta = Var(0.0)
-  private val _timeStamp = Var(0.0)
 
-  val delta: Val[Double] = Val(_delta)
-  val timeStamp: Val[Double] = Val(_timeStamp)
+  val timeStamp: Val[Double] = Var(0.0)
 
-  window.requestAnimationFrame(updateFunction)
-
-  def nextFrame(f: => Unit): Unit = delta.once(_ => f)
-
-  private def update(highResTimeStamp: Double): Unit = {
+  private val updateFunction: Double => Unit = (highResTimeStamp: Double) => {
     val delta = if (lastUpdate == 0.0) {
       0.0
     } else {
       (highResTimeStamp - lastUpdate) / 1000.0
     }
     try {
-      _delta := delta
-      _timeStamp := highResTimeStamp
+      timeStamp.asInstanceOf[Var[Double]] := highResTimeStamp
+      update(delta)
     } finally {
       lastUpdate = highResTimeStamp
       window.requestAnimationFrame(updateFunction)
     }
   }
+
+  window.requestAnimationFrame(updateFunction)
 }

@@ -3,6 +3,7 @@ package io.youi.optimizer
 import java.io.{File, FileNotFoundException}
 import java.net.URL
 
+import com.roundeights.hasher.Hasher
 import io.youi.stream._
 import org.powerscala.io._
 
@@ -19,10 +20,10 @@ object HTMLOptimizer {
     * Cleans up the HTML removing all JavaScript (inline and external) creating files for them.
     *
     * @param input the original HTML file to be optimized
+    * @param baseDirectory the base directory to look up JavaScript paths from
     * @return Optimized
     */
-  private def stage1(input: File): Optimized = {
-    val directory = input.getParentFile
+  private def stage1(input: File, baseDirectory: File): Optimized = {
     val stream = HTMLParser(input)
     var scripts = ListBuffer.empty[ScriptFile]
     val result = stream.stream(List(
@@ -52,7 +53,7 @@ object HTMLOptimizer {
               ScriptFile(file, map)
             } else {                                                                                  // Local script
               val map = if (minified) {
-                val minifiedFile = new File(directory, s"$src.map")
+                val minifiedFile = new File(baseDirectory, s"$src.map")
                 if (minifiedFile.isFile) {
                   Some(minifiedFile)
                 } else {
@@ -62,7 +63,7 @@ object HTMLOptimizer {
               } else {
                 None
               }
-              ScriptFile(new File(directory, src), map)
+              ScriptFile(new File(baseDirectory, src), map)
             }
           }
           case None => {                // Inline script
@@ -137,20 +138,81 @@ object HTMLOptimizer {
     scribe.info(s"Saved(HTML: $htmlTrimmed, JavaScript: $jsTrimmed, Merged: ${optimized.scripts.size} JavaScript files)")
   }
 
-  def optimize(directory: File, htmlPath: String, jsPath: String): Unit = {
-    // TODO: Support incrementing js name if duplicates are found
-    val html = new File(directory, htmlPath)
-    val js = new File(directory, jsPath)
-    val optimized = stage1(html)
-    // TODO: detect if these scripts have been optimized already
-    stage2(optimized)
-    stage3(optimized, js)
-    stage4(optimized.html, html, jsPath)
-    stage5(optimized, html, js)
-    // TODO: cache optimized for multiple runs
+  private def nextJSFile(directory: File, jsPath: String, increment: Int = 0): File = {
+    val name = jsPath.substring(0, jsPath.lastIndexOf('.'))
+    val fileName = if (increment == 0) {
+      s"$name.js"
+    } else {
+      s"$name$increment.js"
+    }
+    val file = new File(directory, fileName)
+    if (!file.exists()) {
+      file
+    } else {
+      nextJSFile(directory, jsPath, increment + 1)
+    }
   }
+
+  private var cache = Map.empty[String, CachedOptimization]
+
+  def optimize(baseDirectory: File, directory: File, htmlPath: String, jsPath: String): Unit = synchronized {
+    try {
+      scribe.info(s"Optimizing $htmlPath...")
+      val html = new File(directory, htmlPath)
+      val optimized = stage1(html, baseDirectory)
+      if (optimized.scripts.isEmpty) {
+        scribe.info(s"No JavaScript in $htmlPath, skipping...")
+      } else {
+        val cached = cache.get(optimized.crc32) match {
+          case Some(c) => {
+            scribe.info(s"Using cached JavaScript file: ${c.js.getAbsolutePath}")
+            c
+          }
+          case None => {
+            val jsFile = nextJSFile(baseDirectory, jsPath)
+            scribe.info(s"Creating new JavaScript file: ${jsFile.getAbsolutePath}")
+            stage2(optimized)
+            stage3(optimized, jsFile)
+            CachedOptimization(optimized.scripts, jsFile, optimized.crc32)
+          }
+        }
+        val js = cached.js
+        val updatedJSPath = js.getCanonicalPath.substring(directory.getCanonicalPath.length + (if (jsPath.startsWith("/")) 0 else 1))
+        stage4(optimized.html, html, updatedJSPath)
+        stage5(optimized, html, js)
+        cached.usedBy += htmlPath
+        cache += optimized.crc32 -> cached
+      }
+    } catch {
+      case t: Throwable => throw new RuntimeException(s"Error occurred while processing $htmlPath", t)
+    }
+  }
+
+  def outputStats(): Unit = {
+    cache.values.foreach { cache =>
+      scribe.info(s"${cache.js.getName} used by ${cache.usedBy.size} pages: ${cache.usedBy.mkString(", ")}")
+    }
+  }
+
+  final def optimizeDirectory(directory: File, jsPath: String, recursive: Boolean = true, baseDirectory: Option[File] = None): Unit = {
+    directory.listFiles().foreach { file =>
+      if (file.getName.toLowerCase.endsWith(".html")) {       // Found HTML file
+        optimize(baseDirectory.getOrElse(directory), file.getParentFile, file.getName, jsPath)
+      } else if (file.isDirectory && recursive) {             // Found directory
+        optimizeDirectory(file, jsPath, recursive, baseDirectory.orElse(Some(directory)))
+      }
+    }
+    scribe.info(s"Processing completed. Processed ${cache.values.flatMap(_.usedBy).size} and created ${cache.size} optimized JavaScript files:")
+    outputStats()
+  }
+
+  def dispose(): Unit = cache = Map.empty
 }
 
-case class Optimized(html: File, scripts: List[ScriptFile], originalSize: Long)
+case class Optimized(html: File, scripts: List[ScriptFile], originalSize: Long) {
+  lazy val crc32: String = scripts.map(sf => Hasher(sf.js).crc32.hex).mkString(",")
+}
+
+case class CachedOptimization(scripts: List[ScriptFile], js: File, crc32: String, var usedBy: Set[String] = Set.empty)
 
 case class ScriptFile(js: File, map: Option[File])

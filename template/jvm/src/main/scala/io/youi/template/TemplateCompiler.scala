@@ -2,6 +2,7 @@ package io.youi.template
 
 import java.io.File
 
+import io.youi.optimizer.HTMLOptimizer
 import scribe.formatter.FormatterBuilder
 import scribe.{LogHandler, Logger}
 import io.youi.stream.{ByTag, Delta, HTMLParser}
@@ -16,7 +17,8 @@ class TemplateCompiler(val sourceDirectory: File,
                        val destinationDirectory: File,
                        val compressCSS: Boolean = false,
                        val removeDotHTML: Boolean = false,
-                       val consoleCommands: Boolean = true) {
+                       val consoleCommands: Boolean = true,
+                       val optimize: Boolean = false) {
   private[template] var pages = Set.empty[String]
 
   private val server = new ServerTemplateApplication(this)
@@ -63,9 +65,6 @@ class TemplateCompiler(val sourceDirectory: File,
       deleteDestination()
     }
 
-    // Generate pages
-    compileAllPages()
-
     // Copy assets
     copyAssets()
 
@@ -74,6 +73,9 @@ class TemplateCompiler(val sourceDirectory: File,
 
     // Compile SASS files
     compileAllSass()
+
+    // Generate pages
+    compileAllPages()
   }
 
   private def processRecursively(directory: File)(handler: File => Unit): Unit = directory.listFiles.foreach { file =>
@@ -107,7 +109,10 @@ class TemplateCompiler(val sourceDirectory: File,
     destination.getParentFile.mkdirs()
     IO.stream(html, destination)
 
-    // TODO: support JavaScript merging
+    if (optimize) {
+      HTMLOptimizer.optimize(destinationDirectory, destinationDirectory, fileName, "/js/optimized.js")
+    }
+
     // TODO: support CSS merging
     // TODO: support HTML minification
 
@@ -224,19 +229,22 @@ object LoggingProcessLogger extends ProcessLogger {
 }
 
 object TemplateCompiler {
-  def main(args: Array[String]): Unit = if (args.length == 3) {
+  def main(args: Array[String]): Unit = if (args.length == 4) {
     Logger.root.clearHandlers()
     Logger.root.addHandler(LogHandler(formatter = FormatterBuilder().date().string(" - ").message.newLine))
 
     val mode = args(0)
-    val sourceDirectory = new File(args(1))
-    val destinationDirectory = new File(args(2))
+    val modification = args(1)
+    val sourceDirectory = new File(args(2))
+    val destinationDirectory = new File(args(3))
+
+    val optimize = modification == "optimize"
 
     assert(sourceDirectory.isDirectory, s"Source directory must be a directory (${sourceDirectory.getAbsolutePath})")
     assert(!destinationDirectory.isFile, s"Destination must be a directory, but found a file (${destinationDirectory.getAbsolutePath})")
     destinationDirectory.mkdirs()
 
-    val compiler = new TemplateCompiler(sourceDirectory, destinationDirectory, removeDotHTML = true, consoleCommands = true)
+    val compiler = new TemplateCompiler(sourceDirectory, destinationDirectory, removeDotHTML = true, consoleCommands = true, optimize = optimize)
     try {
       compiler.compileAll(deleteFirst = true)
       if (mode.equalsIgnoreCase("watch") || mode.equalsIgnoreCase("server")) {
@@ -263,11 +271,14 @@ object TemplateCompiler {
       }
     }
   } else {
-    println("Usage: youi-template <mode> <source directory> <destination directory>")
+    println("Usage: youi-template <mode> <modification> <source directory> <destination directory>")
     println("\t<mode> is one of the following options:")
     println("\t\tcompile - does a full compile and then exit")
     println("\t\twatch - does a full compile, then watches for changes and compiles on-demand")
     println("\t\tserver - does a full compile, then starts a server to serve the pages and will auto-reload the page on change")
+    println("\t<modification> defines modifications that should take place against the compiled template and must be one of the following options:")
+    println("\t\tnone - no optimizations or modifications are applied after compilation")
+    println("\t\toptimize - merges all JavaScript into a single source file (including inline and remote scripts), optimizes it, minifies it, and obfuscates it while generating a js.map file for it")
     println("\t<source directory> is the location where the source files are stored. Supports the following sub-folders:")
     println("\t\tassets - files within this directory or copied as-is into the destination directory")
     println("\t\tless - looks for .less files to compile and put into the css directory of the destination")

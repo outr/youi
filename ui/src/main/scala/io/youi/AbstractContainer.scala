@@ -53,4 +53,10 @@ trait AbstractContainer[C <: AbstractComponent] extends AbstractComponent {
   protected def remove(c: C): Unit
 
   protected def addAfter(c: C, previous: Option[C]): Unit
+
+  override def update(delta: Double): Unit = {
+    super.update(delta)
+
+    children().foreach(_.update(delta))
+  }
 }

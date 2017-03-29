@@ -39,6 +39,10 @@ object UI extends HTMLContainer with Component with Logging {
 
     size.width := actualWidth
     size.height := actualHeight
+
+    AnimationFrame.delta.attach { delta =>
+      update(delta)
+    }
   }
 
   override protected def determineActualWidth: Double = window.innerWidth

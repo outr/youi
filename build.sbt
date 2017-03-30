@@ -7,7 +7,7 @@ sbtVersion in ThisBuild := "0.13.13"
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 
-val scribeVersion = "1.4.1"
+val scribeVersion = "1.4.2"
 val powerScalaVersion = "2.0.5"
 
 lazy val root = project.in(file("."))

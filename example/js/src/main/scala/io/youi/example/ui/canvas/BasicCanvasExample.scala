@@ -2,6 +2,7 @@ package io.youi.example.ui.canvas
 
 import io.youi.example.ui.UIExampleScreen
 import io.youi._
+import io.youi.app.screen.CanvasScreen
 import io.youi.canvas.CanvasRenderer
 import io.youi.hypertext.{Button, Canvas}
 import io.youi.hypertext.border.BorderStyle
@@ -9,12 +10,9 @@ import io.youi.hypertext.border.BorderStyle
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-object BasicCanvasExample extends UIExampleScreen {
+object BasicCanvasExample extends UIExampleScreen with CanvasScreen {
   override def name: String = "Basic Canvas Example"
   override def path: String = "/examples/basic_canvas.html"
-
-  // TODO: Make a mix-in to handle this automatically
-  override protected def init(): Future[Unit] = super.init().flatMap(_ => CanvasRenderer.Loaded)
 
   override protected def load(): Future[Unit] = super.load().map { _ =>
     val canvas = new Canvas {

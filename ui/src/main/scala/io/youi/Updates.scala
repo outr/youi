@@ -3,9 +3,9 @@ package io.youi
 import reactify._
 
 trait Updates {
-  lazy val delta: Val[Double] = Var(0.0)
+  lazy val delta: Channel[Double] = Channel[Double]
 
   def nextFrame(f: => Unit): Unit = delta.once(_ => f)
 
-  def update(d: Double): Unit = delta.asInstanceOf[Var[Double]] := d
+  def update(delta: Double): Unit = this.delta := delta
 }

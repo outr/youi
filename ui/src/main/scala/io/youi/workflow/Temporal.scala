@@ -1,10 +1,12 @@
 package io.youi.workflow
 
-import io.youi.AnimationFrame
+import io.youi.{AnimationFrame, Updates}
 
 import scala.concurrent.{Future, Promise}
 
 trait Temporal extends Task {
+  protected def updates: Updates = AnimationFrame
+
   def run(): Future[Unit] = {
     val promise = Promise[Unit]
     var f: Double => Unit = null
@@ -17,14 +19,14 @@ trait Temporal extends Task {
         update(delta, elapsed) match {
           case Conclusion.Continue => // Keep going
           case Conclusion.Finished => {
-            AnimationFrame.delta.detach(f)
+            updates.delta.detach(f)
             promise.success(())
           }
         }
         step = 0.0
       }
     }
-    AnimationFrame.delta.attach(f)
+    updates.delta.attach(f)
     promise.future
   }
 

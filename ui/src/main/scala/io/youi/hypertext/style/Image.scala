@@ -1,5 +1,6 @@
 package io.youi.hypertext.style
 
+import io.youi.dom
 import io.youi.net.URL
 import org.scalajs.dom.{Event, document, html}
 
@@ -34,7 +35,7 @@ object Image {
   def reload(url: URL): Future[Unit] = {
     val promise = Promise[Unit]()
 
-    val iFrame = document.createElement("iframe").asInstanceOf[html.IFrame]
+    val iFrame = dom.create[html.IFrame]("iframe")
     var firstLoad = true
     iFrame.onload = (evt: Event) => {
       if (firstLoad) {

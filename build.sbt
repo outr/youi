@@ -7,6 +7,7 @@ sbtVersion in ThisBuild := "0.13.13"
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 
+val pixiJsVersion = "4.4.4-SNAPSHOT"
 val scribeVersion = "1.4.2"
 val powerScalaVersion = "2.0.5"
 
@@ -120,7 +121,7 @@ lazy val ui = project.in(file("ui"))
   .settings(
     name := "youi-ui",
     libraryDependencies ++= Seq(
-      "com.outr" %%% "scalajs-pixijs" % "4.4.3"
+      "com.outr" %%% "scalajs-pixijs" % pixiJsVersion
     )
   )
   .dependsOn(coreJS, dom)

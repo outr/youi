@@ -9,7 +9,7 @@ import io.youi._
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class CanvasRenderer private(canvas: Canvas) {
+class CanvasRenderer(canvas: Canvas) extends Container {
   val running: Var[Boolean] = Var(false)
 
   scribe.info(s"Initializing: ${canvas.size.width.toInt}x${canvas.size.height.toInt}")
@@ -20,21 +20,19 @@ class CanvasRenderer private(canvas: Canvas) {
     antialias = true
   })
 
-  val stage = new PIXI.Container()
-
-  val texture: Texture = PIXI.Texture.fromImage("/images/bunny.png")
+  val texture: PIXI.Texture = PIXI.Texture.fromImage("/images/bunny.png")
   val bunny = new PIXI.Sprite(texture) {
     anchor.x = 0.5
     anchor.y = 0.5
     position.x = 200
     position.y = 150
   }
-  stage.addChild(bunny)
+  displayObject.addChild(bunny)
 
-  AnimationFrame.delta.attach(render)
+  canvas.delta.attach(render)
 
   protected def render(delta: Double): Unit = if (running()) {
-    systemRenderer.render(stage)
+    systemRenderer.render(displayObject)
   }
 
   def start(): Unit = running := true

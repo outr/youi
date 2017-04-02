@@ -6,6 +6,9 @@ import io.youi.AbstractContainer
 class Container extends Component with AbstractContainer[Component] {
   override protected[canvas] lazy val displayObject: PIXI.Container = new PIXI.Container()
 
+//  connect(size.width, displayObject.width, (d: Double) => displayObject.width = d)
+//  connect(size.height, displayObject.height, (d: Double) => displayObject.height = d)
+
   override protected def addAfter(c: Component, previous: Option[Component]): Unit = previous match {
     case Some(p) => {
       val index = displayObject.getChildIndex(p.displayObject)

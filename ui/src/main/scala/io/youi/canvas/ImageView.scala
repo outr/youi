@@ -3,6 +3,11 @@ import com.outr.pixijs._
 import reactify.Var
 
 class ImageView extends Component {
+  def this(texture: Texture) = {
+    this()
+    this.texture := texture
+  }
+
   override protected[canvas] lazy val displayObject: PIXI.Sprite = new PIXI.Sprite(Texture.Empty.instance)
 
   lazy val texture: Var[Texture] = prop(new Texture(displayObject.texture), (t: Texture) => displayObject.texture = t.instance)

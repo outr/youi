@@ -11,6 +11,8 @@ import scala.concurrent.Future
 class CanvasRenderer(canvas: Canvas) extends Container {
   val running: Var[Boolean] = Var(false)
 
+  private var dirty: Boolean = false
+
   scribe.info(s"Initializing: ${canvas.size.width.toInt}x${canvas.size.height.toInt}")
 
   val systemRenderer: SystemRenderer = PIXI.autoDetectRenderer(canvas.size.width.toInt, canvas.size.height.toInt, new RendererOptions {
@@ -20,10 +22,23 @@ class CanvasRenderer(canvas: Canvas) extends Container {
     antialias = true
   })
 
+  size.width.attach { _ =>
+    systemRenderer.resize(math.round(size.width()).toInt, math.round(size.height()).toInt)
+    dirty = true
+  }
+  size.height.attach { _ =>
+    systemRenderer.resize(math.round(size.width()).toInt, math.round(size.height()).toInt)
+    dirty = true
+  }
+
   canvas.delta.attach(render)
 
   protected def render(delta: Double): Unit = if (running()) {
     systemRenderer.render(displayObject)
+    if (dirty) {
+      canvas.updateSize()
+      dirty = false
+    }
   }
 
   def start(): Unit = running := true

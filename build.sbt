@@ -1,6 +1,6 @@
 name := "youi"
 organization in ThisBuild := "io.youi"
-version in ThisBuild := "0.2.6"
+version in ThisBuild := "0.2.7-SNAPSHOT"
 scalaVersion in ThisBuild := "2.12.1"
 crossScalaVersions in ThisBuild := List("2.12.1", "2.11.8")
 sbtVersion in ThisBuild := "0.13.13"

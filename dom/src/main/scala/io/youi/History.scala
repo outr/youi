@@ -10,6 +10,13 @@ import scala.scalajs.js
   * Convenience functionality for working with browser history.
   */
 object History {
+  /**
+    * If set to true calling push and replace will always result in the same functionality as set. This is a toggle to
+    * be able to disable single-application mode with one switch.
+    *
+    * Defaults to false.
+    */
+  val alwaysReload: Var[Boolean] = Var(false)
   private val currentURL = Var[URL](URL(document.location.href), static = true)
   val url: Val[URL] = Val(currentURL)
   val stateChange: Channel[HistoryStateChange] = Channel[HistoryStateChange]
@@ -39,7 +46,9 @@ object History {
 
   def pushPath(path: String, state: js.Any = null): Unit = push(url.withPath(path), state)
 
-  def push(url: URL, state: js.Any = null): Unit = {
+  def push(url: URL, state: js.Any = null): Unit = if (alwaysReload()) {
+    set(url)
+  } else {
     val urlString = url.toString
     window.history.pushState(state, urlString, urlString)
     currentURL := url
@@ -48,7 +57,9 @@ object History {
 
   def replacePath(path: String, state: js.Any = null): Unit = replace(url.withPath(path), state)
 
-  def replace(url: URL, state: js.Any): Unit = {
+  def replace(url: URL, state: js.Any): Unit = if (alwaysReload()) {
+    set(url)
+  } else {
     val urlString = url.toString
     window.history.replaceState(state, urlString, urlString)
     currentURL := url

@@ -53,6 +53,14 @@ class URLSpec extends WordSpec with Matchers {
       "properly interpolate a URL" in {
         val url = url"http://www.youi.io"
         url.encoded.toString should equal("http://www.youi.io/")
+        url.protocol should be(Protocol.Http)
+        url.host should be("www.youi.io")
+        url.path.toString should be("/")
+        url.parameters should be(Parameters.empty)
+      }
+      "fail to compile an invalid URL" in {
+        assertCompiles("""url"http://www.youi.io"""")
+        assertDoesNotCompile("""url"http:www:youi:io"""")
       }
     }
     "applying parts" should {

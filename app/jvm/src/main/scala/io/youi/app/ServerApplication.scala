@@ -84,6 +84,10 @@ trait ServerApplication extends YouIApplication with Server {
           disconnected := connection
         }
       }
+      connection.receive.text.attach {
+        case "PING" => connection.send.text := "PONG"
+        case _ => // Ignore everything else
+      }
       httpConnection.webSocketSupport = connection
     }
   }

@@ -1,6 +1,6 @@
 name := "youi"
 organization in ThisBuild := "io.youi"
-version in ThisBuild := "0.2.7"
+version in ThisBuild := "0.2.8-SNAPSHOT"
 scalaVersion in ThisBuild := "2.12.1"
 crossScalaVersions in ThisBuild := List("2.12.1", "2.11.8")
 sbtVersion in ThisBuild := "0.13.13"
@@ -9,6 +9,14 @@ scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 
 val scribeVersion = "1.4.2"
 val powerScalaVersion = "2.0.5"
+val reactifyVersion = "1.4.7"
+val akkaVersion = "2.4.17"
+val scalaJSDOM = "0.9.1"
+val httpAsyncClientVersion = "4.1.3"
+val circeVersion = "0.7.0"
+val uaDetectorVersion = "2014.10"
+val undertowVersion = "1.4.12.Final"
+val uPickleVersion = "0.4.4"
 
 lazy val root = project.in(file("."))
   .aggregate(
@@ -29,19 +37,19 @@ lazy val core = crossProject.in(file("core"))
     libraryDependencies ++= Seq(
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
       "com.outr" %%% "scribe" % scribeVersion,
-      "com.outr" %%% "reactify" % "1.4.7",
+      "com.outr" %%% "reactify" % reactifyVersion,
       "org.scalactic" %%% "scalactic" % "3.0.1",
       "org.scalatest" %%% "scalatest" % "3.0.1" % "test"
     )
   )
   .jvmSettings(
     libraryDependencies ++= Seq(
-      "com.typesafe.akka" %% "akka-actor" % "2.4.17"
+      "com.typesafe.akka" %% "akka-actor" % akkaVersion
     )
   )
   .jsSettings(
     libraryDependencies ++= Seq(
-      "org.scala-js" %%% "scalajs-dom" % "0.9.1"
+      "org.scala-js" %%% "scalajs-dom" % scalaJSDOM
     )
   )
 
@@ -68,14 +76,14 @@ lazy val client = project.in(file("client"))
   .settings(
     name := "youi-client",
     libraryDependencies ++= Seq(
-      "org.apache.httpcomponents" % "httpasyncclient" % "4.1.3",
+      "org.apache.httpcomponents" % "httpasyncclient" % httpAsyncClientVersion,
       "org.powerscala" %% "powerscala-io" % powerScalaVersion
     ),
     libraryDependencies ++= Seq(
       "io.circe" %% "circe-core",
       "io.circe" %% "circe-generic",
       "io.circe" %% "circe-parser"
-    ).map(_ % "0.7.0")
+    ).map(_ % circeVersion)
   )
   .dependsOn(coreJVM)
 
@@ -83,7 +91,7 @@ lazy val server = project.in(file("server"))
   .settings(
     name := "youi-server",
     libraryDependencies ++= Seq(
-      "net.sf.uadetector" % "uadetector-resources" % "2014.10",
+      "net.sf.uadetector" % "uadetector-resources" % uaDetectorVersion,
       "org.scalactic" %% "scalactic" % "3.0.1",
       "org.scalatest" %% "scalatest" % "3.0.1" % "test"
     )
@@ -94,7 +102,7 @@ lazy val serverUndertow = project.in(file("serverUndertow"))
   .settings(
     name := "youi-server-undertow",
     libraryDependencies ++= Seq(
-      "io.undertow" % "undertow-core" % "1.4.11.Final",
+      "io.undertow" % "undertow-core" % undertowVersion,
       "org.scalactic" %% "scalactic" % "3.0.1",
       "org.scalatest" %% "scalatest" % "3.0.1" % "test"
     )
@@ -105,7 +113,7 @@ lazy val communication = crossProject.in(file("communication"))
   .settings(
     name := "youi-communication",
     libraryDependencies ++= Seq(
-      "com.lihaoyi" %%% "upickle" % "0.4.4",
+      "com.lihaoyi" %%% "upickle" % uPickleVersion,
       "org.scalactic" %%% "scalactic" % "3.0.1",
       "org.scalatest" %%% "scalatest" % "3.0.1" % "test"
     )
@@ -159,7 +167,7 @@ lazy val template = crossProject.in(file("template"))
   .jvmSettings(
     fork := true,
     libraryDependencies ++= Seq(
-      "org.powerscala" %% "powerscala-io" % "2.0.5"
+      "org.powerscala" %% "powerscala-io" % powerScalaVersion
     ),
     assemblyJarName in assembly := "youi-template.jar"
   )

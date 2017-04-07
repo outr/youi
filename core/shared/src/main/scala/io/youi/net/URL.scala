@@ -11,6 +11,23 @@ case class URL(protocol: Protocol = Protocol.Http,
   def replaceBase(base: String): URL = URL(s"$base${encoded.pathAndArgs}")
   def replacePathAndParams(pathAndParams: String): URL = URL(s"$base$pathAndParams")
 
+  def withPart(part: String): URL = if (part.indexOf("://") != -1) {
+    URL(part)
+  } else if (part.startsWith("?")) {
+    copy(parameters = Parameters.parse(part))
+  } else if (part.startsWith("/") || part.startsWith("..")) {
+    val index = part.indexOf('?')
+    if (index == -1) {
+      withPath(part).copy(parameters = Parameters.empty)
+    } else {
+      val path = part.substring(0, index)
+      val params = part.substring(index + 1)
+      withPath(path).copy(parameters = Parameters.parse(params))
+    }
+  } else {
+    throw new RuntimeException(s"Unable to parse URL part: $part")
+  }
+
   def withPath(path: String, absolutize: Boolean = true): URL = {
     val updated = this.path.append(path).absolute
     copy(path = updated)
@@ -102,14 +119,7 @@ object URL {
     } else {
       val endIndex = if (hashIndex == -1) url.length else hashIndex
       val query = url.substring(questionIndex + 1, endIndex)
-      var params = Parameters.empty
-      query.split('&').map(param => param.trim.splitAt(param.indexOf('='))).collect {
-        case (key, value) if key.nonEmpty => URL.decode(key) -> URL.decode(value.substring(1))
-        case (key, value) if value.nonEmpty => "query" -> URL.decode(value)
-      }.foreach {
-        case (key, value) => params = params.withParam(key, value)
-      }
-      params
+      Parameters.parse(query)
     }
     val fragment = if (hashIndex != -1) {
       Some(url.substring(hashIndex + 1))

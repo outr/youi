@@ -81,6 +81,16 @@ case class URL(protocol: Protocol = Protocol.Http,
 }
 
 object URL {
+  def build(protocol: String,
+            host: String,
+            port: Int,
+            path: String,
+            parameters: List[(String, List[String])],
+            fragment: Option[String]): URL = {
+    val params = Parameters(parameters.map(t => t._1 -> Param(t._2)))
+    URL(Protocol(protocol), host, port, Path.parse(path), params, fragment)
+  }
+
   def apply(url: String): URL = apply(url, absolutizePath = true)
 
   def get(url: String): Option[URL] = get(url, absolutizePath = true)

@@ -22,6 +22,11 @@ trait Component extends Updates {
     lazy val bottom: Dep[Double, Double] = Dep(top, size.height)
   }
 
+  object scale {
+    lazy val x: Var[Double] = Var(1.0)
+    lazy val y: Var[Double] = Var(1.0)
+  }
+
   object size {
     object measured {
       lazy val width: Var[Double] = Var(0.0)
@@ -41,6 +46,8 @@ trait Component extends Updates {
 
   size.width.attach(_ => updateSize())
   size.height.attach(_ => updateSize())
+  scale.x.attach(_ => updateSize())
+  scale.y.attach(_ => updateSize())
 
   protected[youi] def prop[T](get: => T, set: T => Unit): Var[T] = {
     val v = Var[T](get)
@@ -51,5 +58,7 @@ trait Component extends Updates {
   protected def updateSize(): Unit = {
     instance.width = size.width()
     instance.height = size.height()
+    instance.scale.x = scale.x()
+    instance.scale.y = scale.y()
   }
 }

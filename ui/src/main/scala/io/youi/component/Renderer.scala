@@ -28,7 +28,7 @@ class Renderer(canvas: Canvas) extends Container {
   }
 
   override protected def updateSize(): Unit = {
-//    super.updateSize()
+    super.updateSize()
 
     scribe.info(s"Resizing to: ${size.width()}x${size.height()}")
 //    canvas.size.width := size.width()
@@ -38,6 +38,7 @@ class Renderer(canvas: Canvas) extends Container {
 //    systemRenderer.width = size.width().toInt
 //    systemRenderer.height = size.height().toInt
     systemRenderer.resize(math.round(size.width()).toInt, math.round(size.height()).toInt)
+    canvas.updateSize()
   }
 }
 

@@ -1,6 +1,6 @@
 package io.youi.app
 
-import io.youi.History
+import io.youi.{AnimationFrame, History}
 import io.youi.app.stream.StreamURL
 import io.youi.http.{Connection, WebSocketUtil}
 import io.youi.net.URL
@@ -10,6 +10,7 @@ import reactify.{ChangeListener, Var}
 
 import scala.util.{Failure, Success}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration._
 
 class ClientConnectivity(connectivity: ApplicationConnectivity, application: ClientApplication) {
   val connection: Connection = new Connection
@@ -36,6 +37,9 @@ class ClientConnectivity(connectivity: ApplicationConnectivity, application: Cli
     }
     val url = URL(s"$protocol://${window.location.host}${connectivity.path}")
     webSocket := Some(WebSocketUtil.connect(url, connection))
+    AnimationFrame.every(30.seconds) {
+      ping()
+    }
   }
 
   def disconnect(): Unit = synchronized {
@@ -46,6 +50,8 @@ class ClientConnectivity(connectivity: ApplicationConnectivity, application: Cli
       webSocket := None
     }
   }
+
+  private def ping(): Unit = connection.send.text := "PING"
 
   def close(): Unit = {
     connection.close()

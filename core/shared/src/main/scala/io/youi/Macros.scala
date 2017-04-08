@@ -24,8 +24,14 @@ object Macros {
             b.append(raw)
           }
         }
-        URL(b.toString())
-        c.Expr[URL](q"""URL(${b.toString()})""")
+        val url = URL(b.toString())
+        val protocol = url.protocol.scheme
+        val host = url.host
+        val port = url.port
+        val path = url.path.decoded
+        val parameters = url.parameters.entries.map(t => t._1 -> t._2.values)
+        val fragment = url.fragment
+        c.Expr[URL](q"URL.build(protocol = $protocol, host = $host, port = $port, path = $path, parameters = $parameters, fragment = $fragment)")
       }
       case _ => c.abort(c.enclosingPosition, "Bad usage of url interpolation.")
     }

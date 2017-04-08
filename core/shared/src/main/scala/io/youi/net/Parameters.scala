@@ -78,4 +78,17 @@ case class Parameters(entries: List[(String, Param)]) {
 
 object Parameters {
   val empty = Parameters(Nil)
+
+  def parse(query: String): Parameters = if (query.startsWith("?")) {
+    parse(query.substring(1))
+  } else {
+    var params = Parameters.empty
+    query.split('&').map(param => param.trim.splitAt(param.indexOf('='))).collect {
+      case (key, value) if key.nonEmpty => URL.decode(key) -> URL.decode(value.substring(1))
+      case (key, value) if value.nonEmpty => "query" -> URL.decode(value)
+    }.foreach {
+      case (key, value) => params = params.withParam(key, value)
+    }
+    params
+  }
 }

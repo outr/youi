@@ -53,6 +53,33 @@ class URLSpec extends WordSpec with Matchers {
       "properly interpolate a URL" in {
         val url = url"http://www.youi.io"
         url.encoded.toString should equal("http://www.youi.io/")
+        url.protocol should be(Protocol.Http)
+        url.host should be("www.youi.io")
+        url.path.toString should be("/")
+        url.parameters should be(Parameters.empty)
+      }
+      "fail to compile an invalid URL" in {
+        assertCompiles("""url"http://www.youi.io"""")
+        assertDoesNotCompile("""url"http:www:youi:io"""")
+      }
+    }
+    "applying parts" should {
+      val url = URL("http://www.youi.io/testing/1/test.html?arg1=true")
+
+      "replace one URL with another" in {
+        url.withPart("http://google.com") should be(URL("http://google.com"))
+      }
+      "replace the path" in {
+        url.withPart("/index.html") should be(URL("http://www.youi.io/index.html"))
+      }
+      "replace params" in {
+        url.withPart("?wahoo=true") should be(URL("http://www.youi.io/testing/1/test.html?wahoo=true"))
+      }
+      "replace the path and params" in {
+        url.withPart("/index.html?wahoo=true") should be(URL("http://www.youi.io/index.html?wahoo=true"))
+      }
+      "apply relative path" in {
+        url.withPart("../2/test.html") should be(URL("http://www.youi.io/testing/2/test.html"))
       }
     }
   }

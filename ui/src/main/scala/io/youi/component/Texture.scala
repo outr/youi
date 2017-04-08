@@ -1,10 +1,10 @@
-package io.youi.canvas
+package io.youi.component
 
 import com.outr.pixijs._
 import io.youi.History
 import io.youi.net.URL
 
-class Texture(private[canvas] val instance: PIXI.Texture)
+class Texture(private[component] val instance: PIXI.Texture)
 
 object Texture {
   lazy val Empty: Texture = new Texture(PIXI.Texture.EMPTY)

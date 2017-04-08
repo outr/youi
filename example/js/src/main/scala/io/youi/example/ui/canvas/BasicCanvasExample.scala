@@ -3,7 +3,7 @@ package io.youi.example.ui.canvas
 import io.youi.example.ui.UIExampleScreen
 import io.youi._
 import io.youi.app.screen.CanvasScreen
-import io.youi.canvas.{CanvasRenderer, ImageView, Texture}
+import io.youi.component.{Image, Renderer, Texture}
 import io.youi.hypertext.{Button, Canvas}
 import io.youi.hypertext.border.BorderStyle
 
@@ -11,9 +11,6 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 object BasicCanvasExample extends UIExampleScreen with CanvasScreen {
-  // TODO: remove once 4.4.4 is released
-  CanvasRenderer.PixiJSURL = "https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.4.3/pixi.min.js"
-
   override def name: String = "Basic Canvas Example"
   override def path: String = "/examples/basic_canvas.html"
 
@@ -30,19 +27,17 @@ object BasicCanvasExample extends UIExampleScreen with CanvasScreen {
     }
     ui.children += canvas
 
-    val renderer = CanvasRenderer(canvas)
+    val renderer = Renderer(canvas)
 
     val texture = Texture("/images/bunny.png")
-    val image = new ImageView(texture) {
+    val image = new Image(texture) {
       anchor.x := 0.5
       anchor.y := 0.5
-      position.x := 200.0
-      position.y := 150.0
+      position.x := 20.0
+      position.y := 15.0
     }
 
     renderer.children += image
-
-    renderer.start()
 
     ui.children += new Button {
       text := "Resize"

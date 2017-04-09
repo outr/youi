@@ -1,35 +1,44 @@
 package io.youi.example.ui.canvas
 
 import io.youi.example.ui.UIExampleScreen
-import io.youi._
 import io.youi.app.screen.UIScreen
-import io.youi.component.{Image, Renderer, Texture}
-import io.youi.hypertext.{Button, Canvas, HTMLContainer}
-import io.youi.hypertext.border.BorderStyle
+import io.youi.component.{Image, Texture}
+import io.youi.workflow._
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration._
 
 object BasicCanvasExample extends UIExampleScreen with UIScreen {
   override def name: String = "Basic Canvas Example"
   override def path: String = "/examples/basic_canvas.html"
 
   override protected def load(): Future[Unit] = super.load().map { _ =>
-    val texture = Texture("/images/bunny.png")
-    val image = new Image(texture) {
-      position.bottom := renderer.size.height - 10.0
-      position.right := renderer.size.width - 10.0
+    val texture = Texture("/images/icon.png")
+
+    renderer.children += new Image(texture) {     // Top-Left
+      position.left := 50.0
+      position.top := 50.0
     }
+    renderer.children += new Image(texture) {     // Top-Right
+      position.right := renderer.position.right - 50.0
+      position.top := 50.0
+    }
+    renderer.children += new Image(texture) {     // Bottom-Left
+      position.left := 50.0
+      position.bottom := renderer.position.bottom - 50.0
+    }
+    renderer.children += new Image(texture) {     // Bottom-Right
+      position.right := renderer.position.right - 50.0
+      position.bottom := renderer.position.bottom - 50.0
+    }
+    renderer.children += new Image(texture) {     // Center
+      position.center := renderer.position.center
+      position.middle := renderer.position.middle
 
-    renderer.children += image
-
-    ui.children += new Button {
-      text := "Resize"
-
-      event.click.attach { _ =>
-        renderer.size.width := 400.0
-        renderer.size.height := 400.0
-      }
+      forever {
+        rotation to 1.0 in 1.seconds andThen synchronous(rotation := 0.0)
+      }.start()
     }
   }
 }

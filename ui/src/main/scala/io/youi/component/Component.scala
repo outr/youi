@@ -22,6 +22,8 @@ trait Component extends Updates {
     lazy val bottom: Dep[Double, Double] = Dep(top, size.height)
   }
 
+  lazy val rotation: Var[Double] = prop(0.0, (d: Double) => instance.rotation = d * (2.0 * math.Pi))
+
   object scale {
     lazy val x: Var[Double] = Var(1.0)
     lazy val y: Var[Double] = Var(1.0)

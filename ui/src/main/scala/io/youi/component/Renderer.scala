@@ -19,6 +19,9 @@ class Renderer(canvas: Canvas) extends Container {
     noWebGL = false
   )
 
+  size.width := canvas.size.width()
+  size.height := canvas.size.height()
+
   canvas.delta.attach(update)
 
   override def update(delta: Double): Unit = {
@@ -30,13 +33,6 @@ class Renderer(canvas: Canvas) extends Container {
   override protected def updateSize(): Unit = {
     super.updateSize()
 
-    scribe.info(s"Resizing to: ${size.width()}x${size.height()}")
-//    canvas.size.width := size.width()
-//    canvas.size.height := size.height()
-//    canvas.element.width = size.width().toInt
-//    canvas.element.height = size.height().toInt
-//    systemRenderer.width = size.width().toInt
-//    systemRenderer.height = size.height().toInt
     systemRenderer.resize(math.round(size.width()).toInt, math.round(size.height()).toInt)
     canvas.updateSize()
   }

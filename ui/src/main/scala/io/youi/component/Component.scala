@@ -33,10 +33,10 @@ trait Component extends Updates {
       lazy val height: Var[Double] = Var(0.0)
     }
 
-    object width extends Var[Double](() => measured.width(), distinct = true, cache = true) {
+    object width extends Var[Double](() => measured.width()) {
       def reset(): Unit = set(measured.width())
     }
-    object height extends Var[Double](() => measured.height(), distinct = true, cache = true) {
+    object height extends Var[Double](() => measured.height()) {
       def reset(): Unit = set(measured.height())
     }
 

@@ -16,4 +16,11 @@ class Image extends Component {
     lazy val x: Var[Double] = prop(instance.anchor.x, instance.anchor.x = _)
     lazy val y: Var[Double] = prop(instance.anchor.y, instance.anchor.y = _)
   }
+
+  size.measured.width := texture().width()
+  size.measured.height := texture().height()
+
+  // Configure auto-scaling to size
+  scale.x := size.width() / size.measured.width()
+  scale.y := size.height() / size.measured.height()
 }

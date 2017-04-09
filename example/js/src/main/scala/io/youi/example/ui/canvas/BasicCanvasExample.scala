@@ -31,10 +31,8 @@ object BasicCanvasExample extends UIExampleScreen with CanvasScreen {
 
     val texture = Texture("/images/bunny.png")
     val image = new Image(texture) {
-      anchor.x := 0.5
-      anchor.y := 0.5
-      position.x := 20.0
-      position.y := 15.0
+      position.bottom := renderer.size.height - 10.0
+      position.right := renderer.size.width - 10.0
     }
 
     renderer.children += image
@@ -45,10 +43,6 @@ object BasicCanvasExample extends UIExampleScreen with CanvasScreen {
       event.click.attach { _ =>
         renderer.size.width := 400.0
         renderer.size.height := 400.0
-//        renderer.systemRenderer.resize(400, 400)
-//        AnimationFrame.nextFrame {
-//          canvas.updateSize()
-//        }
       }
     }
   }

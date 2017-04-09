@@ -4,7 +4,8 @@ package io.youi
   * Color provides a simple wrapper around RGBA color information.
   */
 case class Color(red: Double = 0.0, green: Double = 0.0, blue: Double = 0.0, alpha: Double = 0.0) {
-  def toCSS: String = Color.toCSS(red, green, blue, alpha)
+  lazy val css: String = Color.toCSS(red, green, blue, alpha)
+  lazy val long: Long = Color.toLong(red, green, blue, alpha)
   override def toString: String = s"Color(red = $red, green = $green, blue = $blue, alpha = $alpha)"
 }
 
@@ -166,6 +167,14 @@ object Color {
   )
 
   /**
+    * Creates a Long representation of the RGBA values.
+    */
+  def toLong(red: Double, green: Double, blue: Double, alpha: Double): Long = {
+    val hex = toHex(red, green, blue, Some(alpha), includeHash = false)
+    java.lang.Long.parseLong(hex, 16)
+  }
+
+  /**
     * Creates a new Color instance from a hex value. It is flexible for 3-digit and 6-digit with or without a leading
     * hash.
     *
@@ -188,9 +197,18 @@ object Color {
 
   def toHex(color: Color): String = toHex(color.red, color.green, color.blue)
 
-  def toHex(red: Double, green: Double, blue: Double): String = {
-    f"#${(red * 255.0).toInt}%02x${(green * 255.0).toInt}%02x${(blue * 255.0).toInt}%02x"
+  def toHex(red: Double, green: Double, blue: Double, alpha: Option[Double] = None, includeHash: Boolean = true): String = {
+    var hex = s"${hexify(red)}${hexify(green)}${hexify(blue)}"
+    alpha.foreach { a =>
+      hex = s"$hex${hexify(a)}"
+    }
+    if (includeHash) {
+      hex = s"#$hex"
+    }
+    hex
   }
+
+  private def hexify(d: Double): String = f"${math.floor(d * 255.0).toInt}%02x"
 
   def toCSS(red: Double, green: Double, blue: Double, alpha: Double): String = {
     def i(d: Double): Int = math.round(d * 255.0).toInt

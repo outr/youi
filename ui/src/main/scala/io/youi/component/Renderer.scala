@@ -1,8 +1,9 @@
 package io.youi.component
 
 import com.outr.pixijs._
-import io.youi.dom
+import io.youi.{Color, dom}
 import io.youi.hypertext.Canvas
+import reactify.Var
 
 import scala.concurrent.Future
 
@@ -11,13 +12,15 @@ class Renderer(canvas: Canvas) extends Container {
     width = canvas.size.width.toInt,
     height = canvas.size.height.toInt,
     options = new RendererOptions {
-      backgroundColor = 0x1099bb
       view = canvas.element
+      backgroundColor = 0xffffff
       autoResize = true
       antialias = true
     },
     noWebGL = false
   )
+
+  val backgroundColor: Var[Color] = Var.bound(Color.White, (c: Color) => systemRenderer.backgroundColor = c.long)
 
   size.width := canvas.size.width()
   size.height := canvas.size.height()

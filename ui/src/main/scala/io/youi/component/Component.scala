@@ -10,8 +10,8 @@ trait Component extends Updates {
   lazy val parent: Val[Option[Container]] = Var(None)
 
   object position {
-    lazy val x: Var[Double] = prop(instance.x, (d: Double) => instance.x = d)
-    lazy val y: Var[Double] = prop(instance.y, (d: Double) => instance.y = d)
+    lazy val x: Var[Double] = Var(instance.x)
+    lazy val y: Var[Double] = Var(instance.y)
 
     lazy val left: Var[Double] = x
     lazy val center: Dep[Double, Double] = Dep(left, size.width / 2.0)
@@ -43,9 +43,11 @@ trait Component extends Updates {
     }
 
     lazy val center: Val[Double] = Val(width / 2.0)
-    lazy val middle: Val[Double] = Val(height / 2.0)
+    lazy val middle: Val[Double] = Val(height / 2.0)    // TODO: diagnose why this isn't being updated properly
   }
 
+  position.x.on(updateSize())
+  position.y.on(updateSize())
   size.width.attach(_ => updateSize())
   size.height.attach(_ => updateSize())
   scale.x.attach(_ => updateSize())
@@ -60,6 +62,10 @@ trait Component extends Updates {
   protected def updateSize(): Unit = {
     instance.width = size.width()
     instance.height = size.height()
+    instance.pivot.x = size.width() / 2.0
+    instance.pivot.y = size.height() / 2.0
+    instance.position.x = position.x() + (size.width() / 2.0)
+    instance.position.y = position.y() + (size.height() / 2.0)
     instance.scale.x = scale.x()
     instance.scale.y = scale.y()
   }

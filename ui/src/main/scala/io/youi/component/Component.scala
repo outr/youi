@@ -33,6 +33,11 @@ trait Component extends Updates {
     lazy val y: Var[Double] = Var(1.0)
   }
 
+  object skew {
+    lazy val x: Var[Double] = Var(0.0)
+    lazy val y: Var[Double] = Var(0.0)
+  }
+
   object size {
     object measured {
       lazy val width: Var[Double] = Var(0.0)
@@ -56,6 +61,8 @@ trait Component extends Updates {
   size.height.on(dirty.set(true))
   scale.x.on(dirty.set(true))
   scale.y.on(dirty.set(true))
+  skew.x.on(dirty.set(true))
+  skew.y.on(dirty.set(true))
   rotation.on(dirty.set(true))
 
   protected[youi] def prop[T](get: => T, set: T => Unit): Var[T] = {
@@ -81,8 +88,8 @@ trait Component extends Updates {
       scaleX = scale.x(),
       scaleY = scale.y(),
       rotation = rotation() * (2.0 * math.Pi),
-      skewX = 0.0,
-      skewY = 0.0,
+      skewX = skew.x(),
+      skewY = skew.y(),
       pivotX = size.center(),
       pivotY = size.middle()
     )

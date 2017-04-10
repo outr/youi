@@ -3,7 +3,7 @@ package io.youi.hypertext
 import io.youi.hypertext.border.ComponentBorders
 import io.youi.hypertext.style.{ComponentOverflow, Overflow}
 import reactify.{Channel, State, Val, Var}
-import io.youi.{AbstractComponent, Color}
+import io.youi.Color
 import org.scalajs.dom._
 import org.scalajs.dom.html.Element
 import org.scalajs.dom.raw.Event

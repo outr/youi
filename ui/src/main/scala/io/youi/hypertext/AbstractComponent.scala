@@ -1,7 +1,8 @@
-package io.youi
+package io.youi.hypertext
 
-import reactify._
 import io.youi.hypertext.style.{ColorProperties, Position}
+import io.youi.{Unique, Updates}
+import reactify._
 
 trait AbstractComponent extends Updates {
   lazy val id: Var[String] = Var(Unique(length = 8, characters = Unique.LettersLower))

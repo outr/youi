@@ -4,7 +4,7 @@ import io.youi._
 import io.youi.hypertext.border.BorderStyle
 import io.youi.hypertext.style.Overflow
 import io.youi.hypertext.{Button, Component, Container}
-import io.youi.layout.GridLayout
+import io.youi.hypertext.layout.GridLayout
 import reactify._
 
 import scala.concurrent.ExecutionContext.Implicits.global

@@ -1,6 +1,6 @@
-package io.youi.layout
+package io.youi.hypertext.layout
 
-import io.youi.{AbstractComponent, AbstractContainer}
+import io.youi.hypertext.{AbstractComponent, AbstractContainer}
 
 /**
   * Layouts can be defined and connected to an AbstractContainer to manage the layout of the children. By default no

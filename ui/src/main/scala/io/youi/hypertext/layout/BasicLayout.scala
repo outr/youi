@@ -1,6 +1,6 @@
-package io.youi.layout
+package io.youi.hypertext.layout
 
-import io.youi.{AbstractComponent, AbstractContainer}
+import io.youi.hypertext.{AbstractComponent, AbstractContainer}
 
 abstract class BasicLayout(updateOnParentResize: Boolean = false,
                            updateOnChildResize: Boolean = false) extends Layout with (Vector[AbstractComponent] => Unit) {

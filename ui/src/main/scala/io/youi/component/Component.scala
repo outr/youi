@@ -55,6 +55,11 @@ trait Component extends Updates {
     lazy val middle: Val[Double] = Val(height / 2.0)    // TODO: diagnose why this isn't being updated properly
   }
 
+  object pivot {
+    lazy val x: Var[Double] = Var(size.center())
+    lazy val y: Var[Double] = Var(size.middle())
+  }
+
   position.x.on(dirty.set(true))
   position.y.on(dirty.set(true))
   size.width.on(dirty.set(true))
@@ -83,15 +88,15 @@ trait Component extends Updates {
     instance.width = size.width()
     instance.height = size.height()
     instance.setTransform(
-      x = position.x() + size.center(),
-      y = position.y() + size.middle(),
+      x = position.x() + pivot.x(),
+      y = position.y() + pivot.y(),
       scaleX = scale.x(),
       scaleY = scale.y(),
       rotation = rotation() * (2.0 * math.Pi),
       skewX = skew.x(),
       skewY = skew.y(),
-      pivotX = size.center(),
-      pivotY = size.middle()
+      pivotX = pivot.x(),
+      pivotY = pivot.y()
     )
   }
 }

@@ -37,7 +37,7 @@ object BasicCanvasExample extends UIExampleScreen with UIScreen {
       position.middle := renderer.position.middle
 
       forever {
-        rotation to 1.0 in 1.seconds andThen synchronous(rotation := 0.0)
+        rotation to 1.0 in 1.seconds andThen(rotation := 0.0)
       }.start()
     }
   }

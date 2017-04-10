@@ -10,6 +10,12 @@ package object workflow {
   implicit def future2Task(future: => Future[Unit]): Task = new Task {
     override protected def run(): Future[Unit] = future
   }
+  implicit def f2Task(f: => Unit): Task = new Task {
+    override protected def run(): Future[Unit] = {
+      f
+      Future.successful(())
+    }
+  }
 
   implicit class StateChannelWorkflow(state: StateChannel[Double]) {
     def to(destination: => Double): PartialAnimate = PartialAnimate(
@@ -22,7 +28,7 @@ package object workflow {
   def parallel(tasks: Task*): Parallel = new Parallel(tasks.toList)
   def sequential(tasks: Task*): Sequential = new Sequential(tasks.toList)
   def sleep(duration: FiniteDuration): Sleep = new Sleep(duration)
-  def action(f: => Future[Unit]): Action = Action(f)
+  def asynchronous(f: => Future[Unit]): Action = Action(f)
   def synchronous(f: => Unit): Action = Action {
     f
     Future.successful(())

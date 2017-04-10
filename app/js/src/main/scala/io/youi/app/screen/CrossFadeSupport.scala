@@ -15,7 +15,7 @@ trait CrossFadeSupport extends ScreenManager {
 
   override protected def beforeScreenChange(oldScreen: Screen, newScreen: Screen): Future[Unit] = {
     if (crossFadeElement.style.visibility != "visible") {
-      val workflow =  synchronous {
+      val workflow = synchronous {
         crossFadeElement.style.visibility = "visible"
         crossFadeElement.style.opacity = "0.0"
       }

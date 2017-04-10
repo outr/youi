@@ -33,8 +33,8 @@ class Renderer(canvas: Canvas) extends Container {
     systemRenderer.render(instance)
   }
 
-  override protected def updateSize(): Unit = {
-    super.updateSize()
+  override protected def updateTransform(): Unit = {
+    super.updateTransform()
 
     systemRenderer.resize(math.round(size.width()).toInt, math.round(size.height()).toInt)
     canvas.updateSize()

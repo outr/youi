@@ -1,11 +1,15 @@
 package io.youi.component
 
+import java.util.concurrent.atomic.AtomicBoolean
+
 import com.outr.pixijs._
 import io.youi.Updates
 import reactify.{Dep, Val, Var}
 
 trait Component extends Updates {
   protected[component] def instance: PIXI.Container
+
+  private val dirty = new AtomicBoolean(false)
 
   lazy val parent: Val[Option[Container]] = Var(None)
 
@@ -22,7 +26,7 @@ trait Component extends Updates {
     lazy val bottom: Dep[Double, Double] = Dep(top, size.height)
   }
 
-  lazy val rotation: Var[Double] = prop(0.0, (d: Double) => instance.rotation = d * (2.0 * math.Pi))
+  lazy val rotation: Var[Double] = Var(0.0)
 
   object scale {
     lazy val x: Var[Double] = Var(1.0)
@@ -46,12 +50,13 @@ trait Component extends Updates {
     lazy val middle: Val[Double] = Val(height / 2.0)    // TODO: diagnose why this isn't being updated properly
   }
 
-  position.x.on(updateSize())
-  position.y.on(updateSize())
-  size.width.attach(_ => updateSize())
-  size.height.attach(_ => updateSize())
-  scale.x.attach(_ => updateSize())
-  scale.y.attach(_ => updateSize())
+  position.x.on(dirty.set(true))
+  position.y.on(dirty.set(true))
+  size.width.on(dirty.set(true))
+  size.height.on(dirty.set(true))
+  scale.x.on(dirty.set(true))
+  scale.y.on(dirty.set(true))
+  rotation.on(dirty.set(true))
 
   protected[youi] def prop[T](get: => T, set: T => Unit): Var[T] = {
     val v = Var[T](get)
@@ -59,14 +64,27 @@ trait Component extends Updates {
     v
   }
 
-  protected def updateSize(): Unit = {
+  override def update(delta: Double): Unit = {
+    if (dirty.compareAndSet(true, false)) {
+      updateTransform()
+    }
+
+    super.update(delta)
+  }
+
+  protected def updateTransform(): Unit = {
     instance.width = size.width()
     instance.height = size.height()
-    instance.pivot.x = size.width() / 2.0
-    instance.pivot.y = size.height() / 2.0
-    instance.position.x = position.x() + (size.width() / 2.0)
-    instance.position.y = position.y() + (size.height() / 2.0)
-    instance.scale.x = scale.x()
-    instance.scale.y = scale.y()
+    instance.setTransform(
+      x = position.x() + size.center(),
+      y = position.y() + size.middle(),
+      scaleX = scale.x(),
+      scaleY = scale.y(),
+      rotation = rotation() * (2.0 * math.Pi),
+      skewX = 0.0,
+      skewY = 0.0,
+      pivotX = size.center(),
+      pivotY = size.middle()
+    )
   }
 }

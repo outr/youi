@@ -9,7 +9,7 @@ scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 
 val scribeVersion = "1.4.2"
 val powerScalaVersion = "2.0.5"
-val reactifyVersion = "1.4.7"
+val reactifyVersion = "1.4.8"
 val akkaVersion = "2.4.17"
 val scalaJSDOM = "0.9.1"
 val httpAsyncClientVersion = "4.1.3"

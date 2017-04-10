@@ -33,15 +33,39 @@ YouI is broken out into modules of functionality to minimize the dependencies re
 
 ## Features for 1.0.0 (In-Progress)
 
-* [ ] Integration of basic HTML components for UI (Scala.js)
+* [ ] Optimization module
+    * [ ] CSS merging, cleanup, minification, and optimization support.
+    * [ ] HTML minification and optimization support.
+    * [ ] Image validator and optimizer for production deployment.
+* [ ] HTML caching in Local Storage for offline and faster cached loading
+* [ ] Convenience functionality for deploying native applications
+    * [ ] Windows
+    * [ ] Mac
+    * [ ] Linux
+    * [ ] iOS
+    * [ ] Android
+    
+## Features for 0.4.0 (Future)
+
+* [ ] Major cleanup and simplification of writing a web application
+    * [ ] Provide simple classes to extend for client, server, and shared
+    * [ ] SBT plugin to simplify build setup (especially management and sharing of generated JS)
+    * [ ] Ability to create an app with only three classes (client, server, and shared)
+    * [ ] Create a template project (maybe Giter8)
+    
+## Features for 0.3.0 (In-Progress)
+
+* [X] Optimization: JavaScript merging, cleanup, minification, obfuscation, and optimization support.
+* [X] Simplify connectivity / communication functionality
+* [X] Hierarchical `update` calls to allow scoping of animations, graphical layout, and other functionality.
+* [X] Complete re-write of JavaScript error logging and support.
+* [X] Integration of basic HTML components for UI (Scala.js)
     * [X] Button
     * [X] Container
     * [X] ImageView
     * [X] Label
     * [X] TextInput
     * [X] TextArea
-    * [ ] Full event support
-    * [ ] Styling and Theme functionality
 * [ ] Integration of Pixi.js for more advanced UI functionality (Scala.js)
     * [ ] Canvas / Integration with HTML
     * [ ] Shapes
@@ -56,36 +80,13 @@ YouI is broken out into modules of functionality to minimize the dependencies re
     * [X] Sleep
     * [X] Easings integration
     * [X] DSL
+* [ ] Snap Layout Management (ex. `snap(img1).left.to(img2).right`)
 * [ ] Layout Managers
     * [X] Core Support
     * [X] BoxLayout
     * [X] GridLayout
     * [X] FlowLayout
-    * [ ] SnapLayout
     * [ ] TableLayout
-* [ ] Optimization module
-    * [X] JavaScript merging, cleanup, minification, obfuscation, and optimization support.
-    * [ ] CSS merging, cleanup, minification, and optimization support.
-    * [ ] HTML minification and optimization support.
-    * [ ] Image validator and optimizer for production deployment.
-* [ ] HTML caching in Local Storage for offline and faster cached loading
-* [ ] Convenience functionality for deploying native applications
-    * [ ] Windows
-    * [ ] Mac
-    * [ ] Linux
-    * [ ] iOS
-    * [ ] Android
-    
-## Features for 0.3.0 (In-Progress)
-
-* [ ] Major cleanup and simplification of writing a web application
-    * [X] Simplify connectivity / communication functionality
-    * [ ] Provide simple classes to extend for client, server, and shared
-    * [ ] SBT plugin to simplify build setup (especially management and sharing of generated JS)
-    * [ ] Ability to create an app with only three classes (client, server, and shared)
-    * [ ] Create a template project (maybe Giter8)
-* [X] Hierarchical `update` calls to allow scoping of animations, graphical layout, and other functionality.
-* [X] Complete re-write of JavaScript error logging and support.
 
 ## Features for 0.2.0 (Released 2017.02.27)
 

@@ -37,7 +37,7 @@ class ClientConnectivity(connectivity: ApplicationConnectivity, application: Cli
     }
     val url = URL(s"$protocol://${window.location.host}${connectivity.path}")
     webSocket := Some(WebSocketUtil.connect(url, connection))
-    AnimationFrame.every(30.seconds) {
+    AnimationFrame.every(30.seconds, allowBackgrounding = false) {
       ping()
     }
   }

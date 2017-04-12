@@ -123,13 +123,8 @@ class CommunicationInternal private[communication](communication: Communication)
   def onInvocation[T](invocationId: Int)(f: CommunicationMessage => T): Future[T] = synchronized {
     val promise = Promise[T]
     val handler: CommunicationMessage => Unit = (m: CommunicationMessage) => m.error match {
-      case Some(error) => {
-        promise.failure(new CommunicationException(error))
-      }
-      case None => {
-        val t = f(m)
-        promise.success(f(m))
-      }
+      case Some(error) => promise.failure(new CommunicationException(error))
+      case None => promise.success(f(m))
     }
     queue += invocationId -> handler
     promise.future

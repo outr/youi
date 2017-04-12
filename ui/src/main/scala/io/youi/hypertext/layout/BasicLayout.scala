@@ -1,9 +1,10 @@
 package io.youi.hypertext.layout
 
 import io.youi.hypertext.{AbstractComponent, AbstractContainer}
+import reactify.Listener
 
 abstract class BasicLayout(updateOnParentResize: Boolean = false,
-                           updateOnChildResize: Boolean = false) extends Layout with (Vector[AbstractComponent] => Unit) {
+                           updateOnChildResize: Boolean = false) extends Layout with Listener[Vector[AbstractComponent]] {
   private var parent: Option[AbstractContainer[AbstractComponent]] = None
 
   private lazy val resizeListener = (d: Double) => {
@@ -14,7 +15,7 @@ abstract class BasicLayout(updateOnParentResize: Boolean = false,
 
   override protected def connect[C <: AbstractComponent](container: AbstractContainer[C]): Unit = {
     if (parent.nonEmpty) throw new RuntimeException(s"This layout is already attached to another container (${parent.get}). A Layout instance can only be connected to one container.")
-    container.children.attachAndFire(this)
+    container.children.observe(this.asInstanceOf[Listener[Vector[C]]])
     if (updateOnParentResize) {
       container.size.actual.width.attach(resizeListener)
       container.size.actual.height.attach(resizeListener)
@@ -23,7 +24,7 @@ abstract class BasicLayout(updateOnParentResize: Boolean = false,
   }
 
   override protected def disconnect[C <: AbstractComponent](container: AbstractContainer[C]): Unit = {
-    container.children.detach(this)
+    container.children.detach(this.asInstanceOf[Listener[Vector[C]]])
     if (updateOnParentResize) {
       container.size.actual.width.detach(resizeListener)
       container.size.actual.height.detach(resizeListener)

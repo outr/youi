@@ -22,7 +22,7 @@ trait Updates {
     var totalElapsed = 0.0
 
     if (allowBackgrounding) {
-      var listener: Double => Unit = null
+      var listener: Listener[Double] = null
       listener = delta.attach { d =>
         elapsed += d
         totalElapsed += d

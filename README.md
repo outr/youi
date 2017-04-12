@@ -69,10 +69,11 @@ YouI is divided into modules of functionality to minimize the dependencies requi
     * [X] TextArea
 * [ ] Integration of Pixi.js for more advanced UI functionality (Scala.js)
     * [X] Canvas / Integration with HTML
+    * [X] Events
+    * [X] Container
     * [ ] Image
     * [ ] Shapes
     * [ ] Text
-    * [ ] Events
 * [X] Animation and workflow functionality
     * [X] Task
     * [X] Action

@@ -1,13 +1,15 @@
 package io.youi.component
 
 import com.outr.pixijs._
+import io.youi.component.event.Events
 import io.youi.{Color, dom}
 import io.youi.hypertext.Canvas
-import reactify.Var
+import org.scalajs.dom.KeyboardEvent
+import reactify.{Channel, Var}
 
 import scala.concurrent.Future
 
-class Renderer(canvas: Canvas) extends Container {
+class Renderer(val canvas: Canvas) extends Container {
   private val systemRenderer: PIXI.SystemRenderer = PIXI.autoDetectRenderer(
     width = canvas.size.width.toInt,
     height = canvas.size.height.toInt,
@@ -46,4 +48,12 @@ object Renderer {
   lazy val Loaded: Future[Unit] = dom.addScript(PixiJSURL)
 
   def apply(canvas: Canvas): Renderer = new Renderer(canvas)
+}
+
+class RendererEvents(renderer: Renderer) extends Events(renderer) {
+  object key {
+    def down: Channel[KeyboardEvent] = renderer.canvas.event.key.down
+    def press: Channel[KeyboardEvent] = renderer.canvas.event.key.press
+    def up: Channel[KeyboardEvent] = renderer.canvas.event.key.up
+  }
 }

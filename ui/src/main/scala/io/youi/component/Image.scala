@@ -12,11 +12,6 @@ class Image extends Component {
 
   lazy val texture: Var[Texture] = prop(new Texture(instance.texture), (t: Texture) => instance.texture = t.instance)
 
-  object anchor {
-    lazy val x: Var[Double] = prop(instance.anchor.x, instance.anchor.x = _)
-    lazy val y: Var[Double] = prop(instance.anchor.y, instance.anchor.y = _)
-  }
-
   size.measured.width := texture().width()
   size.measured.height := texture().height()
 

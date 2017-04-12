@@ -4,8 +4,8 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 import com.outr.pixijs._
 import io.youi.Updates
-import io.youi.component.event.MouseEvent
-import reactify.{Channel, Dep, Val, Var}
+import io.youi.component.event.Events
+import reactify.{Dep, Val, Var}
 
 trait Component extends Updates {
   protected[component] def instance: PIXI.Container
@@ -14,9 +14,9 @@ trait Component extends Updates {
 
   lazy val parent: Val[Option[Container]] = Var(None)
 
-  val interactive: Var[Boolean] = Var.bound(true, (b: Boolean) => instance.interactive = b)
+  val interactive: Var[Boolean] = Var.bound(true, (b: Boolean) => instance.interactive = b, setImmediately = true)
 
-  val click: Channel[MouseEvent] = Channel[MouseEvent]
+  lazy val event: Events = new Events(this)
 
   object position {
     lazy val x: Var[Double] = Var(instance.x)
@@ -65,8 +65,6 @@ trait Component extends Updates {
     lazy val y: Var[Double] = Var(size.middle())
   }
 
-  instance.interactive = true
-
   position.x.on(dirty.set(true))
   position.y.on(dirty.set(true))
   size.width.on(dirty.set(true))
@@ -76,10 +74,6 @@ trait Component extends Updates {
   skew.x.on(dirty.set(true))
   skew.y.on(dirty.set(true))
   rotation.on(dirty.set(true))
-
-  instance.on("click", (event: PIXI.interaction.InteractionEvent) => {
-    click := new MouseEvent(Component.this, event)
-  })
 
   protected[youi] def prop[T](get: => T, set: T => Unit): Var[T] = {
     val v = Var[T](get)

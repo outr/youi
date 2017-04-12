@@ -19,7 +19,7 @@ object BasicCanvasExample extends UIExampleScreen with UIScreen {
     renderer.children += new Image(texture) {     // Top-Left
       position.left := 50.0
       position.top := 50.0
-      click.attach { evt =>
+      event.click.attach { evt =>
         scribe.info(s"Clicked! ${evt.x}x${evt.y}")
       }
     }

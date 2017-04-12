@@ -18,13 +18,14 @@ environments but are still in heavy development.
 
 ## Modules
 
-YouI is broken out into modules of functionality to minimize the dependencies required for your specific usage:
+YouI is divided into modules of functionality to minimize the dependencies required for your specific usage:
 
 * [app](app) - unification of client and server to write complete applications (Scala and Scala.js)
 * [client](client) - HTTP client for asynchronous request/response and restful support (Scala)
 * [communication](communication) - communication framework to provide type-safe communication between a client / server (Scala and Scala.js)
 * [core](core) - core features generally useful for web and HTTP (Scala and Scala.js)
 * [dom](dom) - features and functionality related to working with the browser's DOM (Scala.js)
+* [optimizer](optimizer) - HTML, JavaScript, and Image optimizations to reduce extra overhead from your application
 * [server](server) - base functionality for a web server (Scala)
 * [server-undertow](serverUndertow) - implementation of [server](server) using [Undertow](http://undertow.io/) (Scala)
 * [stream](stream) - streaming functionality for on-the-fly processing and modification of any XML or HTML content (Scala)
@@ -68,9 +69,9 @@ YouI is broken out into modules of functionality to minimize the dependencies re
     * [X] TextArea
 * [ ] Integration of Pixi.js for more advanced UI functionality (Scala.js)
     * [X] Canvas / Integration with HTML
+    * [ ] Image
     * [ ] Shapes
     * [ ] Text
-    * [ ] Image
     * [ ] Events
 * [X] Animation and workflow functionality
     * [X] Task

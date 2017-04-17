@@ -15,6 +15,10 @@ trait UIScreen extends Screen {
     UIScreen.renderer.size.height := ui.size.height
   }
 
+  override protected def load(): Future[Unit] = super.load().map(_ => createUI())
+
+  def createUI(): Unit
+
   override protected def activate(): Future[Unit] = super.activate().map { _ =>
     UIScreen.canvas.visible := true
   }

@@ -4,14 +4,13 @@ import io.youi.app.screen.UIScreen
 import io.youi.component.{Image, Texture}
 import io.youi.workflow._
 
-import scala.concurrent.Future
 import scala.concurrent.duration._
 
 object ImageExample extends UIExampleScreen with UIScreen {
   override def name: String = "Image Example"
   override def path: String = "/examples/image.html"
 
-  override protected def load(): Future[Unit] = super.load().map { _ =>
+  override def createUI(): Unit = {
     val texture = Texture("/images/icon.png")
 
     renderer.children += new Image(texture) {     // Top-Left

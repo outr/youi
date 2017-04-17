@@ -10,6 +10,7 @@ object HelloWorld extends UIExampleScreen with UIScreen {
   override def createUI(): Unit = {
     container.children += new Text {
       value := "Hello, World!"
+      font.size := 48.0
       position.center := renderer.position.center
       position.middle := renderer.position.middle
     }

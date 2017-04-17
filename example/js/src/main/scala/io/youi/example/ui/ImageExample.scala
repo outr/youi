@@ -1,44 +1,42 @@
 package io.youi.example.ui
 
-import reactify._
-import io.youi.UI
-import io.youi.hypertext.style.Image
-import io.youi.hypertext.ImageView
+import io.youi.app.screen.UIScreen
+import io.youi.component.{Image, Texture}
+import io.youi.workflow._
 
 import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration._
 
-object ImageExample extends UIExampleScreen {
+object ImageExample extends UIExampleScreen with UIScreen {
   override def name: String = "Image Example"
+  override def path: String = "/examples/image.html"
 
   override protected def load(): Future[Unit] = super.load().map { _ =>
-    val icon = Image("/images/icon.png")
-    container.children += new ImageView {    // Top-Left
-      image := icon
+    val texture = Texture("/images/icon.png")
+
+    renderer.children += new Image(texture) {     // Top-Left
       position.left := 50.0
       position.top := 50.0
     }
-    container.children += new ImageView {    // Top-Right
-      image := icon
-      position.right := UI.position.right - 50.0
+    renderer.children += new Image(texture) {     // Top-Right
+      position.right := renderer.position.right - 50.0
       position.top := 50.0
     }
-    container.children += new ImageView {    // Bottom-Left
-      image := icon
+    renderer.children += new Image(texture) {     // Bottom-Left
       position.left := 50.0
-      position.bottom := UI.position.bottom - 50.0
+      position.bottom := renderer.position.bottom - 50.0
     }
-    container.children += new ImageView {    // Bottom-Right
-      image := icon
-      position.right := UI.position.right - 50.0
-      position.bottom := UI.position.bottom - 50.0
+    renderer.children += new Image(texture) {     // Bottom-Right
+      position.right := renderer.position.right - 50.0
+      position.bottom := renderer.position.bottom - 50.0
     }
-    container.children += new ImageView {    // Center
-      image := icon
-      position.center := UI.position.center
-      position.middle := UI.position.middle
+    renderer.children += new Image(texture) {     // Center
+      position.center := renderer.position.center
+      position.middle := renderer.position.middle
+
+      forever {
+        rotation to 1.0 in 1.seconds andThen(rotation := 0.0)
+      }.start()
     }
   }
-
-  override def path: String = "/examples/images.html"
 }

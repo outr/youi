@@ -1,18 +1,18 @@
-package io.youi.example.ui
+package io.youi.example.ui.hypertext
 
-import io.youi._
 import io.youi.easing.Easing
-import io.youi.workflow._
-import io.youi.hypertext.{ImageView, Label}
+import io.youi.example.ui.UIExampleScreen
 import io.youi.hypertext.style.Image
+import io.youi.hypertext.{ImageView, Label}
+import io.youi.workflow._
+import io.youi.{Color, ui}
 
 import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 
 object AnimationExample extends UIExampleScreen {
-  override def name: String = "Animation Example"
-  override def path: String = "/examples/animation.html"
+  override def name: String = "HTML Animation Example"
+  override def path: String = "/examples/html/animation.html"
 
   override protected def load(): Future[Unit] = super.load().map { _ =>
     val icon = Image("/images/icon.png")

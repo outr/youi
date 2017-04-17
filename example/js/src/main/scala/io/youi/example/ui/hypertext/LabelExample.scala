@@ -1,15 +1,15 @@
-package io.youi.example.ui
+package io.youi.example.ui.hypertext
 
-import io.youi.{Color, _}
+import io.youi.example.ui.UIExampleScreen
 import io.youi.hypertext.Label
+import io.youi.{AnimationFrame, Color, ui}
 
 import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
 
 object LabelExample extends UIExampleScreen {
-  override def name: String = "Label Example"
+  override def name: String = "HTML Label Example"
 
-  override def path: String = "/examples/labels.html"
+  override def path: String = "/examples/html/labels.html"
 
   override def load(): Future[Unit] = super.load().map { _ =>
     container.children += new Label {

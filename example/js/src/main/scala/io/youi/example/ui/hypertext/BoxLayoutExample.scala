@@ -1,17 +1,16 @@
-package io.youi.example.ui
+package io.youi.example.ui.hypertext
 
-import io.youi._
+import io.youi.Color
+import io.youi.example.ui.UIExampleScreen
 import io.youi.hypertext.border.BorderStyle
+import io.youi.hypertext.layout.VerticalBoxLayout
 import io.youi.hypertext.style.Overflow
 import io.youi.hypertext.{Button, Component, Container}
-import io.youi.hypertext.layout.VerticalBoxLayout
-import reactify._
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 object BoxLayoutExample extends UIExampleScreen {
-  override def name: String = "BoxLayout Example"
+  override def name: String = "HTML BoxLayout Example"
 
   override protected def load(): Future[Unit] = super.load().map { _ =>
     val layoutContainer = new Container {
@@ -60,5 +59,5 @@ object BoxLayoutExample extends UIExampleScreen {
     border.radius := 5.0
   }
 
-  override def path: String = "/examples/boxlayout.html"
+  override def path: String = "/examples/html/boxlayout.html"
 }

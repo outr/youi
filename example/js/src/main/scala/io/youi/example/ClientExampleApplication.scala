@@ -4,12 +4,11 @@ import io.youi.UI
 import io.youi.app.{ClientApplication, ClientConnectivity}
 import io.youi.app.screen.CrossFadeSupport
 import io.youi.example.screen.{CommunicationScreen, LoginScreen}
-import io.youi.example.ui._
 
 import scala.scalajs.js.JSApp
 import org.scalajs.dom._
 import io.youi.dom._
-import io.youi.example.ui.canvas.BasicCanvasExample
+import io.youi.example.ui._
 
 import scala.concurrent.duration._
 
@@ -19,17 +18,17 @@ object ClientExampleApplication extends JSApp with ExampleApplication with Clien
 
   val uiExamples = UIExamples
 
-  val hello = HelloWorld
-  val animation = AnimationExample
-  val images = ImageExample
-  val label = LabelExample
-  val border = BorderExample
-  val boxLayout = BoxLayoutExample
-  val gridLayout = GridLayoutExample
-  val flowLayout = FlowLayoutExample
-  val virtual = VirtualSizeExample
+  val hello = hypertext.HelloWorld
+  val animation = hypertext.AnimationExample
+  val images = hypertext.ImageExample
+  val label = hypertext.LabelExample
+  val border = hypertext.BorderExample
+  val boxLayout = hypertext.BoxLayoutExample
+  val gridLayout = hypertext.GridLayoutExample
+  val flowLayout = hypertext.FlowLayoutExample
+  val virtual = hypertext.VirtualSizeExample
 
-  val canvasBasic = BasicCanvasExample
+  val uiImages = ImageExample
 
   def cc: ClientConnectivity = clientConnectivity(ClientExampleApplication.connectivity)
 

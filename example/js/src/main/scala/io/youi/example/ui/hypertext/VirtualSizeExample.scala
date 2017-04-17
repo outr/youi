@@ -1,16 +1,15 @@
-package io.youi.example.ui
+package io.youi.example.ui.hypertext
 
-import io.youi.VirtualSizeSupport
-import io.youi._
-import io.youi.hypertext.{ImageView, Label}
+import io.youi.example.ui.UIExampleScreen
 import io.youi.hypertext.style.Image
+import io.youi.hypertext.{ImageView, Label}
+import io.youi.{Color, VirtualSizeSupport, ui}
 
 import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
 
 object VirtualSizeExample extends VirtualSizeSupport with UIExampleScreen {
-  override def name: String = "Virtual Size Example"
-  override def path: String = "/examples/virtual.html"
+  override def name: String = "HTML Virtual Size Example"
+  override def path: String = "/examples/html/virtual.html"
 
   override protected def load(): Future[Unit] = super.load().map { _ =>
     container.children += new ImageView {

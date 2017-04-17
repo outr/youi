@@ -1,15 +1,13 @@
-package io.youi.example.ui
+package io.youi.example.ui.hypertext
 
-import reactify._
-import io.youi._
-import io.youi.example.screen.ExampleScreen
-import io.youi.hypertext.{BasicComponent, Button, Container}
+import io.youi.UI
+import io.youi.example.ui.UIExampleScreen
+import io.youi.hypertext.Button
 
 import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
 
 object HelloWorld extends UIExampleScreen {
-  override def name: String = "Hello World"
+  override def name: String = "HTML Hello World"
 
   override protected def load(): Future[Unit] = super.load().map { _ =>
     container.children += new Button {
@@ -23,5 +21,5 @@ object HelloWorld extends UIExampleScreen {
     }
   }
 
-  override def path: String = "/examples/hello.html"
+  override def path: String = "/examples/html/hello.html"
 }

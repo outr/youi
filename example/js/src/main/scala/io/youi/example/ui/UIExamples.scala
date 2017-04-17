@@ -6,7 +6,6 @@ import io.youi._
 import reactify._
 
 import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
 
 object UIExamples extends UIExampleScreen {
   override def name: String = "UI Examples"

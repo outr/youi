@@ -3,11 +3,12 @@ package io.youi.example.ui
 import io.youi.example.ClientExampleApplication
 import io.youi.hypertext.Button
 import io.youi._
+import io.youi.example.ui.hypertext.HTMLScreen
 import reactify._
 
 import scala.concurrent.Future
 
-object UIExamples extends UIExampleScreen {
+object UIExamples extends HTMLScreen {
   override def name: String = "UI Examples"
 
   override protected def load(): Future[Unit] = super.load().map { _ =>

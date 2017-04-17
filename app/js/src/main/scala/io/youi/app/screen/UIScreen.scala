@@ -1,7 +1,7 @@
 package io.youi.app.screen
 
 import io.youi._
-import io.youi.component.Renderer
+import io.youi.component.{Container, Renderer}
 import io.youi.hypertext.Canvas
 
 import scala.concurrent.Future
@@ -10,9 +10,14 @@ import scala.concurrent.ExecutionContext.Implicits.global
 trait UIScreen extends Screen {
   def renderer: Renderer = UIScreen.renderer
 
+  lazy val container: Container = new Container
+
   override protected def init(): Future[Unit] = super.init().flatMap(_ => Renderer.Loaded).map { _ =>
     UIScreen.renderer.size.width := ui.size.width
     UIScreen.renderer.size.height := ui.size.height
+
+    container.visible := false
+    renderer.children += container
   }
 
   override protected def load(): Future[Unit] = super.load().map(_ => createUI())
@@ -21,9 +26,11 @@ trait UIScreen extends Screen {
 
   override protected def activate(): Future[Unit] = super.activate().map { _ =>
     UIScreen.canvas.visible := true
+    container.visible := true
   }
 
   override protected def deactivate(): Future[Unit] = super.deactivate().map { _ =>
+    container.visible := false
     UIScreen.canvas.visible := false
   }
 }

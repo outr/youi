@@ -6,7 +6,7 @@ import io.youi.{AnimationFrame, Color, ui}
 
 import scala.concurrent.Future
 
-object LabelExample extends UIExampleScreen {
+object LabelExample extends HTMLScreen {
   override def name: String = "HTML Label Example"
 
   override def path: String = "/examples/html/labels.html"

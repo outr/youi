@@ -13,23 +13,23 @@ object ImageExample extends UIExampleScreen with UIScreen {
   override def createUI(): Unit = {
     val texture = Texture("/images/icon.png")
 
-    renderer.children += new Image(texture) {     // Top-Left
+    container.children += new Image(texture) {     // Top-Left
       position.left := 50.0
       position.top := 50.0
     }
-    renderer.children += new Image(texture) {     // Top-Right
+    container.children += new Image(texture) {     // Top-Right
       position.right := renderer.position.right - 50.0
       position.top := 50.0
     }
-    renderer.children += new Image(texture) {     // Bottom-Left
+    container.children += new Image(texture) {     // Bottom-Left
       position.left := 50.0
       position.bottom := renderer.position.bottom - 50.0
     }
-    renderer.children += new Image(texture) {     // Bottom-Right
+    container.children += new Image(texture) {     // Bottom-Right
       position.right := renderer.position.right - 50.0
       position.bottom := renderer.position.bottom - 50.0
     }
-    renderer.children += new Image(texture) {     // Center
+    container.children += new Image(texture) {     // Center
       position.center := renderer.position.center
       position.middle := renderer.position.middle
 

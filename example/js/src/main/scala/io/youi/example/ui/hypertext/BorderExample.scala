@@ -7,7 +7,7 @@ import io.youi.{Color, ui}
 
 import scala.concurrent.Future
 
-object BorderExample extends UIExampleScreen {
+object BorderExample extends HTMLScreen {
   override def name: String = "HTML Border Example"
 
   override protected def load(): Future[Unit] = super.load().map { _ =>

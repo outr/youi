@@ -7,7 +7,7 @@ import io.youi.{Color, VirtualSizeSupport, ui}
 
 import scala.concurrent.Future
 
-object VirtualSizeExample extends VirtualSizeSupport with UIExampleScreen {
+object VirtualSizeExample extends VirtualSizeSupport with HTMLScreen {
   override def name: String = "HTML Virtual Size Example"
   override def path: String = "/examples/html/virtual.html"
 

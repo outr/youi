@@ -10,7 +10,7 @@ import io.youi.{Color, ui}
 import scala.concurrent.Future
 import scala.concurrent.duration._
 
-object AnimationExample extends UIExampleScreen {
+object AnimationExample extends HTMLScreen {
   override def name: String = "HTML Animation Example"
   override def path: String = "/examples/html/animation.html"
 

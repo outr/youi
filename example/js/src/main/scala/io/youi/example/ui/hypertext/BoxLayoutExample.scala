@@ -9,7 +9,7 @@ import io.youi.hypertext.{Button, Component, Container}
 
 import scala.concurrent.Future
 
-object BoxLayoutExample extends UIExampleScreen {
+object BoxLayoutExample extends HTMLScreen {
   override def name: String = "HTML BoxLayout Example"
 
   override protected def load(): Future[Unit] = super.load().map { _ =>

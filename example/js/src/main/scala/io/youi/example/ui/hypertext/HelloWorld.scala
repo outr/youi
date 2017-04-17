@@ -6,7 +6,7 @@ import io.youi.hypertext.Button
 
 import scala.concurrent.Future
 
-object HelloWorld extends UIExampleScreen {
+object HelloWorld extends HTMLScreen {
   override def name: String = "HTML Hello World"
 
   override protected def load(): Future[Unit] = super.load().map { _ =>

@@ -18,17 +18,18 @@ object ClientExampleApplication extends JSApp with ExampleApplication with Clien
 
   val uiExamples = UIExamples
 
-  val hello = hypertext.HelloWorld
-  val animation = hypertext.AnimationExample
-  val images = hypertext.ImageExample
-  val label = hypertext.LabelExample
-  val border = hypertext.BorderExample
-  val boxLayout = hypertext.BoxLayoutExample
-  val gridLayout = hypertext.GridLayoutExample
-  val flowLayout = hypertext.FlowLayoutExample
-  val virtual = hypertext.VirtualSizeExample
+  val hello = HelloWorld
+  val images = ImageExample
 
-  val uiImages = ImageExample
+  val htmlHello = hypertext.HelloWorld
+  val htmlAnimation = hypertext.AnimationExample
+  val htmlImages = hypertext.ImageExample
+  val htmlLabel = hypertext.LabelExample
+  val htmlBorder = hypertext.BorderExample
+  val htmlBoxLayout = hypertext.BoxLayoutExample
+  val htmlGridLayout = hypertext.GridLayoutExample
+  val htmlFlowLayout = hypertext.FlowLayoutExample
+  val htmlVirtual = hypertext.VirtualSizeExample
 
   def cc: ClientConnectivity = clientConnectivity(ClientExampleApplication.connectivity)
 

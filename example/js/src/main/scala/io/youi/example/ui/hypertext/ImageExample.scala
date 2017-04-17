@@ -7,7 +7,7 @@ import io.youi.hypertext.style.Image
 
 import scala.concurrent.Future
 
-object ImageExample extends UIExampleScreen {
+object ImageExample extends HTMLScreen {
   override def name: String = "HTML Image Example"
 
   override protected def load(): Future[Unit] = super.load().map { _ =>

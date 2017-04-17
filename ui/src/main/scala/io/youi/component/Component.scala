@@ -15,6 +15,7 @@ trait Component extends Updates {
   lazy val parent: Val[Option[Container]] = Var(None)
 
   val interactive: Var[Boolean] = Var.bound(true, (b: Boolean) => instance.interactive = b, setImmediately = true)
+  val visible: Var[Boolean] = Var.bound(true, (b: Boolean) => instance.visible = b)
 
   lazy val event: Events = new Events(this)
 

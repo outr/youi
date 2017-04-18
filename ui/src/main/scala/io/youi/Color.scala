@@ -4,8 +4,9 @@ package io.youi
   * Color provides a simple wrapper around RGBA color information.
   */
 case class Color(red: Double = 0.0, green: Double = 0.0, blue: Double = 0.0, alpha: Double = 0.0) {
-  lazy val css: String = Color.toCSS(red, green, blue, alpha)
-  lazy val long: Long = Color.toLong(red, green, blue, alpha)
+  def css: String = Color.toCSS(red, green, blue, alpha)
+  def long: Long = Color.toLong(red, green, blue, alpha)
+  def hex: String = Color.toHex(red, green, blue)
   override def toString: String = s"Color(red = $red, green = $green, blue = $blue, alpha = $alpha)"
 }
 

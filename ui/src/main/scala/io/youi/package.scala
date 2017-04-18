@@ -1,11 +1,14 @@
 package io
 
+import io.youi.style.{ColorFill, Fill}
 import reactify.{Val, Var}
 
 import scala.language.implicitConversions
 
 package object youi {
   def ui: UI.type = UI
+
+  implicit def color2Fill(color: Color): Fill = ColorFill(color)
 
   implicit class NumericSize[T](t: T)(implicit n: Numeric[T]) {
     private val d = n.toDouble(t)

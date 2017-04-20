@@ -2,21 +2,22 @@ package io.youi.component
 
 import com.outr.pixijs.PIXI
 import io.youi._
-import io.youi.style.Fill
+import io.youi.style.{Fill, Theme}
 import reactify.Var
 
 class Text extends Component {
   override protected[component] lazy val instance: PIXI.Text = new PIXI.Text("")
+  override protected def defaultTheme: Theme = Text
 
   lazy val value: Var[String] = Var.bound(instance.text, (s: String) => instance.text = s)
 
-  lazy val breakWords: Var[Boolean] = Var.bound(false, (b: Boolean) => instance.style.breakWords = b, setImmediately = true)
+  lazy val breakWords: Var[Boolean] = Var.bound(theme.breakWords, (b: Boolean) => instance.style.breakWords = b, setImmediately = true)
   object dropShadow {
-    lazy val enabled: Var[Boolean] = Var.bound(false, (b: Boolean) => instance.style.dropShadow = b, setImmediately = true)
-    lazy val angle: Var[Double] = Var.bound(0.0, (d: Double) => instance.style.dropShadowAngle = d, setImmediately = true)
-    lazy val blur: Var[Double] = Var.bound(0.0, (d: Double) => instance.style.dropShadowBlur = d, setImmediately = true)
-    lazy val color: Var[Color] = Var.bound(Color.Black, (c: Color) => instance.style.dropShadowColor = c.hex, setImmediately = true)
-    lazy val distance: Var[Double] = Var.bound(0.0, (d: Double) => instance.style.dropShadowDistance = d, setImmediately = true)
+    val enabled: Var[Boolean] = Var.bound(theme.dropShadow.enabled, (b: Boolean) => instance.style.dropShadow = b, setImmediately = true)
+    val angle: Var[Double] = Var.bound(theme.dropShadow.angle, (d: Double) => instance.style.dropShadowAngle = d, setImmediately = true)
+    val blur: Var[Double] = Var.bound(theme.dropShadow.blur, (d: Double) => instance.style.dropShadowBlur = d, setImmediately = true)
+    val color: Var[Color] = Var.bound(theme.dropShadow.color, (c: Color) => instance.style.dropShadowColor = c.hex, setImmediately = true)
+    val distance: Var[Double] = Var.bound(theme.dropShadow.distance, (d: Double) => instance.style.dropShadowDistance = d, setImmediately = true)
   }
   lazy val fill: Var[Fill] = Var.bound(Color.Black, (f: Fill) => f.fill(instance.style), setImmediately = true)
   object font {
@@ -37,6 +38,7 @@ class Text extends Component {
   val wordWrap: Var[Boolean] = Var.bound(false, (b: Boolean) => instance.style.wordWrap = b, setImmediately = true)
   val wordWrapWidth: Var[Double] = Var.bound(size.width(), (d: Double) => instance.style.wordWrapWidth = d)
 
+  dropShadow
   value.on(measure())
   font.size.on(measure())
 
@@ -47,3 +49,5 @@ class Text extends Component {
     size.measured.height := metrics.height
   }
 }
+
+object Text extends Theme(Theme)

@@ -5,17 +5,20 @@ import java.util.concurrent.atomic.AtomicBoolean
 import com.outr.pixijs._
 import io.youi.Updates
 import io.youi.component.event.Events
+import io.youi.style.Theme
 import reactify.{Dep, Val, Var}
 
 trait Component extends Updates {
   protected[component] def instance: PIXI.Container
+  protected def defaultTheme: Theme
 
   private val dirty = new AtomicBoolean(false)
 
   lazy val parent: Val[Option[Container]] = Var(None)
 
-  val interactive: Var[Boolean] = Var.bound(true, (b: Boolean) => instance.interactive = b, setImmediately = true)
-  val visible: Var[Boolean] = Var.bound(true, (b: Boolean) => instance.visible = b)
+  val theme: Var[Theme] = Var(defaultTheme)
+  val interactive: Var[Boolean] = Var.bound(theme.interactive, (b: Boolean) => instance.interactive = b, setImmediately = true)
+  val visible: Var[Boolean] = Var.bound(theme.visible, (b: Boolean) => instance.visible = b)
 
   lazy val event: Events = new Events(this)
 

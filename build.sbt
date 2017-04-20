@@ -150,7 +150,11 @@ lazy val optimizer = project.in(file("optimizer"))
 
 lazy val app = crossProject.in(file("app"))
   .settings(
-    name := "youi-app"
+    name := "youi-app",
+    libraryDependencies ++= Seq(
+      "org.scalactic" %%% "scalactic" % "3.0.1",
+      "org.scalatest" %%% "scalatest" % "3.0.1" % "test"
+    )
   )
   .dependsOn(core, communication)
 

@@ -3,6 +3,7 @@ package io.youi.example
 import io.youi.UI
 import io.youi.app.{ClientApplication, ClientConnectivity}
 import io.youi.app.screen.CrossFadeSupport
+import io.youi.component.Renderer
 import io.youi.example.screen.{CommunicationScreen, LoginScreen}
 
 import scala.scalajs.js.JSApp
@@ -30,6 +31,8 @@ object ClientExampleApplication extends JSApp with ExampleApplication with Clien
   val htmlGridLayout = hypertext.GridLayoutExample
   val htmlFlowLayout = hypertext.FlowLayoutExample
   val htmlVirtual = hypertext.VirtualSizeExample
+
+  Renderer.PixiJSURL = pixiJS
 
   def cc: ClientConnectivity = clientConnectivity(ClientExampleApplication.connectivity)
 

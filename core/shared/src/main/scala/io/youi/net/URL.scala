@@ -64,6 +64,24 @@ case class URL(protocol: Protocol = Protocol.Http,
   lazy val encoded: URLParts = new URLParts(encoded = true)
   lazy val decoded: URLParts = new URLParts(encoded = false)
 
+  /**
+    * Encodes this URL as a complete path. This is primarily useful for caching to a file while avoiding duplicates with
+    * the same file name. For example:
+    *
+    * http://www.example.com/some/path/file.txt
+    *
+    * Would be encoded to:
+    *
+    * /www.example.com/some/path/file.txt
+    *
+    * @param includePort whether the port should be included as a part of the path. Defaults to false.
+    */
+  def asPath(includePort: Boolean = false): String = if (includePort) {
+    s"/$host/$port${path.encoded}"
+  } else {
+    s"/$host${path.encoded}"
+  }
+
   override def toString: String = encoded.asString
 
   class URLParts(encoded: Boolean) {

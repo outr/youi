@@ -1,5 +1,6 @@
 package io.youi.component
 import com.outr.pixijs.PIXI
+import io.youi.style.Theme
 import reactify.Var
 
 class Image extends Component {
@@ -9,6 +10,7 @@ class Image extends Component {
   }
 
   override protected[component] lazy val instance: PIXI.Sprite = new PIXI.Sprite(Texture.Empty.instance)
+  override protected def defaultTheme: Theme = Image
 
   lazy val texture: Var[Texture] = prop(new Texture(instance.texture), (t: Texture) => instance.texture = t.instance)
 
@@ -19,3 +21,5 @@ class Image extends Component {
   scale.x := size.width() / size.measured.width()
   scale.y := size.height() / size.measured.height()
 }
+
+object Image extends Theme(Theme)

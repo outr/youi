@@ -3,7 +3,7 @@ package io.youi.hypertext
 import io.youi.hypertext.border.ComponentBorders
 import io.youi.hypertext.style.{ComponentOverflow, Overflow}
 import reactify.{Channel, State, Val, Var}
-import io.youi.{AbstractComponent, Color}
+import io.youi.Color
 import org.scalajs.dom._
 import org.scalajs.dom.html.Element
 import org.scalajs.dom.raw.Event
@@ -49,16 +49,10 @@ trait Component extends AbstractComponent {
     v.attach { value =>
       set(value)
       if (mayCauseResize) {
-        onNextFrame(updateSize())
+        nextFrame(updateSize())
       }
     }
     v
-  }
-
-  protected def onNextFrame(f: => Unit): Unit = {
-    window.requestAnimationFrame((d: Double) => {
-      f
-    })
   }
 
   protected def events[E <: Event](eventType: String, stopPropagation: Boolean = false): Channel[E] = {
@@ -88,30 +82,30 @@ trait Component extends AbstractComponent {
     position.y.attach(d => element.style.top = s"${d}px")
     size.width.attach { d =>
       element.style.width = s"${d}px"
-      onNextFrame(updateSize())
+      nextFrame(updateSize())
     }
     size.height.attach { d =>
       element.style.height = s"${d}px"
-      onNextFrame(updateSize())
+      nextFrame(updateSize())
     }
     size.min.width.attach { d =>
       element.style.minWidth = s"${d}px"
-      onNextFrame(updateSize())
+      nextFrame(updateSize())
     }
     size.min.height.attach { d =>
       element.style.minHeight = s"${d}px"
-      onNextFrame(updateSize())
+      nextFrame(updateSize())
     }
     size.max.width.attach { d =>
       element.style.maxWidth = s"${d}px"
-      onNextFrame(updateSize())
+      nextFrame(updateSize())
     }
     size.max.height.attach { d =>
       element.style.maxHeight = s"${d}px"
-      onNextFrame(updateSize())
+      nextFrame(updateSize())
     }
     parent.attach { p =>
-      onNextFrame(updateSize())
+      nextFrame(updateSize())
     }
     rotation.attach(d => updateTransform())
     scale.x.attach(d => updateTransform())

@@ -1,9 +1,7 @@
 package io.youi.app
 
 import reactify._
-import io.youi.ErrorSupport
-import io.youi.communication.Communication
-import io.youi.http.Connection
+import io.youi.{Cache, CacheImplementation, ErrorSupport}
 
 import scala.language.experimental.macros
 
@@ -11,7 +9,8 @@ import scala.language.experimental.macros
   * Base trait to define shared client and server information. This trait must be extended in the shared code as a trait
   * and implemented in both client and server implementations.
   */
-trait YouIApplication extends ErrorSupport {
+trait YouIApplication extends ErrorSupport with CacheImplementation {
+  Cache.implementation = this
   YouIApplication.instance = Some(this)
 
   /**

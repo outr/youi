@@ -1,16 +1,21 @@
 package io.youi.app
 
-import io.youi.{ErrorSupport, JavaScriptError}
-import reactify.Channel
+import java.io.File
+
+import io.youi.{JavaScriptError, http}
+import reactify.{Channel, Var}
 import io.youi.http._
+import io.youi.net.URL
 import io.youi.server.Server
 import io.youi.server.handler.HttpHandler
 import net.sf.uadetector.UserAgentType
 import net.sf.uadetector.service.UADetectorServiceFactory
+import org.powerscala.io._
 
 trait ServerApplication extends YouIApplication with Server {
   val connected: Channel[Connection] = Channel[Connection]
   val disconnected: Channel[Connection] = Channel[Connection]
+  lazy val cacheDirectory: Var[File] = Var(new File(System.getProperty("user.home"), ".cache"))
 
   private var configuredEndPoints = Set.empty[ApplicationConnectivity]
   private lazy val userAgentParser = UADetectorServiceFactory.getResourceModuleParser
@@ -90,5 +95,17 @@ trait ServerApplication extends YouIApplication with Server {
       }
       httpConnection.webSocketSupport = connection
     }
+  }
+
+  // Creates a cached version of the URL and adds an explicit matcher to serve it
+  override def cached(url: URL): String = {
+    val path = url.asPath()
+    val directory = cacheDirectory()
+    val file = new File(directory, path)
+    file.getParentFile.mkdirs()
+    IO.stream(new java.net.URL(url.toString), file)
+    val content = Content.file(file)
+    handler.matcher(http.path.exact(path)).resource(content)
+    path
   }
 }

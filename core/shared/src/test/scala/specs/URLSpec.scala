@@ -82,5 +82,15 @@ class URLSpec extends WordSpec with Matchers {
         url.withPart("../2/test.html") should be(URL("http://www.youi.io/testing/2/test.html"))
       }
     }
+    "encoding to path" should {
+      "apply a complete path properly" in {
+        val url = URL("https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.5.0/pixi.min.js")
+        url.asPath() should be("/cdnjs.cloudflare.com/ajax/libs/pixi.js/4.5.0/pixi.min.js")
+      }
+      "apply a complete path with port properly" in {
+        val url = URL("https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.5.0/pixi.min.js")
+        url.asPath(includePort = true) should be("/cdnjs.cloudflare.com/443/ajax/libs/pixi.js/4.5.0/pixi.min.js")
+      }
+    }
   }
 }

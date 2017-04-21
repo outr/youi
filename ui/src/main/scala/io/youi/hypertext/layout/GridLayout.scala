@@ -1,5 +1,6 @@
-package io.youi.layout
-import io.youi.{AbstractComponent, AbstractContainer}
+package io.youi.hypertext.layout
+
+import io.youi.hypertext.{AbstractComponent, AbstractContainer}
 
 class GridLayout(columns: Int,
                  xOffset: Double = 0.0,

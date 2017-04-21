@@ -1,6 +1,6 @@
 package io.youi
 
-import reactify.Channel
+import reactify.{Channel, Listener}
 
 trait ErrorSupport {
   def error(t: Throwable): Unit = ErrorSupport.error := t
@@ -18,7 +18,7 @@ trait ErrorSupport {
 object ErrorSupport {
   val error: Channel[Throwable] = Channel[Throwable]
 
-  val defaultHandler: (Throwable) => Unit = error.attach {
+  val defaultHandler: Listener[Throwable] = error.attach {
     case exc: MessageException => scribe.error(exc.message)
     case t: Throwable => scribe.error(t)
   }

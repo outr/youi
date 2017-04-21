@@ -1,15 +1,14 @@
-package io.youi.example.ui
+package io.youi.example.ui.hypertext
 
-import io.youi._
+import io.youi.example.ui.UIExampleScreen
 import io.youi.hypertext.border.BorderStyle
 import io.youi.hypertext.{Container, Label}
-import reactify._
+import io.youi.{Color, ui}
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-object BorderExample extends UIExampleScreen {
-  override def name: String = "Border Example"
+object BorderExample extends HTMLScreen {
+  override def name: String = "HTML Border Example"
 
   override protected def load(): Future[Unit] = super.load().map { _ =>
     container.children += new Container {
@@ -36,5 +35,5 @@ object BorderExample extends UIExampleScreen {
     }
   }
 
-  override def path: String = "/examples/border.html"
+  override def path: String = "/examples/html/border.html"
 }

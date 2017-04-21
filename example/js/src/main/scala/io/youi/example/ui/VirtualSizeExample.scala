@@ -1,32 +1,30 @@
 package io.youi.example.ui
 
-import io.youi.VirtualSizeSupport
 import io.youi._
-import io.youi.hypertext.{ImageView, Label}
-import io.youi.hypertext.style.Image
+import io.youi.app.screen.UIScreen
+import io.youi.component.{Image, Text, Texture}
 
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
-
-object VirtualSizeExample extends VirtualSizeSupport with UIExampleScreen {
+object VirtualSizeExample extends UIExampleScreen with UIScreen with VirtualSizeSupport {
   override def name: String = "Virtual Size Example"
   override def path: String = "/examples/virtual.html"
 
-  override protected def load(): Future[Unit] = super.load().map { _ =>
-    container.children += new ImageView {
-      image := Image("/images/1024.jpg")
+  override def createUI(): Unit = {
+    virtualWidth := 1024.0
+    virtualHeight := 768.0
+
+    val texture = Texture("/images/1024.jpg")
+    container.children += new Image(texture) {
       position.left := 0.vx
       position.top := 0.vy
       size.width := 1024.vw
       size.height := 768.vh
     }
-    container.children += new Label {
-      text := "1024x768"
-      color := Color.White
-      font.family := "sans-serif"
+    container.children += new Text {
+      value := "1024x768"
+      fill := Color.White
       font.size := 66.5.vf
       position.left := 44.vx
-      position.middle := ui.position.middle
+      position.middle := container.position.middle
     }
   }
 }

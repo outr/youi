@@ -12,7 +12,7 @@ object ReverseClientExample {
   val connection: WebSocketClient = new WebSocketClient(URL("http://localhost:8080/communication"))
   val simple: ClientSimpleCommunication = Communication.create[ClientSimpleCommunication](connection)
 
-  def main(args: Array[String]): Unit = {
+  def mainDisabled(args: Array[String]): Unit = {
     connection.connect()
     try {
       val future = simple.reverse("This is a test!")

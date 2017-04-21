@@ -18,20 +18,21 @@ environments but are still in heavy development.
 
 ## Modules
 
-YouI is broken out into modules of functionality to minimize the dependencies required for your specific usage:
+YouI is divided into modules of functionality to minimize the dependencies required for your specific usage:
 
 * [app](app) - unification of client and server to write complete applications (Scala and Scala.js)
 * [client](client) - HTTP client for asynchronous request/response and restful support (Scala)
 * [communication](communication) - communication framework to provide type-safe communication between a client / server (Scala and Scala.js)
 * [core](core) - core features generally useful for web and HTTP (Scala and Scala.js)
 * [dom](dom) - features and functionality related to working with the browser's DOM (Scala.js)
+* [optimizer](optimizer) - HTML, JavaScript, and Image optimizations to reduce extra overhead from your application
 * [server](server) - base functionality for a web server (Scala)
 * [server-undertow](serverUndertow) - implementation of [server](server) using [Undertow](http://undertow.io/) (Scala)
 * [stream](stream) - streaming functionality for on-the-fly processing and modification of any XML or HTML content (Scala)
 * [template](template) - features for creating and managing templates for use in applications (Scala and Scala.js)
 * [ui](ui) - functionality for user-interface creation and management (Scala.js)
 
-## Features for 1.0.0 (In-Progress)
+## Features for 1.0.0 (Future)
 
 * [ ] Optimization module
     * [ ] CSS merging, cleanup, minification, and optimization support.
@@ -45,6 +46,23 @@ YouI is broken out into modules of functionality to minimize the dependencies re
     * [ ] iOS
     * [ ] Android
     
+## Features for 0.5.0 (Future)
+
+* [ ] Exhaustive feature integration from Pixi.js
+* [ ] Selectable Text in Canvas for copy/paste
+* [ ] TextInput in Canvas for editable editable text
+    * [ ] Editing features
+    * [ ] Caret with customization support
+    * [ ] Rich text segments
+    * [ ] Multi-line support or explicit single-line support
+* [ ] Snap Layout Management (ex. `snap(img1).left.to(img2).right`)
+* [ ] Layout managers for UI components derived from Snap
+    * [ ] GridLayout
+        * [ ] FormLayout
+    * [ ] StackLayout
+    * [ ] FlowLayout
+* [ ] Scrollbar support
+
 ## Features for 0.4.0 (Future)
 
 * [ ] Major cleanup and simplification of writing a web application
@@ -66,12 +84,13 @@ YouI is broken out into modules of functionality to minimize the dependencies re
     * [X] Label
     * [X] TextInput
     * [X] TextArea
-* [ ] Integration of Pixi.js for more advanced UI functionality (Scala.js)
-    * [ ] Canvas / Integration with HTML
-    * [ ] Shapes
-    * [ ] Text
-    * [ ] Image
-    * [ ] Events
+* [X] Integration of Pixi.js for more advanced UI functionality (Scala.js)
+    * [X] Canvas / Integration with HTML
+    * [X] Events
+    * [X] Container
+    * [X] Image
+    * [X] Text
+    * [X] Shapes
 * [X] Animation and workflow functionality
     * [X] Task
     * [X] Action
@@ -80,13 +99,11 @@ YouI is broken out into modules of functionality to minimize the dependencies re
     * [X] Sleep
     * [X] Easings integration
     * [X] DSL
-* [ ] Snap Layout Management (ex. `snap(img1).left.to(img2).right`)
-* [ ] Layout Managers
+* [X] Layout Managers
     * [X] Core Support
     * [X] BoxLayout
     * [X] GridLayout
     * [X] FlowLayout
-    * [ ] TableLayout
 
 ## Features for 0.2.0 (Released 2017.02.27)
 

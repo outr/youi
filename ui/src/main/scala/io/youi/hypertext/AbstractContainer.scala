@@ -1,6 +1,6 @@
-package io.youi
+package io.youi.hypertext
 
-import io.youi.layout.Layout
+import io.youi.hypertext.layout.Layout
 import reactify._
 
 trait AbstractContainer[C <: AbstractComponent] extends AbstractComponent {

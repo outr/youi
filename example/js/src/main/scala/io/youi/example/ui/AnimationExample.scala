@@ -1,45 +1,42 @@
 package io.youi.example.ui
 
 import io.youi._
-import io.youi.easing.Easing
 import io.youi.workflow._
-import io.youi.hypertext.{ImageView, Label}
-import io.youi.hypertext.style.Image
+import io.youi.app.screen.UIScreen
+import io.youi.component.{Image, Text, Texture}
+import io.youi.easing.Easing
 
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 
-object AnimationExample extends UIExampleScreen {
+object AnimationExample extends UIExampleScreen with UIScreen {
   override def name: String = "Animation Example"
   override def path: String = "/examples/animation.html"
 
-  override protected def load(): Future[Unit] = super.load().map { _ =>
-    val icon = Image("/images/icon.png")
-    val view = new ImageView {
-      image := icon
+  override def createUI(): Unit = {
+    val icon = Texture("/images/icon.png")
+    val image = new Image(icon) {
       position.left := 0.0
-      position.middle := ui.position.middle
+      position.middle := container.position.middle
     }
-    container.children += view
+    container.children += image
 
     var offset = 50.0
     Easing.map.toList.sortBy(_._1).foreach {
       case (name, easingFunction) => {
-        val label = new Label {
-          text := s"$name Example"
+        val label = new Text {
+          value := s"$name Example"
           font.size := 24.0
           font.family := "sans-serif"
           position.top := offset
           position.left := 50.0
-          color := Color.DarkSlateBlue
+          fill := Color.DarkSlateBlue
 
           offset += 25.0
         }
 
         forever(
           sequential(
-            label.position.right to ui.position.right - 50.0 in 5.seconds easing easingFunction,
+            label.position.right to container.position.right - 50.0 in 5.seconds easing easingFunction,
             sleep(2.seconds),
             label.position.left to 50.0 in 5.seconds easing easingFunction,
             sleep(2.seconds)
@@ -53,14 +50,14 @@ object AnimationExample extends UIExampleScreen {
     forever(
       parallel(
         sequential(
-          synchronous(view.rotation := 0.0),
-          view.rotation to 6.0 in 20.seconds
+          synchronous(image.rotation := 0.0),
+          image.rotation to 6.0 in 20.seconds
         ),
         sequential(
-          view.position.right to ui.position.right in 5.seconds easing Easing.bounceOut,
-          view.position.bottom to ui.position.bottom in 5.seconds easing Easing.bounceOut,
-          view.position.left to 0.0 in 5.seconds easing Easing.bounceOut,
-          view.position.top to 0.0 in 5.seconds easing Easing.bounceOut
+          image.position.right to container.position.right in 5.seconds easing Easing.bounceOut,
+          image.position.bottom to container.position.bottom in 5.seconds easing Easing.bounceOut,
+          image.position.left to 0.0 in 5.seconds easing Easing.bounceOut,
+          image.position.top to 0.0 in 5.seconds easing Easing.bounceOut
         )
       )
     ).start()

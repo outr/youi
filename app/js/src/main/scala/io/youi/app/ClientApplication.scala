@@ -6,6 +6,7 @@ import io.youi.ajax.AjaxRequest
 import io.youi.app.sourceMap.ErrorTrace
 import org.scalajs.dom._
 import io.youi.dom._
+import io.youi.net.URL
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.scalajs.js
@@ -42,4 +43,6 @@ trait ClientApplication extends YouIApplication with ScreenManager {
   }
 
   def autoReload: Boolean = true
+
+  override def cached(url: URL): String = url.asPath()
 }

@@ -1,6 +1,7 @@
 package io.youi.workflow
 
 import io.youi.{AnimationFrame, Updates}
+import reactify._
 
 import scala.concurrent.{Future, Promise}
 
@@ -9,24 +10,24 @@ trait Temporal extends Task {
 
   def run(): Future[Unit] = {
     val promise = Promise[Unit]
-    var f: Double => Unit = null
+    var listener: Listener[Double] = null
     var elapsed = 0.0
     var step = 0.0
-    f = (delta: Double) => {
+    listener = (delta: Double) => {
       elapsed += delta
       step += delta
       if (step >= stepSize) {
         update(delta, elapsed) match {
           case Conclusion.Continue => // Keep going
           case Conclusion.Finished => {
-            updates.delta.detach(f)
+            updates.delta.detach(listener)
             promise.success(())
           }
         }
         step = 0.0
       }
     }
-    updates.delta.attach(f)
+    updates.delta.observe(listener)
     promise.future
   }
 

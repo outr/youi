@@ -1,6 +1,6 @@
-package io.youi.layout
+package io.youi.hypertext.layout
 
-import io.youi.{AbstractComponent, AbstractContainer}
+import io.youi.hypertext.{AbstractComponent, AbstractContainer}
 import reactify._
 
 class VerticalBoxLayout(spacing: Double = 0.0,

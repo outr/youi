@@ -3,13 +3,13 @@ package io.youi.example
 import io.youi.UI
 import io.youi.app.{ClientApplication, ClientConnectivity}
 import io.youi.app.screen.CrossFadeSupport
+import io.youi.component.Renderer
 import io.youi.example.screen.{CommunicationScreen, LoginScreen}
-import io.youi.example.ui._
 
 import scala.scalajs.js.JSApp
 import org.scalajs.dom._
 import io.youi.dom._
-import io.youi.example.ui.canvas.BasicCanvasExample
+import io.youi.example.ui._
 
 import scala.concurrent.duration._
 
@@ -20,16 +20,23 @@ object ClientExampleApplication extends JSApp with ExampleApplication with Clien
   val uiExamples = UIExamples
 
   val hello = HelloWorld
-  val animation = AnimationExample
   val images = ImageExample
-  val label = LabelExample
-  val border = BorderExample
-  val boxLayout = BoxLayoutExample
-  val gridLayout = GridLayoutExample
-  val flowLayout = FlowLayoutExample
+  val animation = AnimationExample
+  val graphics = GraphicsExample
+  val text = TextExample
   val virtual = VirtualSizeExample
 
-  val canvasBasic = BasicCanvasExample
+  val htmlHello = hypertext.HelloWorld
+  val htmlAnimation = hypertext.AnimationExample
+  val htmlImages = hypertext.ImageExample
+  val htmlLabel = hypertext.LabelExample
+  val htmlBorder = hypertext.BorderExample
+  val htmlBoxLayout = hypertext.BoxLayoutExample
+  val htmlGridLayout = hypertext.GridLayoutExample
+  val htmlFlowLayout = hypertext.FlowLayoutExample
+  val htmlVirtual = hypertext.VirtualSizeExample
+
+  Renderer.PixiJSURL = pixiJS
 
   def cc: ClientConnectivity = clientConnectivity(ClientExampleApplication.connectivity)
 

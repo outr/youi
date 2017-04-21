@@ -1,15 +1,16 @@
 name := "youi"
 organization in ThisBuild := "io.youi"
-version in ThisBuild := "0.2.8"
+version in ThisBuild := "0.3.0-SNAPSHOT"
 scalaVersion in ThisBuild := "2.12.1"
 crossScalaVersions in ThisBuild := List("2.12.1", "2.11.8")
-sbtVersion in ThisBuild := "0.13.13"
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
+resolvers in ThisBuild += Resolver.sonatypeRepo("snapshots")
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 
+val pixiJsVersion = "4.5.0"
 val scribeVersion = "1.4.2"
 val powerScalaVersion = "2.0.5"
-val reactifyVersion = "1.4.8"
+val reactifyVersion = "1.5.1"
 val akkaVersion = "2.4.17"
 val scalaJSDOM = "0.9.1"
 val httpAsyncClientVersion = "4.1.3"
@@ -128,7 +129,7 @@ lazy val ui = project.in(file("ui"))
   .settings(
     name := "youi-ui",
     libraryDependencies ++= Seq(
-      "com.outr" %%% "scalajs-pixijs" % "4.4.3"
+      "com.outr" %%% "scalajs-pixijs" % pixiJsVersion
     )
   )
   .dependsOn(coreJS, dom)
@@ -149,7 +150,11 @@ lazy val optimizer = project.in(file("optimizer"))
 
 lazy val app = crossProject.in(file("app"))
   .settings(
-    name := "youi-app"
+    name := "youi-app",
+    libraryDependencies ++= Seq(
+      "org.scalactic" %%% "scalactic" % "3.0.1",
+      "org.scalatest" %%% "scalatest" % "3.0.1" % "test"
+    )
   )
   .dependsOn(core, communication)
 

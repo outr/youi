@@ -1,6 +1,5 @@
 package io.youi.example.ui.hypertext
 
-import io.youi.example.ui.UIExampleScreen
 import io.youi.hypertext.style.Image
 import io.youi.hypertext.{ImageView, Label}
 import io.youi.{Color, VirtualSizeSupport, ui}

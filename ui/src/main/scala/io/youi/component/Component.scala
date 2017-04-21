@@ -104,8 +104,8 @@ trait Component extends Updates {
       rotation = rotation() * (2.0 * math.Pi),
       skewX = skew.x(),
       skewY = skew.y(),
-      pivotX = pivot.x(),
-      pivotY = pivot.y()
+      pivotX = pivot.x() / scale.x(),
+      pivotY = pivot.y() / scale.y()
     )
   }
 }

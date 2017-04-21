@@ -61,6 +61,7 @@ YouI is divided into modules of functionality to minimize the dependencies requi
         * [ ] FormLayout
     * [ ] StackLayout
     * [ ] FlowLayout
+* [ ] Scrollbar support
 
 ## Features for 0.4.0 (Future)
 

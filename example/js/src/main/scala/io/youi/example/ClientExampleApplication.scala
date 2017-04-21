@@ -23,6 +23,7 @@ object ClientExampleApplication extends JSApp with ExampleApplication with Clien
   val images = ImageExample
   val animation = AnimationExample
   val graphics = GraphicsExample
+  val text = TextExample
 
   val htmlHello = hypertext.HelloWorld
   val htmlAnimation = hypertext.AnimationExample

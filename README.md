@@ -83,13 +83,13 @@ YouI is divided into modules of functionality to minimize the dependencies requi
     * [X] Label
     * [X] TextInput
     * [X] TextArea
-* [ ] Integration of Pixi.js for more advanced UI functionality (Scala.js)
+* [X] Integration of Pixi.js for more advanced UI functionality (Scala.js)
     * [X] Canvas / Integration with HTML
     * [X] Events
     * [X] Container
     * [X] Image
     * [X] Text
-    * [ ] Shapes
+    * [X] Shapes
 * [X] Animation and workflow functionality
     * [X] Task
     * [X] Action

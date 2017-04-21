@@ -13,9 +13,8 @@ trait UIScreen extends Screen {
   lazy val container: Container = new Container
 
   override protected def init(): Future[Unit] = super.init().flatMap(_ => Renderer.Loaded).map { _ =>
-    UIScreen.renderer.size.width := ui.size.width
-    UIScreen.renderer.size.height := ui.size.height
-
+    container.size.width := renderer.size.width
+    container.size.height := renderer.size.height
     container.visible := false
     renderer.children += container
   }
@@ -40,5 +39,10 @@ object UIScreen {
     ui.children += this
   }
 
-  lazy val renderer = Renderer(canvas)
+  lazy val renderer: Renderer = {
+    val r = Renderer(canvas)
+    r.size.width := ui.size.width
+    r.size.height := ui.size.height
+    r
+  }
 }

@@ -32,7 +32,7 @@ YouI is divided into modules of functionality to minimize the dependencies requi
 * [template](template) - features for creating and managing templates for use in applications (Scala and Scala.js)
 * [ui](ui) - functionality for user-interface creation and management (Scala.js)
 
-## Features for 1.0.0 (In-Progress)
+## Features for 1.0.0 (Future)
 
 * [ ] Optimization module
     * [ ] CSS merging, cleanup, minification, and optimization support.
@@ -46,6 +46,22 @@ YouI is divided into modules of functionality to minimize the dependencies requi
     * [ ] iOS
     * [ ] Android
     
+## Features for 0.5.0 (Future)
+
+* [ ] Exhaustive feature integration from Pixi.js
+* [ ] Selectable Text in Canvas for copy/paste
+* [ ] TextInput in Canvas for editable editable text
+    * [ ] Editing features
+    * [ ] Caret with customization support
+    * [ ] Rich text segments
+    * [ ] Multi-line support or explicit single-line support
+* [ ] Snap Layout Management (ex. `snap(img1).left.to(img2).right`)
+* [ ] Layout managers for UI components derived from Snap
+    * [ ] GridLayout
+        * [ ] FormLayout
+    * [ ] StackLayout
+    * [ ] FlowLayout
+
 ## Features for 0.4.0 (Future)
 
 * [ ] Major cleanup and simplification of writing a web application
@@ -71,9 +87,9 @@ YouI is divided into modules of functionality to minimize the dependencies requi
     * [X] Canvas / Integration with HTML
     * [X] Events
     * [X] Container
-    * [ ] Image
+    * [X] Image
+    * [X] Text
     * [ ] Shapes
-    * [ ] Text
 * [X] Animation and workflow functionality
     * [X] Task
     * [X] Action
@@ -82,13 +98,11 @@ YouI is divided into modules of functionality to minimize the dependencies requi
     * [X] Sleep
     * [X] Easings integration
     * [X] DSL
-* [ ] Snap Layout Management (ex. `snap(img1).left.to(img2).right`)
-* [ ] Layout Managers
+* [X] Layout Managers
     * [X] Core Support
     * [X] BoxLayout
     * [X] GridLayout
     * [X] FlowLayout
-    * [ ] TableLayout
 
 ## Features for 0.2.0 (Released 2017.02.27)
 

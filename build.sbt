@@ -1,6 +1,6 @@
 name := "youi"
 organization in ThisBuild := "io.youi"
-version in ThisBuild := "0.3.0"
+version in ThisBuild := "0.3.1-SNAPSHOT"
 scalaVersion in ThisBuild := "2.12.1"
 crossScalaVersions in ThisBuild := List("2.12.1", "2.11.8")
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
@@ -11,13 +11,18 @@ val pixiJsVersion = "4.5.0"
 val scribeVersion = "1.4.2"
 val powerScalaVersion = "2.0.5"
 val reactifyVersion = "1.5.1"
-val akkaVersion = "2.4.17"
+val akkaVersion = "2.5.0"
 val scalaJSDOM = "0.9.1"
 val httpAsyncClientVersion = "4.1.3"
-val circeVersion = "0.7.0"
+val circeVersion = "0.7.1"
 val uaDetectorVersion = "2014.10"
-val undertowVersion = "1.4.12.Final"
+val undertowVersion = "1.4.13.Final"
 val uPickleVersion = "0.4.4"
+val closureCompilerVersion = "v20170409"
+val hasherVersion = "1.2.1"
+val scalaXMLVersion = "1.0.6"
+val scalacticVersion = "3.0.3"
+val scalaTestVersion = "3.0.3"
 
 lazy val root = project.in(file("."))
   .aggregate(
@@ -39,8 +44,8 @@ lazy val core = crossProject.in(file("core"))
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
       "com.outr" %%% "scribe" % scribeVersion,
       "com.outr" %%% "reactify" % reactifyVersion,
-      "org.scalactic" %%% "scalactic" % "3.0.1",
-      "org.scalatest" %%% "scalatest" % "3.0.1" % "test"
+      "org.scalactic" %%% "scalactic" % scalacticVersion,
+      "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
     )
   )
   .jvmSettings(
@@ -93,8 +98,8 @@ lazy val server = project.in(file("server"))
     name := "youi-server",
     libraryDependencies ++= Seq(
       "net.sf.uadetector" % "uadetector-resources" % uaDetectorVersion,
-      "org.scalactic" %% "scalactic" % "3.0.1",
-      "org.scalatest" %% "scalatest" % "3.0.1" % "test"
+      "org.scalactic" %% "scalactic" % scalacticVersion,
+      "org.scalatest" %% "scalatest" % scalaTestVersion % "test"
     )
   )
   .dependsOn(coreJVM, stream)
@@ -104,8 +109,8 @@ lazy val serverUndertow = project.in(file("serverUndertow"))
     name := "youi-server-undertow",
     libraryDependencies ++= Seq(
       "io.undertow" % "undertow-core" % undertowVersion,
-      "org.scalactic" %% "scalactic" % "3.0.1",
-      "org.scalatest" %% "scalatest" % "3.0.1" % "test"
+      "org.scalactic" %% "scalactic" % scalacticVersion,
+      "org.scalatest" %% "scalatest" % scalaTestVersion % "test"
     )
   )
   .dependsOn(server)
@@ -115,8 +120,8 @@ lazy val communication = crossProject.in(file("communication"))
     name := "youi-communication",
     libraryDependencies ++= Seq(
       "com.lihaoyi" %%% "upickle" % uPickleVersion,
-      "org.scalactic" %%% "scalactic" % "3.0.1",
-      "org.scalatest" %%% "scalatest" % "3.0.1" % "test"
+      "org.scalactic" %%% "scalactic" % scalacticVersion,
+      "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
     )
   )
   .dependsOn(core)
@@ -140,10 +145,10 @@ lazy val optimizer = project.in(file("optimizer"))
     description := "Provides optimization functionality for application development.",
     fork := true,
     libraryDependencies ++= Seq(
-      "com.google.javascript" % "closure-compiler" % "v20170218",
+      "com.google.javascript" % "closure-compiler" % closureCompilerVersion,
       "org.powerscala" %% "powerscala-io" % powerScalaVersion,
       "com.outr" %% "scribe" % scribeVersion,
-      "com.outr" %% "hasher" % "1.2.1"
+      "com.outr" %% "hasher" % hasherVersion
     )
   )
   .dependsOn(stream)
@@ -152,8 +157,8 @@ lazy val app = crossProject.in(file("app"))
   .settings(
     name := "youi-app",
     libraryDependencies ++= Seq(
-      "org.scalactic" %%% "scalactic" % "3.0.1",
-      "org.scalatest" %%% "scalatest" % "3.0.1" % "test"
+      "org.scalactic" %%% "scalactic" % scalacticVersion,
+      "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
     )
   )
   .dependsOn(core, communication)
@@ -192,7 +197,7 @@ lazy val example = crossProject.in(file("example"))
   .jvmSettings(
     libraryDependencies ++= Seq(
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-      "org.scala-lang.modules" %% "scala-xml" % "1.0.6"
+      "org.scala-lang.modules" %% "scala-xml" % scalaXMLVersion
     )
   )
   .dependsOn(app, template)

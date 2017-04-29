@@ -71,7 +71,7 @@ YouI is divided into modules of functionality to minimize the dependencies requi
     * [ ] Ability to create an app with only three classes (client, server, and shared)
     * [ ] Create a template project (maybe Giter8)
     
-## Features for 0.3.0 (In-Progress)
+## Features for 0.3.0 (Released 2017.04.21)
 
 * [X] Optimization: JavaScript merging, cleanup, minification, obfuscation, and optimization support.
 * [X] Simplify connectivity / communication functionality

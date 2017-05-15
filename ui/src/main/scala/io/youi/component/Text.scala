@@ -2,7 +2,7 @@ package io.youi.component
 
 import com.outr.pixijs.PIXI
 import io.youi._
-import io.youi.style.{Fill, Theme}
+import io.youi.style.{Paint, Theme}
 import reactify.Var
 
 class Text extends Component {
@@ -19,7 +19,7 @@ class Text extends Component {
     val color: Var[Color] = Var.bound(theme.dropShadow.color, (c: Color) => instance.style.dropShadowColor = c.hex, setImmediately = true)
     val distance: Var[Double] = Var.bound(theme.dropShadow.distance, (d: Double) => instance.style.dropShadowDistance = d, setImmediately = true)
   }
-  val fill: Var[Fill] = Var.bound(theme.fill, (f: Fill) => f.fill(instance.style), setImmediately = true)
+  val fill: Var[Paint] = Var.bound(theme.fill, (f: Paint) => instance.style.fill = f(this), setImmediately = true)
   object font {
     val family: Var[String] = Var.bound(theme.font.family, (s: String) => instance.style.fontFamily = s, setImmediately = true)
     val size: Var[Double] = Var.bound(theme.font.size, (d: Double) => instance.style.fontSize = d, setImmediately = true)

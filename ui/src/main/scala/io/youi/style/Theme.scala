@@ -19,7 +19,7 @@ class Theme private() {
     val color: Var[Color] = Var(parent.map(_.dropShadow.color()).getOrElse(Color.Black))
     val distance: Var[Double] = Var(parent.map(_.dropShadow.distance()).getOrElse(0.0))
   }
-  val fill: Var[Fill] = Var(parent.map(_.fill()).getOrElse(Color.Black))
+  val fill: Var[Paint] = Var(parent.map(_.fill()).getOrElse(Color.Black))
   object font {
     val family: Var[String] = Var(parent.map(_.font.family()).getOrElse("Arial"))
     val size: Var[Double] = Var(parent.map(_.font.size()).getOrElse(26.0))

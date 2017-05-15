@@ -3,7 +3,7 @@ package io.youi.client
 import java.io.File
 import java.net.URI
 
-import io.circe.{Decoder, Encoder, Printer}
+import io.circe.{Decoder, Encoder, Json, Printer}
 import io.circe.parser._
 import io.circe.syntax._
 import io.youi.http.{Content, FileContent, Headers, HttpRequest, HttpResponse, Method, Status, StringContent}
@@ -25,8 +25,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
   *
   * @param saveDirectory the directory to save response content of a non-textual type
   */
-class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpdir"))) {
-  private lazy val printer = Printer.spaces2.copy(dropNullKeys = true)
+class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpdir")), dropNullKeys: Boolean = false) {
+  private lazy val printer = Printer.spaces2.copy(dropNullKeys = dropNullKeys)
   private val asyncClient: CloseableHttpAsyncClient = {
     val client = HttpAsyncClients.createDefault()
     client.start()
@@ -121,9 +121,10 @@ class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpd
                                  request: Request,
                                  headers: Headers = Headers.empty,
                                  errorHandler: HttpResponse => Response = defaultErrorHandler[Response],
-                                 method: Method = Method.Post)
+                                 method: Method = Method.Post,
+                                 processor: Json => Json = (json: Json) => json)
                                 (implicit encoder: Encoder[Request], decoder: Decoder[Response]): Future[Response] = {
-    val requestJson = printer.pretty(request.asJson)
+    val requestJson = printer.pretty(processor(request.asJson))
     send(HttpRequest(
       method = method,
       url = url,
@@ -137,7 +138,7 @@ class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpd
       }
       if (response.status.isSuccess) {
         decode[Response](responseJson) match {
-          case Left(error) => throw new RuntimeException(s"JSON decoding error: $responseJson", error)
+          case Left(error) => errorHandler(response.copy(Status.InternalServerError(error.getMessage)))
           case Right(result) => result
         }
       } else {
@@ -174,7 +175,7 @@ class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpd
       }
       if (response.status.isSuccess) {
         decode[Response](responseJson) match {
-          case Left(error) => throw new RuntimeException(s"JSON decoding error: $responseJson", error)
+          case Left(error) => errorHandler(response.copy(Status.InternalServerError(error.getMessage)))
           case Right(result) => result
         }
       } else {

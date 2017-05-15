@@ -85,6 +85,36 @@ class RemoveClassInstruction(selector: String, className: String) extends Activa
   }
 }
 
+class ReplaceContentInstruction(selector: String, content: String) extends ActivateInstruction {
+  private var activated = Vector.empty[(html.Element, String)]
+
+  override def activate(): Unit = {
+    if (debug) println(s"ReplaceContent(selector: $selector, content: $content)")
+    activated = dom.bySelector[html.Element](selector).map(e => e -> e.innerHTML)
+    activated.foreach(_._1.innerHTML = content)
+  }
+
+  override def deactivate(): Unit = {
+    activated.foreach(e => e._1.innerHTML = e._2)
+    activated = Vector.empty
+  }
+}
+
+class ReplaceAttributeInstruction(selector: String, attributeName: String, content: String) extends ActivateInstruction {
+  private var activated = Vector.empty[(html.Element, String)]
+
+  override def activate(): Unit = {
+    if (debug) println(s"ReplaceAttribute(selector: $selector, attributeName: $attributeName, content: $content)")
+    activated = dom.bySelector[html.Element](selector).map(e => e -> e.getAttribute(attributeName))
+    activated.foreach(_._1.setAttribute(attributeName, content))
+  }
+
+  override def deactivate(): Unit = {
+    activated.foreach(e => e._1.setAttribute(attributeName, e._2))
+    activated = Vector.empty
+  }
+}
+
 class AlertInstruction(message: String) extends ActivateInstruction {
   override def activate(): Unit = {
     if (debug) println(s"Alert(message: $message)")

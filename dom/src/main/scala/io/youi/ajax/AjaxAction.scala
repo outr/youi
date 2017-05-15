@@ -10,8 +10,8 @@ class AjaxAction(request: AjaxRequest) {
   lazy val future: Future[XMLHttpRequest] = request.promise.future
   private[ajax] val _state = Var[ActionState](ActionState.New)
   def state: State[ActionState] = _state
-  def loaded: State[Int] = request.loaded
-  def total: State[Int] = request.total
+  def loaded: State[Double] = request.loaded
+  def total: State[Double] = request.total
   def percentage: State[Int] = request.percentage
   def cancelled: State[Boolean] = request.cancelled
 

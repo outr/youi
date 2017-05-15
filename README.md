@@ -46,16 +46,14 @@ YouI is divided into modules of functionality to minimize the dependencies requi
     * [ ] iOS
     * [ ] Android
     
-## Features for 0.5.0 (Future)
+## Features for 0.6.0 (Future)
 
-* [ ] Exhaustive feature integration from Pixi.js
 * [ ] Selectable Text in Canvas for copy/paste
 * [ ] TextInput in Canvas for editable editable text
     * [ ] Editing features
     * [ ] Caret with customization support
     * [ ] Rich text segments
     * [ ] Multi-line support or explicit single-line support
-* [ ] Snap Layout Management (ex. `snap(img1).left.to(img2).right`)
 * [ ] Layout managers for UI components derived from Snap
     * [ ] GridLayout
         * [ ] FormLayout
@@ -63,13 +61,23 @@ YouI is divided into modules of functionality to minimize the dependencies requi
     * [ ] FlowLayout
 * [ ] Scrollbar support
 
-## Features for 0.4.0 (Future)
+## Features for 0.5.0 (Future)
 
 * [ ] Major cleanup and simplification of writing a web application
     * [ ] Provide simple classes to extend for client, server, and shared
     * [ ] SBT plugin to simplify build setup (especially management and sharing of generated JS)
     * [ ] Ability to create an app with only three classes (client, server, and shared)
     * [ ] Create a template project (maybe Giter8)
+    
+## Features for 0.4.0 (In-Progress)
+
+* [ ] UI Features
+    * [ ] On-demand rendering capabilities for exceptional performance
+    * [ ] Text integration using https://github.com/nodebox/opentype.js
+    * [ ] Complete SVG rendering support
+    * [ ] Video support
+    * [ ] Advanced border support
+    * [ ] Snap Layout Management (ex. `snap(img1).left.to(img2).right`)
     
 ## Features for 0.3.0 (Released 2017.04.21)
 

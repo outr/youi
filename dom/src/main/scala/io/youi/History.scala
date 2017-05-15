@@ -66,9 +66,9 @@ object History {
     stateChange := HistoryStateChange(url, StateType.Replace, state)
   }
 
-  def back(delta: Int = 1): Unit = window.history.back(delta)
+  def back(delta: Int = 1): Unit = window.history.go(-delta)
 
-  def forward(delta: Int = 1): Unit = window.history.forward(delta)
+  def forward(delta: Int = 1): Unit = window.history.go(delta)
 
   def reload(force: Boolean): Unit = window.location.reload(force)
 

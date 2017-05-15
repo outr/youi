@@ -37,7 +37,8 @@ object ActivationSupport {
   private val SetTitleRegex = """title = "(.*)"""".r
   private val AddClassRegex = """(.+)[.]addClass\("(.+)"\)""".r
   private val RemoveClassRegex = """(.+)[.]removeClass\("(.+)"\)""".r
-  private val ReplaceContentWithRegex = """(.+)[.]replaceContentWith\((.+)\)""".r
+  private val ReplaceContentRegex = """(.+)[.]replaceContent\((.+)\)""".r
+  private val ReplaceAttributeRegex = """(.+)[.]replaceAttribute\((.+)[,] (.+)\)""".r
   private val AlertRegex = """alert\("(.+)"\)""".r
   private val CallRegex = """call\((.+)\)""".r
   private val TestRegex = """test\((.+)\)""".r
@@ -88,6 +89,8 @@ object ActivationSupport {
     case SetTitleRegex(title) => Some(new SetTitleInstruction(title))
     case AddClassRegex(selector, className) => Some(new AddClassInstruction(selector, className))
     case RemoveClassRegex(selector, className) => Some(new RemoveClassInstruction(selector, className))
+    case ReplaceContentRegex(selector, content) => Some(new ReplaceContentInstruction(selector, content))
+    case ReplaceAttributeRegex(selector, attributeName, content) => Some(new ReplaceAttributeInstruction(selector, attributeName, content))
     case AlertRegex(message) => Some(new AlertInstruction(message))
     case CallRegex(code) => Some(new Call(code))
     case LinkRegex(path) => Some(new Link(path))

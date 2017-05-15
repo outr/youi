@@ -71,13 +71,14 @@ class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpd
         }
         val contentType = Headers.`Content-Type`.value(headers).getOrElse(ContentType.`application/octet-stream`)
         val contentLength = Headers.`Content-Length`.value(headers)
-        val content: Option[Content] = if (contentLength.contains(0)) {
+        val content: Option[Content] = if (contentLength.contains(0L)) {
           None
         } else if (contentType.`type` == "text" || contentType.subType == "json") {
           val body = IO.stream(result.getEntity.getContent, new StringBuilder).toString
           Some(Content.string(body, contentType))
         } else {
           val file = File.createTempFile("youi", "client", saveDirectory)
+          IO.stream(result.getEntity.getContent, file)
           Some(Content.file(file, contentType))
         }
 
@@ -131,6 +132,7 @@ class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpd
     )).map { response =>
       val responseJson = response.content.getOrElse(throw new RuntimeException(s"No content received in response.")) match {
         case content: StringContent => content.value
+        case content: FileContent => IO.stream(content.file, new StringBuilder).toString
         case content => throw new RuntimeException(s"$content not supported")
       }
       if (response.status.isSuccess) {
@@ -167,6 +169,7 @@ class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpd
     )).map { response =>
       val responseJson = response.content.getOrElse(throw new RuntimeException(s"No content received in response.")) match {
         case content: StringContent => content.value
+        case content: FileContent => IO.stream(content.file, new StringBuilder).toString
         case content => throw new RuntimeException(s"$content not supported")
       }
       if (response.status.isSuccess) {

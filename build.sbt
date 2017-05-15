@@ -1,6 +1,6 @@
 name := "youi"
 organization in ThisBuild := "io.youi"
-version in ThisBuild := "0.3.1"
+version in ThisBuild := "0.3.2-SNAPSHOT"
 scalaVersion in ThisBuild := "2.12.1"
 crossScalaVersions in ThisBuild := List("2.12.1", "2.11.8")
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
@@ -11,15 +11,17 @@ val pixiJsVersion = "4.5.0"
 val scribeVersion = "1.4.2"
 val powerScalaVersion = "2.0.5"
 val reactifyVersion = "1.5.3"
-val akkaVersion = "2.5.0"
-val scalaJSDOM = "0.9.1"
+val akkaVersion = "2.5.1"
+val scalaJSDOM = "0.9.2"
 val httpAsyncClientVersion = "4.1.3"
-val circeVersion = "0.7.1"
+val circeVersion = "0.8.0"
 val uaDetectorVersion = "2014.10"
-val undertowVersion = "1.4.13.Final"
+val undertowVersion = "1.4.14.Final"
 val uPickleVersion = "0.4.4"
-val closureCompilerVersion = "v20170409"
+val closureCompilerVersion = "v20170423"
 val hasherVersion = "1.2.1"
+val canvgVersion = "1.4.0_1"
+val openTypeVersion = "0.7.1_2"
 val scalaXMLVersion = "1.0.6"
 val scalacticVersion = "3.0.3"
 val scalaTestVersion = "3.0.3"
@@ -134,7 +136,9 @@ lazy val ui = project.in(file("ui"))
   .settings(
     name := "youi-ui",
     libraryDependencies ++= Seq(
-      "com.outr" %%% "scalajs-pixijs" % pixiJsVersion
+      "com.outr" %%% "scalajs-pixijs" % pixiJsVersion,
+      "com.outr" %%% "canvg-scala-js" % canvgVersion,
+      "com.outr" %%% "opentype-scala-js" % openTypeVersion
     )
   )
   .dependsOn(coreJS, dom)
@@ -172,7 +176,9 @@ lazy val template = crossProject.in(file("template"))
   )
   .jsSettings(
     crossTarget in fastOptJS := baseDirectory.value / ".." / "jvm" / "src" / "main" / "resources" / "app",
-    crossTarget in fullOptJS := baseDirectory.value / ".." / "jvm" / "src" / "main" / "resources" / "app"
+    crossTarget in fullOptJS := baseDirectory.value / ".." / "jvm" / "src" / "main" / "resources" / "app",
+    crossTarget in packageJSDependencies := baseDirectory.value / ".." / "jvm" / "src" / "main" / "resources" / "app",
+    skip in packageJSDependencies := false
   )
   .jvmSettings(
     fork := true,
@@ -192,7 +198,9 @@ lazy val example = crossProject.in(file("example"))
   )
   .jsSettings(
     crossTarget in fastOptJS := baseDirectory.value / ".." / "jvm" / "src" / "main" / "resources" / "app",
-    crossTarget in fullOptJS := baseDirectory.value / ".." / "jvm" / "src" / "main" / "resources" / "app"
+    crossTarget in fullOptJS := baseDirectory.value / ".." / "jvm" / "src" / "main" / "resources" / "app",
+    crossTarget in packageJSDependencies := baseDirectory.value / ".." / "jvm" / "src" / "main" / "resources" / "app",
+    skip in packageJSDependencies := false
   )
   .jvmSettings(
     libraryDependencies ++= Seq(

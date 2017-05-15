@@ -16,8 +16,8 @@ class AjaxRequest(url: URL,
                   responseType: String = "") {
   val req = new dom.XMLHttpRequest()
   val promise: Promise[XMLHttpRequest] = Promise[dom.XMLHttpRequest]()
-  val loaded: State[Int] = Var(0)
-  val total: State[Int] = Var(0)
+  val loaded: State[Double] = Var(0.0)
+  val total: State[Double] = Var(0.0)
   val percentage: State[Int] = Var(0)
   val cancelled: State[Boolean] = Var(false)
 
@@ -31,9 +31,9 @@ class AjaxRequest(url: URL,
     }
   }
   req.upload.addEventListener("progress", (evt: ProgressEvent) => {
-    total.asInstanceOf[Var[Int]] := evt.total
-    loaded.asInstanceOf[Var[Int]] := evt.loaded
-    val p = math.round(math.floor((evt.loaded.toDouble / evt.total.toDouble) * 100)).toInt
+    total.asInstanceOf[Var[Double]] := evt.total
+    loaded.asInstanceOf[Var[Double]] := evt.loaded
+    val p = math.round(math.floor((evt.loaded / evt.total) * 100)).toInt
     percentage.asInstanceOf[Var[Int]] := p
   })
   req.open("POST", url.toString)

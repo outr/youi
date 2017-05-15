@@ -16,6 +16,7 @@ import org.xnio.{OptionMap, Options, Xnio}
 
 import scala.collection.JavaConverters._
 
+// TODO: support auto-reconnect
 class WebSocketClient(url: URL,
                       keyStore: Option[KeyStore] = None,
                       autoReconnect: Boolean = true,

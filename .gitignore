@@ -1,4 +1,4 @@
 .idea/
 target/
-*-fastopt.js
-*-fastopt.js.map
+*.js
+*.js.map

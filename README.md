@@ -72,11 +72,13 @@ YouI is divided into modules of functionality to minimize the dependencies requi
 ## Features for 0.4.0 (In-Progress)
 
 * [ ] UI Features
+    * [ ] Update Pixi.js facade to use JSDeps
     * [ ] On-demand rendering capabilities for exceptional performance
-    * [ ] Text integration using https://github.com/nodebox/opentype.js
-    * [ ] Complete SVG rendering support
-    * [ ] Video support
-    * [ ] Advanced border support
+    * [ ] CanvasComponent for specialized drawing using HTML5 Canvas
+        * [ ] Text integration using https://github.com/nodebox/opentype.js
+        * [ ] Complete SVG rendering support (Canvg)
+        * [ ] Video support
+        * [ ] Advanced border support
     * [ ] Snap Layout Management (ex. `snap(img1).left.to(img2).right`)
     
 ## Features for 0.3.0 (Released 2017.04.21)

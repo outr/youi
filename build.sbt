@@ -135,7 +135,7 @@ lazy val ui = project.in(file("ui"))
   .enablePlugins(ScalaJSPlugin)
   .settings(
     name := "youi-ui",
-    requiresDOM := true,
+    test := (),
     libraryDependencies ++= Seq(
       "com.outr" %%% "scalajs-pixijs" % pixiJsVersion,
       "com.outr" %%% "canvg-scala-js" % canvgVersion,
@@ -166,6 +166,9 @@ lazy val app = crossProject.in(file("app"))
       "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
     )
   )
+  .jsSettings(
+    test := ()
+  )
   .dependsOn(core, communication)
 
 lazy val appJS = app.js.dependsOn(ui)
@@ -176,6 +179,7 @@ lazy val template = crossProject.in(file("template"))
     name := "youi-template"
   )
   .jsSettings(
+    test := (),
     crossTarget in fastOptJS := baseDirectory.value / ".." / "jvm" / "src" / "main" / "resources" / "app",
     crossTarget in fullOptJS := baseDirectory.value / ".." / "jvm" / "src" / "main" / "resources" / "app",
     crossTarget in packageJSDependencies := baseDirectory.value / ".." / "jvm" / "src" / "main" / "resources" / "app",
@@ -198,6 +202,7 @@ lazy val example = crossProject.in(file("example"))
     name := "youi-server-example"
   )
   .jsSettings(
+    test := (),
     crossTarget in fastOptJS := baseDirectory.value / ".." / "jvm" / "src" / "main" / "resources" / "app",
     crossTarget in fullOptJS := baseDirectory.value / ".." / "jvm" / "src" / "main" / "resources" / "app",
     crossTarget in packageJSDependencies := baseDirectory.value / ".." / "jvm" / "src" / "main" / "resources" / "app",

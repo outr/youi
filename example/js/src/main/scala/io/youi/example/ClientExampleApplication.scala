@@ -36,8 +36,6 @@ object ClientExampleApplication extends JSApp with ExampleApplication with Clien
   val htmlFlowLayout = hypertext.FlowLayoutExample
   val htmlVirtual = hypertext.VirtualSizeExample
 
-  Renderer.PixiJSURL = pixiJS
-
   def cc: ClientConnectivity = clientConnectivity(ClientExampleApplication.connectivity)
 
   override protected val crossFadeElement: html.Div = byId[html.Div]("loading")

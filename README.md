@@ -72,7 +72,7 @@ YouI is divided into modules of functionality to minimize the dependencies requi
 ## Features for 0.4.0 (In-Progress)
 
 * [ ] UI Features
-    * [ ] Update Pixi.js facade to use JSDeps
+    * [X] Update Pixi.js facade to use JSDeps
     * [ ] On-demand rendering capabilities for exceptional performance
     * [ ] CanvasComponent for specialized drawing using HTML5 Canvas
         * [ ] Text integration using https://github.com/nodebox/opentype.js

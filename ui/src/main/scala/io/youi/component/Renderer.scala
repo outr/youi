@@ -44,9 +44,6 @@ class Renderer(val canvas: Canvas) extends Container {
 }
 
 object Renderer {
-  var PixiJSURL: String = PIXI.Info.cdn
-  lazy val Loaded: Future[Unit] = dom.addScript(PixiJSURL)
-
   def apply(canvas: Canvas): Renderer = new Renderer(canvas)
 }
 

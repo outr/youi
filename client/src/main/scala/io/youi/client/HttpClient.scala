@@ -99,8 +99,8 @@ class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpd
     * @tparam Response the type of response
     * @return throws a RuntimeException when an error occurs
     */
-  protected def defaultErrorHandler[Response]: HttpResponse => Response = (response: HttpResponse) => {
-    throw new RuntimeException(s"Error from server: ${response.status.message} (${response.status.code})")
+  protected def defaultErrorHandler[Response]: (HttpRequest, HttpResponse) => Response = (request: HttpRequest, response: HttpResponse) => {
+    throw new RuntimeException(s"Error from server: ${response.status.message} (${response.status.code}) for ${request.url}.")
   }
 
   /**
@@ -120,17 +120,18 @@ class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpd
   def restful[Request, Response](url: URL,
                                  request: Request,
                                  headers: Headers = Headers.empty,
-                                 errorHandler: HttpResponse => Response = defaultErrorHandler[Response],
+                                 errorHandler: (HttpRequest, HttpResponse) => Response = defaultErrorHandler[Response],
                                  method: Method = Method.Post,
                                  processor: Json => Json = (json: Json) => json)
                                 (implicit encoder: Encoder[Request], decoder: Decoder[Response]): Future[Response] = {
     val requestJson = printer.pretty(processor(request.asJson))
-    send(HttpRequest(
+    val httpRequest = HttpRequest(
       method = method,
       url = url,
       headers = headers,
       content = Some(StringContent(requestJson, ContentType.`application/json`))
-    )).map { response =>
+    )
+    send(httpRequest).map { response =>
       val responseJson = response.content.getOrElse(throw new RuntimeException(s"No content received in response.")) match {
         case content: StringContent => content.value
         case content: FileContent => IO.stream(content.file, new StringBuilder).toString
@@ -138,11 +139,11 @@ class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpd
       }
       if (response.status.isSuccess) {
         decode[Response](responseJson) match {
-          case Left(error) => errorHandler(response.copy(Status.InternalServerError(error.getMessage)))
+          case Left(error) => errorHandler(httpRequest, response.copy(Status.InternalServerError(error.getMessage)))
           case Right(result) => result
         }
       } else {
-        errorHandler(response)
+        errorHandler(httpRequest, response)
       }
     }
   }
@@ -161,13 +162,14 @@ class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpd
   def call[Response](url: URL,
                      method: Method = Method.Get,
                      headers: Headers = Headers.empty,
-                     errorHandler: HttpResponse => Response = defaultErrorHandler[Response])
+                     errorHandler: (HttpRequest, HttpResponse) => Response = defaultErrorHandler[Response])
                     (implicit decoder: Decoder[Response]): Future[Response] = {
-    send(HttpRequest(
+    val request = HttpRequest(
       method = method,
       url = url,
       headers = headers
-    )).map { response =>
+    )
+    send(request).map { response =>
       val responseJson = response.content.getOrElse(throw new RuntimeException(s"No content received in response.")) match {
         case content: StringContent => content.value
         case content: FileContent => IO.stream(content.file, new StringBuilder).toString
@@ -175,11 +177,11 @@ class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpd
       }
       if (response.status.isSuccess) {
         decode[Response](responseJson) match {
-          case Left(error) => errorHandler(response.copy(Status.InternalServerError(error.getMessage)))
+          case Left(error) => errorHandler(request, response.copy(Status.InternalServerError(error.getMessage)))
           case Right(result) => result
         }
       } else {
-        errorHandler(response)
+        errorHandler(request, response)
       }
     }
   }

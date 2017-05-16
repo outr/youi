@@ -2,6 +2,8 @@ package io.youi.http
 
 sealed abstract class Method private(val value: String) {
   Method.map += value -> this
+
+  override def toString: String = value
 }
 
 object Method {

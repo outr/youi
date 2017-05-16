@@ -1,6 +1,6 @@
 name := "youi"
 organization in ThisBuild := "io.youi"
-version in ThisBuild := "0.3.2"
+version in ThisBuild := "0.3.3-SNAPSHOT"
 scalaVersion in ThisBuild := "2.12.2"
 crossScalaVersions in ThisBuild := List("2.12.2", "2.11.11")
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
@@ -135,6 +135,7 @@ lazy val ui = project.in(file("ui"))
   .enablePlugins(ScalaJSPlugin)
   .settings(
     name := "youi-ui",
+    requiresDOM := true,
     libraryDependencies ++= Seq(
       "com.outr" %%% "scalajs-pixijs" % pixiJsVersion,
       "com.outr" %%% "canvg-scala-js" % canvgVersion,

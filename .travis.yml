@@ -4,13 +4,6 @@ scala:
   - 2.12.1
 jdk:
   - oraclejdk8
-install:
-  - . $HOME/.nvm/nvm.sh
-  - nvm install stable
-  - nvm use stable
-  - npm install
-  - npm install jsdom
-  - npm install canvas
 script:
   - sbt clean +test
   - sbt coverage coreJVM/test communicationJVM/test server/test serverUndertow/test stream/test appJVM/test

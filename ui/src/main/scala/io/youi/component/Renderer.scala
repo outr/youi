@@ -2,7 +2,7 @@ package io.youi.component
 
 import com.outr.pixijs._
 import io.youi.component.event.Events
-import io.youi.{Color, dom}
+import io.youi.{Color, LazyUpdate, dom}
 import io.youi.hypertext.Canvas
 import org.scalajs.dom.KeyboardEvent
 import reactify.{Channel, Var}
@@ -22,7 +22,10 @@ class Renderer(val canvas: Canvas) extends Container {
     noWebGL = false
   )
 
-  val backgroundColor: Var[Color] = Var.bound(Color.White, (c: Color) => systemRenderer.backgroundColor = c.long)
+  val renderMode: Var[RenderMode] = Var(RenderMode.OnChange)
+  val backgroundColor: Var[Color] = prop(Color.White, (c: Color) => systemRenderer.backgroundColor = c.long, updatesRendering = true)
+
+  private val changeRenderer = LazyUpdate(systemRenderer.render(instance))
 
   size.width := canvas.size.width()
   size.height := canvas.size.height()
@@ -32,7 +35,10 @@ class Renderer(val canvas: Canvas) extends Container {
   override def update(delta: Double): Unit = {
     super.update(delta)
 
-    systemRenderer.render(instance)
+    renderMode() match {
+      case RenderMode.OnChange => changeRenderer.update()
+      case RenderMode.EveryFrame => systemRenderer.render(instance)
+    }
   }
 
   override protected def updateTransform(): Unit = {
@@ -41,6 +47,8 @@ class Renderer(val canvas: Canvas) extends Container {
     systemRenderer.resize(math.round(size.width()).toInt, math.round(size.height()).toInt)
     canvas.updateSize()
   }
+
+  override def invalidate(): Unit = changeRenderer.flag()
 }
 
 object Renderer {
@@ -53,4 +61,11 @@ class RendererEvents(renderer: Renderer) extends Events(renderer) {
     def press: Channel[KeyboardEvent] = renderer.canvas.event.key.press
     def up: Channel[KeyboardEvent] = renderer.canvas.event.key.up
   }
+}
+
+sealed trait RenderMode
+
+object RenderMode {
+  case object OnChange extends RenderMode
+  case object EveryFrame extends RenderMode
 }

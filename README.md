@@ -73,7 +73,8 @@ YouI is divided into modules of functionality to minimize the dependencies requi
 
 * [ ] UI Features
     * [X] Update Pixi.js facade to use JSDeps
-    * [ ] On-demand rendering capabilities for exceptional performance
+    * [X] On-demand rendering capabilities for exceptional performance
+    * [ ] Workflow rendering tied to elements to allow pausing when invisible
     * [ ] CanvasComponent for specialized drawing using HTML5 Canvas
         * [ ] Text integration using https://github.com/nodebox/opentype.js
         * [ ] Complete SVG rendering support (Canvg)

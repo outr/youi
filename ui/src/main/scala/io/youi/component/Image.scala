@@ -12,7 +12,7 @@ class Image extends Component {
   override protected[component] lazy val instance: PIXI.Sprite = new PIXI.Sprite(Texture.Empty.instance)
   override protected def defaultTheme: Theme = Image
 
-  lazy val texture: Var[Texture] = prop(new Texture(instance.texture), (t: Texture) => instance.texture = t.instance)
+  lazy val texture: Var[Texture] = prop(new Texture(instance.texture), (t: Texture) => instance.texture = t.instance, updatesRendering = true)
 
   size.measured.width := texture().width()
   size.measured.height := texture().height()

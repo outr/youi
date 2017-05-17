@@ -8,7 +8,7 @@ class LazyUpdate(f: () => Unit) {
   def flag(): Unit = dirty.set(true)
   def isFlagged: Boolean = dirty.get()
 
-  def update(): Unit = if (dirty.compareAndSet(true, false)) {
+  def update(force: Boolean = false): Unit = if (dirty.compareAndSet(true, false) || force) {
     f()
   }
 }

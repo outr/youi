@@ -8,7 +8,7 @@ class Container extends Component {
   override protected[component] lazy val instance: PIXI.Container = new PIXI.Container()
   override protected def defaultTheme: Theme = Container
 
-  val children: Var[Vector[Component]] = Var(Vector.empty)
+  val children: Var[Vector[Component]] = prop(Vector.empty, updatesTransform = true)
 
   children.changes(new ChangeListener[Vector[Component]] {
     override def change(oldValue: Vector[Component], newValue: Vector[Component]): Unit = {

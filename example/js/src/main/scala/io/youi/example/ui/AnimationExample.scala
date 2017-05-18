@@ -3,7 +3,7 @@ package io.youi.example.ui
 import io.youi._
 import io.youi.workflow._
 import io.youi.app.screen.UIScreen
-import io.youi.component.{Image, Text, Texture}
+import io.youi.component.{Image, BasicText, Texture}
 import io.youi.easing.Easing
 
 import scala.concurrent.duration._
@@ -23,7 +23,7 @@ object AnimationExample extends UIExampleScreen with UIScreen {
     var offset = 50.0
     Easing.map.toList.sortBy(_._1).foreach {
       case (name, easingFunction) => {
-        val label = new Text {
+        val label = new BasicText {
           value := s"$name Example"
           font.size := 24.0
           font.family := "sans-serif"

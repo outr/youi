@@ -5,9 +5,9 @@ import io.youi._
 import io.youi.style.{Paint, Theme}
 import reactify.Var
 
-class Text extends Component {
+class BasicText extends Component {
   override protected[component] lazy val instance: PIXI.Text = new PIXI.Text("")
-  override protected def defaultTheme: Theme = Text
+  override protected def defaultTheme: Theme = BasicText
 
   lazy val value: Var[String] = prop(instance.text, (s: String) => instance.text = s, updatesRendering = true)
 
@@ -54,4 +54,4 @@ class Text extends Component {
   }
 }
 
-object Text extends Theme(Theme)
+object BasicText extends Theme(Theme)

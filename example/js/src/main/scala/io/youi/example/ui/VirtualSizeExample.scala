@@ -2,7 +2,7 @@ package io.youi.example.ui
 
 import io.youi._
 import io.youi.app.screen.UIScreen
-import io.youi.component.{Image, Text, Texture}
+import io.youi.component.{Image, BasicText, Texture}
 
 object VirtualSizeExample extends UIExampleScreen with UIScreen with VirtualSizeSupport {
   override def name: String = "Virtual Size Example"
@@ -19,7 +19,7 @@ object VirtualSizeExample extends UIExampleScreen with UIScreen with VirtualSize
       size.width := 1024.vw
       size.height := 768.vh
     }
-    container.children += new Text {
+    container.children += new BasicText {
       value := "1024x768"
       fill := Color.White
       font.size := 66.5.vf

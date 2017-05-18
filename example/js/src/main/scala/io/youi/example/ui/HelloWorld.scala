@@ -2,7 +2,7 @@ package io.youi.example.ui
 
 import io.youi._
 import io.youi.app.screen.UIScreen
-import io.youi.component.Text
+import io.youi.component.BasicText
 import io.youi.style.Theme
 
 object HelloWorld extends UIExampleScreen with UIScreen {
@@ -10,7 +10,7 @@ object HelloWorld extends UIExampleScreen with UIScreen {
   override def path: String = "/examples/hello.html"
 
   override def createUI(): Unit = {
-    val text = new Text {
+    val text = new BasicText {
       value := "Hello, World!"
       font.size := 48.0
       fill := Color.DarkBlue

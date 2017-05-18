@@ -16,6 +16,11 @@ class ClientConnectivity(connectivity: ApplicationConnectivity, application: Cli
   val connection: Connection = new Connection
   val webSocket: Var[Option[WebSocket]] = Var(None)
 
+  connection.receive.text.attach {
+    case "PING" => connection.send.text := "PONG"
+    case _ => // Ignore
+  }
+
   if (connectivity.autoConnect) {
     connect()
   }
@@ -37,9 +42,6 @@ class ClientConnectivity(connectivity: ApplicationConnectivity, application: Cli
     }
     val url = URL(s"$protocol://${window.location.host}${connectivity.path}")
     webSocket := Some(WebSocketUtil.connect(url, connection))
-    AnimationFrame.every(30.seconds, allowBackgrounding = false) {
-      ping()
-    }
   }
 
   def disconnect(): Unit = synchronized {
@@ -50,8 +52,6 @@ class ClientConnectivity(connectivity: ApplicationConnectivity, application: Cli
       webSocket := None
     }
   }
-
-  private def ping(): Unit = connection.send.text := "PING"
 
   def close(): Unit = {
     connection.close()

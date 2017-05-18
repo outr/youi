@@ -2,6 +2,7 @@ package io.youi.app
 
 import java.io.File
 
+import akka.actor.{ActorSystem, Cancellable}
 import io.youi.{JavaScriptError, http}
 import reactify.{Channel, Var}
 import io.youi.http._
@@ -12,7 +13,12 @@ import net.sf.uadetector.UserAgentType
 import net.sf.uadetector.service.UADetectorServiceFactory
 import org.powerscala.io._
 
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration._
+
 trait ServerApplication extends YouIApplication with Server {
+  private lazy val system = ActorSystem("ServerApplication")
+
   val connected: Channel[Connection] = Channel[Connection]
   val disconnected: Channel[Connection] = Channel[Connection]
   lazy val cacheDirectory: Var[File] = Var(new File(System.getProperty("user.home"), ".cache"))
@@ -65,6 +71,10 @@ trait ServerApplication extends YouIApplication with Server {
     }
   }
 
+  private val cancellable: Option[Cancellable] = Some(system.scheduler.schedule(30.seconds, 30.seconds) {
+    pingClients()
+  })
+
   protected def errorInfo(error: JavaScriptError, httpConnection: HttpConnection): Map[String, String] = Map.empty
 
   protected def page(page: Page): Page = {
@@ -90,10 +100,16 @@ trait ServerApplication extends YouIApplication with Server {
         }
       }
       connection.receive.text.attach {
-        case "PING" => connection.send.text := "PONG"
+        case "PONG" => // Nothing to do, this finishes the workflow
         case _ => // Ignore everything else
       }
       httpConnection.webSocketSupport = connection
+    }
+  }
+
+  private def pingClients(): Unit = connectivityEntries().foreach { entry =>
+    entry.connections().foreach { connection =>
+      connection.send.text := "PING"
     }
   }
 
@@ -107,5 +123,11 @@ trait ServerApplication extends YouIApplication with Server {
     val content = Content.file(file)
     handler.matcher(http.path.exact(path)).resource(content)
     path
+  }
+
+  override def dispose(): Unit = {
+    super.dispose()
+
+    system.terminate()
   }
 }

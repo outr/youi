@@ -37,6 +37,12 @@ class Connection {
     receive.text.attach { s =>
       if (Connection.debug) scribe.info(s"Receive: $s")
     }
+    send.close.on {
+      _connected := false
+    }
+    receive.close.on {
+      _connected := false
+    }
 
     connected.attach { b =>
       synchronized {

@@ -41,6 +41,8 @@ object TemplateRunner {
         if (mode.equalsIgnoreCase("server")) {
           compiler.stopServer()
         }
+      } else {
+        System.exit(0)
       }
     } catch {
       case t: Throwable => {

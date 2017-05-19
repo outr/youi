@@ -23,6 +23,7 @@ val hasherVersion = "1.2.1"
 val canvgVersion = "1.4.0_1"
 val openTypeVersion = "0.7.1_2"
 val scalaXMLVersion = "1.0.6"
+val scallopVersion = "2.1.2"
 val scalacticVersion = "3.0.3"
 val scalaTestVersion = "3.0.3"
 
@@ -188,7 +189,8 @@ lazy val template = crossProject.in(file("template"))
   .jvmSettings(
     fork := true,
     libraryDependencies ++= Seq(
-      "org.powerscala" %% "powerscala-io" % powerScalaVersion
+      "org.powerscala" %% "powerscala-io" % powerScalaVersion,
+      "org.rogach" %% "scallop" % scallopVersion
     ),
     assemblyJarName in assembly := "youi-template.jar"
   )

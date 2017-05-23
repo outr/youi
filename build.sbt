@@ -7,7 +7,7 @@ resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
 resolvers in ThisBuild += Resolver.sonatypeRepo("snapshots")
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 
-val pixiJsVersion = "4.5.1"
+val pixiJsVersion = "4.5.2"
 val scribeVersion = "1.4.2"
 val powerScalaVersion = "2.0.5"
 val reactifyVersion = "1.5.3"
@@ -16,7 +16,7 @@ val scalaJSDOM = "0.9.2"
 val httpAsyncClientVersion = "4.1.3"
 val circeVersion = "0.8.0"
 val uaDetectorVersion = "2014.10"
-val undertowVersion = "1.4.14.Final"
+val undertowVersion = "1.4.15.Final"
 val uPickleVersion = "0.4.4"
 val closureCompilerVersion = "v20170423"
 val hasherVersion = "1.2.1"

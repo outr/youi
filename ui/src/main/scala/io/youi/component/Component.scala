@@ -73,6 +73,7 @@ trait Component extends Updates {
                               updatesTransform: Boolean = false,
                               updatesRendering: Boolean = false): Var[T] = {
     val v = Var[T](get)
+    set(v())
     v.attach { value =>
       set(value)
       if (updatesTransform) {

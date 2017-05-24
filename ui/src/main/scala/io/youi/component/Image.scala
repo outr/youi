@@ -14,6 +14,8 @@ class Image extends Component {
 
   lazy val texture: Var[Texture] = prop(new Texture(instance.texture), (t: Texture) => instance.texture = t.instance, updatesRendering = true)
 
+  // TODO: fire invalidate when texture.update is triggered
+
   size.measured.width := texture().width()
   size.measured.height := texture().height()
 

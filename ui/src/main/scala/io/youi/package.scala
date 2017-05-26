@@ -49,6 +49,16 @@ package object youi {
     def pica: Double = pt * 12.0
 
     /**
+      * degrees conversion (360 converts to 1.0)
+      */
+    def degrees: Double = d / 360.0
+
+    /**
+      * radians conversion (2π converts to 1.0)
+      */
+    def radians: Double = d / (2.0 * math.Pi)
+
+    /**
       * 1/100th of the width of the viewport.
       */
     def vw: Val[Double] = Val((d / 100.0) * ui.size.width)

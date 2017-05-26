@@ -100,7 +100,7 @@ trait Component extends Updates {
       y = position.y() + pivot.y(),
       scaleX = scale.x(),
       scaleY = scale.y(),
-      rotation = rotation() * (2.0 * -math.Pi),
+      rotation = rotation() * (2.0 * math.Pi),
       skewX = skew.x(),
       skewY = skew.y(),
       pivotX = pivot.x() / scale.x(),

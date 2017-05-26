@@ -1,6 +1,6 @@
 name := "youi"
 organization in ThisBuild := "io.youi"
-version in ThisBuild := "0.3.4"
+version in ThisBuild := "0.3.5-SNAPSHOT"
 scalaVersion in ThisBuild := "2.12.2"
 crossScalaVersions in ThisBuild := List("2.12.2", "2.11.11")
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
@@ -201,7 +201,7 @@ lazy val templateJVM = template.jvm.dependsOn(serverUndertow, optimizer)
 
 lazy val example = crossProject.in(file("example"))
   .settings(
-    name := "youi-server-example"
+    name := "youi-example"
   )
   .jsSettings(
     test := (),

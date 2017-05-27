@@ -6,7 +6,7 @@ import org.scalajs.dom.raw.CanvasRenderingContext2D
 import org.scalajs.dom.{CanvasGradient, CanvasPattern, html}
 
 import scala.scalajs.js
-import scala.scalajs.js.|
+import scala.scalajs.js.{UndefOr, |}
 
 trait Paint {
   def isEmpty: Boolean = false
@@ -50,6 +50,18 @@ class RadialGradientPaint(x0: => Double,
       g.addColorStop(stop.offset, stop.color.hex)
     }
     g
+  }
+}
+
+class ImagePaint() extends Paint {
+  override protected def value(component: Component, context: CanvasRenderingContext2D): js.UndefOr[String | js.Array[String] | Double | CanvasGradient | CanvasPattern] = {
+    ???
+  }
+}
+
+class VideoPaint() extends Paint {
+  override protected def value(component: Component, context: CanvasRenderingContext2D): js.UndefOr[String | js.Array[String] | Double | CanvasGradient | CanvasPattern] = {
+    ???
   }
 }
 

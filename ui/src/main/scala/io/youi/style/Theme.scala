@@ -1,6 +1,7 @@
 package io.youi.style
 
 import io.youi.Color
+import io.youi.component.font.Font
 import reactify.Var
 
 class Theme private() {
@@ -21,8 +22,11 @@ class Theme private() {
   }
   val fill: Var[Paint] = Var(parent.map(_.fill()).getOrElse(Paint.none))
   object font {
-    val family: Var[String] = Var(parent.map(_.font.family()).getOrElse("Arial"))
+    val file: Var[Font] = Var(parent.map(_.font.file()).getOrElse(Font.empty))
     val size: Var[Double] = Var(parent.map(_.font.size()).getOrElse(26.0))
+    val kerning: Var[Boolean] = Var(parent.map(_.font.kerning()).getOrElse(true))
+
+    val family: Var[String] = Var(parent.map(_.font.family()).getOrElse("Arial"))
     val style: Var[String] = Var(parent.map(_.font.style()).getOrElse("normal"))
     val variant: Var[String] = Var(parent.map(_.font.variant()).getOrElse("normal"))
     val weight: Var[String] = Var(parent.map(_.font.weight()).getOrElse("normal"))

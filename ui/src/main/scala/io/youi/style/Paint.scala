@@ -1,10 +1,12 @@
 package io.youi.style
 
-import io.youi.component.Component
+import io.youi.component.{Component, Renderer}
+import io.youi.net.URL
 import io.youi.{Color, dom}
 import org.scalajs.dom.raw.CanvasRenderingContext2D
-import org.scalajs.dom.{CanvasGradient, CanvasPattern, html}
+import org.scalajs.dom.{CanvasGradient, CanvasPattern, Event, html}
 
+import scala.concurrent.{Future, Promise}
 import scala.scalajs.js
 import scala.scalajs.js.{UndefOr, |}
 
@@ -53,16 +55,8 @@ class RadialGradientPaint(x0: => Double,
   }
 }
 
-class ImagePaint() extends Paint {
-  override protected def value(component: Component, context: CanvasRenderingContext2D): js.UndefOr[String | js.Array[String] | Double | CanvasGradient | CanvasPattern] = {
-    ???
-  }
-}
-
-class VideoPaint() extends Paint {
-  override protected def value(component: Component, context: CanvasRenderingContext2D): js.UndefOr[String | js.Array[String] | Double | CanvasGradient | CanvasPattern] = {
-    ???
-  }
+class PatternPaint(pattern: CanvasPattern) extends Paint {
+  override protected def value(component: Component, context: CanvasRenderingContext2D): js.UndefOr[String | js.Array[String] | Double | CanvasGradient | CanvasPattern] = pattern
 }
 
 object Paint {
@@ -102,4 +96,24 @@ object Paint {
     }
     new RadialGradientPaint(x0, y0, r0, x1, y1, r1, stops.toVector)
   }
+
+  def image(url: String | URL, repetition: Repetition = Repetition.Repeat): Future[Paint] = {
+    val promise = Promise[Paint]
+    val img = dom.create[html.Image]("img")
+    img.addEventListener("load", (_: Event) => {
+      val pattern = context.createPattern(img, repetition.value)
+      promise.success(new PatternPaint(pattern))
+    })
+    img.src = url.toString
+    promise.future
+  }
+}
+
+sealed abstract class Repetition(val value: String)
+
+object Repetition {
+  case object Repeat extends Repetition("repeat")
+  case object RepeatX extends Repetition("repeat-x")
+  case object RepeatY extends Repetition("repeat-y")
+  case object NoRepeat extends Repetition("no-repeat")
 }

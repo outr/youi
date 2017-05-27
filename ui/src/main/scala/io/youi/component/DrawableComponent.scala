@@ -9,10 +9,12 @@ import scala.scalajs.js
 class DrawableComponent extends CanvasComponent {
   val drawable: Var[Drawable] = Var(Drawable.empty)
 
-  drawable.on(reDraw.flag())
-
   val fill: Var[Paint] = Var(theme.fill)
   val stroke: Var[Paint] = Var(theme.stroke)
+
+  drawable.on(reDraw.flag())
+  fill.on(reDraw.flag())
+  stroke.on(reDraw.flag())
 
   override protected def defaultTheme: Theme = DrawableComponent
 

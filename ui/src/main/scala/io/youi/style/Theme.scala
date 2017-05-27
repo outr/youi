@@ -19,7 +19,7 @@ class Theme private() {
     val color: Var[Color] = Var(parent.map(_.dropShadow.color()).getOrElse(Color.Black))
     val distance: Var[Double] = Var(parent.map(_.dropShadow.distance()).getOrElse(0.0))
   }
-  val fill: Var[Paint] = Var(parent.map(_.fill()).getOrElse(Color.Black))
+  val fill: Var[Paint] = Var(parent.map(_.fill()).getOrElse(Paint.none))
   object font {
     val family: Var[String] = Var(parent.map(_.font.family()).getOrElse("Arial"))
     val size: Var[Double] = Var(parent.map(_.font.size()).getOrElse(26.0))
@@ -32,7 +32,8 @@ class Theme private() {
   val lineJoin: Var[String] = Var(parent.map(_.lineJoin()).getOrElse("miter"))
   val miterLimit: Var[Double] = Var(parent.map(_.miterLimit()).getOrElse(10.0))
   val padding: Var[Double] = Var(parent.map(_.padding()).getOrElse(0.0))
-  val stroke: Var[Color] = Var(parent.map(_.stroke()).getOrElse(Color.Clear))
+  val stroke: Var[Paint] = Var(parent.map(_.stroke()).getOrElse(Paint.none))
+  val strokeColor: Var[Color] = Var(parent.map(_.strokeColor()).getOrElse(Color.Clear))
   val strokeThickness: Var[Double] = Var(parent.map(_.strokeThickness()).getOrElse(0.0))
   val textBaseline: Var[String] = Var(parent.map(_.textBaseline()).getOrElse("alphabetic"))
   val wordWrap: Var[Boolean] = Var(parent.map(_.wordWrap()).getOrElse(false))

@@ -1,9 +1,9 @@
 package io.youi.style
 
-import io.youi.{Color, dom}
 import io.youi.component.Component
-import org.scalajs.dom.{CanvasGradient, CanvasPattern, html}
+import io.youi.{Color, dom}
 import org.scalajs.dom.raw.CanvasRenderingContext2D
+import org.scalajs.dom.{CanvasGradient, CanvasPattern, html}
 
 import scala.scalajs.js
 import scala.scalajs.js.|
@@ -22,7 +22,7 @@ object NoPaint extends Paint {
 }
 
 class ColorPaint(color: Color) extends Paint {
-  override protected  def value(component: Component, context: CanvasRenderingContext2D): js.UndefOr[String | js.Array[String] | Double | CanvasGradient | CanvasPattern] = color.hex
+  override protected  def value(component: Component, context: CanvasRenderingContext2D): js.UndefOr[String | js.Array[String] | Double | CanvasGradient | CanvasPattern] = color.css
 }
 
 class LinearGradientPaint(direction: GradientDirection, stops: Vector[GradientStop]) extends Paint {

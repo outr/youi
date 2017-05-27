@@ -1,11 +1,12 @@
 package io.youi.component.shape
 
+import io.youi.component.Component
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 
 import scala.collection.mutable.ListBuffer
 
-case class Path(actions: List[PathAction]) extends PathAction {
-  override def invoke(context: CanvasRenderingContext2D): Unit = actions.foreach { action =>
+case class Path(actions: List[PathAction]) extends Drawable {
+  override def draw(component: Component, context: CanvasRenderingContext2D): Unit = actions.foreach { action =>
     action.invoke(context)
   }
 }
@@ -17,6 +18,17 @@ object Path {
   private lazy val LineRegex = """L([- ]?[0-9.]+)([- ]?[0-9.]+)""".r
   private lazy val CurveRegex = """C([- ]?[0-9.]+)([- ]?[0-9.]+)([- ]?[0-9.]+)([- ]?[0-9.]+)([- ]?[0-9.]+)([- ]?[0-9.]+)""".r
   private lazy val QuadraticRegex = """Q([- ]?[0-9.]+)([- ]?[0-9.]+)([- ]?[0-9.]+)([- ]?[0-9.]+)""".r
+
+  def apply(actions: PathAction*): Path = {
+    var list = actions.toList
+    if (list.head != BeginPath) {
+      list = BeginPath :: list
+    }
+    if (list.last != ClosePath) {
+      list = list ::: List(ClosePath)
+    }
+    Path(list)
+  }
 
   def apply(pathString: String): Path = {
     val b = new StringBuilder
@@ -42,28 +54,4 @@ object Path {
 
     Path(actions.toList)
   }
-}
-
-sealed trait PathAction {
-  def invoke(context: CanvasRenderingContext2D): Unit
-}
-
-case class MoveTo(x: Double, y: Double) extends PathAction {
-  override def invoke(context: CanvasRenderingContext2D): Unit = context.moveTo(x, y)
-}
-
-case class LineTo(x: Double, y: Double) extends PathAction {
-  override def invoke(context: CanvasRenderingContext2D): Unit = context.lineTo(x, y)
-}
-
-case class CurveTo(x1: Double, y1: Double, x2: Double, y2: Double, x: Double, y: Double) extends PathAction {
-  override def invoke(context: CanvasRenderingContext2D): Unit = context.bezierCurveTo(x1, y1, x2, y2, x, y)
-}
-
-case class QuadraticCurveTo(x1: Double, y1: Double, x: Double, y: Double) extends PathAction {
-  override def invoke(context: CanvasRenderingContext2D): Unit = context.quadraticCurveTo(x1, y1, x, y)
-}
-
-object ClosePath extends PathAction {
-  override def invoke(context: CanvasRenderingContext2D): Unit = context.closePath()
 }

@@ -1,55 +1,77 @@
 package io.youi.example.ui
 
-import io.youi._
 import io.youi.app.screen.UIScreen
-import io.youi.component.BasicText
-import io.youi.style.Theme
+import io.youi.component.font.Font
+import io.youi.component.shape.Path
+import io.youi.component.{CanvasComponent, RenderMode}
+import opentype.PathOptions
+import org.scalajs.dom.raw.CanvasRenderingContext2D
+import reactify.Val
 
 object TextExample extends UIExampleScreen with UIScreen {
   override def name: String = "Text Example"
   override def path: String = "/examples/text.html"
 
   override def createUI(): Unit = {
-    val textTheme = new Theme(BasicText) {
-      font.size := 48.0
-      fill := Color.Black
-    }
-    container.children += new BasicText {
-      value := "Top Left"
-      theme := textTheme
-      fill := Color.LightGreen
-      position.left := 0.0
-      position.top := 0.0
-    }
-    container.children += new BasicText {
-      value := "Top Right"
-      theme := textTheme
-      fill := Color.LightSalmon
-      position.right := container.position.right
-      position.top := 0.0
-    }
-    container.children += new BasicText {
-      value := "Bottom Left"
-      theme := textTheme
-      fill := Color.DarkGoldenRod
-      position.left := 0.0
-      position.bottom := container.position.bottom
-    }
-    container.children += new BasicText {
-      value := "Bottom Right"
-      theme := textTheme
-      fill := Color.LightBlue
-      position.right := container.position.right
-      position.bottom := container.position.bottom
-    }
-    container.children += new BasicText {
-      value := "Hello, World!"
-      theme := textTheme
-      font.size := 60.0
-      fill := Color.MidnightBlue
+    renderer.renderMode := RenderMode.EveryFrame
+
+    val font = Font.fromPath("/fonts/Pacifico.ttf")
+    val text = "Hello, World!"
+    val fontSize = 48.0
+
+    container.children += new CanvasComponent {
       position.center := container.position.center
       position.middle := container.position.middle
-      rotation := AnimationFrame.timeStamp * 0.001
+      size.width := 400.0
+      size.height := 200.0
+
+      private var adjustX = 0.0
+      private var adjustY = 0.0
+
+      val path: Val[Option[Path]] = Val {
+        font.internal().map { ot =>
+          val path = ot.getPath(text, 0.0, 0.0, fontSize, new PathOptions {
+            kerning = true
+          })
+          val box = path.getBoundingBox()
+          val width = box.x2 - box.x1
+          val height = box.y2 - box.y1
+//          size.measured.width := width
+//          size.measured.height := height
+          adjustX = -box.x1
+          adjustY = -box.y2
+          try {
+            Path(path.toPathData())
+          } finally {
+//            invalidate()
+            reDraw.flag()
+          }
+        }
+      }
+
+      override protected def draw(context: CanvasRenderingContext2D): Unit = {
+        context.fillStyle = "yellow"
+        context.fillRect(0.0, 0.0, size.width(), size.height())
+        context.fillStyle = "black"
+        context.strokeStyle = "black"
+//        context.font = "64px Arial"
+//        context.fillText("Hello, World!", 20.0, 100.0)
+
+        context.translate(adjustX, size.height() + adjustY)
+
+        path().foreach { p =>
+          p.draw(this, context)
+        }
+        context.fill()
+      }
     }
+//    val text = new BasicText {
+//      value := "Hello, World!"
+//      font.size := 48.0
+//      fill := Color.DarkBlue
+//      position.center := renderer.position.center
+//      position.middle := renderer.position.middle
+//    }
+//    container.children += text
   }
 }

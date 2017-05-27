@@ -31,7 +31,7 @@ class BasicText extends Component {
   val lineJoin: Var[String] = prop(theme.lineJoin, (s: String) => instance.style.lineJoin = s, updatesRendering = true)
   val miterLimit: Var[Double] = prop(theme.miterLimit, (d: Double) => instance.style.miterLimit = d, updatesRendering = true)
   val padding: Var[Double] = prop(theme.padding, (d: Double) => instance.style.padding = d, updatesRendering = true)
-  val stroke: Var[Color] = prop(theme.stroke, (c: Color) => instance.style.stroke = c.hex, updatesRendering = true)
+  val stroke: Var[Color] = prop(theme.strokeColor, (c: Color) => instance.style.stroke = c.hex, updatesRendering = true)
   val strokeThickness: Var[Double] = prop(theme.strokeThickness, (d: Double) => instance.style.strokeThickness = d, updatesRendering = true)
   val textBaseline: Var[String] = prop(theme.textBaseline, (s: String) => instance.style.textBaseline = s, updatesRendering = true)
   val wordWrap: Var[Boolean] = prop(theme.wordWrap, (b: Boolean) => instance.style.wordWrap = b, updatesRendering = true)

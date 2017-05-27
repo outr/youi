@@ -1,17 +1,15 @@
 package io.youi.example
 
 import io.youi.UI
-import io.youi.app.{ClientApplication, ClientConnectivity}
 import io.youi.app.screen.CrossFadeSupport
-import io.youi.component.Renderer
-import io.youi.example.screen.{CommunicationScreen, LoginScreen}
-
-import scala.scalajs.js.JSApp
-import org.scalajs.dom._
+import io.youi.app.{ClientApplication, ClientConnectivity}
 import io.youi.dom._
+import io.youi.example.screen.{CommunicationScreen, LoginScreen}
 import io.youi.example.ui._
+import org.scalajs.dom._
 
 import scala.concurrent.duration._
+import scala.scalajs.js.JSApp
 
 object ClientExampleApplication extends JSApp with ExampleApplication with ClientApplication with CrossFadeSupport {
   val communicationScreen = CommunicationScreen
@@ -23,8 +21,10 @@ object ClientExampleApplication extends JSApp with ExampleApplication with Clien
   val images = ImageExample
   val animation = AnimationExample
   val graphics = GraphicsExample
+  val basicText = BasicTextExample
   val text = TextExample
   val canvas = CanvasExample
+  val drawable = DrawableExample
   val htmlComponent = HTMLComponentExample
   val virtual = VirtualSizeExample
   val imageEditor = ImageEditorExample

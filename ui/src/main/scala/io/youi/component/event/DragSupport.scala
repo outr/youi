@@ -7,9 +7,9 @@ abstract class DragSupport[T](component: Component) {
   val dragging: Var[Option[T]] = Var(None)
   val dropped: Channel[Dropped[T]] = Channel[Dropped[T]]
 
-  component.event.mouse.down.attach(checkForDown)
-  component.event.mouse.up.attach(checkForUp)
-  component.event.mouse.upOutside.attach(checkForUp)
+  component.event.pointer.down.attach(checkForDown)
+  component.event.pointer.up.attach(checkForUp)
+  component.event.pointer.upOutside.attach(checkForUp)
 
   /**
     * Determines if there is draggable for this MouseEvent. This is called on mouse down events.

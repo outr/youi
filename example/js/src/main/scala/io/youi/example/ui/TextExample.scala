@@ -2,9 +2,9 @@ package io.youi.example.ui
 
 import io.youi.Color
 import io.youi.app.screen.UIScreen
-import io.youi.component.font.Font
 import io.youi.component.Text
-import io.youi.style.{Paint, Repetition}
+import io.youi.component.font.Font
+import io.youi.style.Paint
 
 object TextExample extends UIExampleScreen with UIScreen {
   override def name: String = "Text Example"
@@ -28,6 +28,12 @@ object TextExample extends UIExampleScreen with UIScreen {
       }
       position.center := container.position.center
       position.middle := container.position.middle - 100.0
+
+      event.click.attach { mouseEvent =>
+        val tp = textPaths.get
+        val touching = tp.touching(mouseEvent.x, mouseEvent.y)
+        scribe.info(s"Checking: ${mouseEvent.x}x${mouseEvent.y}, touching: ${touching.map(_.char)}")
+      }
     }
   }
 }

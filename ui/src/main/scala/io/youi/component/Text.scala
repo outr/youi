@@ -1,7 +1,7 @@
 package io.youi.component
 
-import io.youi.component.font.Font
-import io.youi.component.shape.{Drawable, Group, Translate}
+import io.youi.component.font.{Font, TextPaths}
+import io.youi.component.shape.Drawable
 import io.youi.style.Theme
 import reactify.Var
 
@@ -15,18 +15,26 @@ class Text extends DrawableComponent {
 
   drawable := updateDrawable()
 
+  def textPaths: Option[TextPaths] = drawable() match {
+    case tp: TextPaths => Some(tp)
+    case _ => None
+  }
+
   override protected def defaultTheme = Text
 
   protected def updateDrawable(): Drawable = {
     if (value().nonEmpty && font.file.loaded()) {
-      val path = font.file().createPath(value(), font.size(), font.kerning())
-      val translate = Translate(path.adjustX, path.height + path.adjustY)
-      size.measured.width := path.width
-      size.measured.height := path.height
-      Group(
-        translate,
-        path.path
-      )
+      try {
+        val textPaths = font.file().createPaths(value(), font.size(), font.kerning())
+        size.measured.width := textPaths.boundingBox.width
+        size.measured.height := textPaths.boundingBox.height
+        textPaths
+      } catch {
+        case t: Throwable => {
+          scribe.error(t)
+          throw t
+        }
+      }
     } else {
       Drawable.empty
     }

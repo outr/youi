@@ -1,7 +1,9 @@
 package io.youi.component.font
 
-import io.youi.component.shape.Path
+import io.youi.component.Component
+import io.youi.component.shape.{BoundingBox, Drawable, Path}
 import opentype.{OpenType, PathOptions}
+import org.scalajs.dom.raw.CanvasRenderingContext2D
 import reactify.{Val, Var}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -10,7 +12,7 @@ import scala.concurrent.Future
 trait Font {
   val loaded: Val[Boolean]
 
-  def createPath(value: String, size: Double, kerning: Boolean): FontPath
+  def createPaths(value: String, size: Double, kerning: Boolean): TextPaths
 }
 
 class OpenTypeFont(val fontFuture: Future[opentype.Font]) extends Font {
@@ -21,28 +23,26 @@ class OpenTypeFont(val fontFuture: Future[opentype.Font]) extends Font {
     internal := Some(f)
   }
 
-  override def createPath(value: String, size: Double, kerning: Boolean): FontPath = {
+  override def createPaths(value: String, size: Double, kerning: Boolean): TextPaths = {
     val f = internal().getOrElse(throw new RuntimeException(s"Cannot create path from an OpenTypeFont that has not yet completed loading."))
     val k = kerning
-    val p = f.getPath(value, 0.0, 0.0, size, new PathOptions {
+
+    val openTypePaths = f.getPaths(value, 0.0, 0.0, size, new PathOptions {
       kerning = k
     })
-    val box = p.getBoundingBox()
-    val width = box.x2 - box.x1
-    val height = box.y2 - box.y1
-    val adjustX = -box.x1
-    val adjustY = -box.y2
-    FontPath(Path(p.toPathData()), adjustX, adjustY, width, height)
+    val paths = openTypePaths.map(p => Path(p.toPathData()))
+    val textPaths = value.zip(paths).map {
+      case (char, path) => TextPath(char, path)
+    }.toVector
+    TextPaths(textPaths)
   }
 }
-
-case class FontPath(path: Path, adjustX: Double, adjustY: Double, width: Double, height: Double)
 
 object Font {
   case object empty extends Font {
     override val loaded: Val[Boolean] = Val(false)
 
-    override def createPath(value: String, size: Double, kerning: Boolean): FontPath = {
+    override def createPaths(value: String, size: Double, kerning: Boolean): TextPaths = {
       throw new RuntimeException("Cannot create path from Font.empty.")
     }
   }
@@ -60,3 +60,22 @@ object Font {
     }
   }
 }
+
+case class TextPaths(paths: Vector[TextPath]) extends Drawable {
+  lazy val boundingBox: BoundingBox = {
+    var bb = paths.head.path.boundingBox
+    paths.tail.foreach(other => bb = bb.merge(other.path.boundingBox))
+    bb
+  }
+
+  def touching(x: Double, y: Double): Option[TextPath] = paths.find(_.path.boundingBox.touching(x, y))
+
+  override def draw(component: Component, context: CanvasRenderingContext2D): Unit = {
+    context.translate(boundingBox.adjustX, boundingBox.adjustY)
+    paths.foreach { textPath =>
+      textPath.path.draw(component, context)
+    }
+  }
+}
+
+case class TextPath(char: Char, path: Path)

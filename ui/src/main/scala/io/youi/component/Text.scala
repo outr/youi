@@ -28,7 +28,7 @@ class Text extends DrawableComponent {
         val textPaths = font.file().createPaths(value(), font.size(), font.kerning())
         size.measured.width := textPaths.boundingBox.width
         size.measured.height := textPaths.boundingBox.height
-        textPaths
+        textPaths.zero()
       } catch {
         case t: Throwable => {
           scribe.error(t)

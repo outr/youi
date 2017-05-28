@@ -68,6 +68,10 @@ case class TextPaths(paths: Vector[TextPath]) extends Drawable {
     bb
   }
 
+  def zero(): TextPaths = TextPaths(paths.map { tp =>
+    TextPath(tp.char, tp.path.shift(boundingBox.adjustX, boundingBox.adjustY))
+  })
+
   def touching(x: Double, y: Double): Option[TextPath] = paths.find(_.path.boundingBox.touching(x, y))
 
   override def draw(component: Component, context: CanvasRenderingContext2D): Unit = {

@@ -11,6 +11,17 @@ case class Path(actions: List[PathAction]) extends Drawable {
   override def draw(component: Component, context: CanvasRenderingContext2D): Unit = actions.foreach { action =>
     action.invoke(context)
   }
+
+  def shift(adjustX: Double, adjustY: Double): Path = {
+    val updated = actions.map {
+      case CurveTo(x1, y1, x2, y2, x, y) => CurveTo(x1 + adjustX, y1 + adjustY, x2 + adjustX, y2 + adjustY, x + adjustX, y + adjustY)
+      case LineTo(x, y) => LineTo(x + adjustX, y + adjustY)
+      case MoveTo(x, y) => MoveTo(x + adjustX, y + adjustY)
+      case QuadraticCurveTo(x1, y1, x, y) => QuadraticCurveTo(x1 + adjustX, y1 + adjustY, x + adjustX, y + adjustY)
+      case action => action
+    }
+    Path(updated)
+  }
 }
 
 case class BoundingBox(x1: Double, y1: Double, x2: Double, y2: Double) {

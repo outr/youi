@@ -21,11 +21,13 @@ object TextExample extends UIExampleScreen with UIScreen {
     }
     container.children += new Text {
       value := "Hello, World!"
-      font.file := Font.fromPath("/fonts/Pacifico.ttf")
+      font.file := Font.fromPath("/fonts/Roboto-Black.ttf")
       font.size := 96.0
       Paint.image("/cuteness.jpg").foreach { paint =>
         fill := paint
       }
+      stroke := Color.Black
+      lineWidth := 0.5
       position.center := container.position.center
       position.middle := container.position.middle - 100.0
 

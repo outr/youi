@@ -14,6 +14,7 @@ class DrawableComponent extends CanvasComponent {
 
   val fill: Var[Paint] = Var(theme.fill)
   val stroke: Var[Paint] = Var(theme.stroke)
+  val lineWidth: Var[Double] = Var(theme.lineWidth)
 
   drawable.on(reDraw.flag())
   fill.on(reDraw.flag())
@@ -22,6 +23,7 @@ class DrawableComponent extends CanvasComponent {
   override protected def defaultTheme: Theme = DrawableComponent
 
   override protected def draw(context: CanvasRenderingContext2D): Unit = {
+    context.image
     preDraw.foreach(_.draw(this, context))
     if (fill().nonEmpty) {
       context.fillStyle = fill().apply(this).asInstanceOf[js.Any]
@@ -33,8 +35,9 @@ class DrawableComponent extends CanvasComponent {
     if (fill().nonEmpty) {
       context.fill()
     }
+    context.lineWidth = lineWidth()
     if (stroke().nonEmpty) {
-      context.fill()
+      context.stroke()
     }
     postDraw.foreach(_.draw(this, context))
   }

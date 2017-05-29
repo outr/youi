@@ -4,12 +4,17 @@ import io.youi.component.Component
 import reactify.{Channel, Var}
 
 abstract class DragSupport[T](component: Component) {
-  val dragging: Var[Option[T]] = Var(None)
+  val value: Var[Option[T]] = Var(None)
   val dropped: Channel[Dropped[T]] = Channel[Dropped[T]]
+
+  def isDragging: Boolean = value().nonEmpty
 
   component.event.pointer.down.attach(checkForDown)
   component.event.pointer.up.attach(checkForUp)
   component.event.pointer.upOutside.attach(checkForUp)
+  component.event.pointer.move.attach { mouseEvent =>
+    value.foreach(v => dragging(mouseEvent, v))
+  }
 
   /**
     * Determines if there is draggable for this MouseEvent. This is called on mouse down events.
@@ -19,12 +24,14 @@ abstract class DragSupport[T](component: Component) {
     */
   def draggable(mouseEvent: MouseEvent): Option[T]
 
+  def dragging(mouseEvent: MouseEvent, value: T): Unit = {}
+
   protected def checkForDown(mouseEvent: MouseEvent): Unit = {
-    dragging := draggable(mouseEvent)
+    value := draggable(mouseEvent)
   }
 
-  protected def checkForUp(mouseEvent: MouseEvent): Unit = dragging().foreach { value =>
-    dropped := Dropped(mouseEvent, value)
-    dragging := None
+  protected def checkForUp(mouseEvent: MouseEvent): Unit = value().foreach { v =>
+    dropped := Dropped(mouseEvent, v)
+    value := None
   }
 }

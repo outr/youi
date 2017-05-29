@@ -31,8 +31,8 @@ class OpenTypeFont(val fontFuture: Future[opentype.Font]) extends Font {
       kerning = k
     })
     val paths = openTypePaths.map(p => Path(p.toPathData()))
-    val textPaths = value.zip(paths).map {
-      case (char, path) => TextPath(char, path)
+    val textPaths = value.zip(paths).zipWithIndex.map {
+      case ((char, path), index) => TextPath(char, index, path)
     }.toVector
     TextPaths(textPaths)
   }
@@ -68,13 +68,16 @@ case class TextPaths(paths: Vector[TextPath]) extends Drawable {
     bb
   }
 
-  def zero(): TextPaths = TextPaths(paths.map { tp =>
-    TextPath(tp.char, tp.path.shift(boundingBox.adjustX, boundingBox.adjustY))
+  def zero(): TextPaths = TextPaths(paths.zipWithIndex.map {
+    case (tp, index) => TextPath(tp.char, index, tp.path.shift(boundingBox.adjustX, boundingBox.adjustY))
   })
 
-  def touching(x: Double, y: Double): Vector[Touching] = paths.flatMap { tp =>
-    tp.path.boundingBox.touching(x, y).map(d => Touching(tp, d))
-  }.sortBy(_.data.distance)
+  def touching(x: Double, y: Double): Vector[Touching] = {
+    val ry = boundingBox.height - y
+    paths.flatMap { tp =>
+      tp.path.boundingBox.touching(x, ry).map(d => Touching(tp, d))
+    }.sortBy(_.data.distance)
+  }
 
   override def draw(component: Component, context: CanvasRenderingContext2D): Unit = {
     context.translate(boundingBox.adjustX, boundingBox.adjustY)
@@ -84,7 +87,7 @@ case class TextPaths(paths: Vector[TextPath]) extends Drawable {
   }
 }
 
-case class TextPath(char: Char, path: Path)
+case class TextPath(char: Char, index: Int, path: Path)
 
 case class Touching(textPath: TextPath, data: TouchData) {
   override def toString: String = s"Touching(char: ${textPath.char}, data: $data)"

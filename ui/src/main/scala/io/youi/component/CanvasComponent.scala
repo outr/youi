@@ -20,6 +20,7 @@ abstract class CanvasComponent extends Image {
   override protected def defaultTheme: Theme = CanvasComponent
 
   val reDraw = LazyUpdate {
+    context.clearRect(0.0, 0.0, canvas.width.toDouble, canvas.height.toDouble)
     draw(context)
     filter().foreach { filter =>
       val imageData = context.getImageData(0.0, 0.0, canvas.width.toDouble, canvas.height.toDouble)

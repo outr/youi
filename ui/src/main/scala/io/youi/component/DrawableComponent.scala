@@ -1,4 +1,5 @@
 package io.youi.component
+import io.youi.ItemContainer
 import io.youi.component.shape.Drawable
 import io.youi.style.{Paint, Theme}
 import org.scalajs.dom.raw.CanvasRenderingContext2D
@@ -7,6 +8,8 @@ import reactify.Var
 import scala.scalajs.js
 
 class DrawableComponent extends CanvasComponent {
+  val preDraw: ItemContainer[Drawable] = new ItemContainer[Drawable]()
+  val postDraw: ItemContainer[Drawable] = new ItemContainer[Drawable]()
   val drawable: Var[Drawable] = Var(Drawable.empty)
 
   val fill: Var[Paint] = Var(theme.fill)
@@ -19,6 +22,7 @@ class DrawableComponent extends CanvasComponent {
   override protected def defaultTheme: Theme = DrawableComponent
 
   override protected def draw(context: CanvasRenderingContext2D): Unit = {
+    preDraw.foreach(_.draw(this, context))
     if (fill().nonEmpty) {
       context.fillStyle = fill().apply(this).asInstanceOf[js.Any]
     }
@@ -32,6 +36,7 @@ class DrawableComponent extends CanvasComponent {
     if (stroke().nonEmpty) {
       context.fill()
     }
+    postDraw.foreach(_.draw(this, context))
   }
 }
 

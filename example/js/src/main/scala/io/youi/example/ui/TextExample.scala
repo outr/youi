@@ -31,8 +31,7 @@ object TextExample extends UIExampleScreen with UIScreen {
 
       event.click.attach { mouseEvent =>
         val tp = textPaths.get
-        val height = tp.boundingBox.height
-        val touching = tp.touching(mouseEvent.x, height - mouseEvent.y).headOption
+        val touching = tp.touching(mouseEvent.x, mouseEvent.y).headOption
         scribe.info(s"Checking: ${mouseEvent.x}x${mouseEvent.y}, touching: $touching")
       }
     }

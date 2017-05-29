@@ -1,15 +1,19 @@
 package io.youi.component
 
 import com.outr.pixijs.PIXI
+import io.youi.component.filter.CanvasFilter
 import io.youi.{LazyUpdate, dom}
 import io.youi.style.Theme
 import org.scalajs.dom.html
 import org.scalajs.dom.raw.CanvasRenderingContext2D
+import reactify.Var
 
 abstract class CanvasComponent extends Image {
   private val canvas = dom.create[html.Canvas]("canvas")
   private val context = canvas.getContext("2d").asInstanceOf[CanvasRenderingContext2D]
   private val pixiTexture: PIXI.Texture = PIXI.Texture.fromCanvas(canvas)
+
+  val filter: Var[Option[CanvasFilter]] = Var(None)
 
   texture := new Texture(pixiTexture)
 
@@ -17,6 +21,11 @@ abstract class CanvasComponent extends Image {
 
   val reDraw = LazyUpdate {
     draw(context)
+    filter().foreach { filter =>
+      val imageData = context.getImageData(0.0, 0.0, canvas.width.toDouble, canvas.height.toDouble)
+      filter(imageData)
+      context.putImageData(imageData, 0, 0)
+    }
     pixiTexture.update()
     invalidate()
   }
@@ -29,6 +38,7 @@ abstract class CanvasComponent extends Image {
     canvas.height = math.ceil(d).toInt
     reDraw.flag()
   }
+  filter.on(reDraw.flag())
 
   protected def draw(context: CanvasRenderingContext2D): Unit
 

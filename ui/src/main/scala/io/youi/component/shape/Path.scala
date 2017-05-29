@@ -39,17 +39,21 @@ case class BoundingBox(x1: Double, y1: Double, x2: Double, y2: Double) {
     y2 = math.max(this.y2, that.y2)
   )
 
-  def touching(x: Double, y: Double): Option[Double] = {
+  def touching(x: Double, y: Double): Option[TouchData] = {
     if (x >= x1 && x <= x2 && y >= 0 && y <= height) {
       val deltaX = x - centerX
       val deltaY = y - centerY
-      Some(math.sqrt((deltaX * deltaX) + (deltaY * deltaY)))
+      Some(TouchData(deltaX, deltaY, math.sqrt((deltaX * deltaX) + (deltaY * deltaY))))
     } else {
       None
     }
   }
 
   override def toString: String = s"BoundingBox(x1: $x1, y1: $y1, x2: $x2, y2: $y2, adjustX: $adjustX, adjustY: $adjustY, width: $width, height: $height)"
+}
+
+case class TouchData(deltaX: Double, deltaY: Double, distance: Double) {
+  override def toString: String = s"TouchData(deltaX: $deltaX, deltaY: $deltaY, distance: $distance)"
 }
 
 object BoundingBox {

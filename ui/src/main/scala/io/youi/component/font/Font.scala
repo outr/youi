@@ -1,7 +1,7 @@
 package io.youi.component.font
 
 import io.youi.component.Component
-import io.youi.component.shape.{BoundingBox, Drawable, Path}
+import io.youi.component.shape.{BoundingBox, Drawable, Path, TouchData}
 import opentype.{OpenType, PathOptions}
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 import reactify.{Val, Var}
@@ -74,7 +74,7 @@ case class TextPaths(paths: Vector[TextPath]) extends Drawable {
 
   def touching(x: Double, y: Double): Vector[Touching] = paths.flatMap { tp =>
     tp.path.boundingBox.touching(x, y).map(d => Touching(tp, d))
-  }.sortBy(_.distance)
+  }.sortBy(_.data.distance)
 
   override def draw(component: Component, context: CanvasRenderingContext2D): Unit = {
     context.translate(boundingBox.adjustX, boundingBox.adjustY)
@@ -86,6 +86,6 @@ case class TextPaths(paths: Vector[TextPath]) extends Drawable {
 
 case class TextPath(char: Char, path: Path)
 
-case class Touching(textPath: TextPath, distance: Double) {
-  override def toString: String = s"Touching(char: ${textPath.char}, distance: $distance)"
+case class Touching(textPath: TextPath, data: TouchData) {
+  override def toString: String = s"Touching(char: ${textPath.char}, data: $data)"
 }

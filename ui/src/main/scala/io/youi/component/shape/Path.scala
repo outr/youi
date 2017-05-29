@@ -27,6 +27,8 @@ case class Path(actions: List[PathAction]) extends Drawable {
 case class BoundingBox(x1: Double, y1: Double, x2: Double, y2: Double) {
   def adjustX: Double = -x1
   def adjustY: Double = height - y2
+  def centerX: Double = x1 + (width / 2.0)
+  def centerY: Double = y1 + (height / 2.0)
   def width: Double = x2 - x1
   def height: Double = y2 - y1
 
@@ -37,10 +39,14 @@ case class BoundingBox(x1: Double, y1: Double, x2: Double, y2: Double) {
     y2 = math.max(this.y2, that.y2)
   )
 
-  def touching(x: Double, y: Double): Boolean = {
-    // TODO: fix this
-//    scribe.info(s"Checking: $x between $x1 and $x2 and $y between $y1 and $y2 / $adjustY and $height")
-    x >= x1 && x <= x2 && y >= 0 && y <= height
+  def touching(x: Double, y: Double): Option[Double] = {
+    if (x >= x1 && x <= x2 && y >= 0 && y <= height) {
+      val deltaX = x - centerX
+      val deltaY = y - centerY
+      Some(math.sqrt((deltaX * deltaX) + (deltaY * deltaY)))
+    } else {
+      None
+    }
   }
 
   override def toString: String = s"BoundingBox(x1: $x1, y1: $y1, x2: $x2, y2: $y2, adjustX: $adjustX, adjustY: $adjustY, width: $width, height: $height)"

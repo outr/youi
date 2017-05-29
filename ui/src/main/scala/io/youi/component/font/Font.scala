@@ -72,7 +72,9 @@ case class TextPaths(paths: Vector[TextPath]) extends Drawable {
     TextPath(tp.char, tp.path.shift(boundingBox.adjustX, boundingBox.adjustY))
   })
 
-  def touching(x: Double, y: Double): Option[TextPath] = paths.find(_.path.boundingBox.touching(x, y))
+  def touching(x: Double, y: Double): Vector[Touching] = paths.flatMap { tp =>
+    tp.path.boundingBox.touching(x, y).map(d => Touching(tp, d))
+  }.sortBy(_.distance)
 
   override def draw(component: Component, context: CanvasRenderingContext2D): Unit = {
     context.translate(boundingBox.adjustX, boundingBox.adjustY)
@@ -83,3 +85,7 @@ case class TextPaths(paths: Vector[TextPath]) extends Drawable {
 }
 
 case class TextPath(char: Char, path: Path)
+
+case class Touching(textPath: TextPath, distance: Double) {
+  override def toString: String = s"Touching(char: ${textPath.char}, distance: $distance)"
+}

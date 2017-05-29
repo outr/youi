@@ -23,7 +23,6 @@ class DrawableComponent extends CanvasComponent {
   override protected def defaultTheme: Theme = DrawableComponent
 
   override protected def draw(context: CanvasRenderingContext2D): Unit = {
-    context.image
     preDraw.foreach(_.draw(this, context))
     if (fill().nonEmpty) {
       context.fillStyle = fill().apply(this).asInstanceOf[js.Any]

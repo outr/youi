@@ -34,8 +34,8 @@ class DrawableComponent extends CanvasComponent {
     if (fill().nonEmpty) {
       context.fill()
     }
-    context.lineWidth = lineWidth()
     if (stroke().nonEmpty) {
+      context.lineWidth = lineWidth()
       context.stroke()
     }
     postDraw.foreach(_.draw(this, context))

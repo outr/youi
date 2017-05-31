@@ -1,45 +1,68 @@
 package io.youi.component.extra
 
 import io.youi.component.DrawableComponent
-import io.youi.component.draw.{Drawable, Group}
+import io.youi.component.draw.{BoundingBox, Drawable, Group}
 import io.youi.component.draw.path.Path
 import io.youi.style.Cursor
 import reactify.Var
 
 class RectangularSelection extends DrawableComponent {
   val enabled: Var[Boolean] = Var(true)
-  val x1: Var[Double] = Var[Double](0.0)
-  val y1: Var[Double] = Var[Double](0.0)
-  val x2: Var[Double] = Var[Double](0.0)
-  val y2: Var[Double] = Var[Double](0.0)
 
-  def width: Double = x2 - x1
-  def height: Double = y2 - y1
+  private val edgeDistance = 10.0
 
-  // TODO: change the cursor if near a corner or edge
-//  cursor := {
-//    if ()
-//  }
+  private val mouseX = Var(0.0)
+  private val mouseY = Var(0.0)
 
-  size.measured.width := x2() + math.max(0.0, lineWidth() - 1.0)
-  size.measured.height := y2() + math.max(0.0, lineWidth() - 1.0)
+  event.mouse.moveInside.attach { evt =>
+    mouseX := evt.x
+    mouseY := evt.y
+  }
+
+  cursor := {
+    if (near(0.0, mouseX)) {
+      if (near(0.0, mouseY)) {
+        Cursor.ResizeNorthWest
+      } else if (near(size.height, mouseY)) {
+        Cursor.ResizeSouthWest
+      } else {
+        Cursor.ResizeWest
+      }
+    } else if (near(size.width, mouseX)) {
+      if (near(0.0, mouseY)) {
+        Cursor.ResizeNorthEast
+      } else if (near(size.height, mouseY)) {
+        Cursor.ResizeSouthEast
+      } else {
+        Cursor.ResizeEast
+      }
+    } else if (near(0.0, mouseY)) {
+      Cursor.ResizeNorth
+    } else if (near(size.height(), mouseY)) {
+      Cursor.ResizeSouth
+    } else {
+      Cursor.Move
+    }
+  }
 
   drawable := {
-    if (enabled() && width != 0.0 && height != 0.0) {
+    if (enabled() && size.width() != 0.0 && size.height() != 0.0) {
       Group(List(
         Some(createRectangle()),
-        createEdge(x1, y1),
-        createEdge(x2, y1),
-        createEdge(x2, y2),
-        createEdge(x1, y2)
+        createEdge(position.left(), position.top()),
+        createEdge(position.right(), position.top()),
+        createEdge(position.right(), position.bottom()),
+        createEdge(position.left(), position.bottom())
       ).flatten)
     } else {
       Drawable.empty
     }
   }
 
-//  private def near(x: Double, y: )
+  private def near(from: Double, to: Double): Boolean = {
+    math.abs(from - to) <= edgeDistance
+  }
 
-  protected def createRectangle(): Drawable = Path.begin.rect(x1(), y1(), width, height).close
+  protected def createRectangle(): Drawable = Path.begin.rect(0.0, 0.0, size.width(), size.height()).close
   protected def createEdge(x: Double, y: Double): Option[Drawable] = None
 }

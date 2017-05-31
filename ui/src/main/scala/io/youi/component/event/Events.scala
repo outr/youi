@@ -10,6 +10,20 @@ class Events(component: Component) {
   object mouse {
     lazy val down: Channel[MouseEvent] = mouseEvent("mousedown")
     lazy val move: Channel[MouseEvent] = mouseEvent("mousemove")
+    lazy val (moveInside, moveOutside) = {
+      val inside = Channel[MouseEvent]
+      val outside = Channel[MouseEvent]
+
+      move.attach { evt =>
+        if (evt.x >= 0.0 && evt.y >= 0.0 && evt.x <= component.size.width() && evt.y <= component.size.height()) {
+          inside := evt
+        } else {
+          outside := evt
+        }
+      }
+
+      (inside, outside)
+    }
     lazy val out: Channel[MouseEvent] = mouseEvent("mouseout")
     lazy val over: Channel[MouseEvent] = mouseEvent("mouseover")
     lazy val up: Channel[MouseEvent] = mouseEvent("mouseup")
@@ -19,6 +33,20 @@ class Events(component: Component) {
     lazy val cancel: Channel[MouseEvent] = mouseEvent("pointercancel")
     lazy val down: Channel[MouseEvent] = mouseEvent("pointerdown")
     lazy val move: Channel[MouseEvent] = mouseEvent("pointermove")
+    lazy val (moveInside, moveOutside) = {
+      val inside = Channel[MouseEvent]
+      val outside = Channel[MouseEvent]
+
+      move.attach { evt =>
+        if (evt.x >= 0.0 && evt.y >= 0.0 && evt.x <= component.size.width() && evt.y <= component.size.height()) {
+          inside := evt
+        } else {
+          outside := evt
+        }
+      }
+
+      (inside, outside)
+    }
     lazy val out: Channel[MouseEvent] = mouseEvent("pointerout")
     lazy val over: Channel[MouseEvent] = mouseEvent("pointerover")
     lazy val tap: Channel[MouseEvent] = mouseEvent("pointertap")
@@ -30,6 +58,20 @@ class Events(component: Component) {
     lazy val end: Channel[MouseEvent] = mouseEvent("touchend")
     lazy val endOutside: Channel[MouseEvent] = mouseEvent("touchendOutside")
     lazy val move: Channel[MouseEvent] = mouseEvent("touchmove")
+    lazy val (moveInside, moveOutside) = {
+      val inside = Channel[MouseEvent]
+      val outside = Channel[MouseEvent]
+
+      move.attach { evt =>
+        if (evt.x >= 0.0 && evt.y >= 0.0 && evt.x <= component.size.width() && evt.y <= component.size.height()) {
+          inside := evt
+        } else {
+          outside := evt
+        }
+      }
+
+      (inside, outside)
+    }
     lazy val start: Channel[MouseEvent] = mouseEvent("touchstart")
   }
 

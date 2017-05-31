@@ -9,7 +9,7 @@ import reactify.{Channel, Var}
 
 import scala.concurrent.Future
 
-class Renderer(val canvas: Canvas) extends Container {
+class Renderer private(val canvas: Canvas) extends Container {
   private val systemRenderer: PIXI.SystemRenderer = PIXI.autoDetectRenderer(
     width = canvas.size.width.toInt,
     height = canvas.size.height.toInt,

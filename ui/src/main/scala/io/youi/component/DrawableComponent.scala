@@ -15,6 +15,7 @@ class DrawableComponent extends CanvasComponent {
   val fill: Var[Paint] = Var(theme.fill)
   val stroke: Var[Paint] = Var(theme.stroke)
   val lineWidth: Var[Double] = Var(theme.lineWidth)
+  val lineDash: Var[List[Double]] = Var(theme.lineDash)
 
   drawable.on(reDraw.flag())
   fill.on(reDraw.flag())
@@ -36,6 +37,7 @@ class DrawableComponent extends CanvasComponent {
     }
     if (stroke().nonEmpty) {
       context.lineWidth = lineWidth()
+      context.setLineDash(js.Array(lineDash(): _*))
       context.stroke()
     }
     postDraw.foreach(_.draw(this, context))

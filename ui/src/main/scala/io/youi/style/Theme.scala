@@ -24,6 +24,7 @@ class Theme private() {
   val fill: Var[Paint] = Var(parent.map(_.fill()).getOrElse(Paint.none))
   val stroke: Var[Paint] = Var(parent.map(_.stroke()).getOrElse(Paint.none))
   val lineWidth: Var[Double] = Var(parent.map(_.lineWidth()).getOrElse(1.0))
+  val lineDash: Var[List[Double]] = Var(parent.map(_.lineDash()).getOrElse(Nil))
   object font {
     val file: Var[Font] = Var(parent.map(_.font.file()).getOrElse(Font.empty))
     val size: Var[Double] = Var(parent.map(_.font.size()).getOrElse(26.0))

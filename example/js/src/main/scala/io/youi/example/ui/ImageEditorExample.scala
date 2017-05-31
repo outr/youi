@@ -17,19 +17,20 @@ object ImageEditorExample extends UIExampleScreen with UIScreen {
     container.children += new Image(texture) {
       position.left := 250.0
       position.top := 250.0
-      rotation := math.Pi.radians
+      rotation := 45.degrees
     }
 
     val selection = new RectangularSelection {
       size.width.and(size.height).on {
         scribe.info(s"Selection Size: ${size.width()}x${size.height()}")
       }
-      x1 := 100.0
-      y1 := 100.0
-      x2 := 500.0
-      y2 := 300.0
+      position.x := 100.0
+      position.y := 100.0
+      size.width := 500.0
+      size.height := 300.0
       stroke := Color.Red
       lineWidth := 2.0
+      lineDash := List(5, 15)
     }
     container.children += selection
   }

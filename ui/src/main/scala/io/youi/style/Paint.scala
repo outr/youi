@@ -29,9 +29,8 @@ class ColorPaint(color: Color) extends Paint {
 
 class LinearGradientPaint(direction: GradientDirection, stops: Vector[GradientStop]) extends Paint {
   override protected  def value(component: Component, context: CanvasRenderingContext2D): js.UndefOr[String | js.Array[String] | Double | CanvasGradient | CanvasPattern] = {
-    val x1 = if (direction != GradientDirection.Vertical) component.size.width() else 0.0
-    val y1 = if (direction != GradientDirection.Horizontal) -component.size.height() else 0.0
-    val g = context.createLinearGradient(0.0, 0.0, x1, y1)
+    val info = direction.info(component)
+    val g = context.createLinearGradient(info.begin.x, info.begin.y, info.end.x, info.end.y)
     stops.foreach { stop =>
       g.addColorStop(stop.offset, stop.color.hex)
     }

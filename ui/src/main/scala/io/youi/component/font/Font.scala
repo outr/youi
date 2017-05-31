@@ -1,7 +1,8 @@
 package io.youi.component.font
 
 import io.youi.component.Component
-import io.youi.component.shape.{BoundingBox, Drawable, Path, TouchData}
+import io.youi.component.draw.path.Path
+import io.youi.component.draw.{BoundingBox, Drawable, TouchData}
 import opentype.{OpenType, PathOptions}
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 import reactify.{Val, Var}

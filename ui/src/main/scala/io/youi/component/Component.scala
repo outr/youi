@@ -3,7 +3,7 @@ package io.youi.component
 import com.outr.pixijs._
 import io.youi.{LazyUpdate, Updates}
 import io.youi.component.event.Events
-import io.youi.style.Theme
+import io.youi.style.{Cursor, Theme}
 import reactify.{Dep, Val, Var}
 
 trait Component extends Updates {
@@ -15,6 +15,7 @@ trait Component extends Updates {
   lazy val parent: Val[Option[Container]] = Var(None)
 
   val theme: Var[Theme] = prop(defaultTheme)
+  val cursor: Var[Cursor] = prop(theme.cursor, c => instance.cursor = c.value)
   val interactive: Var[Boolean] = prop(theme.interactive, instance.interactive = _)
   val visible: Var[Boolean] = prop(theme.visible, instance.visible = _, updatesRendering = true)
 

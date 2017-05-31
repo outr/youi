@@ -12,6 +12,7 @@ class Theme private() {
 
   val parent: Var[Option[Theme]] = Var(None)
 
+  val cursor: Var[Cursor] = Var(parent.map(_.cursor()).getOrElse(Cursor.Default))
   val breakWords: Var[Boolean] = Var(parent.map(_.breakWords()).getOrElse(false))
   object dropShadow {
     val enabled: Var[Boolean] = Var(parent.map(_.dropShadow.enabled()).getOrElse(false))

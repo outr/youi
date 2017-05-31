@@ -1,8 +1,8 @@
 package io.youi.component
 
 import io.youi.component.event.{DragSupport, MouseEvent}
-import io.youi.component.font.{Font, TextPaths, Touching}
-import io.youi.component.shape.{Drawable, Fill, MoveTo, Path}
+import io.youi.component.font.{Font, TextPaths}
+import io.youi.component.draw.Drawable
 import io.youi.style.{Paint, Theme}
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 import reactify.Var

@@ -3,7 +3,8 @@ package io.youi.example.ui
 import io.youi._
 import io.youi.app.screen.UIScreen
 import io.youi.component._
-import io.youi.component.shape._
+import io.youi.component.draw._
+import io.youi.component.draw.path._
 
 object DrawableExample extends UIExampleScreen with UIScreen {
   override def name: String = "Drawable Example"

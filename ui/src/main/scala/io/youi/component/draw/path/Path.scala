@@ -1,14 +1,17 @@
-package io.youi.component.shape
+package io.youi.component.draw.path
 
 import io.youi.component.Component
+import io.youi.component.draw.{BoundingBox, Drawable}
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 
 import scala.collection.mutable.ListBuffer
 
-case class Path(actions: List[PathAction]) extends Drawable {
+case class Path(actions: List[PathAction]) extends Drawable with PathBuilder with PathAction {
   lazy val boundingBox: BoundingBox = BoundingBox(actions)
 
-  override def draw(component: Component, context: CanvasRenderingContext2D): Unit = actions.foreach { action =>
+  override def draw(component: Component, context: CanvasRenderingContext2D): Unit = invoke(context)
+
+  override def invoke(context: CanvasRenderingContext2D): Unit = actions.foreach { action =>
     action.invoke(context)
   }
 
@@ -22,76 +25,13 @@ case class Path(actions: List[PathAction]) extends Drawable {
     }
     Path(updated)
   }
+
+  override protected def addAction(action: PathAction): Path = Path(actions ::: List(action))
 }
 
-case class BoundingBox(x1: Double, y1: Double, x2: Double, y2: Double) {
-  def adjustX: Double = -x1
-  def adjustY: Double = height - y2
-  def centerX: Double = x1 + (width / 2.0)
-  def centerY: Double = y1 + (height / 2.0)
-  def width: Double = x2 - x1
-  def height: Double = y2 - y1
+object Path extends PathBuilder {
+  lazy val empty: Path = Path(Nil)
 
-  def merge(that: BoundingBox): BoundingBox = BoundingBox(
-    x1 = math.min(this.x1, that.x1),
-    y1 = math.min(this.y1, that.y1),
-    x2 = math.max(this.x2, that.x2),
-    y2 = math.max(this.y2, that.y2)
-  )
-
-  def touching(x: Double, y: Double): Option[TouchData] = {
-    if (x >= x1 && x <= x2 && y >= 0 && y <= height) {
-      val deltaX = x - centerX
-      val deltaY = y - centerY
-      Some(TouchData(deltaX, deltaY, math.sqrt((deltaX * deltaX) + (deltaY * deltaY))))
-    } else {
-      None
-    }
-  }
-
-  override def toString: String = s"BoundingBox(x1: $x1, y1: $y1, x2: $x2, y2: $y2, adjustX: $adjustX, adjustY: $adjustY, width: $width, height: $height)"
-}
-
-case class TouchData(deltaX: Double, deltaY: Double, distance: Double) {
-  override def toString: String = s"TouchData(deltaX: $deltaX, deltaY: $deltaY, distance: $distance)"
-}
-
-object BoundingBox {
-  def apply(pathActions: List[PathAction]): BoundingBox = {
-    var minX = Double.MaxValue
-    var minY = Double.MaxValue
-    var maxX = Double.MinValue
-    var maxY = Double.MinValue
-
-    var cx = 0.0
-    var cy = 0.0
-
-    def adjustTo(newX: Double, newY: Double, oldX: Double = cx, oldY: Double = cy): Unit = {
-      minX = math.min(oldX, math.min(minX, newX))
-      minY = math.min(oldY, math.min(minY, newY))
-      maxX = math.max(oldX, math.max(maxX, newX))
-      maxY = math.max(oldY, math.max(maxY, newY))
-
-      cx = newX
-      cy = newY
-    }
-
-    pathActions.foreach {
-      case BeginPath => // Nothing
-      case ClosePath => // Nothing
-      case CurveTo(_, _, _, _, x, y) => adjustTo(x, y)
-      case LineTo(x, y) => adjustTo(x, y)
-      case MoveTo(x, y) => {
-        cx = x
-        cy = y
-      }
-      case QuadraticCurveTo(_, _, x, y) => adjustTo(x, y)
-    }
-    BoundingBox(minX, minY, maxX, maxY)
-  }
-}
-
-object Path {
   private lazy val actionCharacters = Set('M', 'L', 'C', 'Q', 'Z')
 
   private lazy val MoveRegex = """M([- ]?[0-9.]+)([- ]?[0-9.]+)""".r
@@ -137,4 +77,20 @@ object Path {
 
     Path(actions.toList)
   }
+
+  override protected def addAction(action: PathAction): Path = Path(List(action))
+}
+
+trait PathBuilder {
+  def begin: Path = addAction(BeginPath)
+  def close: Path = addAction(ClosePath)
+  def curve(x1: Double, y1: Double, x2: Double, y2: Double, x: Double, y: Double): Path = {
+    addAction(CurveTo(x1, y1, x2, y2, x, y))
+  }
+  def line(x: Double, y: Double): Path = addAction(LineTo(x, y))
+  def move(x: Double, y: Double): Path = addAction(MoveTo(x, y))
+  def quadratic(x1: Double, y1: Double, x: Double, y: Double): Path = addAction(QuadraticCurveTo(x1, y1, x, y))
+  def rect(x: Double, y: Double, width: Double, height: Double): Path = addAction(Rectangle(x, y, width, height))
+
+  protected def addAction(action: PathAction): Path
 }

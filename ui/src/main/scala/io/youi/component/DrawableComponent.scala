@@ -1,6 +1,6 @@
 package io.youi.component
 import io.youi.ItemContainer
-import io.youi.component.shape.Drawable
+import io.youi.component.draw.Drawable
 import io.youi.style.{Paint, Theme}
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 import reactify.Var

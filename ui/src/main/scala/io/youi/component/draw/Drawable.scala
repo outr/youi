@@ -1,4 +1,4 @@
-package io.youi.component.shape
+package io.youi.component.draw
 
 import io.youi.Priority
 import io.youi.component.Component

@@ -61,7 +61,7 @@ class TextSelection(text: Text) extends Drawable {
   }
 
   text.preDraw += this
-  dragSupport.dropped.attach(d => scribe.info(s"Dropped: $d"))
+  dragSupport.drop.attach(d => scribe.info(s"Dropped: $d"))
   value.on(text.reDraw.flag())
 
   override def draw(component: Component, context: CanvasRenderingContext2D): Unit = value().foreach { selection =>

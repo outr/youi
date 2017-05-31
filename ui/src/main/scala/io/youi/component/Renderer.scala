@@ -1,7 +1,7 @@
 package io.youi.component
 
 import com.outr.pixijs._
-import io.youi.component.event.Events
+import io.youi.component.event.{Events, Mouse}
 import io.youi.{Color, LazyUpdate, dom}
 import io.youi.hypertext.Canvas
 import org.scalajs.dom.KeyboardEvent
@@ -21,6 +21,11 @@ class Renderer private(val canvas: Canvas) extends Container {
     },
     noWebGL = false
   )
+
+  event.mouse.move.attach { evt =>
+    Mouse.x.asInstanceOf[Var[Double]] := evt.globalX
+    Mouse.y.asInstanceOf[Var[Double]] := evt.globalY
+  }
 
   val renderMode: Var[RenderMode] = Var(RenderMode.OnChange)
   val backgroundColor: Var[Color] = prop(Color.White, (c: Color) => systemRenderer.backgroundColor = c.long, updatesRendering = true)

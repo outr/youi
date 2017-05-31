@@ -15,9 +15,9 @@ object ImageEditorExample extends UIExampleScreen with UIScreen {
     // TODO: reset, zoom in/out, rotate left/right, upload
 
     container.children += new Image(texture) {
-      position.left := 250.0
+      position.left := 550.0
       position.top := 250.0
-      rotation := 45.degrees
+//      rotation := 45.degrees
     }
 
     val selection = new RectangularSelection {
@@ -30,7 +30,7 @@ object ImageEditorExample extends UIExampleScreen with UIScreen {
       size.height := 300.0
       stroke := Color.Red
       lineWidth := 2.0
-      lineDash := List(5, 15)
+//      lineDash := List(5, 15)
     }
     container.children += selection
   }

@@ -5,7 +5,7 @@ import reactify.{Channel, Var}
 
 abstract class DragSupport[T](component: Component) {
   val value: Var[Option[T]] = Var(None)
-  val dropped: Channel[Dropped[T]] = Channel[Dropped[T]]
+  val drop: Channel[Dropped[T]] = Channel[Dropped[T]]
 
   def isDragging: Boolean = value().nonEmpty
 
@@ -26,12 +26,16 @@ abstract class DragSupport[T](component: Component) {
 
   def dragging(mouseEvent: MouseEvent, value: T): Unit = {}
 
+  def dropped(mouseEvent: MouseEvent, value: T): Unit = {
+    drop := Dropped(mouseEvent, value)
+  }
+
   protected def checkForDown(mouseEvent: MouseEvent): Unit = {
-    value := draggable(mouseEvent)
+    value.setStatic(draggable(mouseEvent))
   }
 
   protected def checkForUp(mouseEvent: MouseEvent): Unit = value().foreach { v =>
-    dropped := Dropped(mouseEvent, v)
+    dropped(mouseEvent, v)
     value := None
   }
 }

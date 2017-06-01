@@ -9,8 +9,6 @@ import io.youi.style.Cursor
 import reactify.Var
 
 class RectangularSelection extends DrawableComponent {
-  val enabled: Var[Boolean] = Var(true)
-
   private val dragSupport = new DragSupport[DragStart](this) {
     override def draggable(mouseEvent: MouseEvent): Option[DragStart] = {
       Some(DragStart(cursor(), position.x(), position.y(), size.width(), size.height(), mouseEvent.globalX, mouseEvent.globalY))
@@ -109,7 +107,7 @@ class RectangularSelection extends DrawableComponent {
   }
 
   drawable := {
-    if (enabled() && size.width() != 0.0 && size.height() != 0.0) {
+    if (size.width() != 0.0 && size.height() != 0.0) {
       Group(List(
         Some(createRectangle()),
         createEdge(position.left(), position.top()),

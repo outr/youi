@@ -28,7 +28,7 @@ abstract class CanvasComponent extends Image {
       context.putImageData(imageData, 0, 0)
     }
     pixiTexture.update()
-    invalidate()
+    super.updateTransform()
   }
   reDraw.flag()
   size.width.attachAndFire { d =>
@@ -48,6 +48,8 @@ abstract class CanvasComponent extends Image {
 
     reDraw.update()
   }
+
+  override protected def updateTransform(): Unit = reDraw.flag()
 }
 
 object CanvasComponent extends Theme(Image)

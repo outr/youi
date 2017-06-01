@@ -17,6 +17,7 @@ trait Component extends Updates {
   val theme: Var[Theme] = prop(defaultTheme)
   val cursor: Var[Cursor] = prop(theme.cursor, c => instance.cursor = c.value)
   val interactive: Var[Boolean] = prop(theme.interactive, instance.interactive = _)
+  val float: Var[Boolean] = prop(false, updatesTransform = true)
   val visible: Var[Boolean] = prop(theme.visible, instance.visible = _, updatesRendering = true)
 
   lazy val event: Events = new Events(this)
@@ -107,6 +108,17 @@ trait Component extends Updates {
       pivotX = pivot.x() / scale.x(),
       pivotY = pivot.y() / scale.y()
     )
+    if (float()) {
+      val m = instance.localTransform
+      instance.worldTransform.set(
+        a = m.a,
+        b = m.b,
+        c = m.c,
+        d = m.d,
+        tx = m.tx,
+        ty = m.ty
+      )
+    }
     invalidate()
   }
 

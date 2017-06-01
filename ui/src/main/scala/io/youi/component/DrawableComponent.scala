@@ -21,6 +21,9 @@ class DrawableComponent extends CanvasComponent {
   fill.on(reDraw.flag())
   stroke.on(reDraw.flag())
 
+  size.measured.width := drawable().boundingBox.width
+  size.measured.height := drawable().boundingBox.height
+
   override protected def defaultTheme: Theme = DrawableComponent
 
   override protected def draw(context: CanvasRenderingContext2D): Unit = {

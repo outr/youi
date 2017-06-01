@@ -63,7 +63,7 @@ object Font {
 }
 
 case class TextPaths(paths: Vector[TextPath]) extends Drawable {
-  lazy val boundingBox: BoundingBox = {
+  override lazy val boundingBox: BoundingBox = {
     var bb = paths.head.path.boundingBox
     paths.tail.foreach(other => bb = bb.merge(other.path.boundingBox))
     bb

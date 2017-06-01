@@ -2,7 +2,7 @@ package io.youi.component
 
 import io.youi.component.event.{DragSupport, MouseEvent}
 import io.youi.component.font.{Font, TextPaths}
-import io.youi.component.draw.Drawable
+import io.youi.component.draw.{BoundingBox, Drawable}
 import io.youi.style.{Paint, Theme}
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 import reactify.Var
@@ -52,6 +52,9 @@ class TextSelection(text: Text) extends Drawable {
   val enabled: Var[Boolean] = Var(text.theme.selection.enabled)
   val fill: Var[Paint] = Var(text.theme.selection.fill)
   val stroke: Var[Paint] = Var(text.theme.selection.stroke)
+
+  override def boundingBox: BoundingBox = BoundingBox.zero    // TODO: determine if we need to support this
+
   val value: Var[Option[Selection]] = Var(None)
 
   private val dragSupport = new DragSupport[Int](text) {

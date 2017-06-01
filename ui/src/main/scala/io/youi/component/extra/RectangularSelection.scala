@@ -1,14 +1,69 @@
 package io.youi.component.extra
 
-import io.youi.Point
-import io.youi.component.DrawableComponent
-import io.youi.component.draw.{BoundingBox, Drawable, Group}
+import io.youi._
+import io.youi.component.{Container, DrawableComponent}
+import io.youi.component.draw._
 import io.youi.component.draw.path.Path
 import io.youi.component.event.{DragSupport, MouseEvent}
 import io.youi.style.Cursor
 import reactify.Var
 
-class RectangularSelection extends DrawableComponent {
+class RectangularSelection extends Container {
+  val selection = new SelectionDrawable
+  val modal = new DrawableComponent {
+    interactive := false
+    drawable := Group(
+      Path
+        .begin
+        .rect(0.0, 0.0, selection.position.x(), ui.size.height())
+        .rect(selection.position.right(), 0.0, ui.size.width() - selection.position.right(), ui.size.height())
+        .rect(selection.position.x(), 0.0, selection.size.width(), selection.position.y())
+        .rect(selection.position.x(), selection.position.bottom(), selection.size.width(), ui.size.height() - selection.position.bottom())
+        .close,
+      Fill(Some(Color.Black.withAlpha(0.5)))
+    )
+  }
+  val points = new DrawableComponent {
+    val blockSize = 10.0
+    val halfBlock: Double = blockSize / 2.0
+
+    interactive := false
+    drawable := Group(
+      Path
+        .begin
+        .rect(selection.position.left() - halfBlock, selection.position.top() - halfBlock, blockSize, blockSize)        // Top-Left
+        .rect(selection.position.right() - halfBlock, selection.position.top() - halfBlock, blockSize, blockSize)       // Top-Right
+        .rect(selection.position.left() - halfBlock, selection.position.bottom() - halfBlock, blockSize, blockSize)     // Bottom-Left
+        .rect(selection.position.right() - halfBlock, selection.position.bottom() - halfBlock, blockSize, blockSize)    // Bottom-Right
+        .rect(selection.position.left() - halfBlock, selection.position.middle() - halfBlock, blockSize, blockSize)     // Left
+        .rect(selection.position.right() - halfBlock, selection.position.middle() - halfBlock, blockSize, blockSize)    // Right
+        .rect(selection.position.center() - halfBlock, selection.position.top() - halfBlock, blockSize, blockSize)      // Top
+        .rect(selection.position.center() - halfBlock, selection.position.bottom() - halfBlock, blockSize, blockSize)   // Bottom
+        .close,
+      Fill(Some(Color.Green))
+    )
+  }
+  val dashes = new DrawableComponent {
+    interactive := false
+    val horizontalThird: () => Double = () => selection.size.width() / 3.0
+    val verticalThird: () => Double = () => selection.size.height() / 3.0
+    drawable := Group(
+      Path
+        .begin
+        .rect(selection.position.left(), selection.position.top() + verticalThird(), selection.size.width(), verticalThird())
+        .rect(selection.position.left() + horizontalThird(), selection.position.top(), horizontalThird(), selection.size.height())
+        .close,
+      Stroke(Some(Color.Blue.withAlpha(0.5)), Some(List(5.0, 10.0)))
+    )
+  }
+
+  children += modal
+  children += dashes
+  children += selection
+  children += points
+}
+
+class SelectionDrawable extends DrawableComponent {
   private val dragSupport = new DragSupport[DragStart](this) {
     override def draggable(mouseEvent: MouseEvent): Option[DragStart] = {
       Some(DragStart(cursor(), position.x(), position.y(), size.width(), size.height(), mouseEvent.globalX, mouseEvent.globalY))

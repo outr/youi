@@ -31,6 +31,8 @@ case class BoundingBox(x1: Double, y1: Double, x2: Double, y2: Double) {
 }
 
 object BoundingBox {
+  val zero: BoundingBox = BoundingBox(0.0, 0.0, 0.0, 0.0)
+
   def apply(pathActions: List[PathAction]): BoundingBox = {
     var minX = Double.MaxValue
     var minY = Double.MaxValue
@@ -40,7 +42,7 @@ object BoundingBox {
     var cx = 0.0
     var cy = 0.0
 
-    def adjustTo(newX: Double, newY: Double, oldX: Double = cx, oldY: Double = cy): Unit = {
+    def adjustTo(newX: Double, newY: Double, oldX: Double = cx, oldY: Double = cy, updateCoordinates: Boolean = true): Unit = {
       minX = math.min(oldX, math.min(minX, newX))
       minY = math.min(oldY, math.min(minY, newY))
       maxX = math.max(oldX, math.max(maxX, newX))
@@ -60,6 +62,7 @@ object BoundingBox {
         cy = y
       }
       case QuadraticCurveTo(_, _, x, y) => adjustTo(x, y)
+      case Rectangle(x, y, width, height) => adjustTo(x + width, y + height, updateCoordinates = false)
     }
     BoundingBox(minX, minY, maxX, maxY)
   }

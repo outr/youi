@@ -7,7 +7,7 @@ import org.scalajs.dom.raw.CanvasRenderingContext2D
 import scala.collection.mutable.ListBuffer
 
 case class Path(actions: List[PathAction]) extends Drawable with PathBuilder with PathAction {
-  lazy val boundingBox: BoundingBox = BoundingBox(actions)
+  override lazy val boundingBox: BoundingBox = BoundingBox(actions)
 
   override def draw(component: Component, context: CanvasRenderingContext2D): Unit = invoke(context)
 

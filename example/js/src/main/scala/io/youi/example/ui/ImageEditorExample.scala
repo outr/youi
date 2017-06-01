@@ -21,16 +21,12 @@ object ImageEditorExample extends UIExampleScreen with UIScreen {
     }
 
     val selection = new RectangularSelection {
-      size.width.and(size.height).on {
-        scribe.info(s"Selection Size: ${size.width()}x${size.height()}")
-      }
-      position.x := 100.0
-      position.y := 100.0
-      size.width := 500.0
-      size.height := 300.0
-      stroke := Color.Red
-      lineWidth := 2.0
-//      lineDash := List(5, 15)
+      selection.position.x := 100.0
+      selection.position.y := 100.0
+      selection.size.width := 500.0
+      selection.size.height := 300.0
+      selection.stroke := Color.Red
+      selection.lineWidth := 2.0
     }
     container.children += selection
   }

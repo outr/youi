@@ -7,6 +7,10 @@ case class Color(red: Double = 0.0, green: Double = 0.0, blue: Double = 0.0, alp
   def css: String = Color.toCSS(red, green, blue, alpha)
   def long: Long = Color.toLong(red, green, blue, alpha)
   def hex: String = Color.toHex(red, green, blue)
+  def withRed(red: Double): Color = copy(red = red)
+  def withGreen(green: Double): Color = copy(green = green)
+  def withBlue(blue: Double): Color = copy(blue = blue)
+  def withAlpha(alpha: Double): Color = copy(alpha = alpha)
   override def toString: String = s"Color(red = $red, green = $green, blue = $blue, alpha = $alpha)"
 }
 

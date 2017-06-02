@@ -2,12 +2,14 @@ package io.youi.component
 
 import com.outr.pixijs.PIXI
 import io.youi._
-import io.youi.style.{Paint, Theme}
-import reactify.Var
+import io.youi.style.Paint
+import io.youi.theme.BasicTextTheme
+import reactify._
 
 class BasicText extends Component {
   override protected[component] lazy val instance: PIXI.Text = new PIXI.Text("")
-  override protected def defaultTheme: Theme = BasicText
+
+  override lazy val theme: Var[BasicTextTheme] = Var(BasicText)
 
   lazy val value: Var[String] = prop(instance.text, (s: String) => instance.text = s, updatesRendering = true)
 
@@ -31,7 +33,7 @@ class BasicText extends Component {
   val lineJoin: Var[String] = prop(theme.lineJoin, (s: String) => instance.style.lineJoin = s, updatesRendering = true)
   val miterLimit: Var[Double] = prop(theme.miterLimit, (d: Double) => instance.style.miterLimit = d, updatesRendering = true)
   val padding: Var[Double] = prop(theme.padding, (d: Double) => instance.style.padding = d, updatesRendering = true)
-  val stroke: Var[Color] = prop(theme.strokeColor, (c: Color) => instance.style.stroke = c.hex, updatesRendering = true)
+  val stroke: Var[Color] = prop(theme.stroke, (c: Color) => instance.style.stroke = c.hex, updatesRendering = true)
   val strokeThickness: Var[Double] = prop(theme.strokeThickness, (d: Double) => instance.style.strokeThickness = d, updatesRendering = true)
   val textBaseline: Var[String] = prop(theme.textBaseline, (s: String) => instance.style.textBaseline = s, updatesRendering = true)
   val wordWrap: Var[Boolean] = prop(theme.wordWrap, (b: Boolean) => instance.style.wordWrap = b, updatesRendering = true)
@@ -54,4 +56,4 @@ class BasicText extends Component {
   }
 }
 
-object BasicText extends Theme(Theme)
+object BasicText extends BasicTextTheme

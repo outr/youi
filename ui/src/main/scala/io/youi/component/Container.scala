@@ -1,12 +1,13 @@
 package io.youi.component
 
 import com.outr.pixijs.PIXI
-import io.youi.style.Theme
+import io.youi.theme.ContainerTheme
 import reactify.{ChangeListener, Var}
 
 class Container extends Component {
   override protected[component] lazy val instance: PIXI.Container = new PIXI.Container()
-  override protected def defaultTheme: Theme = Container
+
+  override lazy val theme: Var[ContainerTheme] = Var(Container)
 
   val children: Var[Vector[Component]] = prop(Vector.empty, updatesTransform = true)
 
@@ -63,4 +64,4 @@ class Container extends Component {
   }
 }
 
-object Container extends Theme(Theme)
+object Container extends ContainerTheme

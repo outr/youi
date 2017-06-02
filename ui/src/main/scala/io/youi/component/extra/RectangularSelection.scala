@@ -9,6 +9,11 @@ import io.youi.style.Cursor
 import reactify.Var
 
 class RectangularSelection extends Container {
+  // TODO: support max dimensions (minX, minY, maxX, maxY) - this container's dimensions?
+  // TODO: support aspect ratio constraints
+  // TODO: support minimum width/height of selection
+  // TODO: support custom stylization (drawing, stroking, and filling) of points, dashes, and selection
+
   val selection = new SelectionDrawable
   val modal = new DrawableComponent {
     interactive := false

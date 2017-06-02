@@ -3,21 +3,20 @@ package io.youi.component
 import com.outr.pixijs._
 import io.youi.{LazyUpdate, Updates}
 import io.youi.component.event.Events
-import io.youi.style.{Cursor, Theme}
-import reactify.{Dep, Val, Var}
+import io.youi.style.Cursor
+import io.youi.theme.{ComponentTheme, Theme}
+import reactify._
 
 trait Component extends Updates {
   protected[component] def instance: PIXI.Container
-  protected def defaultTheme: Theme
 
   val transform = LazyUpdate(updateTransform())
 
   lazy val parent: Val[Option[Container]] = Var(None)
 
-  val theme: Var[Theme] = prop(defaultTheme)
+  def theme: Var[_ <: ComponentTheme]
   val cursor: Var[Cursor] = prop(theme.cursor, c => instance.cursor = c.value)
   val interactive: Var[Boolean] = prop(theme.interactive, instance.interactive = _)
-  val float: Var[Boolean] = prop(false, updatesTransform = true)
   val visible: Var[Boolean] = prop(theme.visible, instance.visible = _, updatesRendering = true)
 
   lazy val event: Events = new Events(this)
@@ -108,19 +107,10 @@ trait Component extends Updates {
       pivotX = pivot.x() / scale.x(),
       pivotY = pivot.y() / scale.y()
     )
-    if (float()) {
-      val m = instance.localTransform
-      instance.worldTransform.set(
-        a = m.a,
-        b = m.b,
-        c = m.c,
-        d = m.d,
-        tx = m.tx,
-        ty = m.ty
-      )
-    }
     invalidate()
   }
 
   def invalidate(): Unit = parent().foreach(_.invalidate())
 }
+
+object Component extends ComponentTheme

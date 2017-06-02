@@ -3,7 +3,7 @@ package io.youi.component
 import com.outr.pixijs.PIXI
 import io.youi.component.filter.CanvasFilter
 import io.youi.{LazyUpdate, dom}
-import io.youi.style.Theme
+import io.youi.theme.CanvasComponentTheme
 import org.scalajs.dom.html
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 import reactify.Var
@@ -17,7 +17,7 @@ abstract class CanvasComponent extends Image {
 
   texture := new Texture(pixiTexture)
 
-  override protected def defaultTheme: Theme = CanvasComponent
+  override lazy val theme: Var[_ <: CanvasComponentTheme] = Var(CanvasComponent)
 
   val reDraw = LazyUpdate {
     context.clearRect(0.0, 0.0, canvas.width.toDouble, canvas.height.toDouble)
@@ -52,4 +52,4 @@ abstract class CanvasComponent extends Image {
   override protected def updateTransform(): Unit = reDraw.flag()
 }
 
-object CanvasComponent extends Theme(Image)
+object CanvasComponent extends CanvasComponentTheme

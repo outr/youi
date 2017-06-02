@@ -3,13 +3,16 @@ package io.youi.component
 import io.youi.component.event.{DragSupport, MouseEvent}
 import io.youi.component.font.{Font, TextPaths}
 import io.youi.component.draw.{BoundingBox, Drawable}
-import io.youi.style.{Paint, Theme}
+import io.youi.style.Paint
+import io.youi.theme.TextTheme
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 import reactify.Var
 
 import scala.scalajs.js
 
 class Text extends DrawableComponent {
+  override lazy val theme: Var[TextTheme] = Var(Text)
+
   val value: Var[String] = Var("")
   object font {
     val file: Var[Font] = Var(theme.font.file)
@@ -24,8 +27,6 @@ class Text extends DrawableComponent {
     case tp: TextPaths => Some(tp)
     case _ => None
   }
-
-  override protected def defaultTheme = Text
 
   protected def updateDrawable(): Drawable = {
     if (value().nonEmpty && font.file.loaded()) {
@@ -46,7 +47,7 @@ class Text extends DrawableComponent {
   }
 }
 
-object Text extends Theme(DrawableComponent)
+object Text extends TextTheme
 
 class TextSelection(text: Text) extends Drawable {
   val enabled: Var[Boolean] = Var(text.theme.selection.enabled)

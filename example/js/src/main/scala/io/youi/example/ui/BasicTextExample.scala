@@ -3,14 +3,14 @@ package io.youi.example.ui
 import io.youi._
 import io.youi.app.screen.UIScreen
 import io.youi.component.BasicText
-import io.youi.style.Theme
+import io.youi.theme.BasicTextTheme
 
 object BasicTextExample extends UIExampleScreen with UIScreen {
   override def name: String = "Basic Text Example"
   override def path: String = "/examples/basic-text.html"
 
   override def createUI(): Unit = {
-    val textTheme = new Theme(BasicText) {
+    val textTheme = new BasicTextTheme {
       font.size := 48.0
       fill := Color.Black
     }

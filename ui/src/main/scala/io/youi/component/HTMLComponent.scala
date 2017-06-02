@@ -2,12 +2,12 @@ package io.youi.component
 
 import com.outr.pixijs.PIXI
 import io.youi._
-import io.youi.style.Theme
+import io.youi.theme.HTMLComponentTheme
+import reactify.Var
 
 class HTMLComponent[C <: hypertext.Component](val component: C) extends Component {
+  override lazy val theme: Var[HTMLComponentTheme] = Var(HTMLComponent)
   override protected[component] lazy val instance: PIXI.Container = new PIXI.Sprite(PIXI.Texture.EMPTY)
-
-  override protected def defaultTheme: Theme = HTMLComponent
 
   size.measured.width := component.size.actual.width
   size.measured.height := component.size.actual.height
@@ -25,4 +25,4 @@ class HTMLComponent[C <: hypertext.Component](val component: C) extends Componen
   }
 }
 
-object HTMLComponent extends Theme(Theme)
+object HTMLComponent extends HTMLComponentTheme

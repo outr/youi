@@ -37,6 +37,8 @@ class Renderer private(val canvas: Canvas) extends Container {
 
   canvas.delta.attach(update)
 
+  override val globalVisibility: Var[Boolean] = visible
+
   override def update(delta: Double): Unit = {
     super.update(delta)
 

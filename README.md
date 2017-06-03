@@ -75,11 +75,19 @@ YouI is divided into modules of functionality to minimize the dependencies requi
     * [X] Update Pixi.js facade to use JSDeps
     * [X] On-demand rendering capabilities for exceptional performance
     * [ ] Workflow rendering tied to elements to allow pausing when invisible
-    * [ ] CanvasComponent for specialized drawing using HTML5 Canvas
-        * [ ] Text integration using https://github.com/nodebox/opentype.js
+    * [X] CanvasComponent for specialized drawing using HTML5 Canvas
+        * [X] Text integration using https://github.com/nodebox/opentype.js
         * [ ] Complete SVG rendering support (Canvg)
         * [ ] Video support
         * [ ] Advanced border support
+    * [ ] Complete Paint functionality
+        * [X] Fill integration
+        * [ ] Stroke wrapper
+        * [X] Gradients
+        * [X] Texture
+        * [X] Color
+        * [ ] Video
+    * [X] HTMLComponent to render HTML components on top of Canvas with the same transformations
     * [ ] Snap Layout Management (ex. `snap(img1).left.to(img2).right`)
     
 ## Features for 0.3.0 (Released 2017.04.21)

@@ -21,14 +21,14 @@ class Text extends DrawableComponent {
   }
   val selection: TextSelection = new TextSelection(this)
 
-  drawable := updateDrawable()
+  drawable := createDrawable()
 
   def textPaths: Option[TextPaths] = drawable() match {
     case tp: TextPaths => Some(tp)
     case _ => None
   }
 
-  protected def updateDrawable(): Drawable = {
+  protected def createDrawable(): Drawable = {
     if (value().nonEmpty && font.file.loaded()) {
       try {
         val textPaths = font.file().createPaths(value(), font.size(), font.kerning())

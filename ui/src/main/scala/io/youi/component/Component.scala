@@ -18,6 +18,7 @@ trait Component extends Updates {
   val cursor: Var[Cursor] = prop(theme.cursor, c => instance.cursor = c.value)
   val interactive: Var[Boolean] = prop(theme.interactive, instance.interactive = _)
   val visible: Var[Boolean] = prop(theme.visible, instance.visible = _, updatesRendering = true)
+  val globalVisibility: Val[Boolean] = Val(visible() && parent().exists(_.globalVisibility()))
 
   lazy val event: Events = new Events(this)
 

@@ -4,10 +4,11 @@ import com.outr.pixijs._
 import io.youi.{LazyUpdate, Updates}
 import io.youi.component.event.Events
 import io.youi.style.Cursor
+import io.youi.task.TaskSupport
 import io.youi.theme.{ComponentTheme, Theme}
 import reactify._
 
-trait Component extends Updates {
+trait Component extends TaskSupport {
   protected[component] def instance: PIXI.Container
 
   val transform = LazyUpdate(updateTransform())
@@ -112,6 +113,8 @@ trait Component extends Updates {
   }
 
   def invalidate(): Unit = parent().foreach(_.invalidate())
+
+  override def updateTasks(): Boolean = super.updateTasks() && globalVisibility()
 }
 
 object Component extends ComponentTheme

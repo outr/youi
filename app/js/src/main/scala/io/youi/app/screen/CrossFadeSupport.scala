@@ -1,11 +1,13 @@
 package io.youi.app.screen
 
+import io.youi.AnimationFrame
 import io.youi.easing.Easing
-import io.youi.workflow.{AnimateIn, synchronous}
+import io.youi.task._
 import org.scalajs.dom._
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext.Implicits.global
 
 trait CrossFadeSupport extends ScreenManager {
   protected def crossFadeElement: html.Element
@@ -26,7 +28,7 @@ trait CrossFadeSupport extends ScreenManager {
           duration = crossFadeDuration,
           easing = crossFadeEaseIn
         ))
-      workflow.start()
+      workflow.start(AnimationFrame).future.map(_ => ())
     } else {
       super.beforeScreenChange(oldScreen, newScreen)
     }
@@ -40,7 +42,7 @@ trait CrossFadeSupport extends ScreenManager {
         destination = () => 0.0,
         duration = crossFadeDuration,
         easing = crossFadeEaseOut
-      ).andThen(synchronous(crossFadeElement.style.visibility = "hidden")).start()
+      ).andThen(synchronous(crossFadeElement.style.visibility = "hidden")).start(AnimationFrame).future.map(_ => ())
     } else {
       super.afterScreenChange(oldScreen, newScreen)
     }

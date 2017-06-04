@@ -1,10 +1,11 @@
 package io.youi.hypertext
 
 import io.youi.hypertext.style.{ColorProperties, Position}
+import io.youi.task.TaskSupport
 import io.youi.{Unique, Updates}
 import reactify._
 
-trait AbstractComponent extends Updates {
+trait AbstractComponent extends TaskSupport {
   lazy val id: Var[String] = Var(Unique(length = 8, characters = Unique.LettersLower))
   lazy val parent: State[Option[AbstractComponent]] = Var(None)
 

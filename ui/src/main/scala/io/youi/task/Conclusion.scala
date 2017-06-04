@@ -1,4 +1,4 @@
-package io.youi.workflow
+package io.youi.task
 
 sealed trait Conclusion
 

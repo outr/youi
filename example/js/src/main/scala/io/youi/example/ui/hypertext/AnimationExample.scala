@@ -1,10 +1,9 @@
 package io.youi.example.ui.hypertext
 
 import io.youi.easing.Easing
-import io.youi.example.ui.UIExampleScreen
 import io.youi.hypertext.style.Image
 import io.youi.hypertext.{ImageView, Label}
-import io.youi.workflow._
+import io.youi.task._
 import io.youi.{Color, ui}
 
 import scala.concurrent.Future
@@ -44,7 +43,7 @@ object AnimationExample extends HTMLScreen {
             label.position.left to 50.0 in 5.seconds easing easingFunction,
             sleep(2.seconds)
           )
-        ).start()
+        ).start(label)
 
         container.children += label
       }
@@ -63,6 +62,6 @@ object AnimationExample extends HTMLScreen {
           view.position.top to 0.0 in 5.seconds easing Easing.bounceOut
         )
       )
-    ).start()
+    ).start(view)
   }
 }

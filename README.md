@@ -46,7 +46,7 @@ YouI is divided into modules of functionality to minimize the dependencies requi
     * [ ] iOS
     * [ ] Android
     
-## Features for 0.6.0 (Future)
+## Features for 0.7.0 (Future)
 
 * [ ] Selectable Text in Canvas for copy/paste
 * [ ] TextInput in Canvas for editable editable text
@@ -61,6 +61,13 @@ YouI is divided into modules of functionality to minimize the dependencies requi
     * [ ] FlowLayout
 * [ ] Scrollbar support
 
+## Features for 0.6.0 (Future)
+
+* [ ] Serializable / Deserializable JSON structure for UI
+* [ ] PSD import tool
+* [ ] SVG import tool
+* [ ] AI import tool
+
 ## Features for 0.5.0 (Future)
 
 * [ ] Major cleanup and simplification of writing a web application
@@ -74,7 +81,7 @@ YouI is divided into modules of functionality to minimize the dependencies requi
 * [ ] UI Features
     * [X] Update Pixi.js facade to use JSDeps
     * [X] On-demand rendering capabilities for exceptional performance
-    * [ ] Workflow rendering tied to elements to allow pausing when invisible
+    * [X] Workflow rendering tied to elements to allow pausing when invisible
     * [X] CanvasComponent for specialized drawing using HTML5 Canvas
         * [X] Text integration using https://github.com/nodebox/opentype.js
         * [ ] Complete SVG rendering support (Canvg)

@@ -1,7 +1,7 @@
 package io.youi.example.ui
 
 import io.youi._
-import io.youi.workflow._
+import io.youi.task._
 import io.youi.app.screen.UIScreen
 import io.youi.component.{Image, BasicText, Texture}
 import io.youi.easing.Easing
@@ -41,7 +41,7 @@ object AnimationExample extends UIExampleScreen with UIScreen {
             label.position.left to 50.0 in 5.seconds easing easingFunction,
             sleep(2.seconds)
           )
-        ).start()
+        ).start(label)
 
         container.children += label
       }
@@ -60,6 +60,6 @@ object AnimationExample extends UIExampleScreen with UIScreen {
           image.position.top to 0.0 in 5.seconds easing Easing.bounceOut
         )
       )
-    ).start()
+    ).start(image)
   }
 }

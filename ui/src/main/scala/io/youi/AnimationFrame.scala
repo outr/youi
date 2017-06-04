@@ -1,9 +1,10 @@
 package io.youi
 
+import io.youi.task.TaskSupport
 import reactify._
 import org.scalajs.dom._
 
-object AnimationFrame extends Updates {
+object AnimationFrame extends TaskSupport {
   private var lastUpdate: Double = 0.0
 
   val timeStamp: Val[Double] = Var(0.0)

@@ -1,4 +1,4 @@
-package io.youi.workflow
+package io.youi.task
 
 import io.youi.easing.Easing
 
@@ -8,18 +8,17 @@ case class AnimateIn(get: () => Double,
                      apply: Double => Unit,
                      destination: () => Double,
                      duration: FiniteDuration,
-                     easing: Easing) extends DurationTemporal {
+                     easing: Easing) extends DurationTask {
   private var initialPosition: Double = 0.0
 
   def easing(easing: Easing): AnimateIn = copy(easing = easing)
 
-  override protected def starting(): Unit = {
-    super.starting()
+  override def time: FiniteDuration = duration
 
-    initialPosition = get()
-  }
-
-  override def act(delta: Double, elapsed: Double, progress: Double): Unit = {
+  override def act(delta: Double, elapsed: Double, progress: Double, reset: Boolean): Unit = {
+    if (reset) {
+      initialPosition = get()
+    }
     val endPosition = destination()
     val length = endPosition - initialPosition
     val eased = easing.calculate(progress)
@@ -27,6 +26,4 @@ case class AnimateIn(get: () => Double,
     val value = initialPosition + adjust
     apply(value)
   }
-
-  override def time: FiniteDuration = duration
 }

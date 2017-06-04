@@ -2,7 +2,7 @@ package io.youi.example.ui
 
 import io.youi.app.screen.UIScreen
 import io.youi.component.{Image, Texture}
-import io.youi.workflow._
+import io.youi.task._
 
 import scala.concurrent.duration._
 
@@ -35,7 +35,7 @@ object ImageExample extends UIExampleScreen with UIScreen {
 
       forever {
         rotation to 1.0 in 1.seconds andThen(rotation := 0.0)
-      }.start()
+      }.start(this)
     }
   }
 }

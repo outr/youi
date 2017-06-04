@@ -1,21 +1,14 @@
 package io.youi
 
-import reactify._
+import reactify.StateChannel
 
 import scala.concurrent.Future
 import scala.concurrent.duration.FiniteDuration
 import scala.language.implicitConversions
 
-package object workflow {
-  implicit def future2Task(future: => Future[Unit]): Task = new Task {
-    override protected def run(): Future[Unit] = future
-  }
-  implicit def f2Task(f: => Unit): Task = new Task {
-    override protected def run(): Future[Unit] = {
-      f
-      Future.successful(())
-    }
-  }
+package object task {
+  implicit def future2Task[R](future: => Future[R]): Task = FutureTask[R](future)
+  implicit def f2Task(f: => Unit): Task = Action(f)
 
   implicit class StateChannelWorkflow(state: StateChannel[Double]) {
     def to(destination: => Double): PartialAnimate = PartialAnimate(

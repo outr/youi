@@ -1,6 +1,6 @@
 package io.youi.style
 
-import io.youi.component.{Component, Renderer}
+import io.youi.component.Component
 import io.youi.net.URL
 import io.youi.{Color, dom}
 import org.scalajs.dom.raw.CanvasRenderingContext2D
@@ -8,7 +8,7 @@ import org.scalajs.dom.{CanvasGradient, CanvasPattern, Event, html}
 
 import scala.concurrent.{Future, Promise}
 import scala.scalajs.js
-import scala.scalajs.js.{UndefOr, |}
+import scala.scalajs.js.|
 
 trait Paint {
   def isEmpty: Boolean = false
@@ -21,10 +21,14 @@ trait Paint {
 object NoPaint extends Paint {
   override def isEmpty = true
   override protected  def value(component: Component, context: CanvasRenderingContext2D): js.UndefOr[String | js.Array[String] | Double | CanvasGradient | CanvasPattern] = null
+
+  override def toString: String = "NoPaint"
 }
 
 class ColorPaint(color: Color) extends Paint {
   override protected  def value(component: Component, context: CanvasRenderingContext2D): js.UndefOr[String | js.Array[String] | Double | CanvasGradient | CanvasPattern] = color.css
+
+  override def toString: String = color.toString
 }
 
 class LinearGradientPaint(direction: GradientDirection, stops: Vector[GradientStop]) extends Paint {

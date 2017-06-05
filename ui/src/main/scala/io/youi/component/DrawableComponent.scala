@@ -19,6 +19,7 @@ class DrawableComponent extends CanvasComponent {
   val stroke: Var[Paint] = Var(theme.stroke)
   val lineWidth: Var[Double] = Var(theme.lineWidth)
   val lineDash: Var[List[Double]] = Var(theme.lineDash)
+  val background: Var[Paint] = Var(theme.background)
 
   drawable.on(reDraw.flag())
   fill.on(reDraw.flag())
@@ -28,24 +29,36 @@ class DrawableComponent extends CanvasComponent {
   size.measured.height := drawable().boundingBox.height
 
   override protected def draw(context: CanvasRenderingContext2D): Unit = {
+    background() match {
+      case paint if paint == Paint.none => // No background
+      case paint => {
+        context.fillStyle = paint(this).asInstanceOf[js.Any]
+        context.fillRect(0.0, 0.0, size.width(), size.height())
+      }
+    }
+
     preDraw.foreach(_.draw(this, context))
     if (fill().nonEmpty) {
       context.fillStyle = fill().apply(this).asInstanceOf[js.Any]
     }
     if (stroke().nonEmpty) {
       context.strokeStyle = stroke().apply(this).asInstanceOf[js.Any]
-    }
-    drawable().draw(this, context)
-    if (fill().nonEmpty) {
-      context.fill()
-    }
-    if (stroke().nonEmpty) {
       context.lineWidth = lineWidth()
       context.setLineDash(js.Array(lineDash(): _*))
-      context.stroke()
+    }
+    drawable().draw(this, context)
+    if (autoPaint) {
+      if (fill().nonEmpty) {
+        context.fill()
+      }
+      if (stroke().nonEmpty) {
+        context.stroke()
+      }
     }
     postDraw.foreach(_.draw(this, context))
   }
+
+  protected def autoPaint: Boolean = true
 }
 
 object DrawableComponent extends DrawableComponentTheme

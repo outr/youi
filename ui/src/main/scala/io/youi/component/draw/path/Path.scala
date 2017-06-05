@@ -26,7 +26,7 @@ case class Path(actions: List[PathAction]) extends Drawable with PathBuilder wit
     Path(updated)
   }
 
-  override protected def addAction(action: PathAction): Path = Path(actions ::: List(action))
+  override def withAction(action: PathAction): Path = Path(actions ::: List(action))
 }
 
 object Path extends PathBuilder {
@@ -78,19 +78,19 @@ object Path extends PathBuilder {
     Path(actions.toList)
   }
 
-  override protected def addAction(action: PathAction): Path = Path(List(action))
+  override def withAction(action: PathAction): Path = Path(List(action))
 }
 
 trait PathBuilder {
-  def begin: Path = addAction(BeginPath)
-  def close: Path = addAction(ClosePath)
+  def begin: Path = withAction(BeginPath)
+  def close: Path = withAction(ClosePath)
   def curve(x1: Double, y1: Double, x2: Double, y2: Double, x: Double, y: Double): Path = {
-    addAction(CurveTo(x1, y1, x2, y2, x, y))
+    withAction(CurveTo(x1, y1, x2, y2, x, y))
   }
-  def line(x: Double, y: Double): Path = addAction(LineTo(x, y))
-  def move(x: Double, y: Double): Path = addAction(MoveTo(x, y))
-  def quadratic(x1: Double, y1: Double, x: Double, y: Double): Path = addAction(QuadraticCurveTo(x1, y1, x, y))
-  def rect(x: Double, y: Double, width: Double, height: Double): Path = addAction(Rectangle(x, y, width, height))
+  def line(x: Double, y: Double): Path = withAction(LineTo(x, y))
+  def move(x: Double, y: Double): Path = withAction(MoveTo(x, y))
+  def quadratic(x1: Double, y1: Double, x: Double, y: Double): Path = withAction(QuadraticCurveTo(x1, y1, x, y))
+  def rect(x: Double, y: Double, width: Double, height: Double): Path = withAction(Rectangle(x, y, width, height))
 
-  protected def addAction(action: PathAction): Path
+  def withAction(action: PathAction): Path
 }

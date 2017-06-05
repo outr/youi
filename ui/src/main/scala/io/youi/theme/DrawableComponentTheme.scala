@@ -15,4 +15,5 @@ trait DrawableComponentTheme extends CanvasComponentTheme {
   val stroke: Var[Paint] = Var(prnt(_.stroke, Paint.none))
   val lineWidth: Var[Double] = Var(prnt(_.lineWidth, 1.0))
   val lineDash: Var[List[Double]] = Var(prnt(_.lineDash, Nil))
+  val background: Var[Paint] = Var(prnt(_.background, Paint.none))
 }

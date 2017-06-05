@@ -21,8 +21,8 @@ class Image extends Component {
   size.measured.height := texture().height()
 
   // Configure auto-scaling to size
-  scale.x := size.width() / size.measured.width()
-  scale.y := size.height() / size.measured.height()
+  scale.x := (if (size.measured.width() > 0.0) size.width() / size.measured.width() else 1.0)
+  scale.y := (if (size.measured.height() > 0.0) size.height() / size.measured.height() else 1.0)
 }
 
 object Image extends ImageTheme

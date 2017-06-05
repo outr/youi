@@ -21,12 +21,15 @@ object ImageEditorExample extends UIExampleScreen with UIScreen {
     }
 
     val selection = new RectangularSelection {
-      selection.position.x := 100.0
-      selection.position.y := 100.0
-      selection.size.width := 500.0
-      selection.size.height := 300.0
-      selection.stroke := Color.Red
-      selection.lineWidth := 2.0
+      position.x := 100.0
+      position.y := 100.0
+      size.width := 500.0
+      size.height := 500.0
+
+      selection.set(100.0, 100.0, 300.0, 300.0)
+      stroke := Color.Red
+      lineWidth := 2.0
+      background := Color.LightBlue.withAlpha(0.5)
     }
     container.children += selection
   }

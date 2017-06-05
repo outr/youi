@@ -2,8 +2,8 @@ package io.youi.component
 
 import com.outr.pixijs.PIXI
 import io.youi.component.filter.CanvasFilter
-import io.youi.{LazyUpdate, dom}
 import io.youi.theme.CanvasComponentTheme
+import io.youi.{LazyUpdate, dom}
 import org.scalajs.dom.html
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 import reactify.Var
@@ -20,15 +20,19 @@ abstract class CanvasComponent extends Image {
   override lazy val theme: Var[_ <: CanvasComponentTheme] = Var(CanvasComponent)
 
   val reDraw = LazyUpdate {
-    context.clearRect(0.0, 0.0, canvas.width.toDouble, canvas.height.toDouble)
-    draw(context)
-    filter().foreach { filter =>
-      val imageData = context.getImageData(0.0, 0.0, canvas.width.toDouble, canvas.height.toDouble)
-      filter(imageData)
-      context.putImageData(imageData, 0, 0)
+    try {
+      context.clearRect(0.0, 0.0, canvas.width.toDouble, canvas.height.toDouble)
+      draw(context)
+      filter().foreach { filter =>
+        val imageData = context.getImageData(0.0, 0.0, canvas.width.toDouble, canvas.height.toDouble)
+        filter(imageData)
+        context.putImageData(imageData, 0, 0)
+      }
+      pixiTexture.update()
+      super.updateTransform()
+    } catch {
+      case t: Throwable => scribe.error(t)
     }
-    pixiTexture.update()
-    super.updateTransform()
   }
   reDraw.flag()
   size.width.attachAndFire { d =>
@@ -39,6 +43,11 @@ abstract class CanvasComponent extends Image {
     canvas.height = math.ceil(d).toInt
     reDraw.flag()
   }
+
+  // Override defaults from Image
+  scale.x := 1.0
+  scale.y := 1.0
+
   filter.on(reDraw.flag())
 
   protected def draw(context: CanvasRenderingContext2D): Unit
@@ -49,6 +58,7 @@ abstract class CanvasComponent extends Image {
     reDraw.update()
   }
 
+  // TODO: don't re draw on transform change
   override protected def updateTransform(): Unit = reDraw.flag()
 }
 

@@ -25,6 +25,14 @@ class RectangularSelection extends DrawableComponent {
     val width: Val[Double] = Val(x2 - x1)
     val height: Val[Double] = Val(y2 - y1)
     val edgeDistance: Var[Double] = Var(5.0)
+
+    val minX: Var[Double] = Var(edgeDistance)
+    val minY: Var[Double] = Var(edgeDistance)
+    val maxX: Var[Double] = Var(size.width - edgeDistance)
+    val maxY: Var[Double] = Var(size.height - edgeDistance)
+    val minWidth: Var[Double] = Var(30.0)
+    val minHeight: Var[Double] = Var(30.0)
+
     // TODO: paint and stroke detail
 
     def set(x1: => Double, y1: => Double, x2: => Double, y2: => Double): Unit = {
@@ -162,22 +170,62 @@ class SelectionDragSupport(rs: RectangularSelection) extends DragSupport[DragSta
     def processCursor(cursor: Cursor): Unit = {
       cursor match {
         case Cursor.Move => {
-          rs.selection.x1.setStatic(value.x1 + adjustX)
-          rs.selection.x2.setStatic(value.x2 + adjustX)
-          rs.selection.y1.setStatic(value.y1 + adjustY)
-          rs.selection.y2.setStatic(value.y2 + adjustY)
-        }
-        case Cursor.ResizeNorth => {
-          rs.selection.y1.setStatic(value.y1 + adjustY)
-        }
-        case Cursor.ResizeSouth => {
-          rs.selection.y2.setStatic(value.y2 + adjustY)
-        }
-        case Cursor.ResizeEast => {
-          rs.selection.x2.setStatic(value.x2 + adjustX)
+          var x1 = value.x1 + adjustX
+          var x2 = value.x2 + adjustX
+          var y1 = value.y1 + adjustY
+          var y2 = value.y2 + adjustY
+
+          if (x1 < rs.selection.minX()) {
+            val a = rs.selection.minX - x1
+            x1 += a
+            x2 += a
+          } else if (x2 > rs.selection.maxX()) {
+            val a = x2 - rs.selection.maxX
+            x1 -= a
+            x2 -= a
+          }
+          if (y1 < rs.selection.minY()) {
+            val a = rs.selection.minY - y1
+            y1 += a
+            y2 += a
+          } else if (y2 > rs.selection.maxY()) {
+            val a = y2 - rs.selection.maxY
+            y1 -= a
+            y2 -= a
+          }
+
+          rs.selection.x1.setStatic(x1)
+          rs.selection.x2.setStatic(x2)
+          rs.selection.y1.setStatic(y1)
+          rs.selection.y2.setStatic(y2)
         }
         case Cursor.ResizeWest => {
-          rs.selection.x1.setStatic(value.x1 + adjustX)
+          var x1 = math.max(value.x1 + adjustX, rs.selection.minX)
+          if (rs.selection.x2 - x1 < rs.selection.minWidth()) {
+            x1 = rs.selection.x2 - rs.selection.minWidth
+          }
+          rs.selection.x1.setStatic(x1)
+        }
+        case Cursor.ResizeEast => {
+          var x2 = math.min(value.x2 + adjustX, rs.selection.maxX)
+          if (x2 - rs.selection.x1 < rs.selection.minWidth()) {
+            x2 = rs.selection.x1 + rs.selection.minWidth
+          }
+          rs.selection.x2.setStatic(x2)
+        }
+        case Cursor.ResizeNorth => {
+          var y1 = math.max(value.y1 + adjustY, rs.selection.minY)
+          if (rs.selection.y2 - y1 < rs.selection.minHeight()) {
+            y1 = rs.selection.y2 - rs.selection.minHeight
+          }
+          rs.selection.y1.setStatic(y1)
+        }
+        case Cursor.ResizeSouth => {
+          var y2 = math.min(value.y2 + adjustY, rs.selection.maxY)
+          if (y2 - rs.selection.y1 < rs.selection.minHeight()) {
+            y2 = rs.selection.y1 + rs.selection.minHeight
+          }
+          rs.selection.y2.setStatic(y2)
         }
         case Cursor.ResizeNorthWest => {
           processCursor(Cursor.ResizeNorth)

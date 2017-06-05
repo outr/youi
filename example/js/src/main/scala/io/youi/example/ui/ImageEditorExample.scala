@@ -29,7 +29,6 @@ object ImageEditorExample extends UIExampleScreen with UIScreen {
       selection.set(100.0, 100.0, 300.0, 300.0)
       stroke := Color.Red
       lineWidth := 2.0
-      background := Color.LightBlue.withAlpha(0.5)
     }
     container.children += selection
   }

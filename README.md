@@ -46,7 +46,7 @@ YouI is divided into modules of functionality to minimize the dependencies requi
     * [ ] iOS
     * [ ] Android
     
-## Features for 0.7.0 (Future)
+## Features for 0.8.0 (Future)
 
 * [ ] Selectable Text in Canvas for copy/paste
 * [ ] TextInput in Canvas for editable editable text
@@ -54,27 +54,31 @@ YouI is divided into modules of functionality to minimize the dependencies requi
     * [ ] Caret with customization support
     * [ ] Rich text segments
     * [ ] Multi-line support or explicit single-line support
-* [ ] Layout managers for UI components derived from Snap
-    * [ ] GridLayout
-        * [ ] FormLayout
-    * [ ] StackLayout
-    * [ ] FlowLayout
 * [ ] Scrollbar support
 
-## Features for 0.6.0 (Future)
+## Features for 0.7.0 (Future)
 
 * [ ] Serializable / Deserializable JSON structure for UI
 * [ ] PSD import tool
 * [ ] SVG import tool
 * [ ] AI import tool
 
-## Features for 0.5.0 (Future)
+## Features for 0.6.0 (Future)
 
 * [ ] Major cleanup and simplification of writing a web application
     * [ ] Provide simple classes to extend for client, server, and shared
     * [ ] SBT plugin to simplify build setup (especially management and sharing of generated JS)
     * [ ] Ability to create an app with only three classes (client, server, and shared)
     * [ ] Create a template project (maybe Giter8)
+    
+## Features for 0.5.0 (Future)
+
+* [ ] Snap Layout Management (ex. `snap(img1).left.to(img2).right`)
+* [ ] Layout managers
+    * [ ] Flow layout
+    * [ ] Grid layout
+    * [ ] Form layout
+    * [ ] Stack layout
     
 ## Features for 0.4.0 (In-Progress)
 
@@ -95,7 +99,16 @@ YouI is divided into modules of functionality to minimize the dependencies requi
         * [X] Color
         * [ ] Video
     * [X] HTMLComponent to render HTML components on top of Canvas with the same transformations
-    * [ ] Snap Layout Management (ex. `snap(img1).left.to(img2).right`)
+    * [ ] RectangularSelection tool
+        * [X] Move and Resize Support
+        * [X] Minimum and Maximum constraints
+        * [X] Aspect ratio constraints
+    * [ ] ImageEditor
+        * [ ] Selection area
+        * [ ] Cropping
+        * [ ] Scaling
+        * [ ] Rotation
+        * [ ] Upload local file
     
 ## Features for 0.3.0 (Released 2017.04.21)
 

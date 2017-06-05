@@ -8,6 +8,10 @@ import io.youi.component.event.{DragSupport, MouseEvent}
 import io.youi.style.Cursor
 import reactify._
 
+// TODO: create Paintable mix-in to define the fill, stroke, lineWidth, etc. info
+// TODO: customizable paint and stroke + theme integration (RectangularSelectionTheme)
+// TODO: aspect ratio support
+// TODO: extract mouse monitoring to mix-in
 class RectangularSelection extends DrawableComponent {
   private val mouseX = Var(0.0)
   private val mouseY = Var(0.0)
@@ -32,8 +36,6 @@ class RectangularSelection extends DrawableComponent {
     val maxY: Var[Double] = Var(size.height - edgeDistance)
     val minWidth: Var[Double] = Var(30.0)
     val minHeight: Var[Double] = Var(30.0)
-
-    // TODO: paint and stroke detail
 
     def set(x1: => Double, y1: => Double, x2: => Double, y2: => Double): Unit = {
       this.x1 := x1

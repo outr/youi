@@ -1,4 +1,4 @@
-package io.youi.ajax
+package io.youi.ajax.ajax
 
 import reactify._
 import io.youi.net.URL

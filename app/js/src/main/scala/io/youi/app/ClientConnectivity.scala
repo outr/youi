@@ -1,9 +1,9 @@
 package io.youi.app
 
 import io.youi.{AnimationFrame, History}
-import io.youi.app.stream.StreamURL
 import io.youi.http.{Connection, WebSocketUtil}
 import io.youi.net.URL
+import io.youi.stream.StreamURL
 import org.scalajs.dom.{WebSocket, window}
 import org.scalajs.dom.ext.AjaxException
 import reactify.{ChangeListener, Var}

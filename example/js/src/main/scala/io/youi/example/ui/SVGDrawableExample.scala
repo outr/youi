@@ -18,6 +18,15 @@ object SVGDrawableExample extends UIExampleScreen with UIScreen {
     """.stripMargin
 
   override def createUI(): Unit = {
+    container.children += new DrawableComponent {
+      SVGDrawable.fromPath("/images/tiger.svg").foreach { svg =>
+        drawable := svg
+      }
+
+      position.left := 10.0
+      position.top := 10.0
+    }
+
     val svg = SVGDrawable(svgString)
     container.children += new DrawableComponent {
       drawable := svg

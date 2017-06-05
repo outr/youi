@@ -2,7 +2,7 @@ package io.youi.app
 
 import io.youi.app.screen.ScreenManager
 import io.youi.{History, JavaScriptError}
-import io.youi.ajax.AjaxRequest
+import io.youi.ajax.ajax.AjaxRequest
 import io.youi.app.sourceMap.ErrorTrace
 import org.scalajs.dom._
 import io.youi.dom._

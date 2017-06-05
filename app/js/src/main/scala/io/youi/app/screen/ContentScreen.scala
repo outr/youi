@@ -1,9 +1,9 @@
 package io.youi.app.screen
 
 import reactify.{Val, Var}
-import io.youi.app.stream.StreamURL
 import io.youi.{History, dom}
 import io.youi.dom._
+import io.youi.stream.StreamURL
 import org.scalajs.dom._
 
 import scala.concurrent.Future

@@ -1,8 +1,8 @@
 package io.youi.app.sourceMap
 
 import io.youi.{History, _}
-import io.youi.app.stream.StreamURL
 import io.youi.net.URL
+import io.youi.stream.StreamURL
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global

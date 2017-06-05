@@ -84,7 +84,7 @@ YouI is divided into modules of functionality to minimize the dependencies requi
     * [X] Workflow rendering tied to elements to allow pausing when invisible
     * [X] CanvasComponent for specialized drawing using HTML5 Canvas
         * [X] Text integration using https://github.com/nodebox/opentype.js
-        * [ ] Complete SVG rendering support (Canvg)
+        * [X] Complete SVG rendering support (Canvg)
         * [ ] Video support
         * [ ] Advanced border support
     * [ ] Complete Paint functionality

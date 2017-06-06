@@ -12,13 +12,36 @@ class Texture(private[component] val instance: PIXI.Texture,
   val width: Val[Double] = Var(instance.width)
   val height: Val[Double] = Var(instance.height)
 
-  def clipped(left: Double, top: Double, right: Double, bottom: Double): Texture = {
-    val rectangle = new PIXI.Rectangle(left, top, width - (left + right), height - (top + bottom))
-    new Texture(
-      instance = new PIXI.Texture(instance.baseTexture, rectangle),
-      dependsOn = Some(this),
-      clip = Some(Clip(left, top, right, bottom))
-    )
+  object clipped {
+    def fromSides(left: Double = 0.0, top: Double = 0.0, right: Double = 0.0, bottom: Double = 0.0): Texture = {
+      val rectangle = new PIXI.Rectangle(left, top, width - (left + right), height - (top + bottom))
+      new Texture(
+        instance = new PIXI.Texture(instance.baseTexture, rectangle),
+        dependsOn = Some(Texture.this),
+        clip = Some(Clip(left, top, right, bottom))
+      )
+    }
+    def fromLeft(width: Double): Texture = {
+      val right = math.max(Texture.this.width - width, 0.0)
+      fromSides(right = right)
+    }
+    def fromRight(width: Double): Texture = {
+      val left = math.max(Texture.this.width - width, 0.0)
+      fromSides(left = left)
+    }
+    def fromTop(height: Double): Texture = {
+      val bottom = math.max(Texture.this.height - height, 0.0)
+      fromSides(bottom = bottom)
+    }
+    def fromBottom(height: Double): Texture = {
+      val top = math.max(Texture.this.height - height, 0.0)
+      fromSides(top = top)
+    }
+    def fromPoints(x1: Double, y1: Double, x2: Double, y2: Double): Texture = {
+      val right = width - x2
+      val bottom = height - y2
+      fromSides(x1, y1, right, bottom)
+    }
   }
 
   instance.on("update", () => {

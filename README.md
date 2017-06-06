@@ -93,7 +93,6 @@ YouI is divided into modules of functionality to minimize the dependencies requi
     * [X] DrawableComponent to simplify and maintain stateful drawing backed by CanvasComponent
         * [X] Text integration using https://github.com/nodebox/opentype.js
         * [X] Complete SVG rendering support (Canvg)
-        * [ ] Scale-9 Support
     * [X] Complete Paint functionality
         * [X] Fill integration
         * [X] Stroke wrapper
@@ -106,6 +105,8 @@ YouI is divided into modules of functionality to minimize the dependencies requi
         * [X] Minimum and Maximum constraints
         * [X] Aspect ratio constraints
     * [X] Texture clipping support
+    * [X] Scale-9 Support
+    * [X] AbstractContainer to better support custom components and more explicit containers
     * [ ] ImageEditor
         * [ ] Selection area
         * [ ] Cropping

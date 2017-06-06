@@ -13,7 +13,7 @@ trait Component extends TaskSupport {
 
   val transform = LazyUpdate(updateTransform())
 
-  lazy val parent: Val[Option[Container]] = Var(None)
+  lazy val parent: Val[Option[AbstractContainer]] = Var(None)
 
   def theme: Var[_ <: ComponentTheme]
   val cursor: Var[Cursor] = prop(theme.cursor, c => instance.cursor = c.value)

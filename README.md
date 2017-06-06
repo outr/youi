@@ -107,6 +107,7 @@ YouI is divided into modules of functionality to minimize the dependencies requi
     * [X] Texture clipping support
     * [X] Scale-9 Support
     * [X] AbstractContainer to better support custom components and more explicit containers
+    * [ ] Hierarchical routing support for server handlers
     * [ ] ImageEditor
         * [ ] Selection area
         * [ ] Cropping

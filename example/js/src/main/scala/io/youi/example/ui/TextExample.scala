@@ -23,7 +23,7 @@ object TextExample extends UIExampleScreen with UIScreen {
       value := "Hello, World!"
       font.file := Font.fromPath("/fonts/Roboto-Black.ttf")
       font.size := 96.0
-      Paint.image("/cuteness.jpg").foreach { paint =>
+      Paint.image("/images/cuteness.jpg").foreach { paint =>
         fill.paint := paint
       }
       stroke.paint := Color.Black

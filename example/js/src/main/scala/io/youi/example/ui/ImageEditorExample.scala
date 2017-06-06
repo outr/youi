@@ -10,7 +10,7 @@ object ImageEditorExample extends UIExampleScreen with UIScreen {
   override def path: String = "/examples/image-editor.html"
 
   override def createUI(): Unit = {
-    val texture = Texture("/cuteness.jpg")
+    val texture = Texture("/images/cuteness.jpg")
 
     // TODO: reset, zoom in/out, rotate left/right, upload
 

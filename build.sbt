@@ -1,29 +1,29 @@
 name := "youi"
 organization in ThisBuild := "io.youi"
-version in ThisBuild := "0.3.5-SNAPSHOT"
+version in ThisBuild := "0.4.0-SNAPSHOT"
 scalaVersion in ThisBuild := "2.12.2"
 crossScalaVersions in ThisBuild := List("2.12.2", "2.11.11")
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
 resolvers in ThisBuild += Resolver.sonatypeRepo("snapshots")
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 
-val pixiJsVersion = "4.5.2"
+val pixiJsVersion = "4.5.2.1"
 val scribeVersion = "1.4.2"
 val powerScalaVersion = "2.0.5"
 val reactifyVersion = "1.6.0"
-val akkaVersion = "2.5.1"
+val akkaVersion = "2.5.2"
 val scalaJSDOM = "0.9.2"
 val httpAsyncClientVersion = "4.1.3"
 val circeVersion = "0.8.0"
 val uaDetectorVersion = "2014.10"
-val undertowVersion = "1.4.15.Final"
+val undertowVersion = "1.4.16.Final"
 val uPickleVersion = "0.4.4"
 val closureCompilerVersion = "v20170423"
 val hasherVersion = "1.2.1"
 val canvgVersion = "1.4.0_1"
 val openTypeVersion = "0.7.1_2"
 val scalaXMLVersion = "1.0.6"
-val scallopVersion = "2.1.2"
+val scallopVersion = "2.1.3"
 val scalacticVersion = "3.0.3"
 val scalaTestVersion = "3.0.3"
 

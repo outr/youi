@@ -246,8 +246,7 @@ object UndertowServerImplementation {
             })
           }*/
           case URLContent(url, contentType) => {
-            val connection = url.openConnection()
-            val resource = new URLResource(url, connection, "")
+            val resource = new URLResource(url, "")
             resource.serve(exchange.getResponseSender, exchange, new IoCallback {
               override def onComplete(exchange: HttpServerExchange, sender: Sender): Unit = {
                 sender.close()

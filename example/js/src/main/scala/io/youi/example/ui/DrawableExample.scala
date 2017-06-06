@@ -26,7 +26,7 @@ object DrawableExample extends UIExampleScreen with UIScreen {
         LineTo(50.0, 150.0),
         LineTo(50.0, 50.0)
       ),
-      Fill(Some(Color.Red.copy(alpha = 0.5))),
+      Fill(Color.Red.copy(alpha = 0.5)),
       Path(
         MoveTo(100.0, 100.0),
         LineTo(200.0, 100.0),
@@ -34,7 +34,7 @@ object DrawableExample extends UIExampleScreen with UIScreen {
         LineTo(100.0, 200.0),
         LineTo(100.0, 100.0)
       ),
-      Fill(Some(Color.Green.copy(alpha = 0.5))),
+      Fill(Color.Green.copy(alpha = 0.5)),
       Path(
         MoveTo(150.0, 150.0),
         LineTo(250.0, 150.0),
@@ -42,7 +42,7 @@ object DrawableExample extends UIExampleScreen with UIScreen {
         LineTo(150.0, 250.0),
         LineTo(150.0, 150.0)
       ),
-      Fill(Some(Color.Blue.copy(alpha = 0.5)))
+      Fill(Color.Blue.copy(alpha = 0.5))
     )
 
     container.children += component

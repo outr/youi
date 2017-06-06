@@ -1,11 +1,12 @@
 package io.youi.component.extra
 
 import io.youi.Color
-import io.youi.component.DrawableComponent
+import io.youi.component.{DrawableComponent, PaintSupport, PaintTheme}
 import io.youi.component.draw.path.{Path, PathAction, Rectangle}
-import io.youi.component.draw.{Drawable, Fill, Group, Stroke}
+import io.youi.component.draw.{Drawable, Fill, Group}
 import io.youi.component.event.{DragSupport, MouseEvent}
 import io.youi.style.Cursor
+import io.youi.theme.RectangularSelectionTheme
 import reactify._
 
 // TODO: create Paintable mix-in to define the fill, stroke, lineWidth, etc. info
@@ -13,6 +14,8 @@ import reactify._
 // TODO: aspect ratio support
 // TODO: extract mouse monitoring to mix-in
 class RectangularSelection extends DrawableComponent {
+  override lazy val theme: Var[_ <: RectangularSelectionTheme] = Var(RectangularSelection)
+
   private val mouseX = Var(0.0)
   private val mouseY = Var(0.0)
 
@@ -21,7 +24,7 @@ class RectangularSelection extends DrawableComponent {
     mouseY := evt.y
   }
 
-  object selection {
+  object selection extends PaintSupport {
     val x1: Var[Double] = Var(0.0)
     val y1: Var[Double] = Var(0.0)
     val x2: Var[Double] = Var(0.0)
@@ -37,6 +40,8 @@ class RectangularSelection extends DrawableComponent {
     val minWidth: Var[Double] = Var(30.0)
     val minHeight: Var[Double] = Var(30.0)
 
+    override protected def paintTheme: PaintTheme = theme.selection
+
     def set(x1: => Double, y1: => Double, x2: => Double, y2: => Double): Unit = {
       this.x1 := x1
       this.y1 := y1
@@ -44,8 +49,18 @@ class RectangularSelection extends DrawableComponent {
       this.y2 := y2
     }
   }
-  object blocks {
+  object blocks extends PaintSupport {
     val size: Var[Double] = Var(10.0)
+
+    override protected def paintTheme: PaintTheme = theme.blocks
+  }
+
+  object dashes extends PaintSupport {
+    override protected def paintTheme: PaintTheme = theme.dashes
+  }
+
+  object modal extends PaintSupport {
+    override protected def paintTheme: PaintTheme = theme.modal
   }
 
   private val dragging = new SelectionDragSupport(this)
@@ -99,7 +114,8 @@ class RectangularSelection extends DrawableComponent {
       .begin
       .rect(selection.x1(), selection.y1(), selection.width(), selection.height())
       .close,
-    Stroke(Some(stroke()), lineDash = Some(lineDash()), lineWidth = Some(lineWidth()))
+    selection.fill.value,
+    selection.stroke.value
   )
   protected def createEdges(): Drawable = {
     val halfBlock = blocks.size() / 2.0
@@ -118,7 +134,8 @@ class RectangularSelection extends DrawableComponent {
         .withAction(block(selection.x1 + (selection.width / 2.0), selection.y2))
         .withAction(block(selection.x2, selection.y2))
         .close,
-      Fill(Some(Color.Green))
+      blocks.fill.value,
+      blocks.stroke.value
     )
   }
   protected def createModal(): Drawable = Group(
@@ -129,7 +146,8 @@ class RectangularSelection extends DrawableComponent {
       .rect(selection.x1(), 0.0, selection.width(), selection.y1())
       .rect(selection.x1(), selection.y2(), selection.width(), size.height() - selection.y2())
       .close,
-    Fill(Some(Color.Black.withAlpha(0.5)))
+    modal.fill.value,
+    modal.stroke.value
   )
 
   protected def createDashes(): Drawable = {
@@ -141,7 +159,8 @@ class RectangularSelection extends DrawableComponent {
         .rect(selection.x1, selection.y1 + verticalThird, selection.width, verticalThird)
         .rect(selection.x1 + horizontalThird, selection.y1, horizontalThird, selection.height)
         .close,
-      Stroke(Some(Color.Blue.withAlpha(0.5)), lineWidth = Some(1.0), lineDash = Some(List(5.0, 10.0)))
+      dashes.fill.value,
+      dashes.stroke.value
     )
   }
 
@@ -257,3 +276,5 @@ class SelectionDragSupport(rs: RectangularSelection) extends DragSupport[DragSta
 }
 
 case class DragStart(cursor: Cursor, x1: Double, y1: Double, x2: Double, y2: Double, mouseX: Double, mouseY: Double)
+
+object RectangularSelection extends RectangularSelectionTheme

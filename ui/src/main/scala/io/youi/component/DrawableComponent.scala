@@ -8,25 +8,23 @@ import reactify.Var
 
 import scala.scalajs.js
 
-class DrawableComponent extends CanvasComponent {
+class DrawableComponent extends CanvasComponent with PaintSupport {
   override lazy val theme: Var[_ <: DrawableComponentTheme] = Var(DrawableComponent)
 
   val preDraw: ItemContainer[Drawable] = new ItemContainer[Drawable]()
   val postDraw: ItemContainer[Drawable] = new ItemContainer[Drawable]()
   val drawable: Var[Drawable] = Var(Drawable.empty)
 
-  val fill: Var[Paint] = Var(theme.fill)
-  val stroke: Var[Paint] = Var(theme.stroke)
-  val lineWidth: Var[Double] = Var(theme.lineWidth)
-  val lineDash: Var[List[Double]] = Var(theme.lineDash)
   val background: Var[Paint] = Var(theme.background)
 
   drawable.on(reDraw.flag())
-  fill.on(reDraw.flag())
-  stroke.on(reDraw.flag())
+  fill.value.on(reDraw.flag())
+  stroke.value.on(reDraw.flag())
 
   size.measured.width := drawable().boundingBox.width
   size.measured.height := drawable().boundingBox.height
+
+  override protected def paintTheme: PaintTheme = theme()
 
   override protected def draw(context: CanvasRenderingContext2D): Unit = {
     background() match {
@@ -38,22 +36,12 @@ class DrawableComponent extends CanvasComponent {
     }
 
     preDraw.foreach(_.draw(this, context))
-    if (fill().nonEmpty) {
-      context.fillStyle = fill().apply(this).asInstanceOf[js.Any]
-    }
-    if (stroke().nonEmpty) {
-      context.strokeStyle = stroke().apply(this).asInstanceOf[js.Any]
-      context.lineWidth = lineWidth()
-      context.setLineDash(js.Array(lineDash(): _*))
-    }
+    fill.value.set(this, context)
+    stroke.value.set(this, context)
     drawable().draw(this, context)
     if (autoPaint) {
-      if (fill().nonEmpty) {
-        context.fill()
-      }
-      if (stroke().nonEmpty) {
-        context.stroke()
-      }
+      fill.value.fill(context)
+      stroke.value.stroke(context)
     }
     postDraw.foreach(_.draw(this, context))
   }

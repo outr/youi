@@ -15,7 +15,7 @@ object TextExample extends UIExampleScreen with UIScreen {
       value := "Hello, World!"
       font.file := Font.fromPath("/fonts/Pacifico.ttf")
       font.size := 96.0
-      fill := Paint.horizontal(Color.Red, Color.Green, Color.Blue)
+      fill.paint := Paint.horizontal(Color.Red, Color.Green, Color.Blue)
       position.center := container.position.center
       position.middle := container.position.middle
     }
@@ -24,10 +24,10 @@ object TextExample extends UIExampleScreen with UIScreen {
       font.file := Font.fromPath("/fonts/Roboto-Black.ttf")
       font.size := 96.0
       Paint.image("/cuteness.jpg").foreach { paint =>
-        fill := paint
+        fill.paint := paint
       }
-      stroke := Color.Black
-      lineWidth := 0.5
+      stroke.paint := Color.Black
+      stroke.lineWidth := 0.5
       position.center := container.position.center
       position.middle := container.position.middle - 100.0
 

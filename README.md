@@ -93,7 +93,7 @@ YouI is divided into modules of functionality to minimize the dependencies requi
         * [ ] Advanced border support
     * [ ] Complete Paint functionality
         * [X] Fill integration
-        * [ ] Stroke wrapper
+        * [X] Stroke wrapper
         * [X] Gradients
         * [X] Texture
         * [X] Color
@@ -102,7 +102,7 @@ YouI is divided into modules of functionality to minimize the dependencies requi
     * [ ] RectangularSelection tool
         * [X] Move and Resize Support
         * [X] Minimum and Maximum constraints
-        * [X] Aspect ratio constraints
+        * [ ] Aspect ratio constraints
     * [ ] ImageEditor
         * [ ] Selection area
         * [ ] Cropping

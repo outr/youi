@@ -6,14 +6,24 @@ import org.scalajs.dom.raw.CanvasRenderingContext2D
 
 import scala.scalajs.js
 
-case class Fill(paint: Option[Paint]) extends Drawable {
+case class Fill(paint: Paint) extends Drawable {
   override def boundingBox: BoundingBox = BoundingBox.zero
 
-  override def draw(component: Component, context: CanvasRenderingContext2D): Unit = {
-    paint.foreach { p =>
-      val value = p(component)
+  def set(component: Component, context: CanvasRenderingContext2D): Unit = {
+    if (paint.nonEmpty) {
+      val value = paint(component)
       context.fillStyle = value.asInstanceOf[js.Any]
     }
-    context.fill()
+  }
+
+  override def draw(component: Component, context: CanvasRenderingContext2D): Unit = {
+    set(component, context)
+    fill(context)
+  }
+
+  def fill(context: CanvasRenderingContext2D): Unit = {
+    if (paint.nonEmpty) {
+      context.fill()
+    }
   }
 }

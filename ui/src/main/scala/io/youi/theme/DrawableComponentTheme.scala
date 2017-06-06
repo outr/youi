@@ -1,19 +1,21 @@
 package io.youi.theme
 
-import io.youi.component.CanvasComponent
+import io.youi.component.{CanvasComponent, PaintTheme, StrokeTheme}
 import io.youi.style.Paint
 import reactify.Var
 
-trait DrawableComponentTheme extends CanvasComponentTheme {
+trait DrawableComponentTheme extends CanvasComponentTheme with PaintTheme {
   override def defaultParent: Option[Theme] = Some(CanvasComponent)
 
   private def prnt[T](f: DrawableComponentTheme => T, default: => T): T = parent.collect {
     case p: DrawableComponentTheme => p
   }.map(f).getOrElse(default)
 
-  val fill: Var[Paint] = Var(prnt(_.fill, Paint.none))
-  val stroke: Var[Paint] = Var(prnt(_.stroke, Paint.none))
-  val lineWidth: Var[Double] = Var(prnt(_.lineWidth, 1.0))
-  val lineDash: Var[List[Double]] = Var(prnt(_.lineDash, Nil))
+  override val fill: Var[Paint] = Var(prnt(_.fill, Paint.none))
+  override object stroke extends StrokeTheme {
+    override val paint: Var[Paint] = Var(prnt(_.stroke.paint, Paint.none))
+    override val lineWidth: Var[Double] = Var(prnt(_.stroke.lineWidth, 1.0))
+    override val lineDash: Var[List[Double]] = Var(prnt(_.stroke.lineDash, Nil))
+  }
   val background: Var[Paint] = Var(prnt(_.background, Paint.none))
 }

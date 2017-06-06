@@ -17,7 +17,6 @@ object ImageEditorExample extends UIExampleScreen with UIScreen {
     container.children += new Image(texture) {
       position.left := 550.0
       position.top := 250.0
-//      rotation := 45.degrees
     }
 
     val selection = new RectangularSelection {

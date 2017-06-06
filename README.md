@@ -105,6 +105,7 @@ YouI is divided into modules of functionality to minimize the dependencies requi
         * [X] Move and Resize Support
         * [X] Minimum and Maximum constraints
         * [X] Aspect ratio constraints
+    * [X] Texture clipping support
     * [ ] ImageEditor
         * [ ] Selection area
         * [ ] Cropping

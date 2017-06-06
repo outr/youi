@@ -79,6 +79,9 @@ YouI is divided into modules of functionality to minimize the dependencies requi
     * [ ] Grid layout
     * [ ] Form layout
     * [ ] Stack layout
+* [ ] Border support in DrawableComponent
+* [ ] VideoComponent
+* [ ] VideoPaint
     
 ## Features for 0.4.0 (In-Progress)
 
@@ -87,17 +90,15 @@ YouI is divided into modules of functionality to minimize the dependencies requi
     * [X] On-demand rendering capabilities for exceptional performance
     * [X] Workflow rendering tied to elements to allow pausing when invisible
     * [X] CanvasComponent for specialized drawing using HTML5 Canvas
+    * [X] DrawableComponent to simplify and maintain stateful drawing backed by CanvasComponent
         * [X] Text integration using https://github.com/nodebox/opentype.js
         * [X] Complete SVG rendering support (Canvg)
-        * [ ] Video support
-        * [ ] Advanced border support
-    * [ ] Complete Paint functionality
+    * [X] Complete Paint functionality
         * [X] Fill integration
         * [X] Stroke wrapper
         * [X] Gradients
         * [X] Texture
         * [X] Color
-        * [ ] Video
     * [X] HTMLComponent to render HTML components on top of Canvas with the same transformations
     * [ ] RectangularSelection tool
         * [X] Move and Resize Support
@@ -109,6 +110,7 @@ YouI is divided into modules of functionality to minimize the dependencies requi
         * [ ] Scaling
         * [ ] Rotation
         * [ ] Upload local file
+        * [ ] Download result
     
 ## Features for 0.3.0 (Released 2017.04.21)
 

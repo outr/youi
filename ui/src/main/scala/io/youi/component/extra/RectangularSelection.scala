@@ -6,9 +6,9 @@ import io.youi.component.draw.{Drawable, Fill, Group}
 import io.youi.component.event.{DragSupport, MouseEvent}
 import io.youi.style.Cursor
 import io.youi.theme.RectangularSelectionTheme
+import org.scalajs.dom.raw.CanvasRenderingContext2D
 import reactify._
 
-// TODO: aspect ratio support
 class RectangularSelection extends DrawableComponent with LocalMouseInfo {
   override lazy val theme: Var[_ <: RectangularSelectionTheme] = Var(RectangularSelection)
 
@@ -20,6 +20,9 @@ class RectangularSelection extends DrawableComponent with LocalMouseInfo {
     val width: Val[Double] = Val(x2 - x1)
     val height: Val[Double] = Val(y2 - y1)
     val edgeDistance: Var[Double] = Var(5.0)
+    object aspectRatio extends Var[Option[Double]](() => None) {
+      def bySize(width: Double, height: Double): Unit = set(Some(width / height))
+    }
 
     val minX: Var[Double] = Var(edgeDistance)
     val minY: Var[Double] = Var(edgeDistance)
@@ -156,6 +159,11 @@ class RectangularSelection extends DrawableComponent with LocalMouseInfo {
     math.abs(from - to) <= selection.edgeDistance()
   }
 
+  override protected def draw(context: CanvasRenderingContext2D): Unit = {
+    dragging.update()
+    super.draw(context)
+  }
+
   override protected def autoPaint = false
 }
 
@@ -203,38 +211,35 @@ class SelectionDragSupport(rs: RectangularSelection) extends DragSupport[DragSta
             y2 -= a
           }
 
-          rs.selection.x1.setStatic(x1)
-          rs.selection.x2.setStatic(x2)
-          rs.selection.y1.setStatic(y1)
-          rs.selection.y2.setStatic(y2)
+          update(x1, y1, x2, y2)
         }
         case Cursor.ResizeWest => {
           var x1 = math.max(value.x1 + adjustX, rs.selection.minX)
           if (rs.selection.x2 - x1 < rs.selection.minWidth()) {
             x1 = rs.selection.x2 - rs.selection.minWidth
           }
-          rs.selection.x1.setStatic(x1)
+          update(x1 = x1)
         }
         case Cursor.ResizeEast => {
           var x2 = math.min(value.x2 + adjustX, rs.selection.maxX)
           if (x2 - rs.selection.x1 < rs.selection.minWidth()) {
             x2 = rs.selection.x1 + rs.selection.minWidth
           }
-          rs.selection.x2.setStatic(x2)
+          update(x2 = x2)
         }
         case Cursor.ResizeNorth => {
           var y1 = math.max(value.y1 + adjustY, rs.selection.minY)
           if (rs.selection.y2 - y1 < rs.selection.minHeight()) {
             y1 = rs.selection.y2 - rs.selection.minHeight
           }
-          rs.selection.y1.setStatic(y1)
+          update(y1 = y1)
         }
         case Cursor.ResizeSouth => {
           var y2 = math.min(value.y2 + adjustY, rs.selection.maxY)
           if (y2 - rs.selection.y1 < rs.selection.minHeight()) {
             y2 = rs.selection.y1 + rs.selection.minHeight
           }
-          rs.selection.y2.setStatic(y2)
+          update(y2 = y2)
         }
         case Cursor.ResizeNorthWest => {
           processCursor(Cursor.ResizeNorth)
@@ -257,9 +262,53 @@ class SelectionDragSupport(rs: RectangularSelection) extends DragSupport[DragSta
     }
     processCursor(value.cursor)
   }
-  override def dropped(mouseEvent: MouseEvent, value: DragStart): Unit = {
-    super.dropped(mouseEvent, value)
-    scribe.info(s"Dropped: $value")
+
+  def update(x1: Double = rs.selection.x1,
+             y1: Double = rs.selection.y1,
+             x2: Double = rs.selection.x2,
+             y2: Double = rs.selection.y2): Unit = {
+    val w = x2 - x1
+    val h = y2 - y1
+    val aspectRatio = w / h
+
+    rs.selection.aspectRatio() match {
+      case Some(ar) if math.abs(ar - aspectRatio) > 0.001 => {    // Recalculate for aspect ratio
+        val wd = math.abs(w - rs.selection.width)
+        val hd = math.abs(h - rs.selection.height)
+        val cursor = value().map(_.cursor).getOrElse(Cursor.ResizeSouthEast)
+        if (wd > hd) {      // Calculate based on width
+          val newHeight = w / ar
+          cursor match {
+            case Cursor.ResizeNorth | Cursor.ResizeNorthEast | Cursor.ResizeNorthWest => {
+              update(x1, y2 - newHeight, x2, y2)
+            }
+            case _ => {
+              update(x1, y1, x2, y1 + newHeight)
+            }
+          }
+        } else {            // Calculate based on height
+          val newWidth = h * ar
+          cursor match {
+            case Cursor.ResizeWest | Cursor.ResizeNorthWest | Cursor.ResizeSouthWest => {
+              update(x2 - newWidth, y1, x2, y2)
+            }
+            case _ => {
+              update(x1, y1, x1 + newWidth, y2)
+            }
+          }
+        }
+      }
+      case _ if x1 < rs.selection.minX() => // Ignore
+      case _ if x2 > rs.selection.maxX() => // Ignore
+      case _ if y1 < rs.selection.minY() => // Ignore
+      case _ if y2 > rs.selection.maxY() => // Ignore
+      case _ => {
+        rs.selection.x1.setStatic(x1)
+        rs.selection.x2.setStatic(x2)
+        rs.selection.y1.setStatic(y1)
+        rs.selection.y2.setStatic(y2)
+      }
+    }
   }
 }
 

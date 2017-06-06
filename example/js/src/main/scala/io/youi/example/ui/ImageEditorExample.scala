@@ -23,11 +23,12 @@ object ImageEditorExample extends UIExampleScreen with UIScreen {
     val selection = new RectangularSelection {
       position.x := 100.0
       position.y := 100.0
-      size.width := 500.0
-      size.height := 500.0
+      size.width := 800.0
+      size.height := 600.0
 
       selection.set(100.0, 100.0, 300.0, 300.0)
       selection.stroke.lineWidth := 2.0
+      selection.aspectRatio.bySize(625.0, 352.0)
     }
     container.children += selection
   }

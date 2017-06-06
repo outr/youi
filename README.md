@@ -100,10 +100,10 @@ YouI is divided into modules of functionality to minimize the dependencies requi
         * [X] Texture
         * [X] Color
     * [X] HTMLComponent to render HTML components on top of Canvas with the same transformations
-    * [ ] RectangularSelection tool
+    * [X] RectangularSelection tool
         * [X] Move and Resize Support
         * [X] Minimum and Maximum constraints
-        * [ ] Aspect ratio constraints
+        * [X] Aspect ratio constraints
     * [ ] ImageEditor
         * [ ] Selection area
         * [ ] Cropping

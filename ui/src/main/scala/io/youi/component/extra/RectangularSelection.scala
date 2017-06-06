@@ -1,7 +1,6 @@
 package io.youi.component.extra
 
-import io.youi.Color
-import io.youi.component.{DrawableComponent, PaintSupport, PaintTheme}
+import io.youi.component.{DrawableComponent, LocalMouseInfo, PaintSupport, PaintTheme}
 import io.youi.component.draw.path.{Path, PathAction, Rectangle}
 import io.youi.component.draw.{Drawable, Fill, Group}
 import io.youi.component.event.{DragSupport, MouseEvent}
@@ -9,20 +8,9 @@ import io.youi.style.Cursor
 import io.youi.theme.RectangularSelectionTheme
 import reactify._
 
-// TODO: create Paintable mix-in to define the fill, stroke, lineWidth, etc. info
-// TODO: customizable paint and stroke + theme integration (RectangularSelectionTheme)
 // TODO: aspect ratio support
-// TODO: extract mouse monitoring to mix-in
-class RectangularSelection extends DrawableComponent {
+class RectangularSelection extends DrawableComponent with LocalMouseInfo {
   override lazy val theme: Var[_ <: RectangularSelectionTheme] = Var(RectangularSelection)
-
-  private val mouseX = Var(0.0)
-  private val mouseY = Var(0.0)
-
-  event.mouse.moveInside.attach { evt =>
-    mouseX := evt.x
-    mouseY := evt.y
-  }
 
   object selection extends PaintSupport {
     val x1: Var[Double] = Var(0.0)
@@ -70,8 +58,8 @@ class RectangularSelection extends DrawableComponent {
       Group(
         createModal(),
         createDashes(),
-        createRectangle(),
-        createEdges()
+        createSelection(),
+        createBlocks()
       )
     } else {
       Drawable.empty
@@ -109,7 +97,7 @@ class RectangularSelection extends DrawableComponent {
     }
   }
 
-  protected def createRectangle(): Drawable = Group(
+  protected def createSelection(): Drawable = Group(
     Path
       .begin
       .rect(selection.x1(), selection.y1(), selection.width(), selection.height())
@@ -117,7 +105,7 @@ class RectangularSelection extends DrawableComponent {
     selection.fill.value,
     selection.stroke.value
   )
-  protected def createEdges(): Drawable = {
+  protected def createBlocks(): Drawable = {
     val halfBlock = blocks.size() / 2.0
     def block(x: Double, y: Double): PathAction = {
       Rectangle(x - halfBlock, y - halfBlock, blocks.size(), blocks.size())

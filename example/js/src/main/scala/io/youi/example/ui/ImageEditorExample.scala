@@ -2,6 +2,7 @@ package io.youi.example.ui
 
 import io.youi._
 import io.youi.app.screen.UIScreen
+import io.youi.component.editor.ImageEditor
 import io.youi.component.extra.RectangularSelection
 import io.youi.component.{Image, Texture}
 
@@ -14,21 +15,11 @@ object ImageEditorExample extends UIExampleScreen with UIScreen {
 
     // TODO: reset, zoom in/out, rotate left/right, upload
 
-    container.children += new Image(texture) {
-      position.left := 550.0
-      position.top := 250.0
+    val editor = new ImageEditor {
+      image.texture := texture
+      position.center := container.position.center
+      position.middle := container.position.middle
     }
-
-    val selection = new RectangularSelection {
-      position.x := 100.0
-      position.y := 100.0
-      size.width := 800.0
-      size.height := 600.0
-
-      selection.set(100.0, 100.0, 300.0, 300.0)
-      selection.stroke.lineWidth := 2.0
-      selection.aspectRatio.bySize(625.0, 352.0)
-    }
-    container.children += selection
+    container.children += editor
   }
 }

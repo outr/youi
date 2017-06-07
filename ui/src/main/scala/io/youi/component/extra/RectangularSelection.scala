@@ -39,6 +39,12 @@ class RectangularSelection extends DrawableComponent with LocalMouseInfo {
       this.x2 := x2
       this.y2 := y2
     }
+    def maximize(): Unit = {
+      x1 := minX
+      y1 := minY
+      x2 := maxX
+      y2 := maxY
+    }
   }
   object blocks extends PaintSupport {
     val size: Var[Double] = Var(10.0)

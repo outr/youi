@@ -49,6 +49,9 @@ class AbstractContainer extends Component {
     }
   })
 
+  size.measured.width := (if (childEntries().nonEmpty) childEntries().map(_.position.right()).max else 0.0)
+  size.measured.height := (if (childEntries().nonEmpty) childEntries().map(_.position.bottom()).max else 0.0)
+
   protected def addAfter(component: Component, previous: Option[Component]): Unit = previous match {
     case Some(p) => {
       val index = instance.getChildIndex(p.instance)

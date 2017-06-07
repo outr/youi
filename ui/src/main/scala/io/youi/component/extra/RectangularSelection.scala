@@ -135,17 +135,20 @@ class RectangularSelection extends DrawableComponent with LocalMouseInfo {
       blocks.stroke.value
     )
   }
-  protected def createModal(): Drawable = Group(
-    Path
-      .begin
-      .rect(0.0, 0.0, selection.x1(), size.height())
-      .rect(selection.x2(), 0.0, size.width() - selection.x2(), size.height())
-      .rect(selection.x1(), 0.0, selection.width(), selection.y1())
-      .rect(selection.x1(), selection.y2(), selection.width(), size.height() - selection.y2())
-      .close,
-    modal.fill.value,
-    modal.stroke.value
-  )
+  protected def createModal(): Drawable = {
+    val halfBlock = blocks.size() / 2.0
+    Group(
+      Path
+        .begin
+        .rect(halfBlock, halfBlock, selection.x1() - halfBlock, size.height() - blocks.size())                  // Left
+        .rect(selection.x2(), halfBlock, size.width() - selection.x2() - halfBlock, size.height() - blocks.size())          // Right
+        .rect(selection.x1(), halfBlock, selection.width(), selection.y1() - halfBlock)                         // Top
+        .rect(selection.x1(), selection.y2(), selection.width(), size.height() - selection.y2() - halfBlock)    // Bottom
+        .close,
+      modal.fill.value,
+      modal.stroke.value
+    )
+  }
 
   protected def createDashes(): Drawable = {
     val horizontalThird = selection.width() / 3.0
@@ -281,15 +284,20 @@ class SelectionDragSupport(rs: RectangularSelection) extends DragSupport[DragSta
       case Some(ar) if math.abs(ar - aspectRatio) > 0.001 => {    // Recalculate for aspect ratio
         val wd = math.abs(w - rs.selection.width)
         val hd = math.abs(h - rs.selection.height)
-        val cursor = value().map(_.cursor).getOrElse(Cursor.ResizeSouthEast)
-        if (wd > hd) {      // Calculate based on width
+        val cursor = value().map(_.cursor).getOrElse(Cursor.Move)
+        if (wd > hd || (wd == 0.0 && hd == 0.0 && ar > aspectRatio)) {      // Calculate based on width
           val newHeight = w / ar
           cursor match {
             case Cursor.ResizeNorth | Cursor.ResizeNorthEast | Cursor.ResizeNorthWest => {
               update(x1, y2 - newHeight, x2, y2)
             }
             case _ => {
-              update(x1, y1, x2, y1 + newHeight)
+              if (cursor == Cursor.Move) {
+                val middle = (rs.selection.maxY + rs.selection.minY) / 2.0
+                update(x1, middle - (newHeight / 2.0), x2, middle + (newHeight / 2.0))
+              } else {
+                update(x1, y1, x2, y1 + newHeight)
+              }
             }
           }
         } else {            // Calculate based on height
@@ -299,7 +307,12 @@ class SelectionDragSupport(rs: RectangularSelection) extends DragSupport[DragSta
               update(x2 - newWidth, y1, x2, y2)
             }
             case _ => {
-              update(x1, y1, x1 + newWidth, y2)
+              if (cursor == Cursor.Move) {
+                val center = (rs.selection.maxX  + rs.selection.minX) / 2.0
+                update(center - (newWidth / 2.0), y1, center + (newWidth / 2.0), y2)
+              } else {
+                update(x1, y1, x1 + newWidth, y2)
+              }
             }
           }
         }

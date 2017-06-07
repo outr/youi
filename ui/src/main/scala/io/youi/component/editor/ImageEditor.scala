@@ -1,5 +1,6 @@
 package io.youi.component.editor
 
+import io.youi.Compass
 import io.youi.component.extra.RectangularSelection
 import io.youi.component.{AbstractContainer, Component, Image}
 import reactify._
@@ -7,22 +8,27 @@ import reactify._
 class ImageEditor extends AbstractContainer {
   override type Child = Component
 
-  val maintainAspectRatio: Var[Boolean] = Var(true)
+  val aspectRatio: Var[AspectRatio] = Var(AspectRatio.Original)
 
   val image: Image = new Image
   val rs: RectangularSelection = new RectangularSelection
   val pixelCount: Val[Double] = Val(image.texture.width * image.texture.height)
 
+  image.scale.direction := Compass.Center
   image.position.center := size.center
   image.position.middle := size.middle
 
   rs.size.width := size.width
   rs.size.height := size.height
   rs.selection.aspectRatio := {
-    if (maintainAspectRatio && image.texture.width() > 0.0 && image.texture.height() > 0.0) {
-      Some(image.texture.width() / image.texture.height())
-    } else {
-      None
+    aspectRatio() match {
+      case AspectRatio.Defined(value) => Some(value)
+      case AspectRatio.None => None
+      case AspectRatio.Original => if (image.texture.width() > 0.0 && image.texture.height() > 0.0) {
+        Some(image.texture.width() / image.texture.height())
+      } else {
+        None
+      }
     }
   }
 
@@ -31,5 +37,21 @@ class ImageEditor extends AbstractContainer {
 
   childEntries ++= List(image, rs)
 
-  pixelCount.on(rs.selection.maximize())
+  pixelCount.on {
+    val x1 = image.position.left()
+    val y1 = image.position.top()
+    val x2 = image.position.right()
+    val y2 = image.position.bottom()
+    rs.selection.set(x1, y1, x2, y2)
+  }
+}
+
+sealed trait AspectRatio
+
+object AspectRatio {
+  case class Defined(value: Double) extends AspectRatio
+  case object None extends AspectRatio
+  case object Original extends AspectRatio
+
+  def fromSize(width: Double, height: Double): AspectRatio = Defined(width / height)
 }

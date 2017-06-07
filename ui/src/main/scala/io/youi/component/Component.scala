@@ -1,11 +1,11 @@
 package io.youi.component
 
 import com.outr.pixijs._
-import io.youi.{LazyUpdate, Updates}
+import io.youi.{Compass, Horizontal, LazyUpdate, Vertical}
 import io.youi.component.event.Events
 import io.youi.style.Cursor
 import io.youi.task.TaskSupport
-import io.youi.theme.{ComponentTheme, Theme}
+import io.youi.theme.ComponentTheme
 import reactify._
 
 trait Component extends TaskSupport {
@@ -39,8 +39,14 @@ trait Component extends TaskSupport {
   lazy val rotation: Var[Double] = prop(0.0, updatesTransform = true)
 
   object scale {
+    def :=(value: => Double): Unit = {
+      x := value
+      y := value
+    }
+
     lazy val x: Var[Double] = prop(1.0, updatesTransform = true)
     lazy val y: Var[Double] = prop(1.0, updatesTransform = true)
+    lazy val direction: Var[Compass] = prop(Compass.NorthWest, updatesTransform = true)
   }
 
   object skew {
@@ -98,9 +104,21 @@ trait Component extends TaskSupport {
   protected def updateTransform(): Unit = {
     instance.width = size.width()
     instance.height = size.height()
+    val horizontal = scale.direction().horizontal
+    val vertical = scale.direction().vertical
+    val scaleAdjustX = horizontal match {
+      case Horizontal.Left => 0.0
+      case Horizontal.Center => (size.width / 2.0) - ((size.width * scale.x) / 2.0)
+      case Horizontal.Right => size.width - (size.width * scale.x)
+    }
+    val scaleAdjustY = vertical match {
+      case Vertical.Top => 0.0
+      case Vertical.Middle => (size.height / 2.0) - ((size.height * scale.y) / 2.0)
+      case Vertical.Bottom => size.height - (size.height * scale.y)
+    }
     instance.setTransform(
-      x = position.x() + pivot.x(),
-      y = position.y() + pivot.y(),
+      x = position.x() + pivot.x() + scaleAdjustX,
+      y = position.y() + pivot.y() + scaleAdjustY,
       scaleX = scale.x(),
       scaleY = scale.y(),
       rotation = rotation() * (2.0 * math.Pi),

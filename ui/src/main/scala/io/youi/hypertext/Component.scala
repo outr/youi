@@ -33,7 +33,7 @@ trait Component extends AbstractComponent {
       lazy val up: Channel[MouseEvent] = events("mouseup")
       lazy val leave: Channel[MouseEvent] = events("mouseleave")
       lazy val out: Channel[MouseEvent] = events("mouseout")
-      lazy val wheel: Channel[MouseEvent] = events("wheel")
+      lazy val wheel: Channel[WheelEvent] = events("wheel")
     }
   }
 

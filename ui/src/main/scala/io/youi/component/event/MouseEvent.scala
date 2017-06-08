@@ -3,7 +3,7 @@ package io.youi.component.event
 import com.outr.pixijs.PIXI
 import io.youi.component.Component
 
-class MouseEvent(val component: Component, evt: PIXI.interaction.InteractionEvent) {
+class MouseEvent(val component: Component, val evt: PIXI.interaction.InteractionEvent) {
   lazy val globalX: Double = evt.data.global.x
   lazy val globalY: Double = evt.data.global.y
   lazy val (x, y) = {

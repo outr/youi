@@ -1,13 +1,11 @@
 package io.youi.component
 
 import com.outr.pixijs._
-import io.youi.component.event.{Events, Mouse}
+import io.youi.component.event.{DeltaMode, Events, Mouse, WheelDelta}
 import io.youi.{Color, LazyUpdate, dom}
 import io.youi.hypertext.Canvas
 import org.scalajs.dom.KeyboardEvent
-import reactify.{Channel, Var}
-
-import scala.concurrent.Future
+import reactify.{Channel, Val, Var}
 
 class Renderer private(val canvas: Canvas) extends Container {
   private val systemRenderer: PIXI.SystemRenderer = PIXI.autoDetectRenderer(
@@ -26,9 +24,20 @@ class Renderer private(val canvas: Canvas) extends Container {
     Mouse.x.asInstanceOf[Var[Double]] := evt.globalX
     Mouse.y.asInstanceOf[Var[Double]] := evt.globalY
   }
+  canvas.event.mouse.wheel.attach { evt =>
+    val mode: DeltaMode = evt.deltaMode match {
+      case 0x00 => DeltaMode.Pixel
+      case 0x01 => DeltaMode.Line
+      case 0x02 => DeltaMode.Page
+    }
+    val d = WheelDelta(evt.deltaX, evt.deltaY, evt.deltaZ, mode)
+    Mouse.wheel := d
+  }
 
   val renderMode: Var[RenderMode] = Var(RenderMode.OnChange)
   val backgroundColor: Var[Color] = prop(Color.White, (c: Color) => systemRenderer.backgroundColor = c.long, updatesRendering = true)
+
+  override lazy val parentRenderer: Val[Option[Renderer]] = Val(Some(this))
 
   private val changeRenderer = LazyUpdate(systemRenderer.render(instance))
 

@@ -1,6 +1,6 @@
 package io.youi.component.extra
 
-import io.youi.component.{DrawableComponent, LocalPointerInfo, PaintSupport, PaintTheme}
+import io.youi.component.{DrawableComponent, PaintSupport, PaintTheme}
 import io.youi.component.draw.path.{Path, PathAction, Rectangle}
 import io.youi.component.draw.{Drawable, Fill, Group}
 import io.youi.component.event.{DragSupport, MouseEvent}
@@ -9,7 +9,7 @@ import io.youi.theme.RectangularSelectionTheme
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 import reactify._
 
-class RectangularSelection extends DrawableComponent with LocalPointerInfo {
+class RectangularSelection extends DrawableComponent {
   override lazy val theme: Var[_ <: RectangularSelectionTheme] = Var(RectangularSelection)
 
   object selection extends PaintSupport {
@@ -77,7 +77,7 @@ class RectangularSelection extends DrawableComponent with LocalPointerInfo {
 
   cursor := cursorForMouse()
 
-  def cursorForMouse(pointerX: Double = pointer.x(), pointerY: Double = pointer.y()): Cursor = {
+  def cursorForMouse(pointerX: Double = event.pointer.x(), pointerY: Double = event.pointer.y()): Cursor = {
     val ed = selection.edgeDistance()
     if (pointerX >= selection.x1 - ed && pointerX <= selection.x2 + ed && pointerY >= selection.y1 - ed && pointerY <= selection.y2 + ed) {
       if (near(selection.x1, pointerX)) {

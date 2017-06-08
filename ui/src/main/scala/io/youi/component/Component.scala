@@ -14,6 +14,7 @@ trait Component extends TaskSupport {
   val transform = LazyUpdate(updateTransform())
 
   lazy val parent: Val[Option[AbstractContainer]] = Var(None)
+  lazy val parentRenderer: Val[Option[Renderer]] = Var(parent.flatMap(_.parentRenderer))
 
   def theme: Var[_ <: ComponentTheme]
   val cursor: Var[Cursor] = prop(theme.cursor, c => instance.cursor = c.value)

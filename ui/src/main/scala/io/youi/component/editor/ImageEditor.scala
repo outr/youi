@@ -1,6 +1,6 @@
 package io.youi.component.editor
 
-import io.youi.Compass
+import io.youi.{Compass, Point}
 import io.youi.component.extra.RectangularSelection
 import io.youi.component.{AbstractContainer, Component, Image}
 import reactify._
@@ -13,6 +13,7 @@ class ImageEditor extends AbstractContainer {
   val image: Image = new Image
   val rs: RectangularSelection = new RectangularSelection
   val pixelCount: Val[Double] = Val(image.texture.width * image.texture.height)
+  val wheelMultiplier: Var[Double] = Var(0.001)
 
   image.scale.direction := Compass.Center
   image.position.center := size.center
@@ -39,7 +40,34 @@ class ImageEditor extends AbstractContainer {
 
   pixelCount.on(reset())
 
+  event.mouse.wheel.attach { evt =>
+    scale(evt.delta.y * -wheelMultiplier, Some(evt.local))
+  }
+
+  def scale(amount: Double, point: Option[Point] = None): Unit = {
+    val newScale = math.max(image.scale.x() + amount, 0.1)
+    image.scale := newScale
+    point.foreach { p =>
+      val offsetX = p.x - size.center
+      val offsetY = p.y - size.middle
+      val center = image.position.center() - (offsetX * amount)
+      val middle = image.position.middle() - (offsetY * amount)
+      image.position.center := center
+      image.position.middle := middle
+    }
+  }
+
+  def rotate(amount: Double): Unit = {
+    val current = image.rotation()
+    image.rotation := current + amount
+  }
+
   def reset(): Unit = {
+    image.position.center := size.center
+    image.position.middle := size.middle
+    image.scale := 1.0
+    image.rotation := 0.0
+
     val x1 = math.max(image.position.left(), rs.selection.minX)
     val y1 = math.max(image.position.top(), rs.selection.minY)
     val x2 = math.min(image.position.right(), rs.selection.maxX)

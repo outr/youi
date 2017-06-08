@@ -104,17 +104,31 @@ YouI is divided into modules of functionality to minimize the dependencies requi
         * [X] Move and Resize Support
         * [X] Minimum and Maximum constraints
         * [X] Aspect ratio constraints
+        * [X] Complete Touch support
     * [X] Texture clipping support
     * [X] Scale-9 Support
     * [X] AbstractContainer to better support custom components and more explicit containers
     * [ ] Hierarchical routing support for server handlers
+    * [ ] ImageScaler to smoothly step up and down images with minimal pixelation
+    * [X] MouseWheel support in component
+    * [ ] Touch / Mobile support
+        * [X] Proper drag support
+        * [ ] Pinch events
+        * [ ] Pan with acceleration
+    * [ ] Additional event support
+        * [ ] Long-press
+        * [ ] Double-click
+        * [ ] Multi-touch functionality
     * [ ] ImageEditor
-        * [ ] Selection area
-        * [ ] Cropping
-        * [ ] Scaling
-        * [ ] Rotation
+        * [X] Selection area
+        * [X] Cropping
+        * [X] Scaling
+        * [X] Rotation
+        * [ ] Panning
         * [ ] Upload local file
         * [ ] Download result
+        * [ ] Preview instances
+        * [ ] Complete Touch support
     
 ## Features for 0.3.0 (Released 2017.04.21)
 

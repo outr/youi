@@ -4,7 +4,8 @@ import io.youi._
 import io.youi.component.editor.{AspectRatio, ImageEditor}
 import io.youi.component.{Renderer, Texture}
 import io.youi.example.ui.hypertext.HTMLScreen
-import io.youi.hypertext.Canvas
+import io.youi.hypertext.{Button, Canvas}
+import reactify._
 
 import scala.concurrent.Future
 
@@ -25,16 +26,58 @@ object ImageEditorExample extends HTMLScreen {
 
     val texture = Texture("/images/cuteness.jpg")
 
-    // TODO: reset, zoom in/out, rotate left/right, upload
-
     val editor = new ImageEditor {
       image.texture := texture
-//      image.rotation := 0.25
-//      image.scale := 2.0
       aspectRatio := AspectRatio.Defined(16.0 / 12.0)
       size.width := canvas.size.width
       size.height := canvas.size.height
     }
     renderer.children += editor
+
+    val resetButton = new Button {
+      text := "Reset"
+      position.left := canvas.position.left
+      position.top := canvas.position.bottom + 20.0
+
+      event.click.on(editor.reset())
+    }
+
+    val rotateLeft = new Button {
+      text := "Rotate Left"
+      position.left := resetButton.position.right + 20.0
+      position.top := resetButton.position.top
+
+      event.click.on(editor.rotate(-0.25))
+    }
+
+    val rotateRight = new Button {
+      text := "Rotate Right"
+      position.left := rotateLeft.position.right + 20.0
+      position.top := resetButton.position.top
+
+      event.click.on(editor.rotate(0.25))
+    }
+
+    val zoomIn = new Button {
+      text := "Zoom In"
+      position.left := rotateRight.position.right + 20.0
+      position.top := resetButton.position.top
+
+      event.click.on(editor.scale(0.1))
+    }
+
+    val zoomOut = new Button {
+      text := "Zoom Out"
+      position.left := zoomIn.position.right + 20.0
+      position.top := resetButton.position.top
+
+      event.click.on(editor.scale(-0.1))
+    }
+
+    // TODO: upload
+
+    container.children ++= List(
+      resetButton, rotateLeft, rotateRight, zoomIn, zoomOut
+    )
   }
 }

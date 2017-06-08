@@ -82,6 +82,7 @@ class Events(component: Component) {
       val v = Var(false)
       pointer.over.on(v := true)
       pointer.out.on(v := false)
+      pointer.moveInside.on(v := true)
       v
     }
   }

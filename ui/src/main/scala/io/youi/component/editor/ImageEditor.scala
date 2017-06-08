@@ -37,11 +37,13 @@ class ImageEditor extends AbstractContainer {
 
   childEntries ++= List(image, rs)
 
-  pixelCount.on {
-    val x1 = image.position.left()
-    val y1 = image.position.top()
-    val x2 = image.position.right()
-    val y2 = image.position.bottom()
+  pixelCount.on(reset())
+
+  def reset(): Unit = {
+    val x1 = math.max(image.position.left(), rs.selection.minX)
+    val y1 = math.max(image.position.top(), rs.selection.minY)
+    val x2 = math.min(image.position.right(), rs.selection.maxX)
+    val y2 = math.min(image.position.bottom(), rs.selection.maxY)
     rs.selection.set(x1, y1, x2, y2)
   }
 }

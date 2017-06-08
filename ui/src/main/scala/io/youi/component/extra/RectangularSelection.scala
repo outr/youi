@@ -1,6 +1,6 @@
 package io.youi.component.extra
 
-import io.youi.component.{DrawableComponent, LocalMouseInfo, PaintSupport, PaintTheme}
+import io.youi.component.{DrawableComponent, LocalPointerInfo, PaintSupport, PaintTheme}
 import io.youi.component.draw.path.{Path, PathAction, Rectangle}
 import io.youi.component.draw.{Drawable, Fill, Group}
 import io.youi.component.event.{DragSupport, MouseEvent}
@@ -9,7 +9,7 @@ import io.youi.theme.RectangularSelectionTheme
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 import reactify._
 
-class RectangularSelection extends DrawableComponent with LocalMouseInfo {
+class RectangularSelection extends DrawableComponent with LocalPointerInfo {
   override lazy val theme: Var[_ <: RectangularSelectionTheme] = Var(RectangularSelection)
 
   object selection extends PaintSupport {
@@ -75,28 +75,30 @@ class RectangularSelection extends DrawableComponent with LocalMouseInfo {
     }
   }
 
-  cursor := {
+  cursor := cursorForMouse()
+
+  def cursorForMouse(pointerX: Double = pointer.x(), pointerY: Double = pointer.y()): Cursor = {
     val ed = selection.edgeDistance()
-    if (mouseX >= selection.x1 - ed && mouseX <= selection.x2 + ed && mouseY >= selection.y1 - ed && mouseY <= selection.y2 + ed) {
-      if (near(selection.x1, mouseX)) {
-        if (near(selection.y1, mouseY)) {
+    if (pointerX >= selection.x1 - ed && pointerX <= selection.x2 + ed && pointerY >= selection.y1 - ed && pointerY <= selection.y2 + ed) {
+      if (near(selection.x1, pointerX)) {
+        if (near(selection.y1, pointerY)) {
           Cursor.ResizeNorthWest
-        } else if (near(selection.y2, mouseY)) {
+        } else if (near(selection.y2, pointerY)) {
           Cursor.ResizeSouthWest
         } else {
           Cursor.ResizeWest
         }
-      } else if (near(selection.x2, mouseX)) {
-        if (near(selection.y1, mouseY)) {
+      } else if (near(selection.x2, pointerX)) {
+        if (near(selection.y1, pointerY)) {
           Cursor.ResizeNorthEast
-        } else if (near(selection.y2, mouseY)) {
+        } else if (near(selection.y2, pointerY)) {
           Cursor.ResizeSouthEast
         } else {
           Cursor.ResizeEast
         }
-      } else if (near(selection.y1, mouseY)) {
+      } else if (near(selection.y1, pointerY)) {
         Cursor.ResizeNorth
-      } else if (near(selection.y2, mouseY)) {
+      } else if (near(selection.y2, pointerY)) {
         Cursor.ResizeSouth
       } else {
         Cursor.Move
@@ -183,7 +185,8 @@ class SelectionDragSupport(rs: RectangularSelection) extends DragSupport[DragSta
     val x2 = rs.selection.x2() + rs.selection.edgeDistance()
     val y2 = rs.selection.y2() + rs.selection.edgeDistance()
     if (mouseEvent.x >= x1 && mouseEvent.x <= x2 && mouseEvent.y >= y1 && mouseEvent.y <= y2) {
-      Some(DragStart(rs.cursor(), rs.selection.x1(), rs.selection.y1(), rs.selection.x2(), rs.selection.y2(), mouseEvent.globalX, mouseEvent.globalY))
+      val cursor = rs.cursorForMouse(mouseEvent.x, mouseEvent.y)
+      Some(DragStart(cursor, rs.selection.x1(), rs.selection.y1(), rs.selection.x2(), rs.selection.y2(), mouseEvent.globalX, mouseEvent.globalY))
     } else {
       None
     }
@@ -266,7 +269,7 @@ class SelectionDragSupport(rs: RectangularSelection) extends DragSupport[DragSta
           processCursor(Cursor.ResizeSouth)
           processCursor(Cursor.ResizeEast)
         }
-        case _ => scribe.info(s"Ignoring $value")
+        case _ => scribe.debug(s"Ignoring $value")
       }
     }
     processCursor(value.cursor)

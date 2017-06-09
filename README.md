@@ -116,9 +116,9 @@ YouI is divided into modules of functionality to minimize the dependencies requi
         * [ ] Pinch events
         * [ ] Pan with acceleration
     * [ ] Additional event support
+        * [ ] Upgraded Component events for multi-touch
         * [ ] Long-press
         * [ ] Double-click
-        * [ ] Multi-touch functionality
     * [ ] ImageEditor
         * [X] Selection area
         * [X] Cropping

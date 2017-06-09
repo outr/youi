@@ -31,6 +31,9 @@ object ImageEditorExample extends HTMLScreen {
       aspectRatio := AspectRatio.Defined(16.0 / 12.0)
       size.width := canvas.size.width
       size.height := canvas.size.height
+      event.pointer.pinch.attach { evt =>
+        scale(evt.deltaDistance * 0.001)
+      }
     }
     renderer.children += editor
 

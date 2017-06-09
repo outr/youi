@@ -85,6 +85,7 @@ class Events(component: Component) {
       pointer.moveInside.on(v := true)
       v
     }
+    lazy val pinch: PinchSupport = new PinchSupport(component)
   }
   object touch {
     lazy val cancel: Channel[MouseEvent] = mouseEvent("touchcancel")

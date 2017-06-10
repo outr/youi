@@ -9,15 +9,15 @@ import reactify.{Channel, Val, Var}
 
 class Renderer private(val canvas: Canvas) extends Container {
   private val systemRenderer: PIXI.SystemRenderer = PIXI.autoDetectRenderer(
-    width = canvas.size.width.toInt,
-    height = canvas.size.height.toInt,
     options = new RendererOptions {
+      width = canvas.size.width.toInt
+      height = canvas.size.height.toInt
       view = canvas.element
       backgroundColor = 0xffffff
       autoResize = true
       antialias = true
-    },
-    noWebGL = false
+      forceCanvas = false
+    }
   )
 
   event.mouse.move.attach { evt =>

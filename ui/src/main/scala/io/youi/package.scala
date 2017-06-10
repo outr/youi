@@ -1,7 +1,7 @@
 package io
 
 import io.youi.style.Paint
-import reactify.Val
+import reactify.{State, Val}
 
 import scala.language.implicitConversions
 
@@ -77,5 +77,15 @@ package object youi {
       * 1/100th of the maximum value between the height and the width of the viewport.
       */
     def vmax: Val[Double] = Val[Double](math.max((d / 100.0) * ui.size.width, (d / 100.0) * ui.size.height))
+
+    /**
+      * Returns percentage value `of`.
+      */
+    def %(of: State[Double]): Val[Double] = percentOf(of)
+
+    /**
+      * Returns percentage value `of`.
+      */
+    def percentOf(of: State[Double]): Val[Double] = Val(of.get * (d * 0.01))
   }
 }

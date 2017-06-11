@@ -3,7 +3,8 @@ package io.youi.component
 import com.outr.pixijs._
 import io.youi.History
 import io.youi.net.URL
-import reactify.{Trigger, Val, Var}
+import org.scalajs.dom.html
+import reactify.{Val, Var}
 
 class Texture(private[component] val instance: PIXI.Texture,
               val dependsOn: Option[Texture] = None,
@@ -58,6 +59,9 @@ object Texture {
 
   def apply(url: URL): Texture = new Texture(PIXI.Texture.fromImage(url.toString))
   def apply(path: String): Texture = apply(History.url().withPath(path))
+  def apply(video: html.Video): Texture = new Texture(PIXI.Texture.from(video))
 }
 
 case class Clip(left: Double, top: Double, right: Double, bottom: Double)
+
+sealed trait TextureType

@@ -1,7 +1,7 @@
 package io.youi.component
 import com.outr.pixijs.PIXI
 import io.youi.theme.ImageTheme
-import reactify.Var
+import reactify.{Val, Var}
 
 class Image extends Component {
   override lazy val theme: Var[_ <: ImageTheme] = Var(Image)
@@ -14,8 +14,9 @@ class Image extends Component {
   override protected[component] lazy val instance: PIXI.Sprite = new PIXI.Sprite(Texture.Empty.instance)
 
   lazy val texture: Var[Texture] = prop(new Texture(instance.texture), (t: Texture) => instance.texture = t.instance, updatesRendering = true)
+  lazy val update: Val[Long] = Val(texture.update)
 
-  // TODO: fire invalidate when texture.update is triggered
+  update.on(invalidate())
 
   size.measured.width := texture().width()
   size.measured.height := texture().height()

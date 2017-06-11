@@ -79,7 +79,6 @@ YouI is divided into modules of functionality to minimize the dependencies requi
     * [ ] Form layout
     * [ ] Stack layout
 * [ ] Border support in DrawableComponent
-* [ ] VideoComponent
 * [ ] VideoPaint
     
 ## Features for 0.4.0 (In-Progress)
@@ -106,8 +105,8 @@ YouI is divided into modules of functionality to minimize the dependencies requi
         * [X] Complete Touch support
     * [X] Texture clipping support
     * [X] Scale-9 Support
+    * [X] Basic Video Component
     * [X] AbstractContainer to better support custom components and more explicit containers
-    * [ ] Hierarchical routing support for server handlers
     * [ ] ImageScaler to smoothly step up and down images with minimal pixelation
     * [X] MouseWheel support in component
     * [X] Snap Layout Management (ex. `Snap(b3).leftTo(b1.position.left).rightTo(b2.position.right).topTo(b1.position.bottom + 5.0)`)

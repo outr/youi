@@ -73,7 +73,6 @@ YouI is divided into modules of functionality to minimize the dependencies requi
     
 ## Features for 0.5.0 (Future)
 
-* [ ] Snap Layout Management (ex. `snap(img1).left.to(img2).right`)
 * [ ] Layout managers
     * [ ] Flow layout
     * [ ] Grid layout
@@ -111,6 +110,7 @@ YouI is divided into modules of functionality to minimize the dependencies requi
     * [ ] Hierarchical routing support for server handlers
     * [ ] ImageScaler to smoothly step up and down images with minimal pixelation
     * [X] MouseWheel support in component
+    * [X] Snap Layout Management (ex. `Snap(b3).leftTo(b1.position.left).rightTo(b2.position.right).topTo(b1.position.bottom + 5.0)`)
     * [ ] Touch / Mobile support
         * [X] Proper drag support
         * [ ] Pinch events

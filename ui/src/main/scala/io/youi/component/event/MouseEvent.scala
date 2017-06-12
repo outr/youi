@@ -6,13 +6,13 @@ import io.youi.component.Component
 
 class MouseEvent(val component: Component, val evt: PIXI.interaction.InteractionEvent) {
   val time: Long = System.currentTimeMillis()
-  lazy val identifier: Int = (evt.data.identifier: Any) match {
+  val identifier: Int = (evt.data.identifier: Any) match {
     case _: String => 0
     case i: Int => i
   }
-  lazy val globalX: Double = evt.data.global.x
-  lazy val globalY: Double = evt.data.global.y
-  lazy val (x, y) = {
+  val globalX: Double = evt.data.global.x
+  val globalY: Double = evt.data.global.y
+  val (x, y) = {
     val p = evt.data.getLocalPosition(component.instance)
     p.x -> p.y
   }
@@ -21,4 +21,6 @@ class MouseEvent(val component: Component, val evt: PIXI.interaction.Interaction
   lazy val inside: Boolean = x >= 0.0 && y >= 0.0 && x <= component.size.width() && y <= component.size.height()
   def stopped: Boolean = evt.stopped
   def stopPropagation(): Unit = evt.stopPropagation()
+
+  override def toString: String = s"MouseEvent(identifier: $identifier, x: $x, y: $y, globalX: $globalX, globalY: $globalY, inside: $inside)"
 }

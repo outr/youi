@@ -16,8 +16,20 @@ object GesturesExample extends UIExampleScreen with UIScreen {
     container.children += new Image(texture) {
       position.center := renderer.position.center
       position.middle := renderer.position.middle
-      event.gestures.pointers.attach { events =>
-        scribe.info(s"Events: ${events.keys.mkString(", ")}")
+      event.gestures.pointers.map.attach { events =>
+        scribe.info(s"Events: ${events.values.mkString(", ")}")
+      }
+      event.gestures.tap.attach { p =>
+        scribe.info("Tap!")
+      }
+      event.gestures.click.attach { p =>
+        scribe.info("Click!")
+      }
+      event.gestures.longPress.attach { p =>
+        scribe.info("Long press!")
+      }
+      event.gestures.doubleClick.attach { p =>
+        scribe.info("Double click!")
       }
     }
   }

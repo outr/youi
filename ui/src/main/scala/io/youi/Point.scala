@@ -11,6 +11,8 @@ sealed trait Point {
     case that: Point => x == that.x && y == that.y
     case _ => false
   }
+
+  override def toString: String = s"Point(x: $x, y: $y)"
 }
 
 class MutablePoint(var x: Double = 0.0, var y: Double = 0.0) extends Point {

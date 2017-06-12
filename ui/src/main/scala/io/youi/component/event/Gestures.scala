@@ -25,7 +25,7 @@ class Gestures(component: Component) {
   lazy val doubleClick: DoubleClick = new DoubleClick(component)
   lazy val longPress: LongPress = new LongPress(component)
 
-  // TODO: `state` to represent up, drag, pinch, swype, etc.
+  // TODO: `state` to represent drag, pinch, swype, fling, pan, rotate
 
   pointer.down.attach(add)
   pointer.move.attach { evt =>
@@ -47,13 +47,7 @@ class Gestures(component: Component) {
     pointers.added := p
   }
   private def dragging(evt: MouseEvent): Unit = pointers.get(evt.identifier).foreach { p =>
-    val start = p.start
-    val previous = p.move
-    val current = evt
-
-    val moved = Moved(previous, current)
-    val movedFromStart = Moved(start, current)
-    val updated = p.copy(move = evt, moved = moved, movedFromStart = movedFromStart)
+    val updated = p.withEvent(evt)
 
     _pointers := _pointers() + (p.identifier -> updated)
     pointers.dragged := updated
@@ -69,10 +63,47 @@ case class Pointer(identifier: Int,
                    start: MouseEvent,
                    move: MouseEvent,
                    moved: Moved = Moved(0.0, 0.0, 0.0),
-                   movedFromStart: Moved = Moved(0.0, 0.0, 0.0)) {
+                   movedFromStart: Moved = Moved(0.0, 0.0, 0.0),
+                   meanX: List[Double] = Nil,
+                   meanY: List[Double] = Nil,
+                   meanTime: List[Long] = Nil) {
   val time: Long = System.currentTimeMillis()
+  lazy val (velocityX, velocityY) = {
+    val count = meanX.size.toDouble
+    val averageX = meanX.sum / count
+    val averageY = meanY.sum / count
+    val averageTime = (meanTime.sum / count) / 1000000.0
+    (averageX / averageTime, averageY / averageTime)
+  }
 
   def elapsed: Long = time - start.time
+
+  def withEvent(evt: MouseEvent): Pointer = {
+    val moved = Moved(move, evt)
+    val movedFromStart = Moved(start, evt)
+    val mx = (moved.deltaX :: meanX).take(Pointer.sampleSize)
+    val my = (moved.deltaY :: meanY).take(Pointer.sampleSize)
+    val mt = (evt.time :: meanTime).take(Pointer.sampleSize)
+    copy(
+      move = evt,
+      moved = moved,
+      movedFromStart = movedFromStart,
+      meanX = mx,
+      meanY = my,
+      meanTime = mt
+    )
+  }
+
+  override def toString: String = s"Pointer(id: $identifier, start: $start, move: $move, velocity: $velocityX x $velocityY)"
+}
+
+object Pointer {
+  /**
+    * The number of samples to use to calculate acceleration and velocity.
+    *
+    * Defaults to 10
+    */
+  val sampleSize: Var[Int] = Var(10)
 }
 
 case class Moved(deltaX: Double, deltaY: Double, distance: Double)

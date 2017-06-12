@@ -4,6 +4,7 @@ import com.outr.pixijs.PIXI
 import io.youi.net.URL
 import io.youi.{History, dom}
 import org.scalajs.dom.html
+import reactify.Var
 
 class Video extends Image {
   private val element = {
@@ -16,6 +17,8 @@ class Video extends Image {
   baseTexture.autoPlay = false
 
   texture := new Texture(new PIXI.Texture(baseTexture))
+
+  val autoPlay: Var[Boolean] = prop[Boolean](false, baseTexture.autoPlay = _)
 
   def this(url: URL) = {
     this()

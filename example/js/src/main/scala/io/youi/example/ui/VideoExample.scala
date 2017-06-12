@@ -9,6 +9,7 @@ object VideoExample extends UIExampleScreen with UIScreen {
 
   override def createUI(): Unit = {
     container.children += new Video("/sample.mp4") {
+      autoPlay := true
       position.center := renderer.position.center
       position.middle := renderer.position.middle
       event.click.on {

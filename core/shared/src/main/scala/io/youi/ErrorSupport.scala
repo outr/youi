@@ -1,5 +1,7 @@
 package io.youi
 
+import java.io.IOException
+
 import reactify.{Channel, Listener}
 
 trait ErrorSupport {
@@ -19,6 +21,7 @@ object ErrorSupport {
   val error: Channel[Throwable] = Channel[Throwable]
 
   val defaultHandler: Listener[Throwable] = error.attach {
+    case exc: IOException if exc.getMessage == "Connection reset by peer" => scribe.warn(exc.getMessage)
     case exc: MessageException => scribe.error(exc.message)
     case t: Throwable => scribe.error(t)
   }

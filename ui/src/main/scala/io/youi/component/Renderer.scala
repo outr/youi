@@ -20,7 +20,7 @@ class Renderer private(val canvas: Canvas) extends Container {
     }
   )
 
-  event.mouse.move.attach { evt =>
+  event.pointer.move.attach { evt =>
     Mouse.x.asInstanceOf[Var[Double]] := evt.globalX
     Mouse.y.asInstanceOf[Var[Double]] := evt.globalY
   }

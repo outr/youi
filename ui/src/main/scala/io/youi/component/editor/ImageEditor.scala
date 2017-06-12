@@ -40,7 +40,7 @@ class ImageEditor extends AbstractContainer {
 
   pixelCount.on(reset())
 
-  event.mouse.wheel.attach { evt =>
+  event.pointer.wheel.attach { evt =>
     scale(evt.delta.y * -wheelMultiplier, Some(evt.local))
   }
 

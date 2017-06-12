@@ -1,8 +1,14 @@
 package io.youi.component.event
 
-import com.outr.pixijs.PIXI
+import io.youi.Point
 import io.youi.component.Component
 
 class MouseWheelEvent(component: Component,
-                      evt: PIXI.interaction.InteractionEvent,
-                      val delta: WheelDelta) extends MouseEvent(component, evt)
+                      val x: Double,
+                      val y: Double,
+                      val globalX: Double,
+                      val globalY: Double,
+                      val delta: WheelDelta) {
+  lazy val local: Point = Point(x, y)
+  lazy val global: Point = Point(globalX, globalY)
+}

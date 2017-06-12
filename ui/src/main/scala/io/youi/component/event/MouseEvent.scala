@@ -5,6 +5,7 @@ import io.youi.Point
 import io.youi.component.Component
 
 class MouseEvent(val component: Component, val evt: PIXI.interaction.InteractionEvent) {
+  val time: Long = System.currentTimeMillis()
   lazy val identifier: Int = (evt.data.identifier: Any) match {
     case _: String => 0
     case i: Int => i

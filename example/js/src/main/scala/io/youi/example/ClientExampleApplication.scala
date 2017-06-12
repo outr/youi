@@ -31,6 +31,7 @@ object ClientExampleApplication extends JSApp with ExampleApplication with Clien
   val scale9 = Scale9Example
   val virtual = VirtualSizeExample
   val snap = SnapExample
+  val gestures = GesturesExample
   val imageEditor = ImageEditorExample
 
   val htmlHello = hypertext.HelloWorld

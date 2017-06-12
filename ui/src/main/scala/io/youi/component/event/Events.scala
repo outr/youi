@@ -41,6 +41,7 @@ class Events(component: Component) {
       c
     }
   }
+  lazy val gestures: Gestures = new Gestures(component)
 
   protected def mouseEvent(name: String): Channel[MouseEvent] = {
     val channel = Channel[MouseEvent]

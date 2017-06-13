@@ -30,7 +30,6 @@ class Events(component: Component) {
       }
       (px, py, o)
     }
-    lazy val pinch: PinchSupport = new PinchSupport(component)
     lazy val wheel: Channel[MouseWheelEvent] = {
       val c = Channel[MouseWheelEvent]
       Mouse.wheel.attach { delta =>

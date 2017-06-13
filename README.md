@@ -112,12 +112,12 @@ YouI is divided into modules of functionality to minimize the dependencies requi
     * [X] Snap Layout Management (ex. `Snap(b3).leftTo(b1.position.left).rightTo(b2.position.right).topTo(b1.position.bottom + 5.0)`)
     * [ ] Touch / Mobile support
         * [X] Proper drag support
-        * [ ] Pinch events
+        * [X] Pinch events
         * [ ] Pan with acceleration
-    * [ ] Additional event support
-        * [ ] Upgraded Component events for multi-touch
-        * [ ] Long-press
-        * [ ] Double-click
+    * [X] Additional event support
+        * [X] Upgraded Component events for multi-touch
+        * [X] Long-press
+        * [X] Double-click
     * [ ] ImageEditor
         * [X] Selection area
         * [X] Cropping

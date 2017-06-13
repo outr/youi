@@ -9,33 +9,39 @@ abstract class DragSupport[T](component: Component) {
 
   def isDragging: Boolean = value().nonEmpty
 
-  component.event.pointer.down.attach(checkForDown)
-  component.event.pointer.up.attach(checkForUp)
-  component.event.pointer.upOutside.attach(checkForUp)
-  component.event.pointer.move.attach { mouseEvent =>
-    value.foreach(v => dragging(mouseEvent, v))
+  import component.event.gestures.pointers
+  pointers.added.attach { p =>
+    if (pointers.map.size > 1) {
+      value := None
+    } else {
+      checkForDown(p)
+    }
   }
+  pointers.dragged.attach { p =>
+    value.foreach(v => dragging(p, v))
+  }
+  pointers.removed.attach(checkForUp)
 
   /**
     * Determines if there is draggable for this MouseEvent. This is called on mouse down events.
     *
-    * @param mouseEvent the event that triggered this draggable check
+    * @param pointer the event that triggered this draggable check
     * @return optional T if there is a draggable for this mouse event
     */
-  def draggable(mouseEvent: MouseEvent): Option[T]
+  def draggable(pointer: Pointer): Option[T]
 
-  def dragging(mouseEvent: MouseEvent, value: T): Unit = {}
+  def dragging(pointer: Pointer, value: T): Unit = {}
 
-  def dropped(mouseEvent: MouseEvent, value: T): Unit = {
-    drop := Dropped(mouseEvent, value)
+  def dropped(pointer: Pointer, value: T): Unit = {
+    drop := Dropped(pointer, value)
   }
 
-  protected def checkForDown(mouseEvent: MouseEvent): Unit = {
-    value.setStatic(draggable(mouseEvent))
+  protected def checkForDown(pointer: Pointer): Unit = {
+    value.setStatic(draggable(pointer))
   }
 
-  protected def checkForUp(mouseEvent: MouseEvent): Unit = value().foreach { v =>
-    dropped(mouseEvent, v)
+  protected def checkForUp(pointer: Pointer): Unit = value().foreach { v =>
+    dropped(pointer, v)
     value := None
   }
 }

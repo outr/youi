@@ -1,5 +1,6 @@
 package io.youi.component.event
 
+import io.youi.Point
 import io.youi.component.Component
 import io.youi.component.draw.BoundingBox
 import reactify.{Channel, Observable, Val, Var}
@@ -25,7 +26,9 @@ class Gestures(component: Component) {
   lazy val doubleClick: DoubleClick = new DoubleClick(component)
   lazy val longPress: LongPress = new LongPress(component)
 
-  // TODO: `state` to represent drag, pinch, swype, fling, pan, rotate
+  lazy val pinch: Pinch = new Pinch(component)
+
+  // TODO: `state` to represent drag, swype, fling, pan, rotate
 
   pointer.down.attach(add)
   pointer.move.attach { evt =>
@@ -41,7 +44,7 @@ class Gestures(component: Component) {
 
 
   private def add(evt: MouseEvent): Unit = {
-    val p = Pointer(evt.identifier, evt, evt)
+    val p = Pointer(evt.identifier, evt, evt, evt)
     _pointers := _pointers() + (evt.identifier -> p)
 
     pointers.added := p
@@ -62,6 +65,7 @@ class Gestures(component: Component) {
 case class Pointer(identifier: Int,
                    start: MouseEvent,
                    move: MouseEvent,
+                   previous: MouseEvent,
                    moved: Moved = Moved(0.0, 0.0, 0.0),
                    movedFromStart: Moved = Moved(0.0, 0.0, 0.0),
                    meanX: List[Double] = Nil,
@@ -72,7 +76,7 @@ case class Pointer(identifier: Int,
     val count = meanX.size.toDouble
     val averageX = meanX.sum / count
     val averageY = meanY.sum / count
-    val averageTime = (meanTime.sum / count) / 1000000.0
+    val averageTime = (meanTime.sum / count) / 1000.0
     (averageX / averageTime, averageY / averageTime)
   }
 
@@ -83,9 +87,10 @@ case class Pointer(identifier: Int,
     val movedFromStart = Moved(start, evt)
     val mx = (moved.deltaX :: meanX).take(Pointer.sampleSize)
     val my = (moved.deltaY :: meanY).take(Pointer.sampleSize)
-    val mt = (evt.time :: meanTime).take(Pointer.sampleSize)
+    val mt = (elapsed :: meanTime).take(Pointer.sampleSize)
     copy(
       move = evt,
+      previous = move,
       moved = moved,
       movedFromStart = movedFromStart,
       meanX = mx,
@@ -178,4 +183,65 @@ class DoubleClick(component: Component) extends Observable[Pointer] {
 object DoubleClick {
   val DefaultEnabled: Boolean = true
   val DefaultMaxDelay: Long = 400L
+}
+
+class Pinch(component: Component) extends Observable[PinchEvent] {
+  import component.event.gestures.pointers
+
+  pointers.dragged.attach(dragging)
+
+  private def dragging(pointer: Pointer): Unit = if (pointers.map.size == 2 && pointer.moved.distance != 0.0) {
+    val other = pointers.map.find(_._1 != pointer.identifier).get._2
+
+    val ox = other.move.x
+    val oy = other.move.y
+    val op = other.move.local
+    val px = pointer.previous.x
+    val py = pointer.previous.y
+    val pp = pointer.previous.local
+    val cx = pointer.move.x
+    val cy = pointer.move.y
+    val cp = pointer.move.local
+
+    val pd = BoundingBox.distance(ox, oy, px, py)
+    val cd = BoundingBox.distance(ox, oy, cx, cy)
+    val deltaX = cx - px
+    val deltaY = cy - py
+
+    val deltaDistance = cd - pd
+    val direction = if (deltaDistance > 0.0) {
+      PinchDirection.Out
+    } else {
+      PinchDirection.In
+    }
+    val pe = PinchEvent(
+      pointer,
+      previous = PinchState(op, pp, pd),
+      current = PinchState(op, cp, cd),
+      deltaX = deltaX,
+      deltaY = deltaY,
+      deltaDistance = cd - pd,
+      direction = direction
+    )
+    fire(pe)
+  }
+
+  override def fire(value: PinchEvent): Unit = super.fire(value)
+}
+
+case class PinchEvent(pointer: Pointer,
+                      previous: PinchState,
+                      current: PinchState,
+                      deltaX: Double,
+                      deltaY: Double,
+                      deltaDistance: Double,
+                      direction: PinchDirection)
+
+case class PinchState(point1: Point, point2: Point, distance: Double)
+
+sealed trait PinchDirection
+
+object PinchDirection {
+  case object In extends PinchDirection
+  case object Out extends PinchDirection
 }

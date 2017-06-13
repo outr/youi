@@ -1,6 +1,6 @@
 package io.youi.component
 
-import io.youi.component.event.{DragSupport, MouseEvent}
+import io.youi.component.event.{DragSupport, MouseEvent, Pointer}
 import io.youi.component.font.{Font, TextPaths}
 import io.youi.component.draw.{BoundingBox, Drawable}
 import io.youi.style.Paint
@@ -59,9 +59,9 @@ class TextSelection(text: Text) extends Drawable {
   val value: Var[Option[Selection]] = Var(None)
 
   private val dragSupport = new DragSupport[Int](text) {
-    override def draggable(mouseEvent: MouseEvent): Option[Int] = mouseEventToIndex(mouseEvent)
+    override def draggable(pointer: Pointer): Option[Int] = mouseEventToIndex(pointer.move)
 
-    override def dragging(mouseEvent: MouseEvent, value: Int): Unit = updateDragging(mouseEvent, value)
+    override def dragging(pointer: Pointer, value: Int): Unit = updateDragging(pointer.move, value)
   }
 
   text.preDraw += this

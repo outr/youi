@@ -1,3 +1,3 @@
 package io.youi.component.event
 
-case class Dropped[T](mouseEvent: MouseEvent, value: T)
+case class Dropped[T](pointer: Pointer, value: T)

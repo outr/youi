@@ -3,7 +3,7 @@ package io.youi.component.extra
 import io.youi.component.{DrawableComponent, PaintSupport, PaintTheme}
 import io.youi.component.draw.path.{Path, PathAction, Rectangle}
 import io.youi.component.draw.{Drawable, Fill, Group}
-import io.youi.component.event.{DragSupport, MouseEvent}
+import io.youi.component.event.{DragSupport, MouseEvent, Pointer}
 import io.youi.style.Cursor
 import io.youi.theme.RectangularSelectionTheme
 import org.scalajs.dom.raw.CanvasRenderingContext2D
@@ -179,7 +179,8 @@ class RectangularSelection extends DrawableComponent {
 }
 
 class SelectionDragSupport(rs: RectangularSelection) extends DragSupport[DragStart](rs) {
-  override def draggable(mouseEvent: MouseEvent): Option[DragStart] = {
+  override def draggable(pointer: Pointer): Option[DragStart] = {
+    val mouseEvent = pointer.move
     val x1 = rs.selection.x1() - rs.selection.edgeDistance()
     val y1 = rs.selection.y1() - rs.selection.edgeDistance()
     val x2 = rs.selection.x2() + rs.selection.edgeDistance()
@@ -192,8 +193,10 @@ class SelectionDragSupport(rs: RectangularSelection) extends DragSupport[DragSta
     }
   }
 
-  override def dragging(mouseEvent: MouseEvent, value: DragStart): Unit = {
-    super.dragging(mouseEvent, value)
+  override def dragging(pointer: Pointer, value: DragStart): Unit = {
+    super.dragging(pointer, value)
+
+    val mouseEvent = pointer.move
     val adjustX = mouseEvent.globalX - value.mouseX
     val adjustY = mouseEvent.globalY - value.mouseY
     def processCursor(cursor: Cursor): Unit = {

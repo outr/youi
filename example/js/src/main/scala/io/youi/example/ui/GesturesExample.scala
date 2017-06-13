@@ -2,9 +2,6 @@ package io.youi.example.ui
 
 import io.youi.app.screen.UIScreen
 import io.youi.component.{Image, Texture}
-import io.youi.task._
-
-import scala.concurrent.duration._
 
 object GesturesExample extends UIExampleScreen with UIScreen {
   override def name: String = "Gestures Example"
@@ -16,6 +13,15 @@ object GesturesExample extends UIExampleScreen with UIScreen {
     container.children += new Image(texture) {
       position.center := renderer.position.center
       position.middle := renderer.position.middle
+      event.pointer.move.attach { evt =>
+        scribe.info(s"Move! ${evt.identifier}")
+      }
+      event.pointer.wheel.attach { evt =>
+        scribe.info(s"Wheel: ${evt.delta.x}x${evt.delta.y}x${evt.delta.z}")
+      }
+      event.gestures.pointers.added.attach { p =>
+        scribe.info(s"Added: $p")
+      }
       event.gestures.pointers.removed.attach { p =>
         scribe.info(s"Removed: $p")
       }

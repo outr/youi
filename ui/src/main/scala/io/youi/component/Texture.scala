@@ -6,12 +6,16 @@ import io.youi.net.URL
 import org.scalajs.dom.html
 import reactify.{Val, Var}
 
-class Texture(private[component] val instance: PIXI.Texture,
+import scala.scalajs.js.|
+
+class Texture(val instance: PIXI.Texture,
               val dependsOn: Option[Texture] = None,
-              val clip: Option[Clip] = None) {
+              val clip: Option[Clip] = None,
+              val rotation: Double = 0.0) {
   val update: Val[Long] = Var(0L)
   val width: Val[Double] = Var(instance.width)
   val height: Val[Double] = Var(instance.height)
+  def source: html.Image | html.Canvas = instance.baseTexture.source
 
   object clipped {
     def fromSides(left: Double = 0.0, top: Double = 0.0, right: Double = 0.0, bottom: Double = 0.0): Texture = {
@@ -44,6 +48,12 @@ class Texture(private[component] val instance: PIXI.Texture,
       fromSides(x1, y1, right, bottom)
     }
   }
+
+  def rotated(value: Double): Texture = new Texture(
+    instance = new PIXI.Texture(instance.baseTexture, rotate = value),
+    dependsOn = Some(Texture.this),
+    rotation = value
+  )
 
   instance.on("update", () => {
     width.asInstanceOf[Var[Double]] := instance.width

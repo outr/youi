@@ -22,6 +22,7 @@ val closureCompilerVersion = "v20170423"
 val hasherVersion = "1.2.1"
 val canvgVersion = "1.4.0_1"
 val openTypeVersion = "0.7.1_2"
+val picaVersion = "3.0.4"
 val scalaXMLVersion = "1.0.6"
 val scallopVersion = "2.1.3"
 val scalacticVersion = "3.0.3"
@@ -140,7 +141,8 @@ lazy val ui = project.in(file("ui"))
     libraryDependencies ++= Seq(
       "com.outr" %%% "scalajs-pixijs" % pixiJsVersion,
       "com.outr" %%% "canvg-scala-js" % canvgVersion,
-      "com.outr" %%% "opentype-scala-js" % openTypeVersion
+      "com.outr" %%% "opentype-scala-js" % openTypeVersion,
+      "com.outr" %%% "pica-scala-js" % picaVersion
     )
   )
   .dependsOn(coreJS, dom)

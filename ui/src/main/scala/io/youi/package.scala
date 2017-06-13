@@ -1,6 +1,8 @@
 package io
 
 import io.youi.style.Paint
+import org.scalajs.dom.html
+import org.scalajs.dom.raw.{CanvasRenderingContext2D, WebGLRenderingContext}
 import reactify.{State, Val}
 
 import scala.language.implicitConversions
@@ -9,6 +11,11 @@ package object youi {
   def ui: UI.type = UI
 
   implicit def color2Paint(color: Color): Paint = Paint.color(color)
+
+  implicit class CanvasExtras(canvas: html.Canvas) {
+    def context: CanvasRenderingContext2D = canvas.getContext("2d").asInstanceOf[CanvasRenderingContext2D]
+    def webGL: WebGLRenderingContext = canvas.getContext("webgl").asInstanceOf[WebGLRenderingContext]
+  }
 
   implicit class NumericSize[T](t: T)(implicit n: Numeric[T]) {
     private val d = n.toDouble(t)

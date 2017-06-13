@@ -2,7 +2,7 @@ package io.youi.component.editor
 
 import io.youi.{Compass, Point}
 import io.youi.component.extra.RectangularSelection
-import io.youi.component.{AbstractContainer, Component, Image}
+import io.youi.component.{AbstractContainer, Component, Image, Texture}
 import reactify._
 
 class ImageEditor extends AbstractContainer {
@@ -14,6 +14,7 @@ class ImageEditor extends AbstractContainer {
   val rs: RectangularSelection = new RectangularSelection
   val pixelCount: Val[Double] = Val(image.texture.width * image.texture.height)
   val wheelMultiplier: Var[Double] = Var(0.001)
+  val revision: Val[Int] = Var(0)
 
   image.scale.direction := Compass.Center
   image.position.center := size.center
@@ -33,6 +34,16 @@ class ImageEditor extends AbstractContainer {
     }
   }
 
+  // TODO: make this a preview canvas
+  val preview: Val[Texture] = Val {
+    val x1 = rs.selection.x1 - image.position.x
+    val y1 = rs.selection.y1 - image.position.y
+    val x2 = rs.selection.x2 - image.position.x
+    val y2 = rs.selection.y2 - image.position.y
+    scribe.info(s"From points: $x1 x $y1 x $x2 x $y2")
+    image.texture().clipped.fromPoints(x1, y1, x2, y2)
+  }
+
   size.width := image.size.width + rs.blocks.size
   size.height := image.size.height + rs.blocks.size
 
@@ -48,6 +59,14 @@ class ImageEditor extends AbstractContainer {
       image.position.x := image.position.x() + p.moved.deltaX
       image.position.y := image.position.y() + p.moved.deltaY
     }
+  }
+
+  Observable.wrap(
+    image.position.x, image.position.y, image.scale.x, image.scale.y,
+    rs.selection.x1, rs.selection.y1, rs.selection.x2, rs.selection.y2
+  ).on {
+    val current = revision()
+    revision.asInstanceOf[Var[Int]] := current + 1
   }
 
   def scale(amount: Double, point: Option[Point] = None): Unit = {

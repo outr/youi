@@ -123,7 +123,7 @@ YouI is divided into modules of functionality to minimize the dependencies requi
         * [X] Cropping
         * [X] Scaling
         * [X] Rotation
-        * [ ] Panning
+        * [X] Panning
         * [ ] Upload local file
         * [ ] Download result
         * [ ] Preview instances

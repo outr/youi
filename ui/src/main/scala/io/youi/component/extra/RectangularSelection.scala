@@ -61,6 +61,7 @@ class RectangularSelection extends DrawableComponent {
   }
 
   private val dragging = new SelectionDragSupport(this)
+  def isDragging: Boolean = dragging.isDragging
 
   drawable := {
     if (selection.width() != 0.0 && selection.height() != 0.0) {

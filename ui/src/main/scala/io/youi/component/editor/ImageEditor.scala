@@ -43,6 +43,12 @@ class ImageEditor extends AbstractContainer {
   event.pointer.wheel.attach { evt =>
     scale(evt.delta.y * -wheelMultiplier, Some(evt.local))
   }
+  event.gestures.pointers.dragged.attach { p =>
+    if (event.gestures.pointers.map.size == 1 && !rs.isDragging) {
+      image.position.x := image.position.x() + p.moved.deltaX
+      image.position.y := image.position.y() + p.moved.deltaY
+    }
+  }
 
   def scale(amount: Double, point: Option[Point] = None): Unit = {
     val newScale = math.max(image.scale.x() + amount, 0.1)

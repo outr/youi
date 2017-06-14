@@ -45,7 +45,9 @@ class ImageEditor extends AbstractContainer {
     try {
       val context = destination.context
       context.translate(image.position.x - rs.selection.x1, image.position.y - rs.selection.y1)
-
+      context.translate(image.size.width / 2.0, image.size.height / 2.0)
+      context.rotate(image.rotation() * (math.Pi * 2.0))
+      context.translate(-image.size.width / 2.0, -image.size.height / 2.0)
       context.drawImage(image.texture.source.asInstanceOf[html.Image], 0.0, 0.0, image.size.width, image.size.height)
       val previous = preview()
       preview := destination
@@ -93,7 +95,7 @@ class ImageEditor extends AbstractContainer {
   }
 
   Observable.wrap(
-    image.position.x, image.position.y, image.scale.x, image.scale.y,
+    image.position.x, image.position.y, image.rotation, image.size.width, image.size.height,
     rs.selection.x1, rs.selection.y1, rs.selection.x2, rs.selection.y2
   ).on {
     val current = revision()

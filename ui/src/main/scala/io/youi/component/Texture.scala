@@ -70,6 +70,7 @@ object Texture {
   def apply(url: URL): Texture = new Texture(PIXI.Texture.fromImage(url.toString))
   def apply(path: String): Texture = apply(History.url().withPath(path))
   def apply(video: html.Video): Texture = new Texture(PIXI.Texture.from(video))
+  def apply(image: html.Image): Texture = new Texture(PIXI.Texture.from(image))
 }
 
 case class Clip(left: Double, top: Double, right: Double, bottom: Double)

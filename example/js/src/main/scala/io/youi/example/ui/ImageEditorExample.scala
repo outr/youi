@@ -3,10 +3,11 @@ package io.youi.example.ui
 import io.youi._
 import io.youi.component.editor.{AspectRatio, ImageEditor}
 import io.youi.component.{Renderer, Texture}
-import io.youi.hypertext.ImageView
+import io.youi.hypertext.{Button, Canvas, ImageView, TextInput}
 import io.youi.example.ui.hypertext.HTMLScreen
 import io.youi.hypertext.border.BorderStyle
-import io.youi.hypertext.{Button, Canvas}
+import io.youi.util.ImageUtility
+import org.scalajs.dom._
 import reactify._
 
 import scala.concurrent.Future
@@ -91,10 +92,22 @@ object ImageEditorExample extends HTMLScreen {
       event.click.on(editor.scale(-0.1))
     }
 
-    // TODO: upload
+    val fileUpload = new TextInput {
+      position.left := zoomOut.position.right + 20.0
+      position.top := resetButton.position.top
+      element.`type` = "file"
+      element.addEventListener("change", (evt: Event) => {
+        if (element.files.length > 0) {
+          val file = element.files(0)
+          ImageUtility.loadImage(file).foreach { image =>
+            editor.image.texture := Texture(image)
+          }
+        }
+      })
+    }
 
     container.children ++= List(
-      resetButton, rotateLeft, rotateRight, zoomIn, zoomOut
+      resetButton, rotateLeft, rotateRight, zoomIn, zoomOut, fileUpload
     )
   }
 }

@@ -4,7 +4,7 @@ import io.youi._
 import io.youi.component.extra.RectangularSelection
 import io.youi.component.{AbstractContainer, Component, Image}
 import io.youi.hypertext.ImageView
-import io.youi.util.{CanvasPool, ImageUtility}
+import io.youi.util.{CanvasPool, ImageUtility, SizeUtility}
 import org.scalajs.dom.html
 import reactify._
 
@@ -21,7 +21,6 @@ class ImageEditor extends AbstractContainer {
   val wheelMultiplier: Var[Double] = Var(0.001)
   val revision: Val[Int] = Var(0)
 
-//  image.scale.direction := Compass.Center
   image.position.center := size.center
   image.position.middle := size.middle
 
@@ -123,7 +122,11 @@ class ImageEditor extends AbstractContainer {
   def reset(): Unit = {
     image.position.center := size.center
     image.position.middle := size.middle
-    image.size.reset()
+
+    val scaled = SizeUtility.scale(image.size.measured.width, image.size.measured.height, size.width - (rs.blocks.size() * 2.0), size.height - (rs.blocks.size() * 2.0))
+    image.size.width := scaled.x
+    image.size.height := scaled.y
+
     image.rotation := 0.0
 
     val x1 = math.max(image.position.left(), rs.selection.minX)

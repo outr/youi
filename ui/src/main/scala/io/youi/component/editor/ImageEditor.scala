@@ -1,9 +1,14 @@
 package io.youi.component.editor
 
-import io.youi.{Compass, Point}
+import io.youi._
 import io.youi.component.extra.RectangularSelection
-import io.youi.component.{AbstractContainer, Component, Image, Texture}
+import io.youi.component.{AbstractContainer, Component, Image}
+import io.youi.hypertext.ImageView
+import io.youi.util.{CanvasPool, ImageUtility}
+import org.scalajs.dom.html
 import reactify._
+
+import scala.concurrent.duration._
 
 class ImageEditor extends AbstractContainer {
   override type Child = Component
@@ -16,7 +21,7 @@ class ImageEditor extends AbstractContainer {
   val wheelMultiplier: Var[Double] = Var(0.001)
   val revision: Val[Int] = Var(0)
 
-  image.scale.direction := Compass.Center
+//  image.scale.direction := Compass.Center
   image.position.center := size.center
   image.position.middle := size.middle
 
@@ -34,14 +39,41 @@ class ImageEditor extends AbstractContainer {
     }
   }
 
-  // TODO: make this a preview canvas
-  val preview: Val[Texture] = Val {
-    val x1 = rs.selection.x1 - image.position.x
-    val y1 = rs.selection.y1 - image.position.y
-    val x2 = rs.selection.x2 - image.position.x
-    val y2 = rs.selection.y2 - image.position.y
-    scribe.info(s"From points: $x1 x $y1 x $x2 x $y2")
-    image.texture().clipped.fromPoints(x1, y1, x2, y2)
+  val preview: Var[html.Canvas] = Var(CanvasPool(rs.selection.width, rs.selection.height), static = true)
+
+  private val previewUpdater = LazyUpdate({
+    val destination = CanvasPool(rs.selection.width, rs.selection.height)
+    try {
+      val context = destination.context
+      context.translate(image.position.x - rs.selection.x1, image.position.y - rs.selection.y1)
+
+      context.drawImage(image.texture.source.asInstanceOf[html.Image], 0.0, 0.0, image.size.width, image.size.height)
+      val previous = preview()
+      preview := destination
+      CanvasPool.restore(previous)
+    } catch {
+      case t: Throwable => {
+        scribe.error(t)
+        CanvasPool.restore(destination)
+      }
+    }
+  }, 100.millis)
+
+  revision.on(previewUpdater.flag())
+  delta.on(previewUpdater.update())
+
+  def previewImage(width: Double, height: Double): ImageView = {
+    val view = new ImageView
+    view.size.width := width
+    view.size.height := height
+    previewImage(view)
+    view
+  }
+
+  def previewImage(view: ImageView): Unit = {
+    preview.attachAndFire { canvas =>
+      ImageUtility.resizeToImage(canvas, view.size.width, view.size.height, view.element)
+    }
   }
 
   size.width := image.size.width + rs.blocks.size
@@ -71,7 +103,8 @@ class ImageEditor extends AbstractContainer {
 
   def scale(amount: Double, point: Option[Point] = None): Unit = {
     val newScale = math.max(image.scale.x() + amount, 0.1)
-    image.scale := newScale
+    image.size.width := image.size.measured.width * newScale
+    image.size.height := image.size.measured.height * newScale
     point.foreach { p =>
       val offsetX = p.x - size.center
       val offsetY = p.y - size.middle
@@ -90,7 +123,7 @@ class ImageEditor extends AbstractContainer {
   def reset(): Unit = {
     image.position.center := size.center
     image.position.middle := size.middle
-    image.scale := 1.0
+    image.size.reset()
     image.rotation := 0.0
 
     val x1 = math.max(image.position.left(), rs.selection.minX)

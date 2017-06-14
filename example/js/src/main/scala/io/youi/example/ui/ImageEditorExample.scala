@@ -7,12 +7,9 @@ import io.youi.hypertext.ImageView
 import io.youi.example.ui.hypertext.HTMLScreen
 import io.youi.hypertext.border.BorderStyle
 import io.youi.hypertext.{Button, Canvas}
-import io.youi.util.ImageUtility
 import reactify._
 
 import scala.concurrent.Future
-import scala.concurrent.duration._
-import scala.util.{Failure, Success}
 
 object ImageEditorExample extends HTMLScreen {
   override def name: String = "Image Editor"
@@ -50,6 +47,7 @@ object ImageEditorExample extends HTMLScreen {
       border.size := Some(1.0)
       border.style := Some(BorderStyle.Solid)
       border.color := Some(Color.Black)
+      editor.previewImage(this)
     }
     ui.children += preview1
 
@@ -98,18 +96,5 @@ object ImageEditorExample extends HTMLScreen {
     container.children ++= List(
       resetButton, rotateLeft, rotateRight, zoomIn, zoomOut
     )
-
-    val previewUpdate = LazyUpdate({
-      scribe.info(s"Resizing....")
-      ImageUtility.resizeToImage(editor.preview.source, 160.0, 120.0, preview1.element).onComplete {
-        case Success(image) => {
-          scribe.info("Updated successfully!")
-          preview1.updateSize()
-        }
-        case Failure(throwable) => scribe.error(throwable)
-      }
-    }, 250.millis)
-    editor.delta.on(previewUpdate.update())
-    editor.revision.on(previewUpdate.flag())
   }
 }

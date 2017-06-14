@@ -22,7 +22,6 @@ object ImageUtility {
                     width: Double,
                     height: Double,
                     destination: html.Image): Future[html.Image] = {
-    scribe.info(s"Source: $source, Destination: $destination")
     val destinationCanvas = CanvasPool(width, height)
     resizeToCanvas(source, destinationCanvas).map { _ =>
       val dataURL = destinationCanvas.toDataURL("image/png")

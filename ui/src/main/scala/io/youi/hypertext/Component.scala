@@ -170,8 +170,8 @@ trait Component extends AbstractComponent {
   def updateSize(): Unit = if (!updatingSize) {
     updatingSize = true
     try {
-      if (actualWidth() != determineActualWidth) actualWidth.setStatic(determineActualWidth)
-      if (actualHeight() != determineActualHeight) actualHeight.setStatic(determineActualHeight)
+      if (actualWidth() != determineActualWidth) actualWidth.static(determineActualWidth)
+      if (actualHeight() != determineActualHeight) actualHeight.static(determineActualHeight)
 
       val h = scrollbar.horizontal.size.asInstanceOf[Var[Double]]
       val v = scrollbar.vertical.size.asInstanceOf[Var[Double]]

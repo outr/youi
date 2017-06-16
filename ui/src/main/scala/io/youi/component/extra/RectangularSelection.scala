@@ -33,17 +33,17 @@ class RectangularSelection extends DrawableComponent {
 
     override protected def paintTheme: PaintTheme = theme.selection
 
-    def set(x1: => Double, y1: => Double, x2: => Double, y2: => Double): Unit = {
+    def set(x1: Double, y1: Double, x2: Double, y2: Double): Unit = {
       this.x1 := x1
       this.y1 := y1
       this.x2 := x2
       this.y2 := y2
     }
     def maximize(): Unit = {
-      x1 := minX
-      y1 := minY
-      x2 := maxX
-      y2 := maxY
+      x1.static(minX)
+      y1.static(minY)
+      x2.static(maxX)
+      y2.static(maxY)
     }
   }
   object blocks extends PaintSupport {
@@ -329,10 +329,10 @@ class SelectionDragSupport(rs: RectangularSelection) extends DragSupport[DragSta
       case _ if y1 < rs.selection.minY() => // Ignore
       case _ if y2 > rs.selection.maxY() => // Ignore
       case _ => {
-        rs.selection.x1.setStatic(x1)
-        rs.selection.x2.setStatic(x2)
-        rs.selection.y1.setStatic(y1)
-        rs.selection.y2.setStatic(y2)
+        rs.selection.x1.static(x1)
+        rs.selection.x2.static(x2)
+        rs.selection.y1.static(y1)
+        rs.selection.y2.static(y2)
       }
     }
   }

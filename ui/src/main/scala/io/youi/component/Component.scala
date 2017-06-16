@@ -57,8 +57,8 @@ trait Component extends TaskSupport {
 
   object size {
     object measured {
-      lazy val width: Var[Double] = prop(0.0, updatesRendering = true)
-      lazy val height: Var[Double] = prop(0.0, updatesRendering = true)
+      val width: Var[Double] = prop(0.0, updatesRendering = true)
+      val height: Var[Double] = prop(0.0, updatesRendering = true)
     }
 
     def reset(width: Boolean = true, height: Boolean = true): Unit = {
@@ -66,8 +66,8 @@ trait Component extends TaskSupport {
       if (height) this.height.set(measured.height())
     }
 
-    val width: Var[Double] = prop(measured.width(), updatesTransform = true)
-    val height: Var[Double] = prop(measured.height(), updatesTransform = true)
+    val width: Var[Double] = prop(measured.width, updatesTransform = true)
+    val height: Var[Double] = prop(measured.height, updatesTransform = true)
 
     lazy val center: Val[Double] = Val(width / 2.0)
     lazy val middle: Val[Double] = Val(height / 2.0)    // TODO: diagnose why this isn't being updated properly

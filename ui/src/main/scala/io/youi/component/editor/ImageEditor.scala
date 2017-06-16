@@ -89,8 +89,8 @@ class ImageEditor extends AbstractContainer {
   }
   event.gestures.pointers.dragged.attach { p =>
     if (event.gestures.pointers.map.size == 1 && !rs.isDragging) {
-      image.position.x := image.position.x() + p.moved.deltaX
-      image.position.y := image.position.y() + p.moved.deltaY
+      image.position.x.static(image.position.x() + p.moved.deltaX)
+      image.position.y.static(image.position.y() + p.moved.deltaY)
     }
   }
 

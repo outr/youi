@@ -94,9 +94,9 @@ case class HorizontalSnapping(left: Option[() => Double] = None,
   }
 
   def disconnect(component: Component): Unit = {
-    component.position.x.setStatic(component.position.x())
+    component.position.x.static(component.position.x())
     if (left.nonEmpty && right.nonEmpty) {
-      component.size.width.setStatic(component.size.width())
+      component.size.width.static(component.size.width())
     }
   }
 }
@@ -124,9 +124,9 @@ case class VerticalSnapping(top: Option[() => Double] = None,
   }
 
   def disconnect(component: Component): Unit = {
-    component.position.y.setStatic(component.position.y())
+    component.position.y.static(component.position.y())
     if (top.nonEmpty && bottom.nonEmpty) {
-      component.size.height.setStatic(component.size.height())
+      component.size.height.static(component.size.height())
     }
   }
 }

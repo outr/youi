@@ -37,7 +37,7 @@ abstract class DragSupport[T](component: Component) {
   }
 
   protected def checkForDown(pointer: Pointer): Unit = {
-    value.setStatic(draggable(pointer))
+    value.static(draggable(pointer))
   }
 
   protected def checkForUp(pointer: Pointer): Unit = value().foreach { v =>

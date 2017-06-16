@@ -107,13 +107,16 @@ YouI is divided into modules of functionality to minimize the dependencies requi
     * [X] Scale-9 Support
     * [X] Basic Video Component
     * [X] AbstractContainer to better support custom components and more explicit containers
-    * [ ] ImageScaler to smoothly step up and down images with minimal pixelation
+    * [X] ImageUtility
+        * [X] Smooth and clean image resizing functionality
+        * [X] File to Image loading with Future
+    * [X] SizeUtility for width/height scaling functionality
     * [X] MouseWheel support in component
     * [X] Snap Layout Management (ex. `Snap(b3).leftTo(b1.position.left).rightTo(b2.position.right).topTo(b1.position.bottom + 5.0)`)
-    * [ ] Touch / Mobile support
+    * [X] Touch / Mobile support
         * [X] Proper drag support
         * [X] Pinch events
-        * [ ] Pan with acceleration
+        * [X] Acceleration
     * [X] Additional event support
         * [X] Upgraded Component events for multi-touch
         * [X] Long-press
@@ -124,10 +127,10 @@ YouI is divided into modules of functionality to minimize the dependencies requi
         * [X] Scaling
         * [X] Rotation
         * [X] Panning
-        * [ ] Upload local file
+        * [X] Upload local file
+        * [X] Preview instances
+        * [X] Complete Touch support
         * [ ] Download result
-        * [ ] Preview instances
-        * [ ] Complete Touch support
     
 ## Features for 0.3.0 (Released 2017.04.21)
 

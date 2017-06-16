@@ -70,7 +70,7 @@ trait Component extends TaskSupport {
     val height: Var[Double] = prop(measured.height, updatesTransform = true)
 
     lazy val center: Val[Double] = Val(width / 2.0)
-    lazy val middle: Val[Double] = Val(height / 2.0)    // TODO: diagnose why this isn't being updated properly
+    lazy val middle: Val[Double] = Val(height / 2.0)
   }
 
   object pivot {

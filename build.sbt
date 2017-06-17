@@ -1,6 +1,6 @@
 name := "youi"
 organization in ThisBuild := "io.youi"
-version in ThisBuild := "0.4.0-SNAPSHOT"
+version in ThisBuild := "0.4.0"
 scalaVersion in ThisBuild := "2.12.2"
 crossScalaVersions in ThisBuild := List("2.12.2", "2.11.11")
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
@@ -10,7 +10,7 @@ scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 val pixiJsVersion = "4.5.2.5"
 val scribeVersion = "1.4.2"
 val powerScalaVersion = "2.0.5"
-val reactifyVersion = "2.0.1"
+val reactifyVersion = "2.0.2"
 val akkaVersion = "2.5.2"
 val scalaJSDOM = "0.9.2"
 val httpAsyncClientVersion = "4.1.3"
@@ -24,7 +24,7 @@ val canvgVersion = "1.4.0_1"
 val openTypeVersion = "0.7.1_2"
 val picaVersion = "3.0.4"
 val scalaXMLVersion = "1.0.6"
-val scallopVersion = "2.1.3"
+val scallopVersion = "3.0.0"
 val scalacticVersion = "3.0.3"
 val scalaTestVersion = "3.0.3"
 

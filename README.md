@@ -54,14 +54,17 @@ YouI is divided into modules of functionality to minimize the dependencies requi
     * [ ] Caret with customization support
     * [ ] Rich text segments
     * [ ] Multi-line support or explicit single-line support
-* [ ] Scrollbar support
 
 ## Features for 0.7.0 (Future)
 
-* [ ] Serializable / Deserializable JSON structure for UI
-* [ ] PSD import tool
 * [ ] SVG import tool
 * [ ] AI import tool
+* [ ] VideoPaint
+* [ ] Layout managers
+    * [ ] Flow layout
+    * [ ] Grid layout
+    * [ ] Form layout
+    * [ ] Stack layout
 
 ## Features for 0.6.0 (Future)
 
@@ -73,64 +76,59 @@ YouI is divided into modules of functionality to minimize the dependencies requi
     
 ## Features for 0.5.0 (Future)
 
-* [ ] Layout managers
-    * [ ] Flow layout
-    * [ ] Grid layout
-    * [ ] Form layout
-    * [ ] Stack layout
 * [ ] Border support in DrawableComponent
-* [ ] VideoPaint
+* [ ] PSD import tool
+* [ ] Serializable / Deserializable JSON structure for UI
+* [ ] Scrolling Container support
     
-## Features for 0.4.0 (In-Progress)
+## Features for 0.4.0 (Released 2017.06.17)
 
-* [ ] UI Features
-    * [X] Update Pixi.js facade to use JSDeps
-    * [X] On-demand rendering capabilities for exceptional performance
-    * [X] Workflow rendering tied to elements to allow pausing when invisible
-    * [X] CanvasComponent for specialized drawing using HTML5 Canvas
-    * [X] DrawableComponent to simplify and maintain stateful drawing backed by CanvasComponent
-        * [X] Text integration using https://github.com/nodebox/opentype.js
-        * [X] Complete SVG rendering support (Canvg)
-    * [X] Complete Paint functionality
-        * [X] Fill integration
-        * [X] Stroke wrapper
-        * [X] Gradients
-        * [X] Texture
-        * [X] Color
-    * [X] HTMLComponent to render HTML components on top of Canvas with the same transformations
-    * [X] RectangularSelection tool
-        * [X] Move and Resize Support
-        * [X] Minimum and Maximum constraints
-        * [X] Aspect ratio constraints
-        * [X] Complete Touch support
-    * [X] Texture clipping support
-    * [X] Scale-9 Support
-    * [X] Basic Video Component
-    * [X] AbstractContainer to better support custom components and more explicit containers
-    * [X] ImageUtility
-        * [X] Smooth and clean image resizing functionality
-        * [X] File to Image loading with Future
-    * [X] SizeUtility for width/height scaling functionality
-    * [X] MouseWheel support in component
-    * [X] Snap Layout Management (ex. `Snap(b3).leftTo(b1.position.left).rightTo(b2.position.right).topTo(b1.position.bottom + 5.0)`)
-    * [X] Touch / Mobile support
-        * [X] Proper drag support
-        * [X] Pinch events
-        * [X] Acceleration
-    * [X] Additional event support
-        * [X] Upgraded Component events for multi-touch
-        * [X] Long-press
-        * [X] Double-click
-    * [ ] ImageEditor
-        * [X] Selection area
-        * [X] Cropping
-        * [X] Scaling
-        * [X] Rotation
-        * [X] Panning
-        * [X] Upload local file
-        * [X] Preview instances
-        * [X] Complete Touch support
-        * [ ] Download result
+* [X] Update Pixi.js facade to use JSDeps
+* [X] On-demand rendering capabilities for exceptional performance
+* [X] Workflow rendering tied to elements to allow pausing when invisible
+* [X] CanvasComponent for specialized drawing using HTML5 Canvas
+* [X] DrawableComponent to simplify and maintain stateful drawing backed by CanvasComponent
+    * [X] Text integration using https://github.com/nodebox/opentype.js
+    * [X] Complete SVG rendering support (Canvg)
+* [X] Complete Paint functionality
+    * [X] Fill integration
+    * [X] Stroke wrapper
+    * [X] Gradients
+    * [X] Texture
+    * [X] Color
+* [X] HTMLComponent to render HTML components on top of Canvas with the same transformations
+* [X] RectangularSelection tool
+    * [X] Move and Resize Support
+    * [X] Minimum and Maximum constraints
+    * [X] Aspect ratio constraints
+    * [X] Complete Touch support
+* [X] Texture clipping support
+* [X] Scale-9 Support
+* [X] Basic Video Component
+* [X] AbstractContainer to better support custom components and more explicit containers
+* [X] ImageUtility
+    * [X] Smooth and clean image resizing functionality
+    * [X] File to Image loading with Future
+* [X] SizeUtility for width/height scaling functionality
+* [X] MouseWheel support in component
+* [X] Snap Layout Management (ex. `Snap(b3).leftTo(b1.position.left).rightTo(b2.position.right).topTo(b1.position.bottom + 5.0)`)
+* [X] Touch / Mobile support
+    * [X] Proper drag support
+    * [X] Pinch events
+    * [X] Acceleration
+* [X] Additional event support
+    * [X] Upgraded Component events for multi-touch
+    * [X] Long-press
+    * [X] Double-click
+* [X] ImageEditor
+    * [X] Selection area
+    * [X] Cropping
+    * [X] Scaling
+    * [X] Rotation
+    * [X] Panning
+    * [X] Upload local file
+    * [X] Preview instances
+    * [X] Complete Touch support
     
 ## Features for 0.3.0 (Released 2017.04.21)
 

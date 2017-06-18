@@ -1,7 +1,7 @@
 package io.youi.hypertext.layout
 
 import io.youi.hypertext.{AbstractComponent, AbstractContainer}
-import reactify.Listener
+import reactify.{InvocationType, Listener}
 
 abstract class BasicLayout(updateOnParentResize: Boolean = false,
                            updateOnChildResize: Boolean = false) extends Layout with Listener[Vector[AbstractComponent]] {
@@ -39,7 +39,7 @@ abstract class BasicLayout(updateOnParentResize: Boolean = false,
     parent = None
   }
 
-  override def apply(children: Vector[AbstractComponent]): Unit = if (children.nonEmpty) {
+  override def apply(children: Vector[AbstractComponent], `type`: InvocationType): Unit = if (children.nonEmpty) {
     if (updateOnChildResize) {
       childrenMonitored.foreach { child =>
         if (!children.contains(child)) {            // Remove children from previous monitored state

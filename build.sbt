@@ -1,6 +1,6 @@
 name := "youi"
 organization in ThisBuild := "io.youi"
-version in ThisBuild := "0.4.0"
+version in ThisBuild := "0.5.0-SNAPSHOT"
 scalaVersion in ThisBuild := "2.12.2"
 crossScalaVersions in ThisBuild := List("2.12.2", "2.11.11")
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
@@ -10,7 +10,7 @@ scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 val pixiJsVersion = "4.5.2.5"
 val scribeVersion = "1.4.2"
 val powerScalaVersion = "2.0.5"
-val reactifyVersion = "2.0.2"
+val reactifyVersion = "2.0.3"
 val akkaVersion = "2.5.2"
 val scalaJSDOM = "0.9.2"
 val httpAsyncClientVersion = "4.1.3"
@@ -50,7 +50,12 @@ lazy val core = crossProject.in(file("core"))
       "com.outr" %%% "reactify" % reactifyVersion,
       "org.scalactic" %%% "scalactic" % scalacticVersion,
       "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
-    )
+    ),
+    libraryDependencies ++= Seq(
+      "io.circe" %%% "circe-core",
+      "io.circe" %%% "circe-generic",
+      "io.circe" %%% "circe-parser"
+    ).map(_ % circeVersion)
   )
   .jvmSettings(
     libraryDependencies ++= Seq(
@@ -88,12 +93,7 @@ lazy val client = project.in(file("client"))
     libraryDependencies ++= Seq(
       "org.apache.httpcomponents" % "httpasyncclient" % httpAsyncClientVersion,
       "org.powerscala" %% "powerscala-io" % powerScalaVersion
-    ),
-    libraryDependencies ++= Seq(
-      "io.circe" %% "circe-core",
-      "io.circe" %% "circe-generic",
-      "io.circe" %% "circe-parser"
-    ).map(_ % circeVersion)
+    )
   )
   .dependsOn(coreJVM)
 

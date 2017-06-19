@@ -3,7 +3,7 @@ package io.youi.hypertext
 import io.youi.hypertext.border.ComponentBorders
 import io.youi.hypertext.style.{ComponentOverflow, Overflow}
 import reactify.{Channel, State, Val, Var}
-import io.youi.Color
+import io.youi.{AnimationFrame, Color}
 import org.scalajs.dom._
 import org.scalajs.dom.html.Element
 import org.scalajs.dom.raw.Event
@@ -223,6 +223,7 @@ object Component {
       case Some(c) => c.asInstanceOf[T]
       case None => {
         val c = create(element)
+        AnimationFrame.delta.attach(c.update)     // Disconnected from a hierarchical parent, so it needs to update directly
         cache += element -> c
         c
       }

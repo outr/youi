@@ -22,6 +22,7 @@ object ErrorSupport {
 
   val defaultHandler: Listener[Throwable] = error.attach {
     case exc: IOException if exc.getMessage == "Connection reset by peer" => scribe.warn(exc.getMessage)
+    case exc: IOException if exc.getMessage == "Broken pipe" => scribe.warn(exc.getMessage)
     case exc: MessageException => scribe.error(exc.message)
     case t: Throwable => scribe.error(t)
   }

@@ -93,6 +93,9 @@ class ImageEditor extends AbstractContainer {
       image.position.y.static(image.position.y() + p.moved.deltaY)
     }
   }
+  event.gestures.pinch.attach { evt =>
+    scale(evt.deltaDistance * 0.01, Some(evt.pointer.move.local))
+  }
 
   Observable.wrap(
     image.position.x, image.position.y, image.rotation, image.size.width, image.size.height,

@@ -1,11 +1,15 @@
 package io.youi.component
 
 import com.outr.pixijs._
-import io.youi.{Compass, Horizontal, LazyUpdate, Vertical}
+import io.circe._
+import io.circe.generic.auto._
+import io.circe.syntax._
 import io.youi.component.event.Events
+import io.youi.persist.Persistence
 import io.youi.style.Cursor
 import io.youi.task.TaskSupport
 import io.youi.theme.ComponentTheme
+import io.youi.{Compass, Horizontal, LazyUpdate, Vertical}
 import reactify._
 
 trait Component extends TaskSupport {
@@ -136,4 +140,36 @@ trait Component extends TaskSupport {
   override def updateTasks(): Boolean = super.updateTasks() && globalVisibility()
 }
 
-object Component extends ComponentTheme
+object Component extends ComponentTheme with Persistence[Component] {
+  override protected def identifier: String = "component"
+
+  override protected def create(): Component = throw new RuntimeException("Component cannot be deserialized directly.")
+
+  override protected def parentPersistence: Option[Persistence[_ >: Component]] = None
+
+  override protected def saveInfo(t: Component): Json = SerializedComponent(
+    x = t.position.x(),
+    y = t.position.y(),
+    width = t.size.width(),
+    height = t.size.height(),
+    scaleX = t.scale.x(),
+    scaleY = t.scale.y()
+  ).asJson
+
+  override protected def loadInfo(t: Component, json: Json): Unit = {
+    val sc = json.as[SerializedComponent].getOrElse(throw new RuntimeException(s"Unable to parse $json to SerializedComponent."))
+    t.position.x := sc.x
+    t.position.y := sc.y
+    t.size.width := sc.width
+    t.size.height := sc.height
+    t.scale.x := sc.scaleX
+    t.scale.y := sc.scaleY
+  }
+
+  case class SerializedComponent(x: Double,
+                                 y: Double,
+                                 width: Double,
+                                 height: Double,
+                                 scaleX: Double,
+                                 scaleY: Double)
+}

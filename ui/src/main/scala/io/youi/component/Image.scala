@@ -1,5 +1,9 @@
 package io.youi.component
 import com.outr.pixijs.PIXI
+import io.circe.Json
+import io.circe.generic.auto._
+import io.circe.syntax._
+import io.youi.persist.Persistence
 import io.youi.theme.ImageTheme
 import reactify.{Val, Var}
 
@@ -26,4 +30,22 @@ class Image extends Component {
   scale.y := (if (size.measured.height() > 0.0) size.height() / size.measured.height() else 1.0)
 }
 
-object Image extends ImageTheme
+object Image extends ImageTheme with Persistence[Image] {
+  override protected def identifier: String = "image"
+
+  override protected def create(): Image = new Image
+
+  override protected def parentPersistence: Option[Persistence[_ >: Image]] = Some(Component)
+
+  override protected def saveInfo(t: Image): Json = SerializedImage(
+    texture = "TODO"
+  ).asJson
+
+  override protected def loadInfo(t: Image, json: Json): Unit = {
+    val si = json.as[SerializedImage].getOrElse(throw new RuntimeException(s"Unable to parse $json to SerializedImage."))
+    // TODO: set texture
+    scribe.info(si)
+  }
+
+  case class SerializedImage(texture: String)
+}

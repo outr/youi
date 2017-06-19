@@ -109,6 +109,34 @@ object dom extends ExtendedElement(None) {
       list.item(position)
     }
   }
+
+  def jumpToTop(): Unit = window.scroll(0, 0)
+
+  def stopAllMedia(except: Option[html.Element] = None): Unit = {
+    dom.bySelector[html.Video]("video").foreach { video =>
+      if (!except.contains(video)) {
+        video.pause()
+      }
+    }
+    dom.bySelector[html.Audio]("audio").foreach { audio =>
+      if (!except.contains(audio)) {
+        audio.pause()
+      }
+    }
+  }
+
+  def autoStopOnPlay(): Unit = {
+    dom.bySelector[html.Video]("video").foreach { video =>
+      video.onplay = (_: Event) => {
+        stopAllMedia(Some(video))
+      }
+    }
+    dom.bySelector[html.Audio]("audio").foreach { audio =>
+      audio.onplay = (_: Event) => {
+        stopAllMedia(Some(audio))
+      }
+    }
+  }
 }
 
 class ExtendedElement(element: Option[Element]) {

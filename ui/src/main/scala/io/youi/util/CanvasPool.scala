@@ -25,4 +25,13 @@ object CanvasPool {
   def restore(canvas: html.Canvas): Unit = synchronized {
     cached = canvas :: cached
   }
+
+  def withCanvas[R](width: Double, height: Double)(f: html.Canvas => R): R = {
+    val canvas = apply(width, height)
+    try {
+      f(canvas)
+    } finally {
+      restore(canvas)
+    }
+  }
 }

@@ -1,6 +1,6 @@
 package io.youi.stream
 
-import io.youi.ajax.ajax.AjaxRequest
+import io.youi.ajax.AjaxRequest
 import io.youi.net.URL
 import org.scalajs.dom.FormData
 

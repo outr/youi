@@ -1,7 +1,7 @@
-package io.youi.ajax.ajax
+package io.youi.ajax
 
-import reactify._
 import org.scalajs.dom.XMLHttpRequest
+import reactify._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

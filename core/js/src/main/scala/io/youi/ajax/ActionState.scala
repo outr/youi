@@ -1,4 +1,4 @@
-package io.youi.ajax.ajax
+package io.youi.ajax
 
 sealed trait ActionState
 

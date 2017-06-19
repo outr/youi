@@ -1,9 +1,9 @@
-package io.youi.ajax.ajax
+package io.youi.ajax
 
-import scribe.Logging
 import io.youi.net.URL
 import org.scalajs.dom.XMLHttpRequest
 import org.scalajs.dom.raw.FormData
+import scribe.Logging
 
 import scala.collection.immutable.Queue
 import scala.concurrent.Future

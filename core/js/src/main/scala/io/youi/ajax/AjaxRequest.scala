@@ -1,10 +1,10 @@
-package io.youi.ajax.ajax
+package io.youi.ajax
 
-import reactify._
 import io.youi.net.URL
 import org.scalajs.dom
 import org.scalajs.dom._
 import org.scalajs.dom.ext.AjaxException
+import reactify._
 
 import scala.concurrent.{Future, Promise}
 

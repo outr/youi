@@ -13,7 +13,7 @@ class Renderer private(val canvas: Canvas) extends Container {
       width = canvas.size.width.toInt
       height = canvas.size.height.toInt
       view = canvas.element
-      backgroundColor = 0xffffff
+      transparent = true
       autoResize = true
       antialias = true
       forceCanvas = false
@@ -35,7 +35,7 @@ class Renderer private(val canvas: Canvas) extends Container {
   }
 
   val renderMode: Var[RenderMode] = Var(RenderMode.OnChange)
-  val backgroundColor: Var[Color] = prop(Color.White, (c: Color) => systemRenderer.backgroundColor = c.long, updatesRendering = true)
+  val backgroundColor: Var[Color] = prop(Color.Clear, (c: Color) => systemRenderer.backgroundColor = c.long, updatesRendering = true)
 
   override lazy val parentRenderer: Val[Option[Renderer]] = Val(Some(this))
 

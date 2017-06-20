@@ -2,11 +2,10 @@ package io.youi.example.ui
 
 import io.youi._
 import io.youi.component.editor.{AspectRatio, ImageEditor}
-import io.youi.component.{Renderer, Texture}
+import io.youi.component.Renderer
 import io.youi.hypertext.{Button, Canvas, ImageView, TextInput}
 import io.youi.example.ui.hypertext.HTMLScreen
 import io.youi.hypertext.border.BorderStyle
-import io.youi.util.ImageUtility
 import org.scalajs.dom._
 import reactify._
 
@@ -27,13 +26,12 @@ object ImageEditorExample extends HTMLScreen {
   override protected def load(): Future[Unit] = super.load().map { _ =>
     container.children += canvas
 
-    val texture = Texture("/images/cuteness.jpg")
-
     val editor = new ImageEditor {
-      image.texture := texture
       aspectRatio := AspectRatio.Defined(16.0 / 12.0)
       size.width := canvas.size.width
       size.height := canvas.size.height
+
+      load("/images/cuteness.jpg")
     }
     renderer.children += editor
 
@@ -96,9 +94,7 @@ object ImageEditorExample extends HTMLScreen {
       element.addEventListener("change", (evt: Event) => {
         if (element.files.length > 0) {
           val file = element.files(0)
-          ImageUtility.loadImage(file).foreach { image =>
-            editor.image.texture := Texture(image)
-          }
+          editor.load(file)
         }
       })
     }

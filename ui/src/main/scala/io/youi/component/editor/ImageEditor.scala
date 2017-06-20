@@ -2,13 +2,14 @@ package io.youi.component.editor
 
 import io.youi._
 import io.youi.component.extra.RectangularSelection
-import io.youi.component.{AbstractContainer, Component, Image}
+import io.youi.component.{AbstractContainer, Component, Image, Texture}
 import io.youi.hypertext.ImageView
 import io.youi.util.{CanvasPool, ImageUtility, SizeUtility}
-import org.scalajs.dom.html
+import org.scalajs.dom.{File, html}
 import reactify._
 
 import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class ImageEditor extends AbstractContainer {
   override type Child = Component
@@ -77,6 +78,12 @@ class ImageEditor extends AbstractContainer {
     }
   }
 
+  def previewImage(img: html.Image, width: Double, height: Double): Unit = {
+    preview.attachAndFire { canvas =>
+      ImageUtility.resizeToImage(canvas, width, height, img)
+    }
+  }
+
   size.width := image.size.width + rs.blocks.size
   size.height := image.size.height + rs.blocks.size
 
@@ -103,6 +110,16 @@ class ImageEditor extends AbstractContainer {
   ).on {
     val current = revision()
     revision.asInstanceOf[Var[Int]] := current + 1
+  }
+
+  def load(file: File): Unit = {
+    ImageUtility.loadImage(file).foreach { image =>
+      this.image.texture := Texture(image)
+    }
+  }
+
+  def load(path: String): Unit = {
+    image.texture := Texture(path)
   }
 
   def scale(amount: Double, point: Option[Point] = None): Unit = {

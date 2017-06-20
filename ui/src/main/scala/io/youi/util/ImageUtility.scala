@@ -15,10 +15,16 @@ import scala.concurrent.ExecutionContext.Implicits.global
 object ImageUtility {
   private lazy val pica: Pica = Pica()
 
+  private var single: Future[_] = Future.successful(())
+
   def resizeToCanvas(source: html.Image | html.Canvas, destination: html.Canvas): Future[Canvas] = {
-    pica.resize(source, destination, new ResizeOptions {
-      alpha = true
-    }).toFuture
+    val f = single.flatMap { _ =>
+      pica.resize(source, destination, new ResizeOptions {
+        alpha = true
+      }).toFuture
+    }
+    single = f
+    f
   }
 
   def resizeToImage(source: html.Image | html.Canvas,

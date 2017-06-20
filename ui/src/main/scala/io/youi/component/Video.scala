@@ -6,7 +6,7 @@ import io.youi.{History, dom}
 import org.scalajs.dom.html
 import reactify.Var
 
-class Video extends Image {
+class Video extends TextureComponent {
   private val element = {
     val v = dom.create[html.Video]("video")
     v.autoplay = false

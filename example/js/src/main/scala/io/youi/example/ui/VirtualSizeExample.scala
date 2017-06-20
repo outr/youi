@@ -2,7 +2,7 @@ package io.youi.example.ui
 
 import io.youi._
 import io.youi.app.screen.UIScreen
-import io.youi.component.{Image, BasicText, Texture}
+import io.youi.component.{BasicText, ImageView, Texture, TextureComponent}
 
 object VirtualSizeExample extends UIExampleScreen with UIScreen with VirtualSizeSupport {
   override def name: String = "Virtual Size Example"
@@ -13,7 +13,7 @@ object VirtualSizeExample extends UIExampleScreen with UIScreen with VirtualSize
     virtualHeight := 768.0
 
     val texture = Texture("/images/1024.jpg")
-    container.children += new Image(texture) {
+    container.children += new ImageView(texture) {
       position.left := 0.vx
       position.top := 0.vy
       size.width := 1024.vw

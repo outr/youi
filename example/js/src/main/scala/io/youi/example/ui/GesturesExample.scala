@@ -1,7 +1,7 @@
 package io.youi.example.ui
 
 import io.youi.app.screen.UIScreen
-import io.youi.component.{Image, Texture}
+import io.youi.component.{ImageView, Texture, TextureComponent}
 
 object GesturesExample extends UIExampleScreen with UIScreen {
   override def name: String = "Gestures Example"
@@ -10,7 +10,7 @@ object GesturesExample extends UIExampleScreen with UIScreen {
   override def createUI(): Unit = {
     val texture = Texture("/images/icon.png")
 
-    container.children += new Image(texture) {
+    container.children += new ImageView(texture) {
       position.center := renderer.position.center
       position.middle := renderer.position.middle
 //      event.pointer.move.attach { evt =>

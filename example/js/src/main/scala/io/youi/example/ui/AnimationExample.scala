@@ -3,7 +3,7 @@ package io.youi.example.ui
 import io.youi._
 import io.youi.task._
 import io.youi.app.screen.UIScreen
-import io.youi.component.{Image, BasicText, Texture}
+import io.youi.component.{BasicText, ImageView, Texture, TextureComponent}
 import io.youi.easing.Easing
 
 import scala.concurrent.duration._
@@ -14,7 +14,7 @@ object AnimationExample extends UIExampleScreen with UIScreen {
 
   override def createUI(): Unit = {
     val icon = Texture("/images/icon.png")
-    val image = new Image(icon) {
+    val image = new ImageView(icon) {
       position.left := 0.0
       position.middle := container.position.middle
     }

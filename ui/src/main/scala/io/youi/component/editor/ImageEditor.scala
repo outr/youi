@@ -2,8 +2,7 @@ package io.youi.component.editor
 
 import io.youi._
 import io.youi.component.extra.RectangularSelection
-import io.youi.component.{AbstractContainer, Component, Image, Texture}
-import io.youi.hypertext.ImageView
+import io.youi.component._
 import io.youi.util.{CanvasPool, ImageUtility, SizeUtility}
 import org.scalajs.dom.{File, html}
 import reactify._
@@ -16,14 +15,14 @@ class ImageEditor extends AbstractContainer {
 
   val aspectRatio: Var[AspectRatio] = Var(AspectRatio.Original)
 
-  val image: Image = new Image
+  val imageView: ImageView = new ImageView
   val rs: RectangularSelection = new RectangularSelection
-  val pixelCount: Val[Double] = Val(image.texture.width * image.texture.height)
+  val pixelCount: Val[Double] = Val(imageView.image.width * imageView.image.height)
   val wheelMultiplier: Var[Double] = Var(0.001)
   val revision: Val[Int] = Var(0)
 
-  image.position.center := size.center
-  image.position.middle := size.middle
+  imageView.position.center := size.center
+  imageView.position.middle := size.middle
 
   rs.size.width := size.width
   rs.size.height := size.height
@@ -31,8 +30,8 @@ class ImageEditor extends AbstractContainer {
     aspectRatio() match {
       case AspectRatio.Defined(value) => Some(value)
       case AspectRatio.None => None
-      case AspectRatio.Original => if (image.texture.width() > 0.0 && image.texture.height() > 0.0) {
-        Some(image.texture.width() / image.texture.height())
+      case AspectRatio.Original => if (imageView.image.width() > 0.0 && imageView.image.height() > 0.0) {
+        Some(imageView.image.width() / imageView.image.height())
       } else {
         None
       }
@@ -45,11 +44,11 @@ class ImageEditor extends AbstractContainer {
     val destination = CanvasPool(rs.selection.width, rs.selection.height)
     try {
       val context = destination.context
-      context.translate(image.position.x - rs.selection.x1, image.position.y - rs.selection.y1)
-      context.translate(image.size.width / 2.0, image.size.height / 2.0)
-      context.rotate(image.rotation() * (math.Pi * 2.0))
-      context.translate(-image.size.width / 2.0, -image.size.height / 2.0)
-      context.drawImage(image.texture.source.asInstanceOf[html.Image], 0.0, 0.0, image.size.width, image.size.height)
+      context.translate(imageView.position.x - rs.selection.x1, imageView.position.y - rs.selection.y1)
+      context.translate(imageView.size.width / 2.0, imageView.size.height / 2.0)
+      context.rotate(imageView.rotation() * (math.Pi * 2.0))
+      context.translate(-imageView.size.width / 2.0, -imageView.size.height / 2.0)
+      context.drawImage(imageView.image.source.asInstanceOf[html.Image], 0.0, 0.0, imageView.size.width, imageView.size.height)
       val previous = preview()
       preview := destination
       CanvasPool.restore(previous)
@@ -64,15 +63,15 @@ class ImageEditor extends AbstractContainer {
   revision.on(previewUpdater.flag())
   delta.on(previewUpdater.update())
 
-  def previewImage(width: Double, height: Double): ImageView = {
-    val view = new ImageView
+  def previewImage(width: Double, height: Double): hypertext.ImageView = {
+    val view = new hypertext.ImageView
     view.size.width := width
     view.size.height := height
     previewImage(view)
     view
   }
 
-  def previewImage(view: ImageView): Unit = {
+  def previewImage(view: hypertext.ImageView): Unit = {
     preview.attachAndFire { canvas =>
       ImageUtility.resizeToImage(canvas, view.size.width, view.size.height, view.element)
     }
@@ -84,10 +83,10 @@ class ImageEditor extends AbstractContainer {
     }
   }
 
-  size.width := image.size.width + rs.blocks.size
-  size.height := image.size.height + rs.blocks.size
+  size.width := imageView.size.width + rs.blocks.size
+  size.height := imageView.size.height + rs.blocks.size
 
-  childEntries ++= List(image, rs)
+  childEntries ++= List(imageView, rs)
 
   pixelCount.on(reset())
 
@@ -96,8 +95,8 @@ class ImageEditor extends AbstractContainer {
   }
   event.gestures.pointers.dragged.attach { p =>
     if (event.gestures.pointers.map.size == 1 && !rs.isDragging) {
-      image.position.x.static(image.position.x() + p.moved.deltaX)
-      image.position.y.static(image.position.y() + p.moved.deltaY)
+      imageView.position.x.static(imageView.position.x() + p.moved.deltaX)
+      imageView.position.y.static(imageView.position.y() + p.moved.deltaY)
     }
   }
   event.gestures.pinch.attach { evt =>
@@ -105,7 +104,7 @@ class ImageEditor extends AbstractContainer {
   }
 
   Observable.wrap(
-    image.position.x, image.position.y, image.rotation, image.size.width, image.size.height,
+    imageView.position.x, imageView.position.y, imageView.rotation, imageView.size.width, imageView.size.height,
     rs.selection.x1, rs.selection.y1, rs.selection.x2, rs.selection.y2
   ).on {
     val current = revision()
@@ -114,47 +113,47 @@ class ImageEditor extends AbstractContainer {
 
   def load(file: File): Unit = {
     ImageUtility.loadImage(file).foreach { image =>
-      this.image.texture := Texture(image)
+      this.imageView.image := Texture(image)
     }
   }
 
   def load(path: String): Unit = {
-    image.texture := Texture(path)
+    imageView.image := Texture(path)
   }
 
   def scale(amount: Double, point: Option[Point] = None): Unit = {
-    val newScale = math.max(image.scale.x() + amount, 0.1)
-    image.size.width := image.size.measured.width * newScale
-    image.size.height := image.size.measured.height * newScale
+    val newScale = math.max(imageView.scale.x() + amount, 0.1)
+    imageView.size.width := imageView.size.measured.width * newScale
+    imageView.size.height := imageView.size.measured.height * newScale
     point.foreach { p =>
       val offsetX = p.x - size.center
       val offsetY = p.y - size.middle
-      val center = image.position.center() - (offsetX * amount)
-      val middle = image.position.middle() - (offsetY * amount)
-      image.position.center := center
-      image.position.middle := middle
+      val center = imageView.position.center() - (offsetX * amount)
+      val middle = imageView.position.middle() - (offsetY * amount)
+      imageView.position.center := center
+      imageView.position.middle := middle
     }
   }
 
   def rotate(amount: Double): Unit = {
-    val current = image.rotation()
-    image.rotation := current + amount
+    val current = imageView.rotation()
+    imageView.rotation := current + amount
   }
 
   def reset(): Unit = {
-    image.position.center := size.center
-    image.position.middle := size.middle
+    imageView.position.center := size.center
+    imageView.position.middle := size.middle
 
-    val scaled = SizeUtility.scale(image.size.measured.width, image.size.measured.height, size.width - (rs.blocks.size() * 2.0), size.height - (rs.blocks.size() * 2.0))
-    image.size.width := scaled.x
-    image.size.height := scaled.y
+    val scaled = SizeUtility.scale(imageView.size.measured.width, imageView.size.measured.height, size.width - (rs.blocks.size() * 2.0), size.height - (rs.blocks.size() * 2.0))
+    imageView.size.width := scaled.x
+    imageView.size.height := scaled.y
 
-    image.rotation := 0.0
+    imageView.rotation := 0.0
 
-    val x1 = math.max(image.position.left(), rs.selection.minX)
-    val y1 = math.max(image.position.top(), rs.selection.minY)
-    val x2 = math.min(image.position.right(), rs.selection.maxX)
-    val y2 = math.min(image.position.bottom(), rs.selection.maxY)
+    val x1 = math.max(imageView.position.left(), rs.selection.minX)
+    val y1 = math.max(imageView.position.top(), rs.selection.minY)
+    val x2 = math.min(imageView.position.right(), rs.selection.maxX)
+    val y2 = math.min(imageView.position.bottom(), rs.selection.maxY)
     rs.selection.set(x1, y1, x2, y2)
   }
 }

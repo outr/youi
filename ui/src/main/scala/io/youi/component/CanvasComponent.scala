@@ -8,7 +8,7 @@ import org.scalajs.dom.html
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 import reactify.Var
 
-abstract class CanvasComponent extends Image {
+abstract class CanvasComponent extends TextureComponent {
   private val canvas = dom.create[html.Canvas]("canvas")
   private val context = canvas.getContext("2d").asInstanceOf[CanvasRenderingContext2D]
   private val pixiTexture: PIXI.Texture = PIXI.Texture.fromCanvas(canvas)
@@ -44,6 +44,7 @@ abstract class CanvasComponent extends Image {
     reDraw.flag()
   }
 
+  // TODO: remove
   // Override defaults from Image
   scale.x := 1.0
   scale.y := 1.0

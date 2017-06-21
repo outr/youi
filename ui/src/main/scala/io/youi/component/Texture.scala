@@ -16,6 +16,8 @@ class Texture(val instance: PIXI.Texture,
   val width: Val[Double] = Var(instance.width)
   val height: Val[Double] = Var(instance.height)
   def source: html.Image | html.Canvas = instance.baseTexture.source
+  def loaded: Boolean = width() > 0.0 && height() > 0.0 && valid
+  def valid: Boolean = instance.valid
 
   object clipped {
     def fromSides(left: Double = 0.0, top: Double = 0.0, right: Double = 0.0, bottom: Double = 0.0): Texture = {
@@ -56,10 +58,14 @@ class Texture(val instance: PIXI.Texture,
   )
 
   instance.on("update", () => {
-    width.asInstanceOf[Var[Double]] := instance.width
-    height.asInstanceOf[Var[Double]] := instance.height
+    if (instance.valid) {
+      width.asInstanceOf[Var[Double]] := instance.width
+      height.asInstanceOf[Var[Double]] := instance.height
 
-    update.asInstanceOf[Var[Long]] := System.currentTimeMillis()
+      update.asInstanceOf[Var[Long]] := System.currentTimeMillis()
+    } else {
+      scribe.info(s"updated, but not valid!")
+    }
   })
 }
 

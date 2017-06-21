@@ -9,12 +9,13 @@ import io.youi.persist.Persistence
 import io.youi.style.Cursor
 import io.youi.task.TaskSupport
 import io.youi.theme.ComponentTheme
-import io.youi.{Compass, Horizontal, LazyUpdate, Vertical}
+import io.youi.{Compass, Horizontal, LazyUpdate, Unique, Vertical}
 import reactify._
 
 trait Component extends TaskSupport {
   protected[component] def instance: PIXI.Container
 
+  val id: Var[String] = Var(Unique())
   val transform = LazyUpdate(updateTransform())
 
   lazy val parent: Val[Option[AbstractContainer]] = Var(None)

@@ -21,7 +21,9 @@ abstract class CanvasComponent extends TextureComponent {
 
   val reDraw = LazyUpdate {
     try {
+      context.save()
       context.clearRect(0.0, 0.0, canvas.width.toDouble, canvas.height.toDouble)
+      context.translate(0.5, 0.5)
       draw(context)
       filter().foreach { filter =>
         val imageData = context.getImageData(0.0, 0.0, canvas.width.toDouble, canvas.height.toDouble)
@@ -29,6 +31,7 @@ abstract class CanvasComponent extends TextureComponent {
         context.putImageData(imageData, 0, 0)
       }
       pixiTexture.update()
+      context.restore()
       super.updateTransform()
     } catch {
       case t: Throwable => scribe.error(t)

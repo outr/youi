@@ -14,6 +14,7 @@ class ImageEditor extends AbstractContainer {
   override type Child = Component
 
   val aspectRatio: Var[AspectRatio] = Var(AspectRatio.Original)
+  val imageScale: Var[Double] = Var(1.0)
 
   val imageView: ImageView = new ImageView
   val rs: RectangularSelection = new RectangularSelection
@@ -21,6 +22,7 @@ class ImageEditor extends AbstractContainer {
   val wheelMultiplier: Var[Double] = Var(0.001)
   val revision: Val[Int] = Var(0)
 
+//  imageView.mode := ImageMode.Speed
   imageView.position.center := size.center
   imageView.position.middle := size.middle
 
@@ -73,7 +75,9 @@ class ImageEditor extends AbstractContainer {
 
   def previewImage(view: hypertext.ImageView): Unit = {
     preview.attachAndFire { canvas =>
-      ImageUtility.resizeToImage(canvas, view.size.width, view.size.height, view.element)
+      if (canvas.width > 0 && canvas.height > 0 && view.size.width() > 0.0 && view.size.height() > 0.0) {
+        ImageUtility.resizeToImage(canvas, view.size.width, view.size.height, view.element)
+      }
     }
   }
 
@@ -122,9 +126,9 @@ class ImageEditor extends AbstractContainer {
   }
 
   def scale(amount: Double, point: Option[Point] = None): Unit = {
-    val newScale = math.max(imageView.scale.x() + amount, 0.1)
-    imageView.size.width := imageView.size.measured.width * newScale
-    imageView.size.height := imageView.size.measured.height * newScale
+    imageScale.static(math.max(imageScale + amount, 0.1))
+    imageView.size.width := imageView.size.measured.width * imageScale
+    imageView.size.height := imageView.size.measured.height * imageScale
     point.foreach { p =>
       val offsetX = p.x - size.center
       val offsetY = p.y - size.middle
@@ -141,6 +145,7 @@ class ImageEditor extends AbstractContainer {
   }
 
   def reset(): Unit = {
+    imageScale := 1.0
     imageView.position.center := size.center
     imageView.position.middle := size.middle
 

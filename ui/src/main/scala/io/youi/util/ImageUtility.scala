@@ -11,6 +11,7 @@ import org.scalajs.dom.raw.{File, FileReader, UIEvent, URL}
 
 import scala.concurrent.{Future, Promise}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.{Failure, Success}
 
 object ImageUtility {
   private lazy val pica: Pica = Pica()
@@ -18,10 +19,17 @@ object ImageUtility {
   private var single: Future[_] = Future.successful(())
 
   def resizeToCanvas(source: html.Image | html.Canvas, destination: html.Canvas): Future[Canvas] = {
+    if (single.isCompleted) {
+      single = Future.successful(())
+    }
     val f = single.flatMap { _ =>
       pica.resize(source, destination, new ResizeOptions {
         alpha = true
       }).toFuture
+    }
+    f.onComplete {
+      case Success(_) => // success
+      case Failure(t) => scribe.error(t)
     }
     single = f
     f

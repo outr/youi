@@ -42,7 +42,9 @@ object DrawableExample extends UIExampleScreen with UIScreen {
         LineTo(150.0, 250.0),
         LineTo(150.0, 150.0)
       ),
-      Fill(Color.Blue.copy(alpha = 0.5))
+      Fill(Color.Blue.copy(alpha = 0.5)),
+      Path.begin.move(10.0, 350.0).line(390.0, 350.0).close,
+      Stroke(Color.Red, 2.0, List(5.0, 10.0))
     )
 
     container.children += component

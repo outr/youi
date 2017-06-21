@@ -73,17 +73,25 @@ class ImageEditor extends AbstractContainer {
   }
 
   def previewImage(view: hypertext.ImageView): Unit = {
+    val resizer = LazyFuture {
+      ImageUtility.resizeToImage(preview(), view.size.width, view.size.height, view.element)
+    }
     preview.attachAndFire { canvas =>
       if (canvas.width > 0 && canvas.height > 0 && view.size.width() > 0.0 && view.size.height() > 0.0) {
-        ImageUtility.resizeToImage(canvas, view.size.width, view.size.height, view.element)
+        resizer.flag()
       }
     }
+    delta.attach(_ => resizer.update())
   }
 
   def previewImage(img: html.Image, width: Double, height: Double): Unit = {
-    preview.attachAndFire { canvas =>
-      ImageUtility.resizeToImage(canvas, width, height, img)
+    val resizer = LazyFuture {
+      ImageUtility.resizeToImage(preview(), width, height, img)
     }
+    preview.attachAndFire { _ =>
+      resizer.flag()
+    }
+    delta.attach(_ => resizer.update())
   }
 
   size.width := imageView.size.width + rs.blocks.size

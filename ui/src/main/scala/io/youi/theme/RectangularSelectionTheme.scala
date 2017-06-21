@@ -40,7 +40,7 @@ trait RectangularSelectionTheme extends DrawableComponentTheme {
     override object stroke extends StrokeTheme {
       override val paint: Var[Paint] = Var(prnt(_.dashes.stroke.paint, Color.White))
       override val lineWidth: Var[Double] = Var(prnt(_.dashes.stroke.lineWidth, 0.5))
-      override val lineDash: Var[List[Double]] = Var(prnt(_.dashes.stroke.lineDash, List(4.0, 4.0)))
+      override val lineDash: Var[List[Double]] = Var(prnt(_.dashes.stroke.lineDash, List(4.0, 8.0)))
       override val lineDashOffset: Var[Double] = Var(prnt(_.dashes.stroke.lineDashOffset, 2.0))
       override val lineCap: Var[LineCap] = Var(prnt(_.dashes.stroke.lineCap, LineCap.Butt))
       override val lineJoin: Var[LineJoin] = Var(prnt(_.dashes.stroke.lineJoin, LineJoin.Miter))

@@ -2,7 +2,7 @@ package io.youi.component.extra
 
 import io.youi.component.{DrawableComponent, PaintSupport, PaintTheme}
 import io.youi.component.draw.path.{Path, PathAction, Rectangle}
-import io.youi.component.draw.{Drawable, Fill, Group}
+import io.youi.component.draw.{Drawable, Fill, Group, RestoreContext}
 import io.youi.component.event.{DragSupport, MouseEvent, Pointer}
 import io.youi.style.Cursor
 import io.youi.theme.RectangularSelectionTheme
@@ -157,8 +157,13 @@ class RectangularSelection extends DrawableComponent {
     val horizontalThird = selection.width() / 3.0
     val verticalThird = selection.height() / 3.0
     Group(
+      RestoreContext,
       Path
         .begin
+//        .move(selection.x1 + (selection.width / 2.0), selection.y1 + verticalThird)
+//        .line(selection.x1, selection.y1 + verticalThird)
+//        .move(selection.x1 + (selection.width / 2.0), selection.y1 + verticalThird + 10.0)
+//        .line(selection.x2, selection.y1 + verticalThird + 10.0)
         .rect(selection.x1, selection.y1 + verticalThird, selection.width, verticalThird)
         .rect(selection.x1 + horizontalThird, selection.y1, horizontalThird, selection.height)
         .close,

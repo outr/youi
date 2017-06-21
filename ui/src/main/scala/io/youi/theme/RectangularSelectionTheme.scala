@@ -1,6 +1,7 @@
 package io.youi.theme
 
 import io.youi.Color
+import io.youi.component.draw.{LineCap, LineJoin}
 import io.youi.component.{DrawableComponent, PaintTheme, StrokeTheme}
 import io.youi.style.Paint
 import reactify.Var
@@ -18,6 +19,9 @@ trait RectangularSelectionTheme extends DrawableComponentTheme {
       override val paint: Var[Paint] = Var(prnt(_.selection.stroke.paint, Color.Red))
       override val lineWidth: Var[Double] = Var(prnt(_.selection.stroke.lineWidth, 1.0))
       override val lineDash: Var[List[Double]] = Var(prnt(_.selection.stroke.lineDash, Nil))
+      override val lineDashOffset: Var[Double] = Var(prnt(_.selection.stroke.lineDashOffset, 0.0))
+      override val lineCap: Var[LineCap] = Var(prnt(_.selection.stroke.lineCap, LineCap.Butt))
+      override val lineJoin: Var[LineJoin] = Var(prnt(_.selection.stroke.lineJoin, LineJoin.Miter))
     }
   }
   object blocks extends PaintTheme {
@@ -26,14 +30,20 @@ trait RectangularSelectionTheme extends DrawableComponentTheme {
       override val paint: Var[Paint] = Var(prnt(_.blocks.stroke.paint, Paint.none))
       override val lineWidth: Var[Double] = Var(prnt(_.blocks.stroke.lineWidth, 1.0))
       override val lineDash: Var[List[Double]] = Var(prnt(_.blocks.stroke.lineDash, Nil))
+      override val lineDashOffset: Var[Double] = Var(prnt(_.blocks.stroke.lineDashOffset, 0.0))
+      override val lineCap: Var[LineCap] = Var(prnt(_.blocks.stroke.lineCap, LineCap.Butt))
+      override val lineJoin: Var[LineJoin] = Var(prnt(_.blocks.stroke.lineJoin, LineJoin.Miter))
     }
   }
   object dashes extends PaintTheme {
     override val fill: Var[Paint] = Var(prnt(_.dashes.fill, Paint.none))
     override object stroke extends StrokeTheme {
-      override val paint: Var[Paint] = Var(prnt(_.dashes.stroke.paint, Color.Blue.withAlpha(0.5)))
-      override val lineWidth: Var[Double] = Var(prnt(_.dashes.stroke.lineWidth, 1.0))
-      override val lineDash: Var[List[Double]] = Var(prnt(_.dashes.stroke.lineDash, List(5.0, 10.0)))
+      override val paint: Var[Paint] = Var(prnt(_.dashes.stroke.paint, Color.White))
+      override val lineWidth: Var[Double] = Var(prnt(_.dashes.stroke.lineWidth, 0.5))
+      override val lineDash: Var[List[Double]] = Var(prnt(_.dashes.stroke.lineDash, List(4.0, 4.0)))
+      override val lineDashOffset: Var[Double] = Var(prnt(_.dashes.stroke.lineDashOffset, 2.0))
+      override val lineCap: Var[LineCap] = Var(prnt(_.dashes.stroke.lineCap, LineCap.Butt))
+      override val lineJoin: Var[LineJoin] = Var(prnt(_.dashes.stroke.lineJoin, LineJoin.Miter))
     }
   }
   object modal extends PaintTheme {
@@ -42,6 +52,9 @@ trait RectangularSelectionTheme extends DrawableComponentTheme {
       override val paint: Var[Paint] = Var(prnt(_.modal.stroke.paint, Paint.none))
       override val lineWidth: Var[Double] = Var(prnt(_.modal.stroke.lineWidth, 1.0))
       override val lineDash: Var[List[Double]] = Var(prnt(_.modal.stroke.lineDash, Nil))
+      override val lineDashOffset: Var[Double] = Var(prnt(_.modal.stroke.lineDashOffset, 0.0))
+      override val lineCap: Var[LineCap] = Var(prnt(_.modal.stroke.lineCap, LineCap.Butt))
+      override val lineJoin: Var[LineJoin] = Var(prnt(_.modal.stroke.lineJoin, LineJoin.Miter))
     }
   }
 }

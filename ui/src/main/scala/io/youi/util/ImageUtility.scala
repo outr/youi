@@ -19,18 +19,20 @@ object ImageUtility {
   private var single: Future[_] = Future.successful(())
 
   def resizeToCanvas(source: html.Image | html.Canvas, destination: html.Canvas): Future[Canvas] = {
-    if (single.isCompleted) {
-      single = Future.successful(())
-    }
-    val f = single.flatMap { _ =>
-      pica.resize(source, destination, new ResizeOptions {
+    val promise = Promise[Canvas]
+    single.onComplete { _ =>
+      val future = pica.resize(source, destination, new ResizeOptions {
         alpha = true
       }).toFuture
+      future.onComplete {
+        case Success(canvas) => promise.success(canvas)
+        case Failure(t) => {
+          scribe.error(t)
+          promise.failure(t)
+        }
+      }
     }
-    f.onComplete {
-      case Success(_) => // success
-      case Failure(t) => scribe.error(t)
-    }
+    val f = promise.future
     single = f
     f
   }

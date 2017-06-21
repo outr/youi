@@ -46,6 +46,7 @@ object ImageEditorExample extends HTMLScreen {
       border.style := Some(BorderStyle.Solid)
       border.color := Some(Color.Black)
       editor.previewImage(this)
+      visible := editor.globalVisibility
     }
     ui.children += preview1
 
@@ -104,5 +105,14 @@ object ImageEditorExample extends HTMLScreen {
     container.children ++= List(
       resetButton, rotateLeft, rotateRight, zoomIn, zoomOut, fileUpload
     )
+  }
+
+
+  override protected def activate(): Future[Unit] = super.activate().map { _ =>
+    renderer.visible := true
+  }
+
+  override protected def deactivate(): Future[Unit] = super.deactivate().map { _ =>
+    renderer.visible := false
   }
 }

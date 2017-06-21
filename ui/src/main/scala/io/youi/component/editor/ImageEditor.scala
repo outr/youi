@@ -18,11 +18,10 @@ class ImageEditor extends AbstractContainer {
 
   val imageView: ImageView = new ImageView
   val rs: RectangularSelection = new RectangularSelection
-  val pixelCount: Val[Double] = Val(imageView.image.width * imageView.image.height)
+  val pixelCount: Val[Double] = Val(imageView.size.measured.width * imageView.size.measured.height)
   val wheelMultiplier: Var[Double] = Var(0.001)
   val revision: Val[Int] = Var(0)
 
-//  imageView.mode := ImageMode.Speed
   imageView.position.center := size.center
   imageView.position.middle := size.middle
 
@@ -32,8 +31,8 @@ class ImageEditor extends AbstractContainer {
     aspectRatio() match {
       case AspectRatio.Defined(value) => Some(value)
       case AspectRatio.None => None
-      case AspectRatio.Original => if (imageView.image.width() > 0.0 && imageView.image.height() > 0.0) {
-        Some(imageView.image.width() / imageView.image.height())
+      case AspectRatio.Original => if (imageView.size.measured.width() > 0.0 && imageView.size.measured.height() > 0.0) {
+        Some(imageView.size.measured.width() / imageView.size.measured.height())
       } else {
         None
       }
@@ -50,7 +49,7 @@ class ImageEditor extends AbstractContainer {
       context.translate(imageView.size.width / 2.0, imageView.size.height / 2.0)
       context.rotate(imageView.rotation() * (math.Pi * 2.0))
       context.translate(-imageView.size.width / 2.0, -imageView.size.height / 2.0)
-      context.drawImage(imageView.image.source.asInstanceOf[html.Image], 0.0, 0.0, imageView.size.width, imageView.size.height)
+      context.drawImage(imageView.img, 0.0, 0.0, imageView.size.width, imageView.size.height)
       val previous = preview()
       preview := destination
       CanvasPool.restore(previous)
@@ -116,13 +115,13 @@ class ImageEditor extends AbstractContainer {
   }
 
   def load(file: File): Unit = {
-    ImageUtility.loadImage(file).foreach { image =>
-      this.imageView.image := Texture(image)
+    ImageUtility.loadDataURL(file).foreach { dataURL =>
+      imageView.source := dataURL
     }
   }
 
   def load(path: String): Unit = {
-    imageView.image := Texture(path)
+    imageView.source := path
   }
 
   def scale(amount: Double, point: Option[Point] = None): Unit = {

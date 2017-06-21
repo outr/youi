@@ -13,25 +13,32 @@ import scala.concurrent.Future
 class ImageView extends DrawableComponent with Drawable {
   def this(image: Texture) = {
     this()
-    this.image := image
+    source := image.source.asInstanceOf[html.Image].src
   }
 
   val mode: Var[ImageMode] = Var(ImageMode.Quality)
-  lazy val image: Var[Texture] = prop(new Texture(instance.texture))
-  lazy val imageUpdate: Val[Long] = Val(image.update)
+  lazy val source: Var[String] = prop("")
+  val img: html.Image = dom.create[html.Image]("img")
   private var rendered: Option[html.Canvas] = None
+
+  img.addEventListener("load", (evt: Event) => {
+    size.measured.width := img.width.toDouble
+    size.measured.height := img.height.toDouble
+    reRender.flag()
+  })
+  source.attach(img.src = _)
 
   private var rendering = false
 
   private val reRender: LazyFuture[Unit] = LazyFuture {
-    if (mode() == ImageMode.Quality && size.width() > 0.0 && size.height() > 0.0 && (size.width() != image.width() || size.height() != image.height())) {
+    if (mode() == ImageMode.Quality && size.width() > 0.0 && size.height() > 0.0 && (size.width() != img.width || size.height() != img.height)) {
       val r = CanvasPool(size.width(), size.height())
       val context = r.context
       context.clearRect(0.0, 0.0, r.width, r.height)
       rendered.foreach(CanvasPool.restore)
       rendered = None
       rendering = true
-      ImageUtility.resizeToCanvas(image.source, r).map { _ =>
+      ImageUtility.resizeToCanvas(img, r).map { _ =>
         if (!reRender.isFlagged) {      // Don't draw dirty
           rendered = Some(r)
           reDraw.flag()
@@ -46,22 +53,15 @@ class ImageView extends DrawableComponent with Drawable {
     }
   }
 
-  image.on(reRender.flag())
   size.width.on(reRender.flag())
   size.height.on(reRender.flag())
-  imageUpdate.on(reRender.flag())
-  size.measured.width := image().width()
-  size.measured.height := image().height()
 
   drawable := this
 
   override def draw(component: Component, context: CanvasRenderingContext2D): Unit = rendered match {
     case Some(r) => context.drawImage(r.asInstanceOf[html.Image], 0.0, 0.0, r.width, r.height)
-    case None => if (image().width() > 0.0 && image().height() > 0.0 && size.width() > 0.0 && size.height() > 0.0 && image.valid) {
-      scribe.info(s"Drawing image (${id()})... Valid? ${image().instance.valid}")
-      context.drawImage(image().source.asInstanceOf[html.Image], 0.0, 0.0, size.width(), size.height())
-    } else {
-      scribe.info("Ignoring for invalid image!")
+    case None => if (img.width > 0.0 && img.height > 0.0 && size.width() > 0.0 && size.height() > 0.0) {
+      context.drawImage(img, 0.0, 0.0, size.width(), size.height())
     }
   }
 

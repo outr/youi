@@ -63,8 +63,6 @@ class Texture(val instance: PIXI.Texture,
       height.asInstanceOf[Var[Double]] := instance.height
 
       update.asInstanceOf[Var[Long]] := System.currentTimeMillis()
-    } else {
-      scribe.info(s"updated, but not valid!")
     }
   })
 }

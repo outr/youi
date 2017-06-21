@@ -63,13 +63,20 @@ object ImageUtility {
 
   def loadImage(file: File): Future[html.Image] = {
     val img = dom.create[html.Image]("img")
-    val reader = new FileReader
     val promise = Promise[html.Image]
-    reader.addEventListener("load", (evt: Event) => {
-      img.src = reader.result.asInstanceOf[String]
-    })
+
     img.addEventListener("load", (evt: Event) => {
       promise.success(img)
+    })
+    loadDataURL(file).foreach(img.src = _)
+    promise.future
+  }
+
+  def loadDataURL(file: File): Future[String] = {
+    val reader = new FileReader
+    val promise = Promise[String]
+    reader.addEventListener("load", (evt: Event) => {
+      promise.success(reader.result.asInstanceOf[String])
     })
     reader.readAsDataURL(file)
     promise.future

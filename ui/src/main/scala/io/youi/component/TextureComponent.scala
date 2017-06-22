@@ -37,7 +37,10 @@ object TextureComponent extends ImageTheme with Persistence[TextureComponent] {
   ).asJson
 
   override protected def loadInfo(t: TextureComponent, json: Json): Unit = {
-    val si = json.as[SerializedImage].getOrElse(throw new RuntimeException(s"Unable to parse $json to SerializedImage."))
+    val si = json.as[SerializedImage] match {
+      case Left(failure) => throw new RuntimeException(s"Unable to parse $json to SerializedImage.", failure)
+      case Right(result) => result
+    }
     // TODO: set texture
     scribe.info(si)
   }

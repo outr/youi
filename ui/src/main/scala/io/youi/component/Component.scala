@@ -158,7 +158,10 @@ object Component extends ComponentTheme with Persistence[Component] {
   ).asJson
 
   override protected def loadInfo(t: Component, json: Json): Unit = {
-    val sc = json.as[SerializedComponent].getOrElse(throw new RuntimeException(s"Unable to parse $json to SerializedComponent."))
+    val sc = json.as[SerializedComponent] match {
+      case Left(failure) => throw new RuntimeException(s"Unable to parse $json to SerializedComponent.", failure)
+      case Right(result) => result
+    }
     t.position.x := sc.x
     t.position.y := sc.y
     t.size.width := sc.width

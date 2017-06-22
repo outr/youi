@@ -1,19 +1,43 @@
 package io.youi.app.sourceMap
 
+import io.youi.app.ClientApplication
 import io.youi.{History, _}
 import io.youi.net.URL
 import io.youi.stream.StreamURL
+import scribe.{Level, LogHandler, LogRecord}
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.scalajs._
 import scala.scalajs.runtime.StackTrace.Implicits._
 
-object ErrorTrace {
+object ErrorTrace extends LogHandler {
   private var sourceMaps = Map.empty[String, SourceMapConsumer]
 
   def toError(message: String, source: String, line: Int, column: Int, error: Option[Throwable]): Future[JavaScriptError] = {
-    sourceMapConsumerFor(source).map(consumerOption => toErrorInternal(consumerOption, message, source, line, column, error))
+    val future = sourceMapConsumerFor(source).map { consumerOption =>
+      toErrorInternal(consumerOption, message, source, line, column, error)
+    }
+    future.failed.foreach { t =>
+      t.printStackTrace()
+    }
+    future
+  }
+
+  def toError(throwable: Throwable): Future[JavaScriptError] = {
+    val message = throwable.getMessage
+    val first = throwable.getStackTrace.head
+    val source = first.getFileName
+    val line = first.getLineNumber
+    val column = first.getColumnNumber()
+    toError(message, source, line, column, Some(throwable)).foreach(ClientApplication.sendError)
+  }
+
+  override def level: Level = Level.Error
+
+  override protected def publish(record: LogRecord): Unit = record.messageObject match {
+    case t: Throwable => ClientApplication.sendError(t)
+    case _ => // Ignore others
   }
 
   /**

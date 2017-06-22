@@ -9,6 +9,7 @@ import io.youi.dom._
 import io.youi.net.URL
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 import scala.scalajs.js
 
 trait ClientApplication extends YouIApplication with ScreenManager {
@@ -20,18 +21,13 @@ trait ClientApplication extends YouIApplication with ScreenManager {
   def clientConnectivity(connectivity: ApplicationConnectivity): ClientConnectivity = configuredConnectivity(connectivity)
 
   private val errorFunction: js.Function5[String, String, Int, Int, Throwable, Unit] = (message: String, source: String, line: Int, column: Int, throwable: Throwable) => {
-    ErrorTrace.toError(message, source, line, column, Option(throwable)).map { error =>
-      val formData = new FormData
-      val json = upickle.default.write[JavaScriptError](error)
-      formData.append("json", json)
-      val request = new AjaxRequest(History.url().replacePathAndParams("/clientError"), data = Some(formData))
-      request.send()
-    }
+    ErrorTrace.toError(message, source, line, column, Option(throwable)).map(ClientApplication.sendError)
     ()
   }
 
   if (logJavaScriptErrors) {
     js.Dynamic.global.window.onerror = errorFunction
+    scribe.Logger.root.addHandler(ErrorTrace)
   }
 
   connectivityEntries.attachAndFire { entries =>
@@ -45,4 +41,17 @@ trait ClientApplication extends YouIApplication with ScreenManager {
   def autoReload: Boolean = true
 
   override def cached(url: URL): String = url.asPath()
+}
+
+object ClientApplication {
+  def sendError(throwable: Throwable): Future[XMLHttpRequest] = {
+    ErrorTrace.toError(throwable).flatMap(sendError)
+  }
+  def sendError(error: JavaScriptError): Future[XMLHttpRequest] = {
+    val formData = new FormData
+    val json = upickle.default.write[JavaScriptError](error)
+    formData.append("json", json)
+    val request = new AjaxRequest(History.url().replacePathAndParams("/clientError"), data = Some(formData))
+    request.send()
+  }
 }

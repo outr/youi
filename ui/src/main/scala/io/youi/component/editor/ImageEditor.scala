@@ -152,14 +152,13 @@ class ImageEditor extends AbstractContainer {
   }
 
   def reset(): Unit = {
-    imageScale := 1.0
     imageView.position.center := size.center
     imageView.position.middle := size.middle
 
     val scaled = SizeUtility.scale(imageView.size.measured.width, imageView.size.measured.height, size.width - (rs.blocks.size() * 2.0), size.height - (rs.blocks.size() * 2.0))
-    imageView.size.width := scaled.x
-    imageView.size.height := scaled.y
-
+    imageView.size.width := scaled.width
+    imageView.size.height := scaled.height
+    imageScale := scaled.scale
     imageView.rotation := 0.0
 
     val x1 = math.max(imageView.position.left(), rs.selection.minX)

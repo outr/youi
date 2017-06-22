@@ -109,8 +109,8 @@ object ImageUtility {
         val canvas = CanvasPool(video.videoWidth, video.videoHeight)
         val context = canvas.context
         context.drawImage(video, 0.0, 0.0)
-        val size = SizeUtility.scale(video.videoWidth, video.videoHeight, width, height, scaleUp)
-        resizeToDataURL(canvas, size.x, size.y).map { dataURL =>
+        val scaled = SizeUtility.scale(video.videoWidth, video.videoHeight, width, height, scaleUp)
+        resizeToDataURL(canvas, scaled.width, scaled.height).map { dataURL =>
           CanvasPool.restore(canvas)
           promise.success(dataURL)
         }
@@ -124,8 +124,8 @@ object ImageUtility {
       video.src = url
     } else if (file.`type`.startsWith("image/")) {                                               // Image preview
       loadImage(file).flatMap { img =>
-        val size = SizeUtility.scale(img.width, img.height, width, height, scaleUp)
-        resizeToDataURL(img, size.x, size.y)
+        val scaled = SizeUtility.scale(img.width, img.height, width, height, scaleUp)
+        resizeToDataURL(img, scaled.width, scaled.height)
       }
     } else {
       // Unknown file type, no preview available

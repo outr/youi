@@ -1,9 +1,9 @@
 package io.youi.component.extra
 
-import io.youi.component.{DrawableComponent, PaintSupport, PaintTheme}
 import io.youi.component.draw.path.{Path, PathAction, Rectangle}
-import io.youi.component.draw.{Drawable, Fill, Group, RestoreContext}
-import io.youi.component.event.{DragSupport, MouseEvent, Pointer}
+import io.youi.component.draw.{Drawable, Group, RestoreContext}
+import io.youi.component.event.{DragSupport, Pointer}
+import io.youi.component.{DrawableComponent, PaintSupport, PaintTheme}
 import io.youi.style.Cursor
 import io.youi.theme.RectangularSelectionTheme
 import org.scalajs.dom.raw.CanvasRenderingContext2D
@@ -160,12 +160,26 @@ class RectangularSelection extends DrawableComponent {
       RestoreContext,
       Path
         .begin
-//        .move(selection.x1 + (selection.width / 2.0), selection.y1 + verticalThird)
-//        .line(selection.x1, selection.y1 + verticalThird)
-//        .move(selection.x1 + (selection.width / 2.0), selection.y1 + verticalThird + 10.0)
-//        .line(selection.x2, selection.y1 + verticalThird + 10.0)
-        .rect(selection.x1, selection.y1 + verticalThird, selection.width, verticalThird)
-        .rect(selection.x1 + horizontalThird, selection.y1, horizontalThird, selection.height)
+        // Horizontal Bar 1
+        .move(selection.x1 + (selection.width / 2.0), selection.y1 + verticalThird)
+        .line(selection.x1, selection.y1 + verticalThird)
+        .move(selection.x1 + (selection.width / 2.0), selection.y1 + verticalThird)
+        .line(selection.x2, selection.y1 + verticalThird)
+        // Horizontal Bar 2
+        .move(selection.x1 + (selection.width / 2.0), selection.y2 - verticalThird)
+        .line(selection.x1, selection.y2 - verticalThird)
+        .move(selection.x1 + (selection.width / 2.0), selection.y2 - verticalThird)
+        .line(selection.x2, selection.y2 - verticalThird)
+        // Vertical Bar 1
+        .move(selection.x1 + horizontalThird, selection.y1 + (selection.height / 2.0))
+        .line(selection.x1 + horizontalThird, selection.y1)
+        .move(selection.x1 + horizontalThird, selection.y1 + (selection.height / 2.0))
+        .line(selection.x1 + horizontalThird, selection.y2)
+        // Vertical Bar 2
+        .move(selection.x2 - horizontalThird, selection.y1 + (selection.height / 2.0))
+        .line(selection.x2 - horizontalThird, selection.y1)
+        .move(selection.x2 - horizontalThird, selection.y1 + (selection.height / 2.0))
+        .line(selection.x2 - horizontalThird, selection.y2)
         .close,
       dashes.fill.value,
       dashes.stroke.value

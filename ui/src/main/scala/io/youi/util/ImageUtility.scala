@@ -19,6 +19,10 @@ object ImageUtility {
   private var single: Future[_] = Future.successful(())
 
   def resizeToCanvas(source: html.Image | html.Canvas, destination: html.Canvas): Future[Canvas] = {
+    (source: Any) match {
+      case i: html.Image => assert(i.width > 0 && i.height > 0, "Cannot resizeToCanvas for zero size image as source!")
+      case c: html.Canvas => assert(c.width > 0 && c.height > 0, "Cannot resizeToCanvas for zero size canvas as source!")
+    }
     val promise = Promise[Canvas]
     single.onComplete { _ =>
       val future = pica.resize(source, destination, new ResizeOptions {

@@ -30,7 +30,7 @@ object ErrorTrace extends LogHandler {
     val source = first.getFileName
     val line = first.getLineNumber
     val column = first.getColumnNumber()
-    toError(message, source, line, column, Some(throwable)).foreach(ClientApplication.sendError)
+    toError(message, source, line, column, Some(throwable))
   }
 
   override def level: Level = Level.Error

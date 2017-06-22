@@ -21,6 +21,7 @@ class MouseEvent(val component: Component, val evt: PIXI.interaction.Interaction
   lazy val inside: Boolean = x >= 0.0 && y >= 0.0 && x <= component.size.width() && y <= component.size.height()
   def stopped: Boolean = evt.stopped
   def stopPropagation(): Unit = evt.stopPropagation()
+  def preventDefault(): Unit = evt.data.originalEvent.asInstanceOf[org.scalajs.dom.MouseEvent].preventDefault()
 
   override def toString: String = s"MouseEvent(identifier: $identifier, x: $x, y: $y, globalX: $globalX, globalY: $globalY, inside: $inside)"
 }

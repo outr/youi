@@ -18,6 +18,8 @@ case class Group(drawables: List[Drawable]) extends Drawable {
     }
   }
 
+  def withDrawables(drawables: Drawable*): Group = Group(this.drawables ::: drawables.toList)
+
   override def draw(component: Component, context: CanvasRenderingContext2D): Unit = drawables.foreach { d =>
     d.draw(component, context)
   }

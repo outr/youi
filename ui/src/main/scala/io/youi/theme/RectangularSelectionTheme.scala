@@ -40,10 +40,19 @@ trait RectangularSelectionTheme extends DrawableComponentTheme {
     override object stroke extends StrokeTheme {
       override val paint: Var[Paint] = Var(prnt(_.dashes.stroke.paint, Color.White))
       override val lineWidth: Var[Double] = Var(prnt(_.dashes.stroke.lineWidth, 0.5))
-      override val lineDash: Var[List[Double]] = Var(prnt(_.dashes.stroke.lineDash, List(4.0, 8.0)))
+      override val lineDash: Var[List[Double]] = Var(prnt(_.dashes.stroke.lineDash, List(4.0, 4.0)))
       override val lineDashOffset: Var[Double] = Var(prnt(_.dashes.stroke.lineDashOffset, 2.0))
       override val lineCap: Var[LineCap] = Var(prnt(_.dashes.stroke.lineCap, LineCap.Butt))
       override val lineJoin: Var[LineJoin] = Var(prnt(_.dashes.stroke.lineJoin, LineJoin.Miter))
+    }
+    object shadow {
+      val enabled: Var[Boolean] = Var(prnt(_.dashes.shadow.enabled, true))
+      object offset {
+        val x: Var[Double] = Var(prnt(_.dashes.shadow.offset.x, 1.0))
+        val y: Var[Double] = Var(prnt(_.dashes.shadow.offset.y, 1.0))
+      }
+      val paint: Var[Paint] = Var(prnt(_.dashes.shadow.paint, Color.Black.withAlpha(0.5)))
+      val lineWidth: Var[Double] = Var(prnt(_.dashes.shadow.lineWidth, 0.5))
     }
   }
   object modal extends PaintTheme {

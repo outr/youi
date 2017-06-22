@@ -23,7 +23,6 @@ abstract class CanvasComponent extends TextureComponent {
     try {
       context.save()
       context.clearRect(0.0, 0.0, canvas.width.toDouble, canvas.height.toDouble)
-      context.translate(0.5, 0.5)
       draw(context)
       filter().foreach { filter =>
         val imageData = context.getImageData(0.0, 0.0, canvas.width.toDouble, canvas.height.toDouble)

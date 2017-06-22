@@ -26,6 +26,18 @@ case class Path(actions: List[PathAction]) extends Drawable with PathBuilder wit
     Path(updated)
   }
 
+  def fix(): Path = {
+    def r(value: Double): Double = math.floor(value) + 0.5
+    val updated = actions.map {
+      case CurveTo(x1, y1, x2, y2, x, y) => CurveTo(r(x1), r(y1), r(x2), r(y2), r(x), r(y))
+      case LineTo(x, y) => LineTo(r(x), r(y))
+      case MoveTo(x, y) => MoveTo(r(x), r(y))
+      case QuadraticCurveTo(x1, y1, x, y) => QuadraticCurveTo(r(x1), r(y1), r(x), r(y))
+      case action => action
+    }
+    Path(updated)
+  }
+
   override def withAction(action: PathAction): Path = Path(actions ::: List(action))
 }
 

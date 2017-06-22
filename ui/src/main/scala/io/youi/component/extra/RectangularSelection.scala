@@ -1,10 +1,11 @@
 package io.youi.component.extra
 
+import io.youi.Color
 import io.youi.component.draw.path.{Path, PathAction, Rectangle}
-import io.youi.component.draw.{Drawable, Group, RestoreContext}
+import io.youi.component.draw.{Drawable, Group, RestoreContext, Stroke}
 import io.youi.component.event.{DragSupport, Pointer}
 import io.youi.component.{DrawableComponent, PaintSupport, PaintTheme}
-import io.youi.style.Cursor
+import io.youi.style.{Cursor, Paint}
 import io.youi.theme.RectangularSelectionTheme
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 import reactify._
@@ -53,6 +54,16 @@ class RectangularSelection extends DrawableComponent {
   }
 
   object dashes extends PaintSupport {
+    object shadow {
+      val enabled: Var[Boolean] = Var(theme.dashes.shadow.enabled)
+      object offset {
+        val x: Var[Double] = Var(theme.dashes.shadow.offset.x)
+        val y: Var[Double] = Var(theme.dashes.shadow.offset.y)
+      }
+      val paint: Var[Paint] = Var(theme.dashes.shadow.paint)
+      val lineWidth: Var[Double] = Var(theme.dashes.shadow.lineWidth)
+    }
+
     override protected def paintTheme: PaintTheme = theme.dashes
   }
 
@@ -113,6 +124,7 @@ class RectangularSelection extends DrawableComponent {
     Path
       .begin
       .rect(selection.x1(), selection.y1(), selection.width(), selection.height())
+      .fix()
       .close,
     selection.fill.value,
     selection.stroke.value
@@ -133,7 +145,8 @@ class RectangularSelection extends DrawableComponent {
         .withAction(block(selection.x1, selection.y2))
         .withAction(block(selection.x1 + (selection.width / 2.0), selection.y2))
         .withAction(block(selection.x2, selection.y2))
-        .close,
+        .close
+        .fix(),
       blocks.fill.value,
       blocks.stroke.value
     )
@@ -147,7 +160,8 @@ class RectangularSelection extends DrawableComponent {
         .rect(selection.x2(), halfBlock, size.width() - selection.x2() - halfBlock, size.height() - blocks.size())          // Right
         .rect(selection.x1(), halfBlock, selection.width(), selection.y1() - halfBlock)                         // Top
         .rect(selection.x1(), selection.y2(), selection.width(), size.height() - selection.y2() - halfBlock)    // Bottom
-        .close,
+        .close
+        .fix(),
       modal.fill.value,
       modal.stroke.value
     )
@@ -156,7 +170,38 @@ class RectangularSelection extends DrawableComponent {
   protected def createDashes(): Drawable = {
     val horizontalThird = selection.width() / 3.0
     val verticalThird = selection.height() / 3.0
-    Group(
+    val group = if (dashes.shadow.enabled()) {
+      Group(
+        Path
+          .begin
+          // Horizontal Bar 1
+          .move(selection.x1 + (selection.width / 2.0), selection.y1 + verticalThird)
+          .line(selection.x1, selection.y1 + verticalThird)
+          .move(selection.x1 + (selection.width / 2.0), selection.y1 + verticalThird)
+          .line(selection.x2, selection.y1 + verticalThird)
+          // Horizontal Bar 2
+          .move(selection.x1 + (selection.width / 2.0), selection.y2 - verticalThird)
+          .line(selection.x1, selection.y2 - verticalThird)
+          .move(selection.x1 + (selection.width / 2.0), selection.y2 - verticalThird)
+          .line(selection.x2, selection.y2 - verticalThird)
+          // Vertical Bar 1
+          .move(selection.x1 + horizontalThird, selection.y1 + (selection.height / 2.0))
+          .line(selection.x1 + horizontalThird, selection.y1)
+          .move(selection.x1 + horizontalThird, selection.y1 + (selection.height / 2.0))
+          .line(selection.x1 + horizontalThird, selection.y2)
+          // Vertical Bar 2
+          .move(selection.x2 - horizontalThird, selection.y1 + (selection.height / 2.0))
+          .line(selection.x2 - horizontalThird, selection.y1)
+          .move(selection.x2 - horizontalThird, selection.y1 + (selection.height / 2.0))
+          .line(selection.x2 - horizontalThird, selection.y2)
+          .shift(dashes.shadow.offset.x, dashes.shadow.offset.y)
+          .fix(),
+        Stroke(dashes.shadow.paint, dashes.shadow.lineWidth, dashes.stroke.lineDash, dashes.stroke.lineDashOffset, dashes.stroke.lineCap, dashes.stroke.lineJoin)
+      )
+    } else {
+      Group()
+    }
+    group.withDrawables(
       RestoreContext,
       Path
         .begin
@@ -180,7 +225,7 @@ class RectangularSelection extends DrawableComponent {
         .line(selection.x2 - horizontalThird, selection.y1)
         .move(selection.x2 - horizontalThird, selection.y1 + (selection.height / 2.0))
         .line(selection.x2 - horizontalThird, selection.y2)
-        .close,
+        .fix(),
       dashes.fill.value,
       dashes.stroke.value
     )

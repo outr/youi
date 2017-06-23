@@ -9,6 +9,7 @@ import reactify._
 
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class ImageEditor extends AbstractContainer {
   override type Child = Component
@@ -86,7 +87,11 @@ class ImageEditor extends AbstractContainer {
 
   def previewImage(img: html.Image, width: Double, height: Double): Unit = {
     val resizer = LazyFuture {
-      ImageUtility.resizeToImage(preview(), width, height, img)
+      if (preview().width > 0 && preview().height > 0 && width > 0.0 && height > 0.0) {
+        ImageUtility.resizeToImage(preview(), width, height, img)
+      } else {
+        Future.successful(img)
+      }
     }
     preview.attachAndFire { _ =>
       resizer.flag()

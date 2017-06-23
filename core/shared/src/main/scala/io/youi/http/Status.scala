@@ -15,6 +15,11 @@ class Status private(val code: Int, val message: String) {
 
   def apply(message: String) = new Status(code, message)
 
+  override def equals(obj: scala.Any): Boolean = obj match {
+    case that: Status => code == that.code
+    case _ => false
+  }
+
   override def toString = s"HttpResponseStatus($code: $message)"
 }
 

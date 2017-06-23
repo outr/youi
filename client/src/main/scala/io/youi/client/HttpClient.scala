@@ -132,12 +132,13 @@ class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpd
       content = Some(StringContent(requestJson, ContentType.`application/json`))
     )
     send(httpRequest).map { response =>
-      val responseJson = response.content.getOrElse(throw new RuntimeException(s"No content received in response.")) match {
+      val responseJson = response.content.map {
         case content: StringContent => content.value
         case content: FileContent => IO.stream(content.file, new StringBuilder).toString
         case content => throw new RuntimeException(s"$content not supported")
-      }
+      }.getOrElse("")
       if (response.status.isSuccess) {
+        if (responseJson.isEmpty) throw new RuntimeException(s"No content received in response for $url.")
         decode[Response](responseJson) match {
           case Left(error) => errorHandler(httpRequest, response.copy(Status.InternalServerError(error.getMessage)))
           case Right(result) => result
@@ -170,12 +171,13 @@ class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpd
       headers = headers
     )
     send(request).map { response =>
-      val responseJson = response.content.getOrElse(throw new RuntimeException(s"No content received in response.")) match {
+      val responseJson = response.content.map {
         case content: StringContent => content.value
         case content: FileContent => IO.stream(content.file, new StringBuilder).toString
         case content => throw new RuntimeException(s"$content not supported")
-      }
+      }.getOrElse("")
       if (response.status.isSuccess) {
+        if (responseJson.isEmpty) throw new RuntimeException(s"No content received in response for $url.")
         decode[Response](responseJson) match {
           case Left(error) => errorHandler(request, response.copy(Status.InternalServerError(error.getMessage)))
           case Right(result) => result

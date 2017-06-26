@@ -27,6 +27,17 @@ case class BoundingBox(x1: Double, y1: Double, x2: Double, y2: Double) {
     }
   }
 
+  def shift(offsetX: Double, offsetY: Double): BoundingBox = if (offsetX == 0.0 && offsetY == 0.0) {
+    this
+  } else {
+    BoundingBox(
+      x1 = x1 + offsetX,
+      y1 = y1 + offsetY,
+      x2 = x2 + offsetX,
+      y2 = y2 + offsetY
+    )
+  }
+
   override def toString: String = s"BoundingBox(x1: $x1, y1: $y1, x2: $x2, y2: $y2, adjustX: $adjustX, adjustY: $adjustY, width: $width, height: $height)"
 }
 

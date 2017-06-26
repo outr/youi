@@ -31,7 +31,10 @@ class ImageView extends DrawableComponent with Drawable {
   private var rendering = false
 
   private val reRender: LazyFuture[Unit] = LazyFuture {
-    if (mode() == ImageMode.Quality && size.width() > 0.0 && size.height() > 0.0 && (size.width() != img.width || size.height() != img.height)) {
+    if (mode() == ImageMode.Quality
+        && size.width() > 0.0 && size.height() > 0.0
+        && img.width > 0 && img.height > 0
+        && (size.width() != img.width || size.height() != img.height)) {
       val r = CanvasPool(size.width(), size.height())
       val context = r.context
       context.clearRect(0.0, 0.0, r.width, r.height)

@@ -46,9 +46,9 @@ object Path extends PathBuilder {
 
   private lazy val actionCharacters = Set('M', 'L', 'C', 'Q', 'Z')
 
-  private lazy val MoveRegex = """M([- ]?[0-9.]+)([- ]?[0-9.]+)""".r
-  private lazy val LineRegex = """L([- ]?[0-9.]+)([- ]?[0-9.]+)""".r
-  private lazy val CurveRegex = """C([- ]?[0-9.]+)([- ]?[0-9.]+)([- ]?[0-9.]+)([- ]?[0-9.]+)([- ]?[0-9.]+)([- ]?[0-9.]+)""".r
+  private lazy val MoveRegex = """M[ ]?([-]?[0-9.]+)[ ]?([-]?[0-9.]+)""".r
+  private lazy val LineRegex = """L[ ]?([-]?[0-9.]+)[ ]?([-]?[0-9.]+)""".r
+  private lazy val CurveRegex = """C[ ]?([-]?[0-9.]+)[ ]?([-]?[0-9.]+)[ ]?([-]?[0-9.]+)[ ]?([-]?[0-9.]+)[ ]?([-]?[0-9.]+)[ ]?([-]?[0-9.]+)""".r
   private lazy val QuadraticRegex = """Q([- ]?[0-9.]+)([- ]?[0-9.]+)([- ]?[0-9.]+)([- ]?[0-9.]+)""".r
 
   def apply(actions: PathAction*): Path = {
@@ -74,7 +74,7 @@ object Path extends PathBuilder {
       case _ => throw new RuntimeException(s"Unknown action: [$s]")
     }
 
-    pathString.foreach { c =>
+    pathString.toUpperCase.foreach { c =>
       if (actionCharacters.contains(c)) {
         if (b.nonEmpty) {
           actions += s2a(b.toString())

@@ -68,7 +68,7 @@ object Image {
     original.flatMap { o =>
       val size = SizeUtility.size(width, height, o)
       val canvasFuture = mode match {
-        case _ if width.contains(size.width) && height.contains(size.height) => Future.successful(None)
+        case _ if o.width == size.width && o.height == size.height => Future.successful(None)
         case ImageMode.Speed => Future.successful(None)
         case ImageMode.Quality => {
           val canvas = CanvasPool(size.width, size.height)

@@ -1,5 +1,6 @@
 package io.youi.component.draw
 
+import io.youi.Size
 import io.youi.component.draw.path._
 
 case class BoundingBox(x1: Double, y1: Double, x2: Double, y2: Double) {
@@ -37,6 +38,8 @@ case class BoundingBox(x1: Double, y1: Double, x2: Double, y2: Double) {
       y2 = y2 + offsetY
     )
   }
+
+  def toSize: Size = Size(width, height)
 
   override def toString: String = s"BoundingBox(x1: $x1, y1: $y1, x2: $x2, y2: $y2, adjustX: $adjustX, adjustY: $adjustY, width: $width, height: $height)"
 }

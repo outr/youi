@@ -1,6 +1,6 @@
 package io.youi.util
 
-import io.youi.Point
+import io.youi.{Point, Size}
 
 object SizeUtility {
   def scale(width: Double,
@@ -18,6 +18,27 @@ object SizeUtility {
       }
     } else {
       Scaled(width, height, 1.0)
+    }
+  }
+
+  def size(width: Option[Double], height: Option[Double], original: Size): Size = width match {
+    case Some(w) => height match {
+      case Some(h) => {
+        Size(w, h)
+      }
+      case None => {
+        val aspectRatio = original.height / original.width
+        Size(w, w * aspectRatio)
+      }
+    }
+    case None => {
+      height match {
+        case Some(h) => {
+          val aspectRatio = original.width / original.height
+          Size(h * aspectRatio, h)
+        }
+        case None => Size(original.width, original.height)
+      }
     }
   }
 }

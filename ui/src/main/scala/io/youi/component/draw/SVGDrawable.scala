@@ -14,6 +14,7 @@ import reactify._
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
+@deprecated(message = "Use Image instead", since = "0.4.3")
 class SVGDrawable(val svg: SVGSVGElement, x: Double, y: Double) extends Drawable {
   private val _measured = Var[BoundingBox](BoundingBox.zero)
   val measured: Val[BoundingBox] = _measured.asVal

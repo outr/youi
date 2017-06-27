@@ -12,8 +12,7 @@ object VirtualSizeExample extends UIExampleScreen with UIScreen with VirtualSize
     virtualWidth := 1024.0
     virtualHeight := 768.0
 
-    val texture = Texture("/images/1024.jpg")
-    container.children += new ImageView(texture) {
+    container.children += new ImageView("/images/1024.jpg") {
       position.left := 0.vx
       position.top := 0.vy
       size.width := 1024.vw

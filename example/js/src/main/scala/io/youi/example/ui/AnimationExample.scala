@@ -13,8 +13,7 @@ object AnimationExample extends UIExampleScreen with UIScreen {
   override def path: String = "/examples/animation.html"
 
   override def createUI(): Unit = {
-    val icon = Texture("/images/icon.png")
-    val image = new ImageView(icon) {
+    val image = new ImageView("/images/icon.png") {
       position.left := 0.0
       position.middle := container.position.middle
     }

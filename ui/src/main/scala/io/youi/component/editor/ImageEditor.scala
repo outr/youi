@@ -50,7 +50,7 @@ class ImageEditor extends AbstractContainer {
       context.translate(imageView.size.width / 2.0, imageView.size.height / 2.0)
       context.rotate(imageView.rotation() * (math.Pi * 2.0))
       context.translate(-imageView.size.width / 2.0, -imageView.size.height / 2.0)
-      context.drawImage(imageView.img, 0.0, 0.0, imageView.size.width, imageView.size.height)
+      imageView.image().drawImage(this, context, imageView.size.width, imageView.size.height)
       val previous = preview()
       preview := destination
       CanvasPool.restore(previous)
@@ -125,15 +125,9 @@ class ImageEditor extends AbstractContainer {
     revision.asInstanceOf[Var[Int]] := current + 1
   }
 
-  def load(file: File): Unit = {
-    ImageUtility.loadDataURL(file).foreach { dataURL =>
-      imageView.source := dataURL
-    }
-  }
+  def load(file: File): Future[Unit] = imageView.load(file)
 
-  def load(path: String): Unit = {
-    imageView.source := path
-  }
+  def load(path: String): Future[Unit] = imageView.load(path)
 
   def scale(amount: Double, point: Option[Point] = None): Unit = {
     imageScale.static(math.max(imageScale + amount, 0.1))

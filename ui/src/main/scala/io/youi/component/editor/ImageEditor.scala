@@ -82,7 +82,6 @@ class ImageEditor extends AbstractContainer {
         resizer.flag()
       }
     }
-    delta.attach(_ => resizer.update())
   }
 
   def previewImage(img: html.Image, width: Double, height: Double): Unit = {
@@ -96,7 +95,6 @@ class ImageEditor extends AbstractContainer {
     preview.attachAndFire { _ =>
       resizer.flag()
     }
-    delta.attach(_ => resizer.update())
   }
 
   size.width := imageView.size.width + rs.blocks.size

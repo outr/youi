@@ -12,6 +12,9 @@ trait Updates {
 
   def update(delta: Double): Unit = this.delta := delta
 
+  def once(delay: FiniteDuration, allowBackgrounding: Boolean = true)
+          (f: => Unit): Unit = every(delay, Some(delay), allowBackgrounding)(f)
+
   def every(delay: FiniteDuration,
             until: Option[FiniteDuration] = None,
             allowBackgrounding: Boolean = true)

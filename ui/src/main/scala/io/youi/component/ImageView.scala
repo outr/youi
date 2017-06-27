@@ -69,12 +69,6 @@ class ImageView extends DrawableComponent with Drawable {
   }
 
   override def boundingBox: BoundingBox = BoundingBox.zero
-
-  override def update(delta: Double): Unit = {
-    super.update(delta)
-
-    reRender.update()
-  }
 }
 
 sealed trait ImageMode

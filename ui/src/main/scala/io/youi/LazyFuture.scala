@@ -4,18 +4,27 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class LazyFuture[T](f: () => Future[T], maxFrequency: FiniteDuration) {
   private var lastUpdate: Long = 0L
   private val dirty = new AtomicBoolean(false)
 
-  def flag(): Unit = dirty.set(true)
+  def flag(): Unit = if (dirty.compareAndSet(false, true)) {
+    if (isReady) {
+      update()
+    } else {
+      AnimationFrame.once(delay.millis)(update())
+    }
+  }
   def isFlagged: Boolean = dirty.get()
-  def isReady: Boolean = System.currentTimeMillis() - lastUpdate >= maxFrequency.toMillis
+  def elapsed: Long = System.currentTimeMillis() - lastUpdate
+  def delay: Long = math.max(0L, maxFrequency.toMillis - elapsed)
+  def isReady: Boolean = delay == 0L
 
   private var future: Option[Future[T]] = None
 
-  def update(force: Boolean = false): Unit = {
+  private def update(force: Boolean = false): Unit = {
     val finished = future.forall(_.isCompleted)
     if (finished) {
       if (future.nonEmpty) {
@@ -24,7 +33,9 @@ class LazyFuture[T](f: () => Future[T], maxFrequency: FiniteDuration) {
       }
 
       if ((isReady && dirty.compareAndSet(true, false)) || force) {
-        future = Some(f())
+        val future = f()
+        future.onComplete(_ => update())
+        this.future = Some(future)
       }
     }
   }

@@ -15,9 +15,9 @@ class ImageView extends DrawableComponent {
     this()
     load(file)
   }
-  def this(path: String) = {
+  def this(source: String) = {
     this()
-    load(path)
+    load(source)
   }
 
   val image: Var[Image] = prop(Image.empty, _ => reDraw.flag())
@@ -42,6 +42,9 @@ class ImageView extends DrawableComponent {
     }
   }
 
+  size.measured.width := image.width
+  size.measured.height := image.height
+
   size.width.and(size.height).on(resizer.flag())
   image.attach { i =>
     if (i != Image.empty && size.width() > 0.0 && size.height() > 0.0 && (i.width != size.width() || i.height != size.height())) {
@@ -60,7 +63,6 @@ class ImageView extends DrawableComponent {
   drawable := imageDrawer
 
   def load(file: File): Future[Unit] = Image.fromFile(file).map { image =>
-    scribe.info(s"Loaded file ${file.name} into image: ${image.width}x${image.height}")
     this.image := image
   }
 

@@ -36,10 +36,12 @@ object Image {
   def apply(source: String,
             width: Option[Double] = None,
             height: Option[Double] = None,
-            mode: ImageMode = ImageMode.Quality): Future[Image] = {
-    // TODO: support SVG string
-    // TODO: support SVG path
+            mode: ImageMode = ImageMode.Quality): Future[Image] = if (source.indexOf("<svg") != -1) {
+    Future.successful(fromSVGString(source, width, height))
+  } else if (source.startsWith("data:image/")) {
     fromImageSource(source, width, height, mode)
+  } else {
+    fromURL(History.url.withPart(source), width, height, mode)
   }
   def fromURL(url: URL,
               width: Option[Double] = None,

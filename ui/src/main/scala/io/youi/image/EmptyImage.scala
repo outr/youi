@@ -13,4 +13,6 @@ object EmptyImage extends Image {
   override def drawImage(component: Component, context: CanvasRenderingContext2D, width: Double, height: Double): Unit = {}
 
   override def resized(width: Double, height: Double): Future[Image] = Future.successful(this)
+
+  override def dispose(): Unit = {}
 }

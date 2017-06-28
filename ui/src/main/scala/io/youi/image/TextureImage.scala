@@ -30,4 +30,6 @@ case class TextureImage(img: html.Image,
       copy(canvas = Some(c), width = width, height = height, original = Some(original))
     }
   }
+
+  override def dispose(): Unit = canvas.foreach(CanvasPool.restore)
 }

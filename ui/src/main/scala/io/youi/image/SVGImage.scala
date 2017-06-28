@@ -25,6 +25,8 @@ case class SVGImage(svg: SVGSVGElement,
     val original = this.original.getOrElse(this)
     Future.successful(copy(width = width, height = height, original = Some(original)))
   }
+
+  override def dispose(): Unit = {}
 }
 
 object SVGImage {

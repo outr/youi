@@ -42,7 +42,7 @@ class ImageEditor extends AbstractContainer {
 
   val preview: Var[html.Canvas] = Var(CanvasPool(rs.selection.width, rs.selection.height), static = true)
 
-  private val previewUpdater = LazyUpdate({
+  private val previewUpdater = LazyUpdate {
     val destination = CanvasPool(rs.selection.width, rs.selection.height)
     try {
       val context = destination.context
@@ -60,7 +60,7 @@ class ImageEditor extends AbstractContainer {
         CanvasPool.restore(destination)
       }
     }
-  }, 100.millis)
+  }
 
   revision.on(previewUpdater.flag())
   delta.on(previewUpdater.update())
@@ -102,8 +102,6 @@ class ImageEditor extends AbstractContainer {
 
   childEntries ++= List(imageView, rs)
 
-//  pixelCount.on(reset())
-
   event.pointer.wheel.attach { evt =>
     scale(evt.delta.y * -wheelMultiplier, Some(evt.local))
   }
@@ -135,10 +133,8 @@ class ImageEditor extends AbstractContainer {
 
   def scale(amount: Double, point: Option[Point] = None): Unit = {
     imageScale.static(math.max(imageScale + amount, 0.1))
-    scribe.info(s"Old Size: ${imageView.size.width()}x${imageView.size.height()}")
     imageView.size.width.static(imageView.size.measured.width * imageScale)
     imageView.size.height.static(imageView.size.measured.height * imageScale)
-    scribe.info(s"New Size: ${imageView.size.width()}x${imageView.size.height()}")
     point.foreach { p =>
       val offsetX = p.x - size.center
       val offsetY = p.y - size.middle

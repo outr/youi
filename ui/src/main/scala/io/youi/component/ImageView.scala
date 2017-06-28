@@ -29,6 +29,9 @@ class ImageView extends DrawableComponent {
         if (image() == original) { // Only update if the image hasn't been replaced
           if (updated.width == size.width() && updated.height == size.height()) {
             image := updated
+            if (!updated.original.contains(original)) {
+              original.dispose()
+            }
           } else {
             resizer.flag()
           }

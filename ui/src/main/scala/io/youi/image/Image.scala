@@ -27,6 +27,8 @@ trait Image extends Drawable {
   def resized(width: Double, height: Double): Future[Image]
 
   override lazy val boundingBox: BoundingBox = BoundingBox(0.0, 0.0, width, height)
+
+  def dispose(): Unit
 }
 
 object Image {

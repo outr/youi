@@ -54,6 +54,12 @@ object SVGImage {
         maxX = math.max(maxX, offsetX + (c.cx.baseVal.value + c.r.baseVal.value))
         maxY = math.max(maxY, offsetY + (c.cy.baseVal.value + c.r.baseVal.value))
       }
+      case e: SVGEllipseElement => {
+        minX = math.min(minX, offsetX + (e.cx.baseVal.value - e.rx.baseVal.value))
+        minY = math.min(minY, offsetY + (e.cy.baseVal.value - e.ry.baseVal.value))
+        maxX = math.max(maxX, offsetX + (e.cx.baseVal.value + e.rx.baseVal.value))
+        maxY = math.max(maxY, offsetY + (e.cy.baseVal.value + e.ry.baseVal.value))
+      }
       case p: SVGPathElement => {
         val path = Path(p.getAttribute("d"))
         minX = math.min(minX, offsetX + path.boundingBox.x1)

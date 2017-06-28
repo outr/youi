@@ -27,7 +27,6 @@ object ImageEditorExample extends HTMLScreen {
     container.children += canvas
 
     val editor = new ImageEditor {
-      imageView.id := "ImageEditor.image"
       aspectRatio := AspectRatio.Defined(16.0 / 12.0)
       size.width := canvas.size.width
       size.height := canvas.size.height

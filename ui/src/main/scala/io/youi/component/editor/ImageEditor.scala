@@ -17,7 +17,7 @@ class ImageEditor extends AbstractContainer {
   val aspectRatio: Var[AspectRatio] = Var(AspectRatio.Original)
   val imageScale: Var[Double] = Var(1.0)
 
-  val imageView: ImageView = new ImageView
+  private val imageView: ImageView = new ImageView
   val rs: RectangularSelection = new RectangularSelection
   val pixelCount: Val[Double] = Val(imageView.size.measured.width * imageView.size.measured.height)
   val wheelMultiplier: Var[Double] = Var(0.001)
@@ -102,7 +102,7 @@ class ImageEditor extends AbstractContainer {
 
   childEntries ++= List(imageView, rs)
 
-  pixelCount.on(reset())
+//  pixelCount.on(reset())
 
   event.pointer.wheel.attach { evt =>
     scale(evt.delta.y * -wheelMultiplier, Some(evt.local))
@@ -125,14 +125,20 @@ class ImageEditor extends AbstractContainer {
     revision.asInstanceOf[Var[Int]] := current + 1
   }
 
-  def load(file: File): Future[Unit] = imageView.load(file)
+  def load(file: File): Future[Unit] = imageView.load(file).map { _ =>
+    reset()
+  }
 
-  def load(path: String): Future[Unit] = imageView.load(path)
+  def load(path: String): Future[Unit] = imageView.load(path).map { _ =>
+    reset()
+  }
 
   def scale(amount: Double, point: Option[Point] = None): Unit = {
     imageScale.static(math.max(imageScale + amount, 0.1))
-    imageView.size.width := imageView.size.measured.width * imageScale
-    imageView.size.height := imageView.size.measured.height * imageScale
+    scribe.info(s"Old Size: ${imageView.size.width()}x${imageView.size.height()}")
+    imageView.size.width.static(imageView.size.measured.width * imageScale)
+    imageView.size.height.static(imageView.size.measured.height * imageScale)
+    scribe.info(s"New Size: ${imageView.size.width()}x${imageView.size.height()}")
     point.foreach { p =>
       val offsetX = p.x - size.center
       val offsetY = p.y - size.middle

@@ -12,7 +12,7 @@ class LazyFuture[T](f: () => Future[T], maxFrequency: FiniteDuration) {
 
   def flag(): Unit = if (dirty.compareAndSet(false, true)) {
     if (isReady) {
-      update()
+      AnimationFrame.once(10.millis)(update())
     } else {
       AnimationFrame.once(delay.millis)(update())
     }

@@ -31,29 +31,35 @@ trait Image extends Drawable {
 
 object Image {
   def empty: Image = EmptyImage
-  def apply(source: String): Future[Image] = {
-    // TODO: support SVG string
-    // TODO: support DataURL
-    apply(History.url().withPart(source))
-  }
-  def apply(url: URL,
+  def apply(source: String,
             width: Option[Double] = None,
             height: Option[Double] = None,
-            mode: ImageMode = ImageMode.Quality): Future[Image] = if (url.path.encoded.toLowerCase.endsWith(".svg")) {
-    val stream = StreamURL.stream(url)
-    stream.map { svgString =>
-      val div = dom.create[html.Div]("div")
-      div.innerHTML = svgString
-      val svg = div.oneByTag[SVGSVGElement]("svg")
-      fromSVG(svg, width, height)
-    }
-  } else {
-    val img = dom.create[html.Image]("img")
-    val future = fromImage(img, width, height, mode)
-    img.src = url.toString
-    future
+            mode: ImageMode = ImageMode.Quality): Future[Image] = {
+    // TODO: support SVG string
+    // TODO: support SVG path
+    fromImageSource(source, width, height, mode)
   }
-  def apply(file: File): Future[Image] = ???
+  def fromURL(url: URL,
+              width: Option[Double] = None,
+              height: Option[Double] = None,
+              mode: ImageMode = ImageMode.Quality): Future[Image] = if (url.path.encoded.toLowerCase.endsWith(".svg")) {
+    val stream = StreamURL.stream(url)
+    stream.map(svgString => fromSVGString(svgString, width, height))
+  } else {
+    fromImageSource(url.toString, width, height, mode)
+  }
+  def fromFile(file: File,
+               width: Option[Double] = None,
+               height: Option[Double] = None,
+               mode: ImageMode = ImageMode.Quality): Future[Image] = file.`type` match {
+    case "image/svg+xml" => ImageUtility.loadText(file).map { svgString =>
+      fromSVGString(svgString, width, height)
+    }
+    case _ => ImageUtility.loadDataURL(file).flatMap { dataURL =>
+      fromImageSource(dataURL, width, height, mode)
+    }
+  }
+
   def fromImage(img: html.Image,
                 width: Option[Double],
                 height: Option[Double],
@@ -86,11 +92,35 @@ object Image {
     }
   }
 
+  def fromImageSource(src: String,
+                      width: Option[Double],
+                      height: Option[Double],
+                      mode: ImageMode = ImageMode.Quality): Future[TextureImage] = {
+    val img = dom.create[html.Image]("img")
+    val future = fromImage(img, width, height, mode)
+    img.src = src
+    future
+  }
+
   def fromSVG(svg: SVGSVGElement,
               width: Option[Double] = None,
               height: Option[Double] = None): SVGImage = {
     val original = SVGImage.measure(svg).toSize
     val size = SizeUtility.size(width, height, original)
     SVGImage(svg, size.width, size.height, None)
+  }
+
+  def fromSVGString(svgString: String,
+                    width: Option[Double] = None,
+                    height: Option[Double] = None): SVGImage = try {
+    val div = dom.create[html.Div]("div")
+    div.innerHTML = svgString
+    val svg = div.oneByTag[SVGSVGElement]("svg")
+    fromSVG(svg, width, height)
+  } catch {
+    case t: Throwable => {
+      scribe.error(t)
+      throw t
+    }
   }
 }

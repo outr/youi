@@ -44,10 +44,12 @@ case class Path(actions: List[PathAction]) extends Drawable with PathBuilder wit
 object Path extends PathBuilder {
   lazy val empty: Path = Path(Nil)
 
-  private lazy val actionCharacters = Set('M', 'L', 'C', 'Q', 'Z')
+  private lazy val actionCharacters = Set('M', 'L', 'C', 'Q', 'Z', 'H', 'V')
 
   private lazy val MoveRegex = """M[ ]?([-]?[0-9.]+)[ ]?([-]?[0-9.]+)""".r
   private lazy val LineRegex = """L[ ]?([-]?[0-9.]+)[ ]?([-]?[0-9.]+)""".r
+  private lazy val HorizontalLineRegex = """H[ ]?([-]?[0-9.]+)""".r
+  private lazy val VerticalLineRegex = """V[ ]?([-]?[0-9.]+)""".r
   private lazy val CurveRegex = """C[ ]?([-]?[0-9.]+)[ ]?([-]?[0-9.]+)[ ]?([-]?[0-9.]+)[ ]?([-]?[0-9.]+)[ ]?([-]?[0-9.]+)[ ]?([-]?[0-9.]+)""".r
   private lazy val QuadraticRegex = """Q([- ]?[0-9.]+)([- ]?[0-9.]+)([- ]?[0-9.]+)([- ]?[0-9.]+)""".r
 
@@ -65,26 +67,52 @@ object Path extends PathBuilder {
   def apply(pathString: String): Path = {
     val b = new StringBuilder
     val actions = ListBuffer.empty[PathAction]
+    var currentX = 0.0
+    var currentY = 0.0
     def s2a(s: String): PathAction = s match {
-      case MoveRegex(x, y) => MoveTo(x.toDouble, y.toDouble)
-      case LineRegex(x, y) => LineTo(x.toDouble, y.toDouble)
-      case CurveRegex(x1, y1, x2, y2, x, y) => CurveTo(x1.toDouble, y1.toDouble, x2.toDouble, y2.toDouble, x.toDouble, y.toDouble)
-      case QuadraticRegex(x1, y1, x, y) => QuadraticCurveTo(x1.toDouble, y1.toDouble, x.toDouble, y.toDouble)
+      case MoveRegex(x, y) => {
+        currentX = x.toDouble
+        currentY = y.toDouble
+        MoveTo(currentX, currentY)
+      }
+      case LineRegex(x, y) => {
+        currentX = x.toDouble
+        currentY = y.toDouble
+        LineTo(currentX, currentY)
+      }
+      case HorizontalLineRegex(x) => {
+        currentX = x.toDouble
+        LineTo(currentX, currentY)
+      }
+      case VerticalLineRegex(y) => {
+        currentY = y.toDouble
+        LineTo(currentX, currentY)
+      }
+      case CurveRegex(x1, y1, x2, y2, x, y) => {
+        currentX = x.toDouble
+        currentY = y.toDouble
+        CurveTo(x1.toDouble, y1.toDouble, x2.toDouble, y2.toDouble, currentX, currentY)
+      }
+      case QuadraticRegex(x1, y1, x, y) => {
+        currentX = x.toDouble
+        currentY = y.toDouble
+        QuadraticCurveTo(x1.toDouble, y1.toDouble, currentX, currentY)
+      }
       case "Z" => ClosePath
       case _ => throw new RuntimeException(s"Unknown action: [$s]")
     }
 
-    pathString.toUpperCase.foreach { c =>
+    pathString.replaceAll("[,]", " ").toUpperCase.foreach { c =>
       if (actionCharacters.contains(c)) {
         if (b.nonEmpty) {
-          actions += s2a(b.toString())
+          actions += s2a(b.toString().trim)
         }
         b.clear()
       }
       b.append(c)
     }
     if (b.nonEmpty) {
-      actions += s2a(b.toString())
+      actions += s2a(b.toString().trim)
     }
 
     Path(actions.toList)

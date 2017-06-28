@@ -59,6 +59,7 @@ object SVGImage {
         maxX = math.max(maxX, offsetX + path.boundingBox.x2)
         maxY = math.max(maxY, offsetY + path.boundingBox.y2)
       }
+      case _: SVGStyleElement => // Nothing to do here
       case _ => scribe.warn(s"Unsupported SVG node: $e.")
     }
     svg.children.foreach(child => measureInternal(child, 0.0, 0.0))

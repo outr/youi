@@ -22,12 +22,16 @@ class ImageView extends DrawableComponent {
 
   val image: Var[Image] = prop(Image.empty, _ => reDraw.flag())
 
-  private val resizer = LazyFuture {
+  private val resizer: LazyFuture[Unit] = LazyFuture {
     val original = image()
     if (original != Image.empty && size.width() > 0.0 && size.height() > 0.0 && (original.width != size.width() || original.height != size.height())) {
       original.resized(size.width, size.height).map { updated =>
         if (image() == original) { // Only update if the image hasn't been replaced
-          image := updated
+          if (updated.width == size.width() && updated.height == size.height()) {
+            image := updated
+          } else {
+            resizer.flag()
+          }
         }
       }
     } else {
@@ -52,11 +56,12 @@ class ImageView extends DrawableComponent {
 
   drawable := imageDrawer
 
-  def load(file: File): Future[Unit] = Image(file).map { image =>
+  def load(file: File): Future[Unit] = Image.fromFile(file).map { image =>
+    scribe.info(s"Loaded file ${file.name} into image: ${image.width}x${image.height}")
     this.image := image
   }
 
-  def load(path: String): Future[Unit] = Image(path).map { image =>
+  def load(source: String): Future[Unit] = Image(source).map { image =>
     this.image := image
   }
 }

@@ -1,17 +1,17 @@
 package io.youi.image
 
 import io.youi._
-import io.youi.dom._
-import io.youi.component.{Component, ImageMode}
 import io.youi.component.draw.{BoundingBox, Drawable}
+import io.youi.component.{Component, ImageMode}
+import io.youi.dom._
 import io.youi.net.URL
 import io.youi.stream.StreamURL
 import io.youi.util.{CanvasPool, ImageUtility, SizeUtility}
 import org.scalajs.dom._
 import org.scalajs.dom.raw.SVGSVGElement
 
-import scala.concurrent.{Future, Promise}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Future, Promise}
 
 trait Image extends Drawable {
   val original: Option[Image]
@@ -23,6 +23,8 @@ trait Image extends Drawable {
   }
 
   def drawImage(component: Component, context: CanvasRenderingContext2D, width: Double, height: Double): Unit
+
+  def resized(width: Double, height: Double): Future[Image]
 
   override lazy val boundingBox: BoundingBox = BoundingBox(0.0, 0.0, width, height)
 }

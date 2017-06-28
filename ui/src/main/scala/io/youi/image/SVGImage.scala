@@ -1,11 +1,13 @@
 package io.youi.image
 
 import com.outr.CanvgImplicits._
-import io.youi.dom._
 import io.youi.component.Component
 import io.youi.component.draw.BoundingBox
 import io.youi.component.draw.path.Path
+import io.youi.dom._
 import org.scalajs.dom.raw._
+
+import scala.concurrent.Future
 
 case class SVGImage(svg: SVGSVGElement,
                     width: Double,
@@ -13,6 +15,15 @@ case class SVGImage(svg: SVGSVGElement,
                     original: Option[Image]) extends Image {
   override def drawImage(component: Component, context: CanvasRenderingContext2D, width: Double, height: Double): Unit = {
     context.drawSvg(svg.outerHTML, 0.0, 0.0, width, height)
+  }
+
+  override def resized(width: Double, height: Double): Future[Image] = if (this.width == width && this.height == height) {
+    Future.successful(this)
+  } else if (original.map(_.width).contains(width) && original.map(_.height).contains(height)) {
+    Future.successful(original.get)
+  } else {
+    val original = this.original.getOrElse(this)
+    Future.successful(copy(width = width, height = height, original = Some(original)))
   }
 }
 

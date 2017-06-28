@@ -1,13 +1,14 @@
 package io.youi.component
 
+import io.youi.LazyFuture
 import io.youi.component.draw.{BoundingBox, Drawable}
 import io.youi.image.Image
 import org.scalajs.dom.File
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 import reactify.Var
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class ImageView extends DrawableComponent {
   def this(file: File) = {
@@ -19,7 +20,27 @@ class ImageView extends DrawableComponent {
     load(path)
   }
 
-  val image: Var[Image] = prop(Image.empty, updatesRendering = true)
+  val image: Var[Image] = prop(Image.empty, _ => reDraw.flag())
+
+  private val resizer = LazyFuture {
+    val original = image()
+    if (original != Image.empty && size.width() > 0.0 && size.height() > 0.0 && (original.width != size.width() || original.height != size.height())) {
+      original.resized(size.width, size.height).map { updated =>
+        if (image() == original) { // Only update if the image hasn't been replaced
+          image := updated
+        }
+      }
+    } else {
+      Future.successful(())
+    }
+  }
+
+  size.width.and(size.height).on(resizer.flag())
+  image.attach { i =>
+    if (i != Image.empty && size.width() > 0.0 && size.height() > 0.0 && (i.width != size.width() || i.height != size.height())) {
+      resizer.flag()
+    }
+  }
 
   private object imageDrawer extends Drawable {
     override def draw(component: Component, context: CanvasRenderingContext2D): Unit = {

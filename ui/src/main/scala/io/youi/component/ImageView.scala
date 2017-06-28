@@ -52,15 +52,7 @@ class ImageView extends DrawableComponent {
     }
   }
 
-  private object imageDrawer extends Drawable {
-    override def draw(component: Component, context: CanvasRenderingContext2D): Unit = {
-      image().drawImage(component, context, size.width(), size.height())
-    }
-
-    override def boundingBox: BoundingBox = image().boundingBox
-  }
-
-  drawable := imageDrawer
+  drawable := new ImageDrawer(image)
 
   def load(file: File): Future[Unit] = Image.fromFile(file).map { image =>
     this.image := image
@@ -76,4 +68,12 @@ sealed trait ImageMode
 object ImageMode {
   case object Quality extends ImageMode
   case object Speed extends ImageMode
+}
+
+class ImageDrawer(image: Image) extends Drawable {
+  override def draw(component: Component, context: CanvasRenderingContext2D): Unit = {
+    image.drawImage(component, context, component.size.width(), component.size.height())
+  }
+
+  override def boundingBox: BoundingBox = image.boundingBox
 }

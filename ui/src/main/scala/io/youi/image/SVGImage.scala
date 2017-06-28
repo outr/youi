@@ -5,16 +5,23 @@ import io.youi.component.Component
 import io.youi.component.draw.BoundingBox
 import io.youi.component.draw.path.Path
 import io.youi.dom._
+import io.youi.util.CanvasPool
 import org.scalajs.dom.raw._
 
 import scala.concurrent.Future
+import io.youi._
 
 case class SVGImage(svg: SVGSVGElement,
                     width: Double,
                     height: Double,
                     original: Option[Image]) extends Image {
   override def drawImage(component: Component, context: CanvasRenderingContext2D, width: Double, height: Double): Unit = {
-    context.drawSvg(svg.outerHTML, 0.0, 0.0, width, height)
+    scribe.info(s"Drawing SVGImage! Original: ${this.width}x${this.height} to $width x $height")
+    CanvasPool.withCanvas(width, height) { canvas =>
+      val ctx = canvas.context
+      ctx.drawSvg(svg.outerHTML, 0.0, 0.0, width, height)
+      context.drawImage(canvas, 0.0, 0.0)
+    }
   }
 
   override def resized(width: Double, height: Double): Future[Image] = if (this.width == width && this.height == height) {

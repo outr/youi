@@ -20,4 +20,6 @@ object EmptyImage extends Image {
   override def resized(width: Double, height: Double): Future[Image] = Future.successful(this)
 
   override def dispose(): Unit = {}
+
+  override def isVector: Boolean = true
 }

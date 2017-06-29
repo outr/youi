@@ -6,7 +6,6 @@ import io.youi.component.Renderer
 import io.youi.hypertext.{Button, Canvas, ImageView, TextInput}
 import io.youi.example.ui.hypertext.HTMLScreen
 import io.youi.hypertext.border.BorderStyle
-import io.youi.image.{Image, SVGImage, TextureImage}
 import org.scalajs.dom._
 import reactify._
 
@@ -32,7 +31,7 @@ object ImageEditorExample extends HTMLScreen {
       size.width := canvas.size.width
       size.height := canvas.size.height
 
-      load("/images/tiger.svg")
+      load("/images/cuteness.jpg")
     }
     renderer.children += editor
 

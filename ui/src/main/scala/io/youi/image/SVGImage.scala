@@ -51,6 +51,8 @@ case class SVGImage(svg: SVGSVGElement,
   }
 
   override def dispose(): Unit = {}
+
+  override def isVector: Boolean = true
 }
 
 object SVGImage {

@@ -13,6 +13,8 @@ case class TextureImage(img: html.Image,
                         width: Double,
                         height: Double,
                         original: Option[Image]) extends Image {
+  override def isVector: Boolean = false
+
   override def drawImage(component: Component,
                          canvas: html.Canvas,
                          context: CanvasRenderingContext2D,

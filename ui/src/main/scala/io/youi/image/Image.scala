@@ -28,6 +28,10 @@ trait Image {
 
   lazy val boundingBox: BoundingBox = BoundingBox(0.0, 0.0, width, height)
 
+  def isVector: Boolean
+
+  def isRaster: Boolean = !isVector
+
   def dispose(): Unit
 }
 

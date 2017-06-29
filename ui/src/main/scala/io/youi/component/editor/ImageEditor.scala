@@ -146,9 +146,6 @@ class ImageEditor extends AbstractContainer {
   }
 
   def reset(): Unit = {
-    imageView.position.center := size.center
-    imageView.position.middle := size.middle
-
     imageView.rotation := 0.0
     if (autoFit()) {
       fit()
@@ -158,7 +155,13 @@ class ImageEditor extends AbstractContainer {
   }
 
   def fit(): Unit = {
-    val scaled = SizeUtility.scale(imageView.size.measured.width, imageView.size.measured.height, size.width - (rs.blocks.size() * 2.0), size.height - (rs.blocks.size() * 2.0), scaleUp = imageView.image.isVector)
+    imageView.position.center := size.center
+    imageView.position.middle := size.middle
+    val r = math.abs(imageView.rotation() % 1.0)
+    val flipped = r == 0.25 || r == 0.75
+    val cw = size.width - (rs.blocks.size() * 2.0)
+    val ch = size.height - (rs.blocks.size() * 2.0)
+    val scaled = SizeUtility.scale(imageView.size.measured.width, imageView.size.measured.height, if (flipped) ch else cw, if (flipped) cw else ch, scaleUp = imageView.image.isVector)
     imageView.size.width := scaled.width
     imageView.size.height := scaled.height
     imageScale := scaled.scale
@@ -166,6 +169,8 @@ class ImageEditor extends AbstractContainer {
   }
 
   def original(): Unit = {
+    imageView.position.center := size.center
+    imageView.position.middle := size.middle
     imageView.size.width := imageView.size.measured.width
     imageView.size.height := imageView.size.measured.height
     imageScale := 1.0
@@ -173,10 +178,18 @@ class ImageEditor extends AbstractContainer {
   }
 
   def resetSelection(): Unit = {
-    val x1 = math.max(imageView.position.left(), rs.selection.minX)
-    val y1 = math.max(imageView.position.top(), rs.selection.minY)
-    val x2 = math.min(imageView.position.right(), rs.selection.maxX)
-    val y2 = math.min(imageView.position.bottom(), rs.selection.maxY)
+    val r = math.abs(imageView.rotation() % 1.0)
+    val flipped = r == 0.25 || r == 0.75
+
+    val left = if (flipped) imageView.position.center() - (imageView.size.height() / 2.0) else imageView.position.left()
+    val top = if (flipped) imageView.position.middle() - (imageView.size.width() / 2.0) else imageView.position.top()
+    val right = if (flipped) imageView.position.center() + (imageView.size.height() / 2.0) else imageView.position.right()
+    val bottom = if (flipped) imageView.position.middle() + (imageView.size.width() / 2.0) else imageView.position.bottom()
+
+    val x1 = math.max(left, rs.selection.minX)
+    val y1 = math.max(top, rs.selection.minY)
+    val x2 = math.min(right, rs.selection.maxX)
+    val y2 = math.min(bottom, rs.selection.maxY)
     rs.selection.set(x1, y1, x2, y2)
   }
 }

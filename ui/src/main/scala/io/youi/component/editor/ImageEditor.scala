@@ -16,6 +16,7 @@ class ImageEditor extends AbstractContainer {
 
   val aspectRatio: Var[AspectRatio] = Var(AspectRatio.Original)
   val imageScale: Var[Double] = Var(1.0)
+  val autoFit: Var[Boolean] = Var(false)
 
   val imageView: ImageView = new ImageView
   val rs: RectangularSelection = new RectangularSelection
@@ -148,12 +149,30 @@ class ImageEditor extends AbstractContainer {
     imageView.position.center := size.center
     imageView.position.middle := size.middle
 
+    imageView.rotation := 0.0
+    if (autoFit()) {
+      fit()
+    } else {
+      original()
+    }
+  }
+
+  def fit(): Unit = {
     val scaled = SizeUtility.scale(imageView.size.measured.width, imageView.size.measured.height, size.width - (rs.blocks.size() * 2.0), size.height - (rs.blocks.size() * 2.0), scaleUp = imageView.image.isVector)
     imageView.size.width := scaled.width
     imageView.size.height := scaled.height
     imageScale := scaled.scale
-    imageView.rotation := 0.0
+    resetSelection()
+  }
 
+  def original(): Unit = {
+    imageView.size.width := imageView.size.measured.width
+    imageView.size.height := imageView.size.measured.height
+    imageScale := 1.0
+    resetSelection()
+  }
+
+  def resetSelection(): Unit = {
     val x1 = math.max(imageView.position.left(), rs.selection.minX)
     val y1 = math.max(imageView.position.top(), rs.selection.minY)
     val x2 = math.min(imageView.position.right(), rs.selection.maxX)

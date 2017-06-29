@@ -89,8 +89,24 @@ object ImageEditorExample extends HTMLScreen {
       event.click.on(editor.scale(-0.1))
     }
 
-    val fileUpload = new TextInput {
+    val fit = new Button {
+      text := "Fit Image"
       position.left := zoomOut.position.right + 20.0
+      position.top := resetButton.position.top
+
+      event.click.on(editor.fit())
+    }
+
+    val original = new Button {
+      text := "Original Size"
+      position.left := fit.position.right + 20.0
+      position.top := resetButton.position.top
+
+      event.click.on(editor.original())
+    }
+
+    val fileUpload = new TextInput {
+      position.left := original.position.right + 20.0
       position.top := resetButton.position.top
       element.`type` = "file"
       element.addEventListener("change", (evt: Event) => {
@@ -102,7 +118,7 @@ object ImageEditorExample extends HTMLScreen {
     }
 
     container.children ++= List(
-      resetButton, rotateLeft, rotateRight, zoomIn, zoomOut, fileUpload
+      resetButton, rotateLeft, rotateRight, zoomIn, zoomOut, fit, original, fileUpload
     )
   }
 

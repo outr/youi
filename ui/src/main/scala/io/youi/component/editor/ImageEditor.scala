@@ -154,9 +154,13 @@ class ImageEditor extends AbstractContainer {
     }
   }
 
-  def fit(): Unit = {
+  def reCenter(): Unit = {
     imageView.position.center := size.center
     imageView.position.middle := size.middle
+  }
+
+  def fit(): Unit = {
+    reCenter()
     val r = math.abs(imageView.rotation() % 1.0)
     val flipped = r == 0.25 || r == 0.75
     val cw = size.width - (rs.blocks.size() * 2.0)
@@ -169,8 +173,7 @@ class ImageEditor extends AbstractContainer {
   }
 
   def original(): Unit = {
-    imageView.position.center := size.center
-    imageView.position.middle := size.middle
+    reCenter()
     imageView.size.width := imageView.size.measured.width
     imageView.size.height := imageView.size.measured.height
     imageScale := 1.0

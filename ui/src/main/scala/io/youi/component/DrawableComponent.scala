@@ -6,6 +6,8 @@ import io.youi.theme.DrawableComponentTheme
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 import reactify.Var
 
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.scalajs.js
 
 class DrawableComponent extends CanvasComponent with PaintSupport {
@@ -26,7 +28,7 @@ class DrawableComponent extends CanvasComponent with PaintSupport {
 
   override protected def paintTheme: PaintTheme = theme()
 
-  override protected def draw(context: CanvasRenderingContext2D): Unit = {
+  override protected def draw(context: CanvasRenderingContext2D): Future[Unit] = {
     background() match {
       case paint if paint == Paint.none => // No background
       case paint => {
@@ -35,15 +37,26 @@ class DrawableComponent extends CanvasComponent with PaintSupport {
       }
     }
 
-    preDraw.foreach(_.draw(this, context))
-    fill.value.set(this, context)
-    stroke.value.set(this, context)
-    drawable().draw(this, context)
-    if (autoPaint) {
-      fill.value.fill(context)
-      stroke.value.stroke(context)
+    var future = Future.successful(())
+
+    preDraw.foreach { d =>
+      future = future.flatMap(_ => d.draw(this, context))
     }
-    postDraw.foreach(_.draw(this, context))
+    future = future.flatMap { _ =>
+      fill.value.set(this, context)
+      stroke.value.set(this, context)
+      drawable().draw(this, context)
+    }
+    if (autoPaint) {
+      future = future.map { _ =>
+        fill.value.fill(context)
+        stroke.value.stroke(context)
+      }
+    }
+    postDraw.foreach { d =>
+      future = future.flatMap(_ => d.draw(this, context))
+    }
+    future
   }
 
   protected def autoPaint: Boolean = true

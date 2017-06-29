@@ -4,6 +4,7 @@ import io.youi.component.Component
 import io.youi.style.Paint
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 
+import scala.concurrent.Future
 import scala.scalajs.js
 
 case class Stroke(paint: Paint,
@@ -30,9 +31,10 @@ case class Stroke(paint: Paint,
 
   override def boundingBox: BoundingBox = BoundingBox.zero
 
-  override def draw(component: Component, context: CanvasRenderingContext2D): Unit = {
+  override def draw(component: Component, context: CanvasRenderingContext2D): Future[Unit] = {
     set(component, context)
     stroke(context)
+    Future.successful(())
   }
 }
 

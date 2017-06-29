@@ -17,7 +17,7 @@ class ImageEditor extends AbstractContainer {
   val aspectRatio: Var[AspectRatio] = Var(AspectRatio.Original)
   val imageScale: Var[Double] = Var(1.0)
 
-  private val imageView: ImageView = new ImageView
+  val imageView: ImageView = new ImageView
   val rs: RectangularSelection = new RectangularSelection
   val pixelCount: Val[Double] = Val(imageView.size.measured.width * imageView.size.measured.height)
   val wheelMultiplier: Var[Double] = Var(0.001)
@@ -42,25 +42,19 @@ class ImageEditor extends AbstractContainer {
 
   val preview: Var[html.Canvas] = Var(CanvasPool(rs.selection.width, rs.selection.height), static = true)
 
-  private val previewUpdater = LazyUpdate {
+  private val previewUpdater = LazyFuture({
     val destination = CanvasPool(rs.selection.width, rs.selection.height)
-    try {
-      val context = destination.context
-      context.translate(imageView.position.x - rs.selection.x1, imageView.position.y - rs.selection.y1)
-      context.translate(imageView.size.width / 2.0, imageView.size.height / 2.0)
-      context.rotate(imageView.rotation() * (math.Pi * 2.0))
-      context.translate(-imageView.size.width / 2.0, -imageView.size.height / 2.0)
-      imageView.image().drawImage(this, context, imageView.size.width, imageView.size.height)
+    val context = destination.context
+    context.translate(imageView.position.x - rs.selection.x1, imageView.position.y - rs.selection.y1)
+    context.translate(imageView.size.width / 2.0, imageView.size.height / 2.0)
+    context.rotate(imageView.rotation() * (math.Pi * 2.0))
+    context.translate(-imageView.size.width / 2.0, -imageView.size.height / 2.0)
+    imageView.image().drawImage(this, destination, context, imageView.size.width, imageView.size.height).map { _ =>
       val previous = preview()
       preview := destination
       CanvasPool.restore(previous)
-    } catch {
-      case t: Throwable => {
-        scribe.error(t)
-        CanvasPool.restore(destination)
-      }
     }
-  }
+  }, automatic = false)
 
   revision.on(previewUpdater.flag())
   delta.on(previewUpdater.update())

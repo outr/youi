@@ -3,12 +3,13 @@ package io.youi.component
 import io.youi.LazyFuture
 import io.youi.component.draw.{BoundingBox, Drawable}
 import io.youi.image.Image
-import org.scalajs.dom.File
+import org.scalajs.dom.{File, html}
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 import reactify.Var
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.util.{Failure, Success}
 
 class ImageView extends DrawableComponent {
   def this(file: File) = {
@@ -52,7 +53,7 @@ class ImageView extends DrawableComponent {
     }
   }
 
-  drawable := new ImageDrawer(image)
+  drawable := new ImageDrawer(image, canvas)
 
   def load(file: File): Future[Unit] = Image.fromFile(file).map { image =>
     this.image := image
@@ -70,9 +71,9 @@ object ImageMode {
   case object Speed extends ImageMode
 }
 
-class ImageDrawer(image: Image) extends Drawable {
-  override def draw(component: Component, context: CanvasRenderingContext2D): Unit = {
-    image.drawImage(component, context, component.size.width(), component.size.height())
+class ImageDrawer(image: Image, canvas: html.Canvas) extends Drawable {
+  override def draw(component: Component, context: CanvasRenderingContext2D): Future[Unit] = {
+    image.drawImage(component, canvas, context, component.size.width(), component.size.height())
   }
 
   override def boundingBox: BoundingBox = image.boundingBox

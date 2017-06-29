@@ -80,11 +80,9 @@ case class TextPaths(paths: Vector[TextPath]) extends Drawable {
     }.sortBy(_.data.distance)
   }
 
-  override def draw(component: Component, context: CanvasRenderingContext2D): Unit = {
+  override def draw(component: Component, context: CanvasRenderingContext2D): Future[Unit] = {
     context.translate(boundingBox.adjustX, boundingBox.adjustY)
-    paths.foreach { textPath =>
-      textPath.path.draw(component, context)
-    }
+    Future.sequence(paths.map(_.path.draw(component, context))).map(_ => ())
   }
 }
 

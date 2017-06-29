@@ -6,15 +6,17 @@ import scala.concurrent.Future
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class LazyFuture[T](f: () => Future[T], maxFrequency: FiniteDuration) {
+class LazyFuture[T](f: () => Future[T], maxFrequency: FiniteDuration, automatic: Boolean = true) {
   private var lastUpdate: Long = 0L
   private val dirty = new AtomicBoolean(false)
 
   def flag(): Unit = if (dirty.compareAndSet(false, true)) {
-    if (isReady) {
-      update()
-    } else {
-      AnimationFrame.once(delay.millis)(update())
+    if (automatic) {
+      if (isReady) {
+        update()
+      } else {
+        AnimationFrame.once(delay.millis)(update())
+      }
     }
   }
   def isFlagged: Boolean = dirty.get()
@@ -24,7 +26,7 @@ class LazyFuture[T](f: () => Future[T], maxFrequency: FiniteDuration) {
 
   private var future: Option[Future[T]] = None
 
-  private def update(force: Boolean = false): Unit = {
+  def update(force: Boolean = false): Unit = {
     val finished = future.forall(_.isCompleted)
     if (finished) {
       if (future.nonEmpty) {
@@ -34,7 +36,10 @@ class LazyFuture[T](f: () => Future[T], maxFrequency: FiniteDuration) {
 
       if ((isReady && dirty.compareAndSet(true, false)) || force) {
         val future = f()
-        future.onComplete(_ => update())
+        future.failed.foreach(t => scribe.error(t))
+        if (automatic) {
+          future.onComplete(_ => update())
+        }
         this.future = Some(future)
       }
     }
@@ -42,5 +47,7 @@ class LazyFuture[T](f: () => Future[T], maxFrequency: FiniteDuration) {
 }
 
 object LazyFuture {
-  def apply[T](f: => Future[T], maxFrequency: FiniteDuration = 0.millis): LazyFuture[T] = new LazyFuture(() => f, maxFrequency)
+  def apply[T](f: => Future[T],
+               maxFrequency: FiniteDuration = 0.millis,
+               automatic: Boolean = true): LazyFuture[T] = new LazyFuture(() => f, maxFrequency, automatic)
 }

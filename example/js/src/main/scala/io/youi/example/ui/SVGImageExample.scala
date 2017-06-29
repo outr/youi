@@ -1,10 +1,11 @@
 package io.youi.example.ui
 
 import io.youi.app.screen.UIScreen
-import io.youi.component.ImageView
+import io.youi.component.{ImageView, RenderMode, Renderer}
 import io.youi.dom._
 import io.youi.image.SVGImage
 import org.scalajs.dom.raw.SVGCircleElement
+import org.scalajs.dom._
 
 object SVGImageExample extends UIExampleScreen with UIScreen {
   override def name: String = "SVG Image"
@@ -18,12 +19,17 @@ object SVGImageExample extends UIExampleScreen with UIScreen {
     """.stripMargin
 
   override def createUI(): Unit = {
-    container.children += new ImageView("/images/tiger.svg") {
+    container.children += new ImageView("/images/test2.svg") {
       position.left := 10.0
       position.top := 10.0
+
+      event.click.on {
+        size.width.static(size.width * 1.1)
+        size.height.static(size.height * 1.1)
+      }
     }
 
-    container.children += new ImageView(svgString) {
+    /*container.children += new ImageView(svgString) {
       position.center := renderer.position.center
       position.middle := renderer.position.middle
 
@@ -39,6 +45,6 @@ object SVGImageExample extends UIExampleScreen with UIScreen {
       }
 
       event.click.on(toggleColor())
-    }
+    }*/
   }
 }

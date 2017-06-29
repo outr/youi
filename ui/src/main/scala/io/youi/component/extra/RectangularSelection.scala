@@ -10,6 +10,8 @@ import io.youi.theme.RectangularSelectionTheme
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 import reactify._
 
+import scala.concurrent.Future
+
 class RectangularSelection extends DrawableComponent {
   override lazy val theme: Var[_ <: RectangularSelectionTheme] = Var(RectangularSelection)
 
@@ -235,7 +237,7 @@ class RectangularSelection extends DrawableComponent {
     math.abs(from - to) <= selection.edgeDistance()
   }
 
-  override protected def draw(context: CanvasRenderingContext2D): Unit = {
+  override protected def draw(context: CanvasRenderingContext2D): Future[Unit] = {
     dragging.update()
     super.draw(context)
   }

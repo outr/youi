@@ -13,20 +13,20 @@ import org.scalajs.dom.raw.SVGSVGElement
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Future, Promise}
 
-trait Image extends Drawable {
+trait Image {
   val original: Option[Image]
   val width: Double
   val height: Double
 
-  override def draw(component: Component, context: CanvasRenderingContext2D): Unit = {
-    drawImage(component, context, width, height)
-  }
-
-  def drawImage(component: Component, context: CanvasRenderingContext2D, width: Double, height: Double): Unit
+  def drawImage(component: Component,
+                canvas: html.Canvas,
+                context: CanvasRenderingContext2D,
+                width: Double,
+                height: Double): Future[Unit]
 
   def resized(width: Double, height: Double): Future[Image]
 
-  override lazy val boundingBox: BoundingBox = BoundingBox(0.0, 0.0, width, height)
+  lazy val boundingBox: BoundingBox = BoundingBox(0.0, 0.0, width, height)
 
   def dispose(): Unit
 }
@@ -111,7 +111,7 @@ object Image {
               height: Option[Double] = None): SVGImage = {
     val original = SVGImage.measure(svg).toSize
     val size = SizeUtility.size(width, height, original)
-    SVGImage(svg, size.width, size.height, None)
+    SVGImage(svg, size.width, size.height, None, original)
   }
 
   def fromSVGString(svgString: String,

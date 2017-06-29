@@ -148,7 +148,7 @@ class ImageEditor extends AbstractContainer {
     imageView.position.center := size.center
     imageView.position.middle := size.middle
 
-    val scaled = SizeUtility.scale(imageView.size.measured.width, imageView.size.measured.height, size.width - (rs.blocks.size() * 2.0), size.height - (rs.blocks.size() * 2.0))
+    val scaled = SizeUtility.scale(imageView.size.measured.width, imageView.size.measured.height, size.width - (rs.blocks.size() * 2.0), size.height - (rs.blocks.size() * 2.0), scaleUp = imageView.image.isVector)
     imageView.size.width := scaled.width
     imageView.size.height := scaled.height
     imageScale := scaled.scale

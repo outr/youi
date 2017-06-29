@@ -9,7 +9,6 @@ import reactify.Var
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.util.{Failure, Success}
 
 class ImageView extends DrawableComponent {
   def this(file: File) = {
@@ -43,8 +42,8 @@ class ImageView extends DrawableComponent {
     }
   }
 
-  size.measured.width := image.width
-  size.measured.height := image.height
+  size.measured.width := image.originalWidth
+  size.measured.height := image.originalHeight
 
   size.width.and(size.height).on(resizer.flag())
   image.attach { i =>

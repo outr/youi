@@ -18,6 +18,9 @@ trait Image {
   val width: Double
   val height: Double
 
+  def originalWidth: Double = original.map(_.width).getOrElse(width)
+  def originalHeight: Double = original.map(_.height).getOrElse(height)
+
   def drawImage(component: Component,
                 canvas: html.Canvas,
                 context: CanvasRenderingContext2D,

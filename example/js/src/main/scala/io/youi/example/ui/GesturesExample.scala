@@ -8,9 +8,7 @@ object GesturesExample extends UIExampleScreen with UIScreen {
   override def path: String = "/examples/gestures.html"
 
   override def createUI(): Unit = {
-    val texture = Texture("/images/icon.png")
-
-    container.children += new ImageView(texture) {
+    container.children += new ImageView("/images/icon.png") {
       position.center := renderer.position.center
       position.middle := renderer.position.middle
 //      event.pointer.move.attach { evt =>

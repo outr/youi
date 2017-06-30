@@ -11,29 +11,29 @@ object ImageExample extends UIExampleScreen with UIScreen {
   override def path: String = "/examples/image.html"
 
   override def createUI(): Unit = {
-    val texture = Texture("/images/icon.png")
+    val icon = "/images/icon.png"
 
-    container.children += new ImageView(texture) {     // Top-Left
+    container.children += new ImageView(icon) {     // Top-Left
       position.left := 50.0
       position.top := 50.0
       size.width := 100.0
       size.height := 100.0
     }
-    container.children += new ImageView(texture) {     // Top-Right
+    container.children += new ImageView(icon) {     // Top-Right
       position.right := renderer.position.right - 50.0
       position.top := 50.0
     }
-    container.children += new ImageView(texture) {     // Bottom-Left
+    container.children += new ImageView(icon) {     // Bottom-Left
       position.left := 50.0
       position.bottom := renderer.position.bottom - 50.0
     }
-    container.children += new ImageView(texture) {     // Bottom-Right
+    container.children += new ImageView(icon) {     // Bottom-Right
       position.right := renderer.position.right - 50.0
       position.bottom := renderer.position.bottom - 50.0
       size.width := 300.0
       size.height := 300.0
     }
-    container.children += new ImageView(texture) {     // Center
+    container.children += new ImageView(icon) {     // Center
       position.center := renderer.position.center
       position.middle := renderer.position.middle
 

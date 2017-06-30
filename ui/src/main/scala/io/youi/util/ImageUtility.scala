@@ -88,6 +88,16 @@ object ImageUtility {
     promise.future
   }
 
+  def loadText(file: File): Future[String] = {
+    val reader = new FileReader
+    val promise = Promise[String]
+    reader.addEventListener("load", (_: Event) => {
+      promise.success(reader.result.asInstanceOf[String])
+    })
+    reader.readAsText(file)
+    promise.future
+  }
+
   /**
     * Supports a Video or Image file and generates a smooth image preview for it.
     */

@@ -8,6 +8,7 @@ import io.youi.theme.TextTheme
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 import reactify.Var
 
+import scala.concurrent.Future
 import scala.scalajs.js
 
 class Text extends DrawableComponent {
@@ -68,17 +69,20 @@ class TextSelection(text: Text) extends Drawable {
   dragSupport.drop.attach(d => scribe.info(s"Dropped: $d"))
   value.on(text.reDraw.flag())
 
-  override def draw(component: Component, context: CanvasRenderingContext2D): Unit = value().foreach { selection =>
-    val paths = text.textPaths.get.paths.slice(selection.start, selection.end)
-    val first = paths.head.path.boundingBox
-    val last = paths.last.path.boundingBox
-    val x1 = first.x1
-    val y1 = 0.0
-    val x2 = last.x2
-    val y2 = text.size.height()
-    context.fillStyle = fill().apply(text).asInstanceOf[js.Any]
-    scribe.info(s"Drawing: $x1, $y1, $x2, $y2")
-    context.fillRect(x1, y1, x2 - x1, y2 - y1)
+  override def draw(component: Component, context: CanvasRenderingContext2D): Future[Unit] = {
+    value().foreach { selection =>
+      val paths = text.textPaths.get.paths.slice(selection.start, selection.end)
+      val first = paths.head.path.boundingBox
+      val last = paths.last.path.boundingBox
+      val x1 = first.x1
+      val y1 = 0.0
+      val x2 = last.x2
+      val y2 = text.size.height()
+      context.fillStyle = fill().apply(text).asInstanceOf[js.Any]
+      scribe.info(s"Drawing: $x1, $y1, $x2, $y2")
+      context.fillRect(x1, y1, x2 - x1, y2 - y1)
+    }
+    Future.successful(())
   }
 
   private def mouseEventToIndex(mouseEvent: MouseEvent): Option[Int] = {

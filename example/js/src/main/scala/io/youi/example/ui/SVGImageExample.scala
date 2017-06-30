@@ -1,14 +1,14 @@
 package io.youi.example.ui
 
 import io.youi.app.screen.UIScreen
-import io.youi.component.DrawableComponent
-import io.youi.component.draw.SVGDrawable
+import io.youi.component.ImageView
 import io.youi.dom._
+import io.youi.image.SVGImage
 import org.scalajs.dom.raw.SVGCircleElement
 
-object SVGDrawableExample extends UIExampleScreen with UIScreen {
-  override def name: String = "SVG Drawable"
-  override def path: String = "/examples/svg-drawable.html"
+object SVGImageExample extends UIExampleScreen with UIScreen {
+  override def name: String = "SVG Image"
+  override def path: String = "/examples/svg-image.html"
 
   private val svgString =
     """
@@ -18,24 +18,18 @@ object SVGDrawableExample extends UIExampleScreen with UIScreen {
     """.stripMargin
 
   override def createUI(): Unit = {
-    container.children += new DrawableComponent {
-      SVGDrawable.fromPath("/images/tiger.svg").foreach { svg =>
-        drawable := svg
-      }
-
+    container.children += new ImageView("/images/tiger.svg") {
       position.left := 10.0
       position.top := 10.0
     }
 
-    val svg = SVGDrawable(svgString)
-    container.children += new DrawableComponent {
-      drawable := svg
+    container.children += new ImageView(svgString) {
       position.center := renderer.position.center
       position.middle := renderer.position.middle
 
-      val circle: SVGCircleElement = svg.svg.byId[SVGCircleElement]("circle")
-
-      event.click.attach { _ =>
+      def toggleColor(): Unit = {
+        val current = image().asInstanceOf[SVGImage]
+        val circle = current.svg.byId[SVGCircleElement]("circle")
         if (circle.style.fill == "blue") {
           circle.style.fill = "red"
         } else {
@@ -43,6 +37,8 @@ object SVGDrawableExample extends UIExampleScreen with UIScreen {
         }
         reDraw.flag()
       }
+
+      event.click.on(toggleColor())
     }
   }
 }

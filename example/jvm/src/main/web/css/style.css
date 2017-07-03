@@ -46,3 +46,8 @@ input {
     vertical-align: middle;
     text-align: center;
 }
+
+.hidden {
+    display: none !important;
+    visibility: hidden !important;
+}

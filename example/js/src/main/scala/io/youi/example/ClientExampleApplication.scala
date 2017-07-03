@@ -1,7 +1,7 @@
 package io.youi.example
 
 import io.youi.UI
-import io.youi.app.screen.CrossFadeSupport
+import io.youi.app.screen.{CrossFadeSupport, LoadingTransitionSupport}
 import io.youi.app.{ClientApplication, ClientConnectivity}
 import io.youi.dom._
 import io.youi.example.screen.{CommunicationScreen, LoginScreen}
@@ -11,7 +11,7 @@ import org.scalajs.dom._
 import scala.concurrent.duration._
 import scala.scalajs.js.JSApp
 
-object ClientExampleApplication extends JSApp with ExampleApplication with ClientApplication with CrossFadeSupport {
+object ClientExampleApplication extends JSApp with ExampleApplication with ClientApplication with LoadingTransitionSupport {
   val communicationScreen = CommunicationScreen
   val login = LoginScreen
 
@@ -46,8 +46,11 @@ object ClientExampleApplication extends JSApp with ExampleApplication with Clien
 
   def cc: ClientConnectivity = clientConnectivity(ClientExampleApplication.connectivity)
 
-  override protected val crossFadeElement: html.Div = byId[html.Div]("loading")
-  override protected val crossFadeDuration: FiniteDuration = 250.milliseconds
+//  override protected val crossFadeElement: html.Div = byId[html.Div]("loading")
+//  override protected val crossFadeDuration: FiniteDuration = 250.milliseconds
+
+
+  override protected val loadingElement: html.Element = byId[html.Div]("loading")
 
   override def main(): Unit = {
     UI.init()

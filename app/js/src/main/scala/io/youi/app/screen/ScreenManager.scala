@@ -28,9 +28,6 @@ trait ScreenManager {
 
   private def screenChange(oldScreen: Screen, newScreen: Screen): Unit = {
     scribe.info(s"Screen change from $oldScreen to $newScreen...")
-    managerFuture = managerFuture.flatMap(_ => beforeScreenChange(oldScreen, newScreen))
-    deactivate(oldScreen)
-    activate(newScreen)
     if (!loaded()) {
       // Wait for the page to fully load before finishing screen change
       val promise = Promise[Unit]
@@ -39,6 +36,9 @@ trait ScreenManager {
       }
       managerFuture = managerFuture.flatMap(_ => promise.future)
     }
+    managerFuture = managerFuture.flatMap(_ => beforeScreenChange(oldScreen, newScreen))
+    managerFuture = managerFuture.flatMap(_ => deactivate(oldScreen))
+    managerFuture = managerFuture.flatMap(_ => activate(newScreen))
     managerFuture = managerFuture.flatMap(_ => afterScreenChange(oldScreen, newScreen))
   }
 
@@ -75,7 +75,7 @@ trait ScreenManager {
     future
   }
 
-  private def activate(screen: Screen): Future[Unit] = managerFuture.flatMap { _ =>
+  private def activate(screen: Screen): Future[Unit] = {
     var future: Future[Unit] = Future.successful(())
 
     val state = screen.state()
@@ -98,7 +98,7 @@ trait ScreenManager {
     future
   }
 
-  private def deactivate(screen: Screen): Future[Unit] = managerFuture.flatMap { _ =>
+  private def deactivate(screen: Screen): Future[Unit] = {
     if (screen.state() == ScreenState.Activated) {
       screen.currentState := ScreenState.Deactivating
       val future = Screen.deactivate(screen).map { _ =>
@@ -113,7 +113,7 @@ trait ScreenManager {
     }
   }
 
-  def dispose(screen: Screen): Future[Unit] = managerFuture.flatMap { _ =>
+  def dispose(screen: Screen): Future[Unit] = {
     if (screen.state() != ScreenState.Disposed) {
       screen.currentState := ScreenState.Disposing
       val future = Screen.dispose(screen).map { _ =>

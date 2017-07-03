@@ -26,8 +26,11 @@ trait ScreenManager {
     override def change(oldScreen: Screen, newScreen: Screen): Unit = screenChange(oldScreen, newScreen)
   })
 
-  private def screenChange(oldScreen: Screen, newScreen: Screen): Unit = {
-    scribe.info(s"Screen change from $oldScreen to $newScreen...")
+  private def screenChange(oldScreen: Screen, newScreen: Screen): Unit = synchronized {
+    if (managerFuture.isCompleted) {
+      managerFuture = Future.successful(())
+    }
+    scribe.debug(s"Screen change from $oldScreen to $newScreen...")
     if (!loaded()) {
       // Wait for the page to fully load before finishing screen change
       val promise = Promise[Unit]

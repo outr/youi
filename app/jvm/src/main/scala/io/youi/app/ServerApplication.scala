@@ -3,15 +3,15 @@ package io.youi.app
 import java.io.File
 
 import akka.actor.{ActorSystem, Cancellable}
-import io.youi.{JavaScriptError, http}
-import reactify.{Channel, Var}
 import io.youi.http._
 import io.youi.net.URL
 import io.youi.server.Server
 import io.youi.server.handler.HttpHandler
+import io.youi.{JavaScriptError, http}
 import net.sf.uadetector.UserAgentType
 import net.sf.uadetector.service.UADetectorServiceFactory
 import org.powerscala.io._
+import reactify.{Channel, Var}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
@@ -123,6 +123,10 @@ trait ServerApplication extends YouIApplication with Server {
     val content = Content.file(file)
     handler.matcher(http.path.exact(path)).resource(content)
     path
+  }
+
+  def main(args: Array[String]): Unit = {
+    start()
   }
 
   override def dispose(): Unit = {

@@ -6,8 +6,7 @@ import io.youi.app._
 import io.youi.http._
 import io.youi.net.ContentType
 import io.youi.server.UndertowServer
-import io.youi.server.handler.{CachingManager, HttpHandler}
-import io.youi.stream.{ById, Delta}
+import io.youi.server.handler.CachingManager
 
 object ServerExampleApplication extends UndertowServer with ExampleApplication with ServerApplication {
   config.clearListeners().addHttpListener("0.0.0.0")
@@ -31,8 +30,4 @@ object ServerExampleApplication extends UndertowServer with ExampleApplication w
   handler.caching(CachingManager.LastModified()).classLoader("", (path: String) => s"content$path")
   handler.caching(CachingManager.LastModified()).matcher(path.startsWith("/app")).classLoader()
   handler.caching(CachingManager.LastModified()).matcher(path.startsWith("/css")).file(new File("src/main/web"))
-
-  def main(args: Array[String]): Unit = {
-    start()
-  }
 }

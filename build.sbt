@@ -71,6 +71,18 @@ lazy val core = crossProject.in(file("core"))
 lazy val coreJS = core.js
 lazy val coreJVM = core.jvm
 
+lazy val math = crossProject.in(file("math"))
+  .settings(
+    name := "youi-math",
+    libraryDependencies ++= Seq(
+      "org.scalactic" %%% "scalactic" % scalacticVersion,
+      "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
+    )
+  )
+
+lazy val mathJS = math.js
+lazy val mathJVM = math.jvm
+
 lazy val stream = project.in(file("stream"))
   .settings(
     name := "youi-stream",

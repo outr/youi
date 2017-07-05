@@ -7,6 +7,7 @@ resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
 resolvers in ThisBuild += Resolver.sonatypeRepo("snapshots")
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 
+val profigVersion = "1.0.0"
 val pixiJsVersion = "4.5.3"
 val scribeVersion = "1.4.3"
 val powerScalaVersion = "2.0.5"
@@ -24,7 +25,6 @@ val canvgVersion = "1.4.0_1"
 val openTypeVersion = "0.7.1_2"
 val picaVersion = "3.0.4"
 val scalaXMLVersion = "1.0.6"
-val scallopVersion = "3.0.0"
 val scalacticVersion = "3.0.3"
 val scalaTestVersion = "3.0.3"
 
@@ -46,6 +46,7 @@ lazy val core = crossProject.in(file("core"))
     resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases",
     libraryDependencies ++= Seq(
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
+      "com.outr" %%% "profig" % profigVersion,
       "com.outr" %%% "scribe" % scribeVersion,
       "com.outr" %%% "reactify" % reactifyVersion,
       "org.scalactic" %%% "scalactic" % scalacticVersion,
@@ -191,8 +192,7 @@ lazy val template = crossProject.in(file("template"))
   .jvmSettings(
     fork := true,
     libraryDependencies ++= Seq(
-      "org.powerscala" %% "powerscala-io" % powerScalaVersion,
-      "org.rogach" %% "scallop" % scallopVersion
+      "org.powerscala" %% "powerscala-io" % powerScalaVersion
     ),
     assemblyJarName in assembly := "youi-template.jar"
   )

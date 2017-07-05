@@ -34,11 +34,14 @@ class UndertowServerImplementation(server: Server) extends ServerImplementation 
       .setNext(this)
 
     val builder = Undertow.builder()
+      // TODO: test if we can re-enable this as it was causing problems
 //      .setServerOption(UndertowOptions.ENABLE_HTTP2, java.lang.Boolean.TRUE)
       .setHandler(encodingHandler)
     server.config.listeners.foreach {
-      case HttpServerListener(host, port) => builder.addHttpListener(port, host)
-      case HttpsServerListener(host, port, keyStore) => {
+      case HttpServerListener(host, port, enabled) => if (enabled) {
+        builder.addHttpListener(port, host)
+      }
+      case HttpsServerListener(host, port, keyStore, enabled) => if (enabled) {
         val sslContext = SSLUtil.createSSLContext(keyStore.location, keyStore.password)
         builder.addHttpsListener(port, host, sslContext)
       }

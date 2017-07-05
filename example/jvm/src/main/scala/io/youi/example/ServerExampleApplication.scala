@@ -9,8 +9,6 @@ import io.youi.server.UndertowServer
 import io.youi.server.handler.CachingManager
 
 object ServerExampleApplication extends UndertowServer with ExampleApplication with ServerApplication {
-  config.clearListeners().addHttpListener("0.0.0.0")
-
   val uiExamples: Page = page(UIExamples)
   val generalPages: Page = page(GeneralPages)
 

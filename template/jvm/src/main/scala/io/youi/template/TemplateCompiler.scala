@@ -55,8 +55,7 @@ class TemplateCompiler(val sourceDirectory: File,
 
   def stopWatching(): Unit = watcher.dispose()
 
-  def startServer(host: String, port: Int): Unit = {
-    server.config.clearListeners().addHttpListener(host, port)
+  def startServer(): Unit = {
     server.start()
   }
 

@@ -44,7 +44,7 @@ trait Server extends HttpHandler with ErrorSupport {
     }
 
     implementation.start()
-    scribe.info(s"Server started on ${config.listeners().mkString(", ")}")
+    scribe.info(s"Server started on ${config.enabledListeners.mkString(", ")}")
   }
 
   def stop(): Unit = synchronized {

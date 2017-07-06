@@ -54,7 +54,7 @@ class ServerConfig(server: Server) {
                        port: Int = 8443,
                        keyStorePassword: String = "password",
                        keyStoreLocation: File = new File("keystore.jks")): ServerConfig = {
-    listeners := HttpsServerListener(host, port, KeyStore(keyStoreLocation.getAbsolutePath, keyStorePassword)) :: listeners()
+    listeners := HttpsServerListener(host, port, KeyStore(keyStoreLocation.getAbsolutePath, keyStorePassword), enabled = true) :: listeners()
     this
   }
 

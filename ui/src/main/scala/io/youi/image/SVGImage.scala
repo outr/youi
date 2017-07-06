@@ -8,7 +8,9 @@ import io.youi.dom._
 import org.scalajs.dom.raw._
 
 import scala.concurrent.{Future, Promise}
+import scala.concurrent.ExecutionContext.Implicits.global
 import io.youi._
+import io.youi.util.{CanvasPool, ImageUtility}
 import org.scalajs.dom.html
 
 import scala.scalajs._
@@ -48,6 +50,12 @@ case class SVGImage(svg: SVGSVGElement,
   } else {
     val original = this.original.getOrElse(this)
     Future.successful(copy(width = width, height = height, original = Some(original)))
+  }
+
+  override def toDataURL: Future[String] = CanvasPool.withCanvasFuture(width, height) { canvas =>
+    drawImage(null, canvas, canvas.context, width, height).flatMap { _ =>
+      ImageUtility.resizeToDataURL(canvas, width, height)
+    }
   }
 
   override def dispose(): Unit = {}

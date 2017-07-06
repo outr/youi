@@ -21,7 +21,7 @@ class ImageEditor extends AbstractContainer {
   val minPreviewSize: Var[Size] = Var(Size(1024.0, 1024.0))
 
   private val originalImage: Var[Image] = Var(Image.empty)
-  private val imageView: ImageView = new ImageView
+  val imageView: ImageView = new ImageView
   val rs: RectangularSelection = new RectangularSelection
   val pixelCount: Val[Double] = Val(imageView.size.measured.width * imageView.size.measured.height)
   val wheelMultiplier: Var[Double] = Var(0.001)
@@ -229,6 +229,8 @@ class ImageEditor extends AbstractContainer {
     val y2 = math.min(bottom, rs.selection.maxY)
     rs.selection.set(x1, y1, x2, y2)
   }
+
+  def originalDataURL: Future[String] = originalImage.toDataURL
 }
 
 sealed trait AspectRatio

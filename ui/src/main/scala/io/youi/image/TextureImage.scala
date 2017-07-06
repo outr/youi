@@ -37,5 +37,7 @@ case class TextureImage(img: html.Image,
     }
   }
 
+  override def toDataURL: Future[String] = ImageUtility.resizeToDataURL(img, img.width, img.height)
+
   override def dispose(): Unit = canvas.foreach(CanvasPool.restore)
 }

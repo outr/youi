@@ -22,4 +22,6 @@ object EmptyImage extends Image {
   override def dispose(): Unit = {}
 
   override def isVector: Boolean = true
+
+  override def toDataURL: Future[String] = throw new RuntimeException("Empty image cannot be represented as a data url.")
 }

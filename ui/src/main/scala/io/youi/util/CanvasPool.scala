@@ -3,6 +3,9 @@ package io.youi.util
 import io.youi._
 import org.scalajs.dom.html
 
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
+
 object CanvasPool {
   private var cached = List.empty[html.Canvas]
 
@@ -33,5 +36,14 @@ object CanvasPool {
     } finally {
       restore(canvas)
     }
+  }
+
+  def withCanvasFuture[R](width: Double, height: Double)(f: html.Canvas => Future[R]): Future[R] = {
+    val canvas = apply(width, height)
+    val future = f(canvas)
+    future.onComplete { _ =>
+      restore(canvas)
+    }
+    future
   }
 }

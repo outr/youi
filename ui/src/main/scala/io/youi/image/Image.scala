@@ -35,6 +35,8 @@ trait Image {
 
   def isRaster: Boolean = !isVector
 
+  def toDataURL: Future[String]
+
   def dispose(): Unit
 }
 

@@ -126,20 +126,38 @@ class ImageEditor extends AbstractContainer {
     revision.asInstanceOf[Var[Int]] := current + 1
   }
 
-  def load(file: File): Future[Unit] = imageView.load(file).map { img =>
+  def load(file: File): Future[Image] = imageView.load(file).map { img =>
     originalImage := img
     reset()
+    img
   }
 
-  def load(path: String): Future[Unit] = imageView.load(path).map { img =>
+  def load(path: String): Future[Image] = imageView.load(path).map { img =>
     originalImage := img
     reset()
+    img
+  }
+
+  def info: ImageEditorInfo = ImageEditorInfo(
+    ImageInfo(imageView.position.center(), imageView.position.middle(), imageView.rotation(), imageScale()),
+    SelectionInfo(rs.selection.x1(), rs.selection.y1(), rs.selection.x2(), rs.selection.y2())
+  )
+
+  def info_=(info: ImageEditorInfo): Unit = {
+    imageView.position.center := info.image.center
+    imageView.position.middle := info.image.middle
+    imageView.rotation := info.image.rotation
+    imageScale.static(info.image.scale)
+    updateFromScale()
+    rs.selection.x1 := info.selection.x1
+    rs.selection.y1 := info.selection.y1
+    rs.selection.x2 := info.selection.x2
+    rs.selection.y2 := info.selection.y2
   }
 
   def scale(amount: Double, point: Option[Point] = None): Unit = {
     imageScale.static(math.max(imageScale + amount, 0.1))
-    imageView.size.width.static(imageView.size.measured.width * imageScale)
-    imageView.size.height.static(imageView.size.measured.height * imageScale)
+    updateFromScale()
     point.foreach { p =>
       val offsetX = p.x - size.center
       val offsetY = p.y - size.middle
@@ -148,6 +166,11 @@ class ImageEditor extends AbstractContainer {
       imageView.position.center := center
       imageView.position.middle := middle
     }
+  }
+
+  private def updateFromScale(): Unit = {
+    imageView.size.width.static(imageView.size.measured.width * imageScale)
+    imageView.size.height.static(imageView.size.measured.height * imageScale)
   }
 
   def rotate(amount: Double): Unit = {
@@ -216,3 +239,9 @@ object AspectRatio {
 
   def fromSize(width: Double, height: Double): AspectRatio = Defined(width / height)
 }
+
+case class ImageEditorInfo(image: ImageInfo, selection: SelectionInfo)
+
+case class ImageInfo(center: Double, middle: Double, rotation: Double, scale: Double)
+
+case class SelectionInfo(x1: Double, y1: Double, x2: Double, y2: Double)

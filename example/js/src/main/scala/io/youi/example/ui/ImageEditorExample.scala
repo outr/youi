@@ -1,7 +1,7 @@
 package io.youi.example.ui
 
 import io.youi._
-import io.youi.component.editor.{AspectRatio, ImageEditor}
+import io.youi.component.editor.{AspectRatio, ImageEditor, ImageEditorInfo}
 import io.youi.component.Renderer
 import io.youi.hypertext.{Button, Canvas, ImageView, TextInput}
 import io.youi.example.ui.hypertext.HTMLScreen
@@ -105,8 +105,32 @@ object ImageEditorExample extends HTMLScreen {
       event.click.on(editor.original())
     }
 
-    val fileUpload = new TextInput {
+    val saved = Var[Option[ImageEditorInfo]](None)
+    val save = new Button {
+      text := "Save State"
       position.left := original.position.right + 20.0
+      position.top := resetButton.position.top
+
+      event.click.on(saved.static(Some(editor.info)))
+    }
+    val load = new Button {
+      text := "Load State"
+      position.left := save.position.right + 20.0
+      position.top := resetButton.position.top
+
+      event.click.on {
+        saved() match {
+          case Some(info) => {
+            scribe.info(s"Loading state: $info...")
+            editor.info = info
+          }
+          case None => scribe.info("No information saved!")
+        }
+      }
+    }
+
+    val fileUpload = new TextInput {
+      position.left := load.position.right + 20.0
       position.top := resetButton.position.top
       element.`type` = "file"
       element.addEventListener("change", (evt: Event) => {
@@ -118,7 +142,7 @@ object ImageEditorExample extends HTMLScreen {
     }
 
     container.children ++= List(
-      resetButton, rotateLeft, rotateRight, zoomIn, zoomOut, fit, original, fileUpload
+      resetButton, rotateLeft, rotateRight, zoomIn, zoomOut, fit, original, save, load, fileUpload
     )
   }
 

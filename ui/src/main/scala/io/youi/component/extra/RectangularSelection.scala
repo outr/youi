@@ -1,8 +1,7 @@
 package io.youi.component.extra
 
-import io.youi.Color
 import io.youi.component.draw.path.{Path, PathAction, Rectangle}
-import io.youi.component.draw.{Drawable, Group, RestoreContext, Stroke}
+import io.youi.component.draw._
 import io.youi.component.event.{DragSupport, Pointer}
 import io.youi.component.{DrawableComponent, PaintSupport, PaintTheme}
 import io.youi.style.{Cursor, Paint}
@@ -69,6 +68,8 @@ class RectangularSelection extends DrawableComponent {
     override protected def paintTheme: PaintTheme = theme.dashes
   }
 
+  lazy val overflow: Var[Paint] = Var(theme.overflow)
+
   object modal extends PaintSupport {
     override protected def paintTheme: PaintTheme = theme.modal
   }
@@ -81,6 +82,7 @@ class RectangularSelection extends DrawableComponent {
       Group(
         createModal(),
         createDashes(),
+        createOverflow(),
         createSelection(),
         createBlocks()
       )
@@ -131,6 +133,23 @@ class RectangularSelection extends DrawableComponent {
     selection.fill.value,
     selection.stroke.value
   )
+
+  protected def createOverflow(): Drawable = if (overflow().nonEmpty) {
+    val halfBlock = blocks.size() / 2.0
+    Group(
+      Path
+        .begin
+        .rect(0.0, 0.0, halfBlock, size.height())                                             // Left
+        .rect(halfBlock, 0.0, size.width() - blocks.size(), halfBlock)                        // Top
+        .rect(size.width() - halfBlock, 0.0, halfBlock, size.height())                        // Right
+        .rect(halfBlock, size.height() - halfBlock, size.width() - blocks.size(), halfBlock)  // Bottom
+        .fix(),
+      Fill(overflow)
+    )
+  } else {
+    Drawable.empty
+  }
+
   protected def createBlocks(): Drawable = {
     val halfBlock = blocks.size() / 2.0
     def block(x: Double, y: Double): PathAction = {

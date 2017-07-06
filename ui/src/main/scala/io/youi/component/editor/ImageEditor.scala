@@ -8,7 +8,6 @@ import io.youi.util.{CanvasPool, ImageUtility, SizeUtility}
 import org.scalajs.dom.{File, html}
 import reactify._
 
-import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 

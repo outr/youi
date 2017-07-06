@@ -55,6 +55,7 @@ trait RectangularSelectionTheme extends DrawableComponentTheme {
       val lineWidth: Var[Double] = Var(prnt(_.dashes.shadow.lineWidth, 0.5))
     }
   }
+  lazy val overflow: Var[Paint] = Var(prnt(_.overflow, Color.White))
   object modal extends PaintTheme {
     override val fill: Var[Paint] = Var(prnt(_.modal.fill, Color.Black.withAlpha(0.5)))
     override object stroke extends StrokeTheme {

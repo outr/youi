@@ -4,6 +4,7 @@ import io.youi._
 import io.youi.component.extra.RectangularSelection
 import io.youi.component._
 import io.youi.image.Image
+import io.youi.model.{ImageEditorInfo, ImageInfo, SelectionInfo}
 import io.youi.util.{CanvasPool, ImageUtility, SizeUtility}
 import org.scalajs.dom.{File, html}
 import reactify._
@@ -239,9 +240,3 @@ object AspectRatio {
 
   def fromSize(width: Double, height: Double): AspectRatio = Defined(width / height)
 }
-
-case class ImageEditorInfo(image: ImageInfo, selection: SelectionInfo)
-
-case class ImageInfo(center: Double, middle: Double, rotation: Double, scale: Double)
-
-case class SelectionInfo(x1: Double, y1: Double, x2: Double, y2: Double)

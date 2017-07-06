@@ -1,11 +1,12 @@
 package io.youi.example.ui
 
 import io.youi._
-import io.youi.component.editor.{AspectRatio, ImageEditor, ImageEditorInfo}
+import io.youi.component.editor.{AspectRatio, ImageEditor}
 import io.youi.component.Renderer
 import io.youi.hypertext.{Button, Canvas, ImageView, TextInput}
 import io.youi.example.ui.hypertext.HTMLScreen
 import io.youi.hypertext.border.BorderStyle
+import io.youi.model.ImageEditorInfo
 import org.scalajs.dom._
 import reactify._
 

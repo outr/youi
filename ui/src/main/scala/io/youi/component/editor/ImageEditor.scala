@@ -3,6 +3,7 @@ package io.youi.component.editor
 import io.youi._
 import io.youi.component.extra.RectangularSelection
 import io.youi.component._
+import io.youi.image.Image
 import io.youi.util.{CanvasPool, ImageUtility, SizeUtility}
 import org.scalajs.dom.{File, html}
 import reactify._
@@ -17,8 +18,10 @@ class ImageEditor extends AbstractContainer {
   val aspectRatio: Var[AspectRatio] = Var(AspectRatio.Original)
   val imageScale: Var[Double] = Var(1.0)
   val autoFit: Var[Boolean] = Var(false)
+  val minPreviewSize: Var[Size] = Var(Size(1024.0, 1024.0))
 
-  val imageView: ImageView = new ImageView
+  private val originalImage: Var[Image] = Var(Image.empty)
+  private val imageView: ImageView = new ImageView
   val rs: RectangularSelection = new RectangularSelection
   val pixelCount: Val[Double] = Val(imageView.size.measured.width * imageView.size.measured.height)
   val wheelMultiplier: Var[Double] = Var(0.001)
@@ -44,13 +47,19 @@ class ImageEditor extends AbstractContainer {
   val preview: Var[html.Canvas] = Var(CanvasPool(rs.selection.width, rs.selection.height), static = true)
 
   private val previewUpdater = LazyFuture({
-    val destination = CanvasPool(rs.selection.width, rs.selection.height)
+    val min = minPreviewSize()
+    val scaled = SizeUtility.scale(rs.selection.width(), rs.selection.height(), min.width, min.height, scaleUp = true)
+    val width = scaled.width
+    val height = scaled.height
+    val scale = scaled.scale
+    val destination = CanvasPool(width, height)
     val context = destination.context
+    context.scale(scale, scale)
     context.translate(imageView.position.x - rs.selection.x1, imageView.position.y - rs.selection.y1)
     context.translate(imageView.size.width / 2.0, imageView.size.height / 2.0)
     context.rotate(imageView.rotation() * (math.Pi * 2.0))
     context.translate(-imageView.size.width / 2.0, -imageView.size.height / 2.0)
-    imageView.image().drawImage(this, destination, context, imageView.size.width, imageView.size.height).map { _ =>
+    originalImage.drawImage(this, destination, context, imageView.size.width, imageView.size.height).map { _ =>
       val previous = preview()
       preview := destination
       CanvasPool.restore(previous)
@@ -118,11 +127,13 @@ class ImageEditor extends AbstractContainer {
     revision.asInstanceOf[Var[Int]] := current + 1
   }
 
-  def load(file: File): Future[Unit] = imageView.load(file).map { _ =>
+  def load(file: File): Future[Unit] = imageView.load(file).map { img =>
+    originalImage := img
     reset()
   }
 
-  def load(path: String): Future[Unit] = imageView.load(path).map { _ =>
+  def load(path: String): Future[Unit] = imageView.load(path).map { img =>
+    originalImage := img
     reset()
   }
 

@@ -54,12 +54,14 @@ class ImageView extends DrawableComponent {
 
   drawable := new ImageDrawer(image, canvas)
 
-  def load(file: File): Future[Unit] = Image.fromFile(file).map { image =>
+  def load(file: File): Future[Image] = Image.fromFile(file).map { image =>
     this.image := image
+    image
   }
 
-  def load(source: String): Future[Unit] = Image(source).map { image =>
+  def load(source: String): Future[Image] = Image(source).map { image =>
     this.image := image
+    image
   }
 }
 

@@ -36,9 +36,10 @@ object ImageUtility {
         }
       }
     }
-    val f = promise.future
-    single = f
-    f
+    val future = promise.future
+    future.failed.foreach(scribe.error(_))
+    single = future
+    future
   }
 
   def resizeToImage(source: html.Image | html.Canvas,
@@ -75,7 +76,9 @@ object ImageUtility {
       promise.success(img)
     })
     loadDataURL(file).foreach(img.src = _)
-    promise.future
+    val future = promise.future
+    future.failed.foreach(scribe.error(_))
+    future
   }
 
   def loadDataURL(file: File): Future[String] = {
@@ -85,7 +88,9 @@ object ImageUtility {
       promise.success(reader.result.asInstanceOf[String])
     })
     reader.readAsDataURL(file)
-    promise.future
+    val future = promise.future
+    future.failed.foreach(scribe.error(_))
+    future
   }
 
   def loadText(file: File): Future[String] = {
@@ -95,7 +100,9 @@ object ImageUtility {
       promise.success(reader.result.asInstanceOf[String])
     })
     reader.readAsText(file)
-    promise.future
+    val future = promise.future
+    future.failed.foreach(scribe.error(_))
+    future
   }
 
   /**
@@ -140,6 +147,8 @@ object ImageUtility {
     } else {
       // Unknown file type, no preview available
     }
-    promise.future
+    val future = promise.future
+    future.failed.foreach(scribe.error(_))
+    future
   }
 }

@@ -1,6 +1,6 @@
 name := "youi"
 organization in ThisBuild := "io.youi"
-version in ThisBuild := "0.4.4-SNAPSHOT"
+version in ThisBuild := "0.4.4"
 scalaVersion in ThisBuild := "2.12.2"
 crossScalaVersions in ThisBuild := List("2.12.2", "2.11.11")
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
@@ -17,7 +17,7 @@ val scalaJSDOM = "0.9.2"
 val httpAsyncClientVersion = "4.1.3"
 val circeVersion = "0.8.0"
 val uaDetectorVersion = "2014.10"
-val undertowVersion = "1.4.16.Final"
+val undertowVersion = "1.4.18.Final"
 val uPickleVersion = "0.4.4"
 val closureCompilerVersion = "v20170423"
 val hasherVersion = "1.2.1"

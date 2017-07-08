@@ -1,13 +1,13 @@
 name := "youi"
 organization in ThisBuild := "io.youi"
-version in ThisBuild := "0.4.4"
+version in ThisBuild := "0.4.5-SNAPSHOT"
 scalaVersion in ThisBuild := "2.12.2"
 crossScalaVersions in ThisBuild := List("2.12.2", "2.11.11")
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
 resolvers in ThisBuild += Resolver.sonatypeRepo("snapshots")
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 
-val profigVersion = "1.0.0"
+val profigVersion = "1.0.1"
 val pixiJsVersion = "4.5.3"
 val scribeVersion = "1.4.3"
 val powerScalaVersion = "2.0.5"

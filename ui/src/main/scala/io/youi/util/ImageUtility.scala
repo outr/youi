@@ -133,7 +133,7 @@ object ImageUtility {
       loadImage(file) { img =>
         val scaled = SizeUtility.scale(img.width, img.height, width, height, scaleUp)
         resizeToDataURL(img, scaled.width, scaled.height)
-      }
+      }.foreach(promise.success)
     } else {
       // Unknown file type, no preview available
     }

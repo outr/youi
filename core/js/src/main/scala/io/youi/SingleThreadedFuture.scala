@@ -7,16 +7,17 @@ class SingleThreadedFuture(errorHandler: Throwable => Unit = (t: Throwable) => s
   private var future: Future[Any] = Future.successful(())
 
   def apply[R](f: => Future[R]): Future[R] = {
-    if (future.isCompleted) {
-      future = Future.successful(())
-    }
     val promise = Promise[Unit]
-    future.onComplete { _ =>
-      promise.success(())
-    }
     future.failed.foreach(errorHandler)
     val updated = promise.future.flatMap { _ =>
       f
+    }
+    if (future.isCompleted) {
+      promise.success(())
+    } else {
+      future.onComplete { _ =>
+        promise.success(())
+      }
     }
     future = updated
     updated

@@ -43,12 +43,9 @@ object ClientExampleApplication extends JSApp with ExampleApplication with Clien
   val htmlGridLayout = hypertext.GridLayoutExample
   val htmlFlowLayout = hypertext.FlowLayoutExample
   val htmlVirtual = hypertext.VirtualSizeExample
+  val htmlPreviewImage = hypertext.PreviewImageExample
 
   def cc: ClientConnectivity = clientConnectivity(ClientExampleApplication.connectivity)
-
-//  override protected val crossFadeElement: html.Div = byId[html.Div]("loading")
-//  override protected val crossFadeDuration: FiniteDuration = 250.milliseconds
-
 
   override protected val loadingElement: html.Element = byId[html.Div]("loading")
 

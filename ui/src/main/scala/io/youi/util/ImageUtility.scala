@@ -7,39 +7,27 @@ import com.outr.pica.{Pica, ResizeOptions}
 import io.youi._
 import io.youi.dom
 import org.scalajs.dom.html.Canvas
-import org.scalajs.dom.raw.{File, FileReader, UIEvent, URL}
+import org.scalajs.dom.raw.{File, FileReader, URL}
 
 import scala.concurrent.{Future, Promise}
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.util.{Failure, Success}
+import scala.scalajs.js
 
 object ImageUtility {
   private lazy val pica: Pica = Pica()
-
-  private var single: Future[_] = Future.successful(())
+  private val picaFuture = new SingleThreadedFuture()
 
   def resizeToCanvas(source: html.Image | html.Canvas, destination: html.Canvas): Future[Canvas] = {
     (source: Any) match {
       case i: html.Image => assert(i.width > 0 && i.height > 0, "Cannot resizeToCanvas for zero size image as source!")
       case c: html.Canvas => assert(c.width > 0 && c.height > 0, "Cannot resizeToCanvas for zero size canvas as source!")
     }
-    val promise = Promise[Canvas]
-    single.onComplete { _ =>
-      val future = pica.resize(source, destination, new ResizeOptions {
+
+    picaFuture {
+      pica.resize(source, destination, new ResizeOptions {
         alpha = true
       }).toFuture
-      future.onComplete {
-        case Success(canvas) => promise.success(canvas)
-        case Failure(t) => {
-          scribe.error(t)
-          promise.failure(t)
-        }
-      }
     }
-    val future = promise.future
-    future.failed.foreach(scribe.error(_))
-    single = future
-    future
   }
 
   def resizeToImage(source: html.Image | html.Canvas,
@@ -63,22 +51,24 @@ object ImageUtility {
     }
   }
 
-  def loadImages(input: html.Input): Future[List[html.Image]] = {
-    val files = (0 until input.files.length).map(index => input.files(index)).toList
-    Future.sequence(files.map(loadImage))
-  }
+  private val tempImage = dom.create[html.Image]("img")
+  private val loadImageFuture = new SingleThreadedFuture()
 
-  def loadImage(file: File): Future[html.Image] = {
-    val img = dom.create[html.Image]("img")
-    val promise = Promise[html.Image]
-
-    img.addEventListener("load", (evt: Event) => {
-      promise.success(img)
-    })
-    loadDataURL(file).foreach(img.src = _)
-    val future = promise.future
-    future.failed.foreach(scribe.error(_))
-    future
+  def loadImage[R](file: File)(process: html.Image => Future[R]): Future[R] = {
+    loadImageFuture {
+      val promise = Promise[Unit]
+      val listener: js.Function1[Event, _] = (_: Event) => promise.success(())
+      tempImage.addEventListener("load", listener)
+      loadDataURL(file).foreach(tempImage.src = _)
+      promise.future.flatMap { _ =>
+        tempImage.removeEventListener("load", listener)
+        val f = process(tempImage)
+        f.onComplete { _ =>
+          tempImage.src = ""
+        }
+        f
+      }
+    }
   }
 
   def loadDataURL(file: File): Future[String] = {
@@ -140,7 +130,7 @@ object ImageUtility {
       })
       video.src = url
     } else if (file.`type`.startsWith("image/")) {                                               // Image preview
-      loadImage(file).flatMap { img =>
+      loadImage(file) { img =>
         val scaled = SizeUtility.scale(img.width, img.height, width, height, scaleUp)
         resizeToDataURL(img, scaled.width, scaled.height)
       }

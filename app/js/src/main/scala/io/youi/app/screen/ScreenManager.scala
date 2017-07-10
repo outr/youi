@@ -10,6 +10,7 @@ import org.scalajs.dom._
 trait ScreenManager {
   ScreenManager.instance = Some(this)
 
+  // TODO: remove and switch to using SingleThreadedFuture
   private var managerFuture: Future[Unit] = Future.successful(())
 
   private val allScreens = Var[List[Screen]](Nil)

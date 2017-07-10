@@ -20,7 +20,7 @@ trait MultiPage extends MatcherPage {
 
   override protected val matcher: URLMatcher = combined.any(paths.values.map(_.matcher).toSeq: _*)
 
-  override protected def resource(httpConnection: HttpConnection): Option[File] = paths.get(httpConnection.request.url.path.decoded).map(_.resource)
+  override protected def resource(httpConnection: HttpConnection): Option[Content] = paths.get(httpConnection.request.url.path.decoded).map(_.resource)
 
   case class PageEntry(path: String, matcher: URLMatcher, resource: File)
 }

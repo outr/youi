@@ -79,6 +79,7 @@ lazy val stream = project.in(file("stream"))
       "org.powerscala" %% "powerscala-io" % powerScalaVersion
     )
   )
+  .dependsOn(coreJVM)
 
 lazy val dom = project.in(file("dom"))
   .enablePlugins(ScalaJSPlugin)

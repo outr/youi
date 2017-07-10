@@ -4,6 +4,7 @@ import java.io.{File, FileInputStream, InputStream}
 import java.net.URL
 import java.util.concurrent.ConcurrentHashMap
 
+import io.youi.http.{Content, FileContent, StringContent, URLContent}
 import org.powerscala.io._
 
 import scala.annotation.tailrec
@@ -28,6 +29,12 @@ object HTMLParser {
   var validAttributes = Set("id", "class")
 
   private val parsers = new ConcurrentHashMap[File, StreamableHTML]().asScala
+
+  def cache(content: Content): StreamableHTML = content match {
+    case FileContent(file, _) => cache(file)
+    case URLContent(url, _) => cache(url)
+    case StringContent(value, _, _) => cache(value)
+  }
 
   def cache(file: File): StreamableHTML = parsers.getOrElseUpdate(file, HTMLParser(file))
 

@@ -1,6 +1,6 @@
 package io.youi.server
 
-import io.youi.http.{Content, HttpConnection, Status}
+import io.youi.http.{CacheControl, Content, HttpConnection, Status}
 import io.youi.net.ContentType
 
 object DefaultErrorHandler extends ErrorHandler {
@@ -20,6 +20,8 @@ object DefaultErrorHandler extends ErrorHandler {
          |  </body>
          |</html>
        """.stripMargin
-    response.withContent(Content.string(html, ContentType.`text/html`))
+    response
+      .withContent(Content.string(html, ContentType.`text/html`))
+      .withHeader(CacheControl(CacheControl.NoCache))
   }
 }

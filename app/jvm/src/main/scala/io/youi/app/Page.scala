@@ -1,8 +1,6 @@
 package io.youi.app
 
-import java.io.File
-
-import io.youi.http.{HttpConnection, StringContent}
+import io.youi.http.{Content, HttpConnection, StringContent}
 import io.youi.net.ContentType
 import io.youi.server.handler.{CachingManager, HttpProcessor, SenderHandler}
 import io.youi.server.validation.Validator
@@ -10,7 +8,7 @@ import io.youi.stream._
 
 import scala.collection.mutable.ListBuffer
 
-trait Page extends HttpProcessor[File] {
+trait Page extends HttpProcessor[Content] {
   protected def scalaJSConfig: Option[ScalaJSConfig]
   protected def cachingManager: CachingManager = CachingManager.Default
 
@@ -29,13 +27,13 @@ trait Page extends HttpProcessor[File] {
     List(Delta.InsertLastChild(ByTag("body"), script.mkString("\n")))
   }.getOrElse(Nil)
 
-  override protected def process(connection: HttpConnection, file: File): Unit = {
-    val parser = HTMLParser.cache(file)
+  override protected def process(connection: HttpConnection, content: Content): Unit = {
+    val parser = HTMLParser.cache(content)
     val selector = if (allowSelectors) connection.request.url.param("selector").map(Selector.parse) else None
     val mods = deltas(connection)
     val html = parser.stream(mods, selector)
-    val content = StringContent(html, ContentType.`text/html`, file.lastModified())
-    val handler = SenderHandler(content, caching = cachingManager)
+    val responseContent = StringContent(html, ContentType.`text/html`, content.lastModified)
+    val handler = SenderHandler(responseContent, caching = cachingManager)
     handler.handle(connection)
   }
 }

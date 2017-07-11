@@ -14,6 +14,7 @@ import io.undertow.server.{HttpServerExchange, HttpHandler => UndertowHttpHandle
 import io.undertow.util.{HeaderMap, HttpString}
 import io.undertow.websockets.WebSocketConnectionCallback
 import io.undertow.websockets.core._
+import io.undertow.websockets.extensions.PerMessageDeflateHandshake
 import io.undertow.websockets.spi.WebSocketHttpExchange
 import io.undertow.{Handlers, Undertow, UndertowOptions}
 import io.youi.http.{Connection, FileContent, FileEntry, FormData, FormDataContent, FormDataEntry, Headers, HttpConnection, HttpRequest, Method, RequestContent, StringContent, StringEntry, URLContent}
@@ -188,7 +189,7 @@ object UndertowServerImplementation {
         channel.resumeReceives()
         connection._connected := true
       }
-    })
+    }).addExtension(new PerMessageDeflateHandshake)
     handler.handleRequest(exchange)
   }
 

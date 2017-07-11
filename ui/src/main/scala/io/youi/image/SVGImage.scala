@@ -43,13 +43,15 @@ case class SVGImage(svg: SVGSVGElement,
     promise.future
   }
 
-  override def resized(width: Double, height: Double): Future[Image] = if (this.width == width && this.height == height) {
-    Future.successful(this)
-  } else if (original.map(_.width).contains(width) && original.map(_.height).contains(height)) {
-    Future.successful(original.get)
-  } else {
-    val original = this.original.getOrElse(this)
-    Future.successful(copy(width = width, height = height, original = Some(original)))
+  override def resized(width: Double, height: Double, dropOriginal: Boolean = false): Future[Image] = {
+    if (this.width == width && this.height == height) {
+      Future.successful(this)
+    } else if (original.map(_.width).contains(width) && original.map(_.height).contains(height)) {
+      Future.successful(original.get)
+    } else {
+      val original = this.original.getOrElse(this)
+      Future.successful(copy(width = width, height = height, original = if (dropOriginal) None else Some(original)))
+    }
   }
 
   override def toDataURL: Future[String] = CanvasPool.withCanvasFuture(width, height) { canvas =>

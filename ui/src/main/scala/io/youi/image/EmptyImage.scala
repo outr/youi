@@ -17,7 +17,9 @@ object EmptyImage extends Image {
                          width: Double,
                          height: Double): Future[Unit] = Future.successful(())
 
-  override def resized(width: Double, height: Double): Future[Image] = Future.successful(this)
+  override def resized(width: Double, height: Double, dropOriginal: Boolean = false): Future[Image] = {
+    Future.successful(this)
+  }
 
   override def dispose(): Unit = {}
 

@@ -23,21 +23,23 @@ case class TextureImage(img: html.Image,
     context.drawImage(this.canvas.getOrElse(img).asInstanceOf[html.Image], 0.0, 0.0, width, height)
   }
 
-  override def resized(width: Double, height: Double): Future[Image] = if (this.width == width && this.height == height) {
-    Future.successful(this)
-  } else if (original.map(_.width).contains(width) && original.map(_.height).contains(height)) {
-    Future.successful(original.get)
-  } else {
-    val canvas = CanvasPool(width, height)
-    val context = canvas.context
-    context.clearRect(0.0, 0.0, width, height)
-    ImageUtility.resizeToCanvas(img, canvas).map { c =>
-      val original = this.original.getOrElse(this)
-      copy(canvas = Some(c), width = width, height = height, original = Some(original))
+  override def resized(width: Double, height: Double, dropOriginal: Boolean = false): Future[Image] = {
+    if (this.width == width && this.height == height) {
+      Future.successful(this)
+    } else if (original.map(_.width).contains(width) && original.map(_.height).contains(height)) {
+      Future.successful(original.get)
+    } else {
+      val canvas = CanvasPool(width, height)
+      val context = canvas.context
+      context.clearRect(0.0, 0.0, width, height)
+      ImageUtility.resizeToCanvas(img, canvas).map { c =>
+        val original = this.original.getOrElse(this)
+        copy(canvas = Some(c), width = width, height = height, original = if (dropOriginal) None else Some(original))
+      }
     }
   }
 
-  override def toDataURL: Future[String] = ImageUtility.resizeToDataURL(img, img.width, img.height)
+  override def toDataURL: Future[String] = ImageUtility.resizeToDataURL(img, width, height)
 
   override def dispose(): Unit = canvas.foreach(CanvasPool.restore)
 }

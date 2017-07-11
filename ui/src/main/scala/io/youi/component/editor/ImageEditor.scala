@@ -19,6 +19,7 @@ class ImageEditor extends AbstractContainer {
   val imageScale: Var[Double] = Var(1.0)
   val autoFit: Var[Boolean] = Var(false)
   val minPreviewSize: Var[Size] = Var(Size(1024.0, 1024.0))
+  val maxOriginalSize: Var[Size] = Var(Size(10000.0, 10000.0))
 
   private val originalImage: Var[Image] = Var(Image.empty)
   val imageView: ImageView = new ImageView
@@ -127,16 +128,25 @@ class ImageEditor extends AbstractContainer {
     revision.asInstanceOf[Var[Int]] := current + 1
   }
 
-  def load(file: File): Future[Image] = imageView.load(file).map { img =>
-    originalImage := img
-    reset()
-    img
-  }
+  def load(file: File): Future[Image] = imageView.load(file).flatMap(load)
 
-  def load(path: String): Future[Image] = imageView.load(path).map { img =>
-    originalImage := img
-    reset()
-    img
+  def load(path: String): Future[Image] = imageView.load(path).flatMap(load)
+
+  def load(img: Image): Future[Image] = {
+    if (img.width > maxOriginalSize.width || img.height > maxOriginalSize.height) {
+      val scale = SizeUtility.scale(img.width, img.height, maxOriginalSize.width, maxOriginalSize.height)
+      scribe.warn(s"Image size (${img.width}x${img.height}) is larger than maxOriginalSize ($maxOriginalSize). Scaling to $scale.")
+      img.resized(scale.width, scale.height, dropOriginal = true).map { resized =>
+        imageView.image := resized
+        originalImage := resized
+        reset()
+        resized
+      }
+    } else {
+      originalImage := img
+      reset()
+      Future.successful(img)
+    }
   }
 
   def info: ImageEditorInfo = ImageEditorInfo(

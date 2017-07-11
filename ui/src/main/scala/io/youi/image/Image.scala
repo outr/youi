@@ -27,7 +27,7 @@ trait Image {
                 width: Double,
                 height: Double): Future[Unit]
 
-  def resized(width: Double, height: Double): Future[Image]
+  def resized(width: Double, height: Double, dropOriginal: Boolean = false): Future[Image]
 
   lazy val boundingBox: BoundingBox = BoundingBox(0.0, 0.0, width, height)
 

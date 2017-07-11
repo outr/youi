@@ -43,4 +43,6 @@ object SizeUtility {
   }
 }
 
-case class Scaled(width: Double, height: Double, scale: Double)
+case class Scaled(width: Double, height: Double, scale: Double) {
+  override def toString: String = s"Scaled(width: $width, height: $height, scale: $scale)"
+}

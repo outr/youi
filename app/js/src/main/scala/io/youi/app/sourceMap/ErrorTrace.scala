@@ -46,21 +46,25 @@ object ErrorTrace extends LogHandler {
     * @param fileName the JavaScript file to load the map for
     * @return source map consumer
     */
-  private def sourceMapConsumerFor(fileName: String): Future[Option[SourceMapConsumer]] = sourceMaps.get(fileName) match {
-    case Some(sourceMapConsumer) => Future.successful(Some(sourceMapConsumer))
-    case None => StreamURL.stream(URL(s"$fileName.map")).map { jsonString =>
-      try {
-        val json = js.JSON.parse(jsonString).asInstanceOf[js.Object]
-        val sourceMapConsumer = new SourceMapConsumer(json)
-        sourceMaps += fileName -> sourceMapConsumer
-        Some(sourceMapConsumer)
-      } catch {
-        case t: Throwable => {
-          scribe.error(t)
-          None
+  private def sourceMapConsumerFor(fileName: String): Future[Option[SourceMapConsumer]] = if (fileName != null) {
+    sourceMaps.get(fileName) match {
+      case Some(sourceMapConsumer) => Future.successful(Some(sourceMapConsumer))
+      case None => StreamURL.stream(URL(s"$fileName.map")).map { jsonString =>
+        try {
+          val json = js.JSON.parse(jsonString).asInstanceOf[js.Object]
+          val sourceMapConsumer = new SourceMapConsumer(json)
+          sourceMaps += fileName -> sourceMapConsumer
+          Some(sourceMapConsumer)
+        } catch {
+          case t: Throwable => {
+            scribe.error(t)
+            None
+          }
         }
       }
     }
+  } else {
+    Future.successful(None)
   }
 
   private def map(sourceMapConsumer: SourceMapConsumer, line: Int, column: Int): SourcePosition = {

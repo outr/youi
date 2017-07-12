@@ -71,7 +71,7 @@ object ImageUtility {
     }
   }
 
-  def loadDataURL(file: File): Future[String] = {
+  def loadDataURL(file: File, useFileReader: Boolean = false): Future[String] = if (useFileReader) {
     val reader = new FileReader
     val promise = Promise[String]
     reader.addEventListener("load", (evt: Event) => {
@@ -81,6 +81,8 @@ object ImageUtility {
     val future = promise.future
     future.failed.foreach(scribe.error(_))
     future
+  } else {
+    Future.successful(URL.createObjectURL(file))
   }
 
   def loadText(file: File): Future[String] = {

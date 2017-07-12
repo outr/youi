@@ -125,6 +125,9 @@ object ImageUtility {
       video.addEventListener("loadeddata", (evt: Event) => {
         createImage()
       })
+      video.addEventListener("error", (evt: Event) => {
+        promise.failure(new RuntimeException(s"Video $url failed to load!"))
+      })
       video.addEventListener("seeked", (evt: Event) => {
         createImage()
       })
@@ -137,8 +140,6 @@ object ImageUtility {
     } else {
       // Unknown file type, no preview available
     }
-    val future = promise.future
-    future.failed.foreach(scribe.error(_))
-    future
+    promise.future
   }
 }

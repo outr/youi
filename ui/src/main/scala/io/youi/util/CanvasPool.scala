@@ -2,21 +2,16 @@ package io.youi.util
 
 import io.youi._
 import org.scalajs.dom.html
+import org.scalajs.dom.html.Canvas
 
 import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
 
-object CanvasPool {
-  private var cached = List.empty[html.Canvas]
+object CanvasPool extends ObjectPool[html.Canvas] {
+  def apply(width: Double, height: Double): html.Canvas = update(apply(), width, height)
 
-  def apply(width: Double, height: Double): html.Canvas = synchronized {
-    val canvas = if (cached.nonEmpty) {
-      val c = cached.head
-      cached = cached.tail
-      c
-    } else {
-      dom.create[html.Canvas]("canvas")
-    }
+  override protected def create(): Canvas = dom.create[html.Canvas]("canvas")
+
+  private def update(canvas: html.Canvas, width: Double, height: Double): html.Canvas = {
     val w = math.ceil(width).toInt
     val h = math.ceil(height).toInt
     canvas.width = w
@@ -25,25 +20,15 @@ object CanvasPool {
     canvas
   }
 
-  def restore(canvas: html.Canvas): Unit = synchronized {
-    cached = canvas :: cached
+  override def restore(canvas: html.Canvas): Unit = super.restore(canvas)
+
+  def withCanvas[R](width: Double, height: Double)(f: html.Canvas => R): R = use { canvas =>
+    update(canvas, width, height)
+    f(canvas)
   }
 
-  def withCanvas[R](width: Double, height: Double)(f: html.Canvas => R): R = {
-    val canvas = apply(width, height)
-    try {
-      f(canvas)
-    } finally {
-      restore(canvas)
-    }
-  }
-
-  def withCanvasFuture[R](width: Double, height: Double)(f: html.Canvas => Future[R]): Future[R] = {
-    val canvas = apply(width, height)
-    val future = f(canvas)
-    future.onComplete { _ =>
-      restore(canvas)
-    }
-    future
+  def withCanvasFuture[R](width: Double, height: Double)(f: html.Canvas => Future[R]): Future[R] = future { canvas =>
+    update(canvas, width, height)
+    f(canvas)
   }
 }

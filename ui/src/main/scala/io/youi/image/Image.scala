@@ -96,11 +96,11 @@ object Image {
           val context = canvas.context
           context.clearRect(0.0, 0.0, size.width, size.height)
           scribe.info(s"Resizing to canvas! Original: ${o.width}x${o.height}, Resized: ${size.width}x${size.height}")
-          ImageUtility.resizeToCanvas(img, canvas).map(Some.apply)
+          ImageUtility.drawToCanvas(img, canvas)(width = size.width, height = size.height).map(Some.apply)
         }
       }
-      canvasFuture.map { canvas =>
-        TextureImage(img, canvas, size.width, size.height, None)
+      canvasFuture.map { _ =>
+        TextureImage(img, size.width, size.height, None)
       }
     }
   }

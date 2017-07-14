@@ -4,6 +4,7 @@ import io.youi.component.Component
 import io.youi.util.ImageUtility
 import org.scalajs.dom.{CanvasRenderingContext2D, html}
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 case class TextureImage(img: html.Image,

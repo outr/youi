@@ -1,6 +1,6 @@
 name := "youi"
 organization in ThisBuild := "io.youi"
-version in ThisBuild := "0.4.7"
+version in ThisBuild := "0.4.8-SNAPSHOT"
 scalaVersion in ThisBuild := "2.12.2"
 crossScalaVersions in ThisBuild := List("2.12.2", "2.11.11")
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
@@ -31,7 +31,7 @@ val scalaTestVersion = "3.0.3"
 lazy val root = project.in(file("."))
   .aggregate(
     coreJS, coreJVM, stream, communicationJS, communicationJVM, dom, client, server, serverUndertow, ui, optimizer,
-    appJS, appJVM, templateJS, templateJVM, exampleJS, exampleJVM
+    appJS, appJVM, templateJS, templateJVM, pluginJS, pluginJVM, exampleJS, exampleJVM
   )
   .settings(
     resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases",
@@ -185,6 +185,8 @@ lazy val template = crossProject.in(file("template"))
   )
   .jsSettings(
     test := (),
+    artifactPath in (Compile, fastOptJS) := (resourceManaged in Compile).value / "application.js",
+    artifactPath in (Compile, fullOptJS) := (resourceManaged in Compile).value / "application.js",
     crossTarget in fastOptJS := baseDirectory.value / ".." / "jvm" / "src" / "main" / "resources" / "app",
     crossTarget in fullOptJS := baseDirectory.value / ".." / "jvm" / "src" / "main" / "resources" / "app",
     crossTarget in packageJSDependencies := baseDirectory.value / ".." / "jvm" / "src" / "main" / "resources" / "app",
@@ -201,6 +203,16 @@ lazy val template = crossProject.in(file("template"))
 
 lazy val templateJS = template.js.dependsOn(ui)
 lazy val templateJVM = template.jvm.dependsOn(serverUndertow, optimizer)
+
+lazy val plugin = crossProject.in(file("plugin"))
+  .settings(
+    name := "youi-plugin",
+    sbtPlugin := true
+  )
+  .dependsOn(app)
+
+lazy val pluginJS = plugin.js
+lazy val pluginJVM = plugin.jvm
 
 lazy val example = crossProject.in(file("example"))
   .settings(

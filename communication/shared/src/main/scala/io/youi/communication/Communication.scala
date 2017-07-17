@@ -62,7 +62,7 @@ trait Communication extends ErrorSupport {
   val comm: CommunicationInternal = new CommunicationInternal(this)
   comm.init()
 
-  def connection: Connection
+  def connection: Connection = throw new NotImplementedError()
 
   def shared[T](default: T): Var[T] = macro Macros.shared[T]
 }

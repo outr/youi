@@ -31,7 +31,7 @@ val scalaTestVersion = "3.0.3"
 lazy val root = project.in(file("."))
   .aggregate(
     coreJS, coreJVM, stream, communicationJS, communicationJVM, dom, client, server, serverUndertow, ui, optimizer,
-    appJS, appJVM, templateJS, templateJVM, pluginJS, pluginJVM, exampleJS, exampleJVM
+    appJS, appJVM, templateJS, templateJVM, exampleJS, exampleJVM
   )
   .settings(
     resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases",
@@ -203,16 +203,6 @@ lazy val template = crossProject.in(file("template"))
 
 lazy val templateJS = template.js.dependsOn(ui)
 lazy val templateJVM = template.jvm.dependsOn(serverUndertow, optimizer)
-
-lazy val plugin = crossProject.in(file("plugin"))
-  .settings(
-    name := "youi-plugin",
-    sbtPlugin := true
-  )
-  .dependsOn(app)
-
-lazy val pluginJS = plugin.js
-lazy val pluginJVM = plugin.jvm
 
 lazy val example = crossProject.in(file("example"))
   .settings(

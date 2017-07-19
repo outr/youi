@@ -1,6 +1,6 @@
 name := "youi"
 organization in ThisBuild := "io.youi"
-version in ThisBuild := "0.4.8"
+version in ThisBuild := "0.4.9-SNAPSHOT"
 scalaVersion in ThisBuild := "2.12.2"
 crossScalaVersions in ThisBuild := List("2.12.2", "2.11.11")
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
@@ -12,7 +12,7 @@ val pixiJsVersion = "4.5.3"
 val scribeVersion = "1.4.3"
 val powerScalaVersion = "2.0.5"
 val reactifyVersion = "2.0.3"
-val akkaVersion = "2.5.2"
+val akkaVersion = "2.5.3"
 val scalaJSDOM = "0.9.3"
 val httpAsyncClientVersion = "4.1.3"
 val circeVersion = "0.8.0"

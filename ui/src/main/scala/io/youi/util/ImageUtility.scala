@@ -6,6 +6,7 @@ import scala.scalajs.js.|
 import com.outr.pica.{Pica, ResizeOptions}
 import io.youi._
 import io.youi.dom
+import io.youi.image._
 import org.scalajs.dom.html.Canvas
 import org.scalajs.dom.raw.{File, FileReader, URL}
 
@@ -128,9 +129,9 @@ object ImageUtility {
   def generatePreview(file: File,
                       width: Double,
                       height: Double,
-                      scaleUp: Boolean = false): Future[String] = {
-    val promise = Promise[String]
-    if (file.`type`.startsWith("video/")) {                                                       // Video preview
+                      scaleUp: Boolean = false): Future[Option[String]] = {
+    val promise = Promise[Option[String]]
+    if (file.`type`.startsWith("video/")) { // Video preview
       val video = document.createElement("video").asInstanceOf[html.Video]
 
       val url = URL.createObjectURL(file)
@@ -139,6 +140,7 @@ object ImageUtility {
       video.addEventListener("loadedmetadata", (evt: Event) => {
         video.currentTime = video.duration / 2.0
       })
+
       def createImage(): Unit = {
         val canvas = CanvasPool(video.videoWidth, video.videoHeight)
         val context = canvas.context
@@ -146,26 +148,40 @@ object ImageUtility {
         val scaled = SizeUtility.scale(video.videoWidth, video.videoHeight, width, height, scaleUp)
         resizeToDataURL(canvas, scaled.width, scaled.height).map { dataURL =>
           CanvasPool.restore(canvas)
-          promise.success(dataURL)
+          promise.success(Some(dataURL))
         }
       }
+
       video.addEventListener("loadeddata", (evt: Event) => {
         createImage()
       })
       video.addEventListener("error", (evt: Event) => {
-        promise.failure(new RuntimeException(s"Video $url failed to load!"))
+        promise.success(None)
       })
       video.addEventListener("seeked", (evt: Event) => {
         createImage()
       })
       video.src = url
+    } else if (file.`type` == "image/svg+xml") {                                                 // SVG preview
+      ImageUtility.loadText(file).flatMap { svgString =>
+        val image = Image.fromSVGString(svgString, None, None)
+        val scaled = SizeUtility.scale(image.width, image.height, width, height, scaleUp)
+        CanvasPool.withCanvasFuture(scaled.width, scaled.height) { canvas =>
+          image.drawImage(null, canvas, canvas.context, scaled.width, scaled.height).map { _ =>
+            val dataURL = canvas.toDataURL("image/png")
+            promise.success(Some(dataURL))
+          }
+        }
+      }
     } else if (file.`type`.startsWith("image/")) {                                               // Image preview
       loadImage(file) { img =>
         val scaled = SizeUtility.scale(img.width, img.height, width, height, scaleUp)
         resizeToDataURL(img, scaled.width, scaled.height)
-      }.foreach(promise.success)
+      }.foreach(dataURL => promise.success(Option(dataURL)))
     } else {
       // Unknown file type, no preview available
+      scribe.warn(s"Unknown type (${file.`type`}) for ${file.name}.")
+      promise.success(None)
     }
     promise.future
   }

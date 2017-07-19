@@ -4,6 +4,7 @@ import io.youi.app.ClientApplication
 import io.youi.{History, _}
 import io.youi.net.URL
 import io.youi.stream.StreamURL
+import org.scalajs.dom.{ErrorEvent, Event}
 import scribe.{Level, LogHandler, LogRecord}
 
 import scala.concurrent.Future
@@ -13,6 +14,10 @@ import scala.scalajs.runtime.StackTrace.Implicits._
 
 object ErrorTrace extends LogHandler {
   private var sourceMaps = Map.empty[String, SourceMapConsumer]
+
+  def toError(event: ErrorEvent): Future[JavaScriptError] = {
+    toError(event.message, event.filename, event.lineno, event.colno, None)
+  }
 
   def toError(message: String, source: String, line: Int, column: Int, error: Option[Throwable]): Future[JavaScriptError] = {
     val future = sourceMapConsumerFor(source).map { consumerOption =>
@@ -36,6 +41,7 @@ object ErrorTrace extends LogHandler {
   override def level: Level = Level.Error
 
   override protected def publish(record: LogRecord): Unit = record.messageObject match {
+    case evt: Event if evt.`type` == "error" => ClientApplication.sendError(evt.asInstanceOf[ErrorEvent])
     case t: Throwable => ClientApplication.sendError(t)
     case _ => // Ignore others
   }

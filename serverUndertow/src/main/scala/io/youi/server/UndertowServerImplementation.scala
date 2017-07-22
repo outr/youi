@@ -26,9 +26,10 @@ import scala.collection.JavaConverters._
 
 // TODO: determine problems in HTTP2 so it can be enabled by default going forward
 // TODO: determine problems in WebSocket compression so it can be enabled by default going forward
-class UndertowServerImplementation(val server: Server,
-                                   val enableHTTP2: Boolean = false,
-                                   val webSocketCompression: Boolean = false) extends ServerImplementation with UndertowHttpHandler {
+class UndertowServerImplementation(val server: Server) extends ServerImplementation with UndertowHttpHandler {
+  val enableHTTP2: Boolean = Server.config("enableHTTP2").as[Option[Boolean]].getOrElse(false)
+  val webSocketCompression: Boolean = Server.config("webSocketCompression").as[Option[Boolean]].getOrElse(false)
+
   private var instance: Option[Undertow] = None
 
   override def start(): Unit = synchronized {
@@ -92,7 +93,11 @@ class UndertowServerImplementation(val server: Server,
   }
 }
 
-object UndertowServerImplementation {
+object UndertowServerImplementation extends ServerImplementationCreator {
+  override def create(server: Server): ServerImplementation = {
+    new UndertowServerImplementation(server)
+  }
+
   def parseHeaders(headerMap: HeaderMap): Headers = Headers(headerMap.asScala.map { hv =>
     hv.getHeaderName.toString -> hv.asScala.toList
   }.toMap)

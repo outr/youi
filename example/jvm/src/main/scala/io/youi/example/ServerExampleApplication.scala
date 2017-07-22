@@ -3,10 +3,9 @@ package io.youi.example
 import io.youi.app._
 import io.youi.http._
 import io.youi.net.ContentType
-import io.youi.server.UndertowServer
 import io.youi.server.handler.CachingManager
 
-object ServerExampleApplication extends UndertowServer with ExampleApplication with ServerApplication {
+object ServerExampleApplication extends ExampleApplication with ServerApplication {
   val uiExamples: Page = page(UIExamples)
   val generalPages: Page = page(GeneralPages)
 

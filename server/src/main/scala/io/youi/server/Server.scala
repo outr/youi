@@ -5,6 +5,7 @@ import io.youi.{ErrorSupport, ItemContainer}
 import io.youi.http.{HttpConnection, Status}
 import io.youi.server.handler.{HttpHandler, HttpHandlerBuilder}
 import io.youi.server.session.SessionStore
+import profig.{Config, ConfigPath}
 
 import scala.annotation.tailrec
 
@@ -26,7 +27,22 @@ trait Server extends HttpHandler with ErrorSupport {
     */
   val errorHandler: Var[ErrorHandler] = Var(DefaultErrorHandler)
 
-  protected val implementation: ServerImplementation
+  protected lazy val implementation: ServerImplementation = {
+    Server.config("implementation").as[Option[String]] match {
+      case Some(className) => {
+        scribe.info(s"Using server implementation: $className...")
+        import scala.reflect.runtime._
+
+        val clazz = Class.forName(className)
+        val rootMirror = universe.runtimeMirror(Thread.currentThread().getContextClassLoader)
+        val moduleSymbol = rootMirror.moduleSymbol(clazz)
+        val moduleMirror = rootMirror.reflectModule(moduleSymbol)
+        val creator = moduleMirror.instance.asInstanceOf[ServerImplementationCreator]
+        creator.create(this)
+      }
+      case None => throw new RuntimeException("No server implementation available.")
+    }
+  }
 
   def isInitialized: Boolean = initialized
   def isRunning: Boolean = implementation.isRunning
@@ -91,4 +107,8 @@ trait Server extends HttpHandler with ErrorSupport {
       handleRecursive(connection, handlers.tail)
     }
   }
+}
+
+object Server {
+  def config: ConfigPath = Config("youi.server")
 }

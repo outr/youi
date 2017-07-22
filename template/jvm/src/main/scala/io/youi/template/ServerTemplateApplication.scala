@@ -4,10 +4,10 @@ import java.io.File
 
 import io.youi.app.SinglePageApplication
 import io.youi.http._
-import io.youi.server.UndertowServer
+import io.youi.server.Server
 import io.youi.server.handler.CachingManager
 
-class ServerTemplateApplication(compiler: TemplateCompiler) extends UndertowServer with TemplateApplication with SinglePageApplication {
+class ServerTemplateApplication(compiler: TemplateCompiler) extends Server with TemplateApplication with SinglePageApplication {
   handler.matcher(path.startsWith("/app")).caching(CachingManager.LastModified()).classLoader()
 
   override protected def templateDirectory: File = compiler.destinationDirectory

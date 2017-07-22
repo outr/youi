@@ -4,9 +4,10 @@ import java.io.File
 
 import akka.actor.{ActorSystem, Cancellable}
 import io.youi.http._
-import io.youi.net.URL
+import io.youi.net.{ContentType, URL}
 import io.youi.server.Server
-import io.youi.server.handler.HttpHandler
+import io.youi.server.handler.{CachingManager, HttpHandler, HttpHandlerBuilder, SenderHandler}
+import io.youi.stream.{ByTag, Delta, HTMLParser, Selector}
 import io.youi.{JavaScriptError, http}
 import net.sf.uadetector.UserAgentType
 import net.sf.uadetector.service.UADetectorServiceFactory
@@ -27,48 +28,78 @@ trait ServerApplication extends YouIApplication with Server with ConfigApplicati
   private var configuredEndPoints = Set.empty[ApplicationConnectivity]
   private lazy val userAgentParser = UADetectorServiceFactory.getResourceModuleParser
 
-  connectivityEntries.attachAndFire { entries =>
-    ServerApplication.this.synchronized {
-      entries.foreach { appComm =>
-        if (!configuredEndPoints.contains(appComm)) {
-          val appCommHandler = new ServerConnectionHandler(appComm)
-          handler.matcher(path.exact(appComm.path)).wrap(appCommHandler)
-          configuredEndPoints += appComm
+  protected def applicationBasePath: String = "app/application"
+
+  private val fullOpt = s"$applicationBasePath.js"
+  private val fastOpt = s"$applicationBasePath-fastopt.js"
+  private val fullOptMap = s"$fullOpt.map"
+  private val fastOptMap = s"$fastOpt.map"
+  private val jsDeps = s"$applicationBasePath-jsdeps.js"
+
+  lazy val applicationJSContent: Content = Content.classPathOption(fullOpt).getOrElse(Content.classPath(fastOpt))
+  lazy val applicationJSMapContent: Content = Content.classPathOption(fullOptMap).getOrElse(Content.classPath(fastOptMap))
+  lazy val applicationJSDepsContent: Option[Content] = Content.classPathOption(jsDeps)
+
+  override protected def init(): Unit = {
+    super.init()
+
+    connectivityEntries.attachAndFire { entries =>
+      ServerApplication.this.synchronized {
+        entries.foreach { appComm =>
+          if (!configuredEndPoints.contains(appComm)) {
+            val appCommHandler = new ServerConnectionHandler(appComm)
+            handler.matcher(path.exact(appComm.path)).wrap(appCommHandler)
+            configuredEndPoints += appComm
+          }
         }
       }
     }
-  }
-  handler.matcher(path.exact("/source-map.min.js")).resource(Content.classPath("source-map.min.js"))
-  if (logJavaScriptErrors) {
-    handler.matcher(path.exact("/clientError")).handle { httpConnection =>
-      val content = httpConnection.request.content
-      content match {
-        case Some(requestContent) => requestContent match {
-          case formData: FormDataContent => {
-            val json = formData.string("json").value
-            val jsError = upickle.default.read[JavaScriptError](json)
 
-            val userAgentString = Headers.Request.`User-Agent`.value(httpConnection.request.headers).getOrElse("")
-            val userAgent = userAgentParser.parse(userAgentString)
+    handler.matcher(path.exact("/source-map.min.js")).resource(Content.classPath("source-map.min.js"))
+    if (logJavaScriptErrors) {
+      handler.matcher(path.exact("/clientError")).handle { httpConnection =>
+        val content = httpConnection.request.content
+        content match {
+          case Some(requestContent) => requestContent match {
+            case formData: FormDataContent => {
+              val json = formData.string("json").value
+              val jsError = upickle.default.read[JavaScriptError](json)
 
-            val exception = new JavaScriptException(
-              error = jsError,
-              userAgent = userAgent,
-              ip = httpConnection.request.source,
-              request = httpConnection.request,
-              info = errorInfo(jsError, httpConnection)
-            )
-            if (logJavaScriptException(exception)) {
-              error(exception)
+              val userAgentString = Headers.Request.`User-Agent`.value(httpConnection.request.headers).getOrElse("")
+              val userAgent = userAgentParser.parse(userAgentString)
 
+              val exception = new JavaScriptException(
+                error = jsError,
+                userAgent = userAgent,
+                ip = httpConnection.request.source,
+                request = httpConnection.request,
+                info = errorInfo(jsError, httpConnection)
+              )
+              if (logJavaScriptException(exception)) {
+                error(exception)
+
+              }
             }
+            case otherContent => scribe.error(s"Unsupported content type: $otherContent (${otherContent.getClass.getName})")
           }
-          case otherContent => scribe.error(s"Unsupported content type: $otherContent (${otherContent.getClass.getName})")
+          case None => // Ignore
         }
-        case None => // Ignore
-      }
 
-      httpConnection.update(_.withContent(Content.empty))
+        httpConnection.update(_.withContent(Content.empty))
+      }
+    }
+
+    val lastModifiedManager = CachingManager.LastModified()
+
+    // Serve up application.js
+    handler.matcher(path.exact("/app/application.js")).caching(lastModifiedManager).resource(applicationJSContent)
+
+    // Serve up application.js.map
+    handler.matcher(path.exact("/app/application.js.map")).caching(lastModifiedManager).resource(applicationJSMapContent)
+
+    // Serve up application-jsdeps.js (if available)
+    applicationJSDepsContent.foreach { content =>
+      handler.matcher(path.exact("/app/application-jsdeps.js")).caching(lastModifiedManager).resource(content)
     }
   }
 
@@ -86,6 +117,58 @@ trait ServerApplication extends YouIApplication with Server with ConfigApplicati
   protected def logJavaScriptException(exception: JavaScriptException): Boolean = {
     val ua = exception.userAgent
     ua.getType != UserAgentType.ROBOT
+  }
+
+  implicit class AppHandlerBuilder(builder: HttpHandlerBuilder) {
+    /**
+      * Stores deltas on this connection for use serving HTML.
+      *
+      * @param function the function that takes in an HttpConnection and returns a list of Deltas.
+      * @return HttpHandler that has already been added to the server
+      */
+    def deltas(function: HttpConnection => List[Delta]): HttpHandler = builder.handle { connection =>
+      val d = function(connection)
+      addDeltas(connection, d)
+    }
+
+    def page(template: Content = ServerApplication.DefaultTemplate): HttpHandler = builder.handle { connection =>
+      serveHTML(connection, template)
+    }
+  }
+
+  def addDeltas(connection: HttpConnection, deltas: List[Delta]): Unit = {
+    if (deltas.nonEmpty) {
+      val current = connection.store.getOrElse[List[Delta]](ServerApplication.DeltaKey, Nil)
+      connection.store(ServerApplication.DeltaKey) = current ::: deltas
+    }
+  }
+
+  def serveHTML(httpConnection: HttpConnection, content: Content): Unit = {
+    val stream = content match {
+      case c: FileContent => HTMLParser.cache(c.file)
+      case c: URLContent => HTMLParser.cache(c.url)
+      case c: StringContent => HTMLParser.cache(c.value)
+    }
+    val deltas = httpConnection.store.getOrElse[List[Delta]](ServerApplication.DeltaKey, Nil)
+    val jsDeps = if (applicationJSDepsContent.nonEmpty) {
+      s"""<script src="/app/application-jsdeps.js"></script>"""
+    } else {
+      ""
+    }
+    val d = List(
+      Delta.InsertLastChild(ByTag("body"),
+        s"""
+           |$jsDeps
+           |<script src="/app/application.js"></script>
+           |<script>
+           |  application();
+           |</script>
+         """.stripMargin
+      )
+    ) ::: deltas
+    val selector = httpConnection.request.url.param("selector").map(Selector.parse)
+    val html = stream.stream(d, selector)
+    SenderHandler.handle(httpConnection, Content.string(html, ContentType.`text/html`), caching = CachingManager.NotCached)
   }
 
   private class ServerConnectionHandler(appComm: ApplicationConnectivity) extends HttpHandler {
@@ -135,4 +218,19 @@ trait ServerApplication extends YouIApplication with Server with ConfigApplicati
 
     system.terminate()
   }
+}
+
+object ServerApplication {
+  lazy val DefaultTemplate: Content = Content.string(
+    """
+      |<html>
+      |<head>
+      | <title></title>
+      |</head>
+      |<body>
+      |</body>
+      |</html>
+    """.stripMargin.trim, ContentType.`text/html`)
+
+  val DeltaKey: String = "deltas"
 }

@@ -86,9 +86,10 @@ object Content {
   def url(url: URL): Content = URLContent(url, ContentType.byFileName(url.toString))
   def url(url: URL, contentType: ContentType): Content = URLContent(url, contentType)
   def classPath(url: URL): Content = URLContent(url, ContentType.byFileName(url.toString))
-  def classPath(path: String): Content = Option(Thread.currentThread().getContextClassLoader.getResource(path)) match {
-    case Some(url) => classPath(url)
-    case None => throw new RuntimeException(s"Invalid URL or not found in class-loader: $path.")
+  def classPath(path: String): Content = classPathOption(path).getOrElse(throw new RuntimeException(s"Invalid URL or not found in class-loader: $path."))
+  def classPathOption(path: String): Option[Content] = {
+    val o = Option(Thread.currentThread().getContextClassLoader.getResource(path))
+    o.map(classPath)
   }
   def classPath(path: String, contentType: ContentType): Content = URLContent(Thread.currentThread().getContextClassLoader.getResource(path), contentType)
 }

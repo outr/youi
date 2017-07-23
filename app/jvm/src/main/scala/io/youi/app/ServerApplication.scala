@@ -8,7 +8,7 @@ import io.youi.net.{ContentType, URL}
 import io.youi.server.Server
 import io.youi.server.handler.{CachingManager, HttpHandler, HttpHandlerBuilder, SenderHandler}
 import io.youi.stream.{ByTag, Delta, HTMLParser, Selector}
-import io.youi.{JavaScriptError, http}
+import io.youi.{JavaScriptError, Priority, http}
 import net.sf.uadetector.UserAgentType
 import net.sf.uadetector.service.UADetectorServiceFactory
 import org.powerscala.io._
@@ -103,6 +103,39 @@ trait ServerApplication extends YouIApplication with Server with ConfigApplicati
     }
   }
 
+  def addTemplate(directory: File,
+                  mappings: Set[HttpConnection => Option[File]] = Set.empty,
+                  excludeDotHTML: Boolean = true,
+                  deltas: List[Delta] = Nil): HttpHandler = {
+    // Serve up template files
+    handler.priority(Priority.Low).handle { httpConnection =>
+      val url = httpConnection.request.url
+      val fileName = url.path.decoded
+      if (fileName.endsWith(".html") && excludeDotHTML) {
+        // Ignore
+      } else {
+        val exactFile = new File(directory, fileName)
+        var file: File = exactFile
+        if (excludeDotHTML && !file.exists()) {
+          file = new File(directory, s"$fileName.html")
+        }
+        if (!file.isFile) {     // Handle mappings
+          mappings.toStream.flatMap(m => m(httpConnection)).find(_.isFile).foreach(file = _)
+        }
+
+        if (file.isFile) {
+          if (file.getName.endsWith(".html")) {
+            CachingManager.NotCached.handle(httpConnection)
+            serveHTML(httpConnection, file, deltas)
+          } else {
+            CachingManager.LastModified().handle(httpConnection)
+            httpConnection.update(_.withContent(Content.file(file)))
+          }
+        }
+      }
+    }
+  }
+
   private val cancellable: Option[Cancellable] = Some(system.scheduler.schedule(30.seconds, 30.seconds) {
     pingClients()
   })
@@ -131,8 +164,9 @@ trait ServerApplication extends YouIApplication with Server with ConfigApplicati
       addDeltas(connection, d)
     }
 
-    def page(template: Content = ServerApplication.DefaultTemplate): HttpHandler = builder.handle { connection =>
-      serveHTML(connection, template)
+    def page(template: Content = ServerApplication.DefaultTemplate,
+             deltas: List[Delta] = Nil): HttpHandler = builder.handle { connection =>
+      serveHTML(connection, template, deltas)
     }
   }
 
@@ -143,13 +177,13 @@ trait ServerApplication extends YouIApplication with Server with ConfigApplicati
     }
   }
 
-  def serveHTML(httpConnection: HttpConnection, content: Content): Unit = {
+  def serveHTML(httpConnection: HttpConnection, content: Content, deltas: List[Delta]): Unit = {
     val stream = content match {
       case c: FileContent => HTMLParser.cache(c.file)
       case c: URLContent => HTMLParser.cache(c.url)
       case c: StringContent => HTMLParser.cache(c.value)
     }
-    val deltas = httpConnection.store.getOrElse[List[Delta]](ServerApplication.DeltaKey, Nil)
+    val deltasList = httpConnection.store.getOrElse[List[Delta]](ServerApplication.DeltaKey, Nil) ::: deltas
     val jsDeps = if (applicationJSDepsContent.nonEmpty) {
       s"""<script src="/app/application-jsdeps.js"></script>"""
     } else {
@@ -165,7 +199,7 @@ trait ServerApplication extends YouIApplication with Server with ConfigApplicati
            |</script>
          """.stripMargin
       )
-    ) ::: deltas
+    ) ::: deltasList
     val selector = httpConnection.request.url.param("selector").map(Selector.parse)
     val html = stream.stream(d, selector)
     SenderHandler.handle(httpConnection, Content.string(html, ContentType.`text/html`), caching = CachingManager.NotCached)

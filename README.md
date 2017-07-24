@@ -30,6 +30,11 @@ YouI is divided into modules of functionality to minimize the dependencies requi
 * [template](template) - features for creating and managing templates for use in applications (Scala and Scala.js)
 * [ui](ui) - functionality for user-interface creation and management (Scala.js)
 
+## Tutorials
+
+Though YouI provides many modules to accomplish many things, the primary goal of YouI is application development for
+web, mobile, and desktop. Take a look at the [app](app) module for a great getting started tutorial.
+
 ## Roadmap
 
 https://github.com/outr/youi/wiki/Roadmap

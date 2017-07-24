@@ -5,7 +5,7 @@
 youi is published to Sonatype OSS and Maven Central and utilizes JVM and Scala.js with 2.11 and 2.12:
 
 ```
-libraryDependencies += "io.youi" %%% "youi-core" % "0.1.0" // Scala and Scala.js
+libraryDependencies += "io.youi" %%% "youi-core" % latestVersion // Scala and Scala.js
 ```
 
 ## Main Features

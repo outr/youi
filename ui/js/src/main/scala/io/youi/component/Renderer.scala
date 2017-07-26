@@ -2,8 +2,9 @@ package io.youi.component
 
 import com.outr.pixijs._
 import io.youi.component.event.{DeltaMode, Events, Mouse, WheelDelta}
-import io.youi.{Color, LazyUpdate, dom}
+import io.youi.LazyUpdate
 import io.youi.hypertext.Canvas
+import io.youi.hypertext.style.ColorProperties
 import org.scalajs.dom.KeyboardEvent
 import reactify.{Channel, Val, Var}
 
@@ -35,7 +36,7 @@ class Renderer private(val canvas: Canvas) extends Container {
   }
 
   val renderMode: Var[RenderMode] = Var(RenderMode.OnChange)
-  val backgroundColor: Var[Color] = prop(Color.Clear, (c: Color) => systemRenderer.backgroundColor = c.long, updatesRendering = true)
+  val backgroundColor: ColorProperties = canvas.backgroundColor
 
   override lazy val parentRenderer: Val[Option[Renderer]] = Val(Some(this))
 

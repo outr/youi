@@ -260,6 +260,12 @@ object ServerApplication {
       |<html>
       |<head>
       | <title></title>
+      | <style>
+      |   body {
+      |     margin: 0;
+      |     overflow: hidden;
+      |   }
+      | </style>
       |</head>
       |<body>
       |</body>

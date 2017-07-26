@@ -1,10 +1,10 @@
 package io.youi
 
-import org.scalajs.dom._
-import reactify.{Val, Var}
-import scribe.Logging
 import io.youi.hypertext.{Component, HTMLContainer}
+import org.scalajs.dom._
 import org.scalajs.dom.html.{Div, Element}
+import reactify.Var
+import scribe.Logging
 
 object UI extends HTMLContainer with Component with Logging {
   def name: String = getClass.getSimpleName.replaceAllLiterally("$", "")

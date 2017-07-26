@@ -1,7 +1,6 @@
 package io.youi
 
 import reactify._
-import scribe._
 
 trait VirtualSizeSupport {
   val virtualWidth: Var[Double] = Var[Double](1024.0)

@@ -3,7 +3,7 @@ package io
 import io.youi.style.Paint
 import org.scalajs.dom.html
 import org.scalajs.dom.raw.{CanvasRenderingContext2D, WebGLRenderingContext}
-import reactify.{State, Val}
+import reactify._
 
 import scala.language.implicitConversions
 

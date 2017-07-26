@@ -1,7 +1,7 @@
 package io.youi.util
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 trait ObjectPool[T] {
   private var created = 0

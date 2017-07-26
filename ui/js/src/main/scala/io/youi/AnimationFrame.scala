@@ -1,8 +1,8 @@
 package io.youi
 
 import io.youi.task.TaskSupport
-import reactify._
 import org.scalajs.dom._
+import reactify._
 
 object AnimationFrame extends TaskSupport {
   private var lastUpdate: Double = 0.0

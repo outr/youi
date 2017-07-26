@@ -1,13 +1,13 @@
 name := "youi"
 organization in ThisBuild := "io.youi"
-version in ThisBuild := "0.5.0"
+version in ThisBuild := "0.5.1-SNAPSHOT"
 scalaVersion in ThisBuild := "2.12.2"
 crossScalaVersions in ThisBuild := List("2.12.2", "2.11.11")
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
 resolvers in ThisBuild += Resolver.sonatypeRepo("snapshots")
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 
-val profigVersion = "1.0.1"
+val profigVersion = "1.0.2"
 val pixiJsVersion = "4.5.3"
 val scribeVersion = "1.4.3"
 val powerScalaVersion = "2.0.5"
@@ -30,8 +30,8 @@ val scalaTestVersion = "3.0.3"
 
 lazy val root = project.in(file("."))
   .aggregate(
-    coreJS, coreJVM, stream, communicationJS, communicationJVM, dom, client, server, serverUndertow, ui, optimizer,
-    appJS, appJVM, templateJS, templateJVM, exampleJS, exampleJVM
+    coreJS, coreJVM, stream, communicationJS, communicationJVM, dom, client, server, serverUndertow, uiJS, uiJVM,
+    optimizer, appJS, appJVM, templateJS, templateJVM, exampleJS, exampleJVM
   )
   .settings(
     resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases",
@@ -135,11 +135,11 @@ lazy val communication = crossProject.in(file("communication"))
 lazy val communicationJS = communication.js
 lazy val communicationJVM = communication.jvm.dependsOn(server)
 
-lazy val ui = project.in(file("ui"))
-  .enablePlugins(ScalaJSPlugin)
+lazy val ui = crossProject.in(file("ui"))
   .settings(
-    name := "youi-ui",
-    test := (),
+    name := "youi-ui"
+  )
+  .jsSettings(
     libraryDependencies ++= Seq(
       "com.outr" %%% "scalajs-pixijs" % pixiJsVersion,
       "com.outr" %%% "canvg-scala-js" % canvgVersion,
@@ -147,7 +147,10 @@ lazy val ui = project.in(file("ui"))
       "com.outr" %%% "pica-scala-js" % picaVersion
     )
   )
-  .dependsOn(coreJS, dom)
+  .dependsOn(core)
+
+lazy val uiJS = ui.js.dependsOn(dom)
+lazy val uiJVM = ui.jvm
 
 lazy val optimizer = project.in(file("optimizer"))
   .settings(
@@ -174,9 +177,9 @@ lazy val app = crossProject.in(file("app"))
   .jsSettings(
     test := ()
   )
-  .dependsOn(core, communication)
+  .dependsOn(core, communication, ui)
 
-lazy val appJS = app.js.dependsOn(ui)
+lazy val appJS = app.js
 lazy val appJVM = app.jvm
 
 lazy val template = crossProject.in(file("template"))
@@ -201,7 +204,7 @@ lazy val template = crossProject.in(file("template"))
   )
   .dependsOn(app)
 
-lazy val templateJS = template.js.dependsOn(ui)
+lazy val templateJS = template.js
 lazy val templateJVM = template.jvm.dependsOn(serverUndertow, optimizer)
 
 lazy val example = crossProject.in(file("example"))
@@ -224,5 +227,5 @@ lazy val example = crossProject.in(file("example"))
   )
   .dependsOn(app, template)
 
-lazy val exampleJS = example.js.dependsOn(ui)
+lazy val exampleJS = example.js
 lazy val exampleJVM = example.jvm.dependsOn(serverUndertow)

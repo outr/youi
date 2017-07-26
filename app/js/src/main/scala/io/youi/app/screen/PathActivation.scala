@@ -8,7 +8,7 @@ trait PathActivation extends URLActivation {
   def stateType: StateType = StateType.Push
   def clearParams: Boolean = false
 
-  override val matcher: URLMatcher = http.path.exact(path)
+  override lazy val matcher: URLMatcher = http.path.exact(path)
 
   override def updateURL(current: URL): Option[HistoryStateChange] = if (current.path.decoded != path) {
     val url = if (clearParams) {
@@ -16,7 +16,7 @@ trait PathActivation extends URLActivation {
     } else {
       current.withPath(path)
     }
-    Some(HistoryStateChange(current.withPath(path), stateType))
+    Some(HistoryStateChange(url, stateType))
   } else {
     None
   }

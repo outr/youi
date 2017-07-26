@@ -2,9 +2,9 @@ package io.youi
 
 import java.util.concurrent.atomic.AtomicBoolean
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.duration._
-import scala.concurrent.ExecutionContext.Implicits.global
 
 class LazyFuture[T](f: () => Future[T], maxFrequency: FiniteDuration, automatic: Boolean = true) {
   private var lastUpdate: Long = 0L

@@ -140,6 +140,7 @@ lazy val ui = crossProject.in(file("ui"))
     name := "youi-ui"
   )
   .jsSettings(
+    test := (),
     libraryDependencies ++= Seq(
       "com.outr" %%% "scalajs-pixijs" % pixiJsVersion,
       "com.outr" %%% "canvg-scala-js" % canvgVersion,

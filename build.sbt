@@ -24,6 +24,7 @@ val hasherVersion = "1.2.1"
 val canvgVersion = "1.4.0_1"
 val openTypeVersion = "0.7.1_2"
 val picaVersion = "3.0.5"
+val jSoupVersion = "1.10.3"
 val scalaXMLVersion = "1.0.6"
 val scalacticVersion = "3.0.3"
 val scalaTestVersion = "3.0.3"
@@ -230,3 +231,13 @@ lazy val example = crossProject.in(file("example"))
 
 lazy val exampleJS = example.js
 lazy val exampleJVM = example.jvm.dependsOn(serverUndertow)
+
+lazy val utilities = project.in(file("utilities"))
+  .settings(
+    name := "youi-utilities",
+    libraryDependencies ++= Seq(
+      "org.jsoup" % "jsoup" % jSoupVersion,
+      "org.powerscala" %% "powerscala-io" % powerScalaVersion
+    )
+  )
+  .dependsOn(coreJVM)

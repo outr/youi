@@ -77,6 +77,7 @@ object BoundingBox {
       }
       case QuadraticCurveTo(_, _, x, y) => adjustTo(x, y)
       case Rectangle(x, y, width, height) => adjustTo(x + width, y + height, updateCoordinates = false)
+      case RoundedRectangle(x, y, width, height, _) => adjustTo(x + width, y + height, updateCoordinates = false)
     }
     BoundingBox(minX, minY, maxX, maxY)
   }

@@ -8,11 +8,11 @@ import scala.concurrent.Future
 import scala.scalajs.js
 
 case class Stroke(paint: Paint,
-                  lineWidth: Double,
-                  lineDash: List[Double],
-                  lineDashOffset: Double,
-                  lineCap: LineCap,
-                  lineJoin: LineJoin) extends Drawable {
+                  lineWidth: Double = 1.0,
+                  lineDash: List[Double] = Nil,
+                  lineDashOffset: Double = 0.0,
+                  lineCap: LineCap = LineCap.Butt,
+                  lineJoin: LineJoin = LineJoin.Miter) extends Drawable {
   def set(component: Component, context: CanvasRenderingContext2D): Unit = {
     if (paint.nonEmpty) {
       context.strokeStyle = paint(component).asInstanceOf[js.Any]

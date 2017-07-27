@@ -5,6 +5,7 @@ import io.youi.app.screen.UIScreen
 import io.youi.component._
 import io.youi.component.draw._
 import io.youi.component.draw.path._
+import io.youi.style.Paint
 
 object DrawableExample extends UIExampleScreen with UIScreen {
   override def name: String = "Drawable Example"
@@ -14,7 +15,7 @@ object DrawableExample extends UIExampleScreen with UIScreen {
     val component = new DrawableComponent {
       position.x := 10.0
       position.y := 10.0
-      size.width := 400.0
+      size.width := 800.0
       size.height := 400.0
     }
 
@@ -44,7 +45,10 @@ object DrawableExample extends UIExampleScreen with UIScreen {
       ),
       Fill(Color.Blue.copy(alpha = 0.5)),
       Path.begin.move(10.0, 350.0).line(390.0, 350.0).close,
-      Stroke(Color.Red, 2.0, List(5.0, 10.0), 0.0, LineCap.Butt, LineJoin.Miter)
+      Stroke(Color.Red, 2.0, List(5.0, 10.0)),
+      Path.begin.roundedRect(275.0, 50.0, 200.0, 200.0, 10.0).close,
+      Fill(Paint.vertical(Color.AliceBlue, Color.DarkBlue)),
+      Stroke(Color.BlueViolet, 2.0)
     )
 
     container.children += component

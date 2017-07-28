@@ -1,6 +1,6 @@
 package io.youi.hypertext
 
-import io.youi.hypertext.border.ComponentBorders
+import io.youi.hypertext.border.{Border, ComponentBorders}
 import io.youi.hypertext.style.{ComponentOverflow, Overflow}
 import reactify.{Channel, State, Val, Var}
 import io.youi.{AnimationFrame, Color}
@@ -39,6 +39,7 @@ trait Component extends AbstractComponent {
 
   lazy val border: ComponentBorders = new ComponentBorders(this)
   lazy val overflow: ComponentOverflow = new ComponentOverflow(this)
+  lazy val outline: Border = new Border(this, element.style.outlineColor = _, element.style.outlineStyle = _, element.style.outlineWidth = _)
 
   def focus(): Unit = element.focus()
   def blur(): Unit = element.blur()

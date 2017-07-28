@@ -1,11 +1,10 @@
 package io.youi.component
 
 import com.outr.pixijs._
-import io.youi.component.event.{DeltaMode, Events, Mouse, WheelDelta}
+import io.youi.component.event._
 import io.youi.LazyUpdate
 import io.youi.hypertext.Canvas
 import io.youi.hypertext.style.ColorProperties
-import org.scalajs.dom.KeyboardEvent
 import reactify.{Channel, Val, Var}
 
 class Renderer private(val canvas: Canvas) extends Container {
@@ -20,6 +19,8 @@ class Renderer private(val canvas: Canvas) extends Container {
       forceCanvas = false
     }
   )
+
+  override lazy val event: RendererEvents = new RendererEvents(this)
 
   event.pointer.move.attach { evt =>
     Mouse.x.asInstanceOf[Var[Double]] := evt.globalX
@@ -74,9 +75,9 @@ object Renderer {
 
 class RendererEvents(renderer: Renderer) extends Events(renderer) {
   object key {
-    def down: Channel[KeyboardEvent] = renderer.canvas.event.key.down
-    def press: Channel[KeyboardEvent] = renderer.canvas.event.key.press
-    def up: Channel[KeyboardEvent] = renderer.canvas.event.key.up
+    def down: Channel[KeyEvent] = renderer.canvas.event.key.down
+    def press: Channel[KeyEvent] = renderer.canvas.event.key.press
+    def up: Channel[KeyEvent] = renderer.canvas.event.key.up
   }
 }
 

@@ -1,5 +1,6 @@
 package io.youi.hypertext
 
+import io.youi.component.event.KeyEvent
 import io.youi.hypertext.border.{Border, ComponentBorders}
 import io.youi.hypertext.style.{ComponentOverflow, Overflow}
 import reactify.{Channel, State, Val, Var}
@@ -21,9 +22,9 @@ trait Component extends AbstractComponent {
     lazy val focus: Channel[FocusEvent] = events("focus")
     lazy val blur: Channel[FocusEvent] = events("blur")
     object key {
-      lazy val down: Channel[KeyboardEvent] = events("keydown")
-      lazy val press: Channel[KeyboardEvent] = events("keypress")
-      lazy val up: Channel[KeyboardEvent] = events("keyup")
+      lazy val down: Channel[KeyEvent] = keyEvents("keydown")
+      lazy val press: Channel[KeyEvent] = keyEvents("keypress")
+      lazy val up: Channel[KeyEvent] = keyEvents("keyup")
     }
     object mouse {
       lazy val enter: Channel[MouseEvent] = events("mouseenter")
@@ -54,6 +55,13 @@ trait Component extends AbstractComponent {
       }
     }
     v
+  }
+
+  protected def keyEvents(eventType: String): Channel[KeyEvent] = {
+    val originalEvents = events[KeyboardEvent](eventType)
+    originalEvents.map { keyboardEvent =>
+      KeyEvent(keyboardEvent)
+    }
   }
 
   protected def events[E <: Event](eventType: String, stopPropagation: Boolean = false): Channel[E] = {

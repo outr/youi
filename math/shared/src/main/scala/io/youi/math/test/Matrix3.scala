@@ -23,6 +23,7 @@ trait Matrix3 {
 
   def duplicateAsArray(f: Array[Double] => Unit): Matrix3 = {
     Matrix3ArrayPool.use { array =>
+      assign(array)
       f(array)
       duplicate(
         m00 = array(0),

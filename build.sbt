@@ -28,6 +28,7 @@ val jSoupVersion = "1.10.3"
 val scalaXMLVersion = "1.0.6"
 val scalacticVersion = "3.0.3"
 val scalaTestVersion = "3.0.3"
+val scalaCheckVersion = "1.13.4"
 
 lazy val root = project.in(file("."))
   .aggregate(
@@ -78,7 +79,8 @@ lazy val math = crossProject.in(file("math"))
     name := "youi-math",
     libraryDependencies ++= Seq(
       "org.scalactic" %%% "scalactic" % scalacticVersion,
-      "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
+      "org.scalatest" %%% "scalatest" % scalaTestVersion % "test",
+      "org.scalacheck" %% "scalacheck" % scalaCheckVersion % "test"
     )
   )
   .dependsOn(core)

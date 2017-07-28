@@ -1,4 +1,4 @@
-package io.youi.math.test
+package io.youi.math
 
 import io.youi.util.ObjectPool
 

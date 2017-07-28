@@ -81,6 +81,7 @@ lazy val math = crossProject.in(file("math"))
       "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
     )
   )
+  .dependsOn(core)
 
 lazy val mathJS = math.js
 lazy val mathJVM = math.jvm

@@ -20,6 +20,35 @@ trait Matrix3 {
                 m20: Double = m20,
                 m21: Double = m21,
                 m22: Double = m22): Matrix3
+
+  def duplicateAsArray(f: Array[Double] => Unit): Matrix3 = {
+    Matrix3ArrayPool.use { array =>
+      f(array)
+      duplicate(
+        m00 = array(0),
+        m01 = array(1),
+        m02 = array(2),
+        m10 = array(3),
+        m11 = array(4),
+        m12 = array(5),
+        m20 = array(6),
+        m21 = array(7),
+        m22 = array(8),
+      )
+    }
+  }
+
+  def assign(array: Array[Double]): Unit = {
+    array(0) = m00
+    array(1) = m01
+    array(2) = m02
+    array(3) = m10
+    array(4) = m11
+    array(5) = m12
+    array(6) = m20
+    array(7) = m21
+    array(8) = m22
+  }
 }
 
 case class ImmutableMatrix3(m00: Double,

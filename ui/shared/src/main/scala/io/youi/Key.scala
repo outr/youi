@@ -2,6 +2,8 @@ package io.youi
 
 class Key private[youi](val value: String, val description: String, val `type`: KeyType) {
   Key.register(this)
+
+  override def toString: String = s"Key(value: $value, description: $description, type: ${`type`})"
 }
 
 class CharacterKey private[youi](val char: Char,
@@ -12,10 +14,14 @@ class CharacterKey private[youi](val char: Char,
   def isUpper: Boolean = char.isUpper
   def toUpper: CharacterKey = if (isUpper) this else reverse
   def toLower: CharacterKey = if (isLower) this else reverse
+
+  override def toString: String = s"CharacterKey(char: $char, description: $description)"
 }
 
 class SymbolKey private[youi](val char: Char,
-                              description: String) extends Key(char.toString, description, KeyType.Symbols)
+                              description: String) extends Key(char.toString, description, KeyType.Symbols) {
+  override def toString: String = s"SymbolKey(char: $char, description: $description)"
+}
 
 object Key {
   private var map = Map.empty[String, Key]
@@ -238,6 +244,32 @@ object Key {
   val Romaji: Key = new Key("Romaji", "The Romaji key; selects the Roman character set.", KeyType.IME)
   val Zenkaku: Key = new Key("Zenkaku", "The Zenkaku (full width) characters key.", KeyType.IME)
   val ZenkakuHanaku: Key = new Key("ZenkakuHanaku", "The Zenkaku/Hankaku (full width/half width) toggle key.", KeyType.IME)
+         
+  // Function
+  val F1: Key = new Key("F1", "The first general-purpose function key, F1.", KeyType.Function)
+  val F2: Key = new Key("F2", "The F2 key.", KeyType.Function)
+  val F3: Key = new Key("F3", "The F3 key.", KeyType.Function)
+  val F4: Key = new Key("F4", "The F4 key.", KeyType.Function)
+  val F5: Key = new Key("F5", "The F5 key.", KeyType.Function)
+  val F6: Key = new Key("F6", "The F6 key.", KeyType.Function)
+  val F7: Key = new Key("F7", "The F7 key.", KeyType.Function)
+  val F8: Key = new Key("F8", "The F8 key.", KeyType.Function)
+  val F9: Key = new Key("F9", "The F9 key.", KeyType.Function)
+  val F10: Key = new Key("F10", "The F10 key.", KeyType.Function)
+  val F11: Key = new Key("F11", "The F11 key.", KeyType.Function)
+  val F12: Key = new Key("F12", "The F12 key.", KeyType.Function)
+  val F13: Key = new Key("F13", "The F13 key.", KeyType.Function)
+  val F14: Key = new Key("F14", "The F14 key.", KeyType.Function)
+  val F15: Key = new Key("F15", "The F15 key.", KeyType.Function)
+  val F16: Key = new Key("F16", "The F16 key.", KeyType.Function)
+  val F17: Key = new Key("F17", "The F17 key.", KeyType.Function)
+  val F18: Key = new Key("F18", "The F18 key.", KeyType.Function)
+  val F19: Key = new Key("F19", "The F19 key.", KeyType.Function)
+  val F20: Key = new Key("F20", "The F20 key.", KeyType.Function)
+  val Soft1: Key = new Key("Soft1", "The first general-purpose virtual function key.", KeyType.Function)
+  val Soft2: Key = new Key("Soft2", "The second general-purpose virtual function key.", KeyType.Function)
+  val Soft3: Key = new Key("Soft3", "The third general-purpose virtual function key.", KeyType.Function)
+  val Soft4: Key = new Key("Soft4", "The fourth general-purpose virtual function key.", KeyType.Function)
          
   // Phone
   val AppSwitch: Key = new Key("AppSwitch", "Presents a list of recently-used applications which lets the user change apps quickly.", KeyType.Phone)
@@ -473,6 +505,7 @@ object KeyType {
   val UI = KeyType("UI")
   val Device = KeyType("Device")
   val IME = KeyType("IME")
+  val Function = KeyType("Function")
   val Phone = KeyType("Phone")
   val Multimedia = KeyType("Multimedia")
   val Audio = KeyType("Audio")

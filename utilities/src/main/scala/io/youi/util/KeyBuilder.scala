@@ -73,6 +73,8 @@ object KeyBuilder {
          |
          |class Key private[youi](val value: String, val description: String, val `type`: KeyType) {
          |  Key.register(this)
+         |
+         |  override def toString: String = s"Key(value: $$value, description: $$description, type: $${`type`})"
          |}
          |
          |class CharacterKey private[youi](val char: Char,
@@ -83,10 +85,14 @@ object KeyBuilder {
          |  def isUpper: Boolean = char.isUpper
          |  def toUpper: CharacterKey = if (isUpper) this else reverse
          |  def toLower: CharacterKey = if (isLower) this else reverse
+         |
+         |  override def toString: String = s"CharacterKey(char: $$char, description: $$description)"
          |}
          |
          |class SymbolKey private[youi](val char: Char,
-         |                              description: String) extends Key(char.toString, description, KeyType.Symbols)
+         |                              description: String) extends Key(char.toString, description, KeyType.Symbols) {
+         |  override def toString: String = s"SymbolKey(char: $$char, description: $$description)"
+         |}
          |
          |object Key {
          |  private var map = Map.empty[String, Key]
@@ -194,7 +200,7 @@ object KeyBuilder {
       })
       val rows = table.select("tr")
       val firstHeader = rows.get(0).select("th")
-      if (firstHeader.size() > 0 && firstHeader.get(0).text() == "KeyboardEvent.key Value") {
+      if (firstHeader.size() > 0 && firstHeader.get(0).text().equalsIgnoreCase("KeyboardEvent.key Value")) {
         rows.asScala.toList.foreach { row =>
           val columns = row.select("td")
           if (columns.size() >= 2) {

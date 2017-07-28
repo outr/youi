@@ -20,6 +20,8 @@ case class KeyEvent(key: Key, originalEvent: KeyboardEvent) {
   def capsLockOn: Boolean = modifierState(Key.CapsLock)
   def numLockOn: Boolean = modifierState(Key.NumLock)
   def scrollLockOn: Boolean = modifierState(Key.ScrollLock)
+
+  override def toString: String = s"KeyEvent(key: $key, repeat: $repeat, alt: $altPressed, ctrl: $controlPressed, shift: $shiftPressed)"
 }
 
 object KeyEvent {

@@ -2,7 +2,7 @@ package io.youi.component
 
 import com.outr.pixijs._
 import io.youi.component.event._
-import io.youi.LazyUpdate
+import io.youi._
 import io.youi.hypertext.Canvas
 import io.youi.hypertext.style.ColorProperties
 import reactify.{Channel, Val, Var}
@@ -75,9 +75,9 @@ object Renderer {
 
 class RendererEvents(renderer: Renderer) extends Events(renderer) {
   object key {
-    def down: Channel[KeyEvent] = renderer.canvas.event.key.down
-    def press: Channel[KeyEvent] = renderer.canvas.event.key.press
-    def up: Channel[KeyEvent] = renderer.canvas.event.key.up
+    def down: Channel[KeyEvent] = ui.event.key.down
+    def press: Channel[KeyEvent] = ui.event.key.press
+    def up: Channel[KeyEvent] = ui.event.key.up
   }
 }
 

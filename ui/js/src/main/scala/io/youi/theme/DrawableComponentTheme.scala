@@ -8,7 +8,7 @@ import reactify.Var
 trait DrawableComponentTheme extends CanvasComponentTheme with PaintTheme {
   override def defaultParent: Option[Theme] = Some(CanvasComponent)
 
-  private def prnt[T](f: DrawableComponentTheme => T, default: => T): T = parent.collect {
+  private def prnt[T](f: DrawableComponentTheme => T, default: => T): T = parent().collect {
     case p: DrawableComponentTheme => p
   }.map(f).getOrElse(default)
 

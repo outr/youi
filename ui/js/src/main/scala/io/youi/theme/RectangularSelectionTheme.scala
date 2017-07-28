@@ -9,7 +9,7 @@ import reactify.Var
 trait RectangularSelectionTheme extends DrawableComponentTheme {
   override def defaultParent: Option[Theme] = Some(DrawableComponent)
 
-  private def prnt[T](f: RectangularSelectionTheme => T, default: => T): T = parent.collect {
+  private def prnt[T](f: RectangularSelectionTheme => T, default: => T): T = parent().collect {
     case p: RectangularSelectionTheme => p
   }.map(f).getOrElse(default)
 

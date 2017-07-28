@@ -10,7 +10,7 @@ class CommunicationManager[C <: Communication](connectivity: ApplicationConnecti
   val id: Int = CommunicationManager.increment.getAndIncrement()
 
   val instances: Val[Set[C]] = Val {
-    connectivity.connections.map { connection =>
+    connectivity.connections().map { connection =>
       connection.store.getOrSet(s"communicationManager$id", create(connection))
     }
   }

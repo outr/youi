@@ -13,7 +13,7 @@ object UIExamples extends HTMLScreen {
 
   override protected def load(): Future[Unit] = super.load().map { _ =>
     var previous: Option[Button] = None
-    ClientExampleApplication.screens.collect {
+    ClientExampleApplication.screens().collect {
       case screen: UIExampleScreen => screen
     }.foreach { screen =>
       if (screen != this) {

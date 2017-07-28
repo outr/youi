@@ -8,7 +8,7 @@ import reactify.Var
 trait BasicTextTheme extends ComponentTheme {
   override def defaultParent: Option[Theme] = Some(Component)
 
-  private def prnt[T](f: BasicTextTheme => T, default: => T): T = parent.collect {
+  private def prnt[T](f: BasicTextTheme => T, default: => T): T = parent().collect {
     case p: BasicTextTheme => p
   }.map(f).getOrElse(default)
 

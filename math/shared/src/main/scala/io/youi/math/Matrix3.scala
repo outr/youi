@@ -57,21 +57,29 @@ sealed trait Matrix3 {
     newArr
   }
 
-  def arrayMatrixMult(array1: Array[Double],
-    array2: Array[Double]): Array[Double] = {
+  protected def arrayMatrixMult(left: Array[Double],
+    right: Array[Double]): Array[Double] = {
     val newArr = matrix3Array
-    newArr(M00) = array1(M00) * array2(M00) + array1(M01) * array2(M10) + array1(M02) * array2(M20)
-    newArr(M01) = array1(M00) * array2(M01) + array1(M01) * array2(M11) + array1(M02) * array2(M21)
-    newArr(M02) = array1(M00) * array2(M02) + array1(M01) * array2(M12) + array1(M02) * array2(M22)
+    newArr(M00) = left(M00) * right(M00) + left(M01) * right(M10) + left(M02) * right(M20)
+    newArr(M01) = left(M00) * right(M01) + left(M01) * right(M11) + left(M02) * right(M21)
+    newArr(M02) = left(M00) * right(M02) + left(M01) * right(M12) + left(M02) * right(M22)
 
-    newArr(M10) = array1(M10) * array2(M00) + array1(M11) * array2(M10) + array1(M12) * array2(M20)
-    newArr(M11) = array1(M10) * array2(M01) + array1(M11) * array2(M11) + array1(M12) * array2(M21)
-    newArr(M12) = array1(M10) * array2(M02) + array1(M11) * array2(M12) + array1(M12) * array2(M22)
+    newArr(M10) = left(M10) * right(M00) + left(M11) * right(M10) + left(M12) * right(M20)
+    newArr(M11) = left(M10) * right(M01) + left(M11) * right(M11) + left(M12) * right(M21)
+    newArr(M12) = left(M10) * right(M02) + left(M11) * right(M12) + left(M12) * right(M22)
 
-    newArr(M20) = array1(M20) * array2(M00) + array1(M21) * array2(M10) + array1(M22) * array2(M20)
-    newArr(M21) = array1(M20) * array2(M01) + array1(M21) * array2(M11) + array1(M22) * array2(M21)
-    newArr(M22) = array1(M20) * array2(M02) + array1(M21) * array2(M12) + array1(M22) * array2(M22)
+    newArr(M20) = left(M20) * right(M00) + left(M21) * right(M10) + left(M22) * right(M20)
+    newArr(M21) = left(M20) * right(M01) + left(M21) * right(M11) + left(M22) * right(M21)
+    newArr(M22) = left(M20) * right(M02) + left(M21) * right(M12) + left(M22) * right(M22)
     newArr
+  }
+
+  protected def arrayAdd(left: Array[Double], right: Array[Double]): Array[Double] = {
+    (left, right).zipped.map(_ + _)
+  }
+
+  protected def arraySubtract(left: Array[Double], right: Array[Double]): Array[Double] = {
+    (left, right).zipped.map(_ - _)
   }
 
   /**
@@ -104,8 +112,8 @@ sealed trait Matrix3 {
    * @param degrees the amount to rotate in degrees
    * @return
    */
-  def setToRotationDeg(degrees: Degrees): Matrix3 = {
-    setToRotation(degrees.toRad)
+  def toRotationDeg(degrees: Degrees): Matrix3 = {
+    toRotation(degrees.toRad)
   }
 
   /**
@@ -115,7 +123,7 @@ sealed trait Matrix3 {
    * @param rad the rotation in radians
    * @return
    */
-  def setToRotation(rad: Radians): Matrix3
+  def toRotation(rad: Radians): Matrix3
 
   /**
    * Set to translation matrix
@@ -124,7 +132,7 @@ sealed trait Matrix3 {
    * @param y the translation in y
    * @return
    */
-  def setToTranslation(x: Double, y: Double): Matrix3
+  def toTranslation(x: Double, y: Double): Matrix3
 
   /**
    * Set to scaling matrix
@@ -133,7 +141,7 @@ sealed trait Matrix3 {
    * @param scaleY the scale in y
    * @return
    */
-  def setToScaling(scaleX: Double, scaleY: Double): Matrix3
+  def toScaling(scaleX: Double, scaleY: Double): Matrix3
 
   /**
    * Add a translational component to the matrix in the 3rd column
@@ -144,6 +152,13 @@ sealed trait Matrix3 {
    */
   def trn(x: Double, y: Double): Matrix3
 
+  protected def translateArray(x: Double, y: Double): Array[Double] = {
+    val idt = identityArray
+    idt(M02) = x
+    idt(M12) = y
+    arrayMatrixMult(array, idt)
+  }
+
   /** Postmultiplies this matrix by a translation matrix. Postmultiplication is also used by OpenGL ES' 1.x
    * glTranslate/glRotate/glScale.
    *
@@ -152,6 +167,21 @@ sealed trait Matrix3 {
    * @return
    */
   def translate(x: Double, y: Double): Matrix3
+
+  protected def rotateArray(radians: Radians): Array[Double] = {
+    val cosineVal = stdmath.cos(radians.value)
+    val sineVal = stdmath.sin(radians.value)
+    val newArr = matrix3Array
+    newArr(M00) = cosineVal
+    newArr(M10) = sineVal
+
+    newArr(M01) = -sineVal
+    newArr(M02) = cosineVal
+
+    newArr(M22) = 1
+
+    arrayMatrixMult(array, newArr)
+  }
 
   /** Postmultiplies this matrix with a (counter-clockwise) rotation matrix. Postmultiplication is also used by OpenGL ES' 1.x
    * glTranslate/glRotate/glScale.
@@ -173,6 +203,15 @@ sealed trait Matrix3 {
    */
   def rotate(radians: Radians): Matrix3
 
+  protected def scaleArray(scaleX: Double, scaleY: Double): Array[Double] = {
+    val newArray = matrix3Array
+
+    newArray(M00) = scaleX
+    newArray(M11) = scaleY
+    newArray(M22) = 1
+    arrayMatrixMult(array, newArray)
+  }
+
   /** Postmultiplies this matrix with a scale matrix. Postmultiplication is also used by OpenGL ES' 1.x
    * glTranslate/glRotate/glScale.
    *
@@ -181,6 +220,14 @@ sealed trait Matrix3 {
    * @return
    */
   def scale(scaleX: Double, scaleY: Double): Matrix3
+
+  /**
+   * Define matrix equality as element equality, _not_ reference equality
+   *
+   * @param m
+   * @return
+   */
+  def ==(m: Matrix3): Boolean = array.sameElements(m.array)
 
 }
 
@@ -248,6 +295,11 @@ class MutableMatrix3 private(val array: Array[Double] = matrix3Array)
       case _: ImmutableMatrix3 => ImmutableMatrix3(newArr)
       case _: MutableMatrix3 => MutableMatrix3(newArr)
     }
+  }
+
+  private[this] def returnMat(ref: Matrix3, arr: Array[Double]) = ref match {
+    case _: ImmutableMatrix3 => ImmutableMatrix3(arr)
+    case _: MutableMatrix3 => MutableMatrix3(arr)
   }
 
   def inv(): MutableMatrix3 = {
@@ -333,7 +385,7 @@ class MutableMatrix3 private(val array: Array[Double] = matrix3Array)
     this
   }
 
-  def setToRotation(radians: Radians): MutableMatrix3 = {
+  def toRotation(radians: Radians): MutableMatrix3 = {
     val cosineVal = stdmath.cos(radians.value)
     val sineVal = stdmath.sin(radians.value)
 
@@ -351,14 +403,14 @@ class MutableMatrix3 private(val array: Array[Double] = matrix3Array)
     this
   }
 
-  def setToTranslation(x: Double, y: Double): Matrix3 = {
+  def toTranslation(x: Double, y: Double): Matrix3 = {
     toIdentity
     m02 = x
     m12 = y
     this
   }
 
-  def setToScaling(scaleX: Double, scaleY: Double): Matrix3 = {
+  def toScaling(scaleX: Double, scaleY: Double): Matrix3 = {
     toIdentity
     m00 = scaleX
     m11 = scaleY
@@ -372,10 +424,7 @@ class MutableMatrix3 private(val array: Array[Double] = matrix3Array)
   }
 
   override def translate(x: Double, y: Double): Matrix3 = {
-    val idt = identityArray
-    idt(M02) = x
-    idt(M12) = y
-    arrayMatrixMult(array, idt).copyToArray(array)
+    translateArray(x,y).copyToArray(array)
     this
   }
 
@@ -383,29 +432,13 @@ class MutableMatrix3 private(val array: Array[Double] = matrix3Array)
     if (radians.value == 0)
       this
     else {
-      val cosineVal = stdmath.cos(radians.value)
-      val sineVal = stdmath.sin(radians.value)
-      val newArr = matrix3Array
-      newArr(M00) = cosineVal
-      newArr(M10) = sineVal
-
-      newArr(M01) = -sineVal
-      newArr(M02) = cosineVal
-
-      newArr(M22) = 1
-
-      arrayMatrixMult(array, newArr).copyToArray(array)
+      rotateArray(radians).copyToArray(array)
       this
     }
   }
 
   override def scale(scaleX: Double, scaleY: Double): Matrix3 = {
-    val newArray = matrix3Array
-
-    newArray(M00) = scaleX
-    newArray(M11) = scaleY
-    newArray(M22) = 1
-    arrayMatrixMult(array, newArray).copyToArray(array)
+    scaleArray(scaleX, scaleY).copyToArray(array)
     this
   }
 }
@@ -457,7 +490,7 @@ class ImmutableMatrix3(val array: Array[Double] = matrix3Array)
     ImmutableMatrix3(newMatArray)
   }
 
-  override def setToRotation(radians: Radians): Matrix3 = {
+  override def toRotation(radians: Radians): Matrix3 = {
     val cosineVal = stdmath.cos(radians.value)
     val sineVal = stdmath.sin(radians.value)
 
@@ -471,14 +504,14 @@ class ImmutableMatrix3(val array: Array[Double] = matrix3Array)
     ImmutableMatrix3(idArray)
   }
 
-  override def setToTranslation(x: Double, y: Double): Matrix3 = {
+  override def toTranslation(x: Double, y: Double): Matrix3 = {
     val id = identityArray
     id(M02) = x
     id(M12) = y
     ImmutableMatrix3(id)
   }
 
-  override def setToScaling(scaleX: Double, scaleY: Double): Matrix3 = {
+  override def toScaling(scaleX: Double, scaleY: Double): Matrix3 = {
     val id = identityArray
     id(M00) = scaleX
     id(M11) = scaleY
@@ -494,39 +527,20 @@ class ImmutableMatrix3(val array: Array[Double] = matrix3Array)
   }
 
   override def translate(x: Double, y: Double): Matrix3 = {
-    val idt = identityArray
-    idt(M02) = x
-    idt(M12) = y
-    ImmutableMatrix3(arrayMatrixMult(array, idt))
+    ImmutableMatrix3(translateArray(x, y))
   }
 
   override def rotate(radians: Radians): Matrix3 = {
     if (radians.value == 0)
       this
     else {
-      val cosineVal = stdmath.cos(radians.value)
-      val sineVal = stdmath.sin(radians.value)
-      val newArr = matrix3Array
-      newArr(M00) = cosineVal
-      newArr(M10) = sineVal
-
-      newArr(M01) = -sineVal
-      newArr(M02) = cosineVal
-
-      newArr(M22) = 1
-
-      ImmutableMatrix3(arrayMatrixMult(array, newArr))
+      ImmutableMatrix3(rotateArray(radians))
       this
     }
   }
 
   override def scale(scaleX: Double, scaleY: Double): Matrix3 = {
-    val newArray = matrix3Array
-
-    newArray(M00) = scaleX
-    newArray(M11) = scaleY
-    newArray(M22) = 1
-    ImmutableMatrix3(arrayMatrixMult(array, newArray))
+    ImmutableMatrix3(scaleArray(scaleX, scaleY))
   }
 }
 

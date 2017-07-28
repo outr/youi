@@ -33,7 +33,7 @@ trait Matrix3 {
         m12 = array(5),
         m20 = array(6),
         m21 = array(7),
-        m22 = array(8),
+        m22 = array(8)
       )
     }
   }

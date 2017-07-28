@@ -82,6 +82,11 @@ case class URL(protocol: Protocol = Protocol.Http,
     s"/$host${path.encoded}"
   }
 
+  override def equals(obj: scala.Any): Boolean = obj match {
+    case url: URL => url.toString == toString
+    case _ => false
+  }
+
   override def toString: String = encoded.asString
 
   class URLParts(encoded: Boolean) {

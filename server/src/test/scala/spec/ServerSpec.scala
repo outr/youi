@@ -2,12 +2,14 @@ package spec
 
 import io.youi.http._
 import io.youi.net.{ContentType, URL}
+import io.youi.server.Server
 import io.youi.server.handler.HttpHandler
-import io.youi.server.test.TestServer
 import org.scalatest.{Matchers, WordSpec}
 
 class ServerSpec extends WordSpec with Matchers {
-  val server = new TestServer
+  Server.config.merge("""{ "implementation": "io.youi.server.test.TestServerImplementation" }""")
+
+  object server extends Server
 
   "TestHttpApplication" should {
     "configure the TestServer" in {

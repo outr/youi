@@ -1,0 +1,7 @@
+{
+  "youi": {
+    "server": {
+      "implementation": "io.youi.server.UndertowServerImplementation"
+    }
+  }
+}

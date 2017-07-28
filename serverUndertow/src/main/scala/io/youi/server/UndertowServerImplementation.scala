@@ -14,6 +14,7 @@ import io.undertow.server.{HttpServerExchange, HttpHandler => UndertowHttpHandle
 import io.undertow.util.{HeaderMap, HttpString}
 import io.undertow.websockets.WebSocketConnectionCallback
 import io.undertow.websockets.core._
+import io.undertow.websockets.extensions.PerMessageDeflateHandshake
 import io.undertow.websockets.spi.WebSocketHttpExchange
 import io.undertow.{Handlers, Undertow, UndertowOptions}
 import io.youi.http.{Connection, FileContent, FileEntry, FormData, FormDataContent, FormDataEntry, Headers, HttpConnection, HttpRequest, Method, RequestContent, StringContent, StringEntry, URLContent}
@@ -23,22 +24,29 @@ import org.xnio.{OptionMap, Xnio}
 
 import scala.collection.JavaConverters._
 
-class UndertowServerImplementation(server: Server) extends ServerImplementation with UndertowHttpHandler {
+// TODO: determine problems in HTTP2 so it can be enabled by default going forward
+// TODO: determine problems in WebSocket compression so it can be enabled by default going forward
+class UndertowServerImplementation(val server: Server) extends ServerImplementation with UndertowHttpHandler {
+  val enableHTTP2: Boolean = Server.config("enableHTTP2").as[Option[Boolean]].getOrElse(false)
+  val webSocketCompression: Boolean = Server.config("webSocketCompression").as[Option[Boolean]].getOrElse(false)
+
   private var instance: Option[Undertow] = None
 
   override def start(): Unit = synchronized {
     val contentEncodingRepository = new ContentEncodingRepository()
       .addEncodingHandler("gzip", new GzipEncodingProvider, 100, Predicates.maxContentSize(5L))
       .addEncodingHandler("deflate", new DeflateEncodingProvider, 50, Predicates.maxContentSize(5L))
-    val encodingHandler = new EncodingHandler(contentEncodingRepository)
-      .setNext(this)
+    val encodingHandler = new EncodingHandler(contentEncodingRepository).setNext(this)
 
-    val builder = Undertow.builder()
-//      .setServerOption(UndertowOptions.ENABLE_HTTP2, java.lang.Boolean.TRUE)
-      .setHandler(encodingHandler)
+    val builder = Undertow.builder().setHandler(encodingHandler)
+    if (enableHTTP2) {
+      builder.setServerOption(UndertowOptions.ENABLE_HTTP2, java.lang.Boolean.TRUE)
+    }
     server.config.listeners.foreach {
-      case HttpServerListener(host, port) => builder.addHttpListener(port, host)
-      case HttpsServerListener(host, port, keyStore) => {
+      case HttpServerListener(host, port, enabled) => if (enabled) {
+        builder.addHttpListener(port, host)
+      }
+      case HttpsServerListener(host, port, keyStore, enabled) => if (enabled) {
         val sslContext = SSLUtil.createSSLContext(keyStore.location, keyStore.password)
         builder.addHttpsListener(port, host, sslContext)
       }
@@ -70,24 +78,26 @@ class UndertowServerImplementation(server: Server) extends ServerImplementation 
         exchange.startBlocking()
         val formDataParser = formParserBuilder.build().createParser(exchange)
         formDataParser.parseBlocking()
-        requestHandler.handleRequest(exchange)
+        requestHandler(exchange)
       }
     } else {
-      requestHandler.handleRequest(exchange)
+      requestHandler(exchange)
     }
   }
 
-  private val requestHandler = new UndertowHttpHandler {
-    override def handleRequest(exchange: HttpServerExchange): Unit = {
-      val request = UndertowServerImplementation.request(exchange)
-      val connection = new HttpConnection(server, request)
-      server.handle(connection)
-      UndertowServerImplementation.response(server, connection, exchange)
-    }
+  private def requestHandler(exchange: HttpServerExchange): Unit = {
+    val request = UndertowServerImplementation.request(exchange)
+    val connection = new HttpConnection(server, request)
+    server.handle(connection)
+    UndertowServerImplementation.response(this, connection, exchange)
   }
 }
 
-object UndertowServerImplementation {
+object UndertowServerImplementation extends ServerImplementationCreator {
+  override def create(server: Server): ServerImplementation = {
+    new UndertowServerImplementation(server)
+  }
+
   def parseHeaders(headerMap: HeaderMap): Headers = Headers(headerMap.asScala.map { hv =>
     hv.getHeaderName.toString -> hv.asScala.toList
   }.toMap)
@@ -127,22 +137,22 @@ object UndertowServerImplementation {
     )
   }
 
-  def response(server: Server, connection: HttpConnection, exchange: HttpServerExchange): Unit = {
+  def response(impl: UndertowServerImplementation, connection: HttpConnection, exchange: HttpServerExchange): Unit = {
     connection.webSocketSupport match {
-      case Some(webSocketListener) => handleWebSocket(server, connection, webSocketListener, exchange)
+      case Some(webSocketListener) => handleWebSocket(impl, connection, webSocketListener, exchange)
       case None => connection.proxySupport match {
         case Some(proxyHandler) => {
           proxyHandler.proxy(connection) match {
-            case Some(destination) => handleProxy(server, connection, exchange, destination, proxyHandler.keyStore)
-            case None => handleStandard(server, connection, exchange)
+            case Some(destination) => handleProxy(impl, connection, exchange, destination, proxyHandler.keyStore)
+            case None => handleStandard(impl, connection, exchange)
           }
         }
-        case None => handleStandard(server, connection, exchange)
+        case None => handleStandard(impl, connection, exchange)
       }
     }
   }
 
-  private def handleWebSocket(server: Server,
+  private def handleWebSocket(impl: UndertowServerImplementation,
                               httpConnection: HttpConnection,
                               connection: Connection,
                               exchange: HttpServerExchange): Unit = {
@@ -186,10 +196,13 @@ object UndertowServerImplementation {
         connection._connected := true
       }
     })
+    if (impl.webSocketCompression) {
+      handler.addExtension(new PerMessageDeflateHandshake)
+    }
     handler.handleRequest(exchange)
   }
 
-  private def handleProxy(server: Server,
+  private def handleProxy(impl: UndertowServerImplementation,
                           connection: HttpConnection,
                           exchange: HttpServerExchange,
                           destination: URL,
@@ -207,7 +220,7 @@ object UndertowServerImplementation {
     proxyHandler.handleRequest(exchange)
   }
 
-  private def handleStandard(server: Server, connection: HttpConnection, exchange: HttpServerExchange): Unit = {
+  private def handleStandard(impl: UndertowServerImplementation, connection: HttpConnection, exchange: HttpServerExchange): Unit = {
     val response = connection.response
 
     exchange.setStatusCode(response.status.code)
@@ -225,26 +238,11 @@ object UndertowServerImplementation {
 
               override def onException(exchange: HttpServerExchange, sender: Sender, exception: IOException): Unit = {
                 sender.close()
-                server.error(exception)
+                impl.server.error(exception)
               }
             })
           }
           case fc: FileContent => ResourceServer.serve(exchange, fc)
-          /*case FileContent(file, contentType) => {
-            val channel = FileChannel.open(file.getAbsoluteFile.toPath, StandardOpenOption.READ)
-            exchange.getResponseSender.transferFrom(channel, new IoCallback {
-              override def onComplete(exchange: HttpServerExchange, sender: Sender): Unit = {
-                channel.close()
-                sender.close()
-              }
-
-              override def onException(exchange: HttpServerExchange, sender: Sender, exception: IOException): Unit = {
-                channel.close()
-                sender.close()
-                server.error(exception)
-              }
-            })
-          }*/
           case URLContent(url, contentType) => {
             val resource = new URLResource(url, "")
             resource.serve(exchange.getResponseSender, exchange, new IoCallback {
@@ -254,7 +252,7 @@ object UndertowServerImplementation {
 
               override def onException(exchange: HttpServerExchange, sender: Sender, exception: IOException): Unit = {
                 sender.close()
-                server.error(exception)
+                impl.server.error(exception)
               }
             })
           }
@@ -266,7 +264,7 @@ object UndertowServerImplementation {
 
           override def onException(exchange: HttpServerExchange, sender: Sender, exception: IOException): Unit = {
             sender.close()
-            server.error(exception)
+            impl.server.error(exception)
           }
         })
       }

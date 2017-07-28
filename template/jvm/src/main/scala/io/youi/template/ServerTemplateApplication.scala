@@ -1,19 +1,10 @@
 package io.youi.template
 
-import java.io.File
+import io.youi.app.ServerApplication
+import io.youi.stream._
 
-import io.youi.app.SinglePageApplication
-import io.youi.http._
-import io.youi.server.UndertowServer
-import io.youi.server.handler.CachingManager
-
-class ServerTemplateApplication(compiler: TemplateCompiler) extends UndertowServer with TemplateApplication with SinglePageApplication {
-  handler.matcher(path.startsWith("/app")).caching(CachingManager.LastModified()).classLoader()
-
-  override protected def templateDirectory: File = compiler.destinationDirectory
-  override protected def appJSContent: Content = Content.classPath("app/youi-template-fastopt.js")
-  override protected def appJSMethod: String = "application"
-  override protected def responseMap(httpConnection: HttpConnection): Map[String, String] = Map(
-    "template_pages" -> compiler.pages.mkString(";")
-  )
+class ServerTemplateApplication(compiler: TemplateCompiler) extends ServerApplication with TemplateApplication {
+  addTemplate(compiler.destinationDirectory, deltas = List(
+    Delta.InsertLastChild(ByTag("body"), s"""<input type="hidden" id="template_pages" value="${compiler.pages.mkString(";")}"/>""")
+  ))
 }

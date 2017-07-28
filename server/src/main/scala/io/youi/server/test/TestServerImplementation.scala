@@ -1,8 +1,10 @@
 package io.youi.server.test
 
-import io.youi.server.ServerImplementation
+import io.youi.server.{Server, ServerImplementation, ServerImplementationCreator}
 
-object TestServerImplementation extends ServerImplementation {
+object TestServerImplementation extends ServerImplementation with ServerImplementationCreator {
+  override def create(server: Server): ServerImplementation = this
+
   private var running = false
 
   override def start(): Unit = running = true

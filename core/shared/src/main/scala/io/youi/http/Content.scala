@@ -19,7 +19,7 @@ case class StringContent(value: String, contentType: ContentType, lastModified: 
 }
 
 case class FileContent(file: File, contentType: ContentType) extends Content {
-  assert(file.isFile, s"Cannot send back ${file.getAbsolutePath} as it is not a file reference!")
+  assert(file.isFile, s"Cannot send back ${file.getAbsolutePath} as it is a directory or does not exist!")
 
   override def length: Long = file.length()
 
@@ -29,6 +29,8 @@ case class FileContent(file: File, contentType: ContentType) extends Content {
 }
 
 case class URLContent(url: URL, contentType: ContentType) extends Content {
+  assert(url != null, "URL must not be null.")
+
   private lazy val (contentLength, contentModified) = {
     val connection = url.openConnection()
     connection match {
@@ -84,6 +86,10 @@ object Content {
   def url(url: URL): Content = URLContent(url, ContentType.byFileName(url.toString))
   def url(url: URL, contentType: ContentType): Content = URLContent(url, contentType)
   def classPath(url: URL): Content = URLContent(url, ContentType.byFileName(url.toString))
-  def classPath(path: String): Content = URLContent(Thread.currentThread().getContextClassLoader.getResource(path), ContentType.byFileName(path))
+  def classPath(path: String): Content = classPathOption(path).getOrElse(throw new RuntimeException(s"Invalid URL or not found in class-loader: $path."))
+  def classPathOption(path: String): Option[Content] = {
+    val o = Option(Thread.currentThread().getContextClassLoader.getResource(path))
+    o.map(classPath)
+  }
   def classPath(path: String, contentType: ContentType): Content = URLContent(Thread.currentThread().getContextClassLoader.getResource(path), contentType)
 }

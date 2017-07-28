@@ -54,4 +54,7 @@ object ClientApplication {
     val request = new AjaxRequest(History.url().replacePathAndParams("/clientError"), data = Some(formData))
     request.send()
   }
+  def sendError(event: ErrorEvent): Future[XMLHttpRequest] = {
+    ErrorTrace.toError(event).flatMap(sendError)
+  }
 }

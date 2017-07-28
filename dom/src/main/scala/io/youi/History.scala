@@ -48,7 +48,7 @@ object History {
 
   def push(url: URL, state: js.Any = null): Unit = if (alwaysReload()) {
     set(url)
-  } else {
+  } else if (url != this.url()) {
     val urlString = url.toString
     window.history.pushState(state, urlString, urlString)
     currentURL := url
@@ -59,7 +59,7 @@ object History {
 
   def replace(url: URL, state: js.Any): Unit = if (alwaysReload()) {
     set(url)
-  } else {
+  } else if (url != this.url()) {
     val urlString = url.toString
     window.history.replaceState(state, urlString, urlString)
     currentURL := url

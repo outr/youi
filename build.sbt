@@ -1,37 +1,38 @@
 name := "youi"
 organization in ThisBuild := "io.youi"
-version in ThisBuild := "0.4.4-SNAPSHOT"
+version in ThisBuild := "0.5.1-SNAPSHOT"
 scalaVersion in ThisBuild := "2.12.2"
 crossScalaVersions in ThisBuild := List("2.12.2", "2.11.11")
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
 resolvers in ThisBuild += Resolver.sonatypeRepo("snapshots")
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 
+val profigVersion = "1.0.2"
 val pixiJsVersion = "4.5.3"
 val scribeVersion = "1.4.3"
 val powerScalaVersion = "2.0.5"
 val reactifyVersion = "2.0.3"
-val akkaVersion = "2.5.2"
-val scalaJSDOM = "0.9.2"
+val akkaVersion = "2.5.3"
+val scalaJSDOM = "0.9.3"
 val httpAsyncClientVersion = "4.1.3"
 val circeVersion = "0.8.0"
 val uaDetectorVersion = "2014.10"
-val undertowVersion = "1.4.16.Final"
+val undertowVersion = "1.4.18.Final"
 val uPickleVersion = "0.4.4"
 val closureCompilerVersion = "v20170423"
 val hasherVersion = "1.2.1"
 val canvgVersion = "1.4.0_1"
 val openTypeVersion = "0.7.1_2"
-val picaVersion = "3.0.4"
+val picaVersion = "3.0.5"
+val jSoupVersion = "1.10.3"
 val scalaXMLVersion = "1.0.6"
-val scallopVersion = "3.0.0"
 val scalacticVersion = "3.0.3"
 val scalaTestVersion = "3.0.3"
 
 lazy val root = project.in(file("."))
   .aggregate(
-    coreJS, coreJVM, stream, communicationJS, communicationJVM, dom, client, server, serverUndertow, ui, optimizer,
-    appJS, appJVM, templateJS, templateJVM, exampleJS, exampleJVM
+    coreJS, coreJVM, stream, communicationJS, communicationJVM, dom, client, server, serverUndertow, uiJS, uiJVM,
+    optimizer, appJS, appJVM, templateJS, templateJVM, exampleJS, exampleJVM
   )
   .settings(
     resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases",
@@ -46,6 +47,7 @@ lazy val core = crossProject.in(file("core"))
     resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases",
     libraryDependencies ++= Seq(
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
+      "com.outr" %%% "profig" % profigVersion,
       "com.outr" %%% "scribe" % scribeVersion,
       "com.outr" %%% "reactify" % reactifyVersion,
       "org.scalactic" %%% "scalactic" % scalacticVersion,
@@ -90,6 +92,7 @@ lazy val stream = project.in(file("stream"))
       "org.powerscala" %% "powerscala-io" % powerScalaVersion
     )
   )
+  .dependsOn(coreJVM)
 
 lazy val dom = project.in(file("dom"))
   .enablePlugins(ScalaJSPlugin)
@@ -145,10 +148,11 @@ lazy val communication = crossProject.in(file("communication"))
 lazy val communicationJS = communication.js
 lazy val communicationJVM = communication.jvm.dependsOn(server)
 
-lazy val ui = project.in(file("ui"))
-  .enablePlugins(ScalaJSPlugin)
+lazy val ui = crossProject.in(file("ui"))
   .settings(
-    name := "youi-ui",
+    name := "youi-ui"
+  )
+  .jsSettings(
     test := (),
     libraryDependencies ++= Seq(
       "com.outr" %%% "scalajs-pixijs" % pixiJsVersion,
@@ -157,7 +161,10 @@ lazy val ui = project.in(file("ui"))
       "com.outr" %%% "pica-scala-js" % picaVersion
     )
   )
-  .dependsOn(coreJS, dom)
+  .dependsOn(core)
+
+lazy val uiJS = ui.js.dependsOn(dom)
+lazy val uiJVM = ui.jvm
 
 lazy val optimizer = project.in(file("optimizer"))
   .settings(
@@ -184,9 +191,9 @@ lazy val app = crossProject.in(file("app"))
   .jsSettings(
     test := ()
   )
-  .dependsOn(core, communication)
+  .dependsOn(core, communication, ui)
 
-lazy val appJS = app.js.dependsOn(ui)
+lazy val appJS = app.js
 lazy val appJVM = app.jvm
 
 lazy val template = crossProject.in(file("template"))
@@ -195,6 +202,8 @@ lazy val template = crossProject.in(file("template"))
   )
   .jsSettings(
     test := (),
+    artifactPath in (Compile, fastOptJS) := (resourceManaged in Compile).value / "application.js",
+    artifactPath in (Compile, fullOptJS) := (resourceManaged in Compile).value / "application.js",
     crossTarget in fastOptJS := baseDirectory.value / ".." / "jvm" / "src" / "main" / "resources" / "app",
     crossTarget in fullOptJS := baseDirectory.value / ".." / "jvm" / "src" / "main" / "resources" / "app",
     crossTarget in packageJSDependencies := baseDirectory.value / ".." / "jvm" / "src" / "main" / "resources" / "app",
@@ -203,14 +212,13 @@ lazy val template = crossProject.in(file("template"))
   .jvmSettings(
     fork := true,
     libraryDependencies ++= Seq(
-      "org.powerscala" %% "powerscala-io" % powerScalaVersion,
-      "org.rogach" %% "scallop" % scallopVersion
+      "org.powerscala" %% "powerscala-io" % powerScalaVersion
     ),
     assemblyJarName in assembly := "youi-template.jar"
   )
   .dependsOn(app)
 
-lazy val templateJS = template.js.dependsOn(ui)
+lazy val templateJS = template.js
 lazy val templateJVM = template.jvm.dependsOn(serverUndertow, optimizer)
 
 lazy val example = crossProject.in(file("example"))
@@ -233,5 +241,15 @@ lazy val example = crossProject.in(file("example"))
   )
   .dependsOn(app, template)
 
-lazy val exampleJS = example.js.dependsOn(ui)
+lazy val exampleJS = example.js
 lazy val exampleJVM = example.jvm.dependsOn(serverUndertow)
+
+lazy val utilities = project.in(file("utilities"))
+  .settings(
+    name := "youi-utilities",
+    libraryDependencies ++= Seq(
+      "org.jsoup" % "jsoup" % jSoupVersion,
+      "org.powerscala" %% "powerscala-io" % powerScalaVersion
+    )
+  )
+  .dependsOn(coreJVM)

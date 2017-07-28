@@ -1,16 +1,14 @@
 package io.youi.app
 
-import java.io.File
-
-import io.youi.http.HttpConnection
+import io.youi.http.{Content, HttpConnection}
 import io.youi.net.URLMatcher
 
 trait MatcherPage extends Page {
   protected def matcher: URLMatcher
 
-  protected def resource(httpConnection: HttpConnection): Option[File]
+  protected def resource(httpConnection: HttpConnection): Option[Content]
 
-  override protected def matches(connection: HttpConnection): Option[File] = if (matcher.matches(connection.request.url)) {
+  override protected def matches(connection: HttpConnection): Option[Content] = if (matcher.matches(connection.request.url)) {
     resource(connection)
   } else {
     None

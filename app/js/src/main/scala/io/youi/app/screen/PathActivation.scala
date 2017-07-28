@@ -1,14 +1,14 @@
 package io.youi.app.screen
 
-import io.youi.{HistoryStateChange, StateType}
-import io.youi.net.URL
+import io.youi.{HistoryStateChange, StateType, http}
+import io.youi.net.{URL, URLMatcher}
 
 trait PathActivation extends URLActivation {
   def path: String
   def stateType: StateType = StateType.Push
   def clearParams: Boolean = false
 
-  override def isURLMatch(url: URL): Boolean = url.path.decoded == path
+  override lazy val matcher: URLMatcher = http.path.exact(path)
 
   override def updateURL(current: URL): Option[HistoryStateChange] = if (current.path.decoded != path) {
     val url = if (clearParams) {
@@ -16,7 +16,7 @@ trait PathActivation extends URLActivation {
     } else {
       current.withPath(path)
     }
-    Some(HistoryStateChange(current.withPath(path), stateType))
+    Some(HistoryStateChange(url, stateType))
   } else {
     None
   }

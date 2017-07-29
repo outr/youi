@@ -1,4 +1,6 @@
-package io.youi.math.prototype
+package io.youi.math.prototype.ops
+
+import io.youi.math.prototype.Matrix3
 
 trait Matrix3Modifier {
   type Mod = (Double, Double, Double, Double, Double, Double, Double, Double, Double) => Matrix3

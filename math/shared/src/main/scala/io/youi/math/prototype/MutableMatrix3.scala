@@ -1,6 +1,7 @@
 package io.youi.math.prototype
 
 import io.youi.math.Matrix3ArrayPool
+import io.youi.math.prototype.ops.Matrix3Multiply
 
 case class MutableMatrix3(var m00: Double,
                           var m01: Double,

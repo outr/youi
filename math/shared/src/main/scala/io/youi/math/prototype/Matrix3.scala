@@ -1,6 +1,7 @@
 package io.youi.math.prototype
 
 import io.youi.math.Matrix3ArrayPool
+import io.youi.math.prototype.ops.Matrix3Multiply
 
 trait Matrix3 {
   def m00: Double

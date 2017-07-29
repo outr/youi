@@ -6,8 +6,7 @@ import scala.{math => stdmath}
   * Trait representing a matrix
   *
   */
-sealed trait Matrix3 { self =>
-
+sealed trait Matrix3 {
   def m00: Double
   def m01: Double
   def m02: Double
@@ -322,7 +321,7 @@ sealed trait Matrix3 { self =>
     * @return
     */
   def translate(x: Double, y: Double): Matrix3 = {
-    self assignMult Matrix3.Identity.toTranslation(x, y)
+    assignMult(Matrix3.Identity.toTranslation(x, y))
   }
 
   /** Postmultiplies this matrix with a (counter-clockwise) rotation matrix. Postmultiplication is also used by OpenGL ES' 1.x
@@ -344,7 +343,7 @@ sealed trait Matrix3 { self =>
     * @return
     */
   def rotate(radians: Radians): Matrix3 = {
-    self assignMult Matrix3.Identity.toRotation(radians)
+    assignMult(Matrix3.Identity.toRotation(radians))
   }
 
   /** Postmultiplies this matrix with a scale matrix. Postmultiplication is also used by OpenGL ES' 1.x
@@ -355,7 +354,7 @@ sealed trait Matrix3 { self =>
     * @return
     */
   def scale(scaleX: Double, scaleY: Double): Matrix3 = {
-    self assignMult Matrix3.Identity.toScaling(scaleX, scaleY)
+    assignMult(Matrix3.Identity.toScaling(scaleX, scaleY))
   }
 
   def ==(m: Matrix3): Boolean = {

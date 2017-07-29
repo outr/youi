@@ -14,19 +14,19 @@ trait Matrix3 {
   def m21: Double
   def m22: Double
 
-  def duplicate(m00: Double = m00,
-                m01: Double = m01,
-                m02: Double = m02,
-                m10: Double = m10,
-                m11: Double = m11,
-                m12: Double = m12,
-                m20: Double = m20,
-                m21: Double = m21,
-                m22: Double = m22): Matrix3
+  protected def duplicate(m00: Double = m00,
+                          m01: Double = m01,
+                          m02: Double = m02,
+                          m10: Double = m10,
+                          m11: Double = m11,
+                          m12: Double = m12,
+                          m20: Double = m20,
+                          m21: Double = m21,
+                          m22: Double = m22): Matrix3
 
-  def duplicateAsArray(f: Array[Double] => Unit): Matrix3 = {
+  protected def duplicateAsArray(f: Array[Double] => Unit): Matrix3 = {
     Matrix3ArrayPool.use { array =>
-      assign(array)
+      toArray(array)
       f(array)
       duplicate(
         m00 = array(0),
@@ -42,7 +42,7 @@ trait Matrix3 {
     }
   }
 
-  def assign(array: Array[Double]): Unit = {
+  def toArray(array: Array[Double] = new Array[Double](9)): Array[Double] = {
     array(0) = m00
     array(1) = m01
     array(2) = m02
@@ -52,6 +52,7 @@ trait Matrix3 {
     array(6) = m20
     array(7) = m21
     array(8) = m22
+    array
   }
 
   def *(that: Matrix3): Matrix3 = Matrix3Multiply(this, that, duplicate)

@@ -1,18 +1,26 @@
 package io.youi.component
 
 import com.outr.pixijs.PIXI
+import io.youi.component.layout.Layout
 import io.youi.theme.AbstractContainerTheme
 import reactify.{ChangeListener, Var}
 
-class AbstractContainer extends Component {
+class AbstractContainer extends Component { self =>
   type Child <: Component
 
   override protected[component] lazy val instance: PIXI.Container = new PIXI.Container()
 
   override lazy val theme: Var[_ <: AbstractContainerTheme] = Var(AbstractContainer)
 
+  protected val layoutManager: Var[Layout] = Var(Layout.None)
   protected val childEntries: Var[Vector[Child]] = prop(Vector.empty, updatesTransform = true)
 
+  layoutManager.changes(new ChangeListener[Layout] {
+    override def change(oldValue: Layout, newValue: Layout): Unit = synchronized {
+      Layout.disconnect(self, oldValue)
+      Layout.connect(self, newValue)
+    }
+  })
   childEntries.changes(new ChangeListener[Vector[Child]] {
     override def change(oldValue: Vector[Child], newValue: Vector[Child]): Unit = {
       var modifiedOld = oldValue

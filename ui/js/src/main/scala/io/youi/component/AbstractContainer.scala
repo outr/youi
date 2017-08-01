@@ -3,7 +3,7 @@ package io.youi.component
 import com.outr.pixijs.PIXI
 import io.youi.component.layout.Layout
 import io.youi.theme.AbstractContainerTheme
-import reactify.{ChangeListener, Var}
+import reactify._
 
 class AbstractContainer extends Component { self =>
   type Child <: Component
@@ -17,13 +17,25 @@ class AbstractContainer extends Component { self =>
 
   layoutManager.changes(new ChangeListener[Layout] {
     override def change(oldValue: Layout, newValue: Layout): Unit = synchronized {
-      Layout.disconnect(self, oldValue)
-      Layout.connect(self, newValue)
+      oldValue.disconnect(self)
+      newValue.connect(self)
     }
   })
+
+  size.width.and(size.height).on {
+    layoutManager.resized(self, size.width, size.height)
+  }
+
   childEntries.changes(new ChangeListener[Vector[Child]] {
     override def change(oldValue: Vector[Child], newValue: Vector[Child]): Unit = {
       var modifiedOld = oldValue
+
+      val removed = oldValue.collect {
+        case c: Component if !newValue.contains(c) => c
+      }
+      val added = newValue.collect {
+        case c: Component if !oldValue.contains(c) => c
+      }
 
       // Remove values that existed previously that are not available in the new version
       oldValue.foreach { c =>
@@ -54,6 +66,8 @@ class AbstractContainer extends Component { self =>
           previous = Some(c)
         }
       }
+
+      layoutManager.childrenChanged(self, removed, added)
     }
   })
 
@@ -77,4 +91,6 @@ class AbstractContainer extends Component { self =>
   }
 }
 
-object AbstractContainer extends AbstractContainerTheme
+object AbstractContainer extends AbstractContainerTheme {
+  def children(container: AbstractContainer): Var[Vector[container.Child]] = container.childEntries
+}

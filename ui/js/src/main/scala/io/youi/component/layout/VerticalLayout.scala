@@ -13,6 +13,12 @@ class VerticalLayout(spacing: Double = 0.0,
     Snap(c).verticalReset()
   }
 
+  override def childrenChanged(container: AbstractContainer, removed: Vector[Component], added: Vector[Component]): Unit = {
+    super.childrenChanged(container, removed, added)
+
+    update(container, removed)
+  }
+
   private def update(container: AbstractContainer, removed: Vector[Component]): Unit = {
     val children = AbstractContainer.children(container)
     val items = if (fromTop) children() else children().reverse

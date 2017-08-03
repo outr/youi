@@ -7,4 +7,7 @@
     * [X] Create `KeyBuilder` to support MDN standards generation of `Key` class from https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values
 * [X] Update `Key` to use `KeyboardEvent.key` as mapping for better compliance to latest spec
 * [X] Replace direct use of `KeyboardEvent` in hypertext and component with `KeyEvent`
+* [ ] Layout support in AbstractContainer
+    * [ ] VerticalLayout
+* [X] Update dom Template to utilize Profig instead of limiting to environment variable for load path
 * [ ] Remove uPickle and rely exclusively on Circe for pickling

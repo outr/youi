@@ -21,7 +21,7 @@ class VerticalLayout(spacing: Double = 0.0,
 
   private def update(container: AbstractContainer, removed: Vector[Component]): Unit = {
     val children = AbstractContainer.children(container)
-    val items = if (fromTop) children() else children().reverse
+    val items = children()
     removed.foreach { c =>
       Snap(c).verticalReset()
     }

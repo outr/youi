@@ -1,15 +1,15 @@
 name := "youi"
 organization in ThisBuild := "io.youi"
 version in ThisBuild := "0.5.1-SNAPSHOT"
-scalaVersion in ThisBuild := "2.12.2"
-crossScalaVersions in ThisBuild := List("2.12.2", "2.11.11")
+scalaVersion in ThisBuild := "2.12.3"
+crossScalaVersions in ThisBuild := List("2.12.3", "2.11.11")
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
 resolvers in ThisBuild += Resolver.sonatypeRepo("snapshots")
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 
-val profigVersion = "1.0.2"
+val profigVersion = "1.1.1"
 val pixiJsVersion = "4.5.3"
-val scribeVersion = "1.4.3"
+val scribeVersion = "1.4.5"
 val powerScalaVersion = "2.0.5"
 val reactifyVersion = "2.1.0"
 val akkaVersion = "2.5.3"
@@ -85,7 +85,8 @@ lazy val stream = project.in(file("stream"))
 lazy val dom = project.in(file("dom"))
   .enablePlugins(ScalaJSPlugin)
   .settings(
-    name := "youi-dom"
+    name := "youi-dom",
+    libraryDependencies += "com.outr" %% "profig" % profigVersion
   )
   .dependsOn(coreJS)
   .dependsOn(stream % "compile")

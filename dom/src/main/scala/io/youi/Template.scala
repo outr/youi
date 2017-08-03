@@ -4,6 +4,7 @@ import java.io.File
 
 import io.youi.stream.{ByClass, ById, HTMLParser}
 import org.scalajs.dom.Element
+import profig.Config
 
 import scala.annotation.compileTimeOnly
 import scala.language.experimental.macros
@@ -21,20 +22,23 @@ object TemplateMacros {
                                                             appName: context.Expr[String])(implicit e: context.WeakTypeTag[E]): context.Expr[E] = {
     import context.universe._
 
+    // Initialize Profig
+    context.eval(reify(profig.Config.initMacro(Nil)))
+
     val pathValue = path match {
       case Expr(Literal(Constant(value: String))) => value
     }
     val idValue = id match {
       case Expr(Literal(Constant(value: String))) => value
     }
-    val environmentVariable = appName match {
-      case Expr(Literal(Constant(value: String))) => s"${value.toUpperCase}_TEMPLATE_PATH"
+    val pathKey = appName match {
+      case Expr(Literal(Constant(value: String))) => s"$value.template.path"
     }
-    val templatePath = Option(System.getenv(environmentVariable))
+    val templatePath = Config(pathKey).as[Option[String]]
     val file = templatePath match {
       case Some(basePath) => new File(basePath, pathValue)
       case None => {
-        context.warning(context.enclosingPosition, s"No environment variable defined for $environmentVariable.")
+        context.warning(context.enclosingPosition, s"No configuration defined for $pathKey.")
         new File(pathValue)
       }
     }
@@ -62,22 +66,28 @@ object TemplateMacros {
                                                                appName: context.Expr[String])(implicit e: context.WeakTypeTag[E]): context.Expr[List[E]] = {
     import context.universe._
 
+    // Initialize Profig
+    context.eval(reify(profig.Config.initMacro(Nil)))
+
     val pathValue = path match {
       case Expr(Literal(Constant(value: String))) => value
     }
     val classValue = className match {
       case Expr(Literal(Constant(value: String))) => value
     }
-    val environmentVariable = appName match {
-      case Expr(Literal(Constant(value: String))) => s"${value.toUpperCase}_TEMPLATE_PATH"
+    val pathKey = appName match {
+      case Expr(Literal(Constant(value: String))) => s"$value.template.path"
     }
-    val templatePath = Option(System.getenv(environmentVariable))
+    val templatePath = Config(pathKey).as[Option[String]]
     val file = templatePath match {
       case Some(basePath) => new File(basePath, pathValue)
-      case None => new File(pathValue)
+      case None => {
+        context.warning(context.enclosingPosition, s"No configuration defined for $pathKey.")
+        new File(pathValue)
+      }
     }
     if (!file.exists()) {
-      context.abort(context.enclosingPosition, s"Unable to find path for ${file.getAbsolutePath}, $environmentVariable=$templatePath.")
+      context.abort(context.enclosingPosition, s"Unable to find path for ${file.getAbsolutePath}.")
     }
     val parser = HTMLParser(file)
     val template = parser.stream(Nil, selector = Some(ByClass(classValue)), includeAllMatches = true)

@@ -6,7 +6,7 @@ import java.net.URI
 import io.circe.{Decoder, Encoder, Json, Printer}
 import io.circe.parser._
 import io.circe.syntax._
-import io.youi.http.{Content, FileContent, Headers, HttpRequest, HttpResponse, Method, Status, StringContent}
+import io.youi.http.{Content, FileContent, FormDataContent, Headers, HttpRequest, HttpResponse, Method, Status, StringContent}
 import io.youi.net.{ContentType, URL}
 import org.apache.http.{HttpResponse => ApacheHttpResponse}
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase

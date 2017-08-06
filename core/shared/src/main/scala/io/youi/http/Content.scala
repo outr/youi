@@ -65,6 +65,22 @@ case class FormDataContent(data: List[FormData]) extends RequestContent {
   def file(key: String): FileEntry = fileOption(key).getOrElse(throw new RuntimeException(s"Not found: $key in $this."))
   def string(key: String): StringEntry = stringOption(key).getOrElse(throw new RuntimeException(s"Not found: $key in $this."))
 
+  def withFile(key: String, fileName: String, file: File, headers: Headers = Headers.empty): FormDataContent = {
+    val entry = FileEntry(fileName, file, headers)
+    withEntry(key, entry)
+  }
+
+  def withString(key: String, value: String, headers: Headers = Headers.empty): FormDataContent = {
+    val entry = StringEntry(value, headers)
+    withEntry(key, entry)
+  }
+
+  def withEntry(key: String, entry: FormDataEntry): FormDataContent = {
+    val formData = data.find(_.key == key).getOrElse(FormData(key, Nil))
+    val updated = formData.copy(entries = formData.entries ::: List(entry))
+    copy(data = data.filterNot(_.key == key) ::: List(updated))
+  }
+
   override def toString: String = s"FormDataContent(${data.map(_.key).mkString(", ")})"
 }
 
@@ -80,6 +96,7 @@ case class FileEntry(fileName: String, file: File, headers: Headers) extends For
 
 object Content {
   val empty: Content = string("", ContentType.`text/plain`)
+  lazy val form: FormDataContent = FormDataContent(Nil)
   def string(value: String, contentType: ContentType): Content = StringContent(value, contentType)
   def file(file: File): Content = FileContent(file, ContentType.byFileName(file.getName))
   def file(file: File, contentType: ContentType): Content = FileContent(file, contentType)

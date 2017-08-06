@@ -65,6 +65,8 @@ class TextSelection(text: Text) extends Drawable {
     override def dragging(pointer: Pointer, value: Int): Unit = updateDragging(pointer.move, value)
   }
 
+  text.event.pointer.down.on(value := None)
+
   text.preDraw += this
   dragSupport.drop.attach(d => scribe.info(s"Dropped: $d"))
   value.on(text.reDraw.flag())
@@ -98,15 +100,19 @@ class TextSelection(text: Text) extends Drawable {
   }
 
   private def updateDragging(mouseEvent: MouseEvent, startIndex: Int): Unit = {
-    val selection = mouseEventToIndex(mouseEvent).flatMap { endIndex =>
-      if (startIndex == endIndex) {
-        None
-      } else {
-        val start = math.min(startIndex, endIndex)
-        val end = math.max(startIndex, endIndex)
-        val v = text.value().substring(start, end)
-        Some(Selection(v, start, end, active = true))
+    val selection = if (enabled()) {
+      mouseEventToIndex(mouseEvent).flatMap { endIndex =>
+        if (startIndex == endIndex) {
+          None
+        } else {
+          val start = math.min(startIndex, endIndex)
+          val end = math.max(startIndex, endIndex)
+          val v = text.value().substring(start, end)
+          Some(Selection(v, start, end, active = true))
+        }
       }
+    } else {
+      None
     }
     if (selection.nonEmpty) value := selection
   }

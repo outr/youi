@@ -9,6 +9,8 @@ import scribe.formatter.FormatterBuilder
 import scala.io.StdIn
 
 object TemplateRunner extends ConfigApplication {
+  override def main(args: Array[String]): Unit = start(args)
+
   override protected def run(): Unit = {
     Logger.root.clearHandlers()
     Logger.root.addHandler(LogHandler(formatter = FormatterBuilder().date().string(" - ").message.newLine))

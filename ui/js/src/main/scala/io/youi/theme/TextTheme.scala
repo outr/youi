@@ -9,7 +9,7 @@ import reactify.Var
 trait TextTheme extends DrawableComponentTheme {
   override def defaultParent: Option[Theme] = Some(DrawableComponent)
 
-  private def prnt[T](f: TextTheme => T, default: => T): T = parent.collect {
+  private def prnt[T](f: TextTheme => T, default: => T): T = parent().collect {
     case p: TextTheme => p
   }.map(f).getOrElse(default)
 

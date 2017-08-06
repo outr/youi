@@ -12,6 +12,7 @@ class HTMLComponent[C <: hypertext.Component](val component: C) extends Componen
   size.measured.width := component.size.actual.width
   size.measured.height := component.size.actual.height
   component.visible := globalVisibility
+  ui.children += component
 
   override def update(delta: Double): Unit = {
     super.update(delta)

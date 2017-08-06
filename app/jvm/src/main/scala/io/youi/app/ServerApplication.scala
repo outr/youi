@@ -40,6 +40,9 @@ trait ServerApplication extends YouIApplication with Server with ConfigApplicati
   lazy val applicationJSMapContent: Content = Content.classPathOption(fullOptMap).getOrElse(Content.classPath(fastOptMap))
   lazy val applicationJSDepsContent: Option[Content] = Content.classPathOption(jsDeps)
 
+  protected def scriptPaths: List[String] = Nil
+  protected def responseMap(httpConnection: HttpConnection): Map[String, String] = Map.empty
+
   override protected def init(): Unit = {
     super.init()
 
@@ -183,6 +186,9 @@ trait ServerApplication extends YouIApplication with Server with ConfigApplicati
       case c: URLContent => HTMLParser.cache(c.url)
       case c: StringContent => HTMLParser.cache(c.value)
     }
+    val responseFields = responseMap(httpConnection).toList.map {
+      case (name, value) => s"""<input type="hidden" id="$name" value="$value"/>"""
+    }
     val deltasList = httpConnection.store.getOrElse[List[Delta]](ServerApplication.DeltaKey, Nil) ::: deltas
     val jsDeps = if (applicationJSDepsContent.nonEmpty) {
       s"""<script src="/app/application-jsdeps.js"></script>"""
@@ -192,6 +198,8 @@ trait ServerApplication extends YouIApplication with Server with ConfigApplicati
     val d = List(
       Delta.InsertLastChild(ByTag("body"),
         s"""
+           |${scriptPaths.map(p => s"""<script src="$p"></script>""").mkString("\n")}
+           |${responseFields.mkString("\n")}
            |$jsDeps
            |<script src="/app/application.js"></script>
            |<script>

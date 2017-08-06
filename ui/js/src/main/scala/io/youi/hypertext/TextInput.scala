@@ -6,7 +6,7 @@ import io.youi.hypertext.style.FontProperties
 import org.scalajs.dom.html.{Input => HTMLInput}
 
 class TextInput extends Component {
-  override protected[youi] val element: HTMLInput = dom.create[HTMLInput]("input")
+  override val element: HTMLInput = dom.create[HTMLInput]("input")
 
   lazy val value: Var[String] = prop(element.value, _ => changed(), mayCauseResize = false)
   val font: FontProperties = new FontProperties(this)

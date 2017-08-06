@@ -7,4 +7,6 @@ class ServerTemplateApplication(compiler: TemplateCompiler) extends ServerApplic
   addTemplate(compiler.destinationDirectory, deltas = List(
     Delta.InsertLastChild(ByTag("body"), s"""<input type="hidden" id="template_pages" value="${compiler.pages.mkString(";")}"/>""")
   ))
+
+  override def main(args: Array[String]): Unit = start(args)
 }

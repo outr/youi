@@ -165,7 +165,7 @@ lazy val ui = crossProject.in(file("ui"))
       "com.outr" %%% "pica-scala-js" % picaVersion
     )
   )
-  .dependsOn(core)
+  .dependsOn(core, math)
 
 lazy val uiJS = ui.js.dependsOn(dom)
 lazy val uiJVM = ui.jvm

@@ -14,3 +14,4 @@
 * [ ] Remove uPickle and rely exclusively on Circe for pickling
 * [X] Add better functionality to build FormDataContent
 * [X] Support multipart form posting in youi-client
+* [X] Update URL interpolator to only accept literals for proper compile-time validation

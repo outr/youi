@@ -26,7 +26,7 @@ object MatrixTest extends HTMLScreen {
     def draw(): Unit = {
       val ctx = canvas.element.getContext("2d").asInstanceOf[CanvasRenderingContext2D]
       ctx.clearRect(0.0, 0.0, 500.0, 500.0)
-      matrix.assign(array)
+      matrix.fromArray(array)
       ctx.setTransform(matrix.m00, matrix.m01, matrix.m10, matrix.m11, matrix.m02, matrix.m12)
       ctx.drawImage(image, 0.0, 0.0)
     }

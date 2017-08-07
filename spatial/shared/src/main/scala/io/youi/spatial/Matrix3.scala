@@ -1,10 +1,11 @@
 package io.youi.spatial
 
+import io.youi.spatial.ops.{Matrix3Addition, Matrix3Multiply, Matrix3Subtraction}
+
 /**
   * Trait representing a matrix
-  *
   */
-sealed trait Matrix3 {
+trait Matrix3 {
   def m00: Double
   def m01: Double
   def m02: Double
@@ -15,6 +16,9 @@ sealed trait Matrix3 {
   def m21: Double
   def m22: Double
 
+  /**
+    * Creates a new copy of this Matrix3 with the new values assigned.
+    */
   def duplicate(m00: Double = m00,
                 m01: Double = m01,
                 m02: Double = m02,
@@ -25,17 +29,20 @@ sealed trait Matrix3 {
                 m21: Double = m21,
                 m22: Double = m22): Matrix3
 
-  def assign(m00: Double = m00,
-             m01: Double = m01,
-             m02: Double = m02,
-             m10: Double = m10,
-             m11: Double = m11,
-             m12: Double = m12,
-             m20: Double = m20,
-             m21: Double = m21,
-             m22: Double = m22): Matrix3
+  /**
+    * Updates this Matrix3 if mutable and creates a new instance if immutable.
+    */
+  def set(m00: Double = m00,
+          m01: Double = m01,
+          m02: Double = m02,
+          m10: Double = m10,
+          m11: Double = m11,
+          m12: Double = m12,
+          m20: Double = m20,
+          m21: Double = m21,
+          m22: Double = m22): Matrix3
 
-  def assign(array: Array[Double]): Unit = {
+  def toArray(array: Array[Double]): Array[Double] = {
     array(0) = m00
     array(1) = m01
     array(2) = m02
@@ -45,118 +52,90 @@ sealed trait Matrix3 {
     array(6) = m20
     array(7) = m21
     array(8) = m22
+    array
   }
 
-  def duplicateAsArray(f: Array[Double] => Unit): Matrix3 = {
+  def fromArray(array: Array[Double]): Matrix3 = set(
+    m00 = array(0),
+    m01 = array(1),
+    m02 = array(2),
+    m10 = array(3),
+    m11 = array(4),
+    m12 = array(5),
+    m20 = array(6),
+    m21 = array(7),
+    m22 = array(8)
+  )
+
+  def withArray(duplicate: Boolean)(f: Array[Double] => Unit): Matrix3 = {
     Matrix3ArrayPool.use { array =>
-      assign(array)
+      toArray(array)
       f(array)
-      duplicate(
-        m00 = array(0),
-        m01 = array(1),
-        m02 = array(2),
-        m10 = array(3),
-        m11 = array(4),
-        m12 = array(5),
-        m20 = array(6),
-        m21 = array(7),
-        m22 = array(8)
-      )
+      if (duplicate) {
+        this.duplicate(
+          m00 = array(0),
+          m01 = array(1),
+          m02 = array(2),
+          m10 = array(3),
+          m11 = array(4),
+          m12 = array(5),
+          m20 = array(6),
+          m21 = array(7),
+          m22 = array(8)
+        )
+      } else {
+        set(
+          m00 = array(0),
+          m01 = array(1),
+          m02 = array(2),
+          m10 = array(3),
+          m11 = array(4),
+          m12 = array(5),
+          m20 = array(6),
+          m21 = array(7),
+          m22 = array(8)
+        )
+      }
     }
   }
 
   /**
     * Matrix multiplication, returns a new matrix
     *
-    * @param right the matrix to multiply against
+    * @param that the matrix to multiply against
     * @return the product of the multiplication of both matrices
     */
-  def *(right: Matrix3): Matrix3 = {
-    duplicate(
-      m00.toFloat * right.m00.toFloat + m01.toFloat * right.m10.toFloat + m02.toFloat * right.m20.toFloat,
-      m00.toFloat * right.m01.toFloat + m01.toFloat * right.m11.toFloat + m02.toFloat * right.m21.toFloat,
-      m00.toFloat * right.m02.toFloat + m01.toFloat * right.m12.toFloat + m02.toFloat * right.m22.toFloat,
-      m10.toFloat * right.m00.toFloat + m11.toFloat * right.m10.toFloat + m12.toFloat * right.m20.toFloat,
-      m10.toFloat * right.m01.toFloat + m11.toFloat * right.m11.toFloat + m12.toFloat * right.m21.toFloat,
-      m10.toFloat * right.m02.toFloat + m11.toFloat * right.m12.toFloat + m12.toFloat * right.m22.toFloat,
-      m20.toFloat * right.m00.toFloat + m21.toFloat * right.m10.toFloat + m22.toFloat * right.m20.toFloat,
-      m20.toFloat * right.m01.toFloat + m21.toFloat * right.m11.toFloat + m22.toFloat * right.m21.toFloat,
-      m20.toFloat * right.m02.toFloat + m21.toFloat * right.m12.toFloat + m22.toFloat * right.m22.toFloat
-    )
-  }
-
-  protected def assignMult(right: Matrix3): Matrix3 = {
-    assign(
-      m00 * right.m00 + m01 * right.m10 + m02 * right.m20,
-      m00 * right.m01 + m01 * right.m11 + m02 * right.m21,
-      m00 * right.m02 + m01 * right.m12 + m02 * right.m22,
-      m10 * right.m00 + m11 * right.m10 + m12 * right.m20,
-      m10 * right.m01 + m11 * right.m11 + m12 * right.m21,
-      m10 * right.m02 + m11 * right.m12 + m12 * right.m22,
-      m20 * right.m00 + m21 * right.m10 + m22 * right.m20,
-      m20 * right.m01 + m21 * right.m11 + m22 * right.m21,
-      m20 * right.m02 + m21 * right.m12 + m22 * right.m22
-    )
-  }
+  def *(that: Matrix3): Matrix3 = Matrix3Multiply(this, that, duplicate)
 
   /**
     * Matrix addition, returns a new matrix
     *
-    * @param m the matrix to add
+    * @param that the matrix to add
     * @return the product of the addition
     */
-  def +(m: Matrix3): Matrix3 = {
-    duplicate(
-      m00 + m.m00,
-      m01 + m.m01,
-      m02 + m.m02,
-      m10 + m.m10,
-      m11 + m.m11,
-      m12 + m.m12,
-      m20 + m.m20,
-      m21 + m.m21,
-      m22 + m.m22
-    )
-  }
+  def +(that: Matrix3): Matrix3 = Matrix3Addition(this, that, duplicate)
 
   /**
     * Matrix subtraction, returns a new matrix
     *
-    * @param m the matrix to subtract
+    * @param that the matrix to subtract
     * @return the product of the addition
     */
-  def -(m: Matrix3): Matrix3 = {
-    duplicate(
-      m00 - m.m00,
-      m01 - m.m01,
-      m02 - m.m02,
-      m10 - m.m10,
-      m11 - m.m11,
-      m12 - m.m12,
-      m20 - m.m20,
-      m21 - m.m21,
-      m22 - m.m22
-    )
-  }
+  def -(that: Matrix3): Matrix3 = Matrix3Subtraction(this, that, duplicate)
 
   /*
   Basic scalar operations
    */
-  def *(scalar: Double): Matrix3 = {
-    duplicateAsArray(_.transform(_ * scalar))
-  }
+  def *(scalar: Double): Matrix3 = withArray(duplicate = true)(_.transform(_ * scalar))
 
-  def +(scalar: Double): Matrix3 = {
-    duplicateAsArray(_.transform(_ + scalar))
-  }
+  def +(scalar: Double): Matrix3 = withArray(duplicate = true)(_.transform(_ + scalar))
 
-  def -(scalar: Double): Matrix3 = {
-    duplicateAsArray(_.transform(_ - scalar))
-  }
+  def -(scalar: Double): Matrix3 = withArray(duplicate = true)(_.transform(_ - scalar))
 
-  def /(scalar: Double): Matrix3 = {
-    duplicateAsArray(_.transform(_ / scalar))
-  }
+  def /(scalar: Double): Matrix3 = withArray(duplicate = true)(_.transform(_ / scalar))
+
+  def mutable: MutableMatrix3 = MutableMatrix3(m00, m01, m02, m10, m11, m12, m20, m21, m22)
+  def immutable: ImmutableMatrix3 = ImmutableMatrix3(m00, m01, m02, m10, m11, m12, m20, m21, m22)
 
   /**
     * The determinant of the matrix
@@ -172,9 +151,7 @@ sealed trait Matrix3 {
     *
     * @return
     */
-  def transpose: Matrix3 = {
-    assign(m01 = m10, m02 = m20, m10 = m01, m12 = m21, m20 = m02, m21 = m12)
-  }
+  def transpose: Matrix3 = set(m01 = m10, m02 = m20, m10 = m01, m12 = m21, m20 = m02, m21 = m12)
 
   /**
     * Inverts a non singular matrix
@@ -187,7 +164,7 @@ sealed trait Matrix3 {
       throw new YouiMathException("Cannot invert a singular matrix")
     else {
       val inverseDet: Double = 1.0 / determinant
-      assign(
+      set(
         m00 = (m11 * m22 - m21 * m12) * inverseDet,
         m01 = (m21 * m02 - m01 * m22) * inverseDet,
         m02 = (m01 * m12 - m11 * m02) * inverseDet,
@@ -207,7 +184,7 @@ sealed trait Matrix3 {
       None
     else {
       val inverseDet: Double = 1.0 / determinant
-      Some(assign(
+      Some(set(
         m00 = (m11 * m22 - m21 * m12) * inverseDet,
         m01 = (m21 * m02 - m01 * m22) * inverseDet,
         m02 = (m01 * m12 - m11 * m02) * inverseDet,
@@ -242,7 +219,7 @@ sealed trait Matrix3 {
   def toRotation(rad: Radians): Matrix3 = {
     val cosineVal = math.cos(rad.value)
     val sineVal = math.sin(rad.value)
-    assign(
+    set(
       m00 = cosineVal,
       m10 = sineVal,
       m20 = 0,
@@ -263,7 +240,7 @@ sealed trait Matrix3 {
     * @return
     */
   def toTranslation(x: Double, y: Double): Matrix3 = {
-    assign(
+    set(
       m00 = 1,
       m01 = 0,
       m02 = x,
@@ -284,7 +261,7 @@ sealed trait Matrix3 {
     * @return
     */
   def toScaling(scaleX: Double, scaleY: Double): Matrix3 = {
-    assign(
+    set(
       m00 = scaleX,
       m01 = 0,
       m02 = 0,
@@ -305,24 +282,24 @@ sealed trait Matrix3 {
     * @return
     */
   def trn(x: Double, y: Double): Matrix3 = {
-    assign(
+    set(
       m02 = m02 + x,
       m12 = m12 + y
     )
   }
 
-  /** Postmultiplies this matrix by a translation matrix. Postmultiplication is also used by OpenGL ES' 1.x
+  /**
+    * Postmultiplies this matrix by a translation matrix. Postmultiplication is also used by OpenGL ES' 1.x
     * glTranslate/glRotate/glScale.
     *
     * @param x the translation in x
     * @param y the translation in y
     * @return
     */
-  def translate(x: Double, y: Double): Matrix3 = {
-    assignMult(Matrix3.Identity.toTranslation(x, y))
-  }
+  def translate(x: Double, y: Double): Matrix3 = Matrix3Multiply(this, Matrix3.Identity.toTranslation(x, y), set)
 
-  /** Postmultiplies this matrix with a (counter-clockwise) rotation matrix. Postmultiplication is also used by OpenGL ES' 1.x
+  /**
+    * Postmultiplies this matrix with a (counter-clockwise) rotation matrix. Postmultiplication is also used by OpenGL ES' 1.x
     * glTranslate/glRotate/glScale.
     *
     * @param degrees rotation in degrees
@@ -340,9 +317,7 @@ sealed trait Matrix3 {
     *
     * @return
     */
-  def rotate(radians: Radians): Matrix3 = {
-    assignMult(Matrix3.Identity.toRotation(radians))
-  }
+  def rotate(radians: Radians): Matrix3 = Matrix3Multiply(this, Matrix3.Identity.toRotation(radians), set)
 
   /** Postmultiplies this matrix with a scale matrix. Postmultiplication is also used by OpenGL ES' 1.x
     * glTranslate/glRotate/glScale.
@@ -352,7 +327,7 @@ sealed trait Matrix3 {
     * @return
     */
   def scale(scaleX: Double, scaleY: Double): Matrix3 = {
-    assignMult(Matrix3.Identity.toScaling(scaleX, scaleY))
+    Matrix3Multiply(this, Matrix3.Identity.toScaling(scaleX, scaleY), set)
   }
 
   def ==(m: Matrix3): Boolean = {
@@ -413,80 +388,4 @@ object Matrix3 {
       m21 = 0,
       m22 = 0)
   }
-}
-
-case class ImmutableMatrix3(m00: Double,
-                            m01: Double,
-                            m02: Double,
-                            m10: Double,
-                            m11: Double,
-                            m12: Double,
-                            m20: Double,
-                            m21: Double,
-                            m22: Double)
-    extends Matrix3 {
-  override def duplicate(m00: Double = m00,
-                         m01: Double = m01,
-                         m02: Double = m02,
-                         m10: Double = m10,
-                         m11: Double = m11,
-                         m12: Double = m12,
-                         m20: Double = m20,
-                         m21: Double = m21,
-                         m22: Double = m22): Matrix3 =
-    copy(m00, m01, m02, m10, m11, m12, m20, m21, m22)
-
-  def assign(m00: Double = m00,
-             m01: Double = m01,
-             m02: Double = m02,
-             m10: Double = m10,
-             m11: Double = m11,
-             m12: Double = m12,
-             m20: Double = m20,
-             m21: Double = m21,
-             m22: Double = m22): Matrix3 =
-    copy(m00, m01, m02, m10, m11, m12, m20, m21, m22)
-
-}
-
-case class MutableMatrix3(var m00: Double,
-                          var m01: Double,
-                          var m02: Double,
-                          var m10: Double,
-                          var m11: Double,
-                          var m12: Double,
-                          var m20: Double,
-                          var m21: Double,
-                          var m22: Double)
-    extends Matrix3 {
-  def assign(m00: Double = m00,
-             m01: Double = m01,
-             m02: Double = m02,
-             m10: Double = m10,
-             m11: Double = m11,
-             m12: Double = m12,
-             m20: Double = m20,
-             m21: Double = m21,
-             m22: Double = m22): Matrix3 = {
-    this.m00 = m00
-    this.m01 = m01
-    this.m02 = m02
-    this.m10 = m10
-    this.m11 = m11
-    this.m12 = m12
-    this.m20 = m20
-    this.m21 = m21
-    this.m22 = m22
-    this
-  }
-  override def duplicate(m00: Double = m00,
-                         m01: Double = m01,
-                         m02: Double = m02,
-                         m10: Double = m10,
-                         m11: Double = m11,
-                         m12: Double = m12,
-                         m20: Double = m20,
-                         m21: Double = m21,
-                         m22: Double = m22): Matrix3 =
-    copy(m00, m01, m02, m10, m11, m12, m20, m21, m22)
 }

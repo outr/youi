@@ -28,11 +28,12 @@ val jSoupVersion = "1.10.3"
 val scalaXMLVersion = "1.0.6"
 val scalacticVersion = "3.0.3"
 val scalaTestVersion = "3.0.3"
+val scalaCheckVersion = "1.13.4"
 
 lazy val root = project.in(file("."))
   .aggregate(
-    coreJS, coreJVM, stream, communicationJS, communicationJVM, dom, client, server, serverUndertow, uiJS, uiJVM,
-    optimizer, appJS, appJVM, templateJS, templateJVM, exampleJS, exampleJVM
+    coreJS, coreJVM, spatialJS, spatialJVM, stream, communicationJS, communicationJVM, dom, client, server,
+    serverUndertow, uiJS, uiJVM, optimizer, appJS, appJVM, templateJS, templateJVM, exampleJS, exampleJVM
   )
   .settings(
     resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases",
@@ -72,6 +73,23 @@ lazy val core = crossProject.in(file("core"))
 
 lazy val coreJS = core.js
 lazy val coreJVM = core.jvm
+
+lazy val spatial = crossProject.in(file("spatial"))
+  .settings(
+    name := "youi-spatial",
+    libraryDependencies ++= Seq(
+      "org.scalactic" %%% "scalactic" % scalacticVersion,
+      "org.scalatest" %%% "scalatest" % scalaTestVersion % "test",
+      "org.scalacheck" %% "scalacheck" % scalaCheckVersion % "test"
+    )
+  )
+  .jsSettings(
+    test := ()
+  )
+  .dependsOn(core)
+
+lazy val spatialJS = spatial.js
+lazy val spatialJVM = spatial.jvm
 
 lazy val stream = project.in(file("stream"))
   .settings(
@@ -150,7 +168,7 @@ lazy val ui = crossProject.in(file("ui"))
       "com.outr" %%% "pica-scala-js" % picaVersion
     )
   )
-  .dependsOn(core)
+  .dependsOn(core, spatial)
 
 lazy val uiJS = ui.js.dependsOn(dom)
 lazy val uiJVM = ui.jvm

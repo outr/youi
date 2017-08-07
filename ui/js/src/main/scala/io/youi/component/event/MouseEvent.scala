@@ -1,8 +1,8 @@
 package io.youi.component.event
 
 import com.outr.pixijs.PIXI
-import io.youi.Point
 import io.youi.component.Component
+import io.youi.spatial.Point
 
 class MouseEvent(val component: Component, val evt: PIXI.interaction.InteractionEvent) {
   val time: Long = System.currentTimeMillis()

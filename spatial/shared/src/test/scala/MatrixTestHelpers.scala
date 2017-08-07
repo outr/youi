@@ -12,8 +12,8 @@ trait MatrixTestHelpers {
   implicit val doubleEqualityTolerance: Equality[Double] =
     TolerantNumerics.tolerantDoubleEquality(precision)
 
-  implicit val matrixEquality: Equality[Matrix3] = (m1: Matrix3, b: Any) =>
-    b match {
+  implicit val matrixEquality: Equality[Matrix3] = new Equality[Matrix3] {
+    override def areEqual(m1: Matrix3, b: Any): Boolean = b match {
       case m2: Matrix3 =>
         (m1.m00 === m2.m00) &&
         (m1.m01 === m2.m01) &&
@@ -26,13 +26,16 @@ trait MatrixTestHelpers {
         (m1.m22 === m2.m22)
       case _ => false
     }
+  }
 
-  implicit val pointEquality: Equality[Point] = (a: Point, b: Any) => b match {
-    case p: Point =>
-      a.x === p.x &&
-      a.y === p.y
+  implicit val pointEquality: Equality[Point] = new Equality[Point] {
+    override def areEqual(a: Point, b: Any): Boolean = b match {
+      case p: Point =>
+        a.x === p.x &&
+          a.y === p.y
 
-    case _ => false
+      case _ => false
+    }
   }
 
   /*

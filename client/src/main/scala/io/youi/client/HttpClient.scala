@@ -6,11 +6,12 @@ import java.net.URI
 import io.circe.{Decoder, Encoder, Json, Printer}
 import io.circe.parser._
 import io.circe.syntax._
-import io.youi.http.{Content, FileContent, FormDataContent, Headers, HttpRequest, HttpResponse, Method, Status, StringContent}
+import io.youi.http.{Content, FileContent, FileEntry, FormData, FormDataContent, Headers, HttpRequest, HttpResponse, Method, Status, StringContent, StringEntry}
 import io.youi.net.{ContentType, URL}
-import org.apache.http.{HttpResponse => ApacheHttpResponse}
+import org.apache.http.{HttpEntity, HttpResponse => ApacheHttpResponse}
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase
 import org.apache.http.concurrent.FutureCallback
+import org.apache.http.entity.mime.MultipartEntityBuilder
 import org.apache.http.impl.nio.client.{CloseableHttpAsyncClient, HttpAsyncClients}
 import org.apache.http.nio.entity.{NFileEntity, NStringEntity}
 import org.powerscala.io._
@@ -51,11 +52,27 @@ class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpd
       }
     }
     def ct(contentType: ContentType) = org.apache.http.entity.ContentType.getByMimeType(contentType.mimeType)
-    val content = request.content.map {
+    val content: Option[HttpEntity] = request.content.map {
       case c: StringContent => new NStringEntity(c.value, ct(c.contentType))
       case c: FileContent => new NFileEntity(c.file, ct(c.contentType))
+      case c: FormDataContent => {
+        val b = MultipartEntityBuilder.create()
+        import org.apache.http.entity
+        c.data.foreach {
+          case FormData(key, entries) => entries.foreach {
+            case StringEntry(value, headers) => {
+              val contentType = entity.ContentType.create(Headers.`Content-Type`.value(headers).getOrElse(ContentType.`text/plain`).outputString)
+              b.addTextBody(key, value, contentType)
+            }
+            case FileEntry(fileName, file, headers) => {
+              val contentType = entity.ContentType.create(Headers.`Content-Type`.value(headers).getOrElse(ContentType.`application/octet-stream`).outputString)
+              b.addBinaryBody(key, file, contentType, fileName)
+            }
+          }
+        }
+        b.build()
+      }
       case c => throw new RuntimeException(s"Unsupported request content: $c")
-      // TODO: support form data
     }
     content.foreach(req.setEntity)
     val promise = Promise[HttpResponse]

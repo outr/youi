@@ -15,6 +15,7 @@ val reactifyVersion = "2.1.0"
 val akkaVersion = "2.5.3"
 val scalaJSDOM = "0.9.3"
 val httpAsyncClientVersion = "4.1.3"
+val httpMimeVersion = "4.5.3"
 val circeVersion = "0.8.0"
 val uaDetectorVersion = "2014.10"
 val undertowVersion = "1.4.18.Final"
@@ -114,7 +115,10 @@ lazy val client = project.in(file("client"))
     name := "youi-client",
     libraryDependencies ++= Seq(
       "org.apache.httpcomponents" % "httpasyncclient" % httpAsyncClientVersion,
-      "org.powerscala" %% "powerscala-io" % powerScalaVersion
+      "org.apache.httpcomponents" % "httpmime" % httpMimeVersion,
+      "org.powerscala" %% "powerscala-io" % powerScalaVersion,
+      "org.scalactic" %%% "scalactic" % scalacticVersion,
+      "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
     )
   )
   .dependsOn(coreJVM)

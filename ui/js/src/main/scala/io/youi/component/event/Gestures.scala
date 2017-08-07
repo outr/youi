@@ -1,8 +1,8 @@
 package io.youi.component.event
 
-import io.youi.Point
 import io.youi.component.Component
 import io.youi.component.draw.BoundingBox
+import io.youi.spatial.Point
 import reactify.{Channel, InvocationType, Observable, Val, Var}
 
 class Gestures(component: Component) {

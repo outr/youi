@@ -1,6 +1,6 @@
-package io.youi.math.prototype.ops
+package io.youi.spatial.ops
 
-import io.youi.math.prototype.Matrix3
+import io.youi.spatial.Matrix3
 
 object Matrix3Multiply extends Matrix3Modifier {
   override def apply(m1: Matrix3, m2: Matrix3, modifier: Mod): Matrix3 = modifier(

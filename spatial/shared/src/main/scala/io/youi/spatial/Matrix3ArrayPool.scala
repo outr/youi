@@ -1,4 +1,4 @@
-package io.youi.math
+package io.youi.spatial
 
 import io.youi.util.ObjectPool
 

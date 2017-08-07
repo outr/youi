@@ -1,6 +1,6 @@
 name := "youi"
 organization in ThisBuild := "io.youi"
-version in ThisBuild := "0.5.2-SNAPSHOT"
+version in ThisBuild := "0.5.3-SNAPSHOT"
 scalaVersion in ThisBuild := "2.12.3"
 crossScalaVersions in ThisBuild := List("2.12.3", "2.11.11")
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
@@ -15,6 +15,7 @@ val reactifyVersion = "2.1.0"
 val akkaVersion = "2.5.3"
 val scalaJSDOM = "0.9.3"
 val httpAsyncClientVersion = "4.1.3"
+val httpMimeVersion = "4.5.3"
 val circeVersion = "0.8.0"
 val uaDetectorVersion = "2014.10"
 val undertowVersion = "1.4.18.Final"
@@ -32,8 +33,8 @@ val scalaCheckVersion = "1.13.4"
 
 lazy val root = project.in(file("."))
   .aggregate(
-    coreJS, coreJVM, stream, communicationJS, communicationJVM, dom, client, server, serverUndertow, uiJS, uiJVM,
-    hypertext, canvasJS, canvasJVM, optimizer, appJS, appJVM, templateJS, templateJVM, exampleJS, exampleJVM
+    coreJS, coreJVM, spatialJS, spatialJVM, stream, communicationJS, communicationJVM, dom, client, server,
+    serverUndertow, uiJS, uiJVM, optimizer, appJS, appJVM, templateJS, templateJVM, exampleJS, exampleJVM
   )
   .settings(
     resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases",
@@ -74,19 +75,22 @@ lazy val core = crossProject.in(file("core"))
 lazy val coreJS = core.js
 lazy val coreJVM = core.jvm
 
-lazy val math = crossProject.in(file("math"))
+lazy val spatial = crossProject.in(file("spatial"))
   .settings(
-    name := "youi-math",
+    name := "youi-spatial",
     libraryDependencies ++= Seq(
       "org.scalactic" %%% "scalactic" % scalacticVersion,
       "org.scalatest" %%% "scalatest" % scalaTestVersion % "test",
       "org.scalacheck" %% "scalacheck" % scalaCheckVersion % "test"
     )
   )
+  .jsSettings(
+    test := ()
+  )
   .dependsOn(core)
 
-lazy val mathJS = math.js
-lazy val mathJVM = math.jvm
+lazy val spatialJS = spatial.js
+lazy val spatialJVM = spatial.jvm
 
 lazy val stream = project.in(file("stream"))
   .settings(
@@ -111,7 +115,10 @@ lazy val client = project.in(file("client"))
     name := "youi-client",
     libraryDependencies ++= Seq(
       "org.apache.httpcomponents" % "httpasyncclient" % httpAsyncClientVersion,
-      "org.powerscala" %% "powerscala-io" % powerScalaVersion
+      "org.apache.httpcomponents" % "httpmime" % httpMimeVersion,
+      "org.powerscala" %% "powerscala-io" % powerScalaVersion,
+      "org.scalactic" %%% "scalactic" % scalacticVersion,
+      "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
     )
   )
   .dependsOn(coreJVM)
@@ -165,7 +172,7 @@ lazy val ui = crossProject.in(file("ui"))
       "com.outr" %%% "pica-scala-js" % picaVersion
     )
   )
-  .dependsOn(core, math)
+  .dependsOn(core, spatial)
 
 lazy val uiJS = ui.js.dependsOn(dom)
 lazy val uiJVM = ui.jvm

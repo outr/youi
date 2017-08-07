@@ -58,8 +58,14 @@ class URLSpec extends WordSpec with Matchers {
         url.path.toString should be("/")
         url.parameters should be(Parameters.empty)
       }
+      "failed to compile when interpolating a URL with a param" in {
+        assertDoesNotCompile(
+          """
+            |val path = "wahoo"
+            |url"http://www.youi.io/$path"
+          """.stripMargin)
+      }
       "fail to compile an invalid URL" in {
-        assertCompiles("""url"http://www.youi.io"""")
         assertDoesNotCompile("""url"http:www:youi:io"""")
       }
     }

@@ -1,7 +1,7 @@
 package io.youi.component.event
 
-import io.youi.Point
 import io.youi.component.Component
+import io.youi.spatial.Point
 
 class MouseWheelEvent(component: Component,
                       val x: Double,

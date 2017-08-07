@@ -5,6 +5,7 @@ import io.youi.component.extra.RectangularSelection
 import io.youi.component._
 import io.youi.image.Image
 import io.youi.model.{ImageEditorInfo, ImageInfo, SelectionInfo}
+import io.youi.spatial.Point
 import io.youi.util.{CanvasPool, ImageUtility, SizeUtility}
 import org.scalajs.dom.{File, html}
 import reactify._

@@ -1,6 +1,6 @@
-package io.youi.math.prototype.ops
+package io.youi.spatial.ops
 
-import io.youi.math.prototype.Matrix3
+import io.youi.spatial.Matrix3
 
 trait Matrix3Modifier {
   type Mod = (Double, Double, Double, Double, Double, Double, Double, Double, Double) => Matrix3

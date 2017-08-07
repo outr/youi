@@ -17,9 +17,9 @@ object Macros {
 
         val b = new StringBuilder
         parts.zipWithIndex.foreach {
-          case ((raw, pos), index) => {
+          case ((raw, _), index) => {
             if (index > 0) {
-              b.append(String.valueOf(args(index - 1)))
+              c.abort(c.enclosingPosition, "URL interpolation can only contain string literals. Use URL.apply for runtime parsing.")
             }
             b.append(raw)
           }

@@ -33,7 +33,7 @@ val scalaCheckVersion = "1.13.4"
 lazy val root = project.in(file("."))
   .aggregate(
     coreJS, coreJVM, stream, communicationJS, communicationJVM, dom, client, server, serverUndertow, uiJS, uiJVM,
-    optimizer, appJS, appJVM, templateJS, templateJVM, exampleJS, exampleJVM
+    hypertext, canvasJS, canvasJVM, optimizer, appJS, appJVM, templateJS, templateJVM, exampleJS, exampleJVM
   )
   .settings(
     resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases",
@@ -169,6 +169,30 @@ lazy val ui = crossProject.in(file("ui"))
 
 lazy val uiJS = ui.js.dependsOn(dom)
 lazy val uiJVM = ui.jvm
+
+lazy val hypertext = project.in(file("hypertext"))
+  .enablePlugins(ScalaJSPlugin)
+  .settings(
+    name := "youi-hypertext"
+  )
+  .dependsOn(dom)
+
+lazy val canvas = crossProject.in(file("canvas"))
+  .settings(
+    name := "youi-canvas"
+  )
+  .jsSettings(
+    test := (),
+    libraryDependencies ++= Seq(
+      "com.outr" %%% "canvg-scala-js" % canvgVersion,
+      "com.outr" %%% "opentype-scala-js" % openTypeVersion,
+      "com.outr" %%% "pica-scala-js" % picaVersion
+    )
+  )
+  .dependsOn(core)
+
+lazy val canvasJS = canvas.js.dependsOn(dom)
+lazy val canvasJVM = canvas.jvm
 
 lazy val optimizer = project.in(file("optimizer"))
   .settings(

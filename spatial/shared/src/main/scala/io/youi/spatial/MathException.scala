@@ -1,5 +1,5 @@
 package io.youi.spatial
 
-class YouiMathException(cause: String) extends Exception {
+class MathException(cause: String) extends Exception {
   override def toString: String = cause
 }

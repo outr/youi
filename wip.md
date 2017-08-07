@@ -10,6 +10,7 @@
 * [ ] Layout support in AbstractContainer
     * [ ] VerticalLayout
 * [X] Update dom Template to utilize Profig instead of limiting to environment variable for load path
+* [X] New `spatial` package to do matrix and other spatial math
 * [ ] Remove uPickle and rely exclusively on Circe for pickling
 * [ ] Add better functionality to build FormDataContent
 * [ ] Support multipart form posting in youi-client

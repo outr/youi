@@ -127,11 +127,8 @@ trait Matrix3 {
   Basic scalar operations
    */
   def *(scalar: Double): Matrix3 = withArray(duplicate = true)(_.transform(_ * scalar))
-
   def +(scalar: Double): Matrix3 = withArray(duplicate = true)(_.transform(_ + scalar))
-
   def -(scalar: Double): Matrix3 = withArray(duplicate = true)(_.transform(_ - scalar))
-
   def /(scalar: Double): Matrix3 = withArray(duplicate = true)(_.transform(_ / scalar))
 
   def mutable: MutableMatrix3 = MutableMatrix3(m00, m01, m02, m10, m11, m12, m20, m21, m22)
@@ -161,7 +158,7 @@ trait Matrix3 {
   def inv(): Matrix3 = {
     val determinant = det()
     if (determinant == 0)
-      throw new YouiMathException("Cannot invert a singular matrix")
+      throw new MathException("Cannot invert a singular matrix")
     else {
       val inverseDet: Double = 1.0 / determinant
       set(
@@ -345,8 +342,6 @@ trait Matrix3 {
   /**
    * Localize the point to the particular matrix, assuming the matrix encodes a locally translated rotation
    * and translation
-   *
-   * @param point
    */
   def localize(point: Point): Point = {
     val x = point.x * m00 + point.y * m01 + m02
@@ -355,37 +350,28 @@ trait Matrix3 {
   }
 }
 
-/*
-Matrix Companion obj
- */
 object Matrix3 {
+  lazy val Identity: Matrix3 = ImmutableMatrix3(
+    m00 = 1.0,
+    m01 = 0,
+    m02 = 0,
+    m10 = 0,
+    m11 = 1.0,
+    m12 = 0,
+    m20 = 0,
+    m21 = 0,
+    m22 = 1.0
+  )
 
-  /**
-    * Return an identity matrix
-    *
-    * @return
-    */
-  lazy val Identity: Matrix3 = {
-    ImmutableMatrix3(m00 = 1.0,
-                     m01 = 0,
-                     m02 = 0,
-                     m10 = 0,
-                     m11 = 1.0,
-                     m12 = 0,
-                     m20 = 0,
-                     m21 = 0,
-                     m22 = 1.0)
-  }
-
-  lazy val Empty: Matrix3 = {
-    ImmutableMatrix3(m00 = 0,
-      m01 = 0,
-      m02 = 0,
-      m10 = 0,
-      m11 = 0,
-      m12 = 0,
-      m20 = 0,
-      m21 = 0,
-      m22 = 0)
-  }
+  lazy val Empty: Matrix3 = ImmutableMatrix3(
+    m00 = 0,
+    m01 = 0,
+    m02 = 0,
+    m10 = 0,
+    m11 = 0,
+    m12 = 0,
+    m20 = 0,
+    m21 = 0,
+    m22 = 0
+  )
 }

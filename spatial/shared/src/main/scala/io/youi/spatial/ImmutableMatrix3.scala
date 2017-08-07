@@ -28,4 +28,6 @@ case class ImmutableMatrix3(m00: Double,
              m20: Double = m20,
              m21: Double = m21,
              m22: Double = m22): Matrix3 = copy(m00, m01, m02, m10, m11, m12, m20, m21, m22)
+
+  override def immutable: ImmutableMatrix3 = this
 }

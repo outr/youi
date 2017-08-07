@@ -317,7 +317,7 @@ Now that we have a complete application we need to build and run it. To accompli
 Start up the SBT console in the root of your project ("sbt") and run the following command to build the Scala.js, JVM,
 and run the application:
 
-`;exampleJS/fastOptJS;run`
+`;exampleJS/fastOptJS;exampleJVM/run`
 
 When you are ready to terminate execution simply hit `CTRL + C` to cancel the running process (the youi-plugin enables
 cancelable and forking in run).

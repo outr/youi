@@ -32,8 +32,8 @@ val scalaCheckVersion = "1.13.4"
 
 lazy val root = project.in(file("."))
   .aggregate(
-    coreJS, coreJVM, stream, communicationJS, communicationJVM, dom, client, server, serverUndertow, uiJS, uiJVM,
-    optimizer, appJS, appJVM, templateJS, templateJVM, exampleJS, exampleJVM, spatialJVM, spatialJS
+    coreJS, coreJVM, spatialJS, spatialJVM, stream, communicationJS, communicationJVM, dom, client, server,
+    serverUndertow, uiJS, uiJVM, optimizer, appJS, appJVM, templateJS, templateJVM, exampleJS, exampleJVM
   )
   .settings(
     resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases",
@@ -82,6 +82,9 @@ lazy val spatial = crossProject.in(file("spatial"))
       "org.scalatest" %%% "scalatest" % scalaTestVersion % "test",
       "org.scalacheck" %% "scalacheck" % scalaCheckVersion % "test"
     )
+  )
+  .jsSettings(
+    test := ()
   )
   .dependsOn(core)
 

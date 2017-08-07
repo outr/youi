@@ -26,6 +26,7 @@ YouI is divided into modules of functionality to minimize the dependencies requi
 * [optimizer](optimizer) - HTML, JavaScript, and Image optimizations to reduce extra overhead from your application
 * [server](server) - base functionality for a web server (Scala)
 * [server-undertow](serverUndertow) - implementation of [server](server) using [Undertow](http://undertow.io/) (Scala)
+* [spatial](spatial) - Spatial and math related functionality for Matrix and other operations
 * [stream](stream) - streaming functionality for on-the-fly processing and modification of any XML or HTML content (Scala)
 * [template](template) - features for creating and managing templates for use in applications (Scala and Scala.js)
 * [ui](ui) - functionality for user-interface creation and management (Scala.js)

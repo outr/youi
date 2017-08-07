@@ -74,9 +74,9 @@ lazy val core = crossProject.in(file("core"))
 lazy val coreJS = core.js
 lazy val coreJVM = core.jvm
 
-lazy val math = crossProject.in(file("math"))
+lazy val spatial = crossProject.in(file("spatial"))
   .settings(
-    name := "youi-math",
+    name := "youi-spatial",
     libraryDependencies ++= Seq(
       "org.scalactic" %%% "scalactic" % scalacticVersion,
       "org.scalatest" %%% "scalatest" % scalaTestVersion % "test",
@@ -85,8 +85,8 @@ lazy val math = crossProject.in(file("math"))
   )
   .dependsOn(core)
 
-lazy val spatialJS = math.js
-lazy val spatialJVM = math.jvm
+lazy val spatialJS = spatial.js
+lazy val spatialJVM = spatial.jvm
 
 lazy val stream = project.in(file("stream"))
   .settings(
@@ -165,7 +165,7 @@ lazy val ui = crossProject.in(file("ui"))
       "com.outr" %%% "pica-scala-js" % picaVersion
     )
   )
-  .dependsOn(core, math)
+  .dependsOn(core, spatial)
 
 lazy val uiJS = ui.js.dependsOn(dom)
 lazy val uiJVM = ui.jvm

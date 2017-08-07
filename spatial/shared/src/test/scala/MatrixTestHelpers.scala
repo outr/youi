@@ -38,7 +38,7 @@ trait MatrixTestHelpers {
   /*
   our target precision
    */
-  val doubleGen: Gen[Double] = Gen.chooseNum[Double](-1e5, 1e5)
+  val doubleGen: Gen[Double] = Gen.chooseNum[Double](-1e3, 1e3)
 
   implicit val doubleArbitrary: Arbitrary[Double] = Arbitrary(doubleGen)
 

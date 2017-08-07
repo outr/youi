@@ -2,7 +2,7 @@ package io.youi.example.ui.hypertext
 
 import io.youi.{Color, UI, dom}
 import io.youi.hypertext.{Button, Canvas}
-import io.youi.math._
+import io.youi.spatial._
 import org.scalajs.dom._
 
 import scala.concurrent.Future

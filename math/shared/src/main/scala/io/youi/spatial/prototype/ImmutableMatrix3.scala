@@ -1,4 +1,4 @@
-package io.youi.math.prototype
+package io.youi.spatial.prototype
 
 case class ImmutableMatrix3(m00: Double,
                             m01: Double,

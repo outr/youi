@@ -1,6 +1,4 @@
-package io.youi.math
-
-import scala.{math => stdmath}
+package io.youi.spatial
 
 /**
   * Trait representing a matrix
@@ -75,15 +73,15 @@ sealed trait Matrix3 {
     */
   def *(right: Matrix3): Matrix3 = {
     duplicate(
-      m00 * right.m00 + m01 * right.m10 + m02 * right.m20,
-      m00 * right.m01 + m01 * right.m11 + m02 * right.m21,
-      m00 * right.m02 + m01 * right.m12 + m02 * right.m22,
-      m10 * right.m00 + m11 * right.m10 + m12 * right.m20,
-      m10 * right.m01 + m11 * right.m11 + m12 * right.m21,
-      m10 * right.m02 + m11 * right.m12 + m12 * right.m22,
-      m20 * right.m00 + m21 * right.m10 + m22 * right.m20,
-      m20 * right.m01 + m21 * right.m11 + m22 * right.m21,
-      m20 * right.m02 + m21 * right.m12 + m22 * right.m22
+      m00.toFloat * right.m00.toFloat + m01.toFloat * right.m10.toFloat + m02.toFloat * right.m20.toFloat,
+      m00.toFloat * right.m01.toFloat + m01.toFloat * right.m11.toFloat + m02.toFloat * right.m21.toFloat,
+      m00.toFloat * right.m02.toFloat + m01.toFloat * right.m12.toFloat + m02.toFloat * right.m22.toFloat,
+      m10.toFloat * right.m00.toFloat + m11.toFloat * right.m10.toFloat + m12.toFloat * right.m20.toFloat,
+      m10.toFloat * right.m01.toFloat + m11.toFloat * right.m11.toFloat + m12.toFloat * right.m21.toFloat,
+      m10.toFloat * right.m02.toFloat + m11.toFloat * right.m12.toFloat + m12.toFloat * right.m22.toFloat,
+      m20.toFloat * right.m00.toFloat + m21.toFloat * right.m10.toFloat + m22.toFloat * right.m20.toFloat,
+      m20.toFloat * right.m01.toFloat + m21.toFloat * right.m11.toFloat + m22.toFloat * right.m21.toFloat,
+      m20.toFloat * right.m02.toFloat + m21.toFloat * right.m12.toFloat + m22.toFloat * right.m22.toFloat
     )
   }
 
@@ -242,8 +240,8 @@ sealed trait Matrix3 {
     * @return
     */
   def toRotation(rad: Radians): Matrix3 = {
-    val cosineVal = stdmath.cos(rad.value)
-    val sineVal = stdmath.sin(rad.value)
+    val cosineVal = math.cos(rad.value)
+    val sineVal = math.sin(rad.value)
     assign(
       m00 = cosineVal,
       m10 = sineVal,
@@ -367,6 +365,18 @@ sealed trait Matrix3 {
     (m20 <=> m.m20) &&
     (m21 <=> m.m21) &&
     (m22 <=> m.m22)
+  }
+
+  /**
+   * Localize the point to the particular matrix, assuming the matrix encodes a locally translated rotation
+   * and translation
+   *
+   * @param point
+   */
+  def localize(point: Point): Point = {
+    val x = point.x * m00 + point.y * m01 + m02
+    val y = point.x * m10 + point.y * m11 + m12
+    point.set(x, y)
   }
 }
 

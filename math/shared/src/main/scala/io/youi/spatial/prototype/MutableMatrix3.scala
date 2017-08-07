@@ -1,7 +1,7 @@
-package io.youi.math.prototype
+package io.youi.spatial.prototype
 
-import io.youi.math.Matrix3ArrayPool
-import io.youi.math.prototype.ops.Matrix3Multiply
+import io.youi.spatial.prototype.ops.Matrix3Multiply
+import io.youi.spatial.Matrix3ArrayPool
 
 case class MutableMatrix3(var m00: Double,
                           var m01: Double,

@@ -1,7 +1,7 @@
 package io.youi.style
 
-import io.youi.Point
 import io.youi.component.Component
+import io.youi.spatial.Point
 
 sealed trait GradientDirection {
   def info(component: Component): GradientDirectionInfo

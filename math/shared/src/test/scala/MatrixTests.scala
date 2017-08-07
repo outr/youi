@@ -1,5 +1,6 @@
-import io.youi.math.Matrix3
-import io.youi.math._
+import io.youi.spatial.Matrix3
+import io.youi.spatial._
+import io.youi.spatial.Point
 import org.scalatest.{FlatSpec, FlatSpecLike, Matchers}
 import org.scalatest.prop.PropertyChecks
 import org.scalatest.prop.Checkers._
@@ -60,6 +61,17 @@ class MatrixTests extends MatrixTestHelpers with PropertyChecks with Matchers wi
       (m1: Matrix3) =>
         val duplicate = m1.duplicate()
           m1.transpose.transpose should equal(duplicate)
+    }
+  }
+
+  it should "localize a point properly" in {
+    forAll{
+      (point: Point, xtrans: Double, ytrans: Double, rotation: Degrees) =>
+        val duplicate = point.duplicate()
+
+        val tMatrix = Matrix3.Identity.toTranslation(xtrans, ytrans).rotateDeg(rotation)
+
+        tMatrix.localize(point) should equal((duplicate + Point(xtrans, ytrans)).rotate(rotation))
     }
   }
 }

@@ -2,13 +2,15 @@ package io.youi
 
 import scala.math._
 
-package object math {
+package object spatial {
   val precision: Double = 0.00001
 
   /**
    * Degrees wrapper
    */
-  case class Degrees(value: Double) extends AnyVal
+  case class Degrees(value: Double) extends AnyVal {
+    def toRad: Radians = Radians(toRadians(value))
+  }
 
   /**
    * Radians wrapper
@@ -28,9 +30,6 @@ package object math {
     def <=>(other: Double): Boolean = tolerance(d, other)
   }
 
-  implicit class DegToRad(val deg: Degrees) {
-    def toRad: Radians = Radians(toRadians(deg.value))
-  }
 
   def tolerantEquals(precision: Double)(d1: Double, d2: Double): Boolean = {
     Math.abs(d1 - d2) <= precision

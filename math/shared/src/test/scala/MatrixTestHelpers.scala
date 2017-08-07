@@ -1,10 +1,14 @@
-import io.youi.math.{ImmutableMatrix3, Matrix3, MutableMatrix3}
+import io.youi.spatial.{Degrees, ImmutableMatrix3, Matrix3, MutableMatrix3}
+import io.youi.spatial.Point
 import org.scalacheck.{Arbitrary, Gen}
 import org.scalactic._
 import org.scalactic.TripleEquals._
 
 trait MatrixTestHelpers {
 
+ /*
+ our precision tolerance.
+  */
   implicit val doubleEqualityTolerance: Equality[Double] =
     TolerantNumerics.tolerantDoubleEquality(0.0001)
 
@@ -23,19 +27,43 @@ trait MatrixTestHelpers {
       case _ => false
   }
 
-  implicit val mutableGen: Gen[MutableMatrix3] = for {
+  /*
+  generator for mutable matrices
+   */
+  val mutableGen: Gen[MutableMatrix3] = for {
     d <- Gen.listOfN(9, Gen.chooseNum[Double](-1e3, 1e3))
   } yield MutableMatrix3(d(0), d(1), d(2), d(3), d(4), d(5), d(6), d(7), d(8))
 
+
   implicit val mutableArbitrary = Arbitrary(mutableGen)
 
-  implicit val immutableGen: Gen[ImmutableMatrix3] = for {
+  /*
+  generator for immutable matrices
+   */
+  val immutableGen: Gen[ImmutableMatrix3] = for {
     d <- Gen.listOfN(9, Gen.chooseNum[Double](-1e3, 1e3))
   } yield ImmutableMatrix3(d(0), d(1), d(2), d(3), d(4), d(5), d(6), d(7), d(8))
 
   implicit val immutableArbitrary = Arbitrary(immutableGen)
 
-  implicit val matrixGen: Gen[Matrix3] = Gen.oneOf(mutableGen, immutableGen)
+  /*
+  point generator
+   */
+  val pointGen: Gen[Point] = for {
+    x <- Gen.chooseNum[Double](-1e3, 1e3)
+    y <- Gen.chooseNum[Double](-1e3, 1e3)
+    mutable = Point.mutable(x, y)
+    imm = Point(x, y)
+    gen <- Gen.oneOf(mutable, imm)
+  } yield gen
+
+  implicit val pointArbitrary: Arbitrary[Point] = Arbitrary.apply(pointGen)
+
+  val matrixGen: Gen[Matrix3] = Gen.oneOf(mutableGen, immutableGen)
+
+  val rotationGen: Gen[Degrees] = Gen.chooseNum[Double](0, 360).map(Degrees.apply)
+
+  implicit val degreeArb: Arbitrary[Degrees] = Arbitrary(rotationGen)
 
   implicit val matrixArbitrary: Arbitrary[Matrix3] = Arbitrary(matrixGen)
 }

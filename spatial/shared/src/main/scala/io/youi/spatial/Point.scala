@@ -8,7 +8,7 @@ sealed trait Point {
   def set(that: Point): Point = set(that.x, that.y)
   def duplicate(): Point
   override def equals(obj: scala.Any): Boolean = obj match {
-    case that: Point => x == that.x && y == that.y
+    case that: Point => x <=> that.x && y <=> that.y
     case _ => false
   }
 
@@ -74,11 +74,11 @@ sealed trait Point {
     )
   }
 
-  def rotate(degrees: Degrees): Point = {
-    rotateRadians(degrees.toRad)
+  def rotateDeg(degrees: Degrees): Point = {
+    rotate(degrees.toRad)
   }
 
-  def rotateRadians(radians: Radians): Point = {
+  def rotate(radians: Radians): Point = {
     set(
       x * math.cos(radians.value) - y * math.sin(radians.value),
       x * math.sin(radians.value) + y * math.cos(radians.value)

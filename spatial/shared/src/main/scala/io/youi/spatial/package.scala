@@ -3,7 +3,11 @@ package io.youi
 import scala.math._
 
 package object spatial {
-  val precision: Double = 0.00001
+  /**
+   * Our precision value for equality testing
+   * Double point precision is awful
+   */
+  val precision: Double = 0.001
 
   /**
    * Degrees wrapper

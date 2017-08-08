@@ -12,7 +12,7 @@ import io.youi.{JavaScriptError, Priority, http}
 import net.sf.uadetector.UserAgentType
 import net.sf.uadetector.service.UADetectorServiceFactory
 import org.powerscala.io._
-import profig.ConfigApplication
+import profig.{ConfigApplication, JsonUtil}
 import reactify.{Channel, Var}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -65,8 +65,8 @@ trait ServerApplication extends YouIApplication with Server with ConfigApplicati
         content match {
           case Some(requestContent) => requestContent match {
             case formData: FormDataContent => {
-              val json = formData.string("json").value
-              val jsError = upickle.default.read[JavaScriptError](json)
+              val jsonString = formData.string("json").value
+              val jsError = JsonUtil.fromJsonString[JavaScriptError](jsonString)
 
               val userAgentString = Headers.Request.`User-Agent`.value(httpConnection.request.headers).getOrElse("")
               val userAgent = userAgentParser.parse(userAgentString)

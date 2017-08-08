@@ -1,5 +1,7 @@
 package io.youi.communication
 
+import profig.JsonUtil
+
 case class CommunicationMessage(messageType: Int,
                                 endPoint: String,
                                 invocationId: Int,
@@ -8,7 +10,7 @@ case class CommunicationMessage(messageType: Int,
   lazy val parsableString: String = {
     val message = error match {
       case Some(e) => s"0:$e"
-      case None => s"1:${upickle.default.write(content)}"
+      case None => s"1:${JsonUtil.toJsonString(content)}"
     }
     s"$messageType:[$endPoint]:$invocationId:$message"
   }
@@ -25,7 +27,8 @@ object CommunicationMessage {
     case MessageRegex(messageType, endPoint, invocationId, success, contentJSON) => {
       val successful = success.toInt == 1
       val (content, error) = if (successful) {
-        upickle.default.read[List[String]](contentJSON) -> None
+        val list = JsonUtil.fromJsonString[List[String]](contentJSON)
+        list -> None
       } else {
         Nil -> Some(contentJSON)
       }

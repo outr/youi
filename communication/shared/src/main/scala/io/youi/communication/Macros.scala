@@ -27,14 +27,15 @@ object Macros {
          }
          v.attach { value =>
            if (!modifying.get()) {
-             val json = upickle.default.write[$t](value)
-             val message = CommunicationMessage(CommunicationMessage.SharedVariable, $endPoint, 0, List(json), None)
+             val jsonString = profig.JsonUtil.toJsonString[$t](value)
+             val message = CommunicationMessage(CommunicationMessage.SharedVariable, $endPoint, 0, List(jsonString), None)
              comm.send := message
            }
          }
          comm.receive.attach { message =>
            if (message.endPoint == $endPoint && message.messageType == CommunicationMessage.SharedVariable) {
-             val value = upickle.default.read[$t](message.content.head)
+             val jsonString = message.content.head
+             val value = profig.JsonUtil.fromJsonString[$t](jsonString)
              modifying.set(true)
              try {
                v := value
@@ -88,13 +89,17 @@ object Macros {
             context.abort(context.enclosingPosition, s"$symbol is defined as a @client method, but is defined in the server.")
           }
           val params = args.zipWithIndex.map {
-            case (arg, index) => q"upickle.default.read[${arg.typeSignature.resultType}](message.content($index))"
+            case (arg, index) =>
+              q"""
+                 val jsonString = message.content($index)
+                 profig.JsonUtil.fromJsonString[${arg.typeSignature.resultType}](jsonString)
+               """
           }
           if (params.nonEmpty) {
             q"""
              comm.onEndPoint($endPoint) { message =>
                ${m.name}(..$params).map { response =>
-                 upickle.default.write[$resultType](response)
+                 profig.JsonUtil.toJsonString[$resultType](response)
                }
              }
            """
@@ -102,7 +107,7 @@ object Macros {
             q"""
              comm.onEndPoint($endPoint) { message =>
                ${m.name}.map { response =>
-                 upickle.default.write[$resultType](response)
+                 profig.JsonUtil.toJsonString[$resultType](response)
                }
              }
            """
@@ -118,14 +123,14 @@ object Macros {
           }
           val params = args.map { arg =>
             val argName = arg.name.toTermName
-            q"upickle.default.write[${arg.typeSignature.resultType}]($argName)"
+            q"profig.JsonUtil.toJsonString[${arg.typeSignature.resultType}]($argName)"
           }
           q"""
              override def ${m.name}(..$argList): scala.concurrent.Future[$resultType] = {
                val invocationId = comm.nextId()
                comm.send := io.youi.communication.CommunicationMessage(io.youi.communication.CommunicationMessage.MethodRequest, $endPoint, invocationId, List(..$params), None)
                comm.onInvocation[$resultType](invocationId)( message => {
-                 upickle.default.read[$resultType](message.content.head)
+                 profig.JsonUtil.fromJsonString[$resultType](message.content.head)
                })
              }
            """

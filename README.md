@@ -36,6 +36,15 @@ YouI is divided into modules of functionality to minimize the dependencies requi
 Though YouI provides many modules to accomplish many things, the primary goal of YouI is application development for
 web, mobile, and desktop. Take a look at the [app](app) module for a great getting started tutorial.
 
+## Examples
+
+More examples are located in the `example` directory. Run them with `sbt` 
+
+    exampleJS/fastOptJS 
+    exampleJVM/reStart 
+
+then load http://localhost:8080/ui-examples.html or search with `def path:` for URLs.
+
 ## Roadmap
 
 https://github.com/outr/youi/wiki/Roadmap

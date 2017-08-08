@@ -11,7 +11,7 @@
     * [ ] VerticalLayout
 * [X] Update dom Template to utilize Profig instead of limiting to environment variable for load path
 * [X] New `spatial` package to do matrix and other spatial math
-* [ ] Remove uPickle and rely exclusively on Circe for pickling
+* [X] Remove uPickle and rely exclusively on Circe for pickling
 * [X] Add better functionality to build FormDataContent
 * [X] Support multipart form posting in youi-client
 * [X] Update URL interpolator to only accept literals for proper compile-time validation

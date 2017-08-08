@@ -74,7 +74,7 @@ object ErrorTrace extends LogHandler {
   }
 
   private def map(sourceMapConsumer: SourceMapConsumer, line: Int, column: Int): SourcePosition = {
-    val position = js.JSON.parse(upickle.default.write(JavaScriptPosition(line, column))).asInstanceOf[js.Object]
+    val position = js.JSON.parse(profig.JsonUtil.toJsonString(JavaScriptPosition(line, column))).asInstanceOf[js.Object]
     sourceMapConsumer.originalPositionFor(position)
   }
 

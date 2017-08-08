@@ -7,7 +7,7 @@ resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
 resolvers in ThisBuild += Resolver.sonatypeRepo("snapshots")
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 
-val profigVersion = "1.1.1"
+val profigVersion = "1.1.2"
 val pixiJsVersion = "4.5.3"
 val scribeVersion = "1.4.5"
 val powerScalaVersion = "2.0.5"
@@ -19,7 +19,6 @@ val httpMimeVersion = "4.5.3"
 val circeVersion = "0.8.0"
 val uaDetectorVersion = "2014.10"
 val undertowVersion = "1.4.18.Final"
-val uPickleVersion = "0.4.4"
 val closureCompilerVersion = "v20170423"
 val hasherVersion = "1.2.1"
 val canvgVersion = "1.4.0_1"
@@ -149,7 +148,6 @@ lazy val communication = crossProject.in(file("communication"))
   .settings(
     name := "youi-communication",
     libraryDependencies ++= Seq(
-      "com.lihaoyi" %%% "upickle" % uPickleVersion,
       "org.scalactic" %%% "scalactic" % scalacticVersion,
       "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
     )

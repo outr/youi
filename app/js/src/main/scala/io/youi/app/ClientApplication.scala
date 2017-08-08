@@ -7,6 +7,7 @@ import io.youi.app.sourceMap.ErrorTrace
 import org.scalajs.dom._
 import io.youi.dom._
 import io.youi.net.URL
+import profig.JsonUtil
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -49,8 +50,8 @@ object ClientApplication {
   }
   def sendError(error: JavaScriptError): Future[XMLHttpRequest] = {
     val formData = new FormData
-    val json = upickle.default.write[JavaScriptError](error)
-    formData.append("json", json)
+    val jsonString = JsonUtil.toJsonString(error)
+    formData.append("json", jsonString)
     val request = new AjaxRequest(History.url().replacePathAndParams("/clientError"), data = Some(formData))
     request.send()
   }

@@ -1,9 +1,12 @@
 package io.youi.component
 
-import io.youi.Compass
+import io.youi._
+import io.youi.drawable.Drawable
 import reactify.{Dep, Val, Var}
 
 class Component {
+  private lazy val drawable: Drawable = ui.createDrawable()
+
   object position {
     lazy val x: Var[Double] = prop(0.0, updatesTransform = true)
     lazy val y: Var[Double] = prop(0.0, updatesTransform = true)

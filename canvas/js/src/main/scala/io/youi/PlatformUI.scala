@@ -1,5 +1,6 @@
 package io.youi
 
+import io.youi.drawable.Drawable
 import io.youi.event.KeyEvent
 import org.scalajs.dom.{Event, document, window}
 import org.scalajs.dom.html.Div
@@ -48,4 +49,6 @@ object PlatformUI extends UI {
       stopPropagation = () => evt.stopPropagation()
     )
   }
+
+  override def createDrawable(): Drawable = new CanvasDrawable
 }

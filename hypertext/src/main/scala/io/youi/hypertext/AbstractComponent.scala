@@ -1,8 +1,8 @@
 package io.youi.hypertext
 
+import io.youi.Unique
 import io.youi.hypertext.style.{ColorProperties, Position}
 import io.youi.task.TaskSupport
-import io.youi.{Unique, Updates}
 import reactify._
 
 trait AbstractComponent extends TaskSupport {

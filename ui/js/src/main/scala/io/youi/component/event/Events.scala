@@ -2,6 +2,7 @@ package io.youi.component.event
 
 import com.outr.pixijs.PIXI
 import io.youi.component.Component
+import io.youi.event.Mouse
 import reactify.{Channel, Val, Var}
 
 class Events(component: Component) {

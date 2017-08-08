@@ -1,9 +1,9 @@
 package io.youi.hypertext
 
-import reactify.Var
 import io.youi.dom
 import io.youi.hypertext.style.FontProperties
 import org.scalajs.dom.html.{Input => HTMLInput}
+import reactify.Var
 
 class TextInput extends Component {
   override val element: HTMLInput = dom.create[HTMLInput]("input")

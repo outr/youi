@@ -1,4 +1,4 @@
-package io.youi.component.event
+package io.youi.event
 
 import reactify.{Channel, Val, Var}
 

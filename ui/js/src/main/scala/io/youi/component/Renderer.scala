@@ -3,6 +3,7 @@ package io.youi.component
 import com.outr.pixijs._
 import io.youi.component.event._
 import io.youi._
+import io.youi.event.{DeltaMode, Mouse, WheelDelta}
 import io.youi.hypertext.Canvas
 import io.youi.hypertext.style.ColorProperties
 import reactify.{Channel, Val, Var}

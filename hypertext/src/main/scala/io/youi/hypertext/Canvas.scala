@@ -1,7 +1,7 @@
 package io.youi.hypertext
 
-import org.scalajs.dom._
 import io.youi._
+import org.scalajs.dom._
 
 class Canvas(val element: html.Canvas) extends Component {
   def this() = this(dom.create[html.Canvas]("canvas"))

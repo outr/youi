@@ -1,7 +1,6 @@
-package io.youi.component.event
+package io.youi.event
 
 import io.youi.Key
-import io.youi.component.Component
 import org.scalajs.dom.raw.KeyboardEvent
 
 case class KeyEvent(key: Key, originalEvent: KeyboardEvent) {

@@ -1,7 +1,7 @@
 package io.youi.hypertext
 
-import org.scalajs.dom.html.Element
 import io.youi.dom._
+import org.scalajs.dom.html.Element
 
 trait HTMLContainer extends AbstractContainer[Component] {
   protected[youi] val element: Element

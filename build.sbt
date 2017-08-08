@@ -34,8 +34,8 @@ val scalaCheckVersion = "1.13.4"
 lazy val root = project.in(file("."))
   .aggregate(
     coreJS, coreJVM, spatialJS, spatialJVM, stream, communicationJS, communicationJVM, dom, client, server,
-    serverUndertow, uiJS, uiJVM, canvasJS, canvasJVM, hypertext, optimizer, appJS, appJVM, templateJS, templateJVM,
-    exampleJS, exampleJVM
+    serverUndertow, canvasJS, canvasJVM, hypertext, optimizer, appJS, appJVM, templateJS, templateJVM, exampleJS,
+    exampleJVM
   )
   .settings(
     resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases",
@@ -160,7 +160,7 @@ lazy val communication = crossProject.in(file("communication"))
 lazy val communicationJS = communication.js
 lazy val communicationJVM = communication.jvm.dependsOn(server)
 
-lazy val ui = crossProject.in(file("ui"))
+/*lazy val ui = crossProject.in(file("ui"))
   .settings(
     name := "youi-ui"
   )
@@ -176,7 +176,7 @@ lazy val ui = crossProject.in(file("ui"))
   .dependsOn(core, spatial)
 
 lazy val uiJS = ui.js.dependsOn(dom)
-lazy val uiJVM = ui.jvm
+lazy val uiJVM = ui.jvm*/
 
 lazy val canvas = crossProject.in(file("canvas"))
   .settings(
@@ -200,7 +200,7 @@ lazy val hypertext = project.in(file("hypertext"))
   .settings(
     name := "youi-hypertext"
   )
-  .dependsOn(dom)
+  .dependsOn(canvasJS)
 
 lazy val optimizer = project.in(file("optimizer"))
   .settings(
@@ -227,9 +227,9 @@ lazy val app = crossProject.in(file("app"))
   .jsSettings(
     test := ()
   )
-  .dependsOn(core, communication, ui)
+  .dependsOn(core, communication, canvas)
 
-lazy val appJS = app.js
+lazy val appJS = app.js.dependsOn(hypertext)
 lazy val appJVM = app.jvm
 
 lazy val template = crossProject.in(file("template"))

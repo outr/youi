@@ -1,13 +1,13 @@
 package io.youi.hypertext
 
-import io.youi.component.event.KeyEvent
-import io.youi.hypertext.border.{Border, ComponentBorders}
-import io.youi.hypertext.style.{ComponentOverflow, Overflow}
-import reactify.{Channel, State, Val, Var}
 import io.youi.{AnimationFrame, Color}
+import io.youi.event.KeyEvent
+import io.youi.hypertext.border.{Border, ComponentBorders}
+import io.youi.hypertext.style.ComponentOverflow
 import org.scalajs.dom._
 import org.scalajs.dom.html.Element
 import org.scalajs.dom.raw.Event
+import reactify.{Channel, Var}
 
 import scala.collection.mutable.ListBuffer
 

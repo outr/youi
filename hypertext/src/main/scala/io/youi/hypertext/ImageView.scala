@@ -1,9 +1,9 @@
 package io.youi.hypertext
-import reactify.Var
 import io.youi.dom
 import io.youi.hypertext.style.Image
 import org.scalajs.dom.Event
 import org.scalajs.dom.html.{Image => HTMLImage}
+import reactify.Var
 
 class ImageView(val element: HTMLImage) extends Component {
   def this() = this(dom.create[HTMLImage]("img"))

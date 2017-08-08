@@ -1,6 +1,5 @@
 package io.youi.example.ui
 
-import io.youi.UI
 import io.youi.example.screen.ExampleScreen
 
 import scala.concurrent.{ExecutionContext, Future}

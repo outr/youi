@@ -1,6 +1,6 @@
 package io.youi.theme
 
-import io.youi.style.Cursor
+import io.youi.Cursor
 import reactify.Var
 
 trait ComponentTheme extends Theme {

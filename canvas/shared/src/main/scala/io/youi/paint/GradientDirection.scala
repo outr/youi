@@ -1,4 +1,4 @@
-package io.youi.style
+package io.youi.paint
 
 import io.youi.component.Component
 import io.youi.spatial.Point

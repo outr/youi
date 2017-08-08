@@ -1,6 +1,5 @@
 package io.youi.example
 
-import io.youi.UI
 import io.youi.app.screen.{CrossFadeSupport, LoadingTransitionSupport}
 import io.youi.app.{ClientApplication, ClientConnectivity}
 import io.youi.dom._

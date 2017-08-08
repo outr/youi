@@ -1,10 +1,11 @@
 package io.youi.component.extra
 
+import io.youi.Cursor
 import io.youi.component.draw.path.{Path, PathAction, Rectangle}
 import io.youi.component.draw._
 import io.youi.component.event.{DragSupport, Pointer}
 import io.youi.component.{DrawableComponent, PaintSupport, PaintTheme}
-import io.youi.style.{Cursor, Paint}
+import io.youi.style.Paint
 import io.youi.theme.RectangularSelectionTheme
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 import reactify._

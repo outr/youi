@@ -6,10 +6,9 @@ import io.circe.generic.auto._
 import io.circe.syntax._
 import io.youi.component.event.Events
 import io.youi.persist.Persistence
-import io.youi.style.Cursor
 import io.youi.task.TaskSupport
 import io.youi.theme.ComponentTheme
-import io.youi.{Compass, Horizontal, LazyUpdate, Unique, Vertical}
+import io.youi.{Cursor, _}
 import reactify._
 
 trait Component extends TaskSupport {

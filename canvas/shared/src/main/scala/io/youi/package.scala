@@ -1,21 +1,14 @@
 package io
 
-import io.youi.style.Paint
-import org.scalajs.dom.html
-import org.scalajs.dom.raw.{CanvasRenderingContext2D, WebGLRenderingContext}
+import io.youi.paint.Paint
 import reactify._
 
 import scala.language.implicitConversions
 
 package object youi {
-  def ui: UI.type = UI
+  def ui: UI = PlatformUI
 
   implicit def color2Paint(color: Color): Paint = Paint.color(color)
-
-  implicit class CanvasExtras(canvas: html.Canvas) {
-    def context: CanvasRenderingContext2D = canvas.getContext("2d").asInstanceOf[CanvasRenderingContext2D]
-    def webGL: WebGLRenderingContext = canvas.getContext("webgl").asInstanceOf[WebGLRenderingContext]
-  }
 
   implicit class NumericSize[T](t: T)(implicit n: Numeric[T]) {
     private val d = n.toDouble(t)
@@ -68,22 +61,22 @@ package object youi {
     /**
       * 1/100th of the width of the viewport.
       */
-    def vw: Val[Double] = Val((d / 100.0) * ui.size.width)
+    def vw: Val[Double] = Val((d / 100.0) * ui.width)
 
     /**
       * 1/100th of the height of the viewport.
       */
-    def vh: Val[Double] = Val((d / 100.0) * ui.size.height)
+    def vh: Val[Double] = Val((d / 100.0) * ui.height)
 
     /**
       * 1/100th of the minimum value between the height and the width of the viewport.
       */
-    def vmin: Val[Double] = Val(math.min((d / 100.0) * ui.size.width, (d / 100.0) * ui.size.height))
+    def vmin: Val[Double] = Val(math.min((d / 100.0) * ui.width, (d / 100.0) * ui.height))
 
     /**
       * 1/100th of the maximum value between the height and the width of the viewport.
       */
-    def vmax: Val[Double] = Val[Double](math.max((d / 100.0) * ui.size.width, (d / 100.0) * ui.size.height))
+    def vmax: Val[Double] = Val[Double](math.max((d / 100.0) * ui.width, (d / 100.0) * ui.height))
 
     /**
       * Returns percentage value `of`.

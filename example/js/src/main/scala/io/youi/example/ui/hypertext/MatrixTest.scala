@@ -1,6 +1,6 @@
 package io.youi.example.ui.hypertext
 
-import io.youi.{Color, UI, dom}
+import io.youi.{Color, dom}
 import io.youi.hypertext.{Button, Canvas}
 import io.youi.spatial._
 import org.scalajs.dom._

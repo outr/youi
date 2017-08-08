@@ -1,4 +1,4 @@
-package io.youi.style
+package io.youi
 
 sealed abstract class Cursor(val value: String)
 

@@ -1,14 +1,9 @@
-import io.youi.spatial.{Degrees, ImmutableMatrix3, Matrix3, MutableMatrix3, Point, precision}
+import io.youi.spatial.{ImmutableMatrix3, Matrix3, MutableMatrix3, Point, precision}
 import org.scalacheck.{Arbitrary, Gen}
 import org.scalactic._
 import org.scalactic.TripleEquals._
 
-
 trait MatrixTestHelpers {
-
-  /*
- our precision tolerance.
-  */
   implicit val doubleEqualityTolerance: Equality[Double] =
     TolerantNumerics.tolerantDoubleEquality(precision)
 
@@ -79,9 +74,9 @@ trait MatrixTestHelpers {
 
   val matrixGen: Gen[Matrix3] = Gen.oneOf(mutableGen, immutableGen)
 
-  val rotationGen: Gen[Degrees] = Gen.chooseNum[Double](0, 360).map(Degrees.apply)
+//  val rotationGen: Gen[Degrees] = Gen.chooseNum[Double](0, 360).map(Degrees.apply)
 
-  implicit val degreeArb: Arbitrary[Degrees] = Arbitrary(rotationGen)
+//  implicit val degreeArb: Arbitrary[Degrees] = Arbitrary(rotationGen)
 
   implicit val matrixArbitrary: Arbitrary[Matrix3] = Arbitrary(matrixGen)
 }

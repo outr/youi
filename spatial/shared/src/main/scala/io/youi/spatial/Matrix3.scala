@@ -29,6 +29,18 @@ trait Matrix3 {
                 m21: Double = m21,
                 m22: Double = m22): Matrix3
 
+  def duplicate(that: Matrix3): Matrix3 = duplicate(
+    m00 = that.m00,
+    m01 = that.m01,
+    m02 = that.m02,
+    m10 = that.m10,
+    m11 = that.m11,
+    m12 = that.m12,
+    m20 = that.m20,
+    m21 = that.m21,
+    m22 = that.m22
+  )
+
   /**
     * Updates this Matrix3 if mutable and creates a new instance if immutable.
     */
@@ -41,6 +53,18 @@ trait Matrix3 {
           m20: Double = m20,
           m21: Double = m21,
           m22: Double = m22): Matrix3
+
+  def set(that: Matrix3): Matrix3 = set(
+    m00 = that.m00,
+    m01 = that.m01,
+    m02 = that.m02,
+    m10 = that.m10,
+    m11 = that.m11,
+    m12 = that.m12,
+    m20 = that.m20,
+    m21 = that.m21,
+    m22 = that.m22
+  )
 
   def toArray(array: Array[Double]): Array[Double] = {
     array(0) = m00
@@ -195,33 +219,16 @@ trait Matrix3 {
     }
   }
 
-  /**
-    * Set the matrix to a rotation matrix that will rotate any vector in a couterclockwise direction around
-    * the Z axis
-    *
-    * @param degrees the amount to rotate in degrees
-    * @return
-    */
-  def toRotationDeg(degrees: Degrees): Matrix3 = {
-    toRotation(degrees.toRad)
-  }
-
-  /**
-    * Set the matrix to a rotation matrix that will rotate any vector in a couterclockwise direction around
-    * the Z axis
-    *
-    * @param rad the rotation in radians
-    * @return
-    */
-  def toRotation(rad: Radians): Matrix3 = {
-    val cosineVal = math.cos(rad.value)
-    val sineVal = math.sin(rad.value)
+  def toRotation(value: Double): Matrix3 = {
+    val radians = value * (math.Pi * 2.0)
+    val cos = math.cos(radians)
+    val sin = math.sin(radians)
     set(
-      m00 = cosineVal,
-      m10 = sineVal,
+      m00 = cos,
+      m10 = sin,
       m20 = 0,
-      m01 = -sineVal,
-      m11 = cosineVal,
+      m01 = -sin,
+      m11 = cos,
       m21 = 0,
       m02 = 0,
       m12 = 0,
@@ -295,26 +302,12 @@ trait Matrix3 {
     */
   def translate(x: Double, y: Double): Matrix3 = Matrix3Multiply(this, Matrix3.Identity.toTranslation(x, y), set)
 
-  /**
-    * Postmultiplies this matrix with a (counter-clockwise) rotation matrix. Postmultiplication is also used by OpenGL ES' 1.x
-    * glTranslate/glRotate/glScale.
-    *
-    * @param degrees rotation in degrees
-    * @return
-    */
-  def rotateDeg(degrees: Degrees): Matrix3 = {
-    if (degrees.value == 0)
-      this
-    else
-      rotate(degrees.toRad)
-  }
-
   /** Postmultiplies this matrix with a (counter-clockwise) rotation matrix. Postmultiplication is also used by OpenGL ES' 1.x
     * glTranslate/glRotate/glScale.
     *
-    * @return
+    * @param value is a representation of 1.0 being a complete rotation
     */
-  def rotate(radians: Radians): Matrix3 = Matrix3Multiply(this, Matrix3.Identity.toRotation(radians), set)
+  def rotate(value: Double): Matrix3 = Matrix3Multiply(this, Matrix3.Identity.toRotation(value), set)
 
   /** Postmultiplies this matrix with a scale matrix. Postmultiplication is also used by OpenGL ES' 1.x
     * glTranslate/glRotate/glScale.

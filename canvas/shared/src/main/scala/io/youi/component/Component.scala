@@ -2,10 +2,21 @@ package io.youi.component
 
 import io.youi._
 import io.youi.drawable.Drawable
+import io.youi.spatial.{Matrix3, MutableMatrix3}
 import reactify.{Dep, Val, Var}
 
 class Component {
   private lazy val drawable: Drawable = ui.createDrawable()
+  object matrix {
+    val local: MutableMatrix3 = Matrix3.Identity.mutable
+    val world: MutableMatrix3 = Matrix3.Identity.mutable
+    val transform = LazyUpdate {
+      local.set(Matrix3.Identity)
+      local.translate(position.x(), position.y())
+      local.translate(pivot.x(), pivot.y())
+      local.rotate()
+    }
+  }
 
   object position {
     lazy val x: Var[Double] = prop(0.0, updatesTransform = true)

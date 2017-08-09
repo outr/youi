@@ -1,6 +1,7 @@
 package io
 
 import io.youi.paint.Paint
+import io.youi.spatial.NumericSize
 import reactify._
 
 import scala.language.implicitConversions
@@ -10,13 +11,8 @@ package object youi {
 
   implicit def color2Paint(color: Color): Paint = Paint.color(color)
 
-  implicit class NumericSize[T](t: T)(implicit n: Numeric[T]) {
+  implicit class UINumericSize[T](t: T)(implicit n: Numeric[T]) extends NumericSize[T](t)(n) {
     private val d = n.toDouble(t)
-
-    /**
-      * pixels
-      */
-    def px: Double = d
 
     /**
       * millimeters
@@ -49,16 +45,6 @@ package object youi {
     def pica: Double = pt * 12.0
 
     /**
-      * degrees conversion (360 converts to 1.0)
-      */
-    def degrees: Double = d / 360.0
-
-    /**
-      * radians conversion (2π converts to 1.0)
-      */
-    def radians: Double = d / (2.0 * math.Pi)
-
-    /**
       * 1/100th of the width of the viewport.
       */
     def vw: Val[Double] = Val((d / 100.0) * ui.width)
@@ -82,10 +68,5 @@ package object youi {
       * Returns percentage value `of`.
       */
     def %(of: State[Double]): Val[Double] = percentOf(of)
-
-    /**
-      * Returns percentage value `of`.
-      */
-    def percentOf(of: State[Double]): Val[Double] = Val(of.get * (d * 0.01))
   }
 }

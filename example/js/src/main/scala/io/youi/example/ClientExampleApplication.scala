@@ -14,28 +14,28 @@ object ClientExampleApplication extends JSApp with ExampleApplication with Clien
   val communicationScreen = CommunicationScreen
   val login = LoginScreen
 
-  val uiExamples = UIExamples
+//  val uiExamples = UIExamples
 
   val matrix = hypertext.MatrixTest
 
-  val hello = HelloWorld
-  val images = ImageExample
-  val video = VideoExample
-  val animation = AnimationExample
-  val graphics = GraphicsExample
-  val basicText = BasicTextExample
-  val text = TextExample
-  val canvas = CanvasExample
-  val drawable = DrawableExample
-  val htmlComponent = HTMLComponentExample
-  val svgDrawable = SVGImageExample
-  val scale9 = Scale9Example
-  val virtual = VirtualSizeExample
-  val snap = SnapExample
-  val scrolling = ScrollingExample
-  val verticalLayout = VerticalLayoutExample
-  val gestures = GesturesExample
-  val imageEditor = ImageEditorExample
+//  val hello = HelloWorld
+//  val images = ImageExample
+//  val video = VideoExample
+//  val animation = AnimationExample
+//  val graphics = GraphicsExample
+//  val basicText = BasicTextExample
+//  val text = TextExample
+//  val canvas = CanvasExample
+//  val drawable = DrawableExample
+//  val htmlComponent = HTMLComponentExample
+//  val svgDrawable = SVGImageExample
+//  val scale9 = Scale9Example
+//  val virtual = VirtualSizeExample
+//  val snap = SnapExample
+//  val scrolling = ScrollingExample
+//  val verticalLayout = VerticalLayoutExample
+//  val gestures = GesturesExample
+//  val imageEditor = ImageEditorExample
 
   val htmlHello = hypertext.HelloWorld
   val htmlAnimation = hypertext.AnimationExample
@@ -53,7 +53,6 @@ object ClientExampleApplication extends JSApp with ExampleApplication with Clien
   override protected val loadingElement: html.Element = byId[html.Div]("loading")
 
   override def main(): Unit = {
-    UI.init()
     scribe.info("Initialized!")
   }
 }

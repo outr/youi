@@ -6,6 +6,8 @@ import io.youi.spatial.{Matrix3, MutableMatrix3}
 import reactify.{Dep, Val, Var}
 
 class Component {
+  lazy val parent: Val[Option[Component]] = Var(None)
+
   private lazy val drawable: Drawable = ui.createDrawable()
   object matrix {
     val local: MutableMatrix3 = Matrix3.Identity.mutable
@@ -14,7 +16,11 @@ class Component {
       local.set(Matrix3.Identity)
       local.translate(position.x(), position.y())
       local.translate(pivot.x(), pivot.y())
-      local.rotate()
+      local.rotate(rotation())
+      local.translate(-pivot.x(), -pivot.y())
+
+      world.set(parent().map(_.matrix.world).getOrElse(Matrix3.Identity))
+      world *= local
     }
   }
 

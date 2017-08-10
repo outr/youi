@@ -3,6 +3,7 @@ package io.youi.util
 import io.youi._
 import org.scalajs.dom.html
 import org.scalajs.dom.html.Canvas
+import org.scalajs.dom.raw.CanvasRenderingContext2D
 
 import scala.concurrent.Future
 
@@ -16,7 +17,7 @@ object CanvasPool extends ObjectPool[html.Canvas] {
     val h = math.ceil(height).toInt
     canvas.width = w
     canvas.height = h
-    canvas.context.clearRect(0.0, 0.0, w, h)
+    canvas.getContext("2d").asInstanceOf[CanvasRenderingContext2D].clearRect(0.0, 0.0, w, h)
     canvas
   }
 

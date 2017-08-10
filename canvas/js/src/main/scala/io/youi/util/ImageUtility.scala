@@ -8,7 +8,7 @@ import io.youi._
 import io.youi.dom
 import io.youi.image._
 import org.scalajs.dom.html.Canvas
-import org.scalajs.dom.raw.{File, FileReader, URL}
+import org.scalajs.dom.raw.{CanvasRenderingContext2D, File, FileReader, URL}
 
 import scala.concurrent.{Future, Promise}
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -33,7 +33,7 @@ object ImageUtility {
         }).toFuture
       }
     } else {
-      destination.context.drawImage(source.asInstanceOf[html.Image], 0.0, 0.0, destination.width, destination.height)
+      destination.getContext("2d").asInstanceOf[CanvasRenderingContext2D].drawImage(source.asInstanceOf[html.Image], 0.0, 0.0, destination.width, destination.height)
       Future.successful(destination)
     }
   }
@@ -47,7 +47,7 @@ object ImageUtility {
                    height: Double = source.asInstanceOf[html.Image].height): Future[html.Canvas] = {
     CanvasPool.withCanvasFuture(width, height) { canvas =>
       resizeToCanvas(source, canvas, smooth).map { _ =>
-        destination.context.drawImage(canvas.asInstanceOf[html.Image], offsetX, offsetY, width, height)
+        destination.getContext("2d").asInstanceOf[CanvasRenderingContext2D].drawImage(canvas.asInstanceOf[html.Image], offsetX, offsetY, width, height)
         destination
       }
     }
@@ -143,7 +143,7 @@ object ImageUtility {
 
       def createImage(): Unit = {
         val canvas = CanvasPool(video.videoWidth, video.videoHeight)
-        val context = canvas.context
+        val context = canvas.getContext("2d").asInstanceOf[CanvasRenderingContext2D]
         context.drawImage(video, 0.0, 0.0)
         val scaled = SizeUtility.scale(video.videoWidth, video.videoHeight, width, height, scaleUp)
         resizeToDataURL(canvas, scaled.width, scaled.height).map { dataURL =>
@@ -167,7 +167,7 @@ object ImageUtility {
         val image = Image.fromSVGString(svgString, None, None)
         val scaled = SizeUtility.scale(image.width, image.height, width, height, scaleUp)
         CanvasPool.withCanvasFuture(scaled.width, scaled.height) { canvas =>
-          image.drawImage(null, canvas, canvas.context, scaled.width, scaled.height).map { _ =>
+          image.drawImage(null, canvas, canvas.getContext("2d").asInstanceOf[CanvasRenderingContext2D], scaled.width, scaled.height).map { _ =>
             val dataURL = canvas.toDataURL("image/png")
             promise.success(Some(dataURL))
           }

@@ -2,8 +2,6 @@ package io.youi.image
 
 import com.outr.{CanvgOptions, canvg}
 import io.youi.component.Component
-import io.youi.component.draw.BoundingBox
-import io.youi.component.draw.path.Path
 import io.youi.dom._
 import org.scalajs.dom.raw._
 
@@ -55,7 +53,7 @@ case class SVGImage(svg: SVGSVGElement,
   }
 
   override def toDataURL: Future[String] = CanvasPool.withCanvasFuture(width, height) { canvas =>
-    drawImage(null, canvas, canvas.context, width, height).flatMap { _ =>
+    drawImage(null, canvas, canvas.getContext("2d").asInstanceOf[CanvasRenderingContext2D], width, height).flatMap { _ =>
       ImageUtility.resizeToDataURL(canvas, width, height)
     }
   }
@@ -142,11 +140,12 @@ object SVGImage {
           }
         }
         case p: SVGPathElement => {
-          val path = Path(p.getAttribute("d"))
-          minX = math.min(minX, offsetX + path.boundingBox.x1)
-          minY = math.min(minY, offsetY + path.boundingBox.y1)
-          maxX = math.max(maxX, offsetX + path.boundingBox.x2)
-          maxY = math.max(maxY, offsetY + path.boundingBox.y2)
+//          val path = Path(p.getAttribute("d"))
+//          minX = math.min(minX, offsetX + path.boundingBox.x1)
+//          minY = math.min(minY, offsetY + path.boundingBox.y1)
+//          maxX = math.max(maxX, offsetX + path.boundingBox.x2)
+//          maxY = math.max(maxY, offsetY + path.boundingBox.y2)
+          ???
         }
         case _: SVGStyleElement => // Nothing to do here
         case _ => scribe.warn(s"Unsupported SVG node: $e.")

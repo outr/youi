@@ -1,6 +1,7 @@
 package io.youi.example.ui.hypertext
 
 import io.youi.{Color, dom}
+import io.youi.ui
 import io.youi.hypertext.{Button, Canvas}
 import io.youi.spatial._
 import org.scalajs.dom._
@@ -38,8 +39,8 @@ object MatrixTest extends HTMLScreen {
 
     container.children += new Button {
       text := "Say 'Hello World'"
-      position.center := UI.position.center
-      position.middle := UI.position.middle
+      position.center := ui.position.center
+      position.middle := ui.position.middle
 
       event.click.attach { _ =>
         matrix = matrix
@@ -47,7 +48,7 @@ object MatrixTest extends HTMLScreen {
           .translate(150.0, 150.0)
           .scale(0.5, 0.5)
           .translate(100.0, 100.0)
-          .rotateDeg(180.deg)
+          .rotate(180.degrees)
           .translate(-100.0, -100.0)
         draw()
       }

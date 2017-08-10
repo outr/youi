@@ -1,6 +1,6 @@
 package io.youi.example.ui.hypertext
 
-import io.youi.example.ui.UIExampleScreen
+import io.youi.ui
 import io.youi.hypertext.Button
 
 import scala.concurrent.Future
@@ -11,8 +11,8 @@ object HelloWorld extends HTMLScreen {
   override protected def load(): Future[Unit] = super.load().map { _ =>
     container.children += new Button {
       text := "Say 'Hello World'"
-      position.center := UI.position.center
-      position.middle := UI.position.middle
+      position.center := ui.position.center
+      position.middle := ui.position.middle
 
       event.click.attach { _ =>
         scribe.info(s"Hello, World! ${position.x()}x${position.y()}, Size: ${size.actual.width()}x${size.actual.height()}")

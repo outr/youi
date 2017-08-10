@@ -1,14 +1,13 @@
 package io.youi.image
 
 import io.youi._
-import io.youi.component.draw.{BoundingBox, Drawable}
-import io.youi.component.{Component, ImageMode}
+import io.youi.component.Component
 import io.youi.dom._
 import io.youi.net.URL
 import io.youi.stream.StreamURL
 import io.youi.util.{CanvasPool, ImageUtility, SizeUtility}
 import org.scalajs.dom._
-import org.scalajs.dom.raw.SVGSVGElement
+import org.scalajs.dom.raw.{CanvasRenderingContext2D, SVGSVGElement}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Future, Promise}
@@ -93,7 +92,7 @@ object Image {
         case ImageMode.Speed => Future.successful(None)
         case ImageMode.Quality => {
           val canvas = CanvasPool(size.width, size.height)
-          val context = canvas.context
+          val context = canvas.getContext("2d").asInstanceOf[CanvasRenderingContext2D]
           context.clearRect(0.0, 0.0, size.width, size.height)
           scribe.info(s"Resizing to canvas! Original: ${o.width}x${o.height}, Resized: ${size.width}x${size.height}")
           ImageUtility.drawToCanvas(img, canvas)(width = size.width, height = size.height).map(Some.apply)

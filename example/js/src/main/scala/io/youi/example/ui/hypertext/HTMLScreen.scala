@@ -7,7 +7,7 @@ import io.youi.hypertext.Container
 trait HTMLScreen extends UIExampleScreen {
   lazy val container: Container = {
     val c = Container.cached(content)
-    ui.delta.attach(c.update)
+    AnimationFrame.delta.attach(c.update)
     c
   }
 }

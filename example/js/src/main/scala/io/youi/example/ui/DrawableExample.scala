@@ -1,56 +1,56 @@
-package io.youi.example.ui
-
-import io.youi._
-import io.youi.app.screen.UIScreen
-import io.youi.component._
-import io.youi.component.draw._
-import io.youi.component.draw.path._
-import io.youi.style.Paint
-
-object DrawableExample extends UIExampleScreen with UIScreen {
-  override def name: String = "Drawable Example"
-  override def path: String = "/examples/drawable.html"
-
-  override def createUI(): Unit = {
-    val component = new DrawableComponent {
-      position.x := 10.0
-      position.y := 10.0
-      size.width := 800.0
-      size.height := 400.0
-    }
-
-    component.drawable := Group(
-      Path(
-        MoveTo(50.0, 50.0),
-        LineTo(150.0, 50.0),
-        LineTo(150.0, 150.0),
-        LineTo(50.0, 150.0),
-        LineTo(50.0, 50.0)
-      ),
-      Fill(Color.Red.copy(alpha = 0.5)),
-      Path(
-        MoveTo(100.0, 100.0),
-        LineTo(200.0, 100.0),
-        LineTo(200.0, 200.0),
-        LineTo(100.0, 200.0),
-        LineTo(100.0, 100.0)
-      ),
-      Fill(Color.Green.copy(alpha = 0.5)),
-      Path(
-        MoveTo(150.0, 150.0),
-        LineTo(250.0, 150.0),
-        LineTo(250.0, 250.0),
-        LineTo(150.0, 250.0),
-        LineTo(150.0, 150.0)
-      ),
-      Fill(Color.Blue.copy(alpha = 0.5)),
-      Path.begin.move(10.0, 350.0).line(390.0, 350.0).close,
-      Stroke(Color.Red, 2.0, List(5.0, 10.0)),
-      Path.begin.roundedRect(275.0, 50.0, 200.0, 200.0, 10.0).close,
-      Fill(Paint.vertical(Color.AliceBlue, Color.DarkBlue)),
-      Stroke(Color.BlueViolet, 2.0)
-    )
-
-    container.children += component
-  }
-}
+//package io.youi.example.ui
+//
+//import io.youi._
+//import io.youi.app.screen.UIScreen
+//import io.youi.component._
+//import io.youi.component.draw._
+//import io.youi.component.draw.path._
+//import io.youi.style.Paint
+//
+//object DrawableExample extends UIExampleScreen with UIScreen {
+//  override def name: String = "Drawable Example"
+//  override def path: String = "/examples/drawable.html"
+//
+//  override def createUI(): Unit = {
+//    val component = new DrawableComponent {
+//      position.x := 10.0
+//      position.y := 10.0
+//      size.width := 800.0
+//      size.height := 400.0
+//    }
+//
+//    component.drawable := Group(
+//      Path(
+//        MoveTo(50.0, 50.0),
+//        LineTo(150.0, 50.0),
+//        LineTo(150.0, 150.0),
+//        LineTo(50.0, 150.0),
+//        LineTo(50.0, 50.0)
+//      ),
+//      Fill(Color.Red.copy(alpha = 0.5)),
+//      Path(
+//        MoveTo(100.0, 100.0),
+//        LineTo(200.0, 100.0),
+//        LineTo(200.0, 200.0),
+//        LineTo(100.0, 200.0),
+//        LineTo(100.0, 100.0)
+//      ),
+//      Fill(Color.Green.copy(alpha = 0.5)),
+//      Path(
+//        MoveTo(150.0, 150.0),
+//        LineTo(250.0, 150.0),
+//        LineTo(250.0, 250.0),
+//        LineTo(150.0, 250.0),
+//        LineTo(150.0, 150.0)
+//      ),
+//      Fill(Color.Blue.copy(alpha = 0.5)),
+//      Path.begin.move(10.0, 350.0).line(390.0, 350.0).close,
+//      Stroke(Color.Red, 2.0, List(5.0, 10.0)),
+//      Path.begin.roundedRect(275.0, 50.0, 200.0, 200.0, 10.0).close,
+//      Fill(Paint.vertical(Color.AliceBlue, Color.DarkBlue)),
+//      Stroke(Color.BlueViolet, 2.0)
+//    )
+//
+//    container.children += component
+//  }
+//}

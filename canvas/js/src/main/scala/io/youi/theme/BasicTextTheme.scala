@@ -2,7 +2,7 @@ package io.youi.theme
 
 import io.youi.Color
 import io.youi.component.Component
-import io.youi.style.Paint
+import io.youi.paint.Paint
 import reactify.Var
 
 trait BasicTextTheme extends ComponentTheme {

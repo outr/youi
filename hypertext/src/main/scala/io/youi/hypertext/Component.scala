@@ -1,6 +1,6 @@
 package io.youi.hypertext
 
-import io.youi.{AnimationFrame, Color, PlatformUI}
+import io.youi._
 import io.youi.event.KeyEvent
 import io.youi.hypertext.border.{Border, ComponentBorders}
 import io.youi.hypertext.style.ComponentOverflow
@@ -59,7 +59,7 @@ trait Component extends AbstractComponent {
 
   protected def keyEvents(eventType: String): Channel[KeyEvent] = {
     val originalEvents = events[KeyboardEvent](eventType)
-    originalEvents.map(PlatformUI.keyboardEvent2KeyEvent)
+    originalEvents.map(ui.keyboardEvent2KeyEvent)
   }
 
   protected def events[E <: Event](eventType: String, stopPropagation: Boolean = false): Channel[E] = {

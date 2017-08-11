@@ -3,12 +3,17 @@ package io.youi.component
 import io.youi._
 import io.youi.spatial.{Matrix3, MutableMatrix3}
 import io.youi.task.TaskSupport
+import io.youi.theme.ComponentTheme
 import reactify.{Dep, Val, Var}
 
 trait Component extends TaskSupport {
-  lazy val parent: Val[Option[Component]] = Var(None)
+  def theme: Var[_ <: ComponentTheme]
 
-  protected lazy val drawable: Drawable = new Drawable()
+  lazy val parent: Val[Option[Component]] = Var(None)
+  val visible: Var[Boolean] = prop(theme.visible, updatesRendering = true)
+  val globalVisibility: Val[Boolean] = Val(visible() && parent().exists(_.globalVisibility()))
+
+  protected[youi] lazy val drawable: Drawable = new Drawable()
   object matrix {
     val local: MutableMatrix3 = Matrix3.Identity.mutable
     val world: MutableMatrix3 = Matrix3.Identity.mutable
@@ -85,7 +90,7 @@ trait Component extends TaskSupport {
     lazy val y: Var[Double] = prop(size.middle(), updatesTransform = true)
   }
 
-  def draw(context: Context): Unit
+  def draw(context: Context): Unit = {}
 
   protected[youi] def prop[T](get: => T,
                               set: T => Unit = (_: T) => (),
@@ -114,3 +119,5 @@ trait Component extends TaskSupport {
     reDraw.update()
   }
 }
+
+object Component extends ComponentTheme

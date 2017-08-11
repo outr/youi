@@ -7,7 +7,7 @@ import reactify._
 import scala.language.implicitConversions
 
 package object youi {
-  def ui: UI = PlatformUI
+  lazy val ui: UI = new UI()
 
   implicit def color2Paint(color: Color): Paint = Paint.color(color)
 

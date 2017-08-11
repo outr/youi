@@ -14,7 +14,7 @@ object ClientExampleApplication extends JSApp with ExampleApplication with Clien
   val communicationScreen = CommunicationScreen
   val login = LoginScreen
 
-//  val uiExamples = UIExamples
+  val uiExamples = UIExamples
 
   val matrix = hypertext.MatrixTest
 

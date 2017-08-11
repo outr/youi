@@ -1,14 +1,15 @@
 package io.youi.component
 
 import io.youi._
-import io.youi.drawable.Drawable
+import io.youi.drawable.{Context, Drawable}
 import io.youi.spatial.{Matrix3, MutableMatrix3}
+import io.youi.task.TaskSupport
 import reactify.{Dep, Val, Var}
 
-class Component {
+class Component extends TaskSupport {
   lazy val parent: Val[Option[Component]] = Var(None)
 
-  private lazy val drawable: Drawable = ui.createDrawable()
+  lazy val drawable: Drawable = ui.createDrawable()
   object matrix {
     val local: MutableMatrix3 = Matrix3.Identity.mutable
     val world: MutableMatrix3 = Matrix3.Identity.mutable
@@ -23,6 +24,13 @@ class Component {
       world *= local
     }
   }
+  lazy val reDraw = LazyUpdate {
+    drawable.update(size.width(), size.height())(draw)
+
+    parent().foreach(_.invalidate())
+  }
+
+  reDraw.flag()
 
   object position {
     lazy val x: Var[Double] = prop(0.0, updatesTransform = true)
@@ -78,6 +86,10 @@ class Component {
     lazy val y: Var[Double] = prop(size.middle(), updatesTransform = true)
   }
 
+  def draw(context: Context): Unit = {
+
+  }
+
   protected[youi] def prop[T](get: => T,
                               set: T => Unit = (_: T) => (),
                               updatesTransform: Boolean = false,
@@ -86,13 +98,22 @@ class Component {
     set(v())
     v.attach { value =>
       set(value)
-//      if (updatesTransform) {
-//        transform.flag()
-//      }
-//      if (updatesRendering) {
-//        invalidate()
-//      }
+      if (updatesTransform) {
+        matrix.transform.flag()
+      }
+      if (updatesRendering) {
+        invalidate()
+      }
     }
     v
+  }
+
+  def invalidate(): Unit = reDraw.flag()
+
+  override def update(delta: Double): Unit = {
+    super.update(delta)
+
+    matrix.transform.update()
+    reDraw.update()
   }
 }

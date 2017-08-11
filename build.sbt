@@ -8,7 +8,6 @@ resolvers in ThisBuild += Resolver.sonatypeRepo("snapshots")
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 
 val profigVersion = "1.1.2"
-val pixiJsVersion = "4.5.3"
 val scribeVersion = "1.4.5"
 val powerScalaVersion = "2.0.5"
 val reactifyVersion = "2.1.0"

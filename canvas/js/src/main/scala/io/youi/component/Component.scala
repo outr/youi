@@ -1,15 +1,14 @@
 package io.youi.component
 
 import io.youi._
-import io.youi.drawable.{Context, Drawable}
 import io.youi.spatial.{Matrix3, MutableMatrix3}
 import io.youi.task.TaskSupport
 import reactify.{Dep, Val, Var}
 
-class Component extends TaskSupport {
+trait Component extends TaskSupport {
   lazy val parent: Val[Option[Component]] = Var(None)
 
-  lazy val drawable: Drawable = ui.createDrawable()
+  protected lazy val drawable: Drawable = new Drawable()
   object matrix {
     val local: MutableMatrix3 = Matrix3.Identity.mutable
     val world: MutableMatrix3 = Matrix3.Identity.mutable
@@ -86,9 +85,7 @@ class Component extends TaskSupport {
     lazy val y: Var[Double] = prop(size.middle(), updatesTransform = true)
   }
 
-  def draw(context: Context): Unit = {
-
-  }
+  def draw(context: Context): Unit
 
   protected[youi] def prop[T](get: => T,
                               set: T => Unit = (_: T) => (),

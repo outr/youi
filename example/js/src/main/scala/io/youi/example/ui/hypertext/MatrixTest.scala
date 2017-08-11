@@ -1,7 +1,6 @@
 package io.youi.example.ui.hypertext
 
-import io.youi.drawable.Context
-import io.youi.{AnimationFrame, CanvasDrawable, Color, dom, ui}
+import io.youi.{AnimationFrame, Color, Context, dom, ui}
 import io.youi.hypertext.{Button, Canvas}
 import io.youi.spatial._
 import org.scalajs.dom._
@@ -13,7 +12,7 @@ object MatrixTest extends HTMLScreen {
 
   override protected def load(): Future[Unit] = super.load().map { _ =>
     val c = new io.youi.component.Component {
-      val canvas = drawable.asInstanceOf[CanvasDrawable].canvas
+      import drawable.canvas
       canvas.style.backgroundColor = "lightblue"
       document.body.appendChild(canvas)
 
@@ -21,8 +20,6 @@ object MatrixTest extends HTMLScreen {
       size.height := 200.0
 
       override def draw(context: Context): Unit = {
-        super.draw(context)
-
         scribe.info(s"Drawing component!")
       }
     }

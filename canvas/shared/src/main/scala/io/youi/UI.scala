@@ -1,13 +1,11 @@
 package io.youi
 
-import io.youi.drawable.Drawable
 import reactify._
 
 trait UI {
   def ppi: Double
   def width: Val[Double]
   def height: Val[Double]
-  def createDrawable(): Drawable
 
   object position {
     val x: Val[Double] = Val(0.0)

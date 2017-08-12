@@ -11,12 +11,11 @@ class UI(canvasInstance: html.Canvas = dom.create[html.Canvas]("canvas")) {
   object canvas extends Container {
     override protected[youi] lazy val drawable: Drawable = new Drawable(canvasInstance, swapCanvases = false)
 
-    width.and(height).on(updateSize())
     canvasInstance.style.position = "absolute"
     canvasInstance.style.left = "0px"
     canvasInstance.style.top = "0px"
     hide()
-    updateSize()
+
     document.body.appendChild(canvasInstance)
 
     AnimationFrame.delta.attach(update)
@@ -25,11 +24,6 @@ class UI(canvasInstance: html.Canvas = dom.create[html.Canvas]("canvas")) {
 
     def show(): Unit = canvasInstance.style.display = "block"
     def hide(): Unit = canvasInstance.style.display = "none"
-
-    private def updateSize(): Unit = {
-      canvasInstance.width = width().ceil.toInt
-      canvasInstance.height = height().ceil.toInt
-    }
   }
 
   lazy val ppi: Double = {

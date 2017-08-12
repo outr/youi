@@ -20,8 +20,8 @@ object HelloWorld extends UIExampleScreen with UIScreen {
       position.middle := ui.position.middle
       size.width := 50.0
       size.height := 50.0
-//      document.body.appendChild(drawable.canvas)
     }
+    document.body.appendChild(container.drawable.canvas)
     container.children += text
   }
 }

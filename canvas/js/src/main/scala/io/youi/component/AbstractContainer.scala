@@ -38,6 +38,7 @@ trait AbstractContainer extends Component { self =>
 
   override def draw(context: Context): Unit = {
     super.draw(context)
+
     childEntries.foreach { child =>
       context.transform(child.matrix.world)
       context.draw(child)

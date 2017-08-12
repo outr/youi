@@ -94,9 +94,7 @@ trait Component extends TaskSupport {
 
   def draw(context: Context): Unit = {
     // Draw background
-    scribe.info(s"Drawing $this, background: ${background()}")
     if (background().nonEmpty) {
-      scribe.info(s"Drawing background... ${size.width()}x${size.height()}")
       context.rect(0.0, 0.0, size.width(), size.height())
       context.fill(background())
     }

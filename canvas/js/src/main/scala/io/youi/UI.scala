@@ -4,7 +4,7 @@ import io.youi.component.Container
 import io.youi.event.KeyEvent
 import org.scalajs.dom.{Event, document, html, window}
 import org.scalajs.dom.html.Div
-import org.scalajs.dom.raw.{CanvasRenderingContext2D, KeyboardEvent}
+import org.scalajs.dom.raw.KeyboardEvent
 import reactify._
 
 class UI(canvasInstance: html.Canvas = dom.create[html.Canvas]("canvas")) {
@@ -20,15 +20,6 @@ class UI(canvasInstance: html.Canvas = dom.create[html.Canvas]("canvas")) {
     document.body.appendChild(canvasInstance)
 
     AnimationFrame.delta.attach(update)
-
-    override def draw(context: Context): Unit = {
-      super.draw(context)
-
-      val canvas = drawable.canvas
-      val ctx = canvasInstance.getContext("2d").asInstanceOf[CanvasRenderingContext2D]
-      ctx.clearRect(0.0, 0.0, canvasInstance.width, canvasInstance.height)
-      ctx.drawImage(canvas.asInstanceOf[html.Image], 0.0, 0.0, canvas.width, canvas.height)
-    }
 
     def apply(): html.Canvas = canvasInstance
 

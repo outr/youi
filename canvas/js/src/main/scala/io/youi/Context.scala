@@ -12,7 +12,7 @@ class Context(drawable: Drawable) {
   private lazy val context = canvas.getContext("2d").asInstanceOf[CanvasRenderingContext2D]
 
   def transform(matrix: Matrix3): Unit = {
-//    context.setTransform(matrix.m00, matrix.m01, matrix.m10, matrix.m11, matrix.m02, matrix.m12)
+    context.setTransform(matrix.m00, matrix.m01, matrix.m10, matrix.m11, matrix.m02, matrix.m12)
   }
 
   def draw(component: Component): Unit = {

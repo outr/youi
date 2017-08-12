@@ -28,6 +28,8 @@ trait Component extends TaskSupport {
 
       world.set(parent().map(_.matrix.world).getOrElse(Matrix3.Identity))
       world *= local
+
+      parent().foreach(_.invalidate())
     }
   }
   lazy val reDraw = LazyUpdate {

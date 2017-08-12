@@ -1,6 +1,7 @@
 package io.youi.component
 
 import io.youi._
+import io.youi.paint.Paint
 import io.youi.spatial.{Matrix3, MutableMatrix3}
 import io.youi.task.TaskSupport
 import io.youi.theme.ComponentTheme
@@ -12,6 +13,7 @@ trait Component extends TaskSupport {
   lazy val parent: Val[Option[Component]] = Var(None)
   val visible: Var[Boolean] = prop(theme.visible, updatesRendering = true)
   val globalVisibility: Val[Boolean] = Val(visible() && parent().exists(_.globalVisibility()))
+  val background: Var[Paint] = prop(theme.background, updatesRendering = true)
 
   protected[youi] lazy val drawable: Drawable = new Drawable()
   object matrix {
@@ -90,7 +92,15 @@ trait Component extends TaskSupport {
     lazy val y: Var[Double] = prop(size.middle(), updatesTransform = true)
   }
 
-  def draw(context: Context): Unit = {}
+  def draw(context: Context): Unit = {
+    // Draw background
+    scribe.info(s"Drawing $this, background: ${background()}")
+    if (background().nonEmpty) {
+      scribe.info(s"Drawing background... ${size.width()}x${size.height()}")
+      context.rect(0.0, 0.0, size.width(), size.height())
+      context.fill(background())
+    }
+  }
 
   protected[youi] def prop[T](get: => T,
                               set: T => Unit = (_: T) => (),

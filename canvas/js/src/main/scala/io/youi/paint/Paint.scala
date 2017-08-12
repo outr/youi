@@ -1,6 +1,7 @@
 package io.youi.paint
 
 import io.youi.Color
+import io.youi.component.Component
 import io.youi.net.URL
 
 import scala.concurrent.{Future, Promise}
@@ -16,7 +17,7 @@ object NoPaint extends Paint {
   override def toString: String = "NoPaint"
 }
 
-class ColorPaint(color: Color) extends Paint {
+case class ColorPaint(color: Color) extends Paint {
   override def toString: String = color.toString
 }
 
@@ -36,7 +37,7 @@ case class RadialGradientPaint(x0: Double,
 
 object Paint {
   def none: Paint = NoPaint
-  def color(color: Color): Paint = new ColorPaint(color)
+  def color(color: Color): Paint = ColorPaint(color)
   def horizontal(colors: Color*): Paint = linear(GradientDirection.Horizontal, colors: _*)
   def vertical(colors: Color*): Paint = linear(GradientDirection.Vertical, colors: _*)
   def linear(direction: GradientDirection, colors: Color*): Paint = {
@@ -52,22 +53,22 @@ object Paint {
   }
 
   // TODO: simplify this into a radial gradient builder
-//  def radial(component: Component, colors: Color*)(x0: => Double = component.size.center(),
-//                                                   y0: => Double = -component.size.middle(),
-//                                                   r0: => Double = 0.0,
-//                                                   x1: => Double = component.size.center(),
-//                                                   y1: => Double = -component.size.middle(),
-//                                                   r1: => Double = math.max(component.size.center(), component.size.middle)): Paint = {
-//    val length = colors.length
-//    val adjust = 1.0 / (length.toDouble - 1)
-//    var offset = 0.0
-//    val stops = colors.map { color =>
-//      val stop = GradientStop(color, offset)
-//      offset += adjust
-//      stop
-//    }
-//    new RadialGradientPaint(x0, y0, r0, x1, y1, r1, stops.toVector)
-//  }
+  def radial(component: Component, colors: Color*)(x0: => Double = component.size.center(),
+                                                   y0: => Double = -component.size.middle(),
+                                                   r0: => Double = 0.0,
+                                                   x1: => Double = component.size.center(),
+                                                   y1: => Double = -component.size.middle(),
+                                                   r1: => Double = math.max(component.size.center(), component.size.middle)): Paint = {
+    val length = colors.length
+    val adjust = 1.0 / (length.toDouble - 1)
+    var offset = 0.0
+    val stops = colors.map { color =>
+      val stop = GradientStop(color, offset)
+      offset += adjust
+      stop
+    }
+    RadialGradientPaint(x0, y0, r0, x1, y1, r1, stops.toVector)
+  }
 
   /*def image(url: String | URL, repetition: Repetition = Repetition.Repeat): Future[Paint] = {
     val promise = Promise[Paint]

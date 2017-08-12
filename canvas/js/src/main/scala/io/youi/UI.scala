@@ -15,10 +15,11 @@ class UI(canvasInstance: html.Canvas = dom.create[html.Canvas]("canvas")) {
     canvasInstance.style.position = "absolute"
     canvasInstance.style.left = "0px"
     canvasInstance.style.top = "0px"
-    canvasInstance.style.backgroundColor = "lightblue"      // TODO: remove
     hide()
     updateSize()
     document.body.appendChild(canvasInstance)
+
+    AnimationFrame.delta.attach(update)
 
     override def draw(context: Context): Unit = {
       super.draw(context)

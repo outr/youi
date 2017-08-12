@@ -18,6 +18,8 @@ class BasicText extends Component {
   }
 
   override def draw(context: Context): Unit = {
+    super.draw(context)
+
     scribe.info(s"Draw text! ${value()}")
   }
 }

@@ -11,10 +11,14 @@ class Drawable(private[youi] var canvas: html.Canvas = dom.create[html.Canvas]("
     val c = if (swapCanvases) {
       CanvasPool(width, height)
     } else {
-      canvas.width = math.ceil(width).toInt
-      canvas.height = math.ceil(height).toInt
-
-      context.clear()
+      val w = math.ceil(width).toInt
+      val y = math.ceil(height).toInt
+      if (w != canvas.width || y != canvas.height) {
+        canvas.width = w
+        canvas.height = y
+      } else {
+        context.clear()
+      }
       canvas
     }
     if (swapCanvases) {

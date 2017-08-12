@@ -7,8 +7,7 @@ import org.scalajs.dom.{CanvasRenderingContext2D, html}
 
 import scala.scalajs.js
 
-class Context(drawable: Drawable) {
-  private def canvas: html.Canvas = drawable.canvas
+class Context(canvas: html.Canvas) {
   private lazy val context = canvas.getContext("2d").asInstanceOf[CanvasRenderingContext2D]
 
   def transform(matrix: Matrix3): Unit = {

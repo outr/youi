@@ -9,7 +9,7 @@ import reactify._
 
 class UI(canvasInstance: html.Canvas = dom.create[html.Canvas]("canvas")) {
   object canvas extends Container {
-    override protected[youi] lazy val drawable: Drawable = new Drawable(canvasInstance)
+    override protected[youi] lazy val drawable: Drawable = new Drawable(canvasInstance, swapCanvases = false)
 
     width.and(height).on(updateSize())
     canvasInstance.style.position = "absolute"

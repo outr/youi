@@ -22,7 +22,6 @@ trait Component extends TaskSupport {
     val transform = LazyUpdate {
       local.set(Matrix3.Identity)
       local.translate(position.x(), position.y())
-      scribe.info(s"Position: ${position.x()}x${position.y()}, Size: ${size.width()}x${size.height()}, Pivot: ${pivot.x()}x${pivot.y()}")
       local.translate(pivot.x(), pivot.y())
       local.rotate(rotation())
       local.translate(-pivot.x(), -pivot.y())
@@ -34,10 +33,13 @@ trait Component extends TaskSupport {
     }
   }
   lazy val reDraw = LazyUpdate {
+    reMeasure(drawable.context)
     drawable.update(size.width(), size.height())(draw)
 
     parent().foreach(_.invalidate())
   }
+
+  protected def reMeasure(context: Context): Unit = {}
 
   reDraw.flag()
 
@@ -99,7 +101,7 @@ trait Component extends TaskSupport {
     // Draw background
     if (background().nonEmpty) {
       context.rect(0.0, 0.0, size.width(), size.height())
-      context.fill(background())
+      context.fill(background(), apply = true)
     }
   }
 

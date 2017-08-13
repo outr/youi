@@ -5,7 +5,7 @@ import org.scalajs.dom._
 
 class Drawable(private[youi] var canvas: html.Canvas = dom.create[html.Canvas]("canvas"),
                swapCanvases: Boolean = true) {
-  private var context = new Context(canvas)
+  private[youi] var context = new Context(canvas)
 
   def update(width: Double, height: Double)(f: Context => Unit): Unit = {
     val c = if (swapCanvases) {

@@ -6,6 +6,7 @@ import io.youi.spatial.Matrix3
 import org.scalajs.dom.{CanvasRenderingContext2D, html}
 
 import scala.scalajs.js
+import org.scalajs.dom._
 
 class Context(canvas: html.Canvas) {
   private lazy val context = canvas.getContext("2d").asInstanceOf[CanvasRenderingContext2D]
@@ -23,11 +24,36 @@ class Context(canvas: html.Canvas) {
     context.rect(x, y, width, height)
   }
 
-  def fill(paint: Paint): Unit = {
+  def fill(paint: Paint, apply: Boolean): Unit = {
     if (paint != Paint.none) {
       context.fillStyle = paint2Any(paint)
-      context.fill()
+      if (apply) context.fill()
     }
+  }
+
+  def setFont(family: String, size: Double, style: String, variant: String, weight: String): Unit = {
+    context.font = s"$style $variant $weight ${size}px $family"
+  }
+
+  def measureText(text: String, size: Size = Size.zero): Size = {
+    val div = dom.create[html.Div]("div")
+    div.style.font = context.font
+    div.style.display = "inline-block"
+    div.innerHTML = text
+    document.body.appendChild(div)
+    val width = div.clientWidth
+    val height = div.clientHeight
+    document.body.removeChild(div)
+    size.set(width, height)
+  }
+
+  def fillText(text: String, x: Double = 0.0, y: Double = 0.0, maxWidth: Double = 10000.0): Unit = {
+    context.textBaseline = "top"
+    context.fillText(text, x, y, maxWidth)
+  }
+
+  def strokeText(text: String, x: Double = 0.0, y: Double = 0.0, maxWidth: Double = 10000.0): Unit = {
+    context.strokeText(text, x, y, maxWidth)
   }
 
   def clear(): Unit = {

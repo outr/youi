@@ -14,22 +14,17 @@ object HelloWorld extends UIExampleScreen with UIScreen {
     container.children += new BasicText {
       value := "Hello, World!"
       font.size := 48.0
-      background := Color.Blue
-      fill := Color.DarkBlue
+      background := Color.Yellow.withAlpha(0.5)
+      fill := Color.Red
       position.center := ui.position.center
       position.middle := ui.position.middle
-      size.width := 50.0
-      size.height := 50.0
     }
     val text = new BasicText {
       value := "Hello, World!"
       font.size := 48.0
-      background := Color.Red
       fill := Color.DarkBlue
       position.center := ui.position.center
       position.middle := ui.position.middle
-      size.width := 50.0
-      size.height := 50.0
 
       forever {
         rotation to 1.0 in 5.seconds andThen(rotation := 0.0)

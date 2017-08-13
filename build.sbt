@@ -195,7 +195,8 @@ lazy val canvasJVM = canvas.jvm
 lazy val hypertext = project.in(file("hypertext"))
   .enablePlugins(ScalaJSPlugin)
   .settings(
-    name := "youi-hypertext"
+    name := "youi-hypertext",
+    test := ()
   )
   .dependsOn(canvasJS)
 

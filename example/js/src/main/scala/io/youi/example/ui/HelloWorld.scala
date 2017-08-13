@@ -11,6 +11,16 @@ object HelloWorld extends UIExampleScreen with UIScreen {
   override def path: String = "/examples/hello.html"
 
   override def createUI(): Unit = {
+    container.children += new BasicText {
+      value := "Hello, World!"
+      font.size := 48.0
+      background := Color.Blue
+      fill := Color.DarkBlue
+      position.center := ui.position.center
+      position.middle := ui.position.middle
+      size.width := 50.0
+      size.height := 50.0
+    }
     val text = new BasicText {
       value := "Hello, World!"
       font.size := 48.0
@@ -22,7 +32,7 @@ object HelloWorld extends UIExampleScreen with UIScreen {
       size.height := 50.0
 
       forever {
-        rotation to 1.0 in 1.seconds andThen(rotation := 0.0)
+        rotation to 1.0 in 5.seconds andThen(rotation := 0.0)
       }.start(this)
     }
     container.children += text

@@ -13,7 +13,7 @@ trait UIScreen extends Screen {
     container.size.width := ui.width
     container.size.height := ui.height
     container.visible := false
-    ui.canvas.children += container
+    ui.renderer.children += container
   }
 
   override protected def load(): Future[Unit] = super.load().map(_ => createUI())
@@ -21,12 +21,12 @@ trait UIScreen extends Screen {
   def createUI(): Unit
 
   override protected def activate(): Future[Unit] = super.activate().map { _ =>
-    ui.canvas.show()
+    ui.renderer.show()
     container.visible := true
   }
 
   override protected def deactivate(): Future[Unit] = super.deactivate().map { _ =>
     container.visible := false
-    ui.canvas.hide()
+    ui.renderer.hide()
   }
 }

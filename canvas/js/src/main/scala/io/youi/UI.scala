@@ -1,30 +1,14 @@
 package io.youi
 
-import io.youi.component.Container
+import io.youi.component.{Container, Renderer}
 import io.youi.event.KeyEvent
 import org.scalajs.dom.{Event, document, html, window}
 import org.scalajs.dom.html.Div
 import org.scalajs.dom.raw.KeyboardEvent
 import reactify._
 
-class UI(canvasInstance: html.Canvas = dom.create[html.Canvas]("canvas")) {
-  object canvas extends Container {
-    override protected[youi] lazy val drawable: Drawable = new Drawable(canvasInstance, swapCanvases = false)
-
-    canvasInstance.style.position = "absolute"
-    canvasInstance.style.left = "0px"
-    canvasInstance.style.top = "0px"
-    hide()
-
-    document.body.appendChild(canvasInstance)
-
-    AnimationFrame.delta.attach(update)
-
-    def apply(): html.Canvas = canvasInstance
-
-    def show(): Unit = canvasInstance.style.display = "block"
-    def hide(): Unit = canvasInstance.style.display = "none"
-  }
+class UI(canvas: html.Canvas = dom.create[html.Canvas]("canvas")) {
+  val renderer: Renderer = new Renderer(canvas)
 
   lazy val ppi: Double = {
     val div = dom.create[Div]("div")

@@ -15,7 +15,7 @@ object HelloWorld extends HTMLScreen {
       position.middle := ui.position.middle
 
       event.click.attach { _ =>
-        scribe.info(s"Hello, World! ${position.x()}x${position.y()}, Size: ${size.actual.width()}x${size.actual.height()}")
+        scribe.info("Hello, World!")
       }
     }
   }

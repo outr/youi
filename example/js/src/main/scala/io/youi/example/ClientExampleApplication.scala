@@ -5,9 +5,9 @@ import io.youi.app.{ClientApplication, ClientConnectivity}
 import io.youi.dom._
 import io.youi.example.screen.{CommunicationScreen, LoginScreen}
 import io.youi.example.ui._
+import io.youi.example.ui.hypertext.DataTransferExample
 import org.scalajs.dom._
 
-import scala.concurrent.duration._
 import scala.scalajs.js.JSApp
 
 object ClientExampleApplication extends JSApp with ExampleApplication with ClientApplication with LoadingTransitionSupport {
@@ -34,6 +34,8 @@ object ClientExampleApplication extends JSApp with ExampleApplication with Clien
 //  val verticalLayout = VerticalLayoutExample
 //  val gestures = GesturesExample
 //  val imageEditor = ImageEditorExample
+
+  val dataTransfer = DataTransferExample
 
   val htmlHello = hypertext.HelloWorld
   val htmlAnimation = hypertext.AnimationExample

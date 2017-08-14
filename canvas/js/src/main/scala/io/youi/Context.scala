@@ -15,6 +15,15 @@ class Context(canvas: html.Canvas) {
     context.setTransform(matrix.m00, matrix.m01, matrix.m10, matrix.m11, matrix.m02, matrix.m12)
   }
 
+  def transform(component: Component): Unit = {
+    transform(Matrix3.Identity)
+    component.parent.foreach(transform)
+    context.translate(component.position.x(), component.position.y())
+    context.translate(component.pivot.x(), component.pivot.y())
+    context.rotate(component.rotation() * (math.Pi * 2.0))
+    context.translate(-component.pivot.x(), -component.pivot.y())
+  }
+
   def draw(component: Component): Unit = {
     val canvas = component.drawable.canvas
     context.drawImage(canvas.asInstanceOf[html.Image], 0.0, 0.0, canvas.width, canvas.height)

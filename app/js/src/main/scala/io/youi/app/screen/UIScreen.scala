@@ -21,12 +21,12 @@ trait UIScreen extends Screen {
   def createUI(): Unit
 
   override protected def activate(): Future[Unit] = super.activate().map { _ =>
-    ui.renderer.show()
+    ui.renderer.visible := true
     container.visible := true
   }
 
   override protected def deactivate(): Future[Unit] = super.deactivate().map { _ =>
     container.visible := false
-    ui.renderer.hide()
+    ui.renderer.visible := false
   }
 }

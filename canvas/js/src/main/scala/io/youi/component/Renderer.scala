@@ -9,18 +9,21 @@ class Renderer(canvas: html.Canvas) extends Container {
 
   val htmlEvents: HTMLEvents = new HTMLEvents(canvas)
   override lazy val renderer: Val[Option[Renderer]] = Val(Some(this))
+  override val globalVisibility: Val[Boolean] = visible
+
+  visible.attach {
+    case true => canvas.style.display = "block"
+    case false => canvas.style.display = "none"
+  }
 
   canvas.style.position = "absolute"
   canvas.style.left = "0px"
   canvas.style.top = "0px"
-  hide()
+  visible := false
 
   document.body.appendChild(canvas)
 
   AnimationFrame.delta.attach(update)
 
   def apply(): html.Canvas = canvas
-
-  def show(): Unit = canvas.style.display = "block"
-  def hide(): Unit = canvas.style.display = "none"
 }

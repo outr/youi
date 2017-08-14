@@ -23,15 +23,15 @@ object HelloWorld extends UIExampleScreen with UIScreen {
 
       ui.renderer.htmlEvents.mouse.move.attach { evt =>
         val local = matrix.world.immutable.inv().localize(Point(evt.clientX, evt.clientY))
-        scribe.info(s"MouseEvent! ${evt.clientX}x${evt.clientY} / $local")
+//        scribe.info(s"MouseEvent! ${evt.clientX}x${evt.clientY} / $local")
         if (local.x >= 0.0 && local.y >= 0.0 && local.x <= size.width() && local.y <= size.height()) {
           scribe.info("HIT!")
         }
       }
     }
-    /*val text = new BasicText {
+    val text = new BasicText {
       value := "Hello, World!"
-      font.size := 48.0
+      font.size := 56.0
       fill := Color.DarkBlue
       position.center := ui.position.center
       position.middle := ui.position.middle
@@ -41,6 +41,6 @@ object HelloWorld extends UIExampleScreen with UIScreen {
       }.start(this)
 //      rotation := 90.degrees
     }
-    container.children += text*/
+    container.children += text
   }
 }

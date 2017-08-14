@@ -21,6 +21,7 @@ class DataTransferManager {
     }
   }
   val fileReceived: Channel[DataTransferFile] = Channel[DataTransferFile]
+  val folderFeatureMissing: Channel[File] = Channel[File]
 
   def addDragTarget(element: html.Element): DragTarget = new DragTarget(element, this)
 
@@ -29,21 +30,23 @@ class DataTransferManager {
                folderSupport: Boolean = true): FileInput = new FileInput(input, modify, folderSupport, this)
 
   def process(files: FileList): Unit = files.toList.foreach { file =>
-    // TODO: detect directory upload - check file length and mimetype?
-    val fullName = try {
-      file.webkitRelativePath
-    } catch {
-      case _: Throwable => file.name
-    }
-    scribe.info(s"File: ${file.name} / ${file.size} / $fullName")
-    val (path, fileName) = fullName match {
-      case n if n.indexOf('/') != -1 => {
-        val index = n.lastIndexOf('/')
-        val pathString = n.substring(0, index)
-        pathString.split('/').toList -> n.substring(index + 1)
+    if (file.`type`.isEmpty) {
+      folderFeatureMissing := file
+    } else {
+      val fullName = try {
+        file.webkitRelativePath
+      } catch {
+        case _: Throwable => file.name
       }
-      case n => Nil -> n
+      val (path, fileName) = fullName match {
+        case n if n.indexOf('/') != -1 => {
+          val index = n.lastIndexOf('/')
+          val pathString = n.substring(0, index)
+          pathString.split('/').toList -> n.substring(index + 1)
+        }
+        case n => Nil -> n
+      }
+      fileReceived := DataTransferFile(file, fileName, path)
     }
-    fileReceived := DataTransferFile(file, fileName, path)
   }
 }

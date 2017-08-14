@@ -2,6 +2,7 @@ package io.youi.datatransfer
 
 import org.scalajs.dom.{DataTransfer, DragEvent, File}
 
+import scala.language.implicitConversions
 import scala.scalajs.js
 
 object FileSystemSupport {
@@ -14,7 +15,6 @@ object FileSystemSupport {
     true
   } catch {
     case t: Throwable => {
-      scribe.error(t)       // TODO: Remove this after sufficient testing
       false
     }
   }

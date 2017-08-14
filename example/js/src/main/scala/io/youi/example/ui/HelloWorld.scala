@@ -29,6 +29,7 @@ object HelloWorld extends UIExampleScreen with UIScreen {
       forever {
         rotation to 1.0 in 5.seconds andThen(rotation := 0.0)
       }.start(this)
+//      rotation := 90.degrees
     }
     container.children += text
   }

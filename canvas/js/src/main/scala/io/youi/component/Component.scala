@@ -14,6 +14,10 @@ trait Component extends TaskSupport {
   val visible: Var[Boolean] = prop(theme.visible, updatesRendering = true)
   val globalVisibility: Val[Boolean] = Val(visible() && parent().exists(_.globalVisibility()))
   val background: Var[Paint] = prop(theme.background, updatesRendering = true)
+  val cursor: Var[Cursor] = prop(theme.cursor)
+  val interactive: Var[Boolean] = prop(theme.interactive)
+
+//  lazy val event: Events = new Events(this)
 
   protected[youi] lazy val drawable: Drawable = new Drawable()
   object matrix {
@@ -131,6 +135,8 @@ trait Component extends TaskSupport {
     matrix.transform.update()
     reDraw.update()
   }
+
+  override def updateTasks(): Boolean = super.updateTasks() && globalVisibility()
 }
 
 object Component extends ComponentTheme

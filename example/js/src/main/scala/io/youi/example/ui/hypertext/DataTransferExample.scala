@@ -1,6 +1,6 @@
 package io.youi.example.ui.hypertext
 
-import io.youi.UI
+import io.youi.ui
 import io.youi.datatransfer.DataTransferManager
 import io.youi.hypertext.Button
 import org.scalajs.dom._
@@ -22,8 +22,8 @@ object DataTransferExample extends HTMLScreen {
     val input = dtm.addInput()
     container.children += new Button {
       text := "Upload a file or directory..."
-      position.center := UI.position.center
-      position.middle := UI.position.middle
+      position.center := ui.position.center
+      position.middle := ui.position.middle
 
       event.click.attach { _ =>
         input.open()

@@ -15,6 +15,16 @@ class Context(canvas: html.Canvas) {
     context.setTransform(matrix.m00, matrix.m01, matrix.m10, matrix.m11, matrix.m02, matrix.m12)
   }
 
+  def save(): Unit = context.save()
+  def restore(): Unit = context.restore()
+
+  def state[R](f: => R): R = try {
+    save()
+    f
+  } finally {
+    restore()
+  }
+
   def transform(component: Component): Unit = {
     transform(Matrix3.Identity)
     component.parent.foreach(transform)

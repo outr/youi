@@ -2,9 +2,10 @@ package io.youi.component
 
 import io.youi._
 import io.youi.paint.Paint
-import io.youi.spatial.{Matrix3, MutableMatrix3}
+import io.youi.spatial.{Matrix3, MutableMatrix3, Point}
 import io.youi.task.TaskSupport
 import io.youi.theme.ComponentTheme
+import org.scalajs.dom.raw.MouseEvent
 import reactify.{Dep, Val, Var}
 
 trait Component extends TaskSupport {
@@ -128,6 +129,16 @@ trait Component extends TaskSupport {
     v
   }
 
+  def hitTest(evt: MouseEvent): Option[Point] = {
+    val matrix = Component.tempMatrix.set(this.matrix.world).inv()
+    val local = matrix.localize(Component.tempPoint)
+    if (local.x >= 0.0 && local.y >= 0.0 && local.x <= size.width() && local.y <= size.height()) {
+      Some(local)
+    } else {
+      None
+    }
+  }
+
   def invalidate(): Unit = reDraw.flag()
 
   override def update(delta: Double): Unit = {
@@ -140,4 +151,7 @@ trait Component extends TaskSupport {
   override def updateTasks(): Boolean = super.updateTasks() && globalVisibility()
 }
 
-object Component extends ComponentTheme
+object Component extends ComponentTheme {
+  private val tempMatrix = Matrix3.Identity.mutable
+  private val tempPoint = Point.mutable()
+}

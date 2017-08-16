@@ -4,6 +4,8 @@ import io.youi.Context
 import io.youi.theme.AbstractContainerTheme
 import reactify._
 
+import scala.concurrent.Future
+
 trait AbstractContainer extends Component { self =>
   type Child <: Component
 
@@ -36,15 +38,16 @@ trait AbstractContainer extends Component { self =>
     childEntries().foreach(_.update(delta))
   }
 
-  override def draw(context: Context): Unit = {
+  override def draw(context: Context): Future[Unit] = {
     super.draw(context)
 
     // Draw cached canvases from each child
     childEntries.foreach { child =>
-//      context.transform(child.matrix.world)
       context.transform(child)
       context.draw(child)
     }
+
+    Future.successful(())
   }
 }
 

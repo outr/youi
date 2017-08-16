@@ -4,6 +4,8 @@ import io.youi.paint.Paint
 import io.youi.theme.BasicTextTheme
 import reactify.Var
 
+import scala.concurrent.Future
+
 class BasicText extends Component {
   override lazy val theme: Var[BasicTextTheme] = Var(BasicText)
 
@@ -53,7 +55,7 @@ class BasicText extends Component {
     }
   }
 
-  override def draw(context: Context): Unit = {
+  override def draw(context: Context): Future[Unit] = {
     super.draw(context)
 
     if (value().nonEmpty) {
@@ -61,6 +63,8 @@ class BasicText extends Component {
       context.fill(fill(), apply = false)
       context.fillText(value())
     }
+
+    Future.successful(())
   }
 }
 

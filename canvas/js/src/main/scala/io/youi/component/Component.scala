@@ -8,6 +8,9 @@ import io.youi.theme.ComponentTheme
 import org.scalajs.dom.raw.MouseEvent
 import reactify.{Dep, Val, Var}
 
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
+
 trait Component extends TaskSupport {
   def theme: Var[_ <: ComponentTheme]
 
@@ -38,12 +41,15 @@ trait Component extends TaskSupport {
       parent().foreach(_.invalidate())
     }
   }
-  lazy val reDraw = LazyUpdate {
+  lazy val reDraw = LazyFuture({
     reMeasure(drawable.context)
-    drawable.update(size.width(), size.height())(draw)
+    val future = drawable.update(size.width(), size.height())(draw)
 
-    parent().foreach(_.invalidate())
-  }
+    future.foreach { _ =>
+      parent().foreach(_.invalidate())
+    }
+    future
+  }, automatic = false)
 
   protected def reMeasure(context: Context): Unit = {}
 
@@ -103,12 +109,13 @@ trait Component extends TaskSupport {
     lazy val y: Var[Double] = prop(size.middle(), updatesTransform = true)
   }
 
-  def draw(context: Context): Unit = {
+  def draw(context: Context): Future[Unit] = {
     // Draw background
     if (background().nonEmpty) {
       context.rect(0.0, 0.0, size.width(), size.height())
       context.fill(background(), apply = true)
     }
+    Future.successful(())
   }
 
   protected[youi] def prop[T](get: => T,

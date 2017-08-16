@@ -15,9 +15,19 @@ class DataTransferManager {
     val visible: Var[Boolean] = Var(false)
     val current: Var[Option[DragTarget]] = Var(None)
 
-    def classOnVisible(target: html.Element, className: String): Unit = visible.attachAndFire {
-      case true => target.classList.add(className)
-      case false => target.classList.remove(className)
+    def classOnVisible(target: html.Element,
+                       className: String,
+                       reverse: Boolean = false,
+                       fireImmediately: Boolean = true): Unit = {
+      def attachFunction(f: Boolean => Unit) = if (fireImmediately) visible.attachAndFire _ else visible.attach _
+      attachFunction { b =>
+        val value = if (reverse) !b else b
+        if (value) {
+          target.classList.add(className)
+        } else {
+          target.classList.remove(className)
+        }
+      }
     }
   }
   val fileReceived: Channel[DataTransferFile] = Channel[DataTransferFile]

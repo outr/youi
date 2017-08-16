@@ -83,9 +83,6 @@ lazy val spatial = crossProject.in(file("spatial"))
       "org.scalacheck" %% "scalacheck" % scalaCheckVersion % "test"
     )
   )
-  .jsSettings(
-    test := ()
-  )
   .dependsOn(core)
 
 lazy val spatialJS = spatial.js
@@ -180,7 +177,6 @@ lazy val canvas = crossProject.in(file("canvas"))
     name := "youi-canvas"
   )
   .jsSettings(
-    test := (),
     libraryDependencies ++= Seq(
       "com.outr" %%% "canvg-scala-js" % canvgVersion,
       "com.outr" %%% "opentype-scala-js" % openTypeVersion,
@@ -195,8 +191,7 @@ lazy val canvasJVM = canvas.jvm
 lazy val hypertext = project.in(file("hypertext"))
   .enablePlugins(ScalaJSPlugin)
   .settings(
-    name := "youi-hypertext",
-    test := ()
+    name := "youi-hypertext"
   )
   .dependsOn(canvasJS)
 
@@ -222,9 +217,6 @@ lazy val app = crossProject.in(file("app"))
       "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
     )
   )
-  .jsSettings(
-    test := ()
-  )
   .dependsOn(core, communication, canvas)
 
 lazy val appJS = app.js.dependsOn(hypertext)
@@ -235,7 +227,6 @@ lazy val template = crossProject.in(file("template"))
     name := "youi-template"
   )
   .jsSettings(
-    test := (),
     artifactPath in (Compile, fastOptJS) := (resourceManaged in Compile).value / "application.js",
     artifactPath in (Compile, fullOptJS) := (resourceManaged in Compile).value / "application.js",
     crossTarget in fastOptJS := baseDirectory.value / ".." / "jvm" / "src" / "main" / "resources" / "app",
@@ -260,7 +251,6 @@ lazy val example = crossProject.in(file("example"))
     name := "youi-example"
   )
   .jsSettings(
-    test := (),
     crossTarget in fastOptJS := baseDirectory.value / ".." / "jvm" / "src" / "main" / "resources" / "app",
     crossTarget in fullOptJS := baseDirectory.value / ".." / "jvm" / "src" / "main" / "resources" / "app",
     crossTarget in packageJSDependencies := baseDirectory.value / ".." / "jvm" / "src" / "main" / "resources" / "app",

@@ -1,11 +1,11 @@
 package io.youi.image
 
-import io.youi.component.Component
+import io.youi.Context
 import io.youi.util.ImageUtility
-import org.scalajs.dom.{CanvasRenderingContext2D, html}
+import org.scalajs.dom.html
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 case class TextureImage(img: html.Image,
                         width: Double,
@@ -13,16 +13,12 @@ case class TextureImage(img: html.Image,
                         original: Option[Image]) extends Image {
   override def isVector: Boolean = false
 
-  override def drawImage(component: Component,
-                         canvas: html.Canvas,
-                         context: CanvasRenderingContext2D,
-                         width: Double,
-                         height: Double): Future[Unit] = {
+  override def drawImage(context: Context): Future[Unit] = {
     if (img.width.toDouble == width && img.height.toDouble == height) {     // Draw directly
-      context.drawImage(img, 0.0, 0.0, width, height)
+      context.draw(img)(width = width, height = height)
       Future.successful(())
     } else {
-      ImageUtility.drawToCanvas(img, canvas)(width = width, height = height).map(_ => ())
+      ImageUtility.drawToCanvas(img, context.canvas)(width = width, height = height).map(_ => ())
     }
   }
 

@@ -18,16 +18,12 @@ case class SVGImage(svg: SVGSVGElement,
                     height: Double,
                     original: Option[Image],
                     measured: Size) extends Image {
-  override def drawImage(component: Component,
-                         canvas: html.Canvas,
-                         context: CanvasRenderingContext2D,
-                         width: Double,
-                         height: Double): Future[Unit] = {
+  override def drawImage(context: Context): Future[Unit] = {
     val promise = Promise[Unit]
     val callback: js.Function = () => {
       promise.success(())
     }
-    canvg(canvas, svg.outerHTML, new CanvgOptions {
+    canvg(context.canvas, svg.outerHTML, new CanvgOptions {
       ignoreMouse = true
       ignoreAnimation = true
       ignoreDimensions = true
@@ -53,7 +49,8 @@ case class SVGImage(svg: SVGSVGElement,
   }
 
   override def toDataURL: Future[String] = CanvasPool.withCanvasFuture(width, height) { canvas =>
-    drawImage(null, canvas, canvas.getContext("2d").asInstanceOf[CanvasRenderingContext2D], width, height).flatMap { _ =>
+    val drawable = new Drawable(canvas, swapCanvases = false)
+    drawable.update(width, height)(context => drawImage(context)).flatMap { _ =>
       ImageUtility.resizeToDataURL(canvas, width, height)
     }
   }

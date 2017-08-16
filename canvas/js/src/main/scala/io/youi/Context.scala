@@ -8,8 +8,11 @@ import org.scalajs.dom.{CanvasRenderingContext2D, html}
 import scala.scalajs.js
 import org.scalajs.dom._
 
-class Context(canvas: html.Canvas) {
+class Context(val canvas: html.Canvas) {
   private lazy val context = canvas.getContext("2d").asInstanceOf[CanvasRenderingContext2D]
+
+  def width: Double = canvas.width.toDouble
+  def height: Double = canvas.height.toDouble
 
   def transform(matrix: Matrix3): Unit = {
     context.setTransform(matrix.m00, matrix.m01, matrix.m10, matrix.m11, matrix.m02, matrix.m12)
@@ -37,6 +40,14 @@ class Context(canvas: html.Canvas) {
   def draw(component: Component): Unit = {
     val canvas = component.drawable.canvas
     context.drawImage(canvas.asInstanceOf[html.Image], 0.0, 0.0, canvas.width, canvas.height)
+  }
+
+  def draw(image: html.Image)
+          (x: Double = 0.0,
+           y: Double = 0.0,
+           width: Double = image.width,
+           height: Double = image.height): Unit = {
+    context.drawImage(image, x, y, width, height)
   }
 
   def rect(x: Double, y: Double, width: Double, height: Double): Unit = {

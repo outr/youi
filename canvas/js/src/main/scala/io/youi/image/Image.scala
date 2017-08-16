@@ -20,11 +20,7 @@ trait Image {
   def originalWidth: Double = original.map(_.width).getOrElse(width)
   def originalHeight: Double = original.map(_.height).getOrElse(height)
 
-  def drawImage(component: Component,
-                canvas: html.Canvas,
-                context: CanvasRenderingContext2D,
-                width: Double,
-                height: Double): Future[Unit]
+  def drawImage(context: Context): Future[Unit]
 
   def resized(width: Double, height: Double, dropOriginal: Boolean = false): Future[Image]
 

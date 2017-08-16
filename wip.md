@@ -15,3 +15,4 @@
 * [X] Add better functionality to build FormDataContent
 * [X] Support multipart form posting in youi-client
 * [X] Update URL interpolator to only accept literals for proper compile-time validation
+* [X] DataTransferManager to provide better and more consistent drag-and-drop and file chooser functionality with directory support

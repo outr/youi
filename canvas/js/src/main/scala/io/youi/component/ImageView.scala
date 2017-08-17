@@ -24,7 +24,6 @@ class ImageView extends Component {
   val image: Var[Image] = prop(Image.empty, updatesRendering = true)
 
   override def draw(context: Context): Future[Unit] = super.draw(context).flatMap { _ =>
-    scribe.info(s"Draw image!!!")
     image().drawImage(context, size.width(), size.height())
   }
 

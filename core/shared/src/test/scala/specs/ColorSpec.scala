@@ -69,5 +69,28 @@ class ColorSpec extends WordSpec with Matchers {
       val color = Color.fromLong(0x11223344)
       color.toRGBA should be("rgba(17, 34, 51, 0.26666666666666666)")
     }
+    "verify HSB" in {
+      Color.Green.hue should be(0.3333333333333333)
+      Color.Green.saturation should be(1.0)
+      Color.Green.brightness should be(0.5019607843137255)
+    }
+    "modify hue" in {
+      val c = Color.Green.withHue(0.5)
+      c.hue should be(0.5)
+      c.saturation should be(1.0)
+      c.brightness should be(0.5019607843137255)
+    }
+    "modify saturation" in {
+      val c = Color.Green.withSaturation(0.5)
+      c.hue should be(0.3333333333333333)
+      c.saturation should be(0.5)
+      c.brightness should be(0.5019607843137255)
+    }
+    "modify brightness" in {
+      val c = Color.Green.withBrightness(0.75)
+      c.hue should be(0.3333333333333333)
+      c.saturation should be(1.0)
+      c.brightness should be(0.7490196078431373)
+    }
   }
 }

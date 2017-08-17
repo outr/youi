@@ -26,6 +26,48 @@ class Color private(val value: Long) extends AnyVal {
   def withAlpha(alpha: Double): Color = Color.fromHex(s"$redHex$greenHex$blueHex${Color.hexify(alpha)}")
 
   def toRGBA: String = s"rgba($redInt, $greenInt, $blueInt, $alpha)"
+
+  def hue: Double = {
+    val colorMax = math.max(redInt, math.max(greenInt, blueInt))
+    val colorMin = math.min(redInt, math.min(greenInt, blueInt))
+    if (saturation == 0.0) {
+      0.0
+    } else {
+      val red = (colorMax - redInt) / (colorMax - colorMin)
+      val green = (colorMax - greenInt) / (colorMax - colorMin)
+      val blue = (colorMax - blueInt) / (colorMax - colorMin)
+      val t = if (redInt == colorMax) {
+        blue - green
+      } else if (greenInt == colorMax) {
+        2.0 + red - blue
+      } else {
+        4.0 + green - red
+      }
+      t / 6.0 match {
+        case v if v < 0.0 => v + 1.0
+        case v => v
+      }
+    }
+  }
+
+  def saturation: Double = {
+    val colorMax = math.max(redInt, math.max(greenInt, blueInt))
+    val colorMin = math.min(redInt, math.min(greenInt, blueInt))
+    if (colorMax == 0) {
+      0
+    } else {
+      (colorMax - colorMin).toDouble / colorMax.toDouble
+    }
+  }
+
+  def brightness: Double = {
+    val colorMax = math.max(redInt, math.max(greenInt, blueInt)).toDouble
+    colorMax / 255.0
+  }
+
+  def withHue(hue: Double): Color = Color.fromHSB(hue, saturation, brightness)
+  def withSaturation(saturation: Double): Color = Color.fromHSB(hue, saturation, brightness)
+  def withBrightness(brightness: Double): Color = Color.fromHSB(hue, saturation, brightness)
 }
 
 object Color {
@@ -219,7 +261,60 @@ object Color {
     }
   }
 
-  def fromRGBA(red: Double, green: Double, blue: Double, alpha: Double = 1.0): Color = {
+  def fromRGBA(red: Double, green: Double, blue: Double, alpha: Double): Color = {
     fromHex(s"${hexify(red)}${hexify(green)}${hexify(blue)}${hexify(alpha)}")
+  }
+
+  def fromRGBA(red: Int, green: Int, blue: Int, alpha: Double): Color = {
+    fromHex(s"${hexify(red)}${hexify(green)}${hexify(blue)}${hexify(alpha)}")
+  }
+
+  def fromHSB(hue: Double, saturation: Double, brightness: Double): Color = if (saturation == 0.0) {
+    val value = (brightness * 255.0 + 0.5).toInt
+    fromRGBA(value, value, value, 1.0)
+  } else {
+    val h = (hue - math.floor(hue)) * 6.0
+    val f = h - math.floor(h)
+    val p = brightness * (1.0 - saturation)
+    val q = brightness * (1.0 - saturation * f)
+    val t = brightness * (1.0 - (saturation * (1.0 - f)))
+    h.toInt match {
+      case 0 => {
+        val red = (brightness * 255.0 + 0.5).toInt
+        val green = (t * 255.0 + 0.5).toInt
+        val blue = (p * 255.0 + 0.5).toInt
+        Color.fromRGBA(red, green, blue, 1.0)
+      }
+      case 1 => {
+        val red = (q * 255.0 + 0.5).toInt
+        val green = (brightness * 255.0 + 0.5).toInt
+        val blue = (p * 255.0 + 0.5).toInt
+        Color.fromRGBA(red, green, blue, 1.0)
+      }
+      case 2 => {
+        val red = (p * 255.0 + 0.5).toInt
+        val green = (brightness * 255.0 + 0.5).toInt
+        val blue = (t * 255.0 + 0.5).toInt
+        Color.fromRGBA(red, green, blue, 1.0)
+      }
+      case 3 => {
+        val red = (p * 255.0 + 0.5).toInt
+        val green = (q * 255.0 + 0.5).toInt
+        val blue = (brightness * 255.0 + 0.5).toInt
+        Color.fromRGBA(red, green, blue, 1.0)
+      }
+      case 4 => {
+        val red = (t * 255.0 + 0.5).toInt
+        val green = (p * 255.0 + 0.5).toInt
+        val blue = (brightness * 255.0 + 0.5).toInt
+        Color.fromRGBA(red, green, blue, 1.0)
+      }
+      case 5 => {
+        val red = (brightness * 255.0 + 0.5).toInt
+        val green = (p * 255.0 + 0.5).toInt
+        val blue = (q * 255.0 + 0.5).toInt
+        Color.fromRGBA(red, green, blue, 1.0)
+      }
+    }
   }
 }

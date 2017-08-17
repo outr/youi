@@ -4,10 +4,13 @@ scala:
   - 2.12.3
 jdk:
   - oraclejdk8
-node_js:
-  - "stable"
-before_script:
-  - npm install jsdom
+install:
+  - . $HOME/.nvm/nvm.sh
+  - nvm install 7
+  - nvm use 7
+  - export NODE_PATH="$(npm config get prefix)"/lib/node_modules
+  - npm install
+  - npm install jsdom source-map-support
 script:
   - sbt clean +test
   - sbt coverage coreJVM/test communicationJVM/test server/test serverUndertow/test stream/test appJVM/test

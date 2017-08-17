@@ -1,12 +1,8 @@
 package io.youi.component
 
-import io.youi.{Color, Context, Size}
-import io.youi.paint.Paint
+import io.youi.{Context, Size}
 import io.youi.theme.BasicTextTheme
 import reactify.Var
-
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
 
 class BasicText extends Component with BasicTextTheme {
   override lazy val theme: Var[BasicTextTheme] = Var(BasicText)
@@ -33,9 +29,21 @@ class BasicText extends Component with BasicTextTheme {
     super.draw(context)
 
     if (value().nonEmpty) {
+      if (shadow.enabled()) {
+        context.setShadow(shadow.blur, shadow.color, shadow.x, shadow.y)
+      }
+      context.lineJoin(lineJoin())
+      context.miterLimit(miterLimit())
+      context.textBaseline(textBaseline())
       context.setFont(font.family(), font.size(), font.style(), font.variant(), font.weight())
-      context.fill(fill(), apply = false)
-      context.fillText(value())
+      if (fill.nonEmpty) {
+        context.fill(fill(), apply = false)
+        context.fillText(value())
+      }
+      if (stroke.nonEmpty) {
+        context.stroke(stroke(), apply = false)
+        context.strokeText(value())
+      }
     }
   }
 }

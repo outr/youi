@@ -1,14 +1,12 @@
 package io.youi
 
 import io.youi.component.Component
-import io.youi.paint.{ColorPaint, NoPaint, Paint}
+import io.youi.paint.{ColorPaint, NoPaint, Paint, Stroke}
 import io.youi.spatial.Matrix3
 import org.scalajs.dom.{CanvasRenderingContext2D, html}
 
 import scala.scalajs.js
 import org.scalajs.dom._
-
-import scala.scalajs.js.|
 
 class Context(val canvas: html.Canvas) {
   private lazy val context = canvas.getContext("2d").asInstanceOf[CanvasRenderingContext2D]
@@ -64,16 +62,35 @@ class Context(val canvas: html.Canvas) {
     context.rect(x, y, width, height)
   }
 
-  def fill(paint: Paint, apply: Boolean): Unit = {
-    if (paint != Paint.none) {
-      context.fillStyle = paint2Any(paint)
-      if (apply) context.fill()
-    }
+  def fill(paint: Paint, apply: Boolean): Unit = if (paint.nonEmpty) {
+    context.fillStyle = paint2Any(paint)
+    if (apply) context.fill()
+  }
+
+  def stroke(stroke: Stroke, apply: Boolean): Unit = if (stroke.nonEmpty) {
+    context.strokeStyle = paint2Any(stroke.paint)
+    context.lineWidth = stroke.lineWidth
+    context.setLineDash(js.Array(stroke.lineDash: _*))
+    context.lineDashOffset = stroke.lineDashOffset
+    context.lineCap = stroke.lineCap.value
+    context.lineJoin = stroke.lineJoin.value
+    if (apply) context.stroke()
+  }
+
+  def setShadow(blur: Double, color: Color, x: Double, y: Double): Unit = {
+    context.shadowBlur = blur
+    context.shadowColor = color.toRGBA
+    context.shadowOffsetX = x
+    context.shadowOffsetY = y
   }
 
   def setFont(family: String, size: Double, style: String, variant: String, weight: String): Unit = {
     context.font = s"$style $variant $weight ${size}px $family"
   }
+
+  def lineJoin(value: String): Unit = context.lineJoin = value
+  def miterLimit(value: Double): Unit = context.miterLimit = value
+  def textBaseline(value: String): Unit = context.textBaseline = value
 
   def measureText(text: String, size: Size = Size.zero): Size = {
     val div = dom.create[html.Div]("div")

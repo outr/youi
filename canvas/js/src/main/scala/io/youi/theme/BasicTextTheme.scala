@@ -12,13 +12,12 @@ trait BasicTextTheme extends ComponentTheme {
     case p: BasicTextTheme => p
   }.map(f).getOrElse(default)
 
-  val breakWords: Var[Boolean] = prop(prnt(_.breakWords, false), updatesRendering = true)
-  object dropShadow {
-    val enabled: Var[Boolean] = prop(prnt(_.dropShadow.enabled, false), updatesRendering = true)
-    val angle: Var[Double] = prop(prnt(_.dropShadow.angle, 0.0), updatesRendering = true)
-    val blur: Var[Double] = prop(prnt(_.dropShadow.blur, 0.0), updatesRendering = true)
-    val color: Var[Color] = prop(prnt(_.dropShadow.color, Color.Black), updatesRendering = true)
-    val distance: Var[Double] = prop(prnt(_.dropShadow.distance, 0.0), updatesRendering = true)
+  object shadow {
+    val enabled: Var[Boolean] = prop(prnt(_.shadow.enabled, false), updatesRendering = true)
+    val blur: Var[Double] = prop(prnt(_.shadow.blur, 0.0), updatesRendering = true)
+    val color: Var[Color] = prop(prnt(_.shadow.color, Color.Black), updatesRendering = true)
+    val x: Var[Double] = prop(prnt(_.shadow.x, 2.0), updatesRendering = true)
+    val y: Var[Double] = prop(prnt(_.shadow.y, 2.0), updatesRendering = true)
   }
   val fill: Var[Paint] = prop(prnt(_.fill, Paint.none), updatesRendering = true)
   object font {
@@ -28,12 +27,8 @@ trait BasicTextTheme extends ComponentTheme {
     val variant: Var[String] = prop(prnt(_.font.variant, "normal"), updatesRendering = true)
     val weight: Var[String] = prop(prnt(_.font.weight, "normal"), updatesRendering = true)
   }
-  val letterSpacing: Var[Double] = prop(prnt(_.letterSpacing, 0.0), updatesRendering = true)
-  val lineHeight: Var[Double] = prop(prnt(_.lineHeight, 0.0), updatesRendering = true)
   val lineJoin: Var[String] = prop(prnt(_.lineJoin, "miter"), updatesRendering = true)
   val miterLimit: Var[Double] = prop(prnt(_.miterLimit, 10.0), updatesRendering = true)
-  val padding: Var[Double] = prop(prnt(_.padding, 0.0), updatesRendering = true)
-  val stroke: Var[Option[Stroke]] = prop(prnt(_.stroke, None), updatesRendering = true)
+  val stroke: Var[Stroke] = prop(prnt(_.stroke, Stroke.none), updatesRendering = true)
   val textBaseline: Var[String] = prop(prnt(_.textBaseline, "alphabetic"), updatesRendering = true)
-  val wordWrap: Var[Boolean] = prop(prnt(_.wordWrap, false), updatesRendering = true)
 }

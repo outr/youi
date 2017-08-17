@@ -9,7 +9,7 @@ import reactify.Var
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class ImageView extends Component {
+class ImageView extends Component with ImageViewTheme {
   def this(file: File) = {
     this()
     load(file)
@@ -20,6 +20,8 @@ class ImageView extends Component {
   }
 
   override lazy val theme: Var[ImageViewTheme] = Var(ImageView)
+
+  override protected def defaultThemeParent = Some(theme)
 
   val image: Var[Image] = prop(Image.empty, updatesRendering = true)
 

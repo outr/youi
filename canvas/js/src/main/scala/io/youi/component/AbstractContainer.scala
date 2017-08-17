@@ -7,11 +7,13 @@ import reactify._
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-trait AbstractContainer extends Component { self =>
+trait AbstractContainer extends Component with AbstractContainerTheme { self =>
   type Child <: Component
 
   override lazy val theme: Var[_ <: AbstractContainerTheme] = Var(AbstractContainer)
   protected val childEntries: Var[Vector[Child]] = prop(Vector.empty, updatesTransform = true)
+
+  override protected def defaultThemeParent = Some(theme)
 
   childEntries.changes(new ChangeListener[Vector[Child]] {
     override def change(oldValue: Vector[Child], newValue: Vector[Child]): Unit = {

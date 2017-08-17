@@ -3,9 +3,9 @@ package io.youi.theme
 import io.youi.component.Component
 
 trait ContainerTheme extends AbstractContainerTheme {
-  override def defaultParent: Option[Theme] = Some(Component)
+  override protected def defaultThemeParent: Option[Theme] = Some(Component)
 
-  private def prnt[T](f: ContainerTheme => T, default: => T): T = parent().collect {
-    case p: ContainerTheme => p
+  private def prnt[T](f: RendererTheme => T, default: => T): T = parentTheme().collect {
+    case p: RendererTheme => p
   }.map(f).getOrElse(default)
 }

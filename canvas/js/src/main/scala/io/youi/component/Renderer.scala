@@ -1,15 +1,18 @@
 package io.youi.component
 
+import io.youi.theme.RendererTheme
 import io.youi.{AnimationFrame, Drawable, HTMLEvents}
 import org.scalajs.dom.{document, html}
 import reactify._
 
-class Renderer(canvas: html.Canvas) extends Container {
+class Renderer(canvas: html.Canvas) extends Container with RendererTheme {
   override protected[youi] lazy val drawable: Drawable = new Drawable(canvas, swapCanvases = false)
 
   val htmlEvents: HTMLEvents = new HTMLEvents(canvas)
   override lazy val renderer: Val[Option[Renderer]] = Val(Some(this))
   override val globalVisibility: Val[Boolean] = visible
+
+  override protected def defaultThemeParent = Some(theme)
 
   visible.attach {
     case true => canvas.style.display = "block"
@@ -27,3 +30,5 @@ class Renderer(canvas: html.Canvas) extends Container {
 
   def apply(): html.Canvas = canvas
 }
+
+object Renderer extends RendererTheme

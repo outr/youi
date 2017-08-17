@@ -3,9 +3,9 @@ package io.youi.theme
 import reactify.Var
 
 trait Theme {
-  lazy val parent: Var[Option[Theme]] = Var(defaultParent)
+  protected lazy val parentTheme: Var[Option[Theme]] = Var(defaultThemeParent)
 
-  def defaultParent: Option[Theme]
+  protected def defaultThemeParent: Option[Theme]
 }
 
 object Theme

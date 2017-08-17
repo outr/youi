@@ -6,23 +6,21 @@ import io.youi.spatial.{Matrix3, MutableMatrix3, Point}
 import io.youi.task.TaskSupport
 import io.youi.theme.ComponentTheme
 import org.scalajs.dom.raw.MouseEvent
-import reactify.{Dep, Val, Var}
+import reactify.{Dep, Observable, Val, Var}
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-trait Component extends TaskSupport {
+trait Component extends TaskSupport with ComponentTheme {
   def theme: Var[_ <: ComponentTheme]
 
   lazy val parent: Val[Option[AbstractContainer]] = Var(None)
   lazy val renderer: Val[Option[Renderer]] = Val(parent().flatMap(_.renderer()))
-  val visible: Var[Boolean] = prop(theme.visible, updatesTransform = true)
   val globalVisibility: Val[Boolean] = Val(visible() && parent().exists(_.globalVisibility()))
-  val background: Var[Paint] = prop(theme.background, updatesRendering = true)
-  val cursor: Var[Cursor] = prop(theme.cursor)
-  val interactive: Var[Boolean] = prop(theme.interactive)
 
 //  lazy val event: Events = new Events(this)
+
+  override protected def defaultThemeParent = Some(theme)
 
   protected[youi] lazy val drawable: Drawable = new Drawable()
   object matrix {
@@ -120,23 +118,8 @@ trait Component extends TaskSupport {
     }
   }
 
-  protected[youi] def prop[T](get: => T,
-                              set: T => Unit = (_: T) => (),
-                              updatesTransform: Boolean = false,
-                              updatesRendering: Boolean = false): Var[T] = {
-    val v = Var[T](get)
-    set(v())
-    v.attach { value =>
-      set(value)
-      if (updatesTransform) {
-        matrix.transform.flag()
-      }
-      if (updatesRendering) {
-        invalidate()
-      }
-    }
-    v
-  }
+  override protected def updateTransform(): Unit = matrix.transform.flag()
+  override protected def updateRendering(): Unit = invalidate()
 
   def hitTest(evt: MouseEvent): Option[Point] = {
     val matrix = Component.tempMatrix.set(this.matrix.world).inv()

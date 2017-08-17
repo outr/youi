@@ -174,11 +174,11 @@ trait Component extends AbstractComponent {
   }
 
   protected def updateColor(): Unit = {
-    element.style.color = Color.toCSS(color.red(), color.green(), color.blue(), color.alpha())
+    element.style.color = Color.fromRGBA(color.red(), color.green(), color.blue(), color.alpha()).toRGBA
   }
 
   protected def updateBackgroundColor(): Unit = {
-    val css = Color.toCSS(backgroundColor.red(), backgroundColor.green(), backgroundColor.blue(), backgroundColor.alpha())
+    val css = Color.fromRGBA(backgroundColor.red(), backgroundColor.green(), backgroundColor.blue(), backgroundColor.alpha()).toRGBA
     element.style.backgroundColor = css
   }
 }

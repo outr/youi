@@ -11,7 +11,7 @@ class ColorProperties(initialRed: Double, initialGreen: Double, initialBlue: Dou
 
   def isDefault: Boolean = red() == initialRed && green() == initialGreen && blue() == initialBlue && alpha() == initialAlpha
 
-  def apply() = Color(red.get, green.get, blue.get, alpha.get)
+  def apply(): Color = Color.fromRGBA(red.get, green.get, blue.get, alpha.get)
 
   def :=(c: Color): Unit = {
     red := c.red

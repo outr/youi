@@ -92,7 +92,7 @@ class Context(val canvas: html.Canvas) {
 
   private def paint2Any(paint: Paint): js.Any = paint match {
     case NoPaint => ""
-    case ColorPaint(color) => Color.toCSS(color.red, color.green, color.blue, color.alpha)
+    case ColorPaint(color) => color.toRGBA
     case _ => throw new RuntimeException(s"Unsupported paint: $paint")
   }
 }

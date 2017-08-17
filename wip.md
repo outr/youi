@@ -16,3 +16,4 @@
 * [X] Support multipart form posting in youi-client
 * [X] Update URL interpolator to only accept literals for proper compile-time validation
 * [X] DataTransferManager to provide better and more consistent drag-and-drop and file chooser functionality with directory support
+* [X] Update Color to be an AnyVal wrapper to use the memory footprint of a `Long`

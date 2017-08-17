@@ -16,7 +16,7 @@ trait Component extends TaskSupport {
 
   lazy val parent: Val[Option[AbstractContainer]] = Var(None)
   lazy val renderer: Val[Option[Renderer]] = Val(parent().flatMap(_.renderer()))
-  val visible: Var[Boolean] = prop(theme.visible, updatesRendering = true)
+  val visible: Var[Boolean] = prop(theme.visible, updatesTransform = true)
   val globalVisibility: Val[Boolean] = Val(visible() && parent().exists(_.globalVisibility()))
   val background: Var[Paint] = prop(theme.background, updatesRendering = true)
   val cursor: Var[Cursor] = prop(theme.cursor)

@@ -44,8 +44,10 @@ trait AbstractContainer extends Component { self =>
 
     // Draw cached canvases from each child
     childEntries.foreach { child =>
-      context.transform(child)
-      context.draw(child)
+      if (child.visible()) {
+        context.transform(child)
+        context.draw(child)
+      }
     }
   }
 }

@@ -11,7 +11,12 @@ val profigVersion = "1.1.2"
 val scribeVersion = "1.4.5"
 val powerScalaVersion = "2.0.5"
 val reactifyVersion = "2.1.0"
-val akkaVersion = "2.5.3"
+val hasherVersion = "1.2.1"
+val canvgVersion = "1.4.0_1"
+val openTypeVersion = "0.7.1_2"
+val picaVersion = "3.0.5"
+
+val akkaVersion = "2.5.4"
 val scalaJSDOM = "0.9.3"
 val httpAsyncClientVersion = "4.1.3"
 val httpMimeVersion = "4.5.3"
@@ -19,15 +24,11 @@ val circeVersion = "0.8.0"
 val uaDetectorVersion = "2014.10"
 val undertowVersion = "1.4.18.Final"
 val closureCompilerVersion = "v20170423"
-val hasherVersion = "1.2.1"
-val canvgVersion = "1.4.0_1"
-val openTypeVersion = "0.7.1_2"
-val picaVersion = "3.0.5"
 val jSoupVersion = "1.10.3"
 val scalaXMLVersion = "1.0.6"
 val scalacticVersion = "3.0.3"
 val scalaTestVersion = "3.0.3"
-val scalaCheckVersion = "1.13.4"
+val scalaCheckVersion = "1.13.5"
 
 lazy val root = project.in(file("."))
   .aggregate(
@@ -80,8 +81,11 @@ lazy val spatial = crossProject.in(file("spatial"))
     libraryDependencies ++= Seq(
       "org.scalactic" %%% "scalactic" % scalacticVersion,
       "org.scalatest" %%% "scalatest" % scalaTestVersion % "test",
-      "org.scalacheck" %% "scalacheck" % scalaCheckVersion % "test"
+      "org.scalacheck" %%% "scalacheck" % scalaCheckVersion % "test"
     )
+  )
+  .jsSettings(
+    jsDependencies += RuntimeDOM
   )
   .dependsOn(core)
 
@@ -101,7 +105,8 @@ lazy val dom = project.in(file("dom"))
   .enablePlugins(ScalaJSPlugin)
   .settings(
     name := "youi-dom",
-    libraryDependencies += "com.outr" %% "profig" % profigVersion
+    libraryDependencies += "com.outr" %% "profig" % profigVersion,
+    jsDependencies += RuntimeDOM
   )
   .dependsOn(coreJS)
   .dependsOn(stream % "compile")
@@ -154,24 +159,6 @@ lazy val communication = crossProject.in(file("communication"))
 lazy val communicationJS = communication.js
 lazy val communicationJVM = communication.jvm.dependsOn(server)
 
-/*lazy val ui = crossProject.in(file("ui"))
-  .settings(
-    name := "youi-ui"
-  )
-  .jsSettings(
-    test := (),
-    libraryDependencies ++= Seq(
-      "com.outr" %%% "scalajs-pixijs" % pixiJsVersion,
-      "com.outr" %%% "canvg-scala-js" % canvgVersion,
-      "com.outr" %%% "opentype-scala-js" % openTypeVersion,
-      "com.outr" %%% "pica-scala-js" % picaVersion
-    )
-  )
-  .dependsOn(core, spatial)
-
-lazy val uiJS = ui.js.dependsOn(dom)
-lazy val uiJVM = ui.jvm*/
-
 lazy val canvas = crossProject.in(file("canvas"))
   .settings(
     name := "youi-canvas"
@@ -181,7 +168,8 @@ lazy val canvas = crossProject.in(file("canvas"))
       "com.outr" %%% "canvg-scala-js" % canvgVersion,
       "com.outr" %%% "opentype-scala-js" % openTypeVersion,
       "com.outr" %%% "pica-scala-js" % picaVersion
-    )
+    ),
+    jsDependencies += RuntimeDOM
   )
   .dependsOn(spatial)
 
@@ -191,7 +179,8 @@ lazy val canvasJVM = canvas.jvm
 lazy val hypertext = project.in(file("hypertext"))
   .enablePlugins(ScalaJSPlugin)
   .settings(
-    name := "youi-hypertext"
+    name := "youi-hypertext",
+    jsDependencies += RuntimeDOM
   )
   .dependsOn(canvasJS)
 

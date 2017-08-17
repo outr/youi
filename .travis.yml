@@ -4,6 +4,10 @@ scala:
   - 2.12.3
 jdk:
   - oraclejdk8
+node_js:
+  - "stable"
+before_script:
+  - npm install jsdom
 script:
   - sbt clean +test
   - sbt coverage coreJVM/test communicationJVM/test server/test serverUndertow/test stream/test appJVM/test

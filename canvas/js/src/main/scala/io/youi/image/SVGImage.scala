@@ -18,7 +18,7 @@ case class SVGImage(svg: SVGSVGElement,
                     height: Double,
                     original: Option[Image],
                     measured: Size) extends Image {
-  override def drawImage(context: Context): Future[Unit] = {
+  override def drawImage(context: Context, width: Double, height: Double): Future[Unit] = {
     val promise = Promise[Unit]
     val callback: js.Function = () => {
       promise.success(())
@@ -37,20 +37,9 @@ case class SVGImage(svg: SVGSVGElement,
     promise.future
   }
 
-  override def resized(width: Double, height: Double, dropOriginal: Boolean = false): Future[Image] = {
-    if (this.width == width && this.height == height) {
-      Future.successful(this)
-    } else if (original.map(_.width).contains(width) && original.map(_.height).contains(height)) {
-      Future.successful(original.get)
-    } else {
-      val original = this.original.getOrElse(this)
-      Future.successful(copy(width = width, height = height, original = if (dropOriginal) None else Some(original)))
-    }
-  }
-
   override def toDataURL: Future[String] = CanvasPool.withCanvasFuture(width, height) { canvas =>
     val drawable = new Drawable(canvas, swapCanvases = false)
-    drawable.update(width, height)(context => drawImage(context)).flatMap { _ =>
+    drawable.update(width, height)(context => drawImage(context, width, height)).flatMap { _ =>
       ImageUtility.resizeToDataURL(canvas, width, height)
     }
   }

@@ -13,16 +13,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Future, Promise}
 
 trait Image {
-  val original: Option[Image]
   val width: Double
   val height: Double
 
-  def originalWidth: Double = original.map(_.width).getOrElse(width)
-  def originalHeight: Double = original.map(_.height).getOrElse(height)
-
-  def drawImage(context: Context): Future[Unit]
-
-  def resized(width: Double, height: Double, dropOriginal: Boolean = false): Future[Image]
+  def drawImage(context: Context, width: Double, height: Double): Future[Unit]
 
   lazy val boundingBox: BoundingBox = BoundingBox(0.0, 0.0, width, height)
 

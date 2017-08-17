@@ -24,38 +24,12 @@ class ImageView extends Component {
   val image: Var[Image] = prop(Image.empty, updatesRendering = true)
 
   override def draw(context: Context): Future[Unit] = super.draw(context).flatMap { _ =>
-    image().drawImage(context)
+    scribe.info(s"Draw image!!!")
+    image().drawImage(context, size.width(), size.height())
   }
 
-  private val resizer: LazyFuture[Unit] = LazyFuture {
-    val original = image()
-    if (original != Image.empty && size.width() > 0.0 && size.height() > 0.0 && (original.width != size.width() || original.height != size.height())) {
-      original.resized(size.width, size.height).map { updated =>
-        if (image() == original) { // Only update if the image hasn't been replaced
-          if (updated.width == size.width() && updated.height == size.height()) {
-            image := updated
-            if (!updated.original.contains(original)) {
-              original.dispose()
-            }
-          } else {
-            resizer.flag()
-          }
-        }
-      }
-    } else {
-      Future.successful(())
-    }
-  }
-
-  size.measured.width := image.originalWidth
-  size.measured.height := image.originalHeight
-
-  size.width.and(size.height).on(resizer.flag())
-  image.attach { i =>
-    if (i != Image.empty && size.width() > 0.0 && size.height() > 0.0 && (i.width != size.width() || i.height != size.height())) {
-      resizer.flag()
-    }
-  }
+  size.measured.width := image.width
+  size.measured.height := image.height
 
   def load(file: File): Future[Image] = Image.fromFile(file).map { image =>
     this.image := image

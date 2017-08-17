@@ -168,7 +168,7 @@ object ImageUtility {
         val scaled = SizeUtility.scale(image.width, image.height, width, height, scaleUp)
         CanvasPool.withCanvasFuture(scaled.width, scaled.height) { canvas =>
           val drawable = new Drawable(canvas, swapCanvases = false)
-          drawable.update(scaled.width, scaled.height)(context => image.drawImage(context, scaled.width, scaled.height)).map { _ =>
+          drawable.updateAsync(scaled.width, scaled.height)(context => image.draw(context, scaled.width, scaled.height)).map { _ =>
             val dataURL = canvas.toDataURL("image/png")
             promise.success(Some(dataURL))
           }

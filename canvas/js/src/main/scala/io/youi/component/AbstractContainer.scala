@@ -39,14 +39,14 @@ trait AbstractContainer extends Component { self =>
     childEntries().foreach(_.update(delta))
   }
 
-  override def draw(context: Context): Future[Unit] = super.draw(context).flatMap { _ =>
+  override def draw(context: Context): Unit = {
+    super.draw(context)
+
     // Draw cached canvases from each child
     childEntries.foreach { child =>
       context.transform(child)
       context.draw(child)
     }
-
-    Future.successful(())
   }
 }
 

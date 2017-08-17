@@ -18,7 +18,13 @@ case class SVGImage(svg: SVGSVGElement,
                     height: Double,
                     original: Option[Image],
                     measured: Size) extends Image {
-  override def drawImage(context: Context, width: Double, height: Double): Future[Unit] = {
+  private val canvas = CanvasPool(width, height)
+
+  override def drawFast(context: Context, width: Double, height: Double): Unit = {
+    context.drawCanvas(canvas)(width = width, height = height)
+  }
+
+  override def draw(context: Context, width: Double, height: Double): Future[Unit] = {
     val promise = Promise[Unit]
     val callback: js.Function = () => {
       promise.success(())
@@ -39,7 +45,7 @@ case class SVGImage(svg: SVGSVGElement,
 
   override def toDataURL: Future[String] = CanvasPool.withCanvasFuture(width, height) { canvas =>
     val drawable = new Drawable(canvas, swapCanvases = false)
-    drawable.update(width, height)(context => drawImage(context, width, height)).flatMap { _ =>
+    drawable.updateAsync(width, height)(context => draw(context, width, height)).flatMap { _ =>
       ImageUtility.resizeToDataURL(canvas, width, height)
     }
   }

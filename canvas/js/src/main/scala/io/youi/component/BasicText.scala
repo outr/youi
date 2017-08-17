@@ -57,14 +57,14 @@ class BasicText extends Component {
     }
   }
 
-  override def draw(context: Context): Future[Unit] = super.draw(context).flatMap { _ =>
+  override def draw(context: Context): Unit = {
+    super.draw(context)
+
     if (value().nonEmpty) {
       context.setFont(font.family(), font.size(), font.style(), font.variant(), font.weight())
       context.fill(fill(), apply = false)
       context.fillText(value())
     }
-
-    Future.successful(())
   }
 }
 

@@ -37,9 +37,9 @@ object ImageExample extends UIExampleScreen with UIScreen {
       position.center := container.position.center
       position.middle := container.position.middle
 
-//      forever {
-//        rotation to 1.0 in 1.seconds andThen(rotation := 0.0)
-//      }.start(this)
+      forever {
+        rotation to 1.0 in 1.seconds andThen(rotation := 0.0)
+      }.start(this)
     }
   }
 }

@@ -41,15 +41,18 @@ trait Component extends TaskSupport {
       parent().foreach(_.invalidate())
     }
   }
-  lazy val reDraw = LazyFuture({
+  lazy val reDraw = LazyUpdate {
     reMeasure(drawable.context)
-    val future = drawable.update(size.width(), size.height())(draw)
+    drawable.update(size.width(), size.height())(draw)
 
-    future.foreach { _ =>
+    parent().foreach(_.invalidate())
+  }
+
+  protected def reDrawAsync(f: Context => Future[Unit]): Unit = {
+    drawable.updateAsync(size.width(), size.height())(f).foreach { _ =>
       parent().foreach(_.invalidate())
     }
-    future
-  }, automatic = false)
+  }
 
   protected def reMeasure(context: Context): Unit = {}
 
@@ -109,13 +112,12 @@ trait Component extends TaskSupport {
     lazy val y: Var[Double] = prop(size.middle(), updatesTransform = true)
   }
 
-  def draw(context: Context): Future[Unit] = {
+  def draw(context: Context): Unit = {
     // Draw background
     if (background().nonEmpty) {
       context.rect(0.0, 0.0, size.width(), size.height())
       context.fill(background(), apply = true)
     }
-    Future.successful(())
   }
 
   protected[youi] def prop[T](get: => T,

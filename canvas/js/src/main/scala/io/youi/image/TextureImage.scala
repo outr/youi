@@ -13,9 +13,13 @@ case class TextureImage(img: html.Image,
                         original: Option[Image]) extends Image {
   override def isVector: Boolean = false
 
-  override def drawImage(context: Context, width: Double, height: Double): Future[Unit] = {
+  override def drawFast(context: Context, width: Double, height: Double): Unit = {
+    context.drawImage(img)(width = width, height = height)
+  }
+
+  override def draw(context: Context, width: Double, height: Double): Future[Unit] = {
     if (this.width == width && this.height == height) {     // Draw directly
-      context.draw(img)(width = width, height = height)
+      drawFast(context, width, height)
       Future.successful(())
     } else {
       ImageUtility.drawToCanvas(img, context.canvas)(width = width, height = height).map(_ => ())

@@ -23,8 +23,13 @@ class ImageView extends Component {
 
   val image: Var[Image] = prop(Image.empty, updatesRendering = true)
 
-  override def draw(context: Context): Future[Unit] = super.draw(context).flatMap { _ =>
-    image().drawImage(context, size.width(), size.height())
+  override def draw(context: Context): Unit = {
+    super.draw(context)
+
+    image().drawFast(context, size.width(), size.height())
+    if ((size.width() != image.width || size.height() != image.height) && image.width > 0.0 && image.height > 0.0) {
+      reDrawAsync(image().draw(_, size.width(), size.height()))
+    }
   }
 
   size.measured.width := image.width

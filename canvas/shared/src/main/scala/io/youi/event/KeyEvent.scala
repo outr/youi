@@ -2,7 +2,8 @@ package io.youi.event
 
 import io.youi.Key
 
-case class KeyEvent(key: Key,
+case class KeyEvent(`type`: KeyEvent.Type,
+                    key: Key,
                     repeat: Boolean,
                     modifierState: Key => Boolean,
                     preventDefault: () => Unit,
@@ -19,4 +20,14 @@ case class KeyEvent(key: Key,
   def scrollLockOn: Boolean = modifierState(Key.ScrollLock)
 
   override def toString: String = s"KeyEvent(key: $key, repeat: $repeat, alt: $altPressed, ctrl: $controlPressed, shift: $shiftPressed)"
+}
+
+object KeyEvent {
+  sealed trait Type
+
+  object Type {
+    case object Down extends Type
+    case object Press extends Type
+    case object Up extends Type
+  }
 }

@@ -13,9 +13,9 @@ class HTMLEvents(element: html.Element) {
   lazy val focus: Channel[FocusEvent] = events("focus")
   lazy val blur: Channel[FocusEvent] = events("blur")
   object key {
-    lazy val down: Channel[KeyEvent] = keyEvents("keydown")
-    lazy val press: Channel[KeyEvent] = keyEvents("keypress")
-    lazy val up: Channel[KeyEvent] = keyEvents("keyup")
+    lazy val down: Channel[KeyEvent] = keyEvents("keydown", KeyEvent.Type.Down)
+    lazy val press: Channel[KeyEvent] = keyEvents("keypress", KeyEvent.Type.Press)
+    lazy val up: Channel[KeyEvent] = keyEvents("keyup", KeyEvent.Type.Up)
   }
   object mouse {
     lazy val enter: Channel[MouseEvent] = events("mouseenter")
@@ -28,9 +28,9 @@ class HTMLEvents(element: html.Element) {
     lazy val wheel: Channel[WheelEvent] = events("wheel")
   }
 
-  protected def keyEvents(eventType: String): Channel[KeyEvent] = {
+  protected def keyEvents(eventType: String, `type`: KeyEvent.Type): Channel[KeyEvent] = {
     val originalEvents = events[KeyboardEvent](eventType)
-    originalEvents.map(ui.keyboardEvent2KeyEvent)
+    originalEvents.map(ui.keyboardEvent2KeyEvent(_, `type`))
   }
 
   protected def events[E <: Event](eventType: String, stopPropagation: Boolean = false): Channel[E] = {

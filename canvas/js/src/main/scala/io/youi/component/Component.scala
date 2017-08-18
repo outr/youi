@@ -1,12 +1,12 @@
 package io.youi.component
 
 import io.youi._
-import io.youi.paint.Paint
+import io.youi.event.Events
 import io.youi.spatial.{Matrix3, MutableMatrix3, Point}
 import io.youi.task.TaskSupport
 import io.youi.theme.ComponentTheme
 import org.scalajs.dom.raw.MouseEvent
-import reactify.{Dep, Observable, Val, Var}
+import reactify.{Dep, Val, Var}
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -18,7 +18,7 @@ trait Component extends TaskSupport with ComponentTheme {
   lazy val renderer: Val[Option[Renderer]] = Val(parent().flatMap(_.renderer()))
   val globalVisibility: Val[Boolean] = Val(visible() && parent().exists(_.globalVisibility()))
 
-//  lazy val event: Events = new Events(this)
+  lazy val event: Events = new Events
 
   override protected def defaultThemeParent = Some(theme)
 

@@ -39,9 +39,10 @@ class UI(canvas: html.Canvas = dom.create[html.Canvas]("canvas")) {
     }
   })
 
-  def keyboardEvent2KeyEvent(evt: KeyboardEvent): KeyEvent = {
+  def keyboardEvent2KeyEvent(evt: KeyboardEvent, `type`: KeyEvent.Type): KeyEvent = {
     val key = Key(evt.key)
     KeyEvent(
+      `type` = `type`,
       key = key,
       repeat = evt.repeat,
       modifierState = (k: Key) => evt.getModifierState(k.value),

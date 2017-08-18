@@ -1,8 +1,7 @@
 package io.youi.example.ui
 
-import io.youi._
 import io.youi.app.screen.UIScreen
-import io.youi.component.{ImageView, Scale9}
+import io.youi.component.Scale9
 import io.youi.image.Image
 import reactify._
 
@@ -19,30 +18,29 @@ object Scale9Example extends UIExampleScreen with UIScreen {
         x2 := 450.0
         y1 := 50.0
         y2 := 450.0
-        position.left := 25.0
-//        position.center := ui.position.center
-//        position.middle := container.position.middle
+        position.center := (container.position.center / 2.0)
+        position.middle := container.position.middle
       }
-//      container.children += new Scale9(image) {
-//        size.width := 250.0
-//        size.height := 250.0
-//        x1 := 50.0
-//        x2 := 450.0
-//        y1 := 50.0
-//        y2 := 450.0
-//        position.center := container.position.center
-//        position.middle := container.position.middle
-//      }
-//      container.children += new Scale9(image) {
-//        size.width := 650.0
-//        size.height := 650.0
-//        x1 := 50.0
-//        x2 := 450.0
-//        y1 := 50.0
-//        y2 := 450.0
-//        position.center := (container.position.center * 1.5)
-//        position.middle := container.position.middle
-//      }
+      container.children += new Scale9(image) {
+        size.width := 250.0
+        size.height := 250.0
+        x1 := 50.0
+        x2 := 450.0
+        y1 := 50.0
+        y2 := 450.0
+        position.center := container.position.center
+        position.middle := container.position.middle
+      }
+      container.children += new Scale9(image) {
+        size.width := 650.0
+        size.height := 650.0
+        x1 := 50.0
+        x2 := 450.0
+        y1 := 50.0
+        y2 := 450.0
+        position.center := (container.position.center * 1.5)
+        position.middle := container.position.middle
+      }
     }
   }
 }

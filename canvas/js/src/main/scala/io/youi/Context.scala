@@ -30,7 +30,6 @@ class Context(val canvas: html.Canvas) {
 
   def transform(component: Component): Unit = {
     transform(Matrix3.Identity)
-    component.parent.foreach(transform)
     context.translate(component.position.x(), component.position.y())
     context.translate(component.pivot.x(), component.pivot.y())
     context.rotate(component.rotation() * (math.Pi * 2.0))

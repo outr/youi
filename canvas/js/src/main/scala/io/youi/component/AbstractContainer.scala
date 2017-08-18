@@ -1,6 +1,7 @@
 package io.youi.component
 
 import io.youi.Context
+import io.youi.spatial.Point
 import io.youi.theme.AbstractContainerTheme
 import reactify._
 
@@ -54,26 +55,29 @@ trait AbstractContainer extends Component with AbstractContainerTheme { self =>
     }
   }
 
-  override def hitTest(globalX: Double, globalY: Double): HitResult = {
+  override def hitTest(global: Point): HitResult = if (interactive() && visible()) {
     val children = childEntries()
     val lastIndex = children.length - 1
-    if (lastIndex >= 0) {
-      childHitTest(globalX, globalY, lastIndex, children)
+    val childResult = if (lastIndex >= 0) {
+      childHitTest(global, lastIndex, children)
     } else {
       HitResult.Miss
-    } match {
-      case HitResult.Miss => super.hitTest(globalX, globalY)
+    }
+    childResult match {
+      case HitResult.Miss => super.hitTest(global)
       case result => result
     }
+  } else {
+    HitResult.Miss
   }
 
   @tailrec
-  private def childHitTest(globalX: Double, globalY: Double, index: Int, children: Vector[Child]): HitResult = {
+  private def childHitTest(global: Point, index: Int, children: Vector[Child]): HitResult = {
     val child = children(index)
-    child.hitTest(globalX, globalY) match {
+    child.hitTest(global) match {
       case result: HitResult.Hit => result
       case HitResult.Miss if index == 0 => HitResult.Miss
-      case HitResult.Miss => childHitTest(globalX, globalY, index - 1, children)
+      case HitResult.Miss => childHitTest(global, index - 1, children)
     }
   }
 }

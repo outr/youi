@@ -120,16 +120,24 @@ trait Component extends TaskSupport with ComponentTheme {
   override protected def updateTransform(): Unit = matrix.transform.flag()
   override protected def updateRendering(): Unit = invalidate()
 
-  def hitTest(globalX: Double, globalY: Double): HitResult = {
-    Component.tempPoint.set(globalX, globalY)
-    val matrix = Component.tempMatrix.set(this.matrix.world).inv()
-    val local = matrix.localize(Component.tempPoint)
-    if (local.x >= 0.0 && local.y >= 0.0 && local.x <= size.width() && local.y <= size.height()) {
+  def hitTest(global: Point): HitResult = if (interactive() && visible()) {
+    val local = localize(global)
+    if (isHit(local)) {
       HitResult.Hit(local, this)
     } else {
       HitResult.Miss
     }
+  } else {
+    HitResult.Miss
   }
+
+  def localize(global: Point): Point = {
+    Component.tempPoint.set(global.x, global.y)
+    val matrix = Component.tempMatrix.set(this.matrix.world).inv()
+    matrix.localize(Component.tempPoint)
+  }
+
+  def isHit(local: Point): Boolean = local.x >= 0.0 && local.y >= 0.0 && local.x <= size.width() && local.y <= size.height()
 
   def invalidate(): Unit = reDraw.flag()
 

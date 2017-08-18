@@ -15,6 +15,10 @@ object HelloWorld extends UIExampleScreen with UIScreen {
       fill := Color.DarkBlue
       position.center := ui.position.center
       position.middle := ui.position.middle
+
+      event.pointer.attach { evt =>
+        scribe.info(s"PointerEvent! $evt")
+      }
     }
   }
 }

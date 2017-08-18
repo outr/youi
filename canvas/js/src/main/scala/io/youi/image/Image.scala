@@ -16,7 +16,7 @@ trait Image {
   val width: Double
   val height: Double
 
-  def drawFast(context: Context, width: Double, height: Double): Unit
+  def drawFast(context: Context, width: Double, height: Double): Boolean
   def draw(context: Context, width: Double, height: Double): Future[Unit]
 
   lazy val boundingBox: BoundingBox = BoundingBox(0.0, 0.0, width, height)

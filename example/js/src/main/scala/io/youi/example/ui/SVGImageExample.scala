@@ -36,10 +36,11 @@ object SVGImageExample extends UIExampleScreen with UIScreen {
         } else {
           circle.style.fill = "blue"
         }
+        current.modified := true
         reDraw.flag()
       }
 
-//      event.click.on(toggleColor())
+      event.click.on(toggleColor())
     }
   }
 }

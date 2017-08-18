@@ -13,8 +13,9 @@ case class TextureImage(img: html.Image,
                         original: Option[Image]) extends Image {
   override def isVector: Boolean = false
 
-  override def drawFast(context: Context, width: Double, height: Double): Unit = {
+  override def drawFast(context: Context, width: Double, height: Double): Boolean = {
     context.drawImage(img)(width = width, height = height)
+    this.width != width || this.height != height
   }
 
   override def draw(context: Context, width: Double, height: Double): Future[Unit] = {

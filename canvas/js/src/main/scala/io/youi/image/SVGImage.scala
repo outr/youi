@@ -10,6 +10,7 @@ import io.youi._
 import io.youi.path.Path
 import io.youi.util.{CanvasPool, ImageUtility}
 import org.scalajs.dom.html
+import reactify.Var
 
 import scala.scalajs._
 
@@ -20,11 +21,17 @@ case class SVGImage(svg: SVGSVGElement,
                     measured: Size) extends Image {
   private[image] val canvas = CanvasPool(width, height)
 
-  override def drawFast(context: Context, width: Double, height: Double): Unit = {
+  val modified: Var[Boolean] = Var(false)
+
+  override def drawFast(context: Context, width: Double, height: Double): Boolean = {
     context.drawCanvas(canvas)(width = width, height = height)
+    canvas.width != math.ceil(width).toInt || canvas.height != math.ceil(height).toInt || modified()
   }
 
   override def draw(context: Context, width: Double, height: Double): Future[Unit] = {
+    modified := false
+    canvas.width = math.ceil(width).toInt
+    canvas.height = math.ceil(height).toInt
     drawToCanvas(context.canvas, width, height)
   }
 

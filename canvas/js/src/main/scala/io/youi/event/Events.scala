@@ -1,30 +1,13 @@
 package io.youi.event
 
 import reactify.{Channel, InvocationType}
+import PointerEvent.Type._
 
 class Events {
-  object key extends Channel[KeyEvent] {
-    import KeyEvent.Type._
-
-    lazy val down: Channel[KeyEvent] = byType(Down)
-    lazy val press: Channel[KeyEvent] = byType(Press)
-    lazy val up: Channel[KeyEvent] = byType(Up)
-
-    def byType(types: KeyEvent.Type*): Channel[KeyEvent] = {
-      val set = types.toSet
-      collect {
-        case evt if set.contains(evt.`type`) => evt
-      }
-    }
-
-    override def set(value: => KeyEvent): Unit = fire(value, InvocationType.Direct)
-  }
+  lazy val click: Channel[PointerEvent] = pointer.byType(Click)
+  lazy val doubleClick: Channel[PointerEvent] = pointer.byType(DoubleClick)
 
   object pointer extends Channel[PointerEvent] {
-    import PointerEvent.Type._
-
-    lazy val click: Channel[PointerEvent] = byType(Click)
-    lazy val doubleClick: Channel[PointerEvent] = byType(DoubleClick)
     lazy val move: Channel[PointerEvent] = byType(Move)
     lazy val enter: Channel[PointerEvent] = byType(Enter)
     lazy val exit: Channel[PointerEvent] = byType(Exit)
@@ -42,5 +25,22 @@ class Events {
     }
 
     override def set(value: => PointerEvent): Unit = fire(value, InvocationType.Direct)
+  }
+
+  object key extends Channel[KeyEvent] {
+    import KeyEvent.Type._
+
+    lazy val down: Channel[KeyEvent] = byType(Down)
+    lazy val press: Channel[KeyEvent] = byType(Press)
+    lazy val up: Channel[KeyEvent] = byType(Up)
+
+    def byType(types: KeyEvent.Type*): Channel[KeyEvent] = {
+      val set = types.toSet
+      collect {
+        case evt if set.contains(evt.`type`) => evt
+      }
+    }
+
+    override def set(value: => KeyEvent): Unit = fire(value, InvocationType.Direct)
   }
 }

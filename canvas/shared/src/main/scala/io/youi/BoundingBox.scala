@@ -44,41 +44,6 @@ case class BoundingBox(x1: Double, y1: Double, x2: Double, y2: Double) {
 object BoundingBox {
   val zero: BoundingBox = BoundingBox(0.0, 0.0, 0.0, 0.0)
 
-//  def apply(pathActions: List[PathAction]): BoundingBox = {
-//    var minX = Double.MaxValue
-//    var minY = Double.MaxValue
-//    var maxX = Double.MinValue
-//    var maxY = Double.MinValue
-//
-//    var cx = 0.0
-//    var cy = 0.0
-//
-//    def adjustTo(newX: Double, newY: Double, oldX: Double = cx, oldY: Double = cy, updateCoordinates: Boolean = true): Unit = {
-//      minX = math.min(oldX, math.min(minX, newX))
-//      minY = math.min(oldY, math.min(minY, newY))
-//      maxX = math.max(oldX, math.max(maxX, newX))
-//      maxY = math.max(oldY, math.max(maxY, newY))
-//
-//      cx = newX
-//      cy = newY
-//    }
-//
-//    pathActions.foreach {
-//      case BeginPath => // Nothing
-//      case ClosePath => // Nothing
-//      case CurveTo(_, _, _, _, x, y) => adjustTo(x, y)
-//      case LineTo(x, y) => adjustTo(x, y)
-//      case MoveTo(x, y) => {
-//        cx = x
-//        cy = y
-//      }
-//      case QuadraticCurveTo(_, _, x, y) => adjustTo(x, y)
-//      case Rectangle(x, y, width, height) => adjustTo(x + width, y + height, updateCoordinates = false)
-//      case RoundedRectangle(x, y, width, height, _) => adjustTo(x + width, y + height, updateCoordinates = false)
-//    }
-//    BoundingBox(minX, minY, maxX, maxY)
-//  }
-
   def distance(x1: Double, y1: Double, x2: Double, y2: Double): Double = {
     val xd = x1 - x2
     val yd = y1 - y2

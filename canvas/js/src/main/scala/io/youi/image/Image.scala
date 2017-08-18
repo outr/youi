@@ -36,7 +36,7 @@ object Image {
             width: Option[Double] = None,
             height: Option[Double] = None,
             mode: ImageMode = ImageMode.Quality): Future[Image] = if (source.indexOf("<svg") != -1) {
-    Future.successful(fromSVGString(source, width, height))
+    fromSVGString(source, width, height)
   } else if (source.startsWith("data:image/")) {
     fromImageSource(source, width, height, mode)
   } else {
@@ -47,7 +47,7 @@ object Image {
               height: Option[Double] = None,
               mode: ImageMode = ImageMode.Quality): Future[Image] = if (url.path.encoded.toLowerCase.endsWith(".svg")) {
     val stream = StreamURL.stream(url)
-    stream.map(svgString => fromSVGString(svgString, width, height))
+    stream.flatMap(svgString => fromSVGString(svgString, width, height))
   } else {
     fromImageSource(url.toString, width, height, mode)
   }
@@ -55,7 +55,7 @@ object Image {
                width: Option[Double] = None,
                height: Option[Double] = None,
                mode: ImageMode = ImageMode.Quality): Future[Image] = file.`type` match {
-    case "image/svg+xml" => ImageUtility.loadText(file).map { svgString =>
+    case "image/svg+xml" => ImageUtility.loadText(file).flatMap { svgString =>
       fromSVGString(svgString, width, height)
     }
     case _ => ImageUtility.loadDataURL(file).flatMap { dataURL =>
@@ -107,15 +107,18 @@ object Image {
 
   def fromSVG(svg: SVGSVGElement,
               width: Option[Double] = None,
-              height: Option[Double] = None): SVGImage = {
+              height: Option[Double] = None): Future[SVGImage] = {
     val original = SVGImage.measure(svg).toSize
     val size = SizeUtility.size(width, height, original)
-    SVGImage(svg, size.width, size.height, None, original)
+    val image = SVGImage(svg, size.width, size.height, None, original)
+    image.drawToCanvas(image.canvas, size.width, size.height).map { _ =>
+      image
+    }
   }
 
   def fromSVGString(svgString: String,
                     width: Option[Double] = None,
-                    height: Option[Double] = None): SVGImage = try {
+                    height: Option[Double] = None): Future[SVGImage] = try {
     val div = dom.create[html.Div]("div")
     div.innerHTML = svgString
     val svg = div.oneByTag[SVGSVGElement]("svg")

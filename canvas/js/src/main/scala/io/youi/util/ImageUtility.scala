@@ -164,13 +164,14 @@ object ImageUtility {
       video.src = url
     } else if (file.`type` == "image/svg+xml") {                                                 // SVG preview
       ImageUtility.loadText(file).flatMap { svgString =>
-        val image = Image.fromSVGString(svgString, None, None)
-        val scaled = SizeUtility.scale(image.width, image.height, width, height, scaleUp)
-        CanvasPool.withCanvasFuture(scaled.width, scaled.height) { canvas =>
-          val drawable = new Drawable(canvas, swapCanvases = false)
-          drawable.updateAsync(scaled.width, scaled.height)(context => image.draw(context, scaled.width, scaled.height)).map { _ =>
-            val dataURL = canvas.toDataURL("image/png")
-            promise.success(Some(dataURL))
+        Image.fromSVGString(svgString, None, None).flatMap { image =>
+          val scaled = SizeUtility.scale(image.width, image.height, width, height, scaleUp)
+          CanvasPool.withCanvasFuture(scaled.width, scaled.height) { canvas =>
+            val drawable = new Drawable(canvas, swapCanvases = false)
+            drawable.updateAsync(scaled.width, scaled.height)(context => image.draw(context, scaled.width, scaled.height)).map { _ =>
+              val dataURL = canvas.toDataURL("image/png")
+              promise.success(Some(dataURL))
+            }
           }
         }
       }

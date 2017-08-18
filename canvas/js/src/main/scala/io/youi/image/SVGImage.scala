@@ -1,13 +1,13 @@
 package io.youi.image
 
 import com.outr.{CanvgOptions, canvg}
-import io.youi.component.Component
 import io.youi.dom._
 import org.scalajs.dom.raw._
 
 import scala.concurrent.{Future, Promise}
 import scala.concurrent.ExecutionContext.Implicits.global
 import io.youi._
+import io.youi.path.Path
 import io.youi.util.{CanvasPool, ImageUtility}
 import org.scalajs.dom.html
 
@@ -18,18 +18,22 @@ case class SVGImage(svg: SVGSVGElement,
                     height: Double,
                     original: Option[Image],
                     measured: Size) extends Image {
-  private val canvas = CanvasPool(width, height)
+  private[image] val canvas = CanvasPool(width, height)
 
   override def drawFast(context: Context, width: Double, height: Double): Unit = {
     context.drawCanvas(canvas)(width = width, height = height)
   }
 
   override def draw(context: Context, width: Double, height: Double): Future[Unit] = {
+    drawToCanvas(context.canvas, width, height)
+  }
+
+  def drawToCanvas(canvas: html.Canvas, width: Double, height: Double): Future[Unit] = {
     val promise = Promise[Unit]
     val callback: js.Function = () => {
       promise.success(())
     }
-    canvg(context.canvas, svg.outerHTML, new CanvgOptions {
+    canvg(canvas, svg.outerHTML, new CanvgOptions {
       ignoreMouse = true
       ignoreAnimation = true
       ignoreDimensions = true
@@ -73,7 +77,6 @@ object SVGImage {
       None
     }
     val bb = if (definedWidth.isEmpty || definedHeight.isEmpty || force) {
-      scribe.info(s"Measuring....")
       var minX = 0.0
       var minY = 0.0
       var maxX = 0.0
@@ -132,12 +135,11 @@ object SVGImage {
           }
         }
         case p: SVGPathElement => {
-//          val path = Path(p.getAttribute("d"))
-//          minX = math.min(minX, offsetX + path.boundingBox.x1)
-//          minY = math.min(minY, offsetY + path.boundingBox.y1)
-//          maxX = math.max(maxX, offsetX + path.boundingBox.x2)
-//          maxY = math.max(maxY, offsetY + path.boundingBox.y2)
-          ???
+          val path = Path(p.getAttribute("d"))
+          minX = math.min(minX, offsetX + path.boundingBox.x1)
+          minY = math.min(minY, offsetY + path.boundingBox.y1)
+          maxX = math.max(maxX, offsetX + path.boundingBox.x2)
+          maxY = math.max(maxY, offsetY + path.boundingBox.y2)
         }
         case _: SVGStyleElement => // Nothing to do here
         case _ => scribe.warn(s"Unsupported SVG node: $e.")

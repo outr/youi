@@ -1,4 +1,4 @@
-package io.youi.component.draw.path
+package io.youi.path
 
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 

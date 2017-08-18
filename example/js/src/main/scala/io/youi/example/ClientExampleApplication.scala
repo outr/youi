@@ -19,14 +19,14 @@ object ClientExampleApplication extends JSApp with ExampleApplication with Clien
   val hello = HelloWorld
   val images = ImageExample
 //  val video = VideoExample
-//  val animation = AnimationExample
+  val animation = AnimationExample
 //  val graphics = GraphicsExample
   val basicText = BasicTextExample
 //  val text = TextExample
 //  val canvas = CanvasExample
 //  val drawable = DrawableExample
 //  val htmlComponent = HTMLComponentExample
-//  val svgDrawable = SVGImageExample
+  val svg = SVGImageExample
 //  val scale9 = Scale9Example
 //  val virtual = VirtualSizeExample
 //  val snap = SnapExample

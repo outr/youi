@@ -57,6 +57,14 @@ class Context(val canvas: html.Canvas) {
     context.drawImage(canvas.asInstanceOf[html.Image], x, y, width, height)
   }
 
+  def drawVideo(video: html.Video)
+               (x: Double = 0.0,
+                y: Double = 0.0,
+                width: Double = video.width,
+                height: Double = video.height): Unit = {
+    context.drawImage(video.asInstanceOf[html.Image], x, y, width, height)
+  }
+
   def rect(x: Double, y: Double, width: Double, height: Double): Unit = {
     context.rect(x, y, width, height)
   }

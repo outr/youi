@@ -97,8 +97,8 @@ trait Component extends TaskSupport with ComponentTheme {
       if (height) this.height.set(measured.height())
     }
 
-    val width: Var[Double] = prop(measured.width, updatesTransform = true)
-    val height: Var[Double] = prop(measured.height, updatesTransform = true)
+    val width: Var[Double] = prop(measured.width, updatesRendering = true)
+    val height: Var[Double] = prop(measured.height, updatesRendering = true)
 
     lazy val center: Val[Double] = Val(width / 2.0)
     lazy val middle: Val[Double] = Val(height / 2.0)

@@ -17,7 +17,6 @@ import scala.scalajs._
 case class SVGImage(svg: SVGSVGElement,
                     width: Double,
                     height: Double,
-                    original: Option[Image],
                     measured: Size) extends Image {
   private[image] val canvas = CanvasPool(width, height)
 

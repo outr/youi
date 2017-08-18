@@ -1,6 +1,6 @@
 package io.youi.image
 
-import io.youi.Context
+import io.youi.{Context, ImageMode}
 import io.youi.util.ImageUtility
 import org.scalajs.dom.html
 
@@ -10,12 +10,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
 case class TextureImage(img: html.Image,
                         width: Double,
                         height: Double,
-                        original: Option[Image]) extends Image {
+                        mode: ImageMode) extends Image {
   override def isVector: Boolean = false
 
   override def drawFast(context: Context, width: Double, height: Double): Boolean = {
     context.drawImage(img)(width = width, height = height)
-    this.width != width || this.height != height
+    (this.width != width || this.height != height) && mode == ImageMode.Quality
   }
 
   override def draw(context: Context, width: Double, height: Double): Future[Unit] = {

@@ -1,4 +1,4 @@
-package io.youi.component.layout
+package io.youi.layout
 
 import io.youi.component.Component
 

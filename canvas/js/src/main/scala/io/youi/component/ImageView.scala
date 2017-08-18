@@ -1,6 +1,6 @@
 package io.youi.component
 
-import io.youi.{Context, LazyFuture}
+import io.youi.{Context, ImageMode}
 import io.youi.image.Image
 import io.youi.theme.ImageViewTheme
 import org.scalajs.dom.File
@@ -10,13 +10,13 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class ImageView extends Component with ImageViewTheme {
-  def this(file: File) = {
+  def this(file: File, mode: ImageMode) = {
     this()
-    load(file)
+    load(file, mode)
   }
-  def this(source: String) = {
+  def this(source: String, mode: ImageMode) = {
     this()
-    load(source)
+    load(source, mode)
   }
 
   override lazy val theme: Var[ImageViewTheme] = Var(ImageView)
@@ -39,12 +39,12 @@ class ImageView extends Component with ImageViewTheme {
   size.measured.width := image.width
   size.measured.height := image.height
 
-  def load(file: File): Future[Image] = Image.fromFile(file).map { image =>
+  def load(file: File, mode: ImageMode): Future[Image] = Image.fromFile(file, mode = mode).map { image =>
     this.image := image
     image
   }
 
-  def load(source: String): Future[Image] = Image(source).map { image =>
+  def load(source: String, mode: ImageMode): Future[Image] = Image(source, mode = mode).map { image =>
     this.image := image
     image
   }

@@ -76,22 +76,9 @@ object Image {
       })
       promise.future
     }
-    original.flatMap { o =>
+    original.map { o =>
       val size = SizeUtility.size(width, height, o)
-      val canvasFuture = mode match {
-        case _ if o.width == size.width && o.height == size.height => Future.successful(None)
-        case ImageMode.Speed => Future.successful(None)
-        case ImageMode.Quality => {
-          val canvas = CanvasPool(size.width, size.height)
-          val context = canvas.getContext("2d").asInstanceOf[CanvasRenderingContext2D]
-          context.clearRect(0.0, 0.0, size.width, size.height)
-          scribe.info(s"Resizing to canvas! Original: ${o.width}x${o.height}, Resized: ${size.width}x${size.height}")
-          ImageUtility.drawToCanvas(img, canvas)(width = size.width, height = size.height).map(Some.apply)
-        }
-      }
-      canvasFuture.map { _ =>
-        TextureImage(img, size.width, size.height, None)
-      }
+      TextureImage(img, size.width, size.height, mode)
     }
   }
 
@@ -110,7 +97,7 @@ object Image {
               height: Option[Double] = None): Future[SVGImage] = {
     val original = SVGImage.measure(svg).toSize
     val size = SizeUtility.size(width, height, original)
-    val image = SVGImage(svg, size.width, size.height, None, original)
+    val image = SVGImage(svg, size.width, size.height, original)
     image.drawToCanvas(image.canvas, size.width, size.height).map { _ =>
       image
     }

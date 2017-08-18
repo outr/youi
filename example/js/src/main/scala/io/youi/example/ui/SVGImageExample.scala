@@ -19,12 +19,12 @@ object SVGImageExample extends UIExampleScreen with UIScreen {
     """.stripMargin
 
   override def createUI(): Unit = {
-    container.children += new ImageView("/images/tiger.svg") {
+    container.children += new ImageView("/images/tiger.svg", ImageMode.Quality) {
       position.left := 10.0
       position.top := 10.0
     }
 
-    container.children += new ImageView(svgString) {
+    container.children += new ImageView(svgString, ImageMode.Quality) {
       position.center := ui.position.center
       position.middle := ui.position.middle
 

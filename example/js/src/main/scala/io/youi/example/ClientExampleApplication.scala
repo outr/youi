@@ -27,7 +27,7 @@ object ClientExampleApplication extends JSApp with ExampleApplication with Clien
 //  val drawable = DrawableExample
 //  val htmlComponent = HTMLComponentExample
   val svg = SVGImageExample
-//  val scale9 = Scale9Example
+  val scale9 = Scale9Example
   val virtual = VirtualSizeExample
   val snap = SnapExample
 //  val scrolling = ScrollingExample

@@ -30,12 +30,13 @@ trait AbstractContainer extends Component with AbstractContainerTheme { self =>
       added.foreach(_.parent.asInstanceOf[Var[Option[AbstractContainer]]] := Some(self))
 
 //      layoutManager.childrenChanged(self, removed, added)
+
+      invalidate()
     }
   })
 
   size.measured.width := (if (childEntries().nonEmpty) childEntries().map(_.position.right()).max else 0.0)
   size.measured.height := (if (childEntries().nonEmpty) childEntries().map(_.position.bottom()).max else 0.0)
-  childEntries.on(invalidate())
 
   override def update(delta: Double): Unit = {
     super.update(delta)

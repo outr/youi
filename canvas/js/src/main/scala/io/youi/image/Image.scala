@@ -19,6 +19,23 @@ trait Image {
   def drawFast(context: Context, width: Double, height: Double): Boolean
   def draw(context: Context, width: Double, height: Double): Future[Unit]
 
+  def clip(x1: Double, y1: Double, x2: Double, y2: Double): Future[Image] = {
+    CanvasPool.withCanvasFuture(width, height) { original =>
+      val drawable = new Drawable(original, swapCanvases = false)
+      val context = drawable.context
+      draw(context, width, height).flatMap { _ =>
+        val w = x2 - x1
+        val h = y2 - y1
+        val dataURL = CanvasPool.withCanvas(w, h) { clipped =>
+          val ctx = clipped.getContext("2d").asInstanceOf[CanvasRenderingContext2D]
+          ctx.drawImage(original.asInstanceOf[html.Image], x1, y1, w, h, 0.0, 0.0, w, h)
+          clipped.toDataURL("image/png")
+        }
+        Image.fromImageSource(dataURL, None, None)
+      }
+    }
+  }
+
   lazy val boundingBox: BoundingBox = BoundingBox(0.0, 0.0, width, height)
 
   def isVector: Boolean

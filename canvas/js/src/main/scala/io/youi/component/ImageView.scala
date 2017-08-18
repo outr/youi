@@ -10,6 +10,10 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class ImageView extends Component with ImageViewTheme {
+  def this(image: Image) = {
+    this()
+    this.image := image
+  }
   def this(file: File, mode: ImageMode) = {
     this()
     load(file, mode)

@@ -8,9 +8,15 @@ import reactify._
 class Renderer(canvas: html.Canvas) extends Container with RendererTheme {
   override protected[youi] lazy val drawable: Drawable = new Drawable(canvas, swapCanvases = false)
 
+  override lazy val theme: Var[_ <: RendererTheme] = Var(Renderer)
   val htmlEvents: HTMLEvents = new HTMLEvents(canvas)
   override lazy val renderer: Val[Option[Renderer]] = Val(Some(this))
   override val globalVisibility: Val[Boolean] = visible
+
+  htmlEvents.mouse.move.attach { evt =>
+    val result = hitTest(evt.clientX, evt.clientY)
+    scribe.info(s"Result: $result")
+  }
 
   override protected def defaultThemeParent = Some(theme)
 

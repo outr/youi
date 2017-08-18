@@ -1,10 +1,10 @@
 package io.youi
 
 import io.youi.component.{Container, Renderer}
-import io.youi.event.KeyEvent
+import io.youi.event.{KeyEvent, Mouse}
 import org.scalajs.dom.{Event, document, html, window}
 import org.scalajs.dom.html.Div
-import org.scalajs.dom.raw.KeyboardEvent
+import org.scalajs.dom.raw.{KeyboardEvent, MouseEvent}
 import reactify._
 
 class UI(canvas: html.Canvas = dom.create[html.Canvas]("canvas")) {
@@ -19,6 +19,21 @@ class UI(canvas: html.Canvas = dom.create[html.Canvas]("canvas")) {
     } finally {
       document.body.removeChild(div)
     }
+  }
+
+  document.body.addEventListener("move", (evt: MouseEvent) => {
+    Mouse.x.asInstanceOf[Var[Double]] := evt.clientX
+    Mouse.y.asInstanceOf[Var[Double]] := evt.clientY
+  })
+
+  canvas.event.mouse.wheel.attach { evt =>
+    val mode: DeltaMode = evt.deltaMode match {
+      case 0x00 => DeltaMode.Pixel
+      case 0x01 => DeltaMode.Line
+      case 0x02 => DeltaMode.Page
+    }
+    val d = WheelDelta(evt.deltaX, evt.deltaY, evt.deltaZ, mode)
+    Mouse.wheel := d
   }
 
   lazy val width: Val[Double] = Var[Double](window.innerWidth)

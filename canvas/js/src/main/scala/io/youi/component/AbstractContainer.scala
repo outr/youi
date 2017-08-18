@@ -4,6 +4,7 @@ import io.youi.Context
 import io.youi.theme.AbstractContainerTheme
 import reactify._
 
+import scala.annotation.tailrec
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -50,6 +51,29 @@ trait AbstractContainer extends Component with AbstractContainerTheme { self =>
         context.transform(child)
         context.draw(child)
       }
+    }
+  }
+
+  override def hitTest(globalX: Double, globalY: Double): HitResult = {
+    val children = childEntries()
+    val lastIndex = children.length - 1
+    if (lastIndex >= 0) {
+      childHitTest(globalX, globalY, lastIndex, children)
+    } else {
+      HitResult.Miss
+    } match {
+      case HitResult.Miss => super.hitTest(globalX, globalY)
+      case result => result
+    }
+  }
+
+  @tailrec
+  private def childHitTest(globalX: Double, globalY: Double, index: Int, children: Vector[Child]): HitResult = {
+    val child = children(index)
+    child.hitTest(globalX, globalY) match {
+      case result: HitResult.Hit => result
+      case HitResult.Miss if index == 0 => HitResult.Miss
+      case HitResult.Miss => childHitTest(globalX, globalY, index - 1, children)
     }
   }
 }

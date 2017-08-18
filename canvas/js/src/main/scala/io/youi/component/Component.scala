@@ -5,7 +5,6 @@ import io.youi.event.Events
 import io.youi.spatial.{Matrix3, MutableMatrix3, Point}
 import io.youi.task.TaskSupport
 import io.youi.theme.ComponentTheme
-import org.scalajs.dom.raw.MouseEvent
 import reactify.{Dep, Val, Var}
 
 import scala.concurrent.Future
@@ -121,13 +120,14 @@ trait Component extends TaskSupport with ComponentTheme {
   override protected def updateTransform(): Unit = matrix.transform.flag()
   override protected def updateRendering(): Unit = invalidate()
 
-  def hitTest(evt: MouseEvent): Option[Point] = {
+  def hitTest(globalX: Double, globalY: Double): HitResult = {
+    Component.tempPoint.set(globalX, globalY)
     val matrix = Component.tempMatrix.set(this.matrix.world).inv()
     val local = matrix.localize(Component.tempPoint)
     if (local.x >= 0.0 && local.y >= 0.0 && local.x <= size.width() && local.y <= size.height()) {
-      Some(local)
+      HitResult.Hit(local, this)
     } else {
-      None
+      HitResult.Miss
     }
   }
 
@@ -146,4 +146,11 @@ trait Component extends TaskSupport with ComponentTheme {
 object Component extends ComponentTheme {
   private val tempMatrix = Matrix3.Identity.mutable
   private val tempPoint = Point.mutable()
+}
+
+sealed trait HitResult
+
+object HitResult {
+  case class Hit(local: Point, component: Component) extends HitResult
+  case object Miss extends HitResult
 }

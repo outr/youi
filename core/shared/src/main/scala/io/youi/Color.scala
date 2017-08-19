@@ -26,6 +26,7 @@ class Color private(val value: Long) extends AnyVal {
   def withAlpha(alpha: Double): Color = Color.fromHex(s"$redHex$greenHex$blueHex${Color.hexify(alpha)}")
 
   def toRGBA: String = s"rgba($redInt, $greenInt, $blueInt, $alpha)"
+  def toHex: String = s"#$redHex$greenHex$blueHex"
 
   def hue: Double = {
     val colorMax = math.max(redInt, math.max(greenInt, blueInt))

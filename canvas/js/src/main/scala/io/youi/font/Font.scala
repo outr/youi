@@ -1,8 +1,9 @@
-package io.youi.component.font
+package io.youi.font
 
+import io.youi.BoundingBox
 import io.youi.component.Component
-import io.youi.component.draw.path.Path
-import io.youi.component.draw.{BoundingBox, Drawable, TouchData}
+import io.youi.event.TouchData
+import io.youi.path.Path
 import opentype.{OpenType, PathOptions}
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 import reactify.{Val, Var}
@@ -62,11 +63,13 @@ object Font {
   }
 }
 
-case class TextPaths(paths: Vector[TextPath]) extends Drawable {
-  override lazy val boundingBox: BoundingBox = {
+case class TextPaths(paths: Vector[TextPath]) {
+  lazy val boundingBox: BoundingBox = if (paths.nonEmpty) {
     var bb = paths.head.path.boundingBox
     paths.tail.foreach(other => bb = bb.merge(other.path.boundingBox))
     bb
+  } else {
+    BoundingBox.zero
   }
 
   def zero(): TextPaths = TextPaths(paths.zipWithIndex.map {
@@ -93,7 +96,7 @@ case class TextPaths(paths: Vector[TextPath]) extends Drawable {
     }.sortBy(_.data.distance)
   }
 
-  override def draw(component: Component, context: CanvasRenderingContext2D): Future[Unit] = {
+  def draw(component: Component, context: CanvasRenderingContext2D): Future[Unit] = {
     context.translate(boundingBox.adjustX, boundingBox.adjustY)
     Future.sequence(paths.map(_.path.draw(component, context))).map(_ => ())
   }

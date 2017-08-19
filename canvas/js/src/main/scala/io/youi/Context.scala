@@ -1,7 +1,7 @@
 package io.youi
 
 import io.youi.component.Component
-import io.youi.paint.{ColorPaint, NoPaint, Paint, Stroke}
+import io.youi.paint._
 import io.youi.spatial.Matrix3
 import org.scalajs.dom.{CanvasRenderingContext2D, html}
 
@@ -127,6 +127,9 @@ class Context(val canvas: html.Canvas) {
   private def paint2Any(paint: Paint): js.Any = paint match {
     case NoPaint => ""
     case ColorPaint(color) => color.toRGBA
+    case LinearGradientPaint(direction, stops) => {
+      context.createLinearGradient()
+    }
     case _ => throw new RuntimeException(s"Unsupported paint: $paint")
   }
 }

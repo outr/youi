@@ -1,10 +1,13 @@
 package io.youi.paint
 
-import io.youi.Color
+import io.youi.{Color, dom}
 import io.youi.component.Component
+import io.youi.event.Event
 import io.youi.net.URL
+import org.scalajs.dom.html
 
 import scala.concurrent.{Future, Promise}
+import scala.scalajs.js.|
 
 sealed trait Paint {
   def isEmpty: Boolean = false
@@ -70,16 +73,16 @@ object Paint {
     RadialGradientPaint(x0, y0, r0, x1, y1, r1, stops.toVector)
   }
 
-  /*def image(url: String | URL, repetition: Repetition = Repetition.Repeat): Future[Paint] = {
-    val promise = Promise[Paint]
-    val img = dom.create[html.Image]("img")
-    img.addEventListener("load", (_: Event) => {
-      val pattern = context.createPattern(img, repetition.value)
-      promise.success(new PatternPaint(pattern))
-    })
-    img.src = url.toString
-    promise.future
-  }*/
+//  def image(url: String | URL, repetition: Repetition = Repetition.Repeat): Future[Paint] = {
+//    val promise = Promise[Paint]
+//    val img = dom.create[html.Image]("img")
+//    img.addEventListener("load", (_: Event) => {
+//      val pattern = context.createPattern(img, repetition.value)
+//      promise.success(new PatternPaint(pattern))
+//    })
+//    img.src = url.toString
+//    promise.future
+//  }
 }
 
 sealed abstract class Repetition(val value: String)

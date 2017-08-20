@@ -167,7 +167,7 @@ object ImageUtility {
         Image.fromSVGString(svgString, None, None).flatMap { image =>
           val scaled = SizeUtility.scale(image.width, image.height, width, height, scaleUp)
           CanvasPool.withCanvasFuture(scaled.width, scaled.height) { canvas =>
-            val drawable = new Drawable(canvas, swapCanvases = false)
+            val drawable = new Drawer(canvas, swapCanvases = false)
             drawable.updateAsync(scaled.width, scaled.height)(context => image.draw(context, scaled.width, scaled.height)).map { _ =>
               val dataURL = canvas.toDataURL("image/png")
               promise.success(Some(dataURL))

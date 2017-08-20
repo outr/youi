@@ -21,7 +21,7 @@ trait Image {
 
   def clip(x1: Double, y1: Double, x2: Double, y2: Double): Future[Image] = {
     CanvasPool.withCanvasFuture(width, height) { original =>
-      val drawable = new Drawable(original, swapCanvases = false)
+      val drawable = new Drawer(original, swapCanvases = false)
       val context = drawable.context
       draw(context, width, height).flatMap { _ =>
         val w = x2 - x1

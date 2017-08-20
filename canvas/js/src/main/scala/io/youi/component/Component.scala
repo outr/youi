@@ -21,7 +21,7 @@ trait Component extends TaskSupport with ComponentTheme {
 
   override protected def defaultThemeParent = Some(theme)
 
-  protected[youi] lazy val drawable: Drawable = new Drawable()
+  protected[youi] lazy val drawer: Drawer = new Drawer()
   object matrix {
     val local: MutableMatrix3 = Matrix3.Identity.mutable
     val world: MutableMatrix3 = Matrix3.Identity.mutable
@@ -39,14 +39,14 @@ trait Component extends TaskSupport with ComponentTheme {
     }
   }
   lazy val reDraw = LazyUpdate {
-    reMeasure(drawable.context)
-    drawable.update(size.width(), size.height())(draw)
+    reMeasure(drawer.context)
+    drawer.update(size.width(), size.height())(draw)
 
     parent().foreach(_.invalidate())
   }
 
   protected def reDrawAsync(f: Context => Future[Unit]): Unit = {
-    drawable.updateAsync(size.width(), size.height())(f).foreach { _ =>
+    drawer.updateAsync(size.width(), size.height())(f).foreach { _ =>
       parent().foreach(_.invalidate())
     }
   }

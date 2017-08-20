@@ -3,13 +3,13 @@ package io.youi.component
 import io.youi.event.{Mouse, PointerEvent, WheelDelta, WheelEvent}
 import io.youi.spatial.Point
 import io.youi.theme.RendererTheme
-import io.youi.{AnimationFrame, Drawable, HTMLEvents}
+import io.youi.{AnimationFrame, Drawer, HTMLEvents}
 import org.scalajs.dom.raw.MouseEvent
 import org.scalajs.dom.{document, html, raw}
 import reactify._
 
 class Renderer(canvas: html.Canvas) extends Container with RendererTheme {
-  override protected[youi] lazy val drawable: Drawable = new Drawable(canvas, swapCanvases = false)
+  override protected[youi] lazy val drawer: Drawer = new Drawer(canvas, swapCanvases = false)
 
   override lazy val theme: Var[_ <: RendererTheme] = Var(Renderer)
   val htmlEvents: HTMLEvents = new HTMLEvents(document.body)

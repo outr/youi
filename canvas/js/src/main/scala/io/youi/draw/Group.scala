@@ -1,9 +1,7 @@
-package io.youi.component.draw
-import io.youi.component.Component
-import org.scalajs.dom.raw.CanvasRenderingContext2D
+package io.youi.draw
 
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
+import io.youi.{BoundingBox, Context}
+import io.youi.component.Component
 
 case class Group(drawables: List[Drawable]) extends Drawable {
   override lazy val boundingBox: BoundingBox = {
@@ -23,10 +21,8 @@ case class Group(drawables: List[Drawable]) extends Drawable {
 
   def withDrawables(drawables: Drawable*): Group = Group(this.drawables ::: drawables.toList)
 
-  override def draw(component: Component, context: CanvasRenderingContext2D): Future[Unit] = {
-    Future.sequence(drawables.map { d =>
-      d.draw(component, context)
-    }).map(_ => ())
+  override def draw(component: Component, context: Context): Unit = {
+    drawables.foreach(_.draw(component, context))
   }
 }
 

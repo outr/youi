@@ -1,6 +1,7 @@
 package io.youi.component
 
 import io.youi.Context
+import io.youi.event.HitResult
 import io.youi.spatial.Point
 import io.youi.theme.AbstractContainerTheme
 import reactify._

@@ -1,7 +1,7 @@
 package io.youi.component
 
 import io.youi._
-import io.youi.event.Events
+import io.youi.event.{Events, HitResult}
 import io.youi.spatial.{Matrix3, MutableMatrix3, Point}
 import io.youi.task.TaskSupport
 import io.youi.theme.ComponentTheme
@@ -154,11 +154,4 @@ trait Component extends TaskSupport with ComponentTheme {
 object Component extends ComponentTheme {
   private val tempMatrix = Matrix3.Identity.mutable
   private val tempPoint = Point.mutable()
-}
-
-sealed trait HitResult
-
-object HitResult {
-  case class Hit(local: Point, component: Component) extends HitResult
-  case object Miss extends HitResult
 }

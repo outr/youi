@@ -1,6 +1,6 @@
 package io.youi.component
 
-import io.youi.event.{Mouse, PointerEvent, WheelDelta, WheelEvent}
+import io.youi.event._
 import io.youi.spatial.Point
 import io.youi.theme.RendererTheme
 import io.youi.{AnimationFrame, Drawer, HTMLEvents}

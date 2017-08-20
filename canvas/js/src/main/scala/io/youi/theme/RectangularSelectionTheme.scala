@@ -5,7 +5,7 @@ import io.youi.component.Component
 import io.youi.paint._
 import reactify.Var
 
-trait RectangularSelectionTheme extends ComponentTheme {
+trait RectangularSelectionTheme extends DrawableComponentTheme {
   override def defaultThemeParent: Option[Theme] = Some(Component)
 
   private[theme] def prnt[T](f: RectangularSelectionTheme => T, default: => T): T = parentTheme().collect {

@@ -1,16 +1,14 @@
 //package io.youi.extra
 //
-//import io.youi.Cursor
-//import io.youi.component.Component
+//import io.youi.{Context, Cursor}
+//import io.youi.component.DrawableComponent
 //import io.youi.draw._
-//import io.youi.paint.Paint
+//import io.youi.paint.{Paint, Stroke}
+//import io.youi.path.{Path, PathAction, Rectangle}
 //import io.youi.theme._
-//import org.scalajs.dom.raw.CanvasRenderingContext2D
 //import reactify._
 //
-//import scala.concurrent.Future
-//
-//class RectangularSelection extends Component with RectangularSelectionTheme {
+//class RectangularSelection extends DrawableComponent with RectangularSelectionTheme {
 //  override lazy val theme: Var[_ <: RectangularSelectionTheme] = Var(RectangularSelection)
 //
 //  override object selection extends SelectionPaintTheme(this) {
@@ -66,7 +64,7 @@
 //  private val dragging = new SelectionDragSupport(this)
 //  def isDragging: Boolean = dragging.isDragging
 //
-//  drawer := {
+//  drawable := {
 //    if (selection.width() != 0.0 && selection.height() != 0.0) {
 //      Group(
 //        createModal(),
@@ -119,7 +117,7 @@
 //      .rect(selection.x1(), selection.y1(), selection.width(), selection.height())
 //      .fix()
 //      .close,
-//    selection.fill.value,
+//    Fill(selection.fill),
 //    selection.stroke.value
 //  )
 //
@@ -157,7 +155,7 @@
 //        .withAction(block(selection.x2, selection.y2))
 //        .close
 //        .fix(),
-//      blocks.fill.value,
+//      Fill(blocks.fill),
 //      blocks.stroke.value
 //    )
 //  }
@@ -172,7 +170,7 @@
 //        .rect(selection.x1(), selection.y2(), selection.width(), size.height() - selection.y2() - halfBlock)    // Bottom
 //        .close
 //        .fix(),
-//      modal.fill.value,
+//      Fill(modal.fill),
 //      modal.stroke.value
 //    )
 //  }
@@ -236,7 +234,7 @@
 //        .move(selection.x2 - horizontalThird, selection.y1 + (selection.height / 2.0))
 //        .line(selection.x2 - horizontalThird, selection.y2)
 //        .fix(),
-//      dashes.fill.value,
+//      Fill(dashes.fill),
 //      dashes.stroke.value
 //    )
 //  }
@@ -245,12 +243,13 @@
 //    math.abs(from - to) <= selection.edgeDistance()
 //  }
 //
-//  override protected def draw(context: CanvasRenderingContext2D): Future[Unit] = {
+//  override protected def draw(context: Context): Unit = {
 //    dragging.update()
+//
 //    super.draw(context)
 //  }
 //
-//  override protected def autoPaint = false
+////  override protected def autoPaint = false
 //}
 //
 //class SelectionDragSupport(rs: RectangularSelection) extends DragSupport[DragStart](rs) {

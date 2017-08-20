@@ -1,17 +1,18 @@
 package io.youi.path
 
-import io.youi.BoundingBox
+import io.youi.{BoundingBox, Context}
 import io.youi.component.Component
+import io.youi.draw.Drawable
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 
 import scala.collection.mutable.ListBuffer
-import scala.concurrent.Future
 
-case class Path(actions: List[PathAction]) extends PathBuilder with PathAction {
+case class Path(actions: List[PathAction]) extends PathBuilder with PathAction with Drawable {
   lazy val boundingBox: BoundingBox = Path.boundingBox(actions)
 
-  def draw(component: Component, context: CanvasRenderingContext2D): Future[Unit] = {
-    Future.successful(invoke(context))
+
+  override def draw(component: Component, context: Context): Unit = {
+    invoke(context.canvasContext)
   }
 
   override def invoke(context: CanvasRenderingContext2D): Unit = actions.foreach { action =>

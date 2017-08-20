@@ -8,9 +8,7 @@ case class Fill(paint: Paint) extends Drawable {
   override def boundingBox: BoundingBox = BoundingBox.zero
 
   def set(component: Component, context: Context): Unit = {
-    if (paint.nonEmpty) {
-      context.fill(paint, apply = false)
-    }
+    context.fill(paint, apply = false)
   }
 
   override def draw(component: Component, context: Context): Unit = {

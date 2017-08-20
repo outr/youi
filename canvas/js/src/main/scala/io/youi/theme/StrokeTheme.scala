@@ -1,6 +1,6 @@
 package io.youi.theme
 
-import io.youi.paint.{LineCap, LineJoin, Paint}
+import io.youi.paint.{LineCap, LineJoin, Paint, Stroke}
 import reactify._
 
 trait StrokeTheme {
@@ -10,4 +10,6 @@ trait StrokeTheme {
   val lineDashOffset: Var[Double]
   val lineCap: Var[LineCap]
   val lineJoin: Var[LineJoin]
+
+  lazy val value: Val[Stroke] = Val(Stroke(paint, lineWidth, lineDash, lineDashOffset, lineCap, lineJoin))
 }

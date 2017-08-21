@@ -1,14 +1,15 @@
 package io.youi.font
 
-import io.youi.BoundingBox
+import io.youi.{BoundingBox, Context}
 import io.youi.component.Component
+import io.youi.draw.Drawable
 import io.youi.event.TouchData
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-case class TextPaths(paths: Vector[TextPath]) {
+case class TextPaths(paths: Vector[TextPath]) extends Drawable {
   lazy val boundingBox: BoundingBox = if (paths.nonEmpty) {
     var bb = paths.head.path.boundingBox
     paths.tail.foreach(other => bb = bb.merge(other.path.boundingBox))
@@ -41,8 +42,8 @@ case class TextPaths(paths: Vector[TextPath]) {
     }.sortBy(_.data.distance)
   }
 
-  def draw(component: Component, context: CanvasRenderingContext2D): Future[Unit] = {
+  def draw(component: Component, context: Context): Unit = {
     context.translate(boundingBox.adjustX, boundingBox.adjustY)
-    Future.sequence(paths.map(_.path.draw(component, context))).map(_ => ())
+    paths.foreach(_.path.draw(component, context))
   }
 }

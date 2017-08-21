@@ -5,7 +5,11 @@ import org.scalajs.dom._
 import org.scalajs.dom.raw.Event
 import reactify.Channel
 
+import scala.scalajs.js
+
 class HTMLEvents(element: html.Element) {
+  def hasPointerSupport: Boolean = HTMLEvents.hasPointerSupport
+
   lazy val change: Channel[Event] = events("change")
   lazy val click: Channel[MouseEvent] = events("click")
   lazy val doubleClick: Channel[MouseEvent] = events("dblclick")
@@ -18,13 +22,13 @@ class HTMLEvents(element: html.Element) {
     lazy val up: Channel[KeyEvent] = keyEvents("keyup", KeyEvent.Type.Up)
   }
   object mouse {
-    lazy val enter: Channel[MouseEvent] = events("mouseenter")
-    lazy val over: Channel[MouseEvent] = events("mouseover")
-    lazy val move: Channel[MouseEvent] = events("mousemove")
-    lazy val down: Channel[MouseEvent] = events("mousedown")
-    lazy val up: Channel[MouseEvent] = events("mouseup")
-    lazy val leave: Channel[MouseEvent] = events("mouseleave")
-    lazy val out: Channel[MouseEvent] = events("mouseout")
+    lazy val enter: Channel[MouseEvent] = mouseEvents("enter")
+    lazy val over: Channel[MouseEvent] = mouseEvents("over")
+    lazy val move: Channel[MouseEvent] = mouseEvents("move")
+    lazy val down: Channel[MouseEvent] = mouseEvents("down")
+    lazy val up: Channel[MouseEvent] = mouseEvents("up")
+    lazy val leave: Channel[MouseEvent] = mouseEvents("leave")
+    lazy val out: Channel[MouseEvent] = mouseEvents("out")
     lazy val wheel: Channel[WheelEvent] = events("wheel")
   }
 
@@ -44,4 +48,25 @@ class HTMLEvents(element: html.Element) {
     })
     channel
   }
+
+  protected def mouseEvents(eventType: String, stopPropagation: Boolean = false): Channel[MouseEvent] = {
+    val eventName = if (hasPointerSupport) {
+      s"pointer$eventType"
+    } else {
+      s"mouse$eventType"
+    }
+    val channel = Channel[MouseEvent]
+    element.addEventListener(eventName, (evt: MouseEvent) => {
+      if (stopPropagation) {
+        evt.preventDefault()
+        evt.stopPropagation()
+      }
+      channel := evt
+    })
+    channel
+  }
+}
+
+object HTMLEvents {
+  lazy val hasPointerSupport: Boolean = js.typeOf(js.Dynamic.global.PointerEvent) != "undefined"
 }

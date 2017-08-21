@@ -1,3 +1,3 @@
-//package io.youi.event
-//
-//case class Dropped[T](pointer: Pointer, value: T)
+package io.youi.event
+
+case class Dropped[T](pointer: Pointer, value: T)

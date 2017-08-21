@@ -17,7 +17,7 @@ trait Component extends TaskSupport with ComponentTheme {
   lazy val renderer: Val[Option[Renderer]] = Val(parent().flatMap(_.renderer()))
   val globalVisibility: Val[Boolean] = Val(visible() && parent().exists(_.globalVisibility()))
 
-  lazy val event: Events = new Events
+  lazy val event: Events = new Events(this)
 
   override protected def defaultThemeParent = Some(theme)
 

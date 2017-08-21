@@ -29,6 +29,7 @@ class HTMLEvents(element: html.Element) {
     lazy val up: Channel[MouseEvent] = mouseEvents("up")
     lazy val leave: Channel[MouseEvent] = mouseEvents("leave")
     lazy val out: Channel[MouseEvent] = mouseEvents("out")
+    lazy val cancel: Channel[MouseEvent] = mouseEvents("cancel")
     lazy val wheel: Channel[WheelEvent] = events("wheel")
   }
 

@@ -10,6 +10,7 @@ class PointerEvent private[event](val `type`: PointerEvent.Type,
                                   val local: Point,
                                   val global: Point,
                                   val htmlEvent: raw.MouseEvent) extends Event {
+  val time: Long = System.currentTimeMillis()
   lazy val htmlPointerEvent: Option[HTMLPointerEvent] = if (HTMLEvents.hasPointerSupport) {
     Some(htmlEvent.asInstanceOf[HTMLPointerEvent])
   } else {
@@ -44,6 +45,7 @@ object PointerEvent {
     case object Exit extends Type
     case object Down extends Type
     case object Up extends Type
+    case object Cancel extends Type
     case object Wheel extends Type
   }
 }

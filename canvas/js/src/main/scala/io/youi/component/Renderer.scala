@@ -22,6 +22,7 @@ class Renderer(canvas: html.Canvas) extends Container with RendererTheme {
   htmlEvents.mouse.down.attach(pointerEvent(_, PointerEvent.Type.Down))
   htmlEvents.mouse.up.attach(pointerEvent(_, PointerEvent.Type.Up))
   htmlEvents.mouse.move.attach(pointerEvent(_, PointerEvent.Type.Move))
+  htmlEvents.mouse.cancel.attach(pointerEvent(_, PointerEvent.Type.Cancel))
   Mouse.wheel.attach(wheelEvent)
 
   private val globalPoint = Point.mutable()

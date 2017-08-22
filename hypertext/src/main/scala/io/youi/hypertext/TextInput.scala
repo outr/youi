@@ -6,7 +6,7 @@ import org.scalajs.dom.html.{Input => HTMLInput}
 import reactify.Var
 
 class TextInput extends Component {
-  override val element: HTMLInput = dom.create[HTMLInput]("input")
+  override lazy val element: HTMLInput = dom.create[HTMLInput]("input")
 
   lazy val value: Var[String] = prop(element.value, _ => changed(), mayCauseResize = false)
   val font: FontProperties = new FontProperties(this)

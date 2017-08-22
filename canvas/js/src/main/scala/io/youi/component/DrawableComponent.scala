@@ -6,7 +6,7 @@ import io.youi.theme.DrawableComponentTheme
 import reactify.Var
 
 class DrawableComponent extends Component with DrawableComponentTheme {
-  override lazy val theme: Var[DrawableComponentTheme] = Var(DrawableComponent)
+  override lazy val theme: Var[_ <: DrawableComponentTheme] = Var(DrawableComponent)
   val drawable: Var[Drawable] = prop(Drawable.empty, updatesRendering = true)
 
   size.measured.width := drawable.boundingBox.x2

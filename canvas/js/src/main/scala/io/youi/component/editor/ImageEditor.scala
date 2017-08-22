@@ -3,10 +3,11 @@ package io.youi.component.editor
 import io.youi._
 import io.youi.component._
 import io.youi.component.extra.RectangularSelection
-import io.youi.image.Image
+import io.youi.image.{Image, TextureImage}
 import io.youi.model.{ImageEditorInfo, ImageInfo, SelectionInfo}
 import io.youi.spatial.Point
 import io.youi.util.{CanvasPool, ImageUtility, SizeUtility}
+import org.scalajs.dom.raw.CanvasRenderingContext2D
 import org.scalajs.dom.{File, html}
 import reactify._
 
@@ -55,13 +56,14 @@ class ImageEditor extends AbstractContainer {
     val height = scaled.height
     val scale = scaled.scale
     val destination = CanvasPool(width, height)
-    val context = destination.context
-    context.scale(scale, scale)
-    context.translate(imageView.position.x - rs.selection.x1, imageView.position.y - rs.selection.y1)
-    context.translate(imageView.size.width / 2.0, imageView.size.height / 2.0)
-    context.rotate(imageView.rotation() * (math.Pi * 2.0))
-    context.translate(-imageView.size.width / 2.0, -imageView.size.height / 2.0)
-    originalImage.drawImage(this, destination, context, imageView.size.width, imageView.size.height).map { _ =>
+    val canvasContext = destination.getContext("2d").asInstanceOf[CanvasRenderingContext2D]
+    canvasContext.scale(scale, scale)
+    canvasContext.translate(imageView.position.x - rs.selection.x1, imageView.position.y - rs.selection.y1)
+    canvasContext.translate(imageView.size.width / 2.0, imageView.size.height / 2.0)
+    canvasContext.rotate(imageView.rotation() * (math.Pi * 2.0))
+    canvasContext.translate(-imageView.size.width / 2.0, -imageView.size.height / 2.0)
+    val context = new Context(destination)
+    originalImage.draw(context, imageView.size.width, imageView.size.height).map { _ =>
       val previous = preview()
       preview := destination
       CanvasPool.restore(previous)
@@ -71,24 +73,24 @@ class ImageEditor extends AbstractContainer {
   revision.on(previewUpdater.flag())
   delta.on(previewUpdater.update())
 
-  def previewImage(width: Double, height: Double): hypertext.ImageView = {
-    val view = new hypertext.ImageView
-    view.size.width := width
-    view.size.height := height
-    previewImage(view)
-    view
-  }
-
-  def previewImage(view: hypertext.ImageView): Unit = {
-    val resizer = LazyFuture {
-      ImageUtility.resizeToImage(preview(), view.size.width, view.size.height, view.element)
-    }
-    preview.attachAndFire { canvas =>
-      if (canvas.width > 0 && canvas.height > 0 && view.size.width() > 0.0 && view.size.height() > 0.0) {
-        resizer.flag()
-      }
-    }
-  }
+//  def previewImage(width: Double, height: Double): hypertext.ImageView = {
+//    val view = new hypertext.ImageView
+//    view.size.width := width
+//    view.size.height := height
+//    previewImage(view)
+//    view
+//  }
+//
+//  def previewImage(view: hypertext.ImageView): Unit = {
+//    val resizer = LazyFuture {
+//      ImageUtility.resizeToImage(preview(), view.size.width, view.size.height, view.element)
+//    }
+//    preview.attachAndFire { canvas =>
+//      if (canvas.width > 0 && canvas.height > 0 && view.size.width() > 0.0 && view.size.height() > 0.0) {
+//        resizer.flag()
+//      }
+//    }
+//  }
 
   def previewImage(img: html.Image, width: Double, height: Double): Unit = {
     val resizer = LazyFuture {
@@ -137,11 +139,17 @@ class ImageEditor extends AbstractContainer {
     if (img.width > maxOriginalSize.width || img.height > maxOriginalSize.height) {
       val scale = SizeUtility.scale(img.width, img.height, maxOriginalSize.width, maxOriginalSize.height)
       scribe.warn(s"Image size (${img.width}x${img.height}) is larger than maxOriginalSize ($maxOriginalSize). Scaling to $scale.")
-      img.resized(scale.width, scale.height, dropOriginal = true).map { resized =>
-        imageView.image := resized
-        originalImage := resized
-        reset()
-        resized
+      img.toDataURL.flatMap { dataURL =>
+        val htmlImage = dom.create[html.Image]("img")
+        htmlImage.src = dataURL
+        val destination = dom.create[html.Image]("img")
+        ImageUtility.resizeToImage(htmlImage, scale.width, scale.height, destination).map { _ =>
+          val resized = TextureImage(destination, destination.width, destination.height, ImageMode.Quality)
+          imageView.image := resized
+          originalImage := resized
+          reset()
+          resized
+        }
       }
     } else {
       originalImage := img

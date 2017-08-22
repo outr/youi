@@ -12,55 +12,12 @@ import reactify._
 class RectangularSelection extends DrawableComponent with RectangularSelectionTheme {
   override lazy val theme: Var[_ <: RectangularSelectionTheme] = Var(RectangularSelection)
 
-  override object selection extends SelectionPaintTheme(this) {
-    val x1: Var[Double] = Var(0.0)
-    val y1: Var[Double] = Var(0.0)
-    val x2: Var[Double] = Var(0.0)
-    val y2: Var[Double] = Var(0.0)
-    val width: Val[Double] = Val(x2 - x1)
-    val height: Val[Double] = Val(y2 - y1)
-    val edgeDistance: Var[Double] = Var(5.0)
-    object aspectRatio extends Var[Option[Double]](() => None) {
-      def bySize(width: Double, height: Double): Unit = set(Some(width / height))
-    }
+  override lazy val selection = new RectangularSelectionPaintTheme(this)
+  override lazy val blocks = new RectangularBlocksPaintTheme(this)
+  override lazy val dashes = new DashesPaintTheme(this)
+  override lazy val modal = new ModalPaintTheme(this)
 
-    val minX: Var[Double] = Var(edgeDistance)
-    val minY: Var[Double] = Var(edgeDistance)
-    val maxX: Var[Double] = Var(size.width - edgeDistance)
-    val maxY: Var[Double] = Var(size.height - edgeDistance)
-    val minWidth: Var[Double] = Var(30.0)
-    val minHeight: Var[Double] = Var(30.0)
-
-    def set(x1: Double, y1: Double, x2: Double, y2: Double): Unit = {
-      this.x1 := x1
-      this.y1 := y1
-      this.x2 := x2
-      this.y2 := y2
-    }
-    def maximize(): Unit = {
-      x1.static(minX)
-      y1.static(minY)
-      x2.static(maxX)
-      y2.static(maxY)
-    }
-  }
-  override object blocks extends BlocksPaintTheme(this) {
-    val size: Var[Double] = Var(10.0)
-  }
-
-  override object dashes extends DashesPaintTheme(this) {
-    object shadow {
-      val enabled: Var[Boolean] = Var(theme.dashes.shadow.enabled)
-      object offset {
-        val x: Var[Double] = Var(theme.dashes.shadow.offset.x)
-        val y: Var[Double] = Var(theme.dashes.shadow.offset.y)
-      }
-      val paint: Var[Paint] = Var(theme.dashes.shadow.paint)
-      val lineWidth: Var[Double] = Var(theme.dashes.shadow.lineWidth)
-    }
-  }
-
-  override object modal extends ModalPaintTheme(this)
+  override protected def defaultThemeParent = Some(theme)
 
   private val dragging = new SelectionDragSupport(this)
   def isDragging: Boolean = dragging.isDragging
@@ -244,7 +201,7 @@ class RectangularSelection extends DrawableComponent with RectangularSelectionTh
     math.abs(from - to) <= selection.edgeDistance()
   }
 
-  override protected def draw(context: Context): Unit = {
+  override def draw(context: Context): Unit = {
     dragging.update()
 
     super.draw(context)
@@ -415,3 +372,40 @@ class SelectionDragSupport(rs: RectangularSelection) extends DragSupport[DragSta
 case class DragStart(cursor: Cursor, x1: Double, y1: Double, x2: Double, y2: Double, mouseX: Double, mouseY: Double)
 
 object RectangularSelection extends RectangularSelectionTheme
+
+class RectangularSelectionPaintTheme(rs: RectangularSelection) extends SelectionPaintTheme(rs) {
+  val x1: Var[Double] = Var(0.0)
+  val y1: Var[Double] = Var(0.0)
+  val x2: Var[Double] = Var(0.0)
+  val y2: Var[Double] = Var(0.0)
+  val width: Val[Double] = Val(x2 - x1)
+  val height: Val[Double] = Val(y2 - y1)
+  val edgeDistance: Var[Double] = Var(5.0)
+  object aspectRatio extends Var[Option[Double]](() => None) {
+    def bySize(width: Double, height: Double): Unit = set(Some(width / height))
+  }
+
+  val minX: Var[Double] = Var(edgeDistance)
+  val minY: Var[Double] = Var(edgeDistance)
+  val maxX: Var[Double] = Var(rs.size.width - edgeDistance)
+  val maxY: Var[Double] = Var(rs.size.height - edgeDistance)
+  val minWidth: Var[Double] = Var(30.0)
+  val minHeight: Var[Double] = Var(30.0)
+
+  def set(x1: Double, y1: Double, x2: Double, y2: Double): Unit = {
+  this.x1 := x1
+  this.y1 := y1
+  this.x2 := x2
+  this.y2 := y2
+}
+  def maximize(): Unit = {
+  x1.static(minX)
+  y1.static(minY)
+  x2.static(maxX)
+  y2.static(maxY)
+}
+}
+
+class RectangularBlocksPaintTheme(rs: RectangularSelection) extends BlocksPaintTheme(rs) {
+  val size: Var[Double] = Var(10.0)
+}

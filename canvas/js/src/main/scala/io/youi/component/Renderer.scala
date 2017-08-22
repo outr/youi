@@ -36,16 +36,16 @@ class Renderer(canvas: html.Canvas) extends Container with RendererTheme {
     if (pointerTarget() != newTarget) {
       pointerTarget().foreach { component =>
         val local = component.localize(globalPoint)
-        component.event.pointer := PointerEvent(PointerEvent.Type.Exit, local, globalPoint, evt)
+        component.event.pointer := PointerEvent(PointerEvent.Type.Exit, local.x, local.y, globalPoint.x, globalPoint.y, evt)
       }
       pointerTarget := newTarget
       pointerTarget().foreach { component =>
         val local = component.localize(globalPoint)
-        component.event.pointer := PointerEvent(PointerEvent.Type.Enter, local, globalPoint, evt)
+        component.event.pointer := PointerEvent(PointerEvent.Type.Enter, local.x, local.y, globalPoint.x, globalPoint.y, evt)
       }
     }
     result.foreach {
-      case (local, component) => component.event.pointer := PointerEvent(`type`, local, globalPoint, evt)
+      case (local, component) => component.event.pointer := PointerEvent(`type`, local.x, local.y, globalPoint.x, globalPoint.y, evt)
     }
   }
   private def wheelEvent(delta: WheelDelta): Unit = {
@@ -53,7 +53,7 @@ class Renderer(canvas: html.Canvas) extends Container with RendererTheme {
     hitTest(globalPoint) match {
       case HitResult.Miss => // Nothing
       case HitResult.Hit(local, component) => {
-        component.event.pointer := WheelEvent(local, globalPoint, delta)
+        component.event.pointer := WheelEvent(local.x, local.y, globalPoint.x, globalPoint.y, delta)
       }
     }
   }

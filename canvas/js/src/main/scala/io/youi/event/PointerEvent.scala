@@ -7,9 +7,14 @@ import org.scalajs.dom.raw
 import scala.scalajs.js
 
 class PointerEvent private[event](val `type`: PointerEvent.Type,
-                                  val local: Point,
-                                  val global: Point,
+                                  val x: Double,
+                                  val y: Double,
+                                  val globalX: Double,
+                                  val globalY: Double,
                                   val htmlEvent: raw.MouseEvent) extends Event {
+  lazy val local: Point = Point(x, y)
+  lazy val global: Point = Point(globalX, globalY)
+
   val time: Long = System.currentTimeMillis()
   lazy val htmlPointerEvent: Option[HTMLPointerEvent] = if (HTMLEvents.hasPointerSupport) {
     Some(htmlEvent.asInstanceOf[HTMLPointerEvent])
@@ -31,8 +36,8 @@ class PointerEvent private[event](val `type`: PointerEvent.Type,
 }
 
 object PointerEvent {
-  def apply(`type`: Type, local: Point, global: Point, htmlEvent: raw.MouseEvent): PointerEvent = {
-    new PointerEvent(`type`, local, global, htmlEvent)
+  def apply(`type`: Type, x: Double, y: Double, globalX: Double, globalY: Double, htmlEvent: raw.MouseEvent): PointerEvent = {
+    new PointerEvent(`type`, x, y, globalX, globalY, htmlEvent)
   }
 
   sealed trait Type

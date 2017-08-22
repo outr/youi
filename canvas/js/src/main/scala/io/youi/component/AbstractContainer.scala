@@ -2,19 +2,20 @@ package io.youi.component
 
 import io.youi.Context
 import io.youi.event.HitResult
+import io.youi.layout.Layout
 import io.youi.spatial.Point
 import io.youi.theme.AbstractContainerTheme
 import reactify._
 
 import scala.annotation.tailrec
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
 
 trait AbstractContainer extends Component with AbstractContainerTheme { self =>
   type Child <: Component
 
   override lazy val theme: Var[_ <: AbstractContainerTheme] = Var(AbstractContainer)
   protected val childEntries: Var[Vector[Child]] = prop(Vector.empty, updatesTransform = true)
+
+  protected val layoutManager: Var[Layout] = Var(Layout.None)
 
   override protected def defaultThemeParent = Some(theme)
 
@@ -30,11 +31,22 @@ trait AbstractContainer extends Component with AbstractContainerTheme { self =>
       removed.foreach(_.parent.asInstanceOf[Var[Option[AbstractContainer]]] := None)
       added.foreach(_.parent.asInstanceOf[Var[Option[AbstractContainer]]] := Some(self))
 
-//      layoutManager.childrenChanged(self, removed, added)
+      layoutManager.childrenChanged(self, removed, added)
 
       invalidate()
     }
   })
+
+  layoutManager.changes(new ChangeListener[Layout] {
+    override def change(oldValue: Layout, newValue: Layout): Unit = synchronized {
+      oldValue.disconnect(self)
+      newValue.connect(self)
+    }
+  })
+
+  size.width.and(size.height).on {
+    layoutManager.resized(self, size.width, size.height)
+  }
 
   size.measured.width := (if (childEntries().nonEmpty) childEntries().map(_.position.right()).max else 0.0)
   size.measured.height := (if (childEntries().nonEmpty) childEntries().map(_.position.bottom()).max else 0.0)

@@ -73,25 +73,6 @@ class ImageEditor extends AbstractContainer {
   revision.on(previewUpdater.flag())
   delta.on(previewUpdater.update())
 
-//  def previewImage(width: Double, height: Double): hypertext.ImageView = {
-//    val view = new hypertext.ImageView
-//    view.size.width := width
-//    view.size.height := height
-//    previewImage(view)
-//    view
-//  }
-//
-//  def previewImage(view: hypertext.ImageView): Unit = {
-//    val resizer = LazyFuture {
-//      ImageUtility.resizeToImage(preview(), view.size.width, view.size.height, view.element)
-//    }
-//    preview.attachAndFire { canvas =>
-//      if (canvas.width > 0 && canvas.height > 0 && view.size.width() > 0.0 && view.size.height() > 0.0) {
-//        resizer.flag()
-//      }
-//    }
-//  }
-
   def previewImage(img: html.Image, width: Double, height: Double): Unit = {
     val resizer = LazyFuture {
       if (preview().width > 0 && preview().height > 0 && width > 0.0 && height > 0.0) {
@@ -110,7 +91,7 @@ class ImageEditor extends AbstractContainer {
 
   childEntries ++= List(imageView, rs)
 
-  event.pointer.wheel.attach { evt =>
+  rs.event.pointer.wheel.attach { evt =>
     scale(evt.delta.y * -wheelMultiplier, Some(evt.local))
   }
   event.gestures.pointers.dragged.attach { p =>

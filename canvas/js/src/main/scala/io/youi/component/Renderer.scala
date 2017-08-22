@@ -3,7 +3,7 @@ package io.youi.component
 import io.youi.event._
 import io.youi.spatial.Point
 import io.youi.theme.RendererTheme
-import io.youi.{AnimationFrame, Drawer, HTMLEvents}
+import io.youi.{AnimationFrame, Cursor, Drawer, HTMLEvents}
 import org.scalajs.dom.raw.MouseEvent
 import org.scalajs.dom.{document, html, raw}
 import reactify._
@@ -24,10 +24,12 @@ class Renderer(canvas: html.Canvas) extends Container with RendererTheme {
   htmlEvents.mouse.move.attach(pointerEvent(_, PointerEvent.Type.Move))
   htmlEvents.mouse.cancel.attach(pointerEvent(_, PointerEvent.Type.Cancel))
   Mouse.wheel.attach(wheelEvent)
+  cursor := pointerTarget().map(_.cursor()).getOrElse(Cursor.Auto)      // Renderer's cursor should reflect the pointer target's cursor
+  cursor.attach(c => canvas.style.cursor = c.value)
 
   private val globalPoint = Point.mutable()
-  private def pointerEvent(evt: MouseEvent, `type`: PointerEvent.Type): Unit = {
-    globalPoint.set(evt.clientX, evt.clientY)
+  private def pointerEvent(evt: MouseEvent, `type`: PointerEvent.Type): Unit = if (visible()) {
+    globalPoint.set(evt.clientX - canvas.offsetLeft, evt.clientY - canvas.offsetTop)
     val result = hitTest(globalPoint) match {
       case HitResult.Miss => None
       case HitResult.Hit(l, c) => Some(l -> c)
@@ -48,8 +50,8 @@ class Renderer(canvas: html.Canvas) extends Container with RendererTheme {
       case (local, component) => component.event.pointer := PointerEvent(`type`, local.x, local.y, globalPoint.x, globalPoint.y, evt)
     }
   }
-  private def wheelEvent(delta: WheelDelta): Unit = {
-    globalPoint.set(delta.htmlEvent.clientX, delta.htmlEvent.clientY)
+  private def wheelEvent(delta: WheelDelta): Unit = if (visible()) {
+    globalPoint.set(delta.htmlEvent.clientX - canvas.offsetLeft, delta.htmlEvent.clientY - canvas.offsetTop)
     hitTest(globalPoint) match {
       case HitResult.Miss => // Nothing
       case HitResult.Hit(local, component) => {

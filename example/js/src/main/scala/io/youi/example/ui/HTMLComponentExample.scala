@@ -16,8 +16,8 @@ object HTMLComponentExample extends UIExampleScreen with UIScreen {
       font.size := 48.0
     }
     val component = new HTMLComponent(button) {
-      position.center := renderer.position.center
-      position.middle := renderer.position.middle
+      position.center := ui.position.center
+      position.middle := ui.position.middle
     }
     container.children += component
   }

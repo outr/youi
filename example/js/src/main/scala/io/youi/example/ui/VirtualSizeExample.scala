@@ -2,7 +2,7 @@ package io.youi.example.ui
 
 import io.youi._
 import io.youi.app.screen.UIScreen
-import io.youi.component.{BasicText, ImageView, Texture, TextureComponent}
+import io.youi.component.{BasicText, ImageView}
 
 object VirtualSizeExample extends UIExampleScreen with UIScreen with VirtualSizeSupport {
   override def name: String = "Virtual Size Example"
@@ -12,7 +12,7 @@ object VirtualSizeExample extends UIExampleScreen with UIScreen with VirtualSize
     virtualWidth := 1024.0
     virtualHeight := 768.0
 
-    container.children += new ImageView("/images/1024.jpg") {
+    container.children += new ImageView("/images/1024.jpg", ImageMode.Speed) {
       position.left := 0.vx
       position.top := 0.vy
       size.width := 1024.vw

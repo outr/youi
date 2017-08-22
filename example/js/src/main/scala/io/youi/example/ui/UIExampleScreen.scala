@@ -1,9 +1,9 @@
 package io.youi.example.ui
 
-import io.youi.UI
 import io.youi.example.screen.ExampleScreen
 
 import scala.concurrent.{ExecutionContext, Future}
+import org.scalajs.dom._
 
 trait UIExampleScreen extends ExampleScreen {
   def name: String
@@ -11,6 +11,6 @@ trait UIExampleScreen extends ExampleScreen {
   implicit def executionContext: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
 
   override protected def activate(): Future[Unit] = super.activate().map { _ =>
-    UI.title := name
+    document.title = name
   }
 }

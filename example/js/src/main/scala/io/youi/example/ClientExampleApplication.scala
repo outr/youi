@@ -1,6 +1,5 @@
 package io.youi.example
 
-import io.youi.UI
 import io.youi.app.screen.{CrossFadeSupport, LoadingTransitionSupport}
 import io.youi.app.{ClientApplication, ClientConnectivity}
 import io.youi.dom._
@@ -17,25 +16,20 @@ object ClientExampleApplication extends JSApp with ExampleApplication with Clien
 
   val uiExamples = UIExamples
 
-  val matrix = hypertext.MatrixTest
-
   val hello = HelloWorld
   val images = ImageExample
   val video = VideoExample
   val animation = AnimationExample
-  val graphics = GraphicsExample
   val basicText = BasicTextExample
   val text = TextExample
-  val canvas = CanvasExample
-  val drawable = DrawableExample
   val htmlComponent = HTMLComponentExample
-  val svgDrawable = SVGImageExample
+  val svg = SVGImageExample
   val scale9 = Scale9Example
   val virtual = VirtualSizeExample
   val snap = SnapExample
-  val scrolling = ScrollingExample
-  val verticalLayout = VerticalLayoutExample
-  val gestures = GesturesExample
+//  val scrolling = ScrollingExample
+//  val verticalLayout = VerticalLayoutExample
+//  val gestures = GesturesExample
   val imageEditor = ImageEditorExample
 
   val dataTransfer = DataTransferExample
@@ -56,7 +50,6 @@ object ClientExampleApplication extends JSApp with ExampleApplication with Clien
   override protected val loadingElement: html.Element = byId[html.Div]("loading")
 
   override def main(): Unit = {
-    UI.init()
     scribe.info("Initialized!")
   }
 }

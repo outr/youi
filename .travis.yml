@@ -1,9 +1,16 @@
 sudo: false
 language: scala
 scala:
-  - 2.12.1
+  - 2.12.3
 jdk:
   - oraclejdk8
+install:
+  - . $HOME/.nvm/nvm.sh
+  - nvm install 7
+  - nvm use 7
+  - export NODE_PATH="$(npm config get prefix)"/lib/node_modules
+  - npm install
+  - npm install jsdom source-map-support
 script:
   - sbt clean +test
   - sbt coverage coreJVM/test communicationJVM/test server/test serverUndertow/test stream/test appJVM/test

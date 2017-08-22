@@ -22,7 +22,7 @@ object ImageEditorExample extends HTMLScreen {
     size.width := 800.0
     size.height := 500.0
   }
-  private lazy val renderer = Renderer(canvas)
+  private lazy val renderer = new Renderer(canvas.element)
 
   override protected def load(): Future[Unit] = super.load().map { _ =>
     container.children += canvas
@@ -45,10 +45,10 @@ object ImageEditorExample extends HTMLScreen {
       border.size := Some(1.0)
       border.style := Some(BorderStyle.Solid)
       border.color := Some(Color.Black)
-      editor.previewImage(this)
+      editor.previewImage(element, 160, 120)
       visible := editor.globalVisibility
     }
-    ui.children += preview1
+    container.children += preview1
 
     val resetButton = new Button {
       text := "Reset"

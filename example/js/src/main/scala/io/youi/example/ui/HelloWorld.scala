@@ -9,13 +9,12 @@ object HelloWorld extends UIExampleScreen with UIScreen {
   override def path: String = "/examples/hello.html"
 
   override def createUI(): Unit = {
-    val text = new BasicText {
+    container.children += new BasicText {
       value := "Hello, World!"
       font.size := 48.0
       fill := Color.DarkBlue
-      position.center := renderer.position.center
-      position.middle := renderer.position.middle
+      position.center := ui.position.center
+      position.middle := ui.position.middle
     }
-    container.children += text
   }
 }

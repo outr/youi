@@ -1,5 +1,6 @@
 package io.youi.example.ui
 
+import io.youi._
 import io.youi.app.screen.UIScreen
 import io.youi.component.ImageView
 import io.youi.dom._
@@ -18,14 +19,14 @@ object SVGImageExample extends UIExampleScreen with UIScreen {
     """.stripMargin
 
   override def createUI(): Unit = {
-    container.children += new ImageView("/images/tiger.svg") {
+    container.children += new ImageView("/images/tiger.svg", ImageMode.Quality) {
       position.left := 10.0
       position.top := 10.0
     }
 
-    container.children += new ImageView(svgString) {
-      position.center := renderer.position.center
-      position.middle := renderer.position.middle
+    container.children += new ImageView(svgString, ImageMode.Quality) {
+      position.center := ui.position.center
+      position.middle := ui.position.middle
 
       def toggleColor(): Unit = {
         val current = image().asInstanceOf[SVGImage]
@@ -35,6 +36,7 @@ object SVGImageExample extends UIExampleScreen with UIScreen {
         } else {
           circle.style.fill = "blue"
         }
+        current.modified := true
         reDraw.flag()
       }
 

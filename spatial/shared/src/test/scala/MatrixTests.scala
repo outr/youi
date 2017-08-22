@@ -5,8 +5,6 @@ import org.scalatest.{FlatSpec, FlatSpecLike, Matchers}
 import org.scalatest.prop.PropertyChecks
 import org.scalatest.prop.Checkers._
 
-
-
 class MatrixTests extends MatrixTestHelpers with PropertyChecks with Matchers with FlatSpecLike {
 
   behavior of "Matrix3"
@@ -15,9 +13,9 @@ class MatrixTests extends MatrixTestHelpers with PropertyChecks with Matchers wi
     forAll{
       m: Matrix3 =>
         val duplicated = m.duplicate()
-        m.rotateDeg(180.deg).rotateDeg(180.deg) should equal(duplicated)
-        m.rotateDeg(360.deg) should equal(duplicated)
-        m.rotate((2 * math.Pi).rad) should equal(duplicated)
+        m.rotate(180.degrees).rotate(180.degrees) should equal(duplicated)
+        m.rotate(360.degrees) should equal(duplicated)
+        m.rotate((2.0 * math.Pi).radians) should equal(duplicated)
     }
   }
 
@@ -66,12 +64,12 @@ class MatrixTests extends MatrixTestHelpers with PropertyChecks with Matchers wi
 
   it should "localize a point properly" in {
     forAll{
-      (point: Point, xtrans: Int, ytrans: Int, rotation: Degrees) =>
+      (point: Point, xtrans: Int, ytrans: Int, rotation: Double) =>
         val duplicate = point.duplicate()
 
-        val tMatrix = Matrix3.Identity.toTranslation(xtrans, ytrans).rotateDeg(rotation)
+        val tMatrix = Matrix3.Identity.toTranslation(xtrans, ytrans).rotate(rotation)
 
-        tMatrix.localize(point) should equal(duplicate.rotateDeg(rotation) + Point(xtrans, ytrans))
+        tMatrix.localize(point) should equal(duplicate.rotate(rotation) + Point(xtrans, ytrans))
     }
   }
 }

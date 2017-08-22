@@ -3,7 +3,7 @@ package io.youi.example.ui
 import io.youi._
 import io.youi.task._
 import io.youi.app.screen.UIScreen
-import io.youi.component.{BasicText, ImageView, Texture, TextureComponent}
+import io.youi.component.{BasicText, ImageView}
 import io.youi.easing.Easing
 
 import scala.concurrent.duration._
@@ -13,7 +13,7 @@ object AnimationExample extends UIExampleScreen with UIScreen {
   override def path: String = "/examples/animation.html"
 
   override def createUI(): Unit = {
-    val image = new ImageView("/images/icon.png") {
+    val image = new ImageView("/images/icon.png", ImageMode.Quality) {
       position.left := 0.0
       position.middle := container.position.middle
     }

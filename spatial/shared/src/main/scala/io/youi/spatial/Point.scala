@@ -74,14 +74,13 @@ sealed trait Point {
     )
   }
 
-  def rotateDeg(degrees: Degrees): Point = {
-    rotate(degrees.toRad)
-  }
-
-  def rotate(radians: Radians): Point = {
+  def rotate(value: Double): Point = {
+    val radians = value * (math.Pi * 2.0)
+    val sin = math.sin(radians)
+    val cos = math.cos(radians)
     set(
-      x * math.cos(radians.value) - y * math.sin(radians.value),
-      x * math.sin(radians.value) + y * math.cos(radians.value)
+      x * cos - y * sin,
+      x * sin + y * cos
     )
   }
 

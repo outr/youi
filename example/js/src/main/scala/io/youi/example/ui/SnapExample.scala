@@ -2,9 +2,9 @@ package io.youi.example.ui
 
 import io.youi._
 import io.youi.app.screen.UIScreen
-import io.youi.component.DrawableComponent
-import io.youi.component.layout.Snap
-import io.youi.style.Paint
+import io.youi.component.Container
+import io.youi.layout.Snap
+import io.youi.paint.Paint
 import reactify._
 
 object SnapExample extends UIExampleScreen with UIScreen {
@@ -35,7 +35,7 @@ object SnapExample extends UIExampleScreen with UIScreen {
     )
   }
 
-  class Box extends DrawableComponent {
+  class Box extends Container {
     size.width := 100.0
     size.height := 100.0
   }

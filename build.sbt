@@ -1,6 +1,6 @@
 name := "youi"
 organization in ThisBuild := "io.youi"
-version in ThisBuild := "0.5.3-SNAPSHOT"
+version in ThisBuild := "0.6.0-SNAPSHOT"
 scalaVersion in ThisBuild := "2.12.3"
 crossScalaVersions in ThisBuild := List("2.12.3", "2.11.11")
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
@@ -8,11 +8,15 @@ resolvers in ThisBuild += Resolver.sonatypeRepo("snapshots")
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 
 val profigVersion = "1.1.2"
-val pixiJsVersion = "4.5.3"
 val scribeVersion = "1.4.5"
 val powerScalaVersion = "2.0.5"
 val reactifyVersion = "2.1.0"
-val akkaVersion = "2.5.3"
+val hasherVersion = "1.2.1"
+val canvgVersion = "1.4.0_1"
+val openTypeVersion = "0.7.1_2"
+val picaVersion = "3.0.5"
+
+val akkaVersion = "2.5.4"
 val scalaJSDOM = "0.9.3"
 val httpAsyncClientVersion = "4.1.3"
 val httpMimeVersion = "4.5.3"
@@ -20,20 +24,17 @@ val circeVersion = "0.8.0"
 val uaDetectorVersion = "2014.10"
 val undertowVersion = "1.4.18.Final"
 val closureCompilerVersion = "v20170423"
-val hasherVersion = "1.2.1"
-val canvgVersion = "1.4.0_1"
-val openTypeVersion = "0.7.1_2"
-val picaVersion = "3.0.5"
 val jSoupVersion = "1.10.3"
 val scalaXMLVersion = "1.0.6"
 val scalacticVersion = "3.0.3"
 val scalaTestVersion = "3.0.3"
-val scalaCheckVersion = "1.13.4"
+val scalaCheckVersion = "1.13.5"
 
 lazy val root = project.in(file("."))
   .aggregate(
     coreJS, coreJVM, spatialJS, spatialJVM, stream, communicationJS, communicationJVM, dom, client, server,
-    serverUndertow, uiJS, uiJVM, optimizer, appJS, appJVM, templateJS, templateJVM, exampleJS, exampleJVM
+    serverUndertow, canvasJS, canvasJVM, hypertext, optimizer, appJS, appJVM, templateJS, templateJVM, exampleJS,
+    exampleJVM
   )
   .settings(
     resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases",
@@ -80,11 +81,11 @@ lazy val spatial = crossProject.in(file("spatial"))
     libraryDependencies ++= Seq(
       "org.scalactic" %%% "scalactic" % scalacticVersion,
       "org.scalatest" %%% "scalatest" % scalaTestVersion % "test",
-      "org.scalacheck" %% "scalacheck" % scalaCheckVersion % "test"
+      "org.scalacheck" %%% "scalacheck" % scalaCheckVersion % "test"
     )
   )
   .jsSettings(
-    test := ()
+    jsDependencies += RuntimeDOM
   )
   .dependsOn(core)
 
@@ -104,7 +105,8 @@ lazy val dom = project.in(file("dom"))
   .enablePlugins(ScalaJSPlugin)
   .settings(
     name := "youi-dom",
-    libraryDependencies += "com.outr" %% "profig" % profigVersion
+    libraryDependencies += "com.outr" %% "profig" % profigVersion,
+    jsDependencies += RuntimeDOM
   )
   .dependsOn(coreJS)
   .dependsOn(stream % "compile")
@@ -157,23 +159,30 @@ lazy val communication = crossProject.in(file("communication"))
 lazy val communicationJS = communication.js
 lazy val communicationJVM = communication.jvm.dependsOn(server)
 
-lazy val ui = crossProject.in(file("ui"))
+lazy val canvas = crossProject.in(file("canvas"))
   .settings(
-    name := "youi-ui"
+    name := "youi-canvas"
   )
   .jsSettings(
-    test := (),
     libraryDependencies ++= Seq(
-      "com.outr" %%% "scalajs-pixijs" % pixiJsVersion,
       "com.outr" %%% "canvg-scala-js" % canvgVersion,
       "com.outr" %%% "opentype-scala-js" % openTypeVersion,
       "com.outr" %%% "pica-scala-js" % picaVersion
-    )
+    ),
+    jsDependencies += RuntimeDOM
   )
-  .dependsOn(core, spatial)
+  .dependsOn(spatial)
 
-lazy val uiJS = ui.js.dependsOn(dom)
-lazy val uiJVM = ui.jvm
+lazy val canvasJS = canvas.js.dependsOn(dom)
+lazy val canvasJVM = canvas.jvm
+
+lazy val hypertext = project.in(file("hypertext"))
+  .enablePlugins(ScalaJSPlugin)
+  .settings(
+    name := "youi-hypertext",
+    jsDependencies += RuntimeDOM
+  )
+  .dependsOn(canvasJS)
 
 lazy val optimizer = project.in(file("optimizer"))
   .settings(
@@ -197,12 +206,9 @@ lazy val app = crossProject.in(file("app"))
       "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
     )
   )
-  .jsSettings(
-    test := ()
-  )
-  .dependsOn(core, communication, ui)
+  .dependsOn(core, communication, canvas)
 
-lazy val appJS = app.js
+lazy val appJS = app.js.dependsOn(hypertext)
 lazy val appJVM = app.jvm
 
 lazy val template = crossProject.in(file("template"))
@@ -210,7 +216,6 @@ lazy val template = crossProject.in(file("template"))
     name := "youi-template"
   )
   .jsSettings(
-    test := (),
     artifactPath in (Compile, fastOptJS) := (resourceManaged in Compile).value / "application.js",
     artifactPath in (Compile, fullOptJS) := (resourceManaged in Compile).value / "application.js",
     crossTarget in fastOptJS := baseDirectory.value / ".." / "jvm" / "src" / "main" / "resources" / "app",
@@ -235,7 +240,6 @@ lazy val example = crossProject.in(file("example"))
     name := "youi-example"
   )
   .jsSettings(
-    test := (),
     crossTarget in fastOptJS := baseDirectory.value / ".." / "jvm" / "src" / "main" / "resources" / "app",
     crossTarget in fullOptJS := baseDirectory.value / ".." / "jvm" / "src" / "main" / "resources" / "app",
     crossTarget in packageJSDependencies := baseDirectory.value / ".." / "jvm" / "src" / "main" / "resources" / "app",

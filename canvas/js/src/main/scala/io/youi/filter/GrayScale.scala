@@ -1,6 +1,6 @@
-package io.youi.component.filter
+package io.youi.filter
 
-import io.youi.component.Pixel
+import io.youi.Pixel
 
 object GrayScale extends PerPixelCanvasFilter {
   override def apply(pixel: Pixel): Unit = {

@@ -1,6 +1,6 @@
-package io.youi.component.filter
+package io.youi.filter
 
-import io.youi.component.Pixel
+import io.youi.Pixel
 import org.scalajs.dom.raw.ImageData
 
 trait PerPixelCanvasFilter extends CanvasFilter {

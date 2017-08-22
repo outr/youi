@@ -84,4 +84,6 @@ trait AbstractContainer extends Component with AbstractContainerTheme { self =>
   }
 }
 
-object AbstractContainer extends AbstractContainerTheme
+object AbstractContainer extends AbstractContainerTheme {
+  def children(container: AbstractContainer): Val[Vector[Component]] = container.childEntries.asInstanceOf[Val[Vector[Component]]]
+}

@@ -1,7 +1,6 @@
-package io.youi.component.layout
+package io.youi.layout
 
 import io.youi.component.{AbstractContainer, Component}
-import reactify.{InvocationType, Listener}
 
 /**
   * Layouts can be defined and connected to an AbstractContainer to manage the layout of the children. By default

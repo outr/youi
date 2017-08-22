@@ -1,4 +1,4 @@
-package io.youi.component.layout
+package io.youi.layout
 
 import io.youi.component.{AbstractContainer, Component}
 import reactify._

@@ -10,4 +10,3 @@ class TypedContainer[T <: Component] extends AbstractContainer {
 
   def children: Var[Vector[T]] = childEntries
 }
-

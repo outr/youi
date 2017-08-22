@@ -1,4 +1,4 @@
-package io.youi.component.filter
+package io.youi.filter
 
 import org.scalajs.dom.raw.ImageData
 

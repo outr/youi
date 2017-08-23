@@ -1,10 +1,11 @@
 package io.youi.example.ui.hypertext
 
-import io.youi.Color
+import io.youi.{Color, hypertext}
 import io.youi.hypertext.border.BorderStyle
 import io.youi.hypertext.layout.GridLayout
-import io.youi.hypertext.style.Overflow
-import io.youi.hypertext.{Button, Component, Container}
+import io.youi.hypertext.{Component, Container}
+import io.youi.spatial.Point
+import org.scalajs.dom._
 
 import scala.concurrent.Future
 
@@ -12,44 +13,52 @@ object SelectionExample extends HTMLScreen {
   override def name: String = "Selection Example"
 
   override protected def load(): Future[Unit] = super.load().map { _ =>
-    val box1: Component = createBox("box1", Color.Red)
-    val box2: Component = createBox("box2", Color.Green)
-    val box3: Component = createBox("box3", Color.Blue)
-    val box4: Component = createBox("box4", Color.Magenta)
-    val box5: Component = createBox("box5", Color.Cyan)
-    val box6: Component = createBox("box6", Color.SandyBrown)
-    val box7: Component = createBox("box7", Color.Orange)
-    val box8: Component = createBox("box8", Color.DarkSlateGray)
+    val boxes = Color.all.take(60).zipWithIndex.map {
+      case (color, index) => createBox(s"Box $index", color)
+    }
 
     val layoutContainer = new Container {
-      id := "main"
+      layoutManager := Some(new GridLayout(columns = 3, xOffset = 15.0, yOffset = 15.0, verticalPadding = 15.0, horizontalPadding = 15.0))
 
-      layoutManager := Some(new GridLayout(columns = 3, verticalPadding = 15.0, horizontalPadding = 15.0))
-      backgroundColor := Color.Black
-      size.height := 500.0
-      position.left := 100.0
-      position.top := 100.0
-      overflow.x := Overflow.Hidden
-      overflow.y := Overflow.Auto
+      position.left := 300.0
 
-      children += box1
-      children += box2
-      children += box3
-      children += box4
-      children += box5
-      children += box6
-      children += box7
-      children += box8
+      boxes.foreach(children += _)
     }
     container.children += layoutContainer
 
-    container.children += new Button {
-      text := "Jump to Middle"
+    val boxesSet = boxes.toSet
+    val selection = new hypertext.Selection(document.body, boxesSet) {
+      override def pointFor(box: Component, point: Point): Point = {
+        val rect = box.element.getBoundingClientRect()
+        val cx = rect.left + (rect.width / 2.0)
+        val cy = rect.top + (rect.height / 2.0)
+        point.set(cx, cy)
+      }
 
-      event.click.attach { _ =>
-        layoutContainer.scrollbar.vertical.percentage := 0.5
+      override def added(element: Component): Unit = {
+        super.added(element)
+
+        element.border.color := Some(Color.HotPink)
+      }
+
+      override def removed(element: Component): Unit = {
+        super.removed(element)
+
+        element.border.color := Some(Color.Black)
       }
     }
+    selection.current.attach { selected =>
+      scribe.info(s"Selected: ${selected.map(_.id()).mkString(", ")}")
+    }
+    container.children += selection
+  }
+
+  override protected def activate() = super.activate().map { _ =>
+    document.body.style.overflowY = "auto"
+  }
+
+  override protected def deactivate() = super.deactivate().map { _ =>
+    document.body.style.overflowY = "hidden"
   }
 
   private def createBox(name: String, c: Color): Component = new Container {
@@ -57,8 +66,8 @@ object SelectionExample extends HTMLScreen {
     size.width := 350.0
     size.height := 250.0
     backgroundColor := c
-    border.color := Some(Color.DeepPink)
-    border.size := Some(1.0)
+    border.color := Some(Color.Black)
+    border.size := Some(2.0)
     border.style := Some(BorderStyle.Solid)
     border.radius := 5.0
   }

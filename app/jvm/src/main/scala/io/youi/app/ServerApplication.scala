@@ -272,6 +272,8 @@ object ServerApplication {
       |   body {
       |     margin: 0;
       |     overflow: hidden;
+      |     width: 100vw;
+      |     height: 100vh;
       |   }
       | </style>
       |</head>

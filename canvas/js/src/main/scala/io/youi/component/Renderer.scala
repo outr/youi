@@ -29,7 +29,8 @@ class Renderer(canvas: html.Canvas) extends Container with RendererTheme {
 
   private val globalPoint = Point.mutable()
   private def pointerEvent(evt: MouseEvent, `type`: PointerEvent.Type): Unit = if (visible()) {
-    globalPoint.set(evt.clientX - canvas.offsetLeft, evt.clientY - canvas.offsetTop)
+    val rect = canvas.getBoundingClientRect()
+    globalPoint.set(evt.clientX - rect.left, evt.clientY - rect.top)
     val result = hitTest(globalPoint) match {
       case HitResult.Miss => None
       case HitResult.Hit(l, c) => Some(l -> c)
@@ -51,7 +52,8 @@ class Renderer(canvas: html.Canvas) extends Container with RendererTheme {
     }
   }
   private def wheelEvent(delta: WheelDelta): Unit = if (visible()) {
-    globalPoint.set(delta.htmlEvent.clientX - canvas.offsetLeft, delta.htmlEvent.clientY - canvas.offsetTop)
+    val rect = canvas.getBoundingClientRect()
+    globalPoint.set(delta.htmlEvent.clientX - rect.left, delta.htmlEvent.clientY - rect.top)
     hitTest(globalPoint) match {
       case HitResult.Miss => // Nothing
       case HitResult.Hit(local, component) => {
@@ -67,13 +69,15 @@ class Renderer(canvas: html.Canvas) extends Container with RendererTheme {
     case false => canvas.style.display = "none"
   }
 
-  canvas.style.position = "absolute"
-  canvas.style.left = "0px"
-  canvas.style.top = "0px"
-  visible := false
+  if (Option(canvas.parentElement).isEmpty) {
+    canvas.style.position = "absolute"
+    canvas.style.left = "0px"
+    canvas.style.top = "0px"
+    visible := false
 
-  document.body.appendChild(canvas)
+    document.body.appendChild(canvas)
 
+  }
   AnimationFrame.delta.attach(update)
 
   def apply(): html.Canvas = canvas

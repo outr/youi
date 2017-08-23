@@ -92,5 +92,9 @@ class ColorSpec extends WordSpec with Matchers {
       c.saturation should be(1.0)
       c.brightness should be(0.7490196078431373)
     }
+    "get a color by name" in {
+      Color.getByName("green") should be(Some(Color.Green))
+      Color.getByName("blanched almond") should be(Some(Color.BlanchedAlmond))
+    }
   }
 }

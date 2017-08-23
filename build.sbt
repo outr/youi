@@ -32,15 +32,29 @@ val scalaCheckVersion = "1.13.5"
 
 lazy val root = project.in(file("."))
   .aggregate(
-    coreJS, coreJVM, spatialJS, spatialJVM, stream, communicationJS, communicationJVM, dom, client, server,
-    serverUndertow, canvasJS, canvasJVM, hypertext, optimizer, appJS, appJVM, templateJS, templateJVM, exampleJS,
-    exampleJVM
+    macrosJS, macrosJVM, coreJS, coreJVM, spatialJS, spatialJVM, stream, communicationJS, communicationJVM, dom, client,
+    server, serverUndertow, canvasJS, canvasJVM, hypertext, optimizer, appJS, appJVM, templateJS, templateJVM,
+    exampleJS, exampleJVM
   )
   .settings(
     resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases",
     publish := {},
     publishLocal := {}
   )
+
+lazy val macros = crossProject.in(file("macros"))
+  .settings(
+    name := "youi-macros",
+    description := "Dependency for internal Macro functionality",
+    libraryDependencies ++= Seq(
+      "org.scala-lang" % "scala-reflect" % scalaVersion.value,
+      "org.scalactic" %%% "scalactic" % scalacticVersion,
+      "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
+    )
+  )
+
+lazy val macrosJS = macros.js
+lazy val macrosJVM = macros.jvm
 
 lazy val core = crossProject.in(file("core"))
   .settings(
@@ -71,6 +85,7 @@ lazy val core = crossProject.in(file("core"))
       "org.scala-js" %%% "scalajs-dom" % scalaJSDOM
     )
   )
+  .dependsOn(macros)
 
 lazy val coreJS = core.js
 lazy val coreJVM = core.jvm

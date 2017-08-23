@@ -33,6 +33,7 @@ object ClientExampleApplication extends JSApp with ExampleApplication with Clien
   val imageEditor = ImageEditorExample
 
   val dataTransfer = DataTransferExample
+  val selection = hypertext.SelectionExample
 
   val htmlHello = hypertext.HelloWorld
   val htmlAnimation = hypertext.AnimationExample

@@ -1,13 +1,16 @@
 package io.youi.example.ui.hypertext
 
-import io.youi.{Color, hypertext}
+import io.youi.{BoundingBox, Color, hypertext}
 import io.youi.hypertext.border.BorderStyle
 import io.youi.hypertext.layout.GridLayout
 import io.youi.hypertext.{Component, Container}
-import io.youi.spatial.Point
 import org.scalajs.dom._
 
 import scala.concurrent.Future
+
+// TODO: retain selection
+// TODO: CTRL + click to toggle
+// TODO: SHIFT + click to block add
 
 object SelectionExample extends HTMLScreen {
   override def name: String = "Selection Example"
@@ -28,11 +31,9 @@ object SelectionExample extends HTMLScreen {
 
     val boxesSet = boxes.toSet
     val selection = new hypertext.Selection(document.body, boxesSet) {
-      override def pointFor(box: Component, point: Point): Point = {
-        val rect = box.element.getBoundingClientRect()
-        val cx = rect.left + (rect.width / 2.0)
-        val cy = rect.top + (rect.height / 2.0)
-        point.set(cx, cy)
+      override def boxFor(element: Component): BoundingBox = {
+        val rect = element.element.getBoundingClientRect()
+        BoundingBox(rect.left, rect.top, rect.right, rect.bottom)
       }
 
       override def added(element: Component): Unit = {

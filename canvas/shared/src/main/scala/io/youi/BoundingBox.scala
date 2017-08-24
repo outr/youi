@@ -15,15 +15,17 @@ case class BoundingBox(x1: Double, y1: Double, x2: Double, y2: Double) {
     y2 = math.max(this.y2, that.y2)
   )
 
-//  def touching(x: Double, y: Double): Option[TouchData] = {
-//    if (x >= x1 && x <= x2 && y >= 0 && y <= height) {
-//      val deltaX = x - centerX
-//      val deltaY = y - centerY
-//      Some(TouchData(deltaX, deltaY, BoundingBox.distance(x, centerX, y, centerY)))
-//    } else {
-//      None
-//    }
-//  }
+  def touching(x: Double, y: Double): Option[TouchData] = {
+    if (x >= x1 && x <= x2 && y >= 0 && y <= height) {
+      val deltaX = x - centerX
+      val deltaY = y - centerY
+      Some(TouchData(deltaX, deltaY, BoundingBox.distance(x, centerX, y, centerY)))
+    } else {
+      None
+    }
+  }
+
+  def intersects(that: BoundingBox): Boolean = !(x1 > that.x2 || x2 < that.x1 || y1 > that.y2 || y2 < that.y1)
 
   def shift(offsetX: Double, offsetY: Double): BoundingBox = if (offsetX == 0.0 && offsetY == 0.0) {
     this
@@ -50,3 +52,5 @@ object BoundingBox {
     math.sqrt((xd * xd) + (yd * yd))
   }
 }
+
+case class TouchData(deltaX: Double, deltaY: Double, distance: Double)

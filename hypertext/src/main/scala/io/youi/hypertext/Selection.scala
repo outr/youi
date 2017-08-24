@@ -1,8 +1,7 @@
 package io.youi.hypertext
 
 import io.youi.hypertext.border.BorderStyle
-import io.youi.spatial.Point
-import io.youi.{Color, HTMLEvents}
+import io.youi.{BoundingBox, Color, HTMLEvents}
 import org.scalajs.dom.{document, html}
 import reactify.{Channel, Var}
 
@@ -99,18 +98,17 @@ abstract class Selection[T](root: html.Element,
   def added(element: T): Unit = {}
   def removed(element: T): Unit = {}
 
-  def pointFor(element: T, point: Point): Point
-
-  private val point = Point.mutable()
+  def boxFor(element: T): BoundingBox
 
   def select(x1: Double, y1: Double, x2: Double, y2: Double, elements: Set[T]): Set[T] = {
     val minX = math.min(x1, x2) - adjustX
     val minY = math.min(y1, y2) - adjustY
     val maxX = math.max(x1, x2) - adjustX
     val maxY = math.max(y1, y2) - adjustY
+    val boundingBox = BoundingBox(minX, minY, maxX, maxY)
     elements.filter { e =>
-      val p = pointFor(e, point)
-      p.x >= minX && p.x <= maxX && p.y >= minY && p.y <= maxY
+      val b = boxFor(e)
+      boundingBox.intersects(b)
     }
   }
 }

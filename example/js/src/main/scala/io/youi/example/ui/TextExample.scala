@@ -16,7 +16,7 @@ object TextExample extends UIExampleScreen with UIScreen {
       value := "Hello, World!"
       font.file := Font.fromPath("/fonts/Pacifico.ttf")
       font.size := 96.0
-      fill := Paint.horizontal(this, Color.Red, Color.Green, Color.Blue)
+      fill := Paint.horizontal(this).distributeColors(Color.Red, Color.Green, Color.Blue)
       position.center := container.position.center
       position.middle := container.position.middle
     }

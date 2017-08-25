@@ -25,9 +25,31 @@ case class ColorPaint(color: Color) extends Paint {
   override def toString: String = color.toString
 }
 
-case class LinearGradientPaint(component: Component,
-                               direction: GradientDirection,
-                               stops: Vector[GradientStop]) extends Paint
+sealed trait GradientPaint extends Paint {
+  def stops: Vector[GradientStop]
+  def replaceStops(stops: Vector[GradientStop]): GradientPaint
+
+  def withStops(stops: GradientStop*): GradientPaint = replaceStops(this.stops ++ stops)
+  def distributeColors(colors: Color*): GradientPaint = {
+    val length = colors.length
+    val adjust = 1.0 / (length.toDouble - 1)
+    var offset = 0.0
+    val stops = colors.map { color =>
+      val stop = GradientStop(color, offset)
+      offset += adjust
+      stop
+    }.toVector
+    replaceStops(stops)
+  }
+}
+
+case class LinearGradientPaint(x0: Double,
+                               y0: Double,
+                               x1: Double,
+                               y1: Double,
+                               stops: Vector[GradientStop] = Vector.empty) extends GradientPaint {
+  override def replaceStops(stops: Vector[GradientStop]): LinearGradientPaint = copy(stops = stops)
+}
 
 case class RadialGradientPaint(x0: Double,
                                y0: Double,
@@ -35,45 +57,23 @@ case class RadialGradientPaint(x0: Double,
                                x1: Double,
                                y1: Double,
                                r1: Double,
-                               stops: Vector[GradientStop]) extends Paint
+                               stops: Vector[GradientStop] = Vector.empty) extends GradientPaint {
+  override def replaceStops(stops: Vector[GradientStop]): RadialGradientPaint = copy(stops = stops)
+}
 
 case class PatternPaint(createPattern: CanvasRenderingContext2D => CanvasPattern) extends Paint
 
 object Paint {
   def none: Paint = NoPaint
   def color(color: Color): Paint = ColorPaint(color)
-  def horizontal(component: Component, colors: Color*): Paint = linear(component, GradientDirection.Horizontal, colors: _*)
-  def vertical(component: Component, colors: Color*): Paint = linear(component, GradientDirection.Vertical, colors: _*)
-  def linear(component: Component, direction: GradientDirection, colors: Color*): Paint = {
-    val length = colors.length
-    val adjust = 1.0 / (length.toDouble - 1)
-    var offset = 0.0
-    val stops = colors.map { color =>
-      val stop = GradientStop(color, offset)
-      offset += adjust
-      stop
-    }
-    LinearGradientPaint(component, direction, stops.toVector)
+  def horizontal(component: Component): LinearGradientPaint = linear(0.0, 0.0, component.size.width, 0.0)
+  def vertical(component: Component): LinearGradientPaint = linear(0.0, 0.0, 0.0, component.size.height)
+  def linear(x0: Double, y0: Double, x1: Double, y1: Double): LinearGradientPaint = {
+    LinearGradientPaint(x0, y0, x1, y1)
   }
-
-  // TODO: simplify this into a radial gradient builder
-  def radial(component: Component, colors: Color*)(x0: => Double = component.size.center(),
-                                                   y0: => Double = -component.size.middle(),
-                                                   r0: => Double = 0.0,
-                                                   x1: => Double = component.size.center(),
-                                                   y1: => Double = -component.size.middle(),
-                                                   r1: => Double = math.max(component.size.center(), component.size.middle)): Paint = {
-    val length = colors.length
-    val adjust = 1.0 / (length.toDouble - 1)
-    var offset = 0.0
-    val stops = colors.map { color =>
-      val stop = GradientStop(color, offset)
-      offset += adjust
-      stop
-    }
-    RadialGradientPaint(x0, y0, r0, x1, y1, r1, stops.toVector)
+  def radial(x0: Double, y0: Double, r0: Double, x1: Double, y1: Double, r1: Double): RadialGradientPaint = {
+    RadialGradientPaint(x0, y0, r0, x1, y1, r1)
   }
-
   def image(url: String | URL, repetition: Repetition = Repetition.Repeat): Future[Paint] = {
     val promise = Promise[Paint]
     val img = dom.create[html.Image]("img")

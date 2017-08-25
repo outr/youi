@@ -129,9 +129,8 @@ class Context(val canvas: html.Canvas) {
   private def paint2Any(paint: Paint): js.Any = paint match {
     case NoPaint => ""
     case ColorPaint(color) => color.toRGBA
-    case LinearGradientPaint(component, direction, stops) => {
-      val info = direction.info(component)
-      val g = canvasContext.createLinearGradient(info.begin.x, info.begin.y, info.end.x, info.end.y)
+    case LinearGradientPaint(x0, y0, x1, y1, stops) => {
+      val g = canvasContext.createLinearGradient(x0, y0, x1, y1)
       stops.foreach { stop =>
         g.addColorStop(stop.offset, stop.color.toRGBA)
       }

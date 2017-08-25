@@ -6,9 +6,9 @@ import io.youi.hypertext.layout.GridLayout
 import io.youi.hypertext.{Component, Container}
 import org.scalajs.dom._
 
+import scala.collection.immutable.ListSet
 import scala.concurrent.Future
 
-// TODO: retain selection
 // TODO: CTRL + click to toggle
 // TODO: SHIFT + click to block add
 
@@ -29,26 +29,38 @@ object SelectionExample extends HTMLScreen {
     }
     container.children += layoutContainer
 
-    val boxesSet = boxes.toSet
+    val boxesSet = ListSet(boxes: _*)
     val selection = new hypertext.Selection(document.body, boxesSet) {
       override def boxFor(element: Component): BoundingBox = {
         val rect = element.element.getBoundingClientRect()
         BoundingBox(rect.left, rect.top, rect.right, rect.bottom)
       }
 
-      override def added(element: Component): Unit = {
-        super.added(element)
+      override def highlightAdded(element: Component): Unit = {
+        super.highlightAdded(element)
 
         element.border.color := Some(Color.HotPink)
       }
 
-      override def removed(element: Component): Unit = {
-        super.removed(element)
+      override def highlightRemoved(element: Component): Unit = {
+        super.highlightRemoved(element)
+
+        element.border.color := Some(Color.Black)
+      }
+
+      override def selectionAdded(element: Component): Unit = {
+        super.highlightAdded(element)
+
+        element.border.color := Some(Color.Blue)
+      }
+
+      override def selectionRemoved(element: Component): Unit = {
+        super.highlightRemoved(element)
 
         element.border.color := Some(Color.Black)
       }
     }
-    selection.current.attach { selected =>
+    selection.selected.attach { selected =>
       scribe.info(s"Selected: ${selected.map(_.id()).mkString(", ")}")
     }
     container.children += selection

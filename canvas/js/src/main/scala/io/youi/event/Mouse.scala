@@ -3,7 +3,7 @@ package io.youi.event
 import org.scalajs.dom.raw
 import reactify.{Channel, Val, Var}
 
-object Mouse {
+class Mouse {
   val x: Val[Double] = Var(0.0)
   val y: Val[Double] = Var(0.0)
   val wheel: Channel[WheelDelta] = Channel[WheelDelta]

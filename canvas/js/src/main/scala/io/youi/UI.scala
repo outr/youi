@@ -8,7 +8,8 @@ import org.scalajs.dom.raw.{KeyboardEvent, MouseEvent, WheelEvent}
 import reactify._
 
 class UI(canvas: html.Canvas = dom.create[html.Canvas]("canvas")) {
-  val renderer: Renderer = new Renderer(canvas)
+  lazy val mouse: Mouse = new Mouse
+  lazy val renderer: Renderer = new Renderer(canvas)
 
   lazy val ppi: Double = {
     val div = dom.create[Div]("div")
@@ -21,19 +22,21 @@ class UI(canvas: html.Canvas = dom.create[html.Canvas]("canvas")) {
     }
   }
 
-  document.body.addEventListener("move", (evt: MouseEvent) => {
-    Mouse.x.asInstanceOf[Var[Double]] := evt.clientX
-    Mouse.y.asInstanceOf[Var[Double]] := evt.clientY
-  })
-  document.body.addEventListener("wheel", (evt: WheelEvent) => {
+  lazy val event = new HTMLEvents(document.body)
+
+  event.mouse.move.attach { evt =>
+    mouse.x.asInstanceOf[Var[Double]] := evt.pageX
+    mouse.y.asInstanceOf[Var[Double]] := evt.pageY
+  }
+  event.mouse.wheel.attach { evt =>
     val mode: DeltaMode = evt.deltaMode match {
       case 0x00 => DeltaMode.Pixel
       case 0x01 => DeltaMode.Line
       case 0x02 => DeltaMode.Page
     }
     val d = WheelDelta(evt.deltaX, evt.deltaY, evt.deltaZ, mode, evt)
-    Mouse.wheel := d
-  })
+    mouse.wheel := d
+  }
 
   lazy val width: Val[Double] = Var[Double](window.innerWidth)
   lazy val height: Val[Double] = Var[Double](window.innerHeight)

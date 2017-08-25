@@ -1,5 +1,6 @@
 package io.youi.component
 
+import io.youi._
 import io.youi.event._
 import io.youi.spatial.Point
 import io.youi.theme.RendererTheme
@@ -23,7 +24,7 @@ class Renderer(canvas: html.Canvas) extends Container with RendererTheme {
   htmlEvents.mouse.up.attach(pointerEvent(_, PointerEvent.Type.Up))
   htmlEvents.mouse.move.attach(pointerEvent(_, PointerEvent.Type.Move))
   htmlEvents.mouse.cancel.attach(pointerEvent(_, PointerEvent.Type.Cancel))
-  Mouse.wheel.attach(wheelEvent)
+  ui.mouse.wheel.attach(wheelEvent)
   cursor := pointerTarget().map(_.cursor()).getOrElse(Cursor.Auto)      // Renderer's cursor should reflect the pointer target's cursor
   cursor.attach(c => canvas.style.cursor = c.value)
 

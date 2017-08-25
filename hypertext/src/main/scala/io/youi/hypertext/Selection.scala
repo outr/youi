@@ -1,9 +1,12 @@
 package io.youi.hypertext
 
+import io.youi._
 import io.youi.hypertext.border.BorderStyle
-import io.youi.{BoundingBox, Color, HTMLEvents}
+import io.youi.{BoundingBox, Color, HTMLEvents, Key}
 import org.scalajs.dom.{document, html}
-import reactify.{Channel, Var}
+import reactify._
+
+import scala.collection.immutable.ListSet
 
 /**
   * Selection provides a rectangular selection feature for multi-selecting elements on the screen.
@@ -15,20 +18,23 @@ import reactify.{Channel, Var}
   * @tparam T the type of elements to select
   */
 abstract class Selection[T](root: html.Element,
-                            elements: => Set[T],
+                            elements: => ListSet[T],
                             adjustX: => Double = document.body.scrollLeft,
                             adjustY: => Double = document.body.scrollTop) extends Container {
   element.style.pointerEvents = "none"
 
+  private val mouse = ui.mouse
+
   private val rootEvents = new HTMLEvents(root)
 
   val enabled: Var[Boolean] = Var(true)
+  val time: Var[Long] = Var(0L)
   val x1: Var[Double] = Var(0.0)
   val y1: Var[Double] = Var(0.0)
   val x2: Var[Double] = Var(0.0)
   val y2: Var[Double] = Var(0.0)
-  val current: Var[Set[T]] = Var(Set.empty)
-  val selected: Channel[Set[T]] = Channel[Set[T]]
+  val highlighted: Var[ListSet[T]] = Var(ListSet.empty)
+  val selected: Var[ListSet[T]] = Var(ListSet.empty)
 
   // Default settings
   visible := false
@@ -43,26 +49,51 @@ abstract class Selection[T](root: html.Element,
 
   rootEvents.mouse.down.attach { evt =>
     if (enabled() && parent().exists(_.visible())) {
-      evt.preventDefault()
-      evt.stopPropagation()
+      val touching = select(evt.pageX, evt.pageY, evt.pageX, evt.pageY, elements)
+      if (touching.isEmpty) {
+        evt.preventDefault()
+        evt.stopPropagation()
 
-      x1 := evt.pageX
-      y1 := evt.pageY
-      x2 := evt.pageX
-      y2 := evt.pageY
-      visible := true
+        time := System.currentTimeMillis()
+        x1 := evt.pageX
+        y1 := evt.pageY
+        x2 := evt.pageX
+        y2 := evt.pageY
+        visible := true
+      }
     }
   }
 
   rootEvents.mouse.move.attach { evt =>
-    if (enabled() && visible()) {
-      evt.preventDefault()
-      evt.stopPropagation()
+    if (enabled()) {
+      if (visible()) {
+        x2 := evt.pageX
+        y2 := evt.pageY
 
-      x2 := evt.pageX
-      y2 := evt.pageY
+        updateHighlighting(x1, y1, x2, y2)
+      } else if (evt.getModifierState(Key.Shift.value) || evt.getModifierState(Key.Control.value)) {
+        updateHighlighting(evt.pageX, evt.pageY, evt.pageX, evt.pageY)
+      }
+    }
+  }
 
-      updateSelection()
+  rootEvents.key.down.attach { evt =>
+    if (enabled()) {
+      if (!visible()) {
+        evt.key match {
+          case Key.Shift | Key.Control => updateHighlighting(mouse.x, mouse.y, mouse.x, mouse.y)
+        }
+      }
+    }
+  }
+
+  rootEvents.key.up.attach { evt =>
+    if (enabled()) {
+      if (!visible()) {
+        evt.key match {
+          case Key.Shift | Key.Control => changeHighlighting(ListSet.empty)
+        }
+      }
     }
   }
 
@@ -71,9 +102,7 @@ abstract class Selection[T](root: html.Element,
       evt.preventDefault()
       evt.stopPropagation()
 
-      selected := current()
-      current().foreach(removed)
-      current := Set.empty
+      selectHighlighted(evt.getModifierState(Key.Control.value))
 
       x1 := 0.0
       y1 := 0.0
@@ -83,24 +112,85 @@ abstract class Selection[T](root: html.Element,
     }
   }
 
-  protected def updateSelection(): Unit = {
-    val selected = select(x1, y1, x2, y2, elements)
-    if (selected != current()) {
-      val r = current() -- selected
-      val a = selected -- current()
-      r.foreach(removed)
-      a.foreach(added)
+//  rootEvents.click.attach { evt =>
+//    if (enabled()) {
+//      if (!visible()) {
+//        if (evt.getModifierState(Key.Shift.value) || evt.getModifierState(Key.Control.value)) {
+//          updateHighlighting(evt.pageX, evt.pageY, evt.pageX, evt.pageY)
+//          selectHighlighted(toggle = evt.getModifierState(Key.Control.value))
+//        }
+//      }
+//    }
+//  }
 
-      current := selected
+  protected def updateHighlighting(x1: Double, y1: Double, x2: Double, y2: Double): Unit = {
+    val highlighting = select(x1, y1, x2, y2, elements)
+    changeHighlighting(highlighting)
+  }
+
+  protected def changeHighlighting(highlighting: ListSet[T]): Unit = {
+    if (highlighting != highlighted()) {
+      val r = highlighted() -- highlighting
+      val a = highlighting -- highlighted()
+      r.foreach { e =>
+        highlightRemoved(e)
+        if (selected().contains(e)) {
+          selectionAdded(e)
+        }
+      }
+      a.foreach(highlightAdded)
+
+      highlighted := highlighting
     }
   }
 
-  def added(element: T): Unit = {}
-  def removed(element: T): Unit = {}
+  protected def selectHighlighted(toggle: Boolean): Unit = {
+    scribe.info(s"select highlighted...toggle? $toggle")
+    val updated = if (toggle) {
+      val remove = selected().diff(highlighted())
+      scribe.info(s"Remove: $remove")
+      (selected() ++ highlighted()) -- remove
+    } else {
+      selected() ++ highlighted()
+    }
+    selected.static(updated)
+    highlighted().foreach(highlightRemoved)
+    highlighted().foreach(selectionAdded)
+    highlighted := ListSet.empty
+  }
+
+//  highlighted.changes(new ChangeListener[ListSet[T]] {
+//    override def change(oldValue: ListSet[T], newValue: ListSet[T]): Unit = {
+//      val removed = oldValue -- newValue
+//      val added = newValue -- oldValue
+//      removed.foreach { e =>
+//        highlightRemoved(e)
+//        if (selected().contains(e)) {
+//          selectionAdded(e)
+//        }
+//      }
+//      added.foreach(highlightAdded)
+//    }
+//  })
+//
+//  selected.changes(new ChangeListener[ListSet[T]] {
+//    override def change(oldValue: ListSet[T], newValue: ListSet[T]): Unit = {
+//      val removed = oldValue -- newValue
+//      val added = newValue -- oldValue
+//      removed.foreach(selectionRemoved)
+//      added.foreach(selectionAdded)
+//    }
+//  })
+
+  def highlightAdded(element: T): Unit = {}
+  def highlightRemoved(element: T): Unit = {}
+
+  def selectionAdded(element: T): Unit = {}
+  def selectionRemoved(element: T): Unit = {}
 
   def boxFor(element: T): BoundingBox
 
-  def select(x1: Double, y1: Double, x2: Double, y2: Double, elements: Set[T]): Set[T] = {
+  def select(x1: Double, y1: Double, x2: Double, y2: Double, elements: ListSet[T]): ListSet[T] = {
     val minX = math.min(x1, x2) - adjustX
     val minY = math.min(y1, y2) - adjustY
     val maxX = math.max(x1, x2) - adjustX

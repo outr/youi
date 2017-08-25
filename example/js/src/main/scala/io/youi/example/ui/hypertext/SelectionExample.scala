@@ -9,9 +9,6 @@ import org.scalajs.dom._
 import scala.collection.immutable.ListSet
 import scala.concurrent.Future
 
-// TODO: CTRL + click to toggle
-// TODO: SHIFT + click to block add
-
 object SelectionExample extends HTMLScreen {
   override def name: String = "Selection Example"
 

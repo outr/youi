@@ -82,6 +82,7 @@ abstract class Selection[T](root: html.Element,
       if (!visible()) {
         evt.key match {
           case Key.Shift | Key.Control => updateHighlighting(mouse.x, mouse.y, mouse.x, mouse.y)
+          case _ => // Ignore others
         }
       }
     }
@@ -92,36 +93,45 @@ abstract class Selection[T](root: html.Element,
       if (!visible()) {
         evt.key match {
           case Key.Shift | Key.Control => changeHighlighting(ListSet.empty)
+          case _ => // Ignore others
         }
       }
     }
   }
 
   rootEvents.mouse.up.attach { evt =>
-    if (enabled() && visible()) {
-      evt.preventDefault()
-      evt.stopPropagation()
+    if (enabled()) {
+      if (visible()) {
+        evt.preventDefault()
+        evt.stopPropagation()
 
-      selectHighlighted(evt.getModifierState(Key.Control.value))
+        selectHighlighted(evt.getModifierState(Key.Control.value))
 
-      x1 := 0.0
-      y1 := 0.0
-      x2 := 0.0
-      y2 := 0.0
-      visible := false
+        x1 := 0.0
+        y1 := 0.0
+        x2 := 0.0
+        y2 := 0.0
+        visible := false
+      } else if (evt.getModifierState(Key.Control.value)) {
+        updateHighlighting(evt.pageX, evt.pageY, evt.pageX, evt.pageY)
+        selectHighlighted(toggle = true)
+      } else if (evt.getModifierState(Key.Shift.value)) {
+        select(evt.pageX, evt.pageY, evt.pageX, evt.pageY, elements).headOption.foreach { item =>
+          selected().lastOption match {
+            case Some(last) => {
+              val items = elements.dropWhile(_ != last).takeWhile(_ != item) ++ ListSet(item)
+              changeHighlighting(items)
+              selectHighlighted(toggle = false)
+            }
+            case None => {
+              changeHighlighting(ListSet(item))
+              selectHighlighted(toggle = false)
+            }
+          }
+        }
+      }
     }
   }
-
-//  rootEvents.click.attach { evt =>
-//    if (enabled()) {
-//      if (!visible()) {
-//        if (evt.getModifierState(Key.Shift.value) || evt.getModifierState(Key.Control.value)) {
-//          updateHighlighting(evt.pageX, evt.pageY, evt.pageX, evt.pageY)
-//          selectHighlighted(toggle = evt.getModifierState(Key.Control.value))
-//        }
-//      }
-//    }
-//  }
 
   protected def updateHighlighting(x1: Double, y1: Double, x2: Double, y2: Double): Unit = {
     val highlighting = select(x1, y1, x2, y2, elements)
@@ -129,58 +139,43 @@ abstract class Selection[T](root: html.Element,
   }
 
   protected def changeHighlighting(highlighting: ListSet[T]): Unit = {
-    if (highlighting != highlighted()) {
-      val r = highlighted() -- highlighting
-      val a = highlighting -- highlighted()
-      r.foreach { e =>
+    highlighted := highlighting
+  }
+
+  protected def selectHighlighted(toggle: Boolean): Unit = {
+    val items = if (toggle) {
+      val diff1 = selected().diff(highlighted())
+      val diff2 = highlighted().diff(selected())
+      diff1 ++ diff2
+    } else {
+      selected() ++ highlighted()
+    }
+    highlighted := ListSet.empty
+    selected.static(items)
+  }
+
+  highlighted.changes(new ChangeListener[ListSet[T]] {
+    override def change(oldValue: ListSet[T], newValue: ListSet[T]): Unit = {
+      val removed = oldValue -- newValue
+      val added = newValue -- oldValue
+      removed.foreach { e =>
         highlightRemoved(e)
         if (selected().contains(e)) {
           selectionAdded(e)
         }
       }
-      a.foreach(highlightAdded)
-
-      highlighted := highlighting
+      added.foreach(highlightAdded)
     }
-  }
+  })
 
-  protected def selectHighlighted(toggle: Boolean): Unit = {
-    scribe.info(s"select highlighted...toggle? $toggle")
-    val updated = if (toggle) {
-      val remove = selected().diff(highlighted())
-      scribe.info(s"Remove: $remove")
-      (selected() ++ highlighted()) -- remove
-    } else {
-      selected() ++ highlighted()
+  selected.changes(new ChangeListener[ListSet[T]] {
+    override def change(oldValue: ListSet[T], newValue: ListSet[T]): Unit = {
+      val removed = oldValue -- newValue
+      val added = newValue -- oldValue
+      removed.foreach(selectionRemoved)
+      added.foreach(selectionAdded)
     }
-    selected.static(updated)
-    highlighted().foreach(highlightRemoved)
-    highlighted().foreach(selectionAdded)
-    highlighted := ListSet.empty
-  }
-
-//  highlighted.changes(new ChangeListener[ListSet[T]] {
-//    override def change(oldValue: ListSet[T], newValue: ListSet[T]): Unit = {
-//      val removed = oldValue -- newValue
-//      val added = newValue -- oldValue
-//      removed.foreach { e =>
-//        highlightRemoved(e)
-//        if (selected().contains(e)) {
-//          selectionAdded(e)
-//        }
-//      }
-//      added.foreach(highlightAdded)
-//    }
-//  })
-//
-//  selected.changes(new ChangeListener[ListSet[T]] {
-//    override def change(oldValue: ListSet[T], newValue: ListSet[T]): Unit = {
-//      val removed = oldValue -- newValue
-//      val added = newValue -- oldValue
-//      removed.foreach(selectionRemoved)
-//      added.foreach(selectionAdded)
-//    }
-//  })
+  })
 
   def highlightAdded(element: T): Unit = {}
   def highlightRemoved(element: T): Unit = {}

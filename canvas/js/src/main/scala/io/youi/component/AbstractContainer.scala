@@ -64,6 +64,7 @@ trait AbstractContainer extends Component with AbstractContainerTheme { self =>
     childEntries.foreach { child =>
       if (child.visible()) {
         context.transform(child)
+        context.translate(offset.x, offset.y)
         context.draw(child)
       }
     }

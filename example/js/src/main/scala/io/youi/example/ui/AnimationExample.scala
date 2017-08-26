@@ -19,18 +19,18 @@ object AnimationExample extends UIExampleScreen with UIScreen {
     }
     container.children += image
 
-    var offset = 50.0
+    var shift = 50.0
     Easing.map.toList.sortBy(_._1).foreach {
       case (name, easingFunction) => {
         val label = new BasicText {
           value := s"$name Example"
           font.size := 24.0
           font.family := "sans-serif"
-          position.top := offset
+          position.top := shift
           position.left := 50.0
           fill := Color.DarkSlateBlue
 
-          offset += 25.0
+          shift += 25.0
         }
 
         forever(

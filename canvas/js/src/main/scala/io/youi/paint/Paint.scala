@@ -66,8 +66,10 @@ case class PatternPaint(createPattern: CanvasRenderingContext2D => CanvasPattern
 object Paint {
   def none: Paint = NoPaint
   def color(color: Color): Paint = ColorPaint(color)
-  def horizontal(component: Component): LinearGradientPaint = linear(0.0, 0.0, component.size.width, 0.0)
-  def vertical(component: Component): LinearGradientPaint = linear(0.0, 0.0, 0.0, component.size.height)
+  def horizontal(component: Component): LinearGradientPaint = horizontal(component.size.width)
+  def horizontal(width: Double): LinearGradientPaint = linear(0.0, 0.0, width, 0.0)
+  def vertical(component: Component): LinearGradientPaint = vertical(component.size.height)
+  def vertical(height: Double): LinearGradientPaint = linear(0.0, 0.0, 0.0, height)
   def linear(x0: Double, y0: Double, x1: Double, y1: Double): LinearGradientPaint = {
     LinearGradientPaint(x0, y0, x1, y1)
   }

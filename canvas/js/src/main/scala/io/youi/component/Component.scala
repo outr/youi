@@ -13,6 +13,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 trait Component extends TaskSupport with ComponentTheme {
   def theme: Var[_ <: ComponentTheme]
 
+  lazy val id: Var[Option[String]] = Var(None)
   lazy val parent: Val[Option[AbstractContainer]] = Var(None)
   lazy val renderer: Val[Option[Renderer]] = Val(parent().flatMap(_.renderer()))
   val globalVisibility: Val[Boolean] = Val(visible() && parent().exists(_.globalVisibility()))
@@ -70,22 +71,6 @@ trait Component extends TaskSupport with ComponentTheme {
 
   lazy val rotation: Var[Double] = prop(0.0, updatesTransform = true)
 
-  object scale {
-    def :=(value: => Double): Unit = {
-      x := value
-      y := value
-    }
-
-    lazy val x: Var[Double] = prop(1.0, updatesTransform = true)
-    lazy val y: Var[Double] = prop(1.0, updatesTransform = true)
-    lazy val direction: Var[Compass] = prop(Compass.NorthWest, updatesTransform = true)
-  }
-
-  object skew {
-    lazy val x: Var[Double] = prop(0.0, updatesTransform = true)
-    lazy val y: Var[Double] = prop(0.0, updatesTransform = true)
-  }
-
   object size {
     object measured {
       val width: Var[Double] = prop(0.0, updatesRendering = true)
@@ -109,12 +94,18 @@ trait Component extends TaskSupport with ComponentTheme {
     lazy val y: Var[Double] = prop(size.middle(), updatesTransform = true)
   }
 
+  object offset {
+    lazy val x: Var[Double] = prop(0.0, updatesRendering = true)
+    lazy val y: Var[Double] = prop(0.0, updatesRendering = true)
+  }
+
   def draw(context: Context): Unit = {
     // Draw background
     if (background().nonEmpty) {
       context.rect(0.0, 0.0, size.width(), size.height())
       context.fill(background(), apply = true)
     }
+    context.translate(offset.x, offset.y)
   }
 
   override protected def updateTransform(): Unit = matrix.transform.flag()
@@ -149,6 +140,8 @@ trait Component extends TaskSupport with ComponentTheme {
   }
 
   override def updateTasks(): Boolean = super.updateTasks() && globalVisibility()
+
+  override def toString = id().getOrElse(s"${getClass.getName}:$hashCode")
 }
 
 object Component extends ComponentTheme {

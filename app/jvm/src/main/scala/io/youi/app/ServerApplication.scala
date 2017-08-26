@@ -8,7 +8,7 @@ import io.youi.net.{ContentType, URL}
 import io.youi.server.Server
 import io.youi.server.handler.{CachingManager, HttpHandler, HttpHandlerBuilder, SenderHandler}
 import io.youi.stream.{ByTag, Delta, HTMLParser, Selector}
-import io.youi.{JavaScriptError, Priority, http}
+import io.youi.{JavaScriptError, JavaScriptLog, Priority, http}
 import net.sf.uadetector.UserAgentType
 import net.sf.uadetector.service.UADetectorServiceFactory
 import org.powerscala.io._
@@ -60,27 +60,36 @@ trait ServerApplication extends YouIApplication with Server with ConfigApplicati
 
     handler.matcher(path.exact("/source-map.min.js")).resource(Content.classPath("source-map.min.js"))
     if (logJavaScriptErrors) {
-      handler.matcher(path.exact("/clientError")).handle { httpConnection =>
+      handler.matcher(path.exact(logPath)).handle { httpConnection =>
         val content = httpConnection.request.content
         content match {
           case Some(requestContent) => requestContent match {
             case formData: FormDataContent => {
-              val jsonString = formData.string("json").value
-              val jsError = JsonUtil.fromJsonString[JavaScriptError](jsonString)
-
+              val ip = httpConnection.request.source
               val userAgentString = Headers.Request.`User-Agent`.value(httpConnection.request.headers).getOrElse("")
               val userAgent = userAgentParser.parse(userAgentString)
 
-              val exception = new JavaScriptException(
-                error = jsError,
-                userAgent = userAgent,
-                ip = httpConnection.request.source,
-                request = httpConnection.request,
-                info = errorInfo(jsError, httpConnection)
-              )
-              if (logJavaScriptException(exception)) {
-                error(exception)
+              // Error logging
+              formData.stringOption("error").map(_.value).foreach { jsonString =>
+                val jsError = JsonUtil.fromJsonString[JavaScriptError](jsonString)
 
+                val exception = new JavaScriptException(
+                  error = jsError,
+                  userAgent = userAgent,
+                  ip = ip,
+                  request = httpConnection.request,
+                  info = errorInfo(jsError, httpConnection)
+                )
+                if (logJavaScriptException(exception)) {
+                  error(exception)
+                }
+              }
+
+              // Message logging
+              formData.stringOption("message").map(_.value).foreach { jsonString =>
+                val log = JsonUtil.fromJsonString[JavaScriptLog](jsonString)
+
+                scribe.info(s"[JS] ${log.message.trim} (ip: $ip, userAgent: $userAgentString)")
               }
             }
             case otherContent => scribe.error(s"Unsupported content type: $otherContent (${otherContent.getClass.getName})")

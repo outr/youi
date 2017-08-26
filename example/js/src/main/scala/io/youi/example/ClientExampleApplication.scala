@@ -7,6 +7,7 @@ import io.youi.example.screen.{CommunicationScreen, LoginScreen}
 import io.youi.example.ui._
 import io.youi.example.ui.hypertext.DataTransferExample
 import org.scalajs.dom._
+import scribe.LogHandler
 
 import scala.scalajs.js.JSApp
 
@@ -50,6 +51,9 @@ object ClientExampleApplication extends JSApp with ExampleApplication with Clien
   override protected val loadingElement: html.Element = byId[html.Div]("loading")
 
   override def main(): Unit = {
+    // Write the JavaScript logging messages to the server console
+    scribe.Logger.root.addHandler(LogHandler(writer = ClientApplication.logWriter))
+
     scribe.info("Initialized!")
   }
 }

@@ -2,6 +2,7 @@ package io.youi.app
 
 import reactify._
 import io.youi.{Cache, CacheImplementation, ErrorSupport}
+import profig.Config
 
 import scala.language.experimental.macros
 
@@ -18,7 +19,9 @@ trait YouIApplication extends ErrorSupport with CacheImplementation {
     *
     * Defaults to true.
     */
-  protected def logJavaScriptErrors: Boolean = true
+  protected def logJavaScriptErrors: Boolean = Config("logJavaScriptErrors").as[Option[Boolean]].getOrElse(true)
+
+  protected val logPath: String = "/client/log"
 
   val connectivityEntries: State[Set[ApplicationConnectivity]] = Var(Set.empty[ApplicationConnectivity])
 

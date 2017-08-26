@@ -2,18 +2,23 @@ package io.youi.app
 
 import io.youi.ajax.AjaxRequest
 import io.youi.app.screen.ScreenManager
-import io.youi.{History, JavaScriptError}
+import io.youi.{History, JavaScriptError, JavaScriptLog}
 import io.youi.app.sourceMap.ErrorTrace
 import org.scalajs.dom._
 import io.youi.dom._
 import io.youi.net.URL
 import profig.JsonUtil
+import scribe.formatter.Formatter
+import scribe.writer.Writer
+import scribe.LogRecord
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.scalajs.js
 
 trait ClientApplication extends YouIApplication with ScreenManager {
+  ClientApplication.instance = this
+
   addScript("/source-map.min.js")
 
   // Configure communication end-points
@@ -45,17 +50,36 @@ trait ClientApplication extends YouIApplication with ScreenManager {
 }
 
 object ClientApplication {
+  lazy val logWriter: Writer = new Writer {
+    override def write(record: LogRecord, formatter: Formatter): Unit = {
+      val message = formatter.format(record)
+      sendLog(JavaScriptLog(message, record.level.name))
+    }
+  }
+
+  private var instance: ClientApplication = _
+
   def sendError(throwable: Throwable): Future[XMLHttpRequest] = {
     ErrorTrace.toError(throwable).flatMap(sendError)
   }
+
   def sendError(error: JavaScriptError): Future[XMLHttpRequest] = {
     val formData = new FormData
     val jsonString = JsonUtil.toJsonString(error)
-    formData.append("json", jsonString)
-    val request = new AjaxRequest(History.url().replacePathAndParams("/clientError"), data = Some(formData))
+    formData.append("error", jsonString)
+    val request = new AjaxRequest(History.url().replacePathAndParams(instance.logPath), data = Some(formData))
     request.send()
   }
+
   def sendError(event: ErrorEvent): Future[XMLHttpRequest] = {
     ErrorTrace.toError(event).flatMap(sendError)
+  }
+
+  def sendLog(log: JavaScriptLog): Future[XMLHttpRequest] = {
+    val formData = new FormData
+    val jsonString = JsonUtil.toJsonString(log)
+    formData.append("message", jsonString)
+    val request = new AjaxRequest(History.url().replacePathAndParams(instance.logPath), data = Some(formData))
+    request.send()
   }
 }

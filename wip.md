@@ -27,6 +27,7 @@
 * [ ] Updates for Codacy
 * [ ] Cross-build for Scala.js 0.6.x and 1.x
 * [ ] Cross-build for Scala 2.13
+* [X] Support Client to Server basic logging for better information control from the server.
 * [X] Upgrade to SBT 1.0
 * [ ] Complete paint support
     * [X] Texture, Gradient, and Video support

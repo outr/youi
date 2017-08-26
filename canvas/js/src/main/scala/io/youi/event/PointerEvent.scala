@@ -32,6 +32,9 @@ class PointerEvent private[event](val `type`: PointerEvent.Type,
   lazy val pointerType: String = htmlPointerEvent.map(_.pointerType).getOrElse("mouse")
   lazy val isPrimary: Boolean = htmlPointerEvent.forall(_.isPrimary)
 
+  def stopPropagation(): Unit = htmlEvent.stopPropagation()
+  def preventDefault(): Unit = htmlEvent.preventDefault()
+
   override def toString: String = s"PointerEvent(type: ${`type`}, local: $local, global: $global)"
 }
 

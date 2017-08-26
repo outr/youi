@@ -74,6 +74,7 @@ case class Pointer(identifier: Int,
     val averageTime = (meanTime.sum / count) / 1000.0
     (averageX / averageTime, averageY / averageTime)
   }
+  lazy val (deltaX, deltaY) = (move.globalX - previous.globalX) -> (move.globalY - previous.globalY)
 
   def elapsed: Long = time - start.time
 
@@ -94,7 +95,7 @@ case class Pointer(identifier: Int,
     )
   }
 
-  override def toString: String = s"Pointer(id: $identifier, start: $start, move: $move, velocity: $velocityX x $velocityY)"
+  override def toString: String = s"Pointer(id: $identifier, start: $start, move: $move, velocity: $velocityX x $velocityY, delta: $deltaX x $deltaY)"
 }
 
 object Pointer {

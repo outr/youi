@@ -2,9 +2,9 @@ package io.youi.example.ui
 
 import io.youi._
 import io.youi.app.screen.UIScreen
-import io.youi.component.{Container, DrawableComponent, ScrollSupport}
+import io.youi.component.{BasicText, Container, ScrollSupport}
 import io.youi.layout.VerticalLayout
-import io.youi.paint.Paint
+import io.youi.paint.{Paint, Stroke}
 import reactify._
 
 object ScrollingExample extends UIExampleScreen with UIScreen {
@@ -23,10 +23,7 @@ object ScrollingExample extends UIExampleScreen with UIScreen {
       event.pointer.attach(p => scribe.info(s"Pointer ${p.`type`} - $p"))
     }
 
-    List(
-      Color.Red, Color.Green, Color.Blue, Color.Yellow, Color.Purple, Color.Magenta, Color.Cyan,
-      Color.DarkRed, Color.DarkGreen, Color.DarkBlue, Color.GreenYellow, Color.MediumPurple, Color.DarkCyan
-    ).foreach { color =>
+    Color.all.foreach { color =>
       val box = Box(color)
       scrollable.children += box
     }
@@ -34,7 +31,16 @@ object ScrollingExample extends UIExampleScreen with UIScreen {
     container.children += scrollable
   }
 
-  class Box(w: Double, h: Double) extends DrawableComponent {
+  class Box(text: String, color: Color, w: Double, h: Double) extends Container {
+    background := color
+    children += new BasicText {
+      value := text
+      fill := Color.White
+      stroke := Stroke(Color.Black)
+      font.size := 48.0
+      position.left := 20.0
+      position.top := 10.0
+    }
     interactive := false
     position.left := 25.0
     size.width := w
@@ -42,8 +48,8 @@ object ScrollingExample extends UIExampleScreen with UIScreen {
   }
 
   object Box {
-    def apply(paint: Paint, width: Double = 200.0, height: Double = 200.0): Box = new Box(width, height) {
-      background := paint
+    def apply(color: Color, width: Double = 500.0, height: Double = 200.0): Box = {
+      new Box(Color.name(color).get, color, width, height)
     }
   }
 }

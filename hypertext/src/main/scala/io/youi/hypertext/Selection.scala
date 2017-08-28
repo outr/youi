@@ -13,12 +13,14 @@ import scala.collection.immutable.ListSet
   *
   * @param root the root element to attach events to
   * @param elements function to get a list of all elements to check for selection
+  * @param autoStyle if true defines the default styling of the outline (defaults to true)
   * @param adjustX offset adjustment to properly handle for horizontal scrolling
   * @param adjustY offset adjustment to properly handle for vertical scrolling
   * @tparam T the type of elements to select
   */
 abstract class Selection[T](root: html.Element,
                             elements: => ListSet[T],
+                            autoStyle: Boolean = true,
                             adjustX: => Double = document.body.scrollLeft,
                             adjustY: => Double = document.body.scrollTop) extends Container {
   element.style.pointerEvents = "none"
@@ -38,9 +40,12 @@ abstract class Selection[T](root: html.Element,
 
   // Default settings
   visible := false
-  border.style := Some(BorderStyle.Solid)
-  border.size := Some(1.0)
-  border.color := Some(Color.Black)
+  if (autoStyle) {
+    border.style := Some(BorderStyle.Solid)
+    border.size := Some(1.0)
+    border.color := Some(Color.Black)
+  }
+  element.style.zIndex = "9999"
 
   position.x := math.min(x1, x2)
   position.y := math.min(y1, y2)
@@ -48,7 +53,7 @@ abstract class Selection[T](root: html.Element,
   size.height := math.abs(y1 - y2)
 
   rootEvents.mouse.down.attach { evt =>
-    if (enabled() && parent().exists(_.visible())) {
+    if (enabled()) {
       val touching = select(evt.pageX, evt.pageY, evt.pageX, evt.pageY, elements)
       if (touching.isEmpty) {
         evt.preventDefault()

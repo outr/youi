@@ -12,6 +12,8 @@ import scala.concurrent.Future
 object SelectionExample extends HTMLScreen {
   override def name: String = "Selection Example"
 
+  private var selection: hypertext.Selection[Component] = _
+
   override protected def load(): Future[Unit] = super.load().map { _ =>
     val boxes = Color.all.take(60).zipWithIndex.map {
       case (color, index) => createBox(s"Box $index", color)
@@ -27,7 +29,7 @@ object SelectionExample extends HTMLScreen {
     container.children += layoutContainer
 
     val boxesSet = ListSet(boxes: _*)
-    val selection = new hypertext.Selection(document.body, boxesSet) {
+    selection = new hypertext.Selection(document.body, boxesSet) {
       override def boxFor(element: Component): BoundingBox = {
         val rect = element.element.getBoundingClientRect()
         BoundingBox(rect.left, rect.top, rect.right, rect.bottom)
@@ -65,10 +67,12 @@ object SelectionExample extends HTMLScreen {
 
   override protected def activate() = super.activate().map { _ =>
     document.body.style.overflowY = "auto"
+    selection.enabled := true
   }
 
   override protected def deactivate() = super.deactivate().map { _ =>
     document.body.style.overflowY = "hidden"
+    selection.enabled := false
   }
 
   private def createBox(name: String, c: Color): Component = new Container {

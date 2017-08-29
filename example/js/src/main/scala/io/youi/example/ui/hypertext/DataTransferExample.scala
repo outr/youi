@@ -19,6 +19,7 @@ object DataTransferExample extends HTMLScreen {
     dtm.folderFeatureMissing.attach { file =>
       scribe.info(s"Failed to upload folder: ${file.name}")
     }
+    dtm.overlay.classOnVisible(document.body, "highlight")
     val input = dtm.addInput()
     container.children += new Button {
       text := "Upload a file or directory..."

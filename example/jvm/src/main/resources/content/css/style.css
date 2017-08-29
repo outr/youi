@@ -53,3 +53,7 @@ input {
     display: none !important;
     visibility: hidden !important;
 }
+
+.highlight {
+    background-color: aqua;
+}

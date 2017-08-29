@@ -19,7 +19,7 @@ class DataTransferManager {
                        className: String,
                        reverse: Boolean = false,
                        fireImmediately: Boolean = true): Unit = {
-      def attachFunction(f: Boolean => Unit) = if (fireImmediately) visible.attachAndFire _ else visible.attach _
+      def attachFunction(f: Boolean => Unit) = if (fireImmediately) visible.attachAndFire(f) else visible.attach(f)
       attachFunction { b =>
         val value = if (reverse) !b else b
         if (value) {

@@ -28,8 +28,7 @@ class Scale9 extends AbstractContainer { self =>
   val bottomHeight: Val[Double] = Val(image.height - y2)
   val middleHeight: Val[Double] = Val(size.height - (topHeight + bottomHeight))
 
-  size.measured.width := image.width
-  size.measured.height := image.height
+  updateMeasured(image.width, image.height)
 
   private val topLeft = new ImageView {
     position.left := 0.0

@@ -28,7 +28,7 @@ trait Component extends TaskSupport with ComponentTheme {
     val world: MutableMatrix3 = Matrix3.Identity.mutable
     val transform = LazyUpdate {
       local.set(Matrix3.Identity)
-      local.translate(actual.x(), actual.y())
+      local.translate(position.x(), position.y())
       local.translate(pivot.x(), pivot.y())
       local.rotate(rotation())
       local.translate(-pivot.x(), -pivot.y())
@@ -41,7 +41,7 @@ trait Component extends TaskSupport with ComponentTheme {
   }
   lazy val reDraw = LazyUpdate {
     reMeasure(drawer.context)
-    drawer.update(size.width(), size.height())(draw)
+    drawer.update(size.width(), size.height())(drawInternal)
 
     parent().foreach(_.invalidate())
   }
@@ -99,29 +99,25 @@ trait Component extends TaskSupport with ComponentTheme {
     lazy val y: Var[Double] = prop(0.0, updatesRendering = true)
   }
 
-  object actual {
-    lazy val x: Val[Double] = prop(actualX(), updatesRendering = true)
-    lazy val y: Val[Double] = prop(actualY(), updatesRendering = true)
-    lazy val width: Val[Double] = prop(actualWidth(), updatesRendering = true)
-    lazy val height: Val[Double] = prop(actualHeight(), updatesRendering = true)
+  protected def drawInternal(context: Context): Unit = {
+    preDraw(context)
+    draw(context)
+    postDraw(context)
   }
 
-  protected def actualX(): Double = position.x - padding.left - border.size(Compass.West)
-  protected def actualY(): Double = position.y - padding.top - border.size(Compass.North)
-  protected def actualWidth(): Double = {
-    size.width + padding.left + padding.right + border.size(Compass.West) + border.size(Compass.East)
-  }
-  protected def actualHeight(): Double = {
-    size.height + padding.top + padding.bottom + border.size(Compass.North) + border.size(Compass.South)
-  }
-
-  def draw(context: Context): Unit = {
-    // Draw background
-    if (background().nonEmpty) {
-      context.rect(0.0, 0.0, size.width(), size.height())
-      context.fill(background(), apply = true)
-    }
+  protected def preDraw(context: Context): Unit = {
+    // Draw border and background
+    border.draw(size.width, size.height, context, background)
+    context.save()
     context.translate(offset.x, offset.y)
+    context.translate(padding.left, padding.top)
+    context.translate(border.size(Compass.West), border.size(Compass.North))
+  }
+
+  protected def draw(context: Context): Unit = {}
+
+  protected def postDraw(context: Context): Unit = {
+    context.restore()
   }
 
   override protected def updateTransform(): Unit = matrix.transform.flag()
@@ -147,6 +143,11 @@ trait Component extends TaskSupport with ComponentTheme {
   def isHit(local: Point): Boolean = local.x >= 0.0 && local.y >= 0.0 && local.x <= size.width() && local.y <= size.height()
 
   def invalidate(): Unit = reDraw.flag()
+
+  def updateMeasured(width: => Double, height: => Double): Unit = {
+    size.measured.width := width + padding.width + border.width
+    size.measured.height := height + padding.height + border.height
+  }
 
   override def update(delta: Double): Unit = {
     super.update(delta)

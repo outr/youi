@@ -40,8 +40,7 @@ class ImageView extends Component with ImageViewTheme {
     }
   }
 
-  size.measured.width := image.width
-  size.measured.height := image.height
+  updateMeasured(image.width, image.height)
 
   def load(file: File, mode: ImageMode): Future[Image] = Image.fromFile(file, mode = mode).map { image =>
     this.image := image

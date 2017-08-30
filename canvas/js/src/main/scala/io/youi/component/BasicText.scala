@@ -20,8 +20,7 @@ class BasicText extends Component with BasicTextTheme {
     } else {
       context.setFont(font.family(), font.size(), font.style(), font.variant(), font.weight())
       val size = context.measureText(value(), BasicText.temp)
-      this.size.measured.width := size.width
-      this.size.measured.height := size.height
+      updateMeasured(size.width, size.height)
     }
   }
 

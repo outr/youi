@@ -48,8 +48,10 @@ trait AbstractContainer extends Component with AbstractContainerTheme { self =>
     layoutManager.resized(self, size.width, size.height)
   }
 
-  size.measured.width := (if (childEntries().nonEmpty) childEntries().map(_.position.right()).max else 0.0)
-  size.measured.height := (if (childEntries().nonEmpty) childEntries().map(_.position.bottom()).max else 0.0)
+  updateMeasured(
+    width = if (childEntries().nonEmpty) childEntries().map(_.position.right()).max else 0.0,
+    height = if (childEntries().nonEmpty) childEntries().map(_.position.bottom()).max else 0.0
+  )
 
   override def update(delta: Double): Unit = {
     super.update(delta)

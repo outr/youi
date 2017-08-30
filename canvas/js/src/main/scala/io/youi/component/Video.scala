@@ -11,8 +11,7 @@ class Video extends Component with VideoTheme {
     val v = dom.create[html.Video]("video")
     v.autoplay = false
     v.addEventListener("loadedmetadata", (_: Event) => {
-      size.measured.width := v.videoWidth
-      size.measured.height := v.videoHeight
+      updateMeasured(v.videoWidth, v.videoHeight)
     })
     v
   }

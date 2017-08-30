@@ -31,7 +31,7 @@ case class Path(actions: List[PathAction]) extends PathBuilder with PathAction w
   }
 
   def fix(): Path = {
-    def r(value: Double): Double = math.floor(value) + 0.5
+    def r(d: Double): Double = Path.fix(d)
     val updated = actions.map {
       case CurveTo(x1, y1, x2, y2, x, y) => CurveTo(r(x1), r(y1), r(x2), r(y2), r(x), r(y))
       case LineTo(x, y) => LineTo(r(x), r(y))
@@ -158,6 +158,8 @@ object Path extends PathBuilder {
   }
 
   override def withAction(action: PathAction): Path = Path(List(action))
+
+  def fix(value: Double): Double = math.floor(value) + 0.5
 }
 
 trait PathBuilder {

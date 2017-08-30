@@ -19,11 +19,12 @@
 * [X] Update Color to be an AnyVal wrapper to use the memory footprint of a `Long`
 * [X] `Selection` HTML feature for rectangular and individual selection
 * [X] Upgrade to direct canvas functionality instead of using Pixi.js
-* [ ] Border support in Component
+* [X] Border support in Component
+* [X] Padding support in Component
 * [ ] PSD import tool
 * [ ] Serializable / Deserializable JSON structure for UI
-* [ ] Scrolling Container support
-  * [ ] ScrollBar
+* [X] Scrolling Container support
+* [ ] ScrollBar
 * [ ] Updates for Codacy
 * [ ] Cross-build for Scala.js 0.6.x and 1.x
 * [ ] Cross-build for Scala 2.13

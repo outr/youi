@@ -2,7 +2,7 @@ package io.youi.theme
 
 import io.youi.Cursor
 import io.youi.paint.{Border, Paint}
-import reactify.Var
+import reactify._
 
 trait ComponentTheme extends Theme {
   override protected def defaultThemeParent: Option[Theme] = None
@@ -30,6 +30,9 @@ trait ComponentTheme extends Theme {
       top.set(f)
       bottom.set(f)
     }
+
+    lazy val width: Val[Double] = Val(left + right)
+    lazy val height: Val[Double] = Val(top + bottom)
   }
 
   val border: Var[Border] = prop(prnt(_.border, Border.empty))

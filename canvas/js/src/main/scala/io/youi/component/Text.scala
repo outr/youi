@@ -23,8 +23,7 @@ class Text extends Component with TextTheme {
     }
   }
 
-  size.measured.width := textPaths.boundingBox.width
-  size.measured.height := textPaths.boundingBox.height
+  updateMeasured(textPaths.boundingBox.width, textPaths.boundingBox.height)
 
   override def draw(context: Context): Unit = {
     super.draw(context)

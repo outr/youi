@@ -2,12 +2,12 @@ package io.youi
 
 import io.youi.component.Component
 import io.youi.paint._
+import io.youi.path.Path
 import io.youi.spatial.Matrix3
 import org.scalajs.dom.{CanvasRenderingContext2D, html}
 
 import scala.scalajs.js
 import org.scalajs.dom._
-
 import reactify._
 
 class Context(val canvas: html.Canvas) {
@@ -32,7 +32,7 @@ class Context(val canvas: html.Canvas) {
 
   def transform(component: Component): Unit = {
     transform(Matrix3.Identity)
-    canvasContext.translate(component.actual.x, component.actual.y)
+    canvasContext.translate(component.position.x, component.position.y)
     canvasContext.translate(component.pivot.x(), component.pivot.y())
     canvasContext.rotate(component.rotation() * (math.Pi * 2.0))
     canvasContext.translate(-component.pivot.x(), -component.pivot.y())
@@ -69,19 +69,20 @@ class Context(val canvas: html.Canvas) {
     canvasContext.drawImage(video.asInstanceOf[html.Image], x, y, width, height)
   }
 
-  def moveTo(x: Double, y: Double): Unit = canvasContext.moveTo(x, y)
+  def moveTo(x: Double, y: Double): Unit = canvasContext.moveTo(Path.fix(x), Path.fix(y))
 
-  def lineTo(x: Double, y: Double): Unit = canvasContext.lineTo(x, y)
+  def lineTo(x: Double, y: Double): Unit = canvasContext.lineTo(Path.fix(x), Path.fix(y))
 
   def quadraticCurveTo(cpx: Double, cpy: Double, x: Double, y: Double): Unit = {
     canvasContext.quadraticCurveTo(cpx, cpy, x, y)
   }
 
   def rect(x: Double, y: Double, width: Double, height: Double): Unit = {
-    canvasContext.rect(x, y, width, height)
+    canvasContext.rect(Path.fix(x), Path.fix(y), width, height)
   }
 
   def roundedRect(x: Double, y: Double, width: Double, height: Double, radius: Double): Unit = {
+    canvasContext.beginPath()
     moveTo(x + radius, y)
     lineTo(x + width - radius, y)
     quadraticCurveTo(x + width, y, x + width, y + radius)
@@ -91,6 +92,7 @@ class Context(val canvas: html.Canvas) {
     quadraticCurveTo(x, y + height, x, y + height - radius)
     lineTo(x, y + radius)
     quadraticCurveTo(x, y, x + radius, y)
+    canvasContext.closePath()
   }
 
   def fill(paint: Paint, apply: Boolean): Unit = if (paint.nonEmpty) {

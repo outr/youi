@@ -53,7 +53,7 @@ abstract class Selection[T](root: html.Element,
   size.height := math.abs(y1 - y2)
 
   rootEvents.mouse.down.attach { evt =>
-    if (enabled()) {
+    if (enabled() && evt.target == root) {
       val touching = select(evt.pageX, evt.pageY, evt.pageX, evt.pageY, elements)
       if (touching.isEmpty) {
         evt.preventDefault()
@@ -82,7 +82,7 @@ abstract class Selection[T](root: html.Element,
     }
   }
 
-  rootEvents.key.down.attach { evt =>
+  ui.event.key.down.attach { evt =>
     if (enabled()) {
       if (!visible()) {
         evt.key match {
@@ -93,7 +93,7 @@ abstract class Selection[T](root: html.Element,
     }
   }
 
-  rootEvents.key.up.attach { evt =>
+  ui.event.key.up.attach { evt =>
     if (enabled()) {
       if (!visible()) {
         evt.key match {

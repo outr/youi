@@ -164,10 +164,8 @@ abstract class Selection[T](root: html.Element,
       val removed = oldValue -- newValue
       val added = newValue -- oldValue
       removed.foreach { e =>
-        highlightRemoved(e)
-        if (selected().contains(e)) {
-          selectionAdded(e)
-        }
+        val isSelected = selected().contains(e)
+        highlightRemoved(e, isSelected)
       }
       added.foreach(highlightAdded)
     }
@@ -183,7 +181,7 @@ abstract class Selection[T](root: html.Element,
   })
 
   def highlightAdded(element: T): Unit = {}
-  def highlightRemoved(element: T): Unit = {}
+  def highlightRemoved(element: T, isSelected: Boolean): Unit = {}
 
   def selectionAdded(element: T): Unit = {}
   def selectionRemoved(element: T): Unit = {}

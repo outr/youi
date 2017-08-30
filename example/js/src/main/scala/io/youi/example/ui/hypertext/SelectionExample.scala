@@ -41,20 +41,24 @@ object SelectionExample extends HTMLScreen {
         element.border.color := Some(Color.HotPink)
       }
 
-      override def highlightRemoved(element: Component): Unit = {
-        super.highlightRemoved(element)
+      override def highlightRemoved(element: Component, isSelected: Boolean): Unit = {
+        super.highlightRemoved(element, isSelected)
 
-        element.border.color := Some(Color.Black)
+        if (isSelected) {
+          element.border.color := Some(Color.Blue)
+        } else {
+          element.border.color := Some(Color.Black)
+        }
       }
 
       override def selectionAdded(element: Component): Unit = {
-        super.highlightAdded(element)
+        super.selectionAdded(element)
 
         element.border.color := Some(Color.Blue)
       }
 
       override def selectionRemoved(element: Component): Unit = {
-        super.highlightRemoved(element)
+        super.selectionRemoved(element)
 
         element.border.color := Some(Color.Black)
       }

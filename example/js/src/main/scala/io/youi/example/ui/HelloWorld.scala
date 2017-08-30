@@ -13,6 +13,8 @@ object HelloWorld extends UIExampleScreen with UIScreen {
       value := "Hello, World!"
       font.size := 48.0
       fill := Color.DarkBlue
+      background := Color.LightBlue
+      padding.left := 20.0
       position.center := ui.position.center
       position.middle := ui.position.middle
     }

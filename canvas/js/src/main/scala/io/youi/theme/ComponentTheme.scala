@@ -1,7 +1,7 @@
 package io.youi.theme
 
 import io.youi.Cursor
-import io.youi.paint.Paint
+import io.youi.paint.{Border, Paint}
 import reactify.Var
 
 trait ComponentTheme extends Theme {
@@ -15,6 +15,24 @@ trait ComponentTheme extends Theme {
   val interactive: Var[Boolean] = prop(prnt(_.interactive, true))
   val visible: Var[Boolean] = prop(prnt(_.visible, true), updatesTransform = true)
   val background: Var[Paint] = prop(prnt(_.background, Paint.none), updatesRendering = true)
+
+  object padding {
+    lazy val left: Var[Double] = prop(prnt(_.padding.left, 0.0))
+    lazy val right: Var[Double] = prop(prnt(_.padding.right, 0.0))
+    lazy val top: Var[Double] = prop(prnt(_.padding.top, 0.0))
+    lazy val bottom: Var[Double] = prop(prnt(_.padding.bottom, 0.0))
+
+    def :=(f: => Double): Unit = set(f)
+
+    def set(f: => Double): Unit = {
+      left.set(f)
+      right.set(f)
+      top.set(f)
+      bottom.set(f)
+    }
+  }
+
+  val border: Var[Border] = prop(prnt(_.border, Border.empty))
 
   protected def updateTransform(): Unit = {}
   protected def updateRendering(): Unit = {}

@@ -8,6 +8,8 @@ import org.scalajs.dom.{CanvasRenderingContext2D, html}
 import scala.scalajs.js
 import org.scalajs.dom._
 
+import reactify._
+
 class Context(val canvas: html.Canvas) {
   lazy val canvasContext = canvas.getContext("2d").asInstanceOf[CanvasRenderingContext2D]
 
@@ -30,7 +32,7 @@ class Context(val canvas: html.Canvas) {
 
   def transform(component: Component): Unit = {
     transform(Matrix3.Identity)
-    canvasContext.translate(component.position.x(), component.position.y())
+    canvasContext.translate(component.actual.x, component.actual.y)
     canvasContext.translate(component.pivot.x(), component.pivot.y())
     canvasContext.rotate(component.rotation() * (math.Pi * 2.0))
     canvasContext.translate(-component.pivot.x(), -component.pivot.y())
@@ -67,8 +69,28 @@ class Context(val canvas: html.Canvas) {
     canvasContext.drawImage(video.asInstanceOf[html.Image], x, y, width, height)
   }
 
+  def moveTo(x: Double, y: Double): Unit = canvasContext.moveTo(x, y)
+
+  def lineTo(x: Double, y: Double): Unit = canvasContext.lineTo(x, y)
+
+  def quadraticCurveTo(cpx: Double, cpy: Double, x: Double, y: Double): Unit = {
+    canvasContext.quadraticCurveTo(cpx, cpy, x, y)
+  }
+
   def rect(x: Double, y: Double, width: Double, height: Double): Unit = {
     canvasContext.rect(x, y, width, height)
+  }
+
+  def roundedRect(x: Double, y: Double, width: Double, height: Double, radius: Double): Unit = {
+    moveTo(x + radius, y)
+    lineTo(x + width - radius, y)
+    quadraticCurveTo(x + width, y, x + width, y + radius)
+    lineTo(x + width, y + height - radius)
+    quadraticCurveTo(x + width, y + height, x + width - radius, y + height)
+    lineTo(x + radius, y + height)
+    quadraticCurveTo(x, y + height, x, y + height - radius)
+    lineTo(x, y + radius)
+    quadraticCurveTo(x, y, x + radius, y)
   }
 
   def fill(paint: Paint, apply: Boolean): Unit = if (paint.nonEmpty) {

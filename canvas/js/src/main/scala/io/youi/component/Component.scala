@@ -5,7 +5,7 @@ import io.youi.event.{Events, HitResult}
 import io.youi.spatial.{Matrix3, MutableMatrix3, Point}
 import io.youi.task.TaskSupport
 import io.youi.theme.ComponentTheme
-import reactify.{Dep, Val, Var}
+import reactify._
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -28,7 +28,7 @@ trait Component extends TaskSupport with ComponentTheme {
     val world: MutableMatrix3 = Matrix3.Identity.mutable
     val transform = LazyUpdate {
       local.set(Matrix3.Identity)
-      local.translate(position.x(), position.y())
+      local.translate(actual.x(), actual.y())
       local.translate(pivot.x(), pivot.y())
       local.rotate(rotation())
       local.translate(-pivot.x(), -pivot.y())
@@ -97,6 +97,22 @@ trait Component extends TaskSupport with ComponentTheme {
   object offset {
     lazy val x: Var[Double] = prop(0.0, updatesRendering = true)
     lazy val y: Var[Double] = prop(0.0, updatesRendering = true)
+  }
+
+  object actual {
+    lazy val x: Val[Double] = prop(actualX(), updatesRendering = true)
+    lazy val y: Val[Double] = prop(actualY(), updatesRendering = true)
+    lazy val width: Val[Double] = prop(actualWidth(), updatesRendering = true)
+    lazy val height: Val[Double] = prop(actualHeight(), updatesRendering = true)
+  }
+
+  protected def actualX(): Double = position.x - padding.left - border.size(Compass.West)
+  protected def actualY(): Double = position.y - padding.top - border.size(Compass.North)
+  protected def actualWidth(): Double = {
+    size.width + padding.left + padding.right + border.size(Compass.West) + border.size(Compass.East)
+  }
+  protected def actualHeight(): Double = {
+    size.height + padding.top + padding.bottom + border.size(Compass.North) + border.size(Compass.South)
   }
 
   def draw(context: Context): Unit = {

@@ -21,8 +21,6 @@
 * [X] Upgrade to direct canvas functionality instead of using Pixi.js
 * [X] Border support in Component
 * [X] Padding support in Component
-* [ ] PSD import tool
-* [ ] Serializable / Deserializable JSON structure for UI
 * [X] Scrolling Container support
 * [ ] ScrollBar
 * [ ] Updates for Codacy
@@ -33,3 +31,7 @@
 * [ ] Complete paint support
     * [X] Texture, Gradient, and Video support
     * [ ] ComponentPaint for better Image and Video integration
+* [ ] Designer sub-project
+    * [ ] PSD import tool
+    * [ ] Serializable / Deserializable JSON structure for UI
+    * [ ] JSON to Scala type-safe UI generator

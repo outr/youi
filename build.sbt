@@ -15,7 +15,7 @@ val hasherVersion = "1.2.1"
 val canvgVersion = "1.4.0_1"
 val openTypeVersion = "0.7.1_2"
 val picaVersion = "3.0.5"
-val psdVersion = "3.2.0-SNAPSHOT"
+val psdVersion = "3.2.0"
 
 val akkaVersion = "2.5.4"
 val scalaJSDOM = "0.9.3"

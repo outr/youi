@@ -15,7 +15,6 @@ val hasherVersion = "1.2.1"
 val canvgVersion = "1.4.0_1"
 val openTypeVersion = "0.7.1_2"
 val picaVersion = "3.0.5"
-val psdVersion = "3.2.0"
 
 val akkaVersion = "2.5.4"
 val scalaJSDOM = "0.9.3"
@@ -23,19 +22,19 @@ val httpAsyncClientVersion = "4.1.3"
 val httpMimeVersion = "4.5.3"
 val circeVersion = "0.8.0"
 val uaDetectorVersion = "2014.10"
-val undertowVersion = "1.4.18.Final"
-val closureCompilerVersion = "v20170423"
+val undertowVersion = "1.4.20.Final"
+val closureCompilerVersion = "v20170806"
 val jSoupVersion = "1.10.3"
 val scalaXMLVersion = "1.0.6"
-val scalacticVersion = "3.0.3"
-val scalaTestVersion = "3.0.3"
+val scalacticVersion = "3.0.4"
+val scalaTestVersion = "3.0.4"
 val scalaCheckVersion = "1.13.5"
 
 lazy val root = project.in(file("."))
   .aggregate(
     macrosJS, macrosJVM, coreJS, coreJVM, spatialJS, spatialJVM, stream, communicationJS, communicationJVM, dom, client,
-    server, serverUndertow, canvasJS, canvasJVM, hypertext, optimizer, appJS, appJVM, designerJS, designerJVM,
-    templateJS, templateJVM, exampleJS, exampleJVM
+    server, serverUndertow, canvasJS, canvasJVM, hypertext, optimizer, appJS, appJVM, templateJS, templateJVM,
+    exampleJS, exampleJVM
   )
   .settings(
     resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases",
@@ -226,20 +225,6 @@ lazy val app = crossProject.in(file("app"))
 
 lazy val appJS = app.js.dependsOn(hypertext)
 lazy val appJVM = app.jvm
-
-lazy val designer = crossProject.in(file("designer"))
-  .settings(
-    name := "youi-designer"
-  )
-  .jsSettings(
-    libraryDependencies ++= Seq(
-      "com.outr" %%% "psd-scala-js" % psdVersion
-    )
-  )
-  .dependsOn(app)
-
-lazy val designerJS = designer.js
-lazy val designerJVM = designer.jvm.dependsOn(serverUndertow)
 
 lazy val template = crossProject.in(file("template"))
   .settings(

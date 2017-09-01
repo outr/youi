@@ -23,9 +23,10 @@
 * [X] Padding support in Component
 * [X] Scrolling Container support
     * [X] Mouse support
-    * [ ] Touch support
+    * [X] Touch support
+        * [ ] Utilize acceleration
+* [X] AbstractContainer only draws children within viewable area for better performance
 * [ ] ScrollBar
-* [ ] Updates for Codacy
 * [X] Support Client to Server basic logging for better information control from the server.
 * [X] Upgrade to SBT 1.0
 * [ ] Complete paint support

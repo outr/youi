@@ -1,6 +1,6 @@
 package io.youi.component
 
-import io.youi.Context
+import io.youi.{BoundingBox, Context}
 import io.youi.event.HitResult
 import io.youi.layout.Layout
 import io.youi.spatial.Point
@@ -63,11 +63,17 @@ trait AbstractContainer extends Component with AbstractContainerTheme { self =>
     super.draw(context)
 
     // Draw cached canvases from each child
+    val viewable = BoundingBox(-offset.x, -offset.y, -offset.x + size.width, -offset.y + size.height)
     childEntries.foreach { child =>
       if (child.visible()) {
-        context.transform(child)
-        context.translate(offset.x, offset.y)
-        context.draw(child)
+        // TODO: replace bounding check with matrix point checks when figured out
+        val bb = BoundingBox(child.position.left, child.position.top, child.position.right, child.position.bottom)
+        val drawable = bb.intersects(viewable)
+        if (drawable) {
+          context.transform(child)
+          context.translate(offset.x, offset.y)
+          context.draw(child)
+        }
       }
     }
   }

@@ -1,6 +1,5 @@
 package io.youi.event
 
-import io.youi.HTMLEvents
 import io.youi.spatial.Point
 import org.scalajs.dom.raw
 
@@ -11,16 +10,34 @@ class PointerEvent private[event](val `type`: PointerEvent.Type,
                                   val y: Double,
                                   val globalX: Double,
                                   val globalY: Double,
-                                  val htmlEvent: raw.MouseEvent) extends Event {
+                                  val htmlEvent: raw.UIEvent,
+                                  val htmlEventType: HTMLEventType) extends Event {
   lazy val local: Point = Point(x, y)
   lazy val global: Point = Point(globalX, globalY)
 
-  val time: Long = System.currentTimeMillis()
-  lazy val htmlPointerEvent: Option[HTMLPointerEvent] = if (HTMLEvents.hasPointerSupport) {
+  def isTouch: Boolean = htmlEventType == HTMLEventType.Touch
+  def isPointer: Boolean = htmlEventType == HTMLEventType.Pointer
+  def isMouse: Boolean = !isTouch
+
+  def htmlMouseEvent: Option[raw.MouseEvent] = if (isMouse) {
+    Some(htmlEvent.asInstanceOf[raw.MouseEvent])
+  } else {
+    None
+  }
+
+  def htmlPointerEvent: Option[HTMLPointerEvent] = if (isPointer) {
     Some(htmlEvent.asInstanceOf[HTMLPointerEvent])
   } else {
     None
   }
+
+  def htmlTouchEvent: Option[raw.TouchEvent] = if (isTouch) {
+    Some(htmlEvent.asInstanceOf[raw.TouchEvent])
+  } else {
+    None
+  }
+
+  val time: Long = System.currentTimeMillis()
   lazy val identifier: Int = htmlPointerEvent.map(_.pointerId).getOrElse(1)
   lazy val width: Int = htmlPointerEvent.map(_.width).getOrElse(1)
   lazy val height: Int = htmlPointerEvent.map(_.height).getOrElse(1)
@@ -39,8 +56,14 @@ class PointerEvent private[event](val `type`: PointerEvent.Type,
 }
 
 object PointerEvent {
-  def apply(`type`: Type, x: Double, y: Double, globalX: Double, globalY: Double, htmlEvent: raw.MouseEvent): PointerEvent = {
-    new PointerEvent(`type`, x, y, globalX, globalY, htmlEvent)
+  def apply(`type`: Type,
+            x: Double,
+            y: Double,
+            globalX: Double,
+            globalY: Double,
+            htmlEvent: raw.UIEvent,
+            htmlEventType: HTMLEventType): PointerEvent = {
+    new PointerEvent(`type`, x, y, globalX, globalY, htmlEvent, htmlEventType)
   }
 
   sealed trait Type
@@ -55,6 +78,10 @@ object PointerEvent {
     case object Up extends Type
     case object Cancel extends Type
     case object Wheel extends Type
+    case object TouchStart extends Type
+    case object TouchMove extends Type
+    case object TouchCancel extends Type
+    case object TouchEnd extends Type
   }
 }
 
@@ -70,4 +97,12 @@ trait HTMLPointerEvent extends js.Object {
   def twist: Double = js.native
   def pointerType: String = js.native
   def isPrimary: Boolean = js.native
+}
+
+sealed trait HTMLEventType
+
+object HTMLEventType {
+  case object Mouse extends HTMLEventType
+  case object Pointer extends HTMLEventType
+  case object Touch extends HTMLEventType
 }

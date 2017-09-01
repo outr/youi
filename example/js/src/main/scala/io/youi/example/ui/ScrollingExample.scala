@@ -19,8 +19,6 @@ object ScrollingExample extends UIExampleScreen with UIScreen {
       size.height := container.size.height
       background := Paint.vertical(container.size.height).distributeColors(Color.White, Color.Black)
       layoutManager := new VerticalLayout(25.0)
-
-      event.pointer.attach(p => scribe.info(s"Pointer ${p.`type`} - $p"))
     }
 
     Color.all.foreach { color =>

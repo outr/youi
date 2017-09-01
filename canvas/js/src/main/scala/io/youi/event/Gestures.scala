@@ -1,13 +1,11 @@
 package io.youi.event
 
-import io.youi.BoundingBox
+import io.youi.{BoundingBox, HTMLEvents}
 import io.youi.component.Component
 import io.youi.spatial.Point
 import reactify.{Channel, InvocationType, Observable, Val, Var}
 
 class Gestures(component: Component) {
-  import component.event.pointer
-
   private val _pointers = Var[Map[Int, Pointer]](Map.empty)
 
   object pointers {
@@ -30,12 +28,18 @@ class Gestures(component: Component) {
 
   // TODO: `state` to represent drag, swype, fling, pan, rotate
 
-  pointer.down.attach(add)
-  pointer.move.attach(dragging)
-  Observable.wrap(
-    pointer.up,
-    pointer.cancel
-  ).attach(remove)
+  if (HTMLEvents.hasTouchSupport) {
+    component.event.touch.start.attach(add)
+    component.event.touch.move.attach(dragging)
+    component.event.touch.end.attach(remove)
+  } else {
+    component.event.pointer.down.attach(add)
+    component.event.pointer.move.attach(dragging)
+    Observable.wrap(
+      component.event.pointer.up,
+      component.event.pointer.cancel
+    ).attach(remove)
+  }
 
 
   private def add(evt: PointerEvent): Unit = {

@@ -9,6 +9,7 @@
 * [X] Replace direct use of `KeyboardEvent` in hypertext and component with `KeyEvent`
 * [X] Layout support in AbstractContainer
     * [X] VerticalLayout
+    * [ ] GridLayout
 * [X] Update dom Template to utilize Profig instead of limiting to environment variable for load path
 * [X] New `spatial` package to do matrix and other spatial math
 * [X] Remove uPickle and rely exclusively on Circe for pickling

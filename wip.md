@@ -25,11 +25,7 @@
 * [X] Scrolling Container support
     * [X] Mouse support
     * [X] Touch support
-        * [ ] Utilize acceleration
 * [X] AbstractContainer only draws children within viewable area for better performance
-* [ ] ScrollBar
 * [X] Support Client to Server basic logging for better information control from the server.
 * [X] Upgrade to SBT 1.0
-* [ ] Complete paint support
-    * [X] Texture, Gradient, and Video support
-    * [ ] ComponentPaint for better Image and Video integration
+* [X] Texture, Gradient, and Video paint support

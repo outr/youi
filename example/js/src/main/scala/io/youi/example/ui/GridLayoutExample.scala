@@ -14,11 +14,11 @@ object GridLayoutExample extends UIExampleScreen with UIScreen {
   override def createUI(): Unit = {
     container.layout := new GridLayout {
       columns := 3
-      config.default.padding.left := Some(10.0)
-//      config.default.alignment.horizontal := Some(Horizontal.Center)
-      config.cell(1, 1).padding.right := Some(10.0)
+//      config.default.margin.left := Some(10.0)
+      config.default.alignment.horizontal := Some(Horizontal.Center)
+//      config.cell(1, 1).margin.right := Some(10.0)
       config.cell(2, 0).span.columns := Some(2)
-      config.cell(2, 0).alignment.horizontal := Some(Horizontal.Center)
+//      config.cell(2, 0).alignment.horizontal := Some(Horizontal.Center)
     }
 
     container.children ++= List(

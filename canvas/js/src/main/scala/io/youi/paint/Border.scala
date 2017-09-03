@@ -16,11 +16,15 @@ object Border {
   def apply(stroke: Stroke, radius: Double = 0.0): RectangleBorder = RectangleBorder(stroke, radius)
 }
 
+// TODO: CompoundBorder
+
+// TODO: PaddingBorder
+
 case class RectangleBorder(stroke: Stroke, radius: Double) extends Border {
   override def size(compass: Compass): Double = stroke.lineWidth
 
   override def draw(width: Double, height: Double, context: Context, fill: Paint): Unit = {
-    val sizeAdjust = stroke.lineWidth - 0.5
+    val sizeAdjust = stroke.lineWidth + 1.0
     if (radius == 0.0) {
       context.rect(0.5, 0.5, Path.fix(width - sizeAdjust), Path.fix(height - sizeAdjust))
     } else {

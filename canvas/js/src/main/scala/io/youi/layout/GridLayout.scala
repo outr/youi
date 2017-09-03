@@ -2,9 +2,7 @@ package io.youi.layout
 
 import io.youi.component.{AbstractContainer, Component}
 import io.youi.{Horizontal, Vertical}
-import reactify.Var
-
-import scala.collection.mutable.ListBuffer
+import reactify._
 
 class GridLayout extends Layout {
   val columns: Var[Int] = Var(1)
@@ -55,8 +53,8 @@ class GridLayout extends Layout {
     var columnIndex = 0
     var rowSpans = Map.empty[Int, Int]
     var configs = Map.empty[Component, CellConfig]
-    var columnsMap = Map.empty[Int, ListBuffer[Component]]
-    var rowsMap = Map.empty[Int, ListBuffer[Component]]
+    var maxWidths = Map.empty[Int, Double]
+    var maxHeights = Map.empty[Int, Double]
     def layout(child: Component): Unit = {
       if (rowSpans.contains(columnIndex)) {
         val newValue = rowSpans(columnIndex) - 1
@@ -74,25 +72,18 @@ class GridLayout extends Layout {
       } else {
         val cfg = config.cell(rowIndex, columnIndex)
 
-        // Padding
-        cfg.padding.left.foreach(p => child.padding.left := p)
-        cfg.padding.right.foreach(p => child.padding.right := p)
-        cfg.padding.top.foreach(p => child.padding.top := p)
-        cfg.padding.bottom.foreach(p => child.padding.bottom := p)
+        val width = child.size.width + cfg.margin.left.getOrElse(0.0) + cfg.margin.right.getOrElse(0.0)
+        val height = child.size.height + cfg.margin.top.getOrElse(0.0) + cfg.margin.bottom.getOrElse(0.0)
 
         // Spans
         val colSpan = cfg.span.columns().getOrElse(1)
         val rowSpan = cfg.span.rows().getOrElse(1)
 
         if (colSpan == 1) {
-          val columns = columnsMap.getOrElse(columnIndex, ListBuffer.empty[Component])
-          columns += child
-          columnsMap += columnIndex -> columns
+          maxWidths += columnIndex -> math.max(maxWidths.getOrElse(columnIndex, 0.0), width)
         }
         if (rowSpan == 1) {
-          val rows = rowsMap.getOrElse(rowIndex, ListBuffer.empty[Component])
-          rows += child
-          rowsMap += rowIndex -> rows
+          maxHeights += rowIndex -> math.max(maxHeights.getOrElse(rowIndex, 0.0), height)
         }
 
         configs += child -> cfg
@@ -112,20 +103,23 @@ class GridLayout extends Layout {
 
         val row = cfg.rowIndex
         val column = cfg.columnIndex
+        val rowSpan = cfg.span.rows.getOrElse(0)
+        val colSpan = cfg.span.columns.getOrElse(0)
 
-        def maxHeight: Double = rowsMap.getOrElse(row, ListBuffer.empty).foldLeft(0.0)((max, c) => math.max(max, c.size.height))
-        def maxBottom: Double = rowsMap.getOrElse(row - 1, ListBuffer.empty).foldLeft(0.0)((max, c) => math.max(max, c.position.bottom))
-        def maxWidth: Double = columnsMap.getOrElse(column, ListBuffer.empty).foldLeft(0.0)((max, c) => math.max(max, c.size.width))
-        def maxRight: Double = columnsMap.getOrElse(column - 1, ListBuffer.empty).foldLeft(0.0)((max, c) => math.max(max, c.position.right))
+        val offsetX: Double = (0 until column).foldLeft(0.0)((total, index) => maxWidths.getOrElse(index, 0.0) + total) + cfg.margin.left.getOrElse(0.0)
+        val offsetY: Double = (0 until row).foldLeft(0.0)((total, index) => maxHeights.getOrElse(index, 0.0) + total) + cfg.margin.top.getOrElse(0.0)
+        val maxWidth: Double = (column until column + colSpan).foldLeft(0.0)((total, columnIndex) => maxWidths.getOrElse(columnIndex, 0.0) + total)
+        val maxHeight: Double = (row until row + rowSpan).foldLeft(0.0)((total, rowIndex) => maxHeights.getOrElse(rowIndex, 0.0) + total)
+        scribe.info(s"Row: $row, Column: $column, Offset: $offsetX x $offsetY, Max: $maxWidth x $maxHeight")
         vertical match {
-          case Vertical.Top => child.position.top := maxBottom
-          case Vertical.Middle => child.position.middle := maxBottom + (maxHeight / 2.0)
-          case Vertical.Bottom => child.position.bottom := maxBottom + maxHeight
+          case Vertical.Top => child.position.top := offsetY
+          case Vertical.Middle => child.position.middle := offsetY + (maxHeight / 2.0)
+          case Vertical.Bottom => child.position.bottom := offsetY + maxHeight
         }
         horizontal match {
-          case Horizontal.Left => child.position.left := maxRight
-          case Horizontal.Center => child.position.center := maxRight + (maxWidth / 2.0)
-          case Horizontal.Right => child.position.right := maxRight + maxWidth
+          case Horizontal.Left => child.position.left := offsetX
+          case Horizontal.Center => child.position.center := offsetX + (maxWidth / 2.0)
+          case Horizontal.Right => child.position.right := offsetX + maxWidth
         }
       }
     }
@@ -134,11 +128,11 @@ class GridLayout extends Layout {
   trait Config {
     def parents: List[Config]
 
-    object padding {
-      val left: Var[Option[Double]] = prop[Double](_.padding.left)
-      val right: Var[Option[Double]] = prop[Double](_.padding.right)
-      val top: Var[Option[Double]] = prop[Double](_.padding.top)
-      val bottom: Var[Option[Double]] = prop[Double](_.padding.bottom)
+    object margin {
+      val left: Var[Option[Double]] = prop[Double](_.margin.left)
+      val right: Var[Option[Double]] = prop[Double](_.margin.right)
+      val top: Var[Option[Double]] = prop[Double](_.margin.top)
+      val bottom: Var[Option[Double]] = prop[Double](_.margin.bottom)
     }
 
     object span {

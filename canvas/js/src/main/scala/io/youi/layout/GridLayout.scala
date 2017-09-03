@@ -103,14 +103,13 @@ class GridLayout extends Layout {
 
         val row = cfg.rowIndex
         val column = cfg.columnIndex
-        val rowSpan = cfg.span.rows.getOrElse(0)
-        val colSpan = cfg.span.columns.getOrElse(0)
+        val rowSpan = cfg.span.rows.getOrElse(1)
+        val colSpan = cfg.span.columns.getOrElse(1)
 
         val offsetX: Double = (0 until column).foldLeft(0.0)((total, index) => maxWidths.getOrElse(index, 0.0) + total) + cfg.margin.left.getOrElse(0.0)
         val offsetY: Double = (0 until row).foldLeft(0.0)((total, index) => maxHeights.getOrElse(index, 0.0) + total) + cfg.margin.top.getOrElse(0.0)
         val maxWidth: Double = (column until column + colSpan).foldLeft(0.0)((total, columnIndex) => maxWidths.getOrElse(columnIndex, 0.0) + total)
         val maxHeight: Double = (row until row + rowSpan).foldLeft(0.0)((total, rowIndex) => maxHeights.getOrElse(rowIndex, 0.0) + total)
-        scribe.info(s"Row: $row, Column: $column, Offset: $offsetX x $offsetY, Max: $maxWidth x $maxHeight")
         vertical match {
           case Vertical.Top => child.position.top := offsetY
           case Vertical.Middle => child.position.middle := offsetY + (maxHeight / 2.0)

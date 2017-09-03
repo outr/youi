@@ -7,6 +7,8 @@ import reactify._
 class GridLayout extends Layout {
   val columns: Var[Int] = Var(1)
 
+  columns.on(updateAll())
+
   object config {
     val default: Config = new Config {
       override def parents: List[Config] = Nil
@@ -38,14 +40,28 @@ class GridLayout extends Layout {
     def hasColumn(columnIndex: Int): Boolean = columns().contains(columnIndex)
   }
 
-  override def connect(container: AbstractContainer): Unit = update(container)
+  private var containers: Set[AbstractContainer] = Set.empty
 
-  override def disconnect(container: AbstractContainer): Unit = {}
+  override def connect(container: AbstractContainer): Unit = {
+    containers += container
+    update(container)
+  }
+
+  override def disconnect(container: AbstractContainer): Unit = {
+    containers -= container
+  }
 
   override def childrenChanged(container: AbstractContainer, removed: Vector[Component], added: Vector[Component]): Unit = {
     super.childrenChanged(container, removed, added)
     update(container)
   }
+
+  override def resized(container: AbstractContainer, width: Double, height: Double): Unit = {
+    super.resized(container, width, height)
+    update(container)
+  }
+
+  def updateAll(): Unit = containers.foreach(update)
 
   def update(container: AbstractContainer): Unit = {
     val columnCount = this.columns()
@@ -145,9 +161,11 @@ class GridLayout extends Layout {
     }
 
     protected def prop[T](lookup: Config => Var[Option[T]]): Var[Option[T]] = {
-      Var[Option[T]](parents.map(lookup).collectFirst {
+      val v = Var[Option[T]](parents.map(lookup).collectFirst {
         case v if v().nonEmpty => v().get
       })
+      v.on(updateAll())
+      v
     }
   }
 

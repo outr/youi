@@ -1,6 +1,6 @@
 package io.youi.component
 
-import io.youi.{BoundingBox, Context}
+import io.youi.{BoundingBox, Compass, Context}
 import io.youi.event.HitResult
 import io.youi.layout.Layout
 import io.youi.spatial.Point
@@ -72,6 +72,8 @@ trait AbstractContainer extends Component with AbstractContainerTheme { self =>
         if (drawable) {
           context.transform(child)
           context.translate(offset.x, offset.y)
+          context.translate(padding.left, padding.top)
+          context.translate(border.size(Compass.West), border.size(Compass.North))
           context.draw(child)
         }
       }

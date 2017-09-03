@@ -12,26 +12,24 @@ object ScrollingExample extends UIExampleScreen with UIScreen {
   override def path: String = "/examples/scrolling.html"
 
   override def createUI(): Unit = {
-
     val scrollable = new Container with ScrollSupport {
       id := Some("scrollable")
       size.width := container.size.width
       size.height := container.size.height
       background := Paint.vertical(container.size.height).distributeColors(Color.White, Color.Black)
       layoutManager := new VerticalLayout(25.0)
-
-      event.pointer.attach(p => scribe.info(s"Pointer ${p.`type`} - $p"))
     }
 
     Color.all.foreach { color =>
       val box = Box(color)
       scrollable.children += box
+      box
     }
 
     container.children += scrollable
   }
 
-  class Box(text: String, color: Color, w: Double, h: Double) extends Container {
+  class Box(val text: String, color: Color, w: Double, h: Double) extends Container {
     background := color
     children += new BasicText {
       value := text
@@ -45,6 +43,8 @@ object ScrollingExample extends UIExampleScreen with UIScreen {
     position.left := 25.0
     size.width := w
     size.height := h
+
+    override def toString: String = text
   }
 
   object Box {

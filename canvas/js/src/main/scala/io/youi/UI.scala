@@ -24,11 +24,11 @@ class UI(canvas: html.Canvas = dom.create[html.Canvas]("canvas")) {
 
   lazy val event = new HTMLEvents(document.body)
 
-  event.mouse.move.attach { evt =>
+  event.pointer.move.attach { evt =>
     mouse.x.asInstanceOf[Var[Double]] := evt.pageX
     mouse.y.asInstanceOf[Var[Double]] := evt.pageY
   }
-  event.mouse.wheel.attach { evt =>
+  event.pointer.wheel.attach { evt =>
     val mode: DeltaMode = evt.deltaMode match {
       case 0x00 => DeltaMode.Pixel
       case 0x01 => DeltaMode.Line

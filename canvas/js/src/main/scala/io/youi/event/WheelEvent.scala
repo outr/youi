@@ -6,7 +6,7 @@ class WheelEvent(x: Double,
                  globalY: Double,
                  val delta: WheelDelta,
                  override val htmlEvent: org.scalajs.dom.raw.WheelEvent)
-  extends PointerEvent(PointerEvent.Type.Wheel, x, y, globalX, globalY, htmlEvent) {
+  extends PointerEvent(PointerEvent.Type.Wheel, x, y, globalX, globalY, htmlEvent, HTMLEventType.Mouse) {
   override def toString: String = s"WheelEvent(local: $local, global: $global, delta: $delta)"
 }
 

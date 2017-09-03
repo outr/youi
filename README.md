@@ -19,17 +19,29 @@ There is heavy development going on toward 1.0, but YouI releases are stable and
 YouI is divided into modules of functionality to minimize the dependencies required for your specific usage:
 
 * [app](app) - unification of client and server to write complete applications (Scala and Scala.js)
+* [canvas](canvas) - User Interface implementation on HTML Canvas for greater power and flexibility than HTML provides
 * [client](client) - HTTP client for asynchronous request/response and restful support (Scala)
 * [communication](communication) - communication framework to provide type-safe communication between a client / server (Scala and Scala.js)
 * [core](core) - core features generally useful for web and HTTP (Scala and Scala.js)
 * [dom](dom) - features and functionality related to working with the browser's DOM (Scala.js)
+* [example](example) - example and test functionality for applications using youi
+* [hypertext](hypertext) - extension functionality for working with HTML in a more powerful way
+* [macros](macros) - internal macros for various internal uses
 * [optimizer](optimizer) - HTML, JavaScript, and Image optimizations to reduce extra overhead from your application
 * [server](server) - base functionality for a web server (Scala)
 * [server-undertow](serverUndertow) - implementation of [server](server) using [Undertow](http://undertow.io/) (Scala)
 * [spatial](spatial) - Spatial and math related functionality for Matrix and other operations
 * [stream](stream) - streaming functionality for on-the-fly processing and modification of any XML or HTML content (Scala)
 * [template](template) - features for creating and managing templates for use in applications (Scala and Scala.js)
-* [ui](ui) - functionality for user-interface creation and management (Scala.js)
+* [utilities](utilities) - internal utilities to support the infrastructure of youi
+
+## External Projects
+
+Though this project has several sub-modules, where possible, external projects exist to add optional functionality.
+
+* [youi-plugin](https://github.com/outr/youi-plugin) - An SBT plugin to simplify setting up your youi project.
+* [youi-designer](https://github.com/outr/youi-designer) - User interface designer tool to create, edit, import, export, and generate user interfaces for youi.
+* [youi-example](https://github.com/outr/youi-example) - An example project showing the basic usage of youi.
 
 ## Tutorials
 

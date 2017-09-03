@@ -41,6 +41,25 @@ class Events(component: Component) {
 
     override def set(value: => PointerEvent): Unit = fire(value, InvocationType.Direct)
   }
+  object touch extends Channel[PointerEvent] {
+    lazy val start: Channel[PointerEvent] = byType(Type.TouchStart)
+    lazy val move: Channel[PointerEvent] = byType(Type.TouchMove)
+    lazy val cancel: Channel[PointerEvent] = byType(Type.TouchCancel)
+    lazy val end: Channel[PointerEvent] = byType(Type.TouchEnd)
+
+    pointer.collect {
+      case evt if evt.isTouch => set(evt)
+    }
+
+    def byType(types: PointerEvent.Type*): Channel[PointerEvent] = {
+      val set = types.toSet
+      collect {
+        case evt if set.contains(evt.`type`) => evt
+      }
+    }
+
+    override def set(value: => PointerEvent): Unit = fire(value, InvocationType.Direct)
+  }
 
   object key extends Channel[KeyEvent] {
     import KeyEvent.Type._

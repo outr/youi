@@ -30,6 +30,7 @@ object ClientExampleApplication extends JSApp with ExampleApplication with Clien
   val snap = SnapExample
   val scrolling = ScrollingExample
   val verticalLayout = VerticalLayoutExample
+  val gridLayout = GridLayoutExample
   val imageEditor = ImageEditorExample
 
   val dataTransfer = DataTransferExample

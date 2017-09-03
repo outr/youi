@@ -5,7 +5,7 @@ import io.youi.event._
 import io.youi.spatial.Point
 import io.youi.theme.RendererTheme
 import io.youi.{AnimationFrame, Cursor, Drawer, HTMLEvents}
-import org.scalajs.dom.raw.MouseEvent
+import org.scalajs.dom.raw.{MouseEvent, TouchEvent}
 import org.scalajs.dom.{document, html, raw}
 import reactify._
 
@@ -20,10 +20,14 @@ class Renderer(canvas: html.Canvas) extends Container with RendererTheme {
 
   htmlEvents.click.attach(pointerEvent(_, PointerEvent.Type.Click))
   htmlEvents.doubleClick.attach(pointerEvent(_, PointerEvent.Type.DoubleClick))
-  htmlEvents.mouse.down.attach(pointerEvent(_, PointerEvent.Type.Down))
-  htmlEvents.mouse.up.attach(pointerEvent(_, PointerEvent.Type.Up))
-  htmlEvents.mouse.move.attach(pointerEvent(_, PointerEvent.Type.Move))
-  htmlEvents.mouse.cancel.attach(pointerEvent(_, PointerEvent.Type.Cancel))
+  htmlEvents.pointer.down.attach(pointerEvent(_, PointerEvent.Type.Down))
+  htmlEvents.pointer.up.attach(pointerEvent(_, PointerEvent.Type.Up))
+  htmlEvents.pointer.move.attach(pointerEvent(_, PointerEvent.Type.Move))
+  htmlEvents.pointer.cancel.attach(pointerEvent(_, PointerEvent.Type.Cancel))
+  htmlEvents.touch.start.attach(touchEvent(_, PointerEvent.Type.TouchStart))
+  htmlEvents.touch.move.attach(touchEvent(_, PointerEvent.Type.TouchMove))
+  htmlEvents.touch.cancel.attach(touchEvent(_, PointerEvent.Type.TouchCancel))
+  htmlEvents.touch.end.attach(touchEvent(_, PointerEvent.Type.TouchEnd))
   ui.mouse.wheel.attach(wheelEvent)
   cursor := pointerTarget().map(_.cursor()).getOrElse(Cursor.Auto)      // Renderer's cursor should reflect the pointer target's cursor
   cursor.attach(c => canvas.style.cursor = c.value)
@@ -36,20 +40,48 @@ class Renderer(canvas: html.Canvas) extends Container with RendererTheme {
       case HitResult.Miss => None
       case HitResult.Hit(l, c) => Some(l -> c)
     }
+    val eventType = if (HTMLEvents.hasPointerSupport) HTMLEventType.Pointer else HTMLEventType.Mouse
     val newTarget = result.map(_._2)
     if (pointerTarget() != newTarget) {
       pointerTarget().foreach { component =>
         val local = component.localize(globalPoint)
-        component.event.pointer := PointerEvent(PointerEvent.Type.Exit, local.x, local.y, globalPoint.x, globalPoint.y, evt)
+        component.event.pointer := PointerEvent(PointerEvent.Type.Exit, local.x, local.y, globalPoint.x, globalPoint.y, evt, eventType)
       }
       pointerTarget := newTarget
       pointerTarget().foreach { component =>
         val local = component.localize(globalPoint)
-        component.event.pointer := PointerEvent(PointerEvent.Type.Enter, local.x, local.y, globalPoint.x, globalPoint.y, evt)
+        component.event.pointer := PointerEvent(PointerEvent.Type.Enter, local.x, local.y, globalPoint.x, globalPoint.y, evt, eventType)
       }
     }
     result.foreach {
-      case (local, component) => component.event.pointer := PointerEvent(`type`, local.x, local.y, globalPoint.x, globalPoint.y, evt)
+      case (local, component) => component.event.pointer := PointerEvent(`type`, local.x, local.y, globalPoint.x, globalPoint.y, evt, eventType)
+    }
+  }
+  private def touchEvent(evt: TouchEvent, `type`: PointerEvent.Type): Unit = if (visible()) {
+    val rect = canvas.getBoundingClientRect()
+    if (`type` == PointerEvent.Type.TouchMove) {
+      val latest = evt.changedTouches.item(evt.changedTouches.length - 1)
+      globalPoint.set(latest.clientX - rect.left, latest.clientY - rect.top)
+    }
+    val result = hitTest(globalPoint) match {
+      case HitResult.Miss => None
+      case HitResult.Hit(l, c) => Some(l -> c)
+    }
+    val eventType = HTMLEventType.Touch
+    val newTarget = result.map(_._2)
+    if (pointerTarget() != newTarget) {
+      pointerTarget().foreach { component =>
+        val local = component.localize(globalPoint)
+        component.event.pointer := PointerEvent(PointerEvent.Type.Exit, local.x, local.y, globalPoint.x, globalPoint.y, evt, eventType)
+      }
+      pointerTarget := newTarget
+      pointerTarget().foreach { component =>
+        val local = component.localize(globalPoint)
+        component.event.pointer := PointerEvent(PointerEvent.Type.Enter, local.x, local.y, globalPoint.x, globalPoint.y, evt, eventType)
+      }
+    }
+    result.foreach {
+      case (local, component) => component.event.pointer := PointerEvent(`type`, local.x, local.y, globalPoint.x, globalPoint.y, evt, eventType)
     }
   }
   private def wheelEvent(delta: WheelDelta): Unit = if (visible()) {

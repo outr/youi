@@ -28,9 +28,9 @@ class VerticalLayout(spacing: Double = 0.0,
     if (items.nonEmpty) {
       var previous = items.head
       if (fromTop) {
-        Snap(previous).verticalReset().topTo(container.position.top + spacing)
+        Snap(previous).verticalReset().topTo(spacing)
       } else {
-        Snap(previous).verticalReset().bottomTo(container.position.bottom - spacing)
+        Snap(previous).verticalReset().bottomTo(container.size.height - spacing)
       }
       items.tail.foreach { child =>
         if (fromTop) {

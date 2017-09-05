@@ -3,6 +3,7 @@ package io.youi.font
 import io.youi.BoundingBox
 import io.youi.component.Component
 import io.youi.event.TouchData
+import io.youi.net.URL
 import io.youi.path.Path
 import opentype.{OpenType, PathOptions}
 import org.scalajs.dom.raw.CanvasRenderingContext2D
@@ -34,6 +35,17 @@ object Font {
       case None => {
         val font = new OpenTypeFont(OpenType.load(path))
         pathMap += path -> font
+        font
+      }
+    }
+  }
+
+  def fromURL(url: URL): Font = synchronized {
+    pathMap.get(url.toString) match {
+      case Some(font) => font
+      case None => {
+        val font = new OpenTypeFont(OpenType.load(url.toString))
+        pathMap += url.toString -> font
         font
       }
     }

@@ -3,7 +3,7 @@ package io.youi.example.ui
 import io.youi.Color
 import io.youi.app.screen.UIScreen
 import io.youi.component.Text
-import io.youi.font.Font
+import io.youi.font.{Font, GoogleFont}
 import io.youi.paint.{Paint, Stroke}
 import reactify._
 
@@ -33,7 +33,7 @@ object TextExample extends UIExampleScreen with UIScreen {
     }
     container.children += new Text {
       value := "Hello, World!"
-      font.file := Font.fromPath("/fonts/Chivo-Black.ttf")
+      font.file := Font.fromURL(GoogleFont.`Berkshire Swash`.`regular`)
       font.size := 96.0
       Paint.video("/sample.mp4").foreach { paint =>
         fill := paint

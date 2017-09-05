@@ -13,10 +13,10 @@ install:
   - npm install jsdom source-map-support
 script:
   - sbt clean +test
-#  - sbt coverage coreJVM/test communicationJVM/test server/test serverUndertow/test stream/test appJVM/test
-#  - sbt coverageReport
-#  - sbt coverageAggregate
-#  - sbt codacyCoverage
+  - sbt coverage coreJVM/test communicationJVM/test server/test serverUndertow/test stream/test appJVM/test
+  - sbt coverageReport
+  - sbt coverageAggregate
+  - sbt codacyCoverage
 cache:
   directories:
     - $HOME/.ivy2/cache

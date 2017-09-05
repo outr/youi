@@ -12,4 +12,4 @@
     * [ ] Stack layout
 * [ ] Re-integrate Codacy for SBT 1.0
 * [ ] Cross-build for Scala 2.13
-* [ ] GoogleFonts integration
+* [X] GoogleFonts integration

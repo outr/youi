@@ -18,7 +18,7 @@ object KeyBuilder {
     loadSymbols()
     loadFromMDN()
 
-    val file = new File("ui/shared/src/main/scala/io/youi/Key.scala")
+    val file = new File("canvas/shared/src/main/scala/io/youi/Key.scala")
 
     val grouped = map.toList.sortBy(_._1.index)
 

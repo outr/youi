@@ -25,6 +25,7 @@ object ImageUtility {
     val srcWidth = src.width
     val srcHeight = src.height
     if (srcWidth <= 0 || srcHeight <= 0 || destination.width <= 0 || destination.height <= 0) {
+      scribe.info(s"FAIL! $srcWidth x $srcHeight, ${destination.width} x ${destination.height}")
       Future.successful(destination)
     } else if (smooth && srcWidth != destination.width && srcHeight != destination.height) {
       picaFuture {
@@ -65,11 +66,18 @@ object ImageUtility {
 
   def resizeToDataURL(source: html.Image | html.Canvas, width: Double, height: Double): Future[String] = {
     val destinationCanvas = CanvasPool(width, height)
-    val future = drawToCanvas(source, destinationCanvas)(
-      width = destinationCanvas.width,
-      height = destinationCanvas.height
-    ).map { _ =>
-      destinationCanvas.toDataURL("image/png")
+    val loader = if (source.asInstanceOf[html.Image].width == 0 || source.asInstanceOf[html.Image].height == 0) {
+      loadImage(source.asInstanceOf[html.Image])
+    } else {
+      Future.successful(source.asInstanceOf[html.Image])
+    }
+    val future = loader.flatMap { _ =>
+      drawToCanvas(source, destinationCanvas)(
+        width = destinationCanvas.width,
+        height = destinationCanvas.height
+      ).map { _ =>
+        destinationCanvas.toDataURL("image/png")
+      }
     }
     future.onComplete { _ =>
       CanvasPool.restore(destinationCanvas)
@@ -95,6 +103,17 @@ object ImageUtility {
         f
       }
     }
+  }
+
+  def loadImage(img: html.Image): Future[html.Image] = {
+    val promise = Promise[html.Image]
+    val listener: js.Function1[Event, _] = (_: Event) => promise.success(img)
+    img.addEventListener("load", listener)
+    val future = promise.future
+    future.onComplete { _ =>
+      img.removeEventListener("load", listener)
+    }
+    future
   }
 
   def loadDataURL(file: File, useFileReader: Boolean = false): Future[String] = if (useFileReader) {

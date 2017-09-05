@@ -112,14 +112,13 @@ class ImageEditor extends AbstractContainer {
     revision.asInstanceOf[Var[Int]] := current + 1
   }
 
-  def load(file: File): Future[Image] = imageView.load(file, ImageMode.Quality).flatMap(load)
+  def load(file: File): Future[Image] = Image.fromFile(file, mode = ImageMode.Quality).flatMap(load)
 
-  def load(path: String): Future[Image] = imageView.load(path, ImageMode.Quality).flatMap(load)
+  def load(path: String): Future[Image] = Image(path, mode = ImageMode.Quality).flatMap(load)
 
   def load(img: Image): Future[Image] = {
     if (img.width > maxOriginalSize.width || img.height > maxOriginalSize.height) {
       val scale = SizeUtility.scale(img.width, img.height, maxOriginalSize.width, maxOriginalSize.height)
-      scribe.warn(s"Image size (${img.width}x${img.height}) is larger than maxOriginalSize ($maxOriginalSize). Scaling to $scale.")
       img.toDataURL.flatMap { dataURL =>
         val htmlImage = dom.create[html.Image]("img")
         htmlImage.src = dataURL
@@ -133,6 +132,7 @@ class ImageEditor extends AbstractContainer {
         }
       }
     } else {
+      imageView.image := img
       originalImage := img
       reset()
       Future.successful(img)

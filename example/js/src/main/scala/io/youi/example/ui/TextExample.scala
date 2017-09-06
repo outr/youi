@@ -4,7 +4,7 @@ import io.youi.Color
 import io.youi.app.screen.UIScreen
 import io.youi.component.Text
 import io.youi.font.{Font, GoogleFont}
-import io.youi.paint.{Paint, Stroke}
+import io.youi.paint.{Border, Paint, Stroke}
 import reactify._
 
 object TextExample extends UIExampleScreen with UIScreen {
@@ -12,27 +12,29 @@ object TextExample extends UIExampleScreen with UIScreen {
   override def path: String = "/examples/text.html"
 
   override def createUI(): Unit = {
-    container.children += new Text {
-      value := "Hello, World!"
-      font.file := Font.fromPath("/fonts/Pacifico.ttf")
-      font.size := 96.0
+    val pacifico = new Text {
+      value := "Pacifico Regular"
+      font.file := Font.fromURL(GoogleFont.`Pacifico`.`regular`)
+      font.size := 128.0
       fill := Paint.horizontal(this).distributeColors(Color.Red, Color.Green, Color.Blue)
       position.center := container.position.center
       position.middle := container.position.middle
+      border := Border(Stroke(Color.Purple, 2.0), 10.0)
+      padding := 10.0
     }
-    container.children += new Text {
-      value := "Hello, World!"
-      font.file := Font.fromPath("/fonts/Roboto-Black.ttf")
+    val roboto = new Text {
+      value := "Roboto 900"
+      font.file := Font.fromURL(GoogleFont.`Roboto`.`900`)
       font.size := 96.0
       Paint.image("/images/cuteness.jpg").foreach { paint =>
         fill := paint
       }
       stroke := Stroke(Color.Black, lineWidth = 0.5)
       position.center := container.position.center
-      position.middle := container.position.middle - 100.0
+      position.bottom := pacifico.position.top - 20.0
     }
-    container.children += new Text {
-      value := "Hello, World!"
+    val berkshire = new Text {
+      value := "Berkshire Swash Regular"
       font.file := Font.fromURL(GoogleFont.`Berkshire Swash`.`regular`)
       font.size := 96.0
       Paint.video("/sample.mp4").foreach { paint =>
@@ -40,8 +42,7 @@ object TextExample extends UIExampleScreen with UIScreen {
       }
       stroke := Stroke(Color.Black, lineWidth = 0.5)
       position.center := container.position.center
-      position.middle := container.position.middle + 100.0
-
+      position.top := pacifico.position.bottom + 20.0
       // TODO: support auto-pause / resume of video paint
 
       override def update(delta: Double): Unit = {
@@ -51,5 +52,7 @@ object TextExample extends UIExampleScreen with UIScreen {
         super.update(delta)
       }
     }
+
+    container.children ++= Seq(pacifico, roboto, berkshire)
   }
 }

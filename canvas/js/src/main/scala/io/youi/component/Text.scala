@@ -35,7 +35,9 @@ class Text extends Component with TextTheme {
       context.lineJoin(lineJoin())
       context.miterLimit(miterLimit())
       context.textBaseline(textBaseline())
+      context.canvasContext.beginPath()
       textPaths().draw(this, context)
+      context.canvasContext.closePath()
       if (fill.nonEmpty) {
         context.fill(fill(), apply = true)
       }

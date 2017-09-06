@@ -10,6 +10,8 @@
     * [ ] Flow layout
     * [ ] Form layout
     * [ ] Stack layout
-* [ ] Re-integrate Codacy for SBT 1.0
+* [ ] Support Scala.js 1.0
 * [ ] Cross-build for Scala 2.13
 * [X] GoogleFonts integration
+* [X] Streaming Content support in HttpResponse
+    * [X] Convenience functionality for streaming ZIP

@@ -1,6 +1,6 @@
 package io.youi.example
 
-import io.youi.app.screen.{CrossFadeSupport, LoadingTransitionSupport}
+import io.youi.app.screen.LoadingTransitionSupport
 import io.youi.app.{ClientApplication, ClientConnectivity}
 import io.youi.dom._
 import io.youi.example.screen.{CommunicationScreen, LoginScreen}
@@ -9,9 +9,9 @@ import io.youi.example.ui.hypertext.DataTransferExample
 import org.scalajs.dom._
 import scribe.LogHandler
 
-import scala.scalajs.js.JSApp
+import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
 
-object ClientExampleApplication extends JSApp with ExampleApplication with ClientApplication with LoadingTransitionSupport {
+object ClientExampleApplication extends ExampleApplication with ClientApplication with LoadingTransitionSupport {
   val communicationScreen = CommunicationScreen
   val login = LoginScreen
 
@@ -51,7 +51,11 @@ object ClientExampleApplication extends JSApp with ExampleApplication with Clien
 
   override protected val loadingElement: html.Element = byId[html.Div]("loading")
 
-  override def main(): Unit = {
+  @JSExportTopLevel("io.youi.example.ClientExampleApplication")
+  protected def getInstance(): this.type = this
+
+  @JSExport
+  def main(): Unit = {
     // Write the JavaScript logging messages to the server console
     scribe.Logger.root.addHandler(LogHandler(writer = ClientApplication.logWriter))
 

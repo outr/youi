@@ -263,6 +263,7 @@ lazy val example = crossProject.in(file("example"))
     skip in packageJSDependencies := false
   )
   .jvmSettings(
+    scalaJSUseMainModuleInitializer := true,
     libraryDependencies ++= Seq(
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
       "org.scala-lang.modules" %% "scala-xml" % scalaXMLVersion

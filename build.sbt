@@ -10,7 +10,7 @@ scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 val profigVersion = "1.1.2"
 val scribeVersion = "1.4.5"
 val powerScalaVersion = "2.0.5"
-val reactifyVersion = "2.1.0"
+val reactifyVersion = "2.1.1"
 val hasherVersion = "1.2.1"
 val canvgVersion = "1.4.0_1"
 val openTypeVersion = "0.7.1_2"
@@ -77,7 +77,8 @@ lazy val core = crossProject.in(file("core"))
   )
   .jvmSettings(
     libraryDependencies ++= Seq(
-      "com.typesafe.akka" %% "akka-actor" % akkaVersion
+      "com.typesafe.akka" %% "akka-actor" % akkaVersion,
+      "org.powerscala" %% "powerscala-io" % powerScalaVersion
     )
   )
   .jsSettings(

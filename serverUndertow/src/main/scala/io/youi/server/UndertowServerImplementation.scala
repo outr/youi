@@ -1,7 +1,8 @@
 package io.youi.server
 
-import java.io.IOException
+import java.io.{ByteArrayOutputStream, File, IOException}
 import java.net.URI
+import java.util.zip.{ZipEntry, ZipOutputStream}
 
 import io.undertow.io.{IoCallback, Sender}
 import io.undertow.predicate.Predicates
@@ -17,9 +18,10 @@ import io.undertow.websockets.core._
 import io.undertow.websockets.extensions.PerMessageDeflateHandshake
 import io.undertow.websockets.spi.WebSocketHttpExchange
 import io.undertow.{Handlers, Undertow, UndertowOptions}
-import io.youi.http.{Connection, FileContent, FileEntry, FormData, FormDataContent, FormDataEntry, Headers, HttpConnection, HttpRequest, Method, RequestContent, StringContent, StringEntry, URLContent}
+import io.youi.http.{Connection, FileContent, FileEntry, FormData, FormDataContent, FormDataEntry, Headers, HttpConnection, HttpRequest, Method, RequestContent, StreamContent, StringContent, StringEntry, URLContent}
 import io.youi.net.{ContentType, IP, Parameters, Path, URL}
 import io.youi.server.util.SSLUtil
+import org.powerscala.io._
 import org.xnio.{OptionMap, Xnio}
 
 import scala.collection.JavaConverters._
@@ -86,8 +88,8 @@ class UndertowServerImplementation(val server: Server) extends ServerImplementat
   }
 
   private def requestHandler(exchange: HttpServerExchange): Unit = {
-    val request = UndertowServerImplementation.request(exchange)
-    val connection = new HttpConnection(server, request)
+    val request: HttpRequest = UndertowServerImplementation.request(exchange)
+    val connection: HttpConnection = new HttpConnection(server, request)
     server.handle(connection)
     UndertowServerImplementation.response(this, connection, exchange)
   }
@@ -230,7 +232,7 @@ object UndertowServerImplementation extends ServerImplementationCreator {
     if (exchange.getRequestMethod.toString != "HEAD") {
       response.content match {
         case Some(content) => content match {
-          case StringContent(s, contentType, lastModified) => {
+          case StringContent(s, _, _) => {
             exchange.getResponseSender.send(s, new IoCallback {
               override def onComplete(exchange: HttpServerExchange, sender: Sender): Unit = {
                 sender.close()
@@ -243,7 +245,7 @@ object UndertowServerImplementation extends ServerImplementationCreator {
             })
           }
           case fc: FileContent => ResourceServer.serve(exchange, fc)
-          case URLContent(url, contentType) => {
+          case URLContent(url, _) => {
             val resource = new URLResource(url, "")
             resource.serve(exchange.getResponseSender, exchange, new IoCallback {
               override def onComplete(exchange: HttpServerExchange, sender: Sender): Unit = {
@@ -255,6 +257,20 @@ object UndertowServerImplementation extends ServerImplementationCreator {
                 impl.server.error(exception)
               }
             })
+          }
+          case c: StreamContent => {
+            val runnable = new Runnable {
+              override def run(): Unit = {
+                exchange.startBlocking()
+                val out = exchange.getOutputStream
+                c.stream(out)
+              }
+            }
+            if (exchange.isInIoThread) {    // Must move to async thread before blocking
+              exchange.dispatch(runnable)
+            } else {
+              runnable.run()
+            }
           }
         }
         case None => exchange.getResponseSender.send("", new IoCallback {

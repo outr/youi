@@ -95,6 +95,14 @@ case class HttpHandlerBuilder(server: Server,
 
   def validation(validators: Validator*): HttpHandler = wrap(new ValidatorHttpHandler(validators.toList))
 
+  def content(content: => Content): HttpHandler = handle { connection =>
+    connection.update { response =>
+      response.withContent(content)
+    }
+  }
+
+  def zip(entries: ZipFileEntry*): HttpHandler = content(new StreamZipContent(entries.toList))
+
   def wrap(handler: HttpHandler): HttpHandler = {
     val p = priority
     val wrapper = new HttpHandler {

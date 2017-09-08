@@ -45,16 +45,21 @@ class Renderer(canvas: html.Canvas) extends Container with RendererTheme {
     if (pointerTarget() != newTarget) {
       pointerTarget().foreach { component =>
         val local = component.localize(globalPoint)
-        component.event.pointer := PointerEvent(PointerEvent.Type.Exit, local.x, local.y, globalPoint.x, globalPoint.y, evt, eventType)
+        val event = PointerEvent(component, PointerEvent.Type.Exit, local.x, local.y, globalPoint.x, globalPoint.y, evt, eventType)
+        hierarchicalEvent(component, _.event.pointer, event)
       }
       pointerTarget := newTarget
       pointerTarget().foreach { component =>
         val local = component.localize(globalPoint)
-        component.event.pointer := PointerEvent(PointerEvent.Type.Enter, local.x, local.y, globalPoint.x, globalPoint.y, evt, eventType)
+        val event = PointerEvent(component, PointerEvent.Type.Enter, local.x, local.y, globalPoint.x, globalPoint.y, evt, eventType)
+        hierarchicalEvent(component, _.event.pointer, event)
       }
     }
     result.foreach {
-      case (local, component) => component.event.pointer := PointerEvent(`type`, local.x, local.y, globalPoint.x, globalPoint.y, evt, eventType)
+      case (local, component) => {
+        val event = PointerEvent(component, `type`, local.x, local.y, globalPoint.x, globalPoint.y, evt, eventType)
+        hierarchicalEvent(component, _.event.pointer, event)
+      }
     }
   }
   private def touchEvent(evt: TouchEvent, `type`: PointerEvent.Type): Unit = if (visible()) {
@@ -72,16 +77,21 @@ class Renderer(canvas: html.Canvas) extends Container with RendererTheme {
     if (pointerTarget() != newTarget) {
       pointerTarget().foreach { component =>
         val local = component.localize(globalPoint)
-        component.event.pointer := PointerEvent(PointerEvent.Type.Exit, local.x, local.y, globalPoint.x, globalPoint.y, evt, eventType)
+        val event = PointerEvent(component, PointerEvent.Type.Exit, local.x, local.y, globalPoint.x, globalPoint.y, evt, eventType)
+        hierarchicalEvent(component, _.event.pointer, event)
       }
       pointerTarget := newTarget
       pointerTarget().foreach { component =>
         val local = component.localize(globalPoint)
-        component.event.pointer := PointerEvent(PointerEvent.Type.Enter, local.x, local.y, globalPoint.x, globalPoint.y, evt, eventType)
+        val event = PointerEvent(component, PointerEvent.Type.Enter, local.x, local.y, globalPoint.x, globalPoint.y, evt, eventType)
+        hierarchicalEvent(component, _.event.pointer, event)
       }
     }
     result.foreach {
-      case (local, component) => component.event.pointer := PointerEvent(`type`, local.x, local.y, globalPoint.x, globalPoint.y, evt, eventType)
+      case (local, component) => {
+        val event = PointerEvent(component, `type`, local.x, local.y, globalPoint.x, globalPoint.y, evt, eventType)
+        hierarchicalEvent(component, _.event.pointer, event)
+      }
     }
   }
   private def wheelEvent(delta: WheelDelta): Unit = if (visible()) {
@@ -90,8 +100,17 @@ class Renderer(canvas: html.Canvas) extends Container with RendererTheme {
     hitTest(globalPoint) match {
       case HitResult.Miss => // Nothing
       case HitResult.Hit(local, component) => {
-        component.event.pointer := WheelEvent(local.x, local.y, globalPoint.x, globalPoint.y, delta)
+        val event = WheelEvent(component, local.x, local.y, globalPoint.x, globalPoint.y, delta)
+        hierarchicalEvent(component, _.event.pointer, event)
       }
+    }
+  }
+
+  def hierarchicalEvent[E <: Event](component: Component, handler: Component => Channel[E], event: E): Unit = {
+    val channel = handler(component)
+    channel := event
+    if (event.propagate) {
+      component.parent().foreach(hierarchicalEvent(_, handler, event))
     }
   }
 

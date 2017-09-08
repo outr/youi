@@ -39,7 +39,6 @@ object ScrollingExample extends UIExampleScreen with UIScreen {
       position.left := 20.0
       position.top := 10.0
     }
-    interactive := false
     position.left := 25.0
     size.width := w
     size.height := h

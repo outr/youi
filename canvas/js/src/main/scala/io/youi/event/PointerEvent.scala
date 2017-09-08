@@ -1,11 +1,13 @@
 package io.youi.event
 
+import io.youi.component.Component
 import io.youi.spatial.Point
 import org.scalajs.dom.raw
 
 import scala.scalajs.js
 
-class PointerEvent private[event](val `type`: PointerEvent.Type,
+class PointerEvent private[event](val target: Component,
+                                  val `type`: PointerEvent.Type,
                                   val x: Double,
                                   val y: Double,
                                   val globalX: Double,
@@ -49,21 +51,25 @@ class PointerEvent private[event](val `type`: PointerEvent.Type,
   lazy val pointerType: String = htmlPointerEvent.map(_.pointerType).getOrElse("mouse")
   lazy val isPrimary: Boolean = htmlPointerEvent.forall(_.isPrimary)
 
-  def stopPropagation(): Unit = htmlEvent.stopPropagation()
+  override def stopPropagation(): Unit = {
+    super.stopPropagation()
+
+    htmlEvent.stopPropagation()
+  }
   def preventDefault(): Unit = htmlEvent.preventDefault()
 
   override def toString: String = s"PointerEvent(type: ${`type`}, local: $local, global: $global)"
 }
 
 object PointerEvent {
-  def apply(`type`: Type,
+  def apply(target: Component, `type`: Type,
             x: Double,
             y: Double,
             globalX: Double,
             globalY: Double,
             htmlEvent: raw.UIEvent,
             htmlEventType: HTMLEventType): PointerEvent = {
-    new PointerEvent(`type`, x, y, globalX, globalY, htmlEvent, htmlEventType)
+    new PointerEvent(target, `type`, x, y, globalX, globalY, htmlEvent, htmlEventType)
   }
 
   sealed trait Type

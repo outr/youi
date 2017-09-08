@@ -6,12 +6,10 @@
 * [ ] Touch scroll acceleration
 * [ ] ScrollBar
 * [ ] ComponentPaint for better integration of Image and Video painting
-* [ ] Layout managers
-    * [ ] Flow layout
-    * [ ] Form layout
-    * [ ] Stack layout
+* [ ] Flow layout
 * [ ] Support Scala.js 1.0
 * [ ] Cross-build for Scala 2.13
+* [ ] File drag / select support for canvas (integrate in DataTransferManager)
 * [X] GoogleFonts integration
 * [X] Streaming Content support in HttpResponse
     * [X] Convenience functionality for streaming ZIP

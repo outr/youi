@@ -11,6 +11,8 @@ import scala.scalajs.js
 class DataTransferManager {
   implicit def file2Extras(file: File): FileExtras = file.asInstanceOf[FileExtras]
 
+  val enabled: Var[Boolean] = Var(true)
+
   object overlay {
     val visible: Var[Boolean] = Var(false)
     val current: Var[Option[DragTarget]] = Var(None)
@@ -33,7 +35,7 @@ class DataTransferManager {
   val fileReceived: Channel[DataTransferFile] = Channel[DataTransferFile]
   val folderFeatureMissing: Channel[File] = Channel[File]
 
-  def addDragTarget(element: html.Element): DragTarget = new DragTarget(element, this)
+  def addDragTarget(element: html.Element): DragTarget = new HTMLDragTarget(element, this)
 
   def addInput(input: html.Input = dom.create[html.Input]("input"),
                modify: Boolean = true,

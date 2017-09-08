@@ -1,6 +1,6 @@
 package io.youi.example.ui.hypertext
 
-import io.youi.ui
+import io.youi._
 import io.youi.datatransfer.DataTransferManager
 import io.youi.hypertext.Button
 import org.scalajs.dom._

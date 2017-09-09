@@ -17,6 +17,7 @@ class Renderer(canvas: html.Canvas) extends Container with RendererTheme {
   override lazy val renderer: Val[Option[Renderer]] = Val(Some(this))
   override val globalVisibility: Val[Boolean] = visible
   val pointerTarget: Var[Option[Component]] = Var(None)
+  val reDrawOnUpdate: Var[Boolean] = Var(false)
 
   htmlEvents.click.attach(pointerEvent(_, PointerEvent.Type.Click))
   htmlEvents.doubleClick.attach(pointerEvent(_, PointerEvent.Type.DoubleClick))
@@ -133,6 +134,12 @@ class Renderer(canvas: html.Canvas) extends Container with RendererTheme {
   AnimationFrame.delta.attach(update)
 
   def apply(): html.Canvas = canvas
+
+  override def update(delta: Double): Unit = {
+    if (reDrawOnUpdate()) reDraw.flag()
+
+    super.update(delta)
+  }
 }
 
 object Renderer extends RendererTheme

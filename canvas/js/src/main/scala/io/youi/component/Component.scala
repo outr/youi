@@ -7,7 +7,7 @@ import io.youi.task.TaskSupport
 import io.youi.theme.ComponentTheme
 import reactify._
 
-import scala.concurrent.Future
+import scala.concurrent.{Future, Promise}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 trait Component extends TaskSupport with ComponentTheme {
@@ -142,7 +142,14 @@ trait Component extends TaskSupport with ComponentTheme {
 
   def isHit(local: Point): Boolean = local.x >= 0.0 && local.y >= 0.0 && local.x <= size.width() && local.y <= size.height()
 
-  def invalidate(): Unit = reDraw.flag()
+  def invalidate(): Future[Unit] = {
+    reDraw.flag()
+    val promise = Promise[Unit]
+    nextFrame {
+      promise.success(())
+    }
+    promise.future
+  }
 
   def updateMeasured(width: => Double, height: => Double): Unit = {
     size.measured.width := width + padding.width + border.width

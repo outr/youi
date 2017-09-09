@@ -19,6 +19,8 @@ trait AbstractContainer extends Component with AbstractContainerTheme { self =>
 
   override protected def defaultThemeParent = Some(theme)
 
+   val drawOffscreenChildren: Var[Boolean] = Var(false)
+
   childEntries.changes(new ChangeListener[Vector[Child]] {
     override def change(oldValue: Vector[Child], newValue: Vector[Child]): Unit = {
       val removed = oldValue.collect {
@@ -67,8 +69,12 @@ trait AbstractContainer extends Component with AbstractContainerTheme { self =>
     childEntries.foreach { child =>
       if (child.visible()) {
         // TODO: replace bounding check with matrix point checks when figured out
-        val bb = BoundingBox(child.position.left, child.position.top, child.position.right, child.position.bottom)
-        val drawable = bb.intersects(viewable)
+        val drawable = if (drawOffscreenChildren()) {
+          true
+        } else {
+          val bb = BoundingBox(child.position.left, child.position.top, child.position.right, child.position.bottom)
+          bb.intersects(viewable)
+        }
         if (drawable) {
           context.transform(child)
           context.translate(offset.x, offset.y)

@@ -6,12 +6,17 @@ import io.youi.dom._
 import io.youi.example.screen.{CommunicationScreen, LoginScreen}
 import io.youi.example.ui._
 import io.youi.example.ui.hypertext.DataTransferExample
+import io.youi.util.DebugSupport
 import org.scalajs.dom._
 import scribe.LogHandler
 
 import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
 
 object ClientExampleApplication extends ExampleApplication with ClientApplication with LoadingTransitionSupport {
+  // Adds debug support to the application (press F2)
+  val debug = new DebugSupport()
+  debug.enabled := true
+
   val communicationScreen = CommunicationScreen
   val login = LoginScreen
 

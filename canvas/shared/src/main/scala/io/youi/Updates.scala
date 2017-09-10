@@ -21,8 +21,8 @@ trait Updates {
     var elapsed = 0.0
     var totalElapsed = 0.0
 
-    var listener: Listener[Double] = null
-    listener = delta.attach { d =>
+    var observer: Observer[Double] = null
+    observer = delta.attach { d =>
       elapsed += d
       totalElapsed += d
       if (elapsed >= timeout) {
@@ -31,7 +31,7 @@ trait Updates {
 
         untilTimeout.foreach { total =>
           if (totalElapsed >= total) {
-            delta.detach(listener)
+            delta.detach(observer)
           }
         }
       }

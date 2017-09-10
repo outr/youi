@@ -25,7 +25,9 @@ class DebugSupport(renderer: Renderer = ui.renderer) {
 object DebugWindow {
   private lazy val root = dom.create[html.Div]("div")
 
-  def toggle(renderer: Renderer): Unit = if (root.style.display == "none") {
+  root.style.display = "none"
+
+  def toggle(renderer: Renderer): Unit = if (root.style.display != "block") {
     showFor(renderer)
   } else {
     close()
@@ -53,7 +55,7 @@ object DebugWindow {
     val canvas = component.drawer.canvas
 
     val heading = dom.create[html.Element]("h3")
-    heading.innerHTML = s"${component.toString} (size: ${canvas.width}x${canvas.height})"
+    heading.innerHTML = s"${component.toString} (size: ${canvas.width}x${canvas.height}, parent: ${component.parent()})"
     parent.appendChild(heading)
 
     val actions = dom.create[html.Div]("div")

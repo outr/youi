@@ -22,14 +22,14 @@ class Connection {
 
   // Set up backlog for sending until connection has been established
   private def init(): Unit = {
-    val textListener: Listener[String] = (t: String) => {
+    val textObserver: Observer[String] = (t: String) => {
       Connection.backlog(this, t)
     }
-    val binaryListener: Listener[Array[ByteBuffer]] = (b: Array[ByteBuffer]) => {
+    val binaryObserver: Observer[Array[ByteBuffer]] = (b: Array[ByteBuffer]) => {
       Connection.backlog(this, b)
     }
-    send.text.observe(textListener)
-    send.binary.observe(binaryListener)
+    send.text.observe(textObserver)
+    send.binary.observe(binaryObserver)
 
     send.text.attach { s =>
       if (Connection.debug) scribe.info(s"Send: $s")
@@ -46,8 +46,8 @@ class Connection {
 
     connected.attach { b =>
       synchronized {
-        send.text.detach(textListener)
-        send.binary.detach(binaryListener)
+        send.text.detach(textObserver)
+        send.binary.detach(binaryObserver)
         if (b) {
           backlog.foreach {
             case s: String => send.text := s
@@ -55,8 +55,8 @@ class Connection {
           }
           backlog.clear()
         } else {
-          send.text.observe(textListener)
-          send.binary.observe(binaryListener)
+          send.text.observe(textObserver)
+          send.binary.observe(binaryObserver)
         }
       }
     }

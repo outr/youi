@@ -6,7 +6,7 @@ import io.youi.net.URL
 import io.youi.stream.StreamURL
 import org.scalajs.dom.{WebSocket, window}
 import org.scalajs.dom.ext.AjaxException
-import reactify.{ChangeListener, Var}
+import reactify._
 
 import scala.util.{Failure, Success}
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -25,7 +25,7 @@ class ClientConnectivity(connectivity: ApplicationConnectivity, application: Cli
     connect()
   }
 
-  connection.connected.changes(new ChangeListener[Boolean] {
+  connection.connected.changes(new ChangeObserver[Boolean] {
     override def change(oldValue: Boolean, newValue: Boolean): Unit = if (oldValue && !newValue && application.autoReload) {
       attemptReload()
     }

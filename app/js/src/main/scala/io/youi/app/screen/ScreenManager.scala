@@ -1,6 +1,6 @@
 package io.youi.app.screen
 
-import reactify.{ChangeListener, State, Val, Var}
+import reactify._
 import io.youi.app.YouIApplication
 
 import scala.concurrent.{Future, Promise}
@@ -23,7 +23,7 @@ trait ScreenManager {
     loaded.asInstanceOf[Var[Boolean]] := true
   })
 
-  active.changes(new ChangeListener[Screen] {
+  active.changes(new ChangeObserver[Screen] {
     override def change(oldScreen: Screen, newScreen: Screen): Unit = screenChange(oldScreen, newScreen)
   })
 

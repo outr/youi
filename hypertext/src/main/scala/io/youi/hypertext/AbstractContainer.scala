@@ -7,14 +7,14 @@ trait AbstractContainer[C <: AbstractComponent] extends AbstractComponent {
   val layoutManager: Var[Option[Layout]] = Var(None)
   val children: Var[Vector[C]] = Var[Vector[C]](Vector.empty)
 
-  layoutManager.changes(new ChangeListener[Option[Layout]] {
+  layoutManager.changes(new ChangeObserver[Option[Layout]] {
     override def change(oldValue: Option[Layout], newValue: Option[Layout]): Unit = synchronized {
       oldValue.foreach(l => Layout.disconnect[C](AbstractContainer.this, l))
       newValue.foreach(l => Layout.connect[C](AbstractContainer.this, l))
     }
   })
 
-  children.changes(new ChangeListener[Vector[C]] {
+  children.changes(new ChangeObserver[Vector[C]] {
     override def change(oldValue: Vector[C], newValue: Vector[C]): Unit = {
       var modifiedOld = oldValue
 

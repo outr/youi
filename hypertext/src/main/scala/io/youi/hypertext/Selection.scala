@@ -159,7 +159,7 @@ abstract class Selection[T](root: html.Element,
     selected.static(items)
   }
 
-  highlighted.changes(new ChangeListener[ListSet[T]] {
+  highlighted.changes(new ChangeObserver[ListSet[T]] {
     override def change(oldValue: ListSet[T], newValue: ListSet[T]): Unit = {
       val removed = oldValue -- newValue
       val added = newValue -- oldValue
@@ -171,7 +171,7 @@ abstract class Selection[T](root: html.Element,
     }
   })
 
-  selected.changes(new ChangeListener[ListSet[T]] {
+  selected.changes(new ChangeObserver[ListSet[T]] {
     override def change(oldValue: ListSet[T], newValue: ListSet[T]): Unit = {
       val removed = oldValue -- newValue
       val added = newValue -- oldValue

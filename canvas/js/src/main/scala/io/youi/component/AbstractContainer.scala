@@ -21,7 +21,7 @@ trait AbstractContainer extends Component with AbstractContainerTheme { self =>
 
    val drawOffscreenChildren: Var[Boolean] = Var(false)
 
-  childEntries.changes(new ChangeListener[Vector[Child]] {
+  childEntries.changes(new ChangeObserver[Vector[Child]] {
     override def change(oldValue: Vector[Child], newValue: Vector[Child]): Unit = {
       val removed = oldValue.collect {
         case c: Component if !newValue.contains(c) => c
@@ -39,7 +39,7 @@ trait AbstractContainer extends Component with AbstractContainerTheme { self =>
     }
   })
 
-  layoutManager.changes(new ChangeListener[Layout] {
+  layoutManager.changes(new ChangeObserver[Layout] {
     override def change(oldValue: Layout, newValue: Layout): Unit = synchronized {
       oldValue.disconnect(self)
       newValue.connect(self)

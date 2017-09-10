@@ -1,19 +1,19 @@
 package io.youi.task
 
 import io.youi.Updates
-import reactify.Listener
+import reactify._
 
 import scala.concurrent.{Future, Promise}
 
 class TaskInstance(task: Task, updates: Updates) {
   private val promise = Promise[Double]
-  private var listener: Listener[Double] = _
+  private var observer: Observer[Double] = _
   private var first = true
   private var elapsed: Double = 0.0
   private var paused: Boolean = false
   private var step: Double = 0.0
 
-  listener = Listener[Double] { delta =>
+  observer = Observer[Double] { delta =>
     val updateTask = updates match {
       case ts: TaskSupport => ts.updateTasks()
       case _ => true
@@ -26,7 +26,7 @@ class TaskInstance(task: Task, updates: Updates) {
         task.update(delta, first) match {
           case Conclusion.Continue => // Keep going
           case Conclusion.Finished => {
-            updates.delta.detach(listener)
+            updates.delta.detach(observer)
             promise.success(elapsed)
           }
         }
@@ -38,7 +38,7 @@ class TaskInstance(task: Task, updates: Updates) {
   val future: Future[Double] = promise.future
 
   def start(): Future[Double] = {
-    updates.delta.observe(listener)
+    updates.delta.observe(observer)
     future
   }
 

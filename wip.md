@@ -10,6 +10,7 @@
 * [ ] Support Scala.js 1.0
 * [ ] Cross-build for Scala 2.13
 * [ ] File drag / select support for canvas (integrate in DataTransferManager)
+* [X] Better error handling support in HttpClient
 * [X] Event propagation in canvas
 * [X] GoogleFonts integration
 * [X] Streaming Content support in HttpResponse

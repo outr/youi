@@ -116,8 +116,11 @@ class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpd
     * @tparam Response the type of response
     * @return throws a RuntimeException when an error occurs
     */
-  protected def defaultErrorHandler[Response]: (HttpRequest, HttpResponse) => Response = (request: HttpRequest, response: HttpResponse) => {
-    throw new RuntimeException(s"Error from server: ${response.status.message} (${response.status.code}) for ${request.url}.")
+  protected def defaultErrorHandler[Response]: ErrorHandler[Response] = new ErrorHandler[Response] {
+    override def apply(request: HttpRequest, response: HttpResponse, throwable: Option[Throwable]) = throwable match {
+      case Some(t) => throw new RuntimeException(s"Error from server: ${response.status.message} (${response.status.code}) for ${request.url}.", t)
+      case None => throw new RuntimeException(s"Error from server: ${response.status.message} (${response.status.code}) for ${request.url}.")
+    }
   }
 
   /**
@@ -137,7 +140,7 @@ class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpd
   def restful[Request, Response](url: URL,
                                  request: Request,
                                  headers: Headers = Headers.empty,
-                                 errorHandler: (HttpRequest, HttpResponse) => Response = defaultErrorHandler[Response],
+                                 errorHandler: ErrorHandler[Response] = defaultErrorHandler[Response],
                                  method: Method = Method.Post,
                                  processor: Json => Json = (json: Json) => json)
                                 (implicit encoder: Encoder[Request], decoder: Decoder[Response]): Future[Response] = {
@@ -157,11 +160,11 @@ class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpd
       if (response.status.isSuccess) {
         if (responseJson.isEmpty) throw new RuntimeException(s"No content received in response for $url.")
         decode[Response](responseJson) match {
-          case Left(error) => errorHandler(httpRequest, response.copy(Status.InternalServerError(error.getMessage)))
+          case Left(error) => errorHandler(httpRequest, response, Some(error))
           case Right(result) => result
         }
       } else {
-        errorHandler(httpRequest, response)
+        errorHandler(httpRequest, response, None)
       }
     }
   }
@@ -180,7 +183,7 @@ class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpd
   def call[Response](url: URL,
                      method: Method = Method.Get,
                      headers: Headers = Headers.empty,
-                     errorHandler: (HttpRequest, HttpResponse) => Response = defaultErrorHandler[Response])
+                     errorHandler: ErrorHandler[Response] = defaultErrorHandler[Response])
                     (implicit decoder: Decoder[Response]): Future[Response] = {
     val request = HttpRequest(
       method = method,
@@ -196,11 +199,11 @@ class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpd
       if (response.status.isSuccess) {
         if (responseJson.isEmpty) throw new RuntimeException(s"No content received in response for $url.")
         decode[Response](responseJson) match {
-          case Left(error) => errorHandler(request, response.copy(Status.InternalServerError(error.getMessage)))
+          case Left(error) => errorHandler(request, response, Some(error))
           case Right(result) => result
         }
       } else {
-        errorHandler(request, response)
+        errorHandler(request, response, None)
       }
     }
   }
@@ -209,4 +212,8 @@ class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpd
     * Disposes and cleans up this client instance.
     */
   def dispose(): Unit = asyncClient.close()
+}
+
+trait ErrorHandler[Response] {
+  def apply(request: HttpRequest, response: HttpResponse, throwable: Option[Throwable]): Response
 }

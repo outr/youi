@@ -9,6 +9,8 @@ class FileInput(input: html.Input, modify: Boolean, folderSupport: Boolean, mana
     input.multiple = true
     if (folderSupport) {
       input.setAttribute("webkitDirectory", "webkitDirectory")
+    } else if (input.hasAttribute("webkitDirectory")) {
+      input.removeAttribute("webkitDirectory")
     }
     if (Option(input.parentElement).isEmpty) {
       document.body.appendChild(input)

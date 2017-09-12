@@ -3,6 +3,7 @@ package io.youi.hypertext
 import io.youi._
 import io.youi.hypertext.border.BorderStyle
 import io.youi.{BoundingBox, Color, HTMLEvents, Key}
+import org.scalajs.dom.raw.MouseEvent
 import org.scalajs.dom.{document, html}
 import reactify._
 
@@ -27,8 +28,6 @@ abstract class Selection[T](root: html.Element,
 
   private val mouse = ui.mouse
 
-  private val rootEvents = new HTMLEvents(root)
-
   val enabled: Var[Boolean] = Var(true)
   val time: Var[Long] = Var(0L)
   val x1: Var[Double] = Var(0.0)
@@ -52,35 +51,9 @@ abstract class Selection[T](root: html.Element,
   size.width := math.abs(x1 - x2)
   size.height := math.abs(y1 - y2)
 
-  rootEvents.pointer.down.attach { evt =>
-    if (enabled() && evt.target == root) {
-      val touching = select(evt.pageX, evt.pageY, evt.pageX, evt.pageY, elements)
-      if (touching.isEmpty) {
-        evt.preventDefault()
-        evt.stopPropagation()
+  val rootListener: SelectionListener[T] = new SelectionListener[T](this, root, deferToRoot = false)
 
-        time := System.currentTimeMillis()
-        x1 := evt.pageX
-        y1 := evt.pageY
-        x2 := evt.pageX
-        y2 := evt.pageY
-        visible := true
-      }
-    }
-  }
-
-  rootEvents.pointer.move.attach { evt =>
-    if (enabled()) {
-      if (visible()) {
-        x2 := evt.pageX
-        y2 := evt.pageY
-
-        updateHighlighting(x1, y1, x2, y2)
-      } else if (evt.getModifierState(Key.Shift.value) || evt.getModifierState(Key.Control.value)) {
-        updateHighlighting(evt.pageX, evt.pageY, evt.pageX, evt.pageY)
-      }
-    }
-  }
+  def addListener(base: html.Element, deferToRoot: Boolean = true): SelectionListener[T] = new SelectionListener[T](this, base, deferToRoot)
 
   ui.event.key.down.attach { evt =>
     if (enabled()) {
@@ -99,40 +72,6 @@ abstract class Selection[T](root: html.Element,
         evt.key match {
           case Key.Shift | Key.Control => changeHighlighting(ListSet.empty)
           case _ => // Ignore others
-        }
-      }
-    }
-  }
-
-  rootEvents.pointer.up.attach { evt =>
-    if (enabled()) {
-      if (visible()) {
-        evt.preventDefault()
-        evt.stopPropagation()
-
-        selectHighlighted(evt.getModifierState(Key.Control.value))
-
-        x1 := 0.0
-        y1 := 0.0
-        x2 := 0.0
-        y2 := 0.0
-        visible := false
-      } else if (evt.getModifierState(Key.Control.value)) {
-        updateHighlighting(evt.pageX, evt.pageY, evt.pageX, evt.pageY)
-        selectHighlighted(toggle = true)
-      } else if (evt.getModifierState(Key.Shift.value)) {
-        select(evt.pageX, evt.pageY, evt.pageX, evt.pageY, elements).headOption.foreach { item =>
-          selected().lastOption match {
-            case Some(last) => {
-              val items = elements.dropWhile(_ != last).takeWhile(_ != item) ++ ListSet(item)
-              changeHighlighting(items)
-              selectHighlighted(toggle = false)
-            }
-            case None => {
-              changeHighlighting(ListSet(item))
-              selectHighlighted(toggle = false)
-            }
-          }
         }
       }
     }
@@ -197,6 +136,104 @@ abstract class Selection[T](root: html.Element,
     elements.filter { e =>
       val b = boxFor(e)
       boundingBox.intersects(b)
+    }
+  }
+
+  private[hypertext] def down(evt: MouseEvent): Boolean = if (enabled()) {
+    val touching = select(evt.pageX, evt.pageY, evt.pageX, evt.pageY, elements)
+    if (touching.isEmpty) {
+      evt.preventDefault()
+      evt.stopPropagation()
+
+      time := System.currentTimeMillis()
+      x1 := evt.pageX
+      y1 := evt.pageY
+      x2 := evt.pageX
+      y2 := evt.pageY
+      visible := true
+      true
+    } else {
+      false
+    }
+  } else {
+    false
+  }
+
+  private[hypertext] def move(evt: MouseEvent): Unit = {
+    if (enabled()) {
+      if (visible()) {
+        evt.preventDefault()
+        evt.stopPropagation()
+
+        x2 := evt.pageX
+        y2 := evt.pageY
+
+        updateHighlighting(x1, y1, x2, y2)
+      } else if (evt.getModifierState(Key.Shift.value) || evt.getModifierState(Key.Control.value)) {
+        updateHighlighting(evt.pageX, evt.pageY, evt.pageX, evt.pageY)
+      }
+    }
+  }
+
+  private[hypertext] def up(evt: MouseEvent): Unit = {
+    if (enabled()) {
+      if (visible()) {
+        evt.preventDefault()
+        evt.stopPropagation()
+
+        selectHighlighted(evt.getModifierState(Key.Control.value))
+
+        x1 := 0.0
+        y1 := 0.0
+        x2 := 0.0
+        y2 := 0.0
+        visible := false
+      } else if (evt.getModifierState(Key.Control.value)) {
+        updateHighlighting(evt.pageX, evt.pageY, evt.pageX, evt.pageY)
+        selectHighlighted(toggle = true)
+      } else if (evt.getModifierState(Key.Shift.value)) {
+        select(evt.pageX, evt.pageY, evt.pageX, evt.pageY, elements).headOption.foreach { item =>
+          selected().lastOption match {
+            case Some(last) => {
+              val items = elements.dropWhile(_ != last).takeWhile(_ != item) ++ ListSet(item)
+              changeHighlighting(items)
+              selectHighlighted(toggle = false)
+            }
+            case None => {
+              changeHighlighting(ListSet(item))
+              selectHighlighted(toggle = false)
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+class SelectionListener[T](selection: Selection[T], base: html.Element, deferToRoot: Boolean) {
+  var active: Boolean = false
+
+  private val events = new HTMLEvents(base)
+
+  events.pointer.down.attach { evt =>
+    if (evt.target == base) {
+      val active = selection.down(evt)
+      if (deferToRoot && active) {
+        selection.rootListener.active = active
+      } else {
+        this.active = active
+      }
+    }
+  }
+
+  events.pointer.move.attach { evt =>
+    if (active) selection.move(evt)
+  }
+
+  events.pointer.up.attach { evt =>
+    if (active) {
+      selection.up(evt)
+      active = false
     }
   }
 }

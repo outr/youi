@@ -88,10 +88,11 @@ class UndertowServerImplementation(val server: Server) extends ServerImplementat
   }
 
   private def requestHandler(exchange: HttpServerExchange): Unit = {
-    val request: HttpRequest = UndertowServerImplementation.request(exchange)
-    val connection: HttpConnection = new HttpConnection(server, request)
-    server.handle(connection)
-    UndertowServerImplementation.response(this, connection, exchange)
+    UndertowServerImplementation.processRequest(exchange) { request =>
+      val connection: HttpConnection = new HttpConnection(server, request)
+      server.handle(connection)
+      UndertowServerImplementation.response(this, connection, exchange)
+    }
   }
 }
 
@@ -104,10 +105,22 @@ object UndertowServerImplementation extends ServerImplementationCreator {
     hv.getHeaderName.toString -> hv.asScala.toList
   }.toMap)
 
-  def request(exchange: HttpServerExchange): HttpRequest = {
+  def processRequest(exchange: HttpServerExchange)(handler: HttpRequest => Unit): Unit = {
     val source = IP(exchange.getSourceAddress.getAddress.getHostAddress)
     val headers = parseHeaders(exchange.getRequestHeaders)
-    val content: Option[RequestContent] = if (exchange.getRequestContentLength > 0L) {
+
+    def handle(content: Option[RequestContent]): Unit = {
+      val request = HttpRequest(
+        method = Method(exchange.getRequestMethod.toString),
+        source = source,
+        url = URL(s"${exchange.getRequestURL}?${exchange.getQueryString}"),
+        headers = headers,
+        content = content
+      )
+      handler(request)
+    }
+
+    if (exchange.getRequestContentLength > 0L) {
       Headers.`Content-Type`.value(headers).getOrElse(ContentType.`text/plain`) match {
         case ContentType.`multipart/form-data` => {
           val formData = exchange.getAttachment(FormDataParser.FORM_DATA)
@@ -122,21 +135,26 @@ object UndertowServerImplementation extends ServerImplementationCreator {
             }.toList
             FormData(key, entries)
           }
-          Some(FormDataContent(data))
+          handle(Some(FormDataContent(data)))
         }
-        case ct => throw new RuntimeException(s"Only multipart/form-data is supported currently but received $ct")
+        case ct => {
+          def finish(exchange: HttpServerExchange): Unit = {
+            exchange.startBlocking()
+            val data = IO.stream(exchange.getInputStream, new StringBuilder).toString
+            handle(Some(StringContent(data, ct)))
+          }
+          if (exchange.isInIoThread) {
+            exchange.dispatch(new UndertowHttpHandler {
+              override def handleRequest(exchange: HttpServerExchange): Unit = finish(exchange)
+            })
+          } else {
+            finish(exchange)
+          }
+        }
       }
     } else {
       None
     }
-
-    HttpRequest(
-      method = Method(exchange.getRequestMethod.toString),
-      source = source,
-      url = URL(s"${exchange.getRequestURL}?${exchange.getQueryString}"),
-      headers = headers,
-      content = content
-    )
   }
 
   def response(impl: UndertowServerImplementation, connection: HttpConnection, exchange: HttpServerExchange): Unit = {

@@ -1,14 +1,10 @@
 # Work in Progress
 ## Tasks currently being worked on for the next release
 
-* [ ] SVG import tool
-* [ ] AI import tool
 * [ ] Touch scroll acceleration
 * [ ] ScrollBar
 * [ ] ComponentPaint for better integration of Image and Video painting
 * [ ] Flow layout
-* [ ] Support Scala.js 1.0
-* [ ] Cross-build for Scala 2.13
 * [ ] File drag / select support for canvas (integrate in DataTransferManager)
 * [X] Convenience functionality in HttpHandlerBuilder to create a restful end-point
 * [X] Better error handling support in HttpClient

@@ -153,7 +153,7 @@ object UndertowServerImplementation extends ServerImplementationCreator {
         }
       }
     } else {
-      None
+      handle(None)
     }
   }
 

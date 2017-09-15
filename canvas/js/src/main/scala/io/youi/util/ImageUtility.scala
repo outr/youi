@@ -116,6 +116,14 @@ object ImageUtility {
     future
   }
 
+  def toDataURL(img: html.Image): Future[String] = loadImage(img).map { _ =>
+    CanvasPool.withCanvas(img.width, img.height) { canvas =>
+      val ctx = canvas.getContext("2d").asInstanceOf[CanvasRenderingContext2D]
+      ctx.drawImage(img, 0.0, 0.0)
+      canvas.toDataURL("image/png")
+    }
+  }
+
   def loadDataURL(file: File, useFileReader: Boolean = false): Future[String] = if (useFileReader) {
     val reader = new FileReader
     val promise = Promise[String]

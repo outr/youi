@@ -27,7 +27,7 @@ case class TextureImage(img: html.Image,
     }
   }
 
-  override def toDataURL: Future[String] = ImageUtility.resizeToDataURL(img, width, height)
+  override def toDataURL: Future[String] = ImageUtility.toDataURL(img)
 
   override def dispose(): Unit = {}
 }

@@ -45,7 +45,7 @@ trait Server extends HttpHandler with ErrorSupport {
   }
 
   def isInitialized: Boolean = initialized
-  def isRunning: Boolean = implementation.isRunning
+  def isRunning: Boolean = isInitialized && implementation.isRunning
 
   /**
     * Init is called on start(), but only the first time. If the server is restarted it is not invoked again.

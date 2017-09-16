@@ -2,7 +2,7 @@ package io.youi.server
 
 import reactify._
 import io.youi.{ErrorSupport, ItemContainer}
-import io.youi.http.{HttpConnection, Status}
+import io.youi.http.{HttpConnection, ProxyHandler, Status}
 import io.youi.server.handler.{HttpHandler, HttpHandlerBuilder}
 import io.youi.server.session.SessionStore
 import profig.{Config, ConfigPath}
@@ -16,6 +16,7 @@ trait Server extends HttpHandler with ErrorSupport {
 
   val handler = HttpHandlerBuilder(this)
 
+  object proxies extends ItemContainer[ProxyHandler]
   object handlers extends ItemContainer[HttpHandler]
 
   /**

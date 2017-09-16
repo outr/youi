@@ -2,7 +2,7 @@ package io.youi.example
 
 import io.youi.app._
 import io.youi.http._
-import io.youi.net.ContentType
+import io.youi.net.{ContentType, URL}
 import io.youi.server.handler.CachingManager
 
 object ServerExampleApplication extends ExampleApplication with ServerApplication {
@@ -17,7 +17,9 @@ object ServerExampleApplication extends ExampleApplication with ServerApplicatio
     }
     handler.matcher(path.exact("/cookies.html")).wrap(CookiesExample)
     handler.matcher(path.exact("/web-socket-example")).wrap(WebSocketExample)
-    handler.matcher(path.exact("/proxy.html")).proxy(ProxyExample)
+    proxies += ProxyHandler(path.exact("/proxy.html")) { url =>
+      URL("http://google.com").copy(path = url.path)
+    }
     handler.matcher(path.exact("/session.html")).wrap(SessionExample)
     handler.caching(CachingManager.LastModified()).classLoader("", (path: String) => s"content$path")
     handler.caching(CachingManager.LastModified()).matcher(path.startsWith("/app")).classLoader()

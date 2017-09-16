@@ -12,3 +12,4 @@
 * [X] GoogleFonts integration
 * [X] Streaming Content support in HttpResponse
     * [X] Convenience functionality for streaming ZIP
+* [X] Fixes and improvements regarding proxying functionality

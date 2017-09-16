@@ -1,8 +1,7 @@
 package io.youi.server
 
-import java.io.{ByteArrayOutputStream, File, IOException}
+import java.io.IOException
 import java.net.URI
-import java.util.zip.{ZipEntry, ZipOutputStream}
 
 import io.undertow.io.{IoCallback, Sender}
 import io.undertow.predicate.Predicates
@@ -18,7 +17,7 @@ import io.undertow.websockets.core._
 import io.undertow.websockets.extensions.PerMessageDeflateHandshake
 import io.undertow.websockets.spi.WebSocketHttpExchange
 import io.undertow.{Handlers, Undertow, UndertowOptions}
-import io.youi.http.{Connection, FileContent, FileEntry, FormData, FormDataContent, FormDataEntry, Headers, HttpConnection, HttpRequest, Method, RequestContent, StreamContent, StringContent, StringEntry, URLContent}
+import io.youi.http.{Connection, FileContent, FileEntry, FormData, FormDataContent, FormDataEntry, Headers, HttpConnection, HttpRequest, Method, ProxyHandler, RequestContent, StreamContent, StringContent, StringEntry, URLContent}
 import io.youi.net.{ContentType, IP, Parameters, Path, URL}
 import io.youi.server.util.SSLUtil
 import org.powerscala.io._
@@ -73,22 +72,29 @@ class UndertowServerImplementation(val server: Server) extends ServerImplementat
   private val formParserBuilder = FormParserFactory.builder()
 
   override def handleRequest(exchange: HttpServerExchange): Unit = server.errorSupport {
-    if (exchange.getRequestContentLength > 0L && exchange.getRequestHeaders.getFirst("Content-Type").startsWith("multipart/form-data")) {
-      if (exchange.isInIoThread) {
-        exchange.dispatch(this)
-      } else {
-        exchange.startBlocking()
-        val formDataParser = formParserBuilder.build().createParser(exchange)
-        formDataParser.parseBlocking()
-        requestHandler(exchange)
+    val url = URL(s"${exchange.getRequestURL}?${exchange.getQueryString}")
+
+    server.proxies.find(_.matches(url)) match {
+      case Some(proxy) => UndertowServerImplementation.handleProxy(this, url, exchange, proxy)
+      case None => {
+        if (exchange.getRequestContentLength > 0L && exchange.getRequestHeaders.getFirst("Content-Type").startsWith("multipart/form-data")) {
+          if (exchange.isInIoThread) {
+            exchange.dispatch(this)
+          } else {
+            exchange.startBlocking()
+            val formDataParser = formParserBuilder.build().createParser(exchange)
+            formDataParser.parseBlocking()
+            requestHandler(exchange, url)
+          }
+        } else {
+          requestHandler(exchange, url)
+        }
       }
-    } else {
-      requestHandler(exchange)
     }
   }
 
-  private def requestHandler(exchange: HttpServerExchange): Unit = {
-    UndertowServerImplementation.processRequest(exchange) { request =>
+  private def requestHandler(exchange: HttpServerExchange, url: URL): Unit = {
+    UndertowServerImplementation.processRequest(exchange, url) { request =>
       val connection: HttpConnection = new HttpConnection(server, request)
       server.handle(connection)
       UndertowServerImplementation.response(this, connection, exchange)
@@ -105,7 +111,7 @@ object UndertowServerImplementation extends ServerImplementationCreator {
     hv.getHeaderName.toString -> hv.asScala.toList
   }.toMap)
 
-  def processRequest(exchange: HttpServerExchange)(handler: HttpRequest => Unit): Unit = {
+  def processRequest(exchange: HttpServerExchange, url: URL)(handler: HttpRequest => Unit): Unit = {
     val source = IP(exchange.getSourceAddress.getAddress.getHostAddress)
     val headers = parseHeaders(exchange.getRequestHeaders)
 
@@ -113,7 +119,7 @@ object UndertowServerImplementation extends ServerImplementationCreator {
       val request = HttpRequest(
         method = Method(exchange.getRequestMethod.toString),
         source = source,
-        url = URL(s"${exchange.getRequestURL}?${exchange.getQueryString}"),
+        url = url,
         headers = headers,
         content = content
       )
@@ -160,15 +166,7 @@ object UndertowServerImplementation extends ServerImplementationCreator {
   def response(impl: UndertowServerImplementation, connection: HttpConnection, exchange: HttpServerExchange): Unit = {
     connection.webSocketSupport match {
       case Some(webSocketListener) => handleWebSocket(impl, connection, webSocketListener, exchange)
-      case None => connection.proxySupport match {
-        case Some(proxyHandler) => {
-          proxyHandler.proxy(connection) match {
-            case Some(destination) => handleProxy(impl, connection, exchange, destination, proxyHandler.keyStore)
-            case None => handleStandard(impl, connection, exchange)
-          }
-        }
-        case None => handleStandard(impl, connection, exchange)
-      }
+      case None => handleStandard(impl, connection, exchange)
     }
   }
 
@@ -222,11 +220,9 @@ object UndertowServerImplementation extends ServerImplementationCreator {
     handler.handleRequest(exchange)
   }
 
-  private def handleProxy(impl: UndertowServerImplementation,
-                          connection: HttpConnection,
-                          exchange: HttpServerExchange,
-                          destination: URL,
-                          keyStore: Option[KeyStore]): Unit = {
+  def handleProxy(implementation: UndertowServerImplementation, url: URL, exchange: HttpServerExchange, proxy: ProxyHandler): Unit = {
+    val keyStore = proxy.keyStore
+    val destination = proxy.proxy(url)
     val proxyClient = new LoadBalancingProxyClient
     val ssl = keyStore.map { ks =>
       val sslContext = SSLUtil.createSSLContext(ks.location, ks.password)

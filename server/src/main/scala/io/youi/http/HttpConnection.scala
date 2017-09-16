@@ -27,10 +27,6 @@ class HttpConnection(val server: Server, val request: HttpRequest) {
       throw new RuntimeException(s"Not a WebSocket upgrade request! Expected 'Connection' set to 'Upgrade'. Headers: ${request.headers}")
     }
   }
-  def proxySupport: Option[ProxyHandler] = store.get[ProxyHandler](ProxyHandler.key)
-  def proxySupport_=(handler: ProxyHandler): Unit = {
-    store.update(ProxyHandler.key, handler)
-  }
 
   def isFinished: Boolean = finished
   def finish(): Unit = finished = true

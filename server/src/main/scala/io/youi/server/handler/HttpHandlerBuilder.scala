@@ -66,10 +66,6 @@ case class HttpHandlerBuilder(server: Server,
     }
   }
 
-  def proxy(handler: ProxyHandler): HttpHandler = handle { connection =>
-    connection.proxySupport = handler
-  }
-
   def stream(baseDirectory: File, basePath: String, deltas: HttpConnection => List[Delta] = _ => Nil): HttpHandler = handle { connection =>
     val url = connection.request.url
     val path = url.path.decoded

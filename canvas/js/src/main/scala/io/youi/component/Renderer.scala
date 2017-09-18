@@ -15,7 +15,6 @@ class Renderer(canvas: html.Canvas) extends Container with RendererTheme {
   override lazy val theme: Var[_ <: RendererTheme] = Var(Renderer)
   val htmlEvents: HTMLEvents = new HTMLEvents(document.body)
   override lazy val renderer: Val[Option[Renderer]] = Val(Some(this))
-  override val globalVisibility: Val[Boolean] = visible
   val pointerTarget: Var[Option[Component]] = Var(None)
   val reDrawOnUpdate: Var[Boolean] = Var(false)
 
@@ -32,6 +31,8 @@ class Renderer(canvas: html.Canvas) extends Container with RendererTheme {
   ui.mouse.wheel.attach(wheelEvent)
   cursor := pointerTarget().map(_.cursor()).getOrElse(Cursor.Auto)      // Renderer's cursor should reflect the pointer target's cursor
   cursor.attach(c => canvas.style.cursor = c.value)
+
+  override protected def determineActualVisibility = visible
 
   private val globalPoint = Point.mutable()
   private def pointerEvent(evt: MouseEvent, `type`: PointerEvent.Type): Unit = if (visible()) {

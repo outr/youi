@@ -1,6 +1,6 @@
 package io.youi.example.ui
 
-import io.youi.ImageMode
+import io.youi.{Context, ImageMode}
 import io.youi.app.screen.UIScreen
 import io.youi.component._
 import io.youi.task._
@@ -23,6 +23,7 @@ object ImageExample extends UIExampleScreen with UIScreen {
     container.children += new ImageView(icon, ImageMode.Quality) {     // Top-Right
       position.right := container.position.right - 50.0
       position.top := 50.0
+      opacity := 0.5
     }
     container.children += new ImageView(icon, ImageMode.Quality) {     // Bottom-Left
       position.left := 50.0

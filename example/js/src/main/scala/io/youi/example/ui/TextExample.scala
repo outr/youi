@@ -46,7 +46,7 @@ object TextExample extends UIExampleScreen with UIScreen {
       // TODO: support auto-pause / resume of video paint
 
       override def update(delta: Double): Unit = {
-        if (globalVisibility()) {
+        if (actual.visibility) {
           reDraw.flag()
         }
         super.update(delta)

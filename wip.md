@@ -5,7 +5,8 @@
 * [ ] ScrollBar
 * [ ] ComponentPaint for better integration of Image and Video painting
 * [ ] Flow layout
-* [ ] File drag / select support for canvas (integrate in DataTransferManager)
+* [X] Opacity on Component in Canvas
+* [X] Create Component.actual for pre-multiplied values
 * [X] Convenience functionality in HttpHandlerBuilder to create a restful end-point
 * [X] Better error handling support in HttpClient
 * [X] Event propagation in canvas

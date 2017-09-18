@@ -40,6 +40,9 @@ class Context(val canvas: html.Canvas) {
 
   def translate(x: Double, y: Double): Unit = canvasContext.translate(x, y)
 
+  def opacity_=(value: Double): Unit = canvasContext.globalAlpha = value
+  def opacity: Double = canvasContext.globalAlpha
+
   def draw(component: Component): Unit = {
     val canvas = component.drawer.canvas
     canvasContext.drawImage(canvas.asInstanceOf[html.Image], 0.0, 0.0, canvas.width, canvas.height)

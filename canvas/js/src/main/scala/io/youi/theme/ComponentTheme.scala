@@ -14,6 +14,7 @@ trait ComponentTheme extends Theme {
   val cursor: Var[Cursor] = prop(prnt(_.cursor, Cursor.Default))
   val interactive: Var[Boolean] = prop(prnt(_.interactive, true))
   val visible: Var[Boolean] = prop(prnt(_.visible, true), updatesTransform = true)
+  val opacity: Var[Double] = prop(prnt(_.opacity, 1.0), updatesRendering = true)
   val background: Var[Paint] = prop(prnt(_.background, Paint.none), updatesRendering = true)
 
   object padding {

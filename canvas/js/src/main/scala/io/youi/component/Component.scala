@@ -10,13 +10,19 @@ import reactify._
 import scala.concurrent.{Future, Promise}
 import scala.concurrent.ExecutionContext.Implicits.global
 
-trait Component extends TaskSupport with ComponentTheme {
+trait Component extends TaskSupport with ComponentTheme { self =>
   def theme: Var[_ <: ComponentTheme]
 
   lazy val id: Var[Option[String]] = Var(None)
   lazy val parent: Val[Option[AbstractContainer]] = Var(None)
   lazy val renderer: Val[Option[Renderer]] = Val(parent().flatMap(_.renderer()))
-  val globalVisibility: Val[Boolean] = Val(visible() && parent().exists(_.globalVisibility()))
+
+  object actual {
+    val visibility: Val[Boolean] = Val(determineActualVisibility)
+    val opacity: Val[Double] = Val(self.opacity() * parent().map(_.actual.opacity()).getOrElse(1.0))
+  }
+
+  protected def determineActualVisibility: Boolean = self.visible() && parent().exists(_.actual.visibility())
 
   lazy val event: Events = new Events(this)
 
@@ -47,7 +53,12 @@ trait Component extends TaskSupport with ComponentTheme {
   }
 
   protected def reDrawAsync(f: Context => Future[Unit]): Unit = {
-    drawer.updateAsync(size.width(), size.height())(f).foreach { _ =>
+    drawer.updateAsync(size.width(), size.height()) { context =>
+      preDraw(context)
+      f(context).map { _ =>
+        postDraw(context)
+      }
+    }.foreach { _ =>
       parent().foreach(_.invalidate())
     }
   }
@@ -110,6 +121,9 @@ trait Component extends TaskSupport with ComponentTheme {
   }
 
   protected def preDraw(context: Context): Unit = {
+    // Set opacity
+    context.opacity = actual.opacity
+
     // Draw border and background
     border.draw(size.width, size.height, context, background)
     context.save()
@@ -167,7 +181,7 @@ trait Component extends TaskSupport with ComponentTheme {
     reDraw.update()
   }
 
-  override def updateTasks(): Boolean = super.updateTasks() && globalVisibility()
+  override def updateTasks(): Boolean = super.updateTasks() && actual.visibility
 
   override def toString = id().getOrElse(s"${getClass.getName}:$hashCode")
 }

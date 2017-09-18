@@ -29,7 +29,7 @@ object SelectionExample extends HTMLScreen {
     container.children += layoutContainer
 
     val boxesSet = ListSet(boxes: _*)
-    selection = new hypertext.Selection(document.body, boxesSet) {
+    selection = new hypertext.Selection(document.body, boxesSet, includeChildTargets = true) {
       override def boxFor(element: Component): BoundingBox = {
         val rect = element.element.getBoundingClientRect()
         BoundingBox(rect.left, rect.top, rect.right, rect.bottom)

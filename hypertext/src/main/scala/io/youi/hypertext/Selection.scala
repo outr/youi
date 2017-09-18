@@ -23,7 +23,8 @@ abstract class Selection[T](root: html.Element,
                             elements: => ListSet[T],
                             autoStyle: Boolean = true,
                             adjustX: => Double = document.body.scrollLeft,
-                            adjustY: => Double = document.body.scrollTop) extends Container {
+                            adjustY: => Double = document.body.scrollTop,
+                            includeChildTargets: Boolean = false) extends Container {
   element.style.pointerEvents = "none"
 
   private val mouse = ui.mouse
@@ -51,9 +52,13 @@ abstract class Selection[T](root: html.Element,
   size.width := math.abs(x1 - x2)
   size.height := math.abs(y1 - y2)
 
-  val rootListener: SelectionListener[T] = new SelectionListener[T](this, root, deferToRoot = false)
+  val rootListener: SelectionListener[T] = new SelectionListener[T](this, root, deferToRoot = false, includeChildTargets = includeChildTargets)
 
-  def addListener(base: html.Element, deferToRoot: Boolean = true): SelectionListener[T] = new SelectionListener[T](this, base, deferToRoot)
+  def addListener(base: html.Element,
+                  deferToRoot: Boolean = true,
+                  includeChildTargets: Boolean = false): SelectionListener[T] = {
+    new SelectionListener[T](this, base, deferToRoot, includeChildTargets)
+  }
 
   ui.event.key.down.attach { evt =>
     if (enabled()) {
@@ -210,13 +215,13 @@ abstract class Selection[T](root: html.Element,
   }
 }
 
-class SelectionListener[T](selection: Selection[T], base: html.Element, deferToRoot: Boolean) {
+class SelectionListener[T](selection: Selection[T], base: html.Element, deferToRoot: Boolean, includeChildTargets: Boolean) {
   var active: Boolean = false
 
   private val events = new HTMLEvents(base)
 
   events.pointer.down.attach { evt =>
-    if (evt.target == base) {
+    if (includeChildTargets || evt.target == base) {
       val active = selection.down(evt)
       if (deferToRoot && active) {
         selection.rootListener.active = active

@@ -80,7 +80,7 @@ trait AbstractContainer extends Component with AbstractContainerTheme { self =>
           context.translate(offset.x, offset.y)
           context.translate(padding.left, padding.top)
           context.translate(border.size(Compass.West), border.size(Compass.North))
-          context.draw(child)
+          child.drawToParent(context)
         }
       }
     }

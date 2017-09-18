@@ -39,14 +39,17 @@ class DataTransferManager {
 
   def addInput(input: html.Input = dom.create[html.Input]("input"),
                modify: Boolean = true,
-               folderSupport: Boolean = true): FileInput = new FileInput(input, modify, folderSupport, this)
+               folderSupport: Boolean = false): FileInput = new FileInput(input, modify, folderSupport, this)
 
   def process(files: FileList): Unit = files.toList.foreach { file =>
     if (file.`type`.isEmpty) {
       folderFeatureMissing := file
     } else {
       val fullName = try {
-        file.webkitRelativePath
+        file.webkitRelativePath match {
+          case "" => file.name
+          case path => path
+        }
       } catch {
         case _: Throwable => file.name
       }

@@ -105,6 +105,10 @@ trait Component extends TaskSupport with ComponentTheme {
     postDraw(context)
   }
 
+  def drawToParent(parentContent: Context): Unit = {
+    parentContent.draw(this)
+  }
+
   protected def preDraw(context: Context): Unit = {
     // Draw border and background
     border.draw(size.width, size.height, context, background)

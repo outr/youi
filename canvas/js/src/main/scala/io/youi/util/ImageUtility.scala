@@ -57,14 +57,15 @@ object ImageUtility {
   def resizeToImage(source: html.Image | html.Canvas,
                     width: Double,
                     height: Double,
-                    destination: html.Image): Future[html.Image] = {
-    resizeToDataURL(source, width, height).map { dataURL =>
+                    destination: html.Image,
+                    smooth: Boolean): Future[html.Image] = {
+    resizeToDataURL(source, width, height, smooth).map { dataURL =>
       destination.src = dataURL
       destination
     }
   }
 
-  def resizeToDataURL(source: html.Image | html.Canvas, width: Double, height: Double): Future[String] = {
+  def resizeToDataURL(source: html.Image | html.Canvas, width: Double, height: Double, smooth: Boolean): Future[String] = {
     val destinationCanvas = CanvasPool(width, height)
     val loader = if (source.asInstanceOf[html.Image].width == 0 || source.asInstanceOf[html.Image].height == 0) {
       loadImage(source.asInstanceOf[html.Image])
@@ -72,7 +73,7 @@ object ImageUtility {
       Future.successful(source.asInstanceOf[html.Image])
     }
     val future = loader.flatMap { _ =>
-      drawToCanvas(source, destinationCanvas)(
+      drawToCanvas(source, destinationCanvas, smooth)(
         width = destinationCanvas.width,
         height = destinationCanvas.height
       ).map { _ =>
@@ -156,6 +157,7 @@ object ImageUtility {
   def generatePreview(file: File,
                       width: Double,
                       height: Double,
+                      smooth: Boolean,
                       scaleUp: Boolean = false): Future[Option[String]] = {
     val promise = Promise[Option[String]]
     if (file.`type`.startsWith("video/")) { // Video preview
@@ -173,7 +175,7 @@ object ImageUtility {
         val context = canvas.getContext("2d").asInstanceOf[CanvasRenderingContext2D]
         context.drawImage(video, 0.0, 0.0)
         val scaled = SizeUtility.scale(video.videoWidth, video.videoHeight, width, height, scaleUp)
-        resizeToDataURL(canvas, scaled.width, scaled.height).map { dataURL =>
+        resizeToDataURL(canvas, scaled.width, scaled.height, smooth).map { dataURL =>
           CanvasPool.restore(canvas)
           promise.success(Some(dataURL))
         }
@@ -205,7 +207,7 @@ object ImageUtility {
     } else if (file.`type`.startsWith("image/")) {                                               // Image preview
       loadImage(file) { img =>
         val scaled = SizeUtility.scale(img.width, img.height, width, height, scaleUp)
-        resizeToDataURL(img, scaled.width, scaled.height)
+        resizeToDataURL(img, scaled.width, scaled.height, smooth)
       }.foreach(dataURL => promise.success(Option(dataURL)))
     } else {
       // Unknown file type, no preview available

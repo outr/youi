@@ -56,7 +56,7 @@ case class SVGImage(svg: SVGSVGElement,
   override def toDataURL: Future[String] = CanvasPool.withCanvasFuture(width, height) { canvas =>
     val drawable = new Drawer(canvas, swapCanvases = false)
     drawable.updateAsync(width, height)(context => draw(context, width, height)).flatMap { _ =>
-      ImageUtility.resizeToDataURL(canvas, width, height)
+      ImageUtility.resizeToDataURL(canvas, width, height, smooth = true)
     }
   }
 

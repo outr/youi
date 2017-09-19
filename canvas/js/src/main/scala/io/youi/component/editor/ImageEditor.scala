@@ -76,7 +76,7 @@ class ImageEditor extends AbstractContainer {
   def previewImage(img: html.Image, width: Double, height: Double): Unit = {
     val resizer = LazyFuture {
       if (preview().width > 0 && preview().height > 0 && width > 0.0 && height > 0.0) {
-        ImageUtility.resizeToImage(preview(), width, height, img)
+        ImageUtility.resizeToImage(preview(), width, height, img, smooth = true)
       } else {
         Future.successful(img)
       }
@@ -123,7 +123,7 @@ class ImageEditor extends AbstractContainer {
         val htmlImage = dom.create[html.Image]("img")
         htmlImage.src = dataURL
         val destination = dom.create[html.Image]("img")
-        ImageUtility.resizeToImage(htmlImage, scale.width, scale.height, destination).map { _ =>
+        ImageUtility.resizeToImage(htmlImage, scale.width, scale.height, destination, smooth = true).map { _ =>
           val resized = TextureImage(destination, destination.width, destination.height, ImageMode.Quality)
           imageView.image := resized
           originalImage := resized

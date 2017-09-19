@@ -25,7 +25,7 @@ object PreviewImageExample extends HTMLScreen {
       element.addEventListener("change", (evt: Event) => {
         if (element.files.length > 0) {
           val file = element.files(0)
-          ImageUtility.generatePreview(file, 1024.0, 768.0).foreach {
+          ImageUtility.generatePreview(file, 1024.0, 768.0, smooth = true).foreach {
             case Some(dataURL) => {
               image.image := Image(dataURL)
             }

@@ -106,9 +106,13 @@ object ImageUtility {
     }
   }
 
-  def loadImage(img: html.Image): Future[html.Image] = {
+  def loadImage(img: html.Image): Future[html.Image] = if (img.width > 0 && img.height > 0) {
+    Future.successful(img)
+  } else {
     val promise = Promise[html.Image]
-    val listener: js.Function1[Event, _] = (_: Event) => promise.success(img)
+    val listener: js.Function1[Event, _] = (_: Event) => {
+      promise.success(img)
+    }
     img.addEventListener("load", listener)
     val future = promise.future
     future.onComplete { _ =>

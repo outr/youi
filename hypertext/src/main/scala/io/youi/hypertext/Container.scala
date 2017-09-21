@@ -2,8 +2,11 @@ package io.youi.hypertext
 
 import io.youi.dom
 import org.scalajs.dom._
+import reactify.Var
 
 class Container(val element: html.Element) extends HTMLContainer with Component {
+  def children: Var[Vector[Component]] = childEntries
+
   def this() = this(dom.create[html.Element]("div"))
 
   // Default size to be based on children's max dimensions

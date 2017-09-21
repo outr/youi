@@ -2,9 +2,15 @@ package io.youi
 
 import reactify._
 
+import scala.concurrent.Future
+
 trait Widget {
+  protected[youi] lazy val parentWidget: Var[Option[WidgetContainer]] = Var(None)
+
   def position: WidgetPosition
   def size: WidgetSize
+
+  protected def invalidate(): Future[Unit] = Future.successful(())
 }
 
 trait WidgetPosition {

@@ -15,40 +15,9 @@ trait AbstractContainer extends Component with AbstractContainerTheme with Widge
   override lazy val theme: Var[_ <: AbstractContainerTheme] = Var(AbstractContainer)
   override protected val childEntries: Var[Vector[Child]] = prop(Vector.empty, updatesTransform = true)
 
-  protected val layoutManager: Var[Layout] = Var(Layout.None)
-
   override protected def defaultThemeParent = Some(theme)
 
    val drawOffscreenChildren: Var[Boolean] = Var(false)
-
-  childEntries.changes(new ChangeObserver[Vector[Child]] {
-    override def change(oldValue: Vector[Child], newValue: Vector[Child]): Unit = {
-      val removed = oldValue.collect {
-        case c: Component if !newValue.contains(c) => c
-      }
-      val added = newValue.collect {
-        case c: Component if !oldValue.contains(c) => c
-      }
-
-      removed.foreach(_.parent.asInstanceOf[Var[Option[AbstractContainer]]] := None)
-      added.foreach(_.parent.asInstanceOf[Var[Option[AbstractContainer]]] := Some(self))
-
-      layoutManager.childrenChanged(self, removed, added)
-
-      invalidate()
-    }
-  })
-
-  layoutManager.changes(new ChangeObserver[Layout] {
-    override def change(oldValue: Layout, newValue: Layout): Unit = synchronized {
-      oldValue.disconnect(self)
-      newValue.connect(self)
-    }
-  })
-
-  size.width.and(size.height).on {
-    layoutManager.resized(self, size.width, size.height)
-  }
 
   updateMeasured(
     width = if (childEntries().nonEmpty) childEntries().map(_.position.right()).max else 0.0,

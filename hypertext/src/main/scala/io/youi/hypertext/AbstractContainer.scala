@@ -1,20 +1,13 @@
 package io.youi.hypertext
 
-import io.youi.hypertext.layout.Layout
+import io.youi.WidgetContainer
 import reactify._
 
-trait AbstractContainer[C <: AbstractComponent] extends AbstractComponent {
-  val layoutManager: Var[Option[Layout]] = Var(None)
-  val children: Var[Vector[C]] = Var[Vector[C]](Vector.empty)
+trait AbstractContainer[C <: AbstractComponent] extends AbstractComponent with WidgetContainer {
+  override type Child = C
+  override protected[youi] val childEntries: Var[Vector[C]] = Var[Vector[C]](Vector.empty)
 
-  layoutManager.changes(new ChangeObserver[Option[Layout]] {
-    override def change(oldValue: Option[Layout], newValue: Option[Layout]): Unit = synchronized {
-      oldValue.foreach(l => Layout.disconnect[C](AbstractContainer.this, l))
-      newValue.foreach(l => Layout.connect[C](AbstractContainer.this, l))
-    }
-  })
-
-  children.changes(new ChangeObserver[Vector[C]] {
+  childEntries.changes(new ChangeObserver[Vector[C]] {
     override def change(oldValue: Vector[C], newValue: Vector[C]): Unit = {
       var modifiedOld = oldValue
 
@@ -57,6 +50,6 @@ trait AbstractContainer[C <: AbstractComponent] extends AbstractComponent {
   override def update(delta: Double): Unit = {
     super.update(delta)
 
-    children().foreach(_.update(delta))
+    childEntries().foreach(_.update(delta))
   }
 }

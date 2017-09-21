@@ -14,7 +14,7 @@ trait Component extends TaskSupport with ComponentTheme with Widget { self =>
   def theme: Var[_ <: ComponentTheme]
 
   lazy val id: Var[Option[String]] = Var(None)
-  lazy val parent: Val[Option[AbstractContainer]] = Var(None)
+  def parent: Val[Option[AbstractContainer]] = parentWidget.asInstanceOf[Val[Option[AbstractContainer]]]
   lazy val renderer: Val[Option[Renderer]] = Val(parent().flatMap(_.renderer()))
 
   object actual {
@@ -160,7 +160,7 @@ trait Component extends TaskSupport with ComponentTheme with Widget { self =>
 
   def isHit(local: Point): Boolean = local.x >= 0.0 && local.y >= 0.0 && local.x <= size.width() && local.y <= size.height()
 
-  def invalidate(): Future[Unit] = {
+  override def invalidate(): Future[Unit] = super.invalidate().flatMap { _ =>
     reDraw.flag()
     val promise = Promise[Unit]
     nextFrame {

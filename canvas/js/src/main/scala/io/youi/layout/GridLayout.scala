@@ -1,7 +1,7 @@
 package io.youi.layout
 
 import io.youi.component.{AbstractContainer, Component}
-import io.youi.{Horizontal, Vertical}
+import io.youi.{Horizontal, Vertical, Widget, WidgetContainer}
 import reactify._
 
 class GridLayout extends Layout {
@@ -40,38 +40,38 @@ class GridLayout extends Layout {
     def hasColumn(columnIndex: Int): Boolean = columns().contains(columnIndex)
   }
 
-  private var containers: Set[AbstractContainer] = Set.empty
+  private var containers: Set[WidgetContainer] = Set.empty
 
-  override def connect(container: AbstractContainer): Unit = {
+  override def connect(container: WidgetContainer): Unit = {
     containers += container
     update(container)
   }
 
-  override def disconnect(container: AbstractContainer): Unit = {
+  override def disconnect(container: WidgetContainer): Unit = {
     containers -= container
   }
 
-  override def childrenChanged(container: AbstractContainer, removed: Vector[Component], added: Vector[Component]): Unit = {
+  override def childrenChanged(container: WidgetContainer, removed: Vector[Widget], added: Vector[Widget]): Unit = {
     super.childrenChanged(container, removed, added)
     update(container)
   }
 
-  override def resized(container: AbstractContainer, width: Double, height: Double): Unit = {
+  override def resized(container: WidgetContainer, width: Double, height: Double): Unit = {
     super.resized(container, width, height)
     update(container)
   }
 
   def updateAll(): Unit = containers.foreach(update)
 
-  def update(container: AbstractContainer): Unit = {
+  def update(container: WidgetContainer): Unit = {
     val columnCount = this.columns()
     var rowIndex = 0
     var columnIndex = 0
     var rowSpans = Map.empty[Int, Int]
-    var configs = Map.empty[Component, CellConfig]
+    var configs = Map.empty[Widget, CellConfig]
     var maxWidths = Map.empty[Int, Double]
     var maxHeights = Map.empty[Int, Double]
-    def layout(child: Component): Unit = {
+    def layout(child: Widget): Unit = {
       if (rowSpans.contains(columnIndex)) {
         val newValue = rowSpans(columnIndex) - 1
         if (newValue == 0) {
@@ -110,7 +110,7 @@ class GridLayout extends Layout {
         }
       }
     }
-    AbstractContainer.children(container).foreach(layout)
+    WidgetContainer.children(container).foreach(layout)
     configs.foreach {
       case (child, cfg) => {
         // Alignment

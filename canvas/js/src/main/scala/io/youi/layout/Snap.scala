@@ -1,29 +1,29 @@
 package io.youi.layout
 
-import io.youi.component.Component
+import io.youi.Widget
 
-case class Snap(component: Component,
+case class Snap(widget: Widget,
                 horizontal: Option[HorizontalSnapping],
                 vertical: Option[VerticalSnapping]) {
   def leftTo(left: => Double): Snap = {
     val h = horizontal.getOrElse(HorizontalSnapping()).copy(left = Some(() => left))
     val s = copy(horizontal = Some(h))
-    Snap.map += component -> s
-    h.connect(component)
+    Snap.map += widget -> s
+    h.connect(widget)
     s
   }
   def rightTo(right: => Double): Snap = {
     val h = horizontal.getOrElse(HorizontalSnapping()).copy(right = Some(() => right))
     val s = copy(horizontal = Some(h))
-    Snap.map += component -> s
-    h.connect(component)
+    Snap.map += widget -> s
+    h.connect(widget)
     s
   }
   def horizontalReset(): Snap = horizontal match {
     case Some(h) => {
-      h.disconnect(component)
+      h.disconnect(widget)
       val s = copy(horizontal = None)
-      Snap.map += component -> s
+      Snap.map += widget -> s
       s
     }
     case None => this
@@ -31,22 +31,22 @@ case class Snap(component: Component,
   def topTo(top: => Double): Snap = {
     val v = vertical.getOrElse(VerticalSnapping()).copy(top = Some(() => top))
     val s = copy(vertical = Some(v))
-    Snap.map += component -> s
-    v.connect(component)
+    Snap.map += widget -> s
+    v.connect(widget)
     s
   }
   def bottomTo(bottom: => Double): Snap = {
     val v = vertical.getOrElse(VerticalSnapping()).copy(bottom = Some(() => bottom))
     val s = copy(vertical = Some(v))
-    Snap.map += component -> s
-    v.connect(component)
+    Snap.map += widget -> s
+    v.connect(widget)
     s
   }
   def verticalReset(): Snap = vertical match {
     case Some(v) => {
-      v.disconnect(component)
+      v.disconnect(widget)
       val s = copy(vertical = None)
-      Snap.map += component -> s
+      Snap.map += widget -> s
       s
     }
     case None => this
@@ -55,16 +55,16 @@ case class Snap(component: Component,
 }
 
 object Snap {
-  private var map = Map.empty[Component, Snap]
+  private var map = Map.empty[Widget, Snap]
 
   // TODO: support resetting on change
 
-  def apply(component: Component): Snap = synchronized {
-    map.get(component) match {
+  def apply(widget: Widget): Snap = synchronized {
+    map.get(widget) match {
       case Some(snap) => snap
       case None => {
-        val snap = Snap(component, None, None)
-        map += component -> snap
+        val snap = Snap(widget, None, None)
+        map += widget -> snap
         snap
       }
     }
@@ -73,60 +73,60 @@ object Snap {
 
 case class HorizontalSnapping(left: Option[() => Double] = None,
                               right: Option[() => Double] = None) {
-  def connect(component: Component): Unit = {
+  def connect(widget: Widget): Unit = {
     left match {
       case Some(l) => {
         right match {
           case Some(r) => {
-            component.position.left := l()
-            component.size.width := r() - l()
+            widget.position.left := l()
+            widget.size.width := r() - l()
           }
-          case None => component.position.left := l()
+          case None => widget.position.left := l()
         }
       }
       case None => {
         right match {
-          case Some(r) => component.position.right := r()
+          case Some(r) => widget.position.right := r()
           case None => // Nothing to do here
         }
       }
     }
   }
 
-  def disconnect(component: Component): Unit = {
-    component.position.x.static(component.position.x())
+  def disconnect(widget: Widget): Unit = {
+    widget.position.x.static(widget.position.x())
     if (left.nonEmpty && right.nonEmpty) {
-      component.size.width.static(component.size.width())
+      widget.size.width.static(widget.size.width())
     }
   }
 }
 
 case class VerticalSnapping(top: Option[() => Double] = None,
                             bottom: Option[() => Double] = None) {
-  def connect(component: Component): Unit = {
+  def connect(widget: Widget): Unit = {
     top match {
       case Some(t) => {
         bottom match {
           case Some(b) => {
-            component.position.top := t()
-            component.size.height := b() - t()
+            widget.position.top := t()
+            widget.size.height := b() - t()
           }
-          case None => component.position.top := t()
+          case None => widget.position.top := t()
         }
       }
       case None => {
         bottom match {
-          case Some(b) => component.position.bottom := b()
+          case Some(b) => widget.position.bottom := b()
           case None => // Nothing to do here
         }
       }
     }
   }
 
-  def disconnect(component: Component): Unit = {
-    component.position.y.static(component.position.y())
+  def disconnect(widget: Widget): Unit = {
+    widget.position.y.static(widget.position.y())
     if (top.nonEmpty && bottom.nonEmpty) {
-      component.size.height.static(component.size.height())
+      widget.size.height.static(widget.size.height())
     }
   }
 }

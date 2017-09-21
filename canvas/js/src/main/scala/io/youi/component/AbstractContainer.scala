@@ -1,6 +1,6 @@
 package io.youi.component
 
-import io.youi.{BoundingBox, Compass, Context}
+import io.youi.{BoundingBox, Compass, Context, WidgetContainer}
 import io.youi.event.HitResult
 import io.youi.layout.Layout
 import io.youi.spatial.Point
@@ -9,11 +9,11 @@ import reactify._
 
 import scala.annotation.tailrec
 
-trait AbstractContainer extends Component with AbstractContainerTheme { self =>
-  type Child <: Component
+trait AbstractContainer extends Component with AbstractContainerTheme with WidgetContainer { self =>
+  override type Child <: Component
 
   override lazy val theme: Var[_ <: AbstractContainerTheme] = Var(AbstractContainer)
-  protected val childEntries: Var[Vector[Child]] = prop(Vector.empty, updatesTransform = true)
+  override protected val childEntries: Var[Vector[Child]] = prop(Vector.empty, updatesTransform = true)
 
   protected val layoutManager: Var[Layout] = Var(Layout.None)
 

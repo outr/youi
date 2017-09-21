@@ -10,7 +10,7 @@ import reactify._
 import scala.concurrent.{Future, Promise}
 import scala.concurrent.ExecutionContext.Implicits.global
 
-trait Component extends TaskSupport with ComponentTheme { self =>
+trait Component extends TaskSupport with ComponentTheme with Widget { self =>
   def theme: Var[_ <: ComponentTheme]
 
   lazy val id: Var[Option[String]] = Var(None)
@@ -67,22 +67,22 @@ trait Component extends TaskSupport with ComponentTheme { self =>
 
   reDraw.flag()
 
-  object position {
-    lazy val x: Var[Double] = prop(0.0, updatesTransform = true)
-    lazy val y: Var[Double] = prop(0.0, updatesTransform = true)
+  object position extends WidgetPosition {
+    override lazy val x: Var[Double] = prop(0.0, updatesTransform = true)
+    override lazy val y: Var[Double] = prop(0.0, updatesTransform = true)
 
-    lazy val left: Var[Double] = x
-    lazy val center: Dep[Double, Double] = Dep(left, size.width / 2.0)
-    lazy val right: Dep[Double, Double] = Dep(left, size.width)
+    override lazy val left: Var[Double] = x
+    override lazy val center: Dep[Double, Double] = Dep(left, size.width / 2.0)
+    override lazy val right: Dep[Double, Double] = Dep(left, size.width)
 
-    lazy val top: Var[Double] = y
-    lazy val middle: Dep[Double, Double] = Dep(top, size.height / 2.0)
-    lazy val bottom: Dep[Double, Double] = Dep(top, size.height)
+    override lazy val top: Var[Double] = y
+    override lazy val middle: Dep[Double, Double] = Dep(top, size.height / 2.0)
+    override lazy val bottom: Dep[Double, Double] = Dep(top, size.height)
   }
 
   lazy val rotation: Var[Double] = prop(0.0, updatesTransform = true)
 
-  object size {
+  object size extends WidgetSize {
     object measured {
       val width: Var[Double] = prop(0.0, updatesRendering = true)
       val height: Var[Double] = prop(0.0, updatesRendering = true)

@@ -110,6 +110,8 @@ trait Component extends TaskSupport with ComponentTheme with Widget { self =>
     lazy val y: Var[Double] = prop(0.0, updatesRendering = true)
   }
 
+  init()
+
   protected def drawInternal(context: Context): Unit = {
     preDraw(context)
     draw(context)

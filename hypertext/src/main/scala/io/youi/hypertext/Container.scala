@@ -1,11 +1,14 @@
 package io.youi.hypertext
 
 import io.youi.dom
+import io.youi.layout.Layout
 import org.scalajs.dom._
 import reactify.Var
 
 class Container(val element: html.Element) extends HTMLContainer with Component {
   def children: Var[Vector[Component]] = childEntries
+
+  def layout: Var[Layout] = layoutManager
 
   def this() = this(dom.create[html.Element]("div"))
 

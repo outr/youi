@@ -1,22 +1,21 @@
 package io.youi.example.ui.hypertext
 
 import io.youi.Color
-import io.youi.example.ui.UIExampleScreen
 import io.youi.hypertext.border.BorderStyle
-import io.youi.hypertext.layout.VerticalBoxLayout
 import io.youi.hypertext.style.Overflow
 import io.youi.hypertext.{Button, Component, Container}
+import io.youi.layout.VerticalLayout
 
 import scala.concurrent.Future
 
-object BoxLayoutExample extends HTMLScreen {
-  override def name: String = "HTML BoxLayout Example"
+object VerticalLayoutExample extends HTMLScreen {
+  override def name: String = "HTML Vertical Layout Example"
 
   override protected def load(): Future[Unit] = super.load().map { _ =>
     val layoutContainer = new Container {
       id := "main"
 
-      layoutManager := Some(new VerticalBoxLayout(spacing = 10.0, fillWidth = true))
+      layout := new VerticalLayout(spacing = 10.0)
       backgroundColor := Color.Black
       size.width := 750.0
       size.height := 500.0

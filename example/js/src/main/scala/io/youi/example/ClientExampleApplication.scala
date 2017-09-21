@@ -46,7 +46,7 @@ object ClientExampleApplication extends ExampleApplication with ClientApplicatio
   val htmlImages = hypertext.ImageExample
   val htmlLabel = hypertext.LabelExample
   val htmlBorder = hypertext.BorderExample
-  val htmlBoxLayout = hypertext.BoxLayoutExample
+  val htmlBoxLayout = hypertext.VerticalLayoutExample
   val htmlGridLayout = hypertext.GridLayoutExample
   val htmlFlowLayout = hypertext.FlowLayoutExample
   val htmlVirtual = hypertext.VirtualSizeExample

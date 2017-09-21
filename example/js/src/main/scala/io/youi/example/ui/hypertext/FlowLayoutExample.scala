@@ -1,11 +1,10 @@
 package io.youi.example.ui.hypertext
 
 import io.youi.Color
-import io.youi.example.ui.UIExampleScreen
 import io.youi.hypertext.border.BorderStyle
-import io.youi.hypertext.layout.FlowLayout
 import io.youi.hypertext.style.Overflow
 import io.youi.hypertext.{Button, Component, Container}
+import io.youi.layout.{FlowLayout, Margins}
 
 import scala.concurrent.Future
 
@@ -16,7 +15,7 @@ object FlowLayoutExample extends HTMLScreen {
     val layoutContainer = new Container {
       id := "main"
 
-      layoutManager := Some(new FlowLayout(xOffset = 5.0, yOffset = 5.0, verticalPadding = 5.0, horizontalPadding = 5.0))
+      layoutManager := new FlowLayout(Margins(5.0, 5.0, 5.0, 5.0))
       backgroundColor := Color.Black
       size.width := 500.0
       size.height := 500.0

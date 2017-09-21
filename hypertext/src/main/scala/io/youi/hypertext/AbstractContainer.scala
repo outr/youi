@@ -5,7 +5,7 @@ import reactify._
 
 trait AbstractContainer[C <: AbstractComponent] extends AbstractComponent with WidgetContainer {
   override type Child = C
-  override protected[youi] val childEntries: Var[Vector[C]] = Var[Vector[C]](Vector.empty)
+  override protected[youi] lazy val childEntries: Var[Vector[C]] = Var[Vector[C]](Vector.empty)
 
   childEntries.changes(new ChangeObserver[Vector[C]] {
     override def change(oldValue: Vector[C], newValue: Vector[C]): Unit = {

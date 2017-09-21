@@ -2,8 +2,8 @@ package io.youi.example.ui.hypertext
 
 import io.youi.{BoundingBox, Color, hypertext}
 import io.youi.hypertext.border.BorderStyle
-import io.youi.hypertext.layout.GridLayout
 import io.youi.hypertext.{Component, Container}
+import io.youi.layout.GridLayout
 import org.scalajs.dom._
 
 import scala.collection.immutable.ListSet
@@ -20,7 +20,11 @@ object SelectionExample extends HTMLScreen {
     }
 
     val layoutContainer = new Container {
-      layoutManager := Some(new GridLayout(columns = 3, xOffset = 15.0, yOffset = 15.0, verticalPadding = 15.0, horizontalPadding = 15.0))
+      layout := new GridLayout {
+        columns := 3
+        config.default.margin.left := Some(15.0)
+        config.default.margin.top := Some(15.0)
+      }
 
       position.left := 300.0
 

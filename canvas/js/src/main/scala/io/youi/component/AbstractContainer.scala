@@ -13,7 +13,7 @@ trait AbstractContainer extends Component with AbstractContainerTheme with Widge
   override type Child <: Component
 
   override lazy val theme: Var[_ <: AbstractContainerTheme] = Var(AbstractContainer)
-  override protected val childEntries: Var[Vector[Child]] = prop(Vector.empty, updatesTransform = true)
+  override protected lazy val childEntries: Var[Vector[Child]] = prop(Vector.empty, updatesTransform = true)
 
   override protected def defaultThemeParent = Some(theme)
 

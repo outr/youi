@@ -1,11 +1,10 @@
 package io.youi.example.ui.hypertext
 
 import io.youi.Color
-import io.youi.example.ui.UIExampleScreen
 import io.youi.hypertext.border.BorderStyle
-import io.youi.hypertext.layout.GridLayout
 import io.youi.hypertext.style.Overflow
 import io.youi.hypertext.{Button, Component, Container}
+import io.youi.layout.GridLayout
 
 import scala.concurrent.Future
 
@@ -25,7 +24,11 @@ object GridLayoutExample extends HTMLScreen {
     val layoutContainer = new Container {
       id := "main"
 
-      layoutManager := Some(new GridLayout(columns = 3, verticalPadding = 5.0, horizontalPadding = 5.0))
+      layoutManager := new GridLayout {
+        columns := 3
+        config.default.margin.top := Some(5.0)
+        config.default.margin.left := Some(5.0)
+      }
       backgroundColor := Color.Black
       size.height := 500.0
       position.left := 100.0

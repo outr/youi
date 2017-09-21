@@ -11,6 +11,8 @@ trait Widget {
   def size: WidgetSize
 
   protected def invalidate(): Future[Unit] = Future.successful(())
+
+  protected def init(): Unit = {}
 }
 
 trait WidgetPosition {

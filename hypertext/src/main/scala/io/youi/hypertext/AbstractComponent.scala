@@ -122,8 +122,6 @@ trait AbstractComponent extends TaskSupport with Widget {
   lazy val opacity: Var[Double] = Var(1.0)
   lazy val visible: Var[Boolean] = Var(true)
 
-  protected def init(): Unit = {}
-
   def removeFromParent(): Boolean = parent().exists { p =>
     p.asInstanceOf[AbstractContainer[AbstractComponent]].childEntries -= this
     true

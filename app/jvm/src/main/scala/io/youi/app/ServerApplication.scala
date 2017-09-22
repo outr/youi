@@ -36,6 +36,11 @@ trait ServerApplication extends YouIApplication with Server with ConfigApplicati
   private val fastOptMap = s"$fastOpt.map"
   private val jsDeps = s"$applicationBasePath-jsdeps.js"
 
+  protected def applicationJSBasePath: String = "/app/application"
+  def applicationJSPath: String = s"$applicationJSBasePath.js"
+  def applicationJSMapPath: String = s"$applicationJSPath.map"
+  def applicationJSDepsPath: String = s"$applicationJSBasePath-jsdeps.js"
+
   lazy val applicationJSContent: Content = Content.classPathOption(fullOpt).getOrElse(Content.classPath(fastOpt))
   lazy val applicationJSMapContent: Content = Content.classPathOption(fullOptMap).getOrElse(Content.classPath(fastOptMap))
   lazy val applicationJSDepsContent: Option[Content] = Content.classPathOption(jsDeps)
@@ -104,21 +109,22 @@ trait ServerApplication extends YouIApplication with Server with ConfigApplicati
     val lastModifiedManager = CachingManager.LastModified()
 
     // Serve up application.js
-    handler.matcher(path.exact("/app/application.js")).caching(lastModifiedManager).resource(applicationJSContent)
+    handler.matcher(path.exact(applicationJSPath)).caching(lastModifiedManager).resource(applicationJSContent)
 
     // Serve up application.js.map
-    handler.matcher(path.exact("/app/application.js.map")).caching(lastModifiedManager).resource(applicationJSMapContent)
+    handler.matcher(path.exact(applicationJSMapPath)).caching(lastModifiedManager).resource(applicationJSMapContent)
 
     // Serve up application-jsdeps.js (if available)
     applicationJSDepsContent.foreach { content =>
-      handler.matcher(path.exact("/app/application-jsdeps.js")).caching(lastModifiedManager).resource(content)
+      handler.matcher(path.exact(applicationJSDepsPath)).caching(lastModifiedManager).resource(content)
     }
   }
 
   def addTemplate(directory: File,
                   mappings: Set[HttpConnection => Option[File]] = Set.empty,
                   excludeDotHTML: Boolean = true,
-                  deltas: List[Delta] = Nil): HttpHandler = {
+                  deltas: List[Delta] = Nil,
+                  includeApplication: Boolean = true): HttpHandler = {
     // Serve up template files
     handler.priority(Priority.Low).handle { httpConnection =>
       val url = httpConnection.request.url
@@ -138,7 +144,7 @@ trait ServerApplication extends YouIApplication with Server with ConfigApplicati
         if (file.isFile) {
           if (file.getName.endsWith(".html")) {
             CachingManager.NotCached.handle(httpConnection)
-            serveHTML(httpConnection, file, deltas)
+            serveHTML(httpConnection, file, deltas, includeApplication)
           } else {
             CachingManager.LastModified().handle(httpConnection)
             httpConnection.update(_.withContent(Content.file(file)))
@@ -148,7 +154,7 @@ trait ServerApplication extends YouIApplication with Server with ConfigApplicati
     }
   }
 
-  private val cancellable: Option[Cancellable] = Some(system.scheduler.schedule(30.seconds, 30.seconds) {
+  protected val cancellable: Option[Cancellable] = Some(system.scheduler.schedule(30.seconds, 30.seconds) {
     pingClients()
   })
 
@@ -177,8 +183,9 @@ trait ServerApplication extends YouIApplication with Server with ConfigApplicati
     }
 
     def page(template: Content = ServerApplication.DefaultTemplate,
-             deltas: List[Delta] = Nil): HttpHandler = builder.handle { connection =>
-      serveHTML(connection, template, deltas)
+             deltas: List[Delta] = Nil,
+             includeApplication: Boolean = true): HttpHandler = builder.handle { connection =>
+      serveHTML(connection, template, deltas, includeApplication)
     }
   }
 
@@ -189,7 +196,7 @@ trait ServerApplication extends YouIApplication with Server with ConfigApplicati
     }
   }
 
-  def serveHTML(httpConnection: HttpConnection, content: Content, deltas: List[Delta]): Unit = {
+  def serveHTML(httpConnection: HttpConnection, content: Content, deltas: List[Delta], includeApplication: Boolean): Unit = {
     val stream = content match {
       case c: FileContent => HTMLParser.cache(c.file)
       case c: URLContent => HTMLParser.cache(c.url)
@@ -199,24 +206,29 @@ trait ServerApplication extends YouIApplication with Server with ConfigApplicati
       case (name, value) => s"""<input type="hidden" id="$name" value="$value"/>"""
     }
     val deltasList = httpConnection.store.getOrElse[List[Delta]](ServerApplication.DeltaKey, Nil) ::: deltas
-    val jsDeps = if (applicationJSDepsContent.nonEmpty) {
-      s"""<script src="/app/application-jsdeps.js"></script>"""
-    } else {
-      ""
-    }
-    val d = List(
-      Delta.InsertLastChild(ByTag("body"),
-        s"""
-           |${scriptPaths.map(p => s"""<script src="$p"></script>""").mkString("\n")}
-           |${responseFields.mkString("\n")}
-           |$jsDeps
-           |<script src="/app/application.js"></script>
-           |<script>
-           |  application();
-           |</script>
-         """.stripMargin
+    val applicationDeltas = if (includeApplication) {
+      val jsDeps = if (applicationJSDepsContent.nonEmpty) {
+        s"""<script src="$applicationJSDepsPath"></script>"""
+      } else {
+        ""
+      }
+      List(
+        Delta.InsertLastChild(ByTag("body"),
+          s"""
+             |${scriptPaths.map(p => s"""<script src="$p"></script>""").mkString("\n")}
+             |${responseFields.mkString("\n")}
+             |$jsDeps
+             |<script src="$applicationJSPath"></script>
+             |<script>
+             |  application();
+             |</script>
+           """.stripMargin
+        )
       )
-    ) ::: deltasList
+    } else {
+      Nil
+    }
+    val d = applicationDeltas ::: deltasList
     val selector = httpConnection.request.url.param("selector").map(Selector.parse)
     val html = stream.stream(d, selector)
     SenderHandler.handle(httpConnection, Content.string(html, ContentType.`text/html`), caching = CachingManager.NotCached)

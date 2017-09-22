@@ -1,6 +1,6 @@
 name := "youi"
 organization in ThisBuild := "io.youi"
-version in ThisBuild := "0.7.0-SNAPSHOT"
+version in ThisBuild := "0.6.9-SNAPSHOT"
 scalaVersion in ThisBuild := "2.12.3"
 crossScalaVersions in ThisBuild := List("2.12.3", "2.11.11")
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
@@ -269,7 +269,7 @@ lazy val example = crossProject.in(file("example"))
       "org.scala-lang.modules" %% "scala-xml" % scalaXMLVersion
     )
   )
-  .dependsOn(app, template)
+  .dependsOn(app)
 
 lazy val exampleJS = example.js
 lazy val exampleJVM = example.jvm.dependsOn(serverUndertow)

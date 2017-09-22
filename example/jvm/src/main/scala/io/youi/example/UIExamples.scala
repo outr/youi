@@ -13,6 +13,4 @@ object UIExamples extends ExamplePage with MatcherPage {
   override protected def resource(httpConnection: HttpConnection): Option[Content] = {
     Some(Content.classPath("content/templates/ui-examples.html"))
   }
-
-  override protected def scalaJSFunction: Option[String] = Some("io.youi.example.ClientExampleApplication().main")
 }

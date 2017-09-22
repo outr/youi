@@ -56,10 +56,7 @@ object ClientExampleApplication extends ExampleApplication with ClientApplicatio
 
   override protected val loadingElement: html.Element = byId[html.Div]("loading")
 
-  @JSExportTopLevel("io.youi.example.ClientExampleApplication")
-  protected def getInstance(): this.type = this
-
-  @JSExport
+  @JSExportTopLevel("application")
   def main(): Unit = {
     // Write the JavaScript logging messages to the server console
     scribe.Logger.root.addHandler(LogHandler(writer = ClientApplication.logWriter))

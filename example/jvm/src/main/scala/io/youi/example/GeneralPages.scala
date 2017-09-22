@@ -19,6 +19,4 @@ object GeneralPages extends ExamplePage with MatcherPage {
   }
 
   override protected def resource(httpConnection: HttpConnection): Option[Content] = Some(Content.classPath(s"content/templates${httpConnection.request.url.path.decoded}"))
-
-  override protected def scalaJSFunction: Option[String] = Some("io.youi.example.ClientExampleApplication().main")
 }

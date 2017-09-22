@@ -9,6 +9,9 @@ object ServerExampleApplication extends ExampleApplication with ServerApplicatio
   val uiExamples: Page = page(UIExamples)
   val generalPages: Page = page(GeneralPages)
 
+  override protected def applicationBasePath = s"app/youi-example"
+  override protected def applicationJSBasePath = s"/app/example"
+
   override def main(args: Array[String]): Unit = start(args)
 
   override protected def run(): Unit = {

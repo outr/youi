@@ -38,7 +38,7 @@ object Path {
     } else {
       path
     }
-    Path(updated.split('/').toList) match {
+    Path(updated.split('/').toList.map(URL.decode)) match {
       case p if absolutize => p.absolute
       case p => p
     }

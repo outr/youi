@@ -4,6 +4,7 @@
 * [ ] Touch scroll acceleration
 * [ ] ScrollBar
 * [ ] ComponentPaint for better integration of Image and Video painting
+* [ ] Paint.modified to support mutating paints
 * [X] Widget as common root for canvas and hypertext Components
 * [X] Layout migration to build on Widget instead of Component
 * [X] Flow layout

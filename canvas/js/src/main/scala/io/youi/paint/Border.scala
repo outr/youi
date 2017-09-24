@@ -4,6 +4,7 @@ import io.youi.path.Path
 import io.youi.{Compass, Context}
 
 trait Border {
+  def paint: Paint
   def size(compass: Compass): Double
   def draw(width: Double, height: Double, context: Context, fill: Paint): Unit
   def width: Double = size(Compass.West) + size(Compass.East)
@@ -21,6 +22,8 @@ object Border {
 // TODO: PaddingBorder
 
 case class RectangleBorder(stroke: Stroke, radius: Double) extends Border {
+  override def paint: Paint = stroke.paint
+
   override def size(compass: Compass): Double = stroke.lineWidth
 
   override def draw(width: Double, height: Double, context: Context, fill: Paint): Unit = if (fill.nonEmpty || stroke.nonEmpty) {

@@ -2,6 +2,7 @@ package io.youi.component
 
 import io.youi.Context
 import io.youi.font.TextPaths
+import io.youi.paint.Paint
 import io.youi.theme.TextTheme
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 import reactify._
@@ -24,6 +25,8 @@ class Text extends Component with TextTheme {
   }
 
   updateMeasured(textPaths.boundingBox.width, textPaths.boundingBox.height)
+
+  override protected def paints: List[Paint] = super.paints ::: List(fill(), stroke().paint)
 
   override def draw(context: Context): Unit = {
     super.draw(context)

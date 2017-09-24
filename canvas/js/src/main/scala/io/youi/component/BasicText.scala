@@ -1,5 +1,6 @@
 package io.youi.component
 
+import io.youi.paint.Paint
 import io.youi.{Context, Size}
 import io.youi.theme.BasicTextTheme
 import reactify.Var
@@ -23,6 +24,8 @@ class BasicText extends Component with BasicTextTheme {
       updateMeasured(size.width, size.height)
     }
   }
+
+  override protected def paints: List[Paint] = super.paints ::: List(fill(), stroke().paint)
 
   override def draw(context: Context): Unit = {
     super.draw(context)

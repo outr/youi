@@ -2,11 +2,13 @@ package io.youi.component
 
 import io.youi._
 import io.youi.event.{Events, HitResult}
+import io.youi.paint.Paint
 import io.youi.spatial.{Matrix3, MutableMatrix3, Point}
 import io.youi.task.TaskSupport
 import io.youi.theme.ComponentTheme
 import reactify._
 
+import scala.annotation.tailrec
 import scala.concurrent.{Future, Promise}
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -22,6 +24,8 @@ trait Component extends TaskSupport with ComponentTheme with Widget { self =>
     val opacity: Val[Double] = Val(self.opacity() * parent().map(_.actual.opacity()).getOrElse(1.0))
   }
 
+  protected val modified: Var[Long] = Var(System.currentTimeMillis())
+
   protected def determineActualVisibility: Boolean = self.visible() && parent().exists(_.actual.visibility())
 
   lazy val event: Events = new Events(this)
@@ -29,6 +33,9 @@ trait Component extends TaskSupport with ComponentTheme with Widget { self =>
   override protected def defaultThemeParent = Some(theme)
 
   protected[youi] lazy val drawer: Drawer = new Drawer()
+
+  protected def paints: List[Paint] = List(background(), border().paint)
+
   object matrix {
     val local: MutableMatrix3 = Matrix3.Identity.mutable
     val world: MutableMatrix3 = Matrix3.Identity.mutable
@@ -112,10 +119,12 @@ trait Component extends TaskSupport with ComponentTheme with Widget { self =>
 
   init()
 
-  protected def drawInternal(context: Context): Unit = {
+  protected def drawInternal(context: Context): Unit = try {
     preDraw(context)
     draw(context)
     postDraw(context)
+  } finally {
+    modified := System.currentTimeMillis()
   }
 
   def drawToParent(parentContent: Context): Unit = {
@@ -176,16 +185,29 @@ trait Component extends TaskSupport with ComponentTheme with Widget { self =>
     size.measured.height := height + padding.height + border.height
   }
 
+  private val paintsVal = Val(paints)
+
   override def update(delta: Double): Unit = {
     super.update(delta)
 
     matrix.transform.update()
+    updatePaints(paintsVal)
     reDraw.update()
+  }
+
+  @tailrec
+  private def updatePaints(paints: List[Paint]): Unit = if (paints.nonEmpty) {
+    val paint = paints.head
+    paint.update()
+    if (paint.modified > modified()) {
+      reDraw.flag()
+    }
+    updatePaints(paints.tail)
   }
 
   override def updateTasks(): Boolean = super.updateTasks() && actual.visibility
 
-  override def toString = id().getOrElse(s"${getClass.getName}:$hashCode")
+  override def toString: String = id().getOrElse(s"${getClass.getName}:$hashCode")
 }
 
 object Component extends ComponentTheme {

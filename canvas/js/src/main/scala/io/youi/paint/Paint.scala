@@ -13,6 +13,8 @@ import scala.scalajs.js.|
 sealed trait Paint {
   def isEmpty: Boolean = false
   def nonEmpty: Boolean = !isEmpty
+  def update(): Unit = {}
+  def modified: Long = 0L
 }
 
 object NoPaint extends Paint {

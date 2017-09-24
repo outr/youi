@@ -185,7 +185,7 @@ trait Component extends TaskSupport with ComponentTheme with Widget { self =>
     size.measured.height := height + padding.height + border.height
   }
 
-  private val paintsVal = Val(paints)
+  private lazy val paintsVal = Val(paints)
 
   override def update(delta: Double): Unit = {
     super.update(delta)

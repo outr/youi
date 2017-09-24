@@ -153,24 +153,5 @@ class Context(val canvas: html.Canvas) {
     canvasContext.clearRect(0.0, 0.0, canvas.width, canvas.height)
   }
 
-  private def paint2Any(paint: Paint): js.Any = paint match {
-    case NoPaint => ""
-    case ColorPaint(color) => color.toRGBA
-    case LinearGradientPaint(x0, y0, x1, y1, stops) => {
-      val g = canvasContext.createLinearGradient(x0, y0, x1, y1)
-      stops.foreach { stop =>
-        g.addColorStop(stop.offset, stop.color.toRGBA)
-      }
-      g
-    }
-    case RadialGradientPaint(x0, y0, r0, x1, y1, r1, stops) => {
-      val g = canvasContext.createRadialGradient(x0, y0, r0, x1, y1, r1)
-      stops.foreach { stop =>
-        g.addColorStop(stop.offset, stop.color.toRGBA)
-      }
-      g
-    }
-    case PatternPaint(createPattern) => createPattern(canvasContext)
-    case _ => throw new RuntimeException(s"Unsupported paint: $paint")
-  }
+  private def paint2Any(paint: Paint): js.Any = paint.asJS(this)
 }

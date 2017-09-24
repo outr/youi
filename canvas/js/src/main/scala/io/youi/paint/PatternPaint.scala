@@ -1,0 +1,13 @@
+package io.youi.paint
+
+import io.youi.Context
+import org.scalajs.dom.CanvasPattern
+import org.scalajs.dom.raw.CanvasRenderingContext2D
+
+import scala.scalajs.js
+
+trait PatternPaint extends Paint {
+  def createPattern(context: CanvasRenderingContext2D): CanvasPattern
+
+  override def asJS(context: Context): js.Any = createPattern(context.canvasContext)
+}

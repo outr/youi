@@ -2,7 +2,7 @@ package io.youi.example.ui
 
 import io.youi.Color
 import io.youi.app.screen.UIScreen
-import io.youi.component.Text
+import io.youi.component.{Text, Video}
 import io.youi.font.{Font, GoogleFont}
 import io.youi.paint.{Border, Paint, Stroke}
 import reactify._
@@ -37,9 +37,13 @@ object TextExample extends UIExampleScreen with UIScreen {
       value := "Berkshire Swash Regular"
       font.file := Font.fromURL(GoogleFont.`Berkshire Swash`.`regular`)
       font.size := 96.0
-      Paint.video("/sample.mp4").foreach { paint =>
-        fill := paint
+//      Paint.video("/sample.mp4").foreach { paint =>
+//        fill := paint
+//      }
+      val video: Video = new Video("/sample.mp4") {
+        autoPlay := true
       }
+      fill := Paint.component(video)
       stroke := Stroke(Color.Black, lineWidth = 0.5)
       position.center := container.position.center
       position.top := pacifico.position.bottom + 20.0

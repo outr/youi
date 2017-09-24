@@ -14,7 +14,7 @@ import scala.scalajs.js.|
 trait Paint {
   def isEmpty: Boolean = false
   def nonEmpty: Boolean = !isEmpty
-  def update(): Unit = {}
+  def update(delta: Double): Unit = {}
   def modified: Long = 0L
   def asJS(context: Context): js.Any
 }

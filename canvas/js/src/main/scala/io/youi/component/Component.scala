@@ -24,7 +24,7 @@ trait Component extends TaskSupport with ComponentTheme with Widget { self =>
     val opacity: Val[Double] = Val(self.opacity() * parent().map(_.actual.opacity()).getOrElse(1.0))
   }
 
-  protected val modified: Var[Long] = Var(System.currentTimeMillis())
+  protected[youi] val modified: Var[Long] = Var(System.currentTimeMillis())
 
   protected def determineActualVisibility: Boolean = self.visible() && parent().exists(_.actual.visibility())
 
@@ -191,18 +191,18 @@ trait Component extends TaskSupport with ComponentTheme with Widget { self =>
     super.update(delta)
 
     matrix.transform.update()
-    updatePaints(paintsVal)
+    updatePaints(delta, paintsVal)
     reDraw.update()
   }
 
   @tailrec
-  private def updatePaints(paints: List[Paint]): Unit = if (paints.nonEmpty) {
+  private def updatePaints(delta: Double, paints: List[Paint]): Unit = if (paints.nonEmpty) {
     val paint = paints.head
-    paint.update()
+    paint.update(delta)
     if (paint.modified > modified()) {
       reDraw.flag()
     }
-    updatePaints(paints.tail)
+    updatePaints(delta, paints.tail)
   }
 
   override def updateTasks(): Boolean = super.updateTasks() && actual.visibility

@@ -9,5 +9,9 @@ import scala.scalajs.js
 trait PatternPaint extends Paint {
   def createPattern(context: CanvasRenderingContext2D): CanvasPattern
 
-  override def asJS(context: Context): js.Any = createPattern(context.canvasContext)
+  override def asJS(context: Context): js.Any = if (context.canvas.width > 0 && context.canvas.height > 0) {
+    createPattern(context.canvasContext)
+  } else {
+    ""
+  }
 }

@@ -11,4 +11,6 @@ trait VideoTheme extends ComponentTheme {
   }.map(f).getOrElse(default)
 
   val autoPlay: Var[Boolean] = prop(prnt(_.autoPlay, false), updatesRendering = true)
+  val loop: Var[Boolean] = prop(prnt(_.loop, false), updatesRendering = true)
+  val muted: Var[Boolean] = prop(prnt(_.muted, false))
 }

@@ -7,9 +7,11 @@ import org.scalajs.dom.{Event, html}
 import reactify.Var
 
 class Video extends Component with VideoTheme {
-  private val element = {
+  private lazy val element = {
     val v = dom.create[html.Video]("video")
-    v.autoplay = false
+    autoPlay.attachAndFire(v.autoplay = _)
+    loop.attachAndFire(v.loop = _)
+    muted.attachAndFire(v.muted = _)
     v.addEventListener("loadedmetadata", (_: Event) => {
       updateMeasured(v.videoWidth, v.videoHeight)
     })
@@ -47,7 +49,7 @@ class Video extends Component with VideoTheme {
   override def draw(context: Context): Unit = {
     super.draw(context)
 
-    if (size.width() > 0.0 && size.height() > 0.0) {
+    if (size.width() > 0.0 && size.height() > 0.0 && !element.paused && !element.ended && !element.seeking) {
       context.drawVideo(element)(width = size.width(), height = size.height())
     }
   }

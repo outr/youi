@@ -7,7 +7,7 @@ import org.scalajs.dom.raw.CanvasRenderingContext2D
 
 import scala.scalajs.js
 
-class ComponentPaint(component: Component, repetition: Repetition) extends PatternPaint {
+class ComponentPaint[C <: Component](component: C, repetition: Repetition) extends PatternPaint {
   override def modified: Long = component.modified()
 
   override def update(delta: Double): Unit = {

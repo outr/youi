@@ -80,12 +80,15 @@ class Context(val canvas: html.Canvas) {
     canvasContext.quadraticCurveTo(cpx, cpy, x, y)
   }
 
+  def begin(): Unit = canvasContext.beginPath()
+  def close(): Unit = canvasContext.closePath()
+
   def rect(x: Double, y: Double, width: Double, height: Double): Unit = {
     canvasContext.rect(Path.fix(x), Path.fix(y), width, height)
   }
 
   def roundedRect(x: Double, y: Double, width: Double, height: Double, radius: Double): Unit = {
-    canvasContext.beginPath()
+    begin()
     moveTo(x + radius, y)
     lineTo(x + width - radius, y)
     quadraticCurveTo(x + width, y, x + width, y + radius)
@@ -95,7 +98,7 @@ class Context(val canvas: html.Canvas) {
     quadraticCurveTo(x, y + height, x, y + height - radius)
     lineTo(x, y + radius)
     quadraticCurveTo(x, y, x + radius, y)
-    canvasContext.closePath()
+    close()
   }
 
   def fill(paint: Paint, apply: Boolean): Unit = if (paint.nonEmpty) {

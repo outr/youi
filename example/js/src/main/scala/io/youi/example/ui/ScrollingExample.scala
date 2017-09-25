@@ -2,7 +2,7 @@ package io.youi.example.ui
 
 import io.youi._
 import io.youi.app.screen.UIScreen
-import io.youi.component.{BasicText, Container, ScrollSupport}
+import io.youi.component.{BasicText, Container, ScrollBar, ScrollSupport}
 import io.youi.layout.VerticalLayout
 import io.youi.paint.{Paint, Stroke}
 import reactify._
@@ -18,6 +18,7 @@ object ScrollingExample extends UIExampleScreen with UIScreen {
       size.height := container.size.height
       background := Paint.vertical(container.size.height).distributeColors(Color.White, Color.Black)
       layoutManager := new VerticalLayout(25.0)
+      scroll.vertical.bar := ScrollBar.simple(stroke = Stroke(Color.Black), fill = Color.LightBlue)
     }
 
     Color.all.foreach { color =>

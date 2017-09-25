@@ -3,6 +3,10 @@
 
 * [ ] Touch scroll acceleration
 * [ ] ScrollBar
+    * [X] Visual indicator
+    * [ ] Interactive
+        * [ ] Drag
+        * [ ] Click
 * [X] ComponentPaint for better integration of Image and Video painting
 * [X] Paint.modified to support mutating paints
 * [X] Widget as common root for canvas and hypertext Components

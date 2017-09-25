@@ -50,6 +50,10 @@ class URLSpec extends WordSpec with Matchers {
         val encoded = url.encoded.toString
         encoded should equal("http://test.com/location?address=Oklahoma%20City%2C%20OK")
       }
+      "properly parse a URL with an encoded path and decode it" in {
+        val url = URL("https://test.com/d/_VomiVDa---/s9knzlc2k/Matt%202007.jpg")
+        url.path.decoded should be("/d/_VomiVDa---/s9knzlc2k/Matt 2007.jpg")
+      }
       "properly interpolate a URL" in {
         val url = url"http://www.youi.io"
         url.encoded.toString should equal("http://www.youi.io/")

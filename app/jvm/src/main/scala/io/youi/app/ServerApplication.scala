@@ -124,30 +124,32 @@ trait ServerApplication extends YouIApplication with Server with ConfigApplicati
                   mappings: Set[HttpConnection => Option[File]] = Set.empty,
                   excludeDotHTML: Boolean = true,
                   deltas: List[Delta] = Nil,
-                  includeApplication: Boolean = true): HttpHandler = {
+                  includeApplication: URL => Boolean = _ => true): HttpHandler = {
     // Serve up template files
     handler.priority(Priority.Low).handle { httpConnection =>
-      val url = httpConnection.request.url
-      val fileName = url.path.decoded
-      if (fileName.endsWith(".html") && excludeDotHTML) {
-        // Ignore
-      } else {
-        val exactFile = new File(directory, fileName)
-        var file: File = exactFile
-        if (excludeDotHTML && !file.exists()) {
-          file = new File(directory, s"$fileName.html")
-        }
-        if (!file.isFile) {     // Handle mappings
-          mappings.toStream.flatMap(m => m(httpConnection)).find(_.isFile).foreach(file = _)
-        }
+      if (httpConnection.response.content.isEmpty) {
+        val url = httpConnection.request.url
+        val fileName = url.path.decoded
+        if (fileName.endsWith(".html") && excludeDotHTML) {
+          // Ignore
+        } else {
+          val exactFile = new File(directory, fileName)
+          var file: File = exactFile
+          if (excludeDotHTML && !file.exists()) {
+            file = new File(directory, s"$fileName.html")
+          }
+          if (!file.isFile) { // Handle mappings
+            mappings.toStream.flatMap(m => m(httpConnection)).find(_.isFile).foreach(file = _)
+          }
 
-        if (file.isFile) {
-          if (file.getName.endsWith(".html")) {
-            CachingManager.NotCached.handle(httpConnection)
-            serveHTML(httpConnection, file, deltas, includeApplication)
-          } else {
-            CachingManager.LastModified().handle(httpConnection)
-            httpConnection.update(_.withContent(Content.file(file)))
+          if (file.isFile) {
+            if (file.getName.endsWith(".html")) {
+              CachingManager.NotCached.handle(httpConnection)
+              serveHTML(httpConnection, file, deltas, includeApplication(url))
+            } else {
+              CachingManager.LastModified().handle(httpConnection)
+              httpConnection.update(_.withContent(Content.file(file)))
+            }
           }
         }
       }

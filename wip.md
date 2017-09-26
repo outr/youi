@@ -7,3 +7,11 @@
     * [ ] Caret with customization support
     * [ ] Rich text segments
     * [ ] Multi-line support or explicit single-line support
+* [ ] Move `template` module into its own project
+* [ ] Stylized Components
+    * [ ] Button
+    * [ ] TextField
+    * [ ] TextArea
+    * [ ] Checkbox
+    * [ ] RadioButton
+    * [ ] ListSelection

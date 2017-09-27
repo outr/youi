@@ -1,5 +1,6 @@
 package io.youi.example.ui
 
+import io.youi.ui
 import io.youi.Color
 import io.youi.app.screen.UIScreen
 import io.youi.component.{Text, Video}

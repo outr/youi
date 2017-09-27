@@ -54,13 +54,13 @@ trait Component extends TaskSupport with ComponentTheme with Widget { self =>
   }
   lazy val reDraw = LazyUpdate {
     reMeasure(drawer.context)
-    drawer.update(size.width * dpiMultiplier, size.height * dpiMultiplier)(drawInternal)
+    drawer.update(size.width * ui.dpiMultiplier, size.height * ui.dpiMultiplier)(drawInternal)
 
     parent().foreach(_.invalidate())
   }
 
   protected def reDrawAsync(f: Context => Future[Unit]): Unit = {
-    drawer.updateAsync(size.width * dpiMultiplier, size.height * dpiMultiplier) { context =>
+    drawer.updateAsync(size.width * ui.dpiMultiplier, size.height * ui.dpiMultiplier) { context =>
       preDraw(context)
       f(context).map { _ =>
         postDraw(context)
@@ -127,13 +127,7 @@ trait Component extends TaskSupport with ComponentTheme with Widget { self =>
     modified := System.currentTimeMillis()
   }
 
-  def drawToParent(parent: AbstractContainer, parentContext: Context): Unit = {
-    parentContext.save()
-    val scale = parent.dpiMultiplier / dpiMultiplier
-    parentContext.scale(scale, scale)
-    parentContext.draw(this)
-    parentContext.restore()
-  }
+  def drawToParent(parent: AbstractContainer, parentContext: Context): Unit = parentContext.draw(this)
 
   protected def preDraw(context: Context): Unit = {
     // Set opacity
@@ -141,11 +135,16 @@ trait Component extends TaskSupport with ComponentTheme with Widget { self =>
 
     // Draw border and background
     context.save()
-    context.canvasContext.scale(dpiMultiplier, dpiMultiplier)
+    preScale(context)
     border.draw(size.width, size.height, context, background)
     context.translate(offset.x, offset.y)
     context.translate(padding.left, padding.top)
     context.translate(border.size(Compass.West), border.size(Compass.North))
+  }
+
+  protected def preScale(context: Context): Unit = {
+    val scale = ui.dpiMultiplier()
+    context.scale(scale, scale)
   }
 
   protected def draw(context: Context): Unit = {}

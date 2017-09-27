@@ -2,7 +2,7 @@ package io.youi.component
 
 import io.youi.{BoundingBox, Compass, Context, WidgetContainer}
 import io.youi.event.HitResult
-import io.youi.layout.Layout
+import io.youi.ui
 import io.youi.spatial.Point
 import io.youi.theme.AbstractContainerTheme
 import reactify._
@@ -23,6 +23,8 @@ trait AbstractContainer extends Component with AbstractContainerTheme with Widge
     width = if (childEntries().nonEmpty) childEntries().map(_.position.right()).max else 0.0,
     height = if (childEntries().nonEmpty) childEntries().map(_.position.bottom()).max else 0.0
   )
+
+  override protected def preScale(context: Context): Unit = {}
 
   override def update(delta: Double): Unit = {
     super.update(delta)
@@ -45,10 +47,12 @@ trait AbstractContainer extends Component with AbstractContainerTheme with Widge
           bb.intersects(viewable)
         }
         if (drawable) {
+//          context.save()
           context.transform(child)
           context.translate(offset.x, offset.y)
           context.translate(padding.left, padding.top)
           context.translate(border.size(Compass.West), border.size(Compass.North))
+//          context.restore()
           child.drawToParent(this, context)
         }
       }

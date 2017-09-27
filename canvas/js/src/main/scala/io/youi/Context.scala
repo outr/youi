@@ -33,10 +33,11 @@ class Context(val canvas: html.Canvas) {
 
   def transform(component: Component): Unit = {
     transform(Matrix3.Identity)
-    canvasContext.translate(component.position.x, component.position.y)
-    canvasContext.translate(component.pivot.x(), component.pivot.y())
-    canvasContext.rotate(component.rotation() * (math.Pi * 2.0))
-    canvasContext.translate(-component.pivot.x(), -component.pivot.y())
+    def m(value: Double): Double = value * ui.dpiMultiplier
+    canvasContext.translate(m(component.position.x), m(component.position.y))
+    canvasContext.translate(m(component.pivot.x()), m(component.pivot.y()))
+    canvasContext.rotate(m(component.rotation() * (math.Pi * 2.0)))
+    canvasContext.translate(m(-component.pivot.x()), m(-component.pivot.y()))
   }
 
   def translate(x: Double, y: Double): Unit = canvasContext.translate(x, y)

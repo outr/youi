@@ -10,6 +10,7 @@ import reactify._
 class UI(canvas: html.Canvas = dom.create[html.Canvas]("canvas")) {
   lazy val mouse: Mouse = new Mouse
   lazy val renderer: Renderer = new Renderer(canvas)
+  lazy val dpiMultiplier: Var[Double] = Var(1.0)    // TODO: use webkitBackingStorePixelRatio if available
 
   lazy val ppi: Double = {
     val div = dom.create[Div]("div")

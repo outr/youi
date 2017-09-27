@@ -32,6 +32,13 @@ class Renderer(canvas: html.Canvas) extends Container with RendererTheme {
   cursor := pointerTarget().map(_.cursor()).getOrElse(Cursor.Auto)      // Renderer's cursor should reflect the pointer target's cursor
   cursor.attach(c => canvas.style.cursor = c.value)
 
+  size.width.and(size.height).and(ui.dpiMultiplier).on {
+    val width = size.width()
+    val height = size.height()
+    canvas.style.width = s"${width}px"
+    canvas.style.height = s"${height}px"
+  }
+
   override protected def determineActualVisibility = visible
 
   private val globalPoint = Point.mutable()

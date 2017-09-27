@@ -19,7 +19,7 @@ case class Stroke(paint: Paint,
 }
 
 object Stroke {
-  lazy val none: Stroke = Stroke(Paint.none)
+  lazy val none: Stroke = Stroke(Paint.none, 0.0)
 }
 
 sealed abstract class LineCap(val value: String)

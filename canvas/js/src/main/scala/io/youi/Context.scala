@@ -19,6 +19,7 @@ class Context(val canvas: html.Canvas) {
   def transform(matrix: Matrix3): Unit = {
     canvasContext.setTransform(matrix.m00, matrix.m01, matrix.m10, matrix.m11, matrix.m02, matrix.m12)
   }
+  def scale(x: Double, y: Double): Unit = canvasContext.scale(x, y)
 
   def save(): Unit = canvasContext.save()
   def restore(): Unit = canvasContext.restore()

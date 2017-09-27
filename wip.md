@@ -15,3 +15,7 @@
     * [ ] Checkbox
     * [ ] RadioButton
     * [ ] ListSelection
+* [ ] High DPI rendering
+    * [X] DPI multiplier support in components
+    * [ ] Component.actual.dpiMultiplier
+    * [ ] Proper rendering to the top-level canvas

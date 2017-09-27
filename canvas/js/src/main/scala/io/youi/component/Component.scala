@@ -54,13 +54,13 @@ trait Component extends TaskSupport with ComponentTheme with Widget { self =>
   }
   lazy val reDraw = LazyUpdate {
     reMeasure(drawer.context)
-    drawer.update(size.width(), size.height())(drawInternal)
+    drawer.update(size.width * dpiMultiplier, size.height * dpiMultiplier)(drawInternal)
 
     parent().foreach(_.invalidate())
   }
 
   protected def reDrawAsync(f: Context => Future[Unit]): Unit = {
-    drawer.updateAsync(size.width(), size.height()) { context =>
+    drawer.updateAsync(size.width * dpiMultiplier, size.height * dpiMultiplier) { context =>
       preDraw(context)
       f(context).map { _ =>
         postDraw(context)
@@ -127,8 +127,12 @@ trait Component extends TaskSupport with ComponentTheme with Widget { self =>
     modified := System.currentTimeMillis()
   }
 
-  def drawToParent(parentContent: Context): Unit = {
-    parentContent.draw(this)
+  def drawToParent(parent: AbstractContainer, parentContext: Context): Unit = {
+    parentContext.save()
+    val scale = parent.dpiMultiplier / dpiMultiplier
+    parentContext.scale(scale, scale)
+    parentContext.draw(this)
+    parentContext.restore()
   }
 
   protected def preDraw(context: Context): Unit = {
@@ -136,8 +140,9 @@ trait Component extends TaskSupport with ComponentTheme with Widget { self =>
     context.opacity = actual.opacity
 
     // Draw border and background
-    border.draw(size.width, size.height, context, background)
     context.save()
+    context.canvasContext.scale(dpiMultiplier, dpiMultiplier)
+    border.draw(size.width, size.height, context, background)
     context.translate(offset.x, offset.y)
     context.translate(padding.left, padding.top)
     context.translate(border.size(Compass.West), border.size(Compass.North))

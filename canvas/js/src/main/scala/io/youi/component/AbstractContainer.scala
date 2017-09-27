@@ -49,7 +49,7 @@ trait AbstractContainer extends Component with AbstractContainerTheme with Widge
           context.translate(offset.x, offset.y)
           context.translate(padding.left, padding.top)
           context.translate(border.size(Compass.West), border.size(Compass.North))
-          child.drawToParent(context)
+          child.drawToParent(this, context)
         }
       }
     }

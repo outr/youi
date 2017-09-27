@@ -16,6 +16,7 @@ trait ComponentTheme extends Theme {
   val visible: Var[Boolean] = prop(prnt(_.visible, true), updatesTransform = true)
   val opacity: Var[Double] = prop(prnt(_.opacity, 1.0), updatesRendering = true)
   val background: Var[Paint] = prop(prnt(_.background, Paint.none), updatesRendering = true)
+  val dpiMultiplier: Var[Double] = prop(prnt(_.dpiMultiplier, 1.0), updatesRendering = true)
 
   object padding {
     lazy val left: Var[Double] = prop(prnt(_.padding.left, 0.0))

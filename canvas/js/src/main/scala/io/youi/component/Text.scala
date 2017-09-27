@@ -24,7 +24,7 @@ class Text extends Component with TextTheme {
     }
   }
 
-  updateMeasured(textPaths.boundingBox.width, textPaths.boundingBox.height)
+  updateMeasured(textPaths.boundingBox.width + 1.0, textPaths.boundingBox.height + 1.0)
 
   override protected def paints: List[Paint] = super.paints ::: List(fill(), stroke().paint)
 
@@ -39,6 +39,7 @@ class Text extends Component with TextTheme {
       context.miterLimit(miterLimit())
       context.textBaseline(textBaseline())
       context.canvasContext.beginPath()
+      context.translate(1.0, -1.0)
       textPaths().draw(this, context)
       context.canvasContext.closePath()
       if (fill.nonEmpty) {

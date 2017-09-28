@@ -9,21 +9,25 @@ trait ScrollSupport extends Component {
     object horizontal {
       val enabled: Var[Boolean] = Var(false)
       val bar: Var[ScrollBar] = Var(ScrollBar.None)
-      def apply(delta: Double): Unit = {
+      def apply(delta: Double): Unit = if (size.measured.width() > size.width()) {
         val value = offset.x + delta
         val min = 0
         val max = size.measured.width() - size.width()
         offset.x.static(math.max(max, math.min(min, value)))
+      } else {
+        offset.x.static(0.0)
       }
     }
     object vertical {
       val enabled: Var[Boolean] = Var(true)
       val bar: Var[ScrollBar] = Var(ScrollBar.None)
-      def apply(delta: Double): Unit = {
+      def apply(delta: Double): Unit = if (size.measured.height() > size.height()) {
         val value = offset.y + delta
         val min = 0
         val max = -(size.measured.height() - size.height())
         offset.y.static(math.max(max, math.min(min, value)))
+      } else {
+        offset.y.static(0.0)
       }
     }
   }

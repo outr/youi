@@ -19,3 +19,4 @@
     * [X] DPI multiplier support in components
     * [ ] Component.actual.dpiMultiplier
     * [ ] Proper rendering to the top-level canvas
+* [ ] Update Containers to not have their own canvas and use clipping

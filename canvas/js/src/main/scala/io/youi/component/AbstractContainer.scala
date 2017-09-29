@@ -47,13 +47,13 @@ trait AbstractContainer extends Component with AbstractContainerTheme with Widge
           bb.intersects(viewable)
         }
         if (drawable) {
-//          context.save()
+          context.save()
           context.transform(child)
           context.translate(offset.x, offset.y)
           context.translate(padding.left, padding.top)
           context.translate(border.size(Compass.West), border.size(Compass.North))
-//          context.restore()
           child.drawToParent(this, context)
+          context.restore()
         }
       }
     }

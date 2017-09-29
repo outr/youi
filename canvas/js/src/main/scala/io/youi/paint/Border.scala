@@ -6,7 +6,8 @@ import io.youi.{Compass, Context}
 trait Border {
   def paint: Paint
   def size(compass: Compass): Double
-  def draw(width: Double, height: Double, context: Context, fill: Paint): Unit
+  def background(width: Double, height: Double, context: Context, fill: Paint): Unit
+  def draw(width: Double, height: Double, context: Context): Unit
   def width: Double = size(Compass.West) + size(Compass.East)
   def height: Double = size(Compass.North) + size(Compass.South)
 }
@@ -26,7 +27,7 @@ case class RectangleBorder(stroke: Stroke, radius: Double) extends Border {
 
   override def size(compass: Compass): Double = stroke.lineWidth
 
-  override def draw(width: Double, height: Double, context: Context, fill: Paint): Unit = if (fill.nonEmpty || stroke.nonEmpty) {
+  override def background(width: Double, height: Double, context: Context, fill: Paint): Unit = if (fill.nonEmpty) {
     if (stroke.lineWidth == 0.0 && radius == 0.0) {
       context.rect(0.0, 0.0, width, height)
     } else {
@@ -37,11 +38,20 @@ case class RectangleBorder(stroke: Stroke, radius: Double) extends Border {
         context.roundedRect(Path.fix(sizeAdjust), Path.fix(sizeAdjust), Path.fix(width - sizeAdjust) - 1.0, Path.fix(height - sizeAdjust) - 1.0, radius)
       }
     }
-    if (fill.nonEmpty) {
-      context.fill(fill, apply = true)
+    context.fill(fill, apply = true)
+  }
+
+  override def draw(width: Double, height: Double, context: Context): Unit = if (stroke.nonEmpty) {
+    if (stroke.lineWidth == 0.0 && radius == 0.0) {
+      context.rect(0.0, 0.0, width, height)
+    } else {
+      val sizeAdjust = stroke.lineWidth
+      if (radius == 0.0) {
+        context.rect(Path.fix(sizeAdjust), Path.fix(sizeAdjust), Path.fix(width - sizeAdjust) - 1.0, Path.fix(height - sizeAdjust) - 1.0)
+      } else {
+        context.roundedRect(Path.fix(sizeAdjust), Path.fix(sizeAdjust), Path.fix(width - sizeAdjust) - 1.0, Path.fix(height - sizeAdjust) - 1.0, radius)
+      }
     }
-    if (stroke.nonEmpty) {
-      context.stroke(stroke, apply = true)
-    }
+    context.stroke(stroke, apply = true)
   }
 }

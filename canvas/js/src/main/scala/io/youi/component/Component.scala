@@ -146,7 +146,7 @@ trait Component extends TaskSupport with ComponentTheme with Widget { self =>
     // Draw border and background
     context.save()
     preScale(context)
-    border.draw(size.width, size.height, context, background)
+    border.background(size.width, size.height, context, background)
     context.translate(offset.x, offset.y)
     context.translate(padding.left, padding.top)
     context.translate(border.size(Compass.West), border.size(Compass.North))
@@ -161,6 +161,7 @@ trait Component extends TaskSupport with ComponentTheme with Widget { self =>
 
   protected def postDraw(context: Context): Unit = {
     context.restore()
+    border.draw(size.width, size.height, context)
   }
 
   override protected def updateTransform(): Unit = matrix.transform.flag()

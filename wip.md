@@ -20,3 +20,5 @@
     * [ ] Component.actual.dpiMultiplier
     * [ ] Proper rendering to the top-level canvas
 * [ ] Update Containers to not have their own canvas and use clipping
+* [ ] Update Components to only render when they need to (lazy rendering)
+    * [ ] Disable rendering of offscreen or invisible components

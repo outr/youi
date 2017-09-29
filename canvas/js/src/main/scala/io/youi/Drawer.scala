@@ -12,10 +12,10 @@ class Drawer(private[youi] var canvas: html.Canvas = dom.create[html.Canvas]("ca
 
   def update(width: Double, height: Double)(f: Context => Unit): Unit = {
     val c = if (swapCanvases) {
-      CanvasPool(width, height)
+      CanvasPool(width + 1, height + 1)
     } else {
-      val w = math.ceil(width).toInt
-      val y = math.ceil(height).toInt
+      val w = math.ceil(width).toInt + 1
+      val y = math.ceil(height).toInt + 1
       if (w != canvas.width || y != canvas.height) {
         canvas.width = w
         canvas.height = y

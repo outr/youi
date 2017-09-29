@@ -27,11 +27,15 @@ case class RectangleBorder(stroke: Stroke, radius: Double) extends Border {
   override def size(compass: Compass): Double = stroke.lineWidth
 
   override def draw(width: Double, height: Double, context: Context, fill: Paint): Unit = if (fill.nonEmpty || stroke.nonEmpty) {
-    val sizeAdjust = stroke.lineWidth
-    if (radius == 0.0) {
-      context.rect(Path.fix(0.0), Path.fix(0.0), Path.fix(width - sizeAdjust), Path.fix(height - sizeAdjust))
+    if (stroke.lineWidth == 0.0 && radius == 0.0) {
+      context.rect(0.0, 0.0, width, height)
     } else {
-      context.roundedRect(Path.fix(0.0), Path.fix(0.0), Path.fix(width - sizeAdjust), Path.fix(height - sizeAdjust), radius)
+      val sizeAdjust = stroke.lineWidth
+      if (radius == 0.0) {
+        context.rect(Path.fix(sizeAdjust), Path.fix(sizeAdjust), Path.fix(width - sizeAdjust) - 1.0, Path.fix(height - sizeAdjust) - 1.0)
+      } else {
+        context.roundedRect(Path.fix(sizeAdjust), Path.fix(sizeAdjust), Path.fix(width - sizeAdjust) - 1.0, Path.fix(height - sizeAdjust) - 1.0, radius)
+      }
     }
     if (fill.nonEmpty) {
       context.fill(fill, apply = true)

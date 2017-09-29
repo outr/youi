@@ -39,7 +39,7 @@ class Text extends Component with TextTheme {
       context.miterLimit(miterLimit())
       context.textBaseline(textBaseline())
       context.canvasContext.beginPath()
-      context.translate(1.0, -1.0)
+      context.translate(1.0, 0.0)
       textPaths().draw(this, context)
       context.canvasContext.closePath()
       if (fill.nonEmpty) {

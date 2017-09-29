@@ -53,10 +53,14 @@ case class SVGImage(svg: SVGSVGElement,
     promise.future
   }
 
-  override def toDataURL: Future[String] = CanvasPool.withCanvasFuture(width, height) { canvas =>
-    val drawable = new Drawer(canvas, swapCanvases = false)
+  override def toDataURL: Future[String] = {
+    val drawable = new ComponentDrawer
     drawable.updateAsync(width, height)(context => draw(context, width, height)).flatMap { _ =>
-      ImageUtility.resizeToDataURL(canvas, width, height, smooth = true)
+      try {
+        ImageUtility.resizeToDataURL(drawable.context.canvas, width, height, smooth = true)
+      } finally {
+        drawable.dispose()
+      }
     }
   }
 

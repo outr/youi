@@ -52,7 +52,7 @@ object DebugWindow {
   def close(): Unit = root.style.display = "none"
 
   private def drawChild(component: Component, parent: html.Element, renderer: Renderer): Unit = {
-    val canvas = component.drawer.canvas
+    val canvas = component.drawer.context.canvas
 
     val heading = dom.create[html.Element]("h3")
     heading.innerHTML = s"${component.toString} (size: ${canvas.width}x${canvas.height}, parent: ${component.parent()})"

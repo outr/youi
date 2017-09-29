@@ -10,13 +10,15 @@ import org.scalajs.dom.{document, html, raw}
 import reactify._
 
 class Renderer(canvas: html.Canvas) extends Container with RendererTheme {
-  override protected[youi] lazy val drawer: Drawer = new Drawer(canvas, swapCanvases = false)
+  override protected[youi] lazy val drawer: Drawer = new RendererDrawer(canvas, this)
 
   override lazy val theme: Var[_ <: RendererTheme] = Var(Renderer)
   val htmlEvents: HTMLEvents = new HTMLEvents(document.body)
   override lazy val renderer: Val[Option[Renderer]] = Val(Some(this))
   val pointerTarget: Var[Option[Component]] = Var(None)
   val reDrawOnUpdate: Var[Boolean] = Var(false)
+
+  lazy val dpiMultiplier: Var[Double] = Var(1.0)    // TODO: use webkitBackingStorePixelRatio if available
 
   htmlEvents.click.attach(pointerEvent(_, PointerEvent.Type.Click))
   htmlEvents.doubleClick.attach(pointerEvent(_, PointerEvent.Type.DoubleClick))
@@ -31,13 +33,6 @@ class Renderer(canvas: html.Canvas) extends Container with RendererTheme {
   ui.mouse.wheel.attach(wheelEvent)
   cursor := pointerTarget().map(_.cursor()).getOrElse(Cursor.Auto)      // Renderer's cursor should reflect the pointer target's cursor
   cursor.attach(c => canvas.style.cursor = c.value)
-
-  size.width.and(size.height).and(ui.dpiMultiplier).on {
-    val width = size.width()
-    val height = size.height()
-    canvas.style.width = s"${width}px"
-    canvas.style.height = s"${height}px"
-  }
 
   override protected def determineActualVisibility = visible
 

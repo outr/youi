@@ -34,7 +34,7 @@ trait Component extends TaskSupport with ComponentTheme with Widget { self =>
 
   override protected def defaultThemeParent = Some(theme)
 
-  protected[youi] lazy val drawer: Drawer = new Drawer()
+  protected[youi] lazy val drawer: Drawer = new ComponentDrawer
 
   protected def paints: List[Paint] = List(background(), border().paint)
 

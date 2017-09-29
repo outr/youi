@@ -1,16 +1,16 @@
 package io.youi
 
-import io.youi.component.{Container, Renderer}
+import io.youi.component.Renderer
 import io.youi.event.{DeltaMode, KeyEvent, Mouse, WheelDelta}
 import org.scalajs.dom.{Event, document, html, window}
 import org.scalajs.dom.html.Div
-import org.scalajs.dom.raw.{KeyboardEvent, MouseEvent, WheelEvent}
+import org.scalajs.dom.raw.KeyboardEvent
 import reactify._
 
 class UI(canvas: html.Canvas = dom.create[html.Canvas]("canvas")) {
   lazy val mouse: Mouse = new Mouse
   lazy val renderer: Renderer = new Renderer(canvas)
-  lazy val dpiMultiplier: Var[Double] = Var(1.0)    // TODO: use webkitBackingStorePixelRatio if available
+  def dpiMultiplier: Var[Double] = renderer.dpiMultiplier
 
   lazy val ppi: Double = {
     val div = dom.create[Div]("div")

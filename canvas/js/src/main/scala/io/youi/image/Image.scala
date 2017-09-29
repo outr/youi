@@ -1,13 +1,12 @@
 package io.youi.image
 
 import io.youi._
-import io.youi.component.Component
 import io.youi.dom._
 import io.youi.net.URL
 import io.youi.stream.StreamURL
 import io.youi.util.{CanvasPool, ImageUtility, SizeUtility}
 import org.scalajs.dom._
-import org.scalajs.dom.raw.{CanvasRenderingContext2D, SVGSVGElement}
+import org.scalajs.dom.raw.SVGSVGElement
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Future, Promise}
@@ -20,19 +19,27 @@ trait Image {
   def draw(context: Context, width: Double, height: Double): Future[Unit]
 
   def clip(x1: Double, y1: Double, x2: Double, y2: Double): Future[Image] = {
-    CanvasPool.withCanvasFuture(width, height) { original =>
-      val drawable = new Drawer(original, swapCanvases = false)
-      val context = drawable.context
-      draw(context, width, height).flatMap { _ =>
-        val w = x2 - x1
-        val h = y2 - y1
-        val dataURL = CanvasPool.withCanvas(w, h) { clipped =>
-          val ctx = clipped.getContext("2d").asInstanceOf[CanvasRenderingContext2D]
-          ctx.drawImage(original.asInstanceOf[html.Image], x1, y1, w, h, 0.0, 0.0, w, h)
-          clipped.toDataURL("image/png")
+    val drawable = new ComponentDrawer
+    val promise = Promise[String]
+    drawable.updateAsync(width, height) { context =>
+      draw(context, width, height).map { _ =>
+        try {
+          val w = x2 - x1
+          val h = y2 - y1
+          val dataURL = CanvasPool.withCanvas(w, h) { clipped =>
+            val ctx = clipped.context
+            ctx.drawImage(context.canvas.asInstanceOf[html.Image], x1, y1, w, h, 0.0, 0.0, w, h)
+            clipped.toDataURL("image/png")
+          }
+          promise.success(dataURL)
+          ()
+        } finally {
+          drawable.dispose()
         }
-        Image.fromImageSource(dataURL, None, None)
       }
+    }
+    promise.future.flatMap { dataURL =>
+      Image.fromImageSource(dataURL, None, None)
     }
   }
 

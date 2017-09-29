@@ -2,6 +2,8 @@ package io
 
 import io.youi.paint.Paint
 import io.youi.spatial.NumericSize
+import org.scalajs.dom.html
+import org.scalajs.dom.raw.CanvasRenderingContext2D
 import reactify._
 
 import scala.language.implicitConversions
@@ -10,6 +12,10 @@ package object youi {
   lazy val ui: UI = new UI()
 
   implicit def color2Paint(color: Color): Paint = Paint.color(color)
+
+  implicit class ExtendedCanvas(canvas: html.Canvas) {
+    def context: CanvasRenderingContext2D = canvas.getContext("2d").asInstanceOf[CanvasRenderingContext2D]
+  }
 
   implicit class UINumericSize[T](t: T)(implicit n: Numeric[T]) extends NumericSize[T](t)(n) {
     private val d = n.toDouble(t)

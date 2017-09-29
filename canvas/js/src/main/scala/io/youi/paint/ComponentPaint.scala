@@ -16,13 +16,13 @@ class ComponentPaint[C <: Component](component: C, repetition: Repetition) exten
     component.update(delta)
   }
 
-  override def asJS(context: Context): js.Any = if (component.drawer.canvas.width > 0 && component.drawer.canvas.height > 0) {
+  override def asJS(context: Context): js.Any = if (component.drawer.context.canvas.width > 0 && component.drawer.context.canvas.height > 0) {
     super.asJS(context)
   } else {
     ""
   }
 
   override def createPattern(context: CanvasRenderingContext2D): CanvasPattern = {
-    context.createPattern(component.drawer.canvas, repetition.value)
+    context.createPattern(component.drawer.context.canvas, repetition.value)
   }
 }

@@ -25,7 +25,6 @@ object ImageUtility {
     val srcWidth = src.width
     val srcHeight = src.height
     if (srcWidth <= 0 || srcHeight <= 0 || destination.width <= 0 || destination.height <= 0) {
-      scribe.info(s"FAIL! $srcWidth x $srcHeight, ${destination.width} x ${destination.height}")
       Future.successful(destination)
     } else if (smooth && srcWidth != destination.width && srcHeight != destination.height) {
       picaFuture {
@@ -199,11 +198,13 @@ object ImageUtility {
       ImageUtility.loadText(file).flatMap { svgString =>
         Image.fromSVGString(svgString, None, None).flatMap { image =>
           val scaled = SizeUtility.scale(image.width, image.height, width, height, scaleUp)
-          CanvasPool.withCanvasFuture(scaled.width, scaled.height) { canvas =>
-            val drawable = new Drawer(canvas, swapCanvases = false)
-            drawable.updateAsync(scaled.width, scaled.height)(context => image.draw(context, scaled.width, scaled.height)).map { _ =>
-              val dataURL = canvas.toDataURL("image/png")
+          val drawable = new ComponentDrawer
+          drawable.updateAsync(scaled.width, scaled.height)(context => image.draw(context, scaled.width, scaled.height)).map { _ =>
+            try {
+              val dataURL = drawable.context.canvas.toDataURL("image/png")
               promise.success(Some(dataURL))
+            } finally {
+              drawable.dispose()
             }
           }
         }

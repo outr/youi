@@ -46,7 +46,7 @@ class Context(val canvas: html.Canvas) {
   def opacity: Double = canvasContext.globalAlpha
 
   def draw(component: Component): Unit = {
-    val canvas = component.drawer.canvas
+    val canvas = component.drawer.context.canvas
     canvasContext.drawImage(canvas.asInstanceOf[html.Image], 0.0, 0.0, canvas.width, canvas.height)
   }
 

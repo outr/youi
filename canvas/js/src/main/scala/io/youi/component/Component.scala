@@ -45,10 +45,14 @@ trait Component extends TaskSupport with ComponentTheme with Widget { self =>
   }
   lazy val reDraw = LazyUpdate {
     reMeasure(drawer.context)
-    drawer.update(size.width * ui.dpiMultiplier, size.height * ui.dpiMultiplier)(drawInternal)
+    if (shouldDraw) {
+      drawer.update(size.width * ui.dpiMultiplier, size.height * ui.dpiMultiplier)(drawInternal)
+    }
 
     parent().foreach(_.invalidate())
   }
+
+  protected def shouldDraw: Boolean = true
 
   protected def calculateMatrices(): Unit = {
     matrix.local.set(Matrix3.Identity)

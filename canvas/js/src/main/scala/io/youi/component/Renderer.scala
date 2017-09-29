@@ -2,7 +2,7 @@ package io.youi.component
 
 import io.youi._
 import io.youi.event._
-import io.youi.spatial.Point
+import io.youi.spatial.{Matrix3, Point}
 import io.youi.theme.RendererTheme
 import io.youi.{AnimationFrame, Cursor, Drawer, HTMLEvents}
 import org.scalajs.dom.raw.{MouseEvent, TouchEvent}
@@ -17,6 +17,7 @@ class Renderer(canvas: html.Canvas) extends Container with RendererTheme {
   override lazy val renderer: Val[Option[Renderer]] = Val(Some(this))
   val pointerTarget: Var[Option[Component]] = Var(None)
   val reDrawOnUpdate: Var[Boolean] = Var(false)
+  cache := true
 
   lazy val dpiMultiplier: Var[Double] = Var(1.0)    // TODO: use webkitBackingStorePixelRatio if available
 
@@ -116,6 +117,11 @@ class Renderer(canvas: html.Canvas) extends Container with RendererTheme {
     if (event.propagate) {
       component.parent().foreach(hierarchicalEvent(_, handler, event))
     }
+  }
+
+  override protected def drawInternal(context: Context): Unit = {
+    context.transform(Matrix3.Identity)
+    super.drawInternal(context)
   }
 
   override protected def defaultThemeParent = Some(theme)

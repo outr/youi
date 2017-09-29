@@ -31,8 +31,8 @@ class Context(val canvas: html.Canvas) {
     restore()
   }
 
-  def transform(component: Component): Unit = {
-    transform(Matrix3.Identity)
+  def transform(component: Component, multiply: Boolean = false): Unit = {
+    if (!multiply) transform(Matrix3.Identity)
     def m(value: Double): Double = value * ui.dpiMultiplier
     canvasContext.translate(m(component.position.x), m(component.position.y))
     canvasContext.translate(m(component.pivot.x()), m(component.pivot.y()))

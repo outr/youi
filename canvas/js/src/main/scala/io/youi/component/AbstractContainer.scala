@@ -17,12 +17,15 @@ trait AbstractContainer extends Component with AbstractContainerTheme with Widge
 
   override protected def defaultThemeParent = Some(theme)
 
-   val drawOffscreenChildren: Var[Boolean] = Var(false)
+  val drawOffscreenChildren: Var[Boolean] = Var(false)
+  val cache: Var[Boolean] = Var(true)
 
   updateMeasured(
     width = if (childEntries().nonEmpty) childEntries().map(_.position.right()).max else 0.0,
     height = if (childEntries().nonEmpty) childEntries().map(_.position.bottom()).max else 0.0
   )
+
+  override protected def shouldDraw: Boolean = super.shouldDraw && cache()
 
   override protected def preScale(context: Context): Unit = {}
 
@@ -30,6 +33,15 @@ trait AbstractContainer extends Component with AbstractContainerTheme with Widge
     super.update(delta)
 
     childEntries().foreach(_.update(delta))
+  }
+
+  override def drawToParent(parent: AbstractContainer, parentContext: Context): Unit = if (cache()) {
+    super.drawToParent(parent, parentContext)
+  } else {
+    parentContext.save()
+    parentContext.transform(this, multiply = true)
+    drawInternal(parentContext)
+    parentContext.restore()
   }
 
   override def draw(context: Context): Unit = {
@@ -48,7 +60,7 @@ trait AbstractContainer extends Component with AbstractContainerTheme with Widge
         }
         if (drawable) {
           context.save()
-          context.transform(child)
+          context.transform(child, multiply = !cache())
           context.translate(offset.x, offset.y)
           context.translate(padding.left, padding.top)
           context.translate(border.size(Compass.West), border.size(Compass.North))

@@ -20,6 +20,8 @@ trait Component extends TaskSupport with ComponentTheme with Widget { self =>
   lazy val renderer: Val[Option[Renderer]] = Val(parent().flatMap(_.renderer()))
 
   object actual {
+    val x: Val[Double] = Val(parent().map(_.actual.x()).getOrElse(0.0) + position.x())
+    val y: Val[Double] = Val(parent().map(_.actual.y()).getOrElse(0.0) + position.y())
     val visibility: Val[Boolean] = Val(determineActualVisibility)
     val opacity: Val[Double] = Val(self.opacity() * parent().map(_.actual.opacity()).getOrElse(1.0))
   }
@@ -39,22 +41,24 @@ trait Component extends TaskSupport with ComponentTheme with Widget { self =>
   object matrix {
     val local: MutableMatrix3 = Matrix3.Identity.mutable
     val world: MutableMatrix3 = Matrix3.Identity.mutable
-    val transform = LazyUpdate {
-      local.set(Matrix3.Identity)
-      local.translate(position.x(), position.y())
-      local.translate(pivot.x(), pivot.y())
-      local.rotate(rotation())
-      local.translate(-pivot.x(), -pivot.y())
-
-      world.set(parent().map(_.matrix.world).getOrElse(Matrix3.Identity))
-      world *= local
-
-      parent().foreach(_.invalidate())
-    }
+    val transform = LazyUpdate(calculateMatrices())
   }
   lazy val reDraw = LazyUpdate {
     reMeasure(drawer.context)
     drawer.update(size.width * ui.dpiMultiplier, size.height * ui.dpiMultiplier)(drawInternal)
+
+    parent().foreach(_.invalidate())
+  }
+
+  protected def calculateMatrices(): Unit = {
+    matrix.local.set(Matrix3.Identity)
+    matrix.local.translate(position.x(), position.y())
+    matrix.local.translate(pivot.x(), pivot.y())
+    matrix.local.rotate(rotation())
+    matrix.local.translate(-pivot.x(), -pivot.y())
+
+    matrix.world.set(parent().map(_.matrix.world).getOrElse(Matrix3.Identity))
+    matrix.world *= matrix.local
 
     parent().foreach(_.invalidate())
   }
@@ -118,6 +122,12 @@ trait Component extends TaskSupport with ComponentTheme with Widget { self =>
   }
 
   init()
+
+  override protected def init(): Unit = {
+    super.init()
+
+    (actual.x and actual.y).on(matrix.transform.flag())
+  }
 
   protected def drawInternal(context: Context): Unit = try {
     preDraw(context)

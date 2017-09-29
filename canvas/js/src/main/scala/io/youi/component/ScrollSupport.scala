@@ -17,6 +17,8 @@ trait ScrollSupport extends Component {
       } else {
         offset.x.static(0.0)
       }
+      def left(): Unit = apply(0.0)
+      def right(): Unit = apply(Int.MaxValue)
     }
     object vertical {
       val enabled: Var[Boolean] = Var(true)
@@ -29,6 +31,8 @@ trait ScrollSupport extends Component {
       } else {
         offset.y.static(0.0)
       }
+      def top(): Unit = apply(0.0)
+      def bottom(): Unit = apply(Int.MinValue)
     }
   }
 

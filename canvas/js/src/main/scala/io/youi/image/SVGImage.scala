@@ -70,8 +70,14 @@ case class SVGImage(svg: SVGSVGElement,
 }
 
 object SVGImage {
+  case class ViewBox(width: Double = 0.0, height: Double = 0.0)
+
   def measure(svg: SVGSVGElement, applyDimension: Boolean = true, force: Boolean = false): BoundingBox = {
-    val viewBox = svg.viewBox.animVal
+    val viewBox: ViewBox = if (svg.viewBox != null && svg.viewBox.animVal != null) {
+      ViewBox(svg.viewBox.animVal.width, svg.viewBox.animVal.height)
+    } else {
+      ViewBox()
+    }
     val definedWidth = if (svg.width.animVal.unitType == SVGLength.SVG_LENGTHTYPE_NUMBER) {
       Some(svg.width.animVal.value)
     } else if (viewBox.width > 0.0) {

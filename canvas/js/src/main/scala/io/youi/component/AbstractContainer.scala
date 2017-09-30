@@ -39,6 +39,7 @@ trait AbstractContainer extends Component with AbstractContainerTheme with Widge
     super.drawToParent(parent, parentContext)
   } else {
     parentContext.save()
+    parentContext.identity()
     parentContext.transform(this, multiply = true)
     drawInternal(parentContext)
     parentContext.restore()
@@ -60,6 +61,7 @@ trait AbstractContainer extends Component with AbstractContainerTheme with Widge
         }
         if (drawable) {
           context.save()
+          context.identity()
           context.transform(child, multiply = !cache())
           context.translate(offset.x, offset.y)
           context.translate(padding.left, padding.top)

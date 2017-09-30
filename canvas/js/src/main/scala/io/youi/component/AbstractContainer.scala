@@ -19,6 +19,7 @@ trait AbstractContainer extends Component with AbstractContainerTheme with Widge
 
   val drawOffscreenChildren: Var[Boolean] = Var(false)
   val cache: Var[Boolean] = Var(false)
+  val clip: Var[Boolean] = Var(true)
 
   updateMeasured(
     width = if (childEntries().nonEmpty) childEntries().map(_.position.right()).max else 0.0,
@@ -49,27 +50,35 @@ trait AbstractContainer extends Component with AbstractContainerTheme with Widge
     super.draw(context)
 
     // Draw cached canvases from each child
-    val viewable = BoundingBox(-offset.x, -offset.y, -offset.x + size.width, -offset.y + size.height)
-    childEntries.foreach { child =>
-      if (child.visible()) {
-        // TODO: replace bounding check with matrix point checks when figured out
-        val drawable = if (drawOffscreenChildren()) {
-          true
-        } else {
-          val bb = BoundingBox(child.position.left, child.position.top, child.position.right, child.position.bottom)
-          bb.intersects(viewable)
-        }
-        if (drawable) {
-          context.save()
-          context.identity()
-          context.transform(child, multiply = !cache())
-          context.translate(offset.x, offset.y)
-          context.translate(padding.left, padding.top)
-          context.translate(border.size(Compass.West), border.size(Compass.North))
-          child.drawToParent(this, context)
-          context.restore()
+    context.save()
+    try {
+      if (clip()) {
+        context.clipRect(0.0, 0.0, size.width, size.height)
+      }
+      val viewable = BoundingBox(-offset.x, -offset.y, -offset.x + size.width, -offset.y + size.height)
+      childEntries.foreach { child =>
+        if (child.visible()) {
+          // TODO: replace bounding check with matrix point checks when figured out
+          val drawable = if (drawOffscreenChildren()) {
+            true
+          } else {
+            val bb = BoundingBox(child.position.left, child.position.top, child.position.right, child.position.bottom)
+            bb.intersects(viewable)
+          }
+          if (drawable) {
+            context.save()
+            context.identity()
+            context.transform(child, multiply = !cache())
+            context.translate(offset.x, offset.y)
+            context.translate(padding.left, padding.top)
+            context.translate(border.size(Compass.West), border.size(Compass.North))
+            child.drawToParent(this, context)
+            context.restore()
+          }
         }
       }
+    } finally {
+      context.restore()
     }
   }
 

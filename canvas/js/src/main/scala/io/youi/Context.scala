@@ -86,6 +86,16 @@ class Context(val canvas: html.Canvas) {
     canvasContext.quadraticCurveTo(cpx, cpy, x, y)
   }
 
+  def clipRect(x1: Double, y1: Double, x2: Double, y2: Double): Unit = {
+    begin()
+    moveTo(x1, y1)
+    lineTo(x2, y1)
+    lineTo(x2, y2)
+    lineTo(x1, y2)
+    lineTo(x1, y1)
+    canvasContext.clip()
+  }
+
   def begin(): Unit = canvasContext.beginPath()
   def close(): Unit = canvasContext.closePath()
 

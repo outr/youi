@@ -90,7 +90,9 @@ class Context(val canvas: html.Canvas) {
   def close(): Unit = canvasContext.closePath()
 
   def rect(x: Double, y: Double, width: Double, height: Double): Unit = {
+    begin()
     canvasContext.rect(Path.fix(x), Path.fix(y), width, height)
+    close()
   }
 
   def roundedRect(x: Double, y: Double, width: Double, height: Double, radius: Double): Unit = {

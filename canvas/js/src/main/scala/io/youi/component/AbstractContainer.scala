@@ -18,7 +18,7 @@ trait AbstractContainer extends Component with AbstractContainerTheme with Widge
   override protected def defaultThemeParent = Some(theme)
 
   val drawOffscreenChildren: Var[Boolean] = Var(false)
-  val cache: Var[Boolean] = Var(false)
+  val cache: Var[Boolean] = Var(true)
   val clip: Var[Boolean] = Var(true)
 
   updateMeasured(
@@ -52,7 +52,7 @@ trait AbstractContainer extends Component with AbstractContainerTheme with Widge
     // Draw cached canvases from each child
     context.save()
     try {
-      if (clip()) {
+      if (clip() && !cache()) {
         context.clipRect(0.0, 0.0, size.width, size.height)
       }
       val viewable = BoundingBox(-offset.x, -offset.y, -offset.x + size.width, -offset.y + size.height)

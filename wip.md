@@ -1,6 +1,8 @@
 # Work in Progress
 ## Tasks currently being worked on for the next release
 
+* [ ] Major cleanup and simplification of Component internals
+* [ ] Utilization of Matrix for translation of elements
 * [ ] Selectable Text in Canvas for copy/paste
 * [ ] TextInput in Canvas for editable editable text
     * [ ] Editing features

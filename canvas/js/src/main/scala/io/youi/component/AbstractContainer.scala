@@ -18,8 +18,8 @@ trait AbstractContainer extends Component with AbstractContainerTheme with Widge
   override protected def defaultThemeParent = Some(theme)
 
   val drawOffscreenChildren: Var[Boolean] = Var(false)
-  val cache: Var[Boolean] = Var(false)
-  val clip: Var[Boolean] = Var(false)
+  val cache: Var[Boolean] = Var(true)
+  val clip: Var[Boolean] = Var(true)
 
   updateMeasured(
     width = if (childEntries().nonEmpty) childEntries().map(_.position.right()).max else 0.0,

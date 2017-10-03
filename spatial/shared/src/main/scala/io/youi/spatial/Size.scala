@@ -1,4 +1,4 @@
-package io.youi
+package io.youi.spatial
 
 sealed trait Size {
   def width: Double

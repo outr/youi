@@ -1,9 +1,9 @@
 package io.youi.component
 
-import io.youi.{BoundingBox, Compass, Context, WidgetContainer}
+import io.youi.{Compass, Context, WidgetContainer}
 import io.youi.event.HitResult
 import io.youi.ui
-import io.youi.spatial.Point
+import io.youi.spatial.{BoundingBox, Point}
 import io.youi.theme.AbstractContainerTheme
 import reactify._
 

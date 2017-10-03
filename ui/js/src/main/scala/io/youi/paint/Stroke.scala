@@ -1,9 +1,6 @@
 package io.youi.paint
 
-import io.youi.Context
-import io.youi.component.Component
-import io.youi.draw.Drawable
-import io.youi.spatial.BoundingBox
+import io.youi.{Context, Drawable}
 
 case class Stroke(paint: Paint,
                   lineWidth: Double = 1.0,
@@ -14,9 +11,7 @@ case class Stroke(paint: Paint,
   def isEmpty: Boolean = paint.isEmpty
   def nonEmpty: Boolean = !isEmpty
 
-  override def draw(component: Component, context: Context): Unit = context.stroke(this, apply = true)
-
-  override def boundingBox: BoundingBox = BoundingBox.zero
+  override def draw(context: Context): Unit = context.stroke(this, apply = true)
 }
 
 object Stroke {

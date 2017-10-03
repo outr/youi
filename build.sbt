@@ -1,6 +1,6 @@
 name := "youi"
 organization in ThisBuild := "io.youi"
-version in ThisBuild := "0.7.1-SNAPSHOT"
+version in ThisBuild := "0.8.0-SNAPSHOT"
 scalaVersion in ThisBuild := "2.12.3"
 crossScalaVersions in ThisBuild := List("2.12.3", "2.11.11")
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
@@ -33,8 +33,8 @@ val scalaCheckVersion = "1.13.5"
 lazy val root = project.in(file("."))
   .aggregate(
     macrosJS, macrosJVM, coreJS, coreJVM, spatialJS, spatialJVM, stream, communicationJS, communicationJVM, dom, client,
-    server, serverUndertow, canvasJS, canvasJVM, hypertext, optimizer, appJS, appJVM, templateJS, templateJVM,
-    exampleJS, exampleJVM
+    server, serverUndertow, canvasJS, canvasJVM, uiJS, uiJVM, hypertext, optimizer, appJS, appJVM, templateJS,
+    templateJVM, exampleJS, exampleJVM
   )
   .settings(
     resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases",
@@ -191,6 +191,23 @@ lazy val canvas = crossProject.in(file("canvas"))
 
 lazy val canvasJS = canvas.js.dependsOn(dom)
 lazy val canvasJVM = canvas.jvm
+
+lazy val ui = crossProject.in(file("ui"))
+  .settings(
+    name := "youi-ui"
+  )
+  .jsSettings(
+    libraryDependencies ++= Seq(
+      "com.outr" %%% "canvg-scala-js" % canvgVersion,
+      "com.outr" %%% "opentype-scala-js" % openTypeVersion,
+      "com.outr" %%% "pica-scala-js" % picaVersion
+    ),
+    jsDependencies += RuntimeDOM
+  )
+  .dependsOn(spatial)
+
+lazy val uiJS = ui.js.dependsOn(dom)
+lazy val uiJVM = ui.jvm
 
 lazy val hypertext = project.in(file("hypertext"))
   .enablePlugins(ScalaJSPlugin)

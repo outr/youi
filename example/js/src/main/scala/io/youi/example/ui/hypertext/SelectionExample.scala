@@ -1,9 +1,10 @@
 package io.youi.example.ui.hypertext
 
-import io.youi.{BoundingBox, Color, hypertext}
+import io.youi.{Color, hypertext}
 import io.youi.hypertext.border.BorderStyle
 import io.youi.hypertext.{Component, Container}
 import io.youi.layout.GridLayout
+import io.youi.spatial.BoundingBox
 import org.scalajs.dom._
 
 import scala.collection.immutable.ListSet

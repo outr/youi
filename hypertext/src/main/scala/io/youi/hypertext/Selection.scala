@@ -2,7 +2,8 @@ package io.youi.hypertext
 
 import io.youi._
 import io.youi.hypertext.border.BorderStyle
-import io.youi.{BoundingBox, Color, HTMLEvents, Key}
+import io.youi.spatial.BoundingBox
+import io.youi.{Color, HTMLEvents, Key}
 import org.scalajs.dom.raw.MouseEvent
 import org.scalajs.dom.{document, html}
 import reactify._

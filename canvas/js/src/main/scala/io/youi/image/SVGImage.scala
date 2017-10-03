@@ -8,6 +8,7 @@ import scala.concurrent.{Future, Promise}
 import scala.concurrent.ExecutionContext.Implicits.global
 import io.youi._
 import io.youi.path.Path
+import io.youi.spatial.{BoundingBox, Size}
 import io.youi.util.{CanvasPool, ImageUtility}
 import org.scalajs.dom.html
 import reactify.Var

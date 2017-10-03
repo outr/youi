@@ -1,6 +1,6 @@
 package io.youi.util
 
-import io.youi.Size
+import io.youi.spatial.Size
 
 object SizeUtility {
   def scale(width: Double,

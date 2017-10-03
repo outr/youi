@@ -1,4 +1,4 @@
-package io.youi
+package io.youi.spatial
 
 case class BoundingBox(x1: Double, y1: Double, x2: Double, y2: Double) {
   def adjustX: Double = -x1

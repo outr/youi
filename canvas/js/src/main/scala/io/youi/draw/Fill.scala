@@ -1,8 +1,9 @@
 package io.youi.draw
 
-import io.youi.{BoundingBox, Context}
+import io.youi.Context
 import io.youi.component.Component
 import io.youi.paint.Paint
+import io.youi.spatial.BoundingBox
 
 case class Fill(paint: Paint) extends Drawable {
   override def boundingBox: BoundingBox = BoundingBox.zero

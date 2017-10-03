@@ -1,7 +1,8 @@
 package io.youi.draw
 
-import io.youi.{BoundingBox, Context, Priority}
+import io.youi.{Context, Priority}
 import io.youi.component.Component
+import io.youi.spatial.BoundingBox
 
 trait Drawable extends Ordered[Drawable] {
   def priority: Priority = Priority.Normal

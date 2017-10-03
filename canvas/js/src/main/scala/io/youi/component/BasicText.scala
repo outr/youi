@@ -1,7 +1,8 @@
 package io.youi.component
 
 import io.youi.paint.Paint
-import io.youi.{Context, Size}
+import io.youi.Context
+import io.youi.spatial.Size
 import io.youi.theme.BasicTextTheme
 import reactify.Var
 

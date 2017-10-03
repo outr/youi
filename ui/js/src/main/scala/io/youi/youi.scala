@@ -1,7 +1,9 @@
 package io
 
+import io.youi.event.KeyEvent
+import io.youi.paint.Paint
 import io.youi.spatial.NumericSize
-import org.scalajs.dom.{document, html}
+import org.scalajs.dom.{KeyboardEvent, document, html}
 import org.scalajs.dom.html.Div
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 import reactify._
@@ -20,10 +22,26 @@ package object youi {
     }
   }
 
-//  implicit def color2Paint(color: Color): Paint = Paint.color(color)
+  implicit def color2Paint(color: Color): Paint = Paint.color(color)
 
   implicit class ExtendedCanvas(canvas: html.Canvas) {
     def context: CanvasRenderingContext2D = canvas.getContext("2d").asInstanceOf[CanvasRenderingContext2D]
+  }
+
+  implicit class ExtendedKeyboardEvent(evt: KeyboardEvent) {
+    def toKeyEvent(`type`: KeyEvent.Type): KeyEvent = {
+      val key = Key(evt.key)
+      KeyEvent(
+        `type` = `type`,
+        key = key,
+        repeat = evt.repeat,
+        modifierState = (k: Key) => evt.getModifierState(k.value),
+        preventDefault = () => evt.preventDefault(),
+        defaultPrevented = () => evt.defaultPrevented,
+        stopImmediatePropagation = () => evt.stopImmediatePropagation(),
+        stopPropagation = () => evt.stopPropagation()
+      )
+    }
   }
 
   implicit class UINumericSize[T](t: T)(implicit n: Numeric[T]) extends NumericSize[T](t)(n) {

@@ -33,7 +33,7 @@ val scalaCheckVersion = "1.13.5"
 lazy val root = project.in(file("."))
   .aggregate(
     macrosJS, macrosJVM, coreJS, coreJVM, spatialJS, spatialJVM, stream, communicationJS, communicationJVM, dom, client,
-    server, serverUndertow, canvasJS, canvasJVM, uiJS, uiJVM, hypertext, optimizer, appJS, appJVM, templateJS,
+    server, serverUndertow, uiJS, uiJVM, hypertext, optimizer, appJS, appJVM, templateJS,
     templateJVM, exampleJS, exampleJVM
   )
   .settings(
@@ -175,22 +175,22 @@ lazy val communication = crossProject.in(file("communication"))
 lazy val communicationJS = communication.js
 lazy val communicationJVM = communication.jvm.dependsOn(server)
 
-lazy val canvas = crossProject.in(file("canvas"))
-  .settings(
-    name := "youi-canvas"
-  )
-  .jsSettings(
-    libraryDependencies ++= Seq(
-      "com.outr" %%% "canvg-scala-js" % canvgVersion,
-      "com.outr" %%% "opentype-scala-js" % openTypeVersion,
-      "com.outr" %%% "pica-scala-js" % picaVersion
-    ),
-    jsDependencies += RuntimeDOM
-  )
-  .dependsOn(spatial)
-
-lazy val canvasJS = canvas.js.dependsOn(dom)
-lazy val canvasJVM = canvas.jvm
+//lazy val canvas = crossProject.in(file("canvas"))
+//  .settings(
+//    name := "youi-canvas"
+//  )
+//  .jsSettings(
+//    libraryDependencies ++= Seq(
+//      "com.outr" %%% "canvg-scala-js" % canvgVersion,
+//      "com.outr" %%% "opentype-scala-js" % openTypeVersion,
+//      "com.outr" %%% "pica-scala-js" % picaVersion
+//    ),
+//    jsDependencies += RuntimeDOM
+//  )
+//  .dependsOn(spatial)
+//
+//lazy val canvasJS = canvas.js.dependsOn(dom)
+//lazy val canvasJVM = canvas.jvm
 
 lazy val ui = crossProject.in(file("ui"))
   .settings(
@@ -215,7 +215,7 @@ lazy val hypertext = project.in(file("hypertext"))
     name := "youi-hypertext",
     jsDependencies += RuntimeDOM
   )
-  .dependsOn(canvasJS)
+  .dependsOn(uiJS)
 
 lazy val optimizer = project.in(file("optimizer"))
   .settings(
@@ -239,7 +239,7 @@ lazy val app = crossProject.in(file("app"))
       "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
     )
   )
-  .dependsOn(core, communication, canvas)
+  .dependsOn(core, communication, ui)
 
 lazy val appJS = app.js.dependsOn(hypertext)
 lazy val appJVM = app.jvm

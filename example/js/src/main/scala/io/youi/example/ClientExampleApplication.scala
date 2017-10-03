@@ -14,29 +14,29 @@ import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
 
 object ClientExampleApplication extends ExampleApplication with ClientApplication with LoadingTransitionSupport {
   // Adds debug support to the application (press F2)
-  val debug = new DebugSupport()
-  debug.enabled := true
+//  val debug = new DebugSupport()
+//  debug.enabled := true
 
   val communicationScreen = CommunicationScreen
   val login = LoginScreen
 
   val uiExamples = UIExamples
 
-  val hello = HelloWorld
-  val images = ImageExample
-  val video = VideoExample
-  val animation = AnimationExample
-  val basicText = BasicTextExample
-  val text = TextExample
-  val htmlComponent = HTMLComponentExample
-  val svg = SVGImageExample
-  val scale9 = Scale9Example
-  val virtual = VirtualSizeExample
-  val snap = SnapExample
-  val scrolling = ScrollingExample
-  val verticalLayout = VerticalLayoutExample
-  val gridLayout = GridLayoutExample
-  val imageEditor = ImageEditorExample
+//  val hello = HelloWorld
+//  val images = ImageExample
+//  val video = VideoExample
+//  val animation = AnimationExample
+//  val basicText = BasicTextExample
+//  val text = TextExample
+//  val htmlComponent = HTMLComponentExample
+//  val svg = SVGImageExample
+//  val scale9 = Scale9Example
+//  val virtual = VirtualSizeExample
+//  val snap = SnapExample
+//  val scrolling = ScrollingExample
+//  val verticalLayout = VerticalLayoutExample
+//  val gridLayout = GridLayoutExample
+//  val imageEditor = ImageEditorExample
 
   val dataTransfer = DataTransferExample
   val selection = hypertext.SelectionExample

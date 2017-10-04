@@ -4,7 +4,7 @@ import io.youi.easing.Easing
 import io.youi.hypertext.style.Image
 import io.youi.hypertext.{ImageView, Label}
 import io.youi.task._
-import io.youi.{Color, ui}
+import io.youi.{Color, Display}
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
@@ -18,7 +18,7 @@ object AnimationExample extends HTMLScreen {
     val view = new ImageView {
       image := icon
       position.left := 0.0
-      position.middle := ui.position.middle
+      position.middle := Display.middle
     }
     container.children += view
 
@@ -38,7 +38,7 @@ object AnimationExample extends HTMLScreen {
 
         forever(
           sequential(
-            label.position.right to ui.position.right - 50.0 in 5.seconds easing easingFunction,
+            label.position.right to Display.width - 50.0 in 5.seconds easing easingFunction,
             sleep(2.seconds),
             label.position.left to 50.0 in 5.seconds easing easingFunction,
             sleep(2.seconds)
@@ -56,8 +56,8 @@ object AnimationExample extends HTMLScreen {
           view.rotation to 6.0 in 20.seconds
         ),
         sequential(
-          view.position.right to ui.position.right in 5.seconds easing Easing.bounceOut,
-          view.position.bottom to ui.position.bottom in 5.seconds easing Easing.bounceOut,
+          view.position.right to Display.width in 5.seconds easing Easing.bounceOut,
+          view.position.bottom to Display.height in 5.seconds easing Easing.bounceOut,
           view.position.left to 0.0 in 5.seconds easing Easing.bounceOut,
           view.position.top to 0.0 in 5.seconds easing Easing.bounceOut
         )

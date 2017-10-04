@@ -11,8 +11,8 @@
 //  override def createUI(): Unit = {
 //    container.children += new Video("/sample.mp4") {
 //      autoPlay := true
-//      position.center := ui.position.center
-//      position.middle := ui.position.middle
+//      position.center := Display.center
+//      position.middle := Display.middle
 //      background := Color.Black
 //      event.click.on {
 //        if (isPaused) {

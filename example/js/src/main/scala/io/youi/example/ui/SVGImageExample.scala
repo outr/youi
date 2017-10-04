@@ -25,8 +25,8 @@
 //    }
 //
 //    container.children += new ImageView(svgString, ImageMode.Quality) {
-//      position.center := ui.position.center
-//      position.middle := ui.position.middle
+//      position.center := Display.center
+//      position.middle := Display.middle
 //
 //      def toggleColor(): Unit = {
 //        val current = image().asInstanceOf[SVGImage]

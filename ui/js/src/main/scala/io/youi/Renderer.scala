@@ -5,7 +5,7 @@ import org.scalajs.dom._
 import reactify.Var
 
 class Renderer(val canvas: html.Canvas) {
-  private lazy val context: Context = new Context(canvas)
+  private lazy val context: Context = new Context(canvas, ratio())
 
   val ratio: Var[Double] = Var(ui.ratio)
   val width: Var[Double] = Var(ui.width)

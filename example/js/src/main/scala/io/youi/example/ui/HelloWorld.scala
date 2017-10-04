@@ -31,8 +31,8 @@
 //          background := Color.LightBlue
 //          padding.left := 60.0
 //          border := Border(Stroke(Color.Red, lineWidth = 2.0), 10.0)
-////          position.center := Display.center
-////          position.middle := Display.middle
+////          position.center := ui.center
+////          position.middle := ui.middle
 //          position.left := 100.0
 //          position.top := 50.0
 //        }

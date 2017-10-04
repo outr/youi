@@ -1,10 +1,9 @@
 package io.youi.hypertext
 
-import io.youi._
 import io.youi.event.{HTMLEvents, Mouse}
 import io.youi.hypertext.border.BorderStyle
 import io.youi.spatial.BoundingBox
-import io.youi.{Color, Key}
+import io.youi.{Color, Key, _}
 import org.scalajs.dom.raw.MouseEvent
 import org.scalajs.dom.{document, html}
 import reactify._
@@ -60,7 +59,7 @@ abstract class Selection[T](root: html.Element,
     new SelectionListener[T](this, base, deferToRoot, includeChildTargets)
   }
 
-  Display.event.key.down.attach { evt =>
+  ui.event.key.down.attach { evt =>
     if (enabled()) {
       if (!visible()) {
         evt.key match {
@@ -71,7 +70,7 @@ abstract class Selection[T](root: html.Element,
     }
   }
 
-  Display.event.key.up.attach { evt =>
+  ui.event.key.up.attach { evt =>
     if (enabled()) {
       if (!visible()) {
         evt.key match {

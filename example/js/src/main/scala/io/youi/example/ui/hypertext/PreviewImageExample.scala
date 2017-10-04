@@ -15,11 +15,11 @@ object PreviewImageExample extends HTMLScreen {
 
   override protected def load(): Future[Unit] = super.load().map { _ =>
     val image = new ImageView {
-      position.center := Display.center
-      position.middle := Display.middle
+      position.center := ui.center
+      position.middle := ui.middle
     }
     val fileUpload = new TextInput {
-      position.center := Display.center
+      position.center := ui.center
       position.top := image.position.bottom + 10.0
       element.`type` = "file"
       element.addEventListener("change", (evt: Event) => {

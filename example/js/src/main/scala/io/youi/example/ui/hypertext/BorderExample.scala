@@ -2,7 +2,7 @@ package io.youi.example.ui.hypertext
 
 import io.youi.hypertext.border.BorderStyle
 import io.youi.hypertext.{Container, Label}
-import io.youi.{Color, Display}
+import io.youi.{Color, ui}
 
 import scala.concurrent.Future
 
@@ -11,8 +11,8 @@ object BorderExample extends HTMLScreen {
 
   override protected def load(): Future[Unit] = super.load().map { _ =>
     container.children += new Container {
-      position.center := Display.center
-      position.middle := Display.middle
+      position.center := ui.center
+      position.middle := ui.middle
       size.width := 400.0
       size.height := 300.0
       backgroundColor := Color.DarkCyan
@@ -29,8 +29,8 @@ object BorderExample extends HTMLScreen {
       font.family := "sans-serif"
       text := "Border Example"
 
-      position.center := Display.center
-      position.middle := Display.middle
+      position.center := ui.center
+      position.middle := ui.middle
     }
   }
 

@@ -1,6 +1,6 @@
 package io.youi.event
 
-import io.youi.Display
+import io.youi.ui
 import org.scalajs.dom.raw
 import reactify.{Channel, Val, Var}
 
@@ -12,11 +12,11 @@ object Mouse {
   def y: Val[Double] = _y
   val wheel: Channel[WheelDelta] = Channel[WheelDelta]
 
-  Display.event.pointer.move.attach { evt =>
+  ui.event.pointer.move.attach { evt =>
     _x := evt.pageX
     _y := evt.pageY
   }
-  Display.event.pointer.wheel.attach { evt =>
+  ui.event.pointer.wheel.attach { evt =>
     val mode: DeltaMode = evt.deltaMode match {
       case 0x00 => DeltaMode.Pixel
       case 0x01 => DeltaMode.Line

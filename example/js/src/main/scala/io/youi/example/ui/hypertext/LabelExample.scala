@@ -1,7 +1,7 @@
 package io.youi.example.ui.hypertext
 
 import io.youi.hypertext.Label
-import io.youi.{AnimationFrame, Color, Display}
+import io.youi.{AnimationFrame, Color, ui}
 
 import scala.concurrent.Future
 
@@ -25,7 +25,7 @@ object LabelExample extends HTMLScreen {
       font.family := "sans-serif"
       font.size := 48.0
       color := Color.LightSalmon
-      position.right := Display.width
+      position.right := ui.width
       position.top := 0.0
     }
 
@@ -35,7 +35,7 @@ object LabelExample extends HTMLScreen {
       font.size := 48.0
       color := Color.DarkGoldenRod
       position.left := 0.0
-      position.bottom := Display.height
+      position.bottom := ui.height
     }
 
     container.children += new Label {
@@ -43,8 +43,8 @@ object LabelExample extends HTMLScreen {
       font.family := "sans-serif"
       font.size := 48.0
       color := Color.LightBlue
-      position.right := Display.width
-      position.bottom := Display.height
+      position.right := ui.width
+      position.bottom := ui.height
     }
 
     container.children += new Label {
@@ -52,8 +52,8 @@ object LabelExample extends HTMLScreen {
       font.family := "sans-serif"
       font.size := 60.0
       color := Color.MidnightBlue
-      position.center := Display.center
-      position.middle := Display.middle
+      position.center := ui.center
+      position.middle := ui.middle
 
       rotation := AnimationFrame.timeStamp * 0.001
     }

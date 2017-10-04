@@ -2,7 +2,7 @@ package io.youi.example.ui.hypertext
 
 import io.youi.hypertext.style.Image
 import io.youi.hypertext.{ImageView, Label}
-import io.youi.{Color, Display, VirtualSizeSupport}
+import io.youi.{Color, VirtualSizeSupport, ui}
 
 import scala.concurrent.Future
 
@@ -24,7 +24,7 @@ object VirtualSizeExample extends VirtualSizeSupport with HTMLScreen {
       font.family := "sans-serif"
       font.size := 66.5.vf
       position.left := 44.vx
-      position.middle := Display.middle
+      position.middle := ui.middle
     }
   }
 }

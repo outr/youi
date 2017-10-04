@@ -17,8 +17,8 @@
 //  override def path: String = "/examples/image-editor.html"
 //
 //  private lazy val canvas = new Canvas {
-//    position.center := Display.center
-//    position.middle := Display.middle
+//    position.center := ui.center
+//    position.middle := ui.middle
 //    size.width := 800.0
 //    size.height := 500.0
 //  }

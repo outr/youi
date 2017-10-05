@@ -18,7 +18,6 @@ object BasicDrawableExample extends HTMLScreen {
         context.fillText("Testing", 200.0, 200.0)
       }
     }
-    Renderer.render()
     Renderer.visible := true
   }
 

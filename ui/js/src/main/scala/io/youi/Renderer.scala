@@ -13,6 +13,9 @@ class Renderer(val canvas: html.Canvas) {
   val visible: Var[Boolean] = Var(true)
   val drawable: Var[Drawable] = Var(Drawable.None)
 
+  drawable.on(if (visible()) render())
+  visible.attach(if (_) render())
+
   protected def init(): Unit = {
     ratio.and(width).and(height).on(updateSize())
     visible.attach {
@@ -32,7 +35,7 @@ class Renderer(val canvas: html.Canvas) {
     canvas.height = math.ceil(height * ratio).toInt
     canvas.style.width = s"${math.ceil(width)}px"
     canvas.style.height = s"${math.ceil(height)}px"
-    render()
+    if (visible()) render()
   }
 }
 

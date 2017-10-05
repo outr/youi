@@ -1,6 +1,9 @@
 package io.youi
 
+import reactify.Var
+
 trait Drawable {
+  val modified: Var[Long] = Var(System.currentTimeMillis())
   def draw(context: Context): Unit
 }
 

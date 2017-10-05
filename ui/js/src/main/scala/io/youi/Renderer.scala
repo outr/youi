@@ -12,9 +12,11 @@ class Renderer(val canvas: html.Canvas) {
   val height: Var[Double] = Var(ui.height)
   val visible: Var[Boolean] = Var(true)
   val drawable: Var[Drawable] = Var(Drawable.None)
+  val modified: Var[Long] = Var(drawable.modified)
 
   drawable.on(if (visible()) render())
   visible.attach(if (_) render())
+  modified.on(if (visible()) render())
 
   protected def init(): Unit = {
     ratio.and(width).and(height).on(updateSize())

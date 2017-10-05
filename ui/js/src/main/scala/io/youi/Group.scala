@@ -17,3 +17,9 @@ trait Group extends Drawable {
     drawRecursive(context, elements.tail)
   }
 }
+
+object Group {
+  def apply(children: Drawable*): Group = new Group {
+    override protected val elements: List[Drawable] = children.toList
+  }
+}

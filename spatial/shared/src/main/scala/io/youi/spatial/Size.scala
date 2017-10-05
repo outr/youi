@@ -1,6 +1,6 @@
 package io.youi.spatial
 
-sealed trait Size {
+sealed trait Size extends SpatialValue[Size] {
   def width: Double
   def height: Double
 
@@ -23,12 +23,20 @@ class MutableSize(var width: Double = 0.0, var height: Double = 0.0) extends Siz
   }
 
   override def duplicate(): Size = new MutableSize(width, height)
+
+  override def isMutable: Boolean = true
+  override def mutable: MutableSize = this
+  override def immutable: ImmutableSize = ImmutableSize(width, height)
 }
 
 case class ImmutableSize(width: Double = 0.0, height: Double = 0.0) extends Size {
   override def set(width: Double, height: Double): Size = ImmutableSize(width, height)
 
   override def duplicate(): Size = ImmutableSize(width, height)
+
+  override def isMutable: Boolean = false
+  override def mutable: MutableSize = new MutableSize(width, height)
+  override def immutable: ImmutableSize = this
 }
 
 object Size {

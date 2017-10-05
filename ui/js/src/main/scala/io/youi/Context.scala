@@ -7,7 +7,8 @@ import org.scalajs.dom.{html, _}
 
 import scala.scalajs.js
 
-class Context(val canvas: html.Canvas, ratio: => Double) {
+class Context(val canvas: html.Canvas, _ratio: => Double) {
+  def ratio: Double = _ratio
   def ctx: CanvasRenderingContext2D = canvas.context
   
   def width: Double = canvas.width.toDouble
@@ -41,7 +42,7 @@ class Context(val canvas: html.Canvas, ratio: => Double) {
     ctx.translate(m(-component.pivot.x()), m(-component.pivot.y()))
   }*/
 
-  def translate(x: Double, y: Double): Unit = ctx.translate(x, y)
+  def translate(x: Double, y: Double): Unit = ctx.translate(x * ratio, y * ratio)
 
   def opacity_=(value: Double): Unit = ctx.globalAlpha = value
   def opacity: Double = ctx.globalAlpha

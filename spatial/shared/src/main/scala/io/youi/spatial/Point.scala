@@ -1,6 +1,6 @@
 package io.youi.spatial
 
-sealed trait Point {
+sealed trait Point extends SpatialValue[Point] {
   def x: Double
   def y: Double
 
@@ -94,12 +94,20 @@ class MutablePoint(var x: Double = 0.0, var y: Double = 0.0) extends Point {
   }
 
   override def duplicate(): Point = new MutablePoint(x, y)
+
+  override def isMutable: Boolean = true
+  override def mutable: MutablePoint = this
+  override def immutable: ImmutablePoint = ImmutablePoint(x, y)
 }
 
 case class ImmutablePoint(x: Double = 0.0, y: Double = 0.0) extends Point {
   override def set(x: Double, y: Double): Point = ImmutablePoint(x, y)
 
   override def duplicate(): Point = ImmutablePoint(x, y)
+
+  override def isMutable: Boolean = false
+  override def mutable: MutablePoint = new MutablePoint(x, y)
+  override def immutable: ImmutablePoint = this
 }
 
 object Point {

@@ -9,6 +9,8 @@ case class ImmutableMatrix3(m00: Double,
                             m20: Double,
                             m21: Double,
                             m22: Double) extends Matrix3 {
+  override def isMutable: Boolean = false
+
   override def duplicate(m00: Double = m00,
                          m01: Double = m01,
                          m02: Double = m02,

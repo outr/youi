@@ -5,7 +5,7 @@ import io.youi.spatial.ops.{Matrix3Addition, Matrix3Multiply, Matrix3Subtraction
 /**
   * Trait representing a matrix
   */
-trait Matrix3 {
+trait Matrix3 extends SpatialValue[Matrix3] {
   def m00: Double
   def m01: Double
   def m02: Double

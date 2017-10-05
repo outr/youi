@@ -8,11 +8,13 @@ import scala.concurrent.Future
 trait UIScreen extends Screen {
   protected def renderer: Renderer = Renderer
 
-  protected def drawable: Drawable
+  protected def drawable: Future[Drawable]
 
-  override protected def activate(): Future[Unit] = super.activate().map { _ =>
-    renderer.drawable := drawable
-    renderer.visible := true
+  override protected def activate(): Future[Unit] = super.activate().flatMap { _ =>
+    drawable.map { d =>
+      renderer.drawable := d
+      renderer.visible := true
+    }
   }
 
   override protected def deactivate(): Future[Unit] = super.deactivate().map { _ =>

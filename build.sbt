@@ -13,7 +13,7 @@ val powerScalaVersion = "2.0.5"
 val reactifyVersion = "2.2.0"
 val hasherVersion = "1.2.1"
 val canvgVersion = "1.4.0_1"
-val openTypeVersion = "0.7.1_2"
+val openTypeVersion = "0.7.3-SNAPSHOT"
 val picaVersion = "3.0.5"
 
 val akkaVersion = "2.5.4"

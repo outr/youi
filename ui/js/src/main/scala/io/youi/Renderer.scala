@@ -4,7 +4,7 @@ import io.youi.util.CanvasPool
 import org.scalajs.dom._
 import reactify.Var
 
-class Renderer(val canvas: html.Canvas) {
+class Renderer(val canvas: html.Canvas) extends Updates {
   private lazy val context: Context = new Context(canvas, ratio())
 
   val ratio: Var[Double] = Var(ui.ratio)
@@ -14,9 +14,16 @@ class Renderer(val canvas: html.Canvas) {
   val drawable: Var[Drawable] = Var(Drawable.None)
   val modified: Var[Long] = Var(drawable.modified)
 
-  drawable.on(if (visible()) render())
-  visible.attach(if (_) render())
-  modified.on(if (visible()) render())
+  lazy val render: LazyUpdate = LazyUpdate {
+    if (visible()) {
+      context.clear()
+      drawable.draw(context)
+    }
+  }
+
+  drawable.on(render.flag())
+  visible.on(render.flag())
+  modified.on(render.flag())
 
   protected def init(): Unit = {
     ratio.and(width).and(height).on(updateSize())
@@ -25,11 +32,13 @@ class Renderer(val canvas: html.Canvas) {
       case false => canvas.style.display = "none"
     }
     updateSize()
+    AnimationFrame.delta.attach(update)
   }
 
-  def render(): Unit = {
-    context.clear()
-    drawable.draw(context)
+  override def update(delta: Double): Unit = {
+    super.update(delta)
+
+    render.update()
   }
 
   private def updateSize(): Unit = {
@@ -37,7 +46,7 @@ class Renderer(val canvas: html.Canvas) {
     canvas.height = math.ceil(height * ratio).toInt
     canvas.style.width = s"${math.ceil(width)}px"
     canvas.style.height = s"${math.ceil(height)}px"
-    if (visible()) render()
+    render.flag()
   }
 }
 

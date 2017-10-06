@@ -17,7 +17,7 @@ class Renderer(val canvas: html.Canvas) extends Updates {
   lazy val render: LazyUpdate = LazyUpdate {
     if (visible()) {
       context.clear()
-      drawable.draw(context)
+      drawable.draw(context, 0.0, 0.0)
     }
   }
 

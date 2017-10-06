@@ -1,16 +1,14 @@
 package io.youi.path
 
+import io.youi.Context
 import io.youi.spatial.BoundingBox
-import org.scalajs.dom.raw.CanvasRenderingContext2D
 
 import scala.collection.mutable.ListBuffer
 
 case class Path(actions: List[PathAction]) extends PathBuilder with PathAction {
   lazy val boundingBox: BoundingBox = Path.boundingBox(actions)
 
-  override def invoke(context: CanvasRenderingContext2D): Unit = actions.foreach { action =>
-    action.invoke(context)
-  }
+  override def draw(context: Context, x: Double, y: Double): Unit = actions.foreach(_.draw(context, x, y))
 
   def shift(adjustX: Double, adjustY: Double): Path = {
     val updated = actions.map {

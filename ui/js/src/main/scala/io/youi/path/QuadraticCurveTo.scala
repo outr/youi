@@ -1,7 +1,7 @@
 package io.youi.path
 
-import org.scalajs.dom.raw.CanvasRenderingContext2D
+import io.youi.Context
 
 case class QuadraticCurveTo(x1: Double, y1: Double, x: Double, y: Double) extends PathAction {
-  override def invoke(context: CanvasRenderingContext2D): Unit = context.quadraticCurveTo(x1, y1, x, y)
+  override def draw(context: Context, x: Double, y: Double): Unit = context.quadraticCurveTo(x1, y1, x, y)
 }

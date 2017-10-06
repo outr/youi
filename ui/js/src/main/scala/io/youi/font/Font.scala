@@ -1,13 +1,12 @@
 package io.youi.font
 
-import io.youi.{Context, Drawable}
 import io.youi.net.URL
-import io.youi.path.Path
 import io.youi.spatial.BoundingBox
+import io.youi.{Context, Drawable}
 
 import scala.collection.mutable.ListBuffer
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 trait Font {
   def lineHeight(size: Double): Double
@@ -45,8 +44,8 @@ case class Text(font: Font,
   }
   def lineHeight: Double = font.lineHeight(size)
 
-  override def draw(context: Context): Unit = lines.foreach { line =>
-    line.foreach(_.draw(context))
+  override def draw(context: Context, x: Double, y: Double): Unit = lines.foreach { line =>
+    line.foreach(_.draw(context, x, y))
   }
 }
 
@@ -62,7 +61,7 @@ object Text {
 }
 
 case class CharacterPath(char: Char, size: Double, index: Int, x: Double, y: Double, glyph: Glyph) extends Drawable {
-  override def draw(context: Context): Unit = glyph.draw(context, x, y, size)
+  override def draw(context: Context, x: Double, y: Double): Unit = glyph.draw(context, this.x + x, this.y + y, size)
 }
 
 trait Glyph {

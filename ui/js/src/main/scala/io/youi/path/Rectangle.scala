@@ -1,7 +1,7 @@
 package io.youi.path
 
-import org.scalajs.dom.raw.CanvasRenderingContext2D
+import io.youi.Context
 
 case class Rectangle(x: Double, y: Double, width: Double, height: Double) extends PathAction {
-  override def invoke(context: CanvasRenderingContext2D): Unit = context.rect(x, y, width, height)
+  override def draw(context: Context, x: Double, y: Double): Unit = context.rect(x, y, width, height)
 }

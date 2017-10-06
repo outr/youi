@@ -1,7 +1,7 @@
 package io.youi.path
 
-import org.scalajs.dom.raw.CanvasRenderingContext2D
+import io.youi.Context
 
 case class MoveTo(x: Double, y: Double) extends PathAction {
-  override def invoke(context: CanvasRenderingContext2D): Unit = context.moveTo(x, y)
+  override def draw(context: Context, x: Double, y: Double): Unit = context.moveTo(x, y)
 }

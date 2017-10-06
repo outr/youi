@@ -1,7 +1,5 @@
 package io.youi.path
 
-import org.scalajs.dom.raw.CanvasRenderingContext2D
+import io.youi.Drawable
 
-trait PathAction {
-  def invoke(context: CanvasRenderingContext2D): Unit
-}
+trait PathAction extends Drawable

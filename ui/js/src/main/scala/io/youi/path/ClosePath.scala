@@ -1,7 +1,7 @@
 package io.youi.path
 
-import org.scalajs.dom.raw.CanvasRenderingContext2D
+import io.youi.Context
 
 object ClosePath extends PathAction {
-  override def invoke(context: CanvasRenderingContext2D): Unit = context.closePath()
+  override def draw(context: Context, x: Double, y: Double): Unit = context.close()
 }

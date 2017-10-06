@@ -84,6 +84,10 @@ class Context(val canvas: html.Canvas, _ratio: => Double) {
     ctx.quadraticCurveTo(cpx * ratio, cpy * ratio, x * ratio, y * ratio)
   }
 
+  def bezierCurveTo(cp1x: Double, cp1y: Double, cp2x: Double, cp2y: Double, x: Double, y: Double): Unit = {
+    ctx.bezierCurveTo(cp1x * ratio, cp1y * ratio, cp2x * ratio, cp2y * ratio, x * ratio, y * ratio)
+  }
+
   def clipRect(x1: Double, y1: Double, x2: Double, y2: Double): Unit = {
     begin()
     moveTo(x1 * ratio, y1 * ratio)

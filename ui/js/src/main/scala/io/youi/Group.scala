@@ -9,12 +9,12 @@ trait Group extends Drawable {
 
   protected def elements: List[Drawable]
 
-  override def draw(context: Context): Unit = drawRecursive(context, elements)
+  override def draw(context: Context, x: Double, y: Double): Unit = drawRecursive(context, x, y, elements)
 
   @tailrec
-  private def drawRecursive(context: Context, elements: List[Drawable]): Unit = if (elements.nonEmpty) {
-    elements.head.draw(context)
-    drawRecursive(context, elements.tail)
+  private def drawRecursive(context: Context, x: Double, y: Double, elements: List[Drawable]): Unit = if (elements.nonEmpty) {
+    elements.head.draw(context, x, y)
+    drawRecursive(context, x, y, elements.tail)
   }
 }
 

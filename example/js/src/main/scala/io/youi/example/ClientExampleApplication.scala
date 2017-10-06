@@ -5,6 +5,7 @@ import io.youi.app.{ClientApplication, ClientConnectivity}
 import io.youi.dom._
 import io.youi.example.screen.{CommunicationScreen, LoginScreen}
 import io.youi.example.ui._
+import io.youi.example.ui.drawable.PathsExample
 import io.youi.example.ui.hypertext.DataTransferExample
 //import io.youi.util.DebugSupport
 import org.scalajs.dom._
@@ -21,6 +22,8 @@ object ClientExampleApplication extends ExampleApplication with ClientApplicatio
   val login = LoginScreen
 
   val uiExamples = UIExamples
+
+  val paths = PathsExample
 
   val basic = BasicDrawableExample
 //  val hello = HelloWorld

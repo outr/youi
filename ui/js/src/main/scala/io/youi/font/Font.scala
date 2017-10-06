@@ -8,6 +8,8 @@ import io.youi.{Context, Drawable}
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.scalajs.js
+import scala.scalajs.js.JSON
 
 trait Font {
   def lineHeight(size: Double): Double
@@ -45,8 +47,12 @@ case class Text(font: Font,
   }
   def lineHeight: Double = font.lineHeight(size)
 
-  override def draw(context: Context, x: Double, y: Double): Unit = lines.foreach { line =>
-    line.foreach(_.draw(context, x, y))
+  override def draw(context: Context, x: Double, y: Double): Unit = {
+    context.begin()
+    lines.foreach { line =>
+      line.foreach(_.draw(context, x, y))
+    }
+    context.close()
   }
 }
 
@@ -132,15 +138,25 @@ class OpenTypeFont(otf: opentype.Font) extends Font {
 }
 
 case class OpenTypeGlyph(otg: opentype.Glyph, unitsPerEm: Double) extends Glyph {
-  override lazy val path: Path = Path(otg.getPath(0.0, 0.0, 70.0).toPathData())
+  override lazy val path: Path = try {
+    Path(otg.path.toPathData())
+  } catch {
+    case _: Throwable => Path.empty
+  }
   override def width(size: Double): Double = otg.advanceWidth * (1.0 / unitsPerEm * size)
 
   override def draw(context: Context, x: Double, y: Double, size: Double): Unit = {
 //    context.save()
-//    context.scale(size, size)
-    path.draw(context, x, y)
+//    context.scale(0.025, 0.025)
+//    otg.draw(context.ctx, x, y + 50.0, size)
+    val scale = 1.0 / unitsPerEm * size
+//    context.scale(scale, scale)
+//    scribe.info(s"Path: $path / ${1.0 / unitsPerEm * size}")
+    context.withScale(scale, -scale) {
+      path.draw(context, x / scale, y / scale)
+    }
+    scribe.info(s"Drawing! ${otg.name} - $x x $y")
 //    context.restore()
-//    scribe.info(s"Path? ${JSON.stringify(otg.path)}")
 //    context.save()
 //    context.scale(context.ratio, context.ratio)
 //    otg.draw(context.ctx, x, y, size)

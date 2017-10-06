@@ -24,14 +24,12 @@ object BasicDrawableExample extends UIExampleScreen with UIScreen {
 
 //  override protected val drawable: Future[Group] = Future.successful(Group(rectangle, text))
   override protected val drawable = OpenTypeFont.fromURL(GoogleFont.`Open Sans`.`regular`).map { font =>
-    val text = font("Hello, World!", 96.0 * ui.ratio())
+    val text = font("Testing", 96.0)
     val text2 = new Drawable {
       override def draw(context: Context, x: Double, y: Double): Unit = {
-        context.save()
         context.translate(200.0, 400.0)
         text.draw(context, x, y)
         context.fill(Color.Green, apply = true)
-        context.restore()
       }
     }
     Group(rectangle, basicText, text2)

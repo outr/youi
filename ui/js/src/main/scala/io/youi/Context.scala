@@ -8,7 +8,11 @@ import org.scalajs.dom.{html, _}
 import scala.scalajs.js
 
 class Context(val canvas: html.Canvas, _ratio: => Double) {
-  def ratio: Double = _ratio
+  private var adjustScaleX: Double = 1.0
+  private var adjustScaleY: Double = 1.0
+
+  def ratioX: Double = _ratio * adjustScaleX
+  def ratioY: Double = _ratio * adjustScaleY
   def ctx: CanvasRenderingContext2D = canvas.context
   
   def width: Double = canvas.width.toDouble
@@ -31,6 +35,19 @@ class Context(val canvas: html.Canvas, _ratio: => Double) {
 
   def identity(): Unit = transform(Matrix3.Identity)
 
+  def withScale[R](x: Double = 1.0, y: Double = 1.0)(f: => R): R = {
+    val ox = adjustScaleX
+    val oy = adjustScaleY
+    adjustScaleX *= x
+    adjustScaleY *= y
+    try {
+      f
+    } finally {
+      adjustScaleX = ox
+      adjustScaleY = oy
+    }
+  }
+
   /*def transform(component: Component, multiply: Boolean = false): Unit = {
     if (multiply) {
       component.parent().foreach(transform(_, multiply))
@@ -42,7 +59,7 @@ class Context(val canvas: html.Canvas, _ratio: => Double) {
     ctx.translate(m(-component.pivot.x()), m(-component.pivot.y()))
   }*/
 
-  def translate(x: Double, y: Double): Unit = ctx.translate(x * ratio, y * ratio)
+  def translate(x: Double, y: Double): Unit = ctx.translate(x * ratioX, y * ratioY)
 
   def opacity_=(value: Double): Unit = ctx.globalAlpha = value
   def opacity: Double = ctx.globalAlpha
@@ -57,7 +74,7 @@ class Context(val canvas: html.Canvas, _ratio: => Double) {
                 y: Double = 0.0,
                 width: Double = image.width,
                 height: Double = image.height): Unit = {
-    ctx.drawImage(image, x * ratio, y * ratio, width * ratio, height * ratio)
+    ctx.drawImage(image, x * ratioX, y * ratioY, width * ratioX, height * ratioY)
   }
 
   def drawCanvas(canvas: html.Canvas)
@@ -65,7 +82,7 @@ class Context(val canvas: html.Canvas, _ratio: => Double) {
                  y: Double = 0.0,
                  width: Double = canvas.width,
                  height: Double = canvas.height): Unit = {
-    ctx.drawImage(canvas.asInstanceOf[html.Image], x * ratio, y * ratio, width * ratio, height * ratio)
+    ctx.drawImage(canvas.asInstanceOf[html.Image], x * ratioX, y * ratioY, width * ratioX, height * ratioY)
   }
 
   def drawVideo(video: html.Video)
@@ -73,28 +90,36 @@ class Context(val canvas: html.Canvas, _ratio: => Double) {
                 y: Double = 0.0,
                 width: Double = video.width,
                 height: Double = video.height): Unit = {
-    ctx.drawImage(video.asInstanceOf[html.Image], x * ratio, y * ratio, width * ratio, height * ratio)
+    ctx.drawImage(video.asInstanceOf[html.Image], x * ratioX, y * ratioY, width * ratioX, height * ratioY)
   }
 
-  def moveTo(x: Double, y: Double): Unit = ctx.moveTo(Path.fix(x * ratio), Path.fix(y * ratio))
+  def moveTo(x: Double, y: Double): Unit = {
+    val fx = Path.fix(x * ratioX)
+    val fy = Path.fix(y * ratioY)
+    ctx.moveTo(fx, fy)
+  }
 
-  def lineTo(x: Double, y: Double): Unit = ctx.lineTo(Path.fix(x * ratio), Path.fix(y * ratio))
+  def lineTo(x: Double, y: Double): Unit = {
+    val fx = Path.fix(x * ratioX)
+    val fy = Path.fix(y * ratioY)
+    ctx.lineTo(fx, fy)
+  }
 
   def quadraticCurveTo(cpx: Double, cpy: Double, x: Double, y: Double): Unit = {
-    ctx.quadraticCurveTo(cpx * ratio, cpy * ratio, x * ratio, y * ratio)
+    ctx.quadraticCurveTo(cpx * ratioX, cpy * ratioY, x * ratioX, y * ratioY)
   }
 
   def bezierCurveTo(cp1x: Double, cp1y: Double, cp2x: Double, cp2y: Double, x: Double, y: Double): Unit = {
-    ctx.bezierCurveTo(cp1x * ratio, cp1y * ratio, cp2x * ratio, cp2y * ratio, x * ratio, y * ratio)
+    ctx.bezierCurveTo(cp1x * ratioX, cp1y * ratioY, cp2x * ratioX, cp2y * ratioY, x * ratioX, y * ratioY)
   }
 
   def clipRect(x1: Double, y1: Double, x2: Double, y2: Double): Unit = {
     begin()
-    moveTo(x1 * ratio, y1 * ratio)
-    lineTo(x2 * ratio, y1 * ratio)
-    lineTo(x2 * ratio, y2 * ratio)
-    lineTo(x1 * ratio, y2 * ratio)
-    lineTo(x1 * ratio, y1 * ratio)
+    moveTo(x1 * ratioX, y1 * ratioY)
+    lineTo(x2 * ratioX, y1 * ratioY)
+    lineTo(x2 * ratioX, y2 * ratioY)
+    lineTo(x1 * ratioX, y2 * ratioY)
+    lineTo(x1 * ratioX, y1 * ratioY)
     ctx.clip()
   }
 
@@ -103,7 +128,7 @@ class Context(val canvas: html.Canvas, _ratio: => Double) {
 
   def rect(x: Double, y: Double, width: Double, height: Double): Unit = {
     begin()
-    ctx.rect(Path.fix(x * ratio), Path.fix(y * ratio), width * ratio, height * ratio)
+    ctx.rect(Path.fix(x * ratioX), Path.fix(y * ratioY), width * ratioX, height * ratioY)
     close()
   }
 
@@ -128,9 +153,9 @@ class Context(val canvas: html.Canvas, _ratio: => Double) {
 
   def stroke(stroke: Stroke, apply: Boolean): Unit = if (stroke.nonEmpty) {
     ctx.strokeStyle = stroke.paint.asJS(this)
-    ctx.lineWidth = stroke.lineWidth * ratio
+    ctx.lineWidth = stroke.lineWidth * ratioX
     ctx.setLineDash(js.Array(stroke.lineDash: _*))
-    ctx.lineDashOffset = stroke.lineDashOffset * ratio
+    ctx.lineDashOffset = stroke.lineDashOffset * ratioX
     ctx.lineCap = stroke.lineCap.value
     ctx.lineJoin = stroke.lineJoin.value
     if (apply) ctx.stroke()
@@ -139,16 +164,16 @@ class Context(val canvas: html.Canvas, _ratio: => Double) {
   def setShadow(blur: Double, color: Color, x: Double, y: Double): Unit = {
     ctx.shadowBlur = blur
     ctx.shadowColor = color.toRGBA
-    ctx.shadowOffsetX = x * ratio
-    ctx.shadowOffsetY = y * ratio
+    ctx.shadowOffsetX = x * ratioX
+    ctx.shadowOffsetY = y * ratioY
   }
 
   def setFont(family: String, size: Double, style: String, variant: String, weight: String): Unit = {
-    ctx.font = s"$style $variant $weight ${size * ratio}px $family"
+    ctx.font = s"$style $variant $weight ${size * ratioX}px $family"
   }
 
   def lineJoin(value: String): Unit = ctx.lineJoin = value
-  def miterLimit(value: Double): Unit = ctx.miterLimit = value * ratio
+  def miterLimit(value: Double): Unit = ctx.miterLimit = value * ratioX
   def textBaseline(value: String): Unit = ctx.textBaseline = value
 
   def measureText(text: String, size: Size = Size.zero): Size = {
@@ -165,11 +190,11 @@ class Context(val canvas: html.Canvas, _ratio: => Double) {
 
   def fillText(text: String, x: Double = 0.0, y: Double = 0.0, maxWidth: Double = 10000.0): Unit = {
     ctx.textBaseline = "top"
-    ctx.fillText(text, x * ratio, y * ratio, maxWidth * ratio)
+    ctx.fillText(text, x * ratioX, y * ratioY, maxWidth * ratioX)
   }
 
   def strokeText(text: String, x: Double = 0.0, y: Double = 0.0, maxWidth: Double = 10000.0): Unit = {
-    ctx.strokeText(text, x * ratio, y * ratio, maxWidth * ratio)
+    ctx.strokeText(text, x * ratioX, y * ratioY, maxWidth * ratioX)
   }
 
   def clear(): Unit = {

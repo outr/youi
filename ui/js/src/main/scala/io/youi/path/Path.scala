@@ -34,6 +34,11 @@ case class Path(actions: List[PathAction]) extends PathBuilder with PathAction {
   }
 
   override def withAction(action: PathAction): Path = Path(actions ::: List(action))
+
+  def withoutOpen(): Path = Path(actions.filterNot(_ == BeginPath))
+  def withoutClose(): Path = Path(actions.filterNot(_ == ClosePath))
+
+  override def toString: String = s"Path(${actions.mkString(", ")})"
 }
 
 object Path extends PathBuilder {

@@ -1,13 +1,14 @@
 package io.youi.paint
 
-import io.youi.{Context, Drawable}
+import io.youi.path.PathAction
+import io.youi.Context
 
 case class Stroke(paint: Paint,
                   lineWidth: Double = 1.0,
                   lineDash: List[Double] = Nil,
                   lineDashOffset: Double = 0.0,
                   lineCap: LineCap = LineCap.Butt,
-                  lineJoin: LineJoin = LineJoin.Miter) extends Drawable {
+                  lineJoin: LineJoin = LineJoin.Miter) extends PathAction {
   def isEmpty: Boolean = paint.isEmpty
   def nonEmpty: Boolean = !isEmpty
 

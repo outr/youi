@@ -139,24 +139,26 @@ class OpenTypeFont(otf: opentype.Font) extends Font {
 
 case class OpenTypeGlyph(otg: opentype.Glyph, unitsPerEm: Double) extends Glyph {
   override lazy val path: Path = try {
-    Path(otg.path.toPathData())
+    Path(otg.path.toPathData()) //.flipVertically()
   } catch {
     case _: Throwable => Path.empty
   }
   override def width(size: Double): Double = otg.advanceWidth * (1.0 / unitsPerEm * size)
 
   override def draw(context: Context, x: Double, y: Double, size: Double): Unit = {
-//    context.save()
+    context.save()
+//    context.scale(1.0, -1.0)
 //    context.scale(0.025, 0.025)
 //    otg.draw(context.ctx, x, y + 50.0, size)
     val scale = 1.0 / unitsPerEm * size
 //    context.scale(scale, scale)
 //    scribe.info(s"Path: $path / ${1.0 / unitsPerEm * size}")
-    context.withScale(scale, -scale) {
-      path.draw(context, x / scale, y / scale)
-    }
+//    context.withScale(scale, -scale) {
+//      path.draw(context, x / scale, y / scale)
+//    }
+    path.draw(context, x, y, scale, -scale)
     scribe.info(s"Drawing! ${otg.name} - $x x $y")
-//    context.restore()
+    context.restore()
 //    context.save()
 //    context.scale(context.ratio, context.ratio)
 //    otg.draw(context.ctx, x, y, size)

@@ -12,7 +12,9 @@ case class Stroke(paint: Paint,
   def isEmpty: Boolean = paint.isEmpty
   def nonEmpty: Boolean = !isEmpty
 
-  override def draw(context: Context, x: Double, y: Double): Unit = context.stroke(this, apply = true)
+  override def draw(context: Context, x: Double, y: Double, scaleX: Double, scaleY: Double): Unit = {
+    context.stroke(this, apply = true)
+  }
 }
 
 object Stroke {

@@ -146,12 +146,19 @@ class Context(val canvas: html.Canvas, _ratio: => Double) {
     close()
   }
 
+  private var fillStyle: Paint = Paint.none
+  private var strokeStyle: Stroke = Stroke.none
+
   def fill(paint: Paint, apply: Boolean): Unit = if (paint.nonEmpty) {
+    fillStyle = paint
     ctx.fillStyle = paint.asJS(this)
     if (apply) ctx.fill()
   }
 
+  def fill: Paint = fillStyle
+
   def stroke(stroke: Stroke, apply: Boolean): Unit = if (stroke.nonEmpty) {
+    strokeStyle = stroke
     ctx.strokeStyle = stroke.paint.asJS(this)
     ctx.lineWidth = stroke.lineWidth * ratioX
     ctx.setLineDash(js.Array(stroke.lineDash: _*))
@@ -160,6 +167,8 @@ class Context(val canvas: html.Canvas, _ratio: => Double) {
     ctx.lineJoin = stroke.lineJoin.value
     if (apply) ctx.stroke()
   }
+
+  def stroke: Stroke = strokeStyle
 
   def setShadow(blur: Double, color: Color, x: Double, y: Double): Unit = {
     ctx.shadowBlur = blur

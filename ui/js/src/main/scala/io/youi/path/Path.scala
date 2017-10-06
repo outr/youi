@@ -8,7 +8,9 @@ import scala.collection.mutable.ListBuffer
 case class Path(actions: List[PathAction]) extends PathBuilder with PathAction {
   lazy val boundingBox: BoundingBox = Path.boundingBox(actions)
 
-  override def draw(context: Context, x: Double, y: Double): Unit = actions.foreach(_.draw(context, x, y))
+  override def draw(context: Context, x: Double, y: Double, scaleX: Double, scaleY: Double): Unit = {
+    actions.foreach(_.draw(context, x, y, scaleX, scaleY))
+  }
 
   def shift(adjustX: Double, adjustY: Double): Path = {
     val updated = actions.map {
@@ -16,7 +18,18 @@ case class Path(actions: List[PathAction]) extends PathBuilder with PathAction {
       case LineTo(x, y) => LineTo(x + adjustX, y + adjustY)
       case MoveTo(x, y) => MoveTo(x + adjustX, y + adjustY)
       case QuadraticCurveTo(x1, y1, x, y) => QuadraticCurveTo(x1 + adjustX, y1 + adjustY, x + adjustX, y + adjustY)
-      case action => action
+      case action => throw new RuntimeException(s"Unsupported PathAction: $action.")
+    }
+    Path(updated)
+  }
+
+  def flipVertically(): Path = {
+    val updated = actions.map {
+      case CurveTo(x1, y1, x2, y2, x, y) => CurveTo(x1, -y1, x2, -y2, x, -y)
+      case LineTo(x, y) => LineTo(x, -y)
+      case MoveTo(x, y) => MoveTo(x, -y)
+      case QuadraticCurveTo(x1, y1, x, y) => QuadraticCurveTo(x1, -y1, x, -y)
+      case action => throw new RuntimeException(s"Unsupported PathAction: $action.")
     }
     Path(updated)
   }

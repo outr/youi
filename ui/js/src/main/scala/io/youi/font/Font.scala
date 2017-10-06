@@ -1,6 +1,7 @@
 package io.youi.font
 
 import io.youi.net.URL
+import io.youi.path.Path
 import io.youi.spatial.BoundingBox
 import io.youi.{Context, Drawable}
 
@@ -65,6 +66,7 @@ case class CharacterPath(char: Char, size: Double, index: Int, x: Double, y: Dou
 }
 
 trait Glyph {
+  def path: Path
   def width(size: Double): Double
   def draw(context: Context, x: Double, y: Double, size: Double): Unit
 }
@@ -130,14 +132,19 @@ class OpenTypeFont(otf: opentype.Font) extends Font {
 }
 
 case class OpenTypeGlyph(otg: opentype.Glyph, unitsPerEm: Double) extends Glyph {
-//  lazy val path: Path = Path(otg.path.toPathData())
+  override lazy val path: Path = Path(otg.getPath(0.0, 0.0, 70.0).toPathData())
   override def width(size: Double): Double = otg.advanceWidth * (1.0 / unitsPerEm * size)
 
   override def draw(context: Context, x: Double, y: Double, size: Double): Unit = {
-    context.save()
-    context.scale(context.ratio, context.ratio)
-    otg.draw(context.ctx, x, y, size)
-    context.restore()
+//    context.save()
+//    context.scale(size, size)
+    path.draw(context, x, y)
+//    context.restore()
+//    scribe.info(s"Path? ${JSON.stringify(otg.path)}")
+//    context.save()
+//    context.scale(context.ratio, context.ratio)
+//    otg.draw(context.ctx, x, y, size)
+//    context.restore()
   }
 }
 

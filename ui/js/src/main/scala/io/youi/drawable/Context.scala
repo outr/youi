@@ -1,8 +1,10 @@
-package io.youi
+package io.youi.drawable
 
+import io.youi._
 import io.youi.paint.{Paint, Stroke}
 import io.youi.path.Path
 import io.youi.spatial.{Matrix3, Size}
+import io.youi.{Color, dom}
 import org.scalajs.dom.{html, _}
 
 import scala.scalajs.js

@@ -1,6 +1,6 @@
 package io.youi.path
 
-import io.youi.Context
+import io.youi.drawable.Context
 
 object BeginPath extends PathAction {
   override def draw(context: Context, x: Double, y: Double, scaleX: Double, scaleY: Double): Unit = context.begin()

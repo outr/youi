@@ -2,6 +2,7 @@ package io.youi.example.ui.drawable
 
 import io.youi._
 import io.youi.app.screen.UIScreen
+import io.youi.drawable.Group
 import io.youi.example.ui.UIExampleScreen
 import io.youi.paint.{LineCap, LineJoin, Stroke}
 import io.youi.path._

@@ -1,7 +1,7 @@
 package io.youi.paint
 
+import io.youi.drawable.Context
 import io.youi.path.PathAction
-import io.youi.Context
 
 case class Stroke(paint: Paint,
                   lineWidth: Double = 1.0,

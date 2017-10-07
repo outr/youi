@@ -3,6 +3,7 @@ package io.youi.image
 import com.outr.{CanvgOptions, canvg}
 import io.youi._
 import io.youi.dom._
+import io.youi.drawable.Context
 import io.youi.path.Path
 import io.youi.spatial.{BoundingBox, Size}
 import io.youi.util.CanvasPool

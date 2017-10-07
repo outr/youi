@@ -1,6 +1,6 @@
 package io.youi.path
 
-import io.youi.Context
+import io.youi.drawable.Context
 
 case class Rectangle(x: Double, y: Double, width: Double, height: Double) extends PathAction {
   override def draw(context: Context, x: Double, y: Double, scaleX: Double, scaleY: Double): Unit = {

@@ -1,7 +1,8 @@
 package io.youi.paint
 
 import io.youi.net.URL
-import io.youi.{Color, Context}
+import io.youi.Color
+import io.youi.drawable.Context
 
 import scala.scalajs._
 import scala.scalajs.js.|

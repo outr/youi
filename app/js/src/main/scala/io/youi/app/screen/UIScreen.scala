@@ -1,6 +1,7 @@
 package io.youi.app.screen
 
 import io.youi._
+import io.youi.drawable.Drawable
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

@@ -2,6 +2,7 @@ package io.youi.image
 
 import io.youi._
 import io.youi.dom._
+import io.youi.drawable.Context
 import io.youi.net.URL
 import io.youi.spatial.{BoundingBox, Size}
 import io.youi.stream.StreamURL

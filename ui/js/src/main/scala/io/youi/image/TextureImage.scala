@@ -1,7 +1,8 @@
 package io.youi.image
 
 import io.youi.util.ImageUtility
-import io.youi.{Context, ImageMode}
+import io.youi.ImageMode
+import io.youi.drawable.Context
 import org.scalajs.dom.html
 
 import scala.concurrent.ExecutionContext.Implicits.global

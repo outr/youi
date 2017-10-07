@@ -3,7 +3,7 @@ package io.youi.font
 import io.youi.net.URL
 import io.youi.path.Path
 import io.youi.spatial.BoundingBox
-import io.youi.{Context, Drawable}
+import io.youi.drawable.{Context, Drawable}
 
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.ExecutionContext.Implicits.global

@@ -1,6 +1,6 @@
 package io.youi.image
 
-import io.youi.Context
+import io.youi.drawable.Context
 
 import scala.concurrent.Future
 

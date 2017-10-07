@@ -1,6 +1,6 @@
 package io.youi.path
 
-import io.youi.Context
+import io.youi.drawable.Context
 import io.youi.spatial.BoundingBox
 
 import scala.collection.mutable.ListBuffer

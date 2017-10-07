@@ -2,6 +2,7 @@ package io.youi.example.ui
 
 import io.youi._
 import io.youi.app.screen.UIScreen
+import io.youi.drawable.{Context, Drawable, Group}
 import io.youi.font.{GoogleFont, OpenTypeFont}
 import io.youi.paint.Stroke
 

@@ -1,5 +1,6 @@
 package io.youi
 
+import io.youi.drawable.{Context, Drawable}
 import io.youi.util.CanvasPool
 import org.scalajs.dom._
 import reactify.Var

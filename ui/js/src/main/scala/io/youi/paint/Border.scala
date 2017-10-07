@@ -1,7 +1,8 @@
 package io.youi.paint
 
 import io.youi.path.Path
-import io.youi.{Compass, Context}
+import io.youi.Compass
+import io.youi.drawable.Context
 
 trait Border {
   def paint: Paint

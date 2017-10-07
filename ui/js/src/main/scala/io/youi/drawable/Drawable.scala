@@ -1,4 +1,4 @@
-package io.youi
+package io.youi.drawable
 
 import reactify.Var
 

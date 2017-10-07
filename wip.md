@@ -13,6 +13,7 @@
     * [X] `Text`
         * [X] Pre-defined and sized paths for text from `Font`
         * [X] Extend `Drawable` to allow explicit drawing
+        * [ ] Support `WrapMode` for `None`, `Clip`, `Ellipsis`, `BreakAtCharacter`, and `BreakAtWord`.
     * [ ] `Image`
         * [ ] Extend `Drawable` to allow explicit drawing
     * [X] `Drawable` for most simplistic drawing functionality

@@ -62,6 +62,7 @@ class Context(val canvas: html.Canvas, _ratio: => Double) {
   }*/
 
   def translate(x: Double, y: Double): Unit = ctx.translate(x * ratioX, y * ratioY)
+  def rotate(angle: Double): Unit = ctx.rotate(angle)
 
   def opacity_=(value: Double): Unit = ctx.globalAlpha = value
   def opacity: Double = ctx.globalAlpha

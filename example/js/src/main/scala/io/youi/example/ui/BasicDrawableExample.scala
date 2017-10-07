@@ -3,6 +3,7 @@ package io.youi.example.ui
 import io.youi._
 import io.youi.app.screen.UIScreen
 import io.youi.font.{GoogleFont, OpenTypeFont}
+import io.youi.paint.Stroke
 
 object BasicDrawableExample extends UIExampleScreen with UIScreen {
   override def name: String = "Basic Drawable"
@@ -29,7 +30,7 @@ object BasicDrawableExample extends UIExampleScreen with UIScreen {
       override def draw(context: Context, x: Double, y: Double): Unit = {
         text.draw(context, x + 200.0, y + 300.0)
         context.fill(Color.Green, apply = true)
-
+        context.stroke(Stroke(Color.Black, 2.0), apply = true)
       }
     }
     Group(rectangle, basicText, text2)

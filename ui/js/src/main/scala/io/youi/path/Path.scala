@@ -168,5 +168,5 @@ object Path extends PathBuilder {
 
   override def withAction(action: PathAction): Path = Path(List(action))
 
-  def fix(value: Double): Double = math.floor(value) + 0.5
+  def fix(value: Double): Double = value
 }

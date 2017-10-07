@@ -12,6 +12,7 @@ import org.scalajs.dom.raw._
 import reactify.Var
 
 import scala.concurrent.{Future, Promise}
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.scalajs._
 
 case class SVGImage(svg: SVGSVGElement,
@@ -53,16 +54,14 @@ case class SVGImage(svg: SVGSVGElement,
     promise.future
   }
 
-//  override def toDataURL: Future[String] = {
-//    val drawable = new ComponentDrawer
-//    drawable.updateAsync(width, height)(context => draw(context, width, height)).flatMap { _ =>
-//      try {
-//        ImageUtility.resizeToDataURL(drawable.context.canvas, width, height, smooth = true)
-//      } finally {
-//        drawable.dispose()
-//      }
-//    }
-//  }
+  override def toDataURL: Future[String] = {
+    CanvasPool.withCanvasFuture(width, height) { canvas =>
+      val context = new Context(canvas, ui.ratio)
+      draw(context, width, height).map { _ =>
+        canvas.toDataURL("image/png")
+      }
+    }
+  }
 
   override def dispose(): Unit = {}
 

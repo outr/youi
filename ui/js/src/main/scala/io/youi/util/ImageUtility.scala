@@ -200,7 +200,7 @@ object ImageUtility {
 
           CanvasPool.withCanvasFuture(scaled.width, scaled.height) { canvas =>
             val context = new Context(canvas, ui.ratio)
-            image.draw(context, scaled.width, scaled.height).map { _ =>
+            image.drawAsync(context, 0.0, 0.0, scaled.width, scaled.height).map { _ =>
               val dataURL = canvas.toDataURL("image/png")
               promise.success(Some(dataURL))
             }

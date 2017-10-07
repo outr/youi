@@ -9,33 +9,34 @@ import io.youi.spatial.{BoundingBox, Size}
 import io.youi.util.CanvasPool
 import org.scalajs.dom.html
 import org.scalajs.dom.raw._
-import reactify.Var
 
 import scala.concurrent.{Future, Promise}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.scalajs._
 
-case class SVGImage(svg: SVGSVGElement,
+case class SVGImage(private val svg: SVGSVGElement,
                     width: Double,
                     height: Double,
                     measured: Size) extends Image {
   private[image] val canvas = CanvasPool(width, height)
 
-  val modified: Var[Boolean] = Var(false)
-
-  override def drawFast(context: Context, width: Double, height: Double): Boolean = {
-    context.drawCanvas(canvas)(width = width, height = height)
-    canvas.width != math.ceil(width).toInt || canvas.height != math.ceil(height).toInt || modified()
+  def modify[R](f: SVGSVGElement => R): R = {
+    val result = f(svg)
+    modified := System.currentTimeMillis()
+    result
   }
 
-  override def draw(context: Context, width: Double, height: Double): Future[Unit] = {
-    modified := false
+  override def drawFast(context: Context, x: Double, y: Double, width: Double, height: Double): Unit = {
+    context.drawCanvas(canvas)(x, y, width, height)
+  }
+
+  override def drawAsync(context: Context, x: Double, y: Double, width: Double, height: Double): Future[Unit] = {
     canvas.width = math.ceil(width).toInt
     canvas.height = math.ceil(height).toInt
-    drawToCanvas(context.canvas, width, height)
+    drawToCanvas(context.canvas, x: Double, y: Double, width, height)
   }
 
-  def drawToCanvas(canvas: html.Canvas, width: Double, height: Double): Future[Unit] = {
+  def drawToCanvas(canvas: html.Canvas, x: Double, y: Double, width: Double, height: Double): Future[Unit] = {
     val promise = Promise[Unit]
     val callback: js.Function = () => {
       promise.success(())
@@ -45,8 +46,8 @@ case class SVGImage(svg: SVGSVGElement,
       ignoreAnimation = true
       ignoreDimensions = true
       ignoreClear = true
-      offsetX = 0
-      offsetY = 0
+      offsetX = math.round(x).toInt
+      offsetY = math.round(y).toInt
       scaleWidth = math.ceil(width).toInt
       scaleHeight = math.ceil(height).toInt
       renderCallback = callback
@@ -56,7 +57,7 @@ case class SVGImage(svg: SVGSVGElement,
 
   override def toDataURL: Future[String] = CanvasPool.withCanvasFuture(width, height) { temp =>
     val context = new Context(temp, ui.ratio)
-    draw(context, width, height).map { _ =>
+    drawAsync(context, 0.0, 0.0, width, height).map { _ =>
       temp.toDataURL("image/png")
     }
   }

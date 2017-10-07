@@ -14,17 +14,16 @@ case class TextureImage(img: html.Image,
                         mode: ImageMode) extends Image {
   override def isVector: Boolean = false
 
-  override def drawFast(context: Context, width: Double, height: Double): Boolean = {
-    context.drawImage(img)(width = width, height = height)
-    (this.width != width || this.height != height) && mode == ImageMode.Quality
+  override def drawFast(context: Context, x: Double, y: Double, width: Double, height: Double): Unit = {
+    context.drawImage(img)(x, y, width, height)
   }
 
-  override def draw(context: Context, width: Double, height: Double): Future[Unit] = {
+  override def drawAsync(context: Context, x: Double, y: Double, width: Double, height: Double): Future[Unit] = {
     if (this.width == width && this.height == height) {     // Draw directly
-      drawFast(context, width, height)
+      drawFast(context, x, y, width, height)
       Future.successful(())
     } else {
-      ImageUtility.drawToCanvas(img, context.canvas)(width = width, height = height).map(_ => ())
+      ImageUtility.drawToCanvas(img, context.canvas)(x, y, width, height).map(_ => ())
     }
   }
 

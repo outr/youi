@@ -2,7 +2,7 @@ package io.youi.image
 
 import io.youi._
 import io.youi.dom._
-import io.youi.drawable.Context
+import io.youi.drawable.{Context, Drawable}
 import io.youi.net.URL
 import io.youi.spatial.{BoundingBox, Size}
 import io.youi.stream.StreamURL
@@ -13,12 +13,14 @@ import org.scalajs.dom.raw.SVGSVGElement
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Future, Promise}
 
-trait Image {
+trait Image extends Drawable {
   val width: Double
   val height: Double
 
-  def drawFast(context: Context, width: Double, height: Double): Boolean
-  def draw(context: Context, width: Double, height: Double): Future[Unit]
+  override def draw(context: Context, x: Double, y: Double): Unit = drawFast(context, x, y, width, height)
+
+  def drawFast(context: Context, x: Double, y: Double, width: Double, height: Double): Unit
+  def drawAsync(context: Context, x: Double, y: Double, width: Double, height: Double): Future[Unit]
 
   def clip(x1: Double, y1: Double, x2: Double, y2: Double): Future[Image] = {
     val promise = Promise[String]
@@ -28,7 +30,7 @@ trait Image {
     CanvasPool.withCanvasFuture(w, h) { clipped =>
       val context = new Context(clipped, ui.ratio)
       context.translate(-x1, -y1)
-      draw(context, width, height).map { _ =>
+      drawAsync(context, 0.0, 0.0, width, height).map { _ =>
         val dataURL = clipped.toDataURL("image/png")
         promise.success(dataURL)
       }
@@ -118,7 +120,7 @@ object Image {
     val original = SVGImage.measure(svg).toSize
     val size = SizeUtility.size(width, height, original)
     val image = SVGImage(svg, size.width, size.height, original)
-    image.drawToCanvas(image.canvas, size.width, size.height).map { _ =>
+    image.drawToCanvas(image.canvas, 0.0, 0.0, size.width, size.height).map { _ =>
       image
     }
   }

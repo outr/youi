@@ -8,9 +8,9 @@ object EmptyImage extends Image {
   override val width: Double = 0.0
   override val height: Double = 0.0
 
-  override def drawFast(context: Context, width: Double, height: Double): Boolean = false
+  override def drawFast(context: Context, x: Double, y: Double, width: Double, height: Double): Unit = ()
 
-  override def draw(context: Context, width: Double, height: Double): Future[Unit] = Future.successful(())
+  override def drawAsync(context: Context, x: Double, y: Double, width: Double, height: Double): Future[Unit] = Future.successful(())
 
   override def dispose(): Unit = {}
 

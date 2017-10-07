@@ -4,11 +4,11 @@
 * [ ] Major cleanup and simplification of Component internals
     * [X] Migration back to `ui` module instead of `canvas`
     * [X] Inherent support for `devicePixelRatio` and `backingStoreRatio` to properly render scaled and HiDPI
-    * [ ] `Font`
-        * [ ] Trait for multiple implementations
-        * [ ] OpenTypeFont
-          * [ ] Update to latest version of OpenType.js
-          * [ ] Fixes for consistent font height
+    * [X] `Font`
+        * [X] Trait for multiple implementations
+        * [X] OpenTypeFont
+          * [X] Update to latest version of OpenType.js
+          * [X] Fixes for consistent font height
         * [ ] NativeFont
     * [ ] `Text`
         * [ ] Pre-defined and sized paths for text from `Font`

@@ -8,8 +8,6 @@ import io.youi.{Context, Drawable}
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.scalajs.js
-import scala.scalajs.js.JSON
 
 trait Font {
   def lineHeight(size: Double): Double
@@ -77,10 +75,12 @@ trait Glyph {
   def draw(context: Context, x: Double, y: Double, size: Double): Unit
 }
 
-class OpenTypeFont(otf: opentype.Font) extends Font {
+case class OpenTypeFont(otf: opentype.Font) extends Font {
   private var glyphs = Map.empty[Char, OpenTypeGlyph]
 
-  override def lineHeight(size: Double): Double = otf.ascender - otf.descender
+  override def lineHeight(size: Double): Double = (otf.ascender - otf.descender) * (1.0 / otf.unitsPerEm * size)
+
+  def ascender(size: Double): Double = otf.ascender * (1.0 / otf.unitsPerEm * size)
 
   override def apply(text: String,
                      size: Double,
@@ -104,16 +104,18 @@ class OpenTypeFont(otf: opentype.Font) extends Font {
         val glyph = glyphs.get(char) match {
           case Some(g) => g
           case None => {
-            val g = OpenTypeGlyph(otf.charToGlyph(char.toString), unitsPerEm)
+            val g = OpenTypeGlyph(this, otf.charToGlyph(char.toString), unitsPerEm)
             glyphs += char -> g
             g
           }
         }
         var kernOffset = if (kerning && previous.nonEmpty) {
+          scribe.info(s"Kerning? ${previous.map(_.otg.name)} / ${glyph.otg.name}")
           otf.getKerningValue(previous.get.otg, glyph.otg)
         } else {
           0.0
         }
+        scribe.info(s"Kerning: $kernOffset")
         previous = Some(glyph)
         if (offsetX + kernOffset + glyph.width(size) > maxWidth && line.nonEmpty) {
           offsetX = 0.0
@@ -137,32 +139,17 @@ class OpenTypeFont(otf: opentype.Font) extends Font {
   }
 }
 
-case class OpenTypeGlyph(otg: opentype.Glyph, unitsPerEm: Double) extends Glyph {
+case class OpenTypeGlyph(font: OpenTypeFont, otg: opentype.Glyph, unitsPerEm: Double) extends Glyph {
   override lazy val path: Path = try {
-    Path(otg.path.toPathData()) //.flipVertically()
+    Path(otg.path.toPathData())
   } catch {
     case _: Throwable => Path.empty
   }
   override def width(size: Double): Double = otg.advanceWidth * (1.0 / unitsPerEm * size)
 
   override def draw(context: Context, x: Double, y: Double, size: Double): Unit = {
-    context.save()
-//    context.scale(1.0, -1.0)
-//    context.scale(0.025, 0.025)
-//    otg.draw(context.ctx, x, y + 50.0, size)
     val scale = 1.0 / unitsPerEm * size
-//    context.scale(scale, scale)
-//    scribe.info(s"Path: $path / ${1.0 / unitsPerEm * size}")
-//    context.withScale(scale, -scale) {
-//      path.draw(context, x / scale, y / scale)
-//    }
-    path.draw(context, x, y, scale, -scale)
-    scribe.info(s"Drawing! ${otg.name} - $x x $y")
-    context.restore()
-//    context.save()
-//    context.scale(context.ratio, context.ratio)
-//    otg.draw(context.ctx, x, y, size)
-//    context.restore()
+    path.draw(context, x, y + font.ascender(size), scale, -scale)
   }
 }
 

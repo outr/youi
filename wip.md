@@ -10,9 +10,9 @@
           * [X] Update to latest version of OpenType.js
           * [X] Fixes for consistent font height
         * [ ] NativeFont
-    * [ ] `Text`
-        * [ ] Pre-defined and sized paths for text from `Font`
-        * [ ] Extend `Drawable` to allow explicit drawing
+    * [X] `Text`
+        * [X] Pre-defined and sized paths for text from `Font`
+        * [X] Extend `Drawable` to allow explicit drawing
     * [ ] `Image`
         * [ ] Extend `Drawable` to allow explicit drawing
     * [X] `Drawable` for most simplistic drawing functionality
@@ -24,8 +24,8 @@
     * [ ] `InteractiveDrawable` mix-in for hit testing (extends `Transformable`)
     * [ ] `ImageView` component
     * [ ] `TextView` component
-    * [ ] Cleanup of `Context` to better utilize `Path.fix`
-    * [ ] Update Path to utilize `Context`
+    * [X] Cleanup of `Context` to better utilize `Path.fix`
+    * [X] Update Path to utilize `Context`
 * [ ] Selectable Text in Canvas for copy/paste
 * [ ] TextInput in Canvas for editable editable text
     * [ ] Editing features

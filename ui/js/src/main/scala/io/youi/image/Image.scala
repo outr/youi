@@ -6,7 +6,7 @@ import io.youi.drawable.Context
 import io.youi.net.URL
 import io.youi.spatial.{BoundingBox, Size}
 import io.youi.stream.StreamURL
-import io.youi.util.{ImageUtility, SizeUtility}
+import io.youi.util.{CanvasPool, ImageUtility, SizeUtility}
 import org.scalajs.dom._
 import org.scalajs.dom.raw.SVGSVGElement
 
@@ -20,30 +20,24 @@ trait Image {
   def drawFast(context: Context, width: Double, height: Double): Boolean
   def draw(context: Context, width: Double, height: Double): Future[Unit]
 
-//  def clip(x1: Double, y1: Double, x2: Double, y2: Double): Future[Image] = {
-//    val drawable = new ComponentDrawer
-//    val promise = Promise[String]
-//    drawable.updateAsync(width, height) { context =>
-//      draw(context, width, height).map { _ =>
-//        try {
-//          val w = x2 - x1
-//          val h = y2 - y1
-//          val dataURL = CanvasPool.withCanvas(w, h) { clipped =>
-//            val ctx = clipped.context
-//            ctx.drawImage(context.canvas.asInstanceOf[html.Image], x1, y1, w, h, 0.0, 0.0, w, h)
-//            clipped.toDataURL("image/png")
-//          }
-//          promise.success(dataURL)
-//          ()
-//        } finally {
-//          drawable.dispose()
-//        }
-//      }
-//    }
-//    promise.future.flatMap { dataURL =>
-//      Image.fromImageSource(dataURL, None, None)
-//    }
-//  }
+  def clip(x1: Double, y1: Double, x2: Double, y2: Double): Future[Image] = {
+    val promise = Promise[String]
+
+    val w = x2 - x1
+    val h = y2 - y1
+    CanvasPool.withCanvasFuture(w, h) { clipped =>
+      val context = new Context(clipped, ui.ratio)
+      context.translate(-x1, -y1)
+      draw(context, width, height).map { _ =>
+        val dataURL = clipped.toDataURL("image/png")
+        promise.success(dataURL)
+      }
+    }
+
+    promise.future.flatMap { dataURL =>
+      Image.fromImageSource(dataURL, None, None)
+    }
+  }
 
   lazy val boundingBox: BoundingBox = BoundingBox(0.0, 0.0, width, height)
 

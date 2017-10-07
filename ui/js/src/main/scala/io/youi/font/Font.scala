@@ -110,12 +110,10 @@ case class OpenTypeFont(otf: opentype.Font) extends Font {
           }
         }
         var kernOffset = if (kerning && previous.nonEmpty) {
-          scribe.info(s"Kerning? ${previous.map(_.otg.name)} / ${glyph.otg.name}")
-          otf.getKerningValue(previous.get.otg, glyph.otg)
+          otf.getKerningValue(previous.get.otg, glyph.otg) * (1.0 / otf.unitsPerEm * size)
         } else {
           0.0
         }
-        scribe.info(s"Kerning: $kernOffset")
         previous = Some(glyph)
         if (offsetX + kernOffset + glyph.width(size) > maxWidth && line.nonEmpty) {
           offsetX = 0.0
@@ -125,8 +123,9 @@ case class OpenTypeFont(otf: opentype.Font) extends Font {
           lines += line.toVector
           line.clear()
         }
-        line += CharacterPath(char, size, index, offsetX, offsetY, glyph)
+        line += CharacterPath(char, size, index, offsetX + kernOffset, offsetY, glyph)
         offsetX += glyph.width(size)
+        offsetX += kernOffset
       }
       processCharacters(chars.tail, index + 1)
     }

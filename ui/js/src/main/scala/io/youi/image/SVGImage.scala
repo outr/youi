@@ -54,12 +54,10 @@ case class SVGImage(svg: SVGSVGElement,
     promise.future
   }
 
-  override def toDataURL: Future[String] = {
-    CanvasPool.withCanvasFuture(width, height) { canvas =>
-      val context = new Context(canvas, ui.ratio)
-      draw(context, width, height).map { _ =>
-        canvas.toDataURL("image/png")
-      }
+  override def toDataURL: Future[String] = CanvasPool.withCanvasFuture(width, height) { temp =>
+    val context = new Context(temp, ui.ratio)
+    draw(context, width, height).map { _ =>
+      temp.toDataURL("image/png")
     }
   }
 

@@ -1,6 +1,8 @@
 package io.youi.util
 
 import com.outr.pica.{Pica, ResizeOptions}
+import io.youi.drawable.Context
+import io.youi.image.Image
 import io.youi.{dom, _}
 import org.scalajs.dom._
 import org.scalajs.dom.html.Canvas
@@ -192,20 +194,19 @@ object ImageUtility {
       })
       video.src = url
     } else if (file.`type` == "image/svg+xml") {                                                 // SVG preview
-//      ImageUtility.loadText(file).flatMap { svgString =>
-//        Image.fromSVGString(svgString, None, None).flatMap { image =>
-//          val scaled = SizeUtility.scale(image.width, image.height, width, height, scaleUp)
-//          val drawable = new ComponentDrawer
-//          drawable.updateAsync(scaled.width, scaled.height)(context => image.draw(context, scaled.width, scaled.height)).map { _ =>
-//            try {
-//              val dataURL = drawable.context.canvas.toDataURL("image/png")
-//              promise.success(Some(dataURL))
-//            } finally {
-//              drawable.dispose()
-//            }
-//          }
-//        }
-//      }
+      ImageUtility.loadText(file).flatMap { svgString =>
+        Image.fromSVGString(svgString, None, None).flatMap { image =>
+          val scaled = SizeUtility.scale(image.width, image.height, width, height, scaleUp)
+
+          CanvasPool.withCanvasFuture(scaled.width, scaled.height) { canvas =>
+            val context = new Context(canvas, ui.ratio)
+            image.draw(context, scaled.width, scaled.height).map { _ =>
+              val dataURL = canvas.toDataURL("image/png")
+              promise.success(Some(dataURL))
+            }
+          }
+        }
+      }
     } else if (file.`type`.startsWith("image/")) {                                               // Image preview
       loadImage(file) { img =>
         val scaled = SizeUtility.scale(img.width, img.height, width, height, scaleUp)

@@ -2,10 +2,8 @@ package io.youi.example.ui
 
 import io.youi._
 import io.youi.app.screen.UIScreen
-import io.youi.drawable.{Context, Drawable, Group, Transformation}
-import io.youi.font.{GoogleFont, OpenTypeFont}
-import io.youi.image.Image
-import io.youi.paint.Stroke
+import io.youi.drawable.{Context, Drawable, Group}
+import io.youi.video.Video
 
 object BasicDrawableExample extends UIExampleScreen with UIScreen {
   override def name: String = "Basic Drawable"
@@ -38,10 +36,22 @@ object BasicDrawableExample extends UIExampleScreen with UIScreen {
 //    Group(rectangle, basicText, text2)
 //  }
 
-  override protected val drawable = Image("/images/cuteness.jpg").map { image =>
+//  override protected val drawable = Image("/images/cuteness.jpg").map { image =>
+//    val d = new Drawable {
+//      override def draw(context: Context, x: Double, y: Double): Unit = {
+//        image.draw(context, x + 200.0, y + 300.0)
+//      }
+//    }
+//    Group(rectangle, basicText, d)
+//  }
+
+  override protected val drawable = Video(History.url().withPath("/sample.mp4")).map { video =>
     val d = new Drawable {
+      modified := video.modified
+      video.play()
+
       override def draw(context: Context, x: Double, y: Double): Unit = {
-        image.draw(context, x + 200.0, y + 300.0)
+        video.draw(context, x + 200.0, y + 300.0)
       }
     }
     Group(rectangle, basicText, d)

@@ -13,18 +13,23 @@
     * [X] `Text`
         * [X] Pre-defined and sized paths for text from `Font`
         * [X] Extend `Drawable` to allow explicit drawing
-        * [ ] Support `WrapMode` for `None`, `Clip`, `Ellipsis`, `BreakAtCharacter`, and `BreakAtWord`.
+        * [ ] Support `WrapMode` for `None`, `Clip`, `Ellipsis`, `Hyphenate`, and `Word`.
     * [ ] `Image`
+        * [X] Extend `Drawable` to allow explicit drawing
+        * [ ] Separate asynchronous and synchronous versions
+    * [ ] `Video`
         * [ ] Extend `Drawable` to allow explicit drawing
+        * [ ] Complete control and introspection of video
     * [X] `Drawable` for most simplistic drawing functionality
     * [X] `Group` for simplistic child drawing functionality
-    * [ ] `Transformable` for mix-in of transformation matrix
+    * [X] `Transformable` for mix-in of transformation matrix
     * [ ] `Cacheable` for mix-in of pre-rendering to `canvas` instance
     * [ ] `ClippedDrawable` for clipping the drawing area
     * [ ] `AsynchronousDrawable` for asynchronous drawing mix-in (extends `Cacheable`)
     * [ ] `InteractiveDrawable` mix-in for hit testing (extends `Transformable`)
     * [ ] `ImageView` component
     * [ ] `TextView` component
+    * [ ] `VideoView` component
     * [X] Cleanup of `Context` to better utilize `Path.fix`
     * [X] Update Path to utilize `Context`
 * [ ] Selectable Text in Canvas for copy/paste

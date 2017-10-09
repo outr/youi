@@ -17,13 +17,13 @@
     * [ ] `Image`
         * [X] Extend `Drawable` to allow explicit drawing
         * [ ] Separate asynchronous and synchronous versions
-    * [ ] `Video`
-        * [ ] Extend `Drawable` to allow explicit drawing
-        * [ ] Complete control and introspection of video
+    * [X] `Video`
+        * [X] Extend `Drawable` to allow explicit drawing
+        * [X] Controls and information
     * [X] `Drawable` for most simplistic drawing functionality
     * [X] `Group` for simplistic child drawing functionality
     * [X] `Transformable` for mix-in of transformation matrix
-    * [ ] `Cacheable` for mix-in of pre-rendering to `canvas` instance
+    * [X] `Cacheable` for mix-in of pre-rendering to `canvas` instance
     * [ ] `ClippedDrawable` for clipping the drawing area
     * [ ] `AsynchronousDrawable` for asynchronous drawing mix-in (extends `Cacheable`)
     * [ ] `InteractiveDrawable` mix-in for hit testing (extends `Transformable`)

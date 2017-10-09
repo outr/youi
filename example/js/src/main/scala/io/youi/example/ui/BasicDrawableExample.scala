@@ -2,8 +2,10 @@ package io.youi.example.ui
 
 import io.youi._
 import io.youi.app.screen.UIScreen
-import io.youi.drawable.{Context, Drawable, Group}
-import io.youi.video.Video
+import io.youi.drawable._
+import io.youi.paint.Stroke
+
+import scala.concurrent.Future
 
 object BasicDrawableExample extends UIExampleScreen with UIScreen {
   override def name: String = "Basic Drawable"
@@ -20,7 +22,7 @@ object BasicDrawableExample extends UIExampleScreen with UIScreen {
   private val basicText = new Drawable {
     override def draw(context: Context, x: Double, y: Double): Unit = {
       context.fill(Color.Blue, apply = false)
-      context.setFont("Arial", 32.0, "normal", "normal", "normal")
+      context.setFont("Arial", 96.0, "normal", "normal", "normal")
       context.fillText(message, 200.0, 200.0)
     }
   }
@@ -47,19 +49,31 @@ object BasicDrawableExample extends UIExampleScreen with UIScreen {
 //    Group(rectangle, basicText, d)
 //  }
 
-  override protected val drawable = Video(History.url().withPath("/sample.mp4")).map { video =>
-    val d = new Drawable {
-      modified := video.modified
-      video.play()
-      video.position.attach { d =>
-        message = s"Volume: ${video.volume()}, Duration: ${video.duration}, Width: ${video.width}, Height: ${video.height}, Position: $d"
-      }
+//  override protected val drawable = Video(History.url().withPath("/sample.mp4")).map { video =>
+//    val d = new Drawable {
+//      modified := video.modified
+//      video.play()
+//      video.position.attach { d =>
+//        message = s"Volume: ${video.volume()}, Duration: ${video.duration}, Width: ${video.width}, Height: ${video.height}, Position: $d"
+//      }
+//
+//      override def draw(context: Context, x: Double, y: Double): Unit = {
+//        video.draw(context, x + 200.0, y + 300.0)
+//      }
+//    }
+//    Group(rectangle, basicText, d)
+//  }
 
-      override def draw(context: Context, x: Double, y: Double): Unit = {
-        video.draw(context, x + 200.0, y + 300.0)
+  override protected val drawable = Future.successful {
+    val d = new Cacheable {
+      updateCache(300.0, 300.0) { ctx =>
+        ctx.rect(1.0, 1.0, 298.0, 298.0)
+        ctx.fill(Color.LightBlue, apply = true)
+        ctx.stroke(Stroke(Color.Black, 2.0), apply = true)
+        Future.successful(())
       }
     }
-    Group(rectangle, basicText, d)
+    Group(rectangle, basicText, Transformation(200.0, 300.0)(d))
   }
 
   override def path: String = "/examples/basic-drawable.html"

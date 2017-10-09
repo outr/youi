@@ -8,6 +8,8 @@ import io.youi.video.Video
 object BasicDrawableExample extends UIExampleScreen with UIScreen {
   override def name: String = "Basic Drawable"
 
+  var message: String = "Testing"
+
   private val rectangle = new Drawable {
     override def draw(context: Context, x: Double, y: Double): Unit = {
       context.rect(100.0, 100.0, 250.0, 250.0)
@@ -18,8 +20,8 @@ object BasicDrawableExample extends UIExampleScreen with UIScreen {
   private val basicText = new Drawable {
     override def draw(context: Context, x: Double, y: Double): Unit = {
       context.fill(Color.Blue, apply = false)
-      context.setFont("Arial", 96.0, "normal", "normal", "normal")
-      context.fillText("Testing", 200.0, 200.0)
+      context.setFont("Arial", 32.0, "normal", "normal", "normal")
+      context.fillText(message, 200.0, 200.0)
     }
   }
 
@@ -49,6 +51,9 @@ object BasicDrawableExample extends UIExampleScreen with UIScreen {
     val d = new Drawable {
       modified := video.modified
       video.play()
+      video.position.attach { d =>
+        message = s"Volume: ${video.volume()}, Duration: ${video.duration}, Width: ${video.width}, Height: ${video.height}, Position: $d"
+      }
 
       override def draw(context: Context, x: Double, y: Double): Unit = {
         video.draw(context, x + 200.0, y + 300.0)

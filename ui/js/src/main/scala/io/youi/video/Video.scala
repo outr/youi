@@ -19,6 +19,8 @@ class Video(val url: URL, element: html.Video) extends Drawable {
   val position: Var[Double] = Var(0.0)
   val volume: Var[Double] = Var(1.0)
 
+  private var updatingTime = false
+
   private def init(autoPlay: Boolean,
                    loop: Boolean,
                    muted: Boolean): Unit = {
@@ -30,7 +32,6 @@ class Video(val url: URL, element: html.Video) extends Drawable {
     this.loop.attach(element.loop = _)
     this.muted.attach(element.muted = _)
 
-    var updatingTime = false
     position := element.currentTime
     position.attach { p =>
       if (!updatingTime) element.currentTime = p
@@ -68,6 +69,15 @@ class Video(val url: URL, element: html.Video) extends Drawable {
 
   override def draw(context: Context, x: Double, y: Double): Unit = {
     context.drawVideo(element)(x, y, width, height)
+    if (position() > 0.0 && !isPaused && !isEnded) {
+      updatingTime = true
+      try {
+        position := element.currentTime
+      } finally {
+        updatingTime = false
+      }
+      modified := System.currentTimeMillis()
+    }
   }
 
   def dispose(): Unit = pause()

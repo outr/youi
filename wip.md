@@ -32,19 +32,4 @@
     * [ ] `VideoView` component
     * [X] Cleanup of `Context` to better utilize `Path.fix`
     * [X] Update Path to utilize `Context`
-* [ ] Selectable Text in Canvas for copy/paste
-* [ ] TextInput in Canvas for editable editable text
-    * [ ] Editing features
-    * [ ] Caret with customization support
-    * [ ] Rich text segments
-    * [ ] Multi-line support or explicit single-line support
 * [ ] Move `template` module into its own project
-* [ ] Stylized Components
-    * [ ] Button
-    * [ ] TextField
-    * [ ] TextArea
-    * [ ] Checkbox
-    * [ ] RadioButton
-    * [ ] ListSelection
-* [ ] Update Components to only render when they need to (lazy rendering)
-    * [ ] Disable rendering of offscreen or invisible components

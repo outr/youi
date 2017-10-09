@@ -12,39 +12,24 @@ case class Path(actions: List[PathAction]) extends PathBuilder with PathAction {
     actions.foreach(_.draw(context, x, y, scaleX, scaleY))
   }
 
-  def shift(adjustX: Double, adjustY: Double): Path = {
+  def modify(mx: Double => Double, my: Double => Double): Path = {
     val updated = actions.map {
-      case CurveTo(x1, y1, x2, y2, x, y) => CurveTo(x1 + adjustX, y1 + adjustY, x2 + adjustX, y2 + adjustY, x + adjustX, y + adjustY)
-      case LineTo(x, y) => LineTo(x + adjustX, y + adjustY)
-      case MoveTo(x, y) => MoveTo(x + adjustX, y + adjustY)
-      case QuadraticCurveTo(x1, y1, x, y) => QuadraticCurveTo(x1 + adjustX, y1 + adjustY, x + adjustX, y + adjustY)
+      case CurveTo(x1, y1, x2, y2, x, y) => CurveTo(mx(x1), my(y1), mx(x2), my(y2), mx(x), my(y))
+      case LineTo(x, y) => LineTo(mx(x), my(y))
+      case MoveTo(x, y) => MoveTo(mx(x), my(y))
+      case QuadraticCurveTo(x1, y1, x, y) => QuadraticCurveTo(mx(x1), my(y1), mx(x), my(y))
+      case BeginPath => BeginPath
+      case ClosePath => ClosePath
       case action => throw new RuntimeException(s"Unsupported PathAction: $action.")
     }
     Path(updated)
   }
 
-  def flipVertically(): Path = {
-    val updated = actions.map {
-      case CurveTo(x1, y1, x2, y2, x, y) => CurveTo(x1, -y1, x2, -y2, x, -y)
-      case LineTo(x, y) => LineTo(x, -y)
-      case MoveTo(x, y) => MoveTo(x, -y)
-      case QuadraticCurveTo(x1, y1, x, y) => QuadraticCurveTo(x1, -y1, x, -y)
-      case action => throw new RuntimeException(s"Unsupported PathAction: $action.")
-    }
-    Path(updated)
-  }
+  def scale(x: Double = 1.0, y: Double = 1.0): Path = modify(_ * x, _ * y)
 
-  def fix(): Path = {
-    def r(d: Double): Double = Path.fix(d)
-    val updated = actions.map {
-      case CurveTo(x1, y1, x2, y2, x, y) => CurveTo(r(x1), r(y1), r(x2), r(y2), r(x), r(y))
-      case LineTo(x, y) => LineTo(r(x), r(y))
-      case MoveTo(x, y) => MoveTo(r(x), r(y))
-      case QuadraticCurveTo(x1, y1, x, y) => QuadraticCurveTo(r(x1), r(y1), r(x), r(y))
-      case action => action
-    }
-    Path(updated)
-  }
+  def shift(adjustX: Double, adjustY: Double): Path = modify(_ + adjustX, _ + adjustY)
+
+  def fix(): Path = modify(Path.fix, Path.fix)
 
   override def withAction(action: PathAction): Path = Path(actions ::: List(action))
 
@@ -76,6 +61,8 @@ object Path extends PathBuilder {
     }
     Path(list)
   }
+
+  def merge(paths: Path*): Path = Path(paths.flatMap(_.actions).toList)
 
   def apply(pathString: String): Path = {
     val b = new StringBuilder

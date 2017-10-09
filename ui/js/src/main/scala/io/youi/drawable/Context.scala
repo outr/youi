@@ -1,7 +1,7 @@
 package io.youi.drawable
 
 import io.youi._
-import io.youi.paint.{Paint, Stroke}
+import io.youi.paint.{Paint, Repetition, Stroke}
 import io.youi.path.Path
 import io.youi.spatial.{Matrix3, Size}
 import io.youi.{Color, dom}
@@ -126,6 +126,12 @@ class Context(val canvas: html.Canvas, _ratio: => Double) {
     ctx.clip()
   }
 
+  def clipPath(path: Path, x: Double = 0.0, y: Double = 0.0): Unit = {
+    begin()
+    path.draw(this, x, y)
+    ctx.clip()
+  }
+
   def begin(): Unit = ctx.beginPath()
   def close(): Unit = ctx.closePath()
 
@@ -208,6 +214,8 @@ class Context(val canvas: html.Canvas, _ratio: => Double) {
   def strokeText(text: String, x: Double = 0.0, y: Double = 0.0, maxWidth: Double = 10000.0): Unit = {
     ctx.strokeText(text, x * ratioX, y * ratioY, maxWidth * ratioX)
   }
+
+  def createPattern(repetition: Repetition): CanvasPattern = ctx.createPattern(canvas, repetition.value)
 
   def clear(): Unit = {
     ctx.clearRect(0.0, 0.0, canvas.width, canvas.height)

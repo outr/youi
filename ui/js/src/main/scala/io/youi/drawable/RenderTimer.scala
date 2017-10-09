@@ -1,6 +1,8 @@
 package io.youi.drawable
 
 class RenderTimer(drawable: Drawable) extends Drawable {
+  modified := drawable.modified
+
   override def draw(context: Context, x: Double, y: Double): Unit = {
     val start = System.currentTimeMillis()
     drawable.draw(context, x, y)

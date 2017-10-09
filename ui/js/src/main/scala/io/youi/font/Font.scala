@@ -45,6 +45,8 @@ case class Text(font: Font,
   }
   def lineHeight: Double = font.lineHeight(size)
 
+  lazy val path: Path = Path.merge(lines.flatten.map(cp => cp.path): _*)
+
   override def draw(context: Context, x: Double, y: Double): Unit = {
     context.begin()
     lines.foreach { line =>
@@ -66,11 +68,14 @@ object Text {
 }
 
 case class CharacterPath(char: Char, size: Double, index: Int, x: Double, y: Double, glyph: Glyph) extends Drawable {
+  lazy val path: Path = glyph.sizedPath(size).shift(x, y)
+
   override def draw(context: Context, x: Double, y: Double): Unit = glyph.draw(context, this.x + x, this.y + y, size)
 }
 
 trait Glyph {
   def path: Path
+  def sizedPath(size: Double): Path
   def width(size: Double): Double
   def draw(context: Context, x: Double, y: Double, size: Double): Unit
 }
@@ -145,6 +150,11 @@ case class OpenTypeGlyph(font: OpenTypeFont, otg: opentype.Glyph, unitsPerEm: Do
     case _: Throwable => Path.empty
   }
   override def width(size: Double): Double = otg.advanceWidth * (1.0 / unitsPerEm * size)
+
+  override def sizedPath(size: Double): Path = {
+    val scale = 1.0 / unitsPerEm * size
+    path.scale(scale, -scale)
+  }
 
   override def draw(context: Context, x: Double, y: Double, size: Double): Unit = {
     val scale = 1.0 / unitsPerEm * size

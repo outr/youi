@@ -13,7 +13,7 @@ trait UIScreen extends Screen {
 
   override protected def activate(): Future[Unit] = super.activate().flatMap { _ =>
     drawable.map { d =>
-      renderer.drawable := d
+      renderer.drawable.static(d)
       renderer.visible := true
     }
   }

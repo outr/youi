@@ -2,6 +2,7 @@ package io.youi.client
 
 import java.io.File
 import java.net.URI
+import java.nio.charset.StandardCharsets
 
 import io.circe.{Decoder, Encoder, Json, Printer}
 import io.circe.parser._
@@ -61,15 +62,17 @@ class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpd
         c.data.foreach {
           case FormData(key, entries) => entries.foreach {
             case StringEntry(value, headers) => {
-              val contentType = entity.ContentType.create(Headers.`Content-Type`.value(headers).getOrElse(ContentType.`text/plain`).outputString)
+              val contentType = entity.ContentType.create(Headers.`Content-Type`.value(headers).getOrElse(ContentType.`text/plain`).outputString, StandardCharsets.UTF_8)
               b.addTextBody(key, value, contentType)
             }
             case FileEntry(fileName, file, headers) => {
-              val contentType = entity.ContentType.create(Headers.`Content-Type`.value(headers).getOrElse(ContentType.`application/octet-stream`).outputString)
+              val contentType = entity.ContentType.create(Headers.`Content-Type`.value(headers).getOrElse(ContentType.`application/octet-stream`).outputString, StandardCharsets.UTF_8)
               b.addBinaryBody(key, file, contentType, fileName)
             }
           }
         }
+        b.setCharset(StandardCharsets.UTF_8)
+        b.setContentType(entity.ContentType.create(ContentType.`multipart/form-data`.outputString, StandardCharsets.UTF_8))
         b.build()
       }
       case c => throw new RuntimeException(s"Unsupported request content: $c")

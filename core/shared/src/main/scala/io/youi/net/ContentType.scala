@@ -17,6 +17,8 @@ case class ContentType(`type`: String, subType: String, charSet: Option[String] 
     b.toString()
   }
 
+  def withCharSet(charSet: String): ContentType = copy(charSet = Some(charSet))
+
   def is(contentType: ContentType): Boolean = contentType.mimeType == mimeType
 
   override def equals(obj: scala.Any): Boolean = obj match {

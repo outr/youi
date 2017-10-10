@@ -33,8 +33,7 @@ val scalaCheckVersion = "1.13.5"
 lazy val root = project.in(file("."))
   .aggregate(
     macrosJS, macrosJVM, coreJS, coreJVM, spatialJS, spatialJVM, stream, communicationJS, communicationJVM, dom, client,
-    server, serverUndertow, uiJS, uiJVM, hypertext, optimizer, appJS, appJVM, templateJS,
-    templateJVM, exampleJS, exampleJVM
+    server, serverUndertow, uiJS, uiJVM, hypertext, optimizer, appJS, appJVM, exampleJS, exampleJVM
   )
   .settings(
     resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases",
@@ -175,23 +174,6 @@ lazy val communication = crossProject.in(file("communication"))
 lazy val communicationJS = communication.js
 lazy val communicationJVM = communication.jvm.dependsOn(server)
 
-//lazy val canvas = crossProject.in(file("canvas"))
-//  .settings(
-//    name := "youi-canvas"
-//  )
-//  .jsSettings(
-//    libraryDependencies ++= Seq(
-//      "com.outr" %%% "canvg-scala-js" % canvgVersion,
-//      "com.outr" %%% "opentype-scala-js" % openTypeVersion,
-//      "com.outr" %%% "pica-scala-js" % picaVersion
-//    ),
-//    jsDependencies += RuntimeDOM
-//  )
-//  .dependsOn(spatial)
-//
-//lazy val canvasJS = canvas.js.dependsOn(dom)
-//lazy val canvasJVM = canvas.jvm
-
 lazy val ui = crossProject.in(file("ui"))
   .settings(
     name := "youi-ui"
@@ -202,7 +184,7 @@ lazy val ui = crossProject.in(file("ui"))
       "com.outr" %%% "opentype-scala-js" % openTypeVersion,
       "com.outr" %%% "pica-scala-js" % picaVersion
     ),
-    jsDependencies += RuntimeDOM
+    jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv
   )
   .dependsOn(spatial)
 
@@ -243,30 +225,6 @@ lazy val app = crossProject.in(file("app"))
 
 lazy val appJS = app.js.dependsOn(hypertext)
 lazy val appJVM = app.jvm
-
-lazy val template = crossProject.in(file("template"))
-  .settings(
-    name := "youi-template"
-  )
-  .jsSettings(
-    artifactPath in (Compile, fastOptJS) := (resourceManaged in Compile).value / "application.js",
-    artifactPath in (Compile, fullOptJS) := (resourceManaged in Compile).value / "application.js",
-    crossTarget in fastOptJS := baseDirectory.value / ".." / "jvm" / "src" / "main" / "resources" / "app",
-    crossTarget in fullOptJS := baseDirectory.value / ".." / "jvm" / "src" / "main" / "resources" / "app",
-    crossTarget in packageJSDependencies := baseDirectory.value / ".." / "jvm" / "src" / "main" / "resources" / "app",
-    skip in packageJSDependencies := false
-  )
-  .jvmSettings(
-    fork := true,
-    libraryDependencies ++= Seq(
-      "org.powerscala" %% "powerscala-io" % powerScalaVersion
-    ),
-    assemblyJarName in assembly := "youi-template.jar"
-  )
-  .dependsOn(app)
-
-lazy val templateJS = template.js
-lazy val templateJVM = template.jvm.dependsOn(serverUndertow, optimizer)
 
 lazy val example = crossProject.in(file("example"))
   .settings(

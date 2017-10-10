@@ -35,4 +35,4 @@
     * [X] Improve `Path` rendering performance
         * [X] General optimizations
         * [X] Support `Path2D`
-* [ ] Move `template` module into its own project
+* [X] Move `template` module into its own project

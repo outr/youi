@@ -9,14 +9,12 @@
         * [X] OpenTypeFont
           * [X] Update to latest version of OpenType.js
           * [X] Fixes for consistent font height
-        * [ ] NativeFont
     * [X] `Text`
         * [X] Pre-defined and sized paths for text from `Font`
         * [X] Extend `Drawable` to allow explicit drawing
         * [ ] Support `WrapMode` for `None`, `Clip`, `Ellipsis`, `Hyphenate`, and `Word`.
-    * [ ] `Image`
+    * [X] `Image`
         * [X] Extend `Drawable` to allow explicit drawing
-        * [ ] Separate asynchronous and synchronous versions (utilize `Cacheable`)
     * [X] `Video`
         * [X] Extend `Drawable` to allow explicit drawing
         * [X] Controls and information
@@ -35,4 +33,6 @@
     * [X] Improve `Path` rendering performance
         * [X] General optimizations
         * [X] Support `Path2D`
+    * [ ] Cleanup and re-working on `component` package and build on `Drawable` functionality to reduce complexity
 * [X] Move `template` module into its own project
+* [X] `Activate` support for checked and unchecked to work with checkboxes easily

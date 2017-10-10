@@ -73,7 +73,8 @@ class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpd
         }
         b.setCharset(StandardCharsets.UTF_8)
         b.setContentType(entity.ContentType.create(ContentType.`multipart/form-data`.outputString, StandardCharsets.UTF_8))
-        b.build()
+        val multipart = b.build()
+        new MultipartEntityWrapper(multipart)
       }
       case c => throw new RuntimeException(s"Unsupported request content: $c")
     }

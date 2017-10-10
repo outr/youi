@@ -2,11 +2,15 @@ package io.youi.path
 
 import io.youi.drawable.Context
 import io.youi.spatial.BoundingBox
+import io.youi.ui
 
 import scala.collection.mutable.ListBuffer
+import scala.scalajs.js
+import scala.scalajs.js.annotation.JSGlobal
 
 case class Path(actions: List[PathAction]) extends PathBuilder with PathAction {
   lazy val boundingBox: BoundingBox = Path.boundingBox(actions)
+  lazy val path2d: Path2D = createPath2d()
 
   override def draw(context: Context, x: Double, y: Double, scaleX: Double, scaleY: Double): Unit = {
     actions.foreach(_.draw(context, x, y, scaleX, scaleY))
@@ -23,6 +27,21 @@ case class Path(actions: List[PathAction]) extends PathBuilder with PathAction {
       case action => throw new RuntimeException(s"Unsupported PathAction: $action.")
     }
     Path(updated)
+  }
+
+  private def createPath2d(): Path2D = {
+    val p = new Path2D
+    def s(v: Double): Double = v * ui.ratio
+    actions.foreach {
+      case CurveTo(x1, y1, x2, y2, x, y) => p.bezierCurveTo(s(x1), s(y1), s(x2), s(y2), s(x), s(y))
+      case LineTo(x, y) => p.lineTo(s(x), s(y))
+      case MoveTo(x, y) => p.moveTo(s(x), s(y))
+      case QuadraticCurveTo(x1, y1, x, y) => p.quadraticCurveTo(s(x1), s(y1), s(x), s(y))
+      case BeginPath => // No begin in path2d
+      case ClosePath => p.closePath()
+      case action => throw new RuntimeException(s"Unsupported PathAction: $action.")
+    }
+    p
   }
 
   def scale(x: Double = 1.0, y: Double = 1.0): Path = modify(_ * x, _ * y)
@@ -156,4 +175,18 @@ object Path extends PathBuilder {
   override def withAction(action: PathAction): Path = Path(List(action))
 
   def fix(value: Double): Double = value
+}
+
+@js.native
+@JSGlobal("Path2D")
+class Path2D extends js.Object {
+  def closePath(): Unit = js.native
+  def moveTo(x: Double, y: Double): Unit = js.native
+  def lineTo(x: Double, y: Double): Unit = js.native
+  def bezierCurveTo(cp1x: Double, cp1y: Double, cp2x: Double, cp2y: Double, x: Double, y: Double): Unit = js.native
+  def quadraticCurveTo(cpx: Double, cpy: Double, x: Double, y: Double): Unit = js.native
+  def arc(x: Double, y: Double, radius: Double, startAngle: Double, endAngle: Double, anticlockwise: Boolean = js.native): Unit = js.native
+  def arcTo(x1: Double, y1: Double, x2: Double, y2: Double, radius: Double): Unit = js.native
+  def ellipse(x: Double, y: Double, radiusX: Double, radiusY: Double, rotation: Double, startAngle: Double, endAngle: Double, anticlockwise: Boolean = js.native): Unit = js.native
+  def rect(x: Double, y: Double, width: Double, height: Double): Unit = js.native
 }

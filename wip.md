@@ -16,7 +16,7 @@
         * [ ] Support `WrapMode` for `None`, `Clip`, `Ellipsis`, `Hyphenate`, and `Word`.
     * [ ] `Image`
         * [X] Extend `Drawable` to allow explicit drawing
-        * [ ] Separate asynchronous and synchronous versions
+        * [ ] Separate asynchronous and synchronous versions (utilize `Cacheable`)
     * [X] `Video`
         * [X] Extend `Drawable` to allow explicit drawing
         * [X] Controls and information
@@ -32,4 +32,7 @@
     * [ ] `VideoView` component
     * [X] Cleanup of `Context` to better utilize `Path.fix`
     * [X] Update Path to utilize `Context`
+    * [X] Improve `Path` rendering performance
+        * [X] General optimizations
+        * [X] Support `Path2D`
 * [ ] Move `template` module into its own project

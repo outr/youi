@@ -118,11 +118,11 @@ class Context(val canvas: html.Canvas, _ratio: => Double) {
 
   def clipRect(x1: Double, y1: Double, x2: Double, y2: Double): Unit = {
     begin()
-    moveTo(x1 * ratioX, y1 * ratioY)
-    lineTo(x2 * ratioX, y1 * ratioY)
-    lineTo(x2 * ratioX, y2 * ratioY)
-    lineTo(x1 * ratioX, y2 * ratioY)
-    lineTo(x1 * ratioX, y1 * ratioY)
+    moveTo(x1, y1)
+    lineTo(x2, y1)
+    lineTo(x2, y2)
+    lineTo(x1, y2)
+    lineTo(x1, y1)
     ctx.clip()
   }
 

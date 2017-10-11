@@ -4,6 +4,7 @@
 * [ ] Major cleanup and simplification of Component internals
     * [X] Migration back to `ui` module instead of `canvas`
     * [X] Inherent support for `devicePixelRatio` and `backingStoreRatio` to properly render scaled and HiDPI
+* [ ] `Drawable` core infrastructure
     * [X] `Font`
         * [X] Trait for multiple implementations
         * [X] OpenTypeFont
@@ -22,9 +23,10 @@
     * [X] `Group` for simplistic child drawing functionality
     * [X] `Transformable` for mix-in of transformation matrix
     * [X] `Cacheable` for mix-in of pre-rendering to `canvas` instance
-    * [ ] `ClippedDrawable` for clipping the drawing area
+    * [X] `Clipped` for clipping the drawing area
     * [ ] `AsynchronousDrawable` for asynchronous drawing mix-in (extends `Cacheable`)
     * [ ] `InteractiveDrawable` mix-in for hit testing (extends `Transformable`)
+* [ ] `Component` re-design
     * [ ] `ImageView` component
     * [ ] `TextView` component
     * [ ] `VideoView` component

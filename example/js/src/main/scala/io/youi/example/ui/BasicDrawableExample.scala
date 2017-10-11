@@ -3,6 +3,7 @@ package io.youi.example.ui
 import io.youi._
 import io.youi.app.screen.UIScreen
 import io.youi.drawable._
+import io.youi.image.Image
 import io.youi.paint.Stroke
 
 import scala.concurrent.Future
@@ -40,14 +41,15 @@ object BasicDrawableExample extends UIExampleScreen with UIScreen {
 //    Group(rectangle, basicText, text2)
 //  }
 
-//  override protected val drawable = Image("/images/cuteness.jpg").map { image =>
-//    val d = new Drawable {
-//      override def draw(context: Context, x: Double, y: Double): Unit = {
+  override protected val drawable = Image("/images/scale9.png").map { image =>
+    val d = new Drawable {
+      override def draw(context: Context, x: Double, y: Double): Unit = {
+        Clipped(context, x + 200.0, y + 300.00, 50.0, 50.0, 450.0, 450.0, image)
 //        image.draw(context, x + 200.0, y + 300.0)
-//      }
-//    }
-//    Group(rectangle, basicText, d)
-//  }
+      }
+    }
+    Group(rectangle, basicText, d)
+  }
 
 //  override protected val drawable = Video(History.url().withPath("/sample.mp4")).map { video =>
 //    val d = new Drawable {
@@ -64,17 +66,17 @@ object BasicDrawableExample extends UIExampleScreen with UIScreen {
 //    Group(rectangle, basicText, d)
 //  }
 
-  override protected val drawable = Future.successful {
-    val d = new Cacheable {
-      updateCache(300.0, 300.0) { ctx =>
-        ctx.rect(1.0, 1.0, 298.0, 298.0)
-        ctx.fill(Color.LightBlue, apply = true)
-        ctx.stroke(Stroke(Color.Black, 2.0), apply = true)
-        Future.successful(())
-      }
-    }
-    Group(rectangle, basicText, Transformation(200.0, 300.0)(d))
-  }
+//  override protected val drawable = Future.successful {
+//    val d = new Cacheable {
+//      updateCache(300.0, 300.0) { ctx =>
+//        ctx.rect(1.0, 1.0, 298.0, 298.0)
+//        ctx.fill(Color.LightBlue, apply = true)
+//        ctx.stroke(Stroke(Color.Black, 2.0), apply = true)
+//        Future.successful(())
+//      }
+//    }
+//    Group(rectangle, basicText, Transformation(200.0, 300.0)(d))
+//  }
 
   override def path: String = "/examples/basic-drawable.html"
 }

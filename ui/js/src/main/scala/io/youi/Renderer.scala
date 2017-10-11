@@ -5,7 +5,7 @@ import io.youi.util.CanvasPool
 import org.scalajs.dom._
 import reactify.Var
 
-class Renderer(val canvas: html.Canvas) extends Updates {
+class Renderer(val canvas: html.Canvas = CanvasPool(1.0, 1.0)) extends Updates {
   private lazy val context: Context = new Context(canvas, ratio())
 
   val ratio: Var[Double] = Var(ui.ratio)

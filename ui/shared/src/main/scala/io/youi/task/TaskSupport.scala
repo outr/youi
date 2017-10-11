@@ -3,7 +3,7 @@ package io.youi.task
 import io.youi.Updates
 
 trait TaskSupport extends Updates {
-  def createInstance(task: Task): TaskInstance = new TaskInstance(task, this)
+  protected def createInstance(task: Task): TaskInstance = new TaskInstance(task, this)
 
   def start(task: Task): TaskInstance  = {
     val instance = createInstance(task)

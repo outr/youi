@@ -24,8 +24,6 @@
     * [X] `Transformable` for mix-in of transformation matrix
     * [X] `Cacheable` for mix-in of pre-rendering to `canvas` instance
     * [X] `Clipped` for clipping the drawing area
-    * [ ] `AsynchronousDrawable` for asynchronous drawing mix-in (extends `Cacheable`)
-    * [ ] `InteractiveDrawable` mix-in for hit testing (extends `Transformable`)
 * [ ] `Component` re-design
     * [ ] `ImageView` component
     * [ ] `TextView` component

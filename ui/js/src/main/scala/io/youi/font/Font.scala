@@ -5,7 +5,8 @@ trait Font {
   def apply(text: String,
             size: Double,
             maxWidth: Double = Double.MaxValue,
-            kerning: Boolean = true): Text
+            kerning: Boolean = true,
+            wrap: WrapMode = WrapMode.Word): Text
 }
 
 object Font {
@@ -14,6 +15,7 @@ object Font {
     override def apply(text: String,
                        size: Double,
                        maxWidth: Double = Double.MaxValue,
-                       kerning: Boolean = true): Text = Text.empty
+                       kerning: Boolean = true,
+                       wrap: WrapMode = WrapMode.Word): Text = Text.empty
   }
 }

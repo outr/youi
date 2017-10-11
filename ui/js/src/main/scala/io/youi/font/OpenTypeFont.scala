@@ -3,8 +3,8 @@ package io.youi.font
 import io.youi.net.URL
 
 import scala.collection.mutable.ListBuffer
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 case class OpenTypeFont(otf: opentype.Font) extends Font {
   private var glyphs = Map.empty[Char, OpenTypeGlyph]
@@ -16,7 +16,8 @@ case class OpenTypeFont(otf: opentype.Font) extends Font {
   override def apply(text: String,
                      size: Double,
                      maxWidth: Double = Double.MaxValue,
-                     kerning: Boolean = true): Text = {
+                     kerning: Boolean = true,
+                     wrap: WrapMode = WrapMode.Word): Text = {
     var offsetX = 0.0
     var offsetY = 0.0
     val lineHeight = this.lineHeight(size)

@@ -1,11 +1,11 @@
 package io.youi.component
 
 import io.youi.component.mixins.MatrixSupport
-import io.youi.drawable.{Context, Drawable}
+import io.youi.drawable.{Context, Drawable, Transformation}
 import io.youi.event.Events
 import io.youi.task.TaskSupport
 import io.youi.theme.ComponentTheme
-import io.youi.{Modifiable, Unique, Updatable, Widget, WidgetPosition, WidgetSize}
+import io.youi.{Compass, Modifiable, Unique, Updatable, Widget, WidgetPosition, WidgetSize}
 import reactify._
 
 import scala.annotation.tailrec
@@ -74,6 +74,7 @@ trait Component extends TaskSupport with ComponentTheme with Widget with MatrixS
     preDraw(context)
     drawInternal(context)
     postDraw(context)
+    context.restore()
   }
 
   override def update(delta: Double): Unit = {
@@ -82,18 +83,34 @@ trait Component extends TaskSupport with ComponentTheme with Widget with MatrixS
     updateUpdatables(delta, internalUpdatables())
   }
 
+  protected def updateMeasured(width: => Double, height: => Double): Unit = {
+    size.measured.width := width + padding.width + border.width
+    size.measured.height := height + padding.height + border.height
+  }
+
   @tailrec
   private def updateUpdatables(delta: Double, updatables: List[Updatable]): Unit = if (updatables.nonEmpty) {
     updatables.head.update(delta)
     updateUpdatables(delta, updatables.tail)
   }
 
-  protected def preDraw(context: Context): Unit = {}
+  protected def preDraw(context: Context): Unit = {
+    context.save()
+    context.opacity = context.opacity * opacity()
+    border.background(size.width, size.height, context, background)
+    val x = position.x + padding.left + border.size(Compass.West)
+    val y = position.y + padding.top + border.size(Compass.North)
+    Transformation.transform(context, x, y, pivot.x, pivot.y, rotation, manageState = false)(Drawable.None)
+  }
   protected def drawInternal(context: Context): Unit = {}
-  protected def postDraw(context: Context): Unit = {}
+  protected def postDraw(context: Context): Unit = {
+    context.restore()
+    border.draw(size.width, size.height, context)
+  }
 
   override protected def defaultThemeParent = Some(theme)
-  protected def determineActualVisibility: Boolean = visible() && parent().exists(_.actual.visibility())
+  protected def determineActualVisibility: Boolean = visible() && parent().forall(_.visible())
+  override def updateTasks(): Boolean = super.updateTasks() && actual.visibility
 }
 
 object Component extends ComponentTheme

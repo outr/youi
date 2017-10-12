@@ -1,6 +1,7 @@
 package io.youi.component
 
 import io.youi.WidgetContainer
+import io.youi.drawable.Context
 import io.youi.theme.AbstractContainerTheme
 import reactify._
 
@@ -11,8 +12,32 @@ trait AbstractContainer extends Component with AbstractContainerTheme with Widge
   override protected lazy val childEntries: Var[Vector[Child]] = prop(Vector.empty, updatesTransform = true)
 
   override protected def defaultThemeParent = Some(theme)
+
+  override protected def drawInternal(context: Context): Unit = {
+    super.drawInternal(context)
+
+    childEntries.foreach { child =>
+      if (child.visible()) {
+        child.draw(context, 0.0, 0.0)
+      }
+    }
+  }
+
+  override def update(delta: Double): Unit = {
+    super.update(delta)
+
+    childEntries.foreach(_.update(delta))
+  }
 }
 
 object AbstractContainer extends AbstractContainerTheme {
   def children(container: AbstractContainer): Val[Vector[Component]] = container.childEntries.asInstanceOf[Val[Vector[Component]]]
+}
+
+object Contained {
+  def apply[C <: Component](children: C*): AbstractContainer = new AbstractContainer {
+    override type Child = C
+
+    childEntries := children.toVector
+  }
 }

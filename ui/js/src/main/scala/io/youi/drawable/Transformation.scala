@@ -33,4 +33,21 @@ object Transformation {
       }
     }
   }
+
+  def transform(context: Context,
+                x: Double = 0.0,
+                y: Double = 0.0,
+                pivotX: Double = 0.0,
+                pivotY: Double = 0.0,
+                rotation: Double = 0.0,
+                manageState: Boolean = true)
+               (drawable: Drawable): Unit = {
+    if (manageState) context.save()
+    context.translate(x, y)
+    context.translate(pivotX, pivotY)
+    context.rotate(rotation * (math.Pi * 2.0))
+    context.translate(-pivotX, -pivotY)
+    drawable.draw(context, x, y)
+    if (manageState) context.restore()
+  }
 }

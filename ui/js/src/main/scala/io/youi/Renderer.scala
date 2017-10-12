@@ -39,6 +39,11 @@ class Renderer(val canvas: html.Canvas = CanvasPool(1.0, 1.0)) extends Updates {
   override def update(delta: Double): Unit = {
     super.update(delta)
 
+    drawable() match {
+      case u: Updatable => u.update(delta)
+      case _ => // Not updatable
+    }
+
     render.update()
   }
 

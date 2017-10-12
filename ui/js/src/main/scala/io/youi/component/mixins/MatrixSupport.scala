@@ -23,6 +23,6 @@ trait MatrixSupport {
     matrix.world.set(parent().map(_.matrix.world).getOrElse(Matrix3.Identity))
     matrix.world *= matrix.local
 
-    // TODO: used to invalidate parent, but that shouldn't be necessary unless something has changed
+    invalidate()
   }
 }

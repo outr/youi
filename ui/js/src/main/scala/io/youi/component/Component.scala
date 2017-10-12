@@ -8,6 +8,8 @@ import io.youi.theme.ComponentTheme
 import io.youi.{Compass, Modifiable, Unique, Updatable, Widget, WidgetPosition, WidgetSize}
 import reactify._
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
 import scala.annotation.tailrec
 
 trait Component extends TaskSupport with ComponentTheme with Widget with MatrixSupport with Drawable { self =>
@@ -102,7 +104,7 @@ trait Component extends TaskSupport with ComponentTheme with Widget with MatrixS
     val y = position.y + padding.top + border.size(Compass.North)
     Transformation.transform(context, x, y, pivot.x, pivot.y, rotation, manageState = false)(Drawable.None)
   }
-  protected def drawInternal(context: Context): Unit = {}
+  protected def drawInternal(context: Context): Unit
   protected def postDraw(context: Context): Unit = {
     context.restore()
     border.draw(size.width, size.height, context)
@@ -111,6 +113,23 @@ trait Component extends TaskSupport with ComponentTheme with Widget with MatrixS
   override protected def defaultThemeParent = Some(theme)
   protected def determineActualVisibility: Boolean = visible() && parent().forall(_.visible())
   override def updateTasks(): Boolean = super.updateTasks() && actual.visibility
+
+  override protected def updateRendering(): Unit = {
+    super.updateRendering()
+
+    invalidate()
+  }
+
+  override protected def updateTransform(): Unit = {
+    super.updateTransform()
+
+    updateMatrix()
+    updateRendering()
+  }
+
+  override protected def invalidate() = super.invalidate().map { _ =>
+    modified := System.currentTimeMillis()
+  }
 }
 
 object Component extends ComponentTheme

@@ -13,9 +13,10 @@ trait AbstractContainer extends Component with AbstractContainerTheme with Widge
 
   override protected def defaultThemeParent = Some(theme)
 
-  override protected def drawInternal(context: Context): Unit = {
-    super.drawInternal(context)
+  private val childModified = Val(if (childEntries.nonEmpty) childEntries().map(_.modified()).max else 0L)
+  childModified.attach(modified := _)
 
+  override protected def drawInternal(context: Context): Unit = {
     childEntries.foreach { child =>
       if (child.visible()) {
         child.draw(context, 0.0, 0.0)

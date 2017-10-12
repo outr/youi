@@ -18,8 +18,6 @@ class ImageView extends Component with ImageViewTheme {
   override protected def modifiables: List[Modifiable] = super.modifiables ::: List(image())
 
   override protected def drawInternal(context: Context): Unit = {
-    super.drawInternal(context)
-
     image.draw(context, 0.0, 0.0)
   }
 }

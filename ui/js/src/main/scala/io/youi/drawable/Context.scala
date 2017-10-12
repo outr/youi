@@ -1,10 +1,9 @@
 package io.youi.drawable
 
-import io.youi._
-import io.youi.paint.{Paint, Repetition, Stroke}
+import io.youi.paint._
 import io.youi.path.Path
 import io.youi.spatial.{Matrix3, Size}
-import io.youi.{Color, dom}
+import io.youi.{Color, dom, _}
 import org.scalajs.dom.{html, _}
 
 import scala.scalajs.js
@@ -168,12 +167,22 @@ class Context(val canvas: html.Canvas, _ratio: => Double) {
 
   def stroke(stroke: Stroke, apply: Boolean): Unit = if (stroke.nonEmpty) {
     strokeStyle = stroke
-    ctx.strokeStyle = stroke.paint.asJS(this)
-    ctx.lineWidth = stroke.lineWidth * ratioX
-    ctx.setLineDash(js.Array(stroke.lineDash: _*))
-    ctx.lineDashOffset = stroke.lineDashOffset * ratioX
-    ctx.lineCap = stroke.lineCap.value
-    ctx.lineJoin = stroke.lineJoin.value
+    this.stroke(stroke.paint, stroke.lineWidth, stroke.lineDash, stroke.lineDashOffset, stroke.lineCap, stroke.lineJoin, apply)
+  }
+
+  def stroke(paint: Paint,
+             lineWidth: Double = 1.0,
+             lineDash: List[Double] = Nil,
+             lineDashOffset: Double = 0.0,
+             lineCap: LineCap = LineCap.Butt,
+             lineJoin: LineJoin = LineJoin.Miter,
+             apply: Boolean): Unit = if (paint.nonEmpty) {
+    ctx.strokeStyle = paint.asJS(this)
+    ctx.lineWidth = lineWidth * ratioX
+    ctx.setLineDash(js.Array(lineDash: _*))
+    ctx.lineDashOffset = lineDashOffset * ratioX
+    ctx.lineCap = lineCap.value
+    ctx.lineJoin = lineJoin.value
     if (apply) ctx.stroke()
   }
 

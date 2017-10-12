@@ -17,7 +17,7 @@ object Fill {
   def draw(context: Context,
            paint: Paint,
            path: Option[Path] = None,
-           apply: Boolean = true): Unit = {
+           apply: Boolean = true): Unit = if (paint.nonEmpty) {
     path match {
       case Some(p) => {
         context.fill(paint, apply = false)

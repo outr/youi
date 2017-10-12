@@ -40,7 +40,7 @@ object PathsExample extends UIExampleScreen with UIScreen {
     ),
     Fill(Color.Blue.withAlpha(0.5)),
     Path.begin.move(10.0, 350.0).line(390.0, 350.0).close,
-    Stroke(Color.Red, 2.0, List(5.0, 10.0), 0.0, LineCap.Butt, LineJoin.Miter)
+    Stroke(Color.Red, None, 2.0, List(5.0, 10.0), 0.0, LineCap.Butt, LineJoin.Miter)
   ))
 
   override def path: String = "/examples/drawable/paths.html"

@@ -1,8 +1,9 @@
 package io.youi.component
 
-import io.youi.{Unique, Widget, WidgetPosition, WidgetSize}
+import io.youi.drawable.Context
 import io.youi.task.TaskSupport
 import io.youi.theme.ComponentTheme
+import io.youi.{Unique, Widget, WidgetPosition, WidgetSize}
 import reactify._
 
 trait Component extends TaskSupport with ComponentTheme with Widget {
@@ -41,6 +42,16 @@ trait Component extends TaskSupport with ComponentTheme with Widget {
     lazy val center: Val[Double] = Val(width / 2.0)
     lazy val middle: Val[Double] = Val(height / 2.0)
   }
+
+  final def draw(context: Context): Unit = {
+    preDraw(context)
+    drawInternal(context)
+    postDraw(context)
+  }
+
+  protected def preDraw(context: Context): Unit = {}
+  protected def drawInternal(context: Context): Unit = {}
+  protected def postDraw(context: Context): Unit = {}
 }
 
 object Component extends ComponentTheme

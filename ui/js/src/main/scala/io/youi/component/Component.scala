@@ -8,15 +8,15 @@ import io.youi.theme.ComponentTheme
 import io.youi.{Compass, Modifiable, Unique, Updatable, Widget, WidgetPosition, WidgetSize}
 import reactify._
 
-import scala.concurrent.ExecutionContext.Implicits.global
-
 import scala.annotation.tailrec
+import scala.concurrent.ExecutionContext.Implicits.global
 
 trait Component extends TaskSupport with ComponentTheme with Widget with MatrixSupport with Drawable { self =>
   def theme: Var[_ <: ComponentTheme]
 
-  lazy val id: Var[String] = Var(Unique())
+  lazy val id: Var[String] = Var(s"${`type`}.${Unique(length = 4, characters = Unique.Readable).toLowerCase}")
   lazy val event: Events = new Events(this)
+  def `type`: String
 
   private val internalModified: Val[Long] = Val(modifiables.map(_.modified()).max)
   internalModified.attach(modified := _)
@@ -73,7 +73,12 @@ trait Component extends TaskSupport with ComponentTheme with Widget with MatrixS
   lazy val rotation: Var[Double] = prop(0.0, updatesTransform = true)
 
   override final def draw(context: Context, x: Double, y: Double): Unit = {
+    draw(context, translate = true)
+  }
+
+  def draw(context: Context, translate: Boolean): Unit = {
     preDraw(context)
+    transformDraw(context, translate)
     drawInternal(context)
     postDraw(context)
     context.restore()
@@ -100,9 +105,12 @@ trait Component extends TaskSupport with ComponentTheme with Widget with MatrixS
     context.save()
     context.opacity = context.opacity * opacity()
     border.background(size.width, size.height, context, background)
-    val x = position.x + padding.left + border.size(Compass.West)
-    val y = position.y + padding.top + border.size(Compass.North)
-    Transformation.transform(context, x, y, pivot.x, pivot.y, rotation, manageState = false)(Drawable.None)
+    Transformation.transform(context, padding.left + border.size(Compass.West), padding.top + border.size(Compass.North))()
+  }
+  protected def transformDraw(context: Context, translate: Boolean): Unit = {
+    val x = if (translate) position.x() else 0.0
+    val y = if (translate) position.y() else 0.0
+    Transformation.transform(context, x, y, pivot.x, pivot.y, rotation, manageState = false)()
   }
   protected def drawInternal(context: Context): Unit
   protected def postDraw(context: Context): Unit = {
@@ -127,9 +135,11 @@ trait Component extends TaskSupport with ComponentTheme with Widget with MatrixS
     updateRendering()
   }
 
-  override protected def invalidate() = super.invalidate().map { _ =>
+  override def invalidate() = super.invalidate().map { _ =>
     modified := System.currentTimeMillis()
   }
+
+  override def toString: String = id()
 }
 
 object Component extends ComponentTheme

@@ -7,6 +7,7 @@ import io.youi.example.screen.{CommunicationScreen, LoginScreen}
 import io.youi.example.ui._
 import io.youi.example.ui.drawable.{PathsExample, TextExample}
 import io.youi.example.ui.hypertext.DataTransferExample
+import io.youi.util.DebugSupport
 //import io.youi.util.DebugSupport
 import org.scalajs.dom._
 import scribe.LogHandler
@@ -15,8 +16,8 @@ import scala.scalajs.js.annotation.JSExportTopLevel
 
 object ClientExampleApplication extends ExampleApplication with ClientApplication with LoadingTransitionSupport {
   // Adds debug support to the application (press F2)
-//  val debug = new DebugSupport()
-//  debug.enabled := true
+  val debug = new DebugSupport
+  debug.enabled := true
 
   val communicationScreen = CommunicationScreen
   val login = LoginScreen
@@ -26,7 +27,6 @@ object ClientExampleApplication extends ExampleApplication with ClientApplicatio
   val paths = PathsExample
   val text = TextExample
 
-  val basic = BasicDrawableExample
   val hello = HelloWorld
   val images = ImageExample
 //  val video = VideoExample

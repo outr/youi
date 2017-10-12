@@ -7,6 +7,8 @@ import reactify.Var
 class Container extends AbstractContainer with ContainerTheme {
   override type Child = Component
 
+  override def `type`: String = "Container"
+
   override lazy val theme: Var[_ <: ContainerTheme] = Var(Container)
 
   override protected def defaultThemeParent = Some(theme)

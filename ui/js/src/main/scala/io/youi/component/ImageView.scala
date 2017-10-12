@@ -19,6 +19,8 @@ class ImageView extends Component with ImageViewTheme {
 
   override protected def defaultThemeParent = Some(theme)
 
+  override def `type`: String = "ImageView"
+
   override protected def modifiables: List[Modifiable] = super.modifiables ::: List(image())
 
   override protected def drawInternal(context: Context): Unit = if (image.width > 0.0 && image.height > 0.0) {

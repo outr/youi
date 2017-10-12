@@ -1,6 +1,6 @@
 package io.youi.example.ui
 
-import io.youi.app.screen.UIScreen
+import io.youi.app.screen.DrawableScreen
 import io.youi.component._
 import io.youi.drawable.Drawable
 import io.youi.image.Image
@@ -10,7 +10,7 @@ import io.youi.ui
 import scala.concurrent.Future
 import scala.concurrent.duration._
 
-object ImageExample extends UIExampleScreen with UIScreen {
+object ImageExample extends UIExampleScreen with DrawableScreen {
   override def name: String = "Image Example"
   override def path: String = "/examples/image.html"
 

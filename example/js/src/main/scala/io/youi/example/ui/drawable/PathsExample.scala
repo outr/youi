@@ -1,7 +1,7 @@
 package io.youi.example.ui.drawable
 
 import io.youi._
-import io.youi.app.screen.UIScreen
+import io.youi.app.screen.DrawableScreen
 import io.youi.drawable.Group
 import io.youi.example.ui.UIExampleScreen
 import io.youi.paint.{LineCap, LineJoin, Stroke}
@@ -9,7 +9,7 @@ import io.youi.path._
 
 import scala.concurrent.Future
 
-object PathsExample extends UIExampleScreen with UIScreen {
+object PathsExample extends UIExampleScreen with DrawableScreen {
   override def name: String = "Paths Example"
 
   override protected val drawable = Future.successful(Group(

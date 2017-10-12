@@ -39,6 +39,8 @@ object Contained {
   def apply[C <: Component](children: C*): AbstractContainer = new AbstractContainer {
     override type Child = C
 
+    override def `type`: String = "Contained"
+
     childEntries := children.toVector
   }
 }

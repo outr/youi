@@ -41,7 +41,7 @@ object Transformation {
                 pivotY: Double = 0.0,
                 rotation: Double = 0.0,
                 manageState: Boolean = true)
-               (drawable: Drawable): Unit = {
+               (drawable: Drawable = Drawable.None): Unit = {
     if (manageState) context.save()
     context.translate(x, y)
     context.translate(pivotX, pivotY)

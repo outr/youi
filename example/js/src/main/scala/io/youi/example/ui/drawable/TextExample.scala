@@ -1,7 +1,7 @@
 package io.youi.example.ui.drawable
 
 import io.youi.Color
-import io.youi.app.screen.UIScreen
+import io.youi.app.screen.DrawableScreen
 import io.youi.drawable._
 import io.youi.example.ui.UIExampleScreen
 import io.youi.font.{GoogleFont, OpenTypeFont}
@@ -10,7 +10,7 @@ import io.youi.path.Fill
 
 import scala.concurrent.Future
 
-object TextExample extends UIExampleScreen with UIScreen {
+object TextExample extends UIExampleScreen with DrawableScreen {
   override def name: String = "Text Example"
 
   override protected val drawable: Future[RenderTimer] = OpenTypeFont.fromURL(GoogleFont.`Open Sans`.`regular`).map { font =>

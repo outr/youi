@@ -26,6 +26,7 @@ class DebugSupport(renderer: Renderer = Renderer) {
 
 object DebugWindow {
   private lazy val root = dom.create[html.Div]("div")
+  private var canvases = List.empty[html.Canvas]
 
   root.style.display = "none"
 
@@ -37,6 +38,7 @@ object DebugWindow {
 
   def showFor(container: Container): Unit = {
     root.innerHTML = ""
+    close()
     root.style.position = "absolute"
     root.style.width = s"${ui.width().toInt}px"
     root.style.height = s"${ui.height().toInt}px"
@@ -51,7 +53,10 @@ object DebugWindow {
     container.children().foreach(drawChild(_, parent, container))
   }
 
-  def close(): Unit = root.style.display = "none"
+  def close(): Unit = {
+    canvases.foreach(CanvasPool.restore)
+    root.style.display = "none"
+  }
 
   private def drawChild(component: Component, parent: html.Element, container: Container): Unit = {
     val canvas = CanvasPool(component.size.width() * ui.ratio, component.size.height() * ui.ratio)
@@ -80,6 +85,7 @@ object DebugWindow {
     canvas.height = math.ceil(component.size.height * ui.ratio).toInt
     component.draw(context, translate = false)
     parent.appendChild(canvas)
+    canvases = canvas :: canvases
 
     component match {
       case c: AbstractContainer => {

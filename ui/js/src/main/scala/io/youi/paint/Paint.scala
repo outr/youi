@@ -1,7 +1,7 @@
 package io.youi.paint
 
 import io.youi.net.URL
-import io.youi.{Color, ImageMode, ui}
+import io.youi.{Color, ImageMode, Modifiable, Updatable, ui}
 import io.youi.drawable.{Context, Drawable}
 import io.youi.image.Image
 import io.youi.video.Video
@@ -12,9 +12,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.scalajs._
 import scala.scalajs.js.|
 
-trait Paint {
-  lazy val modified: Var[Long] = Var(System.currentTimeMillis())
-
+trait Paint extends Modifiable with Updatable {
   def isEmpty: Boolean = false
   def nonEmpty: Boolean = !isEmpty
   def update(delta: Double): Unit = {}

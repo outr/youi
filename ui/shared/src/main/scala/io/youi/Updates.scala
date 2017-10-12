@@ -4,12 +4,12 @@ import reactify._
 
 import scala.concurrent.duration.FiniteDuration
 
-trait Updates {
+trait Updates extends Updatable {
   lazy val delta: Channel[Double] = Channel[Double]
 
   def nextFrame(f: => Unit): Unit = delta.once(_ => f)
 
-  def update(delta: Double): Unit = this.delta := delta
+  override def update(delta: Double): Unit = this.delta := delta
 
   def once(delay: FiniteDuration)(f: => Unit): Unit = every(delay, Some(delay))(f)
 

@@ -5,8 +5,10 @@ import io.youi.drawable.{Context, Drawable}
 import io.youi.event.Events
 import io.youi.task.TaskSupport
 import io.youi.theme.ComponentTheme
-import io.youi.{Unique, Widget, WidgetPosition, WidgetSize}
+import io.youi.{Modifiable, Unique, Updatable, Widget, WidgetPosition, WidgetSize}
 import reactify._
+
+import scala.annotation.tailrec
 
 trait Component extends TaskSupport with ComponentTheme with Widget with MatrixSupport with Drawable { self =>
   def theme: Var[_ <: ComponentTheme]
@@ -14,7 +16,14 @@ trait Component extends TaskSupport with ComponentTheme with Widget with MatrixS
   lazy val id: Var[String] = Var(Unique())
   lazy val event: Events = new Events(this)
 
+  private val internalModified: Val[Long] = Val(modifiables.map(_.modified()).max)
+  internalModified.attach(modified := _)
+  private val internalUpdatables: Val[List[Updatable]] = Val(updatables)
+
   def parent: Val[Option[AbstractContainer]] = parentWidget.asInstanceOf[Val[Option[AbstractContainer]]]
+
+  protected def modifiables: List[Modifiable] = List(background(), border().paint)
+  protected def updatables: List[Updatable] = List(background(), border().paint)
 
   object actual {
     val x: Val[Double] = Val(parent().map(_.actual.x()).getOrElse(0.0) + position.x())
@@ -65,6 +74,18 @@ trait Component extends TaskSupport with ComponentTheme with Widget with MatrixS
     preDraw(context)
     drawInternal(context)
     postDraw(context)
+  }
+
+  override def update(delta: Double): Unit = {
+    super.update(delta)
+
+    updateUpdatables(delta, internalUpdatables())
+  }
+
+  @tailrec
+  private def updateUpdatables(delta: Double, updatables: List[Updatable]): Unit = if (updatables.nonEmpty) {
+    updatables.head.update(delta)
+    updateUpdatables(delta, updatables.tail)
   }
 
   protected def preDraw(context: Context): Unit = {}

@@ -1,9 +1,8 @@
 package io.youi.drawable
 
-import reactify.Var
+import io.youi.Modifiable
 
-trait Drawable {
-  lazy val modified: Var[Long] = Var(System.currentTimeMillis())
+trait Drawable extends Modifiable {
   def draw(context: Context, x: Double, y: Double): Unit
 }
 

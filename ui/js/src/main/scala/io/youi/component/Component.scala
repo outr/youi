@@ -1,5 +1,6 @@
 package io.youi.component
 
+import io.youi.component.mixins.MatrixSupport
 import io.youi.drawable.{Context, Drawable}
 import io.youi.event.Events
 import io.youi.task.TaskSupport
@@ -7,7 +8,7 @@ import io.youi.theme.ComponentTheme
 import io.youi.{Unique, Widget, WidgetPosition, WidgetSize}
 import reactify._
 
-trait Component extends TaskSupport with ComponentTheme with Widget with Drawable { self =>
+trait Component extends TaskSupport with ComponentTheme with Widget with MatrixSupport with Drawable { self =>
   def theme: Var[_ <: ComponentTheme]
 
   lazy val id: Var[String] = Var(Unique())
@@ -52,6 +53,13 @@ trait Component extends TaskSupport with ComponentTheme with Widget with Drawabl
     lazy val center: Val[Double] = Val(width / 2.0)
     lazy val middle: Val[Double] = Val(height / 2.0)
   }
+
+  object pivot {
+    lazy val x: Var[Double] = prop(size.center(), updatesTransform = true)
+    lazy val y: Var[Double] = prop(size.middle(), updatesTransform = true)
+  }
+
+  lazy val rotation: Var[Double] = prop(0.0, updatesTransform = true)
 
   override final def draw(context: Context, x: Double, y: Double): Unit = {
     preDraw(context)

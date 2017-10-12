@@ -1,10 +1,13 @@
 package io.youi.theme
 
-trait VideoTheme extends ComponentTheme {
+import io.youi.component.Component
+import reactify.Var
+
+trait VideoViewTheme extends ComponentTheme {
   override protected def defaultThemeParent: Option[Theme] = Some(Component)
 
-  private def prnt[T](f: VideoTheme => T, default: => T): T = parentTheme().collect {
-    case p: VideoTheme => p
+  private def prnt[T](f: VideoViewTheme => T, default: => T): T = parentTheme().collect {
+    case p: VideoViewTheme => p
   }.map(f).getOrElse(default)
 
   val autoPlay: Var[Boolean] = prop(prnt(_.autoPlay, false), updatesRendering = true)

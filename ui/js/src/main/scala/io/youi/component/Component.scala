@@ -77,8 +77,9 @@ trait Component extends TaskSupport with ComponentTheme with Widget with MatrixS
   }
 
   def draw(context: Context, translate: Boolean): Unit = {
-    preDraw(context)
+    context.save()
     transformDraw(context, translate)
+    preDraw(context)
     drawInternal(context)
     postDraw(context)
     context.restore()
@@ -102,7 +103,6 @@ trait Component extends TaskSupport with ComponentTheme with Widget with MatrixS
   }
 
   protected def preDraw(context: Context): Unit = {
-    context.save()
     context.opacity = context.opacity * opacity()
     border.background(size.width, size.height, context, background)
     Transformation.transform(context, padding.left + border.size(Compass.West), padding.top + border.size(Compass.North))()

@@ -9,6 +9,9 @@ import reactify._
 import scala.concurrent.{Future, Promise}
 
 class Video(val url: URL, element: html.Video) extends Drawable {
+  def isEmpty: Boolean = false
+  def nonEmpty: Boolean = !isEmpty
+
   val width: Int = element.videoWidth
   val height: Int = element.videoHeight
   val duration: Double = element.duration
@@ -23,7 +26,7 @@ class Video(val url: URL, element: html.Video) extends Drawable {
 
   private def init(autoPlay: Boolean,
                    loop: Boolean,
-                   muted: Boolean): Unit = {
+                   muted: Boolean): Unit = if (!isEmpty) {
     this.autoPlay := autoPlay
     this.loop := loop
     this.muted := muted
@@ -67,7 +70,7 @@ class Video(val url: URL, element: html.Video) extends Drawable {
   def isPaused: Boolean = element.paused
   def isEnded: Boolean = element.ended
 
-  override def draw(context: Context, x: Double, y: Double): Unit = {
+  override def draw(context: Context, x: Double, y: Double): Unit = if (!isEmpty) {
     context.drawVideo(element)(x, y, width, height)
     if (position() > 0.0 && !isPaused && !isEnded) {
       updatingTime = true
@@ -84,6 +87,10 @@ class Video(val url: URL, element: html.Video) extends Drawable {
 }
 
 object Video {
+  object empty extends Video(URL("http://localhost"), dom.create[html.Video]("video")) {
+    override def isEmpty: Boolean = true
+  }
+
   def apply(url: URL,
             autoPlay: Boolean = false,
             loop: Boolean = false,

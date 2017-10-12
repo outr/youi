@@ -29,7 +29,7 @@ object ClientExampleApplication extends ExampleApplication with ClientApplicatio
 
   val hello = HelloWorld
   val images = ImageExample
-//  val video = VideoExample
+  val video = VideoExample
 //  val animation = AnimationExample
 //  val basicText = BasicTextExample
 //  val text = TextExample

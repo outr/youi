@@ -114,8 +114,8 @@ trait Component extends TaskSupport with ComponentTheme with Widget with MatrixS
   }
   protected def drawInternal(context: Context): Unit
   protected def postDraw(context: Context): Unit = {
-    context.restore()
     border.draw(size.width, size.height, context)
+    context.restore()
   }
 
   override protected def defaultThemeParent = Some(theme)

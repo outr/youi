@@ -1,8 +1,7 @@
 package io.youi.component
 
-import io.youi.component.mixins.MatrixSupport
+import io.youi.component.mixins.{Interactivity, MatrixSupport}
 import io.youi.drawable.{Context, Drawable, Transformation}
-import io.youi.event.Events
 import io.youi.task.TaskSupport
 import io.youi.theme.ComponentTheme
 import io.youi.{Compass, Modifiable, Unique, Updatable, Widget, WidgetPosition, WidgetSize}
@@ -11,11 +10,10 @@ import reactify._
 import scala.annotation.tailrec
 import scala.concurrent.ExecutionContext.Implicits.global
 
-trait Component extends TaskSupport with ComponentTheme with Widget with MatrixSupport with Drawable { self =>
+trait Component extends TaskSupport with ComponentTheme with Widget with MatrixSupport with Interactivity with Drawable { self =>
   def theme: Var[_ <: ComponentTheme]
 
   lazy val id: Var[String] = Var(s"${`type`}.${Unique(length = 4, characters = Unique.Readable).toLowerCase}")
-  lazy val event: Events = new Events(this)
   def `type`: String
 
   private val internalModified: Val[Long] = Val(modifiables.map(_.modified()).max)

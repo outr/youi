@@ -6,37 +6,46 @@ import io.youi.dom._
 import io.youi.drawable.Context
 import io.youi.path.Path
 import io.youi.spatial.{BoundingBox, Size}
-import io.youi.util.CanvasPool
+import io.youi.util.{CanvasPool, LazyFuture}
 import org.scalajs.dom.html
 import org.scalajs.dom.raw._
+import reactify._
 
-import scala.concurrent.{Future, Promise}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Future, Promise}
 import scala.scalajs._
 
 case class SVGImage(private val svg: SVGSVGElement,
                     width: Double,
                     height: Double,
                     measured: Size) extends Image {
-  private[image] val canvas = CanvasPool(width, height)
+  private val context = Val(new Context(CanvasPool(width * ui.ratio, height * ui.ratio), ui.ratio))
+  context.changes(new ChangeObserver[Context] {
+    override def change(oldValue: Context, newValue: Context): Unit = {
+      CanvasPool.restore(oldValue.canvas)     // Cleanup when canvas changes
+      reDrawer.flag()                         // Must make sure to redraw on the new canvas
+    }
+  })
+  private val reDrawer = LazyFuture {
+    drawAsync(context, 0.0, 0.0, width, height).map { _ =>
+      modified := System.currentTimeMillis()
+    }
+  }
 
-  def modify[R](f: SVGSVGElement => R): R = {
+  def modify[R](f: SVGSVGElement => R): Future[R] = {
     val result = f(svg)
-    modified := System.currentTimeMillis()
-    result
+    reDrawer.flag().map(_ => result)
   }
 
   override def drawFast(context: Context, x: Double, y: Double, width: Double, height: Double): Unit = {
-    context.drawCanvas(canvas)(x, y, width, height)
+    context.drawCanvas(this.context.canvas)(x, y, width, height)
   }
 
   override def drawAsync(context: Context, x: Double, y: Double, width: Double, height: Double): Future[Unit] = {
-    canvas.width = math.ceil(width).toInt
-    canvas.height = math.ceil(height).toInt
     drawToCanvas(context.canvas, x: Double, y: Double, width, height)
   }
 
-  def drawToCanvas(canvas: html.Canvas, x: Double, y: Double, width: Double, height: Double): Future[Unit] = {
+  private def drawToCanvas(canvas: html.Canvas, x: Double, y: Double, width: Double, height: Double): Future[Unit] = {
     val promise = Promise[Unit]
     val callback: js.Function = () => {
       promise.success(())
@@ -48,8 +57,8 @@ case class SVGImage(private val svg: SVGSVGElement,
       ignoreClear = true
       offsetX = math.round(x).toInt
       offsetY = math.round(y).toInt
-      scaleWidth = math.ceil(width).toInt
-      scaleHeight = math.ceil(height).toInt
+      scaleWidth = math.ceil(width * ui.ratio).toInt
+      scaleHeight = math.ceil(height * ui.ratio).toInt
       renderCallback = callback
     })
     promise.future

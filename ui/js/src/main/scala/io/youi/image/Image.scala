@@ -120,9 +120,7 @@ object Image {
     val original = SVGImage.measure(svg).toSize
     val size = SizeUtility.size(width, height, original)
     val image = SVGImage(svg, size.width, size.height, original)
-    image.drawToCanvas(image.canvas, 0.0, 0.0, size.width, size.height).map { _ =>
-      image
-    }
+    image.modify(_ => image)
   }
 
   def fromSVGString(svgString: String,

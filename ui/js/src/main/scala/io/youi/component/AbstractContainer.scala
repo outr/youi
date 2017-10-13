@@ -2,8 +2,12 @@ package io.youi.component
 
 import io.youi.WidgetContainer
 import io.youi.drawable.Context
+import io.youi.event.HitResult
+import io.youi.spatial.Point
 import io.youi.theme.AbstractContainerTheme
 import reactify._
+
+import scala.annotation.tailrec
 
 trait AbstractContainer extends Component with AbstractContainerTheme with WidgetContainer {
   override type Child <: Component
@@ -36,6 +40,32 @@ trait AbstractContainer extends Component with AbstractContainerTheme with Widge
     super.update(delta)
 
     childEntries.foreach(_.update(delta))
+  }
+
+  override def hitTest(global: Point): HitResult = if (interactive() && visible()) {
+    val children = childEntries()
+    val lastIndex = children.length - 1
+    val childResult = if (lastIndex >= 0) {
+      childHitTest(global, lastIndex, children)
+    } else {
+      HitResult.Miss
+    }
+    childResult match {
+      case HitResult.Miss => super.hitTest(global)
+      case result => result
+    }
+  } else {
+    HitResult.Miss
+  }
+
+  @tailrec
+  private def childHitTest(global: Point, index: Int, children: Vector[Child]): HitResult = {
+    val child = children(index)
+    child.hitTest(global) match {
+      case result: HitResult.Hit => result
+      case HitResult.Miss if index == 0 => HitResult.Miss
+      case HitResult.Miss => childHitTest(global, index - 1, children)
+    }
   }
 }
 

@@ -18,11 +18,18 @@ class TextView extends Component with TextViewTheme {
       Text.empty
     }
   }
-  internalText.attach(text := _)
+
+  override def init(): Unit = {
+    super.init()
+
+    internalText.attach(text := _)
+
+    updateMeasured(text.boundingBox.width, text.boundingBox.height)
+  }
 
   override lazy val theme: Var[TextViewTheme] = Var(TextView)
 
-  updateMeasured(text.boundingBox.width, text.boundingBox.height)
+  init()
 
   override protected def defaultThemeParent = Some(theme)
 

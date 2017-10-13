@@ -10,11 +10,19 @@ trait AbstractContainer extends Component with AbstractContainerTheme with Widge
 
   override lazy val theme: Var[_ <: AbstractContainerTheme] = Var(AbstractContainer)
   override protected lazy val childEntries: Var[Vector[Child]] = prop(Vector.empty, updatesTransform = true)
+  private val childModified = Val(if (childEntries.nonEmpty) childEntries().map(_.modified()).max else 0L)
 
   override protected def defaultThemeParent = Some(theme)
 
-  private val childModified = Val(if (childEntries.nonEmpty) childEntries().map(_.modified()).max else 0L)
-  childModified.attach(modified := _)
+  override protected def init(): Unit = {
+    super.init()
+
+    updateMeasured(
+      width = if (childEntries().nonEmpty) childEntries().map(_.position.right()).max else 0.0,
+      height = if (childEntries().nonEmpty) childEntries().map(_.position.bottom()).max else 0.0
+    )
+    childModified.attach(modified := _)
+  }
 
   override protected def drawInternal(context: Context): Unit = {
     childEntries.foreach { child =>

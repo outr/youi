@@ -11,6 +11,8 @@ class Container extends AbstractContainer with ContainerTheme {
 
   override lazy val theme: Var[_ <: ContainerTheme] = Var(Container)
 
+  init()
+
   override protected def defaultThemeParent = Some(theme)
 
   def layout: Var[Layout] = layoutManager

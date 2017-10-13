@@ -13,9 +13,15 @@ class ImageView extends Component with ImageViewTheme {
 
   private object caching extends Cacheable
 
-  updateMeasured(image.width, image.height)
+  override protected def init(): Unit = {
+    super.init()
+
+    updateMeasured(image.width, image.height)
+  }
 
   override lazy val theme: Var[ImageViewTheme] = Var(ImageView)
+
+  init()
 
   override protected def defaultThemeParent = Some(theme)
 

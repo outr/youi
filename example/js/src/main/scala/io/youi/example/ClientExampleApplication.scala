@@ -32,7 +32,7 @@ object ClientExampleApplication extends ExampleApplication with ClientApplicatio
   val video = VideoExample
   val animation = AnimationExample
   val textView = TextViewExample
-//  val htmlComponent = HTMLComponentExample
+  val htmlComponent = HTMLComponentExample
 //  val svg = SVGImageExample
 //  val scale9 = Scale9Example
 //  val virtual = VirtualSizeExample

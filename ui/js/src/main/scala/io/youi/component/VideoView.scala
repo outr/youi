@@ -9,13 +9,17 @@ import reactify._
 class VideoView extends Component with VideoViewTheme {
   lazy val video: Var[Video] = Var(Video.empty)
 
-  updateMeasured(video.width, video.height)
-
   override lazy val theme: Var[VideoViewTheme] = Var(VideoView)
 
   override protected def defaultThemeParent = Some(theme)
 
   override def `type`: String = "VideoView"
+
+  override protected def init(): Unit = {
+    super.init()
+
+    updateMeasured(video.width, video.height)
+  }
 
   override protected def modifiables: List[Modifiable] = super.modifiables ::: List(video())
 
@@ -27,6 +31,8 @@ class VideoView extends Component with VideoViewTheme {
   override protected def drawInternal(context: Context): Unit = if (video.nonEmpty) {
     video.draw(context, 0.0, 0.0)
   }
+
+  init()
 }
 
 object VideoView extends VideoViewTheme

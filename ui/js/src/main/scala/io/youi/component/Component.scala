@@ -19,13 +19,18 @@ trait Component extends TaskSupport with ComponentTheme with Widget with MatrixS
   def `type`: String
 
   private val internalModified: Val[Long] = Val(modifiables.map(_.modified()).max)
-  internalModified.attach(modified := _)
   private val internalUpdatables: Val[List[Updatable]] = Val(updatables)
 
   def parent: Val[Option[AbstractContainer]] = parentWidget.asInstanceOf[Val[Option[AbstractContainer]]]
 
   protected def modifiables: List[Modifiable] = List(background(), border().paint)
   protected def updatables: List[Updatable] = List(background(), border().paint)
+
+  override protected def init(): Unit = {
+    super.init()
+
+    internalModified.attach(modified := _)
+  }
 
   object actual {
     val x: Val[Double] = Val(parent().map(_.actual.x()).getOrElse(0.0) + position.x())
@@ -83,6 +88,7 @@ trait Component extends TaskSupport with ComponentTheme with Widget with MatrixS
     drawInternal(context)
     postDraw(context)
     context.restore()
+    borderDraw(context, translate)
   }
 
   override def update(delta: Double): Unit = {
@@ -114,12 +120,16 @@ trait Component extends TaskSupport with ComponentTheme with Widget with MatrixS
   }
   protected def drawInternal(context: Context): Unit
   protected def postDraw(context: Context): Unit = {
+  }
+  protected def borderDraw(context: Context, translate: Boolean): Unit = if (border.paint.nonEmpty) {
+    context.save()
+    transformDraw(context, translate = true)
     border.draw(size.width, size.height, context)
     context.restore()
   }
 
   override protected def defaultThemeParent = Some(theme)
-  protected def determineActualVisibility: Boolean = visible() && parent().forall(_.visible())
+  protected def determineActualVisibility: Boolean = visible() && parent().forall(_.actual.visibility())
   override def updateTasks(): Boolean = super.updateTasks() && actual.visibility
 
   override protected def updateRendering(): Unit = {

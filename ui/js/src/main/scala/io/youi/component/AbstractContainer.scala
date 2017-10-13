@@ -3,7 +3,7 @@ package io.youi.component
 import io.youi.WidgetContainer
 import io.youi.drawable.Context
 import io.youi.event.HitResult
-import io.youi.spatial.Point
+import io.youi.spatial.{BoundingBox, Point}
 import io.youi.theme.AbstractContainerTheme
 import reactify._
 
@@ -12,6 +12,8 @@ import scala.annotation.tailrec
 trait AbstractContainer extends Component with AbstractContainerTheme with WidgetContainer {
   override type Child <: Component
 
+  val clipping: Var[Boolean] = Var(true)
+  val drawOffscreen: Var[Boolean] = Var(false)
   override lazy val theme: Var[_ <: AbstractContainerTheme] = Var(AbstractContainer)
   override protected lazy val childEntries: Var[Vector[Child]] = prop(Vector.empty, updatesTransform = true)
   private val childModified = Val(if (childEntries.nonEmpty) childEntries().map(_.modified()).max else 0L)
@@ -29,9 +31,23 @@ trait AbstractContainer extends Component with AbstractContainerTheme with Widge
   }
 
   override protected def drawInternal(context: Context): Unit = {
+    if (clipping()) {
+      context.clipRect(0.0, 0.0, size.width, size.height)
+    }
+    val viewable = AbstractContainer.containerBB
+    val cbb = AbstractContainer.childBB
     childEntries.foreach { child =>
       if (child.visible()) {
-        child.draw(context, 0.0, 0.0)
+        val shouldDraw = if (drawOffscreen()) {
+          true
+        } else {
+          viewable.set(-offset.x, -offset.y, -offset.x + size.width, -offset.y + size.height)
+          cbb.set(child.position.left, child.position.top, child.position.right, child.position.bottom)
+          cbb.intersects(viewable)
+        }
+        if (shouldDraw) {
+          child.draw(context, 0.0, 0.0)
+        }
       }
     }
   }
@@ -70,6 +86,9 @@ trait AbstractContainer extends Component with AbstractContainerTheme with Widge
 }
 
 object AbstractContainer extends AbstractContainerTheme {
+  private val containerBB: BoundingBox = BoundingBox.zero.mutable
+  private val childBB: BoundingBox = BoundingBox.zero.mutable
+
   def children(container: AbstractContainer): Val[Vector[Component]] = container.childEntries.asInstanceOf[Val[Vector[Component]]]
 }
 

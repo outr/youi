@@ -3,6 +3,7 @@ package io.youi.path
 import io.youi.drawable.Context
 import io.youi.spatial.BoundingBox
 import io.youi.ui
+import reactify.Val
 
 import scala.collection.mutable.ListBuffer
 import scala.scalajs.js
@@ -10,7 +11,7 @@ import scala.scalajs.js.annotation.JSGlobal
 
 case class Path(actions: List[PathAction]) extends PathBuilder with PathAction {
   lazy val boundingBox: BoundingBox = Path.boundingBox(actions)
-  lazy val path2d: Path2D = createPath2d()
+  lazy val path2d: Val[Path2D] = Val(createPath2d(ui.ratio))
 
   override def draw(context: Context, x: Double, y: Double, scaleX: Double, scaleY: Double): Unit = {
     actions.foreach(_.draw(context, x, y, scaleX, scaleY))
@@ -29,9 +30,9 @@ case class Path(actions: List[PathAction]) extends PathBuilder with PathAction {
     Path(updated)
   }
 
-  private def createPath2d(): Path2D = {
+  private def createPath2d(ratio: => Double): Path2D = {
     val p = new Path2D
-    def s(v: Double): Double = v * ui.ratio
+    def s(v: Double): Double = v * ratio
     actions.foreach {
       case CurveTo(x1, y1, x2, y2, x, y) => p.bezierCurveTo(s(x1), s(y1), s(x2), s(y2), s(x), s(y))
       case LineTo(x, y) => p.lineTo(s(x), s(y))

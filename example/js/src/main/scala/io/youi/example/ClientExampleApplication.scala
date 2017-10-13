@@ -36,10 +36,10 @@ object ClientExampleApplication extends ExampleApplication with ClientApplicatio
   val svg = SVGImageExample
   val scale9 = Scale9Example
   val virtual = VirtualSizeExample
-//  val snap = SnapExample
+  val snap = SnapExample
 //  val scrolling = ScrollingExample
-//  val verticalLayout = VerticalLayoutExample
-//  val gridLayout = GridLayoutExample
+  val verticalLayout = VerticalLayoutExample
+  val gridLayout = GridLayoutExample
 //  val imageEditor = ImageEditorExample
 
   val dataTransfer = DataTransferExample

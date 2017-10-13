@@ -6,7 +6,7 @@ import io.youi.path.{Path, PathAction}
 import scala.scalajs.js
 
 case class Stroke(paint: Paint,
-                  path: Option[Path],
+                  path: Option[Path] = None,
                   lineWidth: Double = 1.0,
                   lineDash: List[Double] = Nil,
                   lineDashOffset: Double = 0.0,

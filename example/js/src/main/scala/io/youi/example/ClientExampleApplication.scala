@@ -35,7 +35,7 @@ object ClientExampleApplication extends ExampleApplication with ClientApplicatio
   val htmlComponent = HTMLComponentExample
   val svg = SVGImageExample
   val scale9 = Scale9Example
-//  val virtual = VirtualSizeExample
+  val virtual = VirtualSizeExample
 //  val snap = SnapExample
 //  val scrolling = ScrollingExample
 //  val verticalLayout = VerticalLayoutExample

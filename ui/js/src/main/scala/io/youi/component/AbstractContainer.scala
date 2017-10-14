@@ -18,6 +18,11 @@ trait AbstractContainer extends Component with AbstractContainerTheme with Widge
   override protected lazy val childEntries: Var[Vector[Child]] = prop(Vector.empty, updatesTransform = true)
   private val childModified = Val(if (childEntries.nonEmpty) childEntries().map(_.modified()).max else 0L)
 
+  object offset {
+    lazy val x: Var[Double] = prop(0.0, updatesRendering = true)
+    lazy val y: Var[Double] = prop(0.0, updatesRendering = true)
+  }
+
   override protected def defaultThemeParent = Some(theme)
 
   override protected def init(): Unit = {
@@ -34,6 +39,8 @@ trait AbstractContainer extends Component with AbstractContainerTheme with Widge
     if (clipping()) {
       context.clipRect(0.0, 0.0, size.width, size.height)
     }
+    context.save()
+    context.translate(offset.x, offset.y)
     val viewable = AbstractContainer.containerBB
     val cbb = AbstractContainer.childBB
     childEntries.foreach { child =>
@@ -50,6 +57,7 @@ trait AbstractContainer extends Component with AbstractContainerTheme with Widge
         }
       }
     }
+    context.restore()
   }
 
   override def update(delta: Double): Unit = {

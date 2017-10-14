@@ -24,7 +24,7 @@ object ScrollingExample extends UIExampleScreen with UIScreen {
       scroll.vertical.bar := ScrollBar.simple(stroke = Stroke(Color.Black), fill = Color.LightBlue)
     }
 
-    Color.all.take(10).foreach { color =>
+    Color.all.foreach { color =>
       val box = Box(color)
       scrollable.children += box
       box

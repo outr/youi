@@ -75,11 +75,6 @@ trait Component extends TaskSupport with ComponentTheme with Widget with MatrixS
 
   lazy val rotation: Var[Double] = prop(0.0, updatesTransform = true)
 
-  object offset {
-    lazy val x: Var[Double] = prop(0.0, updatesRendering = true)
-    lazy val y: Var[Double] = prop(0.0, updatesRendering = true)
-  }
-
   override final def draw(context: Context, x: Double, y: Double): Unit = {
     draw(context, translate = true)
   }
@@ -123,7 +118,7 @@ trait Component extends TaskSupport with ComponentTheme with Widget with MatrixS
   protected def transformDraw(context: Context, translate: Boolean): Unit = {
     val x = if (translate) position.x() else 0.0
     val y = if (translate) position.y() else 0.0
-    Transformation.transform(context, x + offset.x, y + offset.y, pivot.x, pivot.y, rotation, manageState = false)()
+    Transformation.transform(context, x, y, pivot.x, pivot.y, rotation, manageState = false)()
   }
   protected def drawInternal(context: Context): Unit
   protected def postDraw(context: Context): Unit = {

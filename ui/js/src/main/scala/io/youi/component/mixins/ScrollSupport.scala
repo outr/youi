@@ -1,12 +1,12 @@
 package io.youi.component.mixins
 
 import io.youi.Color
-import io.youi.component.Component
+import io.youi.component.AbstractContainer
 import io.youi.drawable.Context
 import io.youi.paint.{Paint, Stroke}
 import reactify._
 
-trait ScrollSupport extends Component {
+trait ScrollSupport extends AbstractContainer {
   object scroll {
     object horizontal {
       val enabled: Var[Boolean] = Var(false)

@@ -78,4 +78,6 @@ class Events(component: Component) {
 
     override def set(value: => KeyEvent): Unit = fire(value, InvocationType.Direct)
   }
+
+  lazy val gestures: Gestures = new Gestures(component)
 }

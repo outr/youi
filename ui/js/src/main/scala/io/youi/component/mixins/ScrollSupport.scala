@@ -1,9 +1,8 @@
 package io.youi.component.mixins
 
-import io.youi.Color
+import io.youi.Axis
 import io.youi.component.AbstractContainer
 import io.youi.drawable.Context
-import io.youi.paint.{Paint, Stroke}
 import reactify._
 
 trait ScrollSupport extends AbstractContainer {
@@ -47,9 +46,9 @@ trait ScrollSupport extends AbstractContainer {
     evt.preventDefault()
   }
 
-//  event.gestures.pointers.dragged.attach { pointer =>
-//    if (scroll.vertical.enabled()) scroll.vertical(pointer.deltaY)
-//  }
+  event.gestures.pointers.dragged.attach { pointer =>
+    if (scroll.vertical.enabled()) scroll.vertical(pointer.deltaY)
+  }
 
   override protected def postDraw(context: Context): Unit = {
     super.postDraw(context)
@@ -61,37 +60,4 @@ trait ScrollSupport extends AbstractContainer {
     scroll.horizontal.bar.draw(this, context, Axis.Horizontal, x, width)
     scroll.vertical.bar.draw(this, context, Axis.Vertical, y, height)
   }
-}
-
-sealed trait Axis
-
-object Axis {
-  case object Horizontal extends Axis
-  case object Vertical extends Axis
-}
-
-trait ScrollBar {
-  def draw(component: ScrollSupport, context: Context, axis: Axis, offset: Double, thickness: Double): Unit
-}
-
-class SimpleScrollBar(stroke: Stroke, fill: Paint, size: Double) extends ScrollBar {
-  override def draw(component: ScrollSupport, context: Context, axis: Axis, offset: Double, thickness: Double): Unit = {
-    context.begin()
-    axis match {
-      case Axis.Horizontal => context.rect(offset, component.size.height - size - 5.0, thickness, size)
-      case Axis.Vertical => context.rect(component.size.width - size - 5.0, offset, size, thickness)
-    }
-    context.close()
-    context.fill(fill, apply = true)
-    context.stroke(stroke, apply = true)
-  }
-}
-
-object ScrollBar {
-  object None extends ScrollBar {
-    override def draw(component: ScrollSupport, context: Context, axis: Axis, offset: Double, thickness: Double): Unit = {}
-  }
-  def simple(stroke: Stroke = Stroke.none,
-             fill: Paint = Color.Black,
-             thickness: Double = 20.0): SimpleScrollBar = new SimpleScrollBar(stroke, fill, thickness)
 }

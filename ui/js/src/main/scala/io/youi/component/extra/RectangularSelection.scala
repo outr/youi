@@ -1,42 +1,42 @@
 package io.youi.component.extra
 
-import io.youi.{Context, Cursor}
+import io.youi.Cursor
 import io.youi.component.DrawableComponent
-import io.youi.draw._
+import io.youi.drawable.{Context, Drawable, Group}
 import io.youi.event.{DragSupport, Pointer}
-import io.youi.paint.{Paint, Stroke}
-import io.youi.path.{Path, PathAction, Rectangle}
+import io.youi.paint.Stroke
+import io.youi.path.{Fill, Path, PathAction, Rectangle}
 import io.youi.theme._
 import reactify._
 
 class RectangularSelection extends DrawableComponent with RectangularSelectionTheme {
-  override lazy val theme: Var[_ <: RectangularSelectionTheme] = Var(RectangularSelection)
-
-  override lazy val selection = new RectangularSelectionPaintTheme(this)
-  override lazy val blocks = new RectangularBlocksPaintTheme(this)
-  override lazy val dashes = new DashesPaintTheme(this)
-  override lazy val modal = new ModalPaintTheme(this)
+  override lazy val theme: Var[RectangularSelectionTheme] = Var(RectangularSelection)
 
   override protected def defaultThemeParent = Some(theme)
 
   private val dragging = new SelectionDragSupport(this)
   def isDragging: Boolean = dragging.isDragging
 
-  drawable := {
-    if (selection.width() != 0.0 && selection.height() != 0.0) {
-      Group(
-        createModal(),
-        createDashes(),
-        createOverflow(),
-        createSelection(),
-        createBlocks()
-      )
-    } else {
-      Drawable.empty
-    }
-  }
+  override def init(): Unit = {
+    selection.maxX := size.width - selection.edgeDistance
+    selection.maxY := size.height - selection.edgeDistance
 
-  cursor := cursorForMouse()
+    drawable := {
+      if (selection.width() != 0.0 && selection.height() != 0.0) {
+        Group(
+          createModal(),
+          createDashes(),
+          createOverflow(),
+          createSelection(),
+          createBlocks()
+        )
+      } else {
+        Drawable.None
+      }
+    }
+
+    cursor := cursorForMouse()
+  }
 
   def cursorForMouse(pointerX: Double = event.pointer.x(), pointerY: Double = event.pointer.y()): Cursor = {
     val ed = selection.edgeDistance()
@@ -76,7 +76,7 @@ class RectangularSelection extends DrawableComponent with RectangularSelectionTh
       .fix()
       .close,
     Fill(selection.fill),
-    selection.stroke.value
+    selection.stroke
   )
 
   protected def createOverflow(): Drawable = if (overflow().nonEmpty) {
@@ -92,7 +92,7 @@ class RectangularSelection extends DrawableComponent with RectangularSelectionTh
       Fill(overflow)
     )
   } else {
-    Drawable.empty
+    Drawable.None
   }
 
   protected def createBlocks(): Drawable = {
@@ -114,7 +114,7 @@ class RectangularSelection extends DrawableComponent with RectangularSelectionTh
         .close
         .fix(),
       Fill(blocks.fill),
-      blocks.stroke.value
+      blocks.stroke
     )
   }
   protected def createModal(): Drawable = {
@@ -129,7 +129,7 @@ class RectangularSelection extends DrawableComponent with RectangularSelectionTh
         .close
         .fix(),
       Fill(modal.fill),
-      modal.stroke.value
+      modal.stroke
     )
   }
 
@@ -162,13 +162,13 @@ class RectangularSelection extends DrawableComponent with RectangularSelectionTh
           .line(selection.x2 - horizontalThird, selection.y2)
           .shift(dashes.shadow.offset.x, dashes.shadow.offset.y)
           .fix(),
-        Stroke(dashes.shadow.paint, dashes.shadow.lineWidth, dashes.stroke.lineDash, dashes.stroke.lineDashOffset, dashes.stroke.lineCap, dashes.stroke.lineJoin)
+        Stroke(dashes.shadow.paint, None, dashes.shadow.lineWidth, dashes.stroke.lineDash, dashes.stroke.lineDashOffset, dashes.stroke.lineCap, dashes.stroke.lineJoin)
       )
     } else {
       Group()
     }
     group.withDrawables(
-      RestoreContext,
+//      RestoreContext,
       Path
         .begin
         // Horizontal Bar 1
@@ -193,7 +193,7 @@ class RectangularSelection extends DrawableComponent with RectangularSelectionTh
         .line(selection.x2 - horizontalThird, selection.y2)
         .fix(),
       Fill(dashes.fill),
-      dashes.stroke.value
+      dashes.stroke
     )
   }
 
@@ -201,13 +201,13 @@ class RectangularSelection extends DrawableComponent with RectangularSelectionTh
     math.abs(from - to) <= selection.edgeDistance()
   }
 
-  override def draw(context: Context): Unit = {
+//  override protected def autoPaint = false
+
+  override protected def drawInternal(context: Context): Unit = {
     dragging.update()
 
-    super.draw(context)
+    super.drawInternal(context)
   }
-
-//  override protected def autoPaint = false
 }
 
 class SelectionDragSupport(rs: RectangularSelection) extends DragSupport[DragStart](rs) {
@@ -372,40 +372,3 @@ class SelectionDragSupport(rs: RectangularSelection) extends DragSupport[DragSta
 case class DragStart(cursor: Cursor, x1: Double, y1: Double, x2: Double, y2: Double, mouseX: Double, mouseY: Double)
 
 object RectangularSelection extends RectangularSelectionTheme
-
-class RectangularSelectionPaintTheme(rs: RectangularSelection) extends SelectionPaintTheme(rs) {
-  val x1: Var[Double] = Var(0.0)
-  val y1: Var[Double] = Var(0.0)
-  val x2: Var[Double] = Var(0.0)
-  val y2: Var[Double] = Var(0.0)
-  val width: Val[Double] = Val(x2 - x1)
-  val height: Val[Double] = Val(y2 - y1)
-  val edgeDistance: Var[Double] = Var(5.0)
-  object aspectRatio extends Var[Option[Double]](() => None) {
-    def bySize(width: Double, height: Double): Unit = set(Some(width / height))
-  }
-
-  val minX: Var[Double] = Var(edgeDistance)
-  val minY: Var[Double] = Var(edgeDistance)
-  val maxX: Var[Double] = Var(rs.size.width - edgeDistance)
-  val maxY: Var[Double] = Var(rs.size.height - edgeDistance)
-  val minWidth: Var[Double] = Var(30.0)
-  val minHeight: Var[Double] = Var(30.0)
-
-  def set(x1: Double, y1: Double, x2: Double, y2: Double): Unit = {
-  this.x1 := x1
-  this.y1 := y1
-  this.x2 := x2
-  this.y2 := y2
-}
-  def maximize(): Unit = {
-  x1.static(minX)
-  y1.static(minY)
-  x2.static(maxX)
-  y2.static(maxY)
-}
-}
-
-class RectangularBlocksPaintTheme(rs: RectangularSelection) extends BlocksPaintTheme(rs) {
-  val size: Var[Double] = Var(10.0)
-}

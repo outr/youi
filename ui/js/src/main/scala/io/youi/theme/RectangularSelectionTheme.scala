@@ -12,66 +12,62 @@ trait RectangularSelectionTheme extends DrawableComponentTheme {
     case p: RectangularSelectionTheme => p
   }.map(f).getOrElse(default)
 
-  lazy val selection = new SelectionPaintTheme(this)
-  lazy val blocks = new BlocksPaintTheme(this)
-  lazy val dashes = new DashesPaintTheme(this)
-  lazy val overflow: Var[Paint] = Var(prnt(_.overflow, Color.White))
-  lazy val modal = new ModalPaintTheme(this)
-}
-
-class SelectionPaintTheme(t: RectangularSelectionTheme) extends PaintTheme {
-  override val fill: Var[Paint] = Var(t.prnt(_.selection.fill, Paint.none))
-  override object stroke extends StrokeTheme {
-    override val paint: Var[Paint] = Var(t.prnt(_.selection.stroke.paint, Color.Red))
-    override val lineWidth: Var[Double] = Var(t.prnt(_.selection.stroke.lineWidth, 1.0))
-    override val lineDash: Var[List[Double]] = Var(t.prnt(_.selection.stroke.lineDash, Nil))
-    override val lineDashOffset: Var[Double] = Var(t.prnt(_.selection.stroke.lineDashOffset, 0.0))
-    override val lineCap: Var[LineCap] = Var(t.prnt(_.selection.stroke.lineCap, LineCap.Butt))
-    override val lineJoin: Var[LineJoin] = Var(t.prnt(_.selection.stroke.lineJoin, LineJoin.Miter))
-  }
-}
-
-class BlocksPaintTheme(t: RectangularSelectionTheme) extends PaintTheme {
-  override val fill: Var[Paint] = Var(t.prnt(_.blocks.fill, Color.Blue))
-  override object stroke extends StrokeTheme {
-    override val paint: Var[Paint] = Var(t.prnt(_.blocks.stroke.paint, Paint.none))
-    override val lineWidth: Var[Double] = Var(t.prnt(_.blocks.stroke.lineWidth, 1.0))
-    override val lineDash: Var[List[Double]] = Var(t.prnt(_.blocks.stroke.lineDash, Nil))
-    override val lineDashOffset: Var[Double] = Var(t.prnt(_.blocks.stroke.lineDashOffset, 0.0))
-    override val lineCap: Var[LineCap] = Var(t.prnt(_.blocks.stroke.lineCap, LineCap.Butt))
-    override val lineJoin: Var[LineJoin] = Var(t.prnt(_.blocks.stroke.lineJoin, LineJoin.Miter))
-  }
-}
-
-class DashesPaintTheme(t: RectangularSelectionTheme) extends PaintTheme {
-  override val fill: Var[Paint] = Var(t.prnt(_.dashes.fill, Paint.none))
-  override object stroke extends StrokeTheme {
-    override val paint: Var[Paint] = Var(t.prnt(_.dashes.stroke.paint, Color.White))
-    override val lineWidth: Var[Double] = Var(t.prnt(_.dashes.stroke.lineWidth, 0.5))
-    override val lineDash: Var[List[Double]] = Var(t.prnt(_.dashes.stroke.lineDash, List(4.0, 4.0)))
-    override val lineDashOffset: Var[Double] = Var(t.prnt(_.dashes.stroke.lineDashOffset, 2.0))
-    override val lineCap: Var[LineCap] = Var(t.prnt(_.dashes.stroke.lineCap, LineCap.Butt))
-    override val lineJoin: Var[LineJoin] = Var(t.prnt(_.dashes.stroke.lineJoin, LineJoin.Miter))
-  }
-  object shadow {
-    val enabled: Var[Boolean] = Var(t.prnt(_.dashes.shadow.enabled, true))
-    object offset {
-      val x: Var[Double] = Var(t.prnt(_.dashes.shadow.offset.x, 1.0))
-      val y: Var[Double] = Var(t.prnt(_.dashes.shadow.offset.y, 1.0))
+  object selection {
+    val x1: Var[Double] = prop(prnt(_.selection.x1, 0.0), updatesRendering = true)
+    val y1: Var[Double] = prop(prnt(_.selection.y1, 0.0), updatesRendering = true)
+    val x2: Var[Double] = prop(prnt(_.selection.x2, 0.0), updatesRendering = true)
+    val y2: Var[Double] = prop(prnt(_.selection.y2, 0.0), updatesRendering = true)
+    val width: Var[Double] = prop(prnt(_.selection.width, x2 - x1), updatesRendering = true)
+    val height: Var[Double] = prop(prnt(_.selection.height, y2 - y1), updatesRendering = true)
+    val edgeDistance: Var[Double] = prop(prnt(_.selection.edgeDistance, 5.0), updatesRendering = true)
+    object aspectRatio extends Var[Option[Double]](() => None) {
+      def bySize(width: Double, height: Double): Unit = set(Some(width / height))
     }
-    val paint: Var[Paint] = Var(t.prnt(_.dashes.shadow.paint, Color.Black.withAlpha(0.5)))
-    val lineWidth: Var[Double] = Var(t.prnt(_.dashes.shadow.lineWidth, 0.5))
-  }
-}
 
-class ModalPaintTheme(t: RectangularSelectionTheme) extends PaintTheme {
-  override val fill: Var[Paint] = Var(t.prnt(_.modal.fill, Color.Black.withAlpha(0.5)))
-  override object stroke extends StrokeTheme {
-    override val paint: Var[Paint] = Var(t.prnt(_.modal.stroke.paint, Paint.none))
-    override val lineWidth: Var[Double] = Var(t.prnt(_.modal.stroke.lineWidth, 1.0))
-    override val lineDash: Var[List[Double]] = Var(t.prnt(_.modal.stroke.lineDash, Nil))
-    override val lineDashOffset: Var[Double] = Var(t.prnt(_.modal.stroke.lineDashOffset, 0.0))
-    override val lineCap: Var[LineCap] = Var(t.prnt(_.modal.stroke.lineCap, LineCap.Butt))
-    override val lineJoin: Var[LineJoin] = Var(t.prnt(_.modal.stroke.lineJoin, LineJoin.Miter))
+    val minX: Var[Double] = Var(edgeDistance)
+    val minY: Var[Double] = Var(edgeDistance)
+    val maxX: Var[Double] = Var(0.0)
+    val maxY: Var[Double] = Var(0.0)
+    val minWidth: Var[Double] = Var(30.0)
+    val minHeight: Var[Double] = Var(30.0)
+
+    def set(x1: Double, y1: Double, x2: Double, y2: Double): Unit = {
+      this.x1 := x1
+      this.y1 := y1
+      this.x2 := x2
+      this.y2 := y2
+    }
+    def maximize(): Unit = {
+      x1.static(minX)
+      y1.static(minY)
+      x2.static(maxX)
+      y2.static(maxY)
+    }
+    val fill: Var[Paint] = prop(prnt(_.selection.fill, Paint.none), updatesRendering = true)
+    val stroke: Var[Stroke] = prop(prnt(_.selection.stroke, Stroke.none), updatesRendering = true)
   }
+  object blocks {
+    val size: Var[Double] = Var(10.0)
+    val fill: Var[Paint] = prop(prnt(_.blocks.fill, Paint.none), updatesRendering = true)
+    val stroke: Var[Stroke] = prop(prnt(_.blocks.stroke, Stroke.none), updatesRendering = true)
+  }
+  object dashes {
+    val fill: Var[Paint] = prop(prnt(_.dashes.fill, Paint.none), updatesRendering = true)
+    val stroke: Var[Stroke] = prop(prnt(_.dashes.stroke, Stroke.none), updatesRendering = true)
+    object shadow {
+      val enabled: Var[Boolean] = prop(prnt(_.dashes.shadow.enabled, true), updatesRendering = true)
+      val paint: Var[Paint] = prop(prnt(_.dashes.shadow.paint, Color.Black.withAlpha(0.5)), updatesRendering = true)
+      val lineWidth: Var[Double] = prop(prnt(_.dashes.shadow.lineWidth, 0.5), updatesRendering = true)
+      object offset {
+        val x: Var[Double] = prop(prnt(_.dashes.shadow.offset.x, 1.0), updatesRendering = true)
+        val y: Var[Double] = prop(prnt(_.dashes.shadow.offset.y, 1.0), updatesRendering = true)
+      }
+    }
+  }
+  object modal {
+    val fill: Var[Paint] = prop(prnt(_.modal.fill, Paint.none), updatesRendering = true)
+    val stroke: Var[Stroke] = prop(prnt(_.modal.stroke, Stroke.none), updatesRendering = true)
+  }
+
+  lazy val overflow: Var[Paint] = Var(prnt(_.overflow, Color.White))
 }

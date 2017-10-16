@@ -1,7 +1,8 @@
 package io.youi.component.mixins
 
-import io.youi.Axis
 import io.youi.drawable.Context
+import io.youi.paint.{Paint, Stroke}
+import io.youi.{Axis, Color}
 
 trait ScrollBar {
   def draw(component: ScrollSupport, context: Context, axis: Axis, offset: Double, thickness: Double): Unit

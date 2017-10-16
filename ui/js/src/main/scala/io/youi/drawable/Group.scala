@@ -16,6 +16,10 @@ trait Group extends Drawable {
     elements.head.draw(context, x, y)
     drawRecursive(context, x, y, elements.tail)
   }
+
+  def withDrawables(drawables: Drawable*): Group = {
+    Group(elements ::: drawables.toList: _*)
+  }
 }
 
 object Group {

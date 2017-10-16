@@ -3,10 +3,11 @@ package io.youi.component.editor
 import io.youi._
 import io.youi.component._
 import io.youi.component.extra.RectangularSelection
+import io.youi.drawable.Context
 import io.youi.image.{Image, TextureImage}
 import io.youi.model.{ImageEditorInfo, ImageInfo, SelectionInfo}
 import io.youi.spatial.{Point, Size}
-import io.youi.util.{CanvasPool, ImageUtility, SizeUtility}
+import io.youi.util.{CanvasPool, ImageUtility, LazyFuture, SizeUtility}
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 import org.scalajs.dom.{File, html}
 import reactify._
@@ -16,6 +17,8 @@ import scala.concurrent.Future
 
 class ImageEditor extends AbstractContainer {
   override type Child = Component
+
+  override def `type`: String = "ImageEditor"
 
   val aspectRatio: Var[AspectRatio] = Var(AspectRatio.Original)
   val imageScale: Var[Double] = Var(1.0)
@@ -62,8 +65,8 @@ class ImageEditor extends AbstractContainer {
     canvasContext.translate(imageView.size.width / 2.0, imageView.size.height / 2.0)
     canvasContext.rotate(imageView.rotation() * (math.Pi * 2.0))
     canvasContext.translate(-imageView.size.width / 2.0, -imageView.size.height / 2.0)
-    val context = new Context(destination)
-    originalImage.draw(context, imageView.size.width, imageView.size.height).map { _ =>
+    val context = new Context(destination, ui.ratio)
+    originalImage.drawAsync(context, 0.0, 0.0, imageView.size.width, imageView.size.height).map { _ =>
       val previous = preview()
       preview := destination
       CanvasPool.restore(previous)

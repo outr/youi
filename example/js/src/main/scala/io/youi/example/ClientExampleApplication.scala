@@ -40,7 +40,7 @@ object ClientExampleApplication extends ExampleApplication with ClientApplicatio
   val scrolling = ScrollingExample
   val verticalLayout = VerticalLayoutExample
   val gridLayout = GridLayoutExample
-//  val imageEditor = ImageEditorExample
+  val imageEditor = ImageEditorExample
 
   val dataTransfer = DataTransferExample
   val selection = hypertext.SelectionExample

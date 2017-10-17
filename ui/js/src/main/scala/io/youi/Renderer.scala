@@ -9,12 +9,12 @@ import org.scalajs.dom.html
 import org.scalajs.{dom => jsdom}
 import reactify.{Channel, Var}
 
-class Renderer(val canvas: html.Canvas = CanvasPool(1.0, 1.0)) extends Updates {
+class Renderer(val canvas: html.Canvas = CanvasPool(1.0, 1.0), renderWidth: => Double, renderHeight: => Double) extends Updates {
   private lazy val context: Context = new Context(canvas, ratio())
 
   val ratio: Var[Double] = Var(ui.ratio)
-  val width: Var[Double] = Var(ui.width)
-  val height: Var[Double] = Var(ui.height)
+  val width: Var[Double] = Var(renderWidth)
+  val height: Var[Double] = Var(renderHeight)
   val visible: Var[Boolean] = Var(true)
   val drawable: Var[Drawable] = Var(Drawable.None)
   val modified: Var[Long] = Var(drawable.modified)
@@ -172,11 +172,11 @@ class Renderer(val canvas: html.Canvas = CanvasPool(1.0, 1.0)) extends Updates {
       component.parent().foreach(hierarchicalEvent(_, handler, event))
     }
   }
+
+  init()
 }
 
-object Renderer extends Renderer(CanvasPool(1.0, 1.0)) {
-  init()
-
+object Renderer extends Renderer(CanvasPool(1.0, 1.0), ui.width, ui.height) {
   override protected def init(): Unit = {
     super.init()
 

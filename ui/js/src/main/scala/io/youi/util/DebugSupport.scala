@@ -1,22 +1,24 @@
 package io.youi.util
 
 import io.youi._
-import io.youi.component.{AbstractContainer, Component, Container}
+import io.youi.component.{AbstractContainer, Component}
 import io.youi.drawable.Context
 import org.scalajs.dom._
 import reactify.Var
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class DebugSupport(renderer: Renderer = Renderer) {
+class DebugSupport {
+  val renderer: Var[Renderer] = Var(Renderer)
   val enabled: Var[Boolean] = Var(false)
 
   ui.event.key.down.attach { evt =>
+    scribe.info(s"DebugSupport! Enabled? ${enabled()}, Key? ${evt.key}")
     if (enabled()) {
       evt.key match {
         case Key.F2 => renderer.drawable() match {
-          case container: Container => DebugWindow.toggle(container)
-          case _ => // Ignore
+          case container: AbstractContainer => DebugWindow.toggle(container)
+          case _ => scribe.warn(s"Renderer's drawable is not a Container!") // Ignore
         }
         case _ => // Ignore
       }
@@ -30,13 +32,15 @@ object DebugWindow {
 
   root.style.display = "none"
 
-  def toggle(container: Container): Unit = if (root.style.display != "block") {
-    showFor(container: Container)
+  def toggle(container: AbstractContainer): Unit = if (root.style.display != "block") {
+    scribe.info(s"Showing $container debug information...")
+    showFor(container)
   } else {
+    scribe.info("Hiding debug information")
     close()
   }
 
-  def showFor(container: Container): Unit = {
+  def showFor(container: AbstractContainer): Unit = {
     root.innerHTML = ""
     close()
     root.style.position = "absolute"
@@ -50,7 +54,7 @@ object DebugWindow {
     root.style.backgroundColor = "white"
     document.body.appendChild(root)
     val parent = root
-    container.children().foreach(drawChild(_, parent, container))
+    AbstractContainer.children(container).foreach(drawChild(_, parent, container))
   }
 
   def close(): Unit = {
@@ -58,7 +62,7 @@ object DebugWindow {
     root.style.display = "none"
   }
 
-  private def drawChild(component: Component, parent: html.Element, container: Container): Unit = {
+  private def drawChild(component: Component, parent: html.Element, container: AbstractContainer): Unit = {
     val canvas = CanvasPool(component.size.width() * ui.ratio, component.size.height() * ui.ratio)
     val context = new Context(canvas, ui.ratio)
 

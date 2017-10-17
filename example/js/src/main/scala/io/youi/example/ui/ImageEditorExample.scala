@@ -2,9 +2,10 @@ package io.youi.example.ui
 
 import io.youi._
 import io.youi.component.editor.{AspectRatio, ImageEditor}
-import io.youi.hypertext.{Button, Canvas, ImageView, TextInput}
+import io.youi.example.ClientExampleApplication
 import io.youi.example.ui.hypertext.HTMLScreen
 import io.youi.hypertext.border.BorderStyle
+import io.youi.hypertext.{Button, Canvas, ImageView, TextInput}
 import io.youi.model.ImageEditorInfo
 import org.scalajs.dom._
 import reactify._
@@ -21,7 +22,7 @@ object ImageEditorExample extends HTMLScreen {
     size.width := 800.0
     size.height := 500.0
   }
-  private lazy val renderer = new Renderer(canvas.element)
+  private lazy val renderer = new Renderer(canvas.element, 800.0, 500.0)
 
   override protected def load(): Future[Unit] = super.load().map { _ =>
     container.children += canvas
@@ -34,6 +35,7 @@ object ImageEditorExample extends HTMLScreen {
       load("/images/cuteness.jpg")
     }
     renderer.drawable := editor
+    renderer.visible := true
 
     val preview1 = new ImageView {
       id := "preview1"
@@ -148,10 +150,12 @@ object ImageEditorExample extends HTMLScreen {
 
 
   override protected def activate(): Future[Unit] = super.activate().map { _ =>
+    ClientExampleApplication.debug.renderer := renderer
     renderer.visible := true
   }
 
   override protected def deactivate(): Future[Unit] = super.deactivate().map { _ =>
     renderer.visible := false
+    ClientExampleApplication.debug.renderer := Renderer
   }
 }

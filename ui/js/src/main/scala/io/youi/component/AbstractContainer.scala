@@ -107,5 +107,7 @@ object Contained {
     override def `type`: String = "Contained"
 
     childEntries := children.toVector
+
+    init()
   }
 }

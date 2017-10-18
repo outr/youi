@@ -44,13 +44,13 @@ object HitTestExample extends UIExampleScreen with UIScreen {
   }
 
   class Box(color: Color) extends Container {
-    background := color
+    background := color.withAlpha(0.5)
     size.width := 100.0
     size.height := 100.0
 
     event.pointer.overState.attach {
-      case true => background := Color.LightBlue
-      case false => background := color
+      case true => background := color
+      case false => background := color.withAlpha(0.5)
     }
   }
 }

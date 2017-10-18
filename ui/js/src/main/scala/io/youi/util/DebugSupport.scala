@@ -13,7 +13,6 @@ class DebugSupport {
   val enabled: Var[Boolean] = Var(false)
 
   ui.event.key.down.attach { evt =>
-    scribe.info(s"DebugSupport! Enabled? ${enabled()}, Key? ${evt.key}")
     if (enabled()) {
       evt.key match {
         case Key.F2 => renderer.drawable() match {

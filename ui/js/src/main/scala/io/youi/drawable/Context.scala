@@ -134,10 +134,10 @@ class Context(val canvas: html.Canvas, _ratio: => Double) {
   def begin(): Unit = ctx.beginPath()
   def close(): Unit = ctx.closePath()
 
-  def rect(x: Double, y: Double, width: Double, height: Double): Unit = {
-    begin()
+  def rect(x: Double, y: Double, width: Double, height: Double, begin: Boolean = true, close: Boolean = true): Unit = {
+    if (begin) this.begin()
     ctx.rect(Path.fix(x * ratioX), Path.fix(y * ratioY), width * ratioX, height * ratioY)
-    close()
+    if (close) this.close()
   }
 
   def roundedRect(x: Double, y: Double, width: Double, height: Double, radius: Double): Unit = {

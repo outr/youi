@@ -18,6 +18,8 @@ class RectangularSelection extends DrawableComponent with RectangularSelectionTh
   def isDragging: Boolean = dragging.isDragging
 
   override def init(): Unit = {
+    super.init()
+
     selection.maxX := size.width - selection.edgeDistance
     selection.maxY := size.height - selection.edgeDistance
 
@@ -72,7 +74,7 @@ class RectangularSelection extends DrawableComponent with RectangularSelectionTh
   protected def createSelection(): Drawable = Group(
     Path
       .begin
-      .rect(selection.x1(), selection.y1(), selection.width(), selection.height())
+      .rect(selection.x1(), selection.y1(), selection.width(), selection.height(), complete = false)
       .fix()
       .close,
     Fill(selection.fill),
@@ -84,10 +86,10 @@ class RectangularSelection extends DrawableComponent with RectangularSelectionTh
     Group(
       Path
         .begin
-        .rect(0.0, 0.0, halfBlock, size.height())                                             // Left
-        .rect(halfBlock, 0.0, size.width() - blocks.size(), halfBlock)                        // Top
-        .rect(size.width() - halfBlock, 0.0, halfBlock, size.height())                        // Right
-        .rect(halfBlock, size.height() - halfBlock, size.width() - blocks.size(), halfBlock)  // Bottom
+        .rect(0.0, 0.0, halfBlock, size.height(), complete = false)                                             // Left
+        .rect(halfBlock, 0.0, size.width() - blocks.size(), halfBlock, complete = false)                        // Top
+        .rect(size.width() - halfBlock, 0.0, halfBlock, size.height(), complete = false)                        // Right
+        .rect(halfBlock, size.height() - halfBlock, size.width() - blocks.size(), halfBlock, complete = false)  // Bottom
         .fix(),
       Fill(overflow)
     )
@@ -98,7 +100,7 @@ class RectangularSelection extends DrawableComponent with RectangularSelectionTh
   protected def createBlocks(): Drawable = {
     val halfBlock = blocks.size() / 2.0
     def block(x: Double, y: Double): PathAction = {
-      Rectangle(x - halfBlock, y - halfBlock, blocks.size(), blocks.size())
+      Rectangle(x - halfBlock, y - halfBlock, blocks.size(), blocks.size(), begin = false, close = false)
     }
     Group(
       Path
@@ -122,10 +124,10 @@ class RectangularSelection extends DrawableComponent with RectangularSelectionTh
     Group(
       Path
         .begin
-        .rect(halfBlock, halfBlock, selection.x1() - halfBlock, size.height() - blocks.size())                  // Left
-        .rect(selection.x2(), halfBlock, size.width() - selection.x2() - halfBlock, size.height() - blocks.size())          // Right
-        .rect(selection.x1(), halfBlock, selection.width(), selection.y1() - halfBlock)                         // Top
-        .rect(selection.x1(), selection.y2(), selection.width(), size.height() - selection.y2() - halfBlock)    // Bottom
+        .rect(halfBlock, halfBlock, selection.x1() - halfBlock, size.height() - blocks.size(), complete = false)                  // Left
+        .rect(selection.x2(), halfBlock, size.width() - selection.x2() - halfBlock, size.height() - blocks.size(), complete = false)          // Right
+        .rect(selection.x1(), halfBlock, selection.width(), selection.y1() - halfBlock, complete = false)                         // Top
+        .rect(selection.x1(), selection.y2(), selection.width(), size.height() - selection.y2() - halfBlock, complete = false)    // Bottom
         .close
         .fix(),
       Fill(modal.fill),
@@ -208,6 +210,8 @@ class RectangularSelection extends DrawableComponent with RectangularSelectionTh
 
     super.drawInternal(context)
   }
+
+  init()
 }
 
 class SelectionDragSupport(rs: RectangularSelection) extends DragSupport[DragStart](rs) {

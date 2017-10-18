@@ -23,6 +23,7 @@ case class Path(actions: List[PathAction]) extends PathBuilder with PathAction {
       case LineTo(x, y) => LineTo(mx(x), my(y))
       case MoveTo(x, y) => MoveTo(mx(x), my(y))
       case QuadraticCurveTo(x1, y1, x, y) => QuadraticCurveTo(mx(x1), my(y1), mx(x), my(y))
+      case Rectangle(x, y, width, height, begin, close) => Rectangle(mx(x), my(y), mx(width), my(height), begin, close)
       case BeginPath => BeginPath
       case ClosePath => ClosePath
       case action => throw new RuntimeException(s"Unsupported PathAction: $action.")
@@ -167,7 +168,7 @@ object Path extends PathBuilder {
         cy = y
       }
       case QuadraticCurveTo(_, _, x, y) => adjustTo(x, y)
-      case Rectangle(x, y, width, height) => adjustTo(x + width, y + height, updateCoordinates = false)
+      case Rectangle(x, y, width, height, _, _) => adjustTo(x + width, y + height, updateCoordinates = false)
       case RoundedRectangle(x, y, width, height, _) => adjustTo(x + width, y + height, updateCoordinates = false)
     }
     BoundingBox(minX, minY, maxX, maxY)

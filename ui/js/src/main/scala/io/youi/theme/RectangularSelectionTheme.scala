@@ -24,6 +24,9 @@ trait RectangularSelectionTheme extends DrawableComponentTheme {
       def bySize(width: Double, height: Double): Unit = set(Some(width / height))
     }
 
+    width := x2 - x1
+    height := y2 - y1
+
     val minX: Var[Double] = Var(edgeDistance)
     val minY: Var[Double] = Var(edgeDistance)
     val maxX: Var[Double] = Var(0.0)
@@ -44,16 +47,16 @@ trait RectangularSelectionTheme extends DrawableComponentTheme {
       y2.static(maxY)
     }
     val fill: Var[Paint] = prop(prnt(_.selection.fill, Paint.none), updatesRendering = true)
-    val stroke: Var[Stroke] = prop(prnt(_.selection.stroke, Stroke.none), updatesRendering = true)
+    val stroke: Var[Stroke] = prop(prnt(_.selection.stroke, Stroke(Color.Red, None, 1.0)), updatesRendering = true)
   }
   object blocks {
     val size: Var[Double] = Var(10.0)
-    val fill: Var[Paint] = prop(prnt(_.blocks.fill, Paint.none), updatesRendering = true)
+    val fill: Var[Paint] = prop(prnt(_.blocks.fill, Color.Blue), updatesRendering = true)
     val stroke: Var[Stroke] = prop(prnt(_.blocks.stroke, Stroke.none), updatesRendering = true)
   }
   object dashes {
     val fill: Var[Paint] = prop(prnt(_.dashes.fill, Paint.none), updatesRendering = true)
-    val stroke: Var[Stroke] = prop(prnt(_.dashes.stroke, Stroke.none), updatesRendering = true)
+    val stroke: Var[Stroke] = prop(prnt(_.dashes.stroke, Stroke(Color.White, None, 0.5, List(4.0, 4.0), 2.0)), updatesRendering = true)
     object shadow {
       val enabled: Var[Boolean] = prop(prnt(_.dashes.shadow.enabled, true), updatesRendering = true)
       val paint: Var[Paint] = prop(prnt(_.dashes.shadow.paint, Color.Black.withAlpha(0.5)), updatesRendering = true)
@@ -65,7 +68,7 @@ trait RectangularSelectionTheme extends DrawableComponentTheme {
     }
   }
   object modal {
-    val fill: Var[Paint] = prop(prnt(_.modal.fill, Paint.none), updatesRendering = true)
+    val fill: Var[Paint] = prop(prnt(_.modal.fill, Color.Black.withAlpha(0.5)), updatesRendering = true)
     val stroke: Var[Stroke] = prop(prnt(_.modal.stroke, Stroke.none), updatesRendering = true)
   }
 

@@ -33,23 +33,6 @@ class ImageEditor extends AbstractContainer {
   val wheelMultiplier: Var[Double] = Var(0.001)
   val revision: Val[Int] = Var(0)
 
-  imageView.position.center := size.center
-  imageView.position.middle := size.middle
-
-  rs.size.width := size.width
-  rs.size.height := size.height
-  rs.selection.aspectRatio := {
-    aspectRatio() match {
-      case AspectRatio.Defined(value) => Some(value)
-      case AspectRatio.None => None
-      case AspectRatio.Original => if (imageView.size.measured.width() > 0.0 && imageView.size.measured.height() > 0.0) {
-        Some(imageView.size.measured.width() / imageView.size.measured.height())
-      } else {
-        None
-      }
-    }
-  }
-
   val preview: Var[html.Canvas] = Var(CanvasPool(rs.selection.width, rs.selection.height), static = true)
 
   private val previewUpdater = LazyFuture({
@@ -73,9 +56,6 @@ class ImageEditor extends AbstractContainer {
     }
   }, automatic = false)
 
-  revision.on(previewUpdater.flag())
-  delta.on(previewUpdater.update())
-
   def previewImage(img: html.Image, width: Double, height: Double): Unit = {
     val resizer = LazyFuture {
       if (preview().width > 0 && preview().height > 0 && width > 0.0 && height > 0.0) {
@@ -89,30 +69,54 @@ class ImageEditor extends AbstractContainer {
     }
   }
 
-  size.width := imageView.size.width + rs.blocks.size
-  size.height := imageView.size.height + rs.blocks.size
+  override protected def init(): Unit = {
+    super.init()
 
-  childEntries ++= List(imageView, rs)
+    imageView.position.center := size.center
+    imageView.position.middle := size.middle
 
-  rs.event.pointer.wheel.attach { evt =>
-    scale(evt.delta.y * -wheelMultiplier, Some(evt.local))
-  }
-  event.gestures.pointers.dragged.attach { p =>
-    if (event.gestures.pointers.map.size == 1 && !rs.isDragging) {
-      imageView.position.x.static(imageView.position.x() + p.moved.deltaX)
-      imageView.position.y.static(imageView.position.y() + p.moved.deltaY)
+    rs.size.width := size.width
+    rs.size.height := size.height
+    rs.selection.aspectRatio := {
+      aspectRatio() match {
+        case AspectRatio.Defined(value) => Some(value)
+        case AspectRatio.None => None
+        case AspectRatio.Original => if (imageView.size.measured.width() > 0.0 && imageView.size.measured.height() > 0.0) {
+          Some(imageView.size.measured.width() / imageView.size.measured.height())
+        } else {
+          None
+        }
+      }
     }
-  }
-  event.gestures.pinch.attach { evt =>
-    scale(evt.deltaDistance * 0.01, Some(evt.pointer.move.local))
-  }
 
-  Observable.wrap(
-    imageView.position.x, imageView.position.y, imageView.rotation, imageView.size.width, imageView.size.height,
-    rs.selection.x1, rs.selection.y1, rs.selection.x2, rs.selection.y2
-  ).on {
-    val current = revision()
-    revision.asInstanceOf[Var[Int]] := current + 1
+    revision.on(previewUpdater.flag())
+    delta.on(previewUpdater.update())
+
+    size.width := imageView.size.width + rs.blocks.size
+    size.height := imageView.size.height + rs.blocks.size
+
+    childEntries ++= List(imageView, rs)
+
+    rs.event.pointer.wheel.attach { evt =>
+      scale(evt.delta.y * -wheelMultiplier, Some(evt.local))
+    }
+    event.gestures.pointers.dragged.attach { p =>
+      if (event.gestures.pointers.map.size == 1 && !rs.isDragging) {
+        imageView.position.x.static(imageView.position.x() + p.moved.deltaX)
+        imageView.position.y.static(imageView.position.y() + p.moved.deltaY)
+      }
+    }
+    event.gestures.pinch.attach { evt =>
+      scale(evt.deltaDistance * 0.01, Some(evt.pointer.move.local))
+    }
+
+    Observable.wrap(
+      imageView.position.x, imageView.position.y, imageView.rotation, imageView.size.width, imageView.size.height,
+      rs.selection.x1, rs.selection.y1, rs.selection.x2, rs.selection.y2
+    ).on {
+      val current = revision()
+      revision.asInstanceOf[Var[Int]] := current + 1
+    }
   }
 
   def load(file: File): Future[Image] = Image.fromFile(file, mode = ImageMode.Quality).flatMap(load)
@@ -234,6 +238,8 @@ class ImageEditor extends AbstractContainer {
   }
 
   def originalDataURL: Future[String] = originalImage.toDataURL
+
+  init()
 }
 
 sealed trait AspectRatio

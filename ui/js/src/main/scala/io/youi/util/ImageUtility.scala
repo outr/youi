@@ -25,7 +25,7 @@ object ImageUtility {
     val srcHeight = src.height
     if (srcWidth <= 0 || srcHeight <= 0 || destination.width <= 0 || destination.height <= 0) {
       Future.successful(destination)
-    } else if (smooth && srcWidth != destination.width && srcHeight != destination.height) {
+    } else if (smooth && (srcWidth != destination.width || srcHeight != destination.height)) {
       picaFuture {
         pica.resize(source, destination, new ResizeOptions {
           alpha = true

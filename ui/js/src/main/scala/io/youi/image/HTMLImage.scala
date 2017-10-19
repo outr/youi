@@ -3,7 +3,7 @@ package io.youi.image
 import io.youi.dom
 import io.youi.drawable.Context
 import io.youi.net.URL
-import io.youi.util.ImageUtility
+import io.youi.util.{ImageResizer, ImageUtility}
 import org.scalajs.dom.{Event, html}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -18,10 +18,12 @@ class HTMLImage private(private[image] val img: html.Image) extends Image {
     context.drawImage(img)(x, y, width, height)
   }
 
-  override def resize(width: Double, height: Double): Future[Image] = if (this.width == width && this.height == height) {
+  override def resize(width: Double, height: Double): Future[Image] = resize(width, height, ImageResizer.Pica)
+
+  def resize(width: Double, height: Double, resizer: ImageResizer): Future[Image] = if (this.width == width && this.height == height) {
     Future.successful(this)
   } else {
-    ResizedHTMLImage(this, width, height)
+    ResizedHTMLImage(this, width, height, resizer)
   }
 
   override def isVector: Boolean = false

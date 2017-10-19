@@ -4,7 +4,7 @@ import io.youi._
 import io.youi.drawable.{Context, Drawable}
 import io.youi.image.{CanvasImage, Image}
 import io.youi.net.URL
-import io.youi.util.CanvasPool
+import io.youi.util.{CanvasPool, ImageResizer}
 import org.scalajs.dom.{Event, File, html}
 import reactify._
 
@@ -95,7 +95,7 @@ class Video(element: html.Video) extends Drawable {
     val canvas = CanvasPool(width, height)
     val context = canvas.context
     context.drawImage(element, 0.0, 0.0)
-    CanvasImage(canvas)
+    CanvasImage(canvas, ImageResizer.Pica)
   }
 
   override def draw(context: Context, x: Double, y: Double): Unit = if (!isEmpty) {

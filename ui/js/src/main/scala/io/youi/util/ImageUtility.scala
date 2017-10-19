@@ -14,39 +14,16 @@ import scala.scalajs.js
 import scala.scalajs.js.|
 
 object ImageUtility {
-  private lazy val pica: Pica = Pica()
-  private val picaFuture = new SingleThreadedFuture()
-
-  def resizeToCanvas(source: html.Image | html.Canvas,
-                     destination: html.Canvas,
-                     smooth: Boolean = false): Future[Canvas] = {
-    val src = source.asInstanceOf[html.Image]
-    val srcWidth = src.width
-    val srcHeight = src.height
-    if (srcWidth <= 0 || srcHeight <= 0 || destination.width <= 0 || destination.height <= 0) {
-      Future.successful(destination)
-    } else if (smooth && (srcWidth != destination.width || srcHeight != destination.height)) {
-      picaFuture {
-        pica.resize(source, destination, new ResizeOptions {
-          alpha = true
-        }).toFuture
-      }
-    } else {
-      destination.getContext("2d").asInstanceOf[CanvasRenderingContext2D].drawImage(source.asInstanceOf[html.Image], 0.0, 0.0, destination.width, destination.height)
-      Future.successful(destination)
-    }
-  }
-
   def drawToCanvas(source: html.Image | html.Canvas,
                    destination: html.Canvas,
-                   smooth: Boolean = true)
+                   resizer: ImageResizer)
                   (offsetX: Double = 0.0,
                    offsetY: Double = 0.0,
                    width: Double = source.asInstanceOf[html.Image].width,
                    height: Double = source.asInstanceOf[html.Image].height): Future[html.Canvas] = {
     CanvasPool.withCanvasFuture(width, height) { canvas =>
-      resizeToCanvas(source, canvas, smooth).map { _ =>
-        destination.getContext("2d").asInstanceOf[CanvasRenderingContext2D].drawImage(canvas.asInstanceOf[html.Image], offsetX, offsetY, width, height)
+      resizer.resize(source, canvas).map { _ =>
+        destination.context.drawImage(canvas, offsetX, offsetY, width, height)
         destination
       }
     }
@@ -56,14 +33,14 @@ object ImageUtility {
                     width: Double,
                     height: Double,
                     destination: html.Image,
-                    smooth: Boolean): Future[html.Image] = {
-    resizeToDataURL(source, width, height, smooth).map { dataURL =>
+                    resizer: ImageResizer): Future[html.Image] = {
+    resizeToDataURL(source, width, height, resizer).map { dataURL =>
       destination.src = dataURL
       destination
     }
   }
 
-  def resizeToDataURL(source: html.Image | html.Canvas, width: Double, height: Double, smooth: Boolean): Future[String] = {
+  def resizeToDataURL(source: html.Image | html.Canvas, width: Double, height: Double, resizer: ImageResizer): Future[String] = {
     val destinationCanvas = CanvasPool(width, height)
     val loader = if (source.asInstanceOf[html.Image].width == 0 || source.asInstanceOf[html.Image].height == 0) {
       loadImage(source.asInstanceOf[html.Image])
@@ -71,7 +48,7 @@ object ImageUtility {
       Future.successful(source.asInstanceOf[html.Image])
     }
     val future = loader.flatMap { _ =>
-      drawToCanvas(source, destinationCanvas, smooth)(
+      drawToCanvas(source, destinationCanvas, resizer)(
         width = destinationCanvas.width,
         height = destinationCanvas.height
       ).map { _ =>

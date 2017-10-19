@@ -1,14 +1,16 @@
 package io.youi.video
 
-import io.youi.dom
+import io.youi._
 import io.youi.drawable.{Context, Drawable}
+import io.youi.image.{CanvasImage, Image}
 import io.youi.net.URL
-import org.scalajs.dom.{Event, html}
+import io.youi.util.CanvasPool
+import org.scalajs.dom.{Event, File, html}
 import reactify._
 
 import scala.concurrent.{Future, Promise}
 
-class Video(val url: URL, element: html.Video) extends Drawable {
+class Video(element: html.Video) extends Drawable {
   def isEmpty: Boolean = false
   def nonEmpty: Boolean = !isEmpty
 
@@ -48,6 +50,14 @@ class Video(val url: URL, element: html.Video) extends Drawable {
         updatingTime = false
       }
     })
+    element.addEventListener("seeked", (_: Event) => {
+      updatingTime = true
+      try {
+        position := element.currentTime
+      } finally {
+        updatingTime = false
+      }
+    })
 
     var updatingVolume = false
     volume := element.volume
@@ -70,6 +80,24 @@ class Video(val url: URL, element: html.Video) extends Drawable {
   def isPaused: Boolean = element.paused
   def isEnded: Boolean = element.ended
 
+  def seek(position: Double): Future[Unit] = if (this.position() != position) {
+    val promise = Promise[Unit]
+    this.position.once(_ => {
+      promise.success(())
+    }, d => math.abs(position - d) <= 1.0)
+    this.position := position
+    promise.future
+  } else {
+    Future.successful(())
+  }
+
+  def createImage(): Image = {
+    val canvas = CanvasPool(width, height)
+    val context = canvas.context
+    context.drawImage(element, 0.0, 0.0)
+    CanvasImage(canvas)
+  }
+
   override def draw(context: Context, x: Double, y: Double): Unit = if (!isEmpty) {
     context.drawVideo(element)(x, y, width, height)
     if (position() > 0.0 && !isPaused && !isEnded) {
@@ -87,25 +115,36 @@ class Video(val url: URL, element: html.Video) extends Drawable {
 }
 
 object Video {
-  object empty extends Video(URL("http://localhost"), dom.create[html.Video]("video")) {
+  object empty extends Video(dom.create[html.Video]("video")) {
     override def isEmpty: Boolean = true
   }
 
-  def apply(url: URL,
-            autoPlay: Boolean = false,
-            loop: Boolean = false,
-            muted: Boolean = false): Future[Video] = {
+  def isVideo(file: File): Boolean = file.`type`.startsWith("video/")
+
+  def apply(file: File, autoPlay: Boolean, loop: Boolean, muted: Boolean): Future[Video] = {
+    val url = org.scalajs.dom.URL.createObjectURL(file)
+    apply(url, autoPlay, loop, muted)
+  }
+
+  def apply(url: URL, autoPlay: Boolean, loop: Boolean, muted: Boolean): Future[Video] = {
+    apply(url.toString, autoPlay, loop, muted)
+  }
+
+  def apply(url: String,
+            autoPlay: Boolean,
+            loop: Boolean,
+            muted: Boolean): Future[Video] = {
     val element: html.Video = dom.create[html.Video]("video")
     element.autoplay = autoPlay
     element.loop = loop
     element.muted = muted
     val promise = Promise[Video]
     element.addEventListener("loadedmetadata", (_: Event) => {
-      val v = new Video(url, element)
+      val v = new Video(element)
       v.init(autoPlay, loop, muted)
       promise.success(v)
     })
-    element.src = url.toString
+    element.src = url
     promise.future
   }
 }

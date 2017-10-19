@@ -3,31 +3,21 @@ package io.youi.image
 import com.outr.{CanvgOptions, canvg}
 import io.youi._
 import io.youi.dom._
-import io.youi.drawable.Context
+import io.youi.net.URL
 import io.youi.path.Path
 import io.youi.spatial.{BoundingBox, Size}
+import io.youi.stream.StreamURL
 import io.youi.util.{CanvasPool, LazyFuture}
 import org.scalajs.dom.html
 import org.scalajs.dom.raw._
-import reactify._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Future, Promise}
 import scala.scalajs._
 
-case class SVGImage(private val svg: SVGSVGElement,
-                    width: Double,
-                    height: Double,
-                    measured: Size) extends Image {
-  private val context = Val(new Context(CanvasPool(width * ui.ratio, height * ui.ratio), ui.ratio))
-  context.changes(new ChangeObserver[Context] {
-    override def change(oldValue: Context, newValue: Context): Unit = {
-      CanvasPool.restore(oldValue.canvas)     // Cleanup when canvas changes
-      reDrawer.flag()                         // Must make sure to redraw on the new canvas
-    }
-  })
+class SVGImage private(private val svg: SVGSVGElement, override protected val canvas: html.Canvas, measured: Size) extends CanvasImage {
   private val reDrawer = LazyFuture {
-    drawAsync(context, 0.0, 0.0, width, height).map { _ =>
+    SVGImage.drawToCanvas(canvas, svg, 0.0, 0.0, canvas.width, canvas.height).map { _ =>
       modified := System.currentTimeMillis()
     }
   }
@@ -37,15 +27,45 @@ case class SVGImage(private val svg: SVGSVGElement,
     reDrawer.flag().map(_ => result)
   }
 
-  override def drawFast(context: Context, x: Double, y: Double, width: Double, height: Double): Unit = {
-    context.drawCanvas(this.context.canvas)(x, y, width, height)
+  override def resize(width: Double, height: Double): Future[SVGImage] = SVGImage(svg, width, height)
+
+  override def isVector: Boolean = true
+}
+
+object SVGImage {
+  case class ViewBox(width: Double = 0.0, height: Double = 0.0)
+
+  def apply(url: URL): Future[SVGImage] = {
+    val stream = StreamURL.stream(url)
+    stream.flatMap(apply)
   }
 
-  override def drawAsync(context: Context, x: Double, y: Double, width: Double, height: Double): Future[Unit] = {
-    drawToCanvas(context.canvas, x: Double, y: Double, width, height)
+  def apply(svgString: String): Future[SVGImage] = try {
+    val div = dom.create[html.Div]("div")
+    div.innerHTML = svgString
+    val svg = div.oneByTag[SVGSVGElement]("svg")
+    apply(svg)
+  } catch {
+    case t: Throwable => {
+      scribe.error(t)
+      throw t
+    }
   }
 
-  private def drawToCanvas(canvas: html.Canvas, x: Double, y: Double, width: Double, height: Double): Future[Unit] = {
+  def apply(svg: SVGSVGElement): Future[SVGImage] = {
+    val size = measure(svg).toSize
+    apply(svg, size.width, size.height)
+  }
+
+  def apply(svg: SVGSVGElement, width: Double, height: Double): Future[SVGImage] = {
+    val size = measure(svg).toSize
+    val canvas = CanvasPool(width, height)
+    drawToCanvas(canvas, svg, 0.0, 0.0, width, height).map { _ =>
+      new SVGImage(svg, canvas, size)
+    }
+  }
+
+  def drawToCanvas(canvas: html.Canvas, svg: SVGSVGElement, x: Double, y: Double, width: Double, height: Double): Future[Unit] = {
     val promise = Promise[Unit]
     val callback: js.Function = () => {
       promise.success(())
@@ -63,21 +83,6 @@ case class SVGImage(private val svg: SVGSVGElement,
     })
     promise.future
   }
-
-  override def toDataURL: Future[String] = CanvasPool.withCanvasFuture(width, height) { temp =>
-    val context = new Context(temp, ui.ratio)
-    drawAsync(context, 0.0, 0.0, width, height).map { _ =>
-      temp.toDataURL("image/png")
-    }
-  }
-
-  override def dispose(): Unit = {}
-
-  override def isVector: Boolean = true
-}
-
-object SVGImage {
-  case class ViewBox(width: Double = 0.0, height: Double = 0.0)
 
   def measure(svg: SVGSVGElement, applyDimension: Boolean = true, force: Boolean = false): BoundingBox = {
     val viewBox: ViewBox = if (svg.viewBox != null && svg.viewBox.animVal != null) {

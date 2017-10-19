@@ -1,8 +1,8 @@
 package io.youi.util
 
 import com.outr.pica.{Pica, ResizeOptions}
-import io.youi.drawable.Context
 import io.youi.image.Image
+import io.youi.video.Video
 import io.youi.{dom, _}
 import org.scalajs.dom._
 import org.scalajs.dom.html.Canvas
@@ -153,70 +153,42 @@ object ImageUtility {
     future
   }
 
+  def preview(file: File): Future[Option[Image]] = if (Video.isVideo(file)) {
+    Video(file, autoPlay = false, loop = false, muted = true).flatMap { video =>
+      video.seek(video.duration / 2.0).map { _ =>
+        val image = video.createImage()
+        video.dispose()
+        Some(image)
+      }
+    }
+  } else if (Image.isImage(file)) {
+    Image(file).map(Some.apply)
+  } else {
+    Future.successful(None)
+  }
+
+  def preview(file: File, width: Double, height: Double, scaleUp: Boolean): Future[Option[Image]] = {
+    preview(file).flatMap {
+      case Some(image) => {
+        val scaled = SizeUtility.scale(image.width, image.height, width, height, scaleUp)
+        image.resize(scaled.width, scaled.height).map { resized =>
+          image.dispose()
+          Some(resized)
+        }
+      }
+      case None => Future.successful(None)
+    }
+  }
+
   /**
     * Supports a Video or Image file and generates a smooth image preview for it.
     */
-  def generatePreview(file: File,
-                      width: Double,
-                      height: Double,
-                      smooth: Boolean,
-                      scaleUp: Boolean = false): Future[Option[String]] = {
-    val promise = Promise[Option[String]]
-    if (file.`type`.startsWith("video/")) { // Video preview
-      val video = document.createElement("video").asInstanceOf[html.Video]
-
-      val url = URL.createObjectURL(file)
-      video.autoplay = false
-      video.preload = "auto"
-      video.addEventListener("loadedmetadata", (evt: Event) => {
-        video.currentTime = video.duration / 2.0
-      })
-
-      def createImage(): Unit = {
-        val canvas = CanvasPool(video.videoWidth, video.videoHeight)
-        val context = canvas.getContext("2d").asInstanceOf[CanvasRenderingContext2D]
-        context.drawImage(video, 0.0, 0.0)
-        val scaled = SizeUtility.scale(video.videoWidth, video.videoHeight, width, height, scaleUp)
-        resizeToDataURL(canvas, scaled.width, scaled.height, smooth).map { dataURL =>
-          CanvasPool.restore(canvas)
-          promise.success(Some(dataURL))
-        }
+  def generatePreview(file: File, width: Double, height: Double, scaleUp: Boolean = false): Future[Option[String]] = {
+    preview(file, width, height, scaleUp).flatMap {
+      case Some(image) => {
+        image.toDataURL.map(Some.apply)
       }
-
-      video.addEventListener("loadeddata", (evt: Event) => {
-        createImage()
-      })
-      video.addEventListener("error", (evt: Event) => {
-        promise.success(None)
-      })
-      video.addEventListener("seeked", (evt: Event) => {
-        createImage()
-      })
-      video.src = url
-    } else if (file.`type` == "image/svg+xml") {                                                 // SVG preview
-      ImageUtility.loadText(file).flatMap { svgString =>
-        Image.fromSVGString(svgString, None, None).flatMap { image =>
-          val scaled = SizeUtility.scale(image.width, image.height, width, height, scaleUp)
-
-          CanvasPool.withCanvasFuture(scaled.width, scaled.height) { canvas =>
-            val context = new Context(canvas, ui.ratio)
-            image.drawAsync(context, 0.0, 0.0, scaled.width, scaled.height).map { _ =>
-              val dataURL = canvas.toDataURL("image/png")
-              promise.success(Some(dataURL))
-            }
-          }
-        }
-      }
-    } else if (file.`type`.startsWith("image/")) {                                               // Image preview
-      loadImage(file) { img =>
-        val scaled = SizeUtility.scale(img.width, img.height, width, height, scaleUp)
-        resizeToDataURL(img, scaled.width, scaled.height, smooth)
-      }.foreach(dataURL => promise.success(Option(dataURL)))
-    } else {
-      // Unknown file type, no preview available
-      scribe.warn(s"Unknown type (${file.`type`}) for ${file.name}.")
-      promise.success(None)
+      case None => Future.successful(None)
     }
-    promise.future
   }
 }

@@ -9,7 +9,15 @@ import reactify._
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class ImageView extends Component with ImageViewTheme {
+  /**
+    * True if changing the image should automatically dispose the old `Image`.
+    *
+    * Defaults to true.
+    */
+  val autoDispose: Var[Boolean] = Var(true)
   lazy val image: Var[Image] = Var(Image.empty)
+
+  // TODO: image.resize if image != the width / height
 
   private object caching extends Cacheable
 
@@ -20,8 +28,6 @@ class ImageView extends Component with ImageViewTheme {
   }
 
   override lazy val theme: Var[ImageViewTheme] = Var(ImageView)
-
-  init()
 
   override protected def defaultThemeParent = Some(theme)
 
@@ -46,6 +52,8 @@ class ImageView extends Component with ImageViewTheme {
       }
     }
   }
+
+  init()
 }
 
 object ImageView extends ImageViewTheme

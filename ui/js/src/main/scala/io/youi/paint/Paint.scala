@@ -51,7 +51,7 @@ object Paint {
             mode: ImageMode = ImageMode.Quality,
             x: => Double = 0.0,
             y: => Double = 0.0,
-            ratio: => Double = ui.ratio): Future[DrawablePaint[Image]] = Image(url.toString, mode = mode).map { image =>
+            ratio: => Double = ui.ratio): Future[DrawablePaint[Image]] = Image(url.toString).map { image =>
     new DrawablePaint[Image](image, repetition, image.width, image.height, x, y, ratio)
   }
 

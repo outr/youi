@@ -4,7 +4,7 @@ import io.youi._
 import io.youi.app.screen.UIScreen
 import io.youi.component.ImageView
 import io.youi.dom._
-import io.youi.image.Image
+import io.youi.image.{Image, SVGImage}
 import org.scalajs.dom.raw.SVGCircleElement
 
 import scala.concurrent.Future
@@ -22,7 +22,7 @@ object SVGImageExample extends UIExampleScreen with UIScreen {
 
   override def createUI(): Future[Unit] = for {
     tiger <- Image("/images/tiger.svg")
-    circle <- Image.fromSVGString(svgString)
+    circle <- SVGImage(svgString)
   } yield {
     container.children += new ImageView {
       image := tiger

@@ -29,7 +29,11 @@ object CanvasImage {
     val c = canvas
     new CanvasImage {
       override protected def canvas: Canvas = c
-      override def resize(width: Double, height: Double): Future[Image] = {
+      override def resize(width: Double, height: Double): Future[Image] = if (this.width == width && this.height == height) {
+        Future.successful(this)
+      } else if (original.map(_.width.toDouble).contains(width) && original.map(_.height.toDouble).contains(height)) {
+        Future.successful(apply(original.get, None))
+      } else {
         CanvasImage.resize(original.getOrElse(c), width, height)
       }
     }

@@ -11,7 +11,7 @@ object VideoExample extends UIExampleScreen with UIScreen {
   override def name: String = "Video Example"
   override def path: String = "/examples/video.html"
 
-  override def createUI(): Future[Unit] = Video(History.url().withPath("/sample.mp4"), autoPlay = true).map { v =>
+  override def createUI(): Future[Unit] = Video(History.url().withPath("/sample.mp4"), autoPlay = true, loop = false, muted = false).map { v =>
     container.children += new VideoView {
       video := v
       position.center := ui.center

@@ -27,7 +27,11 @@ class SVGImage private(private val svg: SVGSVGElement, override protected val ca
     reDrawer.flag().map(_ => result)
   }
 
-  override def resize(width: Double, height: Double): Future[SVGImage] = SVGImage(svg, width, height)
+  override def resize(width: Double, height: Double): Future[SVGImage] = if (this.width == width && this.height == height) {
+    Future.successful(this)
+  } else {
+    SVGImage(svg, width, height)
+  }
 
   override def isVector: Boolean = true
 }

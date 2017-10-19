@@ -18,7 +18,11 @@ class HTMLImage private(private[image] val img: html.Image) extends Image {
     context.drawImage(img)(x, y, width, height)
   }
 
-  override def resize(width: Double, height: Double): Future[Image] = ResizedHTMLImage(this, width, height)
+  override def resize(width: Double, height: Double): Future[Image] = if (this.width == width && this.height == height) {
+    Future.successful(this)
+  } else {
+    ResizedHTMLImage(this, width, height)
+  }
 
   override def isVector: Boolean = false
 

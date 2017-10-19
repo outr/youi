@@ -22,10 +22,10 @@ object PreviewImageExample extends HTMLScreen {
       position.center := ui.center
       position.top := image.position.bottom + 10.0
       element.`type` = "file"
-      element.addEventListener("change", (evt: Event) => {
+      element.addEventListener("change", (_: Event) => {
         if (element.files.length > 0) {
           val file = element.files(0)
-          ImageUtility.generatePreview(file, 1024.0, 768.0, smooth = true).foreach {
+          ImageUtility.generatePreview(file, 1024.0, 768.0).foreach {
             case Some(dataURL) => {
               image.image := Image(dataURL)
             }

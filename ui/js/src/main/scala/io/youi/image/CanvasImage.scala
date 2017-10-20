@@ -1,7 +1,8 @@
 package io.youi.image
 
 import io.youi.drawable.Context
-import io.youi.util.{CanvasPool, ImageResizer, ImageUtility}
+import io.youi.image.resize.ImageResizer
+import io.youi.util.{CanvasPool, ImageUtility}
 import org.scalajs.dom.html
 import org.scalajs.dom.html.Canvas
 

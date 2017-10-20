@@ -2,9 +2,10 @@ package io.youi.video
 
 import io.youi._
 import io.youi.drawable.{Context, Drawable}
+import io.youi.image.resize.ImageResizer
 import io.youi.image.{CanvasImage, Image}
 import io.youi.net.URL
-import io.youi.util.{CanvasPool, ImageResizer}
+import io.youi.util.CanvasPool
 import org.scalajs.dom.{Event, File, html}
 import reactify._
 

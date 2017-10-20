@@ -2,8 +2,9 @@ package io.youi.image
 
 import io.youi.dom
 import io.youi.drawable.Context
+import io.youi.image.resize.ImageResizer
 import io.youi.net.URL
-import io.youi.util.{ImageResizer, ImageUtility}
+import io.youi.util.ImageUtility
 import org.scalajs.dom.{Event, html}
 
 import scala.concurrent.ExecutionContext.Implicits.global

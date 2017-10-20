@@ -6,8 +6,8 @@ import io.youi.drawable._
 import io.youi.example.ui.UIExampleScreen
 import io.youi.font.{GoogleFont, OpenTypeFont}
 import io.youi.image.HTMLImage
+import io.youi.image.resize.ImageResizer
 import io.youi.path.Fill
-import io.youi.util.ImageResizer
 
 import scala.concurrent.Future
 
@@ -19,6 +19,9 @@ object ImageScalingExample extends UIExampleScreen with DrawableScreen {
     image <- HTMLImage(History.url.withPart("/images/colored_lines.jpg"))
     (fast, fastTime) <- timed(image.resize(240.0, 150.0, ImageResizer.Fast))
     (pica, picaTime) <- timed(image.resize(240.0, 150.0, ImageResizer.Pica))
+    (smoothLow, smoothLowTime) <- timed(image.resize(240.0, 150.0, ImageResizer.SmoothLow))
+    (smoothMedium, smoothMediumTime) <- timed(image.resize(240.0, 150.0, ImageResizer.SmoothMedium))
+    (smoothHigh, smoothHighTime) <- timed(image.resize(240.0, 150.0, ImageResizer.SmoothHigh))
   } yield {
     Group(
       Transformation(25.0, 0.0)(font(s"Fast ($fastTime seconds)", 36.0)),
@@ -26,7 +29,17 @@ object ImageScalingExample extends UIExampleScreen with DrawableScreen {
       Transformation(50.0, 50.0)(fast),
       Transformation(25.0, 200.0)(font(s"Pica ($picaTime seconds)", 36.0)),
       Fill(Color.Black),
-      Transformation(50.0, 250.0)(pica)
+      Transformation(50.0, 250.0)(pica),
+
+      Transformation(375.0, 0.0)(font(s"Smooth Low ($smoothLowTime seconds)", 36.0)),
+      Fill(Color.Black),
+      Transformation(400.0, 50.0)(smoothLow),
+      Transformation(375.0, 200.0)(font(s"Smooth Medium ($smoothMediumTime seconds)", 36.0)),
+      Fill(Color.Black),
+      Transformation(400.0, 250.0)(smoothMedium),
+      Transformation(375.0, 400.0)(font(s"Smooth High ($smoothHighTime seconds)", 36.0)),
+      Fill(Color.Black),
+      Transformation(400.0, 450.0)(smoothHigh)
     )
   }
 

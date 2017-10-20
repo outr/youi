@@ -2,6 +2,7 @@ package io.youi.util
 
 import com.outr.pica.{Pica, ResizeOptions}
 import io.youi.image.Image
+import io.youi.image.resize.ImageResizer
 import io.youi.video.Video
 import io.youi.{dom, _}
 import org.scalajs.dom._

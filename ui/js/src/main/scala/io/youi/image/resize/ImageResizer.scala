@@ -1,7 +1,5 @@
-package io.youi.util
+package io.youi.image.resize
 
-import com.outr.pica.{Pica, ResizeOptions}
-import io.youi._
 import org.scalajs.dom.html
 
 import scala.concurrent.Future
@@ -26,24 +24,7 @@ trait ImageResizer {
 object ImageResizer {
   def Fast: ImageResizer = FastResizer
   def Pica: ImageResizer = PicaResizer
-}
-
-object PicaResizer extends ImageResizer {
-  private lazy val pica: Pica = Pica()
-  private val picaFuture = new SingleThreadedFuture()
-
-  override protected def resizeInternal(source: html.Image | html.Canvas, destination: html.Canvas): Future[html.Canvas] = {
-    picaFuture {
-      pica.resize(source, destination, new ResizeOptions {
-        alpha = true
-      }).toFuture
-    }
-  }
-}
-
-object FastResizer extends ImageResizer {
-  override protected[util] def resizeInternal(source: html.Image | html.Canvas, destination: html.Canvas): Future[html.Canvas] = {
-    destination.context.drawImage(source.asInstanceOf[html.Image], 0.0, 0.0, destination.width, destination.height)
-    Future.successful(destination)
-  }
+  lazy val SmoothLow: ImageResizer = new SmoothingResizer("low")
+  lazy val SmoothMedium: ImageResizer = new SmoothingResizer("medium")
+  lazy val SmoothHigh: ImageResizer = new SmoothingResizer("high")
 }

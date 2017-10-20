@@ -69,6 +69,33 @@ class ImageEditor extends AbstractContainer {
     canvas
   }
 
+  def preview(img: html.Image, width: Double, height: Double): Unit = {
+    val canvas = CanvasPool(width, height)
+    val context = canvas.context
+    val resizer = LazyFuture {
+      val min = minPreviewSize()
+      val scaled = SizeUtility.scale(rs.selection.width(), rs.selection.height(), min.width, min.height, scaleUp = true)
+      val width = scaled.width
+      val height = scaled.height
+      val scale = scaled.scale
+      canvas.width = math.ceil(width).toInt
+      canvas.height = math.ceil(height).toInt
+
+      context.clearRect(0.0, 0.0, canvas.width, canvas.height)
+      context.scale(scale, scale)
+      context.translate(imageView.position.x - rs.selection.x1, imageView.position.y - rs.selection.y1)
+      context.translate(imageView.size.width / 2.0, imageView.size.height / 2.0)
+      context.rotate(imageView.rotation() * (math.Pi * 2.0))
+      context.translate(-imageView.size.width / 2.0, -imageView.size.height / 2.0)
+      imageView.image().resizeTo(canvas, width, height).map { _ =>
+        img.src = canvas.toDataURL("image/png")
+      }
+    }
+    imageView.image.on(resizer.flag())
+    revision.on(resizer.flag())
+    resizer.flag()
+  }
+
   override protected def init(): Unit = {
     super.init()
 

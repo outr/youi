@@ -41,7 +41,8 @@ object CanvasImage {
       }
 
       override def resizeTo(canvas: html.Canvas, width: Double, height: Double): Future[html.Canvas] = {
-        ImageUtility.drawToCanvas(original.getOrElse(c), canvas, ImageResizer.Smooth)(0.0, 0.0, width, height)
+        val source: html.Canvas = original.getOrElse(c)
+        ImageUtility.drawToCanvas(source, canvas, ImageResizer.Smooth)(0.0, 0.0, width, height)
       }
     }
   }

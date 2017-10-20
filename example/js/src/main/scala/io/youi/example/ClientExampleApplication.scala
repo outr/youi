@@ -43,7 +43,7 @@ object ClientExampleApplication extends ExampleApplication with ClientApplicatio
   val verticalLayout = VerticalLayoutExample
   val gridLayout = GridLayoutExample
   val rectangularSelection = RectangularSelectionExample
-//  val imageEditor = ImageEditorExample
+  val imageEditor = ImageEditorExample
 
   val dataTransfer = DataTransferExample
   val selection = hypertext.SelectionExample

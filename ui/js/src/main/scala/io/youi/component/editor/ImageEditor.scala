@@ -7,13 +7,12 @@ import io.youi.image.Image
 import io.youi.image.resize.ImageResizer
 import io.youi.model.{ImageEditorInfo, ImageInfo, SelectionInfo}
 import io.youi.spatial.{Point, Size}
-import io.youi.util.{CanvasPool, LazyFuture, SizeUtility}
+import io.youi.util.{CanvasPool, ImageUtility, LazyFuture, SizeUtility}
 import org.scalajs.dom.{File, html}
 import reactify._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.concurrent.duration._
 
 class ImageEditor extends AbstractContainer {
   override type Child = Component
@@ -33,31 +32,42 @@ class ImageEditor extends AbstractContainer {
   val wheelMultiplier: Var[Double] = Var(0.001)
   val revision: Val[Int] = Var(0)
 
-//  val preview: Var[html.Canvas] = Var(CanvasPool(rs.selection.width, rs.selection.height), static = true)
+  val preview: Var[html.Canvas] = Var(CanvasPool(rs.selection.width, rs.selection.height), static = true)
 
-  /*private val previewUpdater = LazyFuture({
+  private val previewUpdater = LazyFuture({
     val min = minPreviewSize()
     val scaled = SizeUtility.scale(rs.selection.width(), rs.selection.height(), min.width, min.height, scaleUp = true)
     val width = scaled.width
     val height = scaled.height
     val scale = scaled.scale
     val destination = CanvasPool(width, height)
-    val canvasContext = destination.getContext("2d").asInstanceOf[CanvasRenderingContext2D]
+    val canvasContext = destination.context
     canvasContext.scale(scale, scale)
     canvasContext.translate(imageView.position.x - rs.selection.x1, imageView.position.y - rs.selection.y1)
     canvasContext.translate(imageView.size.width / 2.0, imageView.size.height / 2.0)
     canvasContext.rotate(imageView.rotation() * (math.Pi * 2.0))
     canvasContext.translate(-imageView.size.width / 2.0, -imageView.size.height / 2.0)
-    val context = new Context(destination, ui.ratio)
-
-    originalImage.drawAsync(context, 0.0, 0.0, imageView.size.width, imageView.size.height).map { _ =>
+    originalImage.resizeTo(destination, imageView.size.width, imageView.size.height, ImageResizer.Fast).map { _ =>
       val previous = preview()
       preview := destination
       CanvasPool.restore(previous)
     }
-  }, automatic = false)*/
+  }, automatic = false)
 
-  def preview(width: Double, height: Double, resizer: ImageResizer): html.Canvas = {
+  def previewImage(img: html.Image, width: Double, height: Double): Unit = {
+    val resizer = LazyFuture {
+      if (preview().width > 0 && preview().height > 0 && width > 0.0 && height > 0.0) {
+        ImageUtility.resizeToImage(preview(), width, height, img, ImageResizer.Fast)
+      } else {
+        Future.successful(img)
+      }
+    }
+    preview.attachAndFire { _ =>
+      resizer.flag()
+    }
+  }
+
+  /*def preview(width: Double, height: Double, resizer: ImageResizer): html.Canvas = {
     val canvas = CanvasPool(width, height)
     val lf = LazyFuture {
       imageView.image().resizeTo(canvas, width, height, resizer)
@@ -70,22 +80,20 @@ class ImageEditor extends AbstractContainer {
 
   def preview(img: html.Image, width: Double, height: Double, resizer: ImageResizer): Unit = {
     val canvas = CanvasPool(width, height)
-    val context = canvas.context
+    val context = new Context(canvas, ui.ratio)
     val lf = LazyFuture({
-      val min = minPreviewSize()
-      val scaled = SizeUtility.scale(rs.selection.width(), rs.selection.height(), min.width, min.height, scaleUp = true)
-      val width = scaled.width
-      val height = scaled.height
-      val scale = scaled.scale
+      val scaled = SizeUtility.scale(rs.selection.width(), rs.selection.height(), width, height, scaleUp = true)
       canvas.width = math.ceil(width).toInt
       canvas.height = math.ceil(height).toInt
 
-      context.clearRect(0.0, 0.0, canvas.width, canvas.height)
-      context.scale(scale, scale)
+      scribe.info(s"Ratio: ${ui.ratio()}, Scale: $scaled")
+
+      context.clear()
       context.translate(imageView.position.x - rs.selection.x1, imageView.position.y - rs.selection.y1)
-      context.translate(imageView.size.width / 2.0, imageView.size.height / 2.0)
-      context.rotate(imageView.rotation() * (math.Pi * 2.0))
-      context.translate(-imageView.size.width / 2.0, -imageView.size.height / 2.0)
+      context.scale(scaled.scale, scaled.scale)
+//      context.translate(imageView.size.width / 2.0, imageView.size.height / 2.0)
+//      context.rotate(imageView.rotation() * (math.Pi * 2.0))
+//      context.translate(-imageView.size.width / 2.0, -imageView.size.height / 2.0)
       imageView.image().resizeTo(canvas, width, height, resizer).map { _ =>
         img.src = canvas.toDataURL("image/png")
       }
@@ -94,7 +102,7 @@ class ImageEditor extends AbstractContainer {
     imageView.image.on(lf.flag())
     revision.on(lf.flag())
     lf.flag()
-  }
+  }*/
 
   override protected def init(): Unit = {
     super.init()
@@ -115,6 +123,9 @@ class ImageEditor extends AbstractContainer {
         }
       }
     }
+
+    revision.on(previewUpdater.flag())
+    delta.on(previewUpdater.update())
 
     size.width := imageView.size.width + rs.blocks.size
     size.height := imageView.size.height + rs.blocks.size

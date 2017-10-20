@@ -6,7 +6,6 @@ import io.youi.example.ClientExampleApplication
 import io.youi.example.ui.hypertext.HTMLScreen
 import io.youi.hypertext.border.BorderStyle
 import io.youi.hypertext.{Button, Canvas, ImageView, TextInput}
-import io.youi.image.resize.ImageResizer
 import io.youi.model.ImageEditorInfo
 import org.scalajs.dom._
 import reactify._
@@ -47,7 +46,8 @@ object ImageEditorExample extends HTMLScreen {
       border.size := Some(1.0)
       border.style := Some(BorderStyle.Solid)
       border.color := Some(Color.Black)
-      editor.preview(element, 160.0, 120.0, ImageResizer.Pica)
+      editor.previewImage(element, 160.0, 120.0)
+//      editor.preview(element, 160.0, 120.0, ImageResizer.Fast)
       visible := editor.actual.visibility
     }
     container.children += preview1

@@ -54,11 +54,12 @@ object Image {
 
   def apply(source: String): Future[Image] = if (source.indexOf("<svg") != -1) {
     SVGImage(source)
-  } else if (source.startsWith("data:image/")) {
+  } else if (source.startsWith("data:image/") || source.startsWith("blob:")) {
     val img = dom.create[html.Image]("img")
     img.src = source
     HTMLImage(img)
   } else {
+    scribe.info(s"Loading: $source")
     apply(History.url.withPart(source))
   }
 

@@ -39,6 +39,10 @@ object CanvasImage {
       } else {
         CanvasImage.resize(original.getOrElse(c), width, height, resizer)
       }
+
+      override def resizeTo(canvas: html.Canvas, width: Double, height: Double): Future[html.Canvas] = {
+        ImageUtility.drawToCanvas(original.getOrElse(c), canvas, ImageResizer.Smooth)(0.0, 0.0, width, height)
+      }
     }
   }
 

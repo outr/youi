@@ -20,6 +20,8 @@ trait Image extends Drawable {
 
   def resize(width: Double, height: Double): Future[Image]
 
+  def resizeTo(canvas: html.Canvas, width: Double, height: Double): Future[html.Canvas]
+
   def clip(x1: Double, y1: Double, x2: Double, y2: Double): Future[Image] = {
     val w = x2 - x1
     val h = y2 - y1

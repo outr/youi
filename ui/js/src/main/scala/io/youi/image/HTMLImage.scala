@@ -27,6 +27,10 @@ class HTMLImage private(private[image] val img: html.Image) extends Image {
     ResizedHTMLImage(this, width, height, resizer)
   }
 
+  override def resizeTo(canvas: html.Canvas, width: Double, height: Double): Future[html.Canvas] = {
+    ResizedHTMLImage.resizeTo(this, canvas, width, height, ImageResizer.Smooth)
+  }
+
   override def isVector: Boolean = false
 
   override def toDataURL: Future[String] = ImageUtility.toDataURL(img)

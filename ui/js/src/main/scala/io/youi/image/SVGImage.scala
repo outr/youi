@@ -33,6 +33,10 @@ class SVGImage private(private val svg: SVGSVGElement, override protected val ca
     SVGImage(svg, width, height)
   }
 
+  override def resizeTo(canvas: html.Canvas, width: Double, height: Double): Future[html.Canvas] = {
+    SVGImage.drawToCanvas(canvas, svg, 0.0, 0.0, width, height).map(_ => canvas)
+  }
+
   override def isVector: Boolean = true
 
   override def toString: String = s"SVGImage($width x $height)"

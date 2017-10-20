@@ -2,6 +2,7 @@ package io.youi.image
 
 import io.youi._
 import io.youi.drawable.{Context, Drawable}
+import io.youi.image.resize.ImageResizer
 import io.youi.net.URL
 import io.youi.spatial.BoundingBox
 import io.youi.util.{CanvasPool, ImageUtility}
@@ -20,7 +21,7 @@ trait Image extends Drawable {
 
   def resize(width: Double, height: Double): Future[Image]
 
-  def resizeTo(canvas: html.Canvas, width: Double, height: Double): Future[html.Canvas]
+  def resizeTo(canvas: html.Canvas, width: Double, height: Double, resizer: ImageResizer): Future[html.Canvas]
 
   def clip(x1: Double, y1: Double, x2: Double, y2: Double): Future[Image] = {
     val w = x2 - x1

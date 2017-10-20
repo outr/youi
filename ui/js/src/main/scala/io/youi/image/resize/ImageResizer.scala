@@ -27,7 +27,7 @@ object ImageResizer {
     *
     * Defaults to using `StepDown`.
     */
-  var Smooth: ImageResizer = StepDown
+  var Smooth: ImageResizer = Pica
 
   def Fast: ImageResizer = FastResizer
   def Pica: ImageResizer = PicaResizer

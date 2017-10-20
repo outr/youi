@@ -3,6 +3,7 @@ package io.youi.image
 import com.outr.{CanvgOptions, canvg}
 import io.youi._
 import io.youi.dom._
+import io.youi.image.resize.ImageResizer
 import io.youi.net.URL
 import io.youi.path.Path
 import io.youi.spatial.{BoundingBox, Size}
@@ -33,7 +34,7 @@ class SVGImage private(private val svg: SVGSVGElement, override protected val ca
     SVGImage(svg, width, height)
   }
 
-  override def resizeTo(canvas: html.Canvas, width: Double, height: Double): Future[html.Canvas] = {
+  override def resizeTo(canvas: html.Canvas, width: Double, height: Double, resizer: ImageResizer): Future[html.Canvas] = {
     SVGImage.drawToCanvas(canvas, svg, 0.0, 0.0, width, height).map(_ => canvas)
   }
 

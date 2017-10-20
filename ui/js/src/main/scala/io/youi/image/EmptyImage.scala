@@ -1,6 +1,7 @@
 package io.youi.image
 
 import io.youi.drawable.Context
+import io.youi.image.resize.ImageResizer
 import org.scalajs.dom.html
 
 import scala.concurrent.Future
@@ -19,7 +20,7 @@ object EmptyImage extends Image {
 
   override def resize(width: Double, height: Double): Future[Image] = Future.successful(this)
 
-  override def resizeTo(canvas: html.Canvas, width: Double, height: Double): Future[html.Canvas] = Future.successful(canvas)
+  override def resizeTo(canvas: html.Canvas, width: Double, height: Double, resizer: ImageResizer): Future[html.Canvas] = Future.successful(canvas)
 
   override def toString: String = "EmptyImage"
 }

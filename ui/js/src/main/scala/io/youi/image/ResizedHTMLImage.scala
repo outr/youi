@@ -4,8 +4,8 @@ import io.youi.image.resize.ImageResizer
 import io.youi.util.{CanvasPool, ImageUtility}
 import org.scalajs.dom.html
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class ResizedHTMLImage private(override protected val canvas: html.Canvas,
                                val original: HTMLImage,
@@ -18,7 +18,7 @@ class ResizedHTMLImage private(override protected val canvas: html.Canvas,
     ResizedHTMLImage(original, width, height, resizer)
   }
 
-  override def resizeTo(canvas: html.Canvas, width: Double, height: Double): Future[html.Canvas] = {
+  override def resizeTo(canvas: html.Canvas, width: Double, height: Double, resizer: ImageResizer): Future[html.Canvas] = {
     ResizedHTMLImage.resizeTo(original, canvas, width, height, resizer)
   }
 

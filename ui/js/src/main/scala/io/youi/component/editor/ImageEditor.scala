@@ -3,18 +3,17 @@ package io.youi.component.editor
 import io.youi._
 import io.youi.component._
 import io.youi.component.extra.RectangularSelection
-import io.youi.drawable.Context
-import io.youi.image.{Image, ResizedHTMLImage}
+import io.youi.image.Image
 import io.youi.image.resize.ImageResizer
 import io.youi.model.{ImageEditorInfo, ImageInfo, SelectionInfo}
 import io.youi.spatial.{Point, Size}
-import io.youi.util.{CanvasPool, ImageUtility, LazyFuture, SizeUtility}
-import org.scalajs.dom.raw.CanvasRenderingContext2D
+import io.youi.util.{CanvasPool, LazyFuture, SizeUtility}
 import org.scalajs.dom.{File, html}
 import reactify._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.concurrent.duration._
 
 class ImageEditor extends AbstractContainer {
   override type Child = Component
@@ -58,21 +57,21 @@ class ImageEditor extends AbstractContainer {
     }
   }, automatic = false)*/
 
-  def preview(width: Double, height: Double): html.Canvas = {
+  def preview(width: Double, height: Double, resizer: ImageResizer): html.Canvas = {
     val canvas = CanvasPool(width, height)
-    val resizer = LazyFuture {
-      imageView.image().resizeTo(canvas, width, height)
+    val lf = LazyFuture {
+      imageView.image().resizeTo(canvas, width, height, resizer)
     }
-    imageView.image.on(resizer.flag())
-    revision.on(resizer.flag())
-    resizer.flag()
+    imageView.image.on(lf.flag())
+    revision.on(lf.flag())
+    lf.flag()
     canvas
   }
 
-  def preview(img: html.Image, width: Double, height: Double): Unit = {
+  def preview(img: html.Image, width: Double, height: Double, resizer: ImageResizer): Unit = {
     val canvas = CanvasPool(width, height)
     val context = canvas.context
-    val resizer = LazyFuture {
+    val lf = LazyFuture({
       val min = minPreviewSize()
       val scaled = SizeUtility.scale(rs.selection.width(), rs.selection.height(), min.width, min.height, scaleUp = true)
       val width = scaled.width
@@ -87,13 +86,14 @@ class ImageEditor extends AbstractContainer {
       context.translate(imageView.size.width / 2.0, imageView.size.height / 2.0)
       context.rotate(imageView.rotation() * (math.Pi * 2.0))
       context.translate(-imageView.size.width / 2.0, -imageView.size.height / 2.0)
-      imageView.image().resizeTo(canvas, width, height).map { _ =>
+      imageView.image().resizeTo(canvas, width, height, resizer).map { _ =>
         img.src = canvas.toDataURL("image/png")
       }
-    }
-    imageView.image.on(resizer.flag())
-    revision.on(resizer.flag())
-    resizer.flag()
+    }, maxFrequency = 250.millis, automatic = false)
+    delta.on(lf.update())
+    imageView.image.on(lf.flag())
+    revision.on(lf.flag())
+    lf.flag()
   }
 
   override protected def init(): Unit = {

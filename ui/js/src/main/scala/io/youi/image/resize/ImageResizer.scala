@@ -24,6 +24,7 @@ trait ImageResizer {
 object ImageResizer {
   def Fast: ImageResizer = FastResizer
   def Pica: ImageResizer = PicaResizer
+  def StepDown: ImageResizer = StepDownResizer
   lazy val SmoothLow: ImageResizer = new SmoothingResizer("low")
   lazy val SmoothMedium: ImageResizer = new SmoothingResizer("medium")
   lazy val SmoothHigh: ImageResizer = new SmoothingResizer("high")

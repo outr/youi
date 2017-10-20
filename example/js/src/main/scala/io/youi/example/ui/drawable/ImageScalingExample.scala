@@ -19,6 +19,7 @@ object ImageScalingExample extends UIExampleScreen with DrawableScreen {
     image <- HTMLImage(History.url.withPart("/images/colored_lines.jpg"))
     (fast, fastTime) <- timed(image.resize(240.0, 150.0, ImageResizer.Fast))
     (pica, picaTime) <- timed(image.resize(240.0, 150.0, ImageResizer.Pica))
+    (step, stepTime) <- timed(image.resize(240.0, 150.0, ImageResizer.StepDown))
     (smoothLow, smoothLowTime) <- timed(image.resize(240.0, 150.0, ImageResizer.SmoothLow))
     (smoothMedium, smoothMediumTime) <- timed(image.resize(240.0, 150.0, ImageResizer.SmoothMedium))
     (smoothHigh, smoothHighTime) <- timed(image.resize(240.0, 150.0, ImageResizer.SmoothHigh))
@@ -30,6 +31,9 @@ object ImageScalingExample extends UIExampleScreen with DrawableScreen {
       Transformation(25.0, 200.0)(font(s"Pica ($picaTime seconds)", 36.0)),
       Fill(Color.Black),
       Transformation(50.0, 250.0)(pica),
+      Transformation(25.0, 400.0)(font(s"Step ($stepTime seconds)", 36.0)),
+      Fill(Color.Black),
+      Transformation(50.0, 450.0)(step),
 
       Transformation(375.0, 0.0)(font(s"Smooth Low ($smoothLowTime seconds)", 36.0)),
       Fill(Color.Black),

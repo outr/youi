@@ -34,6 +34,8 @@ class SVGImage private(private val svg: SVGSVGElement, override protected val ca
   }
 
   override def isVector: Boolean = true
+
+  override def toString: String = s"SVGImage($width x $height)"
 }
 
 object SVGImage {

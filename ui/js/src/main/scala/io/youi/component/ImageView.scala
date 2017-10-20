@@ -38,7 +38,9 @@ class ImageView extends Component with ImageViewTheme {
   }
 
   private lazy val resizer = LazyFuture {
-    if (!autoSmooth() || (image.width == size.width() && image.height == size.height())) {
+    if (!autoSmooth() ||
+        (image.width == size.width() && image.height == size.height()) ||
+        (size.width() == 0.0 || size.height() == 0.0)) {
       Future.successful(())
     } else {
       image.resize(size.width, size.height).map { img =>

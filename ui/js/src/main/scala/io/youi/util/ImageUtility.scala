@@ -1,12 +1,10 @@
 package io.youi.util
 
-import com.outr.pica.{Pica, ResizeOptions}
 import io.youi.image.Image
 import io.youi.image.resize.ImageResizer
 import io.youi.video.Video
 import io.youi.{dom, _}
 import org.scalajs.dom._
-import org.scalajs.dom.html.Canvas
 import org.scalajs.dom.raw.{CanvasRenderingContext2D, File, FileReader, URL}
 
 import scala.concurrent.ExecutionContext.Implicits.global

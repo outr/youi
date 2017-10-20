@@ -23,6 +23,8 @@ trait CanvasImage extends Image {
   override def toDataURL: Future[String] = Future.successful(canvas.toDataURL("image/png"))
 
   override def dispose(): Unit = CanvasPool.restore(canvas)
+
+  override def toString: String = s"CanvasImage($width x $height)"
 }
 
 object CanvasImage {

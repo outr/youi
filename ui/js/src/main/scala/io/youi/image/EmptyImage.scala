@@ -17,4 +17,6 @@ object EmptyImage extends Image {
   override def toDataURL: Future[String] = throw new RuntimeException("Empty image cannot be represented as a data url.")
 
   override def resize(width: Double, height: Double): Future[Image] = Future.successful(this)
+
+  override def toString: String = "EmptyImage"
 }

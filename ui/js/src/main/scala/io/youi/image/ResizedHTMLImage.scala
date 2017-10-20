@@ -17,6 +17,8 @@ class ResizedHTMLImage private(override protected val canvas: html.Canvas,
   } else {
     ResizedHTMLImage(original, width, height, resizer)
   }
+
+  override def toString: String = s"ResizedHTMLImage($width x $height, original: $original, resizer: $resizer)"
 }
 
 object ResizedHTMLImage {

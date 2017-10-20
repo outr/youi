@@ -32,6 +32,8 @@ class HTMLImage private(private[image] val img: html.Image) extends Image {
   override def toDataURL: Future[String] = ImageUtility.toDataURL(img)
 
   override def dispose(): Unit = {}
+
+  override def toString: String = s"HTMLImage($width x $height)"
 }
 
 object HTMLImage {

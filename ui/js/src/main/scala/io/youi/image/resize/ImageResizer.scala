@@ -22,9 +22,19 @@ trait ImageResizer {
 }
 
 object ImageResizer {
+  /**
+    * Defines the default smoothing implementation to use.
+    *
+    * Defaults to using `StepDown`.
+    */
+  var Smooth: ImageResizer = StepDown
+
   def Fast: ImageResizer = FastResizer
   def Pica: ImageResizer = PicaResizer
   def StepDown: ImageResizer = StepDownResizer
+
+  // NOTE: Only supported in some browsers (see https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/imageSmoothingQuality)
+  // TODO: determine a way to detect support for this (Firefox defaults to `high` even though it's not supported)
   lazy val SmoothLow: ImageResizer = new SmoothingResizer("low")
   lazy val SmoothMedium: ImageResizer = new SmoothingResizer("medium")
   lazy val SmoothHigh: ImageResizer = new SmoothingResizer("high")

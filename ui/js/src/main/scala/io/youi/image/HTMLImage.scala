@@ -19,7 +19,7 @@ class HTMLImage private(private[image] val img: html.Image) extends Image {
     context.drawImage(img)(x, y, width, height)
   }
 
-  override def resize(width: Double, height: Double): Future[Image] = resize(width, height, ImageResizer.Pica)
+  override def resize(width: Double, height: Double): Future[Image] = resize(width, height, ImageResizer.Smooth)
 
   def resize(width: Double, height: Double, resizer: ImageResizer): Future[Image] = if (this.width == width && this.height == height) {
     Future.successful(this)

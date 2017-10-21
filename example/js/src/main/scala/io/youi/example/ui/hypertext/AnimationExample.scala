@@ -18,7 +18,7 @@ object AnimationExample extends HTMLScreen {
     val view = new ImageView {
       image := icon
       position.left := 0.0
-      position.middle := ui.position.middle
+      position.middle := ui.middle
     }
     container.children += view
 
@@ -38,7 +38,7 @@ object AnimationExample extends HTMLScreen {
 
         forever(
           sequential(
-            label.position.right to ui.position.right - 50.0 in 5.seconds easing easingFunction,
+            label.position.right to ui.width - 50.0 in 5.seconds easing easingFunction,
             sleep(2.seconds),
             label.position.left to 50.0 in 5.seconds easing easingFunction,
             sleep(2.seconds)
@@ -56,8 +56,8 @@ object AnimationExample extends HTMLScreen {
           view.rotation to 6.0 in 20.seconds
         ),
         sequential(
-          view.position.right to ui.position.right in 5.seconds easing Easing.bounceOut,
-          view.position.bottom to ui.position.bottom in 5.seconds easing Easing.bounceOut,
+          view.position.right to ui.width in 5.seconds easing Easing.bounceOut,
+          view.position.bottom to ui.height in 5.seconds easing Easing.bounceOut,
           view.position.left to 0.0 in 5.seconds easing Easing.bounceOut,
           view.position.top to 0.0 in 5.seconds easing Easing.bounceOut
         )

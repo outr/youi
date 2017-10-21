@@ -4,8 +4,10 @@ import io.youi._
 import io.youi.app.screen.UIScreen
 import io.youi.component.ImageView
 import io.youi.dom._
-import io.youi.image.SVGImage
+import io.youi.image.{Image, SVGImage}
 import org.scalajs.dom.raw.SVGCircleElement
+
+import scala.concurrent.Future
 
 object SVGImageExample extends UIExampleScreen with UIScreen {
   override def name: String = "SVG Image"
@@ -18,26 +20,28 @@ object SVGImageExample extends UIExampleScreen with UIScreen {
       |</svg>
     """.stripMargin
 
-  override def createUI(): Unit = {
-    container.children += new ImageView("/images/tiger.svg", ImageMode.Quality) {
+  override def createUI(): Future[Unit] = for {
+    tiger <- Image("/images/tiger.svg")
+    circle <- SVGImage(svgString)
+  } yield {
+    container.children += new ImageView {
+      image := tiger
       position.left := 10.0
       position.top := 10.0
     }
 
-    container.children += new ImageView(svgString, ImageMode.Quality) {
-      position.center := ui.position.center
-      position.middle := ui.position.middle
+    container.children += new ImageView {
+      image := circle
+      position.center := ui.center
+      position.middle := ui.middle
 
-      def toggleColor(): Unit = {
-        val current = image().asInstanceOf[SVGImage]
-        val circle = current.svg.byId[SVGCircleElement]("circle")
+      def toggleColor(): Unit = circle.modify { svg =>
+        val circle = svg.byId[SVGCircleElement]("circle")
         if (circle.style.fill == "blue") {
           circle.style.fill = "red"
         } else {
           circle.style.fill = "blue"
         }
-        current.modified := true
-        reDraw.flag()
       }
 
       event.click.on(toggleColor())

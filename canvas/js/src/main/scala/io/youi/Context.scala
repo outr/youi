@@ -3,7 +3,7 @@ package io.youi
 import io.youi.component.Component
 import io.youi.paint._
 import io.youi.path.Path
-import io.youi.spatial.Matrix3
+import io.youi.spatial.{Matrix3, Size}
 import org.scalajs.dom.{CanvasRenderingContext2D, html}
 
 import scala.scalajs.js

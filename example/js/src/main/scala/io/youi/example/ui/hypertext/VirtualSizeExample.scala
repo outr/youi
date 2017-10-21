@@ -24,7 +24,7 @@ object VirtualSizeExample extends VirtualSizeSupport with HTMLScreen {
       font.family := "sans-serif"
       font.size := 66.5.vf
       position.left := 44.vx
-      position.middle := ui.position.middle
+      position.middle := ui.middle
     }
   }
 }

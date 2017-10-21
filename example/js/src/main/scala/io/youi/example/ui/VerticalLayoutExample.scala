@@ -2,16 +2,17 @@ package io.youi.example.ui
 
 import io.youi._
 import io.youi.app.screen.UIScreen
-import io.youi.component.{Container, DrawableComponent}
+import io.youi.component.Container
 import io.youi.layout.VerticalLayout
 import io.youi.paint.{Border, Paint, Stroke}
-import reactify._
+
+import scala.concurrent.Future
 
 object VerticalLayoutExample extends UIExampleScreen with UIScreen {
   override def name: String = "Vertical Layout"
   override def path: String = "/examples/vertical-layout.html"
 
-  override def createUI(): Unit = {
+  override def createUI(): Future[Unit] = {
     val boxes = new Container {
       layout := new VerticalLayout(spacing = 10.0, fromTop = true)
       background := Color.LightBlue
@@ -36,9 +37,10 @@ object VerticalLayoutExample extends UIExampleScreen with UIScreen {
       )
     }
     container.children += boxes
+    Future.successful(())
   }
 
-  class Box extends DrawableComponent {
+  class Box extends Container {
     position.left := 10.0
     size.width := 100.0
     size.height := 100.0

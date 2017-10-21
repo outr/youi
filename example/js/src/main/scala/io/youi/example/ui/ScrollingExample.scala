@@ -2,20 +2,23 @@ package io.youi.example.ui
 
 import io.youi._
 import io.youi.app.screen.UIScreen
-import io.youi.component.{BasicText, Container, ScrollBar, ScrollSupport}
+import io.youi.component.mixins.{ScrollBar, ScrollSupport}
+import io.youi.component.{Container, TextView}
+import io.youi.font.{GoogleFont, OpenTypeFont}
 import io.youi.layout.VerticalLayout
 import io.youi.paint.{Paint, Stroke}
 import reactify._
+
+import scala.concurrent.Future
 
 object ScrollingExample extends UIExampleScreen with UIScreen {
   override def name: String = "Scrolling"
   override def path: String = "/examples/scrolling.html"
 
-  override def createUI(): Unit = {
+  override def createUI(): Future[Unit] = {
     val scrollable = new Container with ScrollSupport {
-      id := Some("scrollable")
-      size.width := container.size.width
-      size.height := container.size.height
+      size.width := ui.width
+      size.height := ui.height
       background := Paint.vertical(container.size.height).distributeColors(Color.White, Color.Black)
       layoutManager := new VerticalLayout(25.0)
       scroll.vertical.bar := ScrollBar.simple(stroke = Stroke(Color.Black), fill = Color.LightBlue)
@@ -28,12 +31,16 @@ object ScrollingExample extends UIExampleScreen with UIScreen {
     }
 
     container.children += scrollable
+    Future.successful(())
   }
 
-  class Box(val text: String, color: Color, w: Double, h: Double) extends Container {
+  class Box(val message: String, color: Color, w: Double, h: Double) extends Container {
     background := color
-    children += new BasicText {
-      value := text
+    children += new TextView {
+      value := message
+      OpenTypeFont.fromURL(GoogleFont.`Open Sans`.`regular`).foreach { fnt =>
+        font.file := fnt
+      }
       fill := Color.White
       stroke := Stroke(Color.Black)
       font.size := 48.0
@@ -44,7 +51,7 @@ object ScrollingExample extends UIExampleScreen with UIScreen {
     size.width := w
     size.height := h
 
-    override def toString: String = text
+    override def toString: String = message
   }
 
   object Box {

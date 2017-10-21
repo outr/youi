@@ -1,6 +1,6 @@
 name := "youi"
 organization in ThisBuild := "io.youi"
-version in ThisBuild := "0.7.3"
+version in ThisBuild := "0.8.0-M1-SNAPSHOT"
 scalaVersion in ThisBuild := "2.12.3"
 crossScalaVersions in ThisBuild := List("2.12.3", "2.11.11")
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
@@ -13,7 +13,7 @@ val powerScalaVersion = "2.0.5"
 val reactifyVersion = "2.2.0"
 val hasherVersion = "1.2.1"
 val canvgVersion = "1.4.0_1"
-val openTypeVersion = "0.7.1_2"
+val openTypeVersion = "0.7.3"
 val picaVersion = "3.0.5"
 
 val akkaVersion = "2.5.4"
@@ -33,8 +33,7 @@ val scalaCheckVersion = "1.13.5"
 lazy val root = project.in(file("."))
   .aggregate(
     macrosJS, macrosJVM, coreJS, coreJVM, spatialJS, spatialJVM, stream, communicationJS, communicationJVM, dom, client,
-    server, serverUndertow, canvasJS, canvasJVM, hypertext, optimizer, appJS, appJVM, templateJS, templateJVM,
-    exampleJS, exampleJVM
+    server, serverUndertow, uiJS, uiJVM, hypertext, optimizer, appJS, appJVM, exampleJS, exampleJVM
   )
   .settings(
     resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases",
@@ -175,9 +174,9 @@ lazy val communication = crossProject.in(file("communication"))
 lazy val communicationJS = communication.js
 lazy val communicationJVM = communication.jvm.dependsOn(server)
 
-lazy val canvas = crossProject.in(file("canvas"))
+lazy val ui = crossProject.in(file("ui"))
   .settings(
-    name := "youi-canvas"
+    name := "youi-ui"
   )
   .jsSettings(
     libraryDependencies ++= Seq(
@@ -185,12 +184,12 @@ lazy val canvas = crossProject.in(file("canvas"))
       "com.outr" %%% "opentype-scala-js" % openTypeVersion,
       "com.outr" %%% "pica-scala-js" % picaVersion
     ),
-    jsDependencies += RuntimeDOM
+    jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv
   )
   .dependsOn(spatial)
 
-lazy val canvasJS = canvas.js.dependsOn(dom)
-lazy val canvasJVM = canvas.jvm
+lazy val uiJS = ui.js.dependsOn(dom)
+lazy val uiJVM = ui.jvm
 
 lazy val hypertext = project.in(file("hypertext"))
   .enablePlugins(ScalaJSPlugin)
@@ -198,7 +197,7 @@ lazy val hypertext = project.in(file("hypertext"))
     name := "youi-hypertext",
     jsDependencies += RuntimeDOM
   )
-  .dependsOn(canvasJS)
+  .dependsOn(uiJS)
 
 lazy val optimizer = project.in(file("optimizer"))
   .settings(
@@ -222,34 +221,10 @@ lazy val app = crossProject.in(file("app"))
       "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
     )
   )
-  .dependsOn(core, communication, canvas)
+  .dependsOn(core, communication, ui)
 
 lazy val appJS = app.js.dependsOn(hypertext)
 lazy val appJVM = app.jvm
-
-lazy val template = crossProject.in(file("template"))
-  .settings(
-    name := "youi-template"
-  )
-  .jsSettings(
-    artifactPath in (Compile, fastOptJS) := (resourceManaged in Compile).value / "application.js",
-    artifactPath in (Compile, fullOptJS) := (resourceManaged in Compile).value / "application.js",
-    crossTarget in fastOptJS := baseDirectory.value / ".." / "jvm" / "src" / "main" / "resources" / "app",
-    crossTarget in fullOptJS := baseDirectory.value / ".." / "jvm" / "src" / "main" / "resources" / "app",
-    crossTarget in packageJSDependencies := baseDirectory.value / ".." / "jvm" / "src" / "main" / "resources" / "app",
-    skip in packageJSDependencies := false
-  )
-  .jvmSettings(
-    fork := true,
-    libraryDependencies ++= Seq(
-      "org.powerscala" %% "powerscala-io" % powerScalaVersion
-    ),
-    assemblyJarName in assembly := "youi-template.jar"
-  )
-  .dependsOn(app)
-
-lazy val templateJS = template.js
-lazy val templateJVM = template.jvm.dependsOn(serverUndertow, optimizer)
 
 lazy val example = crossProject.in(file("example"))
   .settings(

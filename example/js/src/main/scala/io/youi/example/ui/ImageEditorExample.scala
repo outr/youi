@@ -2,10 +2,10 @@ package io.youi.example.ui
 
 import io.youi._
 import io.youi.component.editor.{AspectRatio, ImageEditor}
-import io.youi.component.Renderer
-import io.youi.hypertext.{Button, Canvas, ImageView, TextInput}
+import io.youi.example.ClientExampleApplication
 import io.youi.example.ui.hypertext.HTMLScreen
 import io.youi.hypertext.border.BorderStyle
+import io.youi.hypertext.{Button, Canvas, ImageView, TextInput}
 import io.youi.model.ImageEditorInfo
 import org.scalajs.dom._
 import reactify._
@@ -17,12 +17,12 @@ object ImageEditorExample extends HTMLScreen {
   override def path: String = "/examples/image-editor.html"
 
   private lazy val canvas = new Canvas {
-    position.center := ui.position.center
-    position.middle := ui.position.middle
+    position.center := ui.center
+    position.middle := ui.middle
     size.width := 800.0
     size.height := 500.0
   }
-  private lazy val renderer = new Renderer(canvas.element)
+  private lazy val renderer = new Renderer(canvas.element, 800.0, 500.0)
 
   override protected def load(): Future[Unit] = super.load().map { _ =>
     container.children += canvas
@@ -34,7 +34,8 @@ object ImageEditorExample extends HTMLScreen {
 
       load("/images/cuteness.jpg")
     }
-    renderer.children += editor
+    renderer.drawable := editor
+    renderer.visible := true
 
     val preview1 = new ImageView {
       id := "preview1"
@@ -45,7 +46,8 @@ object ImageEditorExample extends HTMLScreen {
       border.size := Some(1.0)
       border.style := Some(BorderStyle.Solid)
       border.color := Some(Color.Black)
-      editor.previewImage(element, 160, 120)
+      editor.previewImage(element, 160.0, 120.0)
+//      editor.preview(element, 160.0, 120.0, ImageResizer.Fast)
       visible := editor.actual.visibility
     }
     container.children += preview1
@@ -149,10 +151,12 @@ object ImageEditorExample extends HTMLScreen {
 
 
   override protected def activate(): Future[Unit] = super.activate().map { _ =>
+    ClientExampleApplication.debug.renderer := renderer
     renderer.visible := true
   }
 
   override protected def deactivate(): Future[Unit] = super.deactivate().map { _ =>
     renderer.visible := false
+    ClientExampleApplication.debug.renderer := Renderer
   }
 }

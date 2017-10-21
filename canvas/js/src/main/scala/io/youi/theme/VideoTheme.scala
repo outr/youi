@@ -1,8 +1,5 @@
 package io.youi.theme
 
-import io.youi.component.Component
-import reactify.Var
-
 trait VideoTheme extends ComponentTheme {
   override protected def defaultThemeParent: Option[Theme] = Some(Component)
 

@@ -11,6 +11,8 @@ case class MutableMatrix3(var m00: Double,
                           var m20: Double,
                           var m21: Double,
                           var m22: Double) extends Matrix3 {
+  override def isMutable: Boolean = true
+
   def set(m00: Double = m00,
              m01: Double = m01,
              m02: Double = m02,

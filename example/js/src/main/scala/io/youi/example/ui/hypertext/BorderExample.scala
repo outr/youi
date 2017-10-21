@@ -1,6 +1,5 @@
 package io.youi.example.ui.hypertext
 
-import io.youi.example.ui.UIExampleScreen
 import io.youi.hypertext.border.BorderStyle
 import io.youi.hypertext.{Container, Label}
 import io.youi.{Color, ui}
@@ -12,8 +11,8 @@ object BorderExample extends HTMLScreen {
 
   override protected def load(): Future[Unit] = super.load().map { _ =>
     container.children += new Container {
-      position.center := ui.position.center
-      position.middle := ui.position.middle
+      position.center := ui.center
+      position.middle := ui.middle
       size.width := 400.0
       size.height := 300.0
       backgroundColor := Color.DarkCyan
@@ -30,8 +29,8 @@ object BorderExample extends HTMLScreen {
       font.family := "sans-serif"
       text := "Border Example"
 
-      position.center := ui.position.center
-      position.middle := ui.position.middle
+      position.center := ui.center
+      position.middle := ui.middle
     }
   }
 

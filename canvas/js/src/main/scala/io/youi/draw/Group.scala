@@ -1,7 +1,8 @@
 package io.youi.draw
 
-import io.youi.{BoundingBox, Context}
+import io.youi.Context
 import io.youi.component.Component
+import io.youi.spatial.BoundingBox
 
 case class Group(drawables: List[Drawable]) extends Drawable {
   override lazy val boundingBox: BoundingBox = {

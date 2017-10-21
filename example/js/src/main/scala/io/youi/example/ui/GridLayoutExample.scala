@@ -2,16 +2,18 @@ package io.youi.example.ui
 
 import io.youi._
 import io.youi.app.screen.UIScreen
-import io.youi.component.{Container, DrawableComponent}
+import io.youi.component.Container
 import io.youi.layout.GridLayout
 import io.youi.paint.{Border, Paint, Stroke}
 import reactify._
+
+import scala.concurrent.Future
 
 object GridLayoutExample extends UIExampleScreen with UIScreen {
   override def name: String = "Grid Layout"
   override def path: String = "/examples/grid-layout.html"
 
-  override def createUI(): Unit = {
+  override def createUI(): Future[Unit] = {
     val grid = new Container {
       background := Color.AliceBlue
       padding := 15.0
@@ -41,9 +43,11 @@ object GridLayoutExample extends UIExampleScreen with UIScreen {
     )
 
     container.children += grid
+
+    Future.successful(())
   }
 
-  class Box extends DrawableComponent {
+  class Box extends Container {
     position.left := 10.0
     size.measured.width := 100.0
     size.measured.height := 100.0

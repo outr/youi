@@ -6,18 +6,20 @@ import io.youi.component.{Container, HTMLComponent}
 import io.youi.hypertext.Button
 import io.youi.paint.{Border, Stroke}
 
+import scala.concurrent.Future
+
 object HTMLComponentExample extends UIExampleScreen with UIScreen {
   override def name: String = "HTMLComponent Example"
   override def path: String = "/examples/html-component.html"
 
-  override def createUI(): Unit = {
+  override def createUI(): Future[Unit] = {
     container.children += new Container {
       position.center := container.position.center
       position.middle := container.position.middle
       size.width := 500.0
       size.height := 500.0
       background := Color.SkyBlue
-      border := Border(Stroke(Color.DarkBlue, 2.0), 10.0)
+      border := Border(Stroke(Color.DarkBlue, None, 2.0), 10.0)
 
       val button = new Button {
         text := "Hello, World!"
@@ -30,5 +32,6 @@ object HTMLComponentExample extends UIExampleScreen with UIScreen {
       }
       children += component
     }
+    Future.successful(())
   }
 }

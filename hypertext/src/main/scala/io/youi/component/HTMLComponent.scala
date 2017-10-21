@@ -1,15 +1,19 @@
 package io.youi.component
 
 import io.youi._
+import io.youi.drawable.Context
 import io.youi.theme.HTMLComponentTheme
-import reactify._
-
 import org.scalajs.dom._
+import reactify._
 
 class HTMLComponent[C <: hypertext.Component](val component: C) extends Component {
   override lazy val theme: Var[HTMLComponentTheme] = Var(HTMLComponent)
 
   init()
+
+  override def `type`: String = "HTMLComponent"
+
+  override protected def drawInternal(context: Context): Unit = {}
 
   override protected def init(): Unit = {
     super.init()

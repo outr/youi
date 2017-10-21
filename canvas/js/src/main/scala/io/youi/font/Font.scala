@@ -1,10 +1,10 @@
 package io.youi.font
 
-import io.youi.BoundingBox
 import io.youi.component.Component
 import io.youi.event.TouchData
 import io.youi.net.URL
 import io.youi.path.Path
+import io.youi.spatial.BoundingBox
 import opentype.{OpenType, PathOptions}
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 import reactify.{Val, Var}

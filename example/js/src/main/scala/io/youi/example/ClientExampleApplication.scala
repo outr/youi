@@ -5,16 +5,18 @@ import io.youi.app.{ClientApplication, ClientConnectivity}
 import io.youi.dom._
 import io.youi.example.screen.{CommunicationScreen, LoginScreen}
 import io.youi.example.ui._
+import io.youi.example.ui.drawable.{ImageScalingExample, PathsExample, TextExample}
 import io.youi.example.ui.hypertext.DataTransferExample
 import io.youi.util.DebugSupport
+//import io.youi.util.DebugSupport
 import org.scalajs.dom._
 import scribe.LogHandler
 
-import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
+import scala.scalajs.js.annotation.JSExportTopLevel
 
 object ClientExampleApplication extends ExampleApplication with ClientApplication with LoadingTransitionSupport {
   // Adds debug support to the application (press F2)
-  val debug = new DebugSupport()
+  val debug = new DebugSupport
   debug.enabled := true
 
   val communicationScreen = CommunicationScreen
@@ -22,12 +24,16 @@ object ClientExampleApplication extends ExampleApplication with ClientApplicatio
 
   val uiExamples = UIExamples
 
+  val paths = PathsExample
+  val text = TextExample
+  val imageScaling = ImageScalingExample
+
   val hello = HelloWorld
+  val hitTest = HitTestExample
   val images = ImageExample
   val video = VideoExample
   val animation = AnimationExample
-  val basicText = BasicTextExample
-  val text = TextExample
+  val textView = TextViewExample
   val htmlComponent = HTMLComponentExample
   val svg = SVGImageExample
   val scale9 = Scale9Example
@@ -36,6 +42,7 @@ object ClientExampleApplication extends ExampleApplication with ClientApplicatio
   val scrolling = ScrollingExample
   val verticalLayout = VerticalLayoutExample
   val gridLayout = GridLayoutExample
+  val rectangularSelection = RectangularSelectionExample
   val imageEditor = ImageEditorExample
 
   val dataTransfer = DataTransferExample

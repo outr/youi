@@ -1,8 +1,9 @@
 package io.youi.path
 
-import io.youi.{BoundingBox, Context}
+import io.youi.Context
 import io.youi.component.Component
 import io.youi.draw.Drawable
+import io.youi.spatial.BoundingBox
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 
 import scala.collection.mutable.ListBuffer

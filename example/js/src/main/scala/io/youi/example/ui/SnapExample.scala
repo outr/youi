@@ -7,11 +7,13 @@ import io.youi.layout.Snap
 import io.youi.paint.Paint
 import reactify._
 
+import scala.concurrent.Future
+
 object SnapExample extends UIExampleScreen with UIScreen {
   override def name: String = "Snap"
   override def path: String = "/examples/snap.html"
 
-  override def createUI(): Unit = {
+  override def createUI(): Future[Unit] = {
     val box = new Box {
       background := Color.Black
       position.center := container.position.center
@@ -33,6 +35,8 @@ object SnapExample extends UIExampleScreen with UIScreen {
       green,
       yellow
     )
+
+    Future.successful(())
   }
 
   class Box extends Container {

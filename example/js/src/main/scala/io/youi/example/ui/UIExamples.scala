@@ -20,12 +20,9 @@ object UIExamples extends HTMLScreen {
         val button = new Button {
           text := screen.name
           size.width := 150.0
-          size.height.attach { d =>
-            scribe.info(s"Height changed for ${screen.name} button to $d")
-          }
           val offset: Double = previous.map(_.position.bottom + 45.0).getOrElse(20.0)
           position.top := offset
-          position.center := ui.position.center
+          position.center := ui.center
           event.click.attach { evt =>
             evt.stopPropagation()
             evt.preventDefault()

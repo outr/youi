@@ -23,8 +23,8 @@ object DataTransferExample extends HTMLScreen {
     val input = dtm.addInput()
     container.children += new Button {
       text := "Upload a file or directory..."
-      position.center := ui.position.center
-      position.middle := ui.position.middle
+      position.center := ui.center
+      position.middle := ui.middle
 
       event.click.attach { _ =>
         input.open()

@@ -137,6 +137,40 @@ class OnClick(selector: String, instruction: ActivateInstruction) extends Activa
   override def deactivate(): Unit = dom.bySelector[html.Element](selector).head.removeEventListener("click", listener)
 }
 
+class OnChecked(selector: String, instruction: ActivateInstruction) extends ActivateInstruction {
+  private val listener = (evt: Event) => {
+    evt.preventDefault()
+    evt.stopPropagation()
+
+    if (evt.target.asInstanceOf[html.Input].checked) {
+      instruction.activate()
+    } else {
+      instruction.deactivate()
+    }
+  }
+
+  override def activate(): Unit = dom.bySelector[html.Element](selector).head.addEventListener("change", listener)
+
+  override def deactivate(): Unit = dom.bySelector[html.Element](selector).head.removeEventListener("change", listener)
+}
+
+class OnUnchecked(selector: String, instruction: ActivateInstruction) extends ActivateInstruction {
+  private val listener = (evt: Event) => {
+    evt.preventDefault()
+    evt.stopPropagation()
+
+    if (evt.target.asInstanceOf[html.Input].checked) {
+      instruction.deactivate()
+    } else {
+      instruction.activate()
+    }
+  }
+
+  override def activate(): Unit = dom.bySelector[html.Element](selector).head.addEventListener("change", listener)
+
+  override def deactivate(): Unit = dom.bySelector[html.Element](selector).head.removeEventListener("change", listener)
+}
+
 class Link(path: String) extends ActivateInstruction {
   override def activate(): Unit = History.pushPath(path)
 

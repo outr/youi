@@ -1,8 +1,9 @@
 package io.youi.paint
 
-import io.youi.{BoundingBox, Context}
+import io.youi.Context
 import io.youi.component.Component
 import io.youi.draw.Drawable
+import io.youi.spatial.BoundingBox
 
 case class Stroke(paint: Paint,
                   lineWidth: Double = 1.0,

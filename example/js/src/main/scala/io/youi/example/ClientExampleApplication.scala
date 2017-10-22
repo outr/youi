@@ -29,6 +29,7 @@ object ClientExampleApplication extends ExampleApplication with ClientApplicatio
   val imageScaling = ImageScalingExample
 
   val hello = HelloWorld
+  val imageChange = ImageChangeExample
   val hitTest = HitTestExample
   val images = ImageExample
   val video = VideoExample

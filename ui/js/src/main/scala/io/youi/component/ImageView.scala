@@ -37,7 +37,7 @@ class ImageView extends Component with ImageViewTheme {
     v
   }
 
-  private lazy val resizer = LazyFuture {
+  private lazy val resizer = LazyFuture({
     if (!autoSmooth() ||
         (image.width == size.width() && image.height == size.height()) ||
         (size.width() == 0.0 || size.height() == 0.0)) {
@@ -47,13 +47,19 @@ class ImageView extends Component with ImageViewTheme {
         image := img
       }
     }
-  }
+  }, automatic = false)
 
   override protected def init(): Unit = {
     super.init()
 
     updateMeasured(image.width, image.height)
     size.width.and(size.height).on(resizer.flag())
+  }
+
+  override def update(delta: Double): Unit = {
+    super.update(delta)
+
+    resizer.update()
   }
 
   override lazy val theme: Var[ImageViewTheme] = Var(ImageView)

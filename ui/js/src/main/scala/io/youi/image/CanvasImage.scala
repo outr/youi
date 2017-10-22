@@ -28,6 +28,8 @@ trait CanvasImage extends Image {
 }
 
 object CanvasImage {
+  def canvasFor(image: CanvasImage): html.Canvas = image.canvas
+
   def apply(canvas: html.Canvas, resizer: ImageResizer, original: Option[html.Canvas] = None): CanvasImage = {
     val c = canvas
     new CanvasImage {

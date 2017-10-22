@@ -88,8 +88,8 @@ object SVGImage {
       ignoreClear = true
       offsetX = math.round(x).toInt
       offsetY = math.round(y).toInt
-      scaleWidth = math.ceil(width * ui.ratio).toInt
-      scaleHeight = math.ceil(height * ui.ratio).toInt
+      scaleWidth = math.ceil(width).toInt
+      scaleHeight = math.ceil(height).toInt
       renderCallback = callback
     })
     promise.future

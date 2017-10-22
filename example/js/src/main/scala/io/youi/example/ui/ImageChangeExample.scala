@@ -2,10 +2,8 @@ package io.youi.example.ui
 
 import io.youi._
 import io.youi.app.screen.UIScreen
-import io.youi.component.{ImageView, TextView}
-import io.youi.font.{GoogleFont, OpenTypeFont}
+import io.youi.component.ImageView
 import io.youi.image.Image
-import io.youi.net.URL
 
 import scala.concurrent.Future
 
@@ -20,7 +18,8 @@ object ImageChangeExample extends UIExampleScreen with UIScreen {
     cuteness <- Image("/images/cuteness.jpg")
     tiger <- Image("/images/tiger.svg")
   } yield {
-    imageView.image := icon
+    imageView.autoDispose := false
+    imageView.image := tiger
     imageView.position.center := ui.center
     imageView.position.middle := ui.middle
 

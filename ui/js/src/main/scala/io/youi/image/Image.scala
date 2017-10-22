@@ -59,7 +59,6 @@ object Image {
     img.src = source
     HTMLImage(img)
   } else {
-    scribe.info(s"Loading: $source")
     apply(History.url.withPart(source))
   }
 

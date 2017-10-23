@@ -4,20 +4,20 @@ import io.youi.layout.Layout
 import io.youi.theme.ContainerTheme
 import reactify.Var
 
-class Container extends AbstractContainer with ContainerTheme {
-  override type Child = Component
+class TypedContainer[C <: Component] extends AbstractContainer with ContainerTheme {
+  override type Child = C
 
   override def `type`: String = "Container"
 
-  override lazy val theme: Var[_ <: ContainerTheme] = Var(Container)
+  override lazy val theme: Var[_ <: ContainerTheme] = Var(TypedContainer)
 
   override protected def defaultThemeParent = Some(theme)
 
   def layout: Var[Layout] = layoutManager
 
-  def children: Var[Vector[Component]] = childEntries
+  def children: Var[Vector[C]] = childEntries
 
   init()
 }
 
-object Container extends ContainerTheme
+object TypedContainer extends ContainerTheme

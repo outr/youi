@@ -3,13 +3,16 @@ package io.youi.hypertext
 import io.youi._
 import org.scalajs.dom._
 
-class Canvas(val element: html.Canvas) extends Component {
-  def this() = this(dom.create[html.Canvas]("canvas"))
+class Canvas(val element: html.Canvas, manageSize: Boolean) extends Component {
+  def this() = this(dom.create[html.Canvas]("canvas"), manageSize = true)
+  def this(manageSize: Boolean) = this(dom.create[html.Canvas]("canvas"), manageSize)
 
   init()
 
   override protected def init(): Unit = {
-    updateCanvasSize()
+    if (manageSize) {
+      updateCanvasSize()
+    }
     super.init()
   }
 
@@ -20,5 +23,7 @@ class Canvas(val element: html.Canvas) extends Component {
 }
 
 object Canvas {
-  def cached(element: html.Canvas): Canvas = Component.cached[html.Canvas, Canvas](element, new Canvas(_))
+  def cached(element: html.Canvas, manageSize: Boolean = true): Canvas = {
+    Component.cached[html.Canvas, Canvas](element, new Canvas(_, manageSize))
+  }
 }

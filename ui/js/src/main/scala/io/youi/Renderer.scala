@@ -25,6 +25,7 @@ class Renderer(val canvas: html.Canvas = CanvasPool(1.0, 1.0), renderWidth: => D
   lazy val render: LazyUpdate = LazyUpdate {
     if (visible()) {
       context.clear()
+      context.reset()
       drawable.draw(context, 0.5, 0.5)
     }
   }

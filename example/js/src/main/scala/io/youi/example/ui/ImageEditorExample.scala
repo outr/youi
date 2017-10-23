@@ -49,7 +49,6 @@ object ImageEditorExample extends HTMLScreen {
       border.style := Some(BorderStyle.Solid)
       border.color := Some(Color.Black)
       editor.previewImage(element, 160.0, 120.0)
-//      editor.preview(element, 160.0, 120.0, ImageResizer.Fast)
       visible := editor.actual.visibility
     }
     container.children += preview1

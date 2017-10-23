@@ -229,4 +229,18 @@ class Context(val canvas: html.Canvas, _ratio: => Double) {
   def clear(): Unit = {
     ctx.clearRect(0.0, 0.0, canvas.width, canvas.height)
   }
+
+  def reset(): Unit = {
+    fillStyle = Paint.none
+    strokeStyle = Stroke.none
+    ctx.fillStyle = ""
+    ctx.strokeStyle = ""
+    ctx.lineCap = ""
+    ctx.lineDashOffset = 0.0
+    ctx.lineJoin = ""
+    ctx.lineWidth = 0.0
+    ctx.setLineDash(js.Array[Double]())
+    ctx.globalAlpha = 1.0
+    identity()
+  }
 }

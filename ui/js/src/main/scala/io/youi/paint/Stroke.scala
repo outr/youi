@@ -36,7 +36,7 @@ object Stroke {
            lineDash: List[Double] = Nil,
            lineDashOffset: Double = 0.0,
            lineCap: LineCap = LineCap.Butt,
-           lineJoin: LineJoin = LineJoin.Miter): Unit = {
+           lineJoin: LineJoin = LineJoin.Miter): Unit = if (paint.nonEmpty) {
     path match {
       case Some(p) => {
         context.stroke(

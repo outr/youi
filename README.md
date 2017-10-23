@@ -32,7 +32,6 @@ YouI is divided into modules of functionality to minimize the dependencies requi
 * [server-undertow](serverUndertow) - implementation of [server](server) using [Undertow](http://undertow.io/) (Scala)
 * [spatial](spatial) - Spatial and math related functionality for Matrix and other operations
 * [stream](stream) - streaming functionality for on-the-fly processing and modification of any XML or HTML content (Scala)
-* [template](template) - features for creating and managing templates for use in applications (Scala and Scala.js)
 * [utilities](utilities) - internal utilities to support the infrastructure of youi
 
 ## External Projects
@@ -40,6 +39,7 @@ YouI is divided into modules of functionality to minimize the dependencies requi
 Though this project has several sub-modules, where possible, external projects exist to add optional functionality.
 
 * [youi-plugin](https://github.com/outr/youi-plugin) - An SBT plugin to simplify setting up your youi project.
+* [youi-template](https://github.com/outr/youi-template) - Stand-alone server instance to help designers work with HTML templates locally and support integration for developers.
 * [youi-designer](https://github.com/outr/youi-designer) - User interface designer tool to create, edit, import, export, and generate user interfaces for youi.
 * [youi-example](https://github.com/outr/youi-example) - An example project showing the basic usage of youi.
 

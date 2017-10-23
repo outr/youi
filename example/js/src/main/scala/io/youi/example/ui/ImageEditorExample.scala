@@ -21,6 +21,8 @@ object ImageEditorExample extends HTMLScreen {
     position.middle := ui.middle
     size.width := 800.0
     size.height := 500.0
+
+    override protected def updateCanvasSize(): Unit = {}
   }
   private lazy val renderer = new Renderer(canvas.element, 800.0, 500.0)
 

@@ -67,43 +67,6 @@ class ImageEditor extends AbstractContainer {
     }
   }
 
-  /*def preview(width: Double, height: Double, resizer: ImageResizer): html.Canvas = {
-    val canvas = CanvasPool(width, height)
-    val lf = LazyFuture {
-      imageView.image().resizeTo(canvas, width, height, resizer)
-    }
-    imageView.image.on(lf.flag())
-    revision.on(lf.flag())
-    lf.flag()
-    canvas
-  }
-
-  def preview(img: html.Image, width: Double, height: Double, resizer: ImageResizer): Unit = {
-    val canvas = CanvasPool(width, height)
-    val context = new Context(canvas, ui.ratio)
-    val lf = LazyFuture({
-      val scaled = SizeUtility.scale(rs.selection.width(), rs.selection.height(), width, height, scaleUp = true)
-      canvas.width = math.ceil(width).toInt
-      canvas.height = math.ceil(height).toInt
-
-      scribe.info(s"Ratio: ${ui.ratio()}, Scale: $scaled")
-
-      context.clear()
-      context.translate(imageView.position.x - rs.selection.x1, imageView.position.y - rs.selection.y1)
-      context.scale(scaled.scale, scaled.scale)
-//      context.translate(imageView.size.width / 2.0, imageView.size.height / 2.0)
-//      context.rotate(imageView.rotation() * (math.Pi * 2.0))
-//      context.translate(-imageView.size.width / 2.0, -imageView.size.height / 2.0)
-      imageView.image().resizeTo(canvas, width, height, resizer).map { _ =>
-        img.src = canvas.toDataURL("image/png")
-      }
-    }, maxFrequency = 250.millis, automatic = false)
-    delta.on(lf.update())
-    imageView.image.on(lf.flag())
-    revision.on(lf.flag())
-    lf.flag()
-  }*/
-
   override protected def init(): Unit = {
     super.init()
 

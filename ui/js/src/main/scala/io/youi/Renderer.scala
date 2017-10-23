@@ -29,17 +29,12 @@ class Renderer(val canvas: html.Canvas = CanvasPool(1.0, 1.0), renderWidth: => D
     }
   }
 
-  drawable.on(render.flag())
-  visible.on(render.flag())
-  modified.on(render.flag())
-
   protected def init(): Unit = {
     ratio.and(width).and(height).on(updateSize())
     visible.attach {
       case true => canvas.style.display = "block"
       case false => canvas.style.display = "none"
     }
-    updateSize()
     AnimationFrame.delta.attach(update)
 
     htmlEvents.click.attach(pointerEvent(_, PointerEvent.Type.Click))
@@ -55,6 +50,12 @@ class Renderer(val canvas: html.Canvas = CanvasPool(1.0, 1.0), renderWidth: => D
     Mouse.wheel.attach(wheelEvent)
     cursor := pointerTarget().map(_.cursor()).getOrElse(Cursor.Auto)      // Renderer's cursor should reflect the pointer target's cursor
     cursor.attach(c => canvas.style.cursor = c.value)
+
+    drawable.on(render.flag())
+    visible.on(render.flag())
+    modified.on(render.flag())
+
+    updateSize()
   }
 
   override def update(delta: Double): Unit = {

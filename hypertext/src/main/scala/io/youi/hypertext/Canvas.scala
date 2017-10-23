@@ -9,9 +9,13 @@ class Canvas(val element: html.Canvas) extends Component {
   init()
 
   override protected def init(): Unit = {
+    updateCanvasSize()
+    super.init()
+  }
+
+  protected def updateCanvasSize(): Unit = {
     size.actual.width.attach(w => element.width = math.ceil(w).toInt)
     size.actual.height.attach(h => element.height = math.ceil(h).toInt)
-    super.init()
   }
 }
 

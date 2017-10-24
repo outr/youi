@@ -24,7 +24,7 @@ object ScrollingExample extends UIExampleScreen with UIScreen {
       scroll.vertical.bar := ScrollBar.simple(stroke = Stroke(Color.Black), fill = Color.LightBlue)
     }
 
-    Color.all.foreach { color =>
+    Color.all.take(20).foreach { color =>
       val box = Box(color)
       scrollable.children += box
       box
@@ -50,6 +50,11 @@ object ScrollingExample extends UIExampleScreen with UIScreen {
     position.left := 25.0
     size.width := w
     size.height := h
+
+    event.pointer.overState.attach {
+      case true => background := Color.Red
+      case false => background := color
+    }
 
     override def toString: String = message
   }

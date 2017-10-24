@@ -66,6 +66,12 @@ trait AbstractContainer extends Component with AbstractContainerTheme with Widge
     childEntries.foreach(_.update(delta))
   }
 
+  override protected def updateLocalMatrix(): Unit = {
+    super.updateLocalMatrix()
+
+    matrix.local.translate(offset.x, offset.y)
+  }
+
   override def hitTest(global: Point): HitResult = if (interactive() && visible()) {
     val children = childEntries()
     val lastIndex = children.length - 1

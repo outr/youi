@@ -1,7 +1,7 @@
 package io.youi.component
 
 import io.youi.Modifiable
-import io.youi.drawable.{Cacheable, Context}
+import io.youi.drawable.Context
 import io.youi.image.Image
 import io.youi.theme.ImageViewTheme
 import io.youi.util.LazyFuture
@@ -11,6 +11,18 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class ImageView extends Component with ImageViewTheme {
+  def this(source: String) = {
+    this()
+
+    Image(source).foreach(image := _)
+  }
+
+  def this(image: Image) = {
+    this()
+
+    this.image := image
+  }
+
   /**
     * True if changing the image should automatically dispose the old `Image`.
     *

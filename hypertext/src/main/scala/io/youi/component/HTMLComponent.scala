@@ -27,6 +27,7 @@ class HTMLComponent[C <: hypertext.Component](val component: C) extends Componen
     }
     component.position.x := actual.x
     component.position.y := actual.y
+    component.element.style.zIndex = "100"
     // TODO: support rotation
   }
 }

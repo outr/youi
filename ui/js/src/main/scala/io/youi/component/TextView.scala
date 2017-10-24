@@ -8,8 +8,8 @@ import io.youi.theme.TextViewTheme
 import reactify._
 
 class TextView extends Component with TextViewTheme {
-  lazy val text: Var[Text] = Var(Text.empty)
-  lazy val value: Var[String] = Var("")
+  lazy val text: Var[Text] = prop(Text.empty, updatesRendering = true)
+  lazy val value: Var[String] = prop("", updatesRendering = true)
 
   private val internalText: Val[Text] = Val {
     if (value().nonEmpty && font.file().nonEmpty) {

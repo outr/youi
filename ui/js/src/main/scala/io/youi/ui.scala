@@ -28,11 +28,14 @@ object ui {
 
   lazy val event = new HTMLEvents(document.body)
 
+  lazy val title: Var[String] = Var(document.title)
   def width: Val[Double] = _width
   def height: Val[Double] = _height
 
   lazy val center: Val[Double] = Val(width / 2.0)
   lazy val middle: Val[Double] = Val(height / 2.0)
+
+  title.attach(document.title = _)
 
   window.addEventListener("resize", (_: Event) => {
     _width := window.innerWidth

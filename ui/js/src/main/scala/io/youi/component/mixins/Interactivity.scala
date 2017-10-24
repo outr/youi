@@ -9,9 +9,10 @@ trait Interactivity {
 
   lazy val event: Events = new Events(this)
 
-  def hitTest(global: Point): HitResult = if (interactive() && visible()) {
+  def hitTest(global: Point, adjustX: Double, adjustY: Double): HitResult = if (interactive() && visible()) {
     updateMatrix()      // TODO: this seems expensive to do every hit test
     val local = localize(global)
+    local.set(local.x - adjustX, local.y - adjustY)
     if (isHit(local)) {
       HitResult.Hit(local, this)
     } else {

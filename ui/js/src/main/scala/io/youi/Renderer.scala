@@ -84,7 +84,7 @@ class Renderer(val canvas: html.Canvas = CanvasPool(1.0, 1.0), renderWidth: => D
       case c: Component => {
         val rect = canvas.getBoundingClientRect()
         globalPoint.set(evt.clientX - rect.left, evt.clientY - rect.top)
-        val result = c.hitTest(globalPoint) match {
+        val result = c.hitTest(globalPoint, 0.0, 0.0) match {
           case HitResult.Miss => None
           case HitResult.Hit(l, c) => Some(l -> c)
         }
@@ -121,7 +121,7 @@ class Renderer(val canvas: html.Canvas = CanvasPool(1.0, 1.0), renderWidth: => D
           val latest = evt.changedTouches.item(evt.changedTouches.length - 1)
           globalPoint.set(latest.clientX - rect.left, latest.clientY - rect.top)
         }
-        val result = c.hitTest(globalPoint) match {
+        val result = c.hitTest(globalPoint, 0.0, 0.0) match {
           case HitResult.Miss => None
           case HitResult.Hit(l, c) => Some(l -> c)
         }
@@ -155,7 +155,7 @@ class Renderer(val canvas: html.Canvas = CanvasPool(1.0, 1.0), renderWidth: => D
       case c: Component => {
         val rect = canvas.getBoundingClientRect()
         globalPoint.set(delta.htmlEvent.clientX - rect.left, delta.htmlEvent.clientY - rect.top)
-        c.hitTest(globalPoint) match {
+        c.hitTest(globalPoint, 0.0, 0.0) match {
           case HitResult.Miss => // Nothing
           case HitResult.Hit(local, component) => {
             val event = WheelEvent(component, local.x, local.y, globalPoint.x, globalPoint.y, delta)

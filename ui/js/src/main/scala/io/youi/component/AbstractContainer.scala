@@ -66,22 +66,16 @@ trait AbstractContainer extends Component with AbstractContainerTheme with Widge
     childEntries.foreach(_.update(delta))
   }
 
-  override protected def updateLocalMatrix(): Unit = {
-    super.updateLocalMatrix()
-
-    matrix.local.translate(offset.x, offset.y)
-  }
-
-  override def hitTest(global: Point): HitResult = if (interactive() && visible()) {
+  override def hitTest(global: Point, adjustX: Double, adjustY: Double): HitResult = if (interactive() && visible()) {
     val children = childEntries()
     val lastIndex = children.length - 1
     val childResult = if (lastIndex >= 0) {
-      childHitTest(global, lastIndex, children)
+      childHitTest(global, lastIndex, children, adjustX + offset.x, adjustY + offset.y)
     } else {
       HitResult.Miss
     }
     childResult match {
-      case HitResult.Miss => super.hitTest(global)
+      case HitResult.Miss => super.hitTest(global, adjustX, adjustY)
       case result => result
     }
   } else {
@@ -89,12 +83,12 @@ trait AbstractContainer extends Component with AbstractContainerTheme with Widge
   }
 
   @tailrec
-  private def childHitTest(global: Point, index: Int, children: Vector[Child]): HitResult = {
+  private def childHitTest(global: Point, index: Int, children: Vector[Child], adjustX: Double, adjustY: Double): HitResult = {
     val child = children(index)
-    child.hitTest(global) match {
+    child.hitTest(global, adjustX, adjustY) match {
       case result: HitResult.Hit => result
       case HitResult.Miss if index == 0 => HitResult.Miss
-      case HitResult.Miss => childHitTest(global, index - 1, children)
+      case HitResult.Miss => childHitTest(global, index - 1, children, adjustX, adjustY)
     }
   }
 }

@@ -55,6 +55,13 @@ object ScrollingExample extends UIExampleScreen with UIScreen {
       case true => background := Color.Red
       case false => background := color
     }
+    event.click.on {
+      if (size.height() == h) {
+        size.height := h * 1.25
+      } else {
+        size.height := h
+      }
+    }
 
     override def toString: String = message
   }

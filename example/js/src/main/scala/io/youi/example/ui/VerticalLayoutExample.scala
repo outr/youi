@@ -14,7 +14,7 @@ object VerticalLayoutExample extends UIExampleScreen with UIScreen {
 
   override def createUI(): Future[Unit] = {
     val boxes = new Container {
-      layout := new VerticalLayout(spacing = 10.0, fromTop = true)
+      layout := new VerticalLayout(spacing = 10.0)
       background := Color.LightBlue
       border := Border(Stroke(Color.Black), radius = 10.0)
       position.center := container.position.center

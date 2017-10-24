@@ -3,8 +3,7 @@ package io.youi.layout
 import io.youi.{Widget, WidgetContainer}
 import reactify._
 
-class VerticalLayout(spacing: Double = 0.0,
-                     fromTop: Boolean = true) extends Layout {
+class VerticalLayout(spacing: Double = 0.0) extends Layout {
   override def connect(container: WidgetContainer): Unit = {
     update(container, Vector.empty)
   }
@@ -25,21 +24,9 @@ class VerticalLayout(spacing: Double = 0.0,
     removed.foreach { c =>
       Snap(c).verticalReset()
     }
-    if (items.nonEmpty) {
-      var previous = items.head
-      if (fromTop) {
-        Snap(previous).verticalReset().topTo(spacing)
-      } else {
-        Snap(previous).verticalReset().bottomTo(container.size.height - spacing)
-      }
-      items.tail.foreach { child =>
-        if (fromTop) {
-          Snap(child).verticalReset().topTo(previous.position.bottom + spacing)
-        } else {
-          Snap(child).verticalReset().bottomTo(previous.position.top - spacing)
-        }
-        previous = child
-      }
-    }
+    items.foldLeft(Option.empty[Widget])((previous, current) => {
+      Snap(current).verticalReset().topTo(previous.map(_.position.bottom()).getOrElse(0.0) + spacing)
+      Some(current)
+    })
   }
 }

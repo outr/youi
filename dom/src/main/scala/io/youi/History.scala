@@ -1,8 +1,8 @@
 package io.youi
 
-import reactify.{Channel, Val, Var}
-import io.youi.net.URL
+import io.youi.net.{Protocol, URL}
 import org.scalajs.dom._
+import reactify.{Channel, Val, Var}
 
 import scala.scalajs.js
 
@@ -20,6 +20,8 @@ object History {
   private val currentURL = Var[URL](URL(document.location.href), static = true)
   val url: Val[URL] = Val(currentURL)
   val stateChange: Channel[HistoryStateChange] = Channel[HistoryStateChange]
+
+  def isSecure: Boolean = url().protocol == Protocol.Https
 
   window.addEventListener("popstate", (evt: PopStateEvent) => {
     val urlString = document.location.href

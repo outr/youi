@@ -33,7 +33,7 @@ object GoogleFontBuilder extends ConfigApplication {
          |import io.youi.net.URL
          |
          |object GoogleFont {
-         |  private val base: String = "$base"
+         |  private val base: String = s"https://fonts.gstatic.com/s"
          |
          |${fonts.mkString("\n")}
          |}

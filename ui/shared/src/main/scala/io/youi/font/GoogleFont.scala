@@ -3,7 +3,7 @@ package io.youi.font
 import io.youi.net.URL
 
 object GoogleFont {
-  private val base: String = "http://fonts.gstatic.com/s"
+  private val base: String = "https://fonts.gstatic.com/s"
 
   object `ABeeZee` {
     val category: String = "sans-serif"

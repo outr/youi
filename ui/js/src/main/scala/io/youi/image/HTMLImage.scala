@@ -11,7 +11,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Future, Promise}
 import scala.scalajs.js
 
-class HTMLImage private(private[image] val img: html.Image) extends Image {
+class HTMLImage(private[image] val img: html.Image) extends Image {
   override val width: Double = img.width
   override val height: Double = img.height
 

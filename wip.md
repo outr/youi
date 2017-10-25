@@ -15,6 +15,7 @@
         * [X] Extend `Drawable` to allow explicit drawing
     * [X] `Image`
         * [X] Extend `Drawable` to allow explicit drawing
+        * [X] `AnimatedImage` to support multi-framed images sequenced with delays between frames.
     * [X] `Video`
         * [X] Extend `Drawable` to allow explicit drawing
         * [X] Controls and information

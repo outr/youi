@@ -18,7 +18,7 @@ object KeyBuilder {
     loadSymbols()
     loadFromMDN()
 
-    val file = new File("canvas/shared/src/main/scala/io/youi/Key.scala")
+    val file = new File("ui/shared/src/main/scala/io/youi/Key.scala")
 
     val grouped = map.toList.sortBy(_._1.index)
 
@@ -35,7 +35,7 @@ object KeyBuilder {
     val symbols = map(Title("Symbols")).reverse.map { value =>
       val name = value.description.replaceAllLiterally(" ", "")
       val char = value.value.charAt(0)
-      val charString = if (char == '\\') "'\\\\'" else s"'$char'"
+      val charString = if (char == '\\') "'\\\\'" else if (char == '\'') "'\\''" else s"'$char'"
       s"""  val $name: SymbolKey = new SymbolKey($charString, "${value.description}")"""
     }.mkString("\n")
     val others = grouped.collect {
@@ -172,6 +172,7 @@ object KeyBuilder {
       "_" -> "Underscore",
       "+" -> "Plus",
       "\"" -> "Double Quote",
+      "'" -> "Single Quote",
       "|" -> "Pipe",
       "-" -> "Minus",
       "{" -> "Open Curly Bracket",

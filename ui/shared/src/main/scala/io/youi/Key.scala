@@ -100,6 +100,7 @@ object Key {
   val OpenCurlyBracket: SymbolKey = new SymbolKey('{', "Open Curly Bracket")
   val Minus: SymbolKey = new SymbolKey('-', "Minus")
   val Pipe: SymbolKey = new SymbolKey('|', "Pipe")
+  val SingleQuote: SymbolKey = new SymbolKey('\'', "Single Quote")
   val DoubleQuote: SymbolKey = new SymbolKey('"', "Double Quote")
   val Plus: SymbolKey = new SymbolKey('+', "Plus")
   val Underscore: SymbolKey = new SymbolKey('_', "Underscore")

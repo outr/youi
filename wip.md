@@ -10,6 +10,7 @@
         * [X] OpenTypeFont
           * [X] Update to latest version of OpenType.js
           * [X] Fixes for consistent font height
+        * [X] `WrapMode` (`None`, `Clip`, `Ellipsis`, `Hyphenate`, and `Word`) support
     * [X] `Text`
         * [X] Pre-defined and sized paths for text from `Font`
         * [X] Extend `Drawable` to allow explicit drawing

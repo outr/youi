@@ -4,6 +4,7 @@ import io.youi.drawable.Context
 import io.youi.path.Path
 
 trait Glyph {
+  def char: Char
   def path: Path
   def sizedPath(size: Double): Path
   def width(size: Double): Double

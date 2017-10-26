@@ -1,7 +1,7 @@
 package io.youi.component
 
 import io.youi.drawable.Context
-import io.youi.font.Text
+import io.youi.font.{Text, WrapMode}
 import io.youi.paint.Stroke
 import io.youi.path.Fill
 import io.youi.theme.TextViewTheme
@@ -10,10 +10,11 @@ import reactify._
 class TextView extends Component with TextViewTheme {
   lazy val text: Var[Text] = prop(Text.empty, updatesRendering = true)
   lazy val value: Var[String] = prop("", updatesRendering = true)
+  lazy val wrap: Var[WrapMode] = prop(WrapMode.Word, updatesRendering = true)
 
   private val internalText: Val[Text] = Val {
     if (value().nonEmpty && font.file().nonEmpty) {
-      font.file().apply(text = value, size = font.size, kerning = font.kerning())
+      font.file().apply(text = value, size = font.size, kerning = font.kerning(), maxWidth = size.width, wrap = wrap)
     } else {
       Text.empty
     }

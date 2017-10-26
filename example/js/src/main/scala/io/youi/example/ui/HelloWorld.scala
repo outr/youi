@@ -3,7 +3,7 @@ package io.youi.example.ui
 import io.youi._
 import io.youi.app.screen.UIScreen
 import io.youi.component.TextView
-import io.youi.font.{GoogleFont, OpenTypeFont}
+import io.youi.font.{GoogleFont, OpenTypeFont, WrapMode}
 import io.youi.net.URL
 
 import scala.concurrent.Future
@@ -18,7 +18,9 @@ object HelloWorld extends UIExampleScreen with UIScreen {
     container.children += new TextView {
       font.file := fnt
       font.size := 48.0
-      value := "Hello, World!"
+      value := "Hello, World! This is a clipped String!"
+      wrap := WrapMode.Hyphenate
+      size.width := 150.0
       fill := Color.DarkBlue
       position.center := ui.center
       position.middle := ui.middle

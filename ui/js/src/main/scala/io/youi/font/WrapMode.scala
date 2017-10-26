@@ -1,63 +1,75 @@
 package io.youi.font
 
-import scala.collection.mutable.ListBuffer
-
 trait WrapMode {
+  def processLine(builder: TextBuilder, line: String): Unit
+
   def createText(font: Font,
                  text: String,
                  size: Double,
                  maxWidth: Double = Double.MaxValue,
                  kerning: Boolean = true): Text = {
-    var offsetX = 0.0
-    var offsetY = 0.0
-    val lineHeight = font.lineHeight(size)
-    var previous: Option[Glyph] = None
-    val line = ListBuffer.empty[CharacterPath]
-    val lines = ListBuffer.empty[Vector[CharacterPath]]
-
-    def processCharacters(chars: List[Char], index: Int = 0): Unit = if (chars.nonEmpty) {
-      val char = chars.head
-      if (char == '\n') {
-        offsetX = 0.0
-        offsetY += lineHeight
-        previous = None
-        lines += line.toVector
-        line.clear()
-      } else {
-        val glyph = font.glyph(char)
-        var kernOffset = if (kerning && previous.nonEmpty) {
-          font.kerning(previous.get, glyph, size)
-        } else {
-          0.0
-        }
-        previous = Some(glyph)
-        if (offsetX + kernOffset + glyph.width(size) > maxWidth && line.nonEmpty) {
-          offsetX = 0.0
-          offsetY += lineHeight
-          previous = None
-          kernOffset = 0.0
-          lines += line.toVector
-          line.clear()
-        }
-        line += CharacterPath(char, size, index, offsetX + kernOffset, offsetY, glyph)
-        offsetX += glyph.width(size)
-        offsetX += kernOffset
-      }
-      processCharacters(chars.tail, index + 1)
-    }
-
-    processCharacters(text.toList)
-    if (line.nonEmpty) {
-      lines += line.toVector
-    }
-    Text(font, text, size, maxWidth, kerning, lines.toVector)
+    val builder = new TextBuilder(font, text, size, maxWidth, kerning)
+    text.split('\n').foreach(processLine(builder, _))
+    builder.toText
   }
 }
 
 object WrapMode {
-  case object None extends WrapMode
-  case object Clip extends WrapMode
-  case object Ellipsis extends WrapMode
-  case object Hyphenate extends WrapMode
-  case object Word extends WrapMode
+  case object None extends WrapMode {
+    override def processLine(builder: TextBuilder, line: String): Unit = {
+      builder.addLine(line)
+    }
+  }
+  case object Clip extends WrapMode {
+    override def processLine(builder: TextBuilder, line: String): Unit = {
+      builder.addLine(builder.maximum(line))
+    }
+  }
+  case object Ellipsis extends WrapMode {
+    override def processLine(builder: TextBuilder, line: String): Unit = {
+      val max = builder.maximum(line)
+      val text = if (max != line) {
+        if (max.length > 3) {
+          s"${max.substring(0, max.length - 3)}..."
+        } else {
+          max
+        }
+      } else {
+        line
+      }
+      builder.addLine(text)
+    }
+  }
+  case object Hyphenate extends WrapMode {
+    override def processLine(builder: TextBuilder, line: String): Unit = {
+      val max = builder.maximum(line)
+      if (max != line) {
+        val text = s"${max.substring(0, max.length - 1)}-"
+        builder.addLine(text)
+        processLine(builder, line.substring(max.length - 1))
+      } else {
+        builder.addLine(line)
+      }
+    }
+  }
+  case object Word extends WrapMode {
+    override def processLine(builder: TextBuilder, line: String): Unit = {
+      val max = builder.maximum(line)
+      if (max != line) {
+        if (max.contains(" ")) {
+          val text = max.substring(0, max.lastIndexOf(' '))
+          builder.addLine(text)
+          processLine(builder, line.substring(text.length + 1))
+        } else if (line.contains(" ")) {
+          val text = line.substring(0, line.indexOf(' '))
+          builder.addLine(text)
+          processLine(builder, line.substring(text.length + 1))
+        } else {
+          builder.addLine(line)
+        }
+      } else {
+        builder.addLine(line)
+      }
+    }
+  }
 }

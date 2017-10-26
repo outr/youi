@@ -74,22 +74,27 @@ class UndertowServerImplementation(val server: Server) extends ServerImplementat
   override def handleRequest(exchange: HttpServerExchange): Unit = server.errorSupport {
     val url = URL(s"${exchange.getRequestURL}?${exchange.getQueryString}")
 
-    server.proxies.find(_.matches(url)) match {
-      case Some(proxy) => UndertowServerImplementation.handleProxy(this, url, exchange, proxy)
-      case None => {
-        if (exchange.getRequestContentLength > 0L && exchange.getRequestHeaders.getFirst("Content-Type").startsWith("multipart/form-data")) {
-          if (exchange.isInIoThread) {
-            exchange.dispatch(this)
+    try {
+      server.proxies.find(_.matches(url)) match {
+        case Some(proxy) => UndertowServerImplementation.handleProxy(this, url, exchange, proxy)
+        case None => {
+          if (exchange.getRequestContentLength > 0L && exchange.getRequestHeaders.getFirst("Content-Type").startsWith("multipart/form-data")) {
+            if (exchange.isInIoThread) {
+              exchange.dispatch(this)
+            } else {
+              exchange.startBlocking()
+              val formDataParser = formParserBuilder.build().createParser(exchange)
+              formDataParser.parseBlocking()
+              requestHandler(exchange, url)
+            }
           } else {
-            exchange.startBlocking()
-            val formDataParser = formParserBuilder.build().createParser(exchange)
-            formDataParser.parseBlocking()
             requestHandler(exchange, url)
           }
-        } else {
-          requestHandler(exchange, url)
         }
       }
+    } catch {
+      case exc: ServerException => throw exc
+      case t: Throwable => new ServerException("Error Handling Request", t, url)
     }
   }
 

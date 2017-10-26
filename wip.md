@@ -41,3 +41,4 @@
 * [ ] `RichText` to render stylized text
     * [ ] DSL for cleanly representing
     * [ ] JSON format for inline, loading, and exporting
+* [ ] Better Server error logging (URL, request info, etc.)

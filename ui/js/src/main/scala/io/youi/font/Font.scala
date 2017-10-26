@@ -8,7 +8,9 @@ trait Font {
             size: Double,
             maxWidth: Double = Double.MaxValue,
             kerning: Boolean = true,
-            wrap: WrapMode = WrapMode.Word): Text
+            wrap: WrapMode = WrapMode.Word): Text = wrap.createText(this, text, size, maxWidth, kerning)
+  def glyph(char: Char): Glyph
+  def kerning(first: Glyph, second: Glyph, size: Double): Double
 }
 
 object Font {
@@ -20,5 +22,7 @@ object Font {
                        maxWidth: Double = Double.MaxValue,
                        kerning: Boolean = true,
                        wrap: WrapMode = WrapMode.Word): Text = Text.empty
+    override def glyph(char: Char): Glyph = throw new RuntimeException("Empty font has no glyphs")
+    override def kerning(first: Glyph, second: Glyph, size: Double): Double = 0.0
   }
 }

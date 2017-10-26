@@ -29,8 +29,6 @@ class TextView extends Component with TextViewTheme {
 
   override lazy val theme: Var[TextViewTheme] = Var(TextView)
 
-  init()
-
   override protected def defaultThemeParent = Some(theme)
 
   override def `type`: String = "TextView"
@@ -39,6 +37,8 @@ class TextView extends Component with TextViewTheme {
     Fill.draw(context, fill, Some(text.path))
     Stroke.draw(context, stroke.paint, Some(text.path), stroke.lineWidth, stroke.lineDash, stroke.lineDashOffset, stroke.lineCap, stroke.lineJoin)
   }
+
+  init()
 }
 
 object TextView extends TextViewTheme

@@ -32,6 +32,8 @@ case class OpenTypeFont(otf: opentype.Font) extends Font {
         offsetX = 0.0
         offsetY += lineHeight
         previous = None
+        lines += line.toVector
+        line.clear()
       } else {
         val glyph = glyphs.get(char) match {
           case Some(g) => g

@@ -23,7 +23,7 @@ class TextBuilder(val font: Font, val text: String, val size: Double, val maxWid
     val b = new StringBuilder
     processLine(line, new CharacterProcessor {
       override def process(glyph: Glyph, offset: Double): Boolean = {
-        if (offset + glyph.width(size) < maxWidth) {
+        if (offset + glyph.width(size) <= maxWidth) {
           b.append(glyph.char)
           true
         } else {

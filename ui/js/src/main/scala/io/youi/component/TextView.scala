@@ -14,7 +14,13 @@ class TextView extends Component with TextViewTheme {
 
   private val internalText: Val[Text] = Val {
     if (value().nonEmpty && font.file().nonEmpty) {
-      font.file().apply(text = value, size = font.size, kerning = font.kerning(), maxWidth = size.width, wrap = wrap)
+      val f = font.file()
+      val mw = f.measureWidth(value, font.size, font.kerning)
+      val mh = f.lineHeight(font.size)
+      updateMeasured(mw, mh)
+      val text = f(text = value, size = font.size, kerning = font.kerning(), maxWidth = size.width, wrap = wrap)
+      updateMeasured(text.boundingBox.width, text.boundingBox.height)
+      text
     } else {
       Text.empty
     }

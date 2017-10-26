@@ -8,12 +8,14 @@ trait Clipped extends Drawable {
   def drawable: Drawable
 
   override def draw(context: Context, x: Double, y: Double): Unit = {
-    Clipped(context, x, y, x1, y1, x2, y2, drawable)
+    Clipped.draw(context, x, y, x1, y1, x2, y2, drawable)
   }
 }
 
+case class ClippedInstance(x1: Double, y1: Double, x2: Double, y2: Double, drawable: Drawable) extends Clipped
+
 object Clipped {
-  def apply(context: Context,
+  def draw(context: Context,
             x: Double,
             y: Double,
             x1: Double,
@@ -25,5 +27,9 @@ object Clipped {
     context.clipRect(x1 + x, y1 + y, x2 + x, y2 + y)
     drawable.draw(context, x, y)
     context.restore()
+  }
+
+  def apply(x1: Double, y1: Double, x2: Double, y2: Double)(drawable: Drawable): Clipped = {
+    ClippedInstance(x1, y1, x2, y2, drawable)
   }
 }

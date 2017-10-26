@@ -5,7 +5,7 @@ import io.youi.app.{ClientApplication, ClientConnectivity}
 import io.youi.dom._
 import io.youi.example.screen.{CommunicationScreen, LoginScreen}
 import io.youi.example.ui._
-import io.youi.example.ui.drawable.{AnimatedImageExample, ImageScalingExample, PathsExample, TextExample}
+import io.youi.example.ui.drawable._
 import io.youi.example.ui.hypertext.DataTransferExample
 import io.youi.util.DebugSupport
 //import io.youi.util.DebugSupport
@@ -28,6 +28,7 @@ object ClientExampleApplication extends ExampleApplication with ClientApplicatio
   val text = TextExample
   val imageScaling = ImageScalingExample
   val animatedImage = AnimatedImageExample
+  val performance = PerformanceExample
 
   val hello = HelloWorld
   val imageChange = ImageChangeExample

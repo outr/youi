@@ -5,7 +5,7 @@ import io.youi.hypertext.border.BorderStyle
 import io.youi.spatial.BoundingBox
 import io.youi.{Color, Key, _}
 import org.scalajs.dom.raw.MouseEvent
-import org.scalajs.dom.{document, html}
+import org.scalajs.dom.{html, window}
 import reactify._
 
 import scala.collection.immutable.ListSet
@@ -23,8 +23,8 @@ import scala.collection.immutable.ListSet
 abstract class Selection[T](root: html.Element,
                             elements: => ListSet[T],
                             autoStyle: Boolean = true,
-                            adjustX: => Double = document.body.scrollLeft,
-                            adjustY: => Double = document.body.scrollTop,
+                            adjustX: => Double = window.pageXOffset,
+                            adjustY: => Double = window.pageYOffset,
                             includeChildTargets: Boolean = false) extends Container {
   element.style.pointerEvents = "none"
 

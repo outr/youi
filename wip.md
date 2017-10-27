@@ -37,8 +37,3 @@
     * [X] Cleanup and re-working on `component` package and build on `Drawable` functionality to reduce complexity
 * [X] Move `template` module into its own project
 * [X] `Activate` support for checked and unchecked to work with checkboxes easily
-* [ ] Update `UIExamples` to render using canvas and look a lot nicer
-* [ ] `RichText` to render stylized text
-    * [ ] DSL for cleanly representing
-    * [ ] JSON format for inline, loading, and exporting
-* [ ] Better Server error logging (URL, request info, etc.)

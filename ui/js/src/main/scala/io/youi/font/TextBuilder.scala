@@ -2,11 +2,15 @@ package io.youi.font
 
 import scala.annotation.tailrec
 
-class TextBuilder(val font: Font, val text: String, val size: Double, val maxWidth: Double, val kerning: Boolean) {
-  private var index = 0
-  private var lines = List.empty[List[CharacterPath]]
+abstract class TextBuilder(val font: Font,
+                           val text: String,
+                           val size: Double,
+                           val maxWidth: Double,
+                           val kerning: Boolean) {
+  protected var index = 0
+  protected var lines = List.empty[List[CharacterPath]]
 
-  val lineHeight: Double = font.lineHeight(size)
+  protected val lineHeight: Double = font.lineHeight(size)
 
   def measureWidth(line: String): Double = {
     var width = 0.0
@@ -70,7 +74,7 @@ class TextBuilder(val font: Font, val text: String, val size: Double, val maxWid
     }
   }
 
-  def toText: Text = Text(font, text, size, maxWidth, kerning, lines.reverse.map(_.reverse.toVector).toVector)
+  def toText: Text
 }
 
 trait CharacterProcessor {

@@ -41,8 +41,7 @@ class TextView extends Component with TextViewTheme {
   override def `type`: String = "TextView"
 
   override protected def drawInternal(context: Context): Unit = {
-    Fill.draw(context, fill, Some(text.path))
-    Stroke.draw(context, stroke.paint, Some(text.path), stroke.lineWidth, stroke.lineDash, stroke.lineDashOffset, stroke.lineCap, stroke.lineJoin)
+    text.draw(context, 0.0, 0.0, fill, stroke)
   }
 
   init()

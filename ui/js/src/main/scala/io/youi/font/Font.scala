@@ -8,13 +8,15 @@ trait Font {
             size: Double,
             maxWidth: Double = Double.MaxValue,
             kerning: Boolean = true,
-            wrap: WrapMode = WrapMode.Word): Text = wrap.createText(this, text, size, maxWidth, kerning)
+            wrap: WrapMode = WrapMode.Word): Text = wrap.createText(createBuilder(text, size, maxWidth, kerning))
   def measureWidth(text: String, size: Double, kerning: Boolean): Double = {
-    val b = new TextBuilder(this, text, size, Double.MaxValue, kerning)
+    val b = createBuilder(text, size, Double.MaxValue, kerning)
     b.measureWidth(text)
   }
   def glyph(char: Char): Glyph
   def kerning(first: Glyph, second: Glyph, size: Double): Double
+
+  protected def createBuilder(text: String, size: Double, maxWidth: Double, kerning: Boolean): TextBuilder
 }
 
 object Font {
@@ -29,5 +31,8 @@ object Font {
     override def measureWidth(text: String, size: Double, kerning: Boolean): Double = 0.0
     override def glyph(char: Char): Glyph = throw new RuntimeException("Empty font has no glyphs")
     override def kerning(first: Glyph, second: Glyph, size: Double): Double = 0.0
+    override protected def createBuilder(text: String, size: Double, maxWidth: Double, kerning: Boolean): TextBuilder = {
+      throw new RuntimeException("Empty font cannot build text")
+    }
   }
 }

@@ -24,6 +24,10 @@ case class OpenTypeFont(otf: opentype.Font) extends Font {
   override def lineHeight(size: Double): Double = (otf.ascender - otf.descender) * (1.0 / otf.unitsPerEm * size)
 
   def ascender(size: Double): Double = otf.ascender * (1.0 / otf.unitsPerEm * size)
+
+  override protected def createBuilder(text: String, size: Double, maxWidth: Double, kerning: Boolean): TextBuilder = {
+    new OpenTypeTextBuilder(this, text, size, maxWidth, kerning)
+  }
 }
 
 object OpenTypeFont {

@@ -1,45 +1,34 @@
 package io.youi.font
 
-import io.youi.drawable.{Context, Drawable}
-import io.youi.path.Path
+import io.youi.drawable.{Context, TextDrawable}
+import io.youi.paint.{Paint, Stroke}
 import io.youi.spatial.BoundingBox
 
-case class Text(font: Font,
-                text: String,
-                size: Double,
-                maxWidth: Double,
-                kerning: Boolean,
-                lines: Vector[Vector[CharacterPath]]) extends Drawable {
-  lazy val boundingBox: BoundingBox = {
-    val bb = BoundingBox.temp.zero()
-    lines.foreach { line =>
-      line.foreach { character =>
-        bb.set(x2 = math.max(bb.x2, character.x + character.glyph.width(size)))
-      }
-    }
-    bb.set(y1 = 0.0, y2 = lineHeight * lines.length)
-    bb.immutable
-  }
-  def lineHeight: Double = font.lineHeight(size)
+trait Text {
+  def font: Font
+  def text: String
+  def size: Double
+  def maxWidth: Double
+  def kerning: Boolean
+  def lines: Vector[Vector[CharacterPath]]
+  def boundingBox: BoundingBox
 
-  lazy val path: Path = Path.merge(lines.flatten.map(cp => cp.path): _*)
+  def draw(context: Context, x: Double, y: Double, fill: Paint, stroke: Stroke): Unit
 
-  override def draw(context: Context, x: Double, y: Double): Unit = {
-    context.begin()
-    lines.foreach { line =>
-      line.foreach(_.draw(context, x, y))
-    }
-    context.close()
-  }
+  def toDrawable(fill: Paint = Paint.none,
+                 stroke: Stroke = Stroke.none): TextDrawable = new TextDrawable(this, fill, stroke)
 }
 
 object Text {
-  lazy val empty: Text = Text(
-    font = Font.empty,
-    text = "",
-    size = 0.0,
-    maxWidth = 0.0,
-    kerning = false,
-    lines = Vector.empty
-  )
+  case object empty extends Text {
+    override def font: Font = Font.empty
+    override def text: String = ""
+    override def size: Double = 0.0
+    override def maxWidth: Double = 0.0
+    override def kerning: Boolean = false
+    override def lines: Vector[Vector[CharacterPath]] = Vector.empty
+    override def boundingBox: BoundingBox = BoundingBox.zero
+
+    override def draw(context: Context, x: Double, y: Double, fill: Paint, stroke: Stroke): Unit = {}
+  }
 }

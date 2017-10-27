@@ -3,13 +3,8 @@ package io.youi.font
 trait WrapMode {
   def processLine(builder: TextBuilder, line: String): Unit
 
-  def createText(font: Font,
-                 text: String,
-                 size: Double,
-                 maxWidth: Double = Double.MaxValue,
-                 kerning: Boolean = true): Text = {
-    val builder = new TextBuilder(font, text, size, maxWidth, kerning)
-    text.split('\n').foreach(processLine(builder, _))
+  def createText(builder: TextBuilder): Text = {
+    builder.text.split('\n').foreach(processLine(builder, _))
     builder.toText
   }
 }

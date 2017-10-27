@@ -34,6 +34,8 @@ class Context(val canvas: html.Canvas, _ratio: => Double) {
     restore()
   }
 
+  def composite(composite: Composite): Unit = ctx.globalCompositeOperation = composite.value
+
   def identity(): Unit = transform(Matrix3.Identity)
 
   def withScale[R](x: Double = 1.0, y: Double = 1.0)(f: => R): R = {
@@ -231,6 +233,7 @@ class Context(val canvas: html.Canvas, _ratio: => Double) {
   }
 
   def reset(): Unit = {
+    composite(Composite.SourceOver)
     fillStyle = Paint.none
     strokeStyle = Stroke.none
     ctx.fillStyle = ""

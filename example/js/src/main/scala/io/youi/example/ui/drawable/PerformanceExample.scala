@@ -36,7 +36,7 @@ object PerformanceExample extends UIExampleScreen with DrawableScreen {
                 context.scale(scale, scale)
                 context.drawCanvas(canvas)()
                 context.restore()
-                context.ctx.globalCompositeOperation = "source-in"
+                context.composite(Composite.SourceIn)
               }
             },
             Rectangle(0.0, 0.0, text.boundingBox.width, text.boundingBox.height, begin = true, close = true),

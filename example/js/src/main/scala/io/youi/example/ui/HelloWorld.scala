@@ -14,7 +14,7 @@ object HelloWorld extends UIExampleScreen with UIScreen {
 
   val fontURL: URL = GoogleFont.`Open Sans`.`regular`
 
-  override def createUI(): Future[Unit] = OpenTypeFont.fromURL(fontURL).map { fnt =>
+  override def createUI(): Future[Unit] = OpenTypeFont.fromURL(fontURL).map(_.cached).map { fnt =>
     container.children += new TextView {
       font.file := fnt
       font.size := 48.0

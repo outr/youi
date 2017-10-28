@@ -8,6 +8,8 @@ import scala.concurrent.Future
 case class OpenTypeFont(otf: opentype.Font) extends Font {
   private var glyphs = Map.empty[Char, OpenTypeGlyph]
 
+  lazy val cached: CachedFont = new CachedFont(this)
+
   override def glyph(char: Char): Glyph = glyphs.get(char) match {
     case Some(g) => g
     case None => {

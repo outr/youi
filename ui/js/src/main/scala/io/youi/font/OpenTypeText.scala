@@ -3,7 +3,6 @@ package io.youi.font
 import io.youi.drawable.Context
 import io.youi.paint.{Paint, Stroke}
 import io.youi.path.{Fill, Path}
-import io.youi.spatial.BoundingBox
 
 case class OpenTypeText(font: Font,
                         text: String,
@@ -11,18 +10,6 @@ case class OpenTypeText(font: Font,
                         maxWidth: Double,
                         kerning: Boolean,
                         lines: Vector[Vector[CharacterPath]]) extends Text {
-  lazy val boundingBox: BoundingBox = {
-    val bb = BoundingBox.temp.zero()
-    lines.foreach { line =>
-      line.foreach { character =>
-        bb.set(x2 = math.max(bb.x2, character.x + character.glyph.width(size)))
-      }
-    }
-    bb.set(y1 = 0.0, y2 = lineHeight * lines.length)
-    bb.immutable
-  }
-  def lineHeight: Double = font.lineHeight(size)
-
   lazy val path: Path = Path.merge(lines.flatten.map(cp => cp.path): _*)
 
   override def draw(context: Context, x: Double, y: Double, fill: Paint, stroke: Stroke): Unit = {

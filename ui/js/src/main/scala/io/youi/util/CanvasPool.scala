@@ -8,7 +8,7 @@ import org.scalajs.dom.raw.CanvasRenderingContext2D
 import scala.concurrent.Future
 
 object CanvasPool extends ObjectPool[html.Canvas] {
-  def apply(width: Double, height: Double): html.Canvas = update(apply(), width, height)
+  def apply(width: Double, height: Double, ratio: Double = 1.0): html.Canvas = update(apply(), width * ratio, height * ratio)
 
   override protected def create(): Canvas = dom.create[html.Canvas]("canvas")
 
@@ -23,13 +23,15 @@ object CanvasPool extends ObjectPool[html.Canvas] {
 
   override def restore(canvas: html.Canvas): Unit = super.restore(canvas)
 
-  def withCanvas[R](width: Double, height: Double)(f: html.Canvas => R): R = use { canvas =>
-    update(canvas, width, height)
+  def scale(ratio: Double): Double = 1.0 / ratio
+
+  def withCanvas[R](width: Double, height: Double, ratio: Double = 1.0)(f: html.Canvas => R): R = use { canvas =>
+    update(canvas, width * ratio, height * ratio)
     f(canvas)
   }
 
-  def withCanvasFuture[R](width: Double, height: Double)(f: html.Canvas => Future[R]): Future[R] = future { canvas =>
-    update(canvas, width, height)
+  def withCanvasFuture[R](width: Double, height: Double, ratio: Double = 1.0)(f: html.Canvas => Future[R]): Future[R] = future { canvas =>
+    update(canvas, width * ratio, height * ratio)
     f(canvas)
   }
 }

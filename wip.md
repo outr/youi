@@ -2,6 +2,7 @@
 ## Tasks currently being worked on for the next release
 
 * [ ] `NativeFont` to represent browser-rendered fonts
+* [ ] Better text rendering performance with `CachedFont`
 * [ ] Selectable Text in Canvas for copy/paste
 * [ ] TextInput in Canvas for editable editable text
     * [ ] Editing features

@@ -11,7 +11,19 @@ trait Text {
   def maxWidth: Double
   def kerning: Boolean
   def lines: Vector[Vector[CharacterPath]]
-  def boundingBox: BoundingBox
+
+  lazy val boundingBox: BoundingBox = {
+    val bb = BoundingBox.temp.zero()
+    lines.foreach { line =>
+      line.foreach { character =>
+        bb.set(x2 = math.max(bb.x2, character.x + character.glyph.width(size)))
+      }
+    }
+    bb.set(y1 = 0.0, y2 = lineHeight * lines.length)
+    bb.immutable
+  }
+
+  def lineHeight: Double = font.lineHeight(size)
 
   def draw(context: Context, x: Double, y: Double, fill: Paint, stroke: Stroke): Unit
 
@@ -27,7 +39,6 @@ object Text {
     override def maxWidth: Double = 0.0
     override def kerning: Boolean = false
     override def lines: Vector[Vector[CharacterPath]] = Vector.empty
-    override def boundingBox: BoundingBox = BoundingBox.zero
 
     override def draw(context: Context, x: Double, y: Double, fill: Paint, stroke: Stroke): Unit = {}
   }

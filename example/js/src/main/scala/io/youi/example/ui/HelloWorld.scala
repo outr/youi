@@ -5,6 +5,7 @@ import io.youi.app.screen.UIScreen
 import io.youi.component.TextView
 import io.youi.font.{GoogleFont, OpenTypeFont}
 import io.youi.net.URL
+import reactify._
 
 import scala.concurrent.Future
 
@@ -14,7 +15,7 @@ object HelloWorld extends UIExampleScreen with UIScreen {
 
   val fontURL: URL = GoogleFont.`Open Sans`.`regular`
 
-  override def createUI(): Future[Unit] = OpenTypeFont.fromURL(fontURL).map(_.cached).map { fnt =>
+  override def createUI(): Future[Unit] = OpenTypeFont.fromURL(fontURL).map { fnt =>
     container.children += new TextView {
       font.file := fnt
       font.size := 48.0

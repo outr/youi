@@ -15,12 +15,15 @@ case class CachedText(font: CachedFont,
     CanvasPool.withCanvas(boundingBox.width, boundingBox.height, ui.ratio) { canvas =>
       val ctx = new Context(canvas, ui.ratio)
       ctx.reset()
+      ctx.save()
+      val scale = CanvasPool.scale(ui.ratio)
+      ctx.scale(scale, scale)
 
       // Draw all the characters to our temporary canvas
       lines.foreach { line =>
         line.foreach { path =>
           val cached = font(size)(path.glyph)
-          cached.draw(ctx, path.x, path.y)
+          cached.draw(ctx, path.x * ui.ratio, path.y * ui.ratio)
         }
       }
 
@@ -28,10 +31,10 @@ case class CachedText(font: CachedFont,
       ctx.composite(Composite.SourceIn)
       ctx.rect(0.0, 0.0, canvas.width, canvas.height)
       ctx.fill(fill, apply = true)
+      ctx.restore()
 
       // Draw the canvas to the context now
       context.save()
-      val scale = CanvasPool.scale(ui.ratio)
       context.scale(scale, scale)
       context.drawCanvas(canvas)(x, y)
       context.restore()

@@ -35,8 +35,8 @@ case class OpenTypeFont(otf: opentype.Font) extends Font {
 object OpenTypeFont {
   private var pathMap = Map.empty[String, OpenTypeFont]
 
-  def fromPath(path: String): Future[OpenTypeFont] = {
-    pathMap.get(path) match {
+  def fromPath(path: String, cached: Boolean = true): Future[Font] = {
+    val openTypeFuture = pathMap.get(path) match {
       case Some(font) => Future.successful(font)
       case None => {
         opentype.OpenType.load(path).map { otf =>
@@ -46,7 +46,12 @@ object OpenTypeFont {
         }
       }
     }
+    if (cached) {
+      openTypeFuture.map(_.cached)
+    } else {
+      openTypeFuture
+    }
   }
 
-  def fromURL(url: URL): Future[OpenTypeFont] = fromPath(url.toString)
+  def fromURL(url: URL, cached: Boolean = true): Future[Font] = fromPath(url.toString)
 }

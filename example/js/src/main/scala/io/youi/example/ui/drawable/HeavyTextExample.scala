@@ -12,7 +12,7 @@ import scala.concurrent.Future
 object HeavyTextExample extends UIExampleScreen with DrawableScreen {
   override def name: String = "Heavy Text Example"
 
-  override protected val drawable: Future[RenderTimer] = OpenTypeFont.fromURL(GoogleFont.`Open Sans`.`regular`).map(_.cached).map { font =>
+  override protected val drawable: Future[RenderTimer] = OpenTypeFont.fromURL(GoogleFont.`Open Sans`.`regular`).map { font =>
     def row(y: Double, size: Double, fill: Paint): Group = {
       val chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789~!@#$%^&*()-=_+{}[]:".map { c =>
         font(c.toString, size).toDrawable(fill)

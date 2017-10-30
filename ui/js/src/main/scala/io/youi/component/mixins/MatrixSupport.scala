@@ -18,8 +18,6 @@ trait MatrixSupport {
     // Prepare the world matrix
     matrix.world.set(parent().map(_.matrix.world).getOrElse(Matrix3.Identity))
     matrix.world *= matrix.local
-
-    invalidate()
   }
 
   protected def updateLocalMatrix(): Unit = {

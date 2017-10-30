@@ -30,7 +30,6 @@ class Renderer(val canvas: html.Canvas = CanvasPool(1.0, 1.0), renderWidth: => D
       context.clear()
       context.reset()
       stats.draw(drawable, context, 0.5, 0.5)
-      scribe.info(s"Rendered in ${stats.current} seconds")
     }
   }
 

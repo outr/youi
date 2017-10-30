@@ -1,6 +1,7 @@
 package io.youi
 
 import io.youi.component.Component
+import io.youi.drawable.stats.RenderStats
 import io.youi.drawable.{Context, Drawable}
 import io.youi.event._
 import io.youi.spatial.Point
@@ -22,11 +23,14 @@ class Renderer(val canvas: html.Canvas = CanvasPool(1.0, 1.0), renderWidth: => D
   val pointerTarget: Var[Option[Component]] = Var(None)
   val cursor: Var[Cursor] = Var(Cursor.Default)
 
+  val stats: RenderStats = new RenderStats
+
   lazy val render: LazyUpdate = LazyUpdate {
     if (visible()) {
       context.clear()
       context.reset()
-      drawable.draw(context, 0.5, 0.5)
+      stats.draw(drawable, context, 0.5, 0.5)
+      scribe.info(s"Rendered in ${stats.current} seconds")
     }
   }
 

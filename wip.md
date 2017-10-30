@@ -1,6 +1,9 @@
 # Work in Progress
 ## Tasks currently being worked on for the next release
 
+* [ ] Better debugging support
+    * [ ] On-going stats gathering `RenderStats` used by `Renderer`
+    * [ ] FPS-style display support with information about averages, counts, timings, etc.
 * [ ] `NativeFont` to represent browser-rendered fonts
 * [ ] Better text rendering performance with `CachedFont`
 * [ ] Selectable Text in Canvas for copy/paste
@@ -17,6 +20,7 @@
     * [ ] RadioButton
     * [ ] ListSelection
 * [ ] Update Components to only render when they need to (lazy rendering)
+    * [ ] Better handling of `Renderer` to avoid unnecessary re-rendering
     * [ ] Disable rendering of offscreen or invisible components
 * [ ] Update `UIExamples` to render using canvas and look a lot nicer
 * [ ] `RichText` to render stylized text

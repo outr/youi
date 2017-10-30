@@ -3,6 +3,7 @@ package io.youi.example.ui.drawable
 import io.youi.Color
 import io.youi.app.screen.DrawableScreen
 import io.youi.drawable._
+import io.youi.drawable.stats.RenderTimer
 import io.youi.example.ui.UIExampleScreen
 import io.youi.font.{GoogleFont, OpenTypeFont}
 import io.youi.paint.Paint

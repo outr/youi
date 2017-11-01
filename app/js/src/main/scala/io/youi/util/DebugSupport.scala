@@ -11,7 +11,7 @@ class DebugSupport {
   val enabled: Var[Boolean] = Var(false)
 
   private val stats = new Label {
-    text := renderer.stats.info
+    text := renderer.stats.toString
     font.size := 12.0
     font.family := "sans-serif"
     position.right := ui.width - 10.0
@@ -20,6 +20,10 @@ class DebugSupport {
 
     AnimationFrame.delta.attach(update)
     document.body.appendChild(element)
+  }
+
+  renderer.stats.renders.on {
+    stats.text := renderer.stats.toString
   }
 
   stats.visible := enabled

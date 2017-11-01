@@ -1,6 +1,6 @@
 package io.youi.util
 
-import io.youi.component.{AbstractContainer, Component}
+import io.youi.component.{AbstractContainer, Component, Transform}
 import io.youi.drawable.Context
 import io.youi.{dom, ui}
 import org.scalajs.dom.{Event, document, html}
@@ -68,7 +68,7 @@ object DebugWindow {
     canvas.style.height = s"${math.ceil(component.size.height())}px"
     canvas.width = math.ceil(component.size.width * ui.ratio).toInt
     canvas.height = math.ceil(component.size.height * ui.ratio).toInt
-    component.draw(context, translate = false)
+    component.draw(context, Transform.None)
     parent.appendChild(canvas)
     canvases = canvas :: canvases
 

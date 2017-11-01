@@ -6,12 +6,12 @@ import reactify._
 class RenderStats {
   private val samples = 1000
 
-  private val firstRender = Var(0L)
-  private var lastRender = Var(0L)
-  private var renderStart = Var(0L)
-  private var renderFinish = Var(0L)
-  private val count = Var(0L)
-  private var lastElapsed = Var(0.0)
+  private var firstRender = 0L
+  private var lastRender = 0L
+  private var renderStart = 0L
+  private var renderFinish = 0L
+  private val count: Var[Long] = Var(0L)
+  private var lastElapsed = 0.0
 
   private val elapsed: Array[Double] = new Array[Double](samples)
   private var position: Int = 0
@@ -32,14 +32,14 @@ class RenderStats {
       position = 0
     }
 
-    if (firstRender() == 0L) {
-      firstRender := finished
+    if (firstRender == 0L) {
+      firstRender = finished
     }
-    lastRender := finished
-    renderStart := start
-    renderFinish := finished
-    count.static(count() + 1)
-    lastElapsed := elapsed
+    lastRender = finished
+    renderStart = start
+    renderFinish = finished
+    count.static(count + 1)
+    lastElapsed = elapsed
   }
 
   def average: Double = {
@@ -67,15 +67,13 @@ class RenderStats {
 
   def renders: Val[Long] = count
 
-  def current: Val[Double] = lastElapsed
+  def current: Double = lastElapsed
 
-  lazy val fps: Val[Int] = Val(math.round(1.0 / current).toInt)
+  def fps: Int = math.round(1.0 / current).toInt
 
-  lazy val averageFPS: Val[Int] = Val(math.round(1.0 / average).toInt)
+  def averageFPS: Int = math.round(1.0 / average).toInt
 
-  lazy val info: Val[String] = Val {
-    f"Current: ${fps()} fps (${current()}%2.2f), Average: ${averageFPS()} ($average%2.2f), Min: $min%2.2f, Max: $max%2.2f, Renders: ${renders()}"
+  override def toString: String = {
+    f"Current: $fps fps ($current%2.2f), Average: $averageFPS ($average%2.2f), Min: $min%2.2f, Max: $max%2.2f, Renders: ${renders()}"
   }
-
-  override def toString: String = info()
 }

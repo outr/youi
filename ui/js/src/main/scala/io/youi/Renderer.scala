@@ -22,6 +22,7 @@ class Renderer(val canvas: html.Canvas = CanvasPool(1.0, 1.0), renderWidth: => D
   val htmlEvents: HTMLEvents = new HTMLEvents(jsdom.document.body)
   val pointerTarget: Var[Option[Component]] = Var(None)
   val cursor: Var[Cursor] = Var(Cursor.Default)
+  val reloadOnRatioChange: Var[Boolean] = Var(true)
 
   val stats: RenderStats = new RenderStats
 
@@ -35,6 +36,11 @@ class Renderer(val canvas: html.Canvas = CanvasPool(1.0, 1.0), renderWidth: => D
 
   protected def init(): Unit = {
     ratio.and(width).and(height).on(updateSize())
+    ratio.on {
+      if (reloadOnRatioChange()) {
+        History.reload(force = false)
+      }
+    }
     visible.attach {
       case true => canvas.style.display = "block"
       case false => canvas.style.display = "none"

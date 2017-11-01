@@ -83,22 +83,23 @@ trait Component extends TaskSupport with ComponentTheme with Widget with MatrixS
   override final def draw(context: Context, x: Double, y: Double): Unit = if (cache()) {
     if (cacheable.modified() < modified()) {
       cacheable.sync(size.width, size.height) { ctx =>
-        draw(ctx, translate = false)
+        draw(ctx, Transform.None)
       }
     }
+    // TODO: rotate and pivot
     cacheable.draw(context, x + (position.x * ui.ratio), y + (position.y * ui.ratio))
   } else {
-    draw(context, translate = true)
+    draw(context, Transform.All)
   }
 
-  def draw(context: Context, translate: Boolean): Unit = {
+  def draw(context: Context, transform: Transform): Unit = {
     context.save()
-    transformDraw(context, translate)
+    transformDraw(context, transform)
     preDraw(context)
     drawInternal(context)
     postDraw(context)
     context.restore()
-    borderDraw(context, translate)
+    borderDraw(context, transform)
   }
 
   override def update(delta: Double): Unit = {
@@ -127,17 +128,22 @@ trait Component extends TaskSupport with ComponentTheme with Widget with MatrixS
       y = padding.top + border.size(Compass.North)
     )()
   }
-  protected def transformDraw(context: Context, translate: Boolean): Unit = {
-    val x = if (translate) position.x() else 0.0
-    val y = if (translate) position.y() else 0.0
-    Transformation.transform(context, x, y, pivot.x, pivot.y, rotation, manageState = false)()
+  protected def transformDraw(context: Context, transform: Transform): Unit = {
+    val (tx, ty, px, py, r) = transform match {
+      case Transform.None => (0.0, 0.0, 0.0, 0.0, 0.0)
+      case Transform.Translate => (position.x(), position.y(), 0.0, 0.0, 0.0)
+      case Transform.NoTranslate => (0.0, 0.0, pivot.x(), pivot.y(), rotation())
+      case Transform.All => (position.x(), position.y(), pivot.x(), pivot.y(), rotation())
+      case Transform.Override(tx, ty, px, py, r) => (tx, ty, px, py, r)
+    }
+    Transformation.transform(context, tx, ty, px, py, r, manageState = false)()
   }
   protected def drawInternal(context: Context): Unit
   protected def postDraw(context: Context): Unit = {
   }
-  protected def borderDraw(context: Context, translate: Boolean): Unit = if (border.paint.nonEmpty) {
+  protected def borderDraw(context: Context, transform: Transform): Unit = if (border.paint.nonEmpty) {
     context.save()
-    transformDraw(context, translate = true)
+    transformDraw(context, transform)
     border.draw(size.width, size.height, context)
     context.restore()
   }
@@ -156,7 +162,7 @@ trait Component extends TaskSupport with ComponentTheme with Widget with MatrixS
     super.updateTransform()
 
     updateMatrix()
-    updateRendering()
+    parent().foreach(_.updateRendering())
   }
 
   override def invalidate(): Future[Unit] = super.invalidate().map { _ =>
@@ -167,3 +173,17 @@ trait Component extends TaskSupport with ComponentTheme with Widget with MatrixS
 }
 
 object Component extends ComponentTheme
+
+sealed trait Transform
+
+object Transform {
+  case object None extends Transform
+  case object Translate extends Transform
+  case object NoTranslate extends Transform
+  case object All extends Transform
+  case class Override(tx: Double = 0.0,
+                      ty: Double = 0.0,
+                      px: Double = 0.0,
+                      py: Double = 0.0,
+                      rotation: Double = 0.0) extends Transform
+}

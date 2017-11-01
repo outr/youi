@@ -8,13 +8,26 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Future, Promise}
 import scala.util.{Failure, Success}
 
-trait Cacheable extends Drawable {
+class Cacheable extends Drawable {
   private var canvas: Option[html.Canvas] = None
 
   def width: Option[Double] = canvas.map(_.width.toDouble * (1.0 / ui.ratio))
   def height: Option[Double] = canvas.map(_.height.toDouble * (1.0 / ui.ratio))
 
-  def updateCache(width: Double, height: Double)(f: Context => Future[Unit]): Future[Unit] = {
+  def sync(width: Double, height: Double)(f: Context => Unit): Unit = {
+    val c = CanvasPool(width * ui.ratio, height * ui.ratio)
+    val context = new Context(c, ui.ratio)
+    try {
+      f(context)
+    } finally {
+      val old = canvas
+      canvas = Some(c)
+      old.foreach(CanvasPool.restore)
+      modified := System.currentTimeMillis()
+    }
+  }
+
+  def async(width: Double, height: Double)(f: Context => Future[Unit]): Future[Unit] = {
     val c = CanvasPool(width * ui.ratio, height * ui.ratio)
     val context = new Context(c, ui.ratio)
     val future = f(context)

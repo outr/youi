@@ -1,14 +1,15 @@
 package io.youi.component
 
 import io.youi.component.mixins.{Interactivity, MatrixSupport}
-import io.youi.drawable.{Context, Drawable, Transformation}
+import io.youi.drawable.{Cacheable, Context, Drawable, Transformation}
 import io.youi.task.TaskSupport
 import io.youi.theme.ComponentTheme
-import io.youi.{Compass, Modifiable, Unique, Updatable, Widget, WidgetPosition, WidgetSize}
+import io.youi.{Compass, Modifiable, Unique, Updatable, Widget, WidgetPosition, WidgetSize, ui}
 import reactify._
 
 import scala.annotation.tailrec
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 trait Component extends TaskSupport with ComponentTheme with Widget with MatrixSupport with Interactivity with Drawable { self =>
   def theme: Var[_ <: ComponentTheme]
@@ -23,6 +24,10 @@ trait Component extends TaskSupport with ComponentTheme with Widget with MatrixS
 
   protected def modifiables: List[Modifiable] = List(background(), border().paint)
   protected def updatables: List[Updatable] = List(background(), border().paint)
+
+  val cache: Var[Boolean] = Var(false)
+
+  private lazy val cacheable: Cacheable = new Cacheable
 
   override protected def init(): Unit = {
     super.init()
@@ -75,7 +80,14 @@ trait Component extends TaskSupport with ComponentTheme with Widget with MatrixS
 
   lazy val rotation: Var[Double] = prop(0.0, updatesTransform = true)
 
-  override final def draw(context: Context, x: Double, y: Double): Unit = {
+  override final def draw(context: Context, x: Double, y: Double): Unit = if (cache()) {
+    if (cacheable.modified() < modified()) {
+      cacheable.sync(size.width, size.height) { ctx =>
+        draw(ctx, translate = false)
+      }
+    }
+    cacheable.draw(context, x + (position.x * ui.ratio), y + (position.y * ui.ratio))
+  } else {
     draw(context, translate = true)
   }
 
@@ -147,7 +159,7 @@ trait Component extends TaskSupport with ComponentTheme with Widget with MatrixS
     updateRendering()
   }
 
-  override def invalidate() = super.invalidate().map { _ =>
+  override def invalidate(): Future[Unit] = super.invalidate().map { _ =>
     modified := System.currentTimeMillis()
   }
 

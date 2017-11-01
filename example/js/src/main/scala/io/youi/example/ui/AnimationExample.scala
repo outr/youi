@@ -32,6 +32,7 @@ object AnimationExample extends UIExampleScreen with UIScreen {
         case (name, easingFunction) => {
           val label = new TextView {
             value := s"$name Example"
+            cache := true
             font.size := 24.0
             font.file := fnt
             position.top := shift

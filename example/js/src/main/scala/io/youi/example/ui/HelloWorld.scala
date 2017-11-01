@@ -17,6 +17,7 @@ object HelloWorld extends UIExampleScreen with UIScreen {
 
   override def createUI(): Future[Unit] = OpenTypeFont.fromURL(fontURL).map { fnt =>
     container.children += new TextView {
+      cache := true
       font.file := fnt
       font.size := 48.0
       value := "Hello, World!"

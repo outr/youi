@@ -16,7 +16,7 @@ trait Text {
     val bb = BoundingBox.temp.zero()
     lines.foreach { line =>
       line.foreach { character =>
-        bb.set(x2 = math.max(bb.x2, character.x + character.glyph.width(size)))
+        bb.set(x2 = math.max(bb.x2, character.x + character.glyph.actualWidth(size)))
       }
     }
     bb.set(y1 = 0.0, y2 = lineHeight * lines.length)

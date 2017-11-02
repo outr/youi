@@ -8,7 +8,7 @@ import io.youi.spatial.Point
 import io.youi.util.CanvasPool
 import org.scalajs.dom.html
 import org.scalajs.{dom => jsdom}
-import reactify.{Channel, Var}
+import reactify.{Channel, Val, Var}
 
 class Renderer(val canvas: html.Canvas = CanvasPool(1.0, 1.0), renderWidth: => Double, renderHeight: => Double) extends Updates {
   private lazy val context: Context = new Context(canvas, ratio())
@@ -18,13 +18,15 @@ class Renderer(val canvas: html.Canvas = CanvasPool(1.0, 1.0), renderWidth: => D
   val height: Var[Double] = Var(renderHeight)
   val visible: Var[Boolean] = Var(true)
   val drawable: Var[Drawable] = Var(Drawable.None)
-  val modified: Var[Long] = Var(drawable.modified)
+  val modified: Var[Long] = Var(0L)
   val htmlEvents: HTMLEvents = new HTMLEvents(jsdom.document.body)
   val pointerTarget: Var[Option[Component]] = Var(None)
   val cursor: Var[Cursor] = Var(Cursor.Default)
   val reloadOnRatioChange: Var[Boolean] = Var(true)
 
   val stats: RenderStats = new RenderStats
+
+  private val drawableModified: Val[Long] = Val(drawable.modified)
 
   lazy val render: LazyUpdate = LazyUpdate {
     if (visible()) {
@@ -35,6 +37,7 @@ class Renderer(val canvas: html.Canvas = CanvasPool(1.0, 1.0), renderWidth: => D
   }
 
   protected def init(): Unit = {
+    drawableModified.attach(modified.static)
     ratio.and(width).and(height).on(updateSize())
     ratio.on {
       if (reloadOnRatioChange()) {
@@ -66,6 +69,8 @@ class Renderer(val canvas: html.Canvas = CanvasPool(1.0, 1.0), renderWidth: => D
     modified.on(render.flag())
 
     updateSize()
+
+    modified := System.currentTimeMillis()
   }
 
   override def update(delta: Double): Unit = {

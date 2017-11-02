@@ -184,7 +184,7 @@ trait ServerApplication extends YouIApplication with Server with ConfigApplicati
       addDeltas(connection, d)
     }
 
-    def page(template: Content = ServerApplication.DefaultTemplate,
+    def page(template: Content = ServerApplication.CanvasTemplate,
              deltas: List[Delta] = Nil,
              includeApplication: Boolean = true): HttpHandler = builder.handle { connection =>
       serveHTML(connection, template, deltas, includeApplication)
@@ -286,7 +286,10 @@ trait ServerApplication extends YouIApplication with Server with ConfigApplicati
 }
 
 object ServerApplication {
-  lazy val DefaultTemplate: Content = Content.string(
+  /**
+    * Empty page template with overflow on the body disabled.
+    */
+  lazy val CanvasTemplate: Content = Content.string(
     """
       |<html>
       |<head>
@@ -299,6 +302,30 @@ object ServerApplication {
       |     height: 100vh;
       |   }
       | </style>
+      |</head>
+      |<body>
+      |</body>
+      |</html>
+    """.stripMargin.trim, ContentType.`text/html`)
+
+  /**
+    * Empty page template with overflow on the body disabled and viewport fixed to avoid zooming.
+    */
+  lazy val AppTemplate: Content = Content.string(
+    """
+      |<html>
+      |<head>
+      | <title></title>
+      | <style>
+      |   body {
+      |     margin: 0;
+      |     overflow: hidden;
+      |     width: 100vw;
+      |     height: 100vh;
+      |   }
+      | </style>
+      | <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+      | <meta name="HandheldFriendly" content="true" />
       |</head>
       |<body>
       |</body>

@@ -29,3 +29,4 @@
     * [ ] DSL for cleanly representing
     * [ ] JSON format for inline, loading, and exporting
 * [ ] Better Server error logging (URL, request info, etc.)
+* [X] Support for fixed zoom ratio for fixed applications that shouldn't zoom

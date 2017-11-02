@@ -25,8 +25,6 @@ trait Component extends TaskSupport with ComponentTheme with Widget with MatrixS
   protected def modifiables: List[Modifiable] = List(background(), border().paint)
   protected def updatables: List[Updatable] = List(background(), border().paint)
 
-  val cache: Var[Boolean] = Var(false)
-
   private lazy val cacheable: Cacheable = new Cacheable
 
   override protected def init(): Unit = {

@@ -35,4 +35,7 @@ trait TextViewTheme extends ComponentTheme {
     val fill: Var[Paint] = Var(prnt(_.selection.fill, Color.LightBlue))
     val stroke: Var[Paint] = Var(prnt(_.selection.stroke, Paint.none))
   }
+
+  // Default TextView to be cached for better performance
+  cache := prnt(_.cache, true)
 }

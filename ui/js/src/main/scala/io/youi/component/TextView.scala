@@ -2,9 +2,8 @@ package io.youi.component
 
 import io.youi.drawable.Context
 import io.youi.font.{Text, WrapMode}
-import io.youi.paint.Stroke
-import io.youi.path.Fill
 import io.youi.theme.TextViewTheme
+import io.youi.{Modifiable, Updatable}
 import reactify._
 
 class TextView extends Component with TextViewTheme {
@@ -43,6 +42,10 @@ class TextView extends Component with TextViewTheme {
   override protected def drawInternal(context: Context): Unit = {
     text.draw(context, 0.0, 0.0, fill, stroke)
   }
+
+  override protected def modifiables: List[Modifiable] = super.modifiables ::: List(fill(), stroke())
+
+  override protected def updatables: List[Updatable] = super.updatables ::: List(fill(), stroke().paint)
 
   init()
 }

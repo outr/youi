@@ -20,16 +20,16 @@ trait TextViewTheme extends ComponentTheme {
     val x: Var[Double] = prop(prnt(_.shadow.x, 2.0), updatesRendering = true)
     val y: Var[Double] = prop(prnt(_.shadow.y, 2.0), updatesRendering = true)
   }
-  val fill: Var[Paint] = prop(prnt(_.fill, Paint.none), updatesRendering = true)
+  lazy val fill: Var[Paint] = prop(prnt(_.fill, Paint.none), updatesRendering = true)
   object font {
     val file: Var[Font] = Var(prnt(_.font.file, Font.empty))
     val size: Var[Double] = Var(prnt(_.font.size, 26.0))
     val kerning: Var[Boolean] = Var(prnt(_.font.kerning, true))
   }
-  val lineJoin: Var[String] = prop(prnt(_.lineJoin, "miter"), updatesRendering = true)
-  val miterLimit: Var[Double] = prop(prnt(_.miterLimit, 10.0), updatesRendering = true)
-  val stroke: Var[Stroke] = prop(prnt(_.stroke, Stroke.none), updatesRendering = true)
-  val textBaseline: Var[String] = prop(prnt(_.textBaseline, "alphabetic"), updatesRendering = true)
+  lazy val lineJoin: Var[String] = prop(prnt(_.lineJoin, "miter"), updatesRendering = true)
+  lazy val miterLimit: Var[Double] = prop(prnt(_.miterLimit, 10.0), updatesRendering = true)
+  lazy val stroke: Var[Stroke] = prop(prnt(_.stroke, Stroke.none), updatesRendering = true)
+  lazy val textBaseline: Var[String] = prop(prnt(_.textBaseline, "alphabetic"), updatesRendering = true)
   object selection {
     val enabled: Var[Boolean] = Var(prnt(_.selection.enabled, true))
     val fill: Var[Paint] = Var(prnt(_.selection.fill, Color.LightBlue))

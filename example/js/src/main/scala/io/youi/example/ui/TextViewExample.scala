@@ -44,6 +44,7 @@ object TextViewExample extends UIExampleScreen with UIScreen {
       }
       val berkshireView = new TextView {
         value := "Berkshire Swash Regular"
+        cache := false
         font.file := berkshire
         font.size := 96.0
         Paint.video(History.url().withPath("/sample.mp4")).foreach(fill := _)

@@ -43,7 +43,7 @@ class CachedFontSize(font: CachedFont, val size: Double) {
 }
 
 class CachedGlyph(size: CachedFontSize, glyph: Glyph) extends Drawable {
-  private val canvas = Val(CanvasPool(glyph.width(size.size), glyph.font.lineHeight(size.size), ui.ratio))
+  private val canvas = Val(CanvasPool(glyph.actualWidth(size.size), glyph.font.lineHeight(size.size), ui.ratio))
   canvas.changes(new ChangeObserver[html.Canvas] {
     override def change(oldValue: html.Canvas, newValue: html.Canvas): Unit = {
       update()

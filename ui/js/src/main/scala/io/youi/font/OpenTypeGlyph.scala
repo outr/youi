@@ -11,6 +11,8 @@ case class OpenTypeGlyph(font: OpenTypeFont, char: Char, otg: opentype.Glyph, un
   }
   override def width(size: Double): Double = otg.advanceWidth * (1.0 / unitsPerEm * size)
 
+  override def actualWidth(size: Double): Double = sizedPath(size).boundingBox.x2
+
   override def sizedPath(size: Double): Path = {
     val scale = 1.0 / unitsPerEm * size
     path.scale(scale, -scale).shift(0.0, font.ascender(size))

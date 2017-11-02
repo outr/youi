@@ -16,7 +16,7 @@ object ImageEditorExample extends HTMLScreen {
   override def name: String = "Image Editor"
   override def path: String = "/examples/image-editor.html"
 
-  private lazy val canvas = new Canvas {
+  private lazy val canvas = new Canvas(manageSize = false) {
     position.center := ui.center
     position.middle := ui.middle
     size.width := 800.0

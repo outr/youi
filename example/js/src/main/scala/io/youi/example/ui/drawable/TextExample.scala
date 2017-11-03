@@ -25,13 +25,13 @@ object TextExample extends UIExampleScreen with DrawableScreen {
           font("Testing", 96.0).toDrawable(Color.Orange)
         ),
         Transformation(x = 700.0, y = 0.0)(
-          font("Testing", 96.0).toDrawable(Color.Red),
+          font("Testing", 96.0).toDrawable(Color.Red)
         ),
         Transformation(x = 1050.0, y = 0.0)(
-          font("Testing", 96.0).toDrawable(Color.Blue),
+          font("Testing", 96.0).toDrawable(Color.Blue)
         ),
         Transformation(x = 1400.0, y = 0.0)(
-          font("Testing", 96.0).toDrawable(Color.HotPink),
+          font("Testing", 96.0).toDrawable(Color.HotPink)
         ),
         Transformation(x = 0.0, y = 125.0)(
           font(loremIpsum, 24.0, 1800.0).toDrawable(Paint.vertical(1200.0).distributeColors(Color.Red, Color.Green, Color.Blue))

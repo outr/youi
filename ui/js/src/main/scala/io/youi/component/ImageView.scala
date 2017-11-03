@@ -55,11 +55,20 @@ class ImageView extends Component with ImageViewTheme {
         (size.width() == 0.0 || size.height() == 0.0)) {
       Future.successful(())
     } else {
-      image.resize(size.width, size.height).map { img =>
-        image := img
-      }
+      resizeAsynchronously()
     }
   }, automatic = false)
+
+  private def resizeAsynchronously(): Future[Unit] = {
+    val w = size.width()
+    val h = size.height()
+    image.resize(w, h).map { img =>
+      image := img
+      if (w != size.width() || h == size.height()) {
+        resizer.flag()
+      }
+    }
+  }
 
   override protected def init(): Unit = {
     super.init()

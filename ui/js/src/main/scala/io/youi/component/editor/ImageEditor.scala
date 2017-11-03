@@ -26,7 +26,9 @@ class ImageEditor extends AbstractContainer {
   val maxOriginalSize: Var[Size] = Var(Size(10000.0, 10000.0))
 
   private val originalImage: Var[Image] = Var(Image.empty)
-  val imageView: ImageView = new ImageView
+  val imageView: ImageView = new ImageView {
+    autoSmooth := false
+  }
   val rs: RectangularSelection = new RectangularSelection
   val pixelCount: Val[Double] = Val(imageView.size.measured.width * imageView.size.measured.height)
   val wheelMultiplier: Var[Double] = Var(0.001)

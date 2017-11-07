@@ -4,9 +4,20 @@ import io.youi.{Widget, WidgetContainer}
 import reactify._
 
 class FlowLayout(margins: Margins = Margins()) extends Layout {
-  override def connect(container: WidgetContainer): Unit = update(container)
+  private var map = Map.empty[WidgetContainer, Val[Double]]
 
-  override def disconnect(container: WidgetContainer): Unit = update(container)
+  override def connect(container: WidgetContainer): Unit = {
+    val v = Val(WidgetContainer.children(container)().map(w => w.size.width + w.size.height).sum)
+    map += container -> v
+    v.on(update(container))
+    update(container)
+  }
+
+  override def disconnect(container: WidgetContainer): Unit = {
+    update(container)
+    map(container).clearObservers()
+    map -= container
+  }
 
   override def resized(container: WidgetContainer, width: Double, height: Double): Unit = update(container)
 

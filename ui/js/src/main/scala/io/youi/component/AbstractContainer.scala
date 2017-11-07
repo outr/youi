@@ -40,7 +40,7 @@ trait AbstractContainer extends Component with AbstractContainerTheme with Widge
       context.clipRect(0.0, 0.0, size.width, size.height)
     }
     context.save()
-    context.translate(offset.x, offset.y)
+    context.translate(offset.x + padding.left, offset.y + padding.top)
     val viewable = AbstractContainer.containerBB
     val cbb = AbstractContainer.childBB
     childEntries.foreach { child =>

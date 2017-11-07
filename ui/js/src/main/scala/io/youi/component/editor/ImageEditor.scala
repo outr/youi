@@ -126,7 +126,12 @@ class ImageEditor extends AbstractContainer {
   def load(img: Image): Future[Image] = {
     if (img.width > maxOriginalSize.width || img.height > maxOriginalSize.height) {
       val scale = SizeUtility.scale(img.width, img.height, maxOriginalSize.width, maxOriginalSize.height)
-      img.resize(scale.width, scale.height)
+      img.resize(scale.width, scale.height).map { resized =>
+        imageView.image := resized
+        originalImage := resized
+        reset()
+        resized
+      }
     } else {
       imageView.image := img
       originalImage := img

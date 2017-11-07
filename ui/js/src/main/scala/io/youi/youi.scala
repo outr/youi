@@ -29,8 +29,8 @@ package object youi {
   }
 
   implicit class ExtendedKeyboardEvent(evt: KeyboardEvent) {
-    def toKeyEvent(`type`: KeyEvent.Type): KeyEvent = {
-      Key.get(evt.key).foreach { key =>
+    def toKeyEvent(`type`: KeyEvent.Type): Option[KeyEvent] = {
+      Key.get(evt.key).map { key =>
         KeyEvent(
           `type` = `type`,
           key = key,

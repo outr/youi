@@ -1,8 +1,8 @@
 package io.youi.event
 
 import io.youi._
-import org.scalajs.{dom => jsdom}
 import org.scalajs.dom.html
+import org.scalajs.{dom => jsdom}
 import reactify.Channel
 
 import scala.scalajs.js
@@ -42,7 +42,11 @@ class HTMLEvents(element: html.Element) {
 
   protected def keyEvents(eventType: String, `type`: KeyEvent.Type): Channel[KeyEvent] = {
     val originalEvents = events[jsdom.KeyboardEvent](eventType)
-    originalEvents.map(_.toKeyEvent(`type`))
+    val channel = Channel[KeyEvent]
+    originalEvents.attach { ke =>
+      ke.toKeyEvent(`type`).foreach(channel := _)
+    }
+    channel
   }
 
   protected def events[E <: jsdom.Event](eventType: String, stopPropagation: Boolean = false): Channel[E] = {

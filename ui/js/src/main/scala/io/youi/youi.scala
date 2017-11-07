@@ -30,17 +30,18 @@ package object youi {
 
   implicit class ExtendedKeyboardEvent(evt: KeyboardEvent) {
     def toKeyEvent(`type`: KeyEvent.Type): KeyEvent = {
-      val key = Key(evt.key)
-      KeyEvent(
-        `type` = `type`,
-        key = key,
-        repeat = evt.repeat,
-        modifierState = (k: Key) => evt.getModifierState(k.value),
-        preventDefault = () => evt.preventDefault(),
-        defaultPrevented = () => evt.defaultPrevented,
-        stopImmediatePropagation = () => evt.stopImmediatePropagation(),
-        stopPropagation = () => evt.stopPropagation()
-      )
+      Key.get(evt.key).foreach { key =>
+        KeyEvent(
+          `type` = `type`,
+          key = key,
+          repeat = evt.repeat,
+          modifierState = (k: Key) => evt.getModifierState(k.value),
+          preventDefault = () => evt.preventDefault(),
+          defaultPrevented = () => evt.defaultPrevented,
+          stopImmediatePropagation = () => evt.stopImmediatePropagation(),
+          stopPropagation = () => evt.stopPropagation()
+        )
+      }
     }
   }
 

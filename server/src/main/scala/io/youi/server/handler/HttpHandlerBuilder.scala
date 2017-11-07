@@ -2,9 +2,9 @@ package io.youi.server.handler
 
 import java.io.File
 
-import io.circe.{Decoder, Encoder, Printer}
 import io.circe.parser._
 import io.circe.syntax._
+import io.circe.{Decoder, Encoder, Printer}
 import io.youi.Priority
 import io.youi.http._
 import io.youi.net.{ContentType, URL, URLMatcher}
@@ -37,7 +37,7 @@ case class HttpHandlerBuilder(server: Server,
 
   def file(directory: File, pathTransform: String => String = (s: String) => s): HttpHandler = {
     handle { connection =>
-      val path = pathTransform(connection.request.url.path.encoded)
+      val path = pathTransform(connection.request.url.path.decoded)
       val file = new File(directory, path)
       if (file.isFile) {
         SenderHandler(Content.file(file), caching = cachingManager).handle(connection)
@@ -52,7 +52,7 @@ case class HttpHandlerBuilder(server: Server,
       directory
     }
     handle { connection =>
-      val path = pathTransform(connection.request.url.path.encoded)
+      val path = pathTransform(connection.request.url.path.decoded)
       val resourcePath = s"$dir$path" match {
         case s if s.startsWith("/") => s.substring(1)
         case s => s

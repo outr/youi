@@ -1,10 +1,13 @@
 package io.youi.app.screen
 
+import io.youi.ui
 import reactify.{Val, Var}
 
 import scala.concurrent.Future
 
 trait Screen {
+  protected def title: String = getClass.getSimpleName
+
   private[screen] val currentState = Var[ScreenState](ScreenState.New)
 
   val state: Val[ScreenState] = Val(currentState)
@@ -15,7 +18,10 @@ trait Screen {
 
   protected def load(): Future[Unit] = Future.successful(())
 
-  protected def activate(): Future[Unit] = Future.successful(())
+  protected def activate(): Future[Unit] = {
+    ui.title := title
+    Future.successful(())
+  }
 
   protected def deactivate(): Future[Unit] = Future.successful(())
 

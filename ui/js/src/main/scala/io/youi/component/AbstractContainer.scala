@@ -29,8 +29,8 @@ trait AbstractContainer extends Component with AbstractContainerTheme with Widge
     super.init()
 
     updateMeasured(
-      width = if (childEntries().nonEmpty) childEntries().map(_.position.right()).max else 0.0,
-      height = if (childEntries().nonEmpty) childEntries().map(_.position.bottom()).max else 0.0
+      width = if (childEntries().nonEmpty) childEntries().map(c => math.max(c.position.right(), c.size.width())).max else 0.0,
+      height = if (childEntries().nonEmpty) childEntries().map(c => math.max(c.position.bottom(), c.size.height())).max else 0.0
     )
     childModified.attach(modified := _)
   }

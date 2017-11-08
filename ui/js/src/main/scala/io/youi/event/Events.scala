@@ -33,6 +33,14 @@ class Events(component: Component) {
       (px, py, o)
     }
 
+    lazy val downState: Val[Boolean] = {
+      val d = Var[Boolean](false)
+      pointer.down.on(d := true)
+      pointer.up.on(d := false)
+      pointer.exit.on(d := false)
+      d
+    }
+
     def byType(types: PointerEvent.Type*): Channel[PointerEvent] = {
       val set = types.toSet
       collect {

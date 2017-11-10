@@ -1,9 +1,8 @@
 package io.youi.example.ui
 
 import io.youi.app.screen.UIScreen
-import io.youi.component.TextView
+import io.youi.component.{Container, TextView}
 import io.youi.font.{GoogleFont, OpenTypeFont}
-import io.youi.net.URL
 import io.youi.paint.{Border, Paint, Stroke}
 import io.youi.{Color, History, ui}
 import reactify._
@@ -14,14 +13,28 @@ object TextViewExample extends UIExampleScreen with UIScreen {
   override def name: String = "TextView Example"
   override def path: String = "/examples/text.html"
 
-  val fontURL: URL = GoogleFont.`Pacifico`.`regular`
-
   override def createUI(): Future[Unit] = {
     for {
+      openSans <- OpenTypeFont.fromURL(GoogleFont.`Open Sans`.`regular`)
       pacifico <- OpenTypeFont.fromURL(GoogleFont.`Pacifico`.`regular`)
       roboto <- OpenTypeFont.fromURL(GoogleFont.`Roboto`.`900`)
       berkshire <- OpenTypeFont.fromURL(GoogleFont.`Berkshire Swash`.`regular`)
     } yield {
+      val openSansView = new TextView {
+        value := "Open Sans"
+        font.file := openSans
+        font.size := 96.0
+        fill := Color.Black
+        position.x := 100.0
+        position.y := 100.0
+      }
+      container.children += new Container {
+        position.x := 100.0
+        position.y := 100.0
+        size.width := openSansView.size.width
+        size.height := openSansView.size.height
+        background := Color.Yellow
+      }
       val pacificoView = new TextView {
         value := "Pacifico Regular"
         font.file := pacifico
@@ -53,7 +66,7 @@ object TextViewExample extends UIExampleScreen with UIScreen {
         position.top := pacificoView.position.bottom + 20.0
       }
 
-      container.children ++= Seq(pacificoView, robotoView, berkshireView)
+      container.children ++= Seq(openSansView, pacificoView, robotoView, berkshireView)
     }
   }
 }

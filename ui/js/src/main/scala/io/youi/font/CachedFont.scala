@@ -11,6 +11,10 @@ class CachedFont(font: Font) extends Font {
 
   override def lineHeight(size: Double): Double = font.lineHeight(size)
 
+  override def ascender(size: Double): Double = font.ascender(size)
+
+  override def descender(size: Double): Double = font.descender(size)
+
   override def glyph(char: Char): Glyph = font.glyph(char)
 
   override def kerning(first: Glyph, second: Glyph, size: Double): Double = font.kerning(first, second, size)

@@ -21,7 +21,7 @@ trait Component extends TaskSupport with ComponentTheme {
     */
   lazy val parent: Var[Option[Component]] = Var(None)
 
-  // TODO: Val[Option[UI]]
+  // TODO: lazy val root: Val[Option[UI]] = Val(parent().flatMap(_.root))
 
   /**
     * List of `Updatable` instances derived from the `updatables` method.

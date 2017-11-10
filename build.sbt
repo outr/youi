@@ -121,7 +121,7 @@ lazy val dom = project.in(file("dom"))
   .settings(
     name := "youi-dom",
     libraryDependencies += "com.outr" %% "profig" % profigVersion,
-    jsDependencies += RuntimeDOM
+    jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv
   )
   .dependsOn(coreJS)
   .dependsOn(stream % "compile")
@@ -195,7 +195,7 @@ lazy val hypertext = project.in(file("hypertext"))
   .enablePlugins(ScalaJSPlugin)
   .settings(
     name := "youi-hypertext",
-    jsDependencies += RuntimeDOM
+    jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv
   )
   .dependsOn(uiJS)
 

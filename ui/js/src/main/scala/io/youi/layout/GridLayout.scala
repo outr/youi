@@ -1,6 +1,7 @@
 package io.youi.layout
 
-import io.youi.{Horizontal, Vertical, Widget, WidgetContainer}
+import io.youi.component.Component
+import io.youi.{Horizontal, Vertical}
 import reactify._
 
 class GridLayout extends Layout {
@@ -39,38 +40,38 @@ class GridLayout extends Layout {
     def hasColumn(columnIndex: Int): Boolean = columns().contains(columnIndex)
   }
 
-  private var containers: Set[WidgetContainer] = Set.empty
+  private var containers: Set[Component] = Set.empty
 
-  override def connect(container: WidgetContainer): Unit = {
+  override def connect(container: Component): Unit = {
     containers += container
     update(container)
   }
 
-  override def disconnect(container: WidgetContainer): Unit = {
+  override def disconnect(container: Component): Unit = {
     containers -= container
   }
 
-  override def childrenChanged(container: WidgetContainer, removed: Vector[Widget], added: Vector[Widget]): Unit = {
+  override def childrenChanged(container: Component, removed: Vector[Component], added: Vector[Component]): Unit = {
     super.childrenChanged(container, removed, added)
     update(container)
   }
 
-  override def resized(container: WidgetContainer, width: Double, height: Double): Unit = {
+  override def resized(container: Component, width: Double, height: Double): Unit = {
     super.resized(container, width, height)
     update(container)
   }
 
   def updateAll(): Unit = containers.foreach(update)
 
-  def update(container: WidgetContainer): Unit = {
+  def update(container: Component): Unit = {
     val columnCount = this.columns()
     var rowIndex = 0
     var columnIndex = 0
     var rowSpans = Map.empty[Int, Int]
-    var configs = Map.empty[Widget, CellConfig]
+    var configs = Map.empty[Component, CellConfig]
     var maxWidths = Map.empty[Int, Double]
     var maxHeights = Map.empty[Int, Double]
-    def layout(child: Widget): Unit = {
+    def layout(child: Component): Unit = {
       if (rowSpans.contains(columnIndex)) {
         val newValue = rowSpans(columnIndex) - 1
         if (newValue == 0) {
@@ -109,7 +110,7 @@ class GridLayout extends Layout {
         }
       }
     }
-    WidgetContainer.children(container).foreach(layout)
+    Component.childrenFor(container).foreach(layout)
     configs.foreach {
       case (child, cfg) => {
         // Alignment

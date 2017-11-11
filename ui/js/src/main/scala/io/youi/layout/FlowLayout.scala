@@ -1,34 +1,34 @@
 package io.youi.layout
 
-import io.youi.{Widget, WidgetContainer}
+import io.youi.component.Component
 import reactify._
 
 class FlowLayout(margins: Margins = Margins()) extends Layout {
-  private var map = Map.empty[WidgetContainer, Val[Double]]
+  private var map = Map.empty[Component, Val[Double]]
 
-  override def connect(container: WidgetContainer): Unit = {
-    val v = Val(WidgetContainer.children(container)().map(w => w.size.width + w.size.height).sum)
+  override def connect(container: Component): Unit = {
+    val v = Val(Component.childrenFor(container).map(w => w.size.width + w.size.height).sum)
     map += container -> v
     v.on(update(container))
     update(container)
   }
 
-  override def disconnect(container: WidgetContainer): Unit = {
+  override def disconnect(container: Component): Unit = {
     update(container)
     map(container).clearObservers()
     map -= container
   }
 
-  override def resized(container: WidgetContainer, width: Double, height: Double): Unit = update(container)
+  override def resized(container: Component, width: Double, height: Double): Unit = update(container)
 
-  override def childrenChanged(container: WidgetContainer, removed: Vector[Widget], added: Vector[Widget]): Unit = update(container)
+  override def childrenChanged(container: Component, removed: Vector[Component], added: Vector[Component]): Unit = update(container)
 
-  private def update(container: WidgetContainer): Unit = {
+  private def update(container: Component): Unit = {
     var x: Double = 0.0
     var y: Double = margins.top
     var rowCount = 0
     var rowMaxHeight = 0.0
-    WidgetContainer.children(container).foreach { widget =>
+    Component.childrenFor(container).foreach { widget =>
       x += margins.left
       if (rowCount > 0 && x + widget.size.width > container.size.width) {
         x = margins.left

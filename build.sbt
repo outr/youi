@@ -33,7 +33,7 @@ val scalaCheckVersion = "1.13.5"
 lazy val root = project.in(file("."))
   .aggregate(
     macrosJS, macrosJVM, coreJS, coreJVM, spatialJS, spatialJVM, stream, communicationJS, communicationJVM, dom, client,
-    server, serverUndertow, uiJS, uiJVM, hypertext, optimizer, appJS, appJVM, exampleJS, exampleJVM
+    server, serverUndertow, uiJS, uiJVM, optimizer, appJS, appJVM, exampleJS, exampleJVM
   )
   .settings(
     resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases",
@@ -191,14 +191,6 @@ lazy val ui = crossProject.in(file("ui"))
 lazy val uiJS = ui.js.dependsOn(dom)
 lazy val uiJVM = ui.jvm
 
-lazy val hypertext = project.in(file("hypertext"))
-  .enablePlugins(ScalaJSPlugin)
-  .settings(
-    name := "youi-hypertext",
-    jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv
-  )
-  .dependsOn(uiJS)
-
 lazy val optimizer = project.in(file("optimizer"))
   .settings(
     name := "youi-optimizer",
@@ -223,7 +215,7 @@ lazy val app = crossProject.in(file("app"))
   )
   .dependsOn(core, communication, ui)
 
-lazy val appJS = app.js.dependsOn(hypertext)
+lazy val appJS = app.js
 lazy val appJVM = app.jvm
 
 lazy val example = crossProject.in(file("example"))

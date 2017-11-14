@@ -35,6 +35,9 @@ case class URL(protocol: Protocol = Protocol.Http,
     copy(path = updated)
   }
 
+  def withFragment(fragment: String): URL = copy(fragment = Option(fragment))
+  def withoutFragment(): URL = copy(fragment = None)
+
   def withParam(key: String, value: String, append: Boolean = true): URL = {
     copy(parameters = parameters.withParam(key, value, append))
   }
@@ -97,6 +100,10 @@ case class URL(protocol: Protocol = Protocol.Http,
       val b = new StringBuilder
       b.append(path)
       b.append(if (encoded) parameters.encoded else parameters.decoded)
+      fragment.foreach { f =>
+        b.append('#')
+        b.append(f)
+      }
       b.toString()
     }
     lazy val asString: String = s"$base$pathAndArgs"

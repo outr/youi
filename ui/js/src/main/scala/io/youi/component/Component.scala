@@ -1,5 +1,6 @@
 package io.youi.component
 
+import io.youi.component.extras.{ComponentPosition, ComponentSize}
 import io.youi.{Unique, Updatable}
 import io.youi.task.TaskSupport
 import io.youi.theme.ComponentTheme
@@ -91,33 +92,3 @@ object Component extends ComponentTheme {
   def childrenFor(component: Component): Vector[Component] = component.childComponents
 }
 
-class ComponentPosition(component: Component) {
-  lazy val x: Var[Double] = component.prop(0.0, updatesTransform = true)
-  lazy val y: Var[Double] = component.prop(0.0, updatesTransform = true)
-
-  lazy val left: Var[Double] = x
-  lazy val center: Dep[Double, Double] = Dep(left, component.size.width / 2.0)
-  lazy val right: Dep[Double, Double] = Dep(left, component.size.width)
-
-  lazy val top: Var[Double] = y
-  lazy val middle: Dep[Double, Double] = Dep(top, component.size.height / 2.0)
-  lazy val bottom: Dep[Double, Double] = Dep(top, component.size.height)
-}
-
-class ComponentSize(component: Component) {
-  object measured {
-    val width: Var[Double] = component.prop(0.0, updatesRendering = true)
-    val height: Var[Double] = component.prop(0.0, updatesRendering = true)
-  }
-
-  def reset(width: Boolean = true, height: Boolean = true): Unit = {
-    if (width) this.width.set(measured.width())
-    if (height) this.height.set(measured.height())
-  }
-
-  lazy val width: Var[Double] = component.prop(measured.width, updatesRendering = true)
-  lazy val height: Var[Double] = component.prop(measured.height, updatesRendering = true)
-
-  lazy val center: Val[Double] = Val(width / 2.0)
-  lazy val middle: Val[Double] = Val(height / 2.0)
-}

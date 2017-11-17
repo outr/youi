@@ -1,10 +1,12 @@
 package io.youi.component
 
+import io.youi.dom
 import io.youi.layout.Layout
 import io.youi.theme.ContainerTheme
+import org.scalajs.dom.html
 import reactify.Var
 
-class Container extends AbstractContainer[Component] {
+class Container(override val element: html.Element = dom.create[html.Div]("div")) extends AbstractContainer[Component] with HTMLComponent {
   override lazy val theme: Var[_ <: ContainerTheme] = Var(Container)
   override def `type`: String = "Container"
 

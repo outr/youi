@@ -81,22 +81,22 @@ package object youi {
     /**
       * 1/100th of the width of the viewport.
       */
-    def vw: Val[Double] = Val((d / 100.0) * ui.width)
+    def vw: Val[Double] = Val((d / 100.0) * ui.size.width)
 
     /**
       * 1/100th of the height of the viewport.
       */
-    def vh: Val[Double] = Val((d / 100.0) * ui.height)
+    def vh: Val[Double] = Val((d / 100.0) * ui.size.height)
 
     /**
       * 1/100th of the minimum value between the height and the width of the viewport.
       */
-    def vmin: Val[Double] = Val(math.min((d / 100.0) * ui.width, (d / 100.0) * ui.height))
+    def vmin: Val[Double] = Val(math.min((d / 100.0) * ui.size.width, (d / 100.0) * ui.size.height))
 
     /**
       * 1/100th of the maximum value between the height and the width of the viewport.
       */
-    def vmax: Val[Double] = Val[Double](math.max((d / 100.0) * ui.width, (d / 100.0) * ui.height))
+    def vmax: Val[Double] = Val[Double](math.max((d / 100.0) * ui.size.width, (d / 100.0) * ui.size.height))
 
     /**
       * Returns percentage value `of`.

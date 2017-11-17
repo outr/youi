@@ -1,6 +1,7 @@
 package io.youi.component
 
 import io.youi.component.extras.{ComponentPosition, ComponentSize}
+import io.youi.event.Events
 import io.youi.{Unique, Updatable}
 import io.youi.task.TaskSupport
 import io.youi.theme.ComponentTheme
@@ -38,6 +39,11 @@ trait Component extends TaskSupport with ComponentTheme {
     * Size information for determining the dimensions of this component.
     */
   lazy val size: ComponentSize = new ComponentSize(this)
+
+  /**
+    * Events functionality for monitoring and even firing events on this component.
+    */
+  lazy val event: Events = new Events(this)
 
   /**
     * Theme associated with this Component.

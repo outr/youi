@@ -13,18 +13,10 @@ object Mouse {
   val wheel: Channel[WheelDelta] = Channel[WheelDelta]
 
   ui.event.pointer.move.attach { evt =>
-    _x := evt.pageX
-    _y := evt.pageY
+    _x := evt.globalX
+    _y := evt.globalY
   }
-  ui.event.pointer.wheel.attach { evt =>
-    val mode: DeltaMode = evt.deltaMode match {
-      case 0x00 => DeltaMode.Pixel
-      case 0x01 => DeltaMode.Line
-      case 0x02 => DeltaMode.Page
-    }
-    val d = WheelDelta(evt.deltaX, evt.deltaY, evt.deltaZ, mode, evt)
-    wheel := d
-  }
+  ui.event.pointer.wheel.attach(wheel := _.delta)
 }
 
 case class WheelDelta(x: Double, y: Double, z: Double, mode: DeltaMode, htmlEvent: raw.WheelEvent) {

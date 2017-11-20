@@ -14,7 +14,16 @@ trait AbstractContainer[Child <: Component] extends Component { self =>
       childrenChanged(Vector.empty, children)
     }
     children.changes(new ChangeObserver[Vector[Child]] {
-      override def change(oldValue: Vector[Child], newValue: Vector[Child]): Unit = childrenChanged(oldValue, newValue)
+      override def change(oldValue: Vector[Child], newValue: Vector[Child]): Unit = {
+        val removed = oldValue.collect {
+          case c if !newValue.contains(c) => c
+        }
+        val added = newValue.collect {
+          case c if !oldValue.contains(c) => c
+        }
+
+        childrenChanged(removed, added)
+      }
     })
 
     layout.changes(new ChangeObserver[Layout] {
@@ -29,16 +38,9 @@ trait AbstractContainer[Child <: Component] extends Component { self =>
     }
   }
 
-  protected def childrenChanged(oldValue: Vector[Child], newValue: Vector[Child]): Unit = {
-    val removed = oldValue.collect {
-      case c if !newValue.contains(c) => c
-    }
-    val added = newValue.collect {
-      case c if !oldValue.contains(c) => c
-    }
-
-    removed.foreach(_.parent.asInstanceOf[Var[Option[Component]]] := None)
-    added.foreach(_.parent.asInstanceOf[Var[Option[Component]]] := Some(self))
+  protected def childrenChanged(removed: Vector[Child], added: Vector[Child]): Unit = {
+    removed.foreach(_.parent := None)
+    added.foreach(_.parent := Some(self))
 
     layout.childrenChanged(self, removed, added)
   }

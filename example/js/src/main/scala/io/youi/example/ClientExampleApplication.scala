@@ -4,6 +4,7 @@ import io.youi.app.screen.LoadingTransitionSupport
 import io.youi.app.{ClientApplication, ClientConnectivity}
 import io.youi.dom._
 import io.youi.example.screen.{CommunicationScreen, LoginScreen}
+import io.youi.example.ui.HelloWorld
 //import io.youi.example.ui._
 //import io.youi.example.ui.drawable._
 //import io.youi.example.ui.hypertext.DataTransferExample
@@ -29,7 +30,7 @@ object ClientExampleApplication extends ExampleApplication with ClientApplicatio
 //  val animatedImage = AnimatedImageExample
 //  val heavyText = HeavyTextExample
 
-//  val hello = HelloWorld
+  val hello = HelloWorld
 //  val imageChange = ImageChangeExample
 //  val hitTest = HitTestExample
 //  val images = ImageExample

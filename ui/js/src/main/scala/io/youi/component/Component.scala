@@ -91,10 +91,31 @@ trait Component extends TaskSupport with ComponentTheme {
 
   protected def childComponents: Vector[Component] = Vector.empty
 
+  object sibling {
+    def previous(): Option[Component] = parent().flatMap { p =>
+      val children = p.childComponents
+      val index = children.indexOf(Component.this)
+      if (index > 0) {
+        Some(children(index - 1))
+      } else {
+        None
+      }
+    }
+
+    def next(): Option[Component] = parent().flatMap { p =>
+      val children = p.childComponents
+      val index = children.indexOf(Component.this)
+      if (index < children.size - 1) {
+        Some(children(index + 1))
+      } else {
+        None
+      }
+    }
+  }
+
   override def toString: String = id()
 }
 
 object Component extends ComponentTheme {
   def childrenFor(component: Component): Vector[Component] = component.childComponents
 }
-

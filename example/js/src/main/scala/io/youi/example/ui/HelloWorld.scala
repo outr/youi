@@ -18,15 +18,16 @@ object HelloWorld extends Screen with PathActivation {
 
   override protected def init(): Future[Unit] = super.init().flatMap { _ =>
     OpenTypeFont.fromURL(fontURL).map { fnt =>
-      ui.children += new TextView {
+      val textView = new TextView {
         //      cache := true
         //      font.file := fnt
         //      font.size := 48.0
-        //      value := "Hello, World!"
+        value := "Hello, World!"
         //      fill := Color.DarkBlue
         position.center := ui.position.center
         position.middle := ui.position.middle
       }
+      ui.children += textView
     }
   }
 }

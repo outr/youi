@@ -8,7 +8,9 @@ import reactify._
 import scala.concurrent.duration._
 import scala.scalajs.js
 
-object ui extends Container {
+object ui extends Container(document.body) {
+  id := "ui"
+
   def devicePixelRatio: Double = window.devicePixelRatio
   def backingStoreRatio: Double = CanvasPool.withCanvas(1.0, 1.0) { canvas =>
     def opt(d: js.Dynamic): Option[Double] = d.asInstanceOf[js.UndefOr[Double]].toOption
@@ -36,5 +38,9 @@ object ui extends Container {
     if (r != displayRatio()) {
       displayRatio.asInstanceOf[Var[Double]] := r
     }
+  }
+
+  AnimationFrame.delta.attach { d =>
+    update(d)
   }
 }

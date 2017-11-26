@@ -1,7 +1,7 @@
 package io.youi.component.extras
 
 import io.youi.component.Component
-import io.youi.dom
+import io.youi.{dom, ui}
 import io.youi.dom._
 import org.scalajs.dom.{Element, _}
 
@@ -9,12 +9,30 @@ trait HTMLComponent[E <: html.Element] extends Component {
   protected def element: E
   protected val e: HTMLExtras[E] = new HTMLExtras[E](element)
 
-  parent.attachAndFire {
-    case Some(p) => sibling.previous() match {
-      case Some(previous) => element.insertAfter(HTMLComponent.element(previous))
-      case None => element.insertFirst(HTMLComponent.element(p))
+  override protected def init(): Unit = {
+    super.init()
+
+    element.setAttribute("data-youi-id", id())
+
+    if (this != ui) {
+      parent.attachAndFire {
+        case Some(p) => {
+          sibling.previous() match {
+            case Some(previous) => {
+              val previousElement = HTMLComponent.element(previous)
+              element.insertAfter(previousElement)
+            }
+            case None => {
+              val parent = HTMLComponent.element(p)
+              element.insertFirst(parent)
+            }
+          }
+        }
+        case None => {
+          element.remove()
+        }
+      }
     }
-    case None => element.remove()
   }
 }
 

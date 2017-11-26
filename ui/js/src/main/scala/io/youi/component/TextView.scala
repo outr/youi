@@ -9,6 +9,16 @@ import reactify.Var
 class TextView(protected val element: html.Element = dom.create[html.Span]("span")) extends HTMLComponent[html.Element] {
   override lazy val theme: Var[TextViewTheme] = Var(TextView)
   override def `type`: String = "TextView"
+
+  lazy val value: Var[String] = Var(element.textContent)
+
+  override protected def init(): Unit = {
+    super.init()
+
+    value.attachAndFire { v =>
+      element.textContent = v
+    }
+  }
 }
 
 object TextView extends TextViewTheme

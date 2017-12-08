@@ -4,7 +4,7 @@ import java.io.File
 
 import io.circe.parser._
 import io.circe.syntax._
-import io.circe.{Decoder, Encoder, Printer}
+import io.circe.{Decoder, Encoder, Json, Printer}
 import io.youi.Priority
 import io.youi.http._
 import io.youi.net.{ContentType, URL, URLMatcher}
@@ -109,24 +109,41 @@ case class HttpHandlerBuilder(server: Server,
                                 (implicit decoder: Decoder[Request], encoder: Encoder[Response]): HttpHandler = {
     val printer = Printer.spaces2.copy(dropNullKeys = false)
     handle { connection =>
-      connection.request.content match {
-        case Some(content) => content match {
-          case StringContent(jsonString, _, _) => {
-            decode[Request](jsonString) match {
-              case Left(error) => scribe.error(new RuntimeException(s"Error parsing $jsonString", error))
-              case Right(request) => {
-                val response = handler(request)
-                val responseJson = response.asJson
-                val responseJsonString = printer.pretty(responseJson)
-                connection.update { httpResponse =>
-                  httpResponse.withContent(Content.string(responseJsonString, ContentType.`application/json`))
-                }
+      val jsonOption: Option[Json] = connection.request.method match {
+        case Method.Get => {
+          Some(Json.obj(connection.request.url.parameters.entries.map {
+            case (key, param) => key -> Json.fromString(param.value)
+          }: _*))
+        }
+        case _ => connection.request.content match {
+          case Some(content) => content match {
+            case StringContent(jsonString, _, _) => parse(jsonString) match {
+              case Left(failure) => {
+                scribe.warn(failure)
+                None
               }
+              case Right(json) => Some(json)
+            }
+            case _ => {
+              scribe.error(s"Unsupported content for restful end-point: $content.")
+              None
             }
           }
-          case _ => scribe.error(s"Unsupported content for restulf end-point: $content.")
+          case None => None     // Ignore calls to this end-point that have no content
         }
-        case None => // Ignore calls to this end-point that have no content
+      }
+      jsonOption.foreach { json =>
+        json.as[Request] match {
+          case Left(error) => scribe.error(new RuntimeException(s"Error parsing $json", error))
+          case Right(request) => {
+            val response = handler(request)
+            val responseJson = response.asJson
+            val responseJsonString = printer.pretty(responseJson)
+            connection.update { httpResponse =>
+              httpResponse.withContent(Content.string(responseJsonString, ContentType.`application/json`))
+            }
+          }
+        }
       }
     }
   }

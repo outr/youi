@@ -20,7 +20,7 @@ object WebSocketUtil {
     ws.onopen = (evt: Event) => {
       listener._connected := true
     }
-    ws.onerror = (evt: ErrorEvent) => {
+    ws.onerror = (evt: Event) => {
       listener.error := new RuntimeException("WebSocket error!")
       listener.close()
     }

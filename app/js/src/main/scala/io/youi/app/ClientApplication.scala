@@ -8,9 +8,7 @@ import org.scalajs.dom._
 import io.youi.dom._
 import io.youi.net.URL
 import profig.JsonUtil
-import scribe.formatter.Formatter
 import scribe.writer.Writer
-import scribe.LogRecord
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -33,7 +31,7 @@ trait ClientApplication extends YouIApplication with ScreenManager {
 
   if (logJavaScriptErrors) {
     js.Dynamic.global.window.onerror = errorFunction
-    scribe.Logger.root.addHandler(ErrorTrace)
+    scribe.Logger.update(scribe.Logger.rootName)(_.withHandler(ErrorTrace))
   }
 
   connectivityEntries.attachAndFire { entries =>
@@ -51,10 +49,8 @@ trait ClientApplication extends YouIApplication with ScreenManager {
 
 object ClientApplication {
   lazy val logWriter: Writer = new Writer {
-    override def write(record: LogRecord, formatter: Formatter): Unit = {
-      val message = formatter.format(record)
-      sendLog(JavaScriptLog(message, record.level.name))
-    }
+
+    override def write(output: String): Unit = sendLog(JavaScriptLog(output))
   }
 
   private var instance: ClientApplication = _

@@ -107,7 +107,7 @@ case class HttpHandlerBuilder(server: Server,
 
   def restful[Request, Response](handler: Request => Response)
                                 (implicit decoder: Decoder[Request], encoder: Encoder[Response]): HttpHandler = {
-    val printer = Printer.spaces2.copy(dropNullKeys = false)
+    val printer = Printer.spaces2.copy(dropNullValues = false)
     handle { connection =>
       val jsonOption: Option[Json] = connection.request.method match {
         case Method.Get => {

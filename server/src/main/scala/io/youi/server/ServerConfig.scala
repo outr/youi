@@ -2,12 +2,12 @@ package io.youi.server
 
 import java.io.File
 
-import profig.Config
+import profig.Profig
 import reactify._
 
 class ServerConfig(server: Server) {
   object session {
-    private val config = Config("session").as[SessionConfig]
+    private val config = Profig("session").as[SessionConfig]
 
     val name: Var[String] = Var(config.name)
     val maxAge: Var[Option[Long]] = Var(config.maxAge)
@@ -21,7 +21,7 @@ class ServerConfig(server: Server) {
     *
     * Default is true.
     */
-  lazy val autoRestart: Var[Boolean] = Var(if (Config("autoRestart").exists()) Config("autoRestart").as[Boolean] else true)
+  lazy val autoRestart: Var[Boolean] = Var(if (Profig("autoRestart").exists()) Profig("autoRestart").as[Boolean] else true)
 
   /**
     * Listeners for the server. Support HTTP and HTTPS listeners. Use addHttpListener and addHttpsListener for easier
@@ -34,8 +34,8 @@ class ServerConfig(server: Server) {
     * To easily enable HTTPS just pass "-listeners.https.enabled=true".
     */
   lazy val listeners: Var[List[ServerSocketListener]] = prop(List(
-    Config("listeners.http").as[HttpServerListener],
-    Config("listeners.https").as[HttpsServerListener]
+    Profig("listeners.http").as[HttpServerListener],
+    Profig("listeners.https").as[HttpsServerListener]
   ))
 
   def enabledListeners: List[ServerSocketListener] = listeners().filter(_.enabled)

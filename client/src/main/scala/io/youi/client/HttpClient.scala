@@ -27,8 +27,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
   *
   * @param saveDirectory the directory to save response content of a non-textual type
   */
-class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpdir")), dropNullKeys: Boolean = false) {
-  private lazy val printer = Printer.spaces2.copy(dropNullKeys = dropNullKeys)
+class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpdir")), dropNullValues: Boolean = false) {
+  private lazy val printer = Printer.spaces2.copy(dropNullValues = dropNullValues)
   private val asyncClient: CloseableHttpAsyncClient = {
     val client = HttpAsyncClients.createDefault()
     client.start()

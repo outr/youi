@@ -12,9 +12,7 @@ object ServerExampleApplication extends ExampleApplication with ServerApplicatio
   override protected def applicationBasePath = s"app/youi-example"
   override protected def applicationJSBasePath = s"/app/example"
 
-  override def main(args: Array[String]): Unit = start(args)
-
-  override protected def run(): Unit = {
+  override def start(): Unit = {
     handler.matcher(path.exact("/hello.txt")).caching(CachingManager.MaxAge(120L)).resource {
       Content.string("Hello World!", ContentType.`text/plain`)
     }
@@ -27,6 +25,6 @@ object ServerExampleApplication extends ExampleApplication with ServerApplicatio
     handler.caching(CachingManager.LastModified()).classLoader("", (path: String) => s"content$path")
     handler.caching(CachingManager.LastModified()).matcher(path.startsWith("/app")).classLoader()
 
-    super.run()
+    super.start()
   }
 }

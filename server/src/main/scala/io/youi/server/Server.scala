@@ -5,7 +5,7 @@ import io.youi.{ErrorSupport, ItemContainer}
 import io.youi.http.{HttpConnection, ProxyHandler, Status}
 import io.youi.server.handler.{HttpHandler, HttpHandlerBuilder}
 import io.youi.server.session.SessionStore
-import profig.{Config, ConfigPath}
+import profig.{Profig, ProfigPath}
 
 import scala.annotation.tailrec
 
@@ -111,5 +111,5 @@ trait Server extends HttpHandler with ErrorSupport {
 }
 
 object Server {
-  def config: ConfigPath = Config("youi.server")
+  def config: ProfigPath = Profig("youi.server")
 }

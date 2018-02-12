@@ -10,7 +10,6 @@ import io.youi.example.ui.HelloWorld
 //import io.youi.example.ui.hypertext.DataTransferExample
 //import io.youi.util.DebugSupport
 import org.scalajs.dom._
-import scribe.LogHandler
 
 import scala.scalajs.js.annotation.JSExportTopLevel
 
@@ -69,7 +68,7 @@ object ClientExampleApplication extends ExampleApplication with ClientApplicatio
   @JSExportTopLevel("application")
   def main(): Unit = {
     // Write the JavaScript logging messages to the server console
-    scribe.Logger.root.addHandler(LogHandler(writer = ClientApplication.logWriter))
+    scribe.Logger.update(scribe.Logger.rootName)(_.withHandler(writer = ClientApplication.logWriter))
 
     scribe.info("Initialized!")
   }

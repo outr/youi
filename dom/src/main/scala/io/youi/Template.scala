@@ -4,7 +4,7 @@ import java.io.File
 
 import io.youi.stream.{ByClass, ById, HTMLParser}
 import org.scalajs.dom.Element
-import profig.Config
+import profig.Profig
 
 import scala.annotation.compileTimeOnly
 import scala.language.experimental.macros
@@ -23,7 +23,7 @@ object TemplateMacros {
     import context.universe._
 
     // Initialize Profig
-    context.eval(reify(profig.Config.initMacro(Nil)))
+    context.eval(reify(Profig.initMacro(Nil)))
 
     val pathValue = path match {
       case Expr(Literal(Constant(value: String))) => value
@@ -34,7 +34,7 @@ object TemplateMacros {
     val pathKey = appName match {
       case Expr(Literal(Constant(value: String))) => s"$value.template.path"
     }
-    val templatePath = Config(pathKey).as[Option[String]]
+    val templatePath = Profig(pathKey).as[Option[String]]
     val file = templatePath match {
       case Some(basePath) => new File(basePath, pathValue)
       case None => {
@@ -67,7 +67,7 @@ object TemplateMacros {
     import context.universe._
 
     // Initialize Profig
-    context.eval(reify(profig.Config.initMacro(Nil)))
+    context.eval(reify(Profig.initMacro(Nil)))
 
     val pathValue = path match {
       case Expr(Literal(Constant(value: String))) => value
@@ -78,7 +78,7 @@ object TemplateMacros {
     val pathKey = appName match {
       case Expr(Literal(Constant(value: String))) => s"$value.template.path"
     }
-    val templatePath = Config(pathKey).as[Option[String]]
+    val templatePath = Profig(pathKey).as[Option[String]]
     val file = templatePath match {
       case Some(basePath) => new File(basePath, pathValue)
       case None => {

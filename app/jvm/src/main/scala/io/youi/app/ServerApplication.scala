@@ -12,13 +12,13 @@ import io.youi.{JavaScriptError, JavaScriptLog, Priority, http}
 import net.sf.uadetector.UserAgentType
 import net.sf.uadetector.service.UADetectorServiceFactory
 import org.powerscala.io._
-import profig.{ConfigApplication, JsonUtil}
+import profig.{JsonUtil, Profig}
 import reactify.{Channel, Var}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 
-trait ServerApplication extends YouIApplication with Server with ConfigApplication {
+trait ServerApplication extends YouIApplication with Server {
   private lazy val system = ActorSystem("ServerApplication")
 
   val connected: Channel[Connection] = Channel[Connection]
@@ -274,7 +274,8 @@ trait ServerApplication extends YouIApplication with Server with ConfigApplicati
     path
   }
 
-  override protected def run(): Unit = {
+  def main(args: Array[String]): Unit = {
+    Profig.merge(args)
     start()
   }
 

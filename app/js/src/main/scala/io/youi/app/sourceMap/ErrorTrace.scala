@@ -5,7 +5,9 @@ import io.youi.{History, _}
 import io.youi.net.URL
 import io.youi.stream.StreamURL
 import org.scalajs.dom.{ErrorEvent, Event}
-import scribe.{Level, LogHandler, LogRecord}
+import scribe.handler.LogHandler
+import scribe.modify.LogModifier
+import scribe.{Level, LogRecord}
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -38,12 +40,16 @@ object ErrorTrace extends LogHandler {
     toError(message, source, line, column, Some(throwable))
   }
 
-  override def level: Level = Level.Error
+  override def modifiers: List[LogModifier] = Nil
 
-  override protected def publish(record: LogRecord): Unit = record.messageObject match {
-    case evt: Event if evt.`type` == "error" => ClientApplication.sendError(evt.asInstanceOf[ErrorEvent])
-    case t: Throwable => ClientApplication.sendError(t)
-    case _ => // Ignore others
+  override def setModifiers(modifiers: List[LogModifier]): LogHandler = this
+
+  override def log(record: LogRecord): Unit = if (record.level.value >= Level.Error.value) {
+    record.messageFunction() match {
+      case evt: Event if evt.`type` == "error" => ClientApplication.sendError(evt.asInstanceOf[ErrorEvent])
+      case t: Throwable => ClientApplication.sendError(t)
+      case _ => // Ignore others
+    }
   }
 
   /**

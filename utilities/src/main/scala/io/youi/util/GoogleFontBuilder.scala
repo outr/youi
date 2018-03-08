@@ -5,17 +5,18 @@ import java.net
 
 import io.youi.net.URL
 import org.powerscala.io._
-import profig.{Config, ConfigApplication, JsonUtil}
+import profig.{Profig, JsonUtil}
 
-object GoogleFontBuilder extends ConfigApplication {
-  private lazy val apiKey: String = Config("googleApiKey").as[Option[String]].getOrElse(throw new RuntimeException("No configuration setting present for googleApiKey."))
+object GoogleFontBuilder {
+  private lazy val apiKey: String = Profig("googleApiKey").as[Option[String]].getOrElse(throw new RuntimeException("No configuration setting present for googleApiKey."))
   private lazy val url = URL(s"https://www.googleapis.com/webfonts/v1/webfonts?key=$apiKey")
 
   private val base = "http://fonts.gstatic.com/s"
 
-  override def main(args: Array[String]): Unit = start(args)
+  def main(args: Array[String]): Unit = {
+    Profig.merge(args)
+    Profig.loadDefaults()
 
-  override protected def run(): Unit = {
     val jsonString = IO.stream(new net.URL(url.toString), new StringBuilder).toString
     val list = JsonUtil.fromJsonString[WebFontList](jsonString)
 

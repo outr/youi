@@ -2,8 +2,9 @@ package io.youi.example
 
 import io.youi.app.screen.LoadingTransitionSupport
 import io.youi.app.{ClientApplication, ClientConnectivity}
+import io.youi.dom
 import io.youi.dom._
-import io.youi.example.screen.{CommunicationScreen, LoginScreen}
+import io.youi.example.screen.{CommunicationScreen, ExampleBootstrapScreen, LoginScreen}
 import io.youi.example.ui.HelloWorld
 //import io.youi.example.ui._
 //import io.youi.example.ui.drawable._
@@ -20,6 +21,7 @@ object ClientExampleApplication extends ExampleApplication with ClientApplicatio
 
   val communicationScreen = CommunicationScreen
   val login = LoginScreen
+  val bootstrap = ExampleBootstrapScreen
 
 //  val uiExamples = UIExamples
 
@@ -63,7 +65,7 @@ object ClientExampleApplication extends ExampleApplication with ClientApplicatio
 
   def cc: ClientConnectivity = clientConnectivity(ClientExampleApplication.connectivity)
 
-  override protected val loadingElement: html.Element = byId[html.Div]("loading")
+  override protected val loadingElement: html.Element = getById[html.Div]("loading").getOrElse(dom.create[html.Div]("div"))
 
   @JSExportTopLevel("application")
   def main(): Unit = {

@@ -16,6 +16,7 @@ object ServerExampleApplication extends ExampleApplication with ServerApplicatio
     handler.matcher(path.exact("/hello.txt")).caching(CachingManager.MaxAge(120L)).resource {
       Content.string("Hello World!", ContentType.`text/plain`)
     }
+    handler.matcher(path.exact("/bootstrap.html")).bootstrap()
     handler.matcher(path.exact("/cookies.html")).wrap(CookiesExample)
     handler.matcher(path.exact("/web-socket-example")).wrap(WebSocketExample)
     proxies += ProxyHandler(path.exact("/proxy.html")) { url =>

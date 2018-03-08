@@ -4,7 +4,7 @@ import java.io.File
 
 import io.youi.stream.{ByClass, ById, HTMLParser}
 import org.scalajs.dom.Element
-import profig.Profig
+import profig.{ConfigurationPath, JsonParser, Profig}
 
 import scala.annotation.compileTimeOnly
 import scala.language.experimental.macros
@@ -22,8 +22,8 @@ object TemplateMacros {
                                                             appName: context.Expr[String])(implicit e: context.WeakTypeTag[E]): context.Expr[E] = {
     import context.universe._
 
-    // Initialize Profig
-    context.eval(reify(Profig.initMacro(Nil)))
+    JsonParser.compileTime()
+    Profig.loadDefaults()
 
     val pathValue = path match {
       case Expr(Literal(Constant(value: String))) => value
@@ -66,8 +66,8 @@ object TemplateMacros {
                                                                appName: context.Expr[String])(implicit e: context.WeakTypeTag[E]): context.Expr[List[E]] = {
     import context.universe._
 
-    // Initialize Profig
-    context.eval(reify(Profig.initMacro(Nil)))
+    JsonParser.compileTime()
+    Profig.loadDefaults()
 
     val pathValue = path match {
       case Expr(Literal(Constant(value: String))) => value

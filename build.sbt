@@ -7,7 +7,7 @@ resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
 resolvers in ThisBuild += Resolver.sonatypeRepo("snapshots")
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 
-val profigVersion = "2.0.1"
+val profigVersion = "2.1.0-SNAPSHOT"
 val scribeVersion = "2.2.0"
 val powerScalaVersion = "2.0.5"
 val reactifyVersion = "2.3.0"
@@ -120,7 +120,11 @@ lazy val dom = project.in(file("dom"))
   .enablePlugins(ScalaJSPlugin)
   .settings(
     name := "youi-dom",
-    libraryDependencies += "com.outr" %% "profig" % profigVersion,
+    libraryDependencies ++= Seq(
+      "com.outr" %% "profig" % profigVersion,
+      "org.scalactic" %%% "scalactic" % scalacticVersion,
+      "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
+    ),
     jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv
   )
   .dependsOn(coreJS)

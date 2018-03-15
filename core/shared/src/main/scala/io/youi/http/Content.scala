@@ -6,6 +6,8 @@ import java.net.{HttpURLConnection, JarURLConnection, URL}
 import io.youi.net.ContentType
 import sun.net.www.protocol.file.FileURLConnection
 
+import scala.xml.{Elem, PrettyPrinter}
+
 trait Content extends RequestContent {
   def length: Long
   def lastModified: Long
@@ -95,9 +97,12 @@ case class StringEntry(value: String, headers: Headers) extends FormDataEntry
 case class FileEntry(fileName: String, file: File, headers: Headers) extends FormDataEntry
 
 object Content {
+  private lazy val xmlPrinter = new PrettyPrinter(80, 4)
+
   val empty: Content = string("", ContentType.`text/plain`)
   lazy val form: FormDataContent = FormDataContent(Nil)
   def string(value: String, contentType: ContentType): Content = StringContent(value, contentType)
+  def xml(value: Elem, contentType: ContentType): Content = StringContent(xmlPrinter.format(value), contentType)
   def file(file: File): Content = FileContent(file, ContentType.byFileName(file.getName))
   def file(file: File, contentType: ContentType): Content = FileContent(file, contentType)
   def url(url: URL): Content = URLContent(url, ContentType.byFileName(url.toString))

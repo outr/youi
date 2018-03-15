@@ -45,6 +45,10 @@ trait Server extends HttpHandler with ErrorSupport {
     }
   }
 
+  implicit class ServerHttpHandler(handler: HttpHandler) {
+    def add(): Unit = handlers += handler
+  }
+
   def isInitialized: Boolean = initialized
   def isRunning: Boolean = isInitialized && implementation.isRunning
 

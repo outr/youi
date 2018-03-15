@@ -22,7 +22,6 @@ object TemplateMacros {
                                                             appName: context.Expr[String])(implicit e: context.WeakTypeTag[E]): context.Expr[E] = {
     import context.universe._
 
-    JsonParser.compileTime()
     Profig.loadDefaults()
 
     val pathValue = path match {
@@ -66,7 +65,6 @@ object TemplateMacros {
                                                                appName: context.Expr[String])(implicit e: context.WeakTypeTag[E]): context.Expr[List[E]] = {
     import context.universe._
 
-    JsonParser.compileTime()
     Profig.loadDefaults()
 
     val pathValue = path match {

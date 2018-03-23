@@ -279,6 +279,7 @@ trait ServerApplication extends YouIApplication with Server {
   }
 
   def main(args: Array[String]): Unit = {
+    Profig.loadDefaults()
     Profig.merge(args)
     start()
   }

@@ -11,6 +11,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Future, Promise}
 import scala.scalajs.js
 import scala.scalajs.js.|
+import scribe.LogRecord.Stringify._
 
 object ImageUtility {
   def drawToCanvas(source: html.Image | html.Canvas,

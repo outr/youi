@@ -12,6 +12,8 @@ import io.youi.server.Server
 import io.youi.server.validation.{ValidationResult, Validator}
 import io.youi.stream.{Delta, HTMLParser, Selector}
 
+import scribe.LogRecord.Stringify._
+
 case class HttpHandlerBuilder(server: Server,
                               urlMatcher: Option[URLMatcher] = None,
                               requestMatchers: Set[HttpRequest => Boolean] = Set.empty,

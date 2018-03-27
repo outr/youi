@@ -1,14 +1,14 @@
 name := "youi"
 organization in ThisBuild := "io.youi"
-version in ThisBuild := "0.9.0-M6"
-scalaVersion in ThisBuild := "2.12.4"
-crossScalaVersions in ThisBuild := List("2.12.4", "2.11.12")
+version in ThisBuild := "0.9.0-M7"
+scalaVersion in ThisBuild := "2.12.5"
+crossScalaVersions in ThisBuild := List("2.12.5", "2.11.12")
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
 resolvers in ThisBuild += Resolver.sonatypeRepo("snapshots")
-scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
+scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation", "-feature")
 
 val profigVersion = "2.2.1"
-val scribeVersion = "2.2.1"
+val scribeVersion = "2.3.1"
 val powerScalaVersion = "2.0.5"
 val reactifyVersion = "2.3.0"
 val hasherVersion = "1.2.1"
@@ -17,12 +17,12 @@ val openTypeVersion = "0.7.3"
 val picaVersion = "3.0.5"
 
 val akkaVersion = "2.5.11"
-val scalaJSDOM = "0.9.4"
+val scalaJSDOM = "0.9.5"
 val httpAsyncClientVersion = "4.1.3"
 val httpMimeVersion = "4.5.5"
-val circeVersion = "0.9.1"
+val circeVersion = "0.9.2"
 val uaDetectorVersion = "2014.10"
-val undertowVersion = "2.0.1.Final"
+val undertowVersion = "2.0.3.Final"
 val closureCompilerVersion = "v20180204"
 val jSoupVersion = "1.11.2"
 val scalaXMLVersion = "1.1.0"

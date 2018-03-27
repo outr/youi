@@ -8,6 +8,7 @@ import reactify.Var
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 import scala.concurrent.{Future, Promise}
+import scribe.LogRecord.Stringify._
 
 class LazyFuture[T](f: () => Future[T], maxFrequency: FiniteDuration, automatic: Boolean = true) {
   private val lastUpdate = Var(0L)

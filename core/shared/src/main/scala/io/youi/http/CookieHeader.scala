@@ -1,6 +1,7 @@
 package io.youi.http
 
 import io.youi.http.cookie.RequestCookie
+import scribe.LogRecord.Stringify._
 
 object CookieHeader extends ListTypedHeaderKey[RequestCookie] {
   override def key: String = "Cookie"

@@ -6,6 +6,7 @@ import org.scalajs.dom.{Event, document, html}
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.language.implicitConversions
 
 object ExampleBootstrapScreen extends PathActivation {
   override def path: String = "/bootstrap.html"

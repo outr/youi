@@ -13,6 +13,7 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.scalajs._
 import scala.scalajs.runtime.StackTrace.Implicits._
+import scribe.LogRecord.Stringify._
 
 object ErrorTrace extends LogHandler {
   private var sourceMaps = Map.empty[String, SourceMapConsumer]
@@ -44,8 +45,8 @@ object ErrorTrace extends LogHandler {
 
   override def setModifiers(modifiers: List[LogModifier]): LogHandler = this
 
-  override def log(record: LogRecord): Unit = if (record.level.value >= Level.Error.value) {
-    record.messageFunction() match {
+  override def log[M](record: LogRecord[M]): Unit = if (record.level.value >= Level.Error.value) {
+    record.messageValue match {
       case evt: Event if evt.`type` == "error" => ClientApplication.sendError(evt.asInstanceOf[ErrorEvent])
       case t: Throwable => ClientApplication.sendError(t)
       case _ => // Ignore others

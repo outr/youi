@@ -15,6 +15,7 @@ import org.scalajs.dom.raw._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Future, Promise}
 import scala.scalajs._
+import scribe.LogRecord.Stringify._
 
 class SVGImage private(private val svg: SVGSVGElement, override protected val canvas: html.Canvas, measured: Size) extends CanvasImage {
   private val reDrawer = LazyFuture {

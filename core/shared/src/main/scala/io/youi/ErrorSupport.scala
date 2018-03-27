@@ -3,6 +3,7 @@ package io.youi
 import java.io.IOException
 
 import reactify.{Channel, Observer}
+import scribe.LogRecord.Stringify._
 
 trait ErrorSupport {
   def error(t: Throwable): Unit = ErrorSupport.error := t

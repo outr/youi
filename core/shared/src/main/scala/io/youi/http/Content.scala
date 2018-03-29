@@ -12,26 +12,38 @@ trait Content extends RequestContent {
   def length: Long
   def lastModified: Long
   def contentType: ContentType
+
+  def withContentType(contentType: ContentType): Content
+  def withLastModified(lastModified: Long): Content
 }
 
 case class StringContent(value: String, contentType: ContentType, lastModified: Long = System.currentTimeMillis()) extends Content {
   override def length: Long = value.getBytes("UTF-8").length
 
+  override def withContentType(contentType: ContentType): Content = copy(contentType = contentType)
+  override def withLastModified(lastModified: Long): Content = copy(lastModified = lastModified)
+
   override def toString: String = s"StringContent(${value.take(100)}, contentType: $contentType)"
 }
 
-case class FileContent(file: File, contentType: ContentType) extends Content {
+case class FileContent(file: File, contentType: ContentType, lastModifiedOverride: Option[Long] = None) extends Content {
   assert(file.isFile, s"Cannot send back ${file.getAbsolutePath} as it is a directory or does not exist!")
 
   override def length: Long = file.length()
 
-  override def lastModified: Long = file.lastModified()
+  override def withContentType(contentType: ContentType): Content = copy(contentType = contentType)
+  override def withLastModified(lastModified: Long): Content = copy(lastModifiedOverride = Some(lastModified))
+
+  override def lastModified: Long = lastModifiedOverride.getOrElse(file.lastModified())
 
   override def toString: String = s"FileContent(file: ${file.getAbsolutePath}, contentType: $contentType)"
 }
 
-case class URLContent(url: URL, contentType: ContentType) extends Content {
+case class URLContent(url: URL, contentType: ContentType, lastModifiedOverride: Option[Long] = None) extends Content {
   assert(url != null, "URL must not be null.")
+
+  override def withContentType(contentType: ContentType): Content = copy(contentType = contentType)
+  override def withLastModified(lastModified: Long): Content = copy(lastModifiedOverride = Some(lastModified))
 
   private lazy val (contentLength, contentModified) = {
     val connection = url.openConnection()
@@ -54,7 +66,7 @@ case class URLContent(url: URL, contentType: ContentType) extends Content {
 
   override def length: Long = contentLength
 
-  override def lastModified: Long = contentModified
+  override def lastModified: Long = lastModifiedOverride.getOrElse(contentModified)
 
   override def toString: String = s"URLContent(url: $url, contentType: $contentType)"
 }

@@ -169,4 +169,6 @@ case class HttpHandlerBuilder(server: Server,
     server.handlers += wrapper
     handler
   }
+
+  def apply(handler: HttpHandler): HttpHandler = wrap(handler)
 }

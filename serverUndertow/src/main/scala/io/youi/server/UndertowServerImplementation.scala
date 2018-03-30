@@ -264,7 +264,7 @@ object UndertowServerImplementation extends ServerImplementationCreator {
             })
           }
           case fc: FileContent => ResourceServer.serve(exchange, fc)
-          case URLContent(url, _) => {
+          case URLContent(url, _, _) => {
             val resource = new URLResource(url, "")
             resource.serve(exchange.getResponseSender, exchange, new IoCallback {
               override def onComplete(exchange: HttpServerExchange, sender: Sender): Unit = {

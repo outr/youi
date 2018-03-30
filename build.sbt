@@ -1,11 +1,29 @@
+import sbtcrossproject.{CrossType, crossProject}
+
 name := "youi"
 organization in ThisBuild := "io.youi"
-version in ThisBuild := "0.9.0-M7"
+version in ThisBuild := "0.9.0-M8-SNAPSHOT"
 scalaVersion in ThisBuild := "2.12.5"
 crossScalaVersions in ThisBuild := List("2.12.5", "2.11.12")
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
 resolvers in ThisBuild += Resolver.sonatypeRepo("snapshots")
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation", "-feature")
+
+publishTo in ThisBuild := sonatypePublishTo.value
+sonatypeProfileName in ThisBuild := "io.youi"
+publishMavenStyle in ThisBuild := true
+licenses in ThisBuild := Seq("MIT" -> url("https://github.com/outr/youi/blob/master/LICENSE"))
+sonatypeProjectHosting in ThisBuild := Some(xerial.sbt.Sonatype.GitHubHosting("outr", "youi", "matt@outr.com"))
+homepage in ThisBuild := Some(url("https://github.com/outr/youi"))
+scmInfo in ThisBuild := Some(
+  ScmInfo(
+    url("https://github.com/outr/youi"),
+    "scm:git@github.com:outr/youi.git"
+  )
+)
+developers in ThisBuild := List(
+  Developer(id="darkfrog", name="Matt Hicks", email="matt@matthicks.com", url=url("http://matthicks.com"))
+)
 
 val profigVersion = "2.2.1"
 val scribeVersion = "2.3.1"
@@ -41,7 +59,7 @@ lazy val root = project.in(file("."))
     publishLocal := {}
   )
 
-lazy val macros = crossProject.in(file("macros"))
+lazy val macros = crossProject(JSPlatform, JVMPlatform).in(file("macros"))
   .settings(
     name := "youi-macros",
     description := "Dependency for internal Macro functionality",
@@ -55,7 +73,7 @@ lazy val macros = crossProject.in(file("macros"))
 lazy val macrosJS = macros.js
 lazy val macrosJVM = macros.jvm
 
-lazy val core = crossProject.in(file("core"))
+lazy val core = crossProject(JSPlatform, JVMPlatform).in(file("core"))
   .settings(
     name := "youi-core",
     description := "Core functionality leveraged and shared by most other sub-projects of YouI.",
@@ -90,7 +108,7 @@ lazy val core = crossProject.in(file("core"))
 lazy val coreJS = core.js
 lazy val coreJVM = core.jvm
 
-lazy val spatial = crossProject.in(file("spatial"))
+lazy val spatial = crossProject(JSPlatform, JVMPlatform).in(file("spatial"))
   .settings(
     name := "youi-spatial",
     libraryDependencies ++= Seq(
@@ -165,7 +183,7 @@ lazy val serverUndertow = project.in(file("serverUndertow"))
   )
   .dependsOn(server)
 
-lazy val communication = crossProject.in(file("communication"))
+lazy val communication = crossProject(JSPlatform, JVMPlatform).in(file("communication"))
   .settings(
     name := "youi-communication",
     libraryDependencies ++= Seq(
@@ -178,7 +196,7 @@ lazy val communication = crossProject.in(file("communication"))
 lazy val communicationJS = communication.js
 lazy val communicationJVM = communication.jvm.dependsOn(server)
 
-lazy val ui = crossProject.in(file("ui"))
+lazy val ui = crossProject(JSPlatform, JVMPlatform).in(file("ui"))
   .settings(
     name := "youi-ui"
   )
@@ -209,7 +227,7 @@ lazy val optimizer = project.in(file("optimizer"))
   )
   .dependsOn(stream)
 
-lazy val app = crossProject.in(file("app"))
+lazy val app = crossProject(JSPlatform, JVMPlatform).in(file("app"))
   .settings(
     name := "youi-app",
     libraryDependencies ++= Seq(
@@ -222,7 +240,7 @@ lazy val app = crossProject.in(file("app"))
 lazy val appJS = app.js
 lazy val appJVM = app.jvm
 
-lazy val example = crossProject.in(file("example"))
+lazy val example = crossProject(JSPlatform, JVMPlatform).in(file("example"))
   .settings(
     name := "youi-example"
   )

@@ -2,8 +2,9 @@ package io.youi.example
 
 import io.youi.app._
 import io.youi.http._
-import io.youi.net.{ContentType, URL}
+import io.youi.net._
 import io.youi.server.handler.CachingManager
+import io.youi.server.dsl._
 
 object ServerExampleApplication extends ExampleApplication with ServerApplication {
   val uiExamples: Page = page(UIExamples)
@@ -13,18 +14,40 @@ object ServerExampleApplication extends ExampleApplication with ServerApplicatio
   override protected def applicationJSBasePath = s"/app/example"
 
   override def start(): Unit = {
-    handler.matcher(path.exact("/hello.txt")).caching(CachingManager.MaxAge(120L)).resource {
-      Content.string("Hello World!", ContentType.`text/plain`)
-    }
-    handler.matcher(path.exact("/bootstrap.html")).bootstrap()
-    handler.matcher(path.exact("/cookies.html")).wrap(CookiesExample)
-    handler.matcher(path.exact("/web-socket-example")).wrap(WebSocketExample)
     proxies += ProxyHandler(path.exact("/proxy.html")) { url =>
       URL("http://google.com").copy(path = url.path)
     }
-    handler.matcher(path.exact("/session.html")).wrap(SessionExample)
-    handler.caching(CachingManager.LastModified()).classLoader("", (path: String) => s"content$path")
-    handler.caching(CachingManager.LastModified()).matcher(path.startsWith("/app")).classLoader()
+    handler(
+      filters(
+        path"/hello.txt" ->
+          CachingManager.MaxAge(120L) ->
+            "Hello, World!".withContentType(ContentType.`text/plain`),
+        path"/bootstrap.html" ->
+          Application ->
+            ServerApplication.BootstrapTemplate,
+        path"/cookies.html" ->
+          CookiesExample,
+        path"/web-socket-example" ->
+          WebSocketExample,
+        path"/session.html" ->
+          SessionExample,
+        ClassLoaderPath(pathTransform = (path: String) => s"content$path") -> CachingManager.LastModified(),
+        path.startsWith("/app") -> ClassLoaderPath()
+      )
+    )
+
+//    handler.matcher(path.exact("/hello.txt")).caching(CachingManager.MaxAge(120L)).resource {
+//      Content.string("Hello World!", ContentType.`text/plain`)
+//    }
+//    handler.matcher(path.exact("/bootstrap.html")).bootstrap()
+//    handler.matcher(path.exact("/cookies.html")).wrap(CookiesExample)
+//    handler.matcher(path.exact("/web-socket-example")).wrap(WebSocketExample)
+//    proxies += ProxyHandler(path.exact("/proxy.html")) { url =>
+//      URL("http://google.com").copy(path = url.path)
+//    }
+//    handler.matcher(path.exact("/session.html")).wrap(SessionExample)
+//    handler.caching(CachingManager.LastModified()).classLoader("", (path: String) => s"content$path")
+//    handler.caching(CachingManager.LastModified()).matcher(path.startsWith("/app")).classLoader()
 
     super.start()
   }

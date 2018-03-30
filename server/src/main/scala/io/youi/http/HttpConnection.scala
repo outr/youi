@@ -21,7 +21,7 @@ class HttpConnection(val server: Server, val request: HttpRequest) {
     if (isWebSocketUpgradeRequest) {
       store.update(Connection.key, listener)
       update { response =>
-        response.copy(status = Status.SwitchingProtocols)
+        response.copy(status = HttpStatus.SwitchingProtocols)
       }
     } else {
       throw new RuntimeException(s"Not a WebSocket upgrade request! Expected 'Connection' set to 'Upgrade'. Headers: ${request.headers}")

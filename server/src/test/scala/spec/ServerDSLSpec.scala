@@ -1,6 +1,6 @@
 package spec
 
-import io.youi.http.{HttpConnection, HttpRequest, Method, Status}
+import io.youi.http.{HttpConnection, HttpRequest, Method, HttpStatus}
 import io.youi.server.dsl._
 import io.youi.net._
 import io.youi.server.{DefaultErrorHandler, Server}
@@ -25,7 +25,7 @@ class ServerDSLSpec extends WordSpec with Matchers {
         server.handle(connection)
         val response = connection.response
         response.content should be(Some(text))
-        response.status should be(Status.OK)
+        response.status should be(HttpStatus.OK)
       }
       "properly accept a request for /hello/world.html" in {
         val request = HttpRequest(source = ip"127.0.0.1", url = url"http://www.example.com/hello/world.html")
@@ -33,25 +33,25 @@ class ServerDSLSpec extends WordSpec with Matchers {
         server.handle(connection)
         val response = connection.response
         response.content should be(Some(html))
-        response.status should be(Status.OK)
+        response.status should be(HttpStatus.OK)
       }
       "reject a request from a different origin IP" in {
         val request = HttpRequest(source = ip"127.0.0.2", url = url"http://www.example.com/hello/world.html")
         val connection = new HttpConnection(server, request)
         server.handle(connection)
         val response = connection.response
-        response.content should be(Some(DefaultErrorHandler.html(Status.NotFound)))
-        response.status should be(Status.NotFound)
+        response.content should be(Some(DefaultErrorHandler.html(HttpStatus.NotFound)))
+        response.status should be(HttpStatus.NotFound)
       }
     }
   }
 
   object server extends Server {
     handler(
-      allow(ip"127.0.0.1", ip"192.168.1.1") -> List(
-        Method.Get -> List(
-          path"/hello/world.txt" -> respond(text),
-          path"/hello/world.html" -> respond(html)
+      allow(ip"127.0.0.1", ip"192.168.1.1") :> List(
+        Method.Get :> List(
+          path"/hello/world.txt" :> respond(text),
+          path"/hello/world.html" :> respond(html)
         )
       )
     )

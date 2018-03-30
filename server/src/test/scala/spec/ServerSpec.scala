@@ -23,12 +23,12 @@ class ServerSpec extends WordSpec with Matchers {
     "receive OK for test.html" in {
       val connection = new HttpConnection(server, HttpRequest(url = URL("http://localhost/test.html")))
       server.handle(connection)
-      connection.response.status should equal(Status.OK)
+      connection.response.status should equal(HttpStatus.OK)
     }
     "receive NotFound for other.html" in {
       val connection = new HttpConnection(server, HttpRequest(url = URL("http://localhost/other.html")))
       server.handle(connection)
-      connection.response.status should equal(Status.NotFound)
+      connection.response.status should equal(HttpStatus.NotFound)
     }
   }
 }

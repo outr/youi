@@ -2,7 +2,7 @@ package io.youi.server
 
 import reactify._
 import io.youi.{ErrorSupport, ItemContainer}
-import io.youi.http.{HttpConnection, ProxyHandler, Status}
+import io.youi.http.{HttpConnection, ProxyHandler, HttpStatus}
 import io.youi.server.handler.{HttpHandler, HttpHandlerBuilder}
 import io.youi.server.session.SessionStore
 import profig.{Profig, ProfigPath}
@@ -87,9 +87,9 @@ trait Server extends HttpHandler with ErrorSupport {
       handleRecursive(connection, handlers())
 
       // NotFound handling
-      if (connection.response.content.isEmpty && connection.response.status == Status.OK) {
+      if (connection.response.content.isEmpty && connection.response.status == HttpStatus.OK) {
         connection.update { response =>
-          response.copy(status = Status.NotFound)
+          response.copy(status = HttpStatus.NotFound)
         }
         errorHandler.get.handle(connection, None)
       }

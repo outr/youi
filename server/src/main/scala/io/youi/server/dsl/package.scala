@@ -2,9 +2,12 @@ package io.youi.server
 
 import java.io.File
 
-import io.youi.http.{Content, FileContent, HttpConnection, Method, Status, StringContent, URLContent}
+import io.circe.{Decoder, Encoder}
+import io.youi.http.{Content, FileContent, HttpConnection, HttpStatus, Method, StringContent, URLContent}
 import io.youi.net.{ContentType, IP, Path, URLMatcher}
-import io.youi.server.handler.{CachingManager, ContentHandler, HttpHandler, SenderHandler}
+import io.youi.server.handler._
+import io.youi.server.rest.Restful
+import io.youi.server.validation.{ValidationResult, Validator}
 import io.youi.stream.{ByTag, Delta, HTMLParser, Selector}
 
 import scala.language.implicitConversions
@@ -15,6 +18,17 @@ package object dsl {
 
   implicit class HttpConnectionConnectionFilter(val connection: HttpConnection) extends ConnectionFilter {
     override def filter(connection: HttpConnection): Option[HttpConnection] = Some(connection)
+  }
+
+  implicit class ValidatorFilter(val validator: Validator) extends ConnectionFilter {
+    private lazy val list = List(validator)
+
+    override def filter(connection: HttpConnection): Option[HttpConnection] = {
+      ValidatorHttpHandler.validate(connection, list) match {
+        case ValidationResult.Continue => Some(connection)
+        case _ => None
+      }
+    }
   }
 
   implicit class MethodConnectionFilter(val method: Method) extends ConnectionFilter {
@@ -102,7 +116,12 @@ package object dsl {
   }
 
   implicit def content2Filter(content: Content): ConnectionFilter = {
-    new HttpHandlerFilter(ContentHandler(content, Status.OK))
+    new HttpHandlerFilter(ContentHandler(content, HttpStatus.OK))
+  }
+
+  implicit def restful2Filter[Request, Response](restful: Restful[Request, Response])
+                                                (implicit decoder: Decoder[Request], encoder: Encoder[Response]): ConnectionFilter = {
+    new HttpHandlerFilter(Restful(restful)(decoder, encoder))
   }
 
   implicit def path2AllowFilter(path: Path): ConnectionFilter = PathFilter(path)
@@ -113,7 +132,7 @@ package object dsl {
 
   def allow(path: Path): ConnectionFilter = PathFilter(path)
 
-  def respond(content: Content, status: Status = Status.OK): ContentHandler = {
+  def respond(content: Content, status: HttpStatus = HttpStatus.OK): ContentHandler = {
     ContentHandler(content, status)
   }
 

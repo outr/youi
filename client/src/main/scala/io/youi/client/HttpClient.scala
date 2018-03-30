@@ -7,7 +7,7 @@ import java.nio.charset.StandardCharsets
 import io.circe.{Decoder, Encoder, Json, Printer}
 import io.circe.parser._
 import io.circe.syntax._
-import io.youi.http.{Content, FileContent, FileEntry, FormData, FormDataContent, Headers, HttpRequest, HttpResponse, Method, Status, StringContent, StringEntry}
+import io.youi.http.{Content, FileContent, FileEntry, FormData, FormDataContent, Headers, HttpRequest, HttpResponse, Method, HttpStatus, StringContent, StringEntry}
 import io.youi.net.{ContentType, URL}
 import org.apache.http.{HttpEntity, HttpResponse => ApacheHttpResponse}
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase
@@ -104,7 +104,7 @@ class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpd
         }
 
         promise.success(HttpResponse(
-          Status(result.getStatusLine.getStatusCode, result.getStatusLine.getReasonPhrase),
+          HttpStatus(result.getStatusLine.getStatusCode, result.getStatusLine.getReasonPhrase),
           headers,
           content
         ))

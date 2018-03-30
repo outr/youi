@@ -1,6 +1,6 @@
 package io.youi.server
 
-import io.youi.http.{CacheControl, Content, HttpConnection, Status}
+import io.youi.http.{CacheControl, Content, HttpConnection, HttpStatus}
 import io.youi.net.ContentType
 import io.youi.server.dsl._
 import perfolation._
@@ -8,7 +8,7 @@ import perfolation._
 object DefaultErrorHandler extends ErrorHandler {
   lazy val lastModified: Long = System.currentTimeMillis()
 
-  def html(status: Status): Content = p"""<html>
+  def html(status: HttpStatus): Content = p"""<html>
     <head>
       <title>Error ${status.code}</title>
     </head>
@@ -21,7 +21,7 @@ object DefaultErrorHandler extends ErrorHandler {
     val status = if (response.status.isError) {
       response.status
     } else {
-      Status.InternalServerError
+      HttpStatus.InternalServerError
     }
     response
       .withContent(html(status))

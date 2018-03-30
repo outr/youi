@@ -1,6 +1,6 @@
 package io.youi.server.handler
 
-import io.youi.http.{Content, HttpConnection, Status, StringHeaderKey}
+import io.youi.http.{Content, HttpConnection, HttpStatus, StringHeaderKey}
 import io.youi.server.validation.ValidationResult.{Continue, Error, Redirect}
 import io.youi.server.validation.{ValidationResult, Validator}
 
@@ -19,7 +19,7 @@ object ValidatorHttpHandler {
       case Redirect(location) => {
         val isStreaming = connection.request.headers.first(new StringHeaderKey("streaming")).contains("true")
         if (isStreaming) {
-          val status = Status.NetworkAuthenticationRequired(s"Redirect to $location")
+          val status = HttpStatus.NetworkAuthenticationRequired(s"Redirect to $location")
           connection.update(_.withStatus(status).withContent(Content.empty))
         } else {
           connection.update(_.withRedirect(location))
@@ -27,7 +27,7 @@ object ValidatorHttpHandler {
         connection.finish()
       }
       case Error(status, message) => {
-        connection.update(_.withStatus(Status(status, message)).withContent(Content.empty))
+        connection.update(_.withStatus(HttpStatus(status, message)).withContent(Content.empty))
         connection.finish()
       }
     }

@@ -8,27 +8,10 @@ import io.youi.server.handler.{CachingManager, ContentHandler, HttpHandler, Send
 import io.youi.stream.{ByTag, Delta, HTMLParser, Selector}
 
 import scala.language.implicitConversions
-import scala.util.matching.Regex
 import scala.xml.Elem
 
 package object dsl {
-  private val DeltaKey: String = "deltas"
-  protected def applicationBasePath: String = "app/application"
-
-  private val fullOpt = s"$applicationBasePath.js"
-  private val fastOpt = s"$applicationBasePath-fastopt.js"
-  private val fullOptMap = s"$fullOpt.map"
-  private val fastOptMap = s"$fastOpt.map"
-  private val jsDeps = s"$applicationBasePath-jsdeps.js"
-
-  protected def applicationJSBasePath: String = "/app/application"
-  def applicationJSPath: String = s"$applicationJSBasePath.js"
-  def applicationJSMapPath: String = s"$applicationJSPath.map"
-  def applicationJSDepsPath: String = s"$applicationJSBasePath-jsdeps.js"
-
-  lazy val applicationJSContent: Content = Content.classPathOption(fullOpt).getOrElse(Content.classPath(fastOpt))
-  lazy val applicationJSMapContent: Content = Content.classPathOption(fullOptMap).getOrElse(Content.classPath(fastOptMap))
-  lazy val applicationJSDepsContent: Option[Content] = Content.classPathOption(jsDeps)
+  private[youi] val DeltaKey: String = "deltas"
 
   implicit class HttpConnectionConnectionFilter(val connection: HttpConnection) extends ConnectionFilter {
     override def filter(connection: HttpConnection): Option[HttpConnection] = Some(connection)
@@ -58,24 +41,30 @@ package object dsl {
 
   implicit class DeltasFilter(val deltas: List[Delta]) extends ConnectionFilter {
     override def filter(connection: HttpConnection): Option[HttpConnection] = {
-      connection.response.content match {
-        case Some(content) => {
-          val stream = content match {
-            case c: FileContent => HTMLParser.cache(c.file)
-            case c: URLContent => HTMLParser.cache(c.url)
-            case c: StringContent => HTMLParser.cache(c.value)
-          }
-          val deltasList = connection.store.getOrElse[List[Delta]](DeltaKey, Nil) ::: deltas
+      processDeltas(connection, deltas)
+      Some(connection)
+    }
+  }
 
+  private[server] def processDeltas(connection: HttpConnection, deltas: List[Delta] = Nil): Unit = {
+    connection.response.content match {
+      case Some(content) => {
+        val stream = content match {
+          case c: FileContent => HTMLParser.cache(c.file)
+          case c: URLContent => HTMLParser.cache(c.url)
+          case c: StringContent => HTMLParser.cache(c.value)
+        }
+        val deltasList = connection.store.getOrElse[List[Delta]](DeltaKey, Nil) ::: deltas
+
+        if (deltasList.nonEmpty) {
           val selector = connection.request.url.param("selector").map(Selector.parse)
           val streamed = stream.stream(deltasList, selector)
           connection.update { response =>
             response.withContent(Content.string(streamed, content.contentType))
           }
         }
-        case None => // No content
       }
-      Some(connection)
+      case None => // No content
     }
   }
 
@@ -109,30 +98,6 @@ package object dsl {
           SenderHandler(Content.file(file)).handle(connection)
           connection
         }
-    }
-  }
-
-  object Application extends ConnectionFilter {
-    override def filter(connection: HttpConnection): Option[HttpConnection] = {
-      val jsDeps = if (applicationJSDepsContent.nonEmpty) {
-        s"""<script src="$applicationJSDepsPath"></script>"""
-      } else {
-        ""
-      }
-      val applicationDeltas = List(
-        Delta.InsertLastChild(ByTag("body"),
-          s"""
-             |$jsDeps
-             |<script src="$applicationJSPath"></script>
-             |<script>
-             |  application();
-             |</script>
-           """.stripMargin
-        )
-      )
-      val deltas = connection.store.getOrElse[List[Delta]](DeltaKey, Nil) ::: applicationDeltas
-      connection.store(DeltaKey) = deltas
-      Some(connection)
     }
   }
 

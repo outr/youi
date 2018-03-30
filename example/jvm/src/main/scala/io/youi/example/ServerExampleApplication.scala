@@ -27,27 +27,12 @@ object ServerExampleApplication extends ExampleApplication with ServerApplicatio
             ServerApplication.BootstrapTemplate,
         path"/cookies.html" ->
           CookiesExample,
-        path"/web-socket-example" ->
-          WebSocketExample,
         path"/session.html" ->
           SessionExample,
         ClassLoaderPath(pathTransform = (path: String) => s"content$path") -> CachingManager.LastModified(),
         path.startsWith("/app") -> ClassLoaderPath()
       )
     )
-
-//    handler.matcher(path.exact("/hello.txt")).caching(CachingManager.MaxAge(120L)).resource {
-//      Content.string("Hello World!", ContentType.`text/plain`)
-//    }
-//    handler.matcher(path.exact("/bootstrap.html")).bootstrap()
-//    handler.matcher(path.exact("/cookies.html")).wrap(CookiesExample)
-//    handler.matcher(path.exact("/web-socket-example")).wrap(WebSocketExample)
-//    proxies += ProxyHandler(path.exact("/proxy.html")) { url =>
-//      URL("http://google.com").copy(path = url.path)
-//    }
-//    handler.matcher(path.exact("/session.html")).wrap(SessionExample)
-//    handler.caching(CachingManager.LastModified()).classLoader("", (path: String) => s"content$path")
-//    handler.caching(CachingManager.LastModified()).matcher(path.startsWith("/app")).classLoader()
 
     super.start()
   }

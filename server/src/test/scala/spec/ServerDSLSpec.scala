@@ -35,6 +35,24 @@ class ServerDSLSpec extends WordSpec with Matchers {
         response.content should be(Some(html))
         response.status should be(HttpStatus.OK)
       }
+      "properly return a 404 for /hello/other.html" in {
+        val request = HttpRequest(source = ip"127.0.0.1", url = url"http://www.example.com/hello/other.html")
+        val connection = new HttpConnection(server, request)
+        server.handle(connection)
+        val response = connection.response
+        response.status should be(HttpStatus.NotFound)
+      }
+      "properly return a 404 for a POST" in {
+        val request = HttpRequest(
+          source = ip"127.0.0.1",
+          url = url"http://www.example.com/hello/world.html",
+          method = Method.Post
+        )
+        val connection = new HttpConnection(server, request)
+        server.handle(connection)
+        val response = connection.response
+        response.status should be(HttpStatus.NotFound)
+      }
       "reject a request from a different origin IP" in {
         val request = HttpRequest(source = ip"127.0.0.2", url = url"http://www.example.com/hello/world.html")
         val connection = new HttpConnection(server, request)
@@ -48,11 +66,9 @@ class ServerDSLSpec extends WordSpec with Matchers {
 
   object server extends Server {
     handler(
-      allow(ip"127.0.0.1", ip"192.168.1.1") :> List(
-        Method.Get :> List(
-          path"/hello/world.txt" :> respond(text),
-          path"/hello/world.html" :> respond(html)
-        )
+      allow(ip"127.0.0.1", ip"192.168.1.1") / Method.Get / "hello" / List(
+        "world.txt" / text,
+        "world.html" / html
       )
     )
   }

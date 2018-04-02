@@ -19,18 +19,18 @@ object ServerExampleApplication extends ExampleApplication with ServerApplicatio
     }
     handler(
       filters(
-        path"/hello.txt" :>
-          CachingManager.MaxAge(120L) :>
+        path"/hello.txt" /
+          CachingManager.MaxAge(120L) /
             "Hello, World!".withContentType(ContentType.`text/plain`),
-        path"/bootstrap.html" :>
-          Application :>
+        path"/bootstrap.html" /
+          Application /
             ServerApplication.BootstrapTemplate,
-        path"/cookies.html" :>
+        path"/cookies.html" /
           CookiesExample,
-        path"/session.html" :>
+        path"/session.html" /
           SessionExample,
-        ClassLoaderPath(pathTransform = (path: String) => s"content$path") :> CachingManager.LastModified(),
-        path.startsWith("/app") :> ClassLoaderPath()
+        ClassLoaderPath(pathTransform = (path: String) => s"content$path") / CachingManager.LastModified(),
+        path.startsWith("/app") / ClassLoaderPath()
       )
     )
 

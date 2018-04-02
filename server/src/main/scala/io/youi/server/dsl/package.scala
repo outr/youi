@@ -60,6 +60,10 @@ package object dsl {
     }
   }
 
+  implicit class StringFilter(val s: String) extends ConnectionFilter {
+    override def filter(connection: HttpConnection): Option[HttpConnection] = PathPart.take(connection, s)
+  }
+
   private[server] def processDeltas(connection: HttpConnection, deltas: List[Delta] = Nil): Unit = {
     connection.response.content match {
       case Some(content) => {

@@ -12,7 +12,7 @@ import scala.language.experimental.macros
 trait Restful[Request, Response] {
   def apply(connection: HttpConnection, request: Request): Future[RestfulResponse[Response]]
 
-  def validations: List[RestfulValidation[Request]]
+  def validations: List[RestfulValidation[Request]] = Nil
 
   def error(errors: List[ValidationError], status: HttpStatus): RestfulResponse[Response]
 

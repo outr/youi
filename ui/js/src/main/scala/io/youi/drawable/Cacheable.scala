@@ -7,7 +7,6 @@ import org.scalajs.dom.html
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Future, Promise}
 import scala.util.{Failure, Success}
-import scribe.LogRecord.Stringify._
 
 class Cacheable extends Drawable {
   private var canvas: Option[html.Canvas] = None

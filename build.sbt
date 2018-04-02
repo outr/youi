@@ -1,3 +1,4 @@
+import org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv
 import sbtcrossproject.{CrossType, crossProject}
 
 name := "youi"
@@ -26,7 +27,7 @@ developers in ThisBuild := List(
 )
 
 val profigVersion = "2.2.1"
-val scribeVersion = "2.3.1"
+val scribeVersion = "2.3.2"
 val powerScalaVersion = "2.0.5"
 val reactifyVersion = "2.3.0"
 val hasherVersion = "1.2.1"
@@ -118,7 +119,7 @@ lazy val spatial = crossProject(JSPlatform, JVMPlatform).in(file("spatial"))
     )
   )
   .jsSettings(
-    jsDependencies += RuntimeDOM
+    jsEnv := new JSDOMNodeJSEnv
   )
   .dependsOn(core)
 

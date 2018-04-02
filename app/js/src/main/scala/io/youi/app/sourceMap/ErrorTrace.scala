@@ -13,7 +13,6 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.scalajs._
 import scala.scalajs.runtime.StackTrace.Implicits._
-import scribe.LogRecord.Stringify._
 
 object ErrorTrace extends LogHandler {
   private var sourceMaps = Map.empty[String, SourceMapConsumer]

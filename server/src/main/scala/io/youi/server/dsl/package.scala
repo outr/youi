@@ -16,9 +16,7 @@ import scala.xml.Elem
 package object dsl {
   private[youi] val DeltaKey: String = "deltas"
 
-  implicit class HttpConnectionConnectionFilter(val connection: HttpConnection) extends ConnectionFilter {
-    override def filter(connection: HttpConnection): Option[HttpConnection] = Some(connection)
-  }
+  implicit class HttpConnectionConnectionFilter(val connection: HttpConnection) extends ActionFilter(_ => ())
 
   implicit class ValidatorFilter(val validator: Validator) extends ConnectionFilter {
     private lazy val list = List(validator)
@@ -31,34 +29,13 @@ package object dsl {
     }
   }
 
-  implicit class MethodConnectionFilter(val method: Method) extends ConnectionFilter {
-    override def filter(connection: HttpConnection): Option[HttpConnection] = if (connection.request.method == method) {
-      Some(connection)
-    } else {
-      None
-    }
-  }
+  implicit class MethodConnectionFilter(val method: Method) extends ConditionalFilter(_.request.method == method)
 
-  implicit class HttpHandlerFilter(val handler: HttpHandler) extends ConnectionFilter {
-    override def filter(connection: HttpConnection): Option[HttpConnection] = {
-      handler.handle(connection)
-      Some(connection)
-    }
-  }
+  implicit class HttpHandlerFilter(val handler: HttpHandler) extends ActionFilter(handler.handle)
 
-  implicit class CachingManagerFilter(val caching: CachingManager) extends ConnectionFilter {
-    override def filter(connection: HttpConnection): Option[HttpConnection] = {
-      caching.handle(connection)
-      Some(connection)
-    }
-  }
+  implicit class CachingManagerFilter(val caching: CachingManager) extends LastConnectionFilter(new ActionFilter(caching.handle))
 
-  implicit class DeltasFilter(val deltas: List[Delta]) extends ConnectionFilter {
-    override def filter(connection: HttpConnection): Option[HttpConnection] = {
-      processDeltas(connection, deltas)
-      Some(connection)
-    }
-  }
+  implicit class DeltasFilter(val deltas: List[Delta]) extends ActionFilter(processDeltas(_, deltas))
 
   implicit class StringFilter(val s: String) extends ConnectionFilter {
     override def filter(connection: HttpConnection): Option[HttpConnection] = PathPart.take(connection, s)
@@ -86,15 +63,7 @@ package object dsl {
     }
   }
 
-  implicit class URLMatcherFilter(val matcher: URLMatcher) extends ConnectionFilter {
-    override def filter(connection: HttpConnection): Option[HttpConnection] = {
-      if (matcher.matches(connection.request.url)) {
-        Some(connection)
-      } else {
-        None
-      }
-    }
-  }
+  implicit class URLMatcherFilter(val matcher: URLMatcher) extends ConditionalFilter(c => matcher.matches(c.request.url))
 
   case class ClassLoaderPath(directory: String = "", pathTransform: String => String = (s: String) => s) extends ConnectionFilter {
     private val dir = if (directory.endsWith("/")) {
@@ -135,6 +104,8 @@ package object dsl {
   def allow(ips: IP*): ConnectionFilter = IPAddressFilter(allow = ips.toList)
 
   def allow(path: Path): ConnectionFilter = PathFilter(path)
+
+  def last(filters: ConnectionFilter*): ConnectionFilter = LastConnectionFilter(filters: _*)
 
   def respond(content: Content, status: HttpStatus = HttpStatus.OK): ContentHandler = {
     ContentHandler(content, status)

@@ -161,14 +161,10 @@ class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpd
         case content: FileContent => IO.stream(content.file, new StringBuilder).toString
         case content => throw new RuntimeException(s"$content not supported")
       }.getOrElse("")
-      if (response.status.isSuccess) {
-        if (responseJson.isEmpty) throw new RuntimeException(s"No content received in response for $url.")
-        decode[Response](responseJson) match {
-          case Left(error) => errorHandler(httpRequest, response, Some(error))
-          case Right(result) => result
-        }
-      } else {
-        errorHandler(httpRequest, response, None)
+      if (responseJson.isEmpty) throw new RuntimeException(s"No content received in response for $url.")
+      decode[Response](responseJson) match {
+        case Left(error) => errorHandler(httpRequest, response, Some(error))
+        case Right(result) => result
       }
     }
   }

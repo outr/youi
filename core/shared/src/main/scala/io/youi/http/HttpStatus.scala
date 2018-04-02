@@ -1,6 +1,6 @@
 package io.youi.http
 
-class HttpStatus private(val code: Int, val message: String) {
+case class HttpStatus(code: Int, message: String) extends Ordered[HttpStatus] {
   HttpStatus.synchronized {
     HttpStatus.codeMap += code -> this
   }
@@ -13,12 +13,14 @@ class HttpStatus private(val code: Int, val message: String) {
 
   def isError: Boolean = isClientError || isServerError
 
-  def apply(message: String) = new HttpStatus(code, message)
+  def apply(message: String): HttpStatus = copy(message = message)
 
   override def equals(obj: scala.Any): Boolean = obj match {
     case that: HttpStatus => code == that.code
     case _ => false
   }
+
+  override def compare(that: HttpStatus): Int = this.code.compare(that.code)
 
   override def toString = s"HttpResponseStatus($code: $message)"
 }
@@ -87,6 +89,4 @@ object HttpStatus {
 
   def getByCode(code: Int): Option[HttpStatus] = codeMap.get(code)
   def byCode(code: Int): HttpStatus = getByCode(code).getOrElse(throw new RuntimeException(s"Unable to find HttpResponseStatus by code: $code"))
-
-  def apply(code: Int, message: String): HttpStatus = new HttpStatus(code, message)
 }

@@ -17,7 +17,7 @@ import io.undertow.websockets.core._
 import io.undertow.websockets.extensions.PerMessageDeflateHandshake
 import io.undertow.websockets.spi.WebSocketHttpExchange
 import io.undertow.{Handlers, Undertow, UndertowOptions}
-import io.youi.http.{Connection, FileContent, FileEntry, FormData, FormDataContent, FormDataEntry, Headers, HttpConnection, HttpRequest, Method, ProxyHandler, RequestContent, StreamContent, StringContent, StringEntry, URLContent}
+import io.youi.http._
 import io.youi.net.{ContentType, IP, Parameters, Path, URL}
 import io.youi.server.util.SSLUtil
 import org.powerscala.io._
@@ -120,7 +120,7 @@ object UndertowServerImplementation extends ServerImplementationCreator {
     val source = IP(exchange.getSourceAddress.getAddress.getHostAddress)
     val headers = parseHeaders(exchange.getRequestHeaders)
 
-    def handle(content: Option[RequestContent]): Unit = {
+    def handle(content: Option[Content]): Unit = {
       val request = HttpRequest(
         method = Method(exchange.getRequestMethod.toString),
         source = source,

@@ -3,49 +3,53 @@ package io.youi.server.rest
 import io.circe.parser._
 import io.circe.syntax._
 import io.circe.{Decoder, Encoder, Json, Printer}
-import io.youi.http.{Content, HttpConnection, Method, StringContent}
-import io.youi.net.ContentType
+import io.youi.ValidationError
+import io.youi.http.{Content, HttpConnection, HttpRequest, StringContent}
+import io.youi.net.{ContentType, URL}
 import io.youi.server.handler.HttpHandler
 
-import scala.concurrent.{Await, Future}
+import scala.collection.mutable.ListBuffer
+import scala.concurrent.Await
 
 class RestfulHandler[Request, Response](restful: Restful[Request, Response])
                                        (implicit decoder: Decoder[Request], encoder: Encoder[Response]) extends HttpHandler {
   override def handle(connection: HttpConnection): Unit = {
     // Build JSON
-    val json: Json = (connection.request.method match {
-      case Method.Get => {
-        Some(Json.obj(connection.request.url.parameters.entries.map {
-          case (key, param) => key -> Json.fromString(param.value)
-        }: _*))
+    val result: RestfulResponse[Response] = RestfulHandler.jsonFromRequest(connection.request) match {
+      case Left(err) => {
+        restful.error(List(err), err.status)
       }
-      case _ => connection.request.content match {
-        case Some(content) => content match {
-          case StringContent(jsonString, _, _) => parse(jsonString) match {
-            case Left(failure) => {
-              scribe.warn(s"Failed to parse JSON: $jsonString", failure)
-              None
-            }
-            case Right(j) => Some(j)
+      case Right(json) => {
+        // Decode request
+        json.as[Request] match {
+          case Left(error) => {
+            val err = ValidationError(s"Error parsing ${error.getMessage()}: $json", ValidationError.RequestParsing)
+            restful.error(List(err), err.status)
           }
-          case _ => {
-            scribe.error(s"Unsupported content for restful end-point: $content.")
-            None
+          case Right(req) => {
+            // Validations
+            RestfulHandler.validate(req, restful.validations) match {
+              case Left(errors) => {
+                val status = errors.map(_.status).max
+                restful.error(errors, status)
+              }
+              case Right(request) => try {
+                val future = restful(connection, request)
+
+                // Await result
+                // TODO: add asynchronous HttpHandler support
+                Await.result(future, restful.timeout)
+              } catch {
+                case t: Throwable => {
+                  val err = ValidationError(s"Error while calling restful: ${t.getMessage}", ValidationError.Internal)
+                  restful.error(List(err), err.status)
+                }
+              }
+            }
           }
         }
-        case None => None     // Ignore calls to this end-point that have no content
       }
-    }).getOrElse(Json.obj())
-
-    // Decode request
-    val future: Future[RestfulResponse[Response]] = json.as[Request] match {
-      case Left(error) => Future.successful(restful.error(s"Error parsing $json", Some(error)))
-      case Right(request) => restful(connection, request)
     }
-
-    // Await result
-    // TODO: add asynchronous HttpHandler support
-    val result = Await.result(future, restful.timeout)
 
     // Encode response
     val responseJson = result.response.asJson
@@ -62,4 +66,57 @@ class RestfulHandler[Request, Response](restful: Restful[Request, Response])
 
 object RestfulHandler {
   private lazy val printer = Printer.spaces2.copy(dropNullValues = false)
+
+  def validate[Request](request: Request,
+                        validations: List[RestfulValidation[Request]]): Either[List[ValidationError], Request] = {
+    var errors = ListBuffer.empty[ValidationError]
+    var r: Request = request
+    validations.foreach { v =>
+      v.validate(r) match {
+        case Left(err) => errors += err
+        case Right(req) => r = req
+      }
+    }
+    if (errors.nonEmpty) {
+      Left(errors.toList)
+    } else {
+      Right(r)
+    }
+  }
+
+  def jsonFromRequest(request: HttpRequest): Either[ValidationError, Json] = {
+    val contentJson = request.content.map(jsonFromContent).getOrElse(Right(Json.obj()))
+    val urlJson = jsonFromURL(request.url)
+    contentJson match {
+      case Left(err) => Left(err)
+      case Right(json) => Right(json.deepMerge(urlJson))
+    }
+  }
+
+  def jsonFromContent(content: Content): Either[ValidationError, Json] = content match {
+    case StringContent(jsonString, _, _) => parse(jsonString) match {
+      case Left(failure) => {
+        Left(ValidationError(s"Failed to parse JSON (${failure.getMessage()}): $jsonString", ValidationError.RequestParsing))
+      }
+      case Right(j) => Right(j)
+    }
+    case _ => {
+      Left(ValidationError(s"Unsupported content for restful end-point: $content.", ValidationError.RequestParsing))
+    }
+  }
+
+  def jsonFromURL(url: URL): Json = {
+    val entries = url.parameters.map.toList.map {
+      case (key, param) => {
+        val values = param.values
+        val valuesJson = if (values.length > 1) {
+          Json.arr(values.map(Json.fromString): _*)
+        } else {
+          Json.fromString(values.head)
+        }
+        key -> valuesJson
+      }
+    }
+    Json.obj(entries: _*)
+  }
 }

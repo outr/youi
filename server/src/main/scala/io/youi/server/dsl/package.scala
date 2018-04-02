@@ -8,7 +8,7 @@ import io.youi.net.{ContentType, IP, Path, URLMatcher}
 import io.youi.server.handler._
 import io.youi.server.rest.Restful
 import io.youi.server.validation.{ValidationResult, Validator}
-import io.youi.stream.{ByTag, Delta, HTMLParser, Selector}
+import io.youi.stream.{Delta, HTMLParser, Selector}
 
 import scala.language.implicitConversions
 import scala.xml.Elem
@@ -119,8 +119,8 @@ package object dsl {
     new HttpHandlerFilter(ContentHandler(content, HttpStatus.OK))
   }
 
-  implicit def restful2Filter[Request, Response](restful: Restful[Request, Response])
-                                                (implicit decoder: Decoder[Request], encoder: Encoder[Response]): ConnectionFilter = {
+  implicit def restful[Request, Response](restful: Restful[Request, Response])
+                                         (implicit decoder: Decoder[Request], encoder: Encoder[Response]): ConnectionFilter = {
     new HttpHandlerFilter(Restful(restful)(decoder, encoder))
   }
 

@@ -8,7 +8,7 @@ import sun.net.www.protocol.file.FileURLConnection
 
 import scala.xml.{Elem, PrettyPrinter}
 
-trait Content extends RequestContent {
+trait Content {
   def length: Long
   def lastModified: Long
   def contentType: ContentType
@@ -71,9 +71,13 @@ case class URLContent(url: URL, contentType: ContentType, lastModifiedOverride: 
   override def toString: String = s"URLContent(url: $url, contentType: $contentType)"
 }
 
-sealed trait RequestContent
+case class FormDataContent(data: List[FormData]) extends Content {
+  override def length: Long = -1
+  override def lastModified: Long = -1
+  override def contentType: ContentType = ContentType.`multipart/form-data`
+  override def withContentType(contentType: ContentType): Content = this
+  override def withLastModified(lastModified: Long): Content = this
 
-case class FormDataContent(data: List[FormData]) extends RequestContent {
   def fileOption(key: String): Option[FileEntry] = data.find(_.key == key).map(_.entries.head.asInstanceOf[FileEntry])
   def stringOption(key: String): Option[StringEntry] = data.find(_.key == key).map(_.entries.head.asInstanceOf[StringEntry])
   def file(key: String): FileEntry = fileOption(key).getOrElse(throw new RuntimeException(s"Not found: $key in $this."))

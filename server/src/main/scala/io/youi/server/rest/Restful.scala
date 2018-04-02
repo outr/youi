@@ -1,6 +1,7 @@
 package io.youi.server.rest
 
 import io.circe.{Decoder, Encoder}
+import io.youi.ValidationError
 import io.youi.http.{HttpConnection, HttpStatus}
 import io.youi.server.handler.HttpHandler
 
@@ -11,7 +12,9 @@ import scala.language.experimental.macros
 trait Restful[Request, Response] {
   def apply(connection: HttpConnection, request: Request): Future[RestfulResponse[Response]]
 
-  def error(message: String, throwable: Option[Throwable]): RestfulResponse[Response]
+  def validations: List[RestfulValidation[Request]]
+
+  def error(errors: List[ValidationError], status: HttpStatus): RestfulResponse[Response]
 
   def timeout: Duration = Duration.Inf
 

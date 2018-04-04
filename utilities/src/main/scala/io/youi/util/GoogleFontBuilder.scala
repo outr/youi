@@ -20,18 +20,36 @@ object GoogleFontBuilder {
     val jsonString = IO.stream(new net.URL(url.toString), new StringBuilder).toString
     val list = JsonUtil.fromJsonString[WebFontList](jsonString)
 
-    val file = new File("canvas/shared/src/main/scala/io/youi/font/GoogleFont.scala")
+    val file = new File("ui/shared/src/main/scala/io/youi/font/GoogleFont.scala")
     val fonts = list.items.map { font =>
-      s"""  object `${font.family}` {
-         |    val category: String = "${font.category}"
-         |    val subsets: Set[String] = Set(${font.subsets.map(s => s""""$s"""").mkString(", ")})
+      val subsets = font.subsets.map { sub =>
+        s"""      lazy val `$sub`: GoogleFontSubset = new GoogleFontSubset("$sub")"""
+      }
+
+      s"""  object `${font.family}` extends GoogleFont {
+         |    override lazy val family: String = "${font.family}"
+         |    override lazy val category: String = "${font.category}"
+         |    override object subsets extends GoogleFontSubsets {
+         |${subsets.mkString("\n")}
+         |
+         |      override lazy val all: Set[GoogleFontSubset] = Set(${font.subsets.map(s => s"`$s`").mkString(", ")})
+         |    }
          |${font.toTemplate}
+         |
+         |    override lazy val weights: List[GoogleFontWeight] = List(${font.variants.map(s => s"`$s`").mkString(", ")})
          |  }""".stripMargin
     }
     val template =
       s"""package io.youi.font
          |
          |import io.youi.net.URL
+         |
+         |trait GoogleFont {
+         |  def family: String
+         |  def category: String
+         |  def subsets: GoogleFontSubsets
+         |  def weights: List[GoogleFontWeight]
+         |}
          |
          |object GoogleFont {
          |  private val base: String = s"https://fonts.gstatic.com/s"
@@ -53,7 +71,7 @@ object GoogleFontBuilder {
     def toTemplate: String = variants.map { variant =>
       val url = files(variant)
       assert(url.startsWith(base))
-      s"""    def `$variant`: URL = URL(s"$$base${url.substring(base.length)}")"""
+      s"""    lazy val `$variant`: GoogleFontWeight = GoogleFontWeight(this, "$variant", URL(s"$$base${url.substring(base.length)}"))"""
     }.mkString("\n")
   }
 }

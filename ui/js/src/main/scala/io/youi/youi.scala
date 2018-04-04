@@ -1,14 +1,18 @@
 package io
 
 import io.youi.event.KeyEvent
+import io.youi.font.{GoogleFont, GoogleFontWeight}
 import io.youi.paint.Paint
 import io.youi.spatial.NumericSize
 import org.scalajs.dom.html.Div
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 import org.scalajs.dom.{KeyboardEvent, document, html}
 import reactify._
+import typekit.{GoogleConfig, WebFont, WebFontConfiguration}
 
+import scala.concurrent.{Future, Promise}
 import scala.language.implicitConversions
+import scala.scalajs.js
 
 package object youi {
   lazy val ppi: Double = {
@@ -23,6 +27,38 @@ package object youi {
   }
 
   implicit def color2Paint(color: Color): Paint = Paint.color(color)
+
+  implicit class ExtendedGoogleFont(font: GoogleFont) {
+    def load(): Future[GoogleFont] = {
+      val promise = Promise[GoogleFont]
+      val f: js.Function0[Unit] = () => {
+        promise.success(font)
+      }
+      WebFont.load(new WebFontConfiguration {
+        google = new GoogleConfig {
+          families = js.Array(font.family)
+        }
+        active = f
+      })
+      promise.future
+    }
+  }
+
+  implicit class ExtendedGoogleFontWeight(weight: GoogleFontWeight) {
+    def load(): Future[GoogleFontWeight] = {
+      val promise = Promise[GoogleFontWeight]
+      val f: js.Function0[Unit] = () => {
+        promise.success(weight)
+      }
+      WebFont.load(new WebFontConfiguration {
+        google = new GoogleConfig {
+          families = js.Array(s"${weight.font.family}:${weight.name}")
+        }
+        active = f
+      })
+      promise.future
+    }
+  }
 
   implicit class ExtendedCanvas(canvas: html.Canvas) {
     def context: CanvasRenderingContext2D = canvas.getContext("2d").asInstanceOf[CanvasRenderingContext2D]

@@ -31,9 +31,11 @@ val scribeVersion = "2.3.2"
 val powerScalaVersion = "2.0.5"
 val reactifyVersion = "2.3.0"
 val hasherVersion = "1.2.1"
+
 val canvgVersion = "1.4.0_1"
 val openTypeVersion = "0.7.3"
 val picaVersion = "3.0.5"
+val webFontLoaderVersion = "1.6.28"
 
 val akkaVersion = "2.5.11"
 val scalaJSDOM = "0.9.5"
@@ -203,6 +205,7 @@ lazy val ui = crossProject(JSPlatform, JVMPlatform).in(file("ui"))
   )
   .jsSettings(
     libraryDependencies ++= Seq(
+      "com.outr" %%% "webfontloader-scala-js" % webFontLoaderVersion,
       "com.outr" %%% "canvg-scala-js" % canvgVersion,
       "com.outr" %%% "opentype-scala-js" % openTypeVersion,
       "com.outr" %%% "pica-scala-js" % picaVersion

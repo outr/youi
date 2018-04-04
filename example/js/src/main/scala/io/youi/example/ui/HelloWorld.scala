@@ -14,7 +14,7 @@ object HelloWorld extends Screen with PathActivation {
   override protected def title: String = "Hello World"
   override def path: String = "/examples/hello.html"
 
-  val fontURL: URL = GoogleFont.`Open Sans`.`regular`
+  val fontURL: URL = GoogleFont.`Open Sans`.`regular`.ttf
 
   override protected def init(): Future[Unit] = super.init().flatMap { _ =>
     OpenTypeFont.fromURL(fontURL).map { fnt =>

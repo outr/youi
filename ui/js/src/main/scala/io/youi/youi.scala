@@ -33,6 +33,7 @@ package object youi {
       val promise = Promise[GoogleFont]
       val f: js.Function0[Unit] = () => {
         promise.success(font)
+        ()
       }
       WebFont.load(new WebFontConfiguration {
         google = new GoogleConfig {
@@ -49,6 +50,7 @@ package object youi {
       val promise = Promise[GoogleFontWeight]
       val f: js.Function0[Unit] = () => {
         promise.success(weight)
+        ()
       }
       WebFont.load(new WebFontConfiguration {
         google = new GoogleConfig {

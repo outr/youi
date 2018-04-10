@@ -6,7 +6,7 @@ import io.youi.theme.TextViewTheme
 import org.scalajs.dom.html
 import reactify.Var
 
-class TextView(protected val element: html.Element = dom.create[html.Span]("span")) extends HTMLComponent[html.Element] {
+class TextView(protected val element: html.Element = dom.create[html.Span]("span")) extends HTMLComponent[html.Element] with TextViewTheme {
   override lazy val theme: Var[TextViewTheme] = Var(TextView)
   override def `type`: String = "TextView"
 

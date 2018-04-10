@@ -34,6 +34,10 @@ trait HTMLComponent[E <: html.Element] extends Component {
       }
     }
   }
+
+  def updateFromHTML(): Unit = {
+    props.foreach(_.update())
+  }
 }
 
 object HTMLComponent {

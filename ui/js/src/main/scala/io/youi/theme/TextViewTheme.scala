@@ -1,6 +1,6 @@
 package io.youi.theme
 
-import io.youi.component.{Component, Prop}
+import io.youi.component.Component
 import io.youi.style.{FontFamily, FontWeight}
 import reactify.Var
 
@@ -15,18 +15,6 @@ trait TextViewTheme extends ComponentTheme {
     val family: Var[FontFamily] = Var(prnt(_.font.family, FontFamily.default))
     val weight: Var[FontWeight] = Var(prnt(_.font.weight, FontWeight.default))
     val size: Var[Double] = Var(prnt(_.font.size, 12.0))
-  }
-
-  protected def themed[T](f: => T, get: => T, set: T => Unit, default: T): Prop[T] = {
-    val component = this match {
-      case c: Component => Some(c)
-      case _ => None
-    }
-    val prop = new Prop[T](component, get, set)
-    if (get == default) {     // If default value, override with theme
-      prop := f
-    }
-    prop
   }
 
   /*object shadow {

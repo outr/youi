@@ -15,9 +15,16 @@ import scala.annotation.tailrec
 trait Component extends TaskSupport with ComponentTheme {
   private var _initialized: Boolean = false
 
-  private[component] var props = Set.empty[Prop[_]]
-
-  protected def prop[T](get: => T, set: T => Unit): Prop[T] = new Prop[T](this, get, set)
+  protected def connect[T](v: Var[T], get: => T, set: T => Unit, default: T): Var[T] = {
+    val htmlValue = get
+    if (htmlValue != default) {
+      v := htmlValue
+    } else {
+      set(htmlValue)
+    }
+    v.attach(set)
+    v
+  }
 
   /**
     * Generated unique identifier for this element.

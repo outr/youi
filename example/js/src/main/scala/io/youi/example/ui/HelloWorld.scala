@@ -15,14 +15,11 @@ object HelloWorld extends Screen with PathActivation {
   override def path: String = "/examples/hello.html"
 
   override protected def init(): Future[Unit] = super.init().flatMap { _ =>
-    GoogleFont.`Lobster`.load().map { font =>
+    GoogleFont.`Lobster`.load().map { fnt =>
       val textView = new TextView {
-        //      cache := true
-        //      font.file := fnt
-        //      font.size := 48.0
         value := "Hello, World!"
-        element.style.fontFamily = "Lobster"
-        element.style.fontSize = "30px"
+        font.family := fnt
+        font.size := 64.px
         //      fill := Color.DarkBlue
         position.center := ui.position.center
         position.middle := ui.position.middle

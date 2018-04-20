@@ -3,7 +3,7 @@ import sbtcrossproject.{CrossType, crossProject}
 
 name := "youi"
 organization in ThisBuild := "io.youi"
-version in ThisBuild := "0.9.0-M8"
+version in ThisBuild := "0.9.0-M9-SNAPSHOT"
 scalaVersion in ThisBuild := "2.12.5"
 crossScalaVersions in ThisBuild := List("2.12.5", "2.11.12")
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
@@ -39,8 +39,7 @@ val webFontLoaderVersion = "1.6.28"
 
 val akkaVersion = "2.5.11"
 val scalaJSDOM = "0.9.5"
-val httpAsyncClientVersion = "4.1.3"
-val httpMimeVersion = "4.5.5"
+val okHttpVersion = "3.10.0"
 val circeVersion = "0.9.2"
 val uaDetectorVersion = "2014.10"
 val undertowVersion = "2.0.3.Final"
@@ -155,8 +154,7 @@ lazy val client = project.in(file("client"))
   .settings(
     name := "youi-client",
     libraryDependencies ++= Seq(
-      "org.apache.httpcomponents" % "httpasyncclient" % httpAsyncClientVersion,
-      "org.apache.httpcomponents" % "httpmime" % httpMimeVersion,
+      "com.squareup.okhttp3" % "okhttp" % okHttpVersion,
       "org.powerscala" %% "powerscala-io" % powerScalaVersion,
       "org.scalactic" %%% "scalactic" % scalacticVersion,
       "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"

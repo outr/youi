@@ -1,22 +1,15 @@
 package io.youi.client
 
-import java.io.File
-import java.net.URI
-import java.nio.charset.StandardCharsets
+import java.io.{File, IOException}
 
 import io.circe.{Decoder, Encoder, Json, Printer}
 import io.circe.parser._
 import io.circe.syntax._
-import io.youi.http.{Content, FileContent, FileEntry, FormData, FormDataContent, Headers, HttpRequest, HttpResponse, Method, HttpStatus, StringContent, StringEntry}
+import io.youi.http._
 import io.youi.net.{ContentType, URL}
-import org.apache.http.{HttpEntity, HttpResponse => ApacheHttpResponse}
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase
-import org.apache.http.concurrent.FutureCallback
-import org.apache.http.entity.mime.MultipartEntityBuilder
-import org.apache.http.impl.nio.client.{CloseableHttpAsyncClient, HttpAsyncClients}
-import org.apache.http.nio.entity.{NFileEntity, NStringEntity}
 import org.powerscala.io._
 
+import scala.collection.JavaConverters._
 import scala.concurrent.{Future, Promise}
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -27,13 +20,13 @@ import scala.concurrent.ExecutionContext.Implicits.global
   *
   * @param saveDirectory the directory to save response content of a non-textual type
   */
-class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpdir")), dropNullValues: Boolean = false) {
+class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpdir")),
+                 http2: Boolean = false,
+                 push: Boolean = false,
+                 dropNullValues: Boolean = false,
+                 timeoutInSeconds: Double = 5.0) {
   private lazy val printer = Printer.spaces2.copy(dropNullValues = dropNullValues)
-  private val asyncClient: CloseableHttpAsyncClient = {
-    val client = HttpAsyncClients.createDefault()
-    client.start()
-    client
-  }
+  private lazy val client = new okhttp3.OkHttpClient
 
   /**
     * Sends an HttpRequest and receives an asynchronous HttpResponse future.
@@ -42,76 +35,88 @@ class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpd
     * @return Future[HttpResponse]
     */
   def send(request: HttpRequest): Future[HttpResponse] = {
-    val req: HttpEntityEnclosingRequestBase = new HttpEntityEnclosingRequestBase {
-      setURI(new URI(request.url.toString))
-
-      override def getMethod: String = request.method.value
-    }
-    request.headers.map.foreach {
-      case (key, values) => values.foreach { value =>
-        req.addHeader(key, value)
+    val req = requestToOk(request)
+    val promise = Promise[HttpResponse]
+    client.newCall(req).enqueue(new okhttp3.Callback {
+      override def onResponse(call: okhttp3.Call, res: okhttp3.Response): Unit = {
+        val response = responseFromOk(res)
+        promise.success(response)
       }
+
+      override def onFailure(call: okhttp3.Call, exc: IOException): Unit = promise.failure(exc)
+    })
+    promise.future
+  }
+
+  private def requestToOk(request: HttpRequest): okhttp3.Request = {
+    val r = new okhttp3.Request.Builder().url(request.url.toString)
+
+    // Headers
+    request.headers.map.foreach {
+      case (key, values) => values.foreach(r.addHeader(key, _))
     }
-    def ct(contentType: ContentType) = org.apache.http.entity.ContentType.getByMimeType(contentType.mimeType)
-    val content: Option[HttpEntity] = request.content.map {
-      case c: StringContent => new NStringEntity(c.value, ct(c.contentType))
-      case c: FileContent => new NFileEntity(c.file, ct(c.contentType))
-      case c: FormDataContent => {
-        val b = MultipartEntityBuilder.create()
-        import org.apache.http.entity
-        c.data.foreach {
+
+    def ct(contentType: ContentType): okhttp3.MediaType = okhttp3.MediaType.parse(contentType.outputString)
+
+    // Content
+    val body = request.content.map {
+      case StringContent(value, contentType, _) => okhttp3.RequestBody.create(ct(contentType), value)
+      case FileContent(file, contentType, _) => okhttp3.RequestBody.create(ct(contentType), file)
+      case FormDataContent(data) => {
+        val form = new okhttp3.MultipartBody.Builder()
+        form.setType(ct(ContentType.`multipart/form-data`))
+        data.foreach {
           case FormData(key, entries) => entries.foreach {
-            case StringEntry(value, headers) => {
-              val contentType = entity.ContentType.create(Headers.`Content-Type`.value(headers).getOrElse(ContentType.`text/plain`).outputString, StandardCharsets.UTF_8)
-              b.addTextBody(key, value, contentType)
-            }
+            case StringEntry(value, _) => form.addFormDataPart(key, value)
             case FileEntry(fileName, file, headers) => {
-              val contentType = entity.ContentType.create(Headers.`Content-Type`.value(headers).getOrElse(ContentType.`application/octet-stream`).outputString, StandardCharsets.UTF_8)
-              b.addBinaryBody(key, file, contentType, fileName)
+              val partType = Headers.`Content-Type`.value(headers).getOrElse(ContentType.`application/octet-stream`)
+              val part = okhttp3.RequestBody.create(ct(partType), file)
+              form.addFormDataPart(key, fileName, part)
             }
           }
         }
-        b.setCharset(StandardCharsets.UTF_8)
-        b.setContentType(entity.ContentType.create(ContentType.`multipart/form-data`.outputString, StandardCharsets.UTF_8))
-        val multipart = b.build()
-        new MultipartEntityWrapper(multipart)
+        form.build()
       }
       case c => throw new RuntimeException(s"Unsupported request content: $c")
-    }
-    content.foreach(req.setEntity)
-    val promise = Promise[HttpResponse]
-    asyncClient.execute(req, new FutureCallback[ApacheHttpResponse] {
-      override def cancelled(): Unit = promise.failure(new RuntimeException("Cancelled!"))
+    }.orNull
 
-      override def failed(exc: Exception): Unit = promise.failure(exc)
+    // Method
+    r.method(request.method.value, body)
+    r.build()
+  }
 
-      override def completed(result: ApacheHttpResponse): Unit = {
-        var headers = Headers.empty
-        result.getAllHeaders.foreach { header =>
-          headers = headers.withHeader(header.getName, header.getValue)
-        }
-        val contentType = Headers.`Content-Type`.value(headers).getOrElse(ContentType.`application/octet-stream`)
-        val contentLength = Headers.`Content-Length`.value(headers)
-        val content: Option[Content] = if (contentLength.contains(0L)) {
-          None
-        } else if (contentType.`type` == "text" || contentType.subType == "json") {
-          val body = IO.stream(result.getEntity.getContent, new StringBuilder).toString
-          Some(Content.string(body, contentType))
-        } else {
-          val file = File.createTempFile("youi", "client", saveDirectory)
-          IO.stream(result.getEntity.getContent, file)
-          Some(Content.file(file, contentType))
-        }
+  private def responseFromOk(r: okhttp3.Response): HttpResponse = {
+    // Status
+    val status = HttpStatus(code = r.code(), message = r.message())
 
-        promise.success(HttpResponse(
-          HttpStatus(result.getStatusLine.getStatusCode, result.getStatusLine.getReasonPhrase),
-          headers,
-          content
-        ))
+    // Headers
+    val headersMap = r.headers().names().asScala.toList.map { key =>
+      key -> r.headers(key).asScala.toList
+    }.toMap
+    val headers = Headers(headersMap)
+
+    // Content
+    val contentType = Headers.`Content-Type`.value(headers).getOrElse(ContentType.`application/octet-stream`)
+    val contentLength = Headers.`Content-Length`.value(headers)
+    val content = Option(r.body()).map { responseBody =>
+      if (contentToString(contentType, contentLength)) {
+        Content.string(responseBody.string(), contentType)
+      } else {
+        val file = File.createTempFile("youi", "client", saveDirectory)
+        IO.stream(responseBody.byteStream(), file)
+        Content.file(file, contentType)
       }
-    })
+    }
 
-    promise.future
+    HttpResponse(
+      status = status,
+      headers = headers,
+      content = content
+    )
+  }
+
+  protected def contentToString(contentType: ContentType, contentLength: Option[Long]): Boolean = {
+    contentType.`type` == "text" || contentType.subType == "json"
   }
 
   /**
@@ -207,13 +212,4 @@ class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpd
       }
     }
   }
-
-  /**
-    * Disposes and cleans up this client instance.
-    */
-  def dispose(): Unit = asyncClient.close()
-}
-
-trait ErrorHandler[Response] {
-  def apply(request: HttpRequest, response: HttpResponse, throwable: Option[Throwable]): Response
 }

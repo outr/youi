@@ -10,15 +10,7 @@ class TextView(protected val element: html.Element = dom.create[html.Span]("span
   override lazy val theme: Var[TextViewTheme] = Var(TextView)
   override def `type`: String = "TextView"
 
-  lazy val value: Var[String] = Var(element.textContent)
-
-  override protected def init(): Unit = {
-    super.init()
-
-    value.attachAndFire { v =>
-      element.textContent = v
-    }
-  }
+  lazy val value: Prop[String] = prop[String](element.textContent, element.textContent = _)
 }
 
 object TextView extends TextViewTheme

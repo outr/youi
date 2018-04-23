@@ -15,7 +15,7 @@ import scala.annotation.tailrec
 trait Component extends TaskSupport with ComponentTheme {
   private var _initialized: Boolean = false
 
-  protected def connect[T](v: Var[T], get: => T, set: T => Unit, default: T): Var[T] = {
+  protected[component] def connect[T](v: Var[T], get: => T, set: T => Unit, default: T): Var[T] = {
     val htmlValue = get
     if (htmlValue != default) {
       v := htmlValue

@@ -3,6 +3,7 @@ package io.youi.example.ui
 import io.youi._
 import io.youi.app.screen.{PathActivation, Screen}
 import io.youi.component.TextView
+import io.youi.component.extras.Position
 import io.youi.font.{GoogleFont, OpenTypeFont}
 import io.youi.net.URL
 import reactify._
@@ -21,8 +22,11 @@ object HelloWorld extends Screen with PathActivation {
         font.family := fnt
         font.size := 64.px
         //      fill := Color.DarkBlue
-        position.center := ui.position.center
-        position.middle := ui.position.middle
+        position.`type` := Position.Absolute
+//        position.center := ui.position.center
+//        position.middle := ui.position.middle
+        position.left := 100.0
+        position.top := 150.0
       }
       ui.children += textView
     }

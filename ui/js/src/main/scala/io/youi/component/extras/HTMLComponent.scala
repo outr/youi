@@ -17,6 +17,9 @@ trait HTMLComponent[E <: html.Element] extends Component {
 
     element.setAttribute("data-youi-id", id())
 
+    connect(size.measured.width, determineActualWidth, (v: Double) => element.style.width = s"${v}px", 0.0)
+    connect(size.measured.height, determineActualHeight, (v: Double) => element.style.height = s"${v}px", 0.0)
+
     if (this != ui) {
       parent.attachAndFire {
         case Some(p) => {
@@ -37,6 +40,13 @@ trait HTMLComponent[E <: html.Element] extends Component {
       }
     }
   }
+
+  protected def updateSizeFromElement(): Unit = {
+    size.measured.width := determineActualWidth
+    size.measured.height := determineActualHeight
+  }
+  protected def determineActualWidth: Double = element.offsetWidth // + margin.left() + margin.right()
+  protected def determineActualHeight: Double = element.offsetHeight // + margin.top() + margin.bottom()
 }
 
 object HTMLComponent {

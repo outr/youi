@@ -4,8 +4,7 @@ import io.youi._
 import io.youi.app.screen.{PathActivation, Screen}
 import io.youi.component.TextView
 import io.youi.component.extras.Position
-import io.youi.font.{GoogleFont, OpenTypeFont}
-import io.youi.net.URL
+import io.youi.font.GoogleFont
 import reactify._
 
 import scala.concurrent.Future
@@ -23,10 +22,8 @@ object HelloWorld extends Screen with PathActivation {
         font.size := 64.px
         //      fill := Color.DarkBlue
         position.`type` := Position.Absolute
-//        position.center := ui.position.center
-//        position.middle := ui.position.middle
-        position.left := 100.0
-        position.top := 150.0
+        position.center := ui.position.center
+        position.middle := ui.position.middle
       }
       ui.children += textView
     }

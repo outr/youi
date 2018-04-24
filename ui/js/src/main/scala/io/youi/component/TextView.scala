@@ -1,7 +1,7 @@
 package io.youi.component
 
 import io.youi.component.extras.HTMLComponent
-import io.youi.dom
+import io.youi.{Color, dom}
 import io.youi.drawable.Context
 import io.youi.spatial.Size
 import io.youi.style.FontFamily
@@ -24,6 +24,7 @@ class TextView(protected val element: html.Element) extends HTMLComponent[html.E
     case "auto" | "" => 0.0
     case s => throw new RuntimeException(s"Unsupported font size: [$s]")
   }, (v: Double) => element.style.fontSize = s"${v}px", 0.0, updateSizeFromElement())
+  connect[Color](color, Color.Black, (c: Color) => element.style.color = c.toRGBA, Color.Black)
 
   override protected def determineActualWidth: Double = TextView.measure(this).width
 

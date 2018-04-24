@@ -1,5 +1,6 @@
 package io.youi.theme
 
+import io.youi.Color
 import io.youi.component.Component
 import io.youi.style.{FontFamily, FontWeight}
 import reactify.Var
@@ -16,6 +17,8 @@ trait TextViewTheme extends ComponentTheme {
     val weight: Var[FontWeight] = Var(prnt(_.font.weight, FontWeight.default))
     val size: Var[Double] = Var(prnt(_.font.size, 12.0))
   }
+
+  val color: Var[Color] = Var(prnt(_.color, Color.Black))
 
   /*object shadow {
     val enabled: Var[Boolean] = prop(prnt(_.shadow.enabled, false), updatesRendering = true)

@@ -20,7 +20,7 @@ object HelloWorld extends Screen with PathActivation {
         value := "Hello, World!"
         font.family := fnt
         font.size := 64.px
-        //      fill := Color.DarkBlue
+        color := Color.DarkBlue
         position.`type` := Position.Absolute
         position.center := ui.position.center
         position.middle := ui.position.middle

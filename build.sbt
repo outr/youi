@@ -27,7 +27,7 @@ developers in ThisBuild := List(
 )
 
 val profigVersion = "2.2.1"
-val scribeVersion = "2.3.2"
+val scribeVersion = "2.3.3"
 val powerScalaVersion = "2.0.5"
 val reactifyVersion = "2.3.0"
 val hasherVersion = "1.2.1"
@@ -37,18 +37,18 @@ val openTypeVersion = "0.7.3"
 val picaVersion = "3.0.5"
 val webFontLoaderVersion = "1.6.28"
 
-val akkaVersion = "2.5.11"
+val akkaVersion = "2.5.12"
 val scalaJSDOM = "0.9.5"
 val okHttpVersion = "3.10.0"
-val circeVersion = "0.9.2"
+val circeVersion = "0.9.3"
 val uaDetectorVersion = "2014.10"
-val undertowVersion = "2.0.3.Final"
-val closureCompilerVersion = "v20180204"
-val jSoupVersion = "1.11.2"
+val undertowVersion = "2.0.4.Final"
+val closureCompilerVersion = "v20180402"
+val jSoupVersion = "1.11.3"
 val scalaXMLVersion = "1.1.0"
 val scalacticVersion = "3.0.5"
 val scalaTestVersion = "3.0.5"
-val scalaCheckVersion = "1.13.5"
+val scalaCheckVersion = "1.14.0"
 
 lazy val root = project.in(file("."))
   .aggregate(
@@ -70,6 +70,9 @@ lazy val macros = crossProject(JSPlatform, JVMPlatform).in(file("macros"))
       "org.scalactic" %%% "scalactic" % scalacticVersion,
       "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
     )
+  )
+  .jsSettings(
+    jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv
   )
 
 lazy val macrosJS = macros.js
@@ -192,6 +195,9 @@ lazy val communication = crossProject(JSPlatform, JVMPlatform).in(file("communic
       "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
     )
   )
+  .jsSettings(
+    jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv
+  )
   .dependsOn(core)
 
 lazy val communicationJS = communication.js
@@ -237,6 +243,9 @@ lazy val app = crossProject(JSPlatform, JVMPlatform).in(file("app"))
       "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
     )
   )
+  .jsSettings(
+    jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv
+  )
   .dependsOn(core, communication, ui)
 
 lazy val appJS = app.js
@@ -251,7 +260,8 @@ lazy val example = crossProject(JSPlatform, JVMPlatform).in(file("example"))
     crossTarget in fullOptJS := baseDirectory.value / ".." / "jvm" / "src" / "main" / "resources" / "app",
     crossTarget in packageJSDependencies := baseDirectory.value / ".." / "jvm" / "src" / "main" / "resources" / "app",
     crossTarget in packageMinifiedJSDependencies := baseDirectory.value / ".." / "jvm" / "src" / "main" / "resources" / "app",
-    skip in packageJSDependencies := false
+    skip in packageJSDependencies := false,
+    jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv
   )
   .jvmSettings(
     scalaJSUseMainModuleInitializer := true,

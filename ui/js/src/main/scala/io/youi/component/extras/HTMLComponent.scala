@@ -11,14 +11,18 @@ trait HTMLComponent[E <: html.Element] extends Component {
   protected val e: HTMLExtras[E] = new HTMLExtras[E](element)
 
   override lazy val position: HTMLComponentPosition = new HTMLComponentPosition(this)
+  lazy val rotation: Var[Double] = connect(Var(0.0), (d: Double) => element.style.transform = s"rotate(${d * 360.0}deg)")
 
   override protected def init(): Unit = {
     super.init()
 
     element.setAttribute("data-youi-id", id())
 
-    connect(size.measured.width, determineActualWidth, (v: Double) => element.style.width = s"${v}px", 0.0)
-    connect(size.measured.height, determineActualHeight, (v: Double) => element.style.height = s"${v}px", 0.0)
+    size.measured.width := determineActualWidth
+    size.measured.height := determineActualHeight
+    connect(size.width, (v: Double) => element.style.width = s"${v}px")
+    connect(size.height, (v: Double) => element.style.height = s"${v}px")
+    connect(opacity, (d: Double) => element.style.opacity = d.toString)
 
     if (this != ui) {
       parent.attachAndFire {
@@ -57,38 +61,4 @@ object HTMLComponent {
   }
 
   def element(component: Component): html.Element = component.asInstanceOf[HTMLComponent[html.Element]].element
-}
-
-sealed trait Position
-
-object Position {
-  case object Static extends Position
-  case object Relative extends Position
-  case object Absolute extends Position
-  case object Fixed extends Position
-  case object Sticky extends Position
-
-  def apply(value: String): Position = value.toLowerCase.trim match {
-    case "relative" => Relative
-    case "absolute" => Absolute
-    case "fixed" => Fixed
-    case "sticky" => Sticky
-    case _ => Static
-  }
-}
-
-class HTMLComponentPosition(component: Component) extends ComponentPosition(component) {
-  private def e: html.Element = HTMLComponent.element(component)
-
-  lazy val `type`: Var[Position] = {
-    component.connect[Position](
-      v = Var(Position.Static),
-      get = Position(e.style.position),
-      set = (p: Position) => e.style.position = p.toString.toLowerCase,
-      default = Position.Static
-    )
-  }
-
-  component.connect(x, e.offsetLeft, (v: Double) => e.style.left = s"${v}px", 0.0)
-  component.connect(y, e.offsetTop, (v: Double) => e.style.top = s"${v}px", 0.0)
 }

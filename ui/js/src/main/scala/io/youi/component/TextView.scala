@@ -17,14 +17,11 @@ class TextView(protected val element: html.Element) extends HTMLComponent[html.E
   override lazy val theme: Var[TextViewTheme] = Var(TextView)
   override def `type`: String = "TextView"
 
-  lazy val value: Var[String] = connect[String](Var(""), element.textContent, element.textContent = _, "", updateSizeFromElement())
+  lazy val value: Var[String] = connect[String](Var(""), element.textContent = _, updateSizeFromElement())
 
-  connect[FontFamily](font.family, FontFamily(element.style.fontFamily), ff => element.style.fontFamily = ff.value, FontFamily.default, updateSizeFromElement())
-  connect(font.size, element.style.fontSize match {
-    case "auto" | "" => 0.0
-    case s => throw new RuntimeException(s"Unsupported font size: [$s]")
-  }, (v: Double) => element.style.fontSize = s"${v}px", 0.0, updateSizeFromElement())
-  connect[Color](color, Color.Black, (c: Color) => element.style.color = c.toRGBA, Color.Black)
+  connect[FontFamily](font.family, ff => element.style.fontFamily = ff.value, updateSizeFromElement())
+  connect(font.size, (v: Double) => element.style.fontSize = s"${v}px", updateSizeFromElement())
+  connect[Color](color, (c: Color) => element.style.color = c.toRGBA)
 
   override protected def determineActualWidth: Double = TextView.measure(this).width
 

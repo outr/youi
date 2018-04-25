@@ -3,8 +3,8 @@ package io.youi.example.ui
 import io.youi._
 import io.youi.app.screen.{PathActivation, Screen}
 import io.youi.component.TextView
-import io.youi.component.extras.Position
 import io.youi.font.GoogleFont
+import io.youi.style.Position
 import reactify._
 
 import scala.concurrent.Future

@@ -2,8 +2,7 @@ package io.youi.theme
 
 import io.youi.Color
 import io.youi.component.Component
-import io.youi.font.Font
-import io.youi.paint.{Paint, Stroke}
+import io.youi.style.{FontFamily, FontWeight}
 import reactify.Var
 
 trait TextViewTheme extends ComponentTheme {
@@ -13,7 +12,15 @@ trait TextViewTheme extends ComponentTheme {
     case p: TextViewTheme => p
   }.map(f).getOrElse(default)
 
-  object shadow {
+  object font {
+    val family: Var[FontFamily] = Var(prnt(_.font.family, FontFamily.default))
+    val weight: Var[FontWeight] = Var(prnt(_.font.weight, FontWeight.default))
+    val size: Var[Double] = Var(prnt(_.font.size, 12.0))
+  }
+
+  val color: Var[Color] = Var(prnt(_.color, Color.Black))
+
+  /*object shadow {
     val enabled: Var[Boolean] = prop(prnt(_.shadow.enabled, false), updatesRendering = true)
     val blur: Var[Double] = prop(prnt(_.shadow.blur, 0.0), updatesRendering = true)
     val color: Var[Color] = prop(prnt(_.shadow.color, Color.Black), updatesRendering = true)
@@ -37,5 +44,5 @@ trait TextViewTheme extends ComponentTheme {
   }
 
   // Default TextView to be cached for better performance
-  cache := prnt(_.cache, true)
+  cache := prnt(_.cache, true)*/
 }

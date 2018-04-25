@@ -4,6 +4,7 @@ import io.youi.event.KeyEvent
 import io.youi.font.{GoogleFont, GoogleFontWeight}
 import io.youi.paint.Paint
 import io.youi.spatial.NumericSize
+import io.youi.style.FontFamily
 import org.scalajs.dom.html.Div
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 import org.scalajs.dom.{KeyboardEvent, document, html}
@@ -27,6 +28,8 @@ package object youi {
   }
 
   implicit def color2Paint(color: Color): Paint = Paint.color(color)
+
+  implicit def gf2FontFamily(gf: GoogleFont): FontFamily = FontFamily(gf.family)
 
   implicit class ExtendedGoogleFont(font: GoogleFont) {
     def load(): Future[GoogleFont] = {

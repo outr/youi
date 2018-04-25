@@ -3,8 +3,8 @@ package io.youi.example.ui
 import io.youi._
 import io.youi.app.screen.{PathActivation, Screen}
 import io.youi.component.TextView
-import io.youi.font.{GoogleFont, OpenTypeFont}
-import io.youi.net.URL
+import io.youi.font.GoogleFont
+import io.youi.style.Position
 import reactify._
 
 import scala.concurrent.Future
@@ -15,15 +15,13 @@ object HelloWorld extends Screen with PathActivation {
   override def path: String = "/examples/hello.html"
 
   override protected def init(): Future[Unit] = super.init().flatMap { _ =>
-    GoogleFont.`Lobster`.load().map { font =>
+    GoogleFont.`Lobster`.load().map { fnt =>
       val textView = new TextView {
-        //      cache := true
-        //      font.file := fnt
-        //      font.size := 48.0
         value := "Hello, World!"
-        element.style.fontFamily = "Lobster"
-        element.style.fontSize = "30px"
-        //      fill := Color.DarkBlue
+        font.family := fnt
+        font.size := 64.px
+        color := Color.DarkBlue
+        position.`type` := Position.Absolute
         position.center := ui.position.center
         position.middle := ui.position.middle
       }

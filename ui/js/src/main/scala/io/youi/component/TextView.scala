@@ -1,16 +1,38 @@
 package io.youi.component
 
 import io.youi.component.extras.HTMLComponent
-import io.youi.dom
+import io.youi.{Color, dom}
+import io.youi.drawable.Context
+import io.youi.spatial.Size
+import io.youi.style.FontFamily
 import io.youi.theme.TextViewTheme
 import org.scalajs.dom.html
 import reactify.Var
 
-class TextView(protected val element: html.Element = dom.create[html.Span]("span")) extends HTMLComponent[html.Element] {
+class TextView(protected val element: html.Element) extends HTMLComponent[html.Element] with TextViewTheme {
+  def this() = {
+    this(dom.create[html.Span]("span"))
+  }
+
   override lazy val theme: Var[TextViewTheme] = Var(TextView)
   override def `type`: String = "TextView"
 
-  lazy val value: Prop[String] = prop[String](element.textContent, (s: String) => element.textContent = s)
+  lazy val value: Var[String] = connect[String](Var(""), element.textContent = _, updateSizeFromElement())
+
+  connect[FontFamily](font.family, ff => element.style.fontFamily = ff.value, updateSizeFromElement())
+  connect(font.size, (v: Double) => element.style.fontSize = s"${v}px", updateSizeFromElement())
+  connect[Color](color, (c: Color) => element.style.color = c.toRGBA)
+
+  override protected def determineActualWidth: Double = TextView.measure(this).width
+
+  override protected def determineActualHeight: Double = TextView.measure(this).height
 }
 
-object TextView extends TextViewTheme
+object TextView extends TextViewTheme {
+  private val measurer = new Context(dom.create[html.Canvas]("canvas"), 1.0)
+
+  def measure(component: TextView): Size = {
+    measurer.setFont(component.font.family().value, component.font.size(), "", "", component.font.weight().value)
+    measurer.measureText(component.value())
+  }
+}

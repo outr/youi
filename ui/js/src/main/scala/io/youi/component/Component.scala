@@ -77,6 +77,8 @@ trait Component extends TaskSupport with ComponentTheme {
     */
   protected def updatables: List[Updatable] = Nil
 
+  resetMeasured()
+
   /**
     * Called automatically the first time this Component is connected to the document.
     */
@@ -92,6 +94,11 @@ trait Component extends TaskSupport with ComponentTheme {
     super.update(delta)
 
     updateUpdatables(delta, internalUpdatables())
+  }
+
+  def resetMeasured(): Unit = {
+    size.measured.width := measuredWidth
+    size.measured.height := measuredHeight
   }
 
   @tailrec

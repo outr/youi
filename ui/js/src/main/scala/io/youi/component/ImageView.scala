@@ -10,7 +10,7 @@ class ImageView(implementation: ImageViewImplementation = new CanvasImageViewImp
     extends HTMLComponent[html.Element] with ImageViewTheme {
   override protected lazy val element: html.Element = implementation.createElement()
 
-  lazy val image: Var[Image] = connect(Var(Image.empty), implementation.apply(this, _), updateSizeFromElement())
+  lazy val image: Var[Image] = connect(Var(Image.empty), implementation.apply(this, _))
 
   override lazy val theme: Var[ImageViewTheme] = Var(ImageView)
   override def `type`: String = "ImageView"

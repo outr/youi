@@ -43,4 +43,8 @@ object ui extends Container(document.body) {
   AnimationFrame.delta.attach { d =>
     update(d)
   }
+
+  override protected def measuredWidth: Double = window.innerWidth
+
+  override protected def measuredHeight: Double = window.innerHeight
 }

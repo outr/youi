@@ -3,6 +3,7 @@ package io.youi.component.extras
 import io.youi.component.Component
 import io.youi.{dom, ui}
 import io.youi.dom._
+import io.youi.paint.Paint
 import org.scalajs.dom.{Element, _}
 import reactify.Var
 
@@ -18,11 +19,12 @@ trait HTMLComponent[E <: html.Element] extends Component {
 
     element.setAttribute("data-youi-id", id())
 
-    size.measured.width := measuredWidth
-    size.measured.height := measuredHeight
     connect(size.width, (v: Double) => element.style.width = s"${v}px")
     connect(size.height, (v: Double) => element.style.height = s"${v}px")
+
+    connect(visible, (b: Boolean) => element.style.visibility = if (b) "visible" else "hidden")
     connect(opacity, (d: Double) => element.style.opacity = d.toString)
+    connect(background, (p: Paint) => element.style.background = p.asCSS())
 
     if (this != ui) {
       parent.attachAndFire {
@@ -45,10 +47,6 @@ trait HTMLComponent[E <: html.Element] extends Component {
     }
   }
 
-  protected def updateSizeFromElement(): Unit = {
-    size.measured.width := measuredWidth
-    size.measured.height := measuredHeight
-  }
   override protected def measuredWidth: Double = element.offsetWidth // + margin.left() + margin.right()
   override protected def measuredHeight: Double = element.offsetHeight // + margin.top() + margin.bottom()
 }

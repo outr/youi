@@ -14,8 +14,8 @@ class ComponentSize(component: Component) {
     if (height) this.height.set(measured.height())
   }
 
-  lazy val width: Var[Double] = component.prop(measured.width, updatesRendering = true)
-  lazy val height: Var[Double] = component.prop(measured.height, updatesRendering = true)
+  val width: Var[Double] = component.prop(measured.width, updatesRendering = true)
+  val height: Var[Double] = component.prop(measured.height, updatesRendering = true)
 
   lazy val center: Val[Double] = Val(width / 2.0)
   lazy val middle: Val[Double] = Val(height / 2.0)

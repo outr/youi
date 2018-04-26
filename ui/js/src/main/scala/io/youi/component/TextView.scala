@@ -17,10 +17,10 @@ class TextView(protected val element: html.Element) extends HTMLComponent[html.E
   override lazy val theme: Var[TextViewTheme] = Var(TextView)
   override def `type`: String = "TextView"
 
-  lazy val value: Var[String] = connect[String](Var(""), element.textContent = _, updateSizeFromElement())
+  lazy val value: Var[String] = connect[String](Var(""), element.textContent = _)
 
-  connect[FontFamily](font.family, ff => element.style.fontFamily = ff.value, updateSizeFromElement())
-  connect(font.size, (v: Double) => element.style.fontSize = s"${v}px", updateSizeFromElement())
+  connect[FontFamily](font.family, ff => element.style.fontFamily = ff.value)
+  connect(font.size, (v: Double) => element.style.fontSize = s"${v}px")
   connect[Color](color, (c: Color) => element.style.color = c.toRGBA)
 
   override protected def measuredWidth: Double = TextView.measure(this).width

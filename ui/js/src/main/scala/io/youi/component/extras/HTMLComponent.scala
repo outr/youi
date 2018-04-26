@@ -18,8 +18,8 @@ trait HTMLComponent[E <: html.Element] extends Component {
 
     element.setAttribute("data-youi-id", id())
 
-    size.measured.width := determineActualWidth
-    size.measured.height := determineActualHeight
+    size.measured.width := measuredWidth
+    size.measured.height := measuredHeight
     connect(size.width, (v: Double) => element.style.width = s"${v}px")
     connect(size.height, (v: Double) => element.style.height = s"${v}px")
     connect(opacity, (d: Double) => element.style.opacity = d.toString)
@@ -46,11 +46,11 @@ trait HTMLComponent[E <: html.Element] extends Component {
   }
 
   protected def updateSizeFromElement(): Unit = {
-    size.measured.width := determineActualWidth
-    size.measured.height := determineActualHeight
+    size.measured.width := measuredWidth
+    size.measured.height := measuredHeight
   }
-  protected def determineActualWidth: Double = element.offsetWidth // + margin.left() + margin.right()
-  protected def determineActualHeight: Double = element.offsetHeight // + margin.top() + margin.bottom()
+  protected def measuredWidth: Double = element.offsetWidth // + margin.left() + margin.right()
+  protected def measuredHeight: Double = element.offsetHeight // + margin.top() + margin.bottom()
 }
 
 object HTMLComponent {

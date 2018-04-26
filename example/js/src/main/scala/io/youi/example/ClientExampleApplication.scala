@@ -2,10 +2,10 @@ package io.youi.example
 
 import io.youi.app.screen.LoadingTransitionSupport
 import io.youi.app.{ClientApplication, ClientConnectivity}
-import io.youi.dom
+import io.youi.{Color, dom}
 import io.youi.dom._
 import io.youi.example.screen.{CommunicationScreen, ExampleBootstrapScreen, LoginScreen}
-import io.youi.example.ui.{HelloWorld, ImageExample}
+import io.youi.example.ui.{AnimationExample, GridLayoutExample, HelloWorld, ImageExample}
 //import io.youi.example.ui._
 //import io.youi.example.ui.drawable._
 //import io.youi.example.ui.hypertext.DataTransferExample
@@ -15,6 +15,10 @@ import org.scalajs.dom._
 import scala.scalajs.js.annotation.JSExportTopLevel
 
 object ClientExampleApplication extends ExampleApplication with ClientApplication with LoadingTransitionSupport {
+  object colors {
+    val blue: Color = Color.fromLong(0x166196)
+  }
+
   // Adds debug support to the application (press F2)
 //  val debug = new DebugSupport
 //  debug.enabled := true
@@ -31,8 +35,10 @@ object ClientExampleApplication extends ExampleApplication with ClientApplicatio
 //  val animatedImage = AnimatedImageExample
 //  val heavyText = HeavyTextExample
 
-  val hello = HelloWorld
-  val image = ImageExample
+  val hello: HelloWorld = new HelloWorld
+  val animation: AnimationExample = new AnimationExample
+  val grid: GridLayoutExample = new GridLayoutExample
+  val image: ImageExample = new ImageExample
 
 //  val imageChange = ImageChangeExample
 //  val hitTest = HitTestExample

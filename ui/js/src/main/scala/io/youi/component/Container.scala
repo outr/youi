@@ -10,4 +10,10 @@ class Container(element: html.Element = HTMLComponent.create[html.Div]("div")) e
   override def `type`: String = "Container"
 }
 
-object Container extends ContainerTheme
+object Container extends ContainerTheme {
+  def apply(children: Component*): Container = {
+    val container = new Container
+    container.children := children.toVector
+    container
+  }
+}

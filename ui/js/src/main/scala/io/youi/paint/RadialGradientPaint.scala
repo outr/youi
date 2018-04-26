@@ -20,4 +20,6 @@ case class RadialGradientPaint(x0: Double,
     }
     g
   }
+
+  override def asCSS(): String = ???
 }

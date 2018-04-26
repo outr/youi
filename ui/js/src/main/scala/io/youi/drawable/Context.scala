@@ -214,7 +214,7 @@ class Context(val canvas: html.Canvas, _ratio: => Double) {
     val width = div.clientWidth
     val height = div.clientHeight
     document.body.removeChild(div)
-    size.set(width, height)
+    size.set(width + 1.0, height + 1.0)
   }
 
   def fillText(text: String, x: Double = 0.0, y: Double = 0.0, maxWidth: Double = 10000.0): Unit = {

@@ -9,5 +9,7 @@ object NoPaint extends Paint {
 
   override def asJS(context: Context): js.Any = ""
 
+  override def asCSS(): String = ""
+
   override def toString: String = "NoPaint"
 }

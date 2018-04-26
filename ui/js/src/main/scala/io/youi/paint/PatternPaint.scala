@@ -13,4 +13,6 @@ trait PatternPaint extends Paint {
   } else {
     ""
   }
+
+  override def asCSS(): String = ???
 }

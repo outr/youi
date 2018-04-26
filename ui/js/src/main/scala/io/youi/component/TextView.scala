@@ -23,9 +23,9 @@ class TextView(protected val element: html.Element) extends HTMLComponent[html.E
   connect(font.size, (v: Double) => element.style.fontSize = s"${v}px", updateSizeFromElement())
   connect[Color](color, (c: Color) => element.style.color = c.toRGBA)
 
-  override protected def determineActualWidth: Double = TextView.measure(this).width
+  override protected def measuredWidth: Double = TextView.measure(this).width
 
-  override protected def determineActualHeight: Double = TextView.measure(this).height
+  override protected def measuredHeight: Double = TextView.measure(this).height
 }
 
 object TextView extends TextViewTheme {

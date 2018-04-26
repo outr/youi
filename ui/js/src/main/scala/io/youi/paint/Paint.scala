@@ -17,6 +17,7 @@ trait Paint extends Modifiable with Updatable {
   def nonEmpty: Boolean = !isEmpty
   def update(delta: Double): Unit = {}
   def asJS(context: Context): js.Any
+  def asCSS(): String
 }
 
 object Paint {

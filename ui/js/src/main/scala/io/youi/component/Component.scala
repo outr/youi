@@ -2,7 +2,7 @@ package io.youi.component
 
 import io.youi.component.extras.{ComponentPosition, ComponentSize}
 import io.youi.event.Events
-import io.youi.{Unique, Updatable}
+import io.youi.{MapStore, Store, Unique, Updatable}
 import io.youi.task.TaskSupport
 import io.youi.theme.ComponentTheme
 import reactify._
@@ -23,6 +23,8 @@ trait Component extends TaskSupport with ComponentTheme {
     }
     v
   }
+
+  lazy val store: Store = new MapStore
 
   /**
     * Generated unique identifier for this element.

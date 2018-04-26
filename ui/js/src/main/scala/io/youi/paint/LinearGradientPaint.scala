@@ -18,4 +18,6 @@ case class LinearGradientPaint(x0: Double,
     }
     g
   }
+
+  override def asCSS(): String = ???
 }

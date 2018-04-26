@@ -16,7 +16,10 @@ import scala.scalajs.js.annotation.JSExportTopLevel
 
 object ClientExampleApplication extends ExampleApplication with ClientApplication with LoadingTransitionSupport {
   object colors {
-    val blue: Color = Color.fromLong(0x166196)
+    object blue {
+      val dark: Color = Color.fromLong(0x166196ff)
+      val light: Color = Color.fromLong(0x63b4edff)
+    }
   }
 
   // Adds debug support to the application (press F2)

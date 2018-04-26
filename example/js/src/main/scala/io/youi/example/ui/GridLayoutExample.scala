@@ -3,13 +3,14 @@ package io.youi.example.ui
 import io.youi._
 import io.youi.app.screen.UIScreen
 import io.youi.component.Container
+import io.youi.example.screen.UIExampleScreen
 import io.youi.layout.GridLayout
 import io.youi.paint.{Border, Paint, Stroke}
 import reactify._
 
 import scala.concurrent.Future
 
-class GridLayoutExample extends UIScreen {
+class GridLayoutExample extends UIExampleScreen {
   override def title: String = "Grid Layout"
   override def path: String = "/examples/grid-layout.html"
 

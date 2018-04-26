@@ -19,5 +19,12 @@ case class LinearGradientPaint(x0: Double,
     g
   }
 
-  override def asCSS(): String = ???
+  override def asCSS(): String = {
+    val angle = (math.atan2(y1 - y0, x1 - x0) * 180.0 / math.Pi) + 90.0
+    val stopEntries = stops.map { stop =>
+      val percentage = math.round(stop.offset * 100.0).toInt
+      s"${stop.color.toRGBA} $percentage%"
+    }
+    s"linear-gradient(${angle}deg, ${stopEntries.mkString(", ")})"
+  }
 }

@@ -2,6 +2,7 @@ package io.youi.example.ui
 
 import io.youi.app.screen.{PathActivation, Screen, UIScreen}
 import io.youi.component._
+import io.youi.example.screen.UIExampleScreen
 import io.youi.image.Image
 import io.youi.style.Position
 import io.youi.task._
@@ -11,8 +12,8 @@ import scala.concurrent.Future
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class ImageExample extends UIScreen {
-  override protected def title: String = "Image Example"
+class ImageExample extends UIExampleScreen {
+  override def title: String = "Image Example"
   override def path: String = "/examples/image.html"
 
   override def createUI(): Future[Unit] = Image("/images/icon.png").map { img =>

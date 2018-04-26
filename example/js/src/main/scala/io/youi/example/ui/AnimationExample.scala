@@ -1,9 +1,9 @@
 package io.youi.example.ui
 
 import io.youi._
-import io.youi.app.screen.UIScreen
 import io.youi.component.{ImageView, TextView}
 import io.youi.easing.Easing
+import io.youi.example.screen.UIExampleScreen
 import io.youi.font.GoogleFont
 import io.youi.image.Image
 import io.youi.style.Position
@@ -13,8 +13,8 @@ import scala.concurrent.Future
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class AnimationExample extends UIScreen {
-  override protected def title: String = "Animation Example"
+class AnimationExample extends UIExampleScreen {
+  override def title: String = "Animation Example"
   override def path: String = "/examples/animation.html"
 
   override def createUI(): Future[Unit] = Image("/images/icon.png").map { img =>

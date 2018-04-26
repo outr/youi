@@ -6,7 +6,7 @@ import reactify.{Val, Var}
 import scala.concurrent.Future
 
 trait Screen {
-  protected def title: String = getClass.getSimpleName
+  def title: String = getClass.getSimpleName
 
   private[screen] val currentState = Var[ScreenState](ScreenState.New)
 

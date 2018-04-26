@@ -11,7 +11,7 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class HelloWorld extends UIExampleScreen {
-  override protected def title: String = "Hello World"
+  override def title: String = "Hello World"
   override def path: String = "/examples/hello.html"
 
   override def createUI(): Future[Unit] = GoogleFont.`Lobster`.load().map { fnt =>

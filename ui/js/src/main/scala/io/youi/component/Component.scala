@@ -124,9 +124,17 @@ trait Component extends TaskSupport with ComponentTheme {
     }
   }
 
+  protected def measuredWidth: Double
+  protected def measuredHeight: Double
+
   override def toString: String = id()
 }
 
 object Component extends ComponentTheme {
   def childrenFor(component: Component): Vector[Component] = component.childComponents
+
+  object measured {
+    def width(component: Component): Double = component.measuredWidth
+    def height(component: Component): Double = component.measuredHeight
+  }
 }

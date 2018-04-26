@@ -49,8 +49,8 @@ trait HTMLComponent[E <: html.Element] extends Component {
     size.measured.width := measuredWidth
     size.measured.height := measuredHeight
   }
-  protected def measuredWidth: Double = element.offsetWidth // + margin.left() + margin.right()
-  protected def measuredHeight: Double = element.offsetHeight // + margin.top() + margin.bottom()
+  override protected def measuredWidth: Double = element.offsetWidth // + margin.left() + margin.right()
+  override protected def measuredHeight: Double = element.offsetHeight // + margin.top() + margin.bottom()
 }
 
 object HTMLComponent {

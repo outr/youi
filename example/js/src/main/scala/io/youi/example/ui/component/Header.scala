@@ -20,7 +20,7 @@ class Header extends Container {
   size.height := 125.0
   background := Paint.vertical(125.0).distributeColors(Color.White, Color.LightGray, Color.DarkGray)
 
-  val logo: ImageView = new ImageView(HTMLImageViewImplementation) {
+  val logo: ImageView = new ImageView {
     Image("/images/youi.png").foreach { img =>
       image := img
     }

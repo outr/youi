@@ -11,7 +11,7 @@ import reactify._
 
 import scala.concurrent.{Future, Promise}
 
-class Video(element: html.Video) extends Drawable {
+class Video(private[youi] val element: html.Video) extends Drawable {
   def isEmpty: Boolean = false
   def nonEmpty: Boolean = !isEmpty
 

@@ -1,12 +1,12 @@
 package io.youi.component
 
-import io.youi.component.extras.{CanvasImageViewImplementation, HTMLComponent, ImageViewImplementation}
+import io.youi.component.extras.{CanvasImageViewImplementation, HTMLComponent, HTMLImageViewImplementation, ImageViewImplementation}
 import io.youi.image.Image
 import io.youi.theme.ImageViewTheme
 import org.scalajs.dom.html
 import reactify.Var
 
-class ImageView(implementation: ImageViewImplementation = new CanvasImageViewImplementation)
+class ImageView(implementation: ImageViewImplementation = HTMLImageViewImplementation)
     extends HTMLComponent[html.Element] with ImageViewTheme {
   override protected lazy val element: html.Element = implementation.createElement()
 

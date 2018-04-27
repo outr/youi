@@ -36,7 +36,7 @@ class ThreadLocalStore extends Store {
     override def initialValue(): Option[Map[String, Any]] = None
   }
   private def map: Map[String, Any] = threadLocal.get().getOrElse(throw new RuntimeException(s"Not in a thread-local context."))
-  private def map_=(map: Map[String, Any]) = threadLocal.set(Some(map))
+  private def map_=(map: Map[String, Any]): Unit = threadLocal.set(Some(map))
 
   override def get[T](key: String): Option[T] = map.get(key).asInstanceOf[Option[T]]
 

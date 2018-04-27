@@ -43,6 +43,7 @@ object ClientExampleApplication extends ExampleApplication with ClientApplicatio
   val grid: GridLayoutExample = new GridLayoutExample
   val hit: HitTestExample = new HitTestExample
   val image: ImageExample = new ImageExample
+  val imageChange: ImageChangeExample = new ImageChangeExample
 
 //  val imageChange = ImageChangeExample
 //  val hitTest = HitTestExample

@@ -29,7 +29,7 @@ class ImageExample extends UIExampleScreen {
       new ImageView {                       // Top-Right
         image := img
         position.`type` := Position.Absolute
-        position.right := ui.size.width - 50.0
+        position.right := container.size.width - 50.0
         position.top := 50.0
         opacity := 0.5
       },
@@ -37,21 +37,21 @@ class ImageExample extends UIExampleScreen {
         image := img
         position.`type` := Position.Absolute
         position.left := 50.0
-        position.bottom := ui.size.height - 50.0
+        position.bottom := container.size.height - 50.0
       },
       new ImageView {                       // Bottom-Right
         image := img
         position.`type` := Position.Absolute
-        position.right := ui.size.width - 50.0
-        position.bottom := ui.size.height - 50.0
+        position.right := container.size.width - 50.0
+        position.bottom := container.size.height - 50.0
         size.width := 300.0
         size.height := 300.0
       },
       new ImageView {                       // Center
         image := img
         position.`type` := Position.Absolute
-        position.center := ui.position.center
-        position.middle := ui.position.middle
+        position.center := container.size.center
+        position.middle := container.size.middle
         forever {
           rotation to 1.0 in 1.seconds andThen(rotation := 0.0)
         }.start(this)

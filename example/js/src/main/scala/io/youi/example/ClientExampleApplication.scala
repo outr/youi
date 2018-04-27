@@ -5,7 +5,7 @@ import io.youi.app.{ClientApplication, ClientConnectivity}
 import io.youi.{Color, dom}
 import io.youi.dom._
 import io.youi.example.screen.{CommunicationScreen, ExampleBootstrapScreen, LoginScreen}
-import io.youi.example.ui.{AnimationExample, GridLayoutExample, HelloWorld, ImageExample}
+import io.youi.example.ui._
 //import io.youi.example.ui._
 //import io.youi.example.ui.drawable._
 //import io.youi.example.ui.hypertext.DataTransferExample
@@ -41,6 +41,7 @@ object ClientExampleApplication extends ExampleApplication with ClientApplicatio
   val hello: HelloWorld = new HelloWorld
   val animation: AnimationExample = new AnimationExample
   val grid: GridLayoutExample = new GridLayoutExample
+  val hit: HitTestExample = new HitTestExample
   val image: ImageExample = new ImageExample
 
 //  val imageChange = ImageChangeExample

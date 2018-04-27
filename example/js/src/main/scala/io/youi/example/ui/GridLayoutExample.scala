@@ -19,8 +19,8 @@ class GridLayoutExample extends UIExampleScreen {
       background := Color.AliceBlue
       padding := 15.0
       border := Border(Stroke(Color.Black))
-      position.center := container.position.center
-      position.middle := container.position.middle
+      position.center := container.size.center
+      position.middle := container.size.middle
     }
     grid.layout := new GridLayout {
       columns := 3

@@ -17,21 +17,21 @@ class HitTestExample extends UIExampleScreen {
         position.top := 50.0
       },
       new Box(Color.Magenta) {                    // Top-Right
-        position.right := ui.size.width - 50.0
+        position.right := container.size.width - 50.0
         position.top := 50.0
         opacity := 0.5
       },
       new Box(Color.Yellow) {                     // Bottom-Left
         position.left := 50.0
-        position.bottom := ui.size.height - 50.0
+        position.bottom := container.size.height - 50.0
       },
       new Box(Color.Black) {                      // Bottom-Right
-        position.right := ui.size.width - 50.0
-        position.bottom := ui.size.height - 50.0
+        position.right := container.size.width - 50.0
+        position.bottom := container.size.height - 50.0
       },
       new Box(Color.DarkRed) {                    // Center
-        position.center := ui.size.center
-        position.middle := ui.size.middle
+        position.center := container.size.center
+        position.middle := container.size.middle
         size.width := 200.0
         size.height := 200.0
 

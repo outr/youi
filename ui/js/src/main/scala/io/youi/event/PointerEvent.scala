@@ -62,7 +62,8 @@ class PointerEvent private[event](val target: Component,
 }
 
 object PointerEvent {
-  def apply(target: Component, `type`: Type,
+  def apply(target: Component,
+            `type`: Type,
             x: Double,
             y: Double,
             globalX: Double,
@@ -72,22 +73,39 @@ object PointerEvent {
     new PointerEvent(target, `type`, x, y, globalX, globalY, htmlEvent, htmlEventType)
   }
 
-  sealed trait Type
+  sealed abstract class Type(`type`: String, includePrefix: Boolean = true) {
+    lazy val htmlTypeString: String = if (includePrefix) {
+      val prefix = if (HTMLEvents.hasPointerSupport) {
+        "pointer"
+      } else {
+        "mouse"
+      }
+      s"$prefix${`type`}"
+    } else {
+      `type`
+    }
+    def htmlType: HTMLEventType = htmlTypeString match {
+      case s if s.startsWith("pointer") => HTMLEventType.Pointer
+      case s if s.startsWith("touch") => HTMLEventType.Touch
+      case _ => HTMLEventType.Mouse
+    }
+  }
 
   object Type {
-    case object Click extends Type
-    case object DoubleClick extends Type
-    case object Move extends Type
-    case object Enter extends Type
-    case object Exit extends Type
-    case object Down extends Type
-    case object Up extends Type
-    case object Cancel extends Type
-    case object Wheel extends Type
-    case object TouchStart extends Type
-    case object TouchMove extends Type
-    case object TouchCancel extends Type
-    case object TouchEnd extends Type
+    case object Click extends Type("click", includePrefix = false)
+    case object DoubleClick extends Type("dblclick", includePrefix = false)
+    case object ContextMenu extends Type("contextmenu", includePrefix = false)
+    case object Move extends Type("move")
+    case object Enter extends Type("enter")
+    case object Exit extends Type("leave")
+    case object Down extends Type("down")
+    case object Up extends Type("up")
+    case object Cancel extends Type("cancel")
+    case object Wheel extends Type("wheel", includePrefix = false)
+    case object TouchStart extends Type("touchstart", includePrefix = false)
+    case object TouchMove extends Type("touchmove", includePrefix = false)
+    case object TouchCancel extends Type("touchcancel", includePrefix = false)
+    case object TouchEnd extends Type("touchend", includePrefix = false)
   }
 }
 

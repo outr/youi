@@ -1,7 +1,7 @@
 package io.youi.component
 
 import io.youi.component.extras.{ComponentPosition, ComponentSize}
-import io.youi.event.Events
+import io.youi.event.{EventSupport, Events, HTMLEvents}
 import io.youi.{MapStore, Store, Unique, Updatable}
 import io.youi.task.TaskSupport
 import io.youi.theme.ComponentTheme
@@ -54,7 +54,7 @@ trait Component extends TaskSupport with ComponentTheme {
   /**
     * Events functionality for monitoring and even firing events on this component.
     */
-  lazy val event: Events = new Events(this)
+  def event: EventSupport
 
   /**
     * Theme associated with this Component.

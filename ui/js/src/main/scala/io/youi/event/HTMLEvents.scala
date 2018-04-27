@@ -1,20 +1,21 @@
 package io.youi.event
 
 import io.youi._
+import io.youi.component.Component
 import org.scalajs.dom.html
 import org.scalajs.{dom => jsdom}
-import reactify.Channel
+import reactify.{Channel, Val, Var}
 
 import scala.scalajs.js
 
-class HTMLEvents(element: html.Element) {
+trait EventSupport {
   def hasPointerSupport: Boolean = HTMLEvents.hasPointerSupport
   def hasTouchSupport: Boolean = HTMLEvents.hasTouchSupport
 
   lazy val change: Channel[jsdom.Event] = events("change")
-  lazy val click: Channel[jsdom.MouseEvent] = events("click")
-  lazy val doubleClick: Channel[jsdom.MouseEvent] = events("dblclick")
-  lazy val contextMenu: Channel[jsdom.MouseEvent] = events("contextmenu")
+  lazy val click: Channel[PointerEvent] = pointerChannel(PointerEvent.Type.Click)
+  lazy val doubleClick: Channel[PointerEvent] = pointerChannel(PointerEvent.Type.DoubleClick)
+  lazy val contextmenu: Channel[PointerEvent] = pointerChannel(PointerEvent.Type.ContextMenu)
   lazy val focus: Channel[jsdom.FocusEvent] = events("focus")
   lazy val blur: Channel[jsdom.FocusEvent] = events("blur")
   object key {
@@ -23,24 +24,50 @@ class HTMLEvents(element: html.Element) {
     lazy val up: Channel[KeyEvent] = keyEvents("keyup", KeyEvent.Type.Up)
   }
   object pointer {
-    lazy val enter: Channel[jsdom.MouseEvent] = pointerEvents("enter")
-    lazy val over: Channel[jsdom.MouseEvent] = pointerEvents("over")
-    lazy val move: Channel[jsdom.MouseEvent] = pointerEvents("move")
-    lazy val down: Channel[jsdom.MouseEvent] = pointerEvents("down")
-    lazy val up: Channel[jsdom.MouseEvent] = pointerEvents("up")
-    lazy val leave: Channel[jsdom.MouseEvent] = pointerEvents("leave")
-    lazy val out: Channel[jsdom.MouseEvent] = pointerEvents("out")
-    lazy val cancel: Channel[jsdom.MouseEvent] = pointerEvents("cancel")
-    lazy val wheel: Channel[jsdom.WheelEvent] = events("wheel")
+    lazy val move: Channel[PointerEvent] = pointerChannel(PointerEvent.Type.Move)
+    lazy val enter: Channel[PointerEvent] = pointerChannel(PointerEvent.Type.Enter)
+    lazy val exit: Channel[PointerEvent] = pointerChannel(PointerEvent.Type.Exit)
+    lazy val down: Channel[PointerEvent] = pointerChannel(PointerEvent.Type.Down)
+    lazy val up: Channel[PointerEvent] = pointerChannel(PointerEvent.Type.Up)
+    lazy val cancel: Channel[PointerEvent] = pointerChannel(PointerEvent.Type.Cancel)
+    lazy val wheel: Channel[WheelEvent] = wheelChannel()
+
+    lazy val (x: Val[Double], y: Val[Double], overState: Val[Boolean]) = {
+      val px = Var[Double](0.0)
+      val py = Var[Double](0.0)
+      val o = Var[Boolean](false)
+      pointer.enter.on(o := true)
+      pointer.exit.on(o := false)
+      pointer.move.attach { evt =>
+        px := evt.local.x
+        py := evt.local.y
+      }
+      (px, py, o)
+    }
+
+    lazy val downState: Val[Boolean] = {
+      val d = Var[Boolean](false)
+      pointer.down.on(d := true)
+      pointer.up.on(d := false)
+      pointer.exit.on(d := false)
+      d
+    }
   }
   object touch {
-    lazy val start: Channel[jsdom.TouchEvent] = touchEvents("start")
-    lazy val move: Channel[jsdom.TouchEvent] = touchEvents("move")
-    lazy val cancel: Channel[jsdom.TouchEvent] = touchEvents("cancel")
-    lazy val end: Channel[jsdom.TouchEvent] = touchEvents("end")
+    lazy val start: Channel[PointerEvent] = pointerChannel(PointerEvent.Type.TouchStart)
+    lazy val move: Channel[PointerEvent] = pointerChannel(PointerEvent.Type.TouchMove)
+    lazy val cancel: Channel[PointerEvent] = pointerChannel(PointerEvent.Type.TouchCancel)
+    lazy val end: Channel[PointerEvent] = pointerChannel(PointerEvent.Type.TouchEnd)
   }
 
-  protected def keyEvents(eventType: String, `type`: KeyEvent.Type): Channel[KeyEvent] = {
+  protected def keyEvents(eventType: String, `type`: KeyEvent.Type): Channel[KeyEvent]
+  protected def events[E <: jsdom.Event](eventType: String, stopPropagation: Boolean = false): Channel[E]
+  protected def pointerChannel(`type`: PointerEvent.Type): Channel[PointerEvent]
+  protected def wheelChannel(): Channel[WheelEvent]
+}
+
+class HTMLEvents(component: Component, element: html.Element) extends EventSupport {
+  override protected def keyEvents(eventType: String, `type`: KeyEvent.Type): Channel[KeyEvent] = {
     val originalEvents = events[jsdom.KeyboardEvent](eventType)
     val channel = Channel[KeyEvent]
     originalEvents.attach { ke =>
@@ -49,7 +76,7 @@ class HTMLEvents(element: html.Element) {
     channel
   }
 
-  protected def events[E <: jsdom.Event](eventType: String, stopPropagation: Boolean = false): Channel[E] = {
+  override protected def events[E <: jsdom.Event](eventType: String, stopPropagation: Boolean = false): Channel[E] = {
     val channel = Channel[E]
     element.addEventListener(eventType, (evt: E) => {
       if (stopPropagation) {
@@ -61,32 +88,42 @@ class HTMLEvents(element: html.Element) {
     channel
   }
 
-  protected def pointerEvents(eventType: String, stopPropagation: Boolean = false): Channel[jsdom.MouseEvent] = {
-    val eventName = if (hasPointerSupport) {
-      s"pointer$eventType"
-    } else {
-      s"mouse$eventType"
-    }
-    val channel = Channel[jsdom.MouseEvent]
-    element.addEventListener(eventName, (evt: jsdom.MouseEvent) => {
-      if (stopPropagation) {
-        evt.preventDefault()
-        evt.stopPropagation()
-      }
-      channel := evt
+  override protected def pointerChannel(`type`: PointerEvent.Type): Channel[PointerEvent] = {
+    val channel = Channel[PointerEvent]
+    element.addEventListener(`type`.htmlTypeString, (evt: jsdom.MouseEvent) => {
+      val p = PointerEvent(
+        target = component,
+        `type` = `type`,
+        x = evt.clientX,
+        y = evt.clientY,
+        globalX = evt.pageX,
+        globalY = evt.pageY,
+        htmlEvent = evt,
+        htmlEventType = `type`.htmlType
+      )
+      channel := p
     })
     channel
   }
 
-  protected def touchEvents(eventType: String, stopPropagation: Boolean = false): Channel[jsdom.TouchEvent] = {
-    val eventName = s"touch$eventType"
-    val channel = Channel[jsdom.TouchEvent]
-    element.addEventListener(eventName, (evt: jsdom.TouchEvent) => {
-      if (stopPropagation) {
-        evt.preventDefault()
-        evt.stopPropagation()
+  override protected def wheelChannel(): Channel[WheelEvent] = {
+    val channel = Channel[WheelEvent]
+    element.addEventListener(PointerEvent.Type.Wheel.htmlTypeString, (evt: jsdom.WheelEvent) => {
+      val mode = evt.deltaMode match {
+        case 0 => DeltaMode.Pixel
+        case 1 => DeltaMode.Line
+        case 2 => DeltaMode.Page
       }
-      channel := evt
+      val delta = WheelDelta(evt.deltaX, evt.deltaY, evt.deltaZ, mode, evt)
+      val p = WheelEvent(
+        target = component,
+        x = evt.clientX,
+        y = evt.clientY,
+        globalX = evt.pageX,
+        globalY = evt.pageY,
+        delta = delta
+      )
+      channel := p
     })
     channel
   }

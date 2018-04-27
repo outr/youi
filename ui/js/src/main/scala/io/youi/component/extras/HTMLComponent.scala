@@ -3,6 +3,7 @@ package io.youi.component.extras
 import io.youi.component.Component
 import io.youi.{dom, ui}
 import io.youi.dom._
+import io.youi.event.{EventSupport, HTMLEvents}
 import io.youi.paint.Paint
 import org.scalajs.dom.{Element, _}
 import reactify.Var
@@ -13,6 +14,8 @@ trait HTMLComponent[E <: html.Element] extends Component {
 
   override lazy val position: HTMLComponentPosition = new HTMLComponentPosition(this)
   lazy val rotation: Var[Double] = connect(Var(0.0), (d: Double) => element.style.transform = s"rotate(${d * 360.0}deg)")
+
+  override lazy val event: EventSupport = new HTMLEvents(this, element)
 
   override protected def init(): Unit = {
     super.init()

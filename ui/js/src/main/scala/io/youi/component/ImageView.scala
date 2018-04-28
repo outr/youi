@@ -12,6 +12,12 @@ class ImageView(implementation: ImageViewImplementation = HTMLImageViewImplement
 
   lazy val image: Var[Image] = connect(Var(Image.empty), implementation.apply(this, _))
 
+  private val modified: Var[Long] = Var(image().modified)
+
+  modified.attach { _ =>
+    implementation(this, image())
+  }
+
   override lazy val theme: Var[ImageViewTheme] = Var(ImageView)
   override def `type`: String = "ImageView"
 

@@ -46,6 +46,7 @@ object ClientExampleApplication extends ExampleApplication with ClientApplicatio
   val imageChange: ImageChangeExample = new ImageChangeExample
   val scale9: Scale9Example = new Scale9Example
   val snap: SnapExample = new SnapExample
+  val svgImage: SVGImageExample = new SVGImageExample
   val video: VideoExample = new VideoExample
   val virtual: VirtualSizeExample = new VirtualSizeExample
 

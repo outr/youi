@@ -7,6 +7,10 @@ trait VirtualSizeSupport {
   val virtualHeight: Var[Double] = Var[Double](768.0)
   val virtualMode: Var[VirtualMode] = Var[VirtualMode](VirtualMode.Bars)
   val virtual: VirtualSize = new VirtualSize(this)
+  object actual {
+    val width: Var[Double] = Var(ui.size.width)
+    val height: Var[Double] = Var(ui.size.height)
+  }
 
   implicit class DoubleVirtualPixels(d: Double) {
     def vx: Val[Double] = Val[Double](vw() + virtual.xOffset())
@@ -35,15 +39,13 @@ object VirtualMode {
   case object FitHeight extends VirtualMode
 }
 
-class VirtualSize(screen: VirtualSizeSupport,
-                  width: State[Double] = ui.size.width,
-                  height: State[Double] = ui.size.height) {
+class VirtualSize(screen: VirtualSizeSupport) {
   private val size: Val[(Double, Double, Double, Double)] = Val {
-    if (width > 0.0 && height > 0.0) {
+    if (screen.actual.width > 0.0 && screen.actual.height > 0.0) {
       screen.virtualMode.get match {
         case VirtualMode.Bars | VirtualMode.Clip | VirtualMode.FitWidth | VirtualMode.FitHeight => {
-          val widthRatio = width / screen.virtualWidth.get
-          val heightRatio = height / screen.virtualHeight.get
+          val widthRatio = screen.actual.width / screen.virtualWidth.get
+          val heightRatio = screen.actual.height / screen.virtualHeight.get
           val ratio = screen.virtualMode.get match {
             case VirtualMode.Bars => math.min(widthRatio, heightRatio)
             case VirtualMode.Clip => math.max(widthRatio, heightRatio)
@@ -53,10 +55,10 @@ class VirtualSize(screen: VirtualSizeSupport,
           }
           val w = screen.virtualWidth * ratio
           val h = screen.virtualHeight * ratio
-          ((width - w) / 2.0, (height - h) / 2.0, ratio, ratio)
+          ((screen.actual.width - w) / 2.0, (screen.actual.height - h) / 2.0, ratio, ratio)
         }
         case VirtualMode.Stretch => {
-          (0.0, 0.0, width / screen.virtualWidth, height / screen.virtualHeight)
+          (0.0, 0.0, screen.actual.width / screen.virtualWidth, screen.actual.height / screen.virtualHeight)
         }
       }
     } else {

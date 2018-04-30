@@ -19,6 +19,7 @@ class TextView(protected val element: html.Element) extends HTMLComponent[html.E
 
   lazy val value: Var[String] = connect[String](Var(""), None, element.textContent = _)
 
+  // TODO: extract into mix-in
   connect[FontFamily](font.family, None, ff => element.style.fontFamily = ff.value)
   connect(font.size, None, (v: Double) => element.style.fontSize = s"${v}px")
   connect[Color](color, None, (c: Color) => element.style.color = c.toRGBA)

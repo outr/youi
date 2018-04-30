@@ -50,6 +50,9 @@ object ClientExampleApplication extends ExampleApplication with ClientApplicatio
   val video: VideoExample = new VideoExample
   val virtual: VirtualSizeExample = new VirtualSizeExample
 
+  // Bootstrap
+  val bootstrapButton: BootstrapButtonExample = new BootstrapButtonExample
+
 //  val imageChange = ImageChangeExample
 //  val hitTest = HitTestExample
 //  val images = ImageExample

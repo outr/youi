@@ -17,8 +17,8 @@ trait HTMLComponent[E <: html.Element] extends Component {
 
   override lazy val event: EventSupport = new HTMLEvents(this, element)
 
-  connect(size.width, if (element.offsetWidth > 0.0) Some(element.offsetWidth) else None, (v: Double) => element.style.width = s"${v}px")
-  connect(size.height, if (element.offsetHeight > 0.0) Some(element.offsetHeight) else None, (v: Double) => element.style.height = s"${v}px")
+  connect(size.width, if (element.offsetWidth > 0.0) Some(element.offsetWidth) else None, (v: Double) => if (v > 0.0) element.style.width = s"${v}px")
+  connect(size.height, if (element.offsetHeight > 0.0) Some(element.offsetHeight) else None, (v: Double) => if (v > 0.0) element.style.height = s"${v}px")
 
   connect(visible, if (element.style.visibility == "hidden") Some(false) else None, (b: Boolean) => element.style.visibility = if (b) "visible" else "hidden")
   connect(opacity, element.style.opacity match {

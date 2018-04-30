@@ -15,8 +15,8 @@ import scala.annotation.tailrec
 trait Component extends TaskSupport with ComponentTheme {
   private var _initialized: Boolean = false
 
-  protected[component] def connect[T](v: Var[T], set: T => Unit, onChange: => Unit = ()): Var[T] = {
-    set(v())
+  protected[component] def connect[T](v: Var[T], get: => Option[T], set: T => Unit, onChange: => Unit = ()): Var[T] = {
+    set(get.getOrElse(v()))
     v.attach { t =>
       set(t)
       onChange

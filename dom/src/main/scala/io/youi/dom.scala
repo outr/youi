@@ -44,7 +44,7 @@ object dom extends ExtendedElement(None) {
     case None => {
       val promise = Promise[Unit]
       val script = create[html.Script]("script")
-      script.addEventListener("load", (evt: Event) => {
+      script.addEventListener("load", (_: Event) => {
         promise.success(())
       })
       script.src = url

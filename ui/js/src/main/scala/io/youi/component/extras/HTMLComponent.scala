@@ -13,7 +13,7 @@ trait HTMLComponent[E <: html.Element] extends Component {
   protected val e: HTMLExtras[E] = new HTMLExtras[E](element)
 
   override lazy val position: HTMLComponentPosition = new HTMLComponentPosition(this)
-  lazy val rotation: Var[Double] = connect(Var(0.0), (d: Double) => element.style.transform = s"rotate(${d * 360.0}deg)")
+  lazy val rotation: Var[Double] = connect(Var(0.0), None, (d: Double) => element.style.transform = s"rotate(${d * 360.0}deg)")
 
   override lazy val event: EventSupport = new HTMLEvents(this, element)
 
@@ -22,12 +22,22 @@ trait HTMLComponent[E <: html.Element] extends Component {
 
     element.setAttribute("data-youi-id", id())
 
-    connect(size.width, (v: Double) => element.style.width = s"${v}px")
-    connect(size.height, (v: Double) => element.style.height = s"${v}px")
+    connect(size.width, if (element.offsetWidth > 0.0) Some(element.offsetWidth) else None, (v: Double) => element.style.width = s"${v}px")
+    connect(size.height, if (element.offsetHeight > 0.0) Some(element.offsetHeight) else None, (v: Double) => element.style.height = s"${v}px")
 
-    connect(visible, (b: Boolean) => element.style.visibility = if (b) "visible" else "hidden")
-    connect(opacity, (d: Double) => element.style.opacity = d.toString)
-    connect(background, (p: Paint) => element.style.background = p.asCSS())
+    connect(visible, if (element.style.visibility == "hidden") Some(false) else None, (b: Boolean) => element.style.visibility = if (b) "visible" else "hidden")
+    connect(opacity, element.style.opacity match {
+      case null | "" => None
+      case s => {
+        val o = s.toDouble
+        if (o == 1.0) {
+          None
+        } else {
+          Some(o)
+        }
+      }
+    }, (d: Double) => element.style.opacity = d.toString)
+    connect(background, None, (p: Paint) => element.style.background = p.asCSS())
 
     if (this != ui) {
       parent.attachAndFire {

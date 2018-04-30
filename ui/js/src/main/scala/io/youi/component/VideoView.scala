@@ -11,7 +11,7 @@ class VideoView(override protected val element: html.Span = dom.create[html.Span
   override lazy val theme: Var[_ <: ComponentTheme] = Var(VideoView)
   override def `type`: String = "VideoView"
 
-  lazy val video: Var[Video] = connect(Var(Video.empty), setVideo)
+  lazy val video: Var[Video] = connect(Var(Video.empty), None, setVideo)
 
   def play(): Unit = video.play()
   def pause(): Unit = video.pause()

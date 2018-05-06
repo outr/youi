@@ -18,10 +18,9 @@ class BootstrapButtonExample extends UIExampleScreen {
       value := "Hello, World!"
       position.center := container.size.center
       position.middle := container.size.middle
-
-      event.click.attach { _ =>
-        scribe.info("Clicked!")
-      }
+      font.family := fnt
+      font.size := 64.px
+      color := Color.White
     }
     container.children += button
   }

@@ -7,7 +7,6 @@ import io.youi.server.handler.CachingManager
 import io.youi.server.dsl._
 
 object ServerExampleApplication extends ExampleApplication with ServerApplication {
-  val uiExamples: Page = page(UIExamples)
   val generalPages: Page = page(GeneralPages)
 
   override protected def applicationBasePath = s"app/youi-example"
@@ -22,9 +21,10 @@ object ServerExampleApplication extends ExampleApplication with ServerApplicatio
         path"/hello.txt" /
           CachingManager.MaxAge(120L) /
             "Hello, World!".withContentType(ContentType.`text/plain`),
-        path"/bootstrap.html" /
-          Application /
-            ServerApplication.BootstrapTemplate,
+        combined.any(
+          path.matches("/examples/.*[.]html"),
+          path.exact("/ui-examples.html")
+        ) / Application / ServerApplication.AppTemplate,
         path"/cookies.html" /
           CookiesExample,
         path"/session.html" /

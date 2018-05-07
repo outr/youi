@@ -27,7 +27,7 @@ developers in ThisBuild := List(
 )
 
 val profigVersion = "2.2.1"
-val scribeVersion = "2.3.3"
+val scribeVersion = "2.3.4"
 val powerScalaVersion = "2.0.5"
 val reactifyVersion = "2.3.0"
 val hasherVersion = "1.2.1"
@@ -42,7 +42,7 @@ val scalaJSDOM = "0.9.5"
 val okHttpVersion = "3.10.0"
 val circeVersion = "0.9.3"
 val uaDetectorVersion = "2014.10"
-val undertowVersion = "2.0.4.Final"
+val undertowVersion = "2.0.6.Final"
 val closureCompilerVersion = "v20180402"
 val jSoupVersion = "1.11.3"
 val scalaXMLVersion = "1.1.0"

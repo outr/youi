@@ -3,9 +3,9 @@ import sbtcrossproject.{CrossType, crossProject}
 
 name := "youi"
 organization in ThisBuild := "io.youi"
-version in ThisBuild := "0.9.0-SNAPSHOT"
-scalaVersion in ThisBuild := "2.12.5"
-crossScalaVersions in ThisBuild := List("2.12.5", "2.11.12")
+version in ThisBuild := "0.9.0-M10"
+scalaVersion in ThisBuild := "2.12.6"
+crossScalaVersions in ThisBuild := List("2.12.6", "2.11.12")
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
 resolvers in ThisBuild += Resolver.sonatypeRepo("snapshots")
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation", "-feature")

@@ -19,5 +19,6 @@ class HTMLComponentPosition(component: Component) extends ComponentPosition(comp
     )
     component.connect(x, None, (v: Double) => e.style.left = s"${v}px")
     component.connect(y, None, (v: Double) => e.style.top = s"${v}px")
+    component.connect(z, None, (i: Int) => e.style.zIndex = i.toString)
   }
 }

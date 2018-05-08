@@ -7,7 +7,7 @@ import reactify.Var
 
 class Container(element: html.Element = HTMLComponent.create[html.Div]("div")) extends HTMLContainer[Component](element) {
   override lazy val theme: Var[_ <: ContainerTheme] = Var(Container)
-  override def `type`: String = "Container"
+  override def componentType: String = "Container"
 }
 
 object Container extends ContainerTheme {

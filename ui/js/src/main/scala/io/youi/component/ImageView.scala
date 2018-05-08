@@ -19,7 +19,7 @@ class ImageView(implementation: ImageViewImplementation = HTMLImageViewImplement
   }
 
   override lazy val theme: Var[ImageViewTheme] = Var(ImageView)
-  override def `type`: String = "ImageView"
+  override def componentType: String = "ImageView"
 
   size.width.attach(d => implementation.updateSize(this, d, size.height()))
   size.height.attach(d => implementation.updateSize(this, size.width(), d))

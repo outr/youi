@@ -15,7 +15,7 @@ class TextView(protected val element: html.Element) extends HTMLComponent[html.E
   }
 
   override lazy val theme: Var[TextViewTheme] = Var(TextView)
-  override def `type`: String = "TextView"
+  override def componentType: String = "TextView"
 
   lazy val value: Var[String] = connect[String](Var(""), None, element.textContent = _)
 

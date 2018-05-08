@@ -1,7 +1,7 @@
 package io.youi.example.ui
 
 import io.youi._
-import io.youi.component.bootstrap.Button
+import io.youi.component.bootstrap.{Button, ButtonType}
 import io.youi.example.screen.UIExampleScreen
 import io.youi.font.GoogleFont
 import reactify._
@@ -20,6 +20,7 @@ class BootstrapButtonExample extends UIExampleScreen {
       position.middle := container.size.middle
       font.family := fnt
       font.size := 64.px
+      `type` := ButtonType.Danger
       color := Color.White
     }
     container.children += button

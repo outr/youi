@@ -5,8 +5,9 @@ import io.youi.{dom, ui}
 import io.youi.dom._
 import io.youi.event.{EventSupport, HTMLEvents}
 import io.youi.paint.Paint
+import io.youi.util.Measurer
 import org.scalajs.dom.{Element, _}
-import reactify.Var
+import reactify.{ChangeObserver, Var}
 
 trait HTMLComponent[E <: html.Element] extends Component {
   protected def element: E
@@ -60,8 +61,23 @@ trait HTMLComponent[E <: html.Element] extends Component {
     }
   }
 
-  override protected def measuredWidth: Double = element.offsetWidth // + margin.left() + margin.right()
-  override protected def measuredHeight: Double = element.offsetHeight // + margin.top() + margin.bottom()
+  protected def classify[T](v: Var[T], classifiable: Classifiable[T]): Var[T] = {
+    val initialValue = element.classList.toList.flatMap(classifiable.fromString).headOption.getOrElse(v())
+    v := initialValue
+    element.classList.add(classifiable.toString(initialValue))
+    v.changes(new ChangeObserver[T] {
+      override def change(oldValue: T, newValue: T): Unit = {
+        val oldClassName = classifiable.toString(oldValue)
+        element.classList.remove(oldClassName)
+        val newClassName = classifiable.toString(newValue)
+        element.classList.add(newClassName)
+      }
+    })
+    v
+  }
+
+  override protected def measuredWidth: Double = Measurer.measure(element).width
+  override protected def measuredHeight: Double = Measurer.measure(element).height
 }
 
 object HTMLComponent {
@@ -72,4 +88,9 @@ object HTMLComponent {
   }
 
   def element(component: Component): html.Element = component.asInstanceOf[HTMLComponent[html.Element]].element
+}
+
+trait Classifiable[T] {
+  def fromString(value: String): Option[T]
+  def toString(value: T): String
 }

@@ -12,7 +12,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 class Scale9(element: html.Element = HTMLComponent.create[html.Div]("div")) extends HTMLContainer[ImageView](element) { self =>
   override lazy val theme: Var[_ <: ContainerTheme] = Var(Container)
-  override def `type`: String = "Scale9"
+  override def componentType: String = "Scale9"
 
   def this(image: Image) = {
     this()

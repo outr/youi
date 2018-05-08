@@ -9,7 +9,7 @@ import reactify._
 
 class VideoView(override protected val element: html.Span = dom.create[html.Span]("span")) extends HTMLComponent[html.Span] {
   override lazy val theme: Var[_ <: ComponentTheme] = Var(VideoView)
-  override def `type`: String = "VideoView"
+  override def componentType: String = "VideoView"
 
   lazy val video: Var[Video] = connect(Var(Video.empty), None, setVideo)
 

@@ -29,7 +29,7 @@ trait Component extends TaskSupport with ComponentTheme {
   /**
     * Generated unique identifier for this element.
     */
-  lazy val id: Var[String] = Var(s"${`type`}.${Unique(length = 4, characters = Unique.Readable).toLowerCase}")
+  lazy val id: Var[String] = Var(s"${componentType}.${Unique(length = 4, characters = Unique.Readable).toLowerCase}")
 
   /**
     * Parent to this element.
@@ -67,7 +67,7 @@ trait Component extends TaskSupport with ComponentTheme {
     * The type of Component. This is useful for client-side introspection and logging. Each custom Component instance
     * should represent a unique `type`.
     */
-  def `type`: String
+  def componentType: String
 
   /**
     * True if this Component's `init` method has been invoked.

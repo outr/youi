@@ -36,12 +36,10 @@ object TemplateMacros {
     val templatePath = Profig(pathKey).as[Option[String]]
     val file = templatePath match {
       case Some(basePath) => new File(basePath, pathValue)
-      case None => {
-        context.warning(context.enclosingPosition, s"No configuration defined for $pathKey.")
-        new File(pathValue)
-      }
+      case None => new File(pathValue)
     }
     if (!file.exists()) {
+      context.warning(context.enclosingPosition, s"No configuration defined for $pathKey.")
       context.abort(context.enclosingPosition, s"Unable to find path for ${file.getAbsolutePath}.")
     }
     val parser = HTMLParser(file)
@@ -79,12 +77,10 @@ object TemplateMacros {
     val templatePath = Profig(pathKey).as[Option[String]]
     val file = templatePath match {
       case Some(basePath) => new File(basePath, pathValue)
-      case None => {
-        context.warning(context.enclosingPosition, s"No configuration defined for $pathKey.")
-        new File(pathValue)
-      }
+      case None => new File(pathValue)
     }
     if (!file.exists()) {
+      context.warning(context.enclosingPosition, s"No configuration defined for $pathKey.")
       context.abort(context.enclosingPosition, s"Unable to find path for ${file.getAbsolutePath}.")
     }
     val parser = HTMLParser(file)

@@ -9,7 +9,11 @@ import reactify.Var
 class HTMLComponentPosition(component: Component) extends ComponentPosition(component) {
   private def e: html.Element = HTMLComponent.element(component)
 
-  val `type`: Var[Position] = Var(Position.Absolute)
+  val `type`: Var[Position] = Var(if (x() == 0.0 && y() == 0.0) {
+    Position.Static
+  } else {
+    Position.Absolute
+  })
 
   if (component != ui) {
     component.connect[Position](

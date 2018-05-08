@@ -25,30 +25,8 @@ class Button(override val element: html.Button) extends BootstrapComponent[html.
   lazy val value: Var[String] = connect[String](Var(""), None, element.textContent = _, resetMeasured())
 
   val `type`: Var[ButtonType] = classify(Var(ButtonType.Primary), ButtonType)
+  val buttonSize: Var[ButtonSize] = classify(Var(ButtonSize.Normal), ButtonSize)
+  val block: Var[Boolean] = classifyFlag(Var(false), on = Some("btn-block"))
 }
 
 object Button extends ButtonTheme
-
-sealed abstract class ButtonType(key: String) {
-  private val className: String = s"btn-$key"
-}
-
-object ButtonType extends Classifiable[ButtonType] {
-  case object Primary extends ButtonType("primary")
-  case object Secondary extends ButtonType("secondary")
-  case object Success extends ButtonType("success")
-  case object Danger extends ButtonType("danger")
-  case object Warning extends ButtonType("warning")
-  case object Info extends ButtonType("info")
-  case object Light extends ButtonType("light")
-  case object Dark extends ButtonType("dark")
-  case object Link extends ButtonType("link")
-
-  private val map = List(Primary, Secondary, Success, Danger, Warning, Info, Light, Dark, Link)
-    .map(bt => bt.className -> bt)
-    .toMap
-
-  override def fromString(value: String): Option[ButtonType] = map.get(value)
-
-  override def toString(value: ButtonType): String = value.className
-}

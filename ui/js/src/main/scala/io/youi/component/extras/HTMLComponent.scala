@@ -76,6 +76,28 @@ trait HTMLComponent[E <: html.Element] extends Component {
     v
   }
 
+  protected def classifyFlag(v: Var[Boolean], on: Option[String] = None, off: Option[String] = None): Var[Boolean] = {
+    val classes = element.classList.toSet
+    val isOn = on.exists(classes.contains)
+    val isOff = off.exists(classes.contains)
+    if (isOn) {
+      v := true
+    } else if (isOff) {
+      v := false
+    }
+    v.attachAndFire {
+      case true => {
+        off.foreach(element.classList.remove)
+        on.foreach(element.classList.add)
+      }
+      case false => {
+        on.foreach(element.classList.remove)
+        off.foreach(element.classList.add)
+      }
+    }
+    v
+  }
+
   override protected def measuredWidth: Double = Measurer.measure(element).width
   override protected def measuredHeight: Double = Measurer.measure(element).height
 }
@@ -88,9 +110,4 @@ object HTMLComponent {
   }
 
   def element(component: Component): html.Element = component.asInstanceOf[HTMLComponent[html.Element]].element
-}
-
-trait Classifiable[T] {
-  def fromString(value: String): Option[T]
-  def toString(value: T): String
 }

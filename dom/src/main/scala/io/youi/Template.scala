@@ -4,7 +4,7 @@ import java.io.File
 
 import io.youi.stream.{ByClass, ById, HTMLParser}
 import org.scalajs.dom.Element
-import profig.{ConfigurationPath, JsonParser, Profig}
+import profig.Profig
 
 import scala.annotation.compileTimeOnly
 import scala.language.experimental.macros

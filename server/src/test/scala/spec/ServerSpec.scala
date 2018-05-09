@@ -5,10 +5,9 @@ import io.youi.net.{ContentType, URL}
 import io.youi.server.Server
 import io.youi.server.handler.HttpHandler
 import org.scalatest.{Matchers, WordSpec}
-import profig.ConfigType
 
 class ServerSpec extends WordSpec with Matchers {
-  Server.config.merge("""{ "implementation": "io.youi.server.test.TestServerImplementation" }""", ConfigType.Json)
+  Server.config("implementation").store("io.youi.server.test.TestServerImplementation")
 
   object server extends Server
 

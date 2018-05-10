@@ -29,7 +29,7 @@ trait Component extends TaskSupport with ComponentTheme {
   /**
     * Generated unique identifier for this element.
     */
-  lazy val id: Var[String] = Var(s"${componentType}.${Unique(length = 4, characters = Unique.Readable).toLowerCase}")
+  lazy val id: Var[String] = Var(s"$componentType.${Unique(length = 4, characters = Unique.Readable).toLowerCase}")
 
   /**
     * Parent to this element.

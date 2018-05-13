@@ -18,10 +18,10 @@ trait HTMLComponent[E <: html.Element] extends Component {
 
   override lazy val event: EventSupport = new HTMLEvents(this, element)
 
-  connect(size.width, if (element.offsetWidth > 0.0) Some(element.offsetWidth) else None, (v: Double) => if (v > 0.0) element.style.width = s"${v}px")
-  connect(size.height, if (element.offsetHeight > 0.0) Some(element.offsetHeight) else None, (v: Double) => if (v > 0.0) element.style.height = s"${v}px")
+  connect(size.width, if (element.offsetWidth > 0.0) Some(element.offsetWidth) else None, (v: Double) => if (v > 0.0 && v != size.measured.width()) element.style.width = s"${v}px" else element.style.removeProperty("width"))
+  connect(size.height, if (element.offsetHeight > 0.0) Some(element.offsetHeight) else None, (v: Double) => if (v > 0.0 && v != size.measured.height()) element.style.height = s"${v}px" else element.style.removeProperty("height"))
 
-  connect(visible, if (element.style.visibility == "hidden") Some(false) else None, (b: Boolean) => element.style.visibility = if (b) "visible" else "hidden")
+  connect(visible, if (element.style.visibility == "hidden") Some(false) else None, (b: Boolean) => if (b) element.style.removeProperty("visibility") else element.style.visibility = "hidden")
   connect(opacity, element.style.opacity match {
     case null | "" => None
     case s => {
@@ -32,7 +32,7 @@ trait HTMLComponent[E <: html.Element] extends Component {
         Some(o)
       }
     }
-  }, (d: Double) => element.style.opacity = d.toString)
+  }, (d: Double) => if (d == 1.0) element.style.removeProperty("opacity") else element.style.opacity = d.toString)
   connect(background, None, (p: Paint) => element.style.background = p.asCSS())
 
   override protected def init(): Unit = {

@@ -17,9 +17,8 @@ trait UIScreen extends Screen with PathActivation {
     container.size.width := ui.size.width
     container.size.height := ui.size.height
 
-    createUI().map { _ =>
-      ui.children += container
-    }
+    ui.children += container
+    createUI()
   }
 
   def createUI(): Future[Unit]

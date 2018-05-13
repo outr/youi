@@ -59,6 +59,12 @@ object dom extends ExtendedElement(None) {
     }
   }
 
+  def addCSS(css: String): Unit = {
+    val style = create[html.Style]("style")
+    style.innerHTML = css
+    document.head.appendChild(style)
+  }
+
   implicit class StringExtras(s: String) {
     def toElement[T <: Element]: T = {
       val temp = document.createElement("div")

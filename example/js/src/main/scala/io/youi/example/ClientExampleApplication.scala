@@ -52,6 +52,7 @@ object ClientExampleApplication extends ExampleApplication with ClientApplicatio
 
   // Bootstrap
   val bootstrapButton: BootstrapButtonExample = new BootstrapButtonExample
+  val bootstrapLogin: BootstrapLoginExample = new BootstrapLoginExample
 
 //  val imageChange = ImageChangeExample
 //  val hitTest = HitTestExample

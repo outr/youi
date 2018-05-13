@@ -1,18 +1,21 @@
 package io.youi.component.bootstrap
 
-import io.youi.component.extras.Classifiable
 import io.youi.style.FontFamily
-import io.youi.{Color, dom}
+import io.youi.Color
+import io.youi.dom._
+import io.youi.theme.Theme
 import io.youi.theme.bootstrap.ButtonTheme
 import org.scalajs.dom._
 import reactify.Var
 
 class Button(override val element: html.Button) extends BootstrapComponent[html.Button] with ButtonTheme {
   def this() = {
-    this(dom.create[html.Button]("button"))
+    this(create[html.Button]("button"))
   }
 
-  override lazy val theme: Var[ButtonTheme] = Var(Button)
+  // TODO: clean this up
+  override protected def defaultThemeParent: Option[Theme] = Some(Button)
+  override lazy val theme: Var[ButtonTheme] = Var(this)
   override def componentType: String = "bootstrap.Button"
 
   element.classList.add("btn")
@@ -29,4 +32,10 @@ class Button(override val element: html.Button) extends BootstrapComponent[html.
   val block: Var[Boolean] = classifyFlag(Var(false), on = Some("btn-block"))
 }
 
-object Button extends ButtonTheme
+object Button extends ButtonTheme {
+  def existing(id: String, in: html.Element = document.body): Button = {
+    val e = in.byId[html.Button](id)
+    val b = new Button(e)
+    b
+  }
+}

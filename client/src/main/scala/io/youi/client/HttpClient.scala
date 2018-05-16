@@ -22,9 +22,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
   */
 class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpdir")),
                  http2: Boolean = false,
-                 push: Boolean = false,
                  dropNullValues: Boolean = false,
-                 timeoutInSeconds: Double = 5.0) {
+                 timeoutInSeconds: Double = 15.0) {
   private lazy val printer = Printer.spaces2.copy(dropNullValues = dropNullValues)
   private lazy val client = new okhttp3.OkHttpClient
 
@@ -32,9 +31,13 @@ class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpd
     * Sends an HttpRequest and receives an asynchronous HttpResponse future.
     *
     * @param request the request to send
+    * @param retry the number of times to retry a failed request. This defaults to zero as most requests are not
+    *              idempotent and calling multiple times can cause side-effects
+    * @param retryDelay if a failure occurs and a retry must occur, how long to wait until retrying. This defaults to
+    *                   5.0 seconds
     * @return Future[HttpResponse]
     */
-  def send(request: HttpRequest): Future[HttpResponse] = {
+  def send(request: HttpRequest, retry: Int = 0, retryDelay: Double = 5.0): Future[HttpResponse] = {
     val req = requestToOk(request)
     val promise = Promise[HttpResponse]
     client.newCall(req).enqueue(new okhttp3.Callback {
@@ -45,7 +48,11 @@ class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpd
 
       override def onFailure(call: okhttp3.Call, exc: IOException): Unit = promise.failure(exc)
     })
-    promise.future
+    promise.future.recoverWith {
+      case _ if retry > 0 => {
+        Future(Thread.sleep(math.round(retryDelay))).flatMap(_ => send(request, retry - 1, retryDelay))
+      }
+    }
   }
 
   private def requestToOk(request: HttpRequest): okhttp3.Request = {

@@ -1,6 +1,7 @@
 package io.youi.client
 
 import java.io.{File, IOException}
+import java.util.concurrent.TimeUnit
 
 import io.circe.{Decoder, Encoder, Json, Printer}
 import io.circe.parser._
@@ -12,6 +13,7 @@ import org.powerscala.io._
 import scala.collection.JavaConverters._
 import scala.concurrent.{Future, Promise}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration._
 
 /**
   * Asynchronous HttpClient for simple request response support.
@@ -23,11 +25,19 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpdir")),
                  http2: Boolean = false,
                  dropNullValues: Boolean = false,
-                 timeoutInSeconds: Double = 15.0,
+                 timeout: FiniteDuration = 15.seconds,
                  defaultRetry: Int = 0,
-                 defaultRetryDelay: Double = 5.0) {
+                 defaultRetryDelay: FiniteDuration = 5.seconds,
+                 pingInterval: Option[FiniteDuration] = None) {
   private lazy val printer = Printer.spaces2.copy(dropNullValues = dropNullValues)
-  private lazy val client = new okhttp3.OkHttpClient
+  private lazy val client = {
+    val b = new okhttp3.OkHttpClient.Builder()
+    b.connectTimeout(timeout.toMillis, TimeUnit.MILLISECONDS)
+    b.readTimeout(timeout.toMillis, TimeUnit.MILLISECONDS)
+    b.writeTimeout(timeout.toMillis, TimeUnit.MILLISECONDS)
+    pingInterval.foreach(d => b.pingInterval(d.toMillis, TimeUnit.MILLISECONDS))
+    b.build()
+  }
 
   /**
     * Sends an HttpRequest and receives an asynchronous HttpResponse future.
@@ -41,7 +51,7 @@ class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpd
     */
   def send(request: HttpRequest,
            retry: Int = defaultRetry,
-           retryDelay: Double = defaultRetryDelay): Future[HttpResponse] = {
+           retryDelay: FiniteDuration = defaultRetryDelay): Future[HttpResponse] = {
     val req = requestToOk(request)
     val promise = Promise[HttpResponse]
     client.newCall(req).enqueue(new okhttp3.Callback {
@@ -55,7 +65,7 @@ class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpd
     promise.future.recoverWith {
       case t: Throwable if retry > 0 => {
         scribe.warn(s"Request to ${request.url} failed (${t.getMessage}). Retrying after $retryDelay seconds...")
-        Future(Thread.sleep(math.round(retryDelay * 1000.0))).flatMap(_ => send(request, retry - 1, retryDelay))
+        Future(Thread.sleep(retryDelay.toMillis)).flatMap(_ => send(request, retry - 1, retryDelay))
       }
     }
   }
@@ -165,7 +175,7 @@ class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpd
                                  method: Method = Method.Post,
                                  processor: Json => Json = (json: Json) => json,
                                  retry: Int = defaultRetry,
-                                 retryDelay: Double = defaultRetryDelay)
+                                 retryDelay: FiniteDuration = defaultRetryDelay)
                                 (implicit encoder: Encoder[Request], decoder: Decoder[Response]): Future[Response] = {
     val requestJson = printer.pretty(processor(request.asJson))
     val httpRequest = HttpRequest(
@@ -204,7 +214,7 @@ class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpd
                      headers: Headers = Headers.empty,
                      errorHandler: ErrorHandler[Response] = defaultErrorHandler[Response],
                      retry: Int = defaultRetry,
-                     retryDelay: Double = defaultRetryDelay)
+                     retryDelay: FiniteDuration = defaultRetryDelay)
                     (implicit decoder: Decoder[Response]): Future[Response] = {
     val request = HttpRequest(
       method = method,

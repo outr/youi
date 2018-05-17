@@ -23,7 +23,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpdir")),
                  http2: Boolean = false,
                  dropNullValues: Boolean = false,
-                 timeoutInSeconds: Double = 15.0) {
+                 timeoutInSeconds: Double = 15.0,
+                 defaultRetry: Int = 0,
+                 defaultRetryDelay: Double = 5.0) {
   private lazy val printer = Printer.spaces2.copy(dropNullValues = dropNullValues)
   private lazy val client = new okhttp3.OkHttpClient
 
@@ -37,7 +39,9 @@ class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpd
     *                   5.0 seconds
     * @return Future[HttpResponse]
     */
-  def send(request: HttpRequest, retry: Int = 0, retryDelay: Double = 5.0): Future[HttpResponse] = {
+  def send(request: HttpRequest,
+           retry: Int = defaultRetry,
+           retryDelay: Double = defaultRetryDelay): Future[HttpResponse] = {
     val req = requestToOk(request)
     val promise = Promise[HttpResponse]
     client.newCall(req).enqueue(new okhttp3.Callback {
@@ -49,8 +53,9 @@ class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpd
       override def onFailure(call: okhttp3.Call, exc: IOException): Unit = promise.failure(exc)
     })
     promise.future.recoverWith {
-      case _ if retry > 0 => {
-        Future(Thread.sleep(math.round(retryDelay))).flatMap(_ => send(request, retry - 1, retryDelay))
+      case t: Throwable if retry > 0 => {
+        scribe.warn(s"Request to ${request.url} failed (${t.getMessage}). Retrying after $retryDelay seconds...")
+        Future(Thread.sleep(math.round(retryDelay * 1000.0))).flatMap(_ => send(request, retry - 1, retryDelay))
       }
     }
   }
@@ -158,7 +163,9 @@ class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpd
                                  headers: Headers = Headers.empty,
                                  errorHandler: ErrorHandler[Response] = defaultErrorHandler[Response],
                                  method: Method = Method.Post,
-                                 processor: Json => Json = (json: Json) => json)
+                                 processor: Json => Json = (json: Json) => json,
+                                 retry: Int = defaultRetry,
+                                 retryDelay: Double = defaultRetryDelay)
                                 (implicit encoder: Encoder[Request], decoder: Decoder[Response]): Future[Response] = {
     val requestJson = printer.pretty(processor(request.asJson))
     val httpRequest = HttpRequest(
@@ -167,7 +174,7 @@ class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpd
       headers = headers,
       content = Some(StringContent(requestJson, ContentType.`application/json`))
     )
-    send(httpRequest).map { response =>
+    send(httpRequest, retry, retryDelay).map { response =>
       val responseJson = response.content.map {
         case content: StringContent => content.value
         case content: FileContent => IO.stream(content.file, new StringBuilder).toString
@@ -195,14 +202,16 @@ class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpd
   def call[Response](url: URL,
                      method: Method = Method.Get,
                      headers: Headers = Headers.empty,
-                     errorHandler: ErrorHandler[Response] = defaultErrorHandler[Response])
+                     errorHandler: ErrorHandler[Response] = defaultErrorHandler[Response],
+                     retry: Int = defaultRetry,
+                     retryDelay: Double = defaultRetryDelay)
                     (implicit decoder: Decoder[Response]): Future[Response] = {
     val request = HttpRequest(
       method = method,
       url = url,
       headers = headers
     )
-    send(request).map { response =>
+    send(request, retry, retryDelay).map { response =>
       val responseJson = response.content.map {
         case content: StringContent => content.value
         case content: FileContent => IO.stream(content.file, new StringBuilder).toString

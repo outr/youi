@@ -92,7 +92,7 @@ object ClientExampleApplication extends ExampleApplication with ClientApplicatio
   @JSExportTopLevel("application")
   def main(): Unit = {
     // Write the JavaScript logging messages to the server console
-    scribe.Logger.update(scribe.Logger.rootName)(_.withHandler(writer = ClientApplication.logWriter))
+    scribe.Logger.root.withHandler(writer = ClientApplication.logWriter).replace()
 
     scribe.info("Initialized!")
   }

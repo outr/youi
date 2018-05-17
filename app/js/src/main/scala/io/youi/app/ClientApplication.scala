@@ -8,6 +8,7 @@ import org.scalajs.dom._
 import io.youi.dom._
 import io.youi.net.URL
 import profig.JsonUtil
+import scribe.LogRecord
 import scribe.writer.Writer
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -31,7 +32,7 @@ trait ClientApplication extends YouIApplication with ScreenManager {
 
   if (logJavaScriptErrors) {
     js.Dynamic.global.window.onerror = errorFunction
-    scribe.Logger.update(scribe.Logger.rootName)(_.withHandler(ErrorTrace))
+    scribe.Logger.root.withHandler(ErrorTrace).replace()
   }
 
   connectivityEntries.attachAndFire { entries =>
@@ -49,8 +50,7 @@ trait ClientApplication extends YouIApplication with ScreenManager {
 
 object ClientApplication {
   lazy val logWriter: Writer = new Writer {
-
-    override def write(output: String): Unit = sendLog(JavaScriptLog(output))
+    override def write[M](record: LogRecord[M], output: String): Unit = sendLog(JavaScriptLog(output))
   }
 
   private var instance: ClientApplication = _

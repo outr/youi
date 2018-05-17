@@ -2,6 +2,7 @@ package io.youi.client
 
 import java.io.{File, IOException}
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicLong
 
 import io.circe.{Decoder, Encoder, Json, Printer}
 import io.circe.parser._
@@ -14,6 +15,7 @@ import scala.collection.JavaConverters._
 import scala.concurrent.{Future, Promise}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
+import scala.util.{Success, Failure}
 
 /**
   * Asynchronous HttpClient for simple request response support.
@@ -22,13 +24,14 @@ import scala.concurrent.duration._
   *
   * @param saveDirectory the directory to save response content of a non-textual type
   */
-class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpdir")),
-                 http2: Boolean = false,
-                 dropNullValues: Boolean = false,
-                 timeout: FiniteDuration = 15.seconds,
-                 defaultRetry: Int = 0,
-                 defaultRetryDelay: FiniteDuration = 5.seconds,
-                 pingInterval: Option[FiniteDuration] = None) {
+class HttpClient(val saveDirectory: File = new File(System.getProperty("java.io.tmpdir")),
+                 val http2: Boolean = false,
+                 val dropNullValues: Boolean = false,
+                 val timeout: FiniteDuration = 15.seconds,
+                 val defaultRetry: Int = 0,
+                 val defaultRetryDelay: FiniteDuration = 5.seconds,
+                 val pingInterval: Option[FiniteDuration] = None,
+                 val connectionPool: ConnectionPool = ConnectionPool.default) {
   private lazy val printer = Printer.spaces2.copy(dropNullValues = dropNullValues)
   private lazy val client = {
     val b = new okhttp3.OkHttpClient.Builder()
@@ -62,12 +65,13 @@ class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpd
 
       override def onFailure(call: okhttp3.Call, exc: IOException): Unit = promise.failure(exc)
     })
-    promise.future.recoverWith {
+    val future = promise.future.recoverWith {
       case t: Throwable if retry > 0 => {
         scribe.warn(s"Request to ${request.url} failed (${t.getMessage}). Retrying after $retryDelay seconds...")
         Future(Thread.sleep(retryDelay.toMillis)).flatMap(_ => send(request, retry - 1, retryDelay))
       }
     }
+    HttpClient.process(future)
   }
 
   private def requestToOk(request: HttpRequest): okhttp3.Request = {
@@ -238,4 +242,36 @@ class HttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpd
       }
     }
   }
+
+  def logStats(): Unit = {
+    scribe.info(s"HttpClient stats - Pool[active: ${connectionPool.active}, idle: ${connectionPool.idle}, total: ${connectionPool.total}], Global[active: ${HttpClient.active}, successful: ${HttpClient.successful}, failure: ${HttpClient.failure}, total: ${HttpClient.total}]")
+  }
+}
+
+object HttpClient {
+  private[client] val _total = new AtomicLong(0L)
+  private[client] val _active = new AtomicLong(0L)
+  private[client] val _successful = new AtomicLong(0L)
+  private[client] val _failure = new AtomicLong(0L)
+
+  private[client] def process(future: Future[HttpResponse]): Future[HttpResponse] = {
+    _total.incrementAndGet()
+    _active.incrementAndGet()
+    future.onComplete {
+      case Success(_) => {
+        _successful.incrementAndGet()
+        _active.decrementAndGet()
+      }
+      case Failure(_) => {
+        _failure.incrementAndGet()
+        _active.decrementAndGet()
+      }
+    }
+    future
+  }
+
+  def total: Long = _total.get()
+  def active: Long = _active.get()
+  def successful: Long = _successful.get()
+  def failure: Long = _failure.get()
 }

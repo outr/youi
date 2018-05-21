@@ -1,10 +1,12 @@
 package io.youi
 
+import io.youi.theme.Stringify
+
 sealed abstract class Cursor(val value: String)
 
 case class ImageCursor(url: String) extends Cursor(s"url($url)")
 
-object Cursor {
+object Cursor extends Stringify[Cursor] {
   case object None extends Cursor("none")
   case object Auto extends Cursor("auto")
   case object Inherit extends Cursor("inherit")
@@ -35,5 +37,43 @@ object Cursor {
   case object Text extends Cursor("text")
   case object Wait extends Cursor("wait")
   case object ZoomIn extends Cursor("zoom-in")
-  case object zoomOut extends Cursor("zoom-out")
+  case object ZoomOut extends Cursor("zoom-out")
+
+  lazy val map: Map[String, Cursor] = List(
+    None,
+    Auto,
+    Inherit,
+    Alias,
+    Cell,
+    ContextMenu,
+    Copy,
+    CrossHair,
+    Default,
+    Grab,
+    Grabbing,
+    Help,
+    Move,
+    Pointer,
+    Progress,
+    ResizeNorth,
+    ResizeEast,
+    ResizeSouth,
+    ResizeWest,
+    ResizeNorthSouth,
+    ResizeEastWest,
+    ResizeNorthEast,
+    ResizeNorthWest,
+    ResizeSouthEast,
+    ResizeSouthWest,
+    ResizeNorthEastSouthWest,
+    ResizeNorthWestSouthEast,
+    Text,
+    Wait,
+    ZoomIn,
+    ZoomOut
+  ).map(c => c.value -> c).toMap
+
+  override def fromString(value: String): Option[Cursor] = map.get(value)
+
+  override def toString(value: Cursor): Option[String] = Some(value.value)
 }

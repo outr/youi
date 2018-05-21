@@ -4,9 +4,13 @@ import io.youi.component.Component
 import reactify.{Dep, Var}
 
 class ComponentPosition(component: Component) {
-  lazy val x: Var[Double] = component.prop(0.0, updatesTransform = true)
-  lazy val y: Var[Double] = component.prop(0.0, updatesTransform = true)
-  lazy val z: Var[Int] = component.prop(0, updatesTransform = true)
+//  lazy val x: Var[Double] = component.prop(0.0, updatesTransform = true)
+//  lazy val y: Var[Double] = component.prop(0.0, updatesTransform = true)
+//  lazy val z: Var[Int] = component.prop(0, updatesTransform = true)
+
+  lazy val x: Var[Double] = Var[Double](0.0)
+  lazy val y: Var[Double] = Var[Double](0.0)
+  lazy val z: Var[Int] = Var[Int](0)
 
   lazy val left: Var[Double] = x
   lazy val center: Dep[Double, Double] = Dep(left, component.size.width / 2.0)

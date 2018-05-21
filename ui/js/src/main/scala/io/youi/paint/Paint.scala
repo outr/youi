@@ -4,6 +4,7 @@ import io.youi.net.URL
 import io.youi.{Color, ImageMode, Modifiable, Updatable, ui}
 import io.youi.drawable.{Context, Drawable}
 import io.youi.image.Image
+import io.youi.theme.Stringify
 import io.youi.video.Video
 import reactify.Var
 
@@ -20,7 +21,7 @@ trait Paint extends Modifiable with Updatable {
   def asCSS(): String
 }
 
-object Paint {
+object Paint extends Stringify[Paint] {
   def none: Paint = NoPaint
   def color(color: Color): Paint = ColorPaint(color)
   def horizontal(width: Double): LinearGradientPaint = linear(0.0, 0.0, width, 0.0)
@@ -66,4 +67,8 @@ object Paint {
             ratio: => Double = ui.ratio): Future[DrawablePaint[Video]] = Video(url, autoPlay, loop, muted).map { video =>
     new DrawablePaint[Video](video, repetition, video.width, video.height, x, y, ratio)
   }
+
+  override def fromString(value: String): Option[Paint] = None
+
+  override def toString(value: Paint): Option[String] = Some(value.asCSS())
 }

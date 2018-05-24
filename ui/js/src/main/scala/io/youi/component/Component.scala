@@ -44,6 +44,9 @@ trait Component extends TaskSupport with ComponentTheme {
     */
   lazy val size: ComponentSize = new ComponentSize(this)
 
+  parentTheme := Some(Component)
+  resetMeasured()
+
   /**
     * Events functionality for monitoring and even firing events on this component.
     */
@@ -64,9 +67,6 @@ trait Component extends TaskSupport with ComponentTheme {
     * List of `Updatable` instances this Component represents.
     */
   protected def updatables: List[Updatable] = Nil
-
-  parentTheme := Some(Component)
-  resetMeasured()
 
   /**
     * Called automatically the first time this Component is connected to the document.

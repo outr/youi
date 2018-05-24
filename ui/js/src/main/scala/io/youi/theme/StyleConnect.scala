@@ -51,4 +51,25 @@ object StyleConnect {
       case _ => // Not a component
     }
   })
+  def html[T](implicit stringify: Stringify[T]): Option[StyleConnect[T]] = Some(new StyleConnect[T] {
+    override def init(theme: Theme, v: Var[T], name: String): Unit = theme match {
+      case c: HTMLComponent[_] => {
+        val e = HTMLComponent.element(c)
+        val current = stringify.fromString(window.getComputedStyle(e).getPropertyValue(name))
+        val default = v()
+        v.attach { value =>
+          stringify.toString(value) match {
+            case Some(s) => e.innerHTML = s
+            case None => e.innerHTML = ""
+          }
+        }
+        current.foreach { value =>
+          if (value != default) {
+            v := value
+          }
+        }
+      }
+      case _ => // Not a component
+    }
+  })
 }

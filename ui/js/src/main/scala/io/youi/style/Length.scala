@@ -24,14 +24,6 @@ trait Length extends Any {
   def toHTML: Option[String]
 }
 
-class PixelLength(override val value: Double) extends AnyVal with Length {
-  override def toHTML: Option[String] = Some(s"${value}px")
-}
-
-class PercentLength(override val value: Double) extends AnyVal with Length {
-  override def toHTML: Option[String] = Some(s"$value%")
-}
-
 object Length extends Stringify[Length] {
   private val PixelRegex = """([\d.-]+)px""".r
   private val PercentRegex = """([\d.-]+)[%]""".r

@@ -4,17 +4,18 @@ import io.youi.component.Component
 import io.youi.{dom, ui}
 import io.youi.dom._
 import io.youi.event.{EventSupport, HTMLEvents}
-import io.youi.paint.Paint
+import io.youi.theme.HTMLComponentTheme
 import io.youi.util.Measurer
 import org.scalajs.dom.{Element, _}
 import reactify.{ChangeObserver, Var}
 
-trait HTMLComponent[E <: html.Element] extends Component {
+trait HTMLComponent[E <: html.Element] extends Component with HTMLComponentTheme {
   protected def element: E
   protected val e: HTMLExtras[E] = new HTMLExtras[E](element)
 
+  parentTheme := Some(HTMLComponent)
+
   override lazy val position: HTMLComponentPosition = new HTMLComponentPosition(this)
-//  lazy val rotation: Var[Double] = connect(Var(0.0), None, (d: Double) => element.style.transform = s"rotate(${d * 360.0}deg)")
 
   override lazy val event: EventSupport = new HTMLEvents(this, element)
 
@@ -102,7 +103,7 @@ trait HTMLComponent[E <: html.Element] extends Component {
   override protected def measuredHeight: Double = Measurer.measure(element).height
 }
 
-object HTMLComponent {
+object HTMLComponent extends HTMLComponentTheme {
   def create[T <: Element](tagName: String): T = {
     val e = dom.create[T](tagName)
     // TODO: init

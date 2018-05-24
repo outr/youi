@@ -4,7 +4,7 @@ import io.youi.component.extras.{ComponentPosition, ComponentSize}
 import io.youi.event.{EventSupport, Events, HTMLEvents}
 import io.youi.{MapStore, Store, Unique, Updatable}
 import io.youi.task.TaskSupport
-import io.youi.theme.ComponentTheme
+import io.youi.theme.{ComponentTheme, Theme}
 import reactify._
 
 import scala.annotation.tailrec
@@ -50,11 +50,6 @@ trait Component extends TaskSupport with ComponentTheme {
   def event: EventSupport
 
   /**
-    * Theme associated with this Component.
-    */
-  def theme: Var[_ <: ComponentTheme]
-
-  /**
     * The type of Component. This is useful for client-side introspection and logging. Each custom Component instance
     * should represent a unique `type`.
     */
@@ -70,6 +65,7 @@ trait Component extends TaskSupport with ComponentTheme {
     */
   protected def updatables: List[Updatable] = Nil
 
+  parentTheme := Some(Component)
   resetMeasured()
 
   /**

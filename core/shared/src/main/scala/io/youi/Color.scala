@@ -218,6 +218,27 @@ object Color {
   private def hexify(value: Double): String = hexify(math.floor(value * 255.0).toInt)
   private def hexify(value: Int): String = f"$value%02x"
 
+  private val Hex3Regex = """#?([\w\d])([\w\d])([\w\d])""".r
+  private val Hex6Regex = """#?([\w\d]{2})([\w\d]{2})([\w\d]{2})""".r
+  private val RGBARegex = """rgba\((\d+), (\d+), (\d+), ([\d.]+)\)""".r
+
+  def unapply(value: String): Option[Color] = value match {
+    case null | "" => None
+    case Hex3Regex(r, g, b) => Some(fromLong(java.lang.Long.parseLong(s"$r$r$g$g$b${b}ff", 16)))
+    case Hex6Regex(r, g, b) => Some(fromLong(java.lang.Long.parseLong(s"$r$g${b}ff", 16)))
+    case RGBARegex(r, g, b, a) => {
+      val red = hexify(r.toInt)
+      val green = hexify(g.toInt)
+      val blue = hexify(b.toInt)
+      val alpha = hexify(a.toDouble)
+      Some(fromLong(java.lang.Long.parseLong(s"$red$green$blue$alpha", 16)))
+    }
+    case _ => {
+      scribe.warn(s"Unknown conversion for color value from String: $value")
+      None
+    }
+  }
+
   /**
     * Creates a new Color instance from a Long value 0xRRGGBBAA
     */

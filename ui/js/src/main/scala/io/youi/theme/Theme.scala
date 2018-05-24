@@ -1,14 +1,17 @@
 package io.youi.theme
 
-import io.youi.{Cursor, MapStore}
+import io.youi.{Color, Cursor, MapStore}
 import io.youi.paint.Paint
-import io.youi.style.Length
+import io.youi.style.{FontFamily, FontWeight, Length}
 import reactify._
 
 trait Theme {
   implicit def stringifyLength: Stringify[Length] = Length
   implicit def stringifyPaint: Stringify[Paint] = Paint
   implicit def stringifyCursor: Stringify[Cursor] = Cursor
+  implicit def stringifyFontFamily: Stringify[FontFamily] = FontFamily
+  implicit def stringifyFontWeight: Stringify[FontWeight] = FontWeight
+  implicit val stringifyColor: Stringify[Color] = Stringify[Color](c => Some(c.asCSS()))(Color.unapply)
   implicit def stringifyBoolean: Stringify[Boolean] = Stringify[Boolean](b => Some(b.toString)) {
     case "true" => Some(true)
     case "false" => Some(false)

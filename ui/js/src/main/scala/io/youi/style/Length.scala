@@ -7,8 +7,10 @@ trait Length extends Any {
 
   def op(f: Double => Double): Length = this match {
     case _: PixelLength => Length(f(value))
-    case _: PercentLength => Length.percent(f(value))
-    case Length.default => Length.default
+    case Length.default => f(value) match {
+      case 0.0 => Length.default
+      case d => Length(d)
+    }
   }
 
   def +(value: Double): Length = op(_ + value)
@@ -26,10 +28,8 @@ trait Length extends Any {
 
 object Length extends Stringify[Length] {
   private val PixelRegex = """([\d.-]+)px""".r
-  private val PercentRegex = """([\d.-]+)[%]""".r
 
   def apply(value: Double): Length = new PixelLength(value)
-  def percent(value: Double): Length = new PercentLength(value)
   case object default extends Length {
     override def value: Double = 0.0
 
@@ -39,7 +39,6 @@ object Length extends Stringify[Length] {
   override def fromString(value: String): Option[Length] = value match {
     case "" | null => Some(default)
     case PixelRegex(n) => Some(apply(n.toDouble))
-    case PercentRegex(n) => Some(percent(n.toDouble))
     case _ => {
       scribe.warn(s"Unsupported Length value: $value")
       None

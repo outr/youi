@@ -8,8 +8,8 @@ trait VirtualSizeSupport {
   val virtualMode: Var[VirtualMode] = Var[VirtualMode](VirtualMode.Bars)
   val virtual: VirtualSize = new VirtualSize(this)
   object actual {
-    val width: Var[Double] = Var(ui.size.width)
-    val height: Var[Double] = Var(ui.size.height)
+    val width: Var[Double] = Var(ui.size.actual.width)
+    val height: Var[Double] = Var(ui.size.actual.height)
   }
 
   implicit class DoubleVirtualPixels(d: Double) {

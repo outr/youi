@@ -34,7 +34,7 @@ trait AbstractContainer[Child <: Component] extends Component { self =>
     })
 
     size.width.and(size.height).on {
-      layout.resized(self, size.width, size.height)
+      layout.resized(self, size.actual.width, size.actual.height)
     }
   }
 

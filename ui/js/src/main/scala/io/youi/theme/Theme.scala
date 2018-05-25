@@ -1,29 +1,9 @@
 package io.youi.theme
 
-import io.youi.{Color, Cursor, MapStore}
-import io.youi.paint.Paint
-import io.youi.style.{FontFamily, FontWeight, Length}
+import io.youi.MapStore
 import reactify._
 
-trait Theme {
-  implicit def stringifyLength: Stringify[Length] = Length
-  implicit def stringifyPaint: Stringify[Paint] = Paint
-  implicit def stringifyCursor: Stringify[Cursor] = Cursor
-  implicit def stringifyFontFamily: Stringify[FontFamily] = FontFamily
-  implicit def stringifyFontWeight: Stringify[FontWeight] = FontWeight
-  implicit val stringifyColor: Stringify[Color] = Stringify[Color](c => Some(c.asCSS()))(Color.unapply)
-  implicit def stringifyBoolean: Stringify[Boolean] = Stringify[Boolean](b => Some(b.toString)) {
-    case "true" => Some(true)
-    case "false" => Some(false)
-    case _ => None
-  }
-  implicit def stringifyString: Stringify[String] = Stringify[String](Some(_))(Some(_))
-  implicit def stringifyDouble: Stringify[Double] = Stringify[Double](d => Some(d.toString)) { s => try {
-    Some(s.toDouble)
-  } catch {
-    case _: Throwable => None
-  }}
-
+trait Theme extends StringifyImplicits {
   lazy val parentTheme: Var[Option[Theme]] = Var(None)
 
   private val store = new MapStore
@@ -33,12 +13,17 @@ trait Theme {
   protected def updateTransform(): Unit = {}
   protected def updateRendering(): Unit = {}
 
-  protected def style[T](name: String,
-                         default: => T,
-                         connect: Option[StyleConnect[T]],
-                         updatesTransform: Boolean = false,
-                         updatesRendering: Boolean = false): Var[T] = {
-    val v = Var[T](parentTheme().flatMap(_.get[T](name)).map(_.get).getOrElse(default))
+  protected[youi] def style[T](name: String,
+                               default: => T,
+                               connect: Option[StyleConnect[T]],
+                               updatesTransform: Boolean = false,
+                               updatesRendering: Boolean = false,
+                               ignoreParent: Boolean = false): Var[T] = {
+    val v = Var[T](if (ignoreParent) {
+      default
+    } else {
+      parentTheme().flatMap(_.get[T](name)).map(_.get).getOrElse(default)
+    })
     store(name) = v
     connect.foreach(_.init(this, v, name))
     if (updatesTransform || updatesRendering) {

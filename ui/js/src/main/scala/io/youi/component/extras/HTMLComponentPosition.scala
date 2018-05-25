@@ -1,28 +1,18 @@
 package io.youi.component.extras
 
 import io.youi.component.Component
-import io.youi.style.Position
-import io.youi.ui
-import org.scalajs.dom.html
+import io.youi.style.{Length, Position}
+import io.youi.theme.{StringifyImplicits, StyleConnect}
 import reactify.Var
 
-class HTMLComponentPosition(component: Component) extends ComponentPosition(component) {
-  private def e: html.Element = HTMLComponent.element(component)
+class HTMLComponentPosition(override protected val component: Component) extends ComponentPosition with StringifyImplicits {
+  override val x: Var[Length] = component.style[Length]("left", Length.default, StyleConnect.style[Length])
+  override val y: Var[Length] = component.style[Length]("top", Length.default, StyleConnect.style[Length])
+  override val z: Var[Int] = component.style[Int]("zIndex", 0, StyleConnect.style[Int])
 
-  val `type`: Var[Position] = Var(if (x() == 0.0 && y() == 0.0) {
+  val `type`: Var[Position] = component.style[Position]("position", if (x() == Length(0.0) && y() == Length(0.0)) {
     Position.Static
   } else {
     Position.Absolute
-  })
-
-//  if (component != ui) {
-//    component.connect[Position](
-//      v = Var(Position.Absolute),
-//      get = None,
-//      set = (p: Position) => e.style.position = p.toString.toLowerCase
-//    )
-//    component.connect(x, None, (v: Double) => e.style.left = s"${v}px")
-//    component.connect(y, None, (v: Double) => e.style.top = s"${v}px")
-//    component.connect(z, None, (i: Int) => e.style.zIndex = i.toString)
-//  }
+  }, StyleConnect.style[Position], ignoreParent = true)
 }

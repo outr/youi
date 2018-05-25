@@ -16,25 +16,9 @@ trait HTMLComponent[E <: html.Element] extends Component with HTMLComponentTheme
   parentTheme := Some(HTMLComponent)
 
   override lazy val position: HTMLComponentPosition = new HTMLComponentPosition(this)
+  override lazy val size: HTMLComponentSize = new HTMLComponentSize(this)
 
-  override lazy val event: EventSupport = new HTMLEvents(this, element)
-
-//  connect(size.width, if (element.offsetWidth > 0.0) Some(element.offsetWidth) else None, (v: Double) => if (v > 0.0 && v != size.measured.width()) element.style.width = s"${v}px" else element.style.removeProperty("width"))
-//  connect(size.height, if (element.offsetHeight > 0.0) Some(element.offsetHeight) else None, (v: Double) => if (v > 0.0 && v != size.measured.height()) element.style.height = s"${v}px" else element.style.removeProperty("height"))
-
-//  connect(visible, if (element.style.visibility == "hidden") Some(false) else None, (b: Boolean) => if (b) element.style.removeProperty("visibility") else element.style.visibility = "hidden")
-//  connect(opacity, element.style.opacity match {
-//    case null | "" => None
-//    case s => {
-//      val o = s.toDouble
-//      if (o == 1.0) {
-//        None
-//      } else {
-//        Some(o)
-//      }
-//    }
-//  }, (d: Double) => if (d == 1.0) element.style.removeProperty("opacity") else element.style.opacity = d.toString)
-//  connect(background, None, (p: Paint) => element.style.background = p.asCSS())
+  override val event: EventSupport = new HTMLEvents(this, element)
 
   override protected def init(): Unit = {
     super.init()

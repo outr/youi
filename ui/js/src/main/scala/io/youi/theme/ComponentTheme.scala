@@ -2,6 +2,7 @@ package io.youi.theme
 
 import io.youi._
 import io.youi.Cursor
+import io.youi.component.extras.{ComponentPosition, ComponentSize}
 import io.youi.paint.{Border, Paint}
 import io.youi.style.Length
 import reactify._

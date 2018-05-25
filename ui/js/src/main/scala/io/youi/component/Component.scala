@@ -18,6 +18,16 @@ trait Component extends TaskSupport with ComponentTheme {
   lazy val store: Store = new MapStore
 
   /**
+    * Position information for placement of this component on the screen.
+    */
+  def position: ComponentPosition
+
+  /**
+    * Size information for determining the dimensions of this component.
+    */
+  def size: ComponentSize
+
+  /**
     * Generated unique identifier for this element.
     */
   lazy val id: Var[String] = Var(s"$componentType.${Unique(length = 4, characters = Unique.Readable).toLowerCase}")
@@ -33,16 +43,6 @@ trait Component extends TaskSupport with ComponentTheme {
     * List of `Updatable` instances derived from the `updatables` method.
     */
   private lazy val internalUpdatables: Val[List[Updatable]] = Val(updatables)
-
-  /**
-    * Position information for placement of this component on the screen.
-    */
-  lazy val position: ComponentPosition = new ComponentPosition(this)
-
-  /**
-    * Size information for determining the dimensions of this component.
-    */
-  lazy val size: ComponentSize = new ComponentSize(this)
 
   parentTheme := Some(Component)
   resetMeasured()

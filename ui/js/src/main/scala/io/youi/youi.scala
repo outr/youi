@@ -89,6 +89,7 @@ package object youi {
   }
 
   implicit def double2Length(d: Double): Length = Length(d)
+  implicit def length2Double(l: Length): Double = l.value
 
   implicit class UINumericSize[T](t: T)(implicit n: Numeric[T]) {
     private val d = n.toDouble(t)
@@ -146,22 +147,22 @@ package object youi {
     /**
       * 1/100th of the width of the viewport.
       */
-    def vw: Val[Length] = Val((d / 100.0) * ui.size.width)
+    def vw: Val[Length] = Val((d / 100.0) * ui.size.actual.width)
 
     /**
       * 1/100th of the height of the viewport.
       */
-    def vh: Val[Length] = Val((d / 100.0) * ui.size.height)
+    def vh: Val[Length] = Val((d / 100.0) * ui.size.actual.height)
 
     /**
       * 1/100th of the minimum value between the height and the width of the viewport.
       */
-    def vmin: Val[Length] = Val(math.min((d / 100.0) * ui.size.width, (d / 100.0) * ui.size.height))
+    def vmin: Val[Length] = Val(math.min((d / 100.0) * ui.size.actual.width, (d / 100.0) * ui.size.actual.height))
 
     /**
       * 1/100th of the maximum value between the height and the width of the viewport.
       */
-    def vmax: Val[Length] = Val[Length](math.max((d / 100.0) * ui.size.width, (d / 100.0) * ui.size.height))
+    def vmax: Val[Length] = Val[Length](math.max((d / 100.0) * ui.size.actual.width, (d / 100.0) * ui.size.actual.height))
 
     /**
       * Returns percentage value `of`.

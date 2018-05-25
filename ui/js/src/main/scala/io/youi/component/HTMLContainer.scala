@@ -12,9 +12,9 @@ abstract class HTMLContainer[Child <: Component](override protected val element:
 
   parentTheme := Some(HTMLContainer)
 
-  override protected def measuredWidth: Double = children.foldLeft(0.0)((max, child) => math.max(max, child.position.right()))
+  override protected def measuredWidth: Double = children.foldLeft(0.0)((max, child) => math.max(max, child.position.right().value))
 
-  override protected def measuredHeight: Double = children.foldLeft(0.0)((max, child) => math.max(max, child.position.bottom()))
+  override protected def measuredHeight: Double = children.foldLeft(0.0)((max, child) => math.max(max, child.position.bottom().value))
 }
 
 object HTMLContainer extends HTMLContainerTheme

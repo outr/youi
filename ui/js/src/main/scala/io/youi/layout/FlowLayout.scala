@@ -7,7 +7,7 @@ class FlowLayout(margins: Margins = Margins()) extends Layout {
   private var map = Map.empty[Component, Val[Double]]
 
   override def connect(container: Component): Unit = {
-    val v = Val(Component.childrenFor(container).map(w => w.size.width + w.size.height).sum)
+    val v = Val(Component.childrenFor(container).map(w => w.size.actual.width + w.size.actual.height).sum)
     map += container -> v
     v.on(update(container))
     update(container)
@@ -30,7 +30,7 @@ class FlowLayout(margins: Margins = Margins()) extends Layout {
     var rowMaxHeight = 0.0
     Component.childrenFor(container).foreach { widget =>
       x += margins.left
-      if (rowCount > 0 && x + widget.size.width > container.size.width) {
+      if (rowCount > 0 && x + widget.size.actual.width > container.size.actual.width) {
         x = margins.left
         y += rowMaxHeight + margins.bottom
         rowCount = 0
@@ -38,9 +38,9 @@ class FlowLayout(margins: Margins = Margins()) extends Layout {
       }
       widget.position.left := x
       widget.position.top := y
-      x += widget.size.width
+      x += widget.size.actual.width
       rowCount += 1
-      rowMaxHeight = math.max(rowMaxHeight, widget.size.height)
+      rowMaxHeight = math.max(rowMaxHeight, widget.size.actual.height)
     }
   }
 }

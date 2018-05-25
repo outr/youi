@@ -22,13 +22,13 @@ class SnapExample extends UIExampleScreen {
     }
 
     val blue = Box(Color.Blue)
-    Snap(blue).rightTo(box.position.left - 5.0).topTo(box.position.top)
+    Snap(blue).rightTo(box.position.left.value - 5.0).topTo(box.position.top.value)
 
     val green = Box(Color.Green)
-    Snap(green).leftTo(blue.position.left).rightTo(box.position.right).topTo(box.position.bottom + 5.0)
+    Snap(green).leftTo(blue.position.left.value).rightTo(box.position.right.value).topTo(box.position.bottom.value + 5.0)
 
     val yellow = Box(Color.Yellow.withAlpha(0.5))
-    Snap(yellow).leftTo(blue.position.center).rightTo(box.position.center).topTo(box.position.middle)
+    Snap(yellow).leftTo(blue.position.center.value).rightTo(box.position.center.value).topTo(box.position.middle.value)
 
     container.children ++= List(
       box,

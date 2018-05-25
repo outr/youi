@@ -88,8 +88,8 @@ class GridLayout extends Layout {
       } else {
         val cfg = config.cell(rowIndex, columnIndex)
 
-        val width = child.size.width + cfg.margin.left.getOrElse(0.0) + cfg.margin.right.getOrElse(0.0)
-        val height = child.size.height + cfg.margin.top.getOrElse(0.0) + cfg.margin.bottom.getOrElse(0.0)
+        val width = child.size.actual.width + cfg.margin.left.getOrElse(0.0) + cfg.margin.right.getOrElse(0.0)
+        val height = child.size.actual.height + cfg.margin.top.getOrElse(0.0) + cfg.margin.bottom.getOrElse(0.0)
 
         // Spans
         val colSpan = cfg.span.columns().getOrElse(1)

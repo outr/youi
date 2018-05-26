@@ -8,24 +8,24 @@ trait VirtualSizeSupport {
   val virtualMode: Var[VirtualMode] = Var[VirtualMode](VirtualMode.Bars)
   val virtual: VirtualSize = new VirtualSize(this)
   object actual {
-    val width: Var[Double] = Var(ui.size.actual.width)
-    val height: Var[Double] = Var(ui.size.actual.height)
+    val width: Var[Double] = Var(ui.size.width)
+    val height: Var[Double] = Var(ui.size.height)
   }
 
   implicit class DoubleVirtualPixels(d: Double) {
-    def vx: Val[Length] = Val(vw() + virtual.xOffset())
-    def vy: Val[Length] = Val(vh() + virtual.yOffset())
-    def vw: Val[Length] = Val(d * virtual.widthMultiplier)
-    def vh: Val[Length] = Val(d * virtual.heightMultiplier)
-    def vf: Val[Length] = vw
+    def vx: Val[Double] = Val(vw() + virtual.xOffset())
+    def vy: Val[Double] = Val(vh() + virtual.yOffset())
+    def vw: Val[Double] = Val(d * virtual.widthMultiplier)
+    def vh: Val[Double] = Val(d * virtual.heightMultiplier)
+    def vf: Val[Double] = vw
   }
 
   implicit class IntVirtualPixels(i: Int) {
-    def vx: Val[Length] = Val(vw() + virtual.xOffset())
-    def vy: Val[Length] = Val(vh() + virtual.yOffset())
-    def vw: Val[Length] = Val(i * virtual.widthMultiplier)
-    def vh: Val[Length] = Val(i * virtual.heightMultiplier)
-    def vf: Val[Length] = vw
+    def vx: Val[Double] = Val(vw() + virtual.xOffset())
+    def vy: Val[Double] = Val(vh() + virtual.yOffset())
+    def vw: Val[Double] = Val(i * virtual.widthMultiplier)
+    def vh: Val[Double] = Val(i * virtual.heightMultiplier)
+    def vf: Val[Double] = vw
   }
 }
 

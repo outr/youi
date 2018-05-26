@@ -15,17 +15,13 @@ class TextView(protected val element: html.Element) extends HTMLComponent[html.E
   parentTheme := Some(TextView)
 
   override def componentType: String = "TextView"
-
-  override protected def measuredWidth: Double = TextView.measure(this).width
-
-  override protected def measuredHeight: Double = TextView.measure(this).height
 }
 
 object TextView extends TextViewTheme {
   private val measurer = new Context(dom.create[html.Canvas]("canvas"), 1.0)
 
   def measure(component: TextView): Size = {
-    measurer.setFont(component.font.family().value, component.font.size().value, "", "", component.font.weight().value)
+    measurer.setFont(component.font.family().value, component.font.size, "", "", component.font.weight().value)
     measurer.measureText(component.value())
   }
 }

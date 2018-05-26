@@ -30,14 +30,16 @@ object StyleConnect {
       case _ => // Not a component
     }
   })
-  def style[T](implicit stringify: Stringify[T]): Option[StyleConnect[T]] = Some(new StyleConnect[T] {
+  def style[T](implicit stringify: Stringify[T]): Option[StyleConnect[T]] = style[T]((t: T) => t)(stringify)
+  def style[T](modifier: T => T)
+              (implicit stringify: Stringify[T]): Option[StyleConnect[T]] = Some(new StyleConnect[T] {
     override def init(theme: Theme, v: Var[T], name: String): Unit = theme match {
       case c: HTMLComponent[_] => {
         val e = HTMLComponent.element(c)
         val current = stringify.fromString(window.getComputedStyle(e).getPropertyValue(name))
         val default = v()
         v.attach { value =>
-          stringify.toString(value) match {
+          stringify.toString(modifier(value)) match {
             case Some(s) => e.style.setProperty(name, s)
             case None => e.style.removeProperty(name)
           }

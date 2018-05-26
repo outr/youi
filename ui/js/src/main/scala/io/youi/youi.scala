@@ -88,85 +88,82 @@ package object youi {
     }
   }
 
-  implicit def double2Length(d: Double): Length = Length(d)
-  implicit def length2Double(l: Length): Double = l.value
-
   implicit class UINumericSize[T](t: T)(implicit n: Numeric[T]) {
     private val d = n.toDouble(t)
 
     /**
       * pixels
       */
-    def px: Length = Length(d)
+    def px: Double = d
 
     /**
       * degrees conversion (360 converts to 1.0)
       */
-    def degrees: Length = d / 360.0
+    def degrees: Double = d / 360.0
 
     /**
       * radians conversion (2π converts to 1.0)
       */
-    def radians: Length = d / (2.0 * math.Pi)
+    def radians: Double = d / (2.0 * math.Pi)
 
     /**
       * Returns percentage value `of`.
       */
-    def percentOf(of: State[Length]): Val[Length] = Val(of.get * (d * 0.01))
+    def percentOf(of: State[Double]): Val[Double] = Val(of.get * (d * 0.01))
 
     /**
       * millimeters
       */
-    def mm: Length = in * 25.4
+    def mm: Double = in * 25.4
 
     /**
       * quarter millimeters
       */
-    def q: Length = mm * 0.25
+    def q: Double = mm * 0.25
 
     /**
       * centimeters
       */
-    def cm: Length = mm * 10.0
+    def cm: Double = mm * 10.0
 
     /**
       * inches
       */
-    def in: Length = d * ppi
+    def in: Double = d * ppi
 
     /**
       * points
       */
-    def pt: Length = in / 72.0
+    def pt: Double = in / 72.0
 
     /**
       * picas
       */
-    def pica: Length = pt * 12.0
+    def pica: Double = pt * 12.0
 
     /**
       * 1/100th of the width of the viewport.
       */
-    def vw: Val[Length] = Val((d / 100.0) * ui.size.actual.width)
+    def vw: Val[Double] = Val((d / 100.0) * ui.size.width)
 
     /**
       * 1/100th of the height of the viewport.
       */
-    def vh: Val[Length] = Val((d / 100.0) * ui.size.actual.height)
+    def vh: Val[Double] = Val((d / 100.0) * ui.size.height)
 
     /**
       * 1/100th of the minimum value between the height and the width of the viewport.
       */
-    def vmin: Val[Length] = Val(math.min((d / 100.0) * ui.size.actual.width, (d / 100.0) * ui.size.actual.height))
+    def vmin: Val[Double] = Val(math.min((d / 100.0) * ui.size.width, (d / 100.0) * ui.size.height))
 
     /**
       * 1/100th of the maximum value between the height and the width of the viewport.
       */
-    def vmax: Val[Length] = Val[Length](math.max((d / 100.0) * ui.size.actual.width, (d / 100.0) * ui.size.actual.height))
+    def vmax: Val[Double] = Val(math.max((d / 100.0) * ui.size.width, (d / 100.0) * ui.size.height))
 
     /**
       * Returns percentage value `of`.
       */
-    def %(of: State[Length]): Val[Length] = percentOf(of)
+    def %(of: State[Double]): Val[Double] = percentOf(of)
   }
 }

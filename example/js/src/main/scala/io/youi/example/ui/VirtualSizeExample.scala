@@ -17,8 +17,8 @@ class VirtualSizeExample extends UIExampleScreen with VirtualSizeSupport {
     img <- Image("/images/1024.jpg")
     fnt <- GoogleFont.`Open Sans`.`regular`.load()
   } yield {
-    actual.width := container.size.actual.width
-    actual.height := container.size.actual.height
+    actual.width := container.size.width
+    actual.height := container.size.height
     virtualWidth := 1024.0
     virtualHeight := 768.0
 

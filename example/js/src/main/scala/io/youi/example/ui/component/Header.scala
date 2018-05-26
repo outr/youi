@@ -4,7 +4,6 @@ import io.youi.component.{Container, ImageView, TextView}
 import io.youi.example.ClientExampleApplication
 import io.youi._
 import io.youi.app.screen.ScreenManager
-import io.youi.component.extras.HTMLImageViewImplementation
 import io.youi.font.GoogleFont
 import io.youi.image.Image
 import io.youi.paint.Paint

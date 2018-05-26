@@ -18,14 +18,6 @@ package object task {
     )
   }
 
-  implicit class StateChannelWorkflowLength(state: StateChannel[Length]) {
-    def to(destination: => Double): PartialAnimate = PartialAnimate(
-      get = () => state().value,
-      apply = (d: Double) => state := Length(d),
-      destination = () => destination
-    )
-  }
-
   def parallel(tasks: Task*): Parallel = new Parallel(tasks.toList)
   def sequential(tasks: Task*): Sequential = new Sequential(tasks.toList)
   def sleep(duration: FiniteDuration): Sleep = new Sleep(duration)

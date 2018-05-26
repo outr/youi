@@ -64,8 +64,8 @@ class AnimationExample extends UIExampleScreen {
             image.rotation to 6.0 in 20.seconds
           ),
           sequential(
-            image.position.right to container.size.actual.width in 5.seconds easing Easing.bounceOut,
-            image.position.bottom to container.size.actual.height in 5.seconds easing Easing.bounceOut,
+            image.position.right to container.size.width in 5.seconds easing Easing.bounceOut,
+            image.position.bottom to container.size.height in 5.seconds easing Easing.bounceOut,
             image.position.left to 0.0 in 5.seconds easing Easing.bounceOut,
             image.position.top to 0.0 in 5.seconds easing Easing.bounceOut
           )

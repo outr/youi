@@ -45,7 +45,7 @@ trait Component extends TaskSupport with ComponentTheme {
   private lazy val internalUpdatables: Val[List[Updatable]] = Val(updatables)
 
   parentTheme := Some(Component)
-  resetMeasured()
+  updateTransform()
 
   /**
     * Events functionality for monitoring and even firing events on this component.
@@ -85,7 +85,9 @@ trait Component extends TaskSupport with ComponentTheme {
     updateUpdatables(delta, internalUpdatables())
   }
 
-  def resetMeasured(): Unit = {
+  override protected def updateTransform(): Unit = {
+    super.updateTransform()
+
     size.measured.width := measuredWidth
     size.measured.height := measuredHeight
   }

@@ -24,7 +24,7 @@ class VerticalLayout(spacing: Double = 0.0) extends Layout {
       Snap(c).verticalReset()
     }
     items.foldLeft(Option.empty[Component])((previous, current) => {
-      Snap(current).verticalReset().topTo(previous.map(_.position.bottom().value).getOrElse(0.0) + spacing)
+      Snap(current).verticalReset().topTo(previous.map(_.position.bottom()).getOrElse(0.0) + spacing)
       Some(current)
     })
   }

@@ -1,8 +1,7 @@
 package io.youi.theme
 
-import io.youi.{Cursor, Length, _}
-import io.youi.component.extras.{ComponentPosition, ComponentSize}
-import io.youi.paint.{Border, Paint}
+import io.youi.{Cursor, _}
+import io.youi.paint.Paint
 import reactify._
 
 trait ComponentTheme extends Theme {
@@ -13,10 +12,10 @@ trait ComponentTheme extends Theme {
   val background: Var[Paint] = style[Paint]("background", Paint.none, StyleConnect.style[Paint], updatesRendering = true)
 
   object padding {
-    lazy val left: Var[Length] = style[Length]("padding.left", 0.px, StyleConnect.style[Length])
-    lazy val right: Var[Length] = style[Length]("padding.right", 0.0, StyleConnect.style[Length])
-    lazy val top: Var[Length] = style[Length]("padding.top", 0.0, StyleConnect.style[Length])
-    lazy val bottom: Var[Length] = style[Length]("padding.bottom", 0.0, StyleConnect.style[Length])
+    lazy val left: Var[Double] = style[Double]("padding.left", 0.px, StyleConnect.style[Double])
+    lazy val right: Var[Double] = style[Double]("padding.right", 0.0, StyleConnect.style[Double])
+    lazy val top: Var[Double] = style[Double]("padding.top", 0.0, StyleConnect.style[Double])
+    lazy val bottom: Var[Double] = style[Double]("padding.bottom", 0.0, StyleConnect.style[Double])
 
     def :=(f: => Double): Unit = set(f)
 
@@ -27,8 +26,8 @@ trait ComponentTheme extends Theme {
       bottom.set(f)
     }
 
-    lazy val width: Val[Length] = Val(left + right)
-    lazy val height: Val[Length] = Val(top + bottom)
+    lazy val width: Val[Double] = Val(left + right)
+    lazy val height: Val[Double] = Val(top + bottom)
   }
 
 //  val border: Var[Border] = style[Border]("border", Border.empty, StyleConnect.style[Border], updatesTransform = true)

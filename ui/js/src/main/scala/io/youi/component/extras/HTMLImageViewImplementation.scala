@@ -2,8 +2,9 @@ package io.youi.component.extras
 
 import io.youi.component.ImageView
 import io.youi.dom
-import io.youi.image.{EmptyImage, HTMLImage, Image}
+import io.youi.image.{EmptyImage, HTMLImage, Image, SVGImage}
 import org.scalajs.dom.html
+import scala.concurrent.ExecutionContext.Implicits.global
 
 object HTMLImageViewImplementation extends ImageViewImplementation {
   override def createElement(): html.Element = dom.create[html.Image]("img")
@@ -13,6 +14,9 @@ object HTMLImageViewImplementation extends ImageViewImplementation {
     image match {
       case i: HTMLImage => element.src = i.source
       case EmptyImage => element.src = ""
+      case i: SVGImage => i.toDataURL.foreach { url =>
+        element.src = url
+      }
       case _ => throw new RuntimeException(s"Unsupported Image type: $image")
     }
   }

@@ -3,7 +3,7 @@ package io
 import io.youi.event.KeyEvent
 import io.youi.font.{GoogleFont, GoogleFontWeight}
 import io.youi.paint.Paint
-import io.youi.style.{FontFamily, FontWeight, Length}
+import io.youi.style.{FontFamily, FontWeight}
 import org.scalajs.dom.html.Div
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 import org.scalajs.dom.{KeyboardEvent, document, html}

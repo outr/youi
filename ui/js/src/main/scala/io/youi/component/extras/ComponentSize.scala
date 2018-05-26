@@ -1,8 +1,7 @@
 package io.youi.component.extras
 
-import io.youi._
+import io.youi.{PixelLength, _}
 import io.youi.component.Component
-import io.youi.style.{Length, PixelLength}
 import reactify.{Val, Var}
 
 trait ComponentSize {

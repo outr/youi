@@ -1,7 +1,7 @@
 package io.youi.theme.mixins
 
-import io.youi.Color
-import io.youi.style.{FontFamily, FontWeight, Length}
+import io.youi.{Color, Length}
+import io.youi.style.{FontFamily, FontWeight}
 import io.youi.theme.{StyleConnect, Theme}
 import reactify.Var
 

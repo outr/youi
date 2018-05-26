@@ -10,10 +10,18 @@ package object task {
   implicit def future2Task[R](future: => Future[R]): Task = FutureTask[R](future)
   implicit def f2Task(f: => Unit): Task = Action(f)
 
-  implicit class StateChannelWorkflow(state: StateChannel[Double]) {
+  implicit class StateChannelWorkflowDouble(state: StateChannel[Double]) {
     def to(destination: => Double): PartialAnimate = PartialAnimate(
       get = () => state(),
       apply = (d: Double) => state := d,
+      destination = () => destination
+    )
+  }
+
+  implicit class StateChannelWorkflowLength(state: StateChannel[Length]) {
+    def to(destination: => Double): PartialAnimate = PartialAnimate(
+      get = () => state().value,
+      apply = (d: Double) => state := Length(d),
       destination = () => destination
     )
   }

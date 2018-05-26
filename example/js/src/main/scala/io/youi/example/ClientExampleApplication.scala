@@ -39,16 +39,16 @@ object ClientExampleApplication extends ExampleApplication with ClientApplicatio
 //  val heavyText = HeavyTextExample
 
   val hello: HelloWorld = new HelloWorld
-//  val animation: AnimationExample = new AnimationExample
-//  val grid: GridLayoutExample = new GridLayoutExample
+  val animation: AnimationExample = new AnimationExample
+  val grid: GridLayoutExample = new GridLayoutExample
   val hit: HitTestExample = new HitTestExample
-//  val image: ImageExample = new ImageExample
-//  val imageChange: ImageChangeExample = new ImageChangeExample
+  val image: ImageExample = new ImageExample
+  val imageChange: ImageChangeExample = new ImageChangeExample
 //  val scale9: Scale9Example = new Scale9Example
   val snap: SnapExample = new SnapExample
-//  val svgImage: SVGImageExample = new SVGImageExample
+  val svgImage: SVGImageExample = new SVGImageExample
 //  val video: VideoExample = new VideoExample
-//  val virtual: VirtualSizeExample = new VirtualSizeExample
+  val virtual: VirtualSizeExample = new VirtualSizeExample
 
   // Bootstrap
 //  val bootstrapButton: BootstrapButtonExample = new BootstrapButtonExample

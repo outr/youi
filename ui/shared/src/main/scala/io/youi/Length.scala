@@ -1,9 +1,11 @@
-package io.youi.style
+package io.youi
 
 import io.youi.theme.Stringify
 
 trait Length extends Any {
   def value: Double
+
+  def isDefault: Boolean = true
 
   def op(f: Double => Double): Length = this match {
     case _: PixelLength => Length(f(value))
@@ -34,10 +36,12 @@ object Length extends Stringify[Length] {
     override def value: Double = 0.0
 
     override def toHTML: Option[String] = None
+
+    override def toString: String = "default"
   }
 
   override def fromString(value: String): Option[Length] = value match {
-    case "" | null => Some(default)
+    case null | "" | "auto" => Some(default)
     case PixelRegex(n) => Some(apply(n.toDouble))
     case _ => {
       scribe.warn(s"Unsupported Length value: $value")

@@ -1,7 +1,7 @@
 package io.youi.component.extras
 
+import io.youi.Length
 import io.youi.component.Component
-import io.youi.style.Length
 import io.youi.theme.{StringifyImplicits, StyleConnect}
 import reactify.Var
 

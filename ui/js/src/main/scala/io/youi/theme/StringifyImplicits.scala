@@ -1,8 +1,8 @@
 package io.youi.theme
 
-import io.youi.{Color, Cursor}
+import io.youi.{Color, Cursor, Length}
 import io.youi.paint.Paint
-import io.youi.style.{FontFamily, FontWeight, Length, Position}
+import io.youi.style.{FontFamily, FontWeight, Position}
 import reactify.DepConnector
 
 trait StringifyImplicits {

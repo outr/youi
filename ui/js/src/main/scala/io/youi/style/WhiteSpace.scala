@@ -11,5 +11,9 @@ object WhiteSpace extends Stringify[WhiteSpace] {
   case object PreWrap extends WhiteSpace("pre-wrap")
   case object PreLine extends WhiteSpace("pre-line")
 
-  lazy val map = List(Normal, NoWrap, Pre, PreWrap, PreLine).map(ws => ws.value -> ws).toMap
+  lazy val map: Map[String, WhiteSpace] = List(Normal, NoWrap, Pre, PreWrap, PreLine).map(ws => ws.value -> ws).toMap
+
+  override def fromString(value: String): Option[WhiteSpace] = map.get(value.toLowerCase)
+
+  override def toString(value: WhiteSpace): Option[String] = Some(value.value)
 }

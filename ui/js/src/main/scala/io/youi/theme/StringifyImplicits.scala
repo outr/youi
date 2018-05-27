@@ -2,10 +2,10 @@ package io.youi.theme
 
 import io.youi.{Color, Cursor}
 import io.youi.paint.Paint
-import io.youi.style.{FontFamily, FontWeight, Position}
-import reactify.DepConnector
+import io.youi.style.{FontFamily, FontWeight, Position, WhiteSpace}
 
 trait StringifyImplicits {
+  implicit def stringifyWhiteSpace: Stringify[WhiteSpace] = WhiteSpace
   implicit def stringifyPosition: Stringify[Position] = Position
   implicit def stringifyPaint: Stringify[Paint] = Paint
   implicit def stringifyCursor: Stringify[Cursor] = Cursor

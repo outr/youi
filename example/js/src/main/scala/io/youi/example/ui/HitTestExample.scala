@@ -8,7 +8,7 @@ import scala.concurrent.Future
 
 class HitTestExample extends UIExampleScreen {
   override def title: String = "Hit Test"
-  override def path: String = "/examples/hit-test.html"
+  override def path: String = "/examples/hit.html"
 
   override def createUI(): Future[Unit] = Future.successful {
     container.children += Container(

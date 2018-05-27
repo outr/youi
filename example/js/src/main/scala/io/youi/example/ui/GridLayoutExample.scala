@@ -12,7 +12,7 @@ import scala.concurrent.Future
 
 class GridLayoutExample extends UIExampleScreen {
   override def title: String = "Grid Layout"
-  override def path: String = "/examples/grid-layout.html"
+  override def path: String = "/examples/grid.html"
 
   override def createUI(): Future[Unit] = {
     val grid = new Container {

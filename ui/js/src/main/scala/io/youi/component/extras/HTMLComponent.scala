@@ -46,43 +46,6 @@ trait HTMLComponent[E <: html.Element] extends Component with HTMLComponentTheme
     }
   }
 
-  protected def classify[T](v: Var[T], classifiable: Classifiable[T]): Var[T] = {
-    val initialValue = element.classList.toList.flatMap(classifiable.fromString).headOption.getOrElse(v())
-    v := initialValue
-    element.classList.add(classifiable.toString(initialValue))
-    v.changes(new ChangeObserver[T] {
-      override def change(oldValue: T, newValue: T): Unit = {
-        val oldClassName = classifiable.toString(oldValue)
-        element.classList.remove(oldClassName)
-        val newClassName = classifiable.toString(newValue)
-        element.classList.add(newClassName)
-      }
-    })
-    v
-  }
-
-  protected def classifyFlag(v: Var[Boolean], on: Option[String] = None, off: Option[String] = None): Var[Boolean] = {
-    val classes = element.classList.toSet
-    val isOn = on.exists(classes.contains)
-    val isOff = off.exists(classes.contains)
-    if (isOn) {
-      v := true
-    } else if (isOff) {
-      v := false
-    }
-    v.attachAndFire {
-      case true => {
-        off.foreach(element.classList.remove)
-        on.foreach(element.classList.add)
-      }
-      case false => {
-        on.foreach(element.classList.remove)
-        off.foreach(element.classList.add)
-      }
-    }
-    v
-  }
-
   override protected def measuredWidth: Double = Measurer.measure(element).width
   override protected def measuredHeight: Double = Measurer.measure(element).height
 }

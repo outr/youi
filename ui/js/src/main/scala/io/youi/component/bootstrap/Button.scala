@@ -17,7 +17,7 @@ class Button(override val element: html.Button) extends BootstrapComponent[html.
 
   element.classList.add("btn")
 
-  lazy val value: Var[String] = style[String]("value", "", StyleConnect.html[String], updatesTransform = true)
+  lazy val value: Var[String] = style[String]("value", "", StyleConnect.content[String], updatesTransform = true)
 }
 
 object Button extends ButtonTheme {

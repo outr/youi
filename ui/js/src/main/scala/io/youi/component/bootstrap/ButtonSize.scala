@@ -1,12 +1,12 @@
 package io.youi.component.bootstrap
 
-import io.youi.component.extras.Classifiable
+import io.youi.theme.Stringify
 
 sealed abstract class ButtonSize(key: String) {
   private val className: String = s"btn-$key"
 }
 
-object ButtonSize extends Classifiable[ButtonSize] {
+object ButtonSize extends Stringify[ButtonSize] {
   case object Large extends ButtonSize("lg")
   case object Normal extends ButtonSize("nm")
   case object Small extends ButtonSize("sm")
@@ -15,5 +15,5 @@ object ButtonSize extends Classifiable[ButtonSize] {
 
   override def fromString(value: String): Option[ButtonSize] = map.get(value)
 
-  override def toString(value: ButtonSize): String = value.className
+  override def toString(value: ButtonSize): Option[String] = Option(value.className)
 }

@@ -1,10 +1,13 @@
 package io.youi.theme
 
+import io.youi.component.bootstrap.{ButtonSize, ButtonType}
 import io.youi.{Color, Cursor}
 import io.youi.paint.Paint
 import io.youi.style.{FontFamily, FontWeight, Position, WhiteSpace}
 
 trait StringifyImplicits {
+  implicit def stringifyButtonType: Stringify[ButtonType] = ButtonType
+  implicit def stringifyButtonSize: Stringify[ButtonSize] = ButtonSize
   implicit def stringifyWhiteSpace: Stringify[WhiteSpace] = WhiteSpace
   implicit def stringifyPosition: Stringify[Position] = Position
   implicit def stringifyPaint: Stringify[Paint] = Paint

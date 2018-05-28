@@ -4,7 +4,7 @@ import io.youi.LazyUpdate
 import io.youi.component.extras.HTMLComponent
 import io.youi.image.Image
 import io.youi.style.Position
-import io.youi.theme.Scale9Theme
+import io.youi.theme.{Scale9Theme, Theme}
 import org.scalajs.dom.html
 import reactify._
 
@@ -12,7 +12,7 @@ import scala.util.{Failure, Success}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class Scale9(element: html.Element = HTMLComponent.create[html.Div]("div")) extends HTMLContainer[ImageView](element) with Scale9Theme { self =>
-  parentTheme := Some(Scale9)
+  override protected def defaultParentTheme: Theme = Scale9
 
   override def componentType: String = "Scale9"
 
@@ -134,4 +134,6 @@ class Scale9(element: html.Element = HTMLComponent.create[html.Div]("div")) exte
   }
 }
 
-object Scale9 extends Scale9Theme
+object Scale9 extends Scale9Theme {
+  override protected def defaultParentTheme: Theme = HTMLContainer
+}

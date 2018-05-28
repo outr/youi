@@ -44,8 +44,9 @@ trait Component extends TaskSupport with ComponentTheme {
     */
   private lazy val internalUpdatables: Val[List[Updatable]] = Val(updatables)
 
-  parentTheme := Some(Component)
   updateTransform()
+
+  override protected def defaultParentTheme: Theme = Component
 
   /**
     * Events functionality for monitoring and even firing events on this component.
@@ -129,6 +130,8 @@ trait Component extends TaskSupport with ComponentTheme {
 }
 
 object Component extends ComponentTheme {
+  override protected def defaultParentTheme: Theme = Theme
+
   def childrenFor(component: Component): Vector[Component] = component.childComponents
 
   object measured {

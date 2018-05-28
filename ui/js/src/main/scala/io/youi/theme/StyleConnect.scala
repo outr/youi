@@ -77,15 +77,20 @@ object StyleConnect {
 
   def classify[T](implicit stringify: Stringify[T]): Option[StyleConnect[T]] = Some(new StyleConnect[T] {
     override def init(theme: Theme, v: Var[T], name: String): Unit = withElement(theme) { e =>
+      scribe.info(s"Initializing $name...")
       val initialValue = e.classList.toList.flatMap(stringify.fromString).headOption.getOrElse(v())
       v := initialValue
       stringify.toString(initialValue).foreach(e.classList.add)
       v.changes(new ChangeObserver[T] {
         override def change(oldValue: T, newValue: T): Unit = {
+          scribe.info(s"Classify changed $oldValue / $newValue")
           stringify.toString(oldValue).foreach(e.classList.remove)
           stringify.toString(newValue).foreach(e.classList.add)
         }
       })
+      v.attach { value =>
+        scribe.info(s"Classify fired: $value")
+      }
     }
   })
 

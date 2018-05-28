@@ -4,11 +4,17 @@ import io.youi.MapStore
 import reactify._
 
 trait Theme extends StringifyImplicits {
-  lazy val parentTheme: Var[Option[Theme]] = Var(None)
+  protected def defaultParentTheme: Theme
+
+  lazy val parentTheme: Var[Theme] = Var(defaultParentTheme)
 
   private val store = new MapStore
 
-  private def get[T](name: String): Option[Var[T]] = store.get[Var[T]](name).orElse(parentTheme().flatMap(_.get[T](name)))
+  private[theme] def get[T](name: String): Option[Var[T]] = if (this == Theme) {
+    store.get[Var[T]](name)
+  } else {
+    store.get[Var[T]](name).orElse(parentTheme().get[T](name))
+  }
 
   protected def updateTransform(): Unit = {}
   protected def updateRendering(): Unit = {}
@@ -22,8 +28,13 @@ trait Theme extends StringifyImplicits {
     val v = Var[T](if (ignoreParent) {
       default
     } else {
-      parentTheme().flatMap(_.get[T](name)).map(_.get).getOrElse(default)
+      parentTheme().get[T](name).map(_.get).getOrElse(default)
     })
+    if (name == "type") {
+      v.attachAndFire { value =>
+        scribe.info(s"Value: $value, ${parentTheme().get[Any]("type")}")
+      }
+    }
     store(name) = v
     connect.foreach(_.init(this, v, name))
     if (updatesTransform || updatesRendering) {
@@ -38,4 +49,8 @@ trait Theme extends StringifyImplicits {
     }
     v
   }
+}
+
+object Theme extends Theme {
+  override protected def defaultParentTheme: Theme = Theme
 }

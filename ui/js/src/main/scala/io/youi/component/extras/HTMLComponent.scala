@@ -4,7 +4,7 @@ import io.youi.component.Component
 import io.youi.{dom, ui}
 import io.youi.dom._
 import io.youi.event.{EventSupport, HTMLEvents}
-import io.youi.theme.HTMLComponentTheme
+import io.youi.theme.{HTMLComponentTheme, Theme}
 import io.youi.util.Measurer
 import org.scalajs.dom.{Element, _}
 import reactify.{ChangeObserver, Var}
@@ -12,8 +12,6 @@ import reactify.{ChangeObserver, Var}
 trait HTMLComponent[E <: html.Element] extends Component with HTMLComponentTheme {
   protected def element: E
   protected val e: HTMLExtras[E] = new HTMLExtras[E](element)
-
-  parentTheme := Some(HTMLComponent)
 
   override lazy val position: HTMLComponentPosition = new HTMLComponentPosition(this)
   override lazy val size: HTMLComponentSize = new HTMLComponentSize(this)
@@ -51,6 +49,8 @@ trait HTMLComponent[E <: html.Element] extends Component with HTMLComponentTheme
 }
 
 object HTMLComponent extends HTMLComponentTheme {
+  override protected def defaultParentTheme: Theme = Component
+
   def create[T <: Element](tagName: String): T = {
     val e = dom.create[T](tagName)
     // TODO: init

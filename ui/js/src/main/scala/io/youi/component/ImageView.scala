@@ -2,7 +2,7 @@ package io.youi.component
 
 import io.youi.component.extras.{HTMLComponent, HTMLImageViewImplementation, ImageViewImplementation}
 import io.youi.image.Image
-import io.youi.theme.ImageViewTheme
+import io.youi.theme.{ImageViewTheme, Theme}
 import org.scalajs.dom.html
 import reactify.Var
 
@@ -10,7 +10,7 @@ class ImageView(implementation: ImageViewImplementation = HTMLImageViewImplement
     extends HTMLComponent[html.Element] with ImageViewTheme {
   override protected lazy val element: html.Element = implementation.createElement()
 
-  parentTheme := Some(ImageView)
+  override protected def defaultParentTheme: Theme = ImageView
 
   lazy val image: Var[Image] = {
     val i = style[Image]("src", Image.empty, None)
@@ -36,4 +36,6 @@ class ImageView(implementation: ImageViewImplementation = HTMLImageViewImplement
   override protected def measuredHeight: Double = image().height
 }
 
-object ImageView extends ImageViewTheme
+object ImageView extends ImageViewTheme {
+  override protected def defaultParentTheme: Theme = HTMLComponent
+}

@@ -4,6 +4,8 @@ import io.youi.event.KeyEvent
 import io.youi.font.{GoogleFont, GoogleFontWeight}
 import io.youi.paint.Paint
 import io.youi.style.{FontFamily, FontWeight}
+import io.youi.task.PartialAnimate
+import io.youi.theme.StyleProp
 import org.scalajs.dom.html.Div
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 import org.scalajs.dom.{KeyboardEvent, document, html}
@@ -165,5 +167,15 @@ package object youi {
       * Returns percentage value `of`.
       */
     def %(of: State[Double]): Val[Double] = percentOf(of)
+  }
+
+  implicit def stylePropToValue[T](prop: StyleProp[T]): T = prop()
+
+  implicit class StylePropWorkflowDouble(prop: StyleProp[Double]) {
+    def to(destination: => Double): PartialAnimate = PartialAnimate(
+      get = () => prop(),
+      apply = (d: Double) => prop := d,
+      destination = () => destination
+    )
   }
 }

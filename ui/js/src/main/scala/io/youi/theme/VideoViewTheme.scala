@@ -5,11 +5,11 @@ import io.youi.video.Video
 import reactify.Var
 
 trait VideoViewTheme extends HTMLComponentTheme {
-  lazy val video: Var[Video] = style[Video]("video", Video.empty, Some(VideoViewTheme))
+  lazy val video: StyleProp[Video] = style[Video]("video", Video.empty, Some(VideoViewTheme))
 }
 
 object VideoViewTheme extends StyleConnect[Video] {
-  override def init(theme: Theme, v: Var[Video], name: String): Unit = theme match {
+  override def init(theme: Theme, v: StyleProp[Video], name: String): Unit = theme match {
     case c: HTMLComponent[_] => {
       val e = HTMLComponent.element(c)
       v.attachAndFire { video =>

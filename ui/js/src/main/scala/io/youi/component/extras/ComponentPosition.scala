@@ -7,9 +7,9 @@ import reactify._
 trait ComponentPosition extends StringifyImplicits {
   protected def component: Component
 
-  def x: Var[Double]
-  def y: Var[Double]
-  def z: Var[Int]
+  lazy val x: Var[Double] = Var(0.0)
+  lazy val y: Var[Double] = Var(0.0)
+  lazy val z: Var[Int] = Var(0)
 
   lazy val left: Var[Double] = x
   lazy val center: Dep[Double, Double] = Dep(left, component.size.width / 2.0)

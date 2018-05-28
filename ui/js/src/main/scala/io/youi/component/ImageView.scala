@@ -2,7 +2,7 @@ package io.youi.component
 
 import io.youi.component.extras.{HTMLComponent, HTMLImageViewImplementation, ImageViewImplementation}
 import io.youi.image.Image
-import io.youi.theme.{ImageViewTheme, Theme}
+import io.youi.theme.{ImageViewTheme, StyleProp, Theme}
 import org.scalajs.dom.html
 import reactify.Var
 
@@ -12,7 +12,7 @@ class ImageView(implementation: ImageViewImplementation = HTMLImageViewImplement
 
   override protected def defaultParentTheme: Theme = ImageView
 
-  lazy val image: Var[Image] = {
+  lazy val image: StyleProp[Image] = {
     val i = style[Image]("src", Image.empty, None)
     i.attach { img =>
       implementation(this, img)

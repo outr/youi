@@ -6,7 +6,7 @@ import org.scalajs.dom._
 import io.youi.dom._
 
 trait StyleConnect[T] {
-  def init(theme: Theme, v: Var[T], name: String): Unit
+  def init(theme: Theme, v: StyleProp[T], name: String): Unit
 }
 
 object StyleConnect {
@@ -19,7 +19,7 @@ object StyleConnect {
   }
 
   def field[T](implicit stringify: Stringify[T]): Option[StyleConnect[T]] = Some(new StyleConnect[T] {
-    override def init(theme: Theme, v: Var[T], name: String): Unit = withElement(theme) { e =>
+    override def init(theme: Theme, v: StyleProp[T], name: String): Unit = withElement(theme) { e =>
       val current = stringify.fromString(e.getAttribute(name))
       val default = v()
       v.attach { value =>
@@ -40,7 +40,7 @@ object StyleConnect {
 
   def style[T](modifier: T => T)
               (implicit stringify: Stringify[T]): Option[StyleConnect[T]] = Some(new StyleConnect[T] {
-    override def init(theme: Theme, v: Var[T], name: String): Unit = withElement(theme) { e =>
+    override def init(theme: Theme, v: StyleProp[T], name: String): Unit = withElement(theme) { e =>
       val current = stringify.fromString(window.getComputedStyle(e).getPropertyValue(name))
       val default = v()
       v.attach { value =>
@@ -58,7 +58,7 @@ object StyleConnect {
   })
 
   def content[T](implicit stringify: Stringify[T]): Option[StyleConnect[T]] = Some(new StyleConnect[T] {
-    override def init(theme: Theme, v: Var[T], name: String): Unit = withElement(theme) { e =>
+    override def init(theme: Theme, v: StyleProp[T], name: String): Unit = withElement(theme) { e =>
       val current = stringify.fromString(window.getComputedStyle(e).getPropertyValue(name))
       val default = v()
       v.attach { value =>
@@ -76,7 +76,7 @@ object StyleConnect {
   })
 
   def classify[T](implicit stringify: Stringify[T]): Option[StyleConnect[T]] = Some(new StyleConnect[T] {
-    override def init(theme: Theme, v: Var[T], name: String): Unit = withElement(theme) { e =>
+    override def init(theme: Theme, v: StyleProp[T], name: String): Unit = withElement(theme) { e =>
       scribe.info(s"Initializing $name...")
       val initialValue = e.classList.toList.flatMap(stringify.fromString).headOption.getOrElse(v())
       v := initialValue
@@ -95,7 +95,7 @@ object StyleConnect {
   })
 
   def flag(on: Option[String] = None, off: Option[String] = None): Option[StyleConnect[Boolean]] = Some(new StyleConnect[Boolean] {
-    override def init(theme: Theme, v: Var[Boolean], name: String): Unit = withElement(theme) { e =>
+    override def init(theme: Theme, v: StyleProp[Boolean], name: String): Unit = withElement(theme) { e =>
       val classes = e.classList.toSet
       val isOn = on.exists(classes.contains)
       val isOff = off.exists(classes.contains)

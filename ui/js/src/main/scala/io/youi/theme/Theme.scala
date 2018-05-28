@@ -10,10 +10,10 @@ trait Theme extends StringifyImplicits {
 
   private val store = new MapStore
 
-  private[theme] def get[T](name: String): Option[Var[T]] = if (this == Theme) {
-    store.get[Var[T]](name)
+  private[theme] def get[T](name: String): Option[StyleProp[T]] = if (this == Theme) {
+    store.get[StyleProp[T]](name)
   } else {
-    store.get[Var[T]](name).orElse(parentTheme().get[T](name))
+    store.get[StyleProp[T]](name).orElse(parentTheme().get[T](name))
   }
 
   protected def updateTransform(): Unit = {}
@@ -24,21 +24,17 @@ trait Theme extends StringifyImplicits {
                                connect: Option[StyleConnect[T]],
                                updatesTransform: Boolean = false,
                                updatesRendering: Boolean = false,
-                               ignoreParent: Boolean = false): Var[T] = {
-    val v = Var[T](if (ignoreParent) {
-      default
-    } else {
-      parentTheme().get[T](name).map(_.get).getOrElse(default)
-    })
+                               ignoreParent: Boolean = false): StyleProp[T] = {
+    val prop = new StyleProp[T](name, parentTheme, default)
     if (name == "type") {
-      v.attachAndFire { value =>
+      prop.attachAndFire { value =>
         scribe.info(s"Value: $value, ${parentTheme().get[Any]("type")}")
       }
     }
-    store(name) = v
-    connect.foreach(_.init(this, v, name))
+    store(name) = prop
+    connect.foreach(_.init(this, prop, name))
     if (updatesTransform || updatesRendering) {
-      v.attach { _ =>
+      prop.attach { _ =>
         if (updatesTransform) {
           updateTransform()
         }
@@ -47,10 +43,28 @@ trait Theme extends StringifyImplicits {
         }
       }
     }
-    v
+    prop
   }
 }
 
 object Theme extends Theme {
   override protected def defaultParentTheme: Theme = Theme
+}
+
+class StyleProp[T](val name: String, parent: Var[Theme], default: => T) {
+  lazy val option: Var[Option[T]] = Var(None)
+  lazy val value: Val[T] = Val[T](option().orElse(parent.get.get[T](name).map(_.get)).getOrElse(default))
+
+  def apply(): T = value()
+  def get: T = apply()
+  def :=(value: => T): Unit = option := Option(value)
+  def set(value: => T): Unit = option := Option(value)
+  def clear(): Unit = option := None
+
+  def attach(f: T => Unit,
+             priority: Double = Observer.Priority.Normal): Observer[T] = value.attach(f, priority)
+  def observe(observer: Observer[T]): Observer[T] = value.observe(observer)
+  def detach(observer: Observer[T]): Unit = value.detach(observer)
+  def attachAndFire(f: T => Unit): Observer[T] = value.attachAndFire(f)
+  def changes(observer: ChangeObserver[T]): Observer[T] = value.changes(observer)
 }

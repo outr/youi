@@ -11,8 +11,8 @@ trait ComponentSize {
     lazy val height: Var[Double] = Var(0.0)
   }
 
-  def width: Var[Double]
-  def height: Var[Double]
+  lazy val width: Var[Double] = Var(0.0)
+  lazy val height: Var[Double] = Var(0.0)
 
   lazy val center: Val[Double] = Val(width / 2.0)
   lazy val middle: Val[Double] = Val(height / 2.0)

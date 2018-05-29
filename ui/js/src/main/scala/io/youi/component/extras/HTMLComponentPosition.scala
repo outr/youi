@@ -8,10 +8,10 @@ import org.scalajs.dom._
 class HTMLComponentPosition(override protected val component: Component) extends ComponentPosition with StringifyImplicits {
   private def e: html.Element = HTMLComponent.element(component)
 
-  x.attach { value =>
+  x.attachAndFire { value =>
     e.style.left = s"${value}px"
   }
-  y.attach { value =>
+  y.attachAndFire { value =>
     e.style.top = s"${value}px"
   }
   z.attach { value =>

@@ -69,6 +69,8 @@ class Color private(val value: Long) extends AnyVal {
   def withHue(hue: Double): Color = Color.fromHSB(hue, saturation, brightness)
   def withSaturation(saturation: Double): Color = Color.fromHSB(hue, saturation, brightness)
   def withBrightness(brightness: Double): Color = Color.fromHSB(hue, saturation, brightness)
+
+  override def toString: String = s"Color(red: $red, green: $green, blue: $blue, alpha: $alpha)"
 }
 
 object Color {

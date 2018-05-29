@@ -26,11 +26,6 @@ trait Theme extends StringifyImplicits {
                                updatesRendering: Boolean = false,
                                ignoreParent: Boolean = false): StyleProp[T] = {
     val prop = new StyleProp[T](name, parentTheme, default)
-    if (name == "type") {
-      prop.attachAndFire { value =>
-        scribe.info(s"Value: $value, ${parentTheme().get[Any]("type")}")
-      }
-    }
     store(name) = prop
     connect.foreach(_.init(this, prop, name))
     if (updatesTransform || updatesRendering) {
@@ -52,8 +47,8 @@ object Theme extends Theme {
 }
 
 class StyleProp[T](val name: String, parent: Var[Theme], default: => T) {
-  lazy val option: Var[Option[T]] = Var(None)
-  lazy val value: Val[T] = Val[T](option().orElse(parent.get.get[T](name).map(_.get)).getOrElse(default))
+  val option: Var[Option[T]] = Var(None)
+  val value: Val[T] = Val[T](option().orElse(parent.get.get[T](name).map(_.get)).getOrElse(default))
 
   def apply(): T = value()
   def get: T = apply()

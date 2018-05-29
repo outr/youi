@@ -7,7 +7,6 @@ import io.youi.event.{EventSupport, HTMLEvents}
 import io.youi.theme.{HTMLComponentTheme, Theme}
 import io.youi.util.Measurer
 import org.scalajs.dom.{Element, _}
-import reactify.{ChangeObserver, Var}
 
 trait HTMLComponent[E <: html.Element] extends Component with HTMLComponentTheme {
   protected def element: E

@@ -20,18 +20,10 @@ object StyleConnect {
 
   def field[T](implicit stringify: Stringify[T]): Option[StyleConnect[T]] = Some(new StyleConnect[T] {
     override def init(theme: Theme, v: StyleProp[T], name: String): Unit = withElement(theme) { e =>
-      val current = stringify.fromString(e.getAttribute(name))
-      val default = v()
-      v.attach { value =>
-        stringify.toString(value) match {
-          case Some(s) => e.setAttribute(name, s)
-          case None => e.removeAttribute(name)
-        }
-      }
-      current.foreach { value =>
-        if (value != default) {
-          v := value
-        }
+      val value = v.option.map(valueOption => stringify.toString(valueOption.getOrElse(v.value())))
+      value.attachAndFire {
+        case Some(s) => e.setAttribute(name, s)
+        case None => e.removeAttribute(name)
       }
     }
   })
@@ -41,55 +33,32 @@ object StyleConnect {
   def style[T](modifier: T => T)
               (implicit stringify: Stringify[T]): Option[StyleConnect[T]] = Some(new StyleConnect[T] {
     override def init(theme: Theme, v: StyleProp[T], name: String): Unit = withElement(theme) { e =>
-      val current = stringify.fromString(window.getComputedStyle(e).getPropertyValue(name))
-      val default = v()
-      v.attach { value =>
-        stringify.toString(modifier(value)) match {
-          case Some(s) => e.style.setProperty(name, s)
-          case None => e.style.removeProperty(name)
-        }
-      }
-      current.foreach { value =>
-        if (value != default) {
-          v := value
-        }
+      val value = v.option.map(valueOption => stringify.toString(modifier(valueOption.getOrElse(v.value()))))
+      value.attachAndFire {
+        case Some(s) => e.style.setProperty(name, s)
+        case None => e.style.removeProperty(name)
       }
     }
   })
 
   def content[T](implicit stringify: Stringify[T]): Option[StyleConnect[T]] = Some(new StyleConnect[T] {
     override def init(theme: Theme, v: StyleProp[T], name: String): Unit = withElement(theme) { e =>
-      val current = stringify.fromString(window.getComputedStyle(e).getPropertyValue(name))
-      val default = v()
-      v.attach { value =>
-        stringify.toString(value) match {
-          case Some(s) => e.innerHTML = s
-          case None => e.innerHTML = ""
-        }
-      }
-      current.foreach { value =>
-        if (value != default) {
-          v := value
-        }
+      val value = v.option.map(valueOption => stringify.toString(valueOption.getOrElse(v.value())))
+      value.attachAndFire {
+        case Some(s) => e.innerHTML = s
+        case None => e.innerHTML = ""
       }
     }
   })
 
   def classify[T](implicit stringify: Stringify[T]): Option[StyleConnect[T]] = Some(new StyleConnect[T] {
     override def init(theme: Theme, v: StyleProp[T], name: String): Unit = withElement(theme) { e =>
-      scribe.info(s"Initializing $name...")
-      val initialValue = e.classList.toList.flatMap(stringify.fromString).headOption.getOrElse(v())
-      v := initialValue
-      stringify.toString(initialValue).foreach(e.classList.add)
-      v.changes(new ChangeObserver[T] {
-        override def change(oldValue: T, newValue: T): Unit = {
-          scribe.info(s"Classify changed $oldValue / $newValue")
-          stringify.toString(oldValue).foreach(e.classList.remove)
-          stringify.toString(newValue).foreach(e.classList.add)
-        }
-      })
-      v.attach { value =>
-        scribe.info(s"Classify fired: $value")
+      val value = v.option.map(valueOption => stringify.toString(valueOption.getOrElse(v.value())))
+      var previous: Option[String] = None
+      value.attachAndFire { current =>
+        previous.foreach(e.classList.remove)
+        current.foreach(e.classList.add)
+        previous = current
       }
     }
   })

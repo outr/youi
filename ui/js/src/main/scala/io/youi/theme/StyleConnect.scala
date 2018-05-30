@@ -1,7 +1,6 @@
 package io.youi.theme
 
 import io.youi.component.extras.HTMLComponent
-import reactify._
 import org.scalajs.dom._
 import io.youi.dom._
 

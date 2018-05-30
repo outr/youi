@@ -15,7 +15,6 @@ class BootstrapButtonExample extends UIExampleScreen {
   override def path: String = "/examples/bootstrap/button.html"
 
   override def createUI(): Future[Unit] = GoogleFont.`Lobster`.load().map { fnt =>
-    Button.`type` := ButtonType.Danger
     val button = new Button {
       value := "Hello, World!"
       position.center := container.size.center
@@ -23,10 +22,6 @@ class BootstrapButtonExample extends UIExampleScreen {
       font.family := fnt
       font.size := 64.px
       color := Color.White
-      event.click.attach { _ =>
-        scribe.info("Setting to warning!")
-        Button.`type` := ButtonType.Warning
-      }
     }
     container.children += button
   }

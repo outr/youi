@@ -8,7 +8,7 @@
     * [X] Removal of `Renderer` entirely and each canvas component has its own `html.Canvas` instance
     * [X] Integration of `z-index` as `depth` value
     * [X] Proper management of each component to position and size via HTML properties
-    * [ ] Proper layering and testing of theme support
+    * [X] Proper layering and testing of theme support
     * [ ] Migration of `hyptertext` module into `ui` with proper distinction while allowing good integration
     * [ ] Core `Widget`, `Component`, `CanvasComponent`, `HTMLComponent`, `AbstractContainer`, etc.
     * [ ] `TextView` with `HTML` and `Canvas` implementations

@@ -13,18 +13,18 @@ trait VirtualSizeSupport {
   }
 
   implicit class DoubleVirtualPixels(d: Double) {
-    def vx: Val[Double] = Val[Double](vw() + virtual.xOffset())
-    def vy: Val[Double] = Val[Double](vh() + virtual.yOffset())
-    def vw: Val[Double] = Val[Double](d * virtual.widthMultiplier)
-    def vh: Val[Double] = Val[Double](d * virtual.heightMultiplier)
+    def vx: Val[Double] = Val(vw() + virtual.xOffset())
+    def vy: Val[Double] = Val(vh() + virtual.yOffset())
+    def vw: Val[Double] = Val(d * virtual.widthMultiplier)
+    def vh: Val[Double] = Val(d * virtual.heightMultiplier)
     def vf: Val[Double] = vw
   }
 
   implicit class IntVirtualPixels(i: Int) {
-    def vx: Val[Double] = Val[Double](vw() + virtual.xOffset())
-    def vy: Val[Double] = Val[Double](vh() + virtual.yOffset())
-    def vw: Val[Double] = Val[Double](i.toDouble * virtual.widthMultiplier)
-    def vh: Val[Double] = Val[Double](i.toDouble * virtual.heightMultiplier)
+    def vx: Val[Double] = Val(vw() + virtual.xOffset())
+    def vy: Val[Double] = Val(vh() + virtual.yOffset())
+    def vw: Val[Double] = Val(i * virtual.widthMultiplier)
+    def vh: Val[Double] = Val(i * virtual.heightMultiplier)
     def vf: Val[Double] = vw
   }
 }

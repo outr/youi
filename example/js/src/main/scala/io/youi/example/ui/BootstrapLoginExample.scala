@@ -1,8 +1,6 @@
 package io.youi.example.ui
 
 import io.youi.{Color, Template, dom}
-import io.youi.dom._
-import io.youi.component.Component
 import io.youi.component.bootstrap.Button
 import io.youi.component.extras.HTMLComponent
 import io.youi.example.screen.UIExampleScreen

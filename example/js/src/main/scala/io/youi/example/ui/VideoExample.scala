@@ -1,7 +1,6 @@
 package io.youi.example.ui
 
 import io.youi._
-import io.youi.app.screen.UIScreen
 import io.youi.component.VideoView
 import io.youi.example.screen.UIExampleScreen
 import io.youi.video.Video

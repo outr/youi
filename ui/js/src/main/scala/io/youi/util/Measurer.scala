@@ -23,7 +23,7 @@ object Measurer {
     val e = container.firstElementChild.asInstanceOf[html.Element]
     e.style.width = "auto"
     e.style.height = "auto"
-    e.style.whiteSpace = "noWrap"
+    e.style.whiteSpace = "nowrap"
     e.style.position = "static"
     e.style.visibility = "hidden"
 

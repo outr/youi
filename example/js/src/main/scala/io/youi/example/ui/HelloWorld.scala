@@ -20,9 +20,8 @@ class HelloWorld extends UIExampleScreen {
       font.family := fnt
       font.size := 64.px
       color := Color.DarkBlue
-      position.`type` := Position.Absolute
-      position.center := container.size.center
-      position.middle := container.size.middle
+      position.center := container.size.center()
+      position.middle := container.size.middle()
     }
     container.children += textView
   }

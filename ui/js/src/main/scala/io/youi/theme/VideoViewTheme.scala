@@ -1,16 +1,27 @@
 package io.youi.theme
 
-import io.youi.component.Component
+import io.youi.component.extras.HTMLComponent
+import io.youi.video.Video
 import reactify.Var
 
-trait VideoViewTheme extends ComponentTheme {
-  override protected def defaultThemeParent: Option[Theme] = Some(Component)
+trait VideoViewTheme extends HTMLComponentTheme {
+  lazy val video: StyleProp[Video] = style[Video]("video", Video.empty, Some(VideoViewTheme))
+}
 
-  private def prnt[T](f: VideoViewTheme => T, default: => T): T = parentTheme().collect {
-    case p: VideoViewTheme => p
-  }.map(f).getOrElse(default)
-
-  val autoPlay: Var[Boolean] = prop(prnt(_.autoPlay, false), updatesRendering = true)
-  val loop: Var[Boolean] = prop(prnt(_.loop, false), updatesRendering = true)
-  val muted: Var[Boolean] = prop(prnt(_.muted, false))
+object VideoViewTheme extends StyleConnect[Video] {
+  override def init(theme: Theme, v: StyleProp[Video], name: String): Unit = theme match {
+    case c: HTMLComponent[_] => {
+      val e = HTMLComponent.element(c)
+      v.attachAndFire { video =>
+        while (e.hasChildNodes()) {
+          e.removeChild(e.firstChild)
+        }
+        video match {
+          case Video.empty => // Nothing to add
+          case _ => e.appendChild(video.element)
+        }
+      }
+      // TODO: consider ramifications of the same video in multiple locations
+    }
+  }
 }

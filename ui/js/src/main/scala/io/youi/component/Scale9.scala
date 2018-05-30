@@ -3,15 +3,17 @@ package io.youi.component
 import io.youi.LazyUpdate
 import io.youi.component.extras.HTMLComponent
 import io.youi.image.Image
-import io.youi.theme.ContainerTheme
+import io.youi.style.Position
+import io.youi.theme.{Scale9Theme, Theme}
 import org.scalajs.dom.html
 import reactify._
 
 import scala.util.{Failure, Success}
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class Scale9(element: html.Element = HTMLComponent.create[html.Div]("div")) extends HTMLContainer[ImageView](element) { self =>
-  override lazy val theme: Var[_ <: ContainerTheme] = Var(Container)
+class Scale9(element: html.Element = HTMLComponent.create[html.Div]("div")) extends HTMLContainer[ImageView](element) with Scale9Theme { self =>
+  override protected def defaultParentTheme: Theme = Scale9
+
   override def componentType: String = "Scale9"
 
   def this(image: Image) = {
@@ -36,54 +38,63 @@ class Scale9(element: html.Element = HTMLComponent.create[html.Div]("div")) exte
   size.measured.height := image.height
 
   private val topLeft = new ImageView {
+    position.`type` := Position.Absolute
     position.left := 0.0
     position.top := 0.0
     size.width := x1
     size.height := y1
   }
   private val top = new ImageView {
+    position.`type` := Position.Absolute
     position.left := x1
     position.top := 0.0
     size.width := centerWidth
     size.height := y1
   }
   private val topRight = new ImageView {
+    position.`type` := Position.Absolute
     position.right := self.size.width
     position.top := 0.0
     size.width := rightWidth
     size.height := y1
   }
   private val left = new ImageView {
+    position.`type` := Position.Absolute
     position.left := 0.0
     position.top := y1
     size.width := x1
     size.height := middleHeight
   }
   private val center = new ImageView {
+    position.`type` := Position.Absolute
     position.left := x1
     position.top := y1
     size.width := centerWidth
     size.height := middleHeight
   }
   private val right = new ImageView {
+    position.`type` := Position.Absolute
     position.right := self.size.width
     position.top := y1
     size.width := rightWidth
     size.height := middleHeight
   }
   private val bottomLeft = new ImageView {
+    position.`type` := Position.Absolute
     position.left := 0.0
     position.bottom := self.size.height
     size.width := x1
     size.height := bottomHeight
   }
   private val bottom = new ImageView {
+    position.`type` := Position.Absolute
     position.left := x1
     position.bottom := self.size.height
     size.width := centerWidth
     size.height := bottomHeight
   }
   private val bottomRight = new ImageView {
+    position.`type` := Position.Absolute
     position.right := self.size.width
     position.bottom := self.size.height
     size.width := rightWidth
@@ -114,11 +125,15 @@ class Scale9(element: html.Element = HTMLComponent.create[html.Div]("div")) exte
   image.on(reClip.flag())
   (x1 and y1 and x2 and y2).on(reClip.flag())
 
-  children ++= List(topLeft, top, topRight, left, center, right, bottomLeft, bottom, bottomRight)
+  children ++= List(center, top, bottom, left, right, topLeft, topRight, bottomLeft, bottomRight)
 
   override def update(delta: Double): Unit = {
     super.update(delta)
 
     reClip.update()
   }
+}
+
+object Scale9 extends Scale9Theme {
+  override protected def defaultParentTheme: Theme = HTMLContainer
 }

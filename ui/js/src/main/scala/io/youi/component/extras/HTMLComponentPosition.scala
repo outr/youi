@@ -2,27 +2,25 @@ package io.youi.component.extras
 
 import io.youi.component.Component
 import io.youi.style.Position
-import io.youi.ui
-import org.scalajs.dom.html
-import reactify.Var
+import io.youi.theme.{StringifyImplicits, StyleConnect, StyleProp}
+import org.scalajs.dom._
 
-class HTMLComponentPosition(component: Component) extends ComponentPosition(component) {
+class HTMLComponentPosition(override protected val component: Component) extends ComponentPosition with StringifyImplicits {
   private def e: html.Element = HTMLComponent.element(component)
 
-  val `type`: Var[Position] = Var(if (x() == 0.0 && y() == 0.0) {
+  x.attachAndFire { value =>
+    e.style.left = s"${value}px"
+  }
+  y.attachAndFire { value =>
+    e.style.top = s"${value}px"
+  }
+  z.attach { value =>
+    e.style.zIndex = value.toString
+  }
+
+  val `type`: StyleProp[Position] = component.style[Position]("position", if (x() == 0.0 && y() == 0.0) {
     Position.Static
   } else {
     Position.Absolute
-  })
-
-  if (component != ui) {
-    component.connect[Position](
-      v = Var(Position.Absolute),
-      get = None,
-      set = (p: Position) => e.style.position = p.toString.toLowerCase
-    )
-    component.connect(x, None, (v: Double) => e.style.left = s"${v}px")
-    component.connect(y, None, (v: Double) => e.style.top = s"${v}px")
-    component.connect(z, None, (i: Int) => e.style.zIndex = i.toString)
-  }
+  }, StyleConnect.style[Position], ignoreParent = true)
 }

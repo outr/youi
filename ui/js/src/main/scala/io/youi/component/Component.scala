@@ -4,7 +4,7 @@ import io.youi.component.extras.{ComponentPosition, ComponentSize}
 import io.youi.event.{EventSupport, Events, HTMLEvents}
 import io.youi.{MapStore, Store, Unique, Updatable}
 import io.youi.task.TaskSupport
-import io.youi.theme.ComponentTheme
+import io.youi.theme.{ComponentTheme, Theme}
 import reactify._
 
 import scala.annotation.tailrec
@@ -15,16 +15,17 @@ import scala.annotation.tailrec
 trait Component extends TaskSupport with ComponentTheme {
   private var _initialized: Boolean = false
 
-  protected[component] def connect[T](v: Var[T], get: => Option[T], set: T => Unit, onChange: => Unit = ()): Var[T] = {
-    set(get.getOrElse(v()))
-    v.attach { t =>
-      set(t)
-      onChange
-    }
-    v
-  }
-
   lazy val store: Store = new MapStore
+
+  /**
+    * Position information for placement of this component on the screen.
+    */
+  def position: ComponentPosition
+
+  /**
+    * Size information for determining the dimensions of this component.
+    */
+  def size: ComponentSize
 
   /**
     * Generated unique identifier for this element.
@@ -43,25 +44,14 @@ trait Component extends TaskSupport with ComponentTheme {
     */
   private lazy val internalUpdatables: Val[List[Updatable]] = Val(updatables)
 
-  /**
-    * Position information for placement of this component on the screen.
-    */
-  lazy val position: ComponentPosition = new ComponentPosition(this)
+  updateTransform()
 
-  /**
-    * Size information for determining the dimensions of this component.
-    */
-  lazy val size: ComponentSize = new ComponentSize(this)
+  override protected def defaultParentTheme: Theme = Component
 
   /**
     * Events functionality for monitoring and even firing events on this component.
     */
   def event: EventSupport
-
-  /**
-    * Theme associated with this Component.
-    */
-  def theme: Var[_ <: ComponentTheme]
 
   /**
     * The type of Component. This is useful for client-side introspection and logging. Each custom Component instance
@@ -78,8 +68,6 @@ trait Component extends TaskSupport with ComponentTheme {
     * List of `Updatable` instances this Component represents.
     */
   protected def updatables: List[Updatable] = Nil
-
-  resetMeasured()
 
   /**
     * Called automatically the first time this Component is connected to the document.
@@ -98,7 +86,9 @@ trait Component extends TaskSupport with ComponentTheme {
     updateUpdatables(delta, internalUpdatables())
   }
 
-  def resetMeasured(): Unit = {
+  override protected def updateTransform(): Unit = {
+    super.updateTransform()
+
     size.measured.width := measuredWidth
     size.measured.height := measuredHeight
   }
@@ -140,6 +130,8 @@ trait Component extends TaskSupport with ComponentTheme {
 }
 
 object Component extends ComponentTheme {
+  override protected def defaultParentTheme: Theme = Theme
+
   def childrenFor(component: Component): Vector[Component] = component.childComponents
 
   object measured {

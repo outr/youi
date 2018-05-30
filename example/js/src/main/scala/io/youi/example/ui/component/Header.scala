@@ -4,16 +4,17 @@ import io.youi.component.{Container, ImageView, TextView}
 import io.youi.example.ClientExampleApplication
 import io.youi._
 import io.youi.app.screen.ScreenManager
-import io.youi.component.extras.HTMLImageViewImplementation
 import io.youi.font.GoogleFont
 import io.youi.image.Image
 import io.youi.paint.Paint
+import io.youi.style.Position
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class Header extends Container {
   protected def application: ClientExampleApplication.type = ClientExampleApplication
 
+  position.`type` := Position.Absolute
   position.left := 0.0
   position.top := 0.0
   size.width := ui.size.width

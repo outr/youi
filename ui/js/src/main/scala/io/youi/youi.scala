@@ -3,8 +3,9 @@ package io
 import io.youi.event.KeyEvent
 import io.youi.font.{GoogleFont, GoogleFontWeight}
 import io.youi.paint.Paint
-import io.youi.spatial.NumericSize
 import io.youi.style.{FontFamily, FontWeight}
+import io.youi.task.PartialAnimate
+import io.youi.theme.StyleProp
 import org.scalajs.dom.html.Div
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 import org.scalajs.dom.{KeyboardEvent, document, html}
@@ -89,8 +90,28 @@ package object youi {
     }
   }
 
-  implicit class UINumericSize[T](t: T)(implicit n: Numeric[T]) extends NumericSize[T](t)(n) {
+  implicit class UINumericSize[T](t: T)(implicit n: Numeric[T]) {
     private val d = n.toDouble(t)
+
+    /**
+      * pixels
+      */
+    def px: Double = d
+
+    /**
+      * degrees conversion (360 converts to 1.0)
+      */
+    def degrees: Double = d / 360.0
+
+    /**
+      * radians conversion (2π converts to 1.0)
+      */
+    def radians: Double = d / (2.0 * math.Pi)
+
+    /**
+      * Returns percentage value `of`.
+      */
+    def percentOf(of: State[Double]): Val[Double] = Val(of.get * (d * 0.01))
 
     /**
       * millimeters
@@ -140,11 +161,21 @@ package object youi {
     /**
       * 1/100th of the maximum value between the height and the width of the viewport.
       */
-    def vmax: Val[Double] = Val[Double](math.max((d / 100.0) * ui.size.width, (d / 100.0) * ui.size.height))
+    def vmax: Val[Double] = Val(math.max((d / 100.0) * ui.size.width, (d / 100.0) * ui.size.height))
 
     /**
       * Returns percentage value `of`.
       */
     def %(of: State[Double]): Val[Double] = percentOf(of)
+  }
+
+  implicit def stylePropToValue[T](prop: StyleProp[T]): T = prop()
+
+  implicit class StylePropWorkflowDouble(prop: StyleProp[Double]) {
+    def to(destination: => Double): PartialAnimate = PartialAnimate(
+      get = () => prop(),
+      apply = (d: Double) => prop := d,
+      destination = () => destination
+    )
   }
 }

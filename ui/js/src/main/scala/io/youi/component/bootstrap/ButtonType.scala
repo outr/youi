@@ -1,8 +1,8 @@
 package io.youi.component.bootstrap
 
-import io.youi.component.extras.Classifiable
+import io.youi.theme.Stringify
 
-object ButtonType extends Classifiable[ButtonType] {
+object ButtonType extends Stringify[ButtonType] {
   case object Primary extends ButtonType("primary")
   case object Secondary extends ButtonType("secondary")
   case object Success extends ButtonType("success")
@@ -33,7 +33,7 @@ object ButtonType extends Classifiable[ButtonType] {
 
   override def fromString(value: String): Option[ButtonType] = map.get(value)
 
-  override def toString(value: ButtonType): String = value.className
+  override def toString(value: ButtonType): Option[String] = Some(value.className)
 }
 
 sealed abstract class ButtonType(key: String) {

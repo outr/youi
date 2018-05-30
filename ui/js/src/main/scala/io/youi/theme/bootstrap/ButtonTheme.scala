@@ -1,9 +1,11 @@
 package io.youi.theme.bootstrap
 
-import io.youi.component.Component
-import io.youi.theme.{ComponentTheme, Theme}
-import io.youi.theme.mixin.CoreTextTheme
+import io.youi.component.bootstrap.{ButtonSize, ButtonType}
+import io.youi.theme.{StyleConnect, StyleProp}
+import io.youi.theme.mixins.FontTheme
 
-trait ButtonTheme extends ComponentTheme with CoreTextTheme {
-  override protected def defaultThemeParent: Option[Theme] = Some(Component)
+trait ButtonTheme extends BootstrapTheme with FontTheme {
+  val `type`: StyleProp[ButtonType] = style[ButtonType]("type", ButtonType.Primary, StyleConnect.classify[ButtonType])
+  val buttonSize: StyleProp[ButtonSize] = style[ButtonSize]("buttonSize", ButtonSize.Normal, StyleConnect.classify[ButtonSize])
+  val block: StyleProp[Boolean] = style[Boolean]("block", false, StyleConnect.flag(on = Some("btn-block")))
 }

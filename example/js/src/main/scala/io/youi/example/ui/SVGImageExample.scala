@@ -27,13 +27,13 @@ class SVGImageExample extends UIExampleScreen {
     tiger <- Image("/images/tiger.svg")
     circle <- SVGImage(svgString)
   } yield {
-    container.children += new ImageView(new CanvasImageViewImplementation) {
+    container.children += new ImageView { //(new CanvasImageViewImplementation) {
       image := tiger
       position.left := 10.0
       position.top := 10.0
     }
 
-    container.children += new ImageView(new CanvasImageViewImplementation) {
+    container.children += new ImageView { //(new CanvasImageViewImplementation) {
       image := circle
       position.center := container.size.center
       position.middle := container.size.middle

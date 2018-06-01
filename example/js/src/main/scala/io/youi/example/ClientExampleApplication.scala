@@ -42,6 +42,7 @@ object ClientExampleApplication extends ExampleApplication with ClientApplicatio
 
   val animation: AnimationExample = new AnimationExample
   val canvas: CanvasExample = new CanvasExample
+  val drawable: DrawableExample = new DrawableExample
   val grid: GridLayoutExample = new GridLayoutExample
   val hit: HitTestExample = new HitTestExample
   val image: ImageExample = new ImageExample

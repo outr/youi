@@ -76,7 +76,3 @@ abstract class TextBuilder(val font: Font,
 
   def toText: Text
 }
-
-trait CharacterProcessor {
-  def process(glyph: Glyph, offset: Double): Boolean
-}

@@ -4,10 +4,10 @@ import io.youi.component.extras.HTMLComponent
 import io.youi._
 import io.youi.drawable.Context
 import io.youi.spatial.Size
-import io.youi.theme.{TextViewTheme, Theme}
+import io.youi.theme.{HTMLTextViewTheme, TextViewTheme, Theme}
 import org.scalajs.dom.html
 
-class HTMLTextView(protected val element: html.Element) extends HTMLComponent[html.Element] with TextViewTheme {
+class HTMLTextView(protected val element: html.Element) extends HTMLComponent[html.Element] with HTMLTextViewTheme {
   def this() = {
     this(dom.create[html.Span]("span"))
   }
@@ -17,7 +17,7 @@ class HTMLTextView(protected val element: html.Element) extends HTMLComponent[ht
   override def componentType: String = "HTMLTextView"
 }
 
-object HTMLTextView extends TextViewTheme {
+object HTMLTextView extends HTMLTextViewTheme {
   override protected def defaultParentTheme: Theme = HTMLComponent
 
   private val measurer = new Context(dom.create[html.Canvas]("canvas"), 1.0)

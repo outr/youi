@@ -20,6 +20,7 @@ class BootstrapButtonExample extends UIExampleScreen {
       position.center := container.size.center
       position.middle := container.size.middle
       font := fnt
+      font.size := 64.px
       color := Color.White
     }
     container.children += button

@@ -4,7 +4,7 @@ import io.youi.component.extras.HTMLComponent
 import io.youi._
 import io.youi.drawable.Context
 import io.youi.spatial.Size
-import io.youi.theme.{HTMLTextViewTheme, TextViewTheme, Theme}
+import io.youi.theme.{HTMLTextViewTheme, Theme}
 import org.scalajs.dom.html
 
 class HTMLTextView(protected val element: html.Element) extends HTMLComponent[html.Element] with HTMLTextViewTheme {

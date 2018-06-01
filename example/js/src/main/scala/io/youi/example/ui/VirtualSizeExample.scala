@@ -1,7 +1,7 @@
 package io.youi.example.ui
 
 import io.youi._
-import io.youi.component.{ImageView, TextView}
+import io.youi.component.{ImageView, HTMLTextView}
 import io.youi.example.screen.UIExampleScreen
 import io.youi.font.GoogleFont
 import io.youi.image.Image
@@ -29,11 +29,10 @@ class VirtualSizeExample extends UIExampleScreen with VirtualSizeSupport {
       size.width := 1024.vw
       size.height := 768.vh
     }
-    container.children += new TextView {
+    container.children += new HTMLTextView {
       value := "1024x768"
       color := Color.White
-      font.family := fnt
-      font.weight := fnt
+      font := fnt
       font.size := 66.vf
       position.left := 42.vx
       position.top := 340.vy

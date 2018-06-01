@@ -22,3 +22,10 @@
 * [ ] Better Server error logging (URL, request info, etc.)
 * [X] Support for fixed zoom ratio for fixed applications that should not zoom
 * [ ] Integration of Bootstrap components
+
+TODO:
+
+* [ ] Border
+* [ ] Bootstrap Dropdown
+* [ ] Navigation between UI examples
+* [ ] Differentiate hypertext.TextView and canvas.TextView

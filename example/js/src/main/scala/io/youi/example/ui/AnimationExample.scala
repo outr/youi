@@ -1,7 +1,7 @@
 package io.youi.example.ui
 
 import io.youi._
-import io.youi.component.{ImageView, TextView}
+import io.youi.component.{ImageView, HTMLTextView}
 import io.youi.easing.Easing
 import io.youi.example.screen.UIExampleScreen
 import io.youi.font.GoogleFont
@@ -29,11 +29,10 @@ class AnimationExample extends UIExampleScreen {
       var shift = 50.0
       Easing.map.toList.sortBy(_._1).foreach {
         case (name, easingFunction) => {
-          val label = new TextView {
+          val label = new HTMLTextView {
             value := s"$name Example"
             font.size := 24.0
-            font.family := fnt
-            font.weight := fnt
+            font := fnt
             position.`type` := Position.Absolute
             position.top := shift
             position.left := 50.0

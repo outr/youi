@@ -30,11 +30,6 @@ package object youi {
 
   implicit def color2Paint(color: Color): Paint = Paint.color(color)
 
-  implicit def gf2FontFamily(gf: GoogleFont): FontFamily = FontFamily(gf.family)
-
-  implicit def gfw2FontFamily(gfw: GoogleFontWeight): FontFamily = FontFamily(gfw.font.family)
-  implicit def gfw2FontWeight(gfw: GoogleFontWeight): FontWeight = FontWeight(gfw.name)
-
   implicit class ExtendedGoogleFont(font: GoogleFont) {
     def load(): Future[GoogleFont] = {
       val promise = Promise[GoogleFont]

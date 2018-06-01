@@ -1,6 +1,6 @@
 package io.youi.example.ui.component
 
-import io.youi.component.{Container, ImageView, TextView}
+import io.youi.component.{Container, ImageView, HTMLTextView}
 import io.youi.example.ClientExampleApplication
 import io.youi._
 import io.youi.app.screen.ScreenManager
@@ -31,10 +31,9 @@ class Header extends Container {
     position.top := 4.0
   }
 
-  val title: TextView = new TextView {
+  val title: HTMLTextView = new HTMLTextView {
     GoogleFont.`Open Sans`.`600`.load().foreach { fnt =>
-      font.family := fnt
-      font.weight := fnt
+      font := fnt
     }
     font.size := 20.pt
     color := application.colors.blue.dark

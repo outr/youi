@@ -19,8 +19,7 @@ class BootstrapButtonExample extends UIExampleScreen {
       value := "Hello, World!"
       position.center := container.size.center
       position.middle := container.size.middle
-      font.family := fnt
-      font.size := 64.px
+      font := fnt
       color := Color.White
     }
     container.children += button

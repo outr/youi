@@ -4,7 +4,7 @@ import io.youi._
 import io.youi.app.screen.UIScreen
 import io.youi.component.Container
 import io.youi.example.screen.UIExampleScreen
-import io.youi.layout.Snap
+import io.youi.layout.snap.Snap
 import io.youi.paint.Paint
 import reactify._
 

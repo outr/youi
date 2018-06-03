@@ -1,10 +1,11 @@
 package io.youi.example.ui
 
 import io.youi._
-import io.youi.component.{ImageView, HTMLTextView}
+import io.youi.component.{HTMLTextView, ImageView}
 import io.youi.example.screen.UIExampleScreen
 import io.youi.font.GoogleFont
 import io.youi.image.Image
+import io.youi.virtual.VirtualSizeSupport
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global

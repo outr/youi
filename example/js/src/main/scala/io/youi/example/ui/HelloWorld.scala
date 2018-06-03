@@ -4,7 +4,6 @@ import io.youi._
 import io.youi.component.HTMLTextView
 import io.youi.example.screen.UIExampleScreen
 import io.youi.font.GoogleFont
-import io.youi.style.Position
 import reactify._
 
 import scala.concurrent.Future

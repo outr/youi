@@ -26,10 +26,10 @@
 TODO:
 
 * [ ] Border
-* [ ] Clipping
-* [ ] Ignore events
+* [X] Ignore events
 * [ ] RateLimited for updateTransform and updateRendering
 * [ ] Navigation between UI examples
 * [ ] HTMLTextView and CanvasTextView
 * [ ] HTMLVideoView and CanvasVideoView
 * [ ] HTMLImageView and CanvasImageView
+* [ ] Fix client-side error support

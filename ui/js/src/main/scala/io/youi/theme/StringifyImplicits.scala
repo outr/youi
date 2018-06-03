@@ -3,9 +3,10 @@ package io.youi.theme
 import io.youi.component.bootstrap.{ButtonSize, ButtonType}
 import io.youi.{Color, Cursor}
 import io.youi.paint.Paint
-import io.youi.style.{FontFamily, FontWeight, Position, WhiteSpace}
+import io.youi.style._
 
 trait StringifyImplicits {
+  implicit def stringifyPointerEvents: Stringify[PointerEvents] = PointerEvents
   implicit def stringifyButtonType: Stringify[ButtonType] = ButtonType
   implicit def stringifyButtonSize: Stringify[ButtonSize] = ButtonSize
   implicit def stringifyWhiteSpace: Stringify[WhiteSpace] = WhiteSpace

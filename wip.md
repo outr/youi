@@ -26,6 +26,10 @@
 TODO:
 
 * [ ] Border
-* [ ] Bootstrap Dropdown
+* [ ] Clipping
+* [ ] Ignore events
+* [ ] RateLimited for updateTransform and updateRendering
 * [ ] Navigation between UI examples
-* [ ] Differentiate hypertext.TextView and canvas.TextView
+* [ ] HTMLTextView and CanvasTextView
+* [ ] HTMLVideoView and CanvasVideoView
+* [ ] HTMLImageView and CanvasImageView

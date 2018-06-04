@@ -6,6 +6,7 @@ import io.youi.paint.Paint
 import io.youi.style._
 
 trait StringifyImplicits {
+  implicit def stringifyHTMLBorder: Stringify[HTMLBorder] = HTMLBorder
   implicit def stringifyOverflow: Stringify[Overflow] = Overflow
   implicit def stringifyPointerEvents: Stringify[PointerEvents] = PointerEvents
   implicit def stringifyButtonType: Stringify[ButtonType] = ButtonType
@@ -30,6 +31,11 @@ trait StringifyImplicits {
   }}
   implicit def stringifyDouble: Stringify[Double] = Stringify[Double](d => Some(d.toString)) { s => try {
     Some(s.toDouble)
+  } catch {
+    case _: Throwable => None
+  }}
+  def pixels: Stringify[Double] = Stringify[Double](d => Some(s"${d}px")) { s => try {
+    Some(s.replaceAllLiterally("px", "").toDouble)
   } catch {
     case _: Throwable => None
   }}

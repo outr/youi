@@ -5,7 +5,7 @@ import io.youi.component.Container
 import io.youi.example.screen.UIExampleScreen
 import io.youi.layout.VerticalLayout
 import io.youi.paint.{Border, Paint, Stroke}
-import io.youi.style.Overflow
+import io.youi.style.{HTMLBorder, HTMLBorderStyle, Overflow}
 
 import scala.concurrent.Future
 
@@ -20,9 +20,12 @@ class VerticalLayoutExample extends UIExampleScreen {
       layout := new VerticalLayout(spacing = 10.0)
       background := Color.LightBlue
 //      border := Border(Stroke(Color.Black), radius = 10.0)
+      border := HTMLBorder(1.0, HTMLBorderStyle.Solid, Color.Black)
+      border.radius := 10.0
+      border.radius.topLeft := 15.0
       overflow := Overflow.Hidden
-      position.center := container.position.center
-      position.middle := container.position.middle
+      position.center := container.size.center
+      position.middle := container.size.middle
       size.width := 120.0
       size.height := 475.0
 

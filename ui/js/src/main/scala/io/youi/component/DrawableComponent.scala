@@ -7,7 +7,7 @@ class DrawableComponent extends CanvasComponent {
   protected val drawable: Var[Drawable] = Var(Drawable.None)
   val modified: Val[Long] = Val(drawable.modified)
 
-  modified.attach(_ => updateRendering())
+  modified.attach(_ => invalidateRendering())
 
   override protected def defaultParentTheme: Theme = DrawableComponent
 

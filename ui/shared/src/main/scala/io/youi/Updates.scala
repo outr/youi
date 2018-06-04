@@ -2,7 +2,7 @@ package io.youi
 
 import reactify._
 
-import scala.concurrent.duration.FiniteDuration
+import scala.concurrent.duration._
 
 trait Updates extends Updatable {
   lazy val delta: Channel[Double] = Channel[Double]
@@ -36,5 +36,11 @@ trait Updates extends Updatable {
         }
       }
     }
+  }
+
+  def rateLimited(maxFrequency: FiniteDuration, frequency: FiniteDuration = 0.millis)(f: => Unit): LazyUpdate = {
+    val lu = LazyUpdate(f, maxFrequency)
+    every(frequency)(lu.update())
+    lu
   }
 }

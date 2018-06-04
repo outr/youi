@@ -8,6 +8,7 @@ import io.youi.theme.{ComponentTheme, Theme}
 import reactify._
 
 import scala.annotation.tailrec
+import scala.concurrent.duration._
 
 /**
   * Component represents the root type for all on-screen elements. This includes both HTML and Canvas.
@@ -16,6 +17,13 @@ trait Component extends TaskSupport with ComponentTheme {
   private var _initialized: Boolean = false
 
   lazy val store: Store = new MapStore
+
+  private lazy val transform = rateLimited(1.millis)(updateTransform())
+  private lazy val rendering = rateLimited(1.millis)(updateRendering())
+
+  override protected def invalidateTransform(): Unit = transform.flag()
+
+  override protected def invalidateRendering(): Unit = rendering.flag()
 
   /**
     * Position information for placement of this component on the screen.
@@ -44,7 +52,7 @@ trait Component extends TaskSupport with ComponentTheme {
     */
   private lazy val internalUpdatables: Val[List[Updatable]] = Val(updatables)
 
-  updateTransform()
+  invalidateTransform()
 
   override protected def defaultParentTheme: Theme = Component
 

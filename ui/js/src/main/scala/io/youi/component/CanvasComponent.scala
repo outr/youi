@@ -22,7 +22,7 @@ abstract class CanvasComponent(protected val element: html.Canvas) extends HTMLC
   override protected def init(): Unit = {
     super.init()
 
-    updateRendering()
+    invalidateRendering()
   }
 
   override protected def updateRendering(): Unit = {

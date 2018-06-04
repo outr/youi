@@ -3,7 +3,7 @@ package io.youi.theme
 import io.youi.style.{HTMLBorder, Overflow, PointerEvents}
 
 trait HTMLComponentTheme extends ComponentTheme {
-  lazy val rotation: StyleProp[Double] = style[Double]("rotation", 0.0, StyleConnect.style[Double](new Stringify[Double] {
+  lazy val rotation: StyleProp[Double] = style[Double]("transform", 0.0, StyleConnect.style[Double](new Stringify[Double] {
     override def fromString(value: String): Option[Double] = None
 
     override def toString(value: Double): Option[String] = if (value != 0.0) Some(s"rotate(${value * 360.0}deg)") else None

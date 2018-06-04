@@ -16,6 +16,9 @@ trait Theme extends StringifyImplicits {
     store.get[StyleProp[T]](name).orElse(parentTheme().get[T](name))
   }
 
+  protected def invalidateTransform(): Unit = {}
+  protected def invalidateRendering(): Unit = {}
+
   protected def updateTransform(): Unit = {}
   protected def updateRendering(): Unit = {}
 
@@ -31,10 +34,10 @@ trait Theme extends StringifyImplicits {
     if (updatesTransform || updatesRendering) {
       prop.attach { _ =>
         if (updatesTransform) {
-          updateTransform()
+          invalidateTransform()
         }
         if (updatesRendering) {
-          updateRendering()
+          invalidateRendering()
         }
       }
     }

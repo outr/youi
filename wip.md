@@ -34,3 +34,4 @@ TODO:
 * [ ] HTMLVideoView and CanvasVideoView
 * [ ] HTMLImageView and CanvasImageView
 * [ ] Fix client-side error support
+* [ ] Support screen transactions (set on activate and rollback on deactivate)

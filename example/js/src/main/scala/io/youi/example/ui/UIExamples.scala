@@ -1,40 +1,41 @@
-//package io.youi.example.ui
-//
-//import io.youi.example.ClientExampleApplication
-//import io.youi.hypertext.Button
-//import io.youi._
-//import io.youi.example.ui.hypertext.HTMLScreen
-//import reactify._
-//
-//import scala.concurrent.Future
-//
-//object UIExamples extends HTMLScreen {
-//  override def name: String = "UI Examples"
-//
-//  override protected def load(): Future[Unit] = super.load().map { _ =>
-//    var previous: Option[Button] = None
-//    ClientExampleApplication.screens().collect {
-//      case screen: UIExampleScreen => screen
-//    }.foreach { screen =>
-//      if (screen != this) {
-//        val button = new Button {
-//          text := screen.name
-//          size.width := 150.0
-//          val offset: Double = previous.map(_.position.bottom + 45.0).getOrElse(20.0)
-//          position.top := offset
-//          position.center := ui.center
-//          event.click.attach { evt =>
-//            evt.stopPropagation()
-//            evt.preventDefault()
-//
-//            ClientExampleApplication.active := screen
-//          }
-//        }
-//        previous = Some(button)
-//        container.children += button
-//      }
-//    }
-//  }
-//
-//  override def path: String = "/ui-examples.html"
-//}
+package io.youi.example.ui
+
+import io.youi.Color
+import io.youi.example.ClientExampleApplication
+import io.youi.component.bootstrap.Button
+import io.youi.example.screen.UIExampleScreen
+import reactify._
+
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
+
+class UIExamples extends UIExampleScreen {
+  override def title: String = "UI Examples"
+  override def path: String = "/ui-examples.html"
+
+  override def createUI(): Future[Unit] = super.load().map { _ =>
+    var previous: Option[Button] = None
+    ClientExampleApplication.screens().collect {
+      case screen: UIExampleScreen if screen.title != title => screen
+    }.foreach { screen =>
+      if (screen != this) {
+        val button: Button = new Button {
+          value := screen.title
+          color := Color.White
+          size.width := 250.0
+          val offset: Double = previous.map(_.position.bottom + 45.0).getOrElse(20.0)
+          position.top := offset
+          position.center := container.size.center
+          event.click.attach { evt =>
+            evt.stopPropagation()
+            evt.preventDefault()
+
+            ClientExampleApplication.active := screen
+          }
+        }
+        previous = Some(button)
+        container.children += button
+      }
+    }
+  }
+}

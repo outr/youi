@@ -1,6 +1,7 @@
 package io.youi.app.screen
 
 import io.youi.component.Container
+import io.youi.style.Visibility
 import io.youi.ui
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -23,7 +24,7 @@ trait UIScreen extends Screen with PathActivation {
 
   def createUI(): Future[Unit]
 
-  override protected def activate(): Future[Unit] = super.activate().map(_ => container.visible := true)
+  override protected def activate(): Future[Unit] = super.activate().map(_ => container.visibility := Visibility.Visible)
 
-  override protected def deactivate(): Future[Unit] = super.deactivate().map(_ => container.visible := false)
+  override protected def deactivate(): Future[Unit] = super.deactivate().map(_ => container.visibility := Visibility.Collapse)
 }

@@ -2,6 +2,7 @@ package io.youi.component
 
 import io.youi.component.extras.{ComponentPosition, ComponentSize}
 import io.youi.event.{EventSupport, Events, HTMLEvents}
+import io.youi.style.Visibility
 import io.youi.{MapStore, Store, Unique, Updatable}
 import io.youi.task.TaskSupport
 import io.youi.theme.{ComponentTheme, Theme}
@@ -25,6 +26,8 @@ trait Component extends TaskSupport with ComponentTheme {
 
   override protected def invalidateRendering(): Unit = rendering.flag()
 
+  override def updateTasks(): Boolean = visible()
+
   /**
     * Position information for placement of this component on the screen.
     */
@@ -46,6 +49,8 @@ trait Component extends TaskSupport with ComponentTheme {
   lazy val parent: Var[Option[Component]] = Var(None)
 
   lazy val root: Var[Option[Component]] = Var(parent().flatMap(_.root()))
+
+  val visible: Val[Boolean] = Val(visibility() == Visibility.Visible && parent().exists(_.visible()))
 
   /**
     * List of `Updatable` instances derived from the `updatables` method.

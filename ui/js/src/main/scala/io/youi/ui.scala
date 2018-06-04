@@ -1,7 +1,7 @@
 package io.youi
 
 import io.youi.component.Container
-import io.youi.style.Overflow
+import io.youi.style.{Overflow, Visibility}
 import io.youi.util.CanvasPool
 import org.scalajs.dom.{Event, document, window}
 import reactify._
@@ -11,6 +11,8 @@ import scala.scalajs.js
 
 object ui extends Container(document.body) {
   id := "ui"
+
+  override val visible: Val[Boolean] = Val(visibility() == Visibility.Visible)
 
   def devicePixelRatio: Double = window.devicePixelRatio
   def backingStoreRatio: Double = CanvasPool.withCanvas(1.0, 1.0) { canvas =>
@@ -27,6 +29,8 @@ object ui extends Container(document.body) {
   lazy val ratio: Var[Double] = Var(displayRatio)
 
   lazy val title: Var[String] = Var(document.title)
+
+
   title.attach(document.title = _)
 
   window.addEventListener("resize", (_: Event) => {

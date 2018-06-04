@@ -27,6 +27,7 @@ TODO:
 
 * [ ] Border
 * [X] Ignore events
+* [X] Overflow
 * [ ] RateLimited for updateTransform and updateRendering
 * [ ] Navigation between UI examples
 * [ ] HTMLTextView and CanvasTextView

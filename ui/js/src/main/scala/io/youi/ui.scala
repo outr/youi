@@ -1,6 +1,7 @@
 package io.youi
 
 import io.youi.component.Container
+import io.youi.style.Overflow
 import io.youi.util.CanvasPool
 import org.scalajs.dom.{Event, document, window}
 import reactify._
@@ -32,6 +33,8 @@ object ui extends Container(document.body) {
     size.measured.width := window.innerWidth
     size.measured.height := window.innerHeight
   })
+
+  overflow := Overflow.Hidden
 
   AnimationFrame.every(1.second) {
     val r = devicePixelRatio / backingStoreRatio

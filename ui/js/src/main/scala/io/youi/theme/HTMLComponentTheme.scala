@@ -1,6 +1,6 @@
 package io.youi.theme
 
-import io.youi.style.PointerEvents
+import io.youi.style.{Overflow, PointerEvents}
 
 trait HTMLComponentTheme extends ComponentTheme {
   lazy val rotation: StyleProp[Double] = style[Double]("rotation", 0.0, StyleConnect.style[Double](new Stringify[Double] {
@@ -10,4 +10,14 @@ trait HTMLComponentTheme extends ComponentTheme {
   }), updatesTransform = true)
 
   lazy val pointerEvents: StyleProp[PointerEvents] = style[PointerEvents]("pointer-events", PointerEvents.Auto, StyleConnect.style[PointerEvents])
+
+  object overflow {
+    lazy val x: StyleProp[Overflow] = style[Overflow]("overflow-x", Overflow.Visible, StyleConnect.style[Overflow])
+    lazy val y: StyleProp[Overflow] = style[Overflow]("overflow-y", Overflow.Visible, StyleConnect.style[Overflow])
+
+    def :=(overflow: Overflow): Unit = {
+      x := overflow
+      y := overflow
+    }
+  }
 }

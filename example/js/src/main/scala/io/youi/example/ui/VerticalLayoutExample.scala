@@ -1,11 +1,11 @@
 package io.youi.example.ui
 
 import io.youi._
-import io.youi.app.screen.UIScreen
 import io.youi.component.Container
 import io.youi.example.screen.UIExampleScreen
 import io.youi.layout.VerticalLayout
 import io.youi.paint.{Border, Paint, Stroke}
+import io.youi.style.Overflow
 
 import scala.concurrent.Future
 
@@ -14,10 +14,13 @@ class VerticalLayoutExample extends UIExampleScreen {
   override def path: String = "/examples/vertical.html"
 
   override def createUI(): Future[Unit] = {
+    ui.overflow := Overflow.Auto
+
     val boxes: Container = new Container {
       layout := new VerticalLayout(spacing = 10.0)
       background := Color.LightBlue
 //      border := Border(Stroke(Color.Black), radius = 10.0)
+      overflow := Overflow.Hidden
       position.center := container.position.center
       position.middle := container.position.middle
       size.width := 120.0

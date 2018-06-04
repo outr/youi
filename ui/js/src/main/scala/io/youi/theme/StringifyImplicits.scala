@@ -6,6 +6,7 @@ import io.youi.paint.Paint
 import io.youi.style._
 
 trait StringifyImplicits {
+  implicit def stringifyOverflow: Stringify[Overflow] = Overflow
   implicit def stringifyPointerEvents: Stringify[PointerEvents] = PointerEvents
   implicit def stringifyButtonType: Stringify[ButtonType] = ButtonType
   implicit def stringifyButtonSize: Stringify[ButtonSize] = ButtonSize

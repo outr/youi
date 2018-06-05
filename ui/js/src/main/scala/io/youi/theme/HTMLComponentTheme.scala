@@ -21,7 +21,7 @@ trait HTMLComponentTheme extends ComponentTheme {
     }
   }
 
-  object border {
+  object htmlBorder {
     lazy val top: StyleProp[HTMLBorder] = style[HTMLBorder]("border-top", HTMLBorder.empty, StyleConnect.style[HTMLBorder])
     lazy val bottom: StyleProp[HTMLBorder] = style[HTMLBorder]("border-bottom", HTMLBorder.empty, StyleConnect.style[HTMLBorder])
     lazy val left: StyleProp[HTMLBorder] = style[HTMLBorder]("border-left", HTMLBorder.empty, StyleConnect.style[HTMLBorder])

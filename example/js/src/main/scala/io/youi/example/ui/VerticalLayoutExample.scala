@@ -20,9 +20,9 @@ class VerticalLayoutExample extends UIExampleScreen {
       layout := new VerticalLayout(spacing = 10.0)
       background := Color.LightBlue
 //      border := Border(Stroke(Color.Black), radius = 10.0)
-      border := HTMLBorder(1.0, HTMLBorderStyle.Solid, Color.Black)
-      border.radius := 10.0
-      border.radius.topLeft := 15.0
+      htmlBorder := HTMLBorder(1.0, HTMLBorderStyle.Solid, Color.Black)
+      htmlBorder.radius := 10.0
+      htmlBorder.radius.topLeft := 15.0
       overflow := Overflow.Hidden
       position.center := container.size.center
       position.middle := container.size.middle

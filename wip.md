@@ -29,7 +29,7 @@ TODO:
 * [X] Ignore events
 * [X] Overflow
 * [X] RateLimited for updateTransform and updateRendering
-* [ ] Navigation between UI examples
+* [X] Navigation between UI examples
 * [ ] HTMLTextView and CanvasTextView
 * [ ] HTMLVideoView and CanvasVideoView
 * [ ] HTMLImageView and CanvasImageView

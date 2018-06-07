@@ -32,7 +32,7 @@ trait ClientApplication extends YouIApplication with ScreenManager {
 
   if (logJavaScriptErrors) {
     js.Dynamic.global.window.onerror = errorFunction
-    scribe.Logger.root.withHandler(ErrorTrace).replace()
+    scribe.Logger.root.withHandler(writer = ErrorTrace).replace()
   }
 
   connectivityEntries.attachAndFire { entries =>

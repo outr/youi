@@ -6,6 +6,7 @@ import reactify.Var
 
 trait VideoViewTheme extends HTMLComponentTheme {
   lazy val video: StyleProp[Video] = style[Video]("video", Video.empty, Some(VideoViewTheme))
+  lazy val autoPauseOnHide: StyleProp[Boolean] = style[Boolean]("autoPauseOnHide", true, None)
 }
 
 object VideoViewTheme extends StyleConnect[Video] {

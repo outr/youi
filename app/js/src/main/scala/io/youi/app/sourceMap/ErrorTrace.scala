@@ -5,8 +5,7 @@ import io.youi.{History, _}
 import io.youi.net.URL
 import io.youi.stream.StreamURL
 import org.scalajs.dom.{ErrorEvent, Event}
-import scribe.handler.LogHandler
-import scribe.modify.LogModifier
+import scribe.writer.Writer
 import scribe.{Level, LogRecord}
 
 import scala.concurrent.Future
@@ -14,7 +13,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.scalajs._
 import scala.scalajs.runtime.StackTrace.Implicits._
 
-object ErrorTrace extends LogHandler {
+object ErrorTrace extends Writer {
   private var sourceMaps = Map.empty[String, SourceMapConsumer]
 
   def toError(event: ErrorEvent): Future[JavaScriptError] = {
@@ -40,12 +39,9 @@ object ErrorTrace extends LogHandler {
     toError(message, source, line, column, Some(throwable))
   }
 
-  override def modifiers: List[LogModifier] = Nil
-
-  override def setModifiers(modifiers: List[LogModifier]): LogHandler = this
-
-  override def log[M](record: LogRecord[M]): Unit = if (record.level.value >= Level.Error.value) {
-    record.messageValue match {
+  override def write[M](record: LogRecord[M], output: String): Unit = if (record.level.value >= Level.Error.value) {
+    val value = record.messageValue()
+    value match {
       case evt: Event if evt.`type` == "error" => ClientApplication.sendError(evt.asInstanceOf[ErrorEvent])
       case t: Throwable => ClientApplication.sendError(t)
       case _ => // Ignore others

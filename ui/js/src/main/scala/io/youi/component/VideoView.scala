@@ -15,6 +15,10 @@ class VideoView(override protected val element: html.Span = dom.create[html.Span
   def isPaused: Boolean = video.isPaused
   def isEnded: Boolean = video.isEnded
 
+  visible.attach { b =>
+    if (autoPauseOnHide() && !b) pause()
+  }
+
   override protected def measuredWidth: Double = video.width.toDouble
 
   override protected def measuredHeight: Double = video.height.toDouble

@@ -1,8 +1,8 @@
-package io.youi.hypertext
+package io.youi.component
 
 import io.youi.event.{HTMLEvents, Mouse}
-import io.youi.hypertext.border.BorderStyle
 import io.youi.spatial.BoundingBox
+import io.youi.style.{HTMLBorder, HTMLBorderStyle, Visibility}
 import io.youi.{Color, Key, _}
 import org.scalajs.dom.raw.MouseEvent
 import org.scalajs.dom.{html, window}
@@ -38,11 +38,9 @@ abstract class Selection[T](root: html.Element,
   val selected: Var[ListSet[T]] = Var(ListSet.empty)
 
   // Default settings
-  visible := false
+  visibility := Visibility.Hidden
   if (autoStyle) {
-    border.style := Some(BorderStyle.Solid)
-    border.size := Some(1.0)
-    border.color := Some(Color.Black)
+    htmlBorder := HTMLBorder(1.0, HTMLBorderStyle.Solid, Color.Black)
   }
   element.style.zIndex = "9999"
 
@@ -143,7 +141,7 @@ abstract class Selection[T](root: html.Element,
     }
   }
 
-  private[hypertext] def down(evt: MouseEvent): Boolean = if (enabled()) {
+  private[component] def down(evt: MouseEvent): Boolean = if (enabled()) {
     val touching = select(evt.pageX, evt.pageY, evt.pageX, evt.pageY, elements)
     if (touching.isEmpty) {
       evt.preventDefault()
@@ -154,7 +152,7 @@ abstract class Selection[T](root: html.Element,
       y1 := evt.pageY
       x2 := evt.pageX
       y2 := evt.pageY
-      visible := true
+      visibility := Visibility.Visible
       true
     } else {
       false
@@ -163,7 +161,7 @@ abstract class Selection[T](root: html.Element,
     false
   }
 
-  private[hypertext] def move(evt: MouseEvent): Unit = {
+  private[component] def move(evt: MouseEvent): Unit = {
     if (enabled()) {
       if (visible()) {
         evt.preventDefault()
@@ -179,7 +177,7 @@ abstract class Selection[T](root: html.Element,
     }
   }
 
-  private[hypertext] def up(evt: MouseEvent): Unit = {
+  private[component] def up(evt: MouseEvent): Unit = {
     if (enabled()) {
       if (visible()) {
         evt.preventDefault()
@@ -191,7 +189,7 @@ abstract class Selection[T](root: html.Element,
         y1 := 0.0
         x2 := 0.0
         y2 := 0.0
-        visible := false
+        visibility := Visibility.Hidden
       } else if (evt.getModifierState(Key.Control.value)) {
         updateHighlighting(evt.pageX, evt.pageY, evt.pageX, evt.pageY)
         selectHighlighted(toggle = true)
@@ -217,11 +215,11 @@ abstract class Selection[T](root: html.Element,
 class SelectionListener[T](selection: Selection[T], base: html.Element, deferToRoot: Boolean, includeChildTargets: Boolean) {
   var active: Boolean = false
 
-  private val events = new HTMLEvents(base)
+  private val events = new HTMLEvents(selection, base)
 
   events.pointer.down.attach { evt =>
     if (includeChildTargets || evt.target == base) {
-      val active = selection.down(evt)
+      val active = selection.down(evt.htmlMouseEvent.getOrElse(throw new RuntimeException("Not a mouse event")))
       if (deferToRoot && active) {
         selection.rootListener.active = active
       } else {
@@ -231,12 +229,12 @@ class SelectionListener[T](selection: Selection[T], base: html.Element, deferToR
   }
 
   events.pointer.move.attach { evt =>
-    if (active) selection.move(evt)
+    if (active) selection.move(evt.htmlMouseEvent.getOrElse(throw new RuntimeException("Not a mouse event")))
   }
 
   events.pointer.up.attach { evt =>
     if (active) {
-      selection.up(evt)
+      selection.up(evt.htmlMouseEvent.getOrElse(throw new RuntimeException("Not a mouse event")))
       active = false
     }
   }

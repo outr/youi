@@ -9,8 +9,12 @@ import reactify.{Channel, Val, Var}
 import scala.scalajs.js
 
 trait EventSupport {
+  protected def component: Component
+
   def hasPointerSupport: Boolean = HTMLEvents.hasPointerSupport
   def hasTouchSupport: Boolean = HTMLEvents.hasTouchSupport
+
+  lazy val gestures: Gestures = new Gestures(component)
 
   lazy val change: Channel[jsdom.Event] = events("change")
   lazy val click: Channel[PointerEvent] = pointerChannel(PointerEvent.Type.Click)
@@ -66,7 +70,7 @@ trait EventSupport {
   protected def wheelChannel(): Channel[WheelEvent]
 }
 
-class HTMLEvents(component: Component, element: html.Element) extends EventSupport {
+class HTMLEvents(override protected val component: Component, element: html.Element) extends EventSupport {
   override protected def keyEvents(eventType: String, `type`: KeyEvent.Type): Channel[KeyEvent] = {
     val originalEvents = events[jsdom.KeyboardEvent](eventType)
     val channel = Channel[KeyEvent]

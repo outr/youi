@@ -8,7 +8,7 @@ import io.youi.net.{ContentType, IP, Path, URLMatcher}
 import io.youi.server.handler._
 import io.youi.server.rest.Restful
 import io.youi.server.validation.{ValidationResult, Validator}
-import io.youi.stream.{Delta, HTMLParser, Selector}
+import io.youi.stream.{Delta, HTMLParser, Selector, StreamableHTML}
 
 import scala.language.implicitConversions
 import scala.xml.Elem
@@ -37,14 +37,17 @@ package object dsl {
 
   implicit class DeltasFilter(val deltas: List[Delta]) extends ActionFilter(processDeltas(_, deltas))
 
+  implicit class DeltaFilter(delta: Delta) extends ActionFilter(processDeltas(_, List(delta)))
+
   implicit class StringFilter(val s: String) extends ConnectionFilter {
     override def filter(connection: HttpConnection): Option[HttpConnection] = PathPart.take(connection, s)
   }
 
   private[server] def processDeltas(connection: HttpConnection, deltas: List[Delta] = Nil): Unit = {
+    scribe.info(s"processing deltas: $deltas")
     connection.response.content match {
       case Some(content) => {
-        val stream = content match {
+        val stream: StreamableHTML = content match {
           case c: FileContent => HTMLParser.cache(c.file)
           case c: URLContent => HTMLParser.cache(c.url)
           case c: StringContent => HTMLParser.cache(c.value)
@@ -59,7 +62,11 @@ package object dsl {
           }
         }
       }
-      case None => // No content
+      case None => {    // No content
+        if (deltas.nonEmpty) {
+          scribe.warn(s"Not content set for processing of deltas: $deltas")
+        }
+      }
     }
   }
 

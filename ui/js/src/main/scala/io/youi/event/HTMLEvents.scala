@@ -2,6 +2,7 @@ package io.youi.event
 
 import io.youi._
 import io.youi.component.Component
+import io.youi.net.URL
 import org.scalajs.dom.html
 import org.scalajs.{dom => jsdom}
 import reactify.{Channel, Val, Var}
@@ -68,6 +69,13 @@ trait EventSupport {
   protected def events[E <: jsdom.Event](eventType: String, stopPropagation: Boolean = false): Channel[E]
   protected def pointerChannel(`type`: PointerEvent.Type): Channel[PointerEvent]
   protected def wheelChannel(): Channel[WheelEvent]
+
+  def link(url: URL): Unit = {
+    component.cursor := Cursor.Pointer
+    click.on(History.push(url))
+  }
+
+  def link(path: String): Unit = link(History.url().withPart(path))
 }
 
 class HTMLEvents(override protected val component: Component, element: html.Element) extends EventSupport {

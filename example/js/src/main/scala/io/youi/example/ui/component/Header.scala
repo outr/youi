@@ -29,6 +29,7 @@ class Header extends Container {
     size.height := 117.0
     position.left := 25.0
     position.top := 4.0
+    event.link("/ui-examples.html")
   }
 
   val title: HTMLTextView = new HTMLTextView {

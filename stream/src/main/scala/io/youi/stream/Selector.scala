@@ -16,6 +16,10 @@ case class ByTag(tagName: String) extends Selector {
   override def lookup(streamable: StreamableHTML): Set[OpenTag] = streamable.byTag.getOrElse(tagName, Set.empty)
 }
 
+case class ByMultiple(selectors: Selector*) extends Selector {
+  override def lookup(streamable: StreamableHTML): Set[OpenTag] = selectors.flatMap(_.lookup(streamable)).toSet
+}
+
 object Selector {
   def parse(value: String): Selector = if (value.startsWith("#")) {
     ById(value.substring(1))

@@ -35,39 +35,12 @@ package object dsl {
 
   implicit class CachingManagerFilter(val caching: CachingManager) extends LastConnectionFilter(new ActionFilter(caching.handle))
 
-  implicit class DeltasFilter(val deltas: List[Delta]) extends ActionFilter(processDeltas(_, deltas))
+  implicit class DeltasFilter(val deltas: List[Delta]) extends ActionFilter(_.deltas += deltas)
 
-  implicit class DeltaFilter(delta: Delta) extends ActionFilter(processDeltas(_, List(delta)))
+  implicit class DeltaFilter(delta: Delta) extends ActionFilter(_.deltas += delta)
 
   implicit class StringFilter(val s: String) extends ConnectionFilter {
     override def filter(connection: HttpConnection): Option[HttpConnection] = PathPart.take(connection, s)
-  }
-
-  private[server] def processDeltas(connection: HttpConnection, deltas: List[Delta] = Nil): Unit = {
-    scribe.info(s"processing deltas: $deltas")
-    connection.response.content match {
-      case Some(content) => {
-        val stream: StreamableHTML = content match {
-          case c: FileContent => HTMLParser.cache(c.file)
-          case c: URLContent => HTMLParser.cache(c.url)
-          case c: StringContent => HTMLParser.cache(c.value)
-        }
-        val deltasList = connection.store.getOrElse[List[Delta]](DeltaKey, Nil) ::: deltas
-
-        if (deltasList.nonEmpty) {
-          val selector = connection.request.url.param("selector").map(Selector.parse)
-          val streamed = stream.stream(deltasList, selector)
-          connection.update { response =>
-            response.withContent(Content.string(streamed, content.contentType))
-          }
-        }
-      }
-      case None => {    // No content
-        if (deltas.nonEmpty) {
-          scribe.warn(s"Not content set for processing of deltas: $deltas")
-        }
-      }
-    }
   }
 
   implicit class URLMatcherFilter(val matcher: URLMatcher) extends ConditionalFilter(c => matcher.matches(c.request.url))

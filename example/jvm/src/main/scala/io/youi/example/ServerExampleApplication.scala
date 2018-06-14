@@ -5,7 +5,6 @@ import io.youi.http._
 import io.youi.net._
 import io.youi.server.handler.{CachingManager, ProxyCache}
 import io.youi.server.dsl._
-import io.youi.stream._
 
 object ServerExampleApplication extends ExampleApplication with ServerApplication {
   val generalPages: Page = page(GeneralPages)
@@ -24,15 +23,7 @@ object ServerExampleApplication extends ExampleApplication with ServerApplicatio
         combined.any(
           path.matches("/examples/.*[.]html"),
           path.exact("/ui-examples.html")
-        ) / Application / Delta.Process(
-          selector = ByTag("script"),
-          replace = true,
-          onlyOpenTag = true,
-          processor = (tag, content) => {
-            scribe.info(s"Process: $content")
-            content
-          }
-        ) / ServerApplication.AppTemplate,
+        ) / Application / ProxyCache.delta("/cache") / ServerApplication.AppTemplate,
         path"/cookies.html" / CookiesExample,
         path"/session.html" / SessionExample,
         path"/cache" / ProxyCache(),

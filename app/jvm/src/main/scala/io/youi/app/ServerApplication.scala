@@ -180,8 +180,8 @@ trait ServerApplication extends YouIApplication with Server {
       * @return HttpHandler that has already been added to the server
       */
     def deltas(function: HttpConnection => List[Delta]): HttpHandler = builder.handle { connection =>
-      val d = function(connection)
-      addDeltas(connection, d)
+      val d: List[Delta] = function(connection)
+      connection.deltas += d
     }
 
     def page(template: Content = ServerApplication.CanvasTemplate,
@@ -191,10 +191,15 @@ trait ServerApplication extends YouIApplication with Server {
     }
   }
 
-  def addDeltas(connection: HttpConnection, deltas: List[Delta]): Unit = {
-    if (deltas.nonEmpty) {
-      val current = connection.store.getOrElse[List[Delta]](ServerApplication.DeltaKey, Nil)
-      connection.store(ServerApplication.DeltaKey) = current ::: deltas
+  override protected def handleInternal(connection: HttpConnection): Unit = {
+    super.handleInternal(connection)
+
+    connection.response.content match {
+      case Some(content) if content.contentType == ContentType.`text/html` && connection.deltas.nonEmpty => {
+        connection.update(_.removeContent())
+        serveHTML(connection, content, Nil, includeApplication = false)
+      }
+      case _ => // Ignore
     }
   }
 
@@ -207,7 +212,7 @@ trait ServerApplication extends YouIApplication with Server {
     val responseFields = responseMap(httpConnection).toList.map {
       case (name, value) => s"""<input type="hidden" id="$name" value="$value"/>"""
     }
-    val deltasList = httpConnection.store.getOrElse[List[Delta]](ServerApplication.DeltaKey, Nil) ::: deltas
+    val deltasList = httpConnection.deltas() ::: deltas
     val applicationDeltas = if (includeApplication) {
       val jsDeps = if (applicationJSDepsContent.nonEmpty) {
         s"""<script src="$applicationJSDepsPath"></script>"""
@@ -233,6 +238,7 @@ trait ServerApplication extends YouIApplication with Server {
     val d = applicationDeltas ::: deltasList
     val selector = httpConnection.request.url.param("selector").map(Selector.parse)
     val html = stream.stream(d, selector)
+    httpConnection.deltas.clear()
     SenderHandler.handle(httpConnection, Content.string(html, ContentType.`text/html`), caching = CachingManager.NotCached)
   }
 
@@ -343,6 +349,4 @@ object ServerApplication {
       |</body>
       |</html>
     """.stripMargin.trim, ContentType.`text/html`)
-
-  val DeltaKey: String = "deltas"
 }

@@ -82,22 +82,24 @@ trait Server extends HttpHandler with ErrorSupport {
     SessionStore.dispose()
   }
 
-  override def handle(connection: HttpConnection): Unit = {
-    try {
-      handleRecursive(connection, handlers())
+  override final def handle(connection: HttpConnection): Unit = try {
+    handleInternal(connection)
+  } catch {
+    case t: Throwable => {
+      error(t)
+      errorHandler.get.handle(connection, Some(t))
+    }
+  }
 
-      // NotFound handling
-      if (connection.response.content.isEmpty && connection.response.status == HttpStatus.OK) {
-        connection.update { response =>
-          response.copy(status = HttpStatus.NotFound)
-        }
-        errorHandler.get.handle(connection, None)
+  protected def handleInternal(connection: HttpConnection): Unit = {
+    handleRecursive(connection, handlers())
+
+    // NotFound handling
+    if (connection.response.content.isEmpty && connection.response.status == HttpStatus.OK) {
+      connection.update { response =>
+        response.copy(status = HttpStatus.NotFound)
       }
-    } catch {
-      case t: Throwable => {
-        error(t)
-        errorHandler.get.handle(connection, Some(t))
-      }
+      errorHandler.get.handle(connection, None)
     }
   }
 

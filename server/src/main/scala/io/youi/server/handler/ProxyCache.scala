@@ -4,6 +4,7 @@ import java.nio.file.{Path, Paths}
 
 import io.youi.http.{Content, HttpConnection, HttpStatus}
 import io.youi.net.ContentType
+import io.youi.stream.{ByMultiple, ByTag, Delta}
 import org.powerscala.io._
 
 case class ProxyCache(directory: Path = Paths.get(System.getProperty("java.io.tmpdir"))) extends HttpHandler {
@@ -28,4 +29,26 @@ case class ProxyCache(directory: Path = Paths.get(System.getProperty("java.io.tm
     }
     case None => connection.update(_.withStatus(HttpStatus.BadRequest).withContent(Content.string("Must include `url` as GET parameter", ContentType.`text/plain`)))
   }
+}
+
+object ProxyCache {
+  def delta(cachePath: String): Delta = Delta.Process(
+    selector = ByMultiple(ByTag("script"), ByTag("img"), ByTag("link")),
+    replace = true,
+    onlyOpenTag = true,
+    processor = (tag, content) => {
+      def fixContent(attributeName: String): String = {
+        val value = tag.attributes.getOrElse(attributeName, "")
+        if (value.toLowerCase.startsWith("http")) {
+          content.replaceAllLiterally(value, s"/cache?url=${URLEncoder.encode(value, "UTF-8")}")
+        } else {
+          content
+        }
+      }
+      tag.tagName.toLowerCase match {
+        case "script" | "img" => fixContent("src")
+        case "link" => fixContent("href")
+      }
+    }
+  )
 }

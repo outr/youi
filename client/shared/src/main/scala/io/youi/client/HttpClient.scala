@@ -7,13 +7,14 @@ import io.youi.http.{Content, Headers, HttpRequest, HttpResponse, Method, String
 import io.youi.net.{ContentType, URL}
 
 import scala.concurrent.Future
-import scala.concurrent.duration.FiniteDuration
+import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
 
 trait HttpClient {
   def defaultRetry: Int
   def defaultRetryDelay: FiniteDuration
-  def dropNullValues: Boolean
+  def connectionPool: ConnectionPool
+  def dropNullValues: Boolean = false
 
   protected lazy val printer: Printer = Printer.spaces2.copy(dropNullValues = dropNullValues)
 
@@ -28,7 +29,7 @@ trait HttpClient {
     * @return throws a RuntimeException when an error occurs
     */
   protected def defaultErrorHandler[Response]: ErrorHandler[Response] = new ErrorHandler[Response] {
-    override def apply(request: HttpRequest, response: HttpResponse, throwable: Option[Throwable]) = throwable match {
+    override def apply(request: HttpRequest, response: HttpResponse, throwable: Option[Throwable]): Response = throwable match {
       case Some(t) => throw new RuntimeException(s"Error from server: ${response.status.message} (${response.status.code}) for ${request.url}.", t)
       case None => throw new RuntimeException(s"Error from server: ${response.status.message} (${response.status.code}) for ${request.url}.")
     }
@@ -111,5 +112,17 @@ trait HttpClient {
         errorHandler(request, response, None)
       }
     }
+  }
+}
+
+object HttpClient {
+  var retries: Int = 0
+  var retryDelay: FiniteDuration = 5.seconds
+  var connectionPool: ConnectionPool = ConnectionPool.default
+
+  def apply(defaultRetry: Int = retries,
+            defaultRetryDelay: FiniteDuration = retryDelay,
+            connectionPool: ConnectionPool = connectionPool): HttpClient = {
+    ClientPlatform.createClient(defaultRetry, defaultRetryDelay, connectionPool)
   }
 }

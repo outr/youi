@@ -22,8 +22,6 @@ import scala.util.{Success, Failure}
   * @param saveDirectory the directory to save response content of a non-textual type
   */
 case class JVMHttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpdir")),
-                         http2: Boolean = false,
-                         dropNullValues: Boolean = false,
                          timeout: FiniteDuration = 15.seconds,
                          defaultRetry: Int = 0,
                          defaultRetryDelay: FiniteDuration = 5.seconds,

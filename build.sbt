@@ -52,8 +52,8 @@ val scalaCheckVersion = "1.14.0"
 
 lazy val root = project.in(file("."))
   .aggregate(
-    macrosJS, macrosJVM, coreJS, coreJVM, spatialJS, spatialJVM, stream, communicationJS, communicationJVM, dom, client,
-    server, serverUndertow, uiJS, uiJVM, optimizer, appJS, appJVM, exampleJS, exampleJVM
+    macrosJS, macrosJVM, coreJS, coreJVM, spatialJS, spatialJVM, stream, communicationJS, communicationJVM, dom,
+    clientJS, clientJVM, server, serverUndertow, uiJS, uiJVM, optimizer, appJS, appJVM, exampleJS, exampleJVM
   )
   .settings(
     resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases",
@@ -113,6 +113,25 @@ lazy val core = crossProject(JSPlatform, JVMPlatform).in(file("core"))
 lazy val coreJS = core.js
 lazy val coreJVM = core.jvm
 
+lazy val client = crossProject(JSPlatform, JVMPlatform).in(file("client"))
+  .settings(
+    name := "youi-client",
+    libraryDependencies ++= Seq(
+      "org.scalactic" %%% "scalactic" % scalacticVersion,
+      "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
+    )
+  )
+  .jvmSettings(
+    libraryDependencies ++= Seq(
+      "com.squareup.okhttp3" % "okhttp" % okHttpVersion,
+      "org.powerscala" %% "powerscala-io" % powerScalaVersion
+    )
+  )
+  .dependsOn(core)
+
+lazy val clientJS = client.js
+lazy val clientJVM = client.jvm
+
 lazy val spatial = crossProject(JSPlatform, JVMPlatform).in(file("spatial"))
   .settings(
     name := "youi-spatial",
@@ -152,18 +171,6 @@ lazy val dom = project.in(file("dom"))
   )
   .dependsOn(coreJS)
   .dependsOn(stream % "compile")
-
-lazy val client = project.in(file("client"))
-  .settings(
-    name := "youi-client",
-    libraryDependencies ++= Seq(
-      "com.squareup.okhttp3" % "okhttp" % okHttpVersion,
-      "org.powerscala" %% "powerscala-io" % powerScalaVersion,
-      "org.scalactic" %%% "scalactic" % scalacticVersion,
-      "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
-    )
-  )
-  .dependsOn(coreJVM)
 
 lazy val server = project.in(file("server"))
   .settings(

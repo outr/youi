@@ -7,9 +7,11 @@ import org.scalajs.dom.ext.AjaxException
 import reactify._
 
 import scala.concurrent.{Future, Promise}
+import scala.scalajs.js
+import scala.scalajs.js.|
 
 class AjaxRequest(url: URL,
-                  data: Option[FormData] = None,
+                  data: Option[FormData | String] = None,
                   timeout: Int = 0,
                   headers: Map[String, String] = Map.empty,
                   withCredentials: Boolean = true,
@@ -21,7 +23,7 @@ class AjaxRequest(url: URL,
   val percentage: State[Int] = Var(0)
   val cancelled: State[Boolean] = Var(false)
 
-  req.onreadystatechange = { (e: dom.Event) =>
+  req.onreadystatechange = { _: dom.Event =>
     if (req.readyState == 4) {
       if ((req.status >= 200 && req.status < 300) || req.status == 304) {
         promise.success(req)
@@ -44,7 +46,7 @@ class AjaxRequest(url: URL,
 
   def send(): Future[dom.XMLHttpRequest] = {
     data match {
-      case Some(formData) => req.send(formData)
+      case Some(formData) => req.send(formData.asInstanceOf[js.Any])
       case None => req.send()
     }
     promise.future

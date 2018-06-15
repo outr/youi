@@ -9,5 +9,4 @@ case class JVMConnectionPool(maxIdleConnections: Int, keepAlive: FiniteDuration)
 
   override def idle: Int = pool.idleConnectionCount()
   override def active: Int = pool.connectionCount() - pool.idleConnectionCount()
-  override def total: Int = pool.connectionCount()
 }

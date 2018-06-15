@@ -11,7 +11,7 @@ import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
 
 trait HttpClient {
-  def defaultRetry: Int
+  def defaultRetries: Int
   def defaultRetryDelay: FiniteDuration
   def connectionPool: ConnectionPool
   def dropNullValues: Boolean = false
@@ -19,7 +19,7 @@ trait HttpClient {
   protected lazy val printer: Printer = Printer.spaces2.copy(dropNullValues = dropNullValues)
 
   def send(request: HttpRequest,
-           retry: Int = defaultRetry,
+           retry: Int = defaultRetries,
            retryDelay: FiniteDuration = defaultRetryDelay): Future[HttpResponse]
 
   /**
@@ -55,7 +55,7 @@ trait HttpClient {
                                  errorHandler: ErrorHandler[Response] = defaultErrorHandler[Response],
                                  method: Method = Method.Post,
                                  processor: Json => Json = (json: Json) => json,
-                                 retry: Int = defaultRetry,
+                                 retry: Int = defaultRetries,
                                  retryDelay: FiniteDuration = defaultRetryDelay)
                                 (implicit encoder: Encoder[Request], decoder: Decoder[Response]): Future[Response] = {
     val requestJson = printer.pretty(processor(request.asJson))
@@ -92,7 +92,7 @@ trait HttpClient {
                      method: Method = Method.Get,
                      headers: Headers = Headers.empty,
                      errorHandler: ErrorHandler[Response] = defaultErrorHandler[Response],
-                     retry: Int = defaultRetry,
+                     retry: Int = defaultRetries,
                      retryDelay: FiniteDuration = defaultRetryDelay)
                     (implicit decoder: Decoder[Response]): Future[Response] = {
     val request = HttpRequest(
@@ -120,9 +120,9 @@ object HttpClient {
   var retryDelay: FiniteDuration = 5.seconds
   var connectionPool: ConnectionPool = ConnectionPool.default
 
-  def apply(defaultRetry: Int = retries,
+  def apply(defaultRetries: Int = retries,
             defaultRetryDelay: FiniteDuration = retryDelay,
             connectionPool: ConnectionPool = connectionPool): HttpClient = {
-    ClientPlatform.createClient(defaultRetry, defaultRetryDelay, connectionPool)
+    ClientPlatform.createClient(defaultRetries, defaultRetryDelay, connectionPool)
   }
 }

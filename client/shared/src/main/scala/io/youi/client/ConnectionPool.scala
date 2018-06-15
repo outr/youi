@@ -3,9 +3,12 @@ package io.youi.client
 import scala.concurrent.duration._
 
 trait ConnectionPool {
+  def maxIdleConnections: Int
+  def keepAlive: FiniteDuration
+
   def idle: Int
   def active: Int
-  def total: Int
+  def total: Int = idle + active
 }
 
 object ConnectionPool {

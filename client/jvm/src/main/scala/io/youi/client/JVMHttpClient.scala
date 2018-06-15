@@ -23,7 +23,7 @@ import scala.util.{Success, Failure}
   */
 case class JVMHttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpdir")),
                          timeout: FiniteDuration = 15.seconds,
-                         defaultRetry: Int = 0,
+                         defaultRetries: Int = 0,
                          defaultRetryDelay: FiniteDuration = 5.seconds,
                          pingInterval: Option[FiniteDuration] = None,
                          connectionPool: ConnectionPool = ConnectionPool.default) extends HttpClient {
@@ -47,8 +47,8 @@ case class JVMHttpClient(saveDirectory: File = new File(System.getProperty("java
     * @return Future[HttpResponse]
     */
   override def send(request: HttpRequest,
-           retry: Int = defaultRetry,
-           retryDelay: FiniteDuration = defaultRetryDelay): Future[HttpResponse] = {
+                    retry: Int = defaultRetries,
+                    retryDelay: FiniteDuration = defaultRetryDelay): Future[HttpResponse] = {
     val req = requestToOk(request)
     val promise = Promise[HttpResponse]
     client.newCall(req).enqueue(new okhttp3.Callback {

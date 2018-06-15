@@ -9,8 +9,11 @@ import scala.collection.immutable.Queue
 import scala.concurrent.Future
 
 class AjaxManager(val maxConcurrent: Int) extends Logging {
-  private var queue = Queue.empty[AjaxAction]
-  private var running = Set.empty[AjaxAction]
+  private var _queue = Queue.empty[AjaxAction]
+  private var _running = Set.empty[AjaxAction]
+
+  def queue: Int = _queue.size
+  def running: Int = _running.size
 
   def enqueue(url: URL,
               data: Option[FormData] = None,
@@ -25,21 +28,21 @@ class AjaxManager(val maxConcurrent: Int) extends Logging {
   }
 
   def enqueue(action: AjaxAction): Future[XMLHttpRequest] = {
-    queue = queue.enqueue(action)
+    _queue = _queue.enqueue(action)
     action._state := ActionState.Enqueued
     checkQueue()
     action.future
   }
 
-  def checkQueue(): Unit = if (running.size < maxConcurrent && queue.nonEmpty) {
-    val (action, updated) = queue.dequeue
-    queue = updated
-    running += action
+  def checkQueue(): Unit = if (_running.size < maxConcurrent && _queue.nonEmpty) {
+    val (action, updated) = _queue.dequeue
+    _queue = updated
+    _running += action
     action.start(this)
   }
 
   private[ajax] def remove(action: AjaxAction): Unit = {
-    running -= action
+    _running -= action
     checkQueue()
   }
 }

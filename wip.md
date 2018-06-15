@@ -30,8 +30,8 @@ TODO:
 * [X] Overflow
 * [X] RateLimited for updateTransform and updateRendering
 * [X] Navigation between UI examples
-* [ ] HTMLTextView and CanvasTextView
+* [ ] HTMLTextView and CanvasTextView/
 * [ ] HTMLVideoView and CanvasVideoView
 * [ ] HTMLImageView and CanvasImageView
-* [ ] Fix client-side error support
+* [X] Fix client-side error support
 * [ ] Support screen transactions (set on activate and rollback on deactivate)

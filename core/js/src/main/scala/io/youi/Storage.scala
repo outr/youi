@@ -21,12 +21,14 @@ trait Storage {
     }
   }
 
-  def get[T](key: String): Option[T] = macro macroGet[T]
-  def update[T](key: String, value: T): Unit = macro macroUpdate[T]
+  def get[T](key: String): Option[T] = macro Storage.macroGet[T]
+  def update[T](key: String, value: T): Unit = macro Storage.macroUpdate[T]
   def remove(key: String): Unit = string.remove(key)
 
-  def prop[T](key: String, default: => T): Var[T] =  macro macroProp[T]
+  def prop[T](key: String, default: => T): Var[T] =  macro Storage.macroProp[T]
+}
 
+object Storage {
   def macroGet[T](c: blackbox.Context)(key: c.Expr[String])(t: c.WeakTypeTag[T]): c.Expr[Option[T]] = {
     import c.universe._
 

@@ -7,7 +7,7 @@ import org.scalatest.{AsyncWordSpec, Matchers}
 
 class HttpClientSpec extends AsyncWordSpec with Matchers {
   "HttpClient" should {
-    lazy val client = new HttpClient
+    lazy val client = HttpClient()
 
     "GET the user-agent" in {
       client.send(HttpRequest(url = url"https://httpbin.org/user-agent")).map { response =>

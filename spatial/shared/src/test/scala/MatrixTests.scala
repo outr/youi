@@ -13,9 +13,9 @@ class MatrixTests extends MatrixTestHelpers with PropertyChecks with Matchers wi
     forAll{
       m: Matrix3 =>
         val duplicated = m.duplicate()
-        m.rotate(180.degrees).rotate(180.degrees) should equal(duplicated)
-        m.rotate(360.degrees) should equal(duplicated)
-        m.rotate((2.0 * math.Pi).radians) should equal(duplicated)
+        m.rotate(0.5).rotate(0.5) should equal(duplicated)
+        m.rotate(1.0) should equal(duplicated)
+        m.rotate(1.0) should equal(duplicated)
     }
   }
 

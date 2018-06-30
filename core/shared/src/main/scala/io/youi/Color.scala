@@ -283,6 +283,7 @@ object Color {
     case 8 => {
       fromLong(java.lang.Long.parseLong(value, 16))
     }
+    case length => throw new RuntimeException(s"Unsupported hex length ($length) for $value.")
   }
 
   def fromRGBA(red: Double, green: Double, blue: Double, alpha: Double): Color = {

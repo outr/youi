@@ -21,13 +21,16 @@ class ParallaxExample extends UIExampleScreen {
     val textView = new HTMLTextView {
       value := s"Hello, World"
       font := fnt
-      font.size := {
+      position.scroll.percent.y.attach { d =>
+        scribe.info(s"percent: $d / scroll: ${position.scroll.y()}, max: ${position.scroll.max.y()}, scroll height: ${size.scroll.height()}, view height: ${size.view.height()}")
+      }
+      font.size := 64.px /*{
         // TODO: WHY ISN'T THIS WORKING?
         val p = position.scroll.percent.y()
         val modifier = 24.0 * ((p - 0.5) * 2.0)
         scribe.info(s"Modifier: $modifier")
         64.0 + modifier
-      }
+      }*/
       color := Color.DarkBlue //.withRed(position.scroll.percent.y())
       position.center := container.size.center()
       position.top := 150.0

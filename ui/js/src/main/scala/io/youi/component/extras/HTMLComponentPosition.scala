@@ -60,8 +60,8 @@ class HTMLComponentPosition(override protected val component: HTMLComponent[_ <:
 
     object percent {
       // TODO: clean this up...a lot!
-      lazy val x: Val[Double] = Val(real(math.min(1.0, math.abs(scroll.x / max.x))))
-      lazy val y: Val[Double] = Val(real(math.min(1.0, math.abs(scroll.y / max.y))))
+      lazy val x: Val[Double] = Val(math.abs(scroll.x / max.x))
+      lazy val y: Val[Double] = Val(math.abs(scroll.y / max.y))
     }
   }
 }

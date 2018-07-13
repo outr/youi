@@ -27,10 +27,10 @@ class Scale9(element: html.Element = HTMLComponent.create[html.Div]("div")) exte
   val x2: Var[Double] = Var(0.0)
   val y2: Var[Double] = Var(0.0)
 
-  val leftWidth: Val[Double] = x1.asVal
+  val leftWidth: Val[Double] = x1
   val rightWidth: Val[Double] = Val(image.width - x2)
   val centerWidth: Val[Double] = Val(size.width - (leftWidth + rightWidth))
-  val topHeight: Val[Double] = y1.asVal
+  val topHeight: Val[Double] = y1
   val bottomHeight: Val[Double] = Val(image.height - y2)
   val middleHeight: Val[Double] = Val(size.height - (topHeight + bottomHeight))
 

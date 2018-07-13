@@ -65,7 +65,7 @@ class WebSocketClient(url: URL,
   private var backlog = List.empty[String]
 
   def connect(): Unit = if (_channel.get.isEmpty) {
-    _channel.static(Some(connectionBuilder.connect().get()))
+    _channel := Some(connectionBuilder.connect().get())
 
     channel.resumeReceives()
 

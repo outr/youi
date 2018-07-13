@@ -1,6 +1,7 @@
 package io.youi
 
 import reactify._
+import reactify.reaction.Reaction
 
 import scala.concurrent.duration._
 
@@ -21,8 +22,8 @@ trait Updates extends Updatable {
     var elapsed = 0.0
     var totalElapsed = 0.0
 
-    var observer: Observer[Double] = null
-    observer = delta.attach { d =>
+    var reaction: Reaction[Double] = null
+    reaction = delta.attach { d =>
       elapsed += d
       totalElapsed += d
       if (elapsed >= timeout) {
@@ -31,7 +32,7 @@ trait Updates extends Updatable {
 
         untilTimeout.foreach { total =>
           if (totalElapsed >= total) {
-            delta.detach(observer)
+            delta.reactions += reaction
           }
         }
       }

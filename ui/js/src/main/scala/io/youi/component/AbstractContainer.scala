@@ -13,8 +13,8 @@ trait AbstractContainer[Child <: Component] extends Component { self =>
     if (children.nonEmpty) {
       childrenChanged(Vector.empty, children)
     }
-    children.changes(new ChangeObserver[Vector[Child]] {
-      override def change(oldValue: Vector[Child], newValue: Vector[Child]): Unit = {
+    children.changes {
+      case (oldValue, newValue) => {
         val removed = oldValue.collect {
           case c if !newValue.contains(c) => c
         }
@@ -24,14 +24,14 @@ trait AbstractContainer[Child <: Component] extends Component { self =>
 
         childrenChanged(removed, added)
       }
-    })
+    }
 
-    layout.changes(new ChangeObserver[Layout] {
-      override def change(oldValue: Layout, newValue: Layout): Unit = synchronized {
+    layout.changes {
+      case (oldValue, newValue) => {
         oldValue.disconnect(self)
         newValue.connect(self)
       }
-    })
+    }
 
     size.width.and(size.height).on {
       layout.resized(self, size.width, size.height)

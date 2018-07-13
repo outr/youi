@@ -17,7 +17,7 @@ object History {
     * Defaults to false.
     */
   val alwaysReload: Var[Boolean] = Var(false)
-  private val currentURL = Var[URL](URL(document.location.href), static = true)
+  private val currentURL = Var[URL](URL(document.location.href))
   val url: Val[URL] = Val(currentURL)
   val stateChange: Channel[HistoryStateChange] = Channel[HistoryStateChange]
 

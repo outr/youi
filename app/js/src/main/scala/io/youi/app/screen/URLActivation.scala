@@ -1,6 +1,5 @@
 package io.youi.app.screen
 
-import reactify._
 import io.youi.{History, HistoryStateChange}
 import io.youi.net.{URL, URLMatcher}
 
@@ -8,9 +7,7 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 trait URLActivation extends Screen {
-  History.url.changes(new ChangeObserver[URL] {
-    override def change(oldValue: URL, newValue: URL): Unit = validateURL(newValue)
-  })
+  History.url.attach(validateURL)
   validateURL(History.url())
 
   private def validateURL(url: URL): Unit = if (matcher.matches(url)) {

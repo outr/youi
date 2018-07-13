@@ -9,11 +9,11 @@ import scala.concurrent.Future
 class AjaxAction(request: AjaxRequest) {
   lazy val future: Future[XMLHttpRequest] = request.promise.future
   private[ajax] val _state = Var[ActionState](ActionState.New)
-  def state: State[ActionState] = _state
-  def loaded: State[Double] = request.loaded
-  def total: State[Double] = request.total
-  def percentage: State[Int] = request.percentage
-  def cancelled: State[Boolean] = request.cancelled
+  def state: Val[ActionState] = _state
+  def loaded: Val[Double] = request.loaded
+  def total: Val[Double] = request.total
+  def percentage: Val[Int] = request.percentage
+  def cancelled: Val[Boolean] = request.cancelled
 
   private[ajax] def start(manager: AjaxManager): Unit = {
     if (!cancelled()) {

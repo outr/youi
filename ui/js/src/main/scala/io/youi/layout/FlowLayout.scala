@@ -15,7 +15,7 @@ class FlowLayout(margins: Margins = Margins()) extends Layout {
 
   override def disconnect(container: Component): Unit = {
     update(container)
-    map(container).clearObservers()
+    map(container).reactions.clear()
     map -= container
   }
 

@@ -106,7 +106,7 @@ package object youi {
     /**
       * Returns percentage value `of`.
       */
-    def percentOf(of: State[Double]): Val[Double] = Val(of.get * (d * 0.01))
+    def percentOf(of: Val[Double]): Val[Double] = Val(of.get * (d * 0.01))
 
     /**
       * millimeters
@@ -161,7 +161,7 @@ package object youi {
     /**
       * Returns percentage value `of`.
       */
-    def %(of: State[Double]): Val[Double] = percentOf(of)
+    def %(of: Val[Double]): Val[Double] = percentOf(of)
   }
 
   implicit def stylePropToValue[T](prop: StyleProp[T]): T = prop()

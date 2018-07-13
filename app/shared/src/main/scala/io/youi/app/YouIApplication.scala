@@ -23,7 +23,7 @@ trait YouIApplication extends ErrorSupport with CacheImplementation {
 
   protected val logPath: String = "/client/log"
 
-  val connectivityEntries: State[Set[ApplicationConnectivity]] = Var(Set.empty[ApplicationConnectivity])
+  val connectivityEntries: Var[Set[ApplicationConnectivity]] = Var(Set.empty[ApplicationConnectivity])
 
   /**
     * Default connectivity using "/communication" as the path. Can be overridden if this path is not desirable.

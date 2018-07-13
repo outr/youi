@@ -4,6 +4,7 @@ import java.nio.ByteBuffer
 
 import reactify._
 import io.youi.{MapStore, Store}
+import reactify.reaction.Reaction
 
 import scala.collection.mutable.ListBuffer
 
@@ -22,14 +23,14 @@ class Connection {
 
   // Set up backlog for sending until connection has been established
   private def init(): Unit = {
-    val textObserver: Observer[String] = (t: String) => {
+    val textReaction: Reaction[String] = Reaction { t: String =>
       Connection.backlog(this, t)
     }
-    val binaryObserver: Observer[Array[ByteBuffer]] = (b: Array[ByteBuffer]) => {
+    val binaryReaction: Reaction[Array[ByteBuffer]] = Reaction { b: Array[ByteBuffer] =>
       Connection.backlog(this, b)
     }
-    send.text.observe(textObserver)
-    send.binary.observe(binaryObserver)
+    send.text.reactions += textReaction
+    send.binary.reactions += binaryReaction
 
     send.text.attach { s =>
       if (Connection.debug) scribe.info(s"Send: $s")
@@ -46,8 +47,8 @@ class Connection {
 
     connected.attach { b =>
       synchronized {
-        send.text.detach(textObserver)
-        send.binary.detach(binaryObserver)
+        send.text.reactions -= textReaction
+        send.binary.reactions -= binaryReaction
         if (b) {
           backlog.foreach {
             case s: String => send.text := s
@@ -55,8 +56,8 @@ class Connection {
           }
           backlog.clear()
         } else {
-          send.text.observe(textObserver)
-          send.binary.observe(binaryObserver)
+          send.text.reactions += textReaction
+          send.binary.reactions += binaryReaction
         }
       }
     }

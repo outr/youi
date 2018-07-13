@@ -6,13 +6,13 @@ import scala.math.Ordering
 
 class ItemContainer[T](implicit ord: Ordering[T]) extends Iterable[T] {
   private val list = Var[List[T]](Nil)
-  val items: Val[List[T]] = list.asVal
+  val items: Val[List[T]] = list
 
   def +=(item: T): Unit = synchronized {
-    list.static((item :: list()).sorted)
+    list := (item :: list()).sorted
   }
   def -=(item: T): Unit = synchronized {
-    list.static(list().filterNot(_ == item))
+    list := list().filterNot(_ == item)
   }
   def apply(): List[T] = items()
 

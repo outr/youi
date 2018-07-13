@@ -2,7 +2,8 @@ package io.youi.event
 
 import io.youi.component.Component
 import io.youi.spatial.{BoundingBox, Point}
-import reactify.{Channel, InvocationType, Observable, Val, Var}
+import reactify.reaction.{Reaction, ReactionStatus}
+import reactify.{Channel, Val, Var}
 
 class Gestures(component: Component) {
   private val _pointers = Var[Map[Int, Pointer]](Map.empty)
@@ -34,10 +35,8 @@ class Gestures(component: Component) {
   } else {
     component.event.pointer.down.attach(add)
     component.event.pointer.move.attach(dragging)
-    Observable.wrap(
-      component.event.pointer.up,
-      component.event.pointer.cancel
-    ).attach(remove)
+
+    (component.event.pointer.up & component.event.pointer.cancel).attach(remove)
   }
 
 
@@ -121,12 +120,14 @@ object Moved {
   }
 }
 
-class Tap(component: Component) extends Observable[Pointer] {
+class Tap(component: Component) extends Reaction[Pointer] {
   val enabled: Var[Boolean] = Var(Tap.DefaultEnabled)
   val maxDistance: Var[Double] = Var(Tap.DefaultMaxDistance)
   val maxTimeout: Var[Long] = Var(Tap.DefaultMaxTimeout)
 
-  override def fire(value: Pointer, `type`: InvocationType): Unit = super.fire(value, `type`)
+  override def apply(value: Pointer, previous: Option[Pointer]): ReactionStatus = {
+    ReactionStatus.Continue
+  }
 }
 
 object Tap {
@@ -135,7 +136,7 @@ object Tap {
   val DefaultMaxTimeout: Long = 200L
 }
 
-class Click(component: Component) extends Observable[Pointer] {
+class Click(component: Component) extends Reaction[Pointer] {
   protected def gestures: Gestures = component.event.gestures
 
   private var lastClick = 0L
@@ -143,27 +144,27 @@ class Click(component: Component) extends Observable[Pointer] {
   gestures.pointers.removed.attach { p =>
     if (p.identifier == 0 && p.movedFromStart.distance <= gestures.tap.maxDistance() && gestures.pointers.map.isEmpty) {
       if (gestures.tap.enabled() && p.elapsed <= gestures.tap.maxTimeout()) {
-        fire(p, InvocationType.Direct)
+        apply(p, None)
       } else if (gestures.longPress.enabled() && p.elapsed >= gestures.longPress.minTimeout()) {
-        gestures.longPress.fire(p, InvocationType.Direct)
+        gestures.longPress(p, None)
       } else if (gestures.doubleClick.enabled() && p.time - lastClick <= gestures.doubleClick.maxDelay()) {
-        gestures.doubleClick.fire(p, InvocationType.Direct)
+        gestures.doubleClick(p, None)
         lastClick = 0L
       } else {
-        gestures.click.fire(p, InvocationType.Direct)
+        gestures.click(p, None)
         lastClick = p.time
       }
     }
   }
 
-  override def fire(value: Pointer, `type`: InvocationType): Unit = super.fire(value, `type`)
+  override def apply(value: Pointer, previous: Option[Pointer]): ReactionStatus = ReactionStatus.Continue
 }
 
-class LongPress(component: Component) extends Observable[Pointer] {
+class LongPress(component: Component) extends Reaction[Pointer] {
   val enabled: Var[Boolean] = Var(LongPress.DefaultEnabled)
   val minTimeout: Var[Long] = Var(LongPress.DefaultMinTimeout)
 
-  override def fire(value: Pointer, `type`: InvocationType): Unit = super.fire(value, `type`)
+  override def apply(value: Pointer, previous: Option[Pointer]): ReactionStatus = ReactionStatus.Continue
 }
 
 object LongPress {
@@ -171,11 +172,11 @@ object LongPress {
   val DefaultMinTimeout: Long = 1000L
 }
 
-class DoubleClick(component: Component) extends Observable[Pointer] {
+class DoubleClick(component: Component) extends Reaction[Pointer] {
   val enabled: Var[Boolean] = Var(DoubleClick.DefaultEnabled)
   val maxDelay: Var[Long] = Var(DoubleClick.DefaultMaxDelay)
 
-  override def fire(value: Pointer, `type`: InvocationType): Unit = super.fire(value, `type`)
+  override def apply(value: Pointer, previous: Option[Pointer]): ReactionStatus = ReactionStatus.Continue
 }
 
 object DoubleClick {
@@ -183,7 +184,7 @@ object DoubleClick {
   val DefaultMaxDelay: Long = 400L
 }
 
-class Pinch(component: Component) extends Observable[PinchEvent] {
+class Pinch(component: Component) extends Reaction[PinchEvent] {
   protected def gestures: Gestures = component.event.gestures
 
   gestures.pointers.dragged.attach(dragging)
@@ -221,10 +222,10 @@ class Pinch(component: Component) extends Observable[PinchEvent] {
       deltaDistance = cd - pd,
       direction = direction
     )
-    fire(pe, InvocationType.Direct)
+    apply(pe, None)
   }
 
-  override def fire(value: PinchEvent, `type`: InvocationType): Unit = super.fire(value, `type`)
+  override def apply(value: PinchEvent, previous: Option[PinchEvent]): ReactionStatus = ReactionStatus.Continue
 }
 
 case class PinchEvent(pointer: Pointer,

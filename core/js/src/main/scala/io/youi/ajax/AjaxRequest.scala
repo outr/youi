@@ -18,10 +18,10 @@ class AjaxRequest(url: URL,
                   responseType: String = "") {
   val req = new dom.XMLHttpRequest()
   val promise: Promise[XMLHttpRequest] = Promise[dom.XMLHttpRequest]()
-  val loaded: State[Double] = Var(0.0)
-  val total: State[Double] = Var(0.0)
-  val percentage: State[Int] = Var(0)
-  val cancelled: State[Boolean] = Var(false)
+  val loaded: Val[Double] = Var(0.0)
+  val total: Val[Double] = Var(0.0)
+  val percentage: Val[Int] = Var(0)
+  val cancelled: Val[Boolean] = Var(false)
 
   req.onreadystatechange = { _: dom.Event =>
     if (req.readyState == 4) {

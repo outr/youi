@@ -15,7 +15,7 @@ trait ScreenManager {
 
   private val allScreens = Var[List[Screen]](Nil)
 
-  val screens: State[List[Screen]] = allScreens
+  val screens: Val[List[Screen]] = allScreens
   val active: Var[Screen] = Var(EmptyScreen)
   val loaded: Val[Boolean] = Var(false)
 
@@ -23,9 +23,9 @@ trait ScreenManager {
     loaded.asInstanceOf[Var[Boolean]] := true
   })
 
-  active.changes(new ChangeObserver[Screen] {
-    override def change(oldScreen: Screen, newScreen: Screen): Unit = screenChange(oldScreen, newScreen)
-  })
+  active.changes {
+    case (oldScreen, newScreen) => screenChange(oldScreen, newScreen)
+  }
 
   private def screenChange(oldScreen: Screen, newScreen: Screen): Unit = synchronized {
     if (managerFuture.isCompleted) {

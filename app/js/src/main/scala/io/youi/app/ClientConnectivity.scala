@@ -25,11 +25,11 @@ class ClientConnectivity(connectivity: ApplicationConnectivity, application: Cli
     connect()
   }
 
-  connection.connected.changes(new ChangeObserver[Boolean] {
-    override def change(oldValue: Boolean, newValue: Boolean): Unit = if (oldValue && !newValue && application.autoReload) {
+  connection.connected.changes {
+    case (oldValue, newValue) => {
       attemptReload()
     }
-  })
+  }
 
   def connect(): Unit = {
     connectivity.activeConnections := Set(connection)

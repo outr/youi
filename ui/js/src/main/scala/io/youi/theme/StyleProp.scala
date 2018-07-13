@@ -1,6 +1,7 @@
 package io.youi.theme
 
-import reactify.{ChangeObserver, Observer, Val, Var}
+import reactify.reaction.Reaction
+import reactify.{Priority, Val, Var}
 
 class StyleProp[T](val name: String, parent: Var[Theme], default: => T) {
   val option: Var[Option[T]] = Var(None)
@@ -13,9 +14,9 @@ class StyleProp[T](val name: String, parent: Var[Theme], default: => T) {
   def clear(): Unit = option := None
 
   def attach(f: T => Unit,
-             priority: Double = Observer.Priority.Normal): Observer[T] = value.attach(f, priority)
-  def observe(observer: Observer[T]): Observer[T] = value.observe(observer)
-  def detach(observer: Observer[T]): Unit = value.detach(observer)
-  def attachAndFire(f: T => Unit): Observer[T] = value.attachAndFire(f)
-  def changes(observer: ChangeObserver[T]): Observer[T] = value.changes(observer)
+             priority: Double = Priority.Normal): Reaction[T] = value.attach(f, priority)
+  def observe(reaction: Reaction[T]): Reaction[T] = value.reactions += reaction
+  def detach(reaction: Reaction[T]): Unit = value.reactions -= reaction
+  def attachAndFire(f: T => Unit): Reaction[T] = value.attachAndFire(f)
+  def changes(f: (T, T) => Unit, priority: Double = Priority.Normal): Reaction[T] = value.changes(f, priority)
 }

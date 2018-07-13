@@ -48,7 +48,7 @@ class Events(component: Component) {
       }
     }
 
-    override def set(value: => PointerEvent): Unit = fire(value, InvocationType.Direct)
+    override def set(value: => PointerEvent): Unit = fire(value, None)
   }
   object touch extends Channel[PointerEvent] {
     lazy val start: Channel[PointerEvent] = byType(Type.TouchStart)
@@ -67,7 +67,7 @@ class Events(component: Component) {
       }
     }
 
-    override def set(value: => PointerEvent): Unit = fire(value, InvocationType.Direct)
+    override def set(value: => PointerEvent): Unit = fire(value, None)
   }
 
   object key extends Channel[KeyEvent] {
@@ -84,7 +84,7 @@ class Events(component: Component) {
       }
     }
 
-    override def set(value: => KeyEvent): Unit = fire(value, InvocationType.Direct)
+    override def set(value: => KeyEvent): Unit = fire(value, None)
   }
 
 //  lazy val gestures: Gestures = new Gestures(component)

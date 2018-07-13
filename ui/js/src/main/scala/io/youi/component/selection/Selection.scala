@@ -98,11 +98,11 @@ abstract class Selection[T](root: html.Element,
       selected() ++ highlighted()
     }
     highlighted := ListSet.empty
-    selected.static(items)
+    selected := items
   }
 
-  highlighted.changes(new ChangeObserver[ListSet[T]] {
-    override def change(oldValue: ListSet[T], newValue: ListSet[T]): Unit = {
+  highlighted.changes {
+    case (oldValue, newValue) => {
       val removed = oldValue -- newValue
       val added = newValue -- oldValue
       removed.foreach { e =>
@@ -111,16 +111,16 @@ abstract class Selection[T](root: html.Element,
       }
       added.foreach(highlightAdded)
     }
-  })
+  }
 
-  selected.changes(new ChangeObserver[ListSet[T]] {
-    override def change(oldValue: ListSet[T], newValue: ListSet[T]): Unit = {
+  selected.changes {
+    case (oldValue, newValue) => {
       val removed = oldValue -- newValue
       val added = newValue -- oldValue
       removed.foreach(selectionRemoved)
       added.foreach(selectionAdded)
     }
-  })
+  }
 
   def highlightAdded(element: T): Unit = {}
   def highlightRemoved(element: T, isSelected: Boolean): Unit = {}

@@ -8,3 +8,7 @@ class ActionFilter(f: HttpConnection => Unit) extends ConnectionFilter {
     Some(connection)
   }
 }
+
+object ActionFilter {
+  def apply(f: HttpConnection => Unit): ActionFilter = new ActionFilter(f)
+}

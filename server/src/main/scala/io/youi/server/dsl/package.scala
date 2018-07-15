@@ -31,7 +31,11 @@ package object dsl {
 
   implicit class MethodConnectionFilter(val method: Method) extends ConditionalFilter(_.request.method == method)
 
-  implicit class HttpHandlerFilter(val handler: HttpHandler) extends ActionFilter(handler.handle)
+  implicit def handler2Filter(handler: HttpHandler): ConnectionFilter = ActionFilter { connection =>
+    if (PathPart.fulfilled(connection)) {
+      handler.handle(connection)
+    }
+  }
 
   implicit class CachingManagerFilter(val caching: CachingManager) extends LastConnectionFilter(new ActionFilter(caching.handle))
 
@@ -68,13 +72,11 @@ package object dsl {
     }
   }
 
-  implicit def content2Filter(content: Content): ConnectionFilter = {
-    new HttpHandlerFilter(ContentHandler(content, HttpStatus.OK))
-  }
+  implicit def content2Filter(content: Content): ConnectionFilter = handler2Filter(ContentHandler(content, HttpStatus.OK))
 
   implicit def restful[Request, Response](restful: Restful[Request, Response])
                                          (implicit decoder: Decoder[Request], encoder: Encoder[Response]): ConnectionFilter = {
-    new HttpHandlerFilter(Restful(restful)(decoder, encoder))
+    handler2Filter(Restful(restful)(decoder, encoder))
   }
 
   implicit def path2AllowFilter(path: Path): ConnectionFilter = PathFilter(path)

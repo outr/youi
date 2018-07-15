@@ -26,7 +26,7 @@ class ClientConnectivity(connectivity: ApplicationConnectivity, application: Cli
   }
 
   connection.connected.changes {
-    case (oldValue, newValue) => {
+    case (oldValue, newValue) => if (oldValue && !newValue && application.autoReload) {
       attemptReload()
     }
   }
@@ -60,7 +60,7 @@ class ClientConnectivity(connectivity: ApplicationConnectivity, application: Cli
 
   private def attemptReload(attempt: Int = 0): Unit = {
     StreamURL.stream(History.url()).onComplete {
-      case Success(html) => History.reload(force = true)
+      case Success(_) => History.reload(force = true)
       case Failure(exception) => {
         exception match {
           case exc: AjaxException if exc.xhr.status > 0 => History.reload(force = true)

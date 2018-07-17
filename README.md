@@ -7,6 +7,7 @@
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/outr/youi)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.youi/youi-core_2.12/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.youi/youi-core_2.12)
 [![Latest version](https://index.scala-lang.org/outr/youi/youi-core/latest.svg)](https://index.scala-lang.org/outr/youi)
+[![Javadocs](https://javadoc.io/badge/io.youi/youi-core_2.12.svg)](https://javadoc.io/doc/io.youi/youi-core_2.12)
 
 Next generation user interface and application development in Scala and Scala.js for web, mobile, and desktop.
 

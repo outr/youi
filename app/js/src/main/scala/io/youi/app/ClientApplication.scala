@@ -14,6 +14,7 @@ import scribe.writer.Writer
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.scalajs.js
+import scala.scalajs.js.|
 
 trait ClientApplication extends YouIApplication with ScreenManager {
   ClientApplication.instance = this
@@ -25,8 +26,12 @@ trait ClientApplication extends YouIApplication with ScreenManager {
 
   def clientConnectivity(connectivity: ApplicationConnectivity): ClientConnectivity = configuredConnectivity(connectivity)
 
-  private val errorFunction: js.Function5[String, String, Int, Int, Throwable, Unit] = (message: String, source: String, line: Int, column: Int, throwable: Throwable) => {
-    ErrorTrace.toError(message, source, line, column, Option(throwable)).map(ClientApplication.sendError)
+  private val errorFunction: js.Function5[String, String, Int, Int, Throwable | js.Error, Unit] = (message: String, source: String, line: Int, column: Int, err: Throwable | js.Error) => {
+    err match {
+      case null => ErrorTrace.toError(message, source, line, column, None).map(ClientApplication.sendError)
+      case t: Throwable => ErrorTrace.toError(message, source, line, column, Some(t)).map(ClientApplication.sendError)
+      case e: js.Error => ErrorTrace.toError(message, source, line, column, Some(js.JavaScriptException(e))).map(ClientApplication.sendError)
+    }
     ()
   }
 

@@ -1,5 +1,7 @@
 package io.youi.spatial
 
+import io.youi.util.SizeUtility
+
 sealed trait Size extends SpatialValue[Size] {
   def width: Double
   def height: Double
@@ -11,6 +13,9 @@ sealed trait Size extends SpatialValue[Size] {
     case that: Size => width == that.width && height == that.height
     case _ => false
   }
+
+  def scale(width: Option[Double] = None,
+            height: Option[Double] = None): Size = SizeUtility.size(width, height, this)
 
   override def toString: String = s"Size(width: $width, height: $height)"
 }

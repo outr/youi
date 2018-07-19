@@ -4,7 +4,7 @@ import io.youi._
 import io.youi.drawable.{Context, Drawable}
 import io.youi.image.resize.ImageResizer
 import io.youi.net.URL
-import io.youi.spatial.BoundingBox
+import io.youi.spatial.{BoundingBox, Size}
 import io.youi.util.{CanvasPool, ImageUtility}
 import org.scalajs.dom._
 
@@ -14,6 +14,7 @@ import scala.concurrent.Future
 trait Image extends Drawable {
   val width: Double
   val height: Double
+  lazy val size: Size = Size(width, height)
 
   override def draw(context: Context, x: Double, y: Double): Unit = draw(context, x, y, width, height)
 

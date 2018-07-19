@@ -1,10 +1,17 @@
 package io.youi.component.extras
 
 import io.youi.component.Component
+import io.youi.spatial.Size
 import reactify.{Val, Var}
 
 trait ComponentSize {
   protected def component: Component
+
+  def apply(): Size = Size(width(), height())
+  def :=(size: => Size): Unit = {
+    width := size.width
+    height := size.height
+  }
 
   object measured {
     lazy val width: Var[Double] = Var(0.0)

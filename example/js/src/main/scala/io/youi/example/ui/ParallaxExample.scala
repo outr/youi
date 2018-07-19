@@ -16,7 +16,7 @@ class ParallaxExample extends UIExampleScreen {
 
   override def createUI(): Future[Unit] = GoogleFont.`Lobster`.load().map { fnt =>
     ui.overflow.y := Overflow.Auto
-    ui.size.height := 3000.px
+    ui.size.height := 4000.px
 
     val textView = new HTMLTextView {
       value := s"Hello, World"
@@ -28,7 +28,7 @@ class ParallaxExample extends UIExampleScreen {
       }
       color := Color.DarkBlue.withRed(ui.position.scroll.percent.y())
       position.center := container.size.center()
-      position.top := 150.0 - math.min(150.0, -ui.position.scroll.y())
+      position.top := header.size.height - math.min(header.size.height, -ui.position.scroll.y())
       position.`type` := Position.Fixed
       position.depth := 100
     }

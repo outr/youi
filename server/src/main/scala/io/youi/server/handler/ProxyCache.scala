@@ -14,7 +14,7 @@ case class ProxyCache(directory: Path = Paths.get(System.getProperty("java.io.tm
       val fileName = URLEncoder.encode(cacheURL, "UTF-8")
       val file = directory.resolve(fileName).toAbsolutePath.toFile
       if (!file.exists()) {
-        scribe.info(s"Downloading $cacheURL...")
+        scribe.debug(s"Downloading $cacheURL...")
         val tmp = directory.resolve(s"$fileName.tmp").toAbsolutePath.toFile
         IO.stream(url, tmp)
         IO.stream(tmp, file)
@@ -22,7 +22,7 @@ case class ProxyCache(directory: Path = Paths.get(System.getProperty("java.io.tm
           tmp.deleteOnExit()
         }
       } else {
-        scribe.info(s"$cacheURL already exists")
+        scribe.debug(s"$cacheURL already exists")
       }
 
       connection.update(_.withContent(Content.file(file)).withStatus(HttpStatus.OK))

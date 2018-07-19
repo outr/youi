@@ -1,11 +1,10 @@
 package io.youi.example.ui
 
 import io.youi._
-import io.youi.app.screen.UIScreen
 import io.youi.component.Container
 import io.youi.example.screen.UIExampleScreen
 import io.youi.layout.GridLayout
-import io.youi.paint.{Border, Paint, Stroke}
+import io.youi.paint.Paint
 import reactify._
 
 import scala.concurrent.Future

@@ -1,5 +1,5 @@
 import org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv
-import sbtcrossproject.crossProject
+import sbtcrossproject.CrossPlugin.autoImport.crossProject
 
 name := "youi"
 organization in ThisBuild := "io.youi"
@@ -29,7 +29,7 @@ developers in ThisBuild := List(
 val profigVersion = "2.3.0"
 val scribeVersion = "2.5.3"
 val powerScalaVersion = "2.0.5"
-val reactifyVersion = "3.0.1"
+val reactifyVersion = "3.0.2"
 val hasherVersion = "1.2.1"
 
 val canvgVersion = "1.4.0_1"
@@ -37,13 +37,13 @@ val openTypeVersion = "0.7.3"
 val picaVersion = "3.0.5"
 val webFontLoaderVersion = "1.6.28"
 
-val akkaVersion = "2.5.13"
+val akkaVersion = "2.5.14"
 val scalaJSDOM = "0.9.6"
-val okHttpVersion = "3.10.0"
+val okHttpVersion = "3.11.0"
 val circeVersion = "0.9.3"
 val uaDetectorVersion = "2014.10"
-val undertowVersion = "2.0.9.Final"
-val closureCompilerVersion = "v20180506"
+val undertowVersion = "2.0.10.Final"
+val closureCompilerVersion = "v20180716"
 val jSoupVersion = "1.11.3"
 val scalaXMLVersion = "1.1.0"
 val scalacticVersion = "3.0.5"

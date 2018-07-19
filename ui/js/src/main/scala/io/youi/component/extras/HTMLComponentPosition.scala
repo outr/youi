@@ -31,7 +31,7 @@ class HTMLComponentPosition(override protected val component: HTMLComponent[_ <:
       component.delta.on {
         updating = true
         try {
-          v := get
+          v.static(get)
         } finally {
           updating = false
         }
@@ -59,7 +59,6 @@ class HTMLComponentPosition(override protected val component: HTMLComponent[_ <:
     }
 
     object percent {
-      // TODO: clean this up...a lot!
       lazy val x: Val[Double] = Val(math.abs(scroll.x / max.x))
       lazy val y: Val[Double] = Val(math.abs(scroll.y / max.y))
     }

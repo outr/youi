@@ -6,6 +6,16 @@ sealed trait Size extends SpatialValue[Size] {
   def width: Double
   def height: Double
 
+  def *(d: Double): Size = Size(width * d, height * d)
+  def /(d: Double): Size = Size(width / d, height / d)
+  def +(d: Double): Size = Size(width + d, height + d)
+  def -(d: Double): Size = Size(width - d, height - d)
+
+  def *(that: Size): Size = Size(this.width * that.width, this.height * that.height)
+  def /(that: Size): Size = Size(this.width / that.width, this.height / that.height)
+  def +(that: Size): Size = Size(this.width + that.width, this.height + that.height)
+  def -(that: Size): Size = Size(this.width - that.width, this.height - that.height)
+
   def set(width: Double, height: Double): Size
   def set(that: Size): Size = set(that.width, that.height)
   def duplicate(): Size

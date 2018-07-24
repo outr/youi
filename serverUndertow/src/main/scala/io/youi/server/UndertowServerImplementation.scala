@@ -242,6 +242,14 @@ object UndertowServerImplementation extends ServerImplementationCreator {
   }
 
   private def handleStandard(impl: UndertowServerImplementation, connection: HttpConnection, exchange: HttpServerExchange): Unit = {
+    connection.response.content.foreach { content =>
+      if (Headers.`Content-Type`.value(connection.response.headers).isEmpty) {
+        connection.update { response =>
+          response.withHeader(Headers.`Content-Type`(content.contentType))
+        }
+      }
+    }
+
     val response = connection.response
 
     exchange.setStatusCode(response.status.code)

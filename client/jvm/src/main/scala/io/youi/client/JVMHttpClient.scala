@@ -121,6 +121,8 @@ case class JVMHttpClient(saveDirectory: File = new File(System.getProperty("java
     val content = Option(r.body()).map { responseBody =>
       if (contentToString(contentType, contentLength)) {
         Content.string(responseBody.string(), contentType)
+      } else if (contentToBytes(contentType, contentLength)) {
+        Content.bytes(responseBody.bytes(), contentType)
       } else {
         val file = File.createTempFile("youi", "client", saveDirectory)
         IO.stream(responseBody.byteStream(), file)
@@ -142,7 +144,19 @@ case class JVMHttpClient(saveDirectory: File = new File(System.getProperty("java
 
   override protected def content2String(content: Content): String = content match {
     case c: StringContent => c.value
+    case c: BytesContent => String.valueOf(c.value)
     case c: FileContent => IO.stream(c.file, new StringBuilder).toString
+    case _ => throw new RuntimeException(s"$content not supported")
+  }
+
+  protected def contentToBytes(contentType: ContentType, contentLength: Option[Long]): Boolean = {
+    contentLength.exists(l => l > 0L && l < 512000L)
+  }
+
+  protected def content2Bytes(content: Content): Array[Byte] = content match {
+    case c: StringContent => c.value.getBytes("UTF-8")
+    case c: BytesContent => c.value
+    case c: FileContent => IO.stream(c.file, new StringBuilder).toString.getBytes("UTF-*")
     case _ => throw new RuntimeException(s"$content not supported")
   }
 

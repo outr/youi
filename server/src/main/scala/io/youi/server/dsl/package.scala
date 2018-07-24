@@ -64,7 +64,7 @@ package object dsl {
       }
       Option(getClass.getClassLoader.getResource(resourcePath))
         .map(url => new File(url.getFile))
-        .filterNot(_.isDirectory)
+        .filter(_.isFile)
         .map { file =>
           SenderHandler(Content.file(file)).handle(connection)
           connection

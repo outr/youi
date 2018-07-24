@@ -26,6 +26,15 @@ case class StringContent(value: String, contentType: ContentType, lastModified: 
   override def toString: String = s"StringContent(${value.take(100)}, contentType: $contentType)"
 }
 
+case class BytesContent(value: Array[Byte], contentType: ContentType, lastModified: Long = System.currentTimeMillis()) extends Content {
+  override def length: Long = value.length
+
+  override def withContentType(contentType: ContentType): Content = copy(contentType = contentType)
+  override def withLastModified(lastModified: Long): Content = copy(lastModified = lastModified)
+
+  override def toString: String = s"BytesContent(${value.take(100)}, contentType: $contentType)"
+}
+
 case class FileContent(file: File, contentType: ContentType, lastModifiedOverride: Option[Long] = None) extends Content {
   assert(file.isFile, s"Cannot send back ${file.getAbsolutePath} as it is a directory or does not exist!")
 
@@ -118,6 +127,7 @@ object Content {
   val empty: Content = string("", ContentType.`text/plain`)
   lazy val form: FormDataContent = FormDataContent(Nil)
   def string(value: String, contentType: ContentType): Content = StringContent(value, contentType)
+  def bytes(value: Array[Byte], contentType: ContentType): Content = BytesContent(value, contentType)
   def xml(value: Elem, contentType: ContentType): Content = StringContent(xmlPrinter.format(value), contentType)
   def file(file: File): Content = FileContent(file, ContentType.byFileName(file.getName))
   def file(file: File, contentType: ContentType): Content = FileContent(file, contentType)

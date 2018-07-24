@@ -35,6 +35,8 @@ case class URL(protocol: Protocol = Protocol.Http,
     copy(path = updated)
   }
 
+  def withPath(path: Path): URL = copy(path = path)
+
   def withFragment(fragment: String): URL = copy(fragment = Option(fragment))
   def withoutFragment(): URL = copy(fragment = None)
 

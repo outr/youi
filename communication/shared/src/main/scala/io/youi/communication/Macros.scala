@@ -51,7 +51,7 @@ object Macros {
   def create[C <: Communication](context: blackbox.Context)(connection: context.Expr[Connection])(implicit c: context.WeakTypeTag[C]): context.Expr[C] = {
     import context.universe._
 
-    implicit val futureTypeTag = typeTag[Future[_]]
+    implicit val futureTypeTag: context.universe.TypeTag[Future[_]] = typeTag[Future[_]]
 
     val typeName = c.tpe.toString match {
       case s => s.substring(s.lastIndexOf('.') + 1)

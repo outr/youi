@@ -92,14 +92,13 @@ class WebSocketClient(url: URL,
     checkBacklog()
   }
 
-  def disconnect(): Unit = {
+  def disconnect(): Unit = if (connected()) {
     channel.close()
+    _connected := false
   }
 
   def dispose(): Unit = {
-    if (connected()) {
-      disconnect()
-    }
+    disconnect()
     worker.shutdown()
   }
 

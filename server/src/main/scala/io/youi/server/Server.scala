@@ -29,7 +29,7 @@ trait Server extends HttpHandler with ErrorSupport {
   val errorHandler: Var[ErrorHandler] = Var(DefaultErrorHandler)
 
   protected lazy val implementation: ServerImplementation = {
-    Server.config("implementation").as[Option[String]] match {
+    Server.config("implementation").opt[String] match {
       case Some(className) => {
         scribe.info(s"Using server implementation: $className...")
         import scala.reflect.runtime._

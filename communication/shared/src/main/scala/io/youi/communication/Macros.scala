@@ -51,8 +51,6 @@ object Macros {
   def create[C <: Communication](context: blackbox.Context)(connection: context.Expr[Connection])(implicit c: context.WeakTypeTag[C]): context.Expr[C] = {
     import context.universe._
 
-    implicit val futureTypeTag: context.universe.TypeTag[Future[_]] = typeTag[Future[_]]
-
     val typeName = c.tpe.toString match {
       case s => s.substring(s.lastIndexOf('.') + 1)
     }
@@ -65,7 +63,7 @@ object Macros {
 
     val declaredMethods = c.tpe.decls.toSet
     val methods = c.tpe.members.toList.sortBy(_.fullName).collect {
-      case symbol if symbol.isMethod & symbol.typeSignature.resultType <:< context.typeOf[Future[_]] => {
+      case symbol if symbol.isMethod & symbol.typeSignature.resultType <:< typeOf[Future[Any]] => {
         val endPoint = s"$baseTypeName.${symbol.name}"
         val m = symbol.asMethod
         val declared = declaredMethods.contains(m)

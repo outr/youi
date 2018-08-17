@@ -33,7 +33,7 @@ object TemplateMacros {
     val pathKey = appName match {
       case Expr(Literal(Constant(value: String))) => s"$value.template.path"
     }
-    val templatePath = Profig(pathKey).as[Option[String]]
+    val templatePath = Profig(pathKey).opt[String]
     val file = templatePath match {
       case Some(basePath) => new File(basePath, pathValue)
       case None => new File(pathValue)
@@ -74,7 +74,7 @@ object TemplateMacros {
     val pathKey = appName match {
       case Expr(Literal(Constant(value: String))) => s"$value.template.path"
     }
-    val templatePath = Profig(pathKey).as[Option[String]]
+    val templatePath = Profig(pathKey).opt[String]
     val file = templatePath match {
       case Some(basePath) => new File(basePath, pathValue)
       case None => new File(pathValue)

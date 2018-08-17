@@ -19,7 +19,7 @@ trait YouIApplication extends ErrorSupport with CacheImplementation {
     *
     * Defaults to true.
     */
-  protected def logJavaScriptErrors: Boolean = Profig("logJavaScriptErrors").as[Option[Boolean]].getOrElse(true)
+  protected def logJavaScriptErrors: Boolean = Profig("logJavaScriptErrors").opt[Boolean].getOrElse(true)
 
   protected val logPath: String = "/client/log"
 

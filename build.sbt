@@ -3,7 +3,7 @@ import sbtcrossproject.CrossPlugin.autoImport.crossProject
 
 name := "youi"
 organization in ThisBuild := "io.youi"
-version in ThisBuild := "0.9.0-SNAPSHOT"
+version in ThisBuild := "0.9.0-M18"
 scalaVersion in ThisBuild := "2.12.6"
 crossScalaVersions in ThisBuild := List("2.12.6", "2.11.12")
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
@@ -27,7 +27,7 @@ developers in ThisBuild := List(
 )
 
 val profigVersion = "2.3.1"
-val scribeVersion = "2.5.3"
+val scribeVersion = "2.6.0"
 val powerScalaVersion = "2.0.5"
 val reactifyVersion = "3.0.2"
 val hasherVersion = "1.2.1"
@@ -37,7 +37,7 @@ val openTypeVersion = "0.7.3"
 val picaVersion = "3.0.5"
 val webFontLoaderVersion = "1.6.28"
 
-val akkaVersion = "2.5.14"
+val akkaVersion = "2.5.16"
 val scalaJSDOM = "0.9.6"
 val okHttpVersion = "3.11.0"
 val circeVersion = "0.9.3"

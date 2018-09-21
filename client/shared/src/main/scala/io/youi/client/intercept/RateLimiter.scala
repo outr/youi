@@ -2,7 +2,7 @@ package io.youi.client.intercept
 
 import java.util.concurrent.{Executors, ThreadFactory}
 
-import io.youi.http.{HttpRequest, HttpResponse}
+import io.youi.http.HttpRequest
 
 import scala.concurrent.duration._
 import scala.concurrent.{Future, Promise}

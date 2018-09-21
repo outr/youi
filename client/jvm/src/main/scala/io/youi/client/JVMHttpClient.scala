@@ -36,19 +36,7 @@ case class JVMHttpClient(saveDirectory: File = new File(System.getProperty("java
     b.build()
   }
 
-  /**
-    * Sends an HttpRequest and receives an asynchronous HttpResponse future.
-    *
-    * @param request the request to send
-    * @param retry the number of times to retry a failed request. This defaults to zero as most requests are not
-    *              idempotent and calling multiple times can cause side-effects
-    * @param retryDelay if a failure occurs and a retry must occur, how long to wait until retrying. This defaults to
-    *                   5.0 seconds
-    * @return Future[HttpResponse]
-    */
-  override def send(request: HttpRequest,
-                    retry: Int = defaultRetries,
-                    retryDelay: FiniteDuration = defaultRetryDelay): Future[HttpResponse] = {
+  override protected def implementation(request: HttpRequest): Future[HttpResponse] = {
     val req = requestToOk(request)
     val promise = Promise[HttpResponse]
     client.newCall(req).enqueue(new okhttp3.Callback {
@@ -59,13 +47,7 @@ case class JVMHttpClient(saveDirectory: File = new File(System.getProperty("java
 
       override def onFailure(call: okhttp3.Call, exc: IOException): Unit = promise.failure(exc)
     })
-    val future = promise.future.recoverWith {
-      case t: Throwable if retry > 0 => {
-        scribe.warn(s"Request to ${request.url} failed (${t.getMessage}). Retrying after $retryDelay seconds...")
-        Future(Thread.sleep(retryDelay.toMillis)).flatMap(_ => send(request, retry - 1, retryDelay))
-      }
-    }
-    JVMHttpClient.process(future)
+    JVMHttpClient.process(promise.future)
   }
 
   private def requestToOk(request: HttpRequest): okhttp3.Request = {

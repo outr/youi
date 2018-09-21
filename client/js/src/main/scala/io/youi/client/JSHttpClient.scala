@@ -13,7 +13,8 @@ case class JSHttpClient(defaultRetries: Int = HttpClient.retries,
                         connectionPool: ConnectionPool = HttpClient.connectionPool) extends HttpClient {
   private val HeaderRegex = """(.+)[=](.+)""".r
 
-  override def send(request: HttpRequest, retry: Int, retryDelay: FiniteDuration): Future[HttpResponse] = {
+
+  override protected def implementation(request: HttpRequest): Future[HttpResponse] = {
     val manager = connectionPool.asInstanceOf[JSConnectionPool].manager
     val ajaxRequest = new AjaxRequest(
       url = request.url,

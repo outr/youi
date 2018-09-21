@@ -3,6 +3,7 @@ package io.youi.client
 import io.circe.{Decoder, Encoder, Json, Printer}
 import io.circe.parser.decode
 import io.circe.syntax._
+import io.youi.client.intercept.{Interceptor, RateLimiter}
 import io.youi.http.{Content, Headers, HttpRequest, HttpResponse, Method, StringContent}
 import io.youi.net.{ContentType, URL}
 
@@ -18,9 +19,37 @@ trait HttpClient {
 
   protected lazy val printer: Printer = Printer.spaces2.copy(dropNullValues = dropNullValues)
 
-  def send(request: HttpRequest,
-           retry: Int = defaultRetries,
-           retryDelay: FiniteDuration = defaultRetryDelay): Future[HttpResponse]
+  /**
+    * Sends an HttpRequest and receives an asynchronous HttpResponse future.
+    *
+    * @param request the request to send
+    * @param retry the number of times to retry a failed request. This defaults to zero as most requests are not
+    *              idempotent and calling multiple times can cause side-effects
+    * @param retryDelay if a failure occurs and a retry must occur, how long to wait until retrying. This defaults to
+    *                   5.0 seconds
+    * @param interceptor specifies an interceptor to work with requests and responses. Defaults to Interceptor.empty.
+    * @return Future[HttpResponse]
+    */
+  final def send(request: HttpRequest,
+                 retry: Int = defaultRetries,
+                 retryDelay: FiniteDuration = defaultRetryDelay,
+                 interceptor: Interceptor = Interceptor.empty): Future[HttpResponse] = {
+    val future = for {
+      updatedRequest <- interceptor.before(request)
+      response <- implementation(updatedRequest)
+      updatedResponse <- interceptor.after(updatedRequest, response)
+    } yield {
+      updatedResponse
+    }
+    future.recoverWith {
+      case t: Throwable if retry > 0 => {
+        scribe.warn(s"Request to ${request.url} failed (${t.getMessage}). Retrying after $retryDelay seconds...")
+        RateLimiter.delayedFuture(retryDelay, send(request, retry - 1, retryDelay, interceptor))
+      }
+    }
+  }
+
+  protected def implementation(request: HttpRequest): Future[HttpResponse]
 
   /**
     * Default error handler for restful bad response statuses.

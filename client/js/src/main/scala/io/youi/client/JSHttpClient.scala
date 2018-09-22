@@ -1,6 +1,7 @@
 package io.youi.client
 
 import io.youi.ajax.{AjaxAction, AjaxRequest}
+import io.youi.client.intercept.Interceptor
 import io.youi.http.{Content, Headers, HttpRequest, HttpResponse, HttpStatus, StringContent}
 import io.youi.net.ContentType
 
@@ -10,6 +11,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 case class JSHttpClient(defaultRetries: Int = HttpClient.retries,
                         defaultRetryDelay: FiniteDuration = HttpClient.retryDelay,
+                        defaultInterceptor: Interceptor = Interceptor.empty,
                         connectionPool: ConnectionPool = HttpClient.connectionPool) extends HttpClient {
   private val HeaderRegex = """(.+)[=](.+)""".r
 

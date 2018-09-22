@@ -4,6 +4,7 @@ import java.io.{File, IOException}
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicLong
 
+import io.youi.client.intercept.Interceptor
 import io.youi.http._
 import io.youi.net.ContentType
 import org.powerscala.io._
@@ -12,7 +13,7 @@ import scala.collection.JavaConverters._
 import scala.concurrent.{Future, Promise}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
-import scala.util.{Success, Failure}
+import scala.util.{Failure, Success}
 
 /**
   * Asynchronous HttpClient for simple request response support.
@@ -25,6 +26,7 @@ case class JVMHttpClient(saveDirectory: File = new File(System.getProperty("java
                          timeout: FiniteDuration = 15.seconds,
                          defaultRetries: Int = 0,
                          defaultRetryDelay: FiniteDuration = 5.seconds,
+                         defaultInterceptor: Interceptor = Interceptor.empty,
                          pingInterval: Option[FiniteDuration] = None,
                          connectionPool: ConnectionPool = ConnectionPool.default) extends HttpClient {
   private lazy val client = {

@@ -14,6 +14,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 trait HttpClient {
   def defaultRetries: Int
   def defaultRetryDelay: FiniteDuration
+  def defaultInterceptor: Interceptor
   def connectionPool: ConnectionPool
   def dropNullValues: Boolean = false
 
@@ -33,7 +34,7 @@ trait HttpClient {
   final def send(request: HttpRequest,
                  retry: Int = defaultRetries,
                  retryDelay: FiniteDuration = defaultRetryDelay,
-                 interceptor: Interceptor = Interceptor.empty): Future[HttpResponse] = {
+                 interceptor: Interceptor = defaultInterceptor): Future[HttpResponse] = {
     val future = for {
       updatedRequest <- interceptor.before(request)
       response <- implementation(updatedRequest)
@@ -85,7 +86,8 @@ trait HttpClient {
                                  method: Method = Method.Post,
                                  processor: Json => Json = (json: Json) => json,
                                  retry: Int = defaultRetries,
-                                 retryDelay: FiniteDuration = defaultRetryDelay)
+                                 retryDelay: FiniteDuration = defaultRetryDelay,
+                                 interceptor: Interceptor = defaultInterceptor)
                                 (implicit encoder: Encoder[Request], decoder: Decoder[Response]): Future[Response] = {
     val requestJson = printer.pretty(processor(request.asJson))
     val httpRequest = HttpRequest(
@@ -94,7 +96,7 @@ trait HttpClient {
       headers = headers,
       content = Some(StringContent(requestJson, ContentType.`application/json`))
     )
-    send(httpRequest, retry, retryDelay).map { response =>
+    send(httpRequest, retry, retryDelay, interceptor).map { response =>
       val responseJson = response.content.map(content2String).getOrElse("")
       if (responseJson.isEmpty) throw new RuntimeException(s"No content received in response for $url.")
       decode[Response](responseJson) match {
@@ -122,14 +124,15 @@ trait HttpClient {
                      headers: Headers = Headers.empty,
                      errorHandler: ErrorHandler[Response] = defaultErrorHandler[Response],
                      retry: Int = defaultRetries,
-                     retryDelay: FiniteDuration = defaultRetryDelay)
+                     retryDelay: FiniteDuration = defaultRetryDelay,
+                     interceptor: Interceptor = defaultInterceptor)
                     (implicit decoder: Decoder[Response]): Future[Response] = {
     val request = HttpRequest(
       method = method,
       url = url,
       headers = headers
     )
-    send(request, retry, retryDelay).map { response =>
+    send(request, retry, retryDelay, interceptor).map { response =>
       val responseJson = response.content.map(content2String).getOrElse("")
       if (response.status.isSuccess) {
         if (responseJson.isEmpty) throw new RuntimeException(s"No content received in response for $url.")

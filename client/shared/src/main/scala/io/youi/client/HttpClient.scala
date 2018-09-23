@@ -150,11 +150,13 @@ trait HttpClient {
 object HttpClient {
   var retries: Int = 0
   var retryDelay: FiniteDuration = 5.seconds
+  var interceptor: Interceptor = Interceptor.empty
   var connectionPool: ConnectionPool = ConnectionPool.default
 
   def apply(defaultRetries: Int = retries,
             defaultRetryDelay: FiniteDuration = retryDelay,
+            defaultInterceptor: Interceptor = interceptor,
             connectionPool: ConnectionPool = connectionPool): HttpClient = {
-    ClientPlatform.createClient(defaultRetries, defaultRetryDelay, connectionPool)
+    ClientPlatform.createClient(defaultRetries, defaultRetryDelay, defaultInterceptor, connectionPool)
   }
 }

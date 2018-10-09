@@ -29,7 +29,7 @@ heavy and add some useful features.
 In order to add the plugin you simply need add the following line to your `project/plugins.sbt` file:
 
 ```scala
-addSbtPlugin("io.youi" % "youi-plugin" % "1.0.0")
+addSbtPlugin("io.youi" % "youi-plugin" % "1.0.2")
 ```
 
 This will also add Scala.js and other necessary dependencies.

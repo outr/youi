@@ -33,7 +33,7 @@ object StyleConnect {
               (implicit stringify: Stringify[T]): Option[StyleConnect[T]] = Some(new StyleConnect[T] {
     override def init(theme: Theme, v: StyleProp[T], name: String): Unit = withElement(theme) { e =>
       val value = v.option.map(valueOption => stringify.toString(modifier(valueOption.getOrElse(v.value()))))
-      value.attachAndFire {
+      value.attach {
         case Some(s) => e.style.setProperty(name, s)
         case None => e.style.removeProperty(name)
       }

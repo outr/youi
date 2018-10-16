@@ -8,10 +8,10 @@ import reactify.{Val, Var}
 class HTMLComponentPosition(override protected val component: HTMLComponent[_ <: html.Element]) extends ComponentPosition with StringifyImplicits {
   private def e: html.Element = HTMLComponent.element(component)
 
-  x.attachAndFire { value =>
+  x.attach { value =>
     e.style.left = s"${value}px"
   }
-  y.attachAndFire { value =>
+  y.attach { value =>
     e.style.top = s"${value}px"
   }
   z.attach { value =>

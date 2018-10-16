@@ -1,12 +1,13 @@
 package io.youi.component.bootstrap
 
+import io.youi.component.Container
 import io.youi.component.extras.HTMLComponent
 import io.youi.dom._
 import io.youi.theme.{StyleConnect, StyleProp, Theme}
 import io.youi.theme.bootstrap.ButtonTheme
 import org.scalajs.dom._
 
-class Button(override val element: html.Button) extends BootstrapComponent[html.Button] with ButtonTheme {
+class Button(override val element: html.Button) extends Container with BootstrapComponent[html.Element] with ButtonTheme {
   def this() = {
     this(create[html.Button]("button"))
   }
@@ -16,6 +17,7 @@ class Button(override val element: html.Button) extends BootstrapComponent[html.
   override def componentType: String = "bootstrap.Button"
 
   element.classList.add("btn")
+  element.setAttribute("type", "button")
 
   lazy val value: StyleProp[String] = style[String]("value", "", StyleConnect.content[String], updatesTransform = true)
 }

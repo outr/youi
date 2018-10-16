@@ -16,6 +16,11 @@ trait HTMLComponent[E <: html.Element] extends Component with HTMLComponentTheme
   override lazy val position: HTMLComponentPosition = new HTMLComponentPosition(this)
   override lazy val size: HTMLComponentSize = new HTMLComponentSize(this)
 
+  Option(element.getAttribute("id")).foreach {
+    case "" => // Ignore
+    case s => id := s
+  }
+
   lazy val classList: Var[List[String]] = {
     val v = Var(element.classList.toList)
     v.attach { list =>
@@ -30,12 +35,22 @@ trait HTMLComponent[E <: html.Element] extends Component with HTMLComponentTheme
     v
   }
 
+  object data {
+    def apply(name: String): Attribute = new Attribute("data", name)
+  }
+  object aria {
+    def apply(name: String): Attribute = new Attribute("aria", name)
+  }
+
   override val event: EventSupport = new HTMLEvents(this, element)
 
   override protected def init(): Unit = {
     super.init()
 
-    element.setAttribute("data-youi-id", id())
+    id.attachAndFire { s =>
+      element.setAttribute("data-youi-id", id())
+      element.setAttribute("id", id())
+    }
 
     if (this != ui) {
       parent.attachAndFire {
@@ -60,6 +75,21 @@ trait HTMLComponent[E <: html.Element] extends Component with HTMLComponentTheme
 
   override protected def measuredWidth: Double = Measurer.measure(element).width
   override protected def measuredHeight: Double = Measurer.measure(element).height
+
+  class Attribute(attribute: String, name: String) {
+    lazy val key: String = s"$attribute-$name"
+
+    def apply(): Option[String] = Option(element.getAttribute(key))
+    def :=(value: String): Unit = element.setAttribute(key, value)
+    def toVar: Var[Option[String]] = {
+      val v = Var(apply())
+      v.attach {
+        case Some(s) => element.setAttribute(key, s)
+        case None => element.removeAttribute(key)
+      }
+      v
+    }
+  }
 }
 
 object HTMLComponent extends HTMLComponentTheme {

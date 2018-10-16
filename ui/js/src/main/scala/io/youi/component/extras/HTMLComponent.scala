@@ -7,6 +7,7 @@ import io.youi.event.{EventSupport, HTMLEvents}
 import io.youi.theme.{HTMLComponentTheme, Theme}
 import io.youi.util.Measurer
 import org.scalajs.dom.{Element, _}
+import reactify.Var
 
 trait HTMLComponent[E <: html.Element] extends Component with HTMLComponentTheme {
   protected def element: E
@@ -14,6 +15,20 @@ trait HTMLComponent[E <: html.Element] extends Component with HTMLComponentTheme
 
   override lazy val position: HTMLComponentPosition = new HTMLComponentPosition(this)
   override lazy val size: HTMLComponentSize = new HTMLComponentSize(this)
+
+  lazy val classList: Var[List[String]] = {
+    val v = Var(element.classList.toList)
+    v.attach { list =>
+      val previous = element.classList.toList
+      previous.diff(list).foreach { c =>
+        element.classList.remove(c)
+      }
+      list.diff(previous).foreach { c =>
+        element.classList.add(c)
+      }
+    }
+    v
+  }
 
   override val event: EventSupport = new HTMLEvents(this, element)
 

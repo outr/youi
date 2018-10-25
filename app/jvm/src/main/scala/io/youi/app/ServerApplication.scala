@@ -120,8 +120,8 @@ trait ServerApplication extends YouIApplication with Server {
     }
   }
 
-  def addTemplate(directory: File,
-                  mappings: Set[HttpConnection => Option[File]] = Set.empty,
+  def addTemplate(lookup: String => Option[Content],
+                  mappings: Set[HttpConnection => Option[Content]] = Set.empty,
                   excludeDotHTML: Boolean = true,
                   deltas: List[Delta] = Nil,
                   includeApplication: URL => Boolean = _ => true): HttpHandler = {
@@ -133,22 +133,19 @@ trait ServerApplication extends YouIApplication with Server {
         if (fileName.endsWith(".html") && excludeDotHTML) {
           // Ignore
         } else {
-          val exactFile = new File(directory, fileName)
-          var file: File = exactFile
-          if (excludeDotHTML && !file.exists()) {
-            file = new File(directory, s"$fileName.html")
+          val mapped = mappings.toStream.flatMap(_(httpConnection)).headOption
+          val withHTML = if (excludeDotHTML) {
+            lookup(s"$fileName.html")
+          } else {
+            None
           }
-          if (!file.isFile) { // Handle mappings
-            mappings.toStream.flatMap(m => m(httpConnection)).find(_.isFile).foreach(file = _)
-          }
-
-          if (file.isFile) {
-            if (file.getName.endsWith(".html")) {
+          mapped.orElse(lookup(fileName).orElse(withHTML)).foreach { content =>
+            if (content.contentType == ContentType.`text/html`) {
               CachingManager.NotCached.handle(httpConnection)
-              serveHTML(httpConnection, file, deltas, includeApplication(url))
+              serveHTML(httpConnection, content, deltas, includeApplication(url))
             } else {
               CachingManager.LastModified().handle(httpConnection)
-              httpConnection.update(_.withContent(Content.file(file)))
+              httpConnection.update(_.withContent(content))
             }
           }
         }

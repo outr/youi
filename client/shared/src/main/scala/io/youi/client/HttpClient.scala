@@ -17,6 +17,7 @@ trait HttpClient {
   def defaultInterceptor: Interceptor
   def connectionPool: ConnectionPool
   def dropNullValues: Boolean = false
+  def dns: DNS
 
   protected lazy val printer: Printer = Printer.spaces2.copy(dropNullValues = dropNullValues)
 

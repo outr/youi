@@ -12,9 +12,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 case class JSHttpClient(defaultRetries: Int = HttpClient.retries,
                         defaultRetryDelay: FiniteDuration = HttpClient.retryDelay,
                         defaultInterceptor: Interceptor = Interceptor.empty,
-                        connectionPool: ConnectionPool = HttpClient.connectionPool) extends HttpClient {
+                        connectionPool: ConnectionPool = HttpClient.connectionPool,
+                        dns: DNS = DNS.default) extends HttpClient {
   private val HeaderRegex = """(.+)[=](.+)""".r
-
 
   override protected def implementation(request: HttpRequest): Future[HttpResponse] = {
     val manager = connectionPool.asInstanceOf[JSConnectionPool].manager

@@ -1,12 +1,15 @@
 package io.youi.client
 
 import java.io.{File, IOException}
+import java.net.InetAddress
+import java.util
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicLong
 
 import io.youi.client.intercept.Interceptor
 import io.youi.http._
 import io.youi.net.ContentType
+import okhttp3.Dns
 import org.powerscala.io._
 
 import scala.collection.JavaConverters._
@@ -28,12 +31,23 @@ case class JVMHttpClient(saveDirectory: File = new File(System.getProperty("java
                          defaultRetryDelay: FiniteDuration = 5.seconds,
                          defaultInterceptor: Interceptor = Interceptor.empty,
                          pingInterval: Option[FiniteDuration] = None,
-                         connectionPool: ConnectionPool = ConnectionPool.default) extends HttpClient {
+                         connectionPool: ConnectionPool = ConnectionPool.default,
+                         dns: DNS = DNS.default) extends HttpClient {
   private lazy val client = {
     val b = new okhttp3.OkHttpClient.Builder()
     b.connectTimeout(timeout.toMillis, TimeUnit.MILLISECONDS)
     b.readTimeout(timeout.toMillis, TimeUnit.MILLISECONDS)
     b.writeTimeout(timeout.toMillis, TimeUnit.MILLISECONDS)
+    b.dns(new Dns {
+      override def lookup(hostname: String): util.List[InetAddress] = {
+        val list = new util.ArrayList[InetAddress]()
+        dns.lookup(hostname) match {
+          case Some(ip) => list.add(InetAddress.getByAddress(ip.address.map(_.toByte)))
+          case None => // None
+        }
+        list
+      }
+    })
     pingInterval.foreach(d => b.pingInterval(d.toMillis, TimeUnit.MILLISECONDS))
     b.build()
   }

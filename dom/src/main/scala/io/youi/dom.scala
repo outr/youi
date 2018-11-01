@@ -150,6 +150,8 @@ class ExtendedElement(element: Option[Element]) {
   def oneByTag[T <: Element](tagName: String): T = oneBySelector[T](tagName)
   def byClass[T <: Element](className: String): Vector[T] = bySelector[T](s".$className")
   def oneByClass[T <: Element](className: String): T = oneBySelector[T](s".$className")
+  def byName[T <: Element](name: String): Vector[T] = bySelector[T](s"""[name="$name"]""")
+  def oneByName[T <: Element](name: String): T = oneBySelector[T](s"""[name="$name"]""")
   def getById[T <: Element](id: String): Option[T] = firstBySelector[T](s"#$id")
   def byId[T <: Element](id: String): T = oneBySelector[T](s"#$id")
   def bySelector[T <: Element](selectors: String): Vector[T] = dom.bySelector[T](selectors, element)

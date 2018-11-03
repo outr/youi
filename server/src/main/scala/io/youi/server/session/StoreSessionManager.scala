@@ -3,7 +3,7 @@ package io.youi.server.session
 import io.youi.Store
 import io.youi.http.HttpConnection
 
-trait StoreSessionManager[S <: Session] extends SessionManager[S] {
+trait StoreSessionManager[S] extends SessionManager[S] {
   protected val key: String = getClass.getName
   protected def store(httpConnection: HttpConnection): Store
   override protected def get(httpConnection: HttpConnection): Option[S] = store(httpConnection).get[S](key)

@@ -2,7 +2,7 @@ package io.youi.server.session
 
 import io.youi.http.{Connection, HttpConnection}
 
-trait SessionManager[S <: Session] {
+trait SessionManager[S] {
   protected def get(httpConnection: HttpConnection): Option[S]
   protected def set(httpConnection: HttpConnection, session: S): Unit
   protected def create(httpConnection: HttpConnection): S

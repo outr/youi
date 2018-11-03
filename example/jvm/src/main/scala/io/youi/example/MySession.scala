@@ -2,9 +2,9 @@ package io.youi.example
 
 import reactify.Var
 import io.youi.http.HttpConnection
-import io.youi.server.session.{Session, SessionSessionManager}
+import io.youi.server.session.SessionSessionManager
 
-class MySession extends Session {
+class MySession {
   val created: Long = System.currentTimeMillis()
   val username: Var[Option[String]] = Var(None)
 }

@@ -3,9 +3,9 @@ import sbtcrossproject.CrossPlugin.autoImport.crossProject
 
 name := "youi"
 organization in ThisBuild := "io.youi"
-version in ThisBuild := "0.9.0"
-scalaVersion in ThisBuild := "2.12.6"
-crossScalaVersions in ThisBuild := List("2.12.6", "2.11.12")
+version in ThisBuild := "0.9.1-SNAPSHOT"
+scalaVersion in ThisBuild := "2.12.7"
+crossScalaVersions in ThisBuild := List("2.12.7", "2.11.12")
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
 resolvers in ThisBuild += Resolver.sonatypeRepo("snapshots")
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation", "-feature")
@@ -29,7 +29,7 @@ developers in ThisBuild := List(
 val profigVersion = "2.3.1"
 val scribeVersion = "2.6.0"
 val powerScalaVersion = "2.0.5"
-val reactifyVersion = "3.0.2"
+val reactifyVersion = "3.0.3"
 val hasherVersion = "1.2.1"
 
 val canvgVersion = "1.4.0_1"
@@ -37,15 +37,15 @@ val openTypeVersion = "0.7.3"
 val picaVersion = "3.0.5"
 val webFontLoaderVersion = "1.6.28"
 
-val akkaVersion = "2.5.16"
+val akkaVersion = "2.5.17"
 val scalaJSDOM = "0.9.6"
 val okHttpVersion = "3.11.0"
-val circeVersion = "0.9.3"
+val circeVersion = "0.10.1"
 val uaDetectorVersion = "2014.10"
-val undertowVersion = "2.0.13.Final"
-val closureCompilerVersion = "v20180805"
+val undertowVersion = "2.0.15.Final"
+val closureCompilerVersion = "v20181008"
 val jSoupVersion = "1.11.3"
-val scalaXMLVersion = "1.1.0"
+val scalaXMLVersion = "1.1.1"
 val scalacticVersion = "3.0.5"
 val scalaTestVersion = "3.0.5"
 val scalaCheckVersion = "1.14.0"

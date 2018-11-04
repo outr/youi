@@ -138,8 +138,9 @@ object UndertowServerImplementation extends ServerImplementationCreator {
           val data = formData.asScala.toList.map { key =>
             val entries: List[FormDataEntry] = formData.get(key).asScala.map { entry =>
               val headers = parseHeaders(entry.getHeaders)
-              if (entry.isFile) {
-                FileEntry(entry.getFileName, entry.getPath.toFile, headers)
+              if (entry.isFileItem) {
+                val path = entry.getFileItem.getFile
+                FileEntry(entry.getFileName, path.toFile, headers)
               } else {
                 StringEntry(entry.getValue, headers)
               }

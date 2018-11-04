@@ -57,7 +57,7 @@ object Storage {
     c.Expr[Var[T]](
       q"""
          val initial = io.youi.LocalStorage.get[$t]($key).getOrElse($default)
-         val p = reactify.Var[T](initial)
+         val p = reactify.Var[$t](initial)
          p.attach { value =>
            io.youi.LocalStorage.update($key, value)
          }

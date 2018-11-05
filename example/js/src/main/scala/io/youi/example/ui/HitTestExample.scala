@@ -3,12 +3,13 @@ package io.youi.example.ui
 import io.youi._
 import io.youi.component.Container
 import io.youi.example.screen.UIExampleScreen
+import io.youi.net._
 
 import scala.concurrent.Future
 
 class HitTestExample extends UIExampleScreen {
   override def title: String = "Hit Test"
-  override def path: String = "/examples/hit.html"
+  override def path: Path = path"/examples/hit.html"
 
   override def createUI(): Future[Unit] = Future.successful {
     container.children += Container(

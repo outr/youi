@@ -2,6 +2,7 @@ package io.youi.example.screen
 
 import io.youi.dom
 import io.youi.example.ClientExampleApplication
+import io.youi.net._
 import org.scalajs.dom._
 
 import scala.concurrent.Future
@@ -9,7 +10,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Failure, Success}
 
 object LoginScreen extends ExampleScreen {
-  override def path: String = "/login.html"
+  override def path: Path = path"/login.html"
 
   def form: html.Form = dom.byId[html.Form]("loginScreen")
   def message: html.Div = dom.byId[html.Div]("message")

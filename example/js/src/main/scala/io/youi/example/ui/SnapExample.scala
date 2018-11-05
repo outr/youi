@@ -1,10 +1,10 @@
 package io.youi.example.ui
 
 import io.youi._
-import io.youi.app.screen.UIScreen
 import io.youi.component.Container
 import io.youi.example.screen.UIExampleScreen
 import io.youi.layout.snap.Snap
+import io.youi.net._
 import io.youi.paint.Paint
 import reactify._
 
@@ -12,7 +12,7 @@ import scala.concurrent.Future
 
 class SnapExample extends UIExampleScreen {
   override def title: String = "Snap"
-  override def path: String = "/examples/snap.html"
+  override def path: Path = path"/examples/snap.html"
 
   override def createUI(): Future[Unit] = {
     val box = new Box {

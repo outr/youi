@@ -4,12 +4,13 @@ import io.youi.Color
 import io.youi.component.CanvasComponent
 import io.youi.drawable.Context
 import io.youi.example.screen.UIExampleScreen
+import io.youi.net._
 
 import scala.concurrent.Future
 
 class CanvasExample extends UIExampleScreen {
   override def title: String = "Canvas Example"
-  override def path: String = "/examples/canvas.html"
+  override def path: Path = path"/examples/canvas.html"
 
   override def createUI(): Future[Unit] = Future.successful {
     val canvas = new CanvasComponent {

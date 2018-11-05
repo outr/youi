@@ -1,12 +1,10 @@
 package io.youi.example.ui
 
-import io.youi._
-import io.youi.app.screen.UIScreen
 import io.youi.component.ImageView
-import io.youi.component.extras.CanvasImageViewImplementation
 import io.youi.dom._
 import io.youi.example.screen.UIExampleScreen
 import io.youi.image.{Image, SVGImage}
+import io.youi.net._
 import org.scalajs.dom.raw.SVGCircleElement
 
 import scala.concurrent.Future
@@ -14,7 +12,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 class SVGImageExample extends UIExampleScreen {
   override def title: String = "SVG Image"
-  override def path: String = "/examples/svg-image.html"
+  override def path: Path = path"/examples/svg-image.html"
 
   private val svgString =
     """

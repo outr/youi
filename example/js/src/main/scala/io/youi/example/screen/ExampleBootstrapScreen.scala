@@ -2,14 +2,15 @@ package io.youi.example.screen
 
 import io.youi.app.screen.PathActivation
 import io.youi.dom
-import org.scalajs.dom.{Event, document, html}
+import io.youi.net._
+import org.scalajs.dom.{document, html}
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.implicitConversions
 
 object ExampleBootstrapScreen extends PathActivation {
-  override def path: String = "/bootstrap.html"
+  override def path: Path = path"/bootstrap.html"
 
   implicit def bc2E[E <: html.Element, T <: BootstrapComponent[E, T]](bc: BootstrapComponent[E, T]): E = bc.element
 

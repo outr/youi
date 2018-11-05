@@ -2,7 +2,7 @@ package io.youi
 
 import java.io.File
 
-import io.youi.net.{URL, URLMatcher}
+import io.youi.net.{Path, URL, URLMatcher}
 
 import scala.language.implicitConversions
 
@@ -38,6 +38,9 @@ package object http {
   object path {
     def exact(path: String): URLMatcher = new URLMatcher {
       override def matches(url: URL): Boolean = url.path.decoded == path
+    }
+    def exact(path: Path): URLMatcher = new URLMatcher {
+      override def matches(url: URL): Boolean = url.path == path
     }
     def matches(regex: String): URLMatcher = new URLMatcher {
       override def matches(url: URL): Boolean = url.path.decoded.matches(regex)

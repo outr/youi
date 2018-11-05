@@ -1,11 +1,12 @@
 package io.youi.example.ui
 
 import io.youi._
-import io.youi.component.{ImageView, HTMLTextView}
+import io.youi.component.{HTMLTextView, ImageView}
 import io.youi.easing.Easing
 import io.youi.example.screen.UIExampleScreen
 import io.youi.font.GoogleFont
 import io.youi.image.Image
+import io.youi.net._
 import io.youi.style.Position
 import io.youi.task._
 
@@ -15,7 +16,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 class AnimationExample extends UIExampleScreen {
   override def title: String = "Animation Example"
-  override def path: String = "/examples/animation.html"
+  override def path: Path = path"/examples/animation.html"
 
   override def createUI(): Future[Unit] = Image("/images/icon.png").map { img =>
     GoogleFont.`Open Sans`.`regular`.load().map { fnt =>

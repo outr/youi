@@ -4,6 +4,7 @@ import io.youi.Color
 import io.youi.example.ClientExampleApplication
 import io.youi.component.bootstrap.Button
 import io.youi.example.screen.UIExampleScreen
+import io.youi.net._
 import reactify._
 
 import scala.concurrent.Future
@@ -11,7 +12,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 class UIExamples extends UIExampleScreen {
   override def title: String = "UI Examples"
-  override def path: String = "/ui-examples.html"
+  override def path: Path = path"/ui-examples.html"
 
   override def createUI(): Future[Unit] = super.load().map { _ =>
     var previous: Option[Button] = None

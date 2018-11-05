@@ -4,6 +4,7 @@ import io.youi._
 import io.youi.component.Container
 import io.youi.example.screen.UIExampleScreen
 import io.youi.layout.GridLayout
+import io.youi.net._
 import io.youi.paint.Paint
 import reactify._
 
@@ -11,7 +12,7 @@ import scala.concurrent.Future
 
 class GridLayoutExample extends UIExampleScreen {
   override def title: String = "Grid Layout"
-  override def path: String = "/examples/grid.html"
+  override def path: Path = path"/examples/grid.html"
 
   override def createUI(): Future[Unit] = {
     val grid = new Container {

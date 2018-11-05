@@ -3,13 +3,14 @@ package io.youi.example.ui
 import io.youi.component.ImageView
 import io.youi.example.screen.UIExampleScreen
 import io.youi.image.Image
+import io.youi.net._
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class ImageChangeExample extends UIExampleScreen {
   override def title: String = "Image Change"
-  override def path: String = "/examples/image-change.html"
+  override def path: Path = path"/examples/image-change.html"
 
   lazy val imageView: ImageView = new ImageView
 

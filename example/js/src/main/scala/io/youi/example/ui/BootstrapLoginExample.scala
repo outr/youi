@@ -4,13 +4,14 @@ import io.youi.{Color, Template, dom}
 import io.youi.component.bootstrap.Button
 import io.youi.component.extras.HTMLComponent
 import io.youi.example.screen.UIExampleScreen
+import io.youi.net._
 import org.scalajs.dom._
 
 import scala.concurrent.Future
 
 class BootstrapLoginExample extends UIExampleScreen {
   override def title: String = "Bootstrap Login"
-  override def path: String = "/examples/bootstrap/login.html"
+  override def path: Path = path"/examples/bootstrap/login.html"
 
   private lazy val form: html.Form = Template.byId[html.Form]("../login-example.html", "login-form", "youi")
 

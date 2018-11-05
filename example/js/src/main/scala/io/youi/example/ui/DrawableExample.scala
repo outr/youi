@@ -6,6 +6,7 @@ import io.youi.drawable.{Group, TextDrawable, Transformation}
 import io.youi.example.screen.UIExampleScreen
 import io.youi.font.{CanvasFont, CanvasText, GoogleFont}
 import io.youi.image.Image
+import io.youi.net._
 import io.youi.paint.{Border, Stroke}
 
 import scala.concurrent.Future
@@ -13,7 +14,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 class DrawableExample extends UIExampleScreen {
   override def title: String = "Drawable Example"
-  override def path: String = "/examples/drawable.html"
+  override def path: Path = path"/examples/drawable.html"
 
   override def createUI(): Future[Unit] = for {
     image <- Image("/images/cuteness.jpg")

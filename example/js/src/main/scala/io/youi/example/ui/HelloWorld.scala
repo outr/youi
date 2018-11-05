@@ -4,6 +4,7 @@ import io.youi._
 import io.youi.component.HTMLTextView
 import io.youi.example.screen.UIExampleScreen
 import io.youi.font.GoogleFont
+import io.youi.net._
 import reactify._
 
 import scala.concurrent.Future
@@ -11,7 +12,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 class HelloWorld extends UIExampleScreen {
   override def title: String = "Hello World"
-  override def path: String = "/examples/hello.html"
+  override def path: Path = path"/examples/hello.html"
 
   override def createUI(): Future[Unit] = GoogleFont.`Lobster`.load().map { fnt =>
     val textView = new HTMLTextView {

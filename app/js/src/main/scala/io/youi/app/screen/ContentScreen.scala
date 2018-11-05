@@ -3,6 +3,7 @@ package io.youi.app.screen
 import reactify.{Val, Var}
 import io.youi.{History, dom}
 import io.youi.dom._
+import io.youi.net.Parameters
 import io.youi.stream.StreamURL
 import org.scalajs.dom._
 
@@ -23,7 +24,11 @@ trait ContentScreen extends Screen with PathActivation {
     }
 
     if (contentOption.isEmpty) {      // Content hasn't been loaded yet
-      val url = History.url().replacePathAndParams(path).withParam("part", "true").withParam("selector", "screen")
+      val url = History
+        .url()
+        .copy(path = path, parameters = Parameters.empty)
+        .withParam("part", "true")
+        .withParam("selector", "screen")
       StreamURL.stream(url).map { htmlString =>
         val screen = dom.fromString[html.Element](htmlString).headOption.getOrElse(throw new RuntimeException(s"No content found in: [$htmlString] for URL: $url"))
         loadScreen(screen)

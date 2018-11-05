@@ -4,6 +4,7 @@ import io.youi._
 import io.youi.component.HTMLTextView
 import io.youi.example.screen.UIExampleScreen
 import io.youi.font.GoogleFont
+import io.youi.net._
 import io.youi.style.{Overflow, Position}
 import reactify._
 
@@ -12,7 +13,7 @@ import scala.concurrent.Future
 
 class ParallaxExample extends UIExampleScreen {
   override def title: String = "Parallax Example"
-  override def path: String = "/examples/parallax.html"
+  override def path: Path = path"/examples/parallax.html"
 
   override def createUI(): Future[Unit] = GoogleFont.`Lobster`.load().map { fnt =>
     ui.overflow.y := Overflow.Auto

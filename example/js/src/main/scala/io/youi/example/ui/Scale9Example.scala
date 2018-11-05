@@ -3,6 +3,7 @@ package io.youi.example.ui
 import io.youi.component.Scale9
 import io.youi.example.screen.UIExampleScreen
 import io.youi.image.Image
+import io.youi.net._
 import reactify._
 
 import scala.concurrent.Future
@@ -10,7 +11,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 class Scale9Example extends UIExampleScreen {
   override def title: String = "Scale 9"
-  override def path: String = "/examples/scale9.html"
+  override def path: Path = path"/examples/scale9.html"
 
   override def createUI(): Future[Unit] = Image("/images/scale9.png").map { image =>
     container.children += new Scale9(image) {

@@ -5,6 +5,7 @@ import io.youi.component.{HTMLTextView, ImageView}
 import io.youi.example.screen.UIExampleScreen
 import io.youi.font.GoogleFont
 import io.youi.image.Image
+import io.youi.net._
 import io.youi.virtual.VirtualSizeSupport
 
 import scala.concurrent.Future
@@ -12,7 +13,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 class VirtualSizeExample extends UIExampleScreen with VirtualSizeSupport {
   override def title: String = "Virtual Size Example"
-  override def path: String = "/examples/virtual.html"
+  override def path: Path = path"/examples/virtual.html"
 
   override def createUI(): Future[Unit] = for {
     img <- Image("/images/1024.jpg")

@@ -4,14 +4,15 @@ import io.youi._
 import io.youi.component.Container
 import io.youi.example.screen.UIExampleScreen
 import io.youi.layout.VerticalLayout
-import io.youi.paint.{Border, Paint, Stroke}
+import io.youi.net._
+import io.youi.paint.Paint
 import io.youi.style.{HTMLBorder, HTMLBorderStyle, Overflow}
 
 import scala.concurrent.Future
 
 class VerticalLayoutExample extends UIExampleScreen {
   override def title: String = "Vertical Layout"
-  override def path: String = "/examples/vertical.html"
+  override def path: Path = path"/examples/vertical.html"
 
   override def createUI(): Future[Unit] = {
     ui.overflow := Overflow.Auto

@@ -4,6 +4,7 @@ import io.youi._
 import io.youi.component.bootstrap.{Button, ButtonType}
 import io.youi.example.screen.UIExampleScreen
 import io.youi.font.GoogleFont
+import io.youi.net._
 import io.youi.theme.bootstrap.ButtonTheme
 import reactify._
 
@@ -12,7 +13,7 @@ import scala.concurrent.Future
 
 class BootstrapButtonExample extends UIExampleScreen {
   override def title: String = "Bootstrap Button"
-  override def path: String = "/examples/bootstrap/button.html"
+  override def path: Path = path"/examples/bootstrap/button.html"
 
   override def createUI(): Future[Unit] = GoogleFont.`Lobster`.load().map { fnt =>
     val button = new Button {

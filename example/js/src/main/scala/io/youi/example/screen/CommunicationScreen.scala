@@ -2,6 +2,7 @@ package io.youi.example.screen
 
 import io.youi.dom._
 import io.youi.example.ClientExampleApplication._
+import io.youi.net._
 import org.scalajs.dom.{Event, html, window}
 
 import scala.concurrent.Future
@@ -21,7 +22,7 @@ object CommunicationScreen extends ExampleScreen {
   def broadcastInput: html.Input = content.byId[html.Input]("communicationBroadcast")
   def broadcastButton: html.Button = content.byId[html.Button]("communicationBroadcastButton")
 
-  override def path: String = "/communication.html"
+  override def path: Path = path"/communication.html"
 
   override protected def load(): Future[Unit] = super.load().map { _ =>
     configure()

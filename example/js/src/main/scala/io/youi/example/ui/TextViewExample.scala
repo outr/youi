@@ -1,11 +1,10 @@
 package io.youi.example.ui
 
-import io.youi.app.screen.UIScreen
 import io.youi.component.{Container, HTMLTextView}
 import io.youi.example.screen.UIExampleScreen
-import io.youi.font.{GoogleFont, OpenTypeFont}
-import io.youi.paint.{Border, Paint, Stroke}
-import io.youi.{Color, History, ui}
+import io.youi.font.GoogleFont
+import io.youi.net._
+import io.youi.Color
 import reactify._
 
 import scala.concurrent.Future
@@ -13,7 +12,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 class TextViewExample extends UIExampleScreen {
   override def title: String = "TextView Example"
-  override def path: String = "/examples/text.html"
+  override def path: Path = path"/examples/text.html"
 
   override def createUI(): Future[Unit] = {
     for {

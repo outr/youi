@@ -1,10 +1,17 @@
 package spec
 
+import io.youi.ValidationError
 import io.youi.http._
-import io.youi.net.{ContentType, URL}
+import io.youi.net._
 import io.youi.server.Server
+import io.youi.server.dsl._
 import io.youi.server.handler.HttpHandler
+import io.youi.server.rest.{Restful, RestfulResponse}
 import org.scalatest.{Matchers, WordSpec}
+import io.circe.generic.auto._
+import profig.JsonUtil
+
+import scala.concurrent.Future
 
 class ServerSpec extends WordSpec with Matchers {
   Server.config("implementation").store("io.youi.server.test.TestServerImplementation")
@@ -19,6 +26,14 @@ class ServerSpec extends WordSpec with Matchers {
         }
       })
     }
+    "configure Restful endpoint" in {
+      server.handler(
+        filters(
+          path"/test/reverse" / TestService,
+          path"/test/reverse/:value" / TestService
+        )
+      )
+    }
     "receive OK for test.html" in {
       val connection = new HttpConnection(server, HttpRequest(url = URL("http://localhost/test.html")))
       server.handle(connection)
@@ -29,8 +44,60 @@ class ServerSpec extends WordSpec with Matchers {
       server.handle(connection)
       connection.response.status should equal(HttpStatus.NotFound)
     }
+    "reverse a String with the Restful endpoint via POST" in {
+      val content = Content.string(JsonUtil.toJsonString(TestRequest("Testing")), ContentType.`application/json`)
+      val connection = new HttpConnection(server, HttpRequest(
+        method = Method.Post,
+        url = URL("http://localhost/test/reverse"),
+        content = Some(content)
+      ))
+      server.handle(connection)
+      connection.response.status should equal(HttpStatus.OK)
+      connection.response.content shouldNot equal(None)
+      val jsonString = connection.response.content.get.asInstanceOf[StringContent].value
+      val response = JsonUtil.fromJsonString[TestResponse](jsonString)
+      response.errors should be(Nil)
+      response.reversed should be(Some("gnitseT"))
+    }
+    "reverse a String with the Restful endpoint via GET" in {
+      val connection = new HttpConnection(server, HttpRequest(
+        method = Method.Get,
+        url = URL("http://localhost/test/reverse?value=Testing")
+      ))
+      server.handle(connection)
+      connection.response.status should equal(HttpStatus.OK)
+      connection.response.content shouldNot equal(None)
+      val jsonString = connection.response.content.get.asInstanceOf[StringContent].value
+      val response = JsonUtil.fromJsonString[TestResponse](jsonString)
+      response.errors should be(Nil)
+      response.reversed should be(Some("gnitseT"))
+    }
+    "reverse a String with the Restful endpoint via GET with path-based arg" in {
+      val connection = new HttpConnection(server, HttpRequest(
+        method = Method.Get,
+        url = URL("http://localhost/test/reverse/Testing")
+      ))
+      server.handle(connection)
+      connection.response.status should equal(HttpStatus.OK)
+      connection.response.content shouldNot equal(None)
+      val jsonString = connection.response.content.get.asInstanceOf[StringContent].value
+      val response = JsonUtil.fromJsonString[TestResponse](jsonString)
+      response.errors should be(Nil)
+      response.reversed should be(Some("gnitseT"))
+    }
+  }
+
+  case class TestRequest(value: String)
+
+  case class TestResponse(reversed: Option[String], errors: List[ValidationError])
+
+  object TestService extends Restful[TestRequest, TestResponse] {
+    override def apply(connection: HttpConnection, request: TestRequest): Future[RestfulResponse[TestResponse]] = {
+      Future.successful(RestfulResponse(TestResponse(Some(request.value.reverse), Nil), HttpStatus.OK))
+    }
+
+    override def error(errors: List[ValidationError], status: HttpStatus): RestfulResponse[TestResponse] = {
+      RestfulResponse(TestResponse(None, errors), status)
+    }
   }
 }
-
-
-

@@ -6,7 +6,9 @@ import io.circe.{Decoder, Encoder, Json, Printer}
 import io.youi.ValidationError
 import io.youi.http.{Content, HttpConnection, HttpRequest, StringContent}
 import io.youi.net.{ContentType, URL}
+import io.youi.server.dsl.PathFilter
 import io.youi.server.handler.HttpHandler
+import profig.JsonUtil
 
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.Await
@@ -15,7 +17,7 @@ class RestfulHandler[Request, Response](restful: Restful[Request, Response])
                                        (implicit decoder: Decoder[Request], encoder: Encoder[Response]) extends HttpHandler {
   override def handle(connection: HttpConnection): Unit = {
     // Build JSON
-    val result: RestfulResponse[Response] = RestfulHandler.jsonFromRequest(connection.request) match {
+    val result: RestfulResponse[Response] = RestfulHandler.jsonFromConnection(connection) match {
       case Left(err) => {
         restful.error(List(err), err.status)
       }
@@ -84,12 +86,14 @@ object RestfulHandler {
     }
   }
 
-  def jsonFromRequest(request: HttpRequest): Either[ValidationError, Json] = {
+  def jsonFromConnection(connection: HttpConnection): Either[ValidationError, Json] = {
+    val request = connection.request
     val contentJson = request.content.map(jsonFromContent).getOrElse(Right(Json.obj()))
     val urlJson = jsonFromURL(request.url)
+    val pathJson = JsonUtil.toJson(PathFilter.argumentsFromConnection(connection))
     contentJson match {
       case Left(err) => Left(err)
-      case Right(json) => Right(json.deepMerge(urlJson))
+      case Right(json) => Right(json.deepMerge(urlJson).deepMerge(pathJson))
     }
   }
 

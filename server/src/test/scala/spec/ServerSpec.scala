@@ -29,8 +29,9 @@ class ServerSpec extends WordSpec with Matchers {
     "configure Restful endpoint" in {
       server.handler(
         filters(
-          path"/test/reverse" / TestService,
-          path"/test/reverse/:value" / TestService
+          path"/test/reverse" / ReverseService,
+          path"/test/reverse/:value" / ReverseService,
+          path"/test/time" / ServerTimeService
         )
       )
     }
@@ -45,7 +46,7 @@ class ServerSpec extends WordSpec with Matchers {
       connection.response.status should equal(HttpStatus.NotFound)
     }
     "reverse a String with the Restful endpoint via POST" in {
-      val content = Content.string(JsonUtil.toJsonString(TestRequest("Testing")), ContentType.`application/json`)
+      val content = Content.string(JsonUtil.toJsonString(ReverseRequest("Testing")), ContentType.`application/json`)
       val connection = new HttpConnection(server, HttpRequest(
         method = Method.Post,
         url = URL("http://localhost/test/reverse"),
@@ -55,7 +56,7 @@ class ServerSpec extends WordSpec with Matchers {
       connection.response.status should equal(HttpStatus.OK)
       connection.response.content shouldNot equal(None)
       val jsonString = connection.response.content.get.asInstanceOf[StringContent].value
-      val response = JsonUtil.fromJsonString[TestResponse](jsonString)
+      val response = JsonUtil.fromJsonString[ReverseResponse](jsonString)
       response.errors should be(Nil)
       response.reversed should be(Some("gnitseT"))
     }
@@ -68,7 +69,7 @@ class ServerSpec extends WordSpec with Matchers {
       connection.response.status should equal(HttpStatus.OK)
       connection.response.content shouldNot equal(None)
       val jsonString = connection.response.content.get.asInstanceOf[StringContent].value
-      val response = JsonUtil.fromJsonString[TestResponse](jsonString)
+      val response = JsonUtil.fromJsonString[ReverseResponse](jsonString)
       response.errors should be(Nil)
       response.reversed should be(Some("gnitseT"))
     }
@@ -81,23 +82,46 @@ class ServerSpec extends WordSpec with Matchers {
       connection.response.status should equal(HttpStatus.OK)
       connection.response.content shouldNot equal(None)
       val jsonString = connection.response.content.get.asInstanceOf[StringContent].value
-      val response = JsonUtil.fromJsonString[TestResponse](jsonString)
+      val response = JsonUtil.fromJsonString[ReverseResponse](jsonString)
       response.errors should be(Nil)
       response.reversed should be(Some("gnitseT"))
     }
+    "call a Restful endpoint that takes Unit as the request" in {
+      val begin = System.currentTimeMillis()
+      val connection = new HttpConnection(server, HttpRequest(
+        method = Method.Get,
+        url = URL("http://localhost/test/time")
+      ))
+      server.handle(connection)
+      connection.response.status should equal(HttpStatus.OK)
+      connection.response.content shouldNot equal(None)
+      val jsonString = connection.response.content.get.asInstanceOf[StringContent].value
+      val response = JsonUtil.fromJsonString[Long](jsonString)
+      response should be >= begin
+    }
   }
 
-  case class TestRequest(value: String)
+  case class ReverseRequest(value: String)
 
-  case class TestResponse(reversed: Option[String], errors: List[ValidationError])
+  case class ReverseResponse(reversed: Option[String], errors: List[ValidationError])
 
-  object TestService extends Restful[TestRequest, TestResponse] {
-    override def apply(connection: HttpConnection, request: TestRequest): Future[RestfulResponse[TestResponse]] = {
-      Future.successful(RestfulResponse(TestResponse(Some(request.value.reverse), Nil), HttpStatus.OK))
+  object ReverseService extends Restful[ReverseRequest, ReverseResponse] {
+    override def apply(connection: HttpConnection, request: ReverseRequest): Future[RestfulResponse[ReverseResponse]] = {
+      Future.successful(RestfulResponse(ReverseResponse(Some(request.value.reverse), Nil), HttpStatus.OK))
     }
 
-    override def error(errors: List[ValidationError], status: HttpStatus): RestfulResponse[TestResponse] = {
-      RestfulResponse(TestResponse(None, errors), status)
+    override def error(errors: List[ValidationError], status: HttpStatus): RestfulResponse[ReverseResponse] = {
+      RestfulResponse(ReverseResponse(None, errors), status)
+    }
+  }
+
+  object ServerTimeService extends Restful[Unit, Long] {
+    override def apply(connection: HttpConnection, request: Unit): Future[RestfulResponse[Long]] = {
+      Future.successful(RestfulResponse(System.currentTimeMillis(), HttpStatus.OK))
+    }
+
+    override def error(errors: List[ValidationError], status: HttpStatus): RestfulResponse[Long] = {
+      RestfulResponse(0L, status)
     }
   }
 }

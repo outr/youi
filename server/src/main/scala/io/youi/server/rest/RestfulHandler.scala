@@ -67,7 +67,13 @@ class RestfulHandler[Request, Response](restful: Restful[Request, Response])
 }
 
 object RestfulHandler {
+  private val key: String = "restful"
   private lazy val printer = Printer.spaces2.copy(dropNullValues = false)
+
+  def store(connection: HttpConnection, json: Json): Unit = {
+    val merged = connection.store.getOrElse[Json](key, Json.obj()).deepMerge(json)
+    connection.store.update[Json](key, merged)
+  }
 
   def validate[Request](request: Request,
                         validations: List[RestfulValidation[Request]]): Either[List[ValidationError], Request] = {
@@ -91,9 +97,10 @@ object RestfulHandler {
     val contentJson = request.content.map(jsonFromContent).getOrElse(Right(Json.obj()))
     val urlJson = jsonFromURL(request.url)
     val pathJson = JsonUtil.toJson(PathFilter.argumentsFromConnection(connection))
+    val storeJson = connection.store.getOrElse[Json](key, Json.obj())
     contentJson match {
       case Left(err) => Left(err)
-      case Right(json) => Right(json.deepMerge(urlJson).deepMerge(pathJson))
+      case Right(json) => Right(json.deepMerge(urlJson).deepMerge(pathJson).deepMerge(storeJson))
     }
   }
 

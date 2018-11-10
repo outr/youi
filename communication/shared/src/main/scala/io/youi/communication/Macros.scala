@@ -63,7 +63,7 @@ object Macros {
 
     val declaredMethods = c.tpe.decls.toSet
     val methods = c.tpe.members.toList.sortBy(_.fullName).collect {
-      case symbol if symbol.isMethod & symbol.asMethod.isPublic & symbol.typeSignature.resultType <:< typeOf[Future[Any]] => {
+      case symbol if symbol.isMethod && symbol.asMethod.isPublic && symbol.typeSignature.resultType <:< typeOf[Future[Any]] => {
         val endPoint = s"$baseTypeName.${symbol.name}"
         val m = symbol.asMethod
         val declared = declaredMethods.contains(m)

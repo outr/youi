@@ -20,5 +20,5 @@ object CookieHeader extends ListTypedHeaderKey[RequestCookie] {
     }
   }
 
-  override def apply(value: RequestCookie): Header = Header(this, value.toHTTP())
+  override def apply(value: RequestCookie): Header = Header(this, value.http)
 }

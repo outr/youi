@@ -33,7 +33,15 @@ object SessionStore {
         case None => {        // No cookie found in request or response
         val id = Unique()
           httpConnection.update { response =>
-            val cookie = ResponseCookie(name = session.name, value = id, maxAge = session.maxAge, domain = session.domain, secure = session.secure)
+            val cookie = ResponseCookie(
+              name = session.name,
+              value = id,
+              maxAge = session.maxAge,
+              domain = session.domain,
+              secure = session.secure,
+              httpOnly = session.httpOnly,
+              sameSite = session.sameSite
+            )
             response.withHeader(Headers.Response.`Set-Cookie`(cookie))
           }
           id

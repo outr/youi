@@ -2,6 +2,7 @@ package io.youi.server
 
 import java.io.File
 
+import io.youi.http.cookie.SameSite
 import profig.Profig
 import reactify._
 
@@ -13,6 +14,12 @@ class ServerConfig(server: Server) {
     val maxAge: Var[Option[Long]] = Var(config.maxAge)
     val domain: Var[Option[String]] = Var(config.domain)
     val secure: Var[Boolean] = Var(config.secure)
+    val httpOnly: Var[Boolean] = Var(config.httpOnly)
+    val sameSite: Var[SameSite] = Var(config.sameSite.toLowerCase match {
+      case "normal" => SameSite.Normal
+      case "lax" => SameSite.Lax
+      case "strict" => SameSite.Strict
+    })
   }
 
   /**
@@ -100,4 +107,9 @@ case class KeyStore(path: String = "keystore.jks", password: String = "password"
   lazy val location: File = new File(path)
 }
 
-case class SessionConfig(name: String = "JSESSIONID", maxAge: Option[Long] = None, domain: Option[String] = None, secure: Boolean = false)
+case class SessionConfig(name: String = "JSESSIONID",
+                         maxAge: Option[Long] = None,
+                         domain: Option[String] = None,
+                         secure: Boolean = false,
+                         httpOnly: Boolean = true,
+                         sameSite: String = "strict")

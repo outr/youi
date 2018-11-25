@@ -31,5 +31,5 @@ object SetCookie extends ListTypedHeaderKey[ResponseCookie] {
     }
   }
 
-  override def apply(value: ResponseCookie): Header = Header(this, value.toHTTP())
+  override def apply(value: ResponseCookie): Header = Header(this, value.http)
 }

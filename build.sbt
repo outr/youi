@@ -26,7 +26,7 @@ developers in ThisBuild := List(
   Developer(id="darkfrog", name="Matt Hicks", email="matt@matthicks.com", url=url("http://matthicks.com"))
 )
 
-val profigVersion = "2.3.2"
+val profigVersion = "2.3.3"
 val scribeVersion = "2.6.0"
 val powerScalaVersion = "2.0.5"
 val reactifyVersion = "3.0.3"

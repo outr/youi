@@ -29,6 +29,18 @@ object Validation {
     }
   }
 
+  object Email extends Validation {
+    private val regex = """^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$"""
+
+    override def validate(input: html.Input, value: Option[String]): Option[String] = {
+      if (value.exists(_.matches(regex))) {
+        None
+      } else {
+        Some(s"${input.name.capitalize} must be a valid email address")
+      }
+    }
+  }
+
   case class EqualTo(that: FormInput) extends Validation {
     override def validate(input: html.Input, value: Option[String]): Option[String] = if (value != that.option) {
       Some(s"${input.name.capitalize} must be equal to ${that.input.name.capitalize}")

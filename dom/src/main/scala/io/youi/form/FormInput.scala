@@ -1,14 +1,12 @@
 package io.youi.form
 
-import io.youi.dom._
 import org.scalajs.dom.{Event, html}
 
-class FormInput(val input: html.Input) {
-  private val errorDiv = create[html.Div]("div")
-  errorDiv.classList.add("red-text")
-  error.clear()
-  input.parentElement.appendChild(errorDiv)
+class FormInput(formSupport: FormSupport, val input: html.Input) {
+  val error: FieldError = formSupport.createFieldError(this)
 
+  input.required = false
+  input.`type` = "text"
   input.addEventListener("blur", (_: Event) => {
     validate()
   })
@@ -25,20 +23,6 @@ class FormInput(val input: html.Input) {
 
   def clear(): Unit = input.value = ""
 
-  object error {
-    def show(message: String): Unit = {
-      errorDiv.innerHTML = message
-      errorDiv.style.display = "block"
-      input.classList.add("invalid")
-    }
-
-    def clear(): Unit = {
-      errorDiv.style.display = "none"
-      errorDiv.innerHTML = ""
-      input.classList.remove("invalid")
-    }
-  }
-
   object validation {
     private var list = List.empty[Validation]
 
@@ -54,8 +38,9 @@ class FormInput(val input: html.Input) {
     val v = option
     val results = validation.all().flatMap(_.validate(input, v))
     error.clear()
+    val message = results.mkString("<br/>")
     if (results.nonEmpty) {
-      error.show(results.mkString("<br/>"))
+      error.show(message)
     }
     results.isEmpty
   }

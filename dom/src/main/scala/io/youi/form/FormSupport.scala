@@ -16,13 +16,13 @@ trait FormSupport {
     private var list = List.empty[FormInput]
 
     def byId(id: String): FormInput = {
-      val fi = new FormInput(form.byId[html.Input](id))
+      val fi = new FormInput(FormSupport.this, form.byId[html.Input](id))
       list = list ::: List(fi)
       fi
     }
 
     def byName(name: String): FormInput = {
-      val fi = new FormInput(form.oneByName[html.Input](name))
+      val fi = new FormInput(FormSupport.this, form.oneByName[html.Input](name))
       list = list ::: List(fi)
       fi
     }
@@ -47,8 +47,8 @@ trait FormSupport {
   def enable(): Unit = {
     disabled.foreach {
       case e: html.Input => e.disabled = false
-      case e: html.TextArea => e.disabled = true
-      case e: html.Button => e.disabled = true
+      case e: html.TextArea => e.disabled = false
+      case e: html.Button => e.disabled = false
     }
     disabled = Nil
   }
@@ -68,6 +68,11 @@ trait FormSupport {
         e
       }
     }
+  }
+
+  def clear(): Unit = {
+    form.byTag[html.Input]("input").foreach(_.value = "")
+    form.byTag[html.TextArea]("textarea").foreach(_.value = "")
   }
 
   object alert {
@@ -97,7 +102,24 @@ trait FormSupport {
     }
   }
 
-  protected def validate(): Boolean = input.all().map(_.validate()).forall(identity)
+  def createFieldError(input: FormInput): FieldError = BootstrapFieldError(input)
 
-  protected def submit(): Future[Unit]
+  protected def validate(): Boolean = {
+    val invalidFields = input.all().filter(!_.validate())
+    if (invalidFields.nonEmpty) {
+      invalidFields.head.input.focus()
+    }
+    invalidFields.isEmpty
+  }
+
+  protected def submit(): Future[Boolean]
+
+  protected def onSuccess(): Unit = {
+    clear()
+    input.all().headOption.foreach(_.input.focus())
+  }
+
+  protected def onFailure(): Unit = {
+    input.all().headOption.foreach(_.input.focus())
+  }
 }

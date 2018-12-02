@@ -9,6 +9,7 @@ import io.youi.dom._
 import io.youi.net.URL
 import profig.JsonUtil
 import scribe.LogRecord
+import scribe.output.LogOutput
 import scribe.writer.Writer
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -55,7 +56,7 @@ trait ClientApplication extends YouIApplication with ScreenManager {
 
 object ClientApplication {
   lazy val logWriter: Writer = new Writer {
-    override def write[M](record: LogRecord[M], output: String): Unit = sendLog(JavaScriptLog(output))
+    override def write[M](record: LogRecord[M], output: LogOutput): Unit = sendLog(JavaScriptLog(output.plainText))
   }
 
   private var instance: ClientApplication = _

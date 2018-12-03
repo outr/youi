@@ -5,8 +5,6 @@ import org.scalajs.dom.{Event, html}
 class FormInput(formSupport: FormSupport, val input: html.Input) {
   val error: FieldError = formSupport.createFieldError(this)
 
-  input.required = false
-  input.`type` = "text"
   input.addEventListener("blur", (_: Event) => {
     validate()
   })

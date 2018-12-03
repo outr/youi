@@ -126,8 +126,10 @@ class AlertInstruction(message: String) extends ActivateInstruction {
 
 class OnClick(selector: String, instruction: ActivateInstruction) extends ActivateInstruction {
   private val listener = (evt: Event) => {
-    evt.preventDefault()
-    evt.stopPropagation()
+    if (evt.target.isInstanceOf[html.Button]) {
+      evt.preventDefault()
+      evt.stopPropagation()
+    }
 
     instruction.activate()
   }
@@ -138,15 +140,10 @@ class OnClick(selector: String, instruction: ActivateInstruction) extends Activa
 }
 
 class OnChecked(selector: String, instruction: ActivateInstruction) extends ActivateInstruction {
-  private val listener = (evt: Event) => {
-    evt.preventDefault()
-    evt.stopPropagation()
-
-    if (evt.target.asInstanceOf[html.Input].checked) {
-      instruction.activate()
-    } else {
-      instruction.deactivate()
-    }
+  private val listener = (evt: Event) => if (evt.target.asInstanceOf[html.Input].checked) {
+    instruction.activate()
+  } else {
+    instruction.deactivate()
   }
 
   override def activate(): Unit = dom.bySelector[html.Element](selector).head.addEventListener("change", listener)

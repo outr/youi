@@ -1,5 +1,6 @@
 package io.youi.activate
 
+import io.youi.net.Path
 import io.youi.{History, dom}
 import org.scalajs.dom.{Event, document, html, window}
 
@@ -168,7 +169,7 @@ class OnUnchecked(selector: String, instruction: ActivateInstruction) extends Ac
   override def deactivate(): Unit = dom.bySelector[html.Element](selector).head.removeEventListener("change", listener)
 }
 
-class Link(path: String) extends ActivateInstruction {
+class Link(path: Path) extends ActivateInstruction {
   override def activate(): Unit = History.pushPath(path)
 
   override def deactivate(): Unit = {}

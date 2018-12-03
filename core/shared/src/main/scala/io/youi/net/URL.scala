@@ -56,6 +56,7 @@ case class URL(protocol: Protocol = Protocol.Http,
 
   def paramList(key: String): List[String] = parameters.values(key)
   def param(key: String): Option[String] = paramList(key).headOption
+  def clearParams(): URL = copy(parameters = Parameters.empty)
 
   lazy val base: String = {
     val b = new StringBuilder

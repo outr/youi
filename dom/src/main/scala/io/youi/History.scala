@@ -1,6 +1,6 @@
 package io.youi
 
-import io.youi.net.{Protocol, URL}
+import io.youi.net.{Parameters, Path, Protocol, URL}
 import org.scalajs.dom._
 import reactify.{Channel, Val, Var}
 
@@ -39,14 +39,24 @@ object History {
     case StateType.Pop => back()
   }
 
-  def setPath(path: String): Unit = set(url.withPath(path))
+  def setPath(path: Path, keepParams: Boolean = false): Unit = {
+    set(url.withPath(path) match {
+      case u if keepParams => u
+      case u => u.clearParams()
+    })
+  }
 
   def set(url: URL): Unit = {
     document.location.href = url.toString
     stateChange := HistoryStateChange(url, StateType.Set, null)
   }
 
-  def pushPath(path: String, state: js.Any = null): Unit = push(url.withPath(path), state)
+  def pushPath(path: Path, keepParams: Boolean = false, state: js.Any = null): Unit = {
+    push(url.withPath(path) match {
+      case u if keepParams => u
+      case u => u.clearParams()
+    }, state)
+  }
 
   def push(url: URL, state: js.Any = null): Unit = if (alwaysReload()) {
     set(url)
@@ -57,7 +67,12 @@ object History {
     stateChange := HistoryStateChange(url, StateType.Push, state)
   }
 
-  def replacePath(path: String, state: js.Any = null): Unit = replace(url.withPath(path), state)
+  def replacePath(path: Path, keepParams: Boolean = false, state: js.Any = null): Unit = {
+    replace(url.withPath(path) match {
+      case u if keepParams => u
+      case u => u.clearParams()
+    }, state)
+  }
 
   def replace(url: URL, state: js.Any): Unit = if (alwaysReload()) {
     set(url)

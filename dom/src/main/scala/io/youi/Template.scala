@@ -22,7 +22,7 @@ object TemplateMacros {
                                                             appName: context.Expr[String])(implicit e: context.WeakTypeTag[E]): context.Expr[E] = {
     import context.universe._
 
-    Profig.loadDefaults()
+    Profig.loadDefaultsMacro()
 
     val pathValue = path match {
       case Expr(Literal(Constant(value: String))) => value
@@ -63,7 +63,7 @@ object TemplateMacros {
                                                                appName: context.Expr[String])(implicit e: context.WeakTypeTag[E]): context.Expr[List[E]] = {
     import context.universe._
 
-    Profig.loadDefaults()
+    Profig.loadDefaultsMacro()
 
     val pathValue = path match {
       case Expr(Literal(Constant(value: String))) => value

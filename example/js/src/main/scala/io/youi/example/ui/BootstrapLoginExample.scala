@@ -13,7 +13,7 @@ class BootstrapLoginExample extends UIExampleScreen {
   override def title: String = "Bootstrap Login"
   override def path: Path = path"/examples/bootstrap/login.html"
 
-  private lazy val form: html.Form = Template.byId[html.Form]("../login-example.html", "login-form", "youi")
+  private lazy val form: html.Form = Template.byId[html.Form]("login-example.html", "login-form", "youi")
 
   override def createUI(): Future[Unit] = {
     Button.color := Color.White

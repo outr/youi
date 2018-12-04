@@ -7,7 +7,7 @@ import io.circe.syntax._
 import io.circe.{Decoder, Encoder, Json, Printer}
 import io.youi.Priority
 import io.youi.http._
-import io.youi.net.{ContentType, URL, URLMatcher}
+import io.youi.net.{ContentType, Path, URL, URLMatcher}
 import io.youi.server.Server
 import io.youi.server.validation.{ValidationResult, Validator}
 import io.youi.stream.{Delta, HTMLParser, Selector}
@@ -98,6 +98,10 @@ case class HttpHandlerBuilder(server: Server,
   })
 
   def validation(validators: Validator*): HttpHandler = wrap(new ValidatorHttpHandler(validators.toList))
+
+  def redirect(path: Path): HttpHandler = handle { connection =>
+    HttpHandler.redirect(connection, path.encoded)
+  }
 
   def content(content: => Content): HttpHandler = handle { connection =>
     connection.update { response =>

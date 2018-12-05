@@ -93,17 +93,25 @@ object History {
     * Updates all anchors on the page to internal links to push history instead of loading another page. Essentially
     * converts all links to be single-page-app compliant.  May be run multiple times and will only change new links.
     */
-  def fixAnchors(): Unit = {
-    dom.byTag[html.Anchor]("a").foreach { anchor =>
-      if (Option(anchor.onclick).isEmpty && linkType(anchor.href) == LinkType.Internal) {
-        anchor.onclick = (evt: Event) => {
-          evt.preventDefault()
-          evt.stopPropagation()
+  def fixAnchors(): Unit = dom.byTag[html.Anchor]("a").foreach(fixAnchor)
 
-          push(URL(anchor.href))
-        }
-      }
+  def fixAnchor(anchor: html.Anchor): html.Anchor = {
+    if (Option(anchor.onclick).isEmpty && linkType(anchor.href) == LinkType.Internal) {
+      this.anchor(anchor, anchor.href)
+    } else {
+      anchor
     }
+  }
+
+  def anchor(anchor: html.Anchor, location: String): html.Anchor = {
+    anchor.href = location
+    anchor.onclick = (evt: Event) => {
+      evt.preventDefault()
+      evt.stopPropagation()
+
+      push(URL(anchor.href))
+    }
+    anchor
   }
 
   def linkType(href: String): LinkType = if (href.trim.isEmpty) {

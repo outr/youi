@@ -36,7 +36,7 @@ object SessionStore {
             val cookie = ResponseCookie(
               name = session.name,
               value = id,
-              maxAge = session.maxAge,
+              maxAge = if (session.maxAge() == 0L) None else Some(session.maxAge),
               domain = session.domain,
               secure = session.secure,
               httpOnly = session.httpOnly,

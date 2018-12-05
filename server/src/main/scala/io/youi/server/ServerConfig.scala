@@ -1,6 +1,7 @@
 package io.youi.server
 
 import java.io.File
+import java.util.concurrent.TimeUnit
 
 import io.youi.http.cookie.SameSite
 import profig.Profig
@@ -11,7 +12,7 @@ class ServerConfig(server: Server) {
     private val config = Profig("session").as[SessionConfig]
 
     val name: Var[String] = Var(config.name)
-    val maxAge: Var[Option[Long]] = Var(config.maxAge)
+    val maxAge: Var[Long] = Var(config.maxAge)
     val domain: Var[Option[String]] = Var(config.domain)
     val secure: Var[Boolean] = Var(config.secure)
     val httpOnly: Var[Boolean] = Var(config.httpOnly)
@@ -20,6 +21,13 @@ class ServerConfig(server: Server) {
       case "lax" => SameSite.Lax
       case "strict" => SameSite.Strict
     })
+
+    case class SessionConfig(name: String = server.getClass.getSimpleName.replaceAllLiterally("$", ""),
+                             maxAge: Long = TimeUnit.DAYS.toSeconds(365L),
+                             domain: Option[String] = None,
+                             secure: Boolean = false,
+                             httpOnly: Boolean = true,
+                             sameSite: String = "strict")
   }
 
   /**
@@ -106,10 +114,3 @@ case class HttpsServerListener(host: String = "127.0.0.1",
 case class KeyStore(path: String = "keystore.jks", password: String = "password") {
   lazy val location: File = new File(path)
 }
-
-case class SessionConfig(name: String = "JSESSIONID",
-                         maxAge: Option[Long] = None,
-                         domain: Option[String] = None,
-                         secure: Boolean = false,
-                         httpOnly: Boolean = true,
-                         sameSite: String = "strict")

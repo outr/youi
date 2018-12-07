@@ -24,6 +24,12 @@ case class Path(parts: List[PathPart]) {
     case part => part
   })
 
+  def withParams(params: (String, String)*): String = if (params.nonEmpty) {
+    s"$this?${params.map(t => s"${t._1}=${t._2}").mkString("&")}"
+  } else {
+    toString
+  }
+
   def extractArguments(literal: Path): Map[String, String] = {
     assert(parts.length == literal.parts.length, s"Literal path must have the same number of parts as the one being extracted for")
     parts.zip(literal.parts).flatMap {

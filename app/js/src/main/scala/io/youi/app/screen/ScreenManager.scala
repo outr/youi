@@ -19,13 +19,21 @@ trait ScreenManager {
   val active: Var[Screen] = Var(EmptyScreen)
   val loaded: Val[Boolean] = Var(false)
 
-  window.addEventListener("load", (evt: Event) => {
-    loaded.asInstanceOf[Var[Boolean]] := true
-  })
+  init().foreach { _ =>
+    window.addEventListener("load", (_: Event) => {
+      load().foreach { _ =>
+        loaded.asInstanceOf[Var[Boolean]] := true
+      }
+    })
+  }
 
   active.changes {
     case (oldScreen, newScreen) => screenChange(oldScreen, newScreen)
   }
+
+  protected def init(): Future[Unit] = Future.successful(())
+
+  protected def load(): Future[Unit] = Future.successful(())
 
   private def screenChange(oldScreen: Screen, newScreen: Screen): Unit = synchronized {
     if (managerFuture.isCompleted) {
@@ -138,5 +146,3 @@ object ScreenManager {
 
   def apply(): ScreenManager = instance.getOrElse(throw new RuntimeException("No ScreenManager is initialized!"))
 }
-
-object EmptyScreen extends Screen

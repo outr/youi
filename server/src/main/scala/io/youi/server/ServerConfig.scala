@@ -14,6 +14,7 @@ class ServerConfig(server: Server) {
     val name: Var[String] = Var(config.name)
     val maxAge: Var[Long] = Var(config.maxAge)
     val domain: Var[Option[String]] = Var(config.domain)
+    val path: Var[Option[String]] = Var(config.path)
     val secure: Var[Boolean] = Var(config.secure)
     val httpOnly: Var[Boolean] = Var(config.httpOnly)
     val sameSite: Var[SameSite] = Var(config.sameSite.toLowerCase match {
@@ -25,6 +26,7 @@ class ServerConfig(server: Server) {
     case class SessionConfig(name: String = server.getClass.getSimpleName.replaceAllLiterally("$", ""),
                              maxAge: Long = TimeUnit.DAYS.toSeconds(365L),
                              domain: Option[String] = None,
+                             path: Option[String] = Some("/"),
                              secure: Boolean = false,
                              httpOnly: Boolean = true,
                              sameSite: String = "strict")

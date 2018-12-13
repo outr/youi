@@ -31,13 +31,15 @@ object SessionStore {
       case None => httpConnection.response.cookies.find(_.name == session.name()).map(_.value) match {
         case Some(id) => id   // Found cookie in response
         case None => {        // No cookie found in request or response
-        val id = Unique()
+          scribe.debug(s"No cookie found in request or response: ${httpConnection.request.url} / ${httpConnection.request.headers} / ${httpConnection.request.method}")
+          val id = Unique()
           httpConnection.update { response =>
             val cookie = ResponseCookie(
               name = session.name,
               value = id,
               maxAge = if (session.maxAge() == 0L) None else Some(session.maxAge),
               domain = session.domain,
+              path = session.path,
               secure = session.secure,
               httpOnly = session.httpOnly,
               sameSite = session.sameSite

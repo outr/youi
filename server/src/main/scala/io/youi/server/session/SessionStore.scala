@@ -4,6 +4,7 @@ import akka.actor.ActorSystem
 import reactify._
 import io.youi.http.cookie.ResponseCookie
 import io.youi.http.{Headers, HttpConnection}
+import io.youi.net.Protocol
 import io.youi.{MapStore, Unique}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -30,6 +31,10 @@ object SessionStore {
       case Some(id) => id     // Found cookie in request
       case None => httpConnection.response.cookies.find(_.name == session.name()).map(_.value) match {
         case Some(id) => id   // Found cookie in response
+        case None if session.secure() && httpConnection.request.url.protocol != Protocol.Https => {
+          // Don't set a new cookie for secure-only on an insecure connection
+          Unique()
+        }
         case None => {        // No cookie found in request or response
           scribe.debug(s"No cookie found in request or response: ${httpConnection.request.url} / ${httpConnection.request.headers} / ${httpConnection.request.method}")
           val id = Unique()

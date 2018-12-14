@@ -52,6 +52,9 @@ trait ScreenManager {
     managerFuture = managerFuture.flatMap(_ => deactivate(oldScreen))
     managerFuture = managerFuture.flatMap(_ => activate(newScreen))
     managerFuture = managerFuture.flatMap(_ => afterScreenChange(oldScreen, newScreen))
+    managerFuture.failed.foreach { throwable =>
+      YouIApplication().error(throwable)
+    }
   }
 
   protected def beforeScreenChange(oldScreen: Screen, newScreen: Screen): Future[Unit] = {

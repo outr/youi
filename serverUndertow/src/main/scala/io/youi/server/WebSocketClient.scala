@@ -1,5 +1,6 @@
 package io.youi.server
 
+import java.io.IOException
 import java.net.URI
 
 import reactify.Var
@@ -7,19 +8,24 @@ import io.undertow.protocols.ssl.UndertowXnioSsl
 import io.undertow.server.DefaultByteBufferPool
 import io.undertow.util.Headers
 import io.undertow.websockets.client.WebSocketClient.ConnectionBuilder
-import io.undertow.websockets.client.{WebSocketClient => UndertowWebSocketClient, WebSocketClientNegotiation}
+import io.undertow.websockets.client.{WebSocketClientNegotiation, WebSocketClient => UndertowWebSocketClient}
 import io.undertow.websockets.core.{AbstractReceiveListener, BufferedTextMessage, WebSocketCallback, WebSocketChannel, WebSockets}
 import io.youi.http.Connection
 import io.youi.net.URL
 import io.youi.server.util.SSLUtil
-import org.xnio.{OptionMap, Options, Xnio}
+import io.youi.util.Time
+import org.xnio.{IoFuture, OptionMap, Options, Xnio}
 
 import scala.collection.JavaConverters._
+import scala.concurrent.duration._
+import scribe.Execution.global
 
-// TODO: support auto-reconnect
+import scala.concurrent.{Future, Promise}
+
 class WebSocketClient(url: URL,
                       keyStore: Option[KeyStore] = None,
                       autoReconnect: Boolean = true,
+                      reconnectDelay: FiniteDuration = 5.seconds,
                       directBuffer: Boolean = false,
                       bufferSize: Int = 2048,
                       workerThreads: Int = 2,
@@ -64,32 +70,51 @@ class WebSocketClient(url: URL,
 
   private var backlog = List.empty[String]
 
-  def connect(): Unit = if (_channel.get.isEmpty) {
-    _channel := Some(connectionBuilder.connect().get())
+  def connect(): Future[Unit] = if (_channel.get.isEmpty) {
+    val promise = Promise[Unit]
+    connectionBuilder.connect().addNotifier(new IoFuture.HandlingNotifier[WebSocketChannel, Any] {
+      override def handleDone(data: WebSocketChannel, attachment: Any): Unit = {
+        _channel := Some(data)
+        channel.resumeReceives()
 
-    channel.resumeReceives()
+        // Receive messages
+        channel.getReceiveSetter.set(new AbstractReceiveListener {
+          override def onFullTextMessage(channel: WebSocketChannel, message: BufferedTextMessage): Unit = {
+            val data = message.getData
+            receive.text := data
+          }
 
-    // Receive messages
-    channel.getReceiveSetter.set(new AbstractReceiveListener {
-      override def onFullTextMessage(channel: WebSocketChannel, message: BufferedTextMessage): Unit = {
-        val data = message.getData
-        receive.text := data
+          override def onError(channel: WebSocketChannel, error: Throwable): Unit = {
+            super.onError(channel, error)
+            disconnect()
+          }
+        })
+
+        // Send messages
+        send.text.attach { message =>
+          checkBacklog()
+          sendMessage(message)
+        }
+        _connected := true
+
+        checkBacklog()
+
+        promise.success(())
       }
 
-      override def onError(channel: WebSocketChannel, error: Throwable): Unit = {
-        super.onError(channel, error)
-        disconnected()
+      override def handleFailed(exception: IOException, attachment: Any): Unit = {
+        _channel := None
+        if (autoReconnect) {
+          scribe.warn(s"Connection closed or unable to connect. Trying again in ${reconnectDelay.toSeconds} seconds...")
+          Time.delay(reconnectDelay).foreach(_ => connect())
+        } else {
+          scribe.warn("Connection closed or unable to connect.")
+        }
       }
-    })
-
-    // Send messages
-    send.text.attach { message =>
-      checkBacklog()
-      sendMessage(message)
-    }
-    _connected := true
-
-    checkBacklog()
+    }, None.orNull)
+    promise.future
+  } else {
+    Future.successful(())
   }
 
   def disconnect(): Unit = if (connected()) {
@@ -119,15 +144,18 @@ class WebSocketClient(url: URL,
 
       override def onError(channel: WebSocketChannel, context: Void, throwable: Throwable): Unit = WebSocketClient.this synchronized {
         backlog = message :: backlog
+        disconnect()
       }
     })
   }
 
-  private def disconnected(): Unit = {
-    _channel := None
+  connected.attach { b =>
+    if (!b) {
+      _channel := None
 
-    if (autoReconnect) {
-      connect()
+      if (autoReconnect) {
+        connect()
+      }
     }
   }
 }

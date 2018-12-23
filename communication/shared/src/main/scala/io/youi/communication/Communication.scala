@@ -105,7 +105,7 @@ class CommunicationInternal private[communication](communication: Communication)
 
     communication.connection.receive.text.attach {
       case CommunicationMessage(message) => receive := message
-      case message => // Ignore other messages
+      case _ => // Ignore other messages
     }
     send.attach { message =>
       communication.connection.send.text := message.parsableString
@@ -126,8 +126,17 @@ class CommunicationInternal private[communication](communication: Communication)
       case Some(error) => promise.failure(new CommunicationException(error))
       case None => promise.success(f(m))
     }
+    val connectionMonitor = communication.connection.connected.attach { b =>
+      if (!b && !promise.isCompleted) {
+        promise.failure(new RuntimeException("Connection was closed"))
+      }
+    }
     queue += invocationId -> handler
-    promise.future
+    val future = promise.future
+    future.onComplete { _ =>
+      communication.connection.connected.reactions -= connectionMonitor
+    }
+    future
   }
 }
 

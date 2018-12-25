@@ -79,6 +79,7 @@ class CommunicationInternal private[communication](communication: Communication)
 
   private[communication] def init(): Unit = {
     receive.attach { message =>
+      scribe.debug(s"Received: ${message.messageType}...")
       if (message.messageType == CommunicationMessage.MethodResponse) {
         synchronized {
           val f = queue.get(message.invocationId)
@@ -88,7 +89,7 @@ class CommunicationInternal private[communication](communication: Communication)
           case Some(f) => f(message)
           case None => {
             // TODO: detect if this is the right Communication instance
-            scribe.debug(s"No entry found for endPoint: ${message.endPoint}, invocationId: ${message.invocationId}, content: ${message.content}.")
+            scribe.debug(s"No entry found for endPoint: ${message.endPoint}, invocationId: ${message.invocationId}, content: ${message.content}, queue: ${queue.keySet.mkString(", ")}.")
           }
         }
       } else if (message.messageType == CommunicationMessage.MethodRequest) {
@@ -122,9 +123,16 @@ class CommunicationInternal private[communication](communication: Communication)
   // Wait for invocation response
   def onInvocation[T](invocationId: Int)(f: CommunicationMessage => T): Future[T] = synchronized {
     val promise = Promise[T]
-    val handler: CommunicationMessage => Unit = (m: CommunicationMessage) => m.error match {
-      case Some(error) => promise.failure(new CommunicationException(error))
-      case None => promise.success(f(m))
+    val handler: CommunicationMessage => Unit = (m: CommunicationMessage) => {
+      scribe.debug(s"Received communication message for handler! $invocationId")
+      m.error match {
+        case Some(error) => promise.failure(new CommunicationException(error))
+        case None => try {
+          promise.success(f(m))
+        } catch {
+          case t: Throwable => promise.failure(t)
+        }
+      }
     }
     val connectionMonitor = communication.connection.connected.attach { b =>
       if (!b && !promise.isCompleted) {

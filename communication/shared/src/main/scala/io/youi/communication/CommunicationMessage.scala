@@ -8,11 +8,8 @@ case class CommunicationMessage(messageType: Int,
                                 content: List[String],
                                 error: Option[String]) {
   lazy val parsableString: String = {
-    val message = error match {
-      case Some(e) => s"0:$e"
-      case None => s"1:${JsonUtil.toJsonString(content)}"
-    }
-    s"$messageType:[$endPoint]:$invocationId:$message"
+    val json = JsonUtil.toJsonString(this)
+    s"|CM|$json"
   }
 }
 
@@ -21,19 +18,8 @@ object CommunicationMessage {
   val MethodResponse = 2
   val SharedVariable = 3
 
-  private val MessageRegex = """(\d+):\[(.+)\]:(\d+):(\d{1}):(.*)""".r
-
   def unapply(unparsedMessage: String): Option[CommunicationMessage] = unparsedMessage match {
-    case MessageRegex(messageType, endPoint, invocationId, success, contentJSON) => {
-      val successful = success.toInt == 1
-      val (content, error) = if (successful) {
-        val list = JsonUtil.fromJsonString[List[String]](contentJSON)
-        list -> None
-      } else {
-        Nil -> Some(contentJSON)
-      }
-      Some(CommunicationMessage(messageType.toInt, endPoint, invocationId.toInt, content, error))
-    }
+    case m if m.startsWith("|CM|") => Some(JsonUtil.fromJsonString[CommunicationMessage](m.substring(4)))
     case _ => None
   }
 }

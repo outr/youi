@@ -18,7 +18,7 @@ class AnimationExample extends UIExampleScreen {
   override def title: String = "Animation Example"
   override def path: Path = path"/examples/animation.html"
 
-  override def createUI(): Future[Unit] = Image("/images/icon.png").map { img =>
+  override def createUI(): Future[Unit] = Image("/images/icon.png").flatMap { img =>
     GoogleFont.`Open Sans`.`regular`.load().map { fnt =>
       val image = new ImageView {
         image := img

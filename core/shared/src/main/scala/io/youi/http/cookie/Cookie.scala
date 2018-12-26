@@ -1,7 +1,5 @@
 package io.youi.http.cookie
 
-import java.util.Date
-
 import io.youi.http.DateHeaderKey
 
 sealed trait Cookie {
@@ -27,7 +25,7 @@ case class ResponseCookie(name: String,
   override def http: String = {
     val b = new StringBuilder
     b.append(s"$name=$value")
-    expires.foreach(l => b.append(s"; Expires=${DateHeaderKey.parser.format(new Date(l))}"))
+    expires.foreach(l => b.append(s"; Expires=${DateHeaderKey.format(l)}"))
     maxAge.foreach(l => b.append(s"; Max-Age=$l"))
     domain.foreach(s => b.append(s"; Domain=$s"))
     path.foreach(s => b.append(s"; Path=$s"))

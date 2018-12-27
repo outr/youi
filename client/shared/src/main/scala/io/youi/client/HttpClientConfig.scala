@@ -14,7 +14,8 @@ case class HttpClientConfig(retries: Int = 0,
                             timeout: FiniteDuration = 15.seconds,
                             pingInterval: Option[FiniteDuration] = None,
                             dns: DNS = DNS.default,
-                            dropNullValuesInJson: Boolean = false) {
+                            dropNullValuesInJson: Boolean = false,
+                            sessionManager: Option[SessionManager] = None) {
   def retries(retries: Int): HttpClientConfig = copy(retries = retries)
   def retryDelay(retryDelay: FiniteDuration): HttpClientConfig = copy(retryDelay = retryDelay)
   def interceptor(interceptor: Interceptor): HttpClientConfig = copy(interceptor = interceptor)
@@ -23,4 +24,6 @@ case class HttpClientConfig(retries: Int = 0,
   def timeout(timeout: FiniteDuration): HttpClientConfig = copy(timeout = timeout)
   def pingInterval(pingInterval: Option[FiniteDuration]): HttpClientConfig = copy(pingInterval = pingInterval)
   def dns(dns: DNS): HttpClientConfig = copy(dns = dns)
+  def sessionManager(sessionManager: SessionManager): HttpClientConfig = copy(sessionManager = Some(sessionManager))
+  def session(session: Session): HttpClientConfig = copy(sessionManager = Some(new SessionManager(session)))
 }

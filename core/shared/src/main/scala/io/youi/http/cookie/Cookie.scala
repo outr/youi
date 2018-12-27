@@ -38,4 +38,11 @@ case class ResponseCookie(name: String,
     }
     b.toString()
   }
+
+  override def hashCode(): Int = name.hashCode
+
+  override def equals(obj: Any): Boolean = obj match {
+    case that: Cookie => this.name == that.name
+    case _ => false
+  }
 }

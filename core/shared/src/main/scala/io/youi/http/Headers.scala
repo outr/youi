@@ -18,6 +18,7 @@ case class Headers(map: TreeMap[String, List[String]] = TreeMap.empty(Ordering.b
     copy(map - header.key)
   }
   def withHeader(key: String, value: String): Headers = withHeader(Header(new StringHeaderKey(key), value))
+  def withHeaders(key: String, values: List[String]): Headers = copy(map + (key -> values))
 
   def merge(headers: Headers): Headers = copy(map ++ headers.map)
 }
@@ -27,7 +28,7 @@ object Headers {
 
   def apply(map: Map[String, List[String]]): Headers = apply(TreeMap[String, List[String]](map.toArray: _*)(Ordering.by(_.toLowerCase)))
 
-  def `Cache-Control` = CacheControl
+  def `Cache-Control`: CacheControl.type = CacheControl
   case object `Connection` extends StringHeaderKey("Connection")
   case object `Content-Length` extends LongHeaderKey("Content-Length")
   case object `Content-Type` extends TypedHeaderKey[ContentType] {

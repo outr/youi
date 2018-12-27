@@ -4,6 +4,7 @@ import io.circe.{Decoder, Encoder, Json, Printer}
 import io.circe.parser.decode
 import io.circe.syntax._
 import io.youi.client.intercept.{Interceptor, RateLimiter}
+import io.youi.http.cookie.RequestCookie
 import io.youi.http.{Content, Headers, HttpRequest, HttpResponse, Method, StringContent}
 import io.youi.net.{ContentType, URL}
 import reactify.Var
@@ -32,8 +33,17 @@ trait HttpClient {
                  retry: Int = config.retries,
                  retryDelay: FiniteDuration = config.retryDelay,
                  interceptor: Interceptor = config.interceptor): Future[HttpResponse] = {
+    val updatedHeaders = config.sessionManager match {
+      case Some(sm) => {
+        val cookieHeaders = sm.session.cookies.map { cookie =>
+          RequestCookie(name = cookie.name, value = cookie.value).http
+        } ::: Headers.Request.`Cookie`.value(request.headers).map(_.http).distinct
+        request.headers.withHeaders(Headers.Request.`Cookie`.key, cookieHeaders)
+      }
+      case None => request.headers
+    }
     val future = for {
-      updatedRequest <- interceptor.before(request)
+      updatedRequest <- interceptor.before(request.copy(headers = updatedHeaders))
       response <- implementation(updatedRequest)
       updatedResponse <- interceptor.after(updatedRequest, response)
     } yield {
@@ -44,6 +54,13 @@ trait HttpClient {
         scribe.warn(s"Request to ${request.url} failed (${t.getMessage}). Retrying after $retryDelay seconds...")
         RateLimiter.delayedFuture(retryDelay, send(request, retry - 1, retryDelay, interceptor))
       }
+    }.map { response =>
+      config.sessionManager.foreach { sm =>
+        val cookies = response.cookies
+        sm(cookies)
+      }
+
+      response
     }
   }
 

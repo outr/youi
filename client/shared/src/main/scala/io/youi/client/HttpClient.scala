@@ -6,20 +6,16 @@ import io.circe.syntax._
 import io.youi.client.intercept.{Interceptor, RateLimiter}
 import io.youi.http.{Content, Headers, HttpRequest, HttpResponse, Method, StringContent}
 import io.youi.net.{ContentType, URL}
+import reactify.Var
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
 
 trait HttpClient {
-  def defaultRetries: Int
-  def defaultRetryDelay: FiniteDuration
-  def defaultInterceptor: Interceptor
-  def connectionPool: ConnectionPool
-  def dropNullValues: Boolean = false
-  def dns: DNS
+  def config: HttpClientConfig
 
-  protected lazy val printer: Printer = Printer.spaces2.copy(dropNullValues = dropNullValues)
+  protected lazy val printer: Printer = Printer.spaces2.copy(dropNullValues = config.dropNullValuesInJson)
 
   /**
     * Sends an HttpRequest and receives an asynchronous HttpResponse future.
@@ -33,9 +29,9 @@ trait HttpClient {
     * @return Future[HttpResponse]
     */
   final def send(request: HttpRequest,
-                 retry: Int = defaultRetries,
-                 retryDelay: FiniteDuration = defaultRetryDelay,
-                 interceptor: Interceptor = defaultInterceptor): Future[HttpResponse] = {
+                 retry: Int = config.retries,
+                 retryDelay: FiniteDuration = config.retryDelay,
+                 interceptor: Interceptor = config.interceptor): Future[HttpResponse] = {
     val future = for {
       updatedRequest <- interceptor.before(request)
       response <- implementation(updatedRequest)
@@ -86,9 +82,9 @@ trait HttpClient {
                                  errorHandler: ErrorHandler[Response] = defaultErrorHandler[Response],
                                  method: Method = Method.Post,
                                  processor: Json => Json = (json: Json) => json,
-                                 retry: Int = defaultRetries,
-                                 retryDelay: FiniteDuration = defaultRetryDelay,
-                                 interceptor: Interceptor = defaultInterceptor)
+                                 retry: Int = config.retries,
+                                 retryDelay: FiniteDuration = config.retryDelay,
+                                 interceptor: Interceptor = config.interceptor)
                                 (implicit encoder: Encoder[Request], decoder: Decoder[Response]): Future[Response] = {
     val requestJson = printer.pretty(processor(request.asJson))
     val httpRequest = HttpRequest(
@@ -124,9 +120,9 @@ trait HttpClient {
                      method: Method = Method.Get,
                      headers: Headers = Headers.empty,
                      errorHandler: ErrorHandler[Response] = defaultErrorHandler[Response],
-                     retry: Int = defaultRetries,
-                     retryDelay: FiniteDuration = defaultRetryDelay,
-                     interceptor: Interceptor = defaultInterceptor)
+                     retry: Int = config.retries,
+                     retryDelay: FiniteDuration = config.retryDelay,
+                     interceptor: Interceptor = config.interceptor)
                     (implicit decoder: Decoder[Response]): Future[Response] = {
     val request = HttpRequest(
       method = method,
@@ -149,15 +145,10 @@ trait HttpClient {
 }
 
 object HttpClient {
-  var retries: Int = 0
-  var retryDelay: FiniteDuration = 5.seconds
-  var interceptor: Interceptor = Interceptor.empty
-  var connectionPool: ConnectionPool = ConnectionPool.default
+  val defaultConfig: Var[HttpClientConfig] = Var(HttpClientConfig())
+  def config: HttpClientConfig = defaultConfig()
 
-  def apply(defaultRetries: Int = retries,
-            defaultRetryDelay: FiniteDuration = retryDelay,
-            defaultInterceptor: Interceptor = interceptor,
-            connectionPool: ConnectionPool = connectionPool): HttpClient = {
-    ClientPlatform.createClient(defaultRetries, defaultRetryDelay, defaultInterceptor, connectionPool)
+  def apply(config: HttpClientConfig = HttpClientConfig()): HttpClient = {
+    ClientPlatform.createClient(config)
   }
 }

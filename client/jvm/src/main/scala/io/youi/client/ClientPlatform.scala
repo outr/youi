@@ -1,20 +1,10 @@
 package io.youi.client
 
-import io.youi.client.intercept.Interceptor
-
 import scala.concurrent.duration.FiniteDuration
 
 object ClientPlatform {
-  def createClient(defaultRetries: Int = HttpClient.retries,
-                   defaultRetryDelay: FiniteDuration = HttpClient.retryDelay,
-                   defaultInterceptor: Interceptor = HttpClient.interceptor,
-                   connectionPool: ConnectionPool = HttpClient.connectionPool): HttpClient = {
-    JVMHttpClient(
-      defaultRetries = defaultRetries,
-      defaultRetryDelay = defaultRetryDelay,
-      defaultInterceptor = defaultInterceptor,
-      connectionPool = connectionPool
-    )
+  def createClient(config: HttpClientConfig): HttpClient = {
+    JVMHttpClient(config)
   }
 
   def createPool(maxIdleConnections: Int = ConnectionPool.maxIdleConnections,

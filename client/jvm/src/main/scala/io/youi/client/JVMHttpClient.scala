@@ -6,7 +6,6 @@ import java.util
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicLong
 
-import io.youi.client.intercept.Interceptor
 import io.youi.http._
 import io.youi.net.ContentType
 import okhttp3.Dns
@@ -14,41 +13,31 @@ import org.powerscala.io._
 
 import scala.collection.JavaConverters._
 import scala.concurrent.{Future, Promise}
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration._
 import scala.util.{Failure, Success}
+import scribe.Execution.global
 
 /**
   * Asynchronous HttpClient for simple request response support.
   *
   * Adds support for simple restful request/response JSON support.
-  *
-  * @param saveDirectory the directory to save response content of a non-textual type
   */
-case class JVMHttpClient(saveDirectory: File = new File(System.getProperty("java.io.tmpdir")),
-                         timeout: FiniteDuration = 15.seconds,
-                         defaultRetries: Int = 0,
-                         defaultRetryDelay: FiniteDuration = 5.seconds,
-                         defaultInterceptor: Interceptor = Interceptor.empty,
-                         pingInterval: Option[FiniteDuration] = None,
-                         connectionPool: ConnectionPool = ConnectionPool.default,
-                         dns: DNS = DNS.default) extends HttpClient {
+case class JVMHttpClient(config: HttpClientConfig = HttpClient.config) extends HttpClient {
   private lazy val client = {
     val b = new okhttp3.OkHttpClient.Builder()
-    b.connectTimeout(timeout.toMillis, TimeUnit.MILLISECONDS)
-    b.readTimeout(timeout.toMillis, TimeUnit.MILLISECONDS)
-    b.writeTimeout(timeout.toMillis, TimeUnit.MILLISECONDS)
+    b.connectTimeout(config.timeout.toMillis, TimeUnit.MILLISECONDS)
+    b.readTimeout(config.timeout.toMillis, TimeUnit.MILLISECONDS)
+    b.writeTimeout(config.timeout.toMillis, TimeUnit.MILLISECONDS)
     b.dns(new Dns {
       override def lookup(hostname: String): util.List[InetAddress] = {
         val list = new util.ArrayList[InetAddress]()
-        dns.lookup(hostname) match {
+        config.dns.lookup(hostname) match {
           case Some(ip) => list.add(InetAddress.getByAddress(ip.address.map(_.toByte)))
           case None => // None
         }
         list
       }
     })
-    pingInterval.foreach(d => b.pingInterval(d.toMillis, TimeUnit.MILLISECONDS))
+    config.pingInterval.foreach(d => b.pingInterval(d.toMillis, TimeUnit.MILLISECONDS))
     b.build()
   }
 
@@ -122,7 +111,7 @@ case class JVMHttpClient(saveDirectory: File = new File(System.getProperty("java
       } else if (contentToBytes(contentType, contentLength)) {
         Content.bytes(responseBody.bytes(), contentType)
       } else {
-        val file = File.createTempFile("youi", "client", saveDirectory)
+        val file = File.createTempFile("youi", "client", config.saveDirectory.toFile)
         IO.stream(responseBody.byteStream(), file)
         Content.file(file, contentType)
       }
@@ -159,7 +148,7 @@ case class JVMHttpClient(saveDirectory: File = new File(System.getProperty("java
   }
 
   def logStats(): Unit = {
-    scribe.info(s"HttpClient stats - Pool[active: ${connectionPool.active}, idle: ${connectionPool.idle}, total: ${connectionPool.total}], Global[active: ${JVMHttpClient.active}, successful: ${JVMHttpClient.successful}, failure: ${JVMHttpClient.failure}, total: ${JVMHttpClient.total}]")
+    scribe.info(s"HttpClient stats - Pool[active: ${config.connectionPool.active}, idle: ${config.connectionPool.idle}, total: ${config.connectionPool.total}], Global[active: ${JVMHttpClient.active}, successful: ${JVMHttpClient.successful}, failure: ${JVMHttpClient.failure}, total: ${JVMHttpClient.total}]")
   }
 }
 

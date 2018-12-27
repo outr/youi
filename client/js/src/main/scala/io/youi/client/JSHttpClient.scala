@@ -1,23 +1,17 @@
 package io.youi.client
 
 import io.youi.ajax.{AjaxAction, AjaxRequest}
-import io.youi.client.intercept.Interceptor
 import io.youi.http.{Content, Headers, HttpRequest, HttpResponse, HttpStatus, StringContent}
 import io.youi.net.ContentType
 
 import scala.concurrent.Future
-import scala.concurrent.duration.FiniteDuration
-import scala.concurrent.ExecutionContext.Implicits.global
+import scribe.Execution.global
 
-case class JSHttpClient(defaultRetries: Int = HttpClient.retries,
-                        defaultRetryDelay: FiniteDuration = HttpClient.retryDelay,
-                        defaultInterceptor: Interceptor = Interceptor.empty,
-                        connectionPool: ConnectionPool = HttpClient.connectionPool,
-                        dns: DNS = DNS.default) extends HttpClient {
+case class JSHttpClient(config: HttpClientConfig = HttpClient.config) extends HttpClient {
   private val HeaderRegex = """(.+)[=](.+)""".r
 
   override protected def implementation(request: HttpRequest): Future[HttpResponse] = {
-    val manager = connectionPool.asInstanceOf[JSConnectionPool].manager
+    val manager = config.connectionPool.asInstanceOf[JSConnectionPool].manager
     val ajaxRequest = new AjaxRequest(
       url = request.url,
       data = request.content.map(content2String),

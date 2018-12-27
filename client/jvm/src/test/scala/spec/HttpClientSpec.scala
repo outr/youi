@@ -23,11 +23,12 @@ class HttpClientSpec extends AsyncWordSpec with Matchers {
     "call a URL multiple times with a rate limiter" in {
       var calls = 0
       val limiter = Interceptor.rateLimited(1.seconds)
+      val config = client.config.interceptor(limiter)
 
       def callMultiple(counter: Int): Future[Unit] = {
         client.send(
           request = HttpRequest(url = url"https://httpbin.org/user-agent"),
-          interceptor = limiter
+          config = config
         ).flatMap { response =>
           response.status should be(HttpStatus.OK)
           calls += 1

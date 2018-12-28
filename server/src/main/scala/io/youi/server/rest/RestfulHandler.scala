@@ -4,7 +4,8 @@ import io.circe.parser._
 import io.circe.syntax._
 import io.circe.{Decoder, Encoder, Json, Printer}
 import io.youi.ValidationError
-import io.youi.http.{Content, HttpConnection, HttpRequest, StringContent}
+import io.youi.http.content.{Content, StringContent}
+import io.youi.http.HttpConnection
 import io.youi.net.{ContentType, URL}
 import io.youi.server.dsl.PathFilter
 import io.youi.server.handler.HttpHandler

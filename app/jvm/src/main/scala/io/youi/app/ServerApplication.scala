@@ -4,6 +4,7 @@ import java.io.File
 
 import akka.actor.{ActorSystem, Cancellable}
 import io.youi.http._
+import io.youi.http.content.{Content, FileContent, FormDataContent, StringContent, URLContent}
 import io.youi.net.{ContentType, URL}
 import io.youi.server.Server
 import io.youi.server.handler.{CachingManager, HttpHandler, HttpHandlerBuilder, SenderHandler}

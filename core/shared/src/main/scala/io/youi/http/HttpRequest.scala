@@ -1,5 +1,6 @@
 package io.youi.http
 
+import io.youi.http.content.Content
 import io.youi.http.cookie.RequestCookie
 import io.youi.net.{IP, URL}
 

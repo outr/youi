@@ -4,8 +4,9 @@ import io.circe.{Decoder, Encoder, Json, Printer}
 import io.circe.parser.decode
 import io.circe.syntax._
 import io.youi.client.intercept.RateLimiter
+import io.youi.http.content.{Content, StringContent}
 import io.youi.http.cookie.RequestCookie
-import io.youi.http.{Content, Headers, HttpRequest, HttpResponse, Method, StringContent}
+import io.youi.http.{Headers, HttpRequest, HttpResponse, Method}
 import io.youi.net.{ContentType, URL}
 import reactify.Var
 

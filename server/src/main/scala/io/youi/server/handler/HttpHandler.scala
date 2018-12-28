@@ -1,7 +1,8 @@
 package io.youi.server.handler
 
 import io.youi.Priority
-import io.youi.http.{Content, HttpConnection, HttpStatus, StringHeaderKey}
+import io.youi.http.content.Content
+import io.youi.http.{HttpConnection, HttpStatus, StringHeaderKey}
 
 trait HttpHandler extends Ordered[HttpHandler] {
   def priority: Priority = Priority.Normal

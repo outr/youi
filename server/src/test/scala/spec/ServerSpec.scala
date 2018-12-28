@@ -9,6 +9,7 @@ import io.youi.server.handler.HttpHandler
 import io.youi.server.rest.{Restful, RestfulResponse}
 import org.scalatest.{Matchers, WordSpec}
 import io.circe.generic.auto._
+import io.youi.http.content.{Content, StringContent}
 import profig.JsonUtil
 
 import scala.concurrent.Future

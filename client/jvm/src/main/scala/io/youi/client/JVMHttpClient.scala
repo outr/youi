@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicLong
 
 import io.youi.http._
+import io.youi.http.content._
 import io.youi.net.ContentType
 import okhttp3.Dns
 import org.powerscala.io._

@@ -18,6 +18,7 @@ import io.undertow.websockets.extensions.PerMessageDeflateHandshake
 import io.undertow.websockets.spi.WebSocketHttpExchange
 import io.undertow.{Handlers, Undertow, UndertowOptions}
 import io.youi.http._
+import io.youi.http.content._
 import io.youi.net.{ContentType, IP, Parameters, Path, URL}
 import io.youi.server.util.SSLUtil
 import org.powerscala.io._

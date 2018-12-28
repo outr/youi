@@ -1,7 +1,8 @@
 package io.youi.client
 
 import io.youi.ajax.{AjaxAction, AjaxRequest}
-import io.youi.http.{Content, Headers, HttpRequest, HttpResponse, HttpStatus, StringContent}
+import io.youi.http.content._
+import io.youi.http.{Headers, HttpRequest, HttpResponse, HttpStatus}
 import io.youi.net.ContentType
 
 import scala.concurrent.Future

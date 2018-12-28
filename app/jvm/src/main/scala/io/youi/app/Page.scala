@@ -1,6 +1,7 @@
 package io.youi.app
 
-import io.youi.http.{Content, HttpConnection}
+import io.youi.http.HttpConnection
+import io.youi.http.content.Content
 import io.youi.server.handler.{CachingManager, HttpProcessor}
 import io.youi.server.validation.Validator
 import io.youi.stream._

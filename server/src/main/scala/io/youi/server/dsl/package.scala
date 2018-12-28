@@ -3,7 +3,8 @@ package io.youi.server
 import java.io.File
 
 import io.circe.{Decoder, Encoder}
-import io.youi.http.{Content, FileContent, HttpConnection, HttpStatus, Method, StringContent, URLContent}
+import io.youi.http.content.Content
+import io.youi.http.{HttpConnection, HttpStatus, Method}
 import io.youi.net.{ContentType, IP, Path, URLMatcher}
 import io.youi.server.handler._
 import io.youi.server.rest.Restful

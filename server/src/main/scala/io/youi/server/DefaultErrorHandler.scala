@@ -1,6 +1,7 @@
 package io.youi.server
 
-import io.youi.http.{CacheControl, Content, HttpConnection, HttpStatus}
+import io.youi.http.content.Content
+import io.youi.http.{CacheControl, HttpConnection, HttpStatus}
 import io.youi.net.ContentType
 import io.youi.server.dsl._
 import perfolation._

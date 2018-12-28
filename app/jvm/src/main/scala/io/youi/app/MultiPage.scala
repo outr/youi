@@ -3,6 +3,7 @@ import java.io.File
 
 import io.youi.http
 import io.youi.http._
+import io.youi.http.content.Content
 import io.youi.net.URLMatcher
 
 trait MultiPage extends MatcherPage {

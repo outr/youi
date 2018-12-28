@@ -2,6 +2,7 @@ package io.youi.http
 
 import java.io.OutputStream
 
+import io.youi.http.content.Content
 import io.youi.net.ContentType
 
 abstract class StreamContent(val contentType: ContentType,

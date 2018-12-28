@@ -1,8 +1,9 @@
 package io.youi.example
 
+import io.youi.http.content.Content
 import scribe.Logging
 import io.youi.http.cookie.ResponseCookie
-import io.youi.http.{Content, Headers, HttpConnection}
+import io.youi.http.{Headers, HttpConnection}
 import io.youi.net.ContentType
 import io.youi.server.handler.{HttpHandler, SenderHandler}
 

@@ -4,7 +4,7 @@ import java.io.{File, FileInputStream, InputStream}
 import java.net.URL
 import java.util.concurrent.ConcurrentHashMap
 
-import io.youi.http.{Content, FileContent, StringContent, URLContent}
+import io.youi.http.content._
 import org.powerscala.io._
 
 import scala.annotation.tailrec
@@ -20,13 +20,13 @@ object HTMLParser {
     *
     * Defaults to false.
     */
-  var filterAttributes = false
+  var filterAttributes: Boolean = false
   /**
     * The set of attributes to limit to if filterAttributes is set to true.
     *
     * Defaults to "id" and "class".
     */
-  var validAttributes = Set("id", "class")
+  var validAttributes: Set[String] = Set("id", "class")
 
   private val parsers = new ConcurrentHashMap[File, StreamableHTML]().asScala
 

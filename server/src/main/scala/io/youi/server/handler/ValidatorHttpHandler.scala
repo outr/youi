@@ -1,6 +1,7 @@
 package io.youi.server.handler
 
-import io.youi.http.{Content, HttpConnection, HttpStatus, StringHeaderKey}
+import io.youi.http.content.Content
+import io.youi.http.{HttpConnection, HttpStatus}
 import io.youi.server.validation.ValidationResult.{Continue, Error, Redirect}
 import io.youi.server.validation.{ValidationResult, Validator}
 

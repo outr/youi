@@ -1,6 +1,7 @@
 package io.youi.example
 
-import io.youi.http.{Content, HttpConnection}
+import io.youi.http.HttpConnection
+import io.youi.http.content.Content
 import io.youi.net.ContentType
 import io.youi.server.handler.{HttpHandler, SenderHandler}
 

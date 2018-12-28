@@ -2,7 +2,8 @@ package io.youi.server.handler
 import java.net.{URL, URLEncoder}
 import java.nio.file.{Path, Paths}
 
-import io.youi.http.{Content, HttpConnection, HttpStatus}
+import io.youi.http.content.Content
+import io.youi.http.{HttpConnection, HttpStatus}
 import io.youi.net.ContentType
 import io.youi.stream.{ByMultiple, ByTag, Delta}
 import org.powerscala.io._

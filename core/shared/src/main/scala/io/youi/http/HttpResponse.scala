@@ -1,5 +1,6 @@
 package io.youi.http
 
+import io.youi.http.content.Content
 import io.youi.http.cookie.ResponseCookie
 
 case class HttpResponse(status: HttpStatus = HttpStatus.OK,

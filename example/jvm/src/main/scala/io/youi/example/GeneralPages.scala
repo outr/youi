@@ -1,6 +1,7 @@
 package io.youi.example
 import io.youi.app.MatcherPage
 import io.youi.http._
+import io.youi.http.content.Content
 import io.youi.net.URLMatcher
 import io.youi.server.validation.Validator
 

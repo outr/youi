@@ -8,7 +8,7 @@ import io.undertow.server.handlers.cache.ResponseCache
 import io.undertow.server.{HttpHandler, HttpServerExchange}
 import io.undertow.server.handlers.resource._
 import io.undertow.util._
-import io.youi.http.FileContent
+import io.youi.http.content.FileContent
 
 object ResourceServer {
   private val defaultResourceManager = new FileResourceManager(new File("."))

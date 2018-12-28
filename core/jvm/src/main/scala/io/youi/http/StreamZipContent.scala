@@ -3,6 +3,7 @@ package io.youi.http
 import java.io.OutputStream
 import java.util.zip.{ZipEntry, ZipOutputStream}
 
+import io.youi.http.content.Content
 import io.youi.net.ContentType
 import org.powerscala.io._
 
@@ -29,4 +30,6 @@ class StreamZipContent(entries: List[ZipFileEntry],
     zos.flush()
     zos.close()
   }
+
+  override def asString: String = entries.mkString(", ")
 }

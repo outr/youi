@@ -5,7 +5,7 @@ import io.youi.drawable.{Context, Drawable}
 import io.youi.image.resize.ImageResizer
 import io.youi.net.URL
 import io.youi.spatial.{BoundingBox, Size}
-import io.youi.util.{CanvasPool, ImageUtility}
+import io.youi.util.{CanvasPool, FileUtility, ImageUtility}
 import org.scalajs.dom._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -70,10 +70,10 @@ object Image {
   }
 
   def apply(file: File): Future[Image] = file.`type` match {
-    case "image/svg+xml" => ImageUtility.loadText(file).flatMap { svgString =>
+    case "image/svg+xml" => FileUtility.loadText(file).flatMap { svgString =>
       SVGImage(svgString)
     }
-    case _ => ImageUtility.loadDataURL(file).flatMap(apply)
+    case _ => FileUtility.loadDataURL(file).flatMap(apply)
   }
 
   def isImage(file: File): Boolean = file.`type`.startsWith("image/")

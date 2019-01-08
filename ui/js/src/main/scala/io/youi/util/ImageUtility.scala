@@ -68,7 +68,7 @@ object ImageUtility {
       val promise = Promise[Unit]
       val listener: js.Function1[Event, _] = (_: Event) => promise.success(())
       tempImage.addEventListener("load", listener)
-      loadDataURL(file).foreach(tempImage.src = _)
+      FileUtility.loadDataURL(file).foreach(tempImage.src = _)
       promise.future.flatMap { _ =>
         tempImage.removeEventListener("load", listener)
         val f = process(tempImage)
@@ -101,32 +101,6 @@ object ImageUtility {
       ctx.drawImage(img, 0.0, 0.0)
       canvas.toDataURL("image/png")
     }
-  }
-
-  def loadDataURL(file: File, useFileReader: Boolean = false): Future[String] = if (useFileReader) {
-    val reader = new FileReader
-    val promise = Promise[String]
-    reader.addEventListener("load", (evt: Event) => {
-      promise.success(reader.result.asInstanceOf[String])
-    })
-    reader.readAsDataURL(file)
-    val future = promise.future
-    future.failed.foreach(scribe.error(_))
-    future
-  } else {
-    Future.successful(URL.createObjectURL(file))
-  }
-
-  def loadText(file: File): Future[String] = {
-    val reader = new FileReader
-    val promise = Promise[String]
-    reader.addEventListener("load", (_: Event) => {
-      promise.success(reader.result.asInstanceOf[String])
-    })
-    reader.readAsText(file)
-    val future = promise.future
-    future.failed.foreach(scribe.error(_))
-    future
   }
 
   def preview(file: File): Future[Option[Image]] = if (Video.isVideo(file)) {

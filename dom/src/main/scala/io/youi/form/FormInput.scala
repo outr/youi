@@ -16,7 +16,7 @@ class FormInput(formSupport: FormSupport, val element: html.Element) {
     case i: html.Input => i.name
     case i: html.TextArea => i.name
     case i: html.Select => i.name
-    case _ => throw new RuntimeException(s"Unsupported getting name in FormInput for: ${element.innerHTML}")
+    case _ => element.getAttribute("name")
   }
 
   def focus(): Unit = element.focus()
@@ -24,7 +24,7 @@ class FormInput(formSupport: FormSupport, val element: html.Element) {
   def select(): Unit = element match {
     case i: html.Input => i.select()
     case i: html.TextArea => i.select()
-    case _ => throw new RuntimeException(s"Unsupported select() in FormInput for: ${element.innerHTML}")
+    case _ => throw new RuntimeException(s"Unsupported select() in FormInput for: ${element.outerHTML}")
   }
 
   def option: Option[String] = value match {
@@ -36,38 +36,38 @@ class FormInput(formSupport: FormSupport, val element: html.Element) {
     case i: html.Input => i.value
     case i: html.TextArea => i.value
     case i: html.Select => i.value
-    case _ => throw new RuntimeException(s"Unsupported getting value to FormInput for: ${element.innerHTML}")
+    case _ => throw new RuntimeException(s"Unsupported getting value to FormInput for: ${element.outerHTML}")
   }
 
   def value_=(v: String): Unit = element match {
     case i: html.Input => i.value = v
     case i: html.TextArea => i.value = v
     case i: html.Select => i.value = v
-    case _ => throw new RuntimeException(s"Unsupported setting value to FormInput for: ${element.innerHTML}")
+    case _ => throw new RuntimeException(s"Unsupported setting value to FormInput for: ${element.outerHTML}")
   }
 
   def checked: Boolean = element match {
     case i: html.Input => i.checked
-    case _ => throw new RuntimeException(s"Unsupported getting checked from FormInput for: ${element.innerHTML}")
+    case _ => throw new RuntimeException(s"Unsupported getting checked from FormInput for: ${element.outerHTML}")
   }
 
   def checked_=(b: Boolean): Unit = element match {
     case i: html.Input => i.checked = b
-    case _ => throw new RuntimeException(s"Unsupported setting checked to FormInput for: ${element.innerHTML}")
+    case _ => throw new RuntimeException(s"Unsupported setting checked to FormInput for: ${element.outerHTML}")
   }
 
   def disabled: Boolean = element match {
     case i: html.Input => i.disabled
     case i: html.TextArea => i.disabled
     case i: html.Select => i.disabled
-    case _ => throw new RuntimeException(s"Unsupported disabled in FormInput for: ${element.innerHTML}")
+    case _ => throw new RuntimeException(s"Unsupported disabled in FormInput for: ${element.outerHTML}")
   }
 
   def disabled_=(b: Boolean): Unit = element match {
     case i: html.Input => i.disabled = b
     case i: html.TextArea => i.disabled = b
     case i: html.Select => i.disabled = b
-    case _ => throw new RuntimeException(s"Unsupported disabled in FormInput for: ${element.innerHTML}")
+    case _ => throw new RuntimeException(s"Unsupported disabled in FormInput for: ${element.outerHTML}")
   }
 
   def text: String = option.getOrElse(throw new RuntimeException(s"Value is empty for ${element.id}"))

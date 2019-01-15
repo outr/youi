@@ -56,6 +56,20 @@ class FormInput(formSupport: FormSupport, val element: html.Element) {
     case _ => throw new RuntimeException(s"Unsupported setting checked to FormInput for: ${element.innerHTML}")
   }
 
+  def disabled: Boolean = element match {
+    case i: html.Input => i.disabled
+    case i: html.TextArea => i.disabled
+    case i: html.Select => i.disabled
+    case _ => throw new RuntimeException(s"Unsupported disabled in FormInput for: ${element.innerHTML}")
+  }
+
+  def disabled_=(b: Boolean): Unit = element match {
+    case i: html.Input => i.disabled = b
+    case i: html.TextArea => i.disabled = b
+    case i: html.Select => i.disabled = b
+    case _ => throw new RuntimeException(s"Unsupported disabled in FormInput for: ${element.innerHTML}")
+  }
+
   def text: String = option.getOrElse(throw new RuntimeException(s"Value is empty for ${element.id}"))
 
   def show(): Unit = element.style.display = "inline"

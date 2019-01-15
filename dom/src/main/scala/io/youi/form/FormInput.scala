@@ -21,6 +21,12 @@ class FormInput(formSupport: FormSupport, val element: html.Element) {
 
   def focus(): Unit = element.focus()
 
+  def select(): Unit = element match {
+    case i: html.Input => i.select()
+    case i: html.TextArea => i.select()
+    case _ => throw new RuntimeException(s"Unsupported select() in FormInput for: ${element.innerHTML}")
+  }
+
   def option: Option[String] = value match {
     case s if s != null && s.trim.nonEmpty => Some(s)
     case _ => None

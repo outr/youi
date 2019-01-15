@@ -27,6 +27,12 @@ trait FormSupport {
       fi
     }
 
+    def byClass(className: String): FormInput = {
+      val fi = new FormInput(FormSupport.this, form.oneByClass[html.Element](className))
+      list = list ::: List(fi)
+      fi
+    }
+
     def all(): List[FormInput] = list
   }
 

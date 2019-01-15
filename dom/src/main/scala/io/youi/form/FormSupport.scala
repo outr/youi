@@ -16,13 +16,13 @@ trait FormSupport {
     private var list = List.empty[FormInput]
 
     def byId(id: String): FormInput = {
-      val fi = new FormInput(FormSupport.this, form.byId[html.Input](id))
+      val fi = new FormInput(FormSupport.this, form.byId[html.Element](id))
       list = list ::: List(fi)
       fi
     }
 
     def byName(name: String): FormInput = {
-      val fi = new FormInput(FormSupport.this, form.oneByName[html.Input](name))
+      val fi = new FormInput(FormSupport.this, form.oneByName[html.Element](name))
       list = list ::: List(fi)
       fi
     }
@@ -35,11 +35,13 @@ trait FormSupport {
       evt.preventDefault()
       evt.stopPropagation()
 
-      if (validate()) {
-        disable()
+      disable()
+      if (validate(ValidationMode.FormSubmit)) {
         submit().onComplete { _ =>
           enable()
         }
+      } else {
+        enable()
       }
     })
   }
@@ -104,10 +106,10 @@ trait FormSupport {
 
   def createFieldError(input: FormInput): FieldError = BootstrapFieldError(input)
 
-  protected def validate(): Boolean = {
-    val invalidFields = input.all().filter(!_.validate())
+  def validate(mode: ValidationMode = ValidationMode.OnDemand): Boolean = {
+    val invalidFields = input.all().filter(!_.validate(mode))
     if (invalidFields.nonEmpty) {
-      invalidFields.head.input.focus()
+      invalidFields.head.focus()
     }
     invalidFields.isEmpty
   }
@@ -116,10 +118,10 @@ trait FormSupport {
 
   protected def onSuccess(): Unit = {
     clear()
-    input.all().headOption.foreach(_.input.focus())
+    input.all().headOption.foreach(_.focus())
   }
 
   protected def onFailure(): Unit = {
-    input.all().headOption.foreach(_.input.focus())
+    input.all().headOption.foreach(_.focus())
   }
 }

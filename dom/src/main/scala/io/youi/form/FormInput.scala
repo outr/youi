@@ -2,42 +2,64 @@ package io.youi.form
 
 import org.scalajs.dom.{Event, html}
 
-class FormInput(formSupport: FormSupport, val input: html.Input) {
+class FormInput(formSupport: FormSupport, val element: html.Element) {
   val error: FieldError = formSupport.createFieldError(this)
 
-  input.addEventListener("blur", (_: Event) => {
-    validate()
+  element.addEventListener("blur", (_: Event) => {
+    validate(ValidationMode.Blur)
   })
-  input.addEventListener("change", (_: Event) => {
-    validate()
+  element.addEventListener("change", (_: Event) => {
+    validate(ValidationMode.ValueChange)
   })
 
-  def option: Option[String] = input.value match {
+  def name: String = element match {
+    case i: html.Input => i.name
+    case i: html.TextArea => i.name
+    case i: html.Select => i.name
+    case _ => throw new RuntimeException(s"Unsupported getting name in FormInput for: ${element.innerHTML}")
+  }
+
+  def focus(): Unit = element.focus()
+
+  def option: Option[String] = value match {
     case s if s != null && s.trim.nonEmpty => Some(s)
     case _ => None
   }
 
-  def value: String = option.getOrElse(throw new RuntimeException(s"Value is empty for ${input.id}"))
+  def value: String = element match {
+    case i: html.Input => i.value
+    case i: html.TextArea => i.value
+    case i: html.Select => i.value
+    case _ => throw new RuntimeException(s"Unsupported getting value to FormInput for: ${element.innerHTML}")
+  }
 
-  def show(): Unit = input.style.display = "inline"
-  def hide(): Unit = input.style.display = "none"
+  def value_=(v: String): Unit = element match {
+    case i: html.Input => i.value = v
+    case i: html.TextArea => i.value = v
+    case i: html.Select => i.value = v
+    case _ => throw new RuntimeException(s"Unsupported setting value to FormInput for: ${element.innerHTML}")
+  }
+  def text: String = option.getOrElse(throw new RuntimeException(s"Value is empty for ${element.id}"))
 
-  def clear(): Unit = input.value = ""
+  def show(): Unit = element.style.display = "inline"
+  def hide(): Unit = element.style.display = "none"
+
+  def clear(): Unit = value = ""
 
   object validation {
-    private var list = List.empty[Validation]
+    private var list = List.empty[FormValidation]
 
-    def apply(validation: Validation): FormInput = {
-      list = list ::: List(validation)
+    def apply(validation: Validation, modes: ValidationMode*): FormInput = {
+      val m = if (modes.isEmpty) ValidationMode.all else modes.toSet
+      list = list ::: List(FormValidation(validation, m))
       FormInput.this
     }
 
-    def all(): List[Validation] = list
+    def all(): List[FormValidation] = list
   }
 
-  def validate(): Boolean = {
-    val v = option
-    val results = validation.all().flatMap(_.validate(input, v))
+  def validate(mode: ValidationMode): Boolean = {
+    val results = validation.all().flatMap(_.validate(mode, this).asOption)
     error.clear()
     val message = results.mkString("<br/>")
     if (results.nonEmpty) {

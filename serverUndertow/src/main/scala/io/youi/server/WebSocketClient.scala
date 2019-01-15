@@ -37,6 +37,7 @@ class WebSocketClient(url: URL,
                       buffered: Boolean = true,
                       authorization: => Option[String] = None) extends Connection {
   private lazy val worker = Xnio.getInstance().createWorker(OptionMap.builder()
+    .set(Options.KEEP_ALIVE, true)
     .set(Options.WORKER_IO_THREADS, workerThreads)
     .set(Options.CONNECTION_HIGH_WATER, highWater)
     .set(Options.CONNECTION_LOW_WATER, lowWater)
@@ -96,6 +97,7 @@ class WebSocketClient(url: URL,
           sendMessage(message)
         }
         _connected := true
+        scribe.info(s"Connected to $url successfully")
 
         checkBacklog()
 
@@ -105,7 +107,7 @@ class WebSocketClient(url: URL,
       override def handleFailed(exception: IOException, attachment: Any): Unit = {
         _channel := None
         if (autoReconnect) {
-          scribe.warn(s"Connection closed or unable to connect. Trying again in ${reconnectDelay.toSeconds} seconds...")
+          scribe.warn(s"Connection closed or unable to connect (${exception.getMessage}). Trying again in ${reconnectDelay.toSeconds} seconds...")
           Time.delay(reconnectDelay).foreach(_ => connect())
         } else {
           scribe.warn("Connection closed or unable to connect.")

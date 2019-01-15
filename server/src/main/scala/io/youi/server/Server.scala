@@ -1,16 +1,20 @@
 package io.youi.server
 
+import java.util.concurrent.atomic.AtomicBoolean
+
 import reactify._
 import io.youi.{ErrorSupport, ItemContainer}
-import io.youi.http.{HttpConnection, ProxyHandler, HttpStatus}
+import io.youi.http.{HttpConnection, HttpStatus, ProxyHandler}
 import io.youi.server.handler.{HttpHandler, HttpHandlerBuilder}
 import io.youi.server.session.SessionStore
 import profig.{Profig, ProfigPath}
 
 import scala.annotation.tailrec
+import scala.concurrent.Future
+import scribe.Execution.global
 
 trait Server extends HttpHandler with ErrorSupport {
-  private var initialized = false
+  private val initialized = new AtomicBoolean(false)
 
   val config = new ServerConfig(this)
 
@@ -49,23 +53,26 @@ trait Server extends HttpHandler with ErrorSupport {
     def add(): Unit = handlers += handler
   }
 
-  def isInitialized: Boolean = initialized
+  def isInitialized: Boolean = initialized.get()
   def isRunning: Boolean = isInitialized && implementation.isRunning
 
   /**
     * Init is called on start(), but only the first time. If the server is restarted it is not invoked again.
     */
-  protected def init(): Unit = {
-  }
+  protected def init(): Future[Unit] = Future.successful(())
 
-  def start(): Unit = synchronized {
-    if (!initialized) {
+  def start(): Future[Unit] = {
+    val shouldInit = initialized.compareAndSet(false, true)
+    val future = if (shouldInit) {
       init()
-      initialized = true
+    } else {
+      Future.successful(())
     }
 
-    implementation.start()
-    scribe.info(s"Server started on ${config.enabledListeners.mkString(", ")}")
+    future.map { _ =>
+      implementation.start()
+      scribe.info(s"Server started on ${config.enabledListeners.mkString(", ")}")
+    }
   }
 
   def stop(): Unit = synchronized {

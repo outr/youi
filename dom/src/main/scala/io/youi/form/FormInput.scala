@@ -8,6 +8,9 @@ class FormInput(formSupport: FormSupport, val input: html.Input) {
   input.addEventListener("blur", (_: Event) => {
     validate()
   })
+  input.addEventListener("change", (_: Event) => {
+    validate()
+  })
 
   def option: Option[String] = input.value match {
     case s if s != null && s.trim.nonEmpty => Some(s)

@@ -17,6 +17,7 @@ import profig.{JsonUtil, Profig}
 import reactify.{Channel, Var}
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 import scala.concurrent.duration._
 
 trait ServerApplication extends YouIApplication with Server {
@@ -49,9 +50,7 @@ trait ServerApplication extends YouIApplication with Server {
   protected def scriptPaths: List[String] = Nil
   protected def responseMap(httpConnection: HttpConnection): Map[String, String] = Map.empty
 
-  override protected def init(): Unit = {
-    super.init()
-
+  override protected def init(): Future[Unit] = super.init().map { _ =>
     connectivityEntries.attachAndFire { entries =>
       ServerApplication.this.synchronized {
         entries.foreach { appComm =>

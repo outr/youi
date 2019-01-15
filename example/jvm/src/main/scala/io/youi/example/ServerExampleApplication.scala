@@ -6,13 +6,16 @@ import io.youi.net._
 import io.youi.server.handler.{CachingManager, ProxyCache}
 import io.youi.server.dsl._
 
+import scala.concurrent.Future
+import scribe.Execution.global
+
 object ServerExampleApplication extends ExampleApplication with ServerApplication {
   val generalPages: Page = page(GeneralPages)
 
   override protected def applicationBasePath = s"app/youi-example"
   override protected def applicationJSBasePath = s"/app/example"
 
-  override def start(): Unit = {
+  override protected def init(): Future[Unit] = super.init().map { _ =>
     // TODO: add support to `Connection` to add deltas so they may all be processed at the end
     proxies += ProxyHandler(path.exact("/proxy.html")) { url =>
       URL("http://google.com").copy(path = url.path)
@@ -31,7 +34,5 @@ object ServerExampleApplication extends ExampleApplication with ServerApplicatio
         path.startsWith("/app") / ClassLoaderPath()
       )
     )
-
-    super.start()
   }
 }

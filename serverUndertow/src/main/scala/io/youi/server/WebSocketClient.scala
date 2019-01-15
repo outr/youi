@@ -107,7 +107,7 @@ class WebSocketClient(url: URL,
       override def handleFailed(exception: IOException, attachment: Any): Unit = {
         _channel := None
         if (autoReconnect) {
-          scribe.warn(s"Connection closed or unable to connect (${exception.getMessage}). Trying again in ${reconnectDelay.toSeconds} seconds...")
+          scribe.warn(s"Connection closed or unable to connect to $url (${exception.getMessage}). Trying again in ${reconnectDelay.toSeconds} seconds...")
           Time.delay(reconnectDelay).foreach(_ => connect())
         } else {
           scribe.warn("Connection closed or unable to connect.")

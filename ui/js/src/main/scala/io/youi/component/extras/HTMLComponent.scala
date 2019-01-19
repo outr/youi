@@ -73,8 +73,8 @@ trait HTMLComponent[E <: html.Element] extends Component with HTMLComponentTheme
     }
   }
 
-  override protected def measuredWidth: Double = Measurer.measure(element).width
-  override protected def measuredHeight: Double = Measurer.measure(element).height
+  override protected def measuredWidth: Double = size.view.width
+  override protected def measuredHeight: Double = size.view.height
 
   class Attribute(attribute: String, name: String) {
     lazy val key: String = s"$attribute-$name"

@@ -7,7 +7,8 @@ import io.youi.theme.{StyleConnect, StyleProp, Theme}
 import io.youi.theme.bootstrap.ButtonTheme
 import org.scalajs.dom._
 
-class Button(override val element: html.Button) extends Container with BootstrapComponent[html.Element] with ButtonTheme {
+class Button(element: html.Button,
+             existing: Boolean = false) extends Container(element, existing) with BootstrapComponent[html.Element] with ButtonTheme {
   def this() = {
     this(create[html.Button]("button"))
   }
@@ -26,8 +27,6 @@ object Button extends ButtonTheme {
   override protected def defaultParentTheme: Theme = HTMLComponent
 
   def existing(id: String, in: html.Element = document.body): Button = {
-    val e = in.byId[html.Button](id)
-    val b = new Button(e)
-    b
+    new Button(in.byId[html.Button](id), existing = true)
   }
 }

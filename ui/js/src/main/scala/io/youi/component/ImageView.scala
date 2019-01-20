@@ -10,6 +10,8 @@ class ImageView(implementation: ImageViewImplementation = HTMLImageViewImplement
     extends HTMLComponent[html.Element] with ImageViewTheme {
   override protected lazy val element: html.Element = implementation.createElement()
 
+  override def existing: Boolean = false
+
   override protected def defaultParentTheme: Theme = ImageView
 
   lazy val image: StyleProp[Image] = {

@@ -6,7 +6,8 @@ import io.youi.drawable.Context
 import io.youi.theme.{CanvasComponentTheme, Theme}
 import org.scalajs.dom._
 
-abstract class CanvasComponent(protected val element: html.Canvas) extends HTMLComponent[html.Canvas] with CanvasComponentTheme {
+abstract class CanvasComponent(protected val element: html.Canvas,
+                               val existing: Boolean = false) extends HTMLComponent[html.Canvas] with CanvasComponentTheme {
   protected lazy val context: Context = new Context(element, ratio())
 
   def this() = {

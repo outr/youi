@@ -1,11 +1,12 @@
 package io.youi.component
 
 import io.youi.component.extras.HTMLComponent
-import io.youi.dom
+import io.youi.dom._
 import io.youi.theme.{Theme, VideoViewTheme}
-import org.scalajs.dom.html
+import org.scalajs.dom.{document, html}
 
-class VideoView(override protected val element: html.Span = dom.create[html.Span]("span")) extends HTMLComponent[html.Span] with VideoViewTheme {
+class VideoView(override protected val element: html.Element = create[html.Element]("span"),
+                val existing: Boolean = false) extends HTMLComponent[html.Element] with VideoViewTheme {
   override protected def defaultParentTheme: Theme = VideoView
 
   override def componentType: String = "VideoView"
@@ -26,4 +27,8 @@ class VideoView(override protected val element: html.Span = dom.create[html.Span
 
 object VideoView extends VideoViewTheme {
   override protected def defaultParentTheme: Theme = HTMLComponent
+
+  def existing(id: String, in: html.Element = document.body): VideoView = {
+    new VideoView(in.byId[html.Element](id), existing = true)
+  }
 }

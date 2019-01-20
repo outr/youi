@@ -6,7 +6,8 @@ import io.youi.theme.{HTMLContainerTheme, Theme}
 import org.scalajs.dom.html
 import reactify.Var
 
-abstract class HTMLContainer[Child <: Component](override protected val element: html.Element) extends HTMLComponent[html.Element] with AbstractContainer[Child] with HTMLContainerTheme {
+abstract class HTMLContainer[Child <: Component](override protected val element: html.Element,
+                                                 val existing: Boolean = false) extends HTMLComponent[html.Element] with AbstractContainer[Child] with HTMLContainerTheme {
   override lazy val children: Var[Vector[Child]] = Var(Vector.empty)
   override lazy val layout: Var[Layout] = Var(Layout.None, mode = Var.Mode.Static)
 

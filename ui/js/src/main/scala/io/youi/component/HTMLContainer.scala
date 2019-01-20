@@ -11,10 +11,6 @@ abstract class HTMLContainer[Child <: Component](override protected val element:
   override lazy val layout: Var[Layout] = Var(Layout.None, mode = Var.Mode.Static)
 
   override protected def defaultParentTheme: Theme = HTMLContainer
-
-  override protected def measuredWidth: Double = children.foldLeft(0.0)((max, child) => math.max(max, child.position.right))
-
-  override protected def measuredHeight: Double = children.foldLeft(0.0)((max, child) => math.max(max, child.position.bottom))
 }
 
 object HTMLContainer extends HTMLContainerTheme {

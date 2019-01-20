@@ -5,7 +5,6 @@ import io.youi.component.bootstrap.{Button, ButtonType}
 import io.youi.example.screen.UIExampleScreen
 import io.youi.font.GoogleFont
 import io.youi.net._
-import io.youi.theme.bootstrap.ButtonTheme
 import reactify._
 
 import scala.concurrent.ExecutionContext.Implicits.global

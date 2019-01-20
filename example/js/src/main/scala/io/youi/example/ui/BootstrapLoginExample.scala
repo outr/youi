@@ -1,5 +1,6 @@
 package io.youi.example.ui
 
+import io.youi.component.HTMLTextInput
 import io.youi.{Color, Template, dom}
 import io.youi.component.bootstrap.Button
 import io.youi.component.extras.HTMLComponent
@@ -53,6 +54,13 @@ class BootstrapLoginExample extends UIExampleScreen {
 
     val parent = HTMLComponent.element(container)
     parent.appendChild(form)
+
+    val email = HTMLTextInput.existing("inputEmail", parent)
+    val password = HTMLTextInput.existing("inputPassword", parent)
+
+    email.value.attach { e =>
+      scribe.info(s"Value: $e")
+    }
 
     val button = Button.existing("sign-in", parent)
     scribe.info(s"Button: ${button.block()}")

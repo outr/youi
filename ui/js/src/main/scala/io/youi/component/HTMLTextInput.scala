@@ -1,5 +1,6 @@
 package io.youi.component
 
+import io.youi.{AnimationFrame, ui}
 import io.youi.component.extras.HTMLComponent
 import io.youi.dom._
 import io.youi.theme.{HTMLTextInputTheme, Theme}
@@ -29,6 +30,8 @@ object HTMLTextInput extends HTMLTextInputTheme {
   def existing(id: String, in: html.Element = document.body): HTMLTextInput = {
     val e = in.byId[html.Input](id)
     val i = new HTMLTextInput(e)
+    HTMLComponent.existing(i)
+    AnimationFrame.delta.attach(i.update)
     i
   }
 }

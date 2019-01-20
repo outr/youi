@@ -5,13 +5,14 @@ import io.youi.{dom, ui}
 import io.youi.dom._
 import io.youi.event.{EventSupport, HTMLEvents}
 import io.youi.theme.{HTMLComponentTheme, Theme}
-import io.youi.util.Measurer
 import org.scalajs.dom.{Element, _}
 import reactify.Var
 
 trait HTMLComponent[E <: html.Element] extends Component with HTMLComponentTheme {
   protected def element: E
   protected val e: HTMLExtras[E] = new HTMLExtras[E](element)
+
+  private val existingElement = Var(false)
 
   override lazy val position: HTMLComponentPosition = new HTMLComponentPosition(this)
   override lazy val size: HTMLComponentSize = new HTMLComponentSize(this)
@@ -52,7 +53,7 @@ trait HTMLComponent[E <: html.Element] extends Component with HTMLComponentTheme
       element.setAttribute("id", id())
     }
 
-    if (this != ui) {
+    if (this != ui && !existingElement) {
       parent.attachAndFire {
         case Some(p) => {
           sibling.previous() match {
@@ -66,9 +67,7 @@ trait HTMLComponent[E <: html.Element] extends Component with HTMLComponentTheme
             }
           }
         }
-        case None => {
-          element.remove()
-        }
+        case None => element.remove()
       }
     }
   }
@@ -102,4 +101,6 @@ object HTMLComponent extends HTMLComponentTheme {
   }
 
   def element(component: Component): html.Element = component.asInstanceOf[HTMLComponent[html.Element]].element
+
+  def existing(component: Component): Unit = component.asInstanceOf[HTMLComponent[html.Element]].existingElement := true
 }

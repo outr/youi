@@ -53,6 +53,7 @@ object ClientExampleApplication extends ExampleApplication with ClientApplicatio
   val snap: SnapExample = new SnapExample
   val svgImage: SVGImageExample = new SVGImageExample
   val text: TextViewExample = new TextViewExample
+  val input: TextInputExample = new TextInputExample
   val vertical: VerticalLayoutExample = new VerticalLayoutExample
   val video: VideoExample = new VideoExample
   val virtual: VirtualSizeExample = new VirtualSizeExample

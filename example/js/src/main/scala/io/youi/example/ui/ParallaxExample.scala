@@ -16,8 +16,8 @@ class ParallaxExample extends UIExampleScreen {
   override def path: Path = path"/examples/parallax.html"
 
   override def createUI(): Future[Unit] = GoogleFont.`Lobster`.load().map { fnt =>
-    ui.overflow.y := Overflow.Auto
-    ui.size.height := 4000.px
+    register(ui.overflow.y, Overflow.Auto)
+    register(ui.size.height, 4000.px)
 
     val textView = new HTMLTextView {
       value := s"Hello, World"

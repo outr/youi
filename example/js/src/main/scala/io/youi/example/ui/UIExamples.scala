@@ -1,10 +1,11 @@
 package io.youi.example.ui
 
-import io.youi.Color
+import io.youi.{Color, ui}
 import io.youi.example.ClientExampleApplication
 import io.youi.component.bootstrap.Button
 import io.youi.example.screen.UIExampleScreen
 import io.youi.net._
+import io.youi.style.Overflow
 import reactify._
 
 import scala.concurrent.Future
@@ -15,6 +16,7 @@ class UIExamples extends UIExampleScreen {
   override def path: Path = path"/ui-examples.html"
 
   override def createUI(): Future[Unit] = super.load().map { _ =>
+    register(ui.overflow.y, Overflow.Auto)
     var previous: Option[Button] = None
     ClientExampleApplication.screens().collect {
       case screen: UIExampleScreen if screen.title != title => screen

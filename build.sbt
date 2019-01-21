@@ -3,9 +3,9 @@ import sbtcrossproject.CrossPlugin.autoImport.crossProject
 
 name := "youi"
 organization in ThisBuild := "io.youi"
-version in ThisBuild := "0.9.11"
-scalaVersion in ThisBuild := "2.12.7"
-crossScalaVersions in ThisBuild := List("2.12.7", "2.11.12")
+version in ThisBuild := "0.9.12-SNAPSHOT"
+scalaVersion in ThisBuild := "2.12.8"
+crossScalaVersions in ThisBuild := List("2.12.8", "2.11.12")
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
 resolvers in ThisBuild += Resolver.sonatypeRepo("snapshots")
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation", "-feature")
@@ -42,7 +42,7 @@ val scalaJSDOM = "0.9.6"
 val okHttpVersion = "3.12.1"
 val circeVersion = "0.10.1"
 val uaDetectorVersion = "2014.10"
-val undertowVersion = "2.0.16.Final"
+val undertowVersion = "2.0.17.Final"
 val closureCompilerVersion = "v20181008"
 val jSoupVersion = "1.11.3"
 val scalaXMLVersion = "1.1.1"

@@ -31,7 +31,7 @@ object SessionStore {
       case Some(id) => id     // Found cookie in request
       case None => httpConnection.response.cookies.find(_.name == session.name()).map(_.value) match {
         case Some(id) => id   // Found cookie in response
-        case None if session.secure() && httpConnection.request.url.protocol != Protocol.Https => {
+        case None if session.secure() && !session.forceSecure() && httpConnection.request.url.protocol != Protocol.Https => {
           // Don't set a new cookie for secure-only on an insecure connection
           Unique()
         }

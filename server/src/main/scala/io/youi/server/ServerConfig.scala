@@ -16,6 +16,10 @@ class ServerConfig(server: Server) {
     val domain: Var[Option[String]] = Var(config.domain)
     val path: Var[Option[String]] = Var(config.path)
     val secure: Var[Boolean] = Var(config.secure)
+    /**
+      * If true, will send secure even over insecure connections. Useful when a higher-level proxy is providing SSL.
+      */
+    val forceSecure: Var[Boolean] = Var(config.forceSecure)
     val httpOnly: Var[Boolean] = Var(config.httpOnly)
     val sameSite: Var[SameSite] = Var(config.sameSite.toLowerCase match {
       case "normal" => SameSite.Normal
@@ -28,6 +32,7 @@ class ServerConfig(server: Server) {
                              domain: Option[String] = None,
                              path: Option[String] = Some("/"),
                              secure: Boolean = false,
+                             forceSecure: Boolean = false,
                              httpOnly: Boolean = true,
                              sameSite: String = "strict")
   }

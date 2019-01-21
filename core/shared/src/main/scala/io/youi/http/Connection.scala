@@ -26,7 +26,7 @@ class Connection {
     val textReaction: Reaction[String] = Reaction { t: String =>
       Connection.backlog(this, t)
     }
-    val binaryReaction: Reaction[Array[ByteBuffer]] = Reaction { b: Array[ByteBuffer] =>
+    val binaryReaction: Reaction[ByteBuffer] = Reaction { b: ByteBuffer =>
       Connection.backlog(this, b)
     }
     send.text.reactions += textReaction
@@ -52,7 +52,7 @@ class Connection {
         if (b) {
           backlog.foreach {
             case s: String => send.text := s
-            case b: Array[ByteBuffer] => send.binary := b
+            case b: ByteBuffer => send.binary := b
           }
           backlog.clear()
         } else {
@@ -71,7 +71,7 @@ class Connection {
 
 class WebSocketChannels {
   val text: Channel[String] = Channel[String]
-  val binary: Channel[Array[ByteBuffer]] = Channel[Array[ByteBuffer]]
+  val binary: Channel[ByteBuffer] = Channel[ByteBuffer]
   val close: Channel[Unit] = Channel[Unit]
 }
 

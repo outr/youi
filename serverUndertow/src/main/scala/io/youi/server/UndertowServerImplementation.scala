@@ -203,7 +203,7 @@ object UndertowServerImplementation extends ServerImplementationCreator {
           }
 
           override def onFullBinaryMessage(channel: WebSocketChannel, message: BufferedBinaryMessage): Unit = {
-            connection.receive.binary := message.getData.getResource
+            message.getData.getResource.foreach(connection.receive.binary := _)
             super.onFullBinaryMessage(channel, message)
           }
 

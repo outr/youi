@@ -2,6 +2,7 @@ package io.youi.server
 
 import java.io.IOException
 import java.net.URI
+import java.nio.ByteBuffer
 
 import reactify.Var
 import io.undertow.protocols.ssl.UndertowXnioSsl
@@ -69,7 +70,7 @@ class WebSocketClient(url: URL,
   private val _channel = Var[Option[WebSocketChannel]](None)
   def channel: WebSocketChannel = _channel.get.getOrElse(throw new RuntimeException("No connection has been established."))
 
-  private var backlog = List.empty[String]
+  private var backlog = List.empty[AnyRef]
 
   def connect(): Future[Unit] = if (_channel.get.isEmpty) {
     val promise = Promise[Unit]
@@ -93,6 +94,10 @@ class WebSocketClient(url: URL,
 
         // Send messages
         send.text.attach { message =>
+          checkBacklog()
+          sendMessage(message)
+        }
+        send.binary.attach { message =>
           checkBacklog()
           sendMessage(message)
         }
@@ -132,7 +137,10 @@ class WebSocketClient(url: URL,
   private def checkBacklog(): Unit = {
     if (backlog.nonEmpty) {
       synchronized {
-        backlog.foreach(sendMessage)
+        backlog.foreach {
+          case text: String => sendMessage(text)
+          case binary: ByteBuffer => sendMessage(binary)
+        }
         backlog = Nil
       }
     }
@@ -140,6 +148,19 @@ class WebSocketClient(url: URL,
 
   private def sendMessage(message: String): Unit = {
     WebSockets.sendText(message, channel, new WebSocketCallback[Void] {
+      override def complete(channel: WebSocketChannel, context: Void): Unit = {
+        // Successfully sent
+      }
+
+      override def onError(channel: WebSocketChannel, context: Void, throwable: Throwable): Unit = WebSocketClient.this synchronized {
+        backlog = message :: backlog
+        disconnect()
+      }
+    })
+  }
+
+  private def sendMessage(message: ByteBuffer): Unit = {
+    WebSockets.sendBinary(message, channel, new WebSocketCallback[Void] {
       override def complete(channel: WebSocketChannel, context: Void): Unit = {
         // Successfully sent
       }

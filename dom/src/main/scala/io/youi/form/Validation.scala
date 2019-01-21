@@ -20,7 +20,7 @@ object Validation {
   val NonEmpty: Validation = Conditional(_.option.nonEmpty, name => s"$name must not be empty")
   val Email: Validation = {
     val regex = """^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$"""
-    Conditional(input => input.value.matches(regex), name => "$name must be a valid email address")
+    Conditional(input => input.value.matches(regex), name => s"$name must be a valid email address")
   }
 
   def Length(minimum: Int = 0, maximum: Int = Int.MaxValue): Validation = {

@@ -1,11 +1,11 @@
 package io.youi.http
 
-import java.nio.ByteBuffer
 
 import io.youi.net.URL
 import org.scalajs.dom._
 
-import scala.scalajs.js.typedarray.ArrayBuffer
+import scala.scalajs.js.typedarray._
+import scala.scalajs.js.typedarray.TypedArrayBufferOps._
 
 object WebSocketUtil {
   // TODO: revisit disconnecting, reconnecting, and errors
@@ -26,7 +26,14 @@ object WebSocketUtil {
         listener.close()
         Connection.backlog(listener, message)
       } else if (ws.readyState == WebSocket.OPEN) {
-        ws.send(ByteBuffer.wrap(message))
+        if (message.hasTypedArray()) {
+          ws.send(message.typedArray().buffer)
+        } else {
+          val array = new Array[Byte](message.remaining())
+          message.get(array)
+          val arrayBuffer = array.toTypedArray.buffer
+          ws.send(arrayBuffer)
+        }
       } else {
         Connection.backlog(listener, message)
       }
@@ -48,11 +55,11 @@ object WebSocketUtil {
           val fileReader = new FileReader
           fileReader.onload = (_: Event) => {
             val arrayBuffer = fileReader.result.asInstanceOf[ArrayBuffer]
-            listener.receive.binary := ByteBuffer.wrap(arrayBuffer)
+            listener.receive.binary := TypedArrayBuffer.wrap(arrayBuffer)
           }
           fileReader.readAsArrayBuffer(blob)
         }
-        case ab: ArrayBuffer => listener.receive.binary := ByteBuffer.wrap(ab)
+        case ab: ArrayBuffer => listener.receive.binary := TypedArrayBuffer.wrap(ab)
       }
     }
     ws

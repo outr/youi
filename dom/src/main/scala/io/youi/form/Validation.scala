@@ -24,7 +24,7 @@ object Validation {
   }
 
   def Length(minimum: Int = 0, maximum: Int = Int.MaxValue): Validation = {
-    Conditional(input => (minimum to maximum).contains(input.value.length), name => s"$name must be a minimum of $minimum characters and a maximum of $maximum characters")
+    Conditional(input => (minimum to maximum).contains(input.value.length), name => s"$name must be between $minimum and $maximum length")
   }
   def EqualTo(that: FormInput): Validation = Conditional(_.option == that.option, name => s"$name must be equal to ${that.name.capitalize}")
   def NotEqual(bad: => String, message: String => String): Validation = Conditional(!_.option.contains(bad), message)

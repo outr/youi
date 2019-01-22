@@ -22,6 +22,7 @@ object ServerExampleApplication extends ExampleApplication with ServerApplicatio
     }
     handler(
       filters(
+        path"/" / redirect(path"/ui-examples.html"),
         path"/hello.txt" / CachingManager.MaxAge(120L) / "Hello, World!".withContentType(ContentType.`text/plain`),
         combined.any(
           path.matches("/examples/.*[.]html"),

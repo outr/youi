@@ -26,11 +26,9 @@ import org.xnio.{OptionMap, Xnio}
 
 import scala.collection.JavaConverters._
 
-// TODO: determine problems in HTTP2 so it can be enabled by default going forward
-// TODO: determine problems in WebSocket compression so it can be enabled by default going forward
 class UndertowServerImplementation(val server: Server) extends ServerImplementation with UndertowHttpHandler {
-  val enableHTTP2: Boolean = Server.config("enableHTTP2").opt[Boolean].getOrElse(false)
-  val webSocketCompression: Boolean = Server.config("webSocketCompression").opt[Boolean].getOrElse(false)
+  val enableHTTP2: Boolean = Server.config("enableHTTP2").opt[Boolean].getOrElse(true)
+  val webSocketCompression: Boolean = Server.config("webSocketCompression").opt[Boolean].getOrElse(true)
 
   private var instance: Option[Undertow] = None
 

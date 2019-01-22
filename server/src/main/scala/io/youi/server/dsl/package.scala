@@ -94,6 +94,13 @@ package object dsl {
     ContentHandler(content, status)
   }
 
+  def redirect(path: Path): ConnectionFilter = new ConnectionFilter {
+    override def filter(connection: HttpConnection): Option[HttpConnection] = {
+      HttpHandler.redirect(connection, path.encoded)
+      Some(connection)
+    }
+  }
+
   implicit def string2Content(value: String): Content = Content.string(value, ContentType.`text/plain`)
   implicit def xml2Content(value: Elem): Content = Content.xml(value, ContentType.`text/xml`)
 }

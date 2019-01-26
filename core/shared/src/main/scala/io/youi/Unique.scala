@@ -7,6 +7,7 @@ object Unique {
   val LettersUpper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
   val Numbers = "0123456789"
   val Readable = "ABCDEFGHJKLMNPQRSTWXYZ23456789"
+  val Hexadecimal = s"${Numbers}abcdef"
   val LettersAndNumbers = s"$LettersLower$Numbers"
   val AllLettersAndNumbers = s"$LettersLower$LettersUpper$Numbers"
 
@@ -22,6 +23,20 @@ object Unique {
   def apply(length: Int = 32, characters: String = AllLettersAndNumbers): String = {
     val charMax = characters.length
     (0 until length).map(i => characters.charAt(r.nextInt(charMax))).mkString
+  }
+
+  /**
+    * Convenience functionality to generate a UUID (https://en.wikipedia.org/wiki/Universally_unique_identifier)
+    *
+    * 32 characters of unique hexadecimal values with dashes representing 36 total characters
+    */
+  def uuid: String = {
+    val a = apply(8, Hexadecimal)
+    val b = apply(4, Hexadecimal)
+    val c = apply(4, Hexadecimal)
+    val d = apply(4, Hexadecimal)
+    val e = apply(12, Hexadecimal)
+    s"$a-$b-$c-$d-$e"
   }
 
   /**

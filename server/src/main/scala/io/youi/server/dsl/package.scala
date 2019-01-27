@@ -24,7 +24,7 @@ package object dsl {
 
     override def filter(connection: HttpConnection): Option[HttpConnection] = {
       ValidatorHttpHandler.validate(connection, list) match {
-        case ValidationResult.Continue => Some(connection)
+        case (c, ValidationResult.Continue) => Some(c)
         case _ => None
       }
     }

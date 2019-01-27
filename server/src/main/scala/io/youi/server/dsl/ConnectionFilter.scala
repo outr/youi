@@ -3,6 +3,8 @@ package io.youi.server.dsl
 import io.youi.http.HttpConnection
 import io.youi.server.handler.HttpHandler
 
+import scala.concurrent.Future
+
 trait ConnectionFilter extends HttpHandler {
   def filter(connection: HttpConnection): Option[HttpConnection]
 
@@ -21,12 +23,27 @@ trait ConnectionFilter extends HttpHandler {
     connection.store(ConnectionFilter.LastKey) = current ::: filters.toList
   }
 
-  override def handle(connection: HttpConnection): Unit = filter(connection).map { connection =>
-    val last = connection.store.getOrElse[List[ConnectionFilter]](ConnectionFilter.LastKey, Nil)
-    last.toStream.flatMap(_.filter(connection)).headOption
+  override def handle(connection: HttpConnection): Future[HttpConnection] = Future.successful {
+    filter(connection) match {
+      case Some(c) => {
+        val last = c.store.getOrElse[List[ConnectionFilter]](ConnectionFilter.LastKey, Nil)
+        ConnectionFilter.recurse(c, last)
+      }
+      case None => connection
+    }
   }
 }
 
 object ConnectionFilter {
   private val LastKey: String = "ConnectionFilterLast"
+
+  def recurse(connection: HttpConnection, filters: List[ConnectionFilter]): HttpConnection = if (filters.isEmpty) {
+    connection
+  } else {
+    val filter = filters.head
+    filter.filter(connection) match {
+      case None => connection
+      case Some(modified) => recurse(modified, filters.tail)
+    }
+  }
 }

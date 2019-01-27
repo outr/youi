@@ -25,6 +25,10 @@ import org.powerscala.io._
 import org.xnio.{OptionMap, Xnio}
 
 import scala.collection.JavaConverters._
+import scribe.Execution.global
+
+import scala.concurrent.Await
+import scala.concurrent.duration.Duration
 
 class UndertowServerImplementation(val server: Server) extends ServerImplementation with UndertowHttpHandler {
   val enableHTTP2: Boolean = Server.config("enableHTTP2").opt[Boolean].getOrElse(true)
@@ -99,9 +103,14 @@ class UndertowServerImplementation(val server: Server) extends ServerImplementat
 
   private def requestHandler(exchange: HttpServerExchange, url: URL): Unit = {
     UndertowServerImplementation.processRequest(exchange, url) { request =>
-      val connection: HttpConnection = new HttpConnection(server, request)
-      server.handle(connection)
-      UndertowServerImplementation.response(this, connection, exchange)
+      try {
+        val connection: HttpConnection = HttpConnection(server, request)
+        // TODO: Support true non-blocking
+        val c = Await.result(server.handle(connection), Duration.Inf)
+        UndertowServerImplementation.response(this, c, exchange)
+      } catch {
+        case t: Throwable => scribe.error(t)
+      }
     }
   }
 }
@@ -244,7 +253,7 @@ object UndertowServerImplementation extends ServerImplementationCreator {
   private def handleStandard(impl: UndertowServerImplementation, connection: HttpConnection, exchange: HttpServerExchange): Unit = {
     connection.response.content.foreach { content =>
       if (Headers.`Content-Type`.value(connection.response.headers).isEmpty) {
-        connection.update { response =>
+        connection.modify { response =>
           response.withHeader(Headers.`Content-Type`(content.contentType))
         }
       }

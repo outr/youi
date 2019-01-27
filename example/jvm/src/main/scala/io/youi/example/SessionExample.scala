@@ -5,8 +5,10 @@ import io.youi.http.content.Content
 import io.youi.net.ContentType
 import io.youi.server.handler.{HttpHandler, SenderHandler}
 
+import scala.concurrent.Future
+
 object SessionExample extends HttpHandler {
-  override def handle(connection: HttpConnection): Unit = {
+  override def handle(connection: HttpConnection): Future[HttpConnection] = {
     val session = MySession(connection)
     val html = <html>
       <head>

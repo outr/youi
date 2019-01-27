@@ -6,6 +6,8 @@ import io.youi.server.handler.{CachingManager, HttpProcessor}
 import io.youi.server.validation.Validator
 import io.youi.stream._
 
+import scala.concurrent.Future
+
 trait Page extends HttpProcessor[Content] {
   protected def application: ServerApplication
   protected def includeApplication: Boolean = true
@@ -17,7 +19,7 @@ trait Page extends HttpProcessor[Content] {
 
   protected def deltas(httpConnection: HttpConnection): List[Delta] = Nil
 
-  override protected def process(connection: HttpConnection, content: Content): Unit = {
+  override protected def process(connection: HttpConnection, content: Content): Future[HttpConnection] = {
     application.serveHTML(connection, content, deltas(connection), includeApplication)
   }
 }

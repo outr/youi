@@ -102,7 +102,7 @@ trait ServerApplication extends YouIApplication with Server {
           case None => // Ignore
         }
 
-        httpConnection.update(_.withContent(Content.empty))
+        Future.successful(httpConnection.modify(_.withContent(Content.empty)))
       }
     }
 
@@ -131,24 +131,26 @@ trait ServerApplication extends YouIApplication with Server {
         val url = httpConnection.request.url
         val fileName = url.path.decoded
         if (fileName.endsWith(".html") && excludeDotHTML) {
-          // Ignore
+          Future.successful(httpConnection)      // Ignore
         } else {
-          val mapped = mappings.toStream.flatMap(_(httpConnection)).headOption
+          val mapped = mappings.toStream.flatMap(_ (httpConnection)).headOption
           val withHTML = if (excludeDotHTML) {
             lookup(s"$fileName.html")
           } else {
             None
           }
-          mapped.orElse(lookup(fileName).orElse(withHTML)).foreach { content =>
+          mapped.orElse(lookup(fileName).orElse(withHTML)).map { content =>
             if (content.contentType == ContentType.`text/html`) {
               CachingManager.NotCached.handle(httpConnection)
               serveHTML(httpConnection, content, deltas, includeApplication(url))
             } else {
               CachingManager.LastModified().handle(httpConnection)
-              httpConnection.update(_.withContent(content))
+              Future.successful(httpConnection.modify(_.withContent(content)))
             }
-          }
+          }.getOrElse(Future.successful(httpConnection))
         }
+      } else {
+        Future.successful(httpConnection)
       }
     }
   }
@@ -179,6 +181,7 @@ trait ServerApplication extends YouIApplication with Server {
     def deltas(function: HttpConnection => List[Delta]): HttpHandler = builder.handle { connection =>
       val d: List[Delta] = function(connection)
       connection.deltas += d
+      Future.successful(connection)
     }
 
     def page(template: Content = ServerApplication.CanvasTemplate,
@@ -188,19 +191,19 @@ trait ServerApplication extends YouIApplication with Server {
     }
   }
 
-  override protected def handleInternal(connection: HttpConnection): Unit = {
-    super.handleInternal(connection)
-
-    connection.response.content match {
-      case Some(content) if content.contentType == ContentType.`text/html` && connection.deltas.nonEmpty => {
-        connection.update(_.removeContent())
-        serveHTML(connection, content, Nil, includeApplication = false)
+  override protected def handleInternal(connection: HttpConnection): Future[HttpConnection] = {
+    super.handleInternal(connection).flatMap { c =>
+      c.response.content match {
+        case Some(content) if content.contentType == ContentType.`text/html` && c.deltas.nonEmpty => {
+          c.modify(_.removeContent())
+          serveHTML(c, content, Nil, includeApplication = false)
+        }
+        case _ => Future.successful(c) // Ignore
       }
-      case _ => // Ignore
     }
   }
 
-  def serveHTML(httpConnection: HttpConnection, content: Content, deltas: List[Delta], includeApplication: Boolean): Unit = {
+  def serveHTML(httpConnection: HttpConnection, content: Content, deltas: List[Delta], includeApplication: Boolean): Future[HttpConnection] = {
     val stream = content match {
       case c: FileContent => HTMLParser.cache(c.file)
       case c: URLContent => HTMLParser.cache(c.url)
@@ -240,7 +243,7 @@ trait ServerApplication extends YouIApplication with Server {
   }
 
   private class ServerConnectionHandler(appComm: ApplicationConnectivity) extends HttpHandler {
-    override def handle(httpConnection: HttpConnection): Unit = appComm.activeConnections.synchronized {
+    override def handle(httpConnection: HttpConnection): Future[HttpConnection] = appComm.activeConnections.synchronized {
       val connection = new Connection
       connection.store.update("httpConnection", httpConnection)
       appComm.activeConnections := (appComm.activeConnections() + connection)
@@ -255,7 +258,7 @@ trait ServerApplication extends YouIApplication with Server {
         case "PONG" => // Nothing to do, this finishes the workflow
         case _ => // Ignore everything else
       }
-      httpConnection.webSocketSupport = connection
+      Future.successful(httpConnection.withWebSocket(connection))
     }
   }
 

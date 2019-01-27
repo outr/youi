@@ -12,11 +12,11 @@ import io.youi.server.handler.HttpHandler
 import profig.JsonUtil
 
 import scala.collection.mutable.ListBuffer
-import scala.concurrent.Await
+import scala.concurrent.{Await, Future}
 
 class RestfulHandler[Request, Response](restful: Restful[Request, Response])
                                        (implicit decoder: Decoder[Request], encoder: Encoder[Response]) extends HttpHandler {
-  override def handle(connection: HttpConnection): Unit = {
+  override def handle(connection: HttpConnection): Future[HttpConnection] = Future.successful {
     // Build JSON
     val result: RestfulResponse[Response] = RestfulHandler.jsonFromConnection(connection) match {
       case Left(err) => {
@@ -59,7 +59,7 @@ class RestfulHandler[Request, Response](restful: Restful[Request, Response])
     val responseJsonString = RestfulHandler.printer.pretty(responseJson)
 
     // Attach content
-    connection.update { httpResponse =>
+    connection.modify { httpResponse =>
       httpResponse
         .withContent(Content.string(responseJsonString, ContentType.`application/json`))
         .withStatus(result.status)

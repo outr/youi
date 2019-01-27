@@ -38,7 +38,7 @@ object SessionStore {
         case None => {        // No cookie found in request or response
           scribe.debug(s"No cookie found in request or response: ${httpConnection.request.url} / ${httpConnection.request.headers} / ${httpConnection.request.method}")
           val id = Unique()
-          httpConnection.update { response =>
+          httpConnection.modify { response =>
             val cookie = ResponseCookie(
               name = session.name,
               value = id,

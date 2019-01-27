@@ -37,9 +37,9 @@ case class HttpHandlerBuilder(server: Server,
 
   def resource(f: URL => Option[Content]): HttpHandler = {
     handle { connection =>
-      f(connection.request.url).foreach { content =>
+      f(connection.request.url).map { content =>
         SenderHandler(content, caching = cachingManager).handle(connection)
-      }
+      }.getOrElse(Future.successful(connection))
     }
   }
 
@@ -49,6 +49,8 @@ case class HttpHandlerBuilder(server: Server,
       val file = new File(directory, path)
       if (file.isFile) {
         SenderHandler(Content.file(file), caching = cachingManager).handle(connection)
+      } else {
+        Future.successful(connection)
       }
     }
   }
@@ -65,12 +67,14 @@ case class HttpHandlerBuilder(server: Server,
         case s if s.startsWith("/") => s.substring(1)
         case s => s
       }
-      Option(getClass.getClassLoader.getResource(resourcePath)).foreach { url =>
+      Option(getClass.getClassLoader.getResource(resourcePath)).map { url =>
         val file = new File(url.getFile)
         if (!file.isDirectory) {
           SenderHandler(Content.classPath(url), caching = cachingManager).handle(connection)
+        } else {
+          Future.successful(connection)
         }
-      }
+      }.getOrElse(Future.successful(connection))
     }
   }
 
@@ -88,7 +92,11 @@ case class HttpHandlerBuilder(server: Server,
         val content = StringContent(html, ContentType.`text/html`, file.lastModified())
         val handler = SenderHandler(content, caching = cachingManager)
         handler.handle(connection)
+      } else {
+        Future.successful(connection)
       }
+    } else {
+      Future.successful(connection)
     }
   }
 
@@ -103,12 +111,14 @@ case class HttpHandlerBuilder(server: Server,
   def validation(validators: Validator*): HttpHandler = wrap(new ValidatorHttpHandler(validators.toList))
 
   def redirect(path: Path): HttpHandler = handle { connection =>
-    HttpHandler.redirect(connection, path.encoded)
+    Future.successful(HttpHandler.redirect(connection, path.encoded))
   }
 
   def content(content: => Content): HttpHandler = handle { connection =>
-    connection.update { response =>
-      response.withContent(content)
+    Future.successful {
+      connection.modify { response =>
+        response.withContent(content)
+      }
     }
   }
 
@@ -139,19 +149,19 @@ case class HttpHandlerBuilder(server: Server,
           case None => None     // Ignore calls to this end-point that have no content
         }
       }
-      jsonOption.foreach { json =>
+      jsonOption.map { json =>
         json.as[Request] match {
-          case Left(error) => scribe.error(new RuntimeException(s"Error parsing $json", error))
-          case Right(request) => {
+          case Left(error) => throw new RuntimeException(s"Error parsing $json", error)
+          case Right(request) => Future.successful {
             val response = handler(request)
             val responseJson = response.asJson
             val responseJsonString = printer.pretty(responseJson)
-            connection.update { httpResponse =>
+            connection.modify { httpResponse =>
               httpResponse.withContent(Content.string(responseJsonString, ContentType.`application/json`))
             }
           }
         }
-      }
+      }.getOrElse(Future.successful(connection))
     }
   }
 
@@ -162,12 +172,14 @@ case class HttpHandlerBuilder(server: Server,
     val wrapper = new HttpHandler {
       override def priority: Priority = p
 
-      override def handle(connection: HttpConnection): Unit = {
+      override def handle(connection: HttpConnection): Future[HttpConnection] = {
         if (urlMatcher.forall(_.matches(connection.request.url)) && requestMatchers.forall(_(connection.request))) {
           ValidatorHttpHandler.validate(connection, validators) match {
-            case ValidationResult.Continue => handler.handle(connection)
-            case _ => // Validation failed, handled by ValidatorHttpHandler
+            case (c, ValidationResult.Continue) => handler.handle(c)
+            case _ => Future.successful(connection) // Validation failed, handled by ValidatorHttpHandler
           }
+        } else {
+          Future.successful(connection)
         }
       }
     }

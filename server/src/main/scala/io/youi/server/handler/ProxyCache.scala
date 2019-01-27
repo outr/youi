@@ -8,8 +8,10 @@ import io.youi.net.ContentType
 import io.youi.stream.{ByMultiple, ByTag, Delta}
 import org.powerscala.io._
 
+import scala.concurrent.Future
+
 case class ProxyCache(directory: Path = Paths.get(System.getProperty("java.io.tmpdir"))) extends HttpHandler {
-  override def handle(connection: HttpConnection): Unit = connection.request.url.param("url") match {
+  override def handle(connection: HttpConnection): Future[HttpConnection] = connection.request.url.param("url") match {
     case Some(cacheURL) => {
       val url = new URL(cacheURL)
       val fileName = URLEncoder.encode(cacheURL, "UTF-8")
@@ -26,9 +28,11 @@ case class ProxyCache(directory: Path = Paths.get(System.getProperty("java.io.tm
         scribe.debug(s"$cacheURL already exists")
       }
 
-      connection.update(_.withContent(Content.file(file)).withStatus(HttpStatus.OK))
+      Future.successful(connection.modify(_.withContent(Content.file(file)).withStatus(HttpStatus.OK)))
     }
-    case None => connection.update(_.withStatus(HttpStatus.BadRequest).withContent(Content.string("Must include `url` as GET parameter", ContentType.`text/plain`)))
+    case None => Future.successful {
+      connection.modify(_.withStatus(HttpStatus.BadRequest).withContent(Content.string("Must include `url` as GET parameter", ContentType.`text/plain`)))
+    }
   }
 }
 

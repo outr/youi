@@ -13,6 +13,8 @@ import io.youi.server.Server
 import io.youi.server.validation.{ValidationResult, Validator}
 import io.youi.stream.{Delta, HTMLParser, Selector}
 
+import scala.concurrent.Future
+
 case class HttpHandlerBuilder(server: Server,
                               urlMatcher: Option[URLMatcher] = None,
                               requestMatchers: Set[HttpRequest => Boolean] = Set.empty,
@@ -90,8 +92,8 @@ case class HttpHandlerBuilder(server: Server,
     }
   }
 
-  def handle(f: HttpConnection => Unit): HttpHandler = wrap(new HttpHandler {
-    override def handle(connection: HttpConnection): Unit = f(connection)
+  def handle(f: HttpConnection => Future[HttpConnection]): HttpHandler = wrap(new HttpHandler {
+    override def handle(connection: HttpConnection): Future[HttpConnection] = f(connection)
   })
 
   def validation(validator: HttpConnection => ValidationResult): HttpHandler = validation(new Validator {

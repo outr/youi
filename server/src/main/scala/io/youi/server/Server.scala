@@ -89,36 +89,35 @@ trait Server extends HttpHandler with ErrorSupport {
     SessionStore.dispose()
   }
 
-  override final def handle(connection: HttpConnection): Unit = try {
-    handleInternal(connection)
-  } catch {
-    case t: Throwable => {
+  override final def handle(connection: HttpConnection): Future[HttpConnection] = handleInternal(connection).recoverWith {
+    case t => {
       error(t)
       errorHandler.get.handle(connection, Some(t))
     }
   }
 
-  protected def handleInternal(connection: HttpConnection): Unit = {
-    handleRecursive(connection, handlers())
-
-    // NotFound handling
-    if (connection.response.content.isEmpty && connection.response.status == HttpStatus.OK) {
-      connection.update { response =>
-        response.copy(status = HttpStatus.NotFound)
+  protected def handleInternal(connection: HttpConnection): Future[HttpConnection] = {
+    handleRecursive(connection, handlers()).flatMap { updated =>
+      // NotFound handling
+      if (updated.response.content.isEmpty && updated.response.status == HttpStatus.OK) {
+        updated.modify { response =>
+          response.copy(status = HttpStatus.NotFound)
+        }
+        errorHandler.get.handle(updated, None)
+      } else {
+        Future.successful(updated)
       }
-      errorHandler.get.handle(connection, None)
     }
   }
 
-  @tailrec
-  private def handleRecursive(connection: HttpConnection, handlers: List[HttpHandler]): Unit = {
-    if (connection.isFinished || handlers.isEmpty) {
-      // Finished
+  private def handleRecursive(connection: HttpConnection, handlers: List[HttpHandler]): Future[HttpConnection] = {
+    if (connection.finished || handlers.isEmpty) {
+      Future.successful(connection)     // Finished
     } else {
       val handler = handlers.head
-      handler.handle(connection)
-
-      handleRecursive(connection, handlers.tail)
+      handler.handle(connection).flatMap { updated =>
+        handleRecursive(updated, handlers.tail)
+      }
     }
   }
 }

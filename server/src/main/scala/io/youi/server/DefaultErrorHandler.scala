@@ -6,6 +6,8 @@ import io.youi.net.ContentType
 import io.youi.server.dsl._
 import perfolation._
 
+import scala.concurrent.Future
+
 object DefaultErrorHandler extends ErrorHandler {
   lazy val lastModified: Long = System.currentTimeMillis()
 
@@ -18,14 +20,16 @@ object DefaultErrorHandler extends ErrorHandler {
     </body>
   </html>""".withContentType(ContentType.`text/html`).withLastModified(lastModified)
 
-  override def handle(connection: HttpConnection, t: Option[Throwable]): Unit = connection.update { response =>
-    val status = if (response.status.isError) {
-      response.status
-    } else {
-      HttpStatus.InternalServerError
+  override def handle(connection: HttpConnection, t: Option[Throwable]): Future[HttpConnection] = Future.successful {
+    connection.modify { response =>
+      val status = if (response.status.isError) {
+        response.status
+      } else {
+        HttpStatus.InternalServerError
+      }
+      response
+        .withContent(html(status))
+        .withHeader(CacheControl(CacheControl.NoCache))
     }
-    response
-      .withContent(html(status))
-      .withHeader(CacheControl(CacheControl.NoCache))
   }
 }

@@ -4,24 +4,21 @@ import io.youi.server.Server
 import io.youi.stream.Delta
 import io.youi.{MapStore, Store}
 
-class HttpConnection(val server: Server, val request: HttpRequest) {
-  private var responseVar: HttpResponse = HttpResponse()
-  private var finished = false
-
-  val store: Store = new MapStore()
-
-  def response: HttpResponse = responseVar
-
-  def update(f: HttpResponse => HttpResponse): Unit = synchronized {
-    responseVar = f(responseVar)
+case class HttpConnection(server: Server,
+                          request: HttpRequest,
+                          response: HttpResponse = HttpResponse(),
+                          finished: Boolean = false,
+                          store: Store = new MapStore()) {
+  def modify(f: HttpResponse => HttpResponse): HttpConnection = {
+    copy(response = f(response))
   }
 
   def isWebSocketUpgradeRequest: Boolean = Headers.`Connection`.all(request.headers).contains("Upgrade")
   def webSocketSupport: Option[Connection] = store.get[Connection](Connection.key)
-  def webSocketSupport_=(listener: Connection): Unit = {
+  def withWebSocket(listener: Connection): HttpConnection = {
     if (isWebSocketUpgradeRequest) {
       store.update(Connection.key, listener)
-      update { response =>
+      modify { response =>
         response.copy(status = HttpStatus.SwitchingProtocols)
       }
     } else {
@@ -42,6 +39,5 @@ class HttpConnection(val server: Server, val request: HttpRequest) {
     def nonEmpty: Boolean = apply().nonEmpty
   }
 
-  def isFinished: Boolean = finished
-  def finish(): Unit = finished = true
+  def finish(): HttpConnection = copy(finished = true)
 }

@@ -32,8 +32,8 @@ case class HttpConnection(server: Server,
     def apply(): List[Delta] = store.getOrElse[List[Delta]](key, Nil)
     def clear(): Unit = store.remove(key)
 
-    def +=(deltas: List[Delta]): Unit = store(key) = apply() ::: deltas
-    def +=(delta: Delta): Unit = this += List(delta)
+    def ++=(deltas: List[Delta]): Unit = store(key) = apply() ::: deltas
+    def +=(delta: Delta): Unit = this ++= List(delta)
 
     def isEmpty: Boolean = apply().isEmpty
     def nonEmpty: Boolean = apply().nonEmpty

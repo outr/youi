@@ -180,7 +180,7 @@ trait ServerApplication extends YouIApplication with Server {
       */
     def deltas(function: HttpConnection => List[Delta]): HttpHandler = builder.handle { connection =>
       val d: List[Delta] = function(connection)
-      connection.deltas += d
+      connection.deltas ++= d
       Future.successful(connection)
     }
 

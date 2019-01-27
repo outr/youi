@@ -9,15 +9,17 @@ import io.youi.net.{ContentType, IP, Path, URLMatcher}
 import io.youi.server.handler._
 import io.youi.server.rest.Restful
 import io.youi.server.validation.{ValidationResult, Validator}
-import io.youi.stream.{Delta, HTMLParser, Selector, StreamableHTML}
+import io.youi.stream.Delta
 
+import scala.concurrent.Await
+import scala.concurrent.duration.Duration
 import scala.language.implicitConversions
 import scala.xml.Elem
 
 package object dsl {
   private[youi] val DeltaKey: String = "deltas"
 
-  implicit class HttpConnectionConnectionFilter(val connection: HttpConnection) extends ActionFilter(_ => ())
+  implicit class HttpConnectionConnectionFilter(val connection: HttpConnection) extends ActionFilter(identity)
 
   implicit class ValidatorFilter(val validator: Validator) extends ConnectionFilter {
     private lazy val list = List(validator)
@@ -34,15 +36,24 @@ package object dsl {
 
   implicit def handler2Filter(handler: HttpHandler): ConnectionFilter = ActionFilter { connection =>
     if (PathPart.fulfilled(connection)) {
-      handler.handle(connection)
+      // TODO: Migrate ConnectionFilter to use Future
+      Await.result(handler.handle(connection), Duration.Inf)
+    } else {
+      connection
     }
   }
 
-  implicit class CachingManagerFilter(val caching: CachingManager) extends LastConnectionFilter(new ActionFilter(caching.handle))
+  implicit class CachingManagerFilter(val caching: CachingManager) extends LastConnectionFilter(handler2Filter(caching.handle))
 
-  implicit class DeltasFilter(val deltas: List[Delta]) extends ActionFilter(_.deltas += deltas)
+  implicit class DeltasFilter(val deltas: List[Delta]) extends ActionFilter(connection => {
+    connection.deltas ++= deltas
+    connection
+  })
 
-  implicit class DeltaFilter(delta: Delta) extends ActionFilter(_.deltas += delta)
+  implicit class DeltaFilter(delta: Delta) extends ActionFilter(connection => {
+    connection.deltas += delta
+    connection
+  })
 
   implicit class StringFilter(val s: String) extends ConnectionFilter {
     override def filter(connection: HttpConnection): Option[HttpConnection] = PathPart.take(connection, s)

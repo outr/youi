@@ -25,15 +25,15 @@ object SessionStore {
     invalidateExpired()
   }
 
-  def getOrCreateSessionId(httpConnection: HttpConnection): String = synchronized {
+  def getOrCreateSessionId(httpConnection: HttpConnection): (HttpConnection, String) = synchronized {
     import httpConnection.server.config.session
     httpConnection.request.cookies.find(_.name == session.name()).map(_.value) match {
-      case Some(id) => id     // Found cookie in request
+      case Some(id) => httpConnection -> id     // Found cookie in request
       case None => httpConnection.response.cookies.find(_.name == session.name()).map(_.value) match {
-        case Some(id) => id   // Found cookie in response
+        case Some(id) => httpConnection -> id   // Found cookie in response
         case None if session.secure() && !session.forceSecure() && httpConnection.request.url.protocol != Protocol.Https => {
           // Don't set a new cookie for secure-only on an insecure connection
-          Unique()
+          httpConnection -> Unique()
         }
         case None => {        // No cookie found in request or response
           scribe.debug(s"No cookie found in request or response: ${httpConnection.request.url} / ${httpConnection.request.headers} / ${httpConnection.request.method}")
@@ -50,24 +50,23 @@ object SessionStore {
               sameSite = session.sameSite
             )
             response.withHeader(Headers.Response.`Set-Cookie`(cookie))
-          }
-          id
+          } -> id
         }
       }
     }
   }
 
-  def apply(connection: HttpConnection, timeout: FiniteDuration): SessionStore = synchronized {
-    val sessionId = getOrCreateSessionId(connection)
+  def apply(connection: HttpConnection, timeout: FiniteDuration): (HttpConnection, SessionStore) = synchronized {
+    val (updated, sessionId) = getOrCreateSessionId(connection)
     map.get(sessionId) match {
       case Some(store) => {
         store.lastUsed = System.currentTimeMillis()
-        store
+        updated -> store
       }
       case None => {
         val store = new SessionStore(timeout)
         map += sessionId -> store
-        store
+        updated -> store
       }
     }
   }

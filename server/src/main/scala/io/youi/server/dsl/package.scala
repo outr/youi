@@ -11,16 +11,13 @@ import io.youi.server.rest.Restful
 import io.youi.server.validation.{ValidationResult, Validator}
 import io.youi.stream.Delta
 
-import scala.concurrent.{Await, Future}
-import scala.concurrent.duration.Duration
+import scala.concurrent.Future
 import scala.language.implicitConversions
 import scala.xml.Elem
 import scribe.Execution.global
 
 package object dsl {
   private[youi] val DeltaKey: String = "deltas"
-
-  implicit class HttpConnectionConnectionFilter(val connection: HttpConnection) extends ActionFilter(identity)
 
   implicit class ValidatorFilter(val validator: Validator) extends ConnectionFilter {
     private lazy val list = List(validator)
@@ -37,21 +34,20 @@ package object dsl {
 
   implicit def handler2Filter(handler: HttpHandler): ConnectionFilter = ActionFilter { connection =>
     if (PathPart.fulfilled(connection)) {
-      // TODO: Migrate ConnectionFilter to use Future
-      Await.result(handler.handle(connection), Duration.Inf)
+      handler.handle(connection)
     } else {
-      connection
+      Future.successful(connection)
     }
   }
 
   implicit class CachingManagerFilter(val caching: CachingManager) extends LastConnectionFilter(handler2Filter(caching.handle))
 
-  implicit class DeltasFilter(val deltas: List[Delta]) extends ActionFilter(connection => {
+  implicit class DeltasFilter(val deltas: List[Delta]) extends ActionFilter(connection => Future.successful {
     connection.deltas ++= deltas
     connection
   })
 
-  implicit class DeltaFilter(delta: Delta) extends ActionFilter(connection => {
+  implicit class DeltaFilter(delta: Delta) extends ActionFilter(connection => Future.successful {
     connection.deltas += delta
     connection
   })

@@ -22,7 +22,6 @@ object HttpHandler {
       connection.modify(_.withStatus(status).withContent(Content.empty))
     } else {
       connection.modify(_.withRedirect(location))
-    }
-    connection.finish()
+    }.finish()
   }
 }

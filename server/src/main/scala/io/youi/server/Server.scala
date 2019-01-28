@@ -99,12 +99,11 @@ trait Server extends HttpHandler with ErrorSupport {
   protected def handleInternal(connection: HttpConnection): Future[HttpConnection] = {
     handleRecursive(connection, handlers()).flatMap { updated =>
       // NotFound handling
-      scribe.info(s"connection: ${updated.response}")
       if (updated.response.content.isEmpty && updated.response.status == HttpStatus.OK) {
-        updated.modify { response =>
+        val notFound = updated.modify { response =>
           response.copy(status = HttpStatus.NotFound)
         }
-        errorHandler.get.handle(updated, None)
+        errorHandler.get.handle(notFound, None)
       } else {
         Future.successful(updated)
       }

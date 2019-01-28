@@ -195,8 +195,7 @@ trait ServerApplication extends YouIApplication with Server {
     super.handleInternal(connection).flatMap { c =>
       c.response.content match {
         case Some(content) if content.contentType == ContentType.`text/html` && c.deltas.nonEmpty => {
-          c.modify(_.removeContent())
-          serveHTML(c, content, Nil, includeApplication = false)
+          serveHTML(c.modify(_.removeContent()), content, Nil, includeApplication = false)
         }
         case _ => Future.successful(c) // Ignore
       }

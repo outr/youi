@@ -78,8 +78,8 @@ package object dsl {
         .map(url => new File(url.getFile))
         .filter(_.isFile)
         .map { file =>
-          SenderHandler(Content.file(file)).handle(connection)
-          connection
+          // TODO: Fix with ConnectionFilter future support
+          Await.result(SenderHandler(Content.file(file)).handle(connection), Duration.Inf)
         }
     }
   }
@@ -107,8 +107,7 @@ package object dsl {
 
   def redirect(path: Path): ConnectionFilter = new ConnectionFilter {
     override def filter(connection: HttpConnection): Option[HttpConnection] = {
-      HttpHandler.redirect(connection, path.encoded)
-      Some(connection)
+      Some(HttpHandler.redirect(connection, path.encoded))
     }
   }
 

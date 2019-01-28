@@ -6,26 +6,29 @@ import io.youi.server.validation.ValidationResult.{Continue, Error, Redirect}
 import io.youi.server.validation.{ValidationResult, Validator}
 
 import scala.concurrent.Future
+import scribe.Execution.global
 
 class ValidatorHttpHandler(validators: List[Validator]) extends HttpHandler {
-  override def handle(connection: HttpConnection): Future[HttpConnection] = Future.successful {
-    ValidatorHttpHandler.validate(connection, validators)._1
+  override def handle(connection: HttpConnection): Future[HttpConnection] = {
+    ValidatorHttpHandler.validate(connection, validators).map(_._1)
   }
 }
 
 object ValidatorHttpHandler {
-  def validate(connection: HttpConnection, validators: List[Validator]): (HttpConnection, ValidationResult) = {
-    val failures = validators.map(_.validate(connection)).collect {
-      case result if result != Continue => result
-    }
-    val validationResult = failures.headOption.getOrElse(Continue)
-    (validationResult match {
-      case Continue => connection   // Nothing to do, keep going
-      case Redirect(location) => HttpHandler.redirect(connection, location)
-      case Error(status, message) => {
-        connection.modify(_.withStatus(HttpStatus(status, message)).withContent(Content.empty))
-        connection.finish()
+  def validate(connection: HttpConnection,
+               validators: List[Validator]): Future[(HttpConnection, ValidationResult)] = if (validators.isEmpty) {
+    Future.successful(connection -> ValidationResult.Continue)
+  } else {
+    val validator = validators.head
+    validator.validate(connection).flatMap {
+      case Continue => validate(connection, validators.tail)
+      case v: Redirect => Future.successful(HttpHandler.redirect(connection, v.location) -> v)
+      case v: Error => {
+        val modified = connection
+          .modify(_.withStatus(HttpStatus(v.status, v.message)).withContent(Content.empty))
+          .finish()
+        Future.successful(modified -> v)
       }
-    }, validationResult)
+    }
   }
 }

@@ -22,8 +22,8 @@ package object dsl {
   implicit class ValidatorFilter(val validator: Validator) extends ConnectionFilter {
     private lazy val list = List(validator)
 
-    override def filter(connection: HttpConnection): Future[FilterResponse] = Future.successful {
-      ValidatorHttpHandler.validate(connection, list) match {
+    override def filter(connection: HttpConnection): Future[FilterResponse] = {
+      ValidatorHttpHandler.validate(connection, list).map {
         case (c, ValidationResult.Continue) => FilterResponse.Continue(c)
         case _ => FilterResponse.Stop(connection)
       }

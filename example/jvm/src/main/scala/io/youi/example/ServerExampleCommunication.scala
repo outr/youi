@@ -18,12 +18,18 @@ trait ServerExampleCommunication extends ExampleCommunication {
   override def logIn(username: String, password: String): Future[Option[String]] = Future {
     val authorized = username == "user" && password == "password"
     if (authorized) {
-      MySession(connection.store[HttpConnection]("httpConnection")).username := Some(username)
+      MySession.withSession(connection) { transaction =>
+        transaction.session.username := Some(username)
+        Future.successful(transaction)
+      }
       None
     } else {
       Some("Invalid username / password combination")
     }
   }
 
-  name := MySession(connection.store[HttpConnection]("httpConnection")).username
+  MySession.withSession(connection) { transaction =>
+    name := transaction.session.username
+    Future.successful(transaction)
+  }
 }

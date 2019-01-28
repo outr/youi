@@ -14,6 +14,7 @@ import io.youi.server.validation.{ValidationResult, Validator}
 import io.youi.stream.{Delta, HTMLParser, Selector}
 
 import scala.concurrent.Future
+import scribe.Execution.global
 
 case class HttpHandlerBuilder(server: Server,
                               urlMatcher: Option[URLMatcher] = None,
@@ -104,8 +105,8 @@ case class HttpHandlerBuilder(server: Server,
     override def handle(connection: HttpConnection): Future[HttpConnection] = f(connection)
   })
 
-  def validation(validator: HttpConnection => ValidationResult): HttpHandler = validation(new Validator {
-    override def validate(connection: HttpConnection): ValidationResult = validator(connection)
+  def validation(validator: HttpConnection => Future[ValidationResult]): HttpHandler = validation(new Validator {
+    override def validate(connection: HttpConnection): Future[ValidationResult] = validator(connection)
   })
 
   def validation(validators: Validator*): HttpHandler = wrap(new ValidatorHttpHandler(validators.toList))
@@ -174,7 +175,7 @@ case class HttpHandlerBuilder(server: Server,
 
       override def handle(connection: HttpConnection): Future[HttpConnection] = {
         if (urlMatcher.forall(_.matches(connection.request.url)) && requestMatchers.forall(_(connection.request))) {
-          ValidatorHttpHandler.validate(connection, validators) match {
+          ValidatorHttpHandler.validate(connection, validators).flatMap {
             case (c, ValidationResult.Continue) => handler.handle(c)
             case _ => Future.successful(connection) // Validation failed, handled by ValidatorHttpHandler
           }

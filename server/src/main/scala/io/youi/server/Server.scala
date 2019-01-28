@@ -6,10 +6,8 @@ import reactify._
 import io.youi.{ErrorSupport, ItemContainer}
 import io.youi.http.{HttpConnection, HttpStatus, ProxyHandler}
 import io.youi.server.handler.{HttpHandler, HttpHandlerBuilder}
-import io.youi.server.session.SessionStore
 import profig.{Profig, ProfigPath}
 
-import scala.annotation.tailrec
 import scala.concurrent.Future
 import scribe.Execution.global
 
@@ -84,10 +82,7 @@ trait Server extends HttpHandler with ErrorSupport {
     start()
   }
 
-  def dispose(): Unit = {
-    stop()
-    SessionStore.dispose()
-  }
+  def dispose(): Unit = stop()
 
   override final def handle(connection: HttpConnection): Future[HttpConnection] = handleInternal(connection).recoverWith {
     case t => {

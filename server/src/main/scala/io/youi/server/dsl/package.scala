@@ -11,10 +11,11 @@ import io.youi.server.rest.Restful
 import io.youi.server.validation.{ValidationResult, Validator}
 import io.youi.stream.Delta
 
-import scala.concurrent.Await
+import scala.concurrent.{Await, Future}
 import scala.concurrent.duration.Duration
 import scala.language.implicitConversions
 import scala.xml.Elem
+import scribe.Execution.global
 
 package object dsl {
   private[youi] val DeltaKey: String = "deltas"
@@ -24,10 +25,10 @@ package object dsl {
   implicit class ValidatorFilter(val validator: Validator) extends ConnectionFilter {
     private lazy val list = List(validator)
 
-    override def filter(connection: HttpConnection): Option[HttpConnection] = {
+    override def filter(connection: HttpConnection): Future[FilterResponse] = Future.successful {
       ValidatorHttpHandler.validate(connection, list) match {
-        case (c, ValidationResult.Continue) => Some(c)
-        case _ => None
+        case (c, ValidationResult.Continue) => FilterResponse.Continue(c)
+        case _ => FilterResponse.Stop(connection)
       }
     }
   }
@@ -56,7 +57,12 @@ package object dsl {
   })
 
   implicit class StringFilter(val s: String) extends ConnectionFilter {
-    override def filter(connection: HttpConnection): Option[HttpConnection] = PathPart.take(connection, s)
+    override def filter(connection: HttpConnection): Future[FilterResponse] = Future.successful {
+      PathPart.take(connection, s) match {
+        case Some(c) => FilterResponse.Continue(c)
+        case None => FilterResponse.Stop(connection)
+      }
+    }
   }
 
   implicit class URLMatcherFilter(val matcher: URLMatcher) extends ConditionalFilter(c => matcher.matches(c.request.url))
@@ -68,7 +74,7 @@ package object dsl {
       directory
     }
 
-    override def filter(connection: HttpConnection): Option[HttpConnection] = {
+    override def filter(connection: HttpConnection): Future[FilterResponse] = {
       val path = pathTransform(connection.request.url.path.decoded)
       val resourcePath = s"$dir$path" match {
         case s if s.startsWith("/") => s.substring(1)
@@ -78,9 +84,8 @@ package object dsl {
         .map(url => new File(url.getFile))
         .filter(_.isFile)
         .map { file =>
-          // TODO: Fix with ConnectionFilter future support
-          Await.result(SenderHandler(Content.file(file)).handle(connection), Duration.Inf)
-        }
+          SenderHandler(Content.file(file)).handle(connection)
+        }.map(_.map(FilterResponse.Continue)).getOrElse(Future.successful(FilterResponse.Stop(connection)))
     }
   }
 
@@ -106,8 +111,8 @@ package object dsl {
   }
 
   def redirect(path: Path): ConnectionFilter = new ConnectionFilter {
-    override def filter(connection: HttpConnection): Option[HttpConnection] = {
-      Some(HttpHandler.redirect(connection, path.encoded))
+    override def filter(connection: HttpConnection): Future[FilterResponse] = Future.successful {
+      FilterResponse.Continue(HttpHandler.redirect(connection, path.encoded))
     }
   }
 

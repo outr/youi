@@ -1,12 +1,14 @@
 package io.youi
 
 import io.youi.http.HttpConnection
-import io.youi.server.dsl.{ConnectionFilter, DeltaKey}
+import io.youi.server.dsl.{ConnectionFilter, DeltaKey, FilterResponse}
 import io.youi.stream.{ByTag, Delta}
+
+import scala.concurrent.Future
 
 package object app {
   object Application extends ConnectionFilter {
-    override def filter(connection: HttpConnection): Option[HttpConnection] = {
+    override def filter(connection: HttpConnection): Future[FilterResponse] = Future.successful {
       val server = connection.server.asInstanceOf[ServerApplication]
 
       val jsDeps = if (server.applicationJSDepsContent.nonEmpty) {
@@ -27,7 +29,7 @@ package object app {
       )
       val deltas = connection.store.getOrElse[List[Delta]](DeltaKey, Nil) ::: applicationDeltas
       connection.store(DeltaKey) = deltas
-      Some(connection)
+      FilterResponse.Continue(connection)
     }
   }
 }

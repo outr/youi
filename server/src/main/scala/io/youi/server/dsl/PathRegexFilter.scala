@@ -2,15 +2,16 @@ package io.youi.server.dsl
 
 import io.youi.http.HttpConnection
 
+import scala.concurrent.Future
 import scala.util.matching.Regex
 
 case class PathRegexFilter(regex: Regex) extends ConnectionFilter {
-  override def filter(connection: HttpConnection): Option[HttpConnection] = {
+  override def filter(connection: HttpConnection): Future[FilterResponse] = Future.successful {
     val path = connection.request.url.path.decoded
     if (path.matches(regex.regex)) {
-      Some(connection)
+      FilterResponse.Continue(connection)
     } else {
-      None
+      FilterResponse.Stop(connection)
     }
   }
 }

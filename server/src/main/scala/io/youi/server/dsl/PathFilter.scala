@@ -3,16 +3,18 @@ package io.youi.server.dsl
 import io.youi.http.HttpConnection
 import io.youi.net.Path
 
+import scala.concurrent.Future
+
 case class PathFilter(path: Path) extends ConnectionFilter {
-  override def filter(connection: HttpConnection): Option[HttpConnection] = {
+  override def filter(connection: HttpConnection): Future[FilterResponse] = Future.successful {
     if (path == connection.request.url.path) {
       val args = path.extractArguments(connection.request.url.path)
       if (args.nonEmpty) {
         connection.store(PathFilter.Key) = args
       }
-      Some(connection)
+      FilterResponse.Continue(connection)
     } else {
-      None
+      FilterResponse.Stop(connection)
     }
   }
 }

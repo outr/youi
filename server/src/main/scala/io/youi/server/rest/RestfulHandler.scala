@@ -12,40 +12,37 @@ import io.youi.server.handler.HttpHandler
 import profig.JsonUtil
 
 import scala.collection.mutable.ListBuffer
-import scala.concurrent.{Await, Future}
+import scala.concurrent.Future
+import scribe.Execution.global
 
 class RestfulHandler[Request, Response](restful: Restful[Request, Response])
                                        (implicit decoder: Decoder[Request], encoder: Encoder[Response]) extends HttpHandler {
-  override def handle(connection: HttpConnection): Future[HttpConnection] = Future.successful {
+  override def handle(connection: HttpConnection): Future[HttpConnection] = {
     // Build JSON
-    val result: RestfulResponse[Response] = RestfulHandler.jsonFromConnection(connection) match {
+    val future: Future[RestfulResponse[Response]] = RestfulHandler.jsonFromConnection(connection) match {
       case Left(err) => {
-        restful.error(List(err), err.status)
+        Future.successful(restful.error(List(err), err.status))
       }
       case Right(json) => {
         // Decode request
         json.as[Request] match {
           case Left(error) => {
             val err = ValidationError(s"Error parsing ${error.getMessage()}: $json", ValidationError.RequestParsing)
-            restful.error(List(err), err.status)
+            Future.successful(restful.error(List(err), err.status))
           }
           case Right(req) => {
             // Validations
             RestfulHandler.validate(req, restful.validations) match {
               case Left(errors) => {
                 val status = errors.map(_.status).max
-                restful.error(errors, status)
+                Future.successful(restful.error(errors, status))
               }
               case Right(request) => try {
-                val future = restful(connection, request)
-
-                // Await result
-                // TODO: add asynchronous HttpHandler support
-                Await.result(future, restful.timeout)
+                restful(connection, request)
               } catch {
                 case t: Throwable => {
                   val err = ValidationError(s"Error while calling restful: ${t.getMessage}", ValidationError.Internal)
-                  restful.error(List(err), err.status)
+                  Future.successful(restful.error(List(err), err.status))
                 }
               }
             }
@@ -54,15 +51,17 @@ class RestfulHandler[Request, Response](restful: Restful[Request, Response])
       }
     }
 
-    // Encode response
-    val responseJson = result.response.asJson
-    val responseJsonString = RestfulHandler.printer.pretty(responseJson)
+    future.map { result =>
+      // Encode response
+      val responseJson = result.response.asJson
+      val responseJsonString = RestfulHandler.printer.pretty(responseJson)
 
-    // Attach content
-    connection.modify { httpResponse =>
-      httpResponse
-        .withContent(Content.string(responseJsonString, ContentType.`application/json`))
-        .withStatus(result.status)
+      // Attach content
+      connection.modify { httpResponse =>
+        httpResponse
+          .withContent(Content.string(responseJsonString, ContentType.`application/json`))
+          .withStatus(result.status)
+      }
     }
   }
 }

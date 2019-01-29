@@ -21,10 +21,10 @@ trait SessionManager[Session] {
     * @param f the functionality to work with and potentially modify a session instance
     * @return Future[Unit] since Connection cannot modify the state of HttpConnection
     */
-  def withSession(connection: Connection)
-                 (f: SessionTransaction[Session] => Future[SessionTransaction[Session]]): Future[Unit] = {
+  def withConnection(connection: Connection)
+                    (f: SessionTransaction[Session] => Future[SessionTransaction[Session]] = t => Future.successful(t)): Future[Session] = {
     val httpConnection = connection.store[HttpConnection]("httpConnection")
-    session(httpConnection, f, requestModifiable = false).map(_ => ())
+    session(httpConnection, f, requestModifiable = false).map(_.session)
   }
 
   /**
@@ -34,9 +34,9 @@ trait SessionManager[Session] {
     * @param f the functionality to work with and potentially modify a session instance
     * @return potentially modified HttpConnection
     */
-  def withSession(connection: HttpConnection)
-                 (f: SessionTransaction[Session] => Future[SessionTransaction[Session]]): Future[HttpConnection] = {
-    session(connection, f, requestModifiable = true)
+  def withHttpConnection(connection: HttpConnection)
+                        (f: SessionTransaction[Session] => Future[SessionTransaction[Session]] = t => Future.successful(t)): Future[SessionTransaction[Session]] = {
+    session(connection, f, requestModifiable = true).map(_.copy(sessionModifiable = false))
   }
 
   /**
@@ -49,7 +49,7 @@ trait SessionManager[Session] {
     */
   protected def session(connection: HttpConnection,
                         f: SessionTransaction[Session] => Future[SessionTransaction[Session]],
-                        requestModifiable: Boolean): Future[HttpConnection] = {
+                        requestModifiable: Boolean): Future[SessionTransaction[Session]] = {
     getOrCreateSessionId(connection) match {
       case (modifiedConnection, sessionId) => {
         // Create our SessionTransaction and build our session
@@ -84,13 +84,15 @@ trait SessionManager[Session] {
     */
   protected def createBySessionId(sessionId: String,
                                   connection: HttpConnection): Future[SessionTransaction[Session]] = {
-    Future.successful(SessionTransaction[Session](sessionId, create, connection))
+    Future.successful(SessionTransaction[Session](sessionId, create(sessionId), connection))
   }
 
   /**
     * Simple create function used by createBySessionId. For more advanced usage, extend createBySessionId.
+    *
+    * @param sessionId the session id to create a Session for
     */
-  protected def create: Session
+  protected def create(sessionId: String): Session
 
   /**
     * Saves a potentially modified Session to this manager
@@ -98,7 +100,7 @@ trait SessionManager[Session] {
     * @param transaction the transaction to persist from
     * @return a potentially modified HttpConnection
     */
-  protected def save(transaction: SessionTransaction[Session]): Future[HttpConnection]
+  protected def save(transaction: SessionTransaction[Session]): Future[SessionTransaction[Session]]
 
   /**
     * Gets a session id if it already exists or creates a new one (and applies it on the HttpConnection) if it doesn't

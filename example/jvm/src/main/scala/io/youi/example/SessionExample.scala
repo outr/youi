@@ -9,7 +9,7 @@ import scala.concurrent.Future
 import scribe.Execution.global
 
 object SessionExample extends HttpHandler {
-  override def handle(connection: HttpConnection): Future[HttpConnection] = MySession.withSession(connection) { transaction =>
+  override def handle(connection: HttpConnection): Future[HttpConnection] = MySession.withHttpConnection(connection) { transaction =>
     val session = transaction.session
     val html = <html>
       <head>
@@ -24,5 +24,5 @@ object SessionExample extends HttpHandler {
     SenderHandler.handle(transaction.connection, Content.string(html.toString, ContentType.`text/html`)).map { c =>
       transaction.copy(connection = c)
     }
-  }
+  }.map(_.connection)
 }

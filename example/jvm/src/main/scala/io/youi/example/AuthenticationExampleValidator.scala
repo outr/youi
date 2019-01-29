@@ -9,7 +9,7 @@ import scribe.Execution.global
 object AuthenticationExampleValidator extends Validator {
   override def validate(connection: HttpConnection): Future[ValidationResult] = {
     var result: ValidationResult = ValidationResult.Continue
-    MySession.withSession(connection) { transaction =>
+    MySession.withHttpConnection(connection) { transaction =>
       if (transaction.session.username().isEmpty) {
         result = ValidationResult.Redirect("/login.html")
       }

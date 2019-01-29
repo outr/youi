@@ -9,6 +9,7 @@ import io.youi.http.{HttpConnection, HttpResponse}
   * @param id the session's id
   * @param session the session in this transaction
   * @param connection the HttpConnection in this transaction
+  * @param sessionModifiable true if the session can be modified (this is disabled outside of a session transaction)
   * @param requestModifiable true if the request can be modified (this is usually only false when working with sessions
   *                          in a Connection)
   * @tparam Session the type of session
@@ -16,8 +17,10 @@ import io.youi.http.{HttpConnection, HttpResponse}
 case class SessionTransaction[Session](id: String,
                                        session: Session,
                                        connection: HttpConnection,
+                                       sessionModifiable: Boolean = true,
                                        requestModifiable: Boolean = true) {
   def modifySession(f: Session => Session): SessionTransaction[Session] = {
+    assert(sessionModifiable, "This session transaction is not modifiable")
     copy(session = f(session))
   }
 

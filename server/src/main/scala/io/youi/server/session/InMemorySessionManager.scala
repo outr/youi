@@ -21,9 +21,9 @@ trait InMemorySessionManager[Session] extends SessionManager[Session] {
     }
   }
 
-  override protected def save(transaction: SessionTransaction[Session]): Future[HttpConnection] = Future.successful {
+  override protected def save(transaction: SessionTransaction[Session]): Future[SessionTransaction[Session]] = Future.successful {
     store(transaction.id) = transaction.session
-    transaction.connection
+    transaction
   }
 }
 

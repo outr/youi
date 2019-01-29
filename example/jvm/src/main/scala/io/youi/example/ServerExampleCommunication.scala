@@ -18,7 +18,7 @@ trait ServerExampleCommunication extends ExampleCommunication {
   override def logIn(username: String, password: String): Future[Option[String]] = Future {
     val authorized = username == "user" && password == "password"
     if (authorized) {
-      MySession.withSession(connection) { transaction =>
+      MySession.withConnection(connection) { transaction =>
         transaction.session.username := Some(username)
         Future.successful(transaction)
       }
@@ -28,7 +28,7 @@ trait ServerExampleCommunication extends ExampleCommunication {
     }
   }
 
-  MySession.withSession(connection) { transaction =>
+  MySession.withConnection(connection) { transaction =>
     name := transaction.session.username
     Future.successful(transaction)
   }

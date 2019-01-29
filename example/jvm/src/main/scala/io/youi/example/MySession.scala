@@ -9,5 +9,5 @@ class MySession {
 }
 
 object MySession extends InMemorySessionManager[MySession] {
-  override protected def create: MySession = new MySession
+  override protected def create(sessionId: String): MySession = new MySession
 }

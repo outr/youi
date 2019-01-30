@@ -1,6 +1,11 @@
 package io.youi.app.screen
 
-sealed abstract class ScreenState(val index: Int, val working: Boolean)
+sealed abstract class ScreenState(val index: Int, val working: Boolean) extends Ordered[ScreenState] {
+  override def compare(that: ScreenState): Int = this.index.compare(that.index)
+
+  def loaded: Boolean = this >= ScreenState.Loaded && this < ScreenState.Disposing
+  def active: Boolean = this == ScreenState.Activated
+}
 
 object ScreenState {
   case object New extends ScreenState(0, false)

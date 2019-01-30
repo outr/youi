@@ -1,12 +1,12 @@
 package spec
 
-import io.youi.http.{HttpConnection, HttpRequest, Method, HttpStatus}
+import io.youi.http.{HttpConnection, HttpRequest, HttpStatus, Method}
 import io.youi.server.dsl._
 import io.youi.net._
 import io.youi.server.{DefaultErrorHandler, Server}
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.{AsyncWordSpec, Matchers, WordSpec}
 
-class ServerDSLSpec extends WordSpec with Matchers {
+class ServerDSLSpec extends AsyncWordSpec with Matchers {
   private lazy val text = "Hello, World!".withContentType(ContentType.`text/plain`)
   private lazy val html = <html>
     <head>
@@ -21,26 +21,26 @@ class ServerDSLSpec extends WordSpec with Matchers {
     "creating a simple handler" should {
       "properly accept a request for /hello/world.txt" in {
         val request = HttpRequest(source = ip"127.0.0.1", url = url"http://www.example.com/hello/world.txt")
-        val connection = new HttpConnection(server, request)
-        server.handle(connection)
-        val response = connection.response
-        response.content should be(Some(text))
-        response.status should be(HttpStatus.OK)
+        server.handle(HttpConnection(server, request)).map { connection =>
+          val response = connection.response
+          response.content should be(Some(text))
+          response.status should be(HttpStatus.OK)
+        }
       }
       "properly accept a request for /hello/world.html" in {
         val request = HttpRequest(source = ip"127.0.0.1", url = url"http://www.example.com/hello/world.html")
-        val connection = new HttpConnection(server, request)
-        server.handle(connection)
-        val response = connection.response
-        response.content should be(Some(html))
-        response.status should be(HttpStatus.OK)
+        server.handle(HttpConnection(server, request)).map { connection =>
+          val response = connection.response
+          response.content should be(Some(html))
+          response.status should be(HttpStatus.OK)
+        }
       }
       "properly return a 404 for /hello/other.html" in {
         val request = HttpRequest(source = ip"127.0.0.1", url = url"http://www.example.com/hello/other.html")
-        val connection = new HttpConnection(server, request)
-        server.handle(connection)
-        val response = connection.response
-        response.status should be(HttpStatus.NotFound)
+        server.handle(HttpConnection(server, request)).map { connection =>
+          val response = connection.response
+          response.status should be(HttpStatus.NotFound)
+        }
       }
       "properly return a 404 for a POST" in {
         val request = HttpRequest(
@@ -48,18 +48,18 @@ class ServerDSLSpec extends WordSpec with Matchers {
           url = url"http://www.example.com/hello/world.html",
           method = Method.Post
         )
-        val connection = new HttpConnection(server, request)
-        server.handle(connection)
-        val response = connection.response
-        response.status should be(HttpStatus.NotFound)
+        server.handle(HttpConnection(server, request)).map { connection =>
+          val response = connection.response
+          response.status should be(HttpStatus.NotFound)
+        }
       }
       "reject a request from a different origin IP" in {
         val request = HttpRequest(source = ip"127.0.0.2", url = url"http://www.example.com/hello/world.html")
-        val connection = new HttpConnection(server, request)
-        server.handle(connection)
-        val response = connection.response
-        response.content should be(Some(DefaultErrorHandler.html(HttpStatus.NotFound)))
-        response.status should be(HttpStatus.NotFound)
+        server.handle(HttpConnection(server, request)).map { connection =>
+          val response = connection.response
+          response.content should be(Some(DefaultErrorHandler.html(HttpStatus.NotFound)))
+          response.status should be(HttpStatus.NotFound)
+        }
       }
     }
   }

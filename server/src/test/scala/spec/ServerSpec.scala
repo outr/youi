@@ -7,14 +7,14 @@ import io.youi.server.Server
 import io.youi.server.dsl._
 import io.youi.server.handler.HttpHandler
 import io.youi.server.rest.{Restful, RestfulResponse}
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.{AsyncWordSpec, Matchers, WordSpec}
 import io.circe.generic.auto._
 import io.youi.http.content.{Content, StringContent}
 import profig.JsonUtil
 
 import scala.concurrent.Future
 
-class ServerSpec extends WordSpec with Matchers {
+class ServerSpec extends AsyncWordSpec with Matchers {
   Server.config("implementation").store("io.youi.server.test.TestServerImplementation")
 
   object server extends Server
@@ -22,10 +22,13 @@ class ServerSpec extends WordSpec with Matchers {
   "TestHttpApplication" should {
     "configure the TestServer" in {
       server.handler.matcher(path.exact("/test.html")).wrap(new HttpHandler {
-        override def handle(connection: HttpConnection): Unit = connection.update { response =>
-          response.withContent(Content.string("test!", ContentType.`text/plain`))
+        override def handle(connection: HttpConnection): Future[HttpConnection] = Future.successful {
+          connection.modify { response =>
+            response.withContent(Content.string("test!", ContentType.`text/plain`))
+          }
         }
       })
+      server.handlers.size should be(1)
     }
     "configure Restful endpoint" in {
       server.handler(
@@ -35,70 +38,71 @@ class ServerSpec extends WordSpec with Matchers {
           path"/test/time" / ServerTimeService
         )
       )
+      server.handlers.size should be(2)
     }
     "receive OK for test.html" in {
-      val connection = new HttpConnection(server, HttpRequest(url = URL("http://localhost/test.html")))
-      server.handle(connection)
-      connection.response.status should equal(HttpStatus.OK)
+      server.handle(HttpConnection(server, HttpRequest(url = URL("http://localhost/test.html")))).map { connection =>
+        connection.response.status should equal(HttpStatus.OK)
+      }
     }
     "receive NotFound for other.html" in {
-      val connection = new HttpConnection(server, HttpRequest(url = URL("http://localhost/other.html")))
-      server.handle(connection)
-      connection.response.status should equal(HttpStatus.NotFound)
+      server.handle(HttpConnection(server, HttpRequest(url = URL("http://localhost/other.html")))).map { connection =>
+        connection.response.status should equal(HttpStatus.NotFound)
+      }
     }
     "reverse a String with the Restful endpoint via POST" in {
       val content = Content.string(JsonUtil.toJsonString(ReverseRequest("Testing")), ContentType.`application/json`)
-      val connection = new HttpConnection(server, HttpRequest(
+      server.handle(HttpConnection(server, HttpRequest(
         method = Method.Post,
         url = URL("http://localhost/test/reverse"),
         content = Some(content)
-      ))
-      server.handle(connection)
-      connection.response.status should equal(HttpStatus.OK)
-      connection.response.content shouldNot equal(None)
-      val jsonString = connection.response.content.get.asInstanceOf[StringContent].value
-      val response = JsonUtil.fromJsonString[ReverseResponse](jsonString)
-      response.errors should be(Nil)
-      response.reversed should be(Some("gnitseT"))
+      ))).map { connection =>
+        connection.response.status should equal(HttpStatus.OK)
+        connection.response.content shouldNot equal(None)
+        val jsonString = connection.response.content.get.asInstanceOf[StringContent].value
+        val response = JsonUtil.fromJsonString[ReverseResponse](jsonString)
+        response.errors should be(Nil)
+        response.reversed should be(Some("gnitseT"))
+      }
     }
     "reverse a String with the Restful endpoint via GET" in {
-      val connection = new HttpConnection(server, HttpRequest(
+      server.handle(HttpConnection(server, HttpRequest(
         method = Method.Get,
         url = URL("http://localhost/test/reverse?value=Testing")
-      ))
-      server.handle(connection)
-      connection.response.status should equal(HttpStatus.OK)
-      connection.response.content shouldNot equal(None)
-      val jsonString = connection.response.content.get.asInstanceOf[StringContent].value
-      val response = JsonUtil.fromJsonString[ReverseResponse](jsonString)
-      response.errors should be(Nil)
-      response.reversed should be(Some("gnitseT"))
+      ))).map { connection =>
+        connection.response.status should equal(HttpStatus.OK)
+        connection.response.content shouldNot equal(None)
+        val jsonString = connection.response.content.get.asInstanceOf[StringContent].value
+        val response = JsonUtil.fromJsonString[ReverseResponse](jsonString)
+        response.errors should be(Nil)
+        response.reversed should be(Some("gnitseT"))
+      }
     }
     "reverse a String with the Restful endpoint via GET with path-based arg" in {
-      val connection = new HttpConnection(server, HttpRequest(
+      server.handle(HttpConnection(server, HttpRequest(
         method = Method.Get,
         url = URL("http://localhost/test/reverse/Testing")
-      ))
-      server.handle(connection)
-      connection.response.status should equal(HttpStatus.OK)
-      connection.response.content shouldNot equal(None)
-      val jsonString = connection.response.content.get.asInstanceOf[StringContent].value
-      val response = JsonUtil.fromJsonString[ReverseResponse](jsonString)
-      response.errors should be(Nil)
-      response.reversed should be(Some("gnitseT"))
+      ))).map { connection =>
+        connection.response.status should equal(HttpStatus.OK)
+        connection.response.content shouldNot equal(None)
+        val jsonString = connection.response.content.get.asInstanceOf[StringContent].value
+        val response = JsonUtil.fromJsonString[ReverseResponse](jsonString)
+        response.errors should be(Nil)
+        response.reversed should be(Some("gnitseT"))
+      }
     }
     "call a Restful endpoint that takes Unit as the request" in {
       val begin = System.currentTimeMillis()
-      val connection = new HttpConnection(server, HttpRequest(
+      server.handle(HttpConnection(server, HttpRequest(
         method = Method.Get,
         url = URL("http://localhost/test/time")
-      ))
-      server.handle(connection)
-      connection.response.status should equal(HttpStatus.OK)
-      connection.response.content shouldNot equal(None)
-      val jsonString = connection.response.content.get.asInstanceOf[StringContent].value
-      val response = JsonUtil.fromJsonString[Long](jsonString)
-      response should be >= begin
+      ))).map { connection =>
+        connection.response.status should equal(HttpStatus.OK)
+        connection.response.content shouldNot equal(None)
+        val jsonString = connection.response.content.get.asInstanceOf[StringContent].value
+        val response = JsonUtil.fromJsonString[Long](jsonString)
+        response should be >= begin
+      }
     }
   }
 

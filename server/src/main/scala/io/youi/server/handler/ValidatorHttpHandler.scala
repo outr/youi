@@ -10,24 +10,24 @@ import scribe.Execution.global
 
 class ValidatorHttpHandler(validators: List[Validator]) extends HttpHandler {
   override def handle(connection: HttpConnection): Future[HttpConnection] = {
-    ValidatorHttpHandler.validate(connection, validators).map(_._1)
+    ValidatorHttpHandler.validate(connection, validators).map(_.connection)
   }
 }
 
 object ValidatorHttpHandler {
   def validate(connection: HttpConnection,
-               validators: List[Validator]): Future[(HttpConnection, ValidationResult)] = if (validators.isEmpty) {
-    Future.successful(connection -> ValidationResult.Continue)
+               validators: List[Validator]): Future[ValidationResult] = if (validators.isEmpty) {
+    Future.successful(ValidationResult.Continue(connection))
   } else {
     val validator = validators.head
     validator.validate(connection).flatMap {
-      case Continue => validate(connection, validators.tail)
-      case v: Redirect => Future.successful(HttpHandler.redirect(connection, v.location) -> v)
+      case Continue(c) => validate(c, validators.tail)
+      case v: Redirect => Future.successful(v.copy(HttpHandler.redirect(v.connection, v.location)))
       case v: Error => {
         val modified = connection
           .modify(_.withStatus(HttpStatus(v.status, v.message)).withContent(Content.empty))
           .finish()
-        Future.successful(modified -> v)
+        Future.successful(v.copy(connection = modified))
       }
     }
   }

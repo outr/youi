@@ -8,10 +8,10 @@ import scribe.Execution.global
 
 object AuthenticationExampleValidator extends Validator {
   override def validate(connection: HttpConnection): Future[ValidationResult] = {
-    var result: ValidationResult = ValidationResult.Continue
+    var result: ValidationResult = ValidationResult.Continue(connection)
     MySession.withHttpConnection(connection) { transaction =>
       if (transaction.session.username().isEmpty) {
-        result = ValidationResult.Redirect("/login.html")
+        result = ValidationResult.Redirect(transaction.connection, "/login.html")
       }
       Future.successful(transaction)
     }.map(_ => result)

@@ -1,9 +1,13 @@
 package io.youi.server.validation
 
-sealed trait ValidationResult
+import io.youi.http.HttpConnection
+
+sealed trait ValidationResult {
+  def connection: HttpConnection
+}
 
 object ValidationResult {
-  case object Continue extends ValidationResult
-  case class Redirect(location: String) extends ValidationResult
-  case class Error(status: Int, message: String) extends ValidationResult
+  case class Continue(connection: HttpConnection) extends ValidationResult
+  case class Redirect(connection: HttpConnection, location: String) extends ValidationResult
+  case class Error(connection: HttpConnection, status: Int, message: String) extends ValidationResult
 }

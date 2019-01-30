@@ -24,8 +24,8 @@ package object dsl {
 
     override def filter(connection: HttpConnection): Future[FilterResponse] = {
       ValidatorHttpHandler.validate(connection, list).map {
-        case (c, ValidationResult.Continue) => FilterResponse.Continue(c)
-        case _ => FilterResponse.Stop(connection)
+        case ValidationResult.Continue(c) => FilterResponse.Continue(c)
+        case vr => FilterResponse.Stop(vr.connection)
       }
     }
   }

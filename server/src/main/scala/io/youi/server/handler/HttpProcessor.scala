@@ -22,8 +22,8 @@ trait HttpProcessor[T] extends HttpHandler {
   override def handle(connection: HttpConnection): Future[HttpConnection] = {
     matches(connection).map { value =>
       ValidatorHttpHandler.validate(connection, validators(connection)).flatMap {
-        case (c, ValidationResult.Continue) => process(c, value)
-        case (c, _) => Future.successful(c)
+        case ValidationResult.Continue(c) => process(c, value)
+        case vr => Future.successful(vr.connection)
       }
     }.getOrElse(Future.successful(connection))
   }

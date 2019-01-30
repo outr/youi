@@ -176,8 +176,8 @@ case class HttpHandlerBuilder(server: Server,
       override def handle(connection: HttpConnection): Future[HttpConnection] = {
         if (urlMatcher.forall(_.matches(connection.request.url)) && requestMatchers.forall(_(connection.request))) {
           ValidatorHttpHandler.validate(connection, validators).flatMap {
-            case (c, ValidationResult.Continue) => handler.handle(c)
-            case _ => Future.successful(connection) // Validation failed, handled by ValidatorHttpHandler
+            case ValidationResult.Continue(c) => handler.handle(c)
+            case vr => Future.successful(vr.connection) // Validation failed, handled by ValidatorHttpHandler
           }
         } else {
           Future.successful(connection)

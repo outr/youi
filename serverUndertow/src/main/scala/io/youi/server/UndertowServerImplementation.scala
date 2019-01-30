@@ -108,7 +108,6 @@ class UndertowServerImplementation(val server: Server) extends ServerImplementat
         val connection: HttpConnection = HttpConnection(server, request)
         server.handle(connection).foreach { c =>
           UndertowServerImplementation.response(this, c, exchange)
-          exchange.endExchange()
         }
       } catch {
         case t: Throwable => scribe.error(t)

@@ -6,10 +6,8 @@ import reactify._
 import io.youi.{ErrorSupport, ItemContainer}
 import io.youi.http.{HttpConnection, HttpStatus, ProxyHandler}
 import io.youi.server.handler.{HttpHandler, HttpHandlerBuilder}
-import io.youi.server.session.SessionStore
 import profig.{Profig, ProfigPath}
 
-import scala.annotation.tailrec
 import scala.concurrent.Future
 import scribe.Execution.global
 
@@ -84,41 +82,37 @@ trait Server extends HttpHandler with ErrorSupport {
     start()
   }
 
-  def dispose(): Unit = {
-    stop()
-    SessionStore.dispose()
-  }
+  def dispose(): Unit = stop()
 
-  override final def handle(connection: HttpConnection): Unit = try {
-    handleInternal(connection)
-  } catch {
-    case t: Throwable => {
+  override final def handle(connection: HttpConnection): Future[HttpConnection] = handleInternal(connection).recoverWith {
+    case t => {
       error(t)
       errorHandler.get.handle(connection, Some(t))
     }
   }
 
-  protected def handleInternal(connection: HttpConnection): Unit = {
-    handleRecursive(connection, handlers())
-
-    // NotFound handling
-    if (connection.response.content.isEmpty && connection.response.status == HttpStatus.OK) {
-      connection.update { response =>
-        response.copy(status = HttpStatus.NotFound)
+  protected def handleInternal(connection: HttpConnection): Future[HttpConnection] = {
+    handleRecursive(connection, handlers()).flatMap { updated =>
+      // NotFound handling
+      if (updated.response.content.isEmpty && updated.response.status == HttpStatus.OK) {
+        val notFound = updated.modify { response =>
+          response.copy(status = HttpStatus.NotFound)
+        }
+        errorHandler.get.handle(notFound, None)
+      } else {
+        Future.successful(updated)
       }
-      errorHandler.get.handle(connection, None)
     }
   }
 
-  @tailrec
-  private def handleRecursive(connection: HttpConnection, handlers: List[HttpHandler]): Unit = {
-    if (connection.isFinished || handlers.isEmpty) {
-      // Finished
+  private def handleRecursive(connection: HttpConnection, handlers: List[HttpHandler]): Future[HttpConnection] = {
+    if (connection.finished || handlers.isEmpty) {
+      Future.successful(connection)     // Finished
     } else {
       val handler = handlers.head
-      handler.handle(connection)
-
-      handleRecursive(connection, handlers.tail)
+      handler.handle(connection).flatMap { updated =>
+        handleRecursive(updated, handlers.tail)
+      }
     }
   }
 }

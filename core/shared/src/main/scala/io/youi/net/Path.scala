@@ -2,7 +2,7 @@ package io.youi.net
 
 import scala.reflect.macros.blackbox
 
-case class Path(parts: List[PathPart]) {
+case class Path(parts: List[PathPart]) extends Location {
   lazy val absolute: Path = {
     var entries = Vector.empty[PathPart]
     parts.foreach {

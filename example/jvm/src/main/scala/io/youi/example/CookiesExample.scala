@@ -7,8 +7,10 @@ import io.youi.http.{Headers, HttpConnection}
 import io.youi.net.ContentType
 import io.youi.server.handler.{HttpHandler, SenderHandler}
 
+import scala.concurrent.Future
+
 object CookiesExample extends HttpHandler with Logging {
-  override def handle(connection: HttpConnection): Unit = {
+  override def handle(connection: HttpConnection): Future[HttpConnection] = {
     val request = connection.request
     val actionOption = request.url.parameters.value("action")
     actionOption match {
@@ -16,8 +18,10 @@ object CookiesExample extends HttpHandler with Logging {
         case "setCookie" => {
           val name = request.url.parameters.value("name").getOrElse("myCookie")
           val value = request.url.parameters.value("value").getOrElse("default value")
-          connection.update { response =>
-            response.withRedirect("/cookies.html").withHeader(Headers.Response.`Set-Cookie`(ResponseCookie(name, value)))
+          Future.successful {
+            connection.modify { response =>
+              response.withRedirect("/cookies.html").withHeader(Headers.Response.`Set-Cookie`(ResponseCookie(name, value)))
+            }
           }
         }
       }

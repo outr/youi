@@ -3,6 +3,9 @@ package io.youi.server.handler
 import io.youi.http.HttpConnection
 import io.youi.server.validation.{ValidationResult, Validator}
 
+import scala.concurrent.Future
+import scribe.Execution.global
+
 /**
   * HttpProcessor extends HttpHandler to provide a clean and efficient mechanism to manage proper
   * matching, validation, and then processing.
@@ -14,14 +17,14 @@ trait HttpProcessor[T] extends HttpHandler {
 
   protected def matches(connection: HttpConnection): Option[T]
 
-  protected def process(connection: HttpConnection, value: T): Unit
+  protected def process(connection: HttpConnection, value: T): Future[HttpConnection]
 
-  override def handle(connection: HttpConnection): Unit = {
-    matches(connection).foreach { value =>
-      val validationResult = ValidatorHttpHandler.validate(connection, validators(connection))
-      if (validationResult == ValidationResult.Continue) {
-        process(connection, value)
+  override def handle(connection: HttpConnection): Future[HttpConnection] = {
+    matches(connection).map { value =>
+      ValidatorHttpHandler.validate(connection, validators(connection)).flatMap {
+        case ValidationResult.Continue(c) => process(c, value)
+        case vr => Future.successful(vr.connection)
       }
-    }
+    }.getOrElse(Future.successful(connection))
   }
 }

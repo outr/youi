@@ -11,7 +11,7 @@ import io.undertow.server.handlers.form.{FormDataParser, FormParserFactory}
 import io.undertow.server.handlers.proxy.LoadBalancingProxyClient
 import io.undertow.server.handlers.resource.URLResource
 import io.undertow.server.{HttpServerExchange, HttpHandler => UndertowHttpHandler}
-import io.undertow.util.{HeaderMap, HttpString}
+import io.undertow.util.{HeaderMap, HttpString, SameThreadExecutor}
 import io.undertow.websockets.WebSocketConnectionCallback
 import io.undertow.websockets.core._
 import io.undertow.websockets.extensions.PerMessageDeflateHandshake
@@ -25,6 +25,7 @@ import org.powerscala.io._
 import org.xnio.{OptionMap, Xnio}
 
 import scala.collection.JavaConverters._
+import scribe.Execution.global
 
 class UndertowServerImplementation(val server: Server) extends ServerImplementation with UndertowHttpHandler {
   val enableHTTP2: Boolean = Server.config("enableHTTP2").opt[Boolean].getOrElse(true)
@@ -73,35 +74,44 @@ class UndertowServerImplementation(val server: Server) extends ServerImplementat
   override def handleRequest(exchange: HttpServerExchange): Unit = server.errorSupport {
     val url = URL(s"${exchange.getRequestURL}?${exchange.getQueryString}")
 
-    try {
-      server.proxies.find(_.matches(url)) match {
-        case Some(proxy) => UndertowServerImplementation.handleProxy(this, url, exchange, proxy)
-        case None => {
-          if (exchange.getRequestContentLength > 0L && exchange.getRequestHeaders.getFirst("Content-Type").startsWith("multipart/form-data")) {
-            if (exchange.isInIoThread) {
-              exchange.dispatch(this)
-            } else {
-              exchange.startBlocking()
-              val formDataParser = formParserBuilder.build().createParser(exchange)
-              formDataParser.parseBlocking()
-              requestHandler(exchange, url)
+    exchange.dispatch(SameThreadExecutor.INSTANCE, new Runnable {
+      override def run(): Unit = {
+        try {
+          server.proxies.find(_.matches(url)) match {
+            case Some(proxy) => UndertowServerImplementation.handleProxy(UndertowServerImplementation.this, url, exchange, proxy)
+            case None => {
+              if (exchange.getRequestContentLength > 0L && exchange.getRequestHeaders.getFirst("Content-Type").startsWith("multipart/form-data")) {
+                if (exchange.isInIoThread) {
+                  exchange.dispatch(this)
+                } else {
+                  exchange.startBlocking()
+                  val formDataParser = formParserBuilder.build().createParser(exchange)
+                  formDataParser.parseBlocking()
+                  requestHandler(exchange, url)
+                }
+              } else {
+                requestHandler(exchange, url)
+              }
             }
-          } else {
-            requestHandler(exchange, url)
           }
+        } catch {
+          case exc: ServerException => throw exc
+          case t: Throwable => new ServerException("Error Handling Request", t, url)
         }
       }
-    } catch {
-      case exc: ServerException => throw exc
-      case t: Throwable => new ServerException("Error Handling Request", t, url)
-    }
+    })
   }
 
   private def requestHandler(exchange: HttpServerExchange, url: URL): Unit = {
     UndertowServerImplementation.processRequest(exchange, url) { request =>
-      val connection: HttpConnection = new HttpConnection(server, request)
-      server.handle(connection)
-      UndertowServerImplementation.response(this, connection, exchange)
+      try {
+        val connection: HttpConnection = HttpConnection(server, request)
+        server.handle(connection).foreach { c =>
+          UndertowServerImplementation.response(this, c, exchange)
+        }
+      } catch {
+        case t: Throwable => scribe.error(t)
+      }
     }
   }
 }
@@ -244,7 +254,7 @@ object UndertowServerImplementation extends ServerImplementationCreator {
   private def handleStandard(impl: UndertowServerImplementation, connection: HttpConnection, exchange: HttpServerExchange): Unit = {
     connection.response.content.foreach { content =>
       if (Headers.`Content-Type`.value(connection.response.headers).isEmpty) {
-        connection.update { response =>
+        connection.modify { response =>
           response.withHeader(Headers.`Content-Type`(content.contentType))
         }
       }

@@ -1,14 +1,13 @@
 package io.youi.example
 
 import reactify.Var
-import io.youi.http.HttpConnection
-import io.youi.server.session.SessionSessionManager
+import io.youi.server.session.InMemorySessionManager
 
 class MySession {
   val created: Long = System.currentTimeMillis()
   val username: Var[Option[String]] = Var(None)
 }
 
-object MySession extends SessionSessionManager[MySession] {
-  override protected def create(httpConnection: HttpConnection): MySession = new MySession
+object MySession extends InMemorySessionManager[MySession] {
+  override protected def create(sessionId: String): MySession = new MySession
 }

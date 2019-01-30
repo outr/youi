@@ -40,7 +40,7 @@ package object dsl {
     }
   }
 
-  implicit class CachingManagerFilter(val caching: CachingManager) extends LastConnectionFilter(handler2Filter(caching.handle))
+  implicit class CachingManagerFilter(val caching: CachingManager) extends LastConnectionFilter(handler2Filter(caching))
 
   implicit class DeltasFilter(val deltas: List[Delta]) extends ActionFilter(connection => Future.successful {
     connection.deltas ++= deltas

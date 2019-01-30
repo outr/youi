@@ -9,7 +9,7 @@ case class URL(protocol: Protocol = Protocol.Http,
                port: Int = 80,
                path: Path = Path.empty,
                parameters: Parameters = Parameters.empty,
-               fragment: Option[String] = None) {
+               fragment: Option[String] = None) extends Location {
   def replaceBase(base: String): URL = URL(s"$base${encoded.pathAndArgs}")
   def replacePathAndParams(pathAndParams: String): URL = URL(s"$base$pathAndParams")
 

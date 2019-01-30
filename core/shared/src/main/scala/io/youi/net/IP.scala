@@ -3,7 +3,7 @@ package io.youi.net
 import scala.reflect.macros.blackbox
 import scala.util.matching.Regex
 
-trait IP {
+trait IP extends Location {
   def address: Array[Int]
   def addressString: String
 

@@ -48,8 +48,14 @@ class UndertowServerImplementation(val server: Server) extends ServerImplementat
         builder.addHttpListener(port, host)
       }
       case HttpsServerListener(host, port, keyStore, enabled) => if (enabled) {
-        val sslContext = SSLUtil.createSSLContext(keyStore.location, keyStore.password)
-        builder.addHttpsListener(port, host, sslContext)
+        try {
+          val sslContext = SSLUtil.createSSLContext(keyStore.location, keyStore.password)
+          builder.addHttpsListener(port, host, sslContext)
+        } catch {
+          case t: Throwable => {
+            throw new RuntimeException(s"Error loading HTTPS, host: $host, port: $port, keyStore: ${keyStore.path}", t)
+          }
+        }
       }
     }
     val u = builder.build()

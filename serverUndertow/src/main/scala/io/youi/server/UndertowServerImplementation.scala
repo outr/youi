@@ -283,7 +283,11 @@ object UndertowServerImplementation extends ServerImplementationCreator {
 
               override def onException(exchange: HttpServerExchange, sender: Sender, exception: IOException): Unit = {
                 sender.close()
-                impl.server.error(exception)
+                if (exception.getMessage == "Stream closed") {
+                  scribe.warn(s"Stream closed for $s")
+                } else {
+                  impl.server.error(exception)
+                }
               }
             })
           }
@@ -297,16 +301,23 @@ object UndertowServerImplementation extends ServerImplementationCreator {
 
               override def onException(exchange: HttpServerExchange, sender: Sender, exception: IOException): Unit = {
                 sender.close()
-                impl.server.error(exception)
+                if (exception.getMessage == "Stream closed") {
+                  scribe.warn(s"Stream closed for $url")
+                } else {
+                  impl.server.error(exception)
+                }
               }
             })
           }
           case c: StreamContent => {
             val runnable = new Runnable {
-              override def run(): Unit = {
+              override def run(): Unit = try {
                 exchange.startBlocking()
                 val out = exchange.getOutputStream
                 c.stream(out)
+              } catch {
+                case exc: IOException if exc.getMessage == "Stream closed" => scribe.warn("Stream closed for StreamContent")
+                case t: Throwable => throw t
               }
             }
             if (exchange.isInIoThread) {    // Must move to async thread before blocking

@@ -3,6 +3,7 @@ package io.youi.http.content
 import java.io.File
 import java.net.URL
 
+import io.circe.{Json, Printer}
 import io.youi.net.ContentType
 
 import scala.xml.Elem
@@ -23,6 +24,10 @@ trait SharedContentHelpers {
   val empty: Content = string("", ContentType.`text/plain`)
   lazy val form: FormDataContent = FormDataContent(Nil)
 
+  def json(value: Json, pretty: Boolean = false): Content = {
+    val printer = if (pretty) Printer.spaces2 else Printer.noSpaces
+    bytes(value.pretty(printer).getBytes, ContentType.`application/json`)
+  }
   def string(value: String, contentType: ContentType): Content = StringContent(value, contentType)
   def bytes(value: Array[Byte], contentType: ContentType): Content = BytesContent(value, contentType)
   def classPath(path: String): Content = classPathOption(path).getOrElse(throw new RuntimeException(s"Invalid URL or not found in class-loader: $path."))

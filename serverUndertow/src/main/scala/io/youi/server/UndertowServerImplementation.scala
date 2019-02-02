@@ -2,6 +2,7 @@ package io.youi.server
 
 import java.io.IOException
 import java.net.URI
+import java.nio.ByteBuffer
 
 import io.undertow.io.{IoCallback, Sender}
 import io.undertow.predicate.Predicates
@@ -274,6 +275,7 @@ object UndertowServerImplementation extends ServerImplementationCreator {
 
         // Set the Content-Length from Content if not already set on the response
         if (Headers.`Content-Length`.value(response.headers).isEmpty && content.length != -1L) {
+          scribe.info(s"Setting content-length: ${content.length}")
           response = response.withHeader(Headers.`Content-Length`(content.length))
         }
 
@@ -316,6 +318,23 @@ object UndertowServerImplementation extends ServerImplementationCreator {
                 sender.close()
                 if (exception.getMessage == "Stream closed") {
                   scribe.warn(s"Stream closed for $url")
+                } else {
+                  impl.server.error(exception)
+                }
+              }
+            })
+          }
+          case c: BytesContent => {
+            val buffer = ByteBuffer.wrap(c.value)
+            exchange.getResponseSender.send(buffer, new IoCallback {
+              override def onComplete(exchange: HttpServerExchange, sender: Sender): Unit = {
+                sender.close()
+              }
+
+              override def onException(exchange: HttpServerExchange, sender: Sender, exception: IOException): Unit = {
+                sender.close()
+                if (exception.getMessage == "Stream closed") {
+                  scribe.warn("Stream closed for BytesContent")
                 } else {
                   impl.server.error(exception)
                 }

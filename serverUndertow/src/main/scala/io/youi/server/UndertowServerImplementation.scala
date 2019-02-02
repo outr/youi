@@ -258,15 +258,28 @@ object UndertowServerImplementation extends ServerImplementationCreator {
   }
 
   private def handleStandard(impl: UndertowServerImplementation, connection: HttpConnection, exchange: HttpServerExchange): Unit = {
-    connection.response.content.foreach { content =>
-      if (Headers.`Content-Type`.value(connection.response.headers).isEmpty) {
-        connection.modify { response =>
-          response.withHeader(Headers.`Content-Type`(content.contentType))
-        }
-      }
-    }
+    val response = {
+      var response = connection.response
 
-    val response = connection.response
+      // Add the Server header if not already set
+      if (Headers.Response.`Server`.value(response.headers).isEmpty) {
+        response = response.withHeader(Headers.Response.`Server`(impl.server.config.name()))
+      }
+
+      connection.response.content.map { content =>
+        // Add Content-Type from Content if not already set on the response
+        if (Headers.`Content-Type`.value(response.headers).isEmpty) {
+          response = response.withHeader(Headers.`Content-Type`(content.contentType))
+        }
+
+        // Set the Content-Length from Content if not already set on the response
+        if (Headers.`Content-Length`.value(response.headers).isEmpty && content.length != -1L) {
+          response = response.withHeader(Headers.`Content-Length`(content.length))
+        }
+
+        response
+      }.getOrElse(connection.response)
+    }
 
     exchange.setStatusCode(response.status.code)
     response.headers.map.foreach {

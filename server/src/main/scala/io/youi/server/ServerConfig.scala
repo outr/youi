@@ -8,6 +8,11 @@ import profig.Profig
 import reactify._
 
 class ServerConfig(server: Server) {
+  /**
+    * The Server name set in the HTTP header
+    */
+  val name: Var[String] = Var(Profig("server.name").as[String]("youi"))
+
   object session {
     private val config = Profig("session").as[SessionConfig]
 

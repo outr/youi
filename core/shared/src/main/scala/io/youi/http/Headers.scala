@@ -62,6 +62,7 @@ object Headers {
         Header(this, value)
       }
     }
+    case object `Server` extends StringHeaderKey("Server")
     def `Set-Cookie` = SetCookie
     case object `Content-Disposition` extends HeaderKey {
       override def key: String = "Content-Disposition"

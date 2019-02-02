@@ -275,7 +275,6 @@ object UndertowServerImplementation extends ServerImplementationCreator {
 
         // Set the Content-Length from Content if not already set on the response
         if (Headers.`Content-Length`.value(response.headers).isEmpty && content.length != -1L) {
-          scribe.info(s"Setting content-length: ${content.length}")
           response = response.withHeader(Headers.`Content-Length`(content.length))
         }
 

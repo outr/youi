@@ -33,10 +33,11 @@ object Unique {
   def uuid: String = {
     val a = apply(8, Hexadecimal)
     val b = apply(4, Hexadecimal)
-    val c = apply(4, Hexadecimal)
-    val d = apply(4, Hexadecimal)
-    val e = apply(12, Hexadecimal)
-    s"$a-$b-$c-$d-$e"
+    val c = apply(3, Hexadecimal)
+    val d = apply(1, "89ab")
+    val e = apply(3, Hexadecimal)
+    val f = apply(12, Hexadecimal)
+    s"$a-$b-4$c-$d$e-$f"
   }
 
   /**

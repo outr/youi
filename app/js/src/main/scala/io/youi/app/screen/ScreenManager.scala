@@ -19,12 +19,26 @@ trait ScreenManager {
   val active: Var[Screen] = Var(EmptyScreen)
   val loaded: Val[Boolean] = Var(false)
 
+  protected def waitForWindowLoad: Boolean = true
+
+  scribe.info("Initializing application...")
   init().foreach { _ =>
-    window.addEventListener("load", (_: Event) => {
+    if (waitForWindowLoad) {
+      scribe.info("Application initialized. Waiting for window load to complete...")
+      window.addEventListener("load", (_: Event) => {
+        scribe.info("Window loading complete. Loading application...")
+        load().foreach { _ =>
+          scribe.info("Application loaded.")
+          loaded.asInstanceOf[Var[Boolean]] := true
+        }
+      })
+    } else {
+      scribe.info("Application initialized. Loading application...")
       load().foreach { _ =>
+        scribe.info("Application loaded.")
         loaded.asInstanceOf[Var[Boolean]] := true
       }
-    })
+    }
   }
 
   active.changes {

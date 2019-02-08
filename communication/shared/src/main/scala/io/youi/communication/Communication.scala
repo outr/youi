@@ -97,7 +97,8 @@ class CommunicationInternal private[communication](communication: Communication)
           endPoint(message).map { content =>
             send := CommunicationMessage(CommunicationMessage.MethodResponse, message.endPoint, message.invocationId, List(content), None)
           }.failed.foreach { t =>
-            send := CommunicationMessage(CommunicationMessage.MethodResponse, message.endPoint, message.invocationId, Nil, Some(t.getMessage))
+            val error = Option(t.getMessage).orElse(Some("An error occurred"))
+            send := CommunicationMessage(CommunicationMessage.MethodResponse, message.endPoint, message.invocationId, Nil, error)
             communication.error(t)
           }
         }

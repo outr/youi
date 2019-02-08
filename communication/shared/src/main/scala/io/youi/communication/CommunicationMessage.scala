@@ -7,9 +7,11 @@ case class CommunicationMessage(messageType: Int,
                                 invocationId: Int,
                                 content: List[String],
                                 error: Option[String]) {
-  lazy val parsableString: String = {
+  lazy val parsableString: String = try {
     val json = JsonUtil.toJsonString(this)
     s"|CM|$json"
+  } catch {
+    case t: Throwable => throw new RuntimeException(s"Unable to convert $this to JSON", t)
   }
 }
 

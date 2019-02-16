@@ -31,7 +31,7 @@ val scribeVersion = "2.7.1"
 val powerScalaVersion = "2.0.5"
 val reactifyVersion = "3.0.3"
 val hasherVersion = "1.2.1"
-
+val hookupVersion = "1.0.0-SNAPSHOT"
 val canvgVersion = "1.4.0_1"
 val openTypeVersion = "0.7.3"
 val picaVersion = "3.0.5"
@@ -198,6 +198,7 @@ lazy val communication = crossProject(JSPlatform, JVMPlatform).in(file("communic
   .settings(
     name := "youi-communication",
     libraryDependencies ++= Seq(
+      "com.outr" %%% "hookup" % hookupVersion,
       "org.scalactic" %%% "scalactic" % scalacticVersion,
       "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
     )

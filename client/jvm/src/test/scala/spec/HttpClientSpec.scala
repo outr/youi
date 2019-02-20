@@ -45,7 +45,7 @@ class HttpClientSpec extends AsyncWordSpec with Matchers {
       callMultiple(5).flatMap { _ =>
         calls should be(6)
         val elapsed = System.currentTimeMillis() - start
-        elapsed should be(5000L +- 750L)
+        elapsed should be(5000L +- 1000L)
       }
     }
   }

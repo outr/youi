@@ -1,7 +1,7 @@
 package io.youi
 
-import scala.concurrent.{Future, Promise}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Future, Promise}
 
 class SingleThreadedFuture(errorHandler: Throwable => Unit = (t: Throwable) => scribe.error(t)) {
   private var future: Future[Any] = Future.successful(())

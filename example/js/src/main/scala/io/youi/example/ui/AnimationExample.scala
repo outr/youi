@@ -52,29 +52,26 @@ class AnimationExample extends UIExampleScreen {
       val image = new ImageView {
         image := img
         position.`type` := Position.Absolute
-        //        position.left := 0.0
-        //        position.middle := container.size.middle
-
-        position.top := container.position.top
-        position.left := container.children.head.position.left + 50.0
+        position.left := 0.0
+        position.middle := container.size.middle
       }
 
       container.children += image
 
-//      forever(
-//        parallel(
-//          sequential(
-//            synchronous(image.rotation := 0.0),
-//            image.rotation to 6.0 in 20.seconds
-//          ),
-//          sequential(
-//            image.position.right to container.size.width in 5.seconds easing Easing.bounceOut,
-//            image.position.bottom to container.size.height in 5.seconds easing Easing.bounceOut,
-//            image.position.left to 0.0 in 5.seconds easing Easing.bounceOut,
-//            image.position.top to 0.0 in 5.seconds easing Easing.bounceOut
-//          )
-//        )
-//      ).start(image)
+      forever(
+        parallel(
+          sequential(
+            synchronous(image.rotation := 0.0),
+            image.rotation to 6.0 in 20.seconds
+          ),
+          sequential(
+            image.position.right to container.size.width in 5.seconds easing Easing.bounceOut,
+            image.position.bottom to container.size.height in 5.seconds easing Easing.bounceOut,
+            image.position.left to 0.0 in 5.seconds easing Easing.bounceOut,
+            image.position.top to 0.0 in 5.seconds easing Easing.bounceOut
+          )
+        )
+      ).start(image)
     }
   }
 }

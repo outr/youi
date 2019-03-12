@@ -14,7 +14,7 @@ class HTMLTextArea(protected val element: html.TextArea,
   override protected def init(): Unit = {
     super.init()
 
-    element.addEventListener("textarea", (_: Event) => {
+    element.addEventListener("input", (_: Event) => {
       value := element.value
     })
   }

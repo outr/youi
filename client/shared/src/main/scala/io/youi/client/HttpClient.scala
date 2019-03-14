@@ -1,33 +1,52 @@
 package io.youi.client
 
-import io.circe.{Decoder, Encoder, Json, Printer}
-import io.circe.parser.decode
-import io.circe.syntax._
-import io.youi.client.intercept.RateLimiter
-import io.youi.http.content.{Content, StringContent}
+import io.circe.{Json, Printer}
+import io.youi.client.intercept.{Interceptor, RateLimiter}
 import io.youi.http.cookie.RequestCookie
-import io.youi.http.{Headers, HttpRequest, HttpResponse, Method}
+import io.youi.http._
+import io.youi.http.content.{Content, StringContent}
 import io.youi.net.{ContentType, URL}
-import reactify.Var
 
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.FiniteDuration
+import scala.concurrent.{ExecutionContext, Future}
+import scala.language.experimental.macros
+import scala.reflect.macros.blackbox
 
-trait HttpClient {
-  def config: HttpClientConfig
+case class HttpClient(request: HttpRequest,
+                      implementation: HttpClientImplementation,
+                      retries: Int,
+                      retryDelay: FiniteDuration,
+                      sessionManager: Option[SessionManager],
+                      interceptor: Interceptor,
+                      dropNullValuesInJson: Boolean) {
+  protected lazy val printer: Printer = Printer.spaces2.copy(dropNullValues = dropNullValuesInJson)
 
-  protected lazy val printer: Printer = Printer.spaces2.copy(dropNullValues = config.dropNullValuesInJson)
+  def modify(f: HttpRequest => HttpRequest): HttpClient = copy(request = f(request))
+
+  def url(url: URL): HttpClient = modify(_.copy(url = url))
+
+  def method(method: Method): HttpClient = modify(_.copy(method = method))
+  def get: HttpClient = method(Method.Get)
+  def post: HttpClient = method(Method.Post)
+  def header(header: Header): HttpClient = modify(r => r.copy(headers = r.headers.withHeader(header)))
+  def header(key: String, value: String): HttpClient = header(Header(HeaderKey(key), value))
+
+  def retries(retries: Int): HttpClient = copy(retries = retries)
+  def sessionManager(sessionManager: SessionManager): HttpClient = copy(sessionManager = Some(sessionManager))
+  def clearSessionManager(): HttpClient = copy(sessionManager = None)
+  def interceptor(interceptor: Interceptor): HttpClient = copy(interceptor = interceptor)
+  def dropNullValuesInJson(dropNullValuesInJson: Boolean): HttpClient = copy(dropNullValuesInJson = dropNullValuesInJson)
+
+  def content(content: Content): HttpClient = modify(_.copy(content = Some(content)))
+  def json(json: Json): HttpClient = content(StringContent(printer.pretty(json), ContentType.`application/json`))
 
   /**
     * Sends an HttpRequest and receives an asynchronous HttpResponse future.
     *
-    * @param request the request to send
-    * @param config the configuration (defaults to the client's config)
     * @return Future[HttpResponse]
     */
-  final def send(request: HttpRequest,
-                 config: HttpClientConfig = config): Future[HttpResponse] = {
-    val updatedHeaders = config.sessionManager match {
+  final def send(retries: Int = this.retries)(implicit executionContext: ExecutionContext): Future[HttpResponse] = {
+    val updatedHeaders = sessionManager match {
       case Some(sm) => {
         val cookieHeaders = sm.session.cookies.map { cookie =>
           RequestCookie(name = cookie.name, value = cookie.value).http
@@ -37,19 +56,19 @@ trait HttpClient {
       case None => request.headers
     }
     val future = for {
-      updatedRequest <- config.interceptor.before(request.copy(headers = updatedHeaders))
-      response <- implementation(updatedRequest)
-      updatedResponse <- config.interceptor.after(updatedRequest, response)
+      updatedRequest <- interceptor.before(request.copy(headers = updatedHeaders))
+      response <- implementation.send(updatedRequest, executionContext)
+      updatedResponse <- interceptor.after(updatedRequest, response)
     } yield {
       updatedResponse
     }
     future.recoverWith {
-      case t: Throwable if config.retries > 0 => {
-        scribe.warn(s"Request to ${request.url} failed (${t.getMessage}). Retrying after ${config.retryDelay} seconds...")
-        RateLimiter.delayedFuture(config.retryDelay, send(request, config.copy(retries = config.retries - 1)))
+      case t: Throwable if retries > 0 => {
+        scribe.warn(s"Request to ${request.url} failed (${t.getMessage}). Retrying after $retryDelay...")
+        RateLimiter.delayedFuture(retryDelay, send(retries - 1))
       }
     }.map { response =>
-      config.sessionManager.foreach { sm =>
+      sessionManager.foreach { sm =>
         val cookies = response.cookies
         sm(cookies)
       }
@@ -58,102 +77,88 @@ trait HttpClient {
     }
   }
 
-  protected def implementation(request: HttpRequest): Future[HttpResponse]
-
   /**
-    * Default error handler for restful bad response statuses.
+    * Builds on the send method by supporting basic restful calls that calls a URL and returns a case class as the
+    * response.
     *
-    * @tparam Response the type of response
-    * @return throws a RuntimeException when an error occurs
+    * @tparam Response the response type
+    * @return Future[Response]
     */
-  protected def defaultErrorHandler[Response]: ErrorHandler[Response] = new ErrorHandler[Response] {
-    override def apply(request: HttpRequest, response: HttpResponse, throwable: Option[Throwable]): Response = throwable match {
-      case Some(t) => throw new RuntimeException(s"Error from server: ${response.status.message} (${response.status.code}) for ${request.url}.", t)
-      case None => throw new RuntimeException(s"Error from server: ${response.status.message} (${response.status.code}) for ${request.url}.")
-    }
-  }
+  def call[Response]: Future[Response] = macro HttpClient.autoCall[Response]
 
   /**
     * Builds on the send method by supporting basic restful calls that take a case class as the request and returns a
     * case class as the response.
     *
-    * @param url the URL of the endpoint
-    * @param request the request instance
-    * @param headers the headers if any to provide
-    * @param errorHandler error handling support if the response status is not Success
-    * @param encoder circe encoding of the Request
-    * @param decoder circe decoding of the Response
+    * @param request the request object to convert to JSON and send
     * @tparam Request the request type
     * @tparam Response the response type
     * @return Future[Response]
     */
-  def restful[Request, Response](url: URL,
-                                 request: Request,
-                                 headers: Headers = Headers.empty,
-                                 errorHandler: ErrorHandler[Response] = defaultErrorHandler[Response],
-                                 method: Method = Method.Post,
-                                 processor: Json => Json = (json: Json) => json,
-                                 config: HttpClientConfig = config)
-                                (implicit encoder: Encoder[Request], decoder: Decoder[Response]): Future[Response] = {
-    val requestJson = printer.pretty(processor(request.asJson))
-    val httpRequest = HttpRequest(
-      method = method,
-      url = url,
-      headers = headers,
-      content = Some(StringContent(requestJson, ContentType.`application/json`))
-    )
-    send(httpRequest, config).map { response =>
-      val responseJson = response.content.map(content2String).getOrElse("")
-      if (responseJson.isEmpty) throw new RuntimeException(s"No content received in response for $url.")
-      decode[Response](responseJson) match {
-        case Left(error) => errorHandler(httpRequest, response, Some(error))
-        case Right(result) => result
-      }
-    }
-  }
-
-  protected def content2String(content: Content): String
-
-  /**
-    * Builds on the send method by supporting basic restful calls that calls a URL and returns a case class as the
-    * response.
-    *
-    * @param url the URL of the endpoint
-    * @param headers the headers if any to provide
-    * @param errorHandler error handling support if the response status is not Success
-    * @param decoder circe decoding of the Response
-    * @tparam Response the response type
-    * @return Future[Response]
-    */
-  def call[Response](url: URL,
-                     method: Method = Method.Get,
-                     headers: Headers = Headers.empty,
-                     errorHandler: ErrorHandler[Response] = defaultErrorHandler[Response],
-                     config: HttpClientConfig = config)
-                    (implicit decoder: Decoder[Response]): Future[Response] = {
-    val request = HttpRequest(
-      method = method,
-      url = url,
-      headers = headers
-    )
-    send(request, config).map { response =>
-      val responseJson = response.content.map(content2String).getOrElse("")
-      if (response.status.isSuccess) {
-        if (responseJson.isEmpty) throw new RuntimeException(s"No content received in response for $url.")
-        decode[Response](responseJson) match {
-          case Left(error) => errorHandler(request, response, Some(error))
-          case Right(result) => result
-        }
-      } else {
-        errorHandler(request, response, None)
-      }
-    }
-  }
+  def restful[Request, Response](request: Request): Future[Response] = macro HttpClient.autoRestful[Request, Response]
 }
 
-object HttpClient {
-  val defaultConfig: Var[HttpClientConfig] = Var(HttpClientConfig())
-  def config: HttpClientConfig = defaultConfig()
+object HttpClient extends HttpClient(
+  request = HttpRequest(),
+  implementation = ClientPlatform.implementation(),
+  retries = HttpClientConfig.default().retries,
+  retryDelay = HttpClientConfig.default().retryDelay,
+  sessionManager = HttpClientConfig.default().sessionManager,
+  interceptor = HttpClientConfig.default().interceptor,
+  dropNullValuesInJson = HttpClientConfig.default().dropNullValuesInJson
+) {
+  def autoCall[Response](c: blackbox.Context)
+                        (implicit r: c.WeakTypeTag[Response]): c.Expr[Future[Response]] = {
+    import c.universe._
 
-  def apply(config: HttpClientConfig = HttpClientConfig()): HttpClient = ClientPlatform.createClient(config)
+    val client = c.prefix.tree
+
+    c.Expr[Future[Response]](
+      q"""
+         import _root_.io.youi.client._
+
+         $client.send().map { response =>
+           try {
+             val responseJson = response.content.map($client.implementation.content2String).getOrElse("")
+             if (response.status.isSuccess) {
+               if (responseJson.isEmpty) throw new ClientException(s"No content received in response for $${$client.request.url}.", $client.request, response, None)
+               _root_.profig.JsonUtil.fromJsonString[$r](responseJson)
+             } else {
+              throw new ClientException("HttpStatus was not successful", $client.request, response, None)
+             }
+           } catch {
+             case t: Throwable => throw new ClientException("Response processing error", $client.request, response, Some(t))
+           }
+         }
+       """)
+  }
+
+  def autoRestful[Request, Response](c: blackbox.Context)
+                                    (request: c.Expr[Request])
+                                    (implicit req: c.WeakTypeTag[Request], res: c.WeakTypeTag[Response]): c.Expr[Future[Response]] = {
+    import c.universe._
+
+    val client = c.prefix.tree
+
+    c.Expr[Future[Response]](
+      q"""
+         import _root_.io.youi.client._
+         import _root_.profig.JsonUtil
+
+         val requestJson = JsonUtil.toJson[$req]($request)
+         $client.post.json(requestJson).send().map { response =>
+           try {
+             val responseJson = response.content.map($client.implementation.content2String).getOrElse("")
+             if (response.status.isSuccess) {
+               if (responseJson.isEmpty) throw new ClientException(s"No content received in response for $${$client.request.url}.", $client.request, response, None)
+               _root_.profig.JsonUtil.fromJsonString[$res](responseJson)
+             } else {
+              throw new ClientException("HttpStatus was not successful", $client.request, response, None)
+             }
+           } catch {
+             case t: Throwable => throw new ClientException("Response processing error", $client.request, response, Some(t))
+           }
+         }
+      """)
+  }
 }

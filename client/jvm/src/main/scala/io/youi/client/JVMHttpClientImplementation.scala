@@ -13,16 +13,15 @@ import okhttp3.Dns
 import org.powerscala.io._
 
 import scala.collection.JavaConverters._
-import scala.concurrent.{Future, Promise}
+import scala.concurrent.{ExecutionContext, Future, Promise}
 import scala.util.{Failure, Success}
-import scribe.Execution.global
 
 /**
   * Asynchronous HttpClient for simple request response support.
   *
   * Adds support for simple restful request/response JSON support.
   */
-case class JVMHttpClient(config: HttpClientConfig = HttpClient.config) extends HttpClient {
+class JVMHttpClientImplementation(config: HttpClientConfig) extends HttpClientImplementation(config) {
   private lazy val client = {
     val b = new okhttp3.OkHttpClient.Builder()
     b.connectTimeout(config.timeout.toMillis, TimeUnit.MILLISECONDS)
@@ -42,7 +41,8 @@ case class JVMHttpClient(config: HttpClientConfig = HttpClient.config) extends H
     b.build()
   }
 
-  override protected def implementation(request: HttpRequest): Future[HttpResponse] = {
+  override def send(request: HttpRequest,
+                    executionContext: ExecutionContext): Future[HttpResponse] = {
     val req = requestToOk(request)
     val promise = Promise[HttpResponse]
     client.newCall(req).enqueue(new okhttp3.Callback {
@@ -53,7 +53,7 @@ case class JVMHttpClient(config: HttpClientConfig = HttpClient.config) extends H
 
       override def onFailure(call: okhttp3.Call, exc: IOException): Unit = promise.failure(exc)
     })
-    JVMHttpClient.process(promise.future)
+    JVMHttpClientImplementation.process(promise.future)(executionContext)
   }
 
   private def requestToOk(request: HttpRequest): okhttp3.Request = {
@@ -130,7 +130,7 @@ case class JVMHttpClient(config: HttpClientConfig = HttpClient.config) extends H
   }
 
 
-  override protected def content2String(content: Content): String = content match {
+  override def content2String(content: Content): String = content match {
     case c: StringContent => c.value
     case c: BytesContent => String.valueOf(c.value)
     case c: FileContent => IO.stream(c.file, new StringBuilder).toString
@@ -149,17 +149,18 @@ case class JVMHttpClient(config: HttpClientConfig = HttpClient.config) extends H
   }
 
   def logStats(): Unit = {
-    scribe.info(s"HttpClient stats - Pool[active: ${config.connectionPool.active}, idle: ${config.connectionPool.idle}, total: ${config.connectionPool.total}], Global[active: ${JVMHttpClient.active}, successful: ${JVMHttpClient.successful}, failure: ${JVMHttpClient.failure}, total: ${JVMHttpClient.total}]")
+    val g = JVMHttpClientImplementation
+    scribe.info(s"HttpClient stats - Pool[active: ${config.connectionPool.active}, idle: ${config.connectionPool.idle}, total: ${config.connectionPool.total}], Global[active: ${g.active}, successful: ${g.successful}, failure: ${g.failure}, total: ${g.total}]")
   }
 }
 
-object JVMHttpClient {
+object JVMHttpClientImplementation {
   private[client] val _total = new AtomicLong(0L)
   private[client] val _active = new AtomicLong(0L)
   private[client] val _successful = new AtomicLong(0L)
   private[client] val _failure = new AtomicLong(0L)
 
-  private[client] def process(future: Future[HttpResponse]): Future[HttpResponse] = {
+  private[client] def process(future: Future[HttpResponse])(implicit executionContext: ExecutionContext): Future[HttpResponse] = {
     _total.incrementAndGet()
     _active.incrementAndGet()
     future.onComplete {

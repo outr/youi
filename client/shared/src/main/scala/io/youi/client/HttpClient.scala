@@ -5,7 +5,7 @@ import io.youi.client.intercept.{Interceptor, RateLimiter}
 import io.youi.http.cookie.RequestCookie
 import io.youi.http._
 import io.youi.http.content.{Content, StringContent}
-import io.youi.net.{ContentType, URL}
+import io.youi.net.{ContentType, Path, URL}
 
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future}
@@ -24,6 +24,9 @@ case class HttpClient(request: HttpRequest,
   def modify(f: HttpRequest => HttpRequest): HttpClient = copy(request = f(request))
 
   def url(url: URL): HttpClient = modify(_.copy(url = url))
+  def path(path: Path): HttpClient = modify(_.copy(url = request.url.withPath(path)))
+  def params(params: (String, String)*): HttpClient = modify(_.copy(url = request.url.withParams(params.toMap)))
+  def appendParams(params: (String, String)*): HttpClient = modify(_.copy(url = request.url.withParams(params.toMap, append = true)))
 
   def method(method: Method): HttpClient = modify(_.copy(method = method))
   def get: HttpClient = method(Method.Get)

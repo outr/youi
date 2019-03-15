@@ -26,6 +26,19 @@ case class HttpClient(request: HttpRequest,
   def url(url: URL): HttpClient = modify(_.copy(url = url))
   def path(path: Path): HttpClient = modify(_.copy(url = request.url.withPath(path)))
   def params(params: (String, String)*): HttpClient = modify(_.copy(url = request.url.withParams(params.toMap)))
+  def param[T](name: String, value: T, default: T): HttpClient = if (value != default) {
+    value match {
+      case s: String => params(name -> s)
+      case b: Boolean => params(name -> b.toString)
+      case i: Int => params(name -> i.toString)
+      case l: List[Any] => params(name -> l.mkString(","))
+      case s: Some[Any] => param[Any](name, s.head, default)
+      case None => this
+      case _ => throw new RuntimeException(s"Unsupported param type: $value (${value.getClass.getSimpleName})")
+    }
+  } else {
+    this
+  }
   def appendParams(params: (String, String)*): HttpClient = modify(_.copy(url = request.url.withParams(params.toMap, append = true)))
 
   def method(method: Method): HttpClient = modify(_.copy(method = method))

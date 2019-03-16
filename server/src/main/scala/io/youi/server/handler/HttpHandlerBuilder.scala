@@ -169,7 +169,7 @@ case class HttpHandlerBuilder(server: Server,
   def zip(entries: ZipFileEntry*): HttpHandler = content(new StreamZipContent(entries.toList))
 
   def wrap(handler: HttpHandler): HttpHandler = {
-    val p = priority
+    val p = if (priority == Priority.Normal) handler.priority else priority
     val wrapper = new HttpHandler {
       override def priority: Priority = p
 

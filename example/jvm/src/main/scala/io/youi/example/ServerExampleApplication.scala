@@ -4,7 +4,7 @@ import io.youi.app._
 import io.youi.http._
 import io.youi.http.content.Content
 import io.youi.net._
-import io.youi.server.handler.{CachingManager, ProxyCache}
+import io.youi.server.handler.{CachingManager, LanguageSupport, ProxyCache}
 import io.youi.server.dsl._
 import profig.JsonUtil
 
@@ -40,5 +40,6 @@ object ServerExampleApplication extends ExampleApplication with ServerApplicatio
         path.startsWith("/app") / ClassLoaderPath()
       )
     )
+    handlers += new LanguageSupport()
   }
 }

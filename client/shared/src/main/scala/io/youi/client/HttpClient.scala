@@ -18,12 +18,15 @@ case class HttpClient(request: HttpRequest,
                       retryDelay: FiniteDuration,
                       sessionManager: Option[SessionManager],
                       interceptor: Interceptor,
-                      dropNullValuesInJson: Boolean) {
+                      dropNullValuesInJson: Boolean,
+                      failOnHttpStatus: Boolean) {
   protected lazy val printer: Printer = Printer.spaces2.copy(dropNullValues = dropNullValuesInJson)
 
   def modify(f: HttpRequest => HttpRequest): HttpClient = copy(request = f(request))
 
+  def url: URL = request.url
   def url(url: URL): HttpClient = modify(_.copy(url = url))
+  def path: Path = url.path
   def path(path: Path): HttpClient = modify(_.copy(url = request.url.withPath(path)))
   def params(params: (String, String)*): HttpClient = modify(_.copy(url = request.url.withParams(params.toMap)))
   def param[T](name: String, value: T, default: T): HttpClient = if (value != default) {
@@ -52,6 +55,8 @@ case class HttpClient(request: HttpRequest,
   def clearSessionManager(): HttpClient = copy(sessionManager = None)
   def interceptor(interceptor: Interceptor): HttpClient = copy(interceptor = interceptor)
   def dropNullValuesInJson(dropNullValuesInJson: Boolean): HttpClient = copy(dropNullValuesInJson = dropNullValuesInJson)
+  def failOnHttpStatus(failOnHttpStatus: Boolean): HttpClient = copy(failOnHttpStatus = failOnHttpStatus)
+  def noFailOnHttpStatus: HttpClient = failOnHttpStatus(failOnHttpStatus = false)
 
   def content(content: Content): HttpClient = modify(_.copy(content = Some(content)))
   def json(json: Json): HttpClient = content(StringContent(printer.pretty(json), ContentType.`application/json`))
@@ -121,7 +126,8 @@ object HttpClient extends HttpClient(
   retryDelay = HttpClientConfig.default().retryDelay,
   sessionManager = HttpClientConfig.default().sessionManager,
   interceptor = HttpClientConfig.default().interceptor,
-  dropNullValuesInJson = HttpClientConfig.default().dropNullValuesInJson
+  dropNullValuesInJson = HttpClientConfig.default().dropNullValuesInJson,
+  failOnHttpStatus = HttpClientConfig.default().failOnHttpStatus
 ) {
   def autoCall[Response](c: blackbox.Context)
                         (implicit r: c.WeakTypeTag[Response]): c.Expr[Future[Response]] = {
@@ -136,7 +142,7 @@ object HttpClient extends HttpClient(
          $client.send().map { response =>
            try {
              val responseJson = response.content.map($client.implementation.content2String).getOrElse("")
-             if (response.status.isSuccess) {
+             if (!$client.failOnHttpStatus || response.status.isSuccess) {
                if (responseJson.isEmpty) throw new ClientException(s"No content received in response for $${$client.request.url}.", $client.request, response, None)
                _root_.profig.JsonUtil.fromJsonString[$r](responseJson)
              } else {
@@ -165,7 +171,7 @@ object HttpClient extends HttpClient(
          $client.post.json(requestJson).send().map { response =>
            try {
              val responseJson = response.content.map($client.implementation.content2String).getOrElse("")
-             if (response.status.isSuccess) {
+             if (!$client.failOnHttpStatus || response.status.isSuccess) {
                if (responseJson.isEmpty) throw new ClientException(s"No content received in response for $${$client.request.url}.", $client.request, response, None)
                _root_.profig.JsonUtil.fromJsonString[$res](responseJson)
              } else {

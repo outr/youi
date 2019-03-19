@@ -49,6 +49,11 @@ case class HttpClient(request: HttpRequest,
   def post: HttpClient = method(Method.Post)
   def header(header: Header): HttpClient = modify(r => r.copy(headers = r.headers.withHeader(header)))
   def header(key: String, value: String): HttpClient = header(Header(HeaderKey(key), value))
+  def headers(headers: Headers, replace: Boolean = false): HttpClient = if (replace) {
+    modify(_.copy(headers = headers))
+  } else {
+    modify(_.copy(headers = request.headers.merge(headers)))
+  }
 
   def retries(retries: Int): HttpClient = copy(retries = retries)
   def sessionManager(sessionManager: SessionManager): HttpClient = copy(sessionManager = Some(sessionManager))
@@ -59,6 +64,10 @@ case class HttpClient(request: HttpRequest,
   def noFailOnHttpStatus: HttpClient = failOnHttpStatus(failOnHttpStatus = false)
 
   def content(content: Content): HttpClient = modify(_.copy(content = Some(content)))
+  def content(content: Option[Content]): HttpClient = content match {
+    case Some(c) => this.content(c)
+    case None => this
+  }
   def json(json: Json): HttpClient = content(StringContent(printer.pretty(json), ContentType.`application/json`))
 
   /**

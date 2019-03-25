@@ -3,7 +3,7 @@ import sbtcrossproject.CrossPlugin.autoImport.crossProject
 
 name := "youi"
 organization in ThisBuild := "io.youi"
-version in ThisBuild := "0.10.11"
+version in ThisBuild := "0.10.12-SNAPSHOT"
 scalaVersion in ThisBuild := "2.12.8"
 crossScalaVersions in ThisBuild := List("2.12.8", "2.11.12")
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
@@ -39,7 +39,7 @@ val webFontLoaderVersion = "1.6.28"
 
 val akkaVersion = "2.5.21"
 val scalaJSDOM = "0.9.6"
-val okHttpVersion = "3.13.1"
+val okHttpVersion = "3.14.0"
 val circeVersion = "0.10.1"
 val uaDetectorVersion = "2014.10"
 val undertowVersion = "2.0.19.Final"
@@ -186,13 +186,14 @@ lazy val server = project.in(file("server"))
 lazy val serverUndertow = project.in(file("serverUndertow"))
   .settings(
     name := "youi-server-undertow",
+    fork := true,
     libraryDependencies ++= Seq(
       "io.undertow" % "undertow-core" % undertowVersion,
       "org.scalactic" %% "scalactic" % scalacticVersion,
       "org.scalatest" %% "scalatest" % scalaTestVersion % "test"
     )
   )
-  .dependsOn(server)
+  .dependsOn(server, clientJVM % "test->test")
 
 lazy val communication = crossProject(JSPlatform, JVMPlatform).in(file("communication"))
   .settings(

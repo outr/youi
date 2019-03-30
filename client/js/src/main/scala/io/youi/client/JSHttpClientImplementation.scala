@@ -5,13 +5,13 @@ import io.youi.http.content._
 import io.youi.http.{Headers, HttpRequest, HttpResponse, HttpStatus}
 import io.youi.net.ContentType
 
-import scala.concurrent.Future
-import scribe.Execution.global
+import scala.concurrent.{ExecutionContext, Future}
 
-case class JSHttpClient(config: HttpClientConfig = HttpClient.config) extends HttpClient {
+class JSHttpClientImplementation(config: HttpClientConfig) extends HttpClientImplementation(config) {
   private val HeaderRegex = """(.+)[=](.+)""".r
 
-  override protected def implementation(request: HttpRequest): Future[HttpResponse] = {
+  override def send(request: HttpRequest, executionContext: ExecutionContext): Future[HttpResponse] = {
+    implicit val implicitContext: ExecutionContext = executionContext
     val manager = config.connectionPool.asInstanceOf[JSConnectionPool].manager
     val ajaxRequest = new AjaxRequest(
       url = request.url,
@@ -43,7 +43,7 @@ case class JSHttpClient(config: HttpClientConfig = HttpClient.config) extends Ht
     }
   }
 
-  override protected def content2String(content: Content): String = content match {
+  override def content2String(content: Content): String = content match {
     case c: StringContent => c.value
     case _ => throw new RuntimeException(s"$content not supported")
   }

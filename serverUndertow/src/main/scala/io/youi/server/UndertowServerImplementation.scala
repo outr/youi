@@ -23,6 +23,7 @@ import io.youi.http.content._
 import io.youi.net.{ContentType, IP, Parameters, Path, URL}
 import io.youi.server.util.SSLUtil
 import org.powerscala.io._
+import org.xnio.streams.ChannelInputStream
 import org.xnio.{OptionMap, Xnio}
 
 import scala.collection.JavaConverters._
@@ -166,18 +167,9 @@ object UndertowServerImplementation extends ServerImplementationCreator {
           handle(Some(FormDataContent(data)))
         }
         case ct => {
-          def finish(exchange: HttpServerExchange): Unit = {
-            exchange.startBlocking()
-            val data = IO.stream(exchange.getInputStream, new StringBuilder).toString
-            handle(Some(StringContent(data, ct)))
-          }
-          if (exchange.isInIoThread) {
-            exchange.dispatch(new UndertowHttpHandler {
-              override def handleRequest(exchange: HttpServerExchange): Unit = finish(exchange)
-            })
-          } else {
-            finish(exchange)
-          }
+          val cis = new ChannelInputStream(exchange.getRequestChannel)
+          val data = IO.stream(cis, new StringBuilder).toString
+          handle(Some(StringContent(data, ct)))
         }
       }
     } else {

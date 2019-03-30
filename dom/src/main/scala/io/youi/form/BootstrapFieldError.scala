@@ -2,12 +2,15 @@ package io.youi.form
 
 import io.youi.dom.create
 import org.scalajs.dom.html
+import org.scalajs.dom.html.Element
 
 case class BootstrapFieldError(input: FormInput) extends FieldError {
   private val errorDiv = create[html.Div]("div")
   errorDiv.classList.add("invalid-tooltip")
   clear()
   input.element.parentElement.appendChild(errorDiv)
+
+  override lazy val element: Option[Element] = Some(errorDiv)
 
   override def show(message: String): Unit = {
     errorDiv.innerHTML = message

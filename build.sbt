@@ -3,7 +3,7 @@ import sbtcrossproject.CrossPlugin.autoImport.crossProject
 
 name := "youi"
 organization in ThisBuild := "io.youi"
-version in ThisBuild := "0.10.5-SNAPSHOT"
+version in ThisBuild := "0.10.13"
 scalaVersion in ThisBuild := "2.12.8"
 crossScalaVersions in ThisBuild := List("2.12.8", "2.11.12")
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
@@ -26,8 +26,8 @@ developers in ThisBuild := List(
   Developer(id="darkfrog", name="Matt Hicks", email="matt@matthicks.com", url=url("http://matthicks.com"))
 )
 
-val profigVersion = "2.3.4"
-val scribeVersion = "2.7.1"
+val profigVersion = "2.3.5"
+val scribeVersion = "2.7.3"
 val powerScalaVersion = "2.0.5"
 val reactifyVersion = "3.0.3"
 val hasherVersion = "1.2.1"
@@ -37,12 +37,12 @@ val openTypeVersion = "0.7.3"
 val picaVersion = "3.0.5"
 val webFontLoaderVersion = "1.6.28"
 
-val akkaVersion = "2.5.19"
+val akkaVersion = "2.5.21"
 val scalaJSDOM = "0.9.6"
-val okHttpVersion = "3.12.1"
-val circeVersion = "0.10.1"
+val okHttpVersion = "3.14.0"
+val circeVersion = "0.11.1"
 val uaDetectorVersion = "2014.10"
-val undertowVersion = "2.0.17.Final"
+val undertowVersion = "2.0.19.Final"
 val closureCompilerVersion = "v20181008"
 val jSoupVersion = "1.11.3"
 val scalaXMLVersion = "1.1.1"
@@ -186,13 +186,14 @@ lazy val server = project.in(file("server"))
 lazy val serverUndertow = project.in(file("serverUndertow"))
   .settings(
     name := "youi-server-undertow",
+    fork := true,
     libraryDependencies ++= Seq(
       "io.undertow" % "undertow-core" % undertowVersion,
       "org.scalactic" %% "scalactic" % scalacticVersion,
       "org.scalatest" %% "scalatest" % scalaTestVersion % "test"
     )
   )
-  .dependsOn(server)
+  .dependsOn(server, clientJVM % "test->test")
 
 lazy val communication = crossProject(JSPlatform, JVMPlatform).in(file("communication"))
   .settings(

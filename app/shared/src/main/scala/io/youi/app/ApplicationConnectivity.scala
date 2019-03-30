@@ -1,6 +1,5 @@
 package io.youi.app
 
-import io.youi.communication.Communication
 import io.youi.http.Connection
 import reactify.{Val, Var}
 

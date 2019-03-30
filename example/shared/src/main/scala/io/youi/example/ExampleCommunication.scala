@@ -1,7 +1,7 @@
 package io.youi.example
 
 import reactify.Var
-import io.youi.communication.{Communication, client, server}
+import io.youi.communication.Communication
 
 import scala.concurrent.Future
 

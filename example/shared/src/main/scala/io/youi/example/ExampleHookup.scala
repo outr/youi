@@ -2,6 +2,7 @@ package io.youi.example
 
 import com.outr.hookup.{Hookup, HookupSupport}
 import reactify.Var
+import scribe.Execution.global
 
 trait ExampleHookup extends Hookup {
   val name: Var[Option[String]] = prop[Option[String]](None)

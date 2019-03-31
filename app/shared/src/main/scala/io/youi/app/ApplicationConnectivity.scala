@@ -21,27 +21,4 @@ class ApplicationConnectivity private[app](val application: YouIApplication,
     * Listing of all active connections. On the client this will only ever have one entry.
     */
   val connections: Val[Set[Connection]] = Val(activeConnections)
-
-  /**
-    * Listing of all communication managers attached.
-    */
-  val communicationManagers: Val[Set[CommunicationManager[_ <: Communication]]] = Var(Set.empty)
-
-  // Make sure the application knows about it
-  application.synchronized {
-    val entries = application.connectivityEntries()
-    application.connectivityEntries.asInstanceOf[Var[Set[ApplicationConnectivity]]] := entries + this
-  }
-
-  /**
-    * Creates a new CommunicationManager for the Communication trait defined. This should be used to define a val in the
-    * shared application trait that will be utilized in both client and server.
-    *
-    * @return CommunicationManager[C]
-    */
-  def communication[C <: Communication]: CommunicationManager[C] = macro Macros.communication[C]
-
-  private[app] def registerCommunicationManager(communicationManager: CommunicationManager[_ <: Communication]): Unit = synchronized {
-    communicationManagers.asInstanceOf[Var[Set[CommunicationManager[_ <: Communication]]]] := (communicationManagers() + communicationManager)
-  }
 }

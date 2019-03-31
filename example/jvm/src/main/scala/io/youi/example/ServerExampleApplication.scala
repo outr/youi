@@ -1,5 +1,6 @@
 package io.youi.example
 
+import com.outr.hookup.{Hookup, HookupServer}
 import io.youi.app._
 import io.youi.http._
 import io.youi.http.content.Content
@@ -13,6 +14,8 @@ import scribe.Execution.global
 
 object ServerExampleApplication extends ExampleApplication with ServerApplication {
   val generalPages: Page = page(GeneralPages)
+
+  val hookup: HookupServer[ExampleHookup] = Hookup.server[ExampleHookup]
 
   override protected def applicationBasePath = s"app/youi-example"
   override protected def applicationJSBasePath = s"/app/example"

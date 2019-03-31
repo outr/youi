@@ -1,6 +1,6 @@
 package io.youi.example
 
-import io.youi.communication.{Communication, server}
+import io.youi.communication.Communication
 
 import scala.concurrent.Future
 

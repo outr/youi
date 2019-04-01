@@ -29,7 +29,7 @@ object CommunicationScreen extends ExampleScreen {
   }
 
   private def configure(): Unit = {
-    cc.connection.connected.attachAndFire { c =>
+    /*cc.connection.connected.attachAndFire { c =>
       connectedInput.value = if (c) "Yes" else "No"
     }
     connectedButton.addEventListener("click", (evt: Event) => {
@@ -40,7 +40,7 @@ object CommunicationScreen extends ExampleScreen {
       } else {
         cc.connect()
       }
-    })
+    })*/
 
     reverseButton.addEventListener("click", (evt: Event) => {
       evt.preventDefault()
@@ -49,7 +49,7 @@ object CommunicationScreen extends ExampleScreen {
       if (value.isEmpty) {
         window.alert("Reverse value must not be empty!")
       } else {
-        s.reverse(value).foreach { reversed =>
+        hookup.simple.reverse(value).foreach { reversed =>
           reverseInput.value = reversed
         }
       }
@@ -58,18 +58,18 @@ object CommunicationScreen extends ExampleScreen {
     timeButton.addEventListener("click", (evt: Event) => {
       evt.preventDefault()
       evt.stopPropagation()
-      c.time.foreach { time =>
+      hookup.communication.time.foreach { time =>
         timeInput.value = time.toString
       }
     })
 
-    nameInput.value = c.name().getOrElse("")
+    nameInput.value = hookup.name().getOrElse("")
     nameButton.addEventListener("click", (evt: Event) => {
       evt.preventDefault()
       evt.stopPropagation()
-      c.name := Some(nameInput.value)
+      hookup.name := Some(nameInput.value)
     })
-    c.name.attach { name =>
+    hookup.name.attach { name =>
       val s = name.getOrElse("")
       if (nameInput.value != s) {
         nameInput.value = s
@@ -79,7 +79,7 @@ object CommunicationScreen extends ExampleScreen {
     counterButton.addEventListener("click", (evt: Event) => {
       evt.preventDefault()
       evt.stopPropagation()
-      c.counter.foreach { count =>
+      hookup.communication.counter.foreach { count =>
         counterInput.value = count.toString
       }
     })
@@ -87,7 +87,7 @@ object CommunicationScreen extends ExampleScreen {
     broadcastButton.addEventListener("click", (evt: Event) => {
       evt.preventDefault()
       evt.stopPropagation()
-      c.broadcast(broadcastInput.value)
+      hookup.communication.broadcast(broadcastInput.value)
     })
   }
 }

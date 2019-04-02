@@ -22,6 +22,10 @@ trait ClientApplication extends YouIApplication with ScreenManager {
 
   addScript("/source-map.min.js")
 
+  override def isClient: Boolean = true
+
+  override def isServer: Boolean = false
+
   // Configure communication end-points
   private var configuredConnectivity: Map[ApplicationConnectivity, ClientConnectivity] = Map.empty
 

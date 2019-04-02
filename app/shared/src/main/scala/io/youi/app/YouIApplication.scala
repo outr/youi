@@ -14,6 +14,9 @@ trait YouIApplication extends ErrorSupport with CacheImplementation {
   Cache.implementation = this
   YouIApplication.instance = Some(this)
 
+  def isClient: Boolean
+  def isServer: Boolean
+
   /**
     * Returns true if errors that happen in the browser should be logged on the server.
     *

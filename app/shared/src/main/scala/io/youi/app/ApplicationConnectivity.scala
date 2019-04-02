@@ -26,6 +26,12 @@ class ApplicationConnectivity private[app](val application: YouIApplication,
     */
   val connections: Val[Set[Connection]] = Val(activeConnections)
 
+  // Make sure the application knows about it
+  application.synchronized {
+    val entries = application.connectivityEntries()
+    application.connectivityEntries.asInstanceOf[Var[Set[ApplicationConnectivity]]] := entries + this
+  }
+
   connections.changes((before, after) => {
     val added = after -- before
     val removed = before -- after
@@ -33,7 +39,7 @@ class ApplicationConnectivity private[app](val application: YouIApplication,
       val hookups = if (application.isClient) {
         HookupManager.clients
       } else {
-        HookupManager(connection)
+        HookupManager(connection, registerAllServers = true)
       }
       // Send output from Hookups
       val reaction = hookups.io.output.attach { json =>

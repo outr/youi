@@ -31,8 +31,9 @@ trait ServerExampleCommunication extends ExampleCommunication with HookupSupport
     }
   }
 
-/*  MySession.withConnection(connection) { transaction =>
-    val name = ServerExampleApplication.hookup(connection).name
+  /*MySession.withConnection(connection) { transaction =>
+    val hookup = ServerExampleApplication.hookup(connection)
+    val name = hookup.name
     name := transaction.session.username
     Future.successful(transaction)
   }*/

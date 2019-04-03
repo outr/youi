@@ -34,7 +34,7 @@ object ReverseClientExample {
     }
 //    reRun()
 
-    Thread.sleep(120000)
+//    Thread.sleep(120000)
   }
 
   private def reRun(): Future[Unit] = hookup.simple.reverse("This is a test!").flatMap { result =>

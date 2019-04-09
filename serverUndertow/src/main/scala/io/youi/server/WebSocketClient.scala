@@ -135,8 +135,8 @@ class WebSocketClient(url: URL,
   }
 
   private def checkBacklog(): Unit = {
-    if (backlog.nonEmpty) {
-      synchronized {
+    synchronized {
+      if (backlog.nonEmpty) {
         val messages = backlog
         backlog = Nil
         messages.foreach {

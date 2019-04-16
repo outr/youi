@@ -135,13 +135,14 @@ class WebSocketClient(url: URL,
   }
 
   private def checkBacklog(): Unit = {
-    if (backlog.nonEmpty) {
-      synchronized {
-        backlog.foreach {
+    synchronized {
+      if (backlog.nonEmpty) {
+        val messages = backlog
+        backlog = Nil
+        messages.foreach {
           case text: String => sendMessage(text)
           case binary: ByteBuffer => sendMessage(binary)
         }
-        backlog = Nil
       }
     }
   }

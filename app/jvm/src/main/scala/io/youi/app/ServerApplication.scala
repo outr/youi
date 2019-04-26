@@ -130,25 +130,21 @@ trait ServerApplication extends YouIApplication with Server {
       if (httpConnection.response.content.isEmpty) {
         val url = httpConnection.request.url
         val fileName = url.path.decoded
-        if (fileName.endsWith(".html") && excludeDotHTML) {
-          Future.successful(httpConnection)      // Ignore
+        val mapped = mappings.toStream.flatMap(_ (httpConnection)).headOption
+        val withHTML = if (excludeDotHTML) {
+          lookup(s"$fileName.html")
         } else {
-          val mapped = mappings.toStream.flatMap(_ (httpConnection)).headOption
-          val withHTML = if (excludeDotHTML) {
-            lookup(s"$fileName.html")
-          } else {
-            None
-          }
-          mapped.orElse(lookup(fileName).orElse(withHTML)).map { content =>
-            if (content.contentType == ContentType.`text/html`) {
-              CachingManager.NotCached.handle(httpConnection)
-              serveHTML(httpConnection, content, deltas, includeApplication(url))
-            } else {
-              CachingManager.LastModified().handle(httpConnection)
-              Future.successful(httpConnection.modify(_.withContent(content)))
-            }
-          }.getOrElse(Future.successful(httpConnection))
+          None
         }
+        mapped.orElse(lookup(fileName).orElse(withHTML)).map { content =>
+          if (content.contentType == ContentType.`text/html`) {
+            CachingManager.NotCached.handle(httpConnection)
+            serveHTML(httpConnection, content, deltas, includeApplication(url))
+          } else {
+            CachingManager.LastModified().handle(httpConnection)
+            Future.successful(httpConnection.modify(_.withContent(content)))
+          }
+        }.getOrElse(Future.successful(httpConnection))
       } else {
         Future.successful(httpConnection)
       }

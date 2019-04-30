@@ -2,7 +2,7 @@ package io.youi.server.handler
 
 import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
-import java.util.regex.Matcher
+import java.util.regex.{Matcher, Pattern}
 
 import io.youi.Priority
 import io.youi.http.content.Content
@@ -72,7 +72,7 @@ class LanguageSupport(val default: Locale = Locale.ENGLISH) extends HttpHandler 
       case None => firstConfig(localeStrings)
     }
 
-    val matcher = """[{](.+?)[}]""".r
+    val matcher = """[{]([a-zA-Z0-9._-]+?)[}]""".r
     val updatedHTML = matcher.replaceAllIn(html, m => {
       config(m.group(1)).opt[String] match {
         case Some(replacement) => Matcher.quoteReplacement(replacement)

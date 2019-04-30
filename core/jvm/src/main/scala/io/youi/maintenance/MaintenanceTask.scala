@@ -1,9 +1,11 @@
 package io.youi.maintenance
 
+import java.util.Calendar
+
 import reactify.Var
 
 import scala.concurrent.Future
-import scala.concurrent.duration.FiniteDuration
+import scala.concurrent.duration._
 
 trait MaintenanceTask {
   var lastStatus: Option[TaskStatus] = None
@@ -23,4 +25,22 @@ trait MaintenanceTask {
   def delay: FiniteDuration
   def statusOnFailure: TaskStatus = TaskStatus.Stop
   def run(): Future[TaskStatus]
+
+  def at(hour: Int,
+         minute: Int = 0,
+         second: Int = 0,
+         millisecond: Int = 0,
+         rollToNextDay: Boolean = true): FiniteDuration = {
+    val c = Calendar.getInstance()
+    c.set(Calendar.HOUR_OF_DAY, hour)
+    c.set(Calendar.MINUTE, minute)
+    c.set(Calendar.SECOND, second)
+    c.set(Calendar.MILLISECOND, millisecond)
+    val l = c.getTimeInMillis - System.currentTimeMillis()
+    if (l <= 0 && rollToNextDay) {
+      (l + 24.hours.toMillis).millis
+    } else {
+      l.millis
+    }
+  }
 }

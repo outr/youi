@@ -43,7 +43,7 @@ val scalaJSDOM = "0.9.6"
 val okHttpVersion = "3.14.0"
 val circeVersion = "0.11.1"
 val uaDetectorVersion = "2014.10"
-val undertowVersion = "2.0.19.Final"
+val undertowVersion = "2.0.20.Final"
 val closureCompilerVersion = "v20181008"
 val jSoupVersion = "1.11.3"
 val scalaXMLVersion = "1.1.1"
@@ -200,7 +200,6 @@ lazy val communication = crossProject(JSPlatform, JVMPlatform).in(file("communic
   .settings(
     name := "youi-communication",
     libraryDependencies ++= Seq(
-      "com.outr" %%% "hookup" % hookupVersion,
       "org.scalactic" %%% "scalactic" % scalacticVersion,
       "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
     )

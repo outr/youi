@@ -17,7 +17,10 @@ object ReverseClientExample {
   // TODO: Do this with Communication paradigm
   // Connect IO
   connection.receive.text.attach { s =>
-    parse(s).foreach(hookup.io.input.set(_))
+    parse(s) match {
+      case Left(pf) => throw pf
+      case Right(json) => hookup.io.input.set(json)
+    }
   }
   hookup.io.output.attach { json =>
     connection.send.text := json.spaces2

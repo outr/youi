@@ -200,6 +200,7 @@ lazy val communication = crossProject(JSPlatform, JVMPlatform).in(file("communic
   .settings(
     name := "youi-communication",
     libraryDependencies ++= Seq(
+      "com.outr" %%% "hookup" % hookupVersion,
       "org.scalactic" %%% "scalactic" % scalacticVersion,
       "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
     )

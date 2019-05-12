@@ -3,7 +3,7 @@ import sbtcrossproject.CrossPlugin.autoImport.crossProject
 
 name := "youi"
 organization in ThisBuild := "io.youi"
-version in ThisBuild := "0.10.15"
+version in ThisBuild := "0.11.0"
 scalaVersion in ThisBuild := "2.12.8"
 crossScalaVersions in ThisBuild := List("2.12.8", "2.11.12")
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
@@ -31,21 +31,22 @@ val scribeVersion = "2.7.3"
 val powerScalaVersion = "2.0.5"
 val reactifyVersion = "3.0.3"
 val hasherVersion = "1.2.1"
+val hookupVersion = "2.0.0"
 
 val canvgVersion = "1.4.0_1"
 val openTypeVersion = "0.7.3"
 val picaVersion = "3.0.5"
 val webFontLoaderVersion = "1.6.28"
 
-val akkaVersion = "2.5.21"
-val scalaJSDOM = "0.9.6"
-val okHttpVersion = "3.14.0"
+val akkaVersion = "2.5.22"
+val scalaJSDOM = "0.9.7"
+val okHttpVersion = "3.14.1"
 val circeVersion = "0.11.1"
 val uaDetectorVersion = "2014.10"
-val undertowVersion = "2.0.19.Final"
-val closureCompilerVersion = "v20181008"
+val undertowVersion = "2.0.20.Final"
+val closureCompilerVersion = "v20190415"
 val jSoupVersion = "1.11.3"
-val scalaXMLVersion = "1.1.1"
+val scalaXMLVersion = "1.2.0"
 val scalacticVersion = "3.0.5"
 val scalaTestVersion = "3.0.5"
 val scalaCheckVersion = "1.14.0"
@@ -199,6 +200,7 @@ lazy val communication = crossProject(JSPlatform, JVMPlatform).in(file("communic
   .settings(
     name := "youi-communication",
     libraryDependencies ++= Seq(
+      "com.outr" %%% "hookup" % hookupVersion,
       "org.scalactic" %%% "scalactic" % scalacticVersion,
       "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
     )

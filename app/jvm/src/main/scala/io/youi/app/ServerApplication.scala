@@ -23,6 +23,10 @@ import scala.concurrent.duration._
 trait ServerApplication extends YouIApplication with Server {
   private lazy val system = ActorSystem("ServerApplication")
 
+  override def isClient: Boolean = false
+
+  override def isServer: Boolean = true
+
   val connected: Channel[Connection] = Channel[Connection]
   val disconnected: Channel[Connection] = Channel[Connection]
   lazy val cacheDirectory: Var[File] = Var(new File(System.getProperty("user.home"), ".cache"))

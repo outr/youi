@@ -1,9 +1,9 @@
 package io.youi.example
 
-import io.youi.communication.{Communication, server}
+import com.outr.hookup.server
 
 import scala.concurrent.Future
 
-trait SimpleCommunication extends Communication {
+trait SimpleCommunication {
   @server def reverse(text: String): Future[String]
 }

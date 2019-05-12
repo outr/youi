@@ -1,5 +1,6 @@
 package io.youi.example
 
+import com.outr.hookup.Hookup
 import io.youi.app.screen.LoadingTransitionSupport
 import io.youi.app.{ClientApplication, ClientConnectivity}
 import io.youi.{Color, dom}
@@ -68,7 +69,7 @@ object ClientExampleApplication extends ExampleApplication with ClientApplicatio
 //  val dataTransfer = DataTransferExample
 //  val selection = hypertext.SelectionExample
 
-  def cc: ClientConnectivity = clientConnectivity(ClientExampleApplication.connectivity)
+  val hookup: ExampleHookup = Hookup.client[ExampleHookup]
 
   override protected val loadingElement: html.Element = getById[html.Div]("loading").getOrElse(dom.create[html.Div]("div"))
 

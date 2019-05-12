@@ -9,6 +9,7 @@ import scribe.Execution.global
 
 trait FormSupport {
   val form: html.Form
+  val clearErrorOnFocus: Boolean = true
 
   private var disabled: List[html.Element] = Nil
 

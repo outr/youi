@@ -1,6 +1,7 @@
 package io.youi.example
 
-import io.youi.communication.Communication
+import com.outr.hookup.{Hookup, HookupSupport}
+import io.circe.parser._
 import io.youi.net.URL
 import io.youi.server.WebSocketClient
 import io.youi.util.Time
@@ -11,12 +12,24 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 object ReverseClientExample {
   val connection: WebSocketClient = new WebSocketClient(URL("http://localhost:8080/communication"))
-  val simple: ClientSimpleCommunication = Communication.create[ClientSimpleCommunication](connection)
+  val hookup: SimpleHookup = Hookup.client[SimpleHookup]
 
-  def mainDisabled(args: Array[String]): Unit = {
+  // TODO: Do this with Communication paradigm
+  // Connect IO
+  connection.receive.text.attach { s =>
+    parse(s) match {
+      case Left(pf) => throw pf
+      case Right(json) => hookup.io.input.set(json)
+    }
+  }
+  hookup.io.output.attach { json =>
+    connection.send.text := json.spaces2
+  }
+
+  def main(args: Array[String]): Unit = {
     connection.connect()
     try {
-      val future = simple.reverse("This is a test!")
+      val future = hookup.simple.reverse("This is a test!")
       val result = Await.result(future, 5.seconds)
       scribe.info(s"Receive: $result")
     } finally {
@@ -24,11 +37,15 @@ object ReverseClientExample {
     }
 //    reRun()
 
-    Thread.sleep(120000)
+//    Thread.sleep(120000)
   }
 
-  private def reRun(): Future[Unit] = simple.reverse("This is a test!").flatMap { result =>
+  private def reRun(): Future[Unit] = hookup.simple.reverse("This is a test!").flatMap { result =>
     scribe.info(s"Receive: $result")
     Time.delay(2.seconds).flatMap(_ => reRun())
+  }
+
+  trait SimpleHookup extends Hookup {
+    val simple: SimpleCommunication with HookupSupport = auto[SimpleCommunication]
   }
 }

@@ -48,8 +48,9 @@ class ApplicationConnectivity private[app](val application: YouIApplication,
       connection.store("applicationConnectivity") = reaction
       // Receive input from connection
       connection.receive.text.attach { s =>
-        parse(s).foreach { json =>
-          hookups.io.input := json
+        parse(s) match {
+          case Left(pf) => throw pf
+          case Right(json) => hookups.io.input := json
         }
       }
     }

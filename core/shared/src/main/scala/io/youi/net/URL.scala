@@ -1,5 +1,8 @@
 package io.youi.net
 
+import io.circe.Decoder.Result
+import io.circe.{Decoder, DecodingFailure, Encoder, HCursor, Json}
+
 import scala.reflect.macros.blackbox
 import scala.util.matching.Regex
 import scala.language.experimental.macros
@@ -116,6 +119,16 @@ case class URL(protocol: Protocol = Protocol.Http,
 }
 
 object URL {
+  implicit val encoder: Encoder[URL] = new Encoder[URL] {
+    override def apply(url: URL): Json = Json.fromString(url.toString)
+  }
+  implicit val decoder: Decoder[URL] = new Decoder[URL] {
+    override def apply(c: HCursor): Result[URL] = c.value.asString match {
+      case Some(s) => Right(URL(s))
+      case None => Left(DecodingFailure(s"Cannot decode URL from ${c.value}", Nil))
+    }
+  }
+
   def build(protocol: String,
             host: String,
             port: Int,

@@ -53,7 +53,7 @@ class ServerSpec extends AsyncWordSpec with Matchers {
     "reverse a String with the Restful endpoint via POST" in {
       val content = Content.string(JsonUtil.toJsonString(ReverseRequest("Testing")), ContentType.`application/json`)
       server.handle(HttpConnection(server, HttpRequest(
-        method = Method.Post,
+        method = HttpMethod.Post,
         url = URL("http://localhost/test/reverse"),
         content = Some(content)
       ))).map { connection =>
@@ -67,7 +67,7 @@ class ServerSpec extends AsyncWordSpec with Matchers {
     }
     "reverse a String with the Restful endpoint via GET" in {
       server.handle(HttpConnection(server, HttpRequest(
-        method = Method.Get,
+        method = HttpMethod.Get,
         url = URL("http://localhost/test/reverse?value=Testing")
       ))).map { connection =>
         connection.response.status should equal(HttpStatus.OK)
@@ -80,7 +80,7 @@ class ServerSpec extends AsyncWordSpec with Matchers {
     }
     "reverse a String with the Restful endpoint via GET with path-based arg" in {
       server.handle(HttpConnection(server, HttpRequest(
-        method = Method.Get,
+        method = HttpMethod.Get,
         url = URL("http://localhost/test/reverse/Testing")
       ))).map { connection =>
         connection.response.status should equal(HttpStatus.OK)
@@ -94,7 +94,7 @@ class ServerSpec extends AsyncWordSpec with Matchers {
     "call a Restful endpoint that takes Unit as the request" in {
       val begin = System.currentTimeMillis()
       server.handle(HttpConnection(server, HttpRequest(
-        method = Method.Get,
+        method = HttpMethod.Get,
         url = URL("http://localhost/test/time")
       ))).map { connection =>
         connection.response.status should equal(HttpStatus.OK)

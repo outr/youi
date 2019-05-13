@@ -4,7 +4,7 @@ import java.io.File
 
 import io.circe.{Decoder, Encoder}
 import io.youi.http.content.Content
-import io.youi.http.{HttpConnection, HttpStatus, Method}
+import io.youi.http.{HttpConnection, HttpStatus, HttpMethod}
 import io.youi.net.{ContentType, IP, Path, URLMatcher}
 import io.youi.server.handler._
 import io.youi.server.rest.Restful
@@ -30,7 +30,7 @@ package object dsl {
     }
   }
 
-  implicit class MethodConnectionFilter(val method: Method) extends ConditionalFilter(_.request.method == method)
+  implicit class MethodConnectionFilter(val method: HttpMethod) extends ConditionalFilter(_.request.method == method)
 
   implicit def handler2Filter(handler: HttpHandler): ConnectionFilter = ActionFilter { connection =>
     if (PathPart.fulfilled(connection)) {

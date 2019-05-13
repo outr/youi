@@ -1,6 +1,6 @@
 package spec
 
-import io.youi.http.{HttpConnection, HttpRequest, HttpStatus, Method}
+import io.youi.http.{HttpConnection, HttpRequest, HttpStatus, HttpMethod}
 import io.youi.server.dsl._
 import io.youi.net._
 import io.youi.server.{DefaultErrorHandler, Server}
@@ -46,7 +46,7 @@ class ServerDSLSpec extends AsyncWordSpec with Matchers {
         val request = HttpRequest(
           source = ip"127.0.0.1",
           url = url"http://www.example.com/hello/world.html",
-          method = Method.Post
+          method = HttpMethod.Post
         )
         server.handle(HttpConnection(server, request)).map { connection =>
           val response = connection.response
@@ -66,7 +66,7 @@ class ServerDSLSpec extends AsyncWordSpec with Matchers {
 
   object server extends Server {
     handler(
-      allow(ip"127.0.0.1", ip"192.168.1.1") / Method.Get / "hello" / List(
+      allow(ip"127.0.0.1", ip"192.168.1.1") / HttpMethod.Get / "hello" / List(
         "world.txt" / text,
         "world.html" / html
       )

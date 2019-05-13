@@ -4,7 +4,7 @@ import io.youi.http.content.Content
 import io.youi.http.cookie.RequestCookie
 import io.youi.net.{IP, URL}
 
-case class HttpRequest(method: Method = Method.Get,
+case class HttpRequest(method: HttpMethod = HttpMethod.Get,
                        source: IP = IP.LocalHost,
                        url: URL = URL(),
                        headers: Headers = Headers.empty,

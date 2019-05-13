@@ -139,7 +139,7 @@ object UndertowServerImplementation extends ServerImplementationCreator {
 
     def handle(content: Option[Content]): Unit = {
       val request = HttpRequest(
-        method = Method(exchange.getRequestMethod.toString),
+        method = HttpMethod(exchange.getRequestMethod.toString),
         source = source,
         url = url,
         headers = headers,

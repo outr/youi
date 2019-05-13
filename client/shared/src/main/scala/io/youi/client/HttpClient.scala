@@ -44,9 +44,9 @@ case class HttpClient(request: HttpRequest,
   }
   def appendParams(params: (String, String)*): HttpClient = modify(_.copy(url = request.url.withParams(params.toMap, append = true)))
 
-  def method(method: Method): HttpClient = modify(_.copy(method = method))
-  def get: HttpClient = method(Method.Get)
-  def post: HttpClient = method(Method.Post)
+  def method(method: HttpMethod): HttpClient = modify(_.copy(method = method))
+  def get: HttpClient = method(HttpMethod.Get)
+  def post: HttpClient = method(HttpMethod.Post)
   def header(header: Header): HttpClient = modify(r => r.copy(headers = r.headers.withHeader(header)))
   def header(key: String, value: String): HttpClient = header(Header(HeaderKey(key), value))
   def headers(headers: Headers, replace: Boolean = false): HttpClient = if (replace) {

@@ -28,7 +28,7 @@ case class HttpHandlerBuilder(server: Server,
 
   def requestMatcher(requestMatcher: HttpRequest => Boolean): HttpHandlerBuilder = copy(requestMatchers = requestMatchers + requestMatcher)
 
-  def methodMatcher(method: Method): HttpHandlerBuilder = requestMatcher(request => request.method == method)
+  def methodMatcher(method: HttpMethod): HttpHandlerBuilder = requestMatcher(request => request.method == method)
 
   def caching(cachingManager: CachingManager): HttpHandlerBuilder = copy(cachingManager = cachingManager)
 
@@ -128,7 +128,7 @@ case class HttpHandlerBuilder(server: Server,
     val printer = Printer.spaces2.copy(dropNullValues = false)
     handle { connection =>
       val jsonOption: Option[Json] = connection.request.method match {
-        case Method.Get => {
+        case HttpMethod.Get => {
           Some(Json.obj(connection.request.url.parameters.entries.map {
             case (key, param) => key -> Json.fromString(param.value)
           }: _*))

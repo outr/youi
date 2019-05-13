@@ -63,26 +63,30 @@ class LanguageSupport(val default: Locale = Locale.ENGLISH) extends HttpHandler 
     }
 
     val localeStrings = locales.map(_.toString)
-    val existingConfig = localeStrings.flatMap { locale =>
+    val updatedHTML = translate(localeStrings, html)
+
+    c.modify { response =>
+      response.withContent(Content.string(updatedHTML, ContentType.`text/html`))
+    }
+  }
+
+  def translate(locales: List[String], html: String): String = {
+    val existingConfig = locales.flatMap { locale =>
       Option(languageConfig.get(locale))
     }.headOption
 
     val config = existingConfig match {
       case Some(cfg) => cfg
-      case None => firstConfig(localeStrings)
+      case None => firstConfig(locales)
     }
 
     val matcher = """[{]([a-zA-Z0-9._-]+?)[}]""".r
-    val updatedHTML = matcher.replaceAllIn(html, m => {
+    matcher.replaceAllIn(html, m => {
       config(m.group(1)).opt[String] match {
         case Some(replacement) => Matcher.quoteReplacement(replacement)
         case None => s"{${m.group(1)}}"
       }
     })
-
-    c.modify { response =>
-      response.withContent(Content.string(updatedHTML, ContentType.`text/html`))
-    }
   }
 
   /**

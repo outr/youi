@@ -36,7 +36,6 @@ trait ContentScreen extends Screen with PathActivation {
         loadScreen(screen)
       }
     } else {                          // Content has already been loaded either by page load or by previous load
-      scribe.info("Content is already loaded!")
       Future.successful(())
     }
   }

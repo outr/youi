@@ -43,14 +43,16 @@ class ApplicationConnectivity private[app](val application: YouIApplication,
       }
       // Send output from Hookups
       val reaction = hookups.io.output.attach { json =>
-        connection.send.text := json.spaces2
+        connection.send.text := s"[HKP]${json.spaces2}"
       }
       connection.store("applicationConnectivity") = reaction
       // Receive input from connection
       connection.receive.text.attach { s =>
-        parse(s) match {
-          case Left(pf) => throw pf
-          case Right(json) => hookups.io.input := json
+        if (s.startsWith("[HKP]")) {
+          parse(s.substring(5)) match {
+            case Left(pf) => throw pf
+            case Right(json) => hookups.io.input := json
+          }
         }
       }
     }

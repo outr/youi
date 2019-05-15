@@ -20,7 +20,7 @@ import io.undertow.websockets.spi.WebSocketHttpExchange
 import io.undertow.{Handlers, Undertow, UndertowOptions}
 import io.youi.http._
 import io.youi.http.content._
-import io.youi.net.{ContentType, IP, Parameters, Path, URL}
+import io.youi.net.{ContentType, IP, MalformedURLException, Parameters, Path, URL}
 import io.youi.server.util.SSLUtil
 import org.powerscala.io._
 import org.xnio.streams.ChannelInputStream
@@ -79,35 +79,40 @@ class UndertowServerImplementation(val server: Server) extends ServerImplementat
 
   private val formParserBuilder = FormParserFactory.builder()
 
-  override def handleRequest(exchange: HttpServerExchange): Unit = server.errorSupport {
-    val url = URL(s"${exchange.getRequestURL}?${exchange.getQueryString}")
+  override def handleRequest(exchange: HttpServerExchange): Unit = try {
+    server.errorSupport {
+      val url = URL(s"${exchange.getRequestURL}?${exchange.getQueryString}")
 
-    exchange.dispatch(SameThreadExecutor.INSTANCE, new Runnable {
-      override def run(): Unit = {
-        try {
-          server.proxies.find(_.matches(url)) match {
-            case Some(proxy) => UndertowServerImplementation.handleProxy(UndertowServerImplementation.this, url, exchange, proxy)
-            case None => {
-              if (exchange.getRequestContentLength > 0L && exchange.getRequestHeaders.getFirst("Content-Type").startsWith("multipart/form-data")) {
-                if (exchange.isInIoThread) {
-                  exchange.dispatch(this)
+      exchange.dispatch(SameThreadExecutor.INSTANCE, new Runnable {
+        override def run(): Unit = {
+          try {
+            server.proxies.find(_.matches(url)) match {
+              case Some(proxy) => UndertowServerImplementation.handleProxy(UndertowServerImplementation.this, url, exchange, proxy)
+              case None => {
+                if (exchange.getRequestContentLength > 0L && exchange.getRequestHeaders.getFirst("Content-Type").startsWith("multipart/form-data")) {
+                  if (exchange.isInIoThread) {
+                    exchange.dispatch(this)
+                  } else {
+                    exchange.startBlocking()
+                    val formDataParser = formParserBuilder.build().createParser(exchange)
+                    formDataParser.parseBlocking()
+                    requestHandler(exchange, url)
+                  }
                 } else {
-                  exchange.startBlocking()
-                  val formDataParser = formParserBuilder.build().createParser(exchange)
-                  formDataParser.parseBlocking()
                   requestHandler(exchange, url)
                 }
-              } else {
-                requestHandler(exchange, url)
               }
             }
+          } catch {
+            case exc: ServerException => throw exc
+            case t: Throwable => new ServerException("Error Handling Request", t, url)
           }
-        } catch {
-          case exc: ServerException => throw exc
-          case t: Throwable => new ServerException("Error Handling Request", t, url)
         }
-      }
-    })
+      })
+    }
+  } catch {
+    case exc: MalformedURLException => scribe.warn(exc.message)
+    case t: Throwable => scribe.error(t)
   }
 
   private def requestHandler(exchange: HttpServerExchange, url: URL): Unit = {

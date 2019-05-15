@@ -143,7 +143,8 @@ object URL {
 
   def get(url: String): Option[URL] = get(url, absolutizePath = true)
 
-  def apply(url: String, absolutizePath: Boolean): URL = get(url, absolutizePath).getOrElse(throw new RuntimeException(s"Unable to parse URL: [$url]."))
+  def apply(url: String, absolutizePath: Boolean): URL = get(url, absolutizePath)
+    .getOrElse(throw MalformedURLException(s"Unable to parse URL: [$url].", url))
 
   def get(url: String, absolutizePath: Boolean): Option[URL] = try {
     val colonIndex1 = url.indexOf(':')
@@ -221,7 +222,10 @@ object URL {
         parts.zipWithIndex.foreach {
           case ((raw, _), index) => {
             if (index > 0) {
-              c.abort(c.enclosingPosition, "URL interpolation can only contain string literals. Use URL.apply for runtime parsing.")
+              c.abort(
+                c.enclosingPosition,
+                "URL interpolation can only contain string literals. Use URL.apply for runtime parsing."
+              )
             }
             b.append(raw)
           }

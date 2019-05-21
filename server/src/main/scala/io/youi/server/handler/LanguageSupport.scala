@@ -28,7 +28,7 @@ import scala.concurrent.Future
 class LanguageSupport(val default: Locale = Locale.ENGLISH) extends HttpHandler {
   private lazy val emptyConfig = new Profig(None)
   private val languageConfig = new ConcurrentHashMap[String, Profig]
-  private val cookieName = "languageOverride"
+  private val cookieName = "lang"
 
   override def handle(connection: HttpConnection): Future[HttpConnection] = {
     val updated = connection

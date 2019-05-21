@@ -41,9 +41,7 @@ class LanguageSupport(val default: Locale = Locale.ENGLISH) extends HttpHandler 
     Future.successful(updated)
   }
 
-  def translate(connection: HttpConnection, html: String): HttpConnection = {
-    var c = connection
-
+  def locales(connection: HttpConnection): (HttpConnection, List[String]) = {
     val request = connection.request
     val paramLocales = request.url.param("lang").map(parseLocale).toList
     val cookieLocales = request.cookies.find(_.name == cookieName).map(c => parseLocale(c.value)).toList
@@ -51,8 +49,8 @@ class LanguageSupport(val default: Locale = Locale.ENGLISH) extends HttpHandler 
     val locales = (paramLocales ::: cookieLocales ::: headerLocales ::: List(default)).distinct
 
     // Param override - set a cookie to store it
-    if (paramLocales.nonEmpty) {
-      c = c.modify { response =>
+    val c = if (paramLocales.nonEmpty) {
+      connection.modify { response =>
         val localesString = paramLocales.map {
           case l if l.getCountry.nonEmpty => s"${l.getLanguage}-${l.getCountry}"
           case l => l.getLanguage
@@ -60,10 +58,16 @@ class LanguageSupport(val default: Locale = Locale.ENGLISH) extends HttpHandler 
         val OneYear = 60 * 60 * 24 * 365
         response.withHeader(Headers.Response.`Set-Cookie`(ResponseCookie(cookieName, localesString, maxAge = Some(OneYear))))
       }
+    } else {
+      connection
     }
 
-    val localeStrings = locales.map(_.toString)
-    val updatedHTML = translate(localeStrings, html)
+    (c, locales.map(_.toString))
+  }
+
+  def translate(connection: HttpConnection, html: String): HttpConnection = {
+    val (c, l) = locales(connection)
+    val updatedHTML = translate(l, html)
 
     c.modify { response =>
       response.withContent(Content.string(updatedHTML, ContentType.`text/html`))

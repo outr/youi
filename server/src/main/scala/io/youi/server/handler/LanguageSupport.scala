@@ -1,8 +1,8 @@
 package io.youi.server.handler
 
 import java.util.Locale
-import java.util.concurrent.ConcurrentHashMap
-import java.util.regex.{Matcher, Pattern}
+import java.util.concurrent.{ConcurrentHashMap, TimeUnit}
+import java.util.regex.Matcher
 
 import io.youi.Priority
 import io.youi.http.content.Content
@@ -55,7 +55,7 @@ class LanguageSupport(val default: Locale = Locale.ENGLISH) extends HttpHandler 
           case l if l.getCountry.nonEmpty => s"${l.getLanguage}-${l.getCountry}"
           case l => l.getLanguage
         }.mkString(", ")
-        val OneYear = 60 * 60 * 24 * 365
+        val OneYear = TimeUnit.SECONDS.convert(365, TimeUnit.DAYS)
         response.withHeader(Headers.Response.`Set-Cookie`(ResponseCookie(cookieName, localesString, maxAge = Some(OneYear))))
       }
     } else {

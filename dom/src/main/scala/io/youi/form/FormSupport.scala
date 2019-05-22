@@ -7,13 +7,15 @@ import org.scalajs.dom.{Event, html}
 import scala.concurrent.Future
 import scribe.Execution.global
 
+import scala.util.{Failure, Success}
+
 trait FormSupport {
   val form: html.Form
   val clearErrorOnFocus: Boolean = true
 
   private var disabled: List[html.Element] = Nil
 
-  protected object input {
+  object input {
     private var list = List.empty[FormInput]
 
     def byId(id: String): FormInput = {
@@ -44,8 +46,13 @@ trait FormSupport {
 
       disable()
       if (validate(ValidationMode.FormSubmit)) {
-        submit().onComplete { _ =>
-          enable()
+        val future = submit()
+        future.onComplete {
+          case Success(result) => result.invoke(this)
+          case Failure(exception) => {
+            scribe.error(exception)
+            alert.danger("An internal error occurred")
+          }
         }
       } else {
         enable()
@@ -121,7 +128,7 @@ trait FormSupport {
     invalidFields.isEmpty
   }
 
-  protected def submit(): Future[Boolean]
+  protected def submit(): Future[FormResult]
 
   protected def onSuccess(): Unit = {
     clear()

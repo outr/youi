@@ -23,7 +23,7 @@ trait ScreenManager {
 
   scribe.info("Initializing application...")
   init().foreach { _ =>
-    if (waitForWindowLoad) {
+    if (waitForWindowLoad && document.readyState != "complete") {
       scribe.info("Application initialized. Waiting for window load to complete...")
       window.addEventListener("load", (_: Event) => {
         scribe.info("Window loading complete. Loading application...")

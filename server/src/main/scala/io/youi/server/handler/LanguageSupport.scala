@@ -44,6 +44,10 @@ class LanguageSupport(val default: Locale = Locale.ENGLISH) extends HttpHandler 
   def locales(connection: HttpConnection): (HttpConnection, List[String]) = {
     val request = connection.request
     val paramLocales = request.url.param("lang").map(parseLocale).toList
+    if (request.url.param("clearLanguageCache").contains("true")) {
+      scribe.info(s"Clearing language cache...")
+      clear()
+    }
     val cookieLocales = request.cookies.find(_.name == cookieName).map(c => parseLocale(c.value)).toList
     val headerLocales = request.headers.get(Headers.Request.`Accept-Language`).flatMap(_.split(',')).map(parseLocale)
     val locales = (paramLocales ::: cookieLocales ::: headerLocales ::: List(default)).distinct
@@ -104,7 +108,7 @@ class LanguageSupport(val default: Locale = Locale.ENGLISH) extends HttpHandler 
     emptyConfig
   } else {
     val locale = localeStrings.head
-    val lookupPaths = ProfigLookupPath.paths(List(s"language-$locale"))
+    val lookupPaths = ProfigLookupPath.paths(mergePaths = Nil, defaultPaths = List(s"language-$locale"))
     val config = new Profig(None)
     config.load(lookupPaths: _*)
     if (config.json.asObject.get.nonEmpty) {

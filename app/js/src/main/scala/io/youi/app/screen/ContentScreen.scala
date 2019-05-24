@@ -17,7 +17,7 @@ trait ContentScreen extends Screen with PathActivation {
   protected val contentOption: Val[Option[html.Span]] = Val(contentOptionVar)
   protected def content: html.Span = contentOption().getOrElse(throw new RuntimeException("Content not set!"))
 
-  override protected def load(): Future[Unit] = super.load().flatMap { _ =>
+  private lazy val preloaded: Future[Unit] = {
     // On load check to see if the screen tag is loaded already
     dom.byTag[html.Element]("screen").headOption.foreach { screen =>
       loadScreen(screen)
@@ -40,6 +40,12 @@ trait ContentScreen extends Screen with PathActivation {
     }
   }
 
+  override protected def load(): Future[Unit] = super.load().flatMap { _ =>
+    preloaded
+  }
+
+  def preload(): Future[Unit] = preloaded
+
   private def loadScreen(screen: html.Element): Unit = {
     val span = dom.create[html.Span]("span")
     screen.remove()
@@ -51,7 +57,6 @@ trait ContentScreen extends Screen with PathActivation {
       }
       span.appendChild(child)
     }
-    pageTag.appendChild(span)
     contentOptionVar := Some(span)
   }
 

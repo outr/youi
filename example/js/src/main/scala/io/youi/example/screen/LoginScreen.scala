@@ -17,7 +17,7 @@ object LoginScreen extends ExampleScreen {
   def username: html.Input = dom.byId[html.Input]("username")
   def password: html.Input = dom.byId[html.Input]("password")
 
-  override protected def load(): Future[Unit] = super.load().map { _ =>
+  override protected def load(): Future[Unit] = super.load().flatMap { _ =>
     content.addEventListener("submit", (evt: Event) => {
       evt.stopPropagation()
       evt.preventDefault()
@@ -32,5 +32,6 @@ object LoginScreen extends ExampleScreen {
         case Failure(exception) => scribe.warn(s"Failed to log in with exception: ${exception.getMessage}")
       }
     })
+    ClientExampleApplication.login.preload()
   }
 }

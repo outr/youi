@@ -57,18 +57,16 @@ trait ContentScreen extends Screen with PathActivation {
       }
       span.appendChild(child)
     }
+    span.classList.add("d-none")
+    pageTag.appendChild(span)
     contentOptionVar := Some(span)
   }
 
   protected def showContent(): Unit = contentOption.foreach { c =>
-    if (Option(c.parentElement).isEmpty) {
-      pageTag.appendChild(c)
-    }
+    content.classList.remove("d-none")
   }
   protected def hideContent(): Unit = contentOption.foreach { c =>
-    if (Option(c.parentElement).nonEmpty) {
-      c.remove()
-    }
+    content.classList.add("d-none")
   }
 
   override protected def activate(): Future[Unit] = super.activate().map { _ =>

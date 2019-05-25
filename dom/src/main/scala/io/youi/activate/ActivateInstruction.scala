@@ -135,9 +135,9 @@ class OnClick(selector: String, instruction: ActivateInstruction) extends Activa
     instruction.activate()
   }
 
-  override def activate(): Unit = dom.bySelector[html.Element](selector).head.addEventListener("click", listener)
+  override def activate(): Unit = dom.oneBySelector[html.Element](selector).addEventListener("click", listener)
 
-  override def deactivate(): Unit = dom.bySelector[html.Element](selector).head.removeEventListener("click", listener)
+  override def deactivate(): Unit = dom.oneBySelector[html.Element](selector).removeEventListener("click", listener)
 }
 
 class OnChecked(selector: String, instruction: ActivateInstruction) extends ActivateInstruction {
@@ -147,9 +147,9 @@ class OnChecked(selector: String, instruction: ActivateInstruction) extends Acti
     instruction.deactivate()
   }
 
-  override def activate(): Unit = dom.bySelector[html.Element](selector).head.addEventListener("change", listener)
+  override def activate(): Unit = dom.oneBySelector[html.Element](selector).addEventListener("change", listener)
 
-  override def deactivate(): Unit = dom.bySelector[html.Element](selector).head.removeEventListener("change", listener)
+  override def deactivate(): Unit = dom.oneBySelector[html.Element](selector).removeEventListener("change", listener)
 }
 
 class OnUnchecked(selector: String, instruction: ActivateInstruction) extends ActivateInstruction {
@@ -164,9 +164,9 @@ class OnUnchecked(selector: String, instruction: ActivateInstruction) extends Ac
     }
   }
 
-  override def activate(): Unit = dom.bySelector[html.Element](selector).head.addEventListener("change", listener)
+  override def activate(): Unit = dom.oneBySelector[html.Element](selector).addEventListener("change", listener)
 
-  override def deactivate(): Unit = dom.bySelector[html.Element](selector).head.removeEventListener("change", listener)
+  override def deactivate(): Unit = dom.oneBySelector[html.Element](selector).removeEventListener("change", listener)
 }
 
 class Link(path: Path) extends ActivateInstruction {

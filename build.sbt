@@ -38,12 +38,12 @@ val openTypeVersion = "0.7.3"
 val picaVersion = "3.0.5"
 val webFontLoaderVersion = "1.6.28"
 
-val akkaVersion = "2.5.22"
+val akkaVersion = "2.5.23"
 val scalaJSDOM = "0.9.7"
-val okHttpVersion = "3.14.1"
+val okHttpVersion = "3.14.2"
 val circeVersion = "0.11.1"
 val uaDetectorVersion = "2014.10"
-val undertowVersion = "2.0.20.Final"
+val undertowVersion = "2.0.21.Final"
 val closureCompilerVersion = "v20190415"
 val jSoupVersion = "1.11.3"
 val scalaXMLVersion = "1.2.0"
@@ -53,8 +53,8 @@ val scalaCheckVersion = "1.14.0"
 
 lazy val root = project.in(file("."))
   .aggregate(
-    macrosJS, macrosJVM, coreJS, coreJVM, spatialJS, spatialJVM, stream, communicationJS, communicationJVM, dom,
-    clientJS, clientJVM, server, serverUndertow, uiJS, uiJVM, optimizer, appJS, appJVM, exampleJS, exampleJVM
+    macrosJS, macrosJVM, coreJS, coreJVM, spatialJS, spatialJVM, stream, dom, clientJS, clientJVM, server,
+    serverUndertow, uiJS, uiJVM, optimizer, appJS, appJVM, exampleJS, exampleJVM
   )
   .settings(
     resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases",
@@ -89,6 +89,7 @@ lazy val core = crossProject(JSPlatform, JVMPlatform).in(file("core"))
       "com.outr" %%% "profig" % profigVersion,
       "com.outr" %%% "scribe" % scribeVersion,
       "com.outr" %%% "reactify" % reactifyVersion,
+      "com.outr" %%% "hookup" % hookupVersion,
       "org.scalactic" %%% "scalactic" % scalacticVersion,
       "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
     ),
@@ -196,23 +197,6 @@ lazy val serverUndertow = project.in(file("serverUndertow"))
   )
   .dependsOn(server, clientJVM % "test->test")
 
-lazy val communication = crossProject(JSPlatform, JVMPlatform).in(file("communication"))
-  .settings(
-    name := "youi-communication",
-    libraryDependencies ++= Seq(
-      "com.outr" %%% "hookup" % hookupVersion,
-      "org.scalactic" %%% "scalactic" % scalacticVersion,
-      "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
-    )
-  )
-  .jsSettings(
-    jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv
-  )
-  .dependsOn(core)
-
-lazy val communicationJS = communication.js
-lazy val communicationJVM = communication.jvm.dependsOn(server)
-
 lazy val ui = crossProject(JSPlatform, JVMPlatform).in(file("ui"))
   .settings(
     name := "youi-ui"
@@ -256,10 +240,10 @@ lazy val app = crossProject(JSPlatform, JVMPlatform).in(file("app"))
   .jsSettings(
     jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv
   )
-  .dependsOn(core, communication, ui)
+  .dependsOn(core, ui)
 
 lazy val appJS = app.js
-lazy val appJVM = app.jvm
+lazy val appJVM = app.jvm.dependsOn(server)
 
 lazy val example = crossProject(JSPlatform, JVMPlatform).in(file("example"))
   .settings(

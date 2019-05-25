@@ -26,7 +26,7 @@ object ReverseClientExample {
     connection.send.text := json.spaces2
   }
 
-  def main(args: Array[String]): Unit = {
+  def mainOld(args: Array[String]): Unit = {
     connection.connect()
     try {
       val future = hookup.simple.reverse("This is a test!")

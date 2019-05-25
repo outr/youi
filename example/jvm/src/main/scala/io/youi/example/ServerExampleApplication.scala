@@ -5,7 +5,7 @@ import io.youi.app._
 import io.youi.http._
 import io.youi.http.content.Content
 import io.youi.net._
-import io.youi.server.handler.{CachingManager, LanguageSupport, ProxyCache}
+import io.youi.server.handler.{CachingManager, LanguageSupport, ProxyCache, RestfulHookup}
 import io.youi.server.dsl._
 import profig.JsonUtil
 
@@ -16,6 +16,10 @@ object ServerExampleApplication extends ExampleApplication with ServerApplicatio
   val generalPages: Page = page(GeneralPages)
 
   val hookup: HookupServer[ExampleHookup] = Hookup.server[ExampleHookup]
+  val restfulHookup: RestfulHookup[ExampleHookup] = new RestfulHookup[ExampleHookup](
+    hookup,
+    classOf[SimpleCommunication] -> "simple"
+  )
 
   override protected def applicationBasePath = s"app/youi-example"
   override protected def applicationJSBasePath = s"/app/example"
@@ -43,6 +47,7 @@ object ServerExampleApplication extends ExampleApplication with ServerApplicatio
         path.startsWith("/app") / ClassLoaderPath()
       )
     )
+    handlers += restfulHookup
     handlers += new LanguageSupport()
   }
 }

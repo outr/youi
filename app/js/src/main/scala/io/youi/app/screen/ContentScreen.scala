@@ -29,9 +29,9 @@ trait ContentScreen extends Screen with PathActivation {
         .copy(path = path, parameters = Parameters.empty)
         .withParam("part", "true")
         .withParam("selector", "screen")
-      scribe.info(s"Loading content $url...")
+      scribe.debug(s"Loading content $url...")
       StreamURL.stream(url).map { htmlString =>
-        scribe.info(s"Content loaded successfully (${htmlString.length} characters)")
+        scribe.debug(s"Content loaded successfully (${htmlString.length} characters)")
         val screen = dom.fromString[html.Element](htmlString).headOption.getOrElse(throw new RuntimeException(s"No content found in: [$htmlString] for URL: $url"))
         loadScreen(screen)
       }
@@ -62,10 +62,10 @@ trait ContentScreen extends Screen with PathActivation {
     contentOptionVar := Some(span)
   }
 
-  protected def showContent(): Unit = contentOption.foreach { c =>
+  protected def showContent(): Unit = contentOption.foreach { _ =>
     content.classList.remove("d-none")
   }
-  protected def hideContent(): Unit = contentOption.foreach { c =>
+  protected def hideContent(): Unit = contentOption.foreach { _ =>
     content.classList.add("d-none")
   }
 

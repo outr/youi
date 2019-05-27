@@ -10,26 +10,19 @@ import org.scalajs.dom._
 trait ActivationSupport {
   protected def activationRoot: html.Element = document.body
   private lazy val instructions: List[ActivateInstruction] = ActivationSupport.parse(testing, activationRoot)
-  private var extraInstructions: List[ActivateInstruction] = Nil
 
   protected def testing: Boolean = false
 
   object activation {
-    def extractFrom(root: html.Element): Unit = ActivationSupport.this.synchronized {
-      extraInstructions = extraInstructions ::: ActivationSupport.parse(testing, root)
-    }
-
     def activate(): Unit = {
       val local = instructions                          // Necessary before global to make sure all instructions are parsed
       ActivationSupport.global.foreach(_.activate())
       local.foreach(_.activate())
-      extraInstructions.foreach(_.activate())
     }
 
     def deactivate(): Unit = {
       ActivationSupport.global.foreach(_.deactivate())
       instructions.foreach(_.deactivate())
-      extraInstructions.foreach(_.deactivate())
     }
   }
 }

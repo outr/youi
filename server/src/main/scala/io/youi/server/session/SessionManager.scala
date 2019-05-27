@@ -49,20 +49,28 @@ trait SessionManager[Session] {
     */
   protected def session(connection: HttpConnection,
                         f: SessionTransaction[Session] => Future[SessionTransaction[Session]],
-                        requestModifiable: Boolean): Future[SessionTransaction[Session]] = {
-    getOrCreateSessionId(connection) match {
-      case (modifiedConnection, sessionId) => {
-        // Create our SessionTransaction and build our session
-        val transactionFuture = loadBySessionId(sessionId, modifiedConnection).flatMap {
-          case Some(transaction) => Future.successful(transaction)
-          case None => createBySessionId(sessionId, modifiedConnection)
-        }.map(_.copy(requestModifiable = requestModifiable))
-        // Apply the transaction to the supplied function
-        val appliedTransaction = transactionFuture.flatMap(f)
-        // Save the changes to the transaction
-        appliedTransaction.flatMap(save)
-      }
+                        requestModifiable: Boolean): Future[SessionTransaction[Session]] = for {
+    // Load or create the session id
+    (modifiedConnection, sessionId) <- Future.successful(getOrCreateSessionId(connection))
+    // Get the existing session if it exists
+    originalTransaction <- loadBySessionId(sessionId, modifiedConnection)
+    // Update the existing transaction or create a new one if none exists
+    transaction <- originalTransaction match {
+      case Some(t) => Future.successful(t.copy(requestModifiable = requestModifiable))
+      case None => createBySessionId(sessionId, modifiedConnection).map(_.copy(requestModifiable = requestModifiable))
     }
+    // Apply the transaction handler
+    updatedTransaction <- f(transaction)
+    // Determine if the session was modified
+    modified = !originalTransaction.map(_.session).contains(updatedTransaction.session)
+    // Save the transaction if the session was modified
+    saved <- if (modified) {
+      save(updatedTransaction)
+    } else {
+      Future.successful(updatedTransaction)
+    }
+  } yield {
+    saved
   }
 
   /**

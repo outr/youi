@@ -1,6 +1,6 @@
 package io.youi.maintenance
 
-import java.util.Calendar
+import java.util.{Calendar, TimeZone}
 
 import reactify.Var
 
@@ -30,8 +30,9 @@ trait MaintenanceTask {
          minute: Int = 0,
          second: Int = 0,
          millisecond: Int = 0,
-         rollToNextDay: Boolean = true): FiniteDuration = {
-    val c = Calendar.getInstance()
+         rollToNextDay: Boolean = true,
+         timeZone: TimeZone = TimeZone.getDefault): FiniteDuration = {
+    val c = Calendar.getInstance(timeZone)
     c.set(Calendar.HOUR_OF_DAY, hour)
     c.set(Calendar.MINUTE, minute)
     c.set(Calendar.SECOND, second)

@@ -4,6 +4,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 import akka.actor.{ActorSystem, Cancellable, Scheduler}
 import scribe.Execution.global
+import perfolation._
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
@@ -22,6 +23,7 @@ object Maintenance {
     } else {
       task.delay
     }
+    scribe.info(s"${task.name} scheduled at ${(System.currentTimeMillis() + taskDelay.toMillis).t.c}")
     val scheduled = Some(scheduler.scheduleOnce(delayOverride.getOrElse(taskDelay)) {
       if (!disposed.get()) {
         val time = System.currentTimeMillis()
@@ -43,7 +45,7 @@ object Maintenance {
               val s = task.statusOnFailure
               task.lastStatus = Some(s)
               task.status = MaintenanceStatus.Failure
-              scribe.error(new RuntimeException(s"Error thrown in $task during maintenance", throwable))
+              scribe.error(new RuntimeException(s"Error thrown in ${task.name} during maintenance", throwable))
               s
             }
           }

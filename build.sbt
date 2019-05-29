@@ -47,6 +47,7 @@ val undertowVersion = "2.0.21.Final"
 val closureCompilerVersion = "v20190415"
 val jSoupVersion = "1.11.3"
 val scalaXMLVersion = "1.2.0"
+val swaggerParserVersion = "2.0.12"
 val scalacticVersion = "3.0.5"
 val scalaTestVersion = "3.0.5"
 val scalaCheckVersion = "1.14.0"
@@ -274,7 +275,8 @@ lazy val utilities = project.in(file("utilities"))
     name := "youi-utilities",
     libraryDependencies ++= Seq(
       "org.jsoup" % "jsoup" % jSoupVersion,
-      "org.powerscala" %% "powerscala-io" % powerScalaVersion
+      "org.powerscala" %% "powerscala-io" % powerScalaVersion,
+      "io.swagger.parser.v3" % "swagger-parser" % swaggerParserVersion
     )
   )
   .dependsOn(coreJVM)

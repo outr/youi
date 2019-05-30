@@ -8,7 +8,7 @@ import scala.concurrent.Future
 import scala.concurrent.duration._
 
 trait MaintenanceTask {
-  val name: String = getClass.getSimpleName
+  val name: String = getClass.getSimpleName.replaceAllLiterally("$", "")
 
   var lastStatus: Option[TaskStatus] = None
   var lastRunTime: Option[Long] = None

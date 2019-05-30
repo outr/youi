@@ -23,7 +23,7 @@ object Maintenance {
     } else {
       task.delay
     }
-    scribe.info(s"${task.name} scheduled at ${(System.currentTimeMillis() + taskDelay.toMillis).t.c}")
+    scribe.info(s"${task.name} scheduled to run next at ${(System.currentTimeMillis() + taskDelay.toMillis).t.c}")
     val scheduled = Some(scheduler.scheduleOnce(delayOverride.getOrElse(taskDelay)) {
       if (!disposed.get()) {
         val time = System.currentTimeMillis()

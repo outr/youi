@@ -1,17 +1,20 @@
 package io.youi.util
 
+import io.circe.parser._
 import java.io.File
 
-import io.swagger.v3.parser.OpenAPIV3Parser
-import scala.collection.JavaConverters._
+import org.powerscala.io.IO
 
 object SwaggerClientBuilder {
   def main(args: Array[String]): Unit = {
     val file = new File("swagger.json")
-    assert(file.exists(), s"File not found: ${file.getAbsolutePath}")
-    val api = new OpenAPIV3Parser().read(file.getCanonicalPath)
-    api.getPaths.asScala.foreach {
-      case (key, path) => scribe.info(s"Key: $key")
-    }
+    val json = parse(IO.stream(file, new StringBuilder).toString).getOrElse(throw new RuntimeException("Failed to parse!"))
+    val definitions = (json \\ "definitions").head
+    val paths = (json \\ "paths").head
+    val path = (paths \\ "/_api/collection").head
+    val post = (path \\ "post").head
+    val parameters = (post \\ "parameters").head
+    val postAPICollection = (definitions \\ "post_api_collection").head
+    scribe.info(s"Post: $postAPICollection")
   }
 }

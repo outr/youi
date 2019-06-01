@@ -8,7 +8,7 @@ import org.powerscala.io._
 import profig.{Profig, JsonUtil}
 
 object GoogleFontBuilder {
-  private lazy val apiKey: String = Profig("googleApiKey").as[Option[String]].getOrElse(throw new RuntimeException("No configuration setting present for googleApiKey."))
+  private lazy val apiKey: String = Profig("googleApiKey").as[String](throw new RuntimeException("No configuration setting present for googleApiKey."))
   private lazy val url = URL(s"https://www.googleapis.com/webfonts/v1/webfonts?key=$apiKey")
 
   private val base = "http://fonts.gstatic.com/s"

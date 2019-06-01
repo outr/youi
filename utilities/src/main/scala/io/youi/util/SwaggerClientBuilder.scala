@@ -27,7 +27,8 @@ class SwaggerClientBuilder(directory: File, packageName: String, swagger: Json) 
   )
   private val NameSwap = Map(
     "type" -> "`type`",
-    "new" -> "`new`"
+    "new" -> "`new`",
+    "Json Request Body" -> "body"
   )
   private val TypeSwap = Map(
     "boolean" -> "Boolean",
@@ -48,9 +49,6 @@ class SwaggerClientBuilder(directory: File, packageName: String, swagger: Json) 
   private val basePath = (swagger \\ "basePath").head.asString.get
   private val definitions = (swagger \\ "definitions").head.asObject.get
   private val paths = (swagger \\ "paths").head
-//  private val path = (swagger \\ "/_api/collection").head
-//  private val post = (swagger \\ "post").head
-//  private val parameters = (swagger \\ "parameters").head
 
   private val packageDirectory: File = new File(directory, packageName.replace('.', '/'))
 
@@ -66,7 +64,20 @@ class SwaggerClientBuilder(directory: File, packageName: String, swagger: Json) 
     val parameters = (json \\ "parameters").headOption.flatMap(_.asArray.map(_.toList)).getOrElse(Nil).map { j =>
       JsonUtil.fromJson[Parameter](j)
     }
-    scribe.info(s"Parameters: $parameters")
+    val args = parameters.map { p =>
+      val n = fixName(p.name)
+      val t = p.`type` match {
+        case Some(v) => v
+        case None => {
+          val s = p.schema.getOrElse(throw new RuntimeException(s"No type or schema for $p"))
+          val refName = s.`$ref`.substring(s.`$ref`.lastIndexOf('/') + 1)
+          className(refName)
+        }
+      }
+      val `type` = generateType(n, t, p.format, p.`type`.nonEmpty, p.required)
+      s"$n: ${`type`}"
+    }
+    scribe.info(s"Args: $args")
   }
 
   def createClasses(): List[String] = {
@@ -119,27 +130,35 @@ class SwaggerClientBuilder(directory: File, packageName: String, swagger: Json) 
     WordSwap.getOrElse(value, value.capitalize)
   })
 
-  def paramFrom(property: Property): String = {
-    val name = NameSplitter.replaceAllIn(NameSwap.getOrElse(property.name, property.name), m => {
+  def fixName(name: String): String = {
+    NameSplitter.replaceAllIn(NameSwap.getOrElse(name, name), m => {
       m.group(1).toUpperCase
     }).replaceAll("[\\[\\]*]", "")
-    val t = s"${property.`type`}${property.format.getOrElse("")}"
-    val `type` = if (property.builtIn) {
-      TypeSwap.getOrElse(t, throw new RuntimeException(s"Unsupported type: [$t] for ${property.name}"))
+  }
+
+  def generateType(name: String, `type`: String, format: Option[String], builtIn: Boolean, required: Boolean): String = {
+    val merged = s"${`type`}${format.getOrElse("")}"
+    val t = if (builtIn) {
+      TypeSwap.getOrElse(merged, throw new RuntimeException(s"Unsupported type: [$merged] for $name"))
     } else {
-      property.`type`
-    }
-    val finalType = if (property.required) {
       `type`
-    } else {
-      s"Option[${`type`}] = None"
     }
-    s"$name: $finalType"
+    if (required) {
+      t
+    } else {
+      s"Option[$t] = None"
+    }
+  }
+
+  def paramFrom(property: Property): String = {
+    val name = fixName(property.name)
+    val `type` = generateType(property.name, property.`type`, property.format, property.builtIn, property.required)
+    s"$name: ${`type`}"
   }
 
   case class Property(name: String = "", description: String, format: Option[String], `type`: String, required: Boolean = false, builtIn: Boolean = true)
 
-  case class Parameter(in: String, name: String, required: Boolean, schema: Option[Schema], description: Option[String], `type`: Option[String])
+  case class Parameter(in: String, name: String, required: Boolean, schema: Option[Schema], description: Option[String], `type`: Option[String], format: Option[String])
 
   case class Schema(`$ref`: String)
 }

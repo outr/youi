@@ -13,7 +13,8 @@ object SwaggerClientBuilder {
     val json = parse(IO.stream(file, new StringBuilder).toString).getOrElse(throw new RuntimeException("Failed to parse!"))
     val directory = new File("utilities/src/main/scala/")
     val b = new SwaggerClientBuilder(directory, "com.outr.arango.api", json)
-    b.createClasses()
+//    b.createClasses()
+    b.test()
   }
 }
 
@@ -44,13 +45,29 @@ class SwaggerClientBuilder(directory: File, packageName: String, swagger: Json) 
     "object" -> "io.circe.Json",
     "arrayobject" -> "List[io.circe.Json]"
   )
+  private val basePath = (swagger \\ "basePath").head.asString.get
   private val definitions = (swagger \\ "definitions").head.asObject.get
   private val paths = (swagger \\ "paths").head
 //  private val path = (swagger \\ "/_api/collection").head
-  private val post = (swagger \\ "post").head
-  private val parameters = (swagger \\ "parameters").head
+//  private val post = (swagger \\ "post").head
+//  private val parameters = (swagger \\ "parameters").head
 
   private val packageDirectory: File = new File(directory, packageName.replace('.', '/'))
+
+  def test(): Unit = {
+    val path = "/_api/collection"
+    val method = "post"
+    val json = ((paths \\ path).head \\ method).head
+    createEndPoint(path, method, json)
+  }
+
+  def createEndPoint(path: String, method: String, json: Json): Unit = {
+    val description = (json \\ "description").head.asString.getOrElse("").trim
+    val parameters = (json \\ "parameters").headOption.flatMap(_.asArray.map(_.toList)).getOrElse(Nil).map { j =>
+      JsonUtil.fromJson[Parameter](j)
+    }
+    scribe.info(s"Parameters: $parameters")
+  }
 
   def createClasses(): List[String] = {
     // "post_api_collection_opts"
@@ -121,4 +138,8 @@ class SwaggerClientBuilder(directory: File, packageName: String, swagger: Json) 
   }
 
   case class Property(name: String = "", description: String, format: Option[String], `type`: String, required: Boolean = false, builtIn: Boolean = true)
+
+  case class Parameter(in: String, name: String, required: Boolean, schema: Option[Schema], description: Option[String], `type`: Option[String])
+
+  case class Schema(`$ref`: String)
 }

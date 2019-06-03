@@ -272,6 +272,7 @@ lazy val exampleJVM = example.jvm.dependsOn(serverUndertow)
 lazy val utilities = project.in(file("utilities"))
   .settings(
     name := "youi-utilities",
+    fork := true,
     libraryDependencies ++= Seq(
       "org.jsoup" % "jsoup" % jSoupVersion,
       "org.powerscala" %% "powerscala-io" % powerScalaVersion

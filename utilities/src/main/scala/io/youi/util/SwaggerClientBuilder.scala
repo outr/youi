@@ -17,12 +17,12 @@ object SwaggerClientBuilder {
     val b = new SwaggerClientBuilder(directory, "com.outr.arango.api", json)
     b.createClasses()
     b.createEndPoints()
-    b.structure.write()
+    b.structures.values.foreach(_.write())
   }
 }
 
 class SwaggerClientBuilder(directory: File, packageName: String, swagger: Json) {
-  private val SnakeSplitter = "[-._]?([a-zA-Z0-9]+)".r
+  private val SnakeSplitter = "[-._/]?([a-zA-Z0-9]+)".r
   private val NameSplitter = "[-._ ]([a-zA-Z0-9])".r
 
   private val WordSwap = Map(
@@ -57,7 +57,7 @@ class SwaggerClientBuilder(directory: File, packageName: String, swagger: Json) 
 
   private val packageDirectory: File = new File(directory, packageName.replace('.', '/'))
 
-  private val structure: Structure = new Structure
+  private var structures = Map.empty[String, Structure]
 
   def createEndPoints(): Unit = paths.toList.foreach {
     case (n, j) => j.asObject.get.toList.foreach {
@@ -96,8 +96,10 @@ class SwaggerClientBuilder(directory: File, packageName: String, swagger: Json) 
                   |  def $method(${args.mkString(", ")}): Future[$responseType] = client
                   |    ${build.mkString("\n    ")}
                   |""".stripMargin.trim
-    val fullPath = (path.split('/').toList ::: List(method)).filterNot(_.trim.isEmpty)
-    structure.define(fullPath, code)
+    val cn = className(path.replaceAll("[#{}]", "")).replaceAll("[/]", "").capitalize
+    val structure = structures.getOrElse(cn, Structure(cn, path))
+    structure.define(code)
+    structures += cn -> structure
   } catch {
     case t: Throwable => throw new RuntimeException(s"Failed to create end-point for $path: $json", t)
   }
@@ -201,57 +203,34 @@ class SwaggerClientBuilder(directory: File, packageName: String, swagger: Json) 
     }
   }
 
-  class Structure {
-    private var map = Map.empty[String, Structure]
+  case class Structure(className: String, path: String) {
     private var code = Set.empty[String]
 
-    def define(path: List[String], code: String): Unit = if (path.isEmpty) {
+    def define(code: String): Unit = {
       this.code += code
-    } else {
-      val entry = path.head
-      val child = map.getOrElse(entry, new Structure)
-      child.define(path.tail, code)
-      map += entry -> child
     }
 
-    def write(prefix: List[String] = Nil): Unit = {
-      if (prefix.nonEmpty) {
-        val cn = className(prefix.reverse.map(_.capitalize).mkString(""))
-        val entries = if (map.nonEmpty) {
-          map.keys.toList.map { k =>
-            val name = className(k)
-            s"val ${name.charAt(0).toLower}${name.substring(1)} = new ${className(s"$cn${k.capitalize}")}(client)"
-          }.mkString("\n  ")
-        } else {
-          ""
-        }
-        val imports = if (code.nonEmpty) {
-          """
-            |import io.youi.client.HttpClient
-            |import io.youi.http.HttpMethod
-            |import scala.concurrent.Future
-            |import scribe.Execution.global
-          """.stripMargin
-        } else {
-          """
-            |import io.youi.client.HttpClient
-          """.stripMargin
-        }
-        val methods = if (code.nonEmpty) code.mkString(if (entries.nonEmpty) "\n\n  " else "", "\n\n  ", "") else ""
-        val source =
-          s"""package $packageName
-             |$imports
-             |class $cn(client: HttpClient) {
-             |  $entries$methods
-             |}
-         """.stripMargin.trim
-        val file = new File(packageDirectory, s"$cn.scala")
-        assert(!file.exists(), s"File already exists: ${file.getAbsolutePath}")
-        IO.stream(source, file)
-      }
-      map.foreach {
-        case (entry, child) => child.write(entry :: prefix)
-      }
+    def write(): Unit = {
+      scribe.info(s"Writing - path: $path, className: $className")
+//        val cn = className(prefix.reverse.map(_.capitalize).mkString(""))
+      val imports =
+      """
+        |import io.youi.client.HttpClient
+        |import io.youi.http.HttpMethod
+        |import scala.concurrent.Future
+        |import scribe.Execution.global
+      """.stripMargin
+      val methods = code.mkString("\n\n  ")
+      val source =
+        s"""package $packageName
+           |$imports
+           |class $className(client: HttpClient) {
+           |  $methods
+           |}
+       """.stripMargin.trim
+      val file = new File(packageDirectory, s"$className.scala")
+      assert(!file.exists(), s"File already exists: ${file.getAbsolutePath}")
+      IO.stream(source, file)
     }
   }
 }

@@ -14,14 +14,17 @@ object SwaggerClientBuilder {
     val json = parse(IO.stream(url.openStream(), new StringBuilder).toString).getOrElse(throw new RuntimeException("Failed to parse!"))
     val directory = new File("/home/mhicks/projects/open/scarango/core/src/main/scala/")
     IO.delete(directory)
-    val b = new SwaggerClientBuilder(directory, "com.outr.arango.api", json)
+    val b = new SwaggerClientBuilder(directory, "com.outr.arango.api", json, Some("/_db/_system"))
     b.createClasses()
     b.createEndPoints()
     b.structures.values.foreach(_.write())
   }
 }
 
-class SwaggerClientBuilder(directory: File, packageName: String, swagger: Json) {
+class SwaggerClientBuilder(directory: File,
+                           packageName: String,
+                           swagger: Json,
+                           basePathOverride: Option[String] = None) {
   private val SnakeSplitter = "[-._/]?([a-zA-Z0-9]+)".r
   private val NameSplitter = "[-._ ]([a-zA-Z0-9])".r
 
@@ -48,14 +51,15 @@ class SwaggerClientBuilder(directory: File, packageName: String, swagger: Json) 
     "array" -> "List[String]",
     "arraystring" -> "List[String]",
     "arrayinteger" -> "List[Int]",
-    "object" -> "io.circe.Json",
-    "arrayobject" -> "List[io.circe.Json]"
+    "object" -> "Json",
+    "arrayobject" -> "List[Json]"
   )
-  private val basePath = (swagger \\ "basePath").head.asString.get
+  private val basePath = basePathOverride.getOrElse((swagger \\ "basePath").head.asString.get)
   private val definitions = (swagger \\ "definitions").head.asObject.get
   private val paths = (swagger \\ "paths").head.asObject.get
 
   private val packageDirectory: File = new File(directory, packageName.replace('.', '/'))
+  private val modelDirectory: File = new File(packageDirectory, "model")
 
   private var structures = Map.empty[String, Structure]
 
@@ -69,6 +73,12 @@ class SwaggerClientBuilder(directory: File, packageName: String, swagger: Json) 
     val description = (json \\ "description").head.asString.getOrElse("").trim
     val parameters = (json \\ "parameters").headOption.flatMap(_.asArray.map(_.toList)).getOrElse(Nil).map { j =>
       JsonUtil.fromJson[Parameter](j)
+    }.map { p =>
+      if (p.in == "body") {
+        p.copy(required = true)
+      } else {
+        p
+      }
     }
     val args = parameters.map { p =>
       s"${p.fixedName}: ${p.derivedType}"
@@ -79,19 +89,23 @@ class SwaggerClientBuilder(directory: File, packageName: String, swagger: Json) 
       className(s.name)
     }.getOrElse("ArangoResponse")
     val OptionRegex = """Option\[(.+)\] = None""".r
-    val paramEntries = parameters.filterNot(_.in == "body").map { p =>
+    val paramEntries = parameters.filter(_.in == "query").map { p =>
       p.derivedType match {
         case OptionRegex(t) => s""".param[Option[$t]]("${p.name}", ${p.name}, None)"""
-        case _ => s""".params("${p.name}" -> ${p.name}.toString)"""
+        case _ => s""".params("${p.name}" -> ${p.fixedName}.toString)"""
       }
     }
+    val pathBuilder = parameters.filter(_.in == "path").map { p =>
+      s""""${p.name}" -> ${p.fixedName}"""
+    }.mkString(s""".path(path"$basePath$path".withArguments(Map(""", ", ", ")))")
+    scribe.info(s"PathBuilder: $pathBuilder for $path")
     val call = parameters.find(_.in == "body") match {
       case Some(p) => s".restful[${p.derivedType}, $responseType](${p.fixedName})"
       case None => s".call[$responseType]"
     }
-    val build = List(s".method(HttpMethod.${method.capitalize})") ::: paramEntries ::: List(call)
+    val build = List(s".method(HttpMethod.${method.capitalize})", pathBuilder) ::: paramEntries ::: List(call)
     val code = s"""/**
-                  |  * ${description.replaceAll("\n", "\n  * ")}
+                  |  * ${description.replaceAll("[/][*]", "/{@literal *}").replaceAll("\n", "\n  * ")}
                   |  */
                   |  def $method(${args.mkString(", ")}): Future[$responseType] = client
                   |    ${build.mkString("\n    ")}
@@ -106,10 +120,10 @@ class SwaggerClientBuilder(directory: File, packageName: String, swagger: Json) 
 
   def createClasses(): List[String] = definitions.toList.map {
     case (n, j) => {
-      packageDirectory.mkdirs()
+      modelDirectory.mkdirs()
       val clazz = className(n)
       val source = createClass(clazz, j)
-      val file = new File(packageDirectory, s"$clazz.scala")
+      val file = new File(modelDirectory, s"$clazz.scala")
       IO.stream(source, file)
       s"$packageName.$clazz"
     }
@@ -135,9 +149,11 @@ class SwaggerClientBuilder(directory: File, packageName: String, swagger: Json) 
     val params = properties.map(paramFrom)
     def description(p: Property): String = p.description.trim match {
       case "" => "*** No description ***"
-      case d => d.replaceAll("\n", "\n  *        ")
+      case d => d.replaceAll("[*]", "{@literal *}").replaceAll("\n", "\n  *        ")
     }
-    s"""package $packageName
+    s"""package $packageName.model
+       |
+       |import io.circe.Json
        |
        |/**
        |  * $clazz
@@ -214,9 +230,12 @@ class SwaggerClientBuilder(directory: File, packageName: String, swagger: Json) 
       scribe.info(s"Writing - path: $path, className: $className")
 //        val cn = className(prefix.reverse.map(_.capitalize).mkString(""))
       val imports =
-      """
+      s"""
+        |import $packageName.model._
         |import io.youi.client.HttpClient
         |import io.youi.http.HttpMethod
+        |import io.youi.net._
+        |import io.circe.Json
         |import scala.concurrent.Future
         |import scribe.Execution.global
       """.stripMargin

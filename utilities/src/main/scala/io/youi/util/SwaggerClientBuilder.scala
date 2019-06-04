@@ -227,8 +227,6 @@ class SwaggerClientBuilder(directory: File,
     }
 
     def write(): Unit = {
-      scribe.info(s"Writing - path: $path, className: $className")
-//        val cn = className(prefix.reverse.map(_.capitalize).mkString(""))
       val imports =
       s"""
         |import $packageName.model._

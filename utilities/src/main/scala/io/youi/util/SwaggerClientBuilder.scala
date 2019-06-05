@@ -10,8 +10,8 @@ import profig.JsonUtil
 
 object SwaggerClientBuilder {
   def main(args: Array[String]): Unit = {
-    val url = new URL("https://raw.githubusercontent.com/arangodb/arangodb/devel/js/apps/system/_admin/aardvark/APP/api-docs.json")
-    val json = parse(IO.stream(url.openStream(), new StringBuilder).toString).getOrElse(throw new RuntimeException("Failed to parse!"))
+    val file = new File("../swagger.json")
+    val json = parse(IO.stream(file, new StringBuilder).toString).getOrElse(throw new RuntimeException("Failed to parse!"))
     val directory = new File("/home/mhicks/projects/open/scarango/core/src/main/scala/")
     IO.delete(directory)
     val b = new SwaggerClientBuilder(directory, "com.outr.arango.api", json, Some("/_db/_system"))
@@ -33,6 +33,7 @@ class SwaggerClientBuilder(directory: File,
   )
   private val NameSwap = Map(
     "type" -> "`type`",
+    "global" -> "_global",
     "new" -> "`new`",
     "Json Request Body" -> "body"
   )
@@ -91,21 +92,20 @@ class SwaggerClientBuilder(directory: File,
     val OptionRegex = """Option\[(.+)\] = None""".r
     val paramEntries = parameters.filter(_.in == "query").map { p =>
       p.derivedType match {
-        case OptionRegex(t) => s""".param[Option[$t]]("${p.name}", ${p.name}, None)"""
+        case OptionRegex(t) => s""".param[Option[$t]]("${p.name}", ${fixName(p.name)}, None)"""
         case _ => s""".params("${p.name}" -> ${p.fixedName}.toString)"""
       }
     }
     val pathBuilder = parameters.filter(_.in == "path").map { p =>
       s""""${p.name}" -> ${p.fixedName}"""
     }.mkString(s""".path(path"$basePath$path".withArguments(Map(""", ", ", ")))")
-    scribe.info(s"PathBuilder: $pathBuilder for $path")
     val call = parameters.find(_.in == "body") match {
       case Some(p) => s".restful[${p.derivedType}, $responseType](${p.fixedName})"
       case None => s".call[$responseType]"
     }
     val build = List(s".method(HttpMethod.${method.capitalize})", pathBuilder) ::: paramEntries ::: List(call)
     val code = s"""/**
-                  |  * ${description.replaceAll("[/][*]", "/{@literal *}").replaceAll("\n", "\n  * ")}
+                  |  * ${description.replaceAll("[/][*]", "/{@literal *}").replaceAll("[*][/]", "{@literal *}/").replaceAll("\n", "\n  * ")}
                   |  */
                   |  def $method(${args.mkString(", ")}): Future[$responseType] = client
                   |    ${build.mkString("\n    ")}
@@ -149,7 +149,7 @@ class SwaggerClientBuilder(directory: File,
     val params = properties.map(paramFrom)
     def description(p: Property): String = p.description.trim match {
       case "" => "*** No description ***"
-      case d => d.replaceAll("[*]", "{@literal *}").replaceAll("\n", "\n  *        ")
+      case d => d.replaceAll("[/][*]", "/{@literal *}").replaceAll("\n", "\n  *        ")
     }
     s"""package $packageName.model
        |
@@ -172,9 +172,9 @@ class SwaggerClientBuilder(directory: File,
   })
 
   def fixName(name: String): String = {
-    NameSplitter.replaceAllIn(NameSwap.getOrElse(name, name), m => {
+    NameSwap.getOrElse(name, NameSplitter.replaceAllIn(name, m => {
       m.group(1).toUpperCase
-    }).replaceAll("[\\[\\]*]", "")
+    }).replaceAll("[\\[\\]*]", ""))
   }
 
   def generateType(name: String, `type`: String, format: Option[String], builtIn: Boolean, required: Boolean): String = {

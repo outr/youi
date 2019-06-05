@@ -8,6 +8,11 @@ import io.circe.Json
 import org.powerscala.io._
 import profig.JsonUtil
 
+// TODO: Generate ArangoResponse
+// TODO: Support {database} in path
+// TODO: Support credentials
+// TODO: Consider a structured object to bring it all together
+// TODO: Support mix-ins
 object SwaggerClientBuilder {
   def main(args: Array[String]): Unit = {
     val file = new File("../swagger.json")

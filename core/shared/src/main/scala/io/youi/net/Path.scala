@@ -48,6 +48,8 @@ case class Path(parts: List[PathPart]) extends Location {
     Path(left ::: right.parts)
   }
 
+  def merge(that: Path): Path = Path(this.parts ::: that.parts)
+
   override def equals(obj: Any): Boolean = obj match {
     case that: Path if this.parts.length == that.parts.length => {
       this.parts.zip(that.parts).forall {

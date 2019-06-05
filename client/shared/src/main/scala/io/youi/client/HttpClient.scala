@@ -27,7 +27,11 @@ case class HttpClient(request: HttpRequest,
   def url: URL = request.url
   def url(url: URL): HttpClient = modify(_.copy(url = url))
   def path: Path = url.path
-  def path(path: Path): HttpClient = modify(_.copy(url = request.url.withPath(path)))
+  def path(path: Path, append: Boolean = false): HttpClient = if (append) {
+    modify(_.copy(url = request.url.withPath(request.url.path.merge(path))))
+  } else {
+    modify(_.copy(url = request.url.withPath(path)))
+  }
   def params(params: (String, String)*): HttpClient = modify(_.copy(url = request.url.withParams(params.toMap)))
   def param[T](name: String, value: T, default: T): HttpClient = if (value != default) {
     value match {

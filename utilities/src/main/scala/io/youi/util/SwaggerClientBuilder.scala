@@ -8,18 +8,13 @@ import io.circe.Json
 import org.powerscala.io._
 import profig.JsonUtil
 
-// TODO: Generate ArangoResponse
-// TODO: Support {database} in path
-// TODO: Support credentials
-// TODO: Consider a structured object to bring it all together
-// TODO: Support mix-ins
 object SwaggerClientBuilder {
   def main(args: Array[String]): Unit = {
-    val file = new File("../swagger.json")
+    val file = new File("/home/mhicks/projects/open/scarango/swagger.json")
     val json = parse(IO.stream(file, new StringBuilder).toString).getOrElse(throw new RuntimeException("Failed to parse!"))
     val directory = new File("/home/mhicks/projects/open/scarango/core/src/main/scala/")
     IO.delete(directory)
-    val b = new SwaggerClientBuilder(directory, "com.outr.arango.api", json, Some("/_db/_system"))
+    val b = new SwaggerClientBuilder(directory, "com.outr.arango.api", json)
     b.createClasses()
     b.createEndPoints()
     b.structures.values.foreach(_.write())
@@ -28,8 +23,7 @@ object SwaggerClientBuilder {
 
 class SwaggerClientBuilder(directory: File,
                            packageName: String,
-                           swagger: Json,
-                           basePathOverride: Option[String] = None) {
+                           swagger: Json) {
   private val SnakeSplitter = "[-._/]?([a-zA-Z0-9]+)".r
   private val NameSplitter = "[-._ ]([a-zA-Z0-9])".r
 
@@ -60,7 +54,6 @@ class SwaggerClientBuilder(directory: File,
     "object" -> "Json",
     "arrayobject" -> "List[Json]"
   )
-  private val basePath = basePathOverride.getOrElse((swagger \\ "basePath").head.asString.get)
   private val definitions = (swagger \\ "definitions").head.asObject.get
   private val paths = (swagger \\ "paths").head.asObject.get
 
@@ -93,7 +86,7 @@ class SwaggerClientBuilder(directory: File,
     val response = (responses \\ "200").headOption.map(j => JsonUtil.fromJson[Response](j)).getOrElse(Response("", None))
     val responseType = response.schema.map { s =>
       className(s.name)
-    }.getOrElse("ArangoResponse")
+    }.getOrElse("Json")
     val OptionRegex = """Option\[(.+)\] = None""".r
     val paramEntries = parameters.filter(_.in == "query").map { p =>
       p.derivedType match {
@@ -101,9 +94,14 @@ class SwaggerClientBuilder(directory: File,
         case _ => s""".params("${p.name}" -> ${p.fixedName}.toString)"""
       }
     }
-    val pathBuilder = parameters.filter(_.in == "path").map { p =>
-      s""""${p.name}" -> ${p.fixedName}"""
-    }.mkString(s""".path(path"$basePath$path".withArguments(Map(""", ", ", ")))")
+    val pathParams = parameters.filter(_.in == "path")
+    val pathBuilder = if (pathParams.nonEmpty) {
+      pathParams.map { p =>
+        s""""${p.name}" -> ${p.fixedName}"""
+      }.mkString(s""".path(path"$path".withArguments(Map(""", ", ", ")), append = true)")
+    } else {
+      s""".path(path"$path", append = true) """
+    }
     val call = parameters.find(_.in == "body") match {
       case Some(p) => s".restful[${p.derivedType}, $responseType](${p.fixedName})"
       case None => s".call[$responseType]"

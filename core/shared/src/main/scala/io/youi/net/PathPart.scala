@@ -5,13 +5,15 @@ sealed trait PathPart extends Any {
 }
 
 object PathPart {
-  private val ArgumentPartRegex = """[:](.+)""".r
+  private val ArgumentPartRegex1 = """[:](.+)""".r
+  private val ArgumentPartRegex2 = """[{](.+)[}]""".r
 
   def apply(value: String): Option[PathPart] = value match {
     case null | "" => None
     case ".." => Some(UpLevelPathPart)
     case "." => Some(SameLevelPathPart)
-    case ArgumentPartRegex(name) => Some(new ArgumentPathPart(name))
+    case ArgumentPartRegex1(name) => Some(new ArgumentPathPart(name))
+    case ArgumentPartRegex2(name) => Some(new ArgumentPathPart(name))
     case s => Some(new LiteralPathPart(s))
   }
 

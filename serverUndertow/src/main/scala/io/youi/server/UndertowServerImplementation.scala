@@ -79,8 +79,8 @@ class UndertowServerImplementation(val server: Server) extends ServerImplementat
 
   private val formParserBuilder = FormParserFactory.builder()
 
-  override def handleRequest(exchange: HttpServerExchange): Unit = try {
-    server.errorSupport {
+  override def handleRequest(exchange: HttpServerExchange): Unit = server.errorSupport {
+    try {
       val url = URL(s"${exchange.getRequestURL}?${exchange.getQueryString}")
 
       exchange.dispatch(SameThreadExecutor.INSTANCE, new Runnable {
@@ -109,10 +109,9 @@ class UndertowServerImplementation(val server: Server) extends ServerImplementat
           }
         }
       })
+    } catch {
+      case exc: MalformedURLException => scribe.warn(exc.message)
     }
-  } catch {
-    case exc: MalformedURLException => scribe.warn(exc.message)
-    case t: Throwable => scribe.error(t)
   }
 
   private def requestHandler(exchange: HttpServerExchange, url: URL): Unit = {

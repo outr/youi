@@ -2,11 +2,13 @@ package io.youi.form
 
 import io.youi.dom
 import io.youi.dom._
+import io.youi.util.Time
 import org.scalajs.dom.{Event, html}
 
 import scala.concurrent.Future
 import scribe.Execution.global
 
+import scala.concurrent.duration.FiniteDuration
 import scala.util.{Failure, Success}
 
 trait FormSupport {
@@ -95,12 +97,31 @@ trait FormSupport {
     private val container = dom.create[html.Div]("div")
     container.insertFirst(form)
 
-    def success(message: String, clearFirst: Boolean = true): Unit = create("success", message, clearFirst)
-    def info(message: String, clearFirst: Boolean = true): Unit = create("info", message, clearFirst)
-    def warning(message: String, clearFirst: Boolean = true): Unit = create("warning", message, clearFirst)
-    def danger(message: String, clearFirst: Boolean = true): Unit = create("danger", message, clearFirst)
+    def success(message: String,
+                clearFirst: Boolean = true,
+                removeAfter: Option[FiniteDuration] = None): html.Div = {
+      create("success", message, clearFirst, removeAfter)
+    }
+    def info(message: String,
+             clearFirst: Boolean = true,
+             removeAfter: Option[FiniteDuration] = None): html.Div = {
+      create("info", message, clearFirst, removeAfter)
+    }
+    def warning(message: String,
+                clearFirst: Boolean = true,
+                removeAfter: Option[FiniteDuration] = None): html.Div = {
+      create("warning", message, clearFirst, removeAfter)
+    }
+    def danger(message: String,
+               clearFirst: Boolean = true,
+               removeAfter: Option[FiniteDuration] = None): html.Div = {
+      create("danger", message, clearFirst, removeAfter)
+    }
 
-    private def create(`type`: String, message: String, clearFirst: Boolean): Unit = {
+    private def create(`type`: String,
+                       message: String,
+                       clearFirst: Boolean,
+                       removeAfter: Option[FiniteDuration]): html.Div = {
       if (clearFirst) {
         clear()
       }
@@ -111,6 +132,12 @@ trait FormSupport {
       alert.classList.add(s"alert-${`type`}")
       alert.innerHTML = message
       container.appendChild(alert)
+
+      removeAfter.foreach { d =>
+        Time.delay(d).foreach(_ => alert.remove())
+      }
+
+      alert
     }
 
     def clear(): Unit = {

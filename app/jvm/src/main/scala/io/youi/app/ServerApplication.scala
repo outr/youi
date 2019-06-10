@@ -3,13 +3,14 @@ package io.youi.app
 import java.io.File
 
 import akka.actor.{ActorSystem, Cancellable}
+import com.outr.hookup.Hookup
 import io.youi.http._
 import io.youi.http.content.{Content, FileContent, FormDataContent, StringContent, URLContent}
 import io.youi.net.{ContentType, URL}
 import io.youi.server.Server
 import io.youi.server.handler.{CachingManager, HttpHandler, HttpHandlerBuilder, SenderHandler}
 import io.youi.stream.{ByTag, Delta, HTMLParser, Selector}
-import io.youi.{JavaScriptError, JavaScriptLog, Priority, http}
+import io.youi.{ErrorSupport, JavaScriptError, JavaScriptLog, Priority, http}
 import net.sf.uadetector.UserAgentType
 import net.sf.uadetector.service.UADetectorServiceFactory
 import org.powerscala.io._
@@ -55,6 +56,9 @@ trait ServerApplication extends YouIApplication with Server {
   protected def responseMap(httpConnection: HttpConnection): Map[String, String] = Map.empty
 
   override protected def init(): Future[Unit] = super.init().map { _ =>
+    // Redirect Hookup errors to error support
+    Hookup.error.attach(t => ErrorSupport.error := t)
+
     connectivityEntries.attachAndFire { entries =>
       ServerApplication.this.synchronized {
         entries.foreach { appComm =>

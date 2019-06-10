@@ -31,7 +31,7 @@ val scribeVersion = "2.7.7"
 val powerScalaVersion = "2.0.5"
 val reactifyVersion = "3.0.3"
 val hasherVersion = "1.2.1"
-val hookupVersion = "2.0.0"
+val hookupVersion = "2.0.1"
 
 val canvgVersion = "1.4.0_1"
 val openTypeVersion = "0.7.3"

@@ -1,11 +1,15 @@
 package io.youi.app.screen
 
+import com.outr.hookup.Hookup
+import io.youi.ErrorSupport
 import reactify._
-import io.youi.app.YouIApplication
+import io.youi.app.{ClientApplication, YouIApplication}
 
 import scala.concurrent.{Future, Promise}
 import scala.concurrent.ExecutionContext.Implicits.global
 import org.scalajs.dom._
+
+import scala.util.{Failure, Success}
 
 trait ScreenManager {
   ScreenManager.instance = Some(this)
@@ -22,30 +26,38 @@ trait ScreenManager {
   protected def waitForWindowLoad: Boolean = true
 
   scribe.info("Initializing application...")
-  init().foreach { _ =>
-    if (waitForWindowLoad && document.readyState != "complete") {
-      scribe.info("Application initialized. Waiting for window load to complete...")
-      window.addEventListener("load", (_: Event) => {
-        scribe.info("Window loading complete. Loading application...")
+  init().onComplete {
+    case Success(_) => {
+      if (waitForWindowLoad && document.readyState != "complete") {
+        scribe.info("Application initialized. Waiting for window load to complete...")
+        window.addEventListener("load", (_: Event) => {
+          scribe.info("Window loading complete. Loading application...")
+          load().foreach { _ =>
+            scribe.info("Application loaded.")
+            loaded.asInstanceOf[Var[Boolean]] := true
+          }
+        })
+      } else {
+        scribe.info("Application initialized. Loading application...")
         load().foreach { _ =>
           scribe.info("Application loaded.")
           loaded.asInstanceOf[Var[Boolean]] := true
         }
-      })
-    } else {
-      scribe.info("Application initialized. Loading application...")
-      load().foreach { _ =>
-        scribe.info("Application loaded.")
-        loaded.asInstanceOf[Var[Boolean]] := true
       }
     }
+    case Failure(t) => ErrorSupport.error := new RuntimeException("Error during application initialization!", t)
   }
 
   active.changes {
     case (oldScreen, newScreen) => screenChange(oldScreen, newScreen)
   }
 
-  protected def init(): Future[Unit] = Future.successful(())
+  protected def init(): Future[Unit] = {
+    // Redirect Hookup errors to error support
+    Hookup.error.attach(t => ErrorSupport.error := t)
+
+    Future.successful(())
+  }
 
   protected def load(): Future[Unit] = Future.successful(())
 

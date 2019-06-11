@@ -51,12 +51,21 @@ object Storage {
     )
   }
 
-  def macroProp[T](c: blackbox.Context)(key: c.Expr[String], default: c.Tree)(t: c.WeakTypeTag[T]): c.Expr[Var[T]] = {
+  def macroProp[T](c: blackbox.Context)(key: c.Expr[String],
+                                        default: c.Tree)(t: c.WeakTypeTag[T]): c.Expr[Var[T]] = {
     import c.universe._
 
     c.Expr[Var[T]](
       q"""
-         val initial = io.youi.LocalStorage.get[$t]($key).getOrElse($default)
+         val initial = try {
+           _root_.io.youi.LocalStorage.get[$t]($key).getOrElse($default)
+         } catch {
+           case t: Throwable => {
+             _root_.scribe.warn(t.getMessage + " Deleting stored data and resetting to default value.")
+             _root_.io.youi.LocalStorage.remove($key)
+             $default
+           }
+         }
          val p = reactify.Var[$t](initial)
          p.attach { value =>
            io.youi.LocalStorage.update($key, value)

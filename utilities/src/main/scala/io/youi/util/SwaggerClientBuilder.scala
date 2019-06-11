@@ -114,7 +114,7 @@ class SwaggerClientBuilder(directory: File,
     val code = s"""/**
                   |  * ${description.replaceAll("[/][*]", "/{@literal *}").replaceAll("[*][/]", "{@literal *}/").replaceAll("\n", "\n  * ")}
                   |  */
-                  |  def $method(${args.mkString(", ")}): Future[$responseType] = client
+                  |  def $method(${args.mkString(", ")})(implicit ec: ExecutionContext): Future[$responseType] = client
                   |    ${build.mkString("\n    ")}
                   |""".stripMargin.trim
     val cn = className(path.replaceAll("[#{}]", "")).replaceAll("[/]", "").capitalize
@@ -241,8 +241,7 @@ class SwaggerClientBuilder(directory: File,
         |import io.youi.http.HttpMethod
         |import io.youi.net._
         |import io.circe.Json
-        |import scala.concurrent.Future
-        |import scribe.Execution.global
+        |import scala.concurrent.{ExecutionContext, Future}
       """.stripMargin
       val methods = code.mkString("\n\n  ")
       val source =

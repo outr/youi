@@ -130,6 +130,17 @@ case class HttpClient(request: HttpRequest,
     * @return Future[Response]
     */
   def restful[Request, Response](request: Request): Future[Response] = macro HttpClient.autoRestful[Request, Response]
+
+  /**
+    * Similar to the restful call, but provides a different return-type if the response is an error.
+    *
+    * @param request the request object to convert to JSON and send
+    * @tparam Request the request type
+    * @tparam Success the success (OK response) response type
+    * @tparam Failure the failure (non-OK response) response type
+    * @return either Failure or Success
+    */
+  def restfulEither[Request, Success, Failure](request: Request): Future[Either[Failure, Success]] = macro HttpClient.autoRestfulEither[Request, Success, Failure]
 }
 
 object HttpClient extends HttpClient(
@@ -189,6 +200,37 @@ object HttpClient extends HttpClient(
                _root_.profig.JsonUtil.fromJsonString[$res](responseJson)
              } else {
               throw new ClientException("HttpStatus was not successful", $client.request, response, None)
+             }
+           } catch {
+             case t: Throwable => throw new ClientException("Response processing error", $client.request, response, Some(t))
+           }
+         }
+      """)
+  }
+
+  def autoRestfulEither[Request, Success, Failure](c: blackbox.Context)
+                                                  (request: c.Expr[Request])
+                                                  (implicit req: c.WeakTypeTag[Request],
+                                                   success: c.WeakTypeTag[Success],
+                                                   failure: c.WeakTypeTag[Failure]): c.Expr[Future[Either[Failure, Success]]] = {
+    import c.universe._
+
+    val client = c.prefix.tree
+
+    c.Expr[Future[Either[Failure, Success]]](
+      q"""
+         import _root_.io.youi.client._
+         import _root_.profig.JsonUtil
+
+         val requestJson = JsonUtil.toJson[$req]($request)
+         $client.post.json(requestJson).send().map { response =>
+           try {
+             val responseJson = response.content.map($client.implementation.content2String).getOrElse("")
+         if (responseJson.isEmpty) throw new ClientException(s"No content received in response for $${$client.request.url}.", $client.request, response, None)
+             if (response.status.isSuccess) {
+               Right(_root_.profig.JsonUtil.fromJsonString[$success](responseJson))
+             } else {
+               Left(_root_.profig.JsonUtil.fromJsonString[$failure](responseJson))
              }
            } catch {
              case t: Throwable => throw new ClientException("Response processing error", $client.request, response, Some(t))

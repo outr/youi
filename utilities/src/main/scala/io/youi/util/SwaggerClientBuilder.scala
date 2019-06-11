@@ -12,12 +12,9 @@ object SwaggerClientBuilder {
   def main(args: Array[String]): Unit = {
     val file = new File("/home/mhicks/projects/open/scarango/swagger.json")
     val json = parse(IO.stream(file, new StringBuilder).toString).getOrElse(throw new RuntimeException("Failed to parse!"))
-    val directory = new File("/home/mhicks/projects/open/scarango/core/src/main/scala/")
-    IO.delete(directory)
+    val directory = new File("/home/mhicks/projects/open/scarango/api/src/main/scala/")
     val b = new SwaggerClientBuilder(directory, "com.outr.arango.api", json)
-    b.createClasses()
-    b.createEndPoints()
-    b.structures.values.foreach(_.write())
+    b.generate()
   }
 }
 
@@ -62,6 +59,13 @@ class SwaggerClientBuilder(directory: File,
 
   private var structures = Map.empty[String, Structure]
 
+  def generate(): Unit = {
+    IO.delete(packageDirectory)
+    createClasses()
+    createEndPoints()
+    structures.values.foreach(_.write())
+  }
+
   def createEndPoints(): Unit = paths.toList.foreach {
     case (n, j) => j.asObject.get.toList.foreach {
       case (m, json) => createEndPoint(n, m, json)
@@ -79,7 +83,7 @@ class SwaggerClientBuilder(directory: File,
         p
       }
     }
-    val args = parameters.map { p =>
+    val args = "client: HttpClient" :: parameters.map { p =>
       s"${p.fixedName}: ${p.derivedType}"
     }
     val responses = (json \\ "responses").head
@@ -244,7 +248,7 @@ class SwaggerClientBuilder(directory: File,
       val source =
         s"""package $packageName
            |$imports
-           |class $className(client: HttpClient) {
+           |object $className {
            |  $methods
            |}
        """.stripMargin.trim

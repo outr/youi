@@ -103,6 +103,11 @@ object dom extends ExtendedElement(None) {
     }
 
     def remove(): Unit = Option(e.parentNode).foreach(_.removeChild(e))
+
+    def removeIds(): Unit = {
+      e.removeAttribute("id")
+      e.bySelector[html.Element]("[id]").foreach(_.removeAttribute("id"))
+    }
   }
 
   implicit def domListToIterator[T](list: DOMList[T]): Iterator[T] = new Iterator[T] {

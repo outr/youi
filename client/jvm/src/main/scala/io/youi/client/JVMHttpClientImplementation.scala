@@ -86,10 +86,16 @@ class JVMHttpClientImplementation(config: HttpClientConfig) extends HttpClientIm
         form.build()
       }
       case c => throw new RuntimeException(s"Unsupported request content: $c")
-    }.orNull
+    }.getOrElse {
+      if (request.method != HttpMethod.Get) {
+        okhttp3.RequestBody.create(None.orNull, "")
+      } else {
+        None.orNull
+      }
+    }
 
     // Method
-    r.method(request.method.value, body)
+    r.method(request.method.value, body).header("Content-Length", Option(body).map(_.contentLength().toString).getOrElse("0"))
     r.build()
   }
 

@@ -48,6 +48,7 @@ case class HttpClient(request: HttpRequest,
   }
   def appendParams(params: (String, String)*): HttpClient = modify(_.copy(url = request.url.withParams(params.toMap, append = true)))
 
+  def method: HttpMethod = request.method
   def method(method: HttpMethod): HttpClient = modify(_.copy(method = method))
   def get: HttpClient = method(HttpMethod.Get)
   def post: HttpClient = method(HttpMethod.Post)
@@ -189,10 +190,11 @@ object HttpClient extends HttpClient(
     c.Expr[Future[Response]](
       q"""
          import _root_.io.youi.client._
+         import _root_.io.youi.http._
          import _root_.profig.JsonUtil
 
          val requestJson = JsonUtil.toJson[$req]($request)
-         $client.post.json(requestJson).send().map { response =>
+         $client.method(if ($client.method == HttpMethod.Get) HttpMethod.Post else $client.method).json(requestJson).send().map { response =>
            try {
              val responseJson = response.content.map($client.implementation.content2String).getOrElse("")
              if (!$client.failOnHttpStatus || response.status.isSuccess) {
@@ -220,10 +222,11 @@ object HttpClient extends HttpClient(
     c.Expr[Future[Either[Failure, Success]]](
       q"""
          import _root_.io.youi.client._
+         import _root_.io.youi.http._
          import _root_.profig.JsonUtil
 
          val requestJson = JsonUtil.toJson[$req]($request)
-         $client.post.json(requestJson).send().map { response =>
+         $client.method(if ($client.method == HttpMethod.Get) HttpMethod.Post else $client.method).json(requestJson).send().map { response =>
            try {
              val responseJson = response.content.map($client.implementation.content2String).getOrElse("")
          if (responseJson.isEmpty) throw new ClientException(s"No content received in response for $${$client.request.url}.", $client.request, response, None)

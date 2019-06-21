@@ -1,5 +1,8 @@
 package io.youi.net
 
+import io.circe.Decoder.Result
+import io.circe.{Decoder, DecodingFailure, Encoder, HCursor, Json}
+
 case class ContentType(`type`: String, subType: String, charSet: Option[String] = None, boundary: Option[String] = None) {
   def this(mimeType: String) = {
     this(mimeType.substring(0, mimeType.indexOf('/')), mimeType.substring(mimeType.indexOf('/') + 1))
@@ -1833,5 +1836,16 @@ object ContentType {
 
   def getByExtension(extension: String): Option[ContentType] = {
     extension2MimeType.get(extension.toLowerCase).map(new ContentType(_))
+  }
+
+  implicit val encoder: Encoder[ContentType] = new Encoder[ContentType] {
+    override def apply(ct: ContentType): Json = Json.fromString(ct.outputString)
+  }
+
+  implicit val decoder: Decoder[ContentType] = new Decoder[ContentType] {
+    override def apply(c: HCursor): Result[ContentType] = c.value.asString match {
+      case Some(value) => Right(parse(value))
+      case None => Left(DecodingFailure(s"Unable to decode ContentType from ${c.value}", Nil))
+    }
   }
 }

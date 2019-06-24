@@ -1,7 +1,6 @@
 package io.youi.example
 
 import com.outr.hookup.{Hookup, HookupSupport}
-import io.circe.parser._
 import io.youi.net.URL
 import io.youi.server.WebSocketClient
 import io.youi.util.Time
@@ -14,20 +13,10 @@ object ReverseClientExample {
   val connection: WebSocketClient = new WebSocketClient(URL("http://localhost:8080/communication"))
   val hookup: SimpleHookup = Hookup.client[SimpleHookup]
 
-  // TODO: Do this with Communication paradigm
-  // Connect IO
-  connection.receive.text.attach { s =>
-    parse(s) match {
-      case Left(pf) => throw pf
-      case Right(json) => hookup.io.input.set(json)
-    }
-  }
-  hookup.io.output.attach { json =>
-    connection.send.text := json.spaces2
-  }
+  connection.hookup(isClient = true)
 
   def mainOld(args: Array[String]): Unit = {
-    connection.connect()
+    Await.result(connection.connect(), 5.seconds)
     try {
       val future = hookup.simple.reverse("This is a test!")
       val result = Await.result(future, 5.seconds)

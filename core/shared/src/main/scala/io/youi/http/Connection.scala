@@ -2,6 +2,9 @@ package io.youi.http
 
 import java.nio.ByteBuffer
 
+import com.outr.hookup.HookupManager
+import io.circe.Json
+import io.circe.parser.parse
 import reactify._
 import io.youi.{MapStore, Store}
 import reactify.reaction.Reaction
@@ -61,6 +64,38 @@ class Connection {
         }
       }
     }
+  }
+
+  def hookup(isClient: Boolean): Unit = {
+    val hookups = if (isClient) {
+      HookupManager.clients
+    } else {
+      HookupManager(this, registerAllServers = true)
+    }
+    // Send output from Hookups
+    val reaction = hookups.io.output.attach { json =>
+      send.text := s"[HKP]${json.spaces2}"
+    }
+    store("applicationConnectivity") = reaction
+    // Receive input from connection
+    receive.text.attach { s =>
+      if (s.startsWith("[HKP]")) {
+        parse(s.substring(5)) match {
+          case Left(pf) => throw pf
+          case Right(json) => hookups.io.input := json
+        }
+      }
+    }
+  }
+
+  def unHookup(isClient: Boolean): Unit = {
+    val hookups = if (isClient) {
+      HookupManager.clients
+    } else {
+      HookupManager(this)
+    }
+    val reaction = store[Reaction[Json]]("applicationConnectivity")
+    hookups.io.output.reactions -= reaction
   }
 
   def close(): Unit = if (connected()) {

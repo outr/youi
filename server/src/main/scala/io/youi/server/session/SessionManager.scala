@@ -24,7 +24,15 @@ trait SessionManager[Session] {
   def withConnection(connection: Connection)
                     (f: SessionTransaction[Session] => Future[SessionTransaction[Session]] = t => Future.successful(t)): Future[Session] = {
     val httpConnection = connection.store[HttpConnection]("httpConnection")
-    session(httpConnection, f, requestModifiable = false).map(_.session)
+    val transaction = httpConnection
+      .store
+      .get[SessionTransaction[Session]]("transaction")
+      .map(Future.successful)
+      .getOrElse(session(httpConnection, f, requestModifiable = false))
+    transaction.map { t =>
+      httpConnection.store("transaction") = t
+      t.session
+    }
   }
 
   /**
@@ -36,7 +44,16 @@ trait SessionManager[Session] {
     */
   def withHttpConnection(connection: HttpConnection)
                         (f: SessionTransaction[Session] => Future[SessionTransaction[Session]] = t => Future.successful(t)): Future[SessionTransaction[Session]] = {
-    session(connection, f, requestModifiable = true).map(_.copy(sessionModifiable = false))
+    val transaction = connection
+      .store
+      .get[SessionTransaction[Session]]("transaction")
+      .map(Future.successful)
+      .getOrElse(session(connection, f, requestModifiable = true))
+    transaction.map { t =>
+      val tm = t.copy(sessionModifiable = false)
+      connection.store("transaction") = tm
+      tm
+    }
   }
 
   /**
@@ -137,12 +154,17 @@ trait SessionManager[Session] {
     * @return the session id if found
     */
   protected def sessionId(connection: HttpConnection): Option[String] = {
-    val config = connection.server.config.session
-    connection.request.cookies.find(_.name == config.name()).map(_.value) match {
+    connection.store.get[String]("sessionId") match {
       case Some(id) => Some(id)
-      case None => connection.response.cookies.find(_.name == config.name()).map(_.value) match {
-        case Some(id) => Some(id)
-        case None => None
+      case None => {
+        val config = connection.server.config.session
+        connection.request.cookies.find(_.name == config.name()).map(_.value) match {
+          case Some(id) => Some(id)
+          case None => connection.response.cookies.find(_.name == config.name()).map(_.value) match {
+            case Some(id) => Some(id)
+            case None => None
+          }
+        }
       }
     }
   }
@@ -159,6 +181,7 @@ trait SessionManager[Session] {
     if (config.secure() && !config.forceSecure() && connection.request.url.protocol != Protocol.Https) {
       connection        // Don't set cookie if secure cookie is required and non-HTTPs
     } else {
+      connection.store("sessionId") = id
       connection.modify { response =>
         val cookie = ResponseCookie(
           name = config.name(),

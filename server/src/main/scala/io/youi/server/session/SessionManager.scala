@@ -24,15 +24,7 @@ trait SessionManager[Session] {
   def withConnection(connection: Connection)
                     (f: SessionTransaction[Session] => Future[SessionTransaction[Session]] = t => Future.successful(t)): Future[Session] = {
     val httpConnection = connection.store[HttpConnection]("httpConnection")
-    val transaction = httpConnection
-      .store
-      .get[SessionTransaction[Session]]("transaction")
-      .map(Future.successful)
-      .getOrElse(session(httpConnection, f, requestModifiable = false))
-    transaction.map { t =>
-      httpConnection.store("transaction") = t
-      t.session
-    }
+    session(httpConnection, f, requestModifiable = false).map(_.session)
   }
 
   /**
@@ -44,16 +36,7 @@ trait SessionManager[Session] {
     */
   def withHttpConnection(connection: HttpConnection)
                         (f: SessionTransaction[Session] => Future[SessionTransaction[Session]] = t => Future.successful(t)): Future[SessionTransaction[Session]] = {
-    val transaction = connection
-      .store
-      .get[SessionTransaction[Session]]("transaction")
-      .map(Future.successful)
-      .getOrElse(session(connection, f, requestModifiable = true))
-    transaction.map { t =>
-      val tm = t.copy(sessionModifiable = false)
-      connection.store("transaction") = tm
-      tm
-    }
+    session(connection, f, requestModifiable = true).map(_.copy(sessionModifiable = false))
   }
 
   /**

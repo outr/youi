@@ -37,11 +37,11 @@ trait ServerApplication extends YouIApplication with Server {
 
   protected def applicationBasePath: String = "app/application"
 
-  private val fullOpt = s"$applicationBasePath.js"
-  private val fastOpt = s"$applicationBasePath-fastopt.js"
+  private val fullOpt = s"$applicationBasePath.js.youi"
+  private val fastOpt = s"$applicationBasePath-fastopt.js.youi"
   private val fullOptMap = s"$fullOpt.map"
   private val fastOptMap = s"$fastOpt.map"
-  private val jsDeps = s"$applicationBasePath-jsdeps.js"
+  private val jsDeps = s"$applicationBasePath-jsdeps.js.youi"
 
   protected def applicationJSBasePath: String = "/app/application"
   def applicationJSPath: String = s"$applicationJSBasePath.js"

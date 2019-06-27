@@ -1,6 +1,6 @@
 package io.youi.theme
 
-import io.youi.style.{HTMLBorder, Overflow, PointerEvents}
+import io.youi.style.{HTMLBorder, Overflow, PointerEvents, UserSelect}
 
 trait HTMLComponentTheme extends ComponentTheme {
   lazy val rotation: StyleProp[Double] = style[Double]("transform", 0.0, StyleConnect.style[Double](new Stringify[Double] {
@@ -20,6 +20,7 @@ trait HTMLComponentTheme extends ComponentTheme {
       y := overflow
     }
   }
+  lazy val userSelect: StyleProp[UserSelect] = style[UserSelect]("user-select", UserSelect.Auto, StyleConnect.style[UserSelect])
 
   object htmlBorder {
     lazy val top: StyleProp[HTMLBorder] = style[HTMLBorder]("border-top", HTMLBorder.empty, StyleConnect.style[HTMLBorder])

@@ -9,6 +9,7 @@ trait StringifyImplicits {
   implicit def stringifyVisibility: Stringify[Visibility] = Visibility
   implicit def stringifyHTMLBorder: Stringify[HTMLBorder] = HTMLBorder
   implicit def stringifyOverflow: Stringify[Overflow] = Overflow
+  implicit def stringifyUserSelect: Stringify[UserSelect] = UserSelect
   implicit def stringifyPointerEvents: Stringify[PointerEvents] = PointerEvents
   implicit def stringifyButtonType: Stringify[ButtonType] = ButtonType
   implicit def stringifyButtonSize: Stringify[ButtonSize] = ButtonSize

@@ -16,7 +16,7 @@ class TextViewExample extends UIExampleScreen {
 
   override def createUI(): Future[Unit] = {
     for {
-      openSans <- GoogleFont.`Open Sans`.`regular`load()
+      openSans <- GoogleFont.`Open Sans`.`regular`.load()
       pacifico <- GoogleFont.`Pacifico`.`regular`.load()
       roboto <- GoogleFont.`Roboto`.`900`.load()
       berkshire <- GoogleFont.`Berkshire Swash`.`regular`.load()

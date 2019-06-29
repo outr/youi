@@ -7,7 +7,7 @@ import io.youi.app.{ClientApplication, YouIApplication}
 
 import scala.concurrent.{Future, Promise}
 import scala.concurrent.ExecutionContext.Implicits.global
-import org.scalajs.dom._
+import org.scalajs.dom
 
 import scala.util.{Failure, Success}
 
@@ -28,9 +28,9 @@ trait ScreenManager {
   scribe.info("Initializing application...")
   init().onComplete {
     case Success(_) => {
-      if (waitForWindowLoad && document.readyState != "complete") {
+      if (waitForWindowLoad && dom.document.readyState != "complete") {
         scribe.info("Application initialized. Waiting for window load to complete...")
-        window.addEventListener("load", (_: Event) => {
+        dom.window.addEventListener("load", (_: dom.Event) => {
           scribe.info("Window loading complete. Loading application...")
           load().foreach { _ =>
             scribe.info("Application loaded.")

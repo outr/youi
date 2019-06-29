@@ -2,7 +2,7 @@ package io.youi
 
 import java.io.{ByteArrayInputStream, File, FileInputStream, FileOutputStream, InputStream, OutputStream}
 import java.net.URL
-import java.nio.file.{Files, Path}
+import java.nio.file.Path
 
 import scala.language.implicitConversions
 

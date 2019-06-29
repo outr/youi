@@ -4,8 +4,8 @@ import sbtcrossproject.CrossPlugin.autoImport.crossProject
 name := "youi"
 organization in ThisBuild := "io.youi"
 version in ThisBuild := "0.11.11-SNAPSHOT"
-scalaVersion in ThisBuild := "2.12.8"
-crossScalaVersions in ThisBuild := List("2.12.8", "2.11.12")
+scalaVersion in ThisBuild := "2.13.0"
+crossScalaVersions in ThisBuild := List("2.13.0", "2.12.8", "2.11.12")
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
 resolvers in ThisBuild += Resolver.sonatypeRepo("snapshots")
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation", "-feature")
@@ -26,28 +26,27 @@ developers in ThisBuild := List(
   Developer(id="darkfrog", name="Matt Hicks", email="matt@matthicks.com", url=url("http://matthicks.com"))
 )
 
-val profigVersion = "2.3.5"
-val scribeVersion = "2.7.7"
-val reactifyVersion = "3.0.3"
-val hasherVersion = "1.2.1"
-val hookupVersion = "2.0.2"
+val profigVersion = "2.3.6"
+val scribeVersion = "2.7.8"
+val reactifyVersion = "3.0.4"
+val hasherVersion = "1.2.2"
+val hookupVersion = "2.0.3"
 
-val canvgVersion = "1.4.0_1"
-val openTypeVersion = "0.7.3"
-val picaVersion = "3.0.5"
-val webFontLoaderVersion = "1.6.28"
+val canvgVersion = "1.4.0_2"
+val openTypeVersion = "0.7.3_1"
+val picaVersion = "3.0.5_1"
+val webFontLoaderVersion = "1.6.28_1"
 
 val akkaVersion = "2.5.23"
 val scalaJSDOM = "0.9.7"
-val okHttpVersion = "3.14.2"
-val circeVersion = "0.11.1"
+val okHttpVersion = "4.0.0"
+val circeVersion = "0.12.0-M3"
 val uaDetectorVersion = "2014.10"
-val undertowVersion = "2.0.21.Final"
-val closureCompilerVersion = "v20190415"
-val jSoupVersion = "1.11.3"
+val undertowVersion = "2.0.22.Final"
+val closureCompilerVersion = "v20190618"
+val jSoupVersion = "1.12.1"
 val scalaXMLVersion = "1.2.0"
-val scalacticVersion = "3.0.5"
-val scalaTestVersion = "3.0.5"
+val scalaTestVersion = "3.1.0-SNAP13"
 val scalaCheckVersion = "1.14.0"
 
 lazy val root = project.in(file("."))
@@ -67,7 +66,6 @@ lazy val macros = crossProject(JSPlatform, JVMPlatform).in(file("macros"))
     description := "Dependency for internal Macro functionality",
     libraryDependencies ++= Seq(
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-      "org.scalactic" %%% "scalactic" % scalacticVersion,
       "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
     )
   )
@@ -89,7 +87,6 @@ lazy val core = crossProject(JSPlatform, JVMPlatform).in(file("core"))
       "com.outr" %%% "scribe" % scribeVersion,
       "com.outr" %%% "reactify" % reactifyVersion,
       "com.outr" %%% "hookup" % hookupVersion,
-      "org.scalactic" %%% "scalactic" % scalacticVersion,
       "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
     ),
     libraryDependencies ++= Seq(
@@ -117,7 +114,6 @@ lazy val client = crossProject(JSPlatform, JVMPlatform).in(file("client"))
   .settings(
     name := "youi-client",
     libraryDependencies ++= Seq(
-      "org.scalactic" %%% "scalactic" % scalacticVersion,
       "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
     )
   )
@@ -135,7 +131,6 @@ lazy val spatial = crossProject(JSPlatform, JVMPlatform).in(file("spatial"))
   .settings(
     name := "youi-spatial",
     libraryDependencies ++= Seq(
-      "org.scalactic" %%% "scalactic" % scalacticVersion,
       "org.scalatest" %%% "scalatest" % scalaTestVersion % "test",
       "org.scalacheck" %%% "scalacheck" % scalaCheckVersion % "test"
     )
@@ -160,7 +155,6 @@ lazy val dom = project.in(file("dom"))
     name := "youi-dom",
     libraryDependencies ++= Seq(
       "com.outr" %% "profig" % profigVersion,
-      "org.scalactic" %%% "scalactic" % scalacticVersion,
       "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
     ),
     jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv
@@ -173,7 +167,6 @@ lazy val server = project.in(file("server"))
     name := "youi-server",
     libraryDependencies ++= Seq(
       "net.sf.uadetector" % "uadetector-resources" % uaDetectorVersion,
-      "org.scalactic" %% "scalactic" % scalacticVersion,
       "org.scalatest" %% "scalatest" % scalaTestVersion % "test"
     )
   )
@@ -185,7 +178,6 @@ lazy val serverUndertow = project.in(file("serverUndertow"))
     fork := true,
     libraryDependencies ++= Seq(
       "io.undertow" % "undertow-core" % undertowVersion,
-      "org.scalactic" %% "scalactic" % scalacticVersion,
       "org.scalatest" %% "scalatest" % scalaTestVersion % "test"
     )
   )
@@ -226,7 +218,6 @@ lazy val app = crossProject(JSPlatform, JVMPlatform).in(file("app"))
   .settings(
     name := "youi-app",
     libraryDependencies ++= Seq(
-      "org.scalactic" %%% "scalactic" % scalacticVersion,
       "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
     )
   )

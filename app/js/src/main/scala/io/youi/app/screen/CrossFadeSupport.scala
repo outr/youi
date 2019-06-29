@@ -3,7 +3,7 @@ package io.youi.app.screen
 import io.youi.AnimationFrame
 import io.youi.easing.Easing
 import io.youi.task._
-import org.scalajs.dom._
+import org.scalajs.dom.html
 
 import scala.concurrent.Future
 import scala.concurrent.duration._

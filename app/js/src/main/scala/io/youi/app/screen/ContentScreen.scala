@@ -5,7 +5,7 @@ import io.youi.{History, dom}
 import io.youi.dom._
 import io.youi.net.Parameters
 import io.youi.stream.StreamURL
-import org.scalajs.dom._
+import org.scalajs.dom.html
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -52,7 +52,7 @@ trait ContentScreen extends Screen with PathActivation {
     val size = screen.childNodes.length
     (0 until size).map(screen.childNodes.item).foreach { child =>
       child match {
-        case e: Element => e.remove()
+        case e: html.Element => e.remove()
         case _ => // Ignore nodes
       }
       span.appendChild(child)

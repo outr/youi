@@ -1,6 +1,6 @@
 package io.youi.app.screen
 
-import org.scalajs.dom._
+import org.scalajs.dom.html
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global

@@ -5,7 +5,7 @@ import java.net.URL
 
 import com.roundeights.hasher.Hasher
 import io.youi.stream._
-import org.powerscala.io._
+import io.youi.stream._
 
 import scala.collection.mutable.ListBuffer
 

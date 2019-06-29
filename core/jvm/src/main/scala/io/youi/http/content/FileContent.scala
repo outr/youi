@@ -3,7 +3,7 @@ package io.youi.http.content
 import java.io.File
 
 import io.youi.net.ContentType
-import org.powerscala.io.IO
+import io.youi.stream.IO
 
 case class FileContent(file: File, contentType: ContentType, lastModifiedOverride: Option[Long] = None) extends Content {
   assert(file.isFile, s"Cannot send back ${file.getAbsolutePath} as it is a directory or does not exist!")

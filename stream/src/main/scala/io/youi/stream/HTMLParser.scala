@@ -5,7 +5,7 @@ import java.net.URL
 import java.util.concurrent.ConcurrentHashMap
 
 import io.youi.http.content._
-import org.powerscala.io._
+import io.youi.stream._
 
 import scala.annotation.tailrec
 import scala.collection.JavaConverters._

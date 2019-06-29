@@ -28,8 +28,8 @@ trait AbstractContainer[Child <: Component] extends Component { self =>
 
     layout.changes {
       case (oldValue, newValue) => {
-        oldValue.disconnect(self)
-        newValue.connect(self)
+        Option(oldValue).foreach(_.disconnect(self))
+        Option(newValue).foreach(_.connect(self))
       }
     }
 

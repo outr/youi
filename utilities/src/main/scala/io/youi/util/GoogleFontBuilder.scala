@@ -4,7 +4,7 @@ import java.io.File
 import java.net
 
 import io.youi.net.URL
-import org.powerscala.io._
+import io.youi.stream._
 import profig.{Profig, JsonUtil}
 
 object GoogleFontBuilder {

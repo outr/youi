@@ -13,7 +13,7 @@ import io.youi.stream.{ByTag, Delta, HTMLParser, Selector}
 import io.youi.{ErrorSupport, JavaScriptError, JavaScriptLog, Priority, http}
 import net.sf.uadetector.UserAgentType
 import net.sf.uadetector.service.UADetectorServiceFactory
-import org.powerscala.io._
+import io.youi.stream._
 import profig.{JsonUtil, Profig}
 import reactify.{Channel, Var}
 

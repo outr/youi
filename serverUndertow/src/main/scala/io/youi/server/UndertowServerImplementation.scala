@@ -22,7 +22,7 @@ import io.youi.http._
 import io.youi.http.content._
 import io.youi.net.{ContentType, IP, MalformedURLException, Parameters, Path, URL}
 import io.youi.server.util.SSLUtil
-import org.powerscala.io._
+import io.youi.stream._
 import org.xnio.streams.ChannelInputStream
 import org.xnio.{OptionMap, Xnio}
 

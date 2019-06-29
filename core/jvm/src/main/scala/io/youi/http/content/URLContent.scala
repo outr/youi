@@ -3,7 +3,7 @@ package io.youi.http.content
 import java.net.{HttpURLConnection, JarURLConnection, URL}
 
 import io.youi.net.ContentType
-import org.powerscala.io.IO
+import io.youi.stream.IO
 import sun.net.www.protocol.file.FileURLConnection
 
 case class URLContent(url: URL, contentType: ContentType, lastModifiedOverride: Option[Long] = None) extends Content {

@@ -4,7 +4,7 @@ import java.io.File
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
-import org.powerscala.io._
+import io.youi.stream._
 
 import scala.collection.JavaConverters._
 

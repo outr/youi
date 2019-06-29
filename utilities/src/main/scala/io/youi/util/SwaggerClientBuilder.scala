@@ -5,7 +5,7 @@ import java.io.File
 import java.net.URL
 
 import io.circe.Json
-import org.powerscala.io._
+import io.youi.stream._
 import profig.JsonUtil
 
 object SwaggerClientBuilder {

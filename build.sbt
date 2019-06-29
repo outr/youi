@@ -3,7 +3,7 @@ import sbtcrossproject.CrossPlugin.autoImport.crossProject
 
 name := "youi"
 organization in ThisBuild := "io.youi"
-version in ThisBuild := "0.11.10"
+version in ThisBuild := "0.11.11-SNAPSHOT"
 scalaVersion in ThisBuild := "2.12.8"
 crossScalaVersions in ThisBuild := List("2.12.8", "2.11.12")
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
@@ -28,7 +28,6 @@ developers in ThisBuild := List(
 
 val profigVersion = "2.3.5"
 val scribeVersion = "2.7.7"
-val powerScalaVersion = "2.0.5"
 val reactifyVersion = "3.0.3"
 val hasherVersion = "1.2.1"
 val hookupVersion = "2.0.2"
@@ -101,8 +100,7 @@ lazy val core = crossProject(JSPlatform, JVMPlatform).in(file("core"))
   )
   .jvmSettings(
     libraryDependencies ++= Seq(
-      "com.typesafe.akka" %% "akka-actor" % akkaVersion,
-      "org.powerscala" %% "powerscala-io" % powerScalaVersion
+      "com.typesafe.akka" %% "akka-actor" % akkaVersion
     )
   )
   .jsSettings(
@@ -125,8 +123,7 @@ lazy val client = crossProject(JSPlatform, JVMPlatform).in(file("client"))
   )
   .jvmSettings(
     libraryDependencies ++= Seq(
-      "com.squareup.okhttp3" % "okhttp" % okHttpVersion,
-      "org.powerscala" %% "powerscala-io" % powerScalaVersion
+      "com.squareup.okhttp3" % "okhttp" % okHttpVersion
     )
   )
   .dependsOn(core)
@@ -153,10 +150,7 @@ lazy val spatialJVM = spatial.jvm
 
 lazy val stream = project.in(file("stream"))
   .settings(
-    name := "youi-stream",
-    libraryDependencies ++= Seq(
-      "org.powerscala" %% "powerscala-io" % powerScalaVersion
-    )
+    name := "youi-stream"
   )
   .dependsOn(coreJVM)
 
@@ -222,7 +216,6 @@ lazy val optimizer = project.in(file("optimizer"))
     fork := true,
     libraryDependencies ++= Seq(
       "com.google.javascript" % "closure-compiler" % closureCompilerVersion,
-      "org.powerscala" %% "powerscala-io" % powerScalaVersion,
       "com.outr" %% "scribe" % scribeVersion,
       "com.outr" %% "hasher" % hasherVersion
     )
@@ -274,8 +267,7 @@ lazy val utilities = project.in(file("utilities"))
     name := "youi-utilities",
     fork := true,
     libraryDependencies ++= Seq(
-      "org.jsoup" % "jsoup" % jSoupVersion,
-      "org.powerscala" %% "powerscala-io" % powerScalaVersion
+      "org.jsoup" % "jsoup" % jSoupVersion
     )
   )
   .dependsOn(coreJVM)

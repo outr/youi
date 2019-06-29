@@ -10,7 +10,7 @@ import io.youi.http._
 import io.youi.http.content._
 import io.youi.net.ContentType
 import okhttp3.Dns
-import org.powerscala.io._
+import io.youi.stream._
 
 import scala.collection.JavaConverters._
 import scala.concurrent.{ExecutionContext, Future, Promise}

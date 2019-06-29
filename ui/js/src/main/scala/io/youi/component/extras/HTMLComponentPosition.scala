@@ -10,8 +10,10 @@ class HTMLComponentPosition(override protected val component: HTMLComponent[_ <:
 
   x.attach { value =>
     e.style.left = s"${value}px"
+    e.style.top = s"${y()}px"
   }
   y.attach { value =>
+    e.style.left = s"${x()}px"
     e.style.top = s"${value}px"
   }
   z.attach { value =>
@@ -23,6 +25,11 @@ class HTMLComponentPosition(override protected val component: HTMLComponent[_ <:
   } else {
     Position.Absolute
   }, StyleConnect.style[Position], ignoreParent = true)
+
+  `type`.attach { _ =>
+    e.style.left = s"${x()}px"
+    e.style.top = s"${y()}px"
+  }
 
   object scroll {
     private def prop(get: => Double, set: Double => Unit): Var[Double] = {

@@ -6,7 +6,7 @@ import io.youi.http.content.Content
 import io.youi.http.{HttpConnection, HttpStatus}
 import io.youi.net.ContentType
 import io.youi.stream.{ByMultiple, ByTag, Delta}
-import org.powerscala.io._
+import io.youi.stream._
 
 import scala.concurrent.Future
 

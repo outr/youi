@@ -74,7 +74,7 @@ object dom extends ExtendedElement(None) {
     }
   }
 
-  implicit class ElementExtras(e: Element) extends ExtendedElement(Some(e)) {
+  implicit class ElementExtras[E <: Element](e: E) extends ExtendedElement(Some(e)) {
     def parentByTag[T <: HTMLElement](tagName: String): Option[T] = findParentRecursive[T](e.asInstanceOf[HTMLElement], (p: HTMLElement) => {
       p.tagName == tagName
     })
@@ -100,6 +100,23 @@ object dom extends ExtendedElement(None) {
     def insertFirst(parent: Element): Unit = Option(parent.firstElementChild) match {
       case Some(first) => parent.insertBefore(e, first)
       case None => parent.appendChild(e)
+    }
+
+    def addChildren(children: Element*): E = {
+      children.foreach { child =>
+        e.appendChild(child)
+      }
+      e
+    }
+
+    def addClasses(classes: String*): E = {
+      classes.foreach(c => e.classList.add(c))
+      e
+    }
+
+    def removeClasses(classes: String*): E = {
+      classes.foreach(c => e.classList.remove(c))
+      e
     }
 
     def remove(): Unit = Option(e.parentNode).foreach(_.removeChild(e))

@@ -157,28 +157,41 @@ object UndertowServerImplementation extends ServerImplementationCreator {
     }
 
     if (exchange.getRequestContentLength > 0L) {
-      Headers.`Content-Type`.value(headers).getOrElse(ContentType.`text/plain`) match {
-        case ContentType.`multipart/form-data` => {
-          val formData = exchange.getAttachment(FormDataParser.FORM_DATA)
-          val data = formData.asScala.toList.map { key =>
-            val entries: List[FormDataEntry] = formData.get(key).asScala.map { entry =>
-              val headers = parseHeaders(entry.getHeaders)
-              if (entry.isFileItem) {
-                val path = entry.getFileItem.getFile
-                FileEntry(entry.getFileName, path.toFile, headers)
-              } else {
-                StringEntry(entry.getValue, headers)
-              }
-            }.toList
-            FormData(key, entries)
+      try {
+        Headers.`Content-Type`.value(headers).getOrElse(ContentType.`text/plain`) match {
+          case ContentType.`multipart/form-data` => {
+            val formData = exchange.getAttachment(FormDataParser.FORM_DATA)
+            val data = formData.asScala.toList.map { key =>
+              val entries: List[FormDataEntry] = formData.get(key).asScala.map { entry =>
+                val headers = parseHeaders(entry.getHeaders)
+                if (entry.isFileItem) {
+                  val path = entry.getFileItem.getFile
+                  FileEntry(entry.getFileName, path.toFile, headers)
+                } else {
+                  StringEntry(entry.getValue, headers)
+                }
+              }.toList
+              FormData(key, entries)
+            }
+            handle(Some(FormDataContent(data)))
           }
-          handle(Some(FormDataContent(data)))
+          case ct => {
+            val runnable = new Runnable {
+              override def run(): Unit = {
+                val cis = new ChannelInputStream(exchange.getRequestChannel)
+                val data = IO.stream(cis, new StringBuilder).toString
+                handle(Some(StringContent(data, ct)))
+              }
+            }
+            if (exchange.isInIoThread) {
+              exchange.dispatch(runnable)
+            } else {
+              runnable.run()
+            }
+          }
         }
-        case ct => {
-          val cis = new ChannelInputStream(exchange.getRequestChannel)
-          val data = IO.stream(cis, new StringBuilder).toString
-          handle(Some(StringContent(data, ct)))
-        }
+      } catch {
+        case t: Throwable => scribe.error(t)
       }
     } else {
       handle(None)
@@ -292,6 +305,7 @@ object UndertowServerImplementation extends ServerImplementationCreator {
           case StringContent(s, _, _) => {
             exchange.getResponseSender.send(s, new IoCallback {
               override def onComplete(exchange: HttpServerExchange, sender: Sender): Unit = {
+                exchange.endExchange()
                 sender.close()
               }
 

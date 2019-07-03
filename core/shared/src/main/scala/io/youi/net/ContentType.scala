@@ -3,24 +3,27 @@ package io.youi.net
 import io.circe.Decoder.Result
 import io.circe.{Decoder, DecodingFailure, Encoder, HCursor, Json}
 
-case class ContentType(`type`: String, subType: String, charSet: Option[String] = None, boundary: Option[String] = None) {
+case class ContentType(`type`: String,
+                       subType: String,
+                       extras: Map[String, String] = Map.empty) {
   def this(mimeType: String) = {
     this(mimeType.substring(0, mimeType.indexOf('/')), mimeType.substring(mimeType.indexOf('/') + 1))
   }
 
   lazy val mimeType: String = s"${`type`}/$subType"
+  lazy val boundary: String = extras("boundary")
+  lazy val charSet: String = extras("charset")
+  lazy val start: String = extras("start")
   lazy val outputString: String = {
     val b = new StringBuilder(mimeType)
-    charSet.foreach { s =>
-      b.append(s"; charset=$s")
-    }
-    boundary.foreach { s =>
-      b.append(s"; boundary=$s")
+    extras.foreach {
+      case (key, value) => b.append(s"; $key=$value")
     }
     b.toString()
   }
 
-  def withCharSet(charSet: String): ContentType = copy(charSet = Some(charSet))
+  def withExtra(key: String, value: String): ContentType = copy(extras = extras + (key -> value))
+  def withCharSet(charSet: String): ContentType = withExtra("charset", charSet)
 
   def is(contentType: ContentType): Boolean = contentType.mimeType == mimeType
 
@@ -1812,11 +1815,7 @@ object ContentType {
       }
       val name = block.substring(0, divider)
       val value = block.substring(divider + 1)
-      name match {
-        case "boundary" => contentType = contentType.copy(boundary = Some(value))
-        case "charset" => contentType = contentType.copy(charSet = Some(value))
-        case _ => throw new RuntimeException(s"Unable to parse content type: [$contentTypeString]")
-      }
+      contentType = contentType.withExtra(name, value)
     }
     contentType
   }

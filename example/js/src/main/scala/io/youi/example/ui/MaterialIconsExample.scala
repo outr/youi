@@ -23,8 +23,8 @@ class MaterialIconsExample extends UIExampleScreen {
       font.weight := FontWeight("bold")
       font.size := 128.0
       color := Color.Blue
-      position.x := container.size.center
-      position.y := container.size.middle
+      position.center := container.size.center
+      position.middle := container.size.middle
     }
     container.children += iconView
   }

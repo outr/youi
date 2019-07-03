@@ -6,3 +6,5 @@ npm-debug.log
 *.js.map
 package-lock.json
 temp/
+utilities/config.json
+example/jvm/src/main/resources/app/

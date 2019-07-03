@@ -31,6 +31,7 @@ import scribe.Execution.global
 
 class UndertowServerImplementation(val server: Server) extends ServerImplementation with UndertowHttpHandler {
   val enableHTTP2: Boolean = Server.config("enableHTTP2").opt[Boolean].getOrElse(true)
+  val persistentConnections: Boolean = Server.config("persistentConnections").as[Boolean](true)
   val webSocketCompression: Boolean = Server.config("webSocketCompression").opt[Boolean].getOrElse(true)
 
   private var instance: Option[Undertow] = None
@@ -82,6 +83,9 @@ class UndertowServerImplementation(val server: Server) extends ServerImplementat
   override def handleRequest(exchange: HttpServerExchange): Unit = server.errorSupport {
     try {
       val url = URL(s"${exchange.getRequestURL}?${exchange.getQueryString}")
+      if (!persistentConnections) {
+        exchange.setPersistent(false)
+      }
 
       exchange.dispatch(SameThreadExecutor.INSTANCE, new Runnable {
         override def run(): Unit = {

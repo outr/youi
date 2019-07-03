@@ -21,9 +21,6 @@ object ServerExampleApplication extends ExampleApplication with ServerApplicatio
     classOf[SimpleCommunication] -> "simple"
   )
 
-  override protected def applicationBasePath = s"app/youi-example"
-  override protected def applicationJSBasePath = s"/app/example"
-
   case class Greeting(message: String, name: String)
 
   override protected def init(): Future[Unit] = super.init().map { _ =>

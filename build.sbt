@@ -231,16 +231,12 @@ lazy val app = crossProject(JSPlatform, JVMPlatform).in(file("app"))
 lazy val appJS = app.js
 lazy val appJVM = app.jvm.dependsOn(server)
 
-lazy val example = crossProject(JSPlatform, JVMPlatform).in(file("example"))
+lazy val example = crossApplication.in(file("example"))
   .settings(
-    name := "youi-example"
+    name := "youi-example",
+    youiVersion := version.value
   )
   .jsSettings(
-    crossTarget in fastOptJS := baseDirectory.value / ".." / "jvm" / "src" / "main" / "resources" / "app",
-    crossTarget in fullOptJS := baseDirectory.value / ".." / "jvm" / "src" / "main" / "resources" / "app",
-    crossTarget in packageJSDependencies := baseDirectory.value / ".." / "jvm" / "src" / "main" / "resources" / "app",
-    crossTarget in packageMinifiedJSDependencies := baseDirectory.value / ".." / "jvm" / "src" / "main" / "resources" / "app",
-    skip in packageJSDependencies := false,
     jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv
   )
   .jvmSettings(
@@ -250,10 +246,9 @@ lazy val example = crossProject(JSPlatform, JVMPlatform).in(file("example"))
       "org.scala-lang.modules" %% "scala-xml" % scalaXMLVersion
     )
   )
-  .dependsOn(app)
 
-lazy val exampleJS = example.js
-lazy val exampleJVM = example.jvm.dependsOn(serverUndertow)
+lazy val exampleJS = example.js.dependsOn(appJS)
+lazy val exampleJVM = example.jvm.dependsOn(serverUndertow, appJVM)
 
 lazy val utilities = project.in(file("utilities"))
   .settings(

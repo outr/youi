@@ -1,9 +1,8 @@
 package io
 
 import io.youi.event.KeyEvent
-import io.youi.font.{GoogleFont, GoogleFontWeight}
+import io.youi.font.{GoogleFont, GoogleFontWeight, MaterialIcon, MaterialIconView}
 import io.youi.paint.Paint
-import io.youi.style.{FontFamily, FontWeight}
 import io.youi.task.PartialAnimate
 import io.youi.theme.StyleProp
 import org.scalajs.dom.html.Div
@@ -29,6 +28,14 @@ package object youi {
   }
 
   implicit def color2Paint(color: Color): Paint = Paint.color(color)
+
+  implicit class ExtendedMaterialIcon(icon: MaterialIcon) {
+    def toView: MaterialIconView = {
+      val view = new MaterialIconView
+      view.value := icon
+      view
+    }
+  }
 
   implicit class ExtendedGoogleFont(font: GoogleFont) {
     def load(): Future[GoogleFont] = {

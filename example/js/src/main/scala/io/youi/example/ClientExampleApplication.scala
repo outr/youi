@@ -46,6 +46,7 @@ object ClientExampleApplication extends ExampleApplication with ClientApplicatio
   val hit: HitTestExample = new HitTestExample
   val image: ImageExample = new ImageExample
   val imageChange: ImageChangeExample = new ImageChangeExample
+  val materialIcons: MaterialIconsExample = new MaterialIconsExample
   val measured: MeasuredExample = new MeasuredExample
   val parallax: ParallaxExample = new ParallaxExample
   val scale9: Scale9Example = new Scale9Example

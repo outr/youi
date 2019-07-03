@@ -10,3 +10,5 @@ addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.14.9")
 addSbtPlugin("io.spray" % "sbt-revolver" % "0.9.1")
 addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.5.1")
 addSbtPlugin("com.codacy" % "sbt-codacy-coverage" % "1.3.15")
+
+addSbtPlugin("io.youi" % "youi-plugin" % "1.0.3")

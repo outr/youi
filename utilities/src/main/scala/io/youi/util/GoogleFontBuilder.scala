@@ -20,7 +20,7 @@ object GoogleFontBuilder {
     val jsonString = IO.stream(new net.URL(url.toString), new StringBuilder).toString
     val list = JsonUtil.fromJsonString[WebFontList](jsonString)
 
-    val file = new File("ui/shared/src/main/scala/io/youi/font/GoogleFont.scala")
+    val file = new File("../ui/shared/src/main/scala/io/youi/font/GoogleFont.scala")
     val fonts = list.items.map { font =>
       val subsets = font.subsets.map { sub =>
         s"""      lazy val `$sub`: GoogleFontSubset = new GoogleFontSubset("$sub")"""

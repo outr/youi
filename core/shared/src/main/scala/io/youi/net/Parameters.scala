@@ -21,6 +21,8 @@ case class Parameters(entries: List[(String, Param)]) {
     replaceParam(key, List(value))
   }
 
+  def param(key: String, param: Param): Parameters = copy(entries = key -> param :: removeParam(key).entries)
+
   def appendParam(key: String, value: String): Parameters = {
     val values = this.values(key)
     replaceParam(key, value :: values)
@@ -40,9 +42,13 @@ case class Parameters(entries: List[(String, Param)]) {
       val params = map.flatMap {
         case (key, param) => {
           val keyEncoded = URL.encode(key)
-          param.values.map { value =>
-            val valueEncoded = URL.encode(value)
-            s"$keyEncoded=$valueEncoded"
+          if (param.values.nonEmpty) {
+            param.values.map { value =>
+              val valueEncoded = URL.encode(value)
+              s"$keyEncoded=$valueEncoded"
+            }
+          } else {
+            List(keyEncoded)
           }
         }
       }.mkString("&")
@@ -60,9 +66,13 @@ case class Parameters(entries: List[(String, Param)]) {
       val params = map.flatMap {
         case (key, param) => {
           val keyEncoded = key
-          param.values.map { value =>
-            val valueEncoded = value
-            s"$keyEncoded=$valueEncoded"
+          if (param.values.nonEmpty) {
+            param.values.map { value =>
+              val valueEncoded = value
+              s"$keyEncoded=$valueEncoded"
+            }
+          } else {
+            List(keyEncoded)
           }
         }
       }.mkString("&")
@@ -84,10 +94,10 @@ object Parameters {
   } else {
     var params = Parameters.empty
     query.split('&').map(param => param.trim.splitAt(param.indexOf('='))).collect {
-      case (key, value) if key.nonEmpty => URL.decode(key) -> URL.decode(value.substring(1))
-      case (key, value) if value.nonEmpty => "query" -> URL.decode(value)
+      case (key, value) if key.nonEmpty => URL.decode(key) -> Param(List(URL.decode(value.substring(1))))
+      case (_, value) if value.nonEmpty => URL.decode(value) -> Param(Nil)
     }.foreach {
-      case (key, value) => params = params.withParam(key, value)
+      case (key, value) => params = params.param(key, value)
     }
     params
   }

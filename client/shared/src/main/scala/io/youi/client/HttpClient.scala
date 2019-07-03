@@ -19,7 +19,8 @@ case class HttpClient(request: HttpRequest,
                       sessionManager: Option[SessionManager],
                       interceptor: Interceptor,
                       dropNullValuesInJson: Boolean,
-                      failOnHttpStatus: Boolean) {
+                      failOnHttpStatus: Boolean,
+                      validateSSLCertificates: Boolean) {
   protected lazy val printer: Printer = Printer.spaces2.copy(dropNullValues = dropNullValuesInJson)
 
   def modify(f: HttpRequest => HttpRequest): HttpClient = copy(request = f(request))
@@ -67,6 +68,7 @@ case class HttpClient(request: HttpRequest,
   def dropNullValuesInJson(dropNullValuesInJson: Boolean): HttpClient = copy(dropNullValuesInJson = dropNullValuesInJson)
   def failOnHttpStatus(failOnHttpStatus: Boolean): HttpClient = copy(failOnHttpStatus = failOnHttpStatus)
   def noFailOnHttpStatus: HttpClient = failOnHttpStatus(failOnHttpStatus = false)
+  def ignoreSSLCertificates: HttpClient = copy(validateSSLCertificates = false)
 
   def content(content: Content): HttpClient = modify(_.copy(content = Some(content)))
   def content(content: Option[Content]): HttpClient = content match {
@@ -152,7 +154,8 @@ object HttpClient extends HttpClient(
   sessionManager = HttpClientConfig.default().sessionManager,
   interceptor = HttpClientConfig.default().interceptor,
   dropNullValuesInJson = HttpClientConfig.default().dropNullValuesInJson,
-  failOnHttpStatus = HttpClientConfig.default().failOnHttpStatus
+  failOnHttpStatus = HttpClientConfig.default().failOnHttpStatus,
+  validateSSLCertificates = HttpClientConfig.default().validateSSLCertificates
 ) {
   def autoCall[Response](c: blackbox.Context)
                         (implicit r: c.WeakTypeTag[Response]): c.Expr[Future[Response]] = {

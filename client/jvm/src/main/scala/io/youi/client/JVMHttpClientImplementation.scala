@@ -1,7 +1,9 @@
 package io.youi.client
 
 import java.io.{File, IOException}
-import java.net.InetAddress
+import java.net.{InetAddress, Socket}
+import java.security.{KeyStore, SecureRandom}
+import java.security.cert.X509Certificate
 import java.util
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicLong
@@ -11,6 +13,7 @@ import io.youi.http.content._
 import io.youi.net.ContentType
 import okhttp3.Dns
 import io.youi.stream._
+import javax.net.ssl.{HostnameVerifier, HttpsURLConnection, SSLContext, SSLSession, SSLSocketFactory, TrustManager, TrustManagerFactory, X509TrustManager}
 
 import scala.collection.JavaConverters._
 import scala.concurrent.{ExecutionContext, Future, Promise}
@@ -24,6 +27,63 @@ import scala.util.{Failure, Success}
 class JVMHttpClientImplementation(config: HttpClientConfig) extends HttpClientImplementation(config) {
   private lazy val client = {
     val b = new okhttp3.OkHttpClient.Builder()
+    b.sslSocketFactory(new SSLSocketFactory {
+//      private val default = SSLSocketFactory.getDefault.asInstanceOf[SSLSocketFactory]
+      private val disabled = {
+        val trustAllCerts = Array[TrustManager](new X509TrustManager {
+          override def checkClientTrusted(x509Certificates: Array[X509Certificate], s: String): Unit = {}
+
+          override def checkServerTrusted(x509Certificates: Array[X509Certificate], s: String): Unit = {}
+
+          override def getAcceptedIssuers: Array[X509Certificate] = null
+        })
+        val sc = SSLContext.getInstance("SSL")
+        sc.init(null, trustAllCerts, new SecureRandom)
+        sc.getSocketFactory
+      }
+      private def f: SSLSocketFactory = disabled //if (config.validateSSLCertificates) default else disabled
+
+      override def getDefaultCipherSuites: Array[String] = f.getDefaultCipherSuites
+
+      override def getSupportedCipherSuites: Array[String] = f.getSupportedCipherSuites
+
+      override def createSocket(socket: Socket, s: String, i: Int, b: Boolean): Socket = f.createSocket(socket, s, i, b)
+
+      override def createSocket(s: String, i: Int): Socket = f.createSocket(s, i)
+
+      override def createSocket(s: String, i: Int, inetAddress: InetAddress, i1: Int): Socket = f.createSocket(s, i, inetAddress, i1)
+
+      override def createSocket(inetAddress: InetAddress, i: Int): Socket = f.createSocket(inetAddress, i)
+
+      override def createSocket(inetAddress: InetAddress, i: Int, inetAddress1: InetAddress, i1: Int): Socket = f.createSocket(inetAddress, i, inetAddress1, i1)
+    }, new X509TrustManager {
+//      private val factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm)
+//      private val default = {
+//        factory.init(KeyStore.getInstance(KeyStore.getDefaultType))
+//        factory.getTrustManagers.apply(0).asInstanceOf[X509TrustManager]
+//      }
+
+      override def checkClientTrusted(x509Certificates: Array[X509Certificate], s: String): Unit = {
+        if (config.validateSSLCertificates) {
+//          default.checkClientTrusted(x509Certificates, s)
+        }
+      }
+
+      override def checkServerTrusted(x509Certificates: Array[X509Certificate], s: String): Unit = {
+        if (config.validateSSLCertificates) {
+//          default.checkServerTrusted(x509Certificates, s)
+        }
+      }
+
+      override def getAcceptedIssuers: Array[X509Certificate] = //if (config.validateSSLCertificates) {
+//        default.getAcceptedIssuers
+//      } else {
+        Array.empty[X509Certificate]
+//      }
+    })
+    b.hostnameVerifier(new HostnameVerifier {
+      override def verify(s: String, sslSession: SSLSession): Boolean = true
+    })
     b.connectTimeout(config.timeout.toMillis, TimeUnit.MILLISECONDS)
     b.readTimeout(config.timeout.toMillis, TimeUnit.MILLISECONDS)
     b.writeTimeout(config.timeout.toMillis, TimeUnit.MILLISECONDS)
@@ -40,6 +100,23 @@ class JVMHttpClientImplementation(config: HttpClientConfig) extends HttpClientIm
     config.pingInterval.foreach(d => b.pingInterval(d.toMillis, TimeUnit.MILLISECONDS))
     b.build()
   }
+
+  /*def disableSSLVerification(): Unit = {
+    val trustAllCerts = Array[TrustManager](new X509TrustManager {
+      override def checkClientTrusted(x509Certificates: Array[X509Certificate], s: String): Unit = {}
+
+      override def checkServerTrusted(x509Certificates: Array[X509Certificate], s: String): Unit = {}
+
+      override def getAcceptedIssuers: Array[X509Certificate] = null
+    })
+    val sc = SSLContext.getInstance("SSL")
+    sc.init(null, trustAllCerts, new SecureRandom)
+    HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory)
+    val allHostsValid = new HostnameVerifier {
+      override def verify(s: String, sslSession: SSLSession): Boolean = true
+    }
+    HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid)
+  }*/
 
   override def send(request: HttpRequest,
                     executionContext: ExecutionContext): Future[HttpResponse] = {

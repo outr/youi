@@ -17,7 +17,8 @@ case class HttpClientConfig(retries: Int = 0,
                             dns: DNS = DNS.default,
                             dropNullValuesInJson: Boolean = false,
                             sessionManager: Option[SessionManager] = None,
-                            failOnHttpStatus: Boolean = true) {
+                            failOnHttpStatus: Boolean = true,
+                            validateSSLCertificates: Boolean = true) {
   def retries(retries: Int): HttpClientConfig = copy(retries = retries)
   def retryDelay(retryDelay: FiniteDuration): HttpClientConfig = copy(retryDelay = retryDelay)
   def interceptor(interceptor: Interceptor): HttpClientConfig = copy(interceptor = interceptor)

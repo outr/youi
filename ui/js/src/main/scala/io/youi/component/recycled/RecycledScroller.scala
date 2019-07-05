@@ -96,12 +96,12 @@ class RecycledScroller[T, C <: Component](perPage: Int, renderer: RecycledRender
     if (!updatingPosition) {
       if (p < 1) {
         batch.position := 1
-      } else if (p >= batch.total()) {
+      } else if (p > batch.total()) {
         batch.position := batch.total()
       } else {
         val entryHeight = middle.components.head.size.height()
         val perScreen = math.floor(size.height() / entryHeight).toInt
-        val actualPosition = math.min(batch.total() - perScreen, p) - 1
+        val actualPosition = math.min(batch.total() - perScreen, p)
         val offset = actualPosition % perPage
         val middleStart = actualPosition - offset
         middle.page(middleStart)

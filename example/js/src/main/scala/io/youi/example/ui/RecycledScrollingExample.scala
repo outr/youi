@@ -22,7 +22,7 @@ class RecycledScrollingExample extends UIExampleScreen {
     scroller.size.width := 1000.0
     scroller.size.height := 500.0
     scroller.background := Color.LightGray
-    scroller.batch.data := BatchedData((0 until 5000).toList)
+    scroller.batch.data := BatchedData((0 to 300).toList)
     container.children += scroller
 
     Future.successful(())
@@ -63,15 +63,9 @@ class RecycledScroller[T, C <: Component](perPage: Int, renderer: RecycledRender
 
   overflow := Overflow.Hidden
 
-  private val pane1 = new RecycledPane {
-    background := Color.Blue
-  }
-  private val pane2 = new RecycledPane {
-    background := Color.Green
-  }
-  private val pane3 = new RecycledPane {
-    background := Color.Red
-  }
+  private val pane1 = new RecycledPane
+  private val pane2 = new RecycledPane
+  private val pane3 = new RecycledPane
 
   private var middle = pane1
   private var top = pane2
@@ -79,40 +73,51 @@ class RecycledScroller[T, C <: Component](perPage: Int, renderer: RecycledRender
 
   // TODO: create "scroll" in gestures
   event.pointer.wheel.attach { evt =>
-    middle.position.y.static(middle.position.y() - evt.delta.y)
-    if (evt.delta.y < 0) {      // Scrolling up
-      if (top.position.middle() >= 0.0) {                 // Make top the new middle
-        val pt = top
-        val pm = middle
-        val pb = bottom
-        top = pb
-        middle = pt
-        bottom = pm
+    if (middle.isPartial) {
+      // Don't scroll at all
+    } else if (middle.start == 0 && middle.position.bottom() - evt.delta.y < size.height()) {
+      middle.position.bottom.static(size.height())
+    } else if (top.isPartial && top.position.bottom() - evt.delta.y > top.renderedHeight) {
+      middle.position.y.static(top.renderedHeight)
+    } else {
+      middle.position.y.static(middle.position.y() - evt.delta.y)
+      if (evt.delta.y < 0) { // Scrolling up
+        if (!top.isPartial && top.position.middle() >= 0.0) { // Make top the new middle
+          val pt = top
+          val pm = middle
+          val pb = bottom
+          top = pb
+          middle = pt
+          bottom = pm
 
-        middle.position.y.static(middle.position.y())
-        top.position.bottom := middle.position.top
-        bottom.position.top := middle.position.bottom
-      }
-    } else {                    // Scrolling down
-      if (bottom.position.middle() <= size.height()) {    // Make bottom the new middle
-        val pt = top
-        val pm = middle
-        val pb = bottom
-        top = pm
-        middle = pb
-        bottom = pt
+          top.page(middle.end)
 
-        middle.position.y.static(middle.position.y())
-        top.position.bottom := middle.position.top
-        bottom.position.top := middle.position.bottom
+          middle.position.y.static(middle.position.y())
+          top.position.bottom := middle.position.top
+          bottom.position.top := middle.position.bottom
+        }
+      } else { // Scrolling down
+        if (bottom.position.middle() <= size.height()) { // Make bottom the new middle
+          val pt = top
+          val pm = middle
+          val pb = bottom
+          top = pm
+          middle = pb
+          bottom = pt
+
+          bottom.page(middle.start - perPage)
+
+          middle.position.y.static(middle.position.y())
+          top.position.bottom := middle.position.top
+          bottom.position.top := middle.position.bottom
+        }
       }
     }
   }
 
-  batch.data.attachAndFire { data =>
-    if (data.nonEmpty) {
-      data.get(0, perPage).foreach(middle.update)
-    }
+  batch.data.on {
+    middle.page(0)
+    top.page(perPage)
   }
 
   pane1.position.bottom := size.height
@@ -131,6 +136,25 @@ class RecycledScroller[T, C <: Component](perPage: Int, renderer: RecycledRender
     size.width := RecycledScroller.this.size.width
     size.height := components.last.position.bottom
     children ++= components
+
+    def isPartial: Boolean = end - start < perPage
+    def renderedHeight: Double = (0 until end - start).foldLeft(0.0)((height, index) => {
+      height + components(components.length - (index + 1)).size.height()
+    })
+
+    def page(start: Int): Unit = if (batch.data().nonEmpty) {
+      // Set all to loading
+      components.foreach(renderer.loading)
+      // Asynchronously load data
+      batch.data().get(start, components.length).map { data =>
+        this.start = start
+        this.end = start + data.length
+        update(data)
+      }
+    } else {
+      // No data, hide it all
+      components.foreach(renderer.hide)
+    }
 
     def update(data: Vector[T]): Unit = {
       components.zipWithIndex.foreach {
@@ -171,6 +195,6 @@ object BatchedData {
   def apply[T](data: Seq[T]): BatchedData[T] = new BatchedData[T] {
     override def total: Int = data.length
 
-    override def get(start: Int, end: Int): Future[Vector[T]] = Future.successful(data.slice(start, end).toVector)
+    override def get(start: Int, end: Int): Future[Vector[T]] = Future.successful(data.slice(start, start + end).toVector)
   }
 }

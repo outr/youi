@@ -9,7 +9,7 @@ trait StyleConnect[T] {
 }
 
 object StyleConnect {
-  private def withElement(theme: Theme)(f: html.Element => Unit): Unit = theme match {
+  def withElement(theme: Theme)(f: html.Element => Unit): Unit = theme match {
     case c: HTMLComponent[_] => {
       val e = HTMLComponent.element(c)
       f(e)

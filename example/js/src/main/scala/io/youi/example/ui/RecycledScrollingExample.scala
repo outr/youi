@@ -1,12 +1,12 @@
 package io.youi.example.ui
 
-import io.youi.Color
-import io.youi.component.{Component, Container, HTMLTextView}
+import io.youi.{Color, Key}
+import io.youi.component.{Component, Container, HTMLTextInput, HTMLTextView}
 import io.youi.example.screen.UIExampleScreen
 import io.youi.layout.VerticalLayout
 import io.youi.net._
-import io.youi.style.{Display, HTMLBorder, HTMLBorderStyle, Overflow, Position, Visibility}
-import reactify.{Val, Var}
+import io.youi.style.{Display, HTMLBorder, HTMLBorderStyle, Overflow, Position}
+import reactify._
 
 import scala.concurrent.Future
 import scribe.Execution.global
@@ -24,6 +24,34 @@ class RecycledScrollingExample extends UIExampleScreen {
     scroller.background := Color.LightGray
     scroller.batch.data := BatchedData((0 to 300).toList)
     container.children += scroller
+
+    val textTotal = new HTMLTextView {
+      position.right := scroller.position.right
+      position.bottom := scroller.position.top
+      font.size := 24.0
+      value := s"of ${scroller.batch.total()}"
+    }
+    val inputPosition = new HTMLTextInput {
+      position.right := textTotal.position.left - 10.0
+      position.bottom := scroller.position.top - 5.0
+      size.width := 50.0
+      size.height := 25.0
+      scroller.batch.position.attachAndFire { p =>
+        value := p.toString
+      }
+
+      event.key.up.attach { evt =>
+        if (evt.key == Key.Enter) {
+          val text = value().filter(_.isDigit)
+          if (text.nonEmpty) {
+            val n = text.toInt
+            scroller.batch.position := n
+          }
+        }
+      }
+    }
+    container.children += inputPosition
+    container.children ++= List(scroller, textTotal, inputPosition)
 
     Future.successful(())
   }
@@ -50,15 +78,18 @@ class RecycledScrollingExample extends UIExampleScreen {
 
     override def setData(data: Int, component: NumberComponent): Unit = component.value := data
 
+    override def getData(component: NumberComponent): Int = component.value()
+
     override def loading(component: NumberComponent): Unit = component.value := -1
   }
 }
 
-class RecycledScroller[T, C <: Component](perPage: Int, renderer: RecycledRenderer[T, C]) extends Container {
+class RecycledScroller[T, C <: Component](perPage: Int, renderer: RecycledRenderer[T, C]) extends Container { scroller =>
   object batch {
     val data: Var[BatchedData[T]] = Var(BatchedData.empty[T])
     val position: Var[Int] = Var(0)
-    val current: Val[Int] = Val(data().total -  position())
+    val value: Var[Option[T]] = Var(None)
+    val total: Val[Int] = Val(data().total)
   }
 
   overflow := Overflow.Hidden
@@ -73,15 +104,22 @@ class RecycledScroller[T, C <: Component](perPage: Int, renderer: RecycledRender
 
   // TODO: create "scroll" in gestures
   event.pointer.wheel.attach { evt =>
+    val delta = if (evt.delta.y > middle.size.height()) {     // TODO: support large jumps
+      middle.size.height()
+    } else if (evt.delta.y < -middle.size.height()) {         // TODO: support large jumps
+      -middle.size.height()
+    } else {
+      evt.delta.y
+    }
     if (middle.isPartial) {
       // Don't scroll at all
-    } else if (middle.start == 0 && middle.position.bottom() - evt.delta.y < size.height()) {
+    } else if (middle.start == 0 && middle.position.bottom() - delta < size.height()) {
       middle.position.bottom.static(size.height())
-    } else if (top.isPartial && top.position.bottom() - evt.delta.y > top.renderedHeight) {
+    } else if (top.isPartial && top.position.bottom() - delta > top.renderedHeight) {
       middle.position.y.static(top.renderedHeight)
     } else {
-      middle.position.y.static(middle.position.y() - evt.delta.y)
-      if (evt.delta.y < 0) { // Scrolling up
+      middle.position.y.static(middle.position.y() - delta)
+      if (delta < 0) { // Scrolling up
         if (!top.isPartial && top.position.middle() >= 0.0) { // Make top the new middle
           val pt = top
           val pm = middle
@@ -113,6 +151,7 @@ class RecycledScroller[T, C <: Component](perPage: Int, renderer: RecycledRender
         }
       }
     }
+    updatePosition()
   }
 
   batch.data.on {
@@ -126,6 +165,29 @@ class RecycledScroller[T, C <: Component](perPage: Int, renderer: RecycledRender
 
   children ++= List(pane1, pane2, pane3)
 
+  private var updatingPosition = false
+
+  batch.position.attach { p =>
+    if (!updatingPosition) {
+      scribe.info(s"Should set position to: $p")
+    }
+  }
+
+  private def updatePosition(): Unit = {
+    bottom.lastItemVisible.orElse(middle.lastItemVisible) match {
+      case Some((item, p)) => {
+        updatingPosition = true
+        try {
+          batch.value := Some(item)
+          batch.position := p
+        } finally {
+          updatingPosition = false
+        }
+      }
+      case None => scribe.warn("Neither bottom or middle has a last item visible!")
+    }
+  }
+
   class RecycledPane extends Container {
     var start: Int = 0
     var end: Int = 0
@@ -133,7 +195,7 @@ class RecycledScroller[T, C <: Component](perPage: Int, renderer: RecycledRender
     components.foreach(renderer.loading)
 
     layout := new VerticalLayout
-    size.width := RecycledScroller.this.size.width
+    size.width := scroller.size.width
     size.height := components.last.position.bottom
     children ++= components
 
@@ -141,6 +203,14 @@ class RecycledScroller[T, C <: Component](perPage: Int, renderer: RecycledRender
     def renderedHeight: Double = (0 until end - start).foldLeft(0.0)((height, index) => {
       height + components(components.length - (index + 1)).size.height()
     })
+    def lastItemVisible: Option[(T, Int)] = if (end - start == 0 || scroller.size.height() - position.top() < 0.0) {
+      None
+    } else {
+      val offset = scroller.size.height() - (position.top() + 10.0)
+      components.reverse.zipWithIndex.collectFirst {
+        case (c, index) if c.position.top() <= offset && c.position.bottom() >= offset => (renderer.getData(c), start + index)
+      }
+    }
 
     def page(start: Int): Unit = if (batch.data().nonEmpty) {
       // Set all to loading
@@ -173,6 +243,7 @@ class RecycledScroller[T, C <: Component](perPage: Int, renderer: RecycledRender
 trait RecycledRenderer[T, C <: Component] {
   def createComponent: C
   def setData(data: T, component: C): Unit
+  def getData(component: C): T
   def loading(component: C): Unit
   def show(component: C): Unit = component.display := Display.Block
   def hide(component: C): Unit = component.display := Display.None

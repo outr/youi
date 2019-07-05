@@ -12,7 +12,7 @@ import scribe.Execution.global
 class RecycledScroller[T, C <: Component](perPage: Int, renderer: RecycledRenderer[T, C]) extends Container { scroller =>
   object batch {
     val data: Var[BatchedData[T]] = Var(BatchedData.empty[T])
-    val position: Var[Int] = Var(0)
+    val position: Var[Int] = Var(1)
     val value: Var[Option[T]] = Var(None)
     val total: Val[Int] = Val(data().total)
   }
@@ -94,14 +94,14 @@ class RecycledScroller[T, C <: Component](perPage: Int, renderer: RecycledRender
 
   batch.position.attach { p =>
     if (!updatingPosition) {
-      if (p < 0) {
-        batch.position := 0
+      if (p < 1) {
+        batch.position := 1
       } else if (p >= batch.total()) {
-        batch.position := batch.total() - 1
+        batch.position := batch.total()
       } else {
         val entryHeight = middle.components.head.size.height()
         val perScreen = math.floor(size.height() / entryHeight).toInt
-        val actualPosition = math.min(batch.total() - perScreen, p)
+        val actualPosition = math.min(batch.total() - perScreen, p) - 1
         val offset = actualPosition % perPage
         val middleStart = actualPosition - offset
         middle.page(middleStart)
@@ -111,7 +111,6 @@ class RecycledScroller[T, C <: Component](perPage: Int, renderer: RecycledRender
         top.page(middleStart + perPage)
         val adjust = middle.size.height() - middle.components(perPage - (offset + 1)).position.bottom()
         middle.position.bottom.static(scroller.size.height() + adjust)
-        //        scribe.info(s"Should set position to: $p, actual p: $actualPosition, Per Page: $perPage, Placement on pane: $offset, Adjust: $adjust, per screen: $perScreen")
         Time.delay(10.millis).foreach { _ =>
           updatePosition()
         }
@@ -138,7 +137,7 @@ class RecycledScroller[T, C <: Component](perPage: Int, renderer: RecycledRender
             }
           } else {
             batch.value := Some(item)
-            batch.position := p
+            batch.position := p + 1
           }
         } finally {
           updatingPosition = false

@@ -8,6 +8,7 @@ import io.youi.style._
 trait StringifyImplicits {
   implicit def stringifyVisibility: Stringify[Visibility] = Visibility
   implicit def stringifyDisplay: Stringify[Display] = Display
+  implicit def stringifyInputType: Stringify[InputType] = InputType
   implicit def stringifyHTMLBorder: Stringify[HTMLBorder] = HTMLBorder
   implicit def stringifyOverflow: Stringify[Overflow] = Overflow
   implicit def stringifyUserSelect: Stringify[UserSelect] = UserSelect

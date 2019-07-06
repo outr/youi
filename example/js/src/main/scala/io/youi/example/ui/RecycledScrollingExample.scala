@@ -15,7 +15,7 @@ class RecycledScrollingExample extends UIExampleScreen {
   override def path: Path = path"/examples/recycled-scrolling.html"
 
   override def createUI(): Future[Unit] = {
-    val scroller = new RecycledScroller[Int, NumberComponent](10, NumberComponentRenderer) {
+    val scroller = new RecycledScroller[Int, NumberComponent](8, NumberComponentRenderer) {
       pane1.background := Color.LightBlue
       pane2.background := Color.LightPink
       pane3.background := Color.LightGreen

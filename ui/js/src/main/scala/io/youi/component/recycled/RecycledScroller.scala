@@ -29,9 +29,9 @@ class RecycledScroller[T, C <: Component](perPage: Int, renderer: RecycledRender
 
   // TODO: create "scroll" in gestures
   event.pointer.wheel.attach { evt =>
-    val delta = if (evt.delta.y > middle.size.height()) {     // TODO: support large jumps
+    val delta = if (evt.delta.y > middle.size.height()) {
       middle.size.height()
-    } else if (evt.delta.y < -middle.size.height()) {         // TODO: support large jumps
+    } else if (evt.delta.y < -middle.size.height()) {
       -middle.size.height()
     } else {
       evt.delta.y
@@ -82,6 +82,7 @@ class RecycledScroller[T, C <: Component](perPage: Int, renderer: RecycledRender
   batch.data.on {
     middle.page(0)
     top.page(perPage)
+    bottom.clear()
   }
 
   pane1.position.bottom := size.height
@@ -182,6 +183,12 @@ class RecycledScroller[T, C <: Component](perPage: Int, renderer: RecycledRender
       }
     } else {
       // No data, hide it all
+      components.foreach(renderer.hide)
+    }
+
+    def clear(): Unit = {
+      start = 0
+      end = 0
       components.foreach(renderer.hide)
     }
 

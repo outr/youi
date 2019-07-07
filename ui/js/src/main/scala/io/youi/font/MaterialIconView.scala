@@ -5,6 +5,8 @@ import io.youi.dom._
 import io.youi.theme.{MaterialIconViewTheme, Theme}
 import org.scalajs.dom._
 
+import scribe.Execution.global
+
 class MaterialIconView(protected val element: html.Element,
                        val existing: Boolean = false) extends HTMLComponent[html.Element] with MaterialIconViewTheme {
   def this() = {
@@ -12,6 +14,8 @@ class MaterialIconView(protected val element: html.Element,
   }
 
   element.classList.add("material-icons")
+
+  Material.load().map(fnt => font := fnt)
 
   override protected def defaultParentTheme: Theme = MaterialIconView
 

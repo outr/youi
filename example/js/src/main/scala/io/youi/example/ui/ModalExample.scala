@@ -21,6 +21,15 @@ class ModalExample extends UIExampleScreen {
       background := Color.White
       htmlBorder.radius := 20.0
       htmlBorder := HTMLBorder(1.0, HTMLBorderStyle.Outset, Color.Black)
+
+      children += new HTMLTextView {
+        value := "This is a modal!"
+        font := fnt
+        font.size := 50.px
+        color := Color.DarkSlateBlue
+        position.left := 60.0
+        position.top := 200.0
+      }
     })
     val button = new HTMLTextView {
       value := "Open Modal"

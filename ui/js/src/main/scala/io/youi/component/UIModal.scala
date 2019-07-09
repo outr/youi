@@ -20,10 +20,18 @@ class UIModal[C <: Component] private(val component: C,
   element.setAttribute("role", "dialog")
   element.setAttribute("aria-hidden", "true")
 
+  private val document = new Container {
+    element.classList.add("modal-dialog")
+    element.classList.add("modal-lg")
+    element.setAttribute("role", "document")
+    size.width := component.size.width
+    size.height := component.size.height
+  }
+  children += document
+
   private val htmlElement = HTMLComponent.element(component)
-  htmlElement.classList.add("modal-dialog")
-  htmlElement.setAttribute("role", "document")
-  children += component
+  htmlElement.classList.add("modal-content")
+  document.children += component
 
   verticallyCentered.attach { b =>
     if (b) {

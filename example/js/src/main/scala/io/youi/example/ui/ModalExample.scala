@@ -27,8 +27,8 @@ class ModalExample extends UIExampleScreen {
         font := fnt
         font.size := 50.px
         color := Color.DarkSlateBlue
-        position.left := 60.0
-        position.top := 200.0
+        position.center := 400.0
+        position.middle := 250.0
       }
     })
     val button = new HTMLTextView {

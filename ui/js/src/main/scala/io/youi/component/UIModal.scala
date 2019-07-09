@@ -34,7 +34,8 @@ object UIModal {
   val active: Var[Option[UIModal]] = Var(None)
 
   val backdrop: Container = new Container {
-    background := Color.Black.withAlpha(0.5)
+    background := Color.Black
+    opacity := 0.5
     position.x := 0.0
     position.y := 0.0
     position.z := 100

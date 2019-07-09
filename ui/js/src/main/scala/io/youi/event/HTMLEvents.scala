@@ -23,6 +23,12 @@ trait EventSupport {
   lazy val contextmenu: Channel[PointerEvent] = pointerChannel(PointerEvent.Type.ContextMenu)
   lazy val focus: Channel[jsdom.FocusEvent] = events("focus")
   lazy val blur: Channel[jsdom.FocusEvent] = events("blur")
+  lazy val focusState: Val[Boolean] = {
+    val o = Var[Boolean](false)
+    focus.on(o := true)
+    blur.on(o := false)
+    o
+  }
   object key {
     lazy val down: Channel[KeyEvent] = keyEvents("keydown", KeyEvent.Type.Down)
     lazy val press: Channel[KeyEvent] = keyEvents("keypress", KeyEvent.Type.Press)

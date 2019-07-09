@@ -4,9 +4,10 @@ import io.youi.component.Component
 import io.youi.{AnimationFrame, dom, ui}
 import io.youi.dom._
 import io.youi.event.{EventSupport, HTMLEvents}
+import io.youi.style.{Display, Visibility}
 import io.youi.theme.{HTMLComponentTheme, Theme}
 import org.scalajs.dom.{Element, _}
-import reactify.Var
+import reactify.{Val, Var}
 
 trait HTMLComponent[E <: html.Element] extends Component with HTMLComponentTheme {
   protected def element: E
@@ -16,6 +17,8 @@ trait HTMLComponent[E <: html.Element] extends Component with HTMLComponentTheme
 
   override lazy val position: HTMLComponentPosition = new HTMLComponentPosition(this)
   override lazy val size: HTMLComponentSize = new HTMLComponentSize(this)
+
+  override val visible: Val[Boolean] = Val(visibility() == Visibility.Visible && display() != Display.None && parent().exists(_.visible()))
 
   Option(element.getAttribute("id")).foreach {
     case "" => // Ignore

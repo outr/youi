@@ -7,6 +7,8 @@ trait AbstractContainer[Child <: Component] extends Component { self =>
   protected lazy val children: Var[Vector[Child]] = Var(Vector.empty)
   protected lazy val layout: Var[Layout] = Var(Layout.None)
 
+  val visibleChildren: Val[Vector[Child]] = Val(children().filter(_.visible()))
+
   override protected def init(): Unit = {
     super.init()
 
@@ -25,6 +27,7 @@ trait AbstractContainer[Child <: Component] extends Component { self =>
         childrenChanged(removed, added)
       }
     }
+    visibleChildren.on(childrenChanged(Vector.empty, Vector.empty))
 
     layout.changes {
       case (oldValue, newValue) => {

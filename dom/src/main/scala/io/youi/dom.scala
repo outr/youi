@@ -1,5 +1,6 @@
 package io.youi
 
+import io.youi.net.URL
 import org.scalajs.dom._
 import org.scalajs.dom.ext._
 import org.scalajs.dom.html.Div
@@ -63,6 +64,14 @@ object dom extends ExtendedElement(None) {
     val style = create[html.Style]("style")
     style.innerHTML = css
     document.head.appendChild(style)
+  }
+
+  def addCSS(url: URL): Unit = {
+    val link = create[html.Link]("link")
+    link.href = url.toString
+    link.setAttribute("as", "style")
+    link.setAttribute("crossorigin", "crossorigin")
+    document.head.appendChild(link)
   }
 
   implicit class StringExtras(s: String) {

@@ -1094,6 +1094,4 @@ object Material extends GoogleFont {
   }
 }
 
-case class MaterialIcon(name: String) {
-
-}
+case class MaterialIcon(name: String)

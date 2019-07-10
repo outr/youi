@@ -1,7 +1,7 @@
 package io
 
 import io.youi.event.KeyEvent
-import io.youi.font.{GoogleFont, GoogleFontWeight, MaterialIcon, MaterialIconView}
+import io.youi.font.{FontAwesome, GoogleFont, GoogleFontWeight, MaterialIcon, MaterialIconView}
 import io.youi.paint.Paint
 import io.youi.task.PartialAnimate
 import io.youi.theme.StyleProp
@@ -14,6 +14,7 @@ import typekit.{GoogleConfig, WebFont, WebFontConfiguration}
 import scala.concurrent.{Future, Promise}
 import scala.language.implicitConversions
 import scala.scalajs.js
+import scribe.Execution.global
 
 package object youi {
   lazy val ppi: Double = {
@@ -34,6 +35,14 @@ package object youi {
       val view = new MaterialIconView
       view.value := icon
       view
+    }
+  }
+
+  implicit class ExtendedFontAwesome(font: FontAwesome) {
+    def load(): Future[FontAwesome] = {
+      dom.addScript("https://kit.fontawesome.com/afbab8b8a9.js", addToHead = true).map { _ =>
+        font
+      }
     }
   }
 

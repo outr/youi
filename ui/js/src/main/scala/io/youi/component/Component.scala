@@ -50,6 +50,14 @@ trait Component extends TaskSupport with ComponentTheme {
 
   lazy val root: Var[Option[Component]] = Var(parent().flatMap(_.root()))
 
+  /**
+    * Defines if this component should be managed by layout managers (defaults to true)
+    */
+  val includeInLayout: Var[Boolean] = Var(true)
+
+  /**
+    * Value determining the visibility of this element based on multiple criteria
+    */
   val visible: Val[Boolean] = Val(visibility() == Visibility.Visible && parent().exists(_.visible()))
 
   /**

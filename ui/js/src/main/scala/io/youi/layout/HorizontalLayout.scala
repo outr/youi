@@ -24,7 +24,7 @@ class HorizontalLayout(spacing: Double = 0.0,
     removed.foreach { c =>
       Snap(c).horizontalReset()
     }
-    items.filter(_.visible()).foldLeft(Option.empty[Component])((previous, current) => {
+    items.filter(c => c.visible() && c.includeInLayout()).foldLeft(Option.empty[Component])((previous, current) => {
       Snap(current).horizontalReset().leftTo(previous.map(_.position.right()).getOrElse(initialSpacing) + spacing)
       Some(current)
     })

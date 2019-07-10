@@ -28,7 +28,7 @@ class FlowLayout(margins: Margins = Margins()) extends Layout {
     var y: Double = margins.top
     var rowCount = 0
     var rowMaxHeight = 0.0
-    Component.childrenFor(container).foreach { widget =>
+    Component.childrenFor(container).filter(c => c.visible() && c.includeInLayout()).foreach { widget =>
       x += margins.left
       if (rowCount > 0 && x + widget.size.width > container.size.width) {
         x = margins.left

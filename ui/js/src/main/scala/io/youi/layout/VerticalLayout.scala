@@ -25,7 +25,7 @@ class VerticalLayout(spacing: Double = 0.0,
     removed.foreach { c =>
       Snap(c).verticalReset()
     }
-    items.filter(_.visible()).foldLeft(Option.empty[Component])((previous, current) => {
+    items.filter(c => c.visible() && c.includeInLayout()).foldLeft(Option.empty[Component])((previous, current) => {
       Snap(current).verticalReset().topTo(previous.map(_.position.bottom()).getOrElse(initialSpacing) + spacing)
       Some(current)
     })

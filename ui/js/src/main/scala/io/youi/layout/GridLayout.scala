@@ -110,7 +110,7 @@ class GridLayout extends Layout {
         }
       }
     }
-    Component.childrenFor(container).foreach(layout)
+    Component.childrenFor(container).filter(c => c.visible() && c.includeInLayout()).foreach(layout)
     configs.foreach {
       case (child, cfg) => {
         // Alignment

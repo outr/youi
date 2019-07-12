@@ -1,5 +1,6 @@
 package io.youi.component.extras
 
+import io.youi.component.Component
 import io.youi.style.Position
 import io.youi.theme.{StringifyImplicits, StyleConnect, StyleProp}
 import org.scalajs.dom._
@@ -32,33 +33,14 @@ class HTMLComponentPosition(override protected val component: HTMLComponent[_ <:
   }
 
   object scroll {
-    private def prop(get: => Double, set: Double => Unit): Var[Double] = {
-      val v = Var(get)
-      var updating = false
-      component.delta.on {
-        updating = true
-        try {
-          v.static(get)
-        } finally {
-          updating = false
-        }
-      }
-      v.attach { d =>
-        if (!updating) {
-          set(d)
-        }
-      }
-      v
-    }
-
     private def real(d: Double): Double = if (d.isInfinite || d.isNaN) {
       0.0
     } else {
       d
     }
 
-    lazy val x: Var[Double] = prop(e.getBoundingClientRect().left, e.scrollLeft = _)
-    lazy val y: Var[Double] = prop(e.getBoundingClientRect().top, e.scrollTop = _)
+    lazy val x: Var[Double] = Component.prop(component, e.getBoundingClientRect().left, e.scrollLeft = _)
+    lazy val y: Var[Double] = Component.prop(component, e.getBoundingClientRect().top, e.scrollTop = _)
 
     object max {
       lazy val x: Val[Double] = Val(real(component.size.scroll.width - component.size.view.width))

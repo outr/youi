@@ -23,27 +23,13 @@ class HTMLComponentSize(override protected val component: Component) extends Com
     }
   }
 
-  private def prop(get: => Double): Val[Double] = {
-    val v = Var(get)
-    var updating = false
-    component.delta.on {
-      updating = true
-      try {
-        v := get
-      } finally {
-        updating = false
-      }
-    }
-    v
-  }
-
   object view {
-    lazy val width: Val[Double] = prop(e.clientWidth)
-    lazy val height: Val[Double] = prop(e.clientHeight)
+    lazy val width: Val[Double] = Component.prop(component, e.clientWidth)
+    lazy val height: Val[Double] = Component.prop(component, e.clientHeight)
   }
 
   object scroll {
-    lazy val width: Val[Double] = prop(e.getBoundingClientRect().width)
-    lazy val height: Val[Double] = prop(e.getBoundingClientRect().height)
+    lazy val width: Val[Double] = Component.prop(component, e.getBoundingClientRect().width)
+    lazy val height: Val[Double] = Component.prop(component, e.getBoundingClientRect().height)
   }
 }

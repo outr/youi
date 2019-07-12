@@ -155,6 +155,39 @@ object Component extends ComponentTheme {
 
   def childrenFor(component: Component): Vector[Component] = component.childComponents
 
+  def prop[T](component: Component, get: => T): Val[T] = {
+    val v = Var(get)
+    var updating = false
+    component.delta.on {
+      updating = true
+      try {
+        v := get
+      } finally {
+        updating = false
+      }
+    }
+    v
+  }
+
+  def prop[T](component: Component, get: => T, set: T => Unit): Var[T] = {
+    val v = Var(get)
+    var updating = false
+    component.delta.on {
+      updating = true
+      try {
+        v.static(get)
+      } finally {
+        updating = false
+      }
+    }
+    v.attach { d =>
+      if (!updating) {
+        set(d)
+      }
+    }
+    v
+  }
+
   object measured {
     def width(component: Component): Double = component.measuredWidth
     def height(component: Component): Double = component.measuredHeight

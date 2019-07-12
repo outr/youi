@@ -15,6 +15,7 @@ object HTMLImageViewImplementation extends ImageViewImplementation {
     image match {
       case i: HTMLImage => element.src = i.source
       case EmptyImage => element.src = ""
+//      case i: SVGImage => element.src = s"data:image/svg+xml;charset=utf-8,${i.toXML}"
       case i: CanvasImage => i.toDataURL.foreach { url =>
         element.src = url
       }

@@ -40,6 +40,8 @@ class SVGImage private(private val svg: SVGSVGElement, override protected val ca
 
   override def isVector: Boolean = true
 
+  def toXML: String = (new XMLSerializer).serializeToString(svg)
+
   override def toString: String = s"SVGImage($width x $height)"
 }
 

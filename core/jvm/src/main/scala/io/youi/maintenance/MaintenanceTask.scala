@@ -9,6 +9,7 @@ import scala.concurrent.duration._
 
 trait MaintenanceTask {
   val name: String = getClass.getSimpleName.replaceAllLiterally("$", "")
+  def logScheduling: Boolean = true
 
   var lastStatus: Option[TaskStatus] = None
   var lastRunTime: Option[Long] = None

@@ -74,4 +74,6 @@ trait HTMLComponentTheme extends ComponentTheme {
       right := border
     }
   }
+
+  lazy val outline: StyleProp[HTMLBorder] = style[HTMLBorder]("outline", HTMLBorder.empty, StyleConnect.style[HTMLBorder])
 }

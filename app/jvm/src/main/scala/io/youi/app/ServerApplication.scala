@@ -315,6 +315,9 @@ object ServerApplication {
       |     width: 100vw;
       |     height: 100vh;
       |   }
+      |   :focus {
+      |     outline: none;
+      |   }
       | </style>
       |</head>
       |<body>
@@ -342,6 +345,9 @@ object ServerApplication {
       |     overflow: hidden;
       |     width: 100vw;
       |     height: 100vh;
+      |   }
+      |   :focus {
+      |     outline: none;
       |   }
       | </style>
       | <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />

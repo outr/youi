@@ -1,7 +1,7 @@
 package io.youi
 
 import io.youi.component.Container
-import io.youi.style.Visibility
+import io.youi.style.{Display, Visibility}
 import io.youi.util.CanvasPool
 import org.scalajs.dom.{Event, document, window}
 import reactify._
@@ -12,7 +12,7 @@ import scala.scalajs.js
 object ui extends Container(document.body) {
   id := "ui"
 
-  override val visible: Val[Boolean] = Val(visibility() == Visibility.Visible)
+  override val visible: Val[Boolean] = Val(visibility() == Visibility.Visible && display() != Display.None)
 
   def devicePixelRatio: Double = window.devicePixelRatio
   def backingStoreRatio: Double = CanvasPool.withCanvas(1.0, 1.0) { canvas =>

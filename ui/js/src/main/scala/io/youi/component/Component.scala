@@ -158,7 +158,7 @@ object Component extends ComponentTheme {
   def prop[T](component: Component, get: => T): Val[T] = {
     val v = Var(get)
     var updating = false
-    component.delta.on {
+    component.every(25.millis) {
       updating = true
       try {
         v := get
@@ -172,7 +172,7 @@ object Component extends ComponentTheme {
   def prop[T](component: Component, get: => T, set: T => Unit): Var[T] = {
     val v = Var(get)
     var updating = false
-    component.delta.on {
+    component.every(25.millis) {
       updating = true
       try {
         v.static(get)

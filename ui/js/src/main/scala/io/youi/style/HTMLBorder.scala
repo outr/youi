@@ -7,7 +7,7 @@ import perfolation._
 case class HTMLBorder(width: Double, style: HTMLBorderStyle, color: Color)
 
 object HTMLBorder extends Stringify[HTMLBorder] {
-  lazy val empty: HTMLBorder = HTMLBorder(0.0, HTMLBorderStyle.Hidden, Color.Clear)
+  lazy val empty: HTMLBorder = HTMLBorder(-1.0, HTMLBorderStyle.Hidden, Color.Clear)
 
   override def fromString(value: String): Option[HTMLBorder] = None
 

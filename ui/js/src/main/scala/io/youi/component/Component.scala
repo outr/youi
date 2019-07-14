@@ -22,9 +22,9 @@ trait Component extends TaskSupport with ComponentTheme {
   private lazy val transform = rateLimited(1.millis)(updateTransform())
   private lazy val rendering = rateLimited(1.millis)(updateRendering())
 
-  override protected def invalidateTransform(): Unit = transform.flag()
+  override def invalidateTransform(): Unit = transform.flag()
 
-  override protected def invalidateRendering(): Unit = rendering.flag()
+  override def invalidateRendering(): Unit = rendering.flag()
 
   override def updateTasks(): Boolean = visible()
 
@@ -107,7 +107,7 @@ trait Component extends TaskSupport with ComponentTheme {
     updateUpdatables(delta, internalUpdatables())
   }
 
-  override protected def updateTransform(): Unit = {
+  override def updateTransform(): Unit = {
     super.updateTransform()
 
     size.measured.width := measuredWidth
@@ -155,7 +155,7 @@ object Component extends ComponentTheme {
 
   def childrenFor(component: Component): Vector[Component] = component.childComponents
 
-  def prop[T](component: Component, get: => T): Val[T] = {
+  /*def prop[T](component: Component, get: => T): Val[T] = {
     val v = Var(get)
     var updating = false
     component.every(25.millis) {
@@ -186,7 +186,7 @@ object Component extends ComponentTheme {
       }
     }
     v
-  }
+  }*/
 
   object measured {
     def width(component: Component): Double = component.measuredWidth

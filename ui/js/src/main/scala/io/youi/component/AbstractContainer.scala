@@ -47,6 +47,13 @@ trait AbstractContainer[Child <: Component] extends Component { self =>
     children().foreach(_.update(delta))
   }
 
+
+  override def updateTransform(): Unit = {
+    super.updateTransform()
+
+    children().foreach(_.updateTransform())
+  }
+
   protected def childrenChanged(removed: Vector[Child], added: Vector[Child]): Unit = {
     removed.foreach(_.parent := None)
     added.foreach(_.parent := Some(self))

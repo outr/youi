@@ -8,7 +8,7 @@ import reactify._
 trait ComponentTheme extends Theme {
   val cursor: StyleProp[Cursor] = style[Cursor]("cursor", Cursor.Default, StyleConnect.style[Cursor])
   val interactive: StyleProp[Boolean] = style[Boolean]("interactive", true, StyleConnect.style[Boolean])
-  val display: StyleProp[Display] = style[Display]("display", Display.Initial, StyleConnect.style[Display])
+  val display: StyleProp[Display] = style[Display]("display", Display.Initial, StyleConnect.style[Display], updatesTransform = true)
   val visibility: StyleProp[Visibility] = style[Visibility]("visibility", Visibility.Visible, StyleConnect.style[Visibility], updatesTransform = true)
   val opacity: StyleProp[Double] = style[Double]("opacity", 1.0, StyleConnect.style[Double], updatesRendering = true)
   val background: StyleProp[Paint] = style[Paint]("background", Paint.none, StyleConnect.style[Paint], updatesRendering = true)

@@ -48,12 +48,34 @@ trait HTMLComponent[E <: html.Element] extends Component with HTMLComponentTheme
 
   override val event: EventSupport = new HTMLEvents(this, element)
 
+  private var scrolling: Boolean = false
+
   override protected def init(): Unit = {
     super.init()
 
-    id.attachAndFire { s =>
+    id.attachAndFire { _ =>
       element.setAttribute("data-youi-id", id())
       element.setAttribute("id", id())
+    }
+
+    visible.attach { b =>
+      if (b) invalidateTransform()
+    }
+
+    val e = if (this == ui) window else element
+    e.addEventListener("scroll", (_: Event) => {
+      invalidateTransform()
+    })
+
+    position.scroll.x.attach { v =>
+      if (!scrolling) {
+        element.scrollLeft = v
+      }
+    }
+    position.scroll.y.attach { v =>
+      if (!scrolling) {
+        element.scrollTop = v
+      }
     }
 
     if (this != ui && !existing) {
@@ -76,6 +98,23 @@ trait HTMLComponent[E <: html.Element] extends Component with HTMLComponentTheme
 
     if (existing) {
       AnimationFrame.delta.attach(update)
+    }
+  }
+
+  override def updateTransform(): Unit = {
+    super.updateTransform()
+
+    size.view.width.asInstanceOf[Var[Double]] := element.clientWidth
+    size.view.height.asInstanceOf[Var[Double]] := element.clientHeight
+    val rect = element.getBoundingClientRect()
+    scrolling = true
+    try {
+      position.scroll.x := rect.left
+      position.scroll.y := rect.top
+      size.scroll.width.asInstanceOf[Var[Double]] := rect.width
+      size.scroll.height.asInstanceOf[Var[Double]] := rect.height
+    } finally {
+      scrolling = false
     }
   }
 

@@ -19,8 +19,8 @@ trait Component extends TaskSupport with ComponentTheme {
 
   lazy val store: Store = new MapStore
 
-  private lazy val transform = rateLimited(1.millis)(updateTransform())
-  private lazy val rendering = rateLimited(1.millis)(updateRendering())
+  private lazy val transform = rateLimited(10.millis)(updateTransform())
+  private lazy val rendering = rateLimited(10.millis)(updateRendering())
 
   override def invalidateTransform(): Unit = transform.flag()
 

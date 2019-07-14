@@ -32,7 +32,7 @@ trait Theme extends StringifyImplicits {
     store(name) = prop
     connect.foreach(_.init(this, prop, name))
     if (updatesTransform || updatesRendering) {
-      prop.attach { _ =>
+      prop.attachAndFire { _ =>
         if (updatesTransform) {
           invalidateTransform()
         }

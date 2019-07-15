@@ -7,7 +7,7 @@ import io.youi.app.screen.ScreenManager
 import io.youi.font.GoogleFont
 import io.youi.image.Image
 import io.youi.paint.Paint
-import io.youi.style.Position
+import io.youi.style.{Position, WhiteSpace}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -40,6 +40,7 @@ class Header extends Container { self =>
     ScreenManager().active.attachAndFire { screen =>
       value := screen.title
     }
+    whiteSpace := WhiteSpace.NoWrap
     position.right := ui.size.width - 25.0
     position.top := 15.0
   }

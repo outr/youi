@@ -38,6 +38,7 @@ trait AbstractContainer[Child <: Component] extends Component { self =>
 
     size.width.and(size.height).on {
       layout.resized(self, size.width, size.height)
+      children().foreach(_.invalidateTransform())
     }
   }
 
@@ -45,6 +46,13 @@ trait AbstractContainer[Child <: Component] extends Component { self =>
     super.update(delta)
 
     children().foreach(_.update(delta))
+  }
+
+
+  override def updateTransform(): Unit = {
+    super.updateTransform()
+
+    children().foreach(_.updateTransform())
   }
 
   protected def childrenChanged(removed: Vector[Child], added: Vector[Child]): Unit = {

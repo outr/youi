@@ -1,6 +1,5 @@
 package io.youi.component.extras
 
-import io.youi.component.Component
 import io.youi.style.Position
 import io.youi.theme.{StringifyImplicits, StyleConnect, StyleProp}
 import org.scalajs.dom._
@@ -39,8 +38,8 @@ class HTMLComponentPosition(override protected val component: HTMLComponent[_ <:
       d
     }
 
-    lazy val x: Var[Double] = Component.prop(component, e.getBoundingClientRect().left, e.scrollLeft = _)
-    lazy val y: Var[Double] = Component.prop(component, e.getBoundingClientRect().top, e.scrollTop = _)
+    lazy val x: Var[Double] = Var(e.getBoundingClientRect().left)
+    lazy val y: Var[Double] = Var(e.getBoundingClientRect().top)
 
     object max {
       lazy val x: Val[Double] = Val(real(component.size.scroll.width - component.size.view.width))
@@ -48,8 +47,20 @@ class HTMLComponentPosition(override protected val component: HTMLComponent[_ <:
     }
 
     object percent {
-      lazy val x: Val[Double] = Val(math.min(math.max(0.0, math.abs(scroll.x / max.x)), 1.0))
-      lazy val y: Val[Double] = Val(math.min(math.max(0.0, math.abs(scroll.y / max.y)), 1.0))
+      lazy val x: Val[Double] = Val {
+        if (scroll.x() != 0.0 && max.x() != 0.0) {
+          math.abs(scroll.x / max.x)
+        } else {
+          0.0
+        }
+      }
+      lazy val y: Val[Double] = Val {
+        if (scroll.y() != 0.0 && max.y() != 0.0) {
+          math.abs(scroll.y / max.y)
+        } else {
+          0.0
+        }
+      }
     }
   }
 }

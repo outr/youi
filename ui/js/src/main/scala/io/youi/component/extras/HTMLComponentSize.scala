@@ -24,12 +24,12 @@ class HTMLComponentSize(override protected val component: Component) extends Com
   }
 
   object view {
-    lazy val width: Val[Double] = Component.prop(component, e.clientWidth)
-    lazy val height: Val[Double] = Component.prop(component, e.clientHeight)
+    lazy val width: Val[Double] = Var(e.clientWidth.toDouble)
+    lazy val height: Val[Double] = Var(e.clientHeight.toDouble)
   }
 
   object scroll {
-    lazy val width: Val[Double] = Component.prop(component, e.getBoundingClientRect().width)
-    lazy val height: Val[Double] = Component.prop(component, e.getBoundingClientRect().height)
+    lazy val width: Val[Double] = Var(e.getBoundingClientRect().width)
+    lazy val height: Val[Double] = Var(e.getBoundingClientRect().height)
   }
 }

@@ -92,7 +92,9 @@ trait SessionManager[Session] {
     */
   protected def createBySessionId(sessionId: String,
                                   connection: HttpConnection): Future[SessionTransaction[Session]] = {
-    Future.successful(SessionTransaction[Session](sessionId, create(sessionId), connection))
+    create(sessionId).map { session =>
+      SessionTransaction[Session](sessionId, session, connection)
+    }
   }
 
   /**
@@ -100,7 +102,7 @@ trait SessionManager[Session] {
     *
     * @param sessionId the session id to create a Session for
     */
-  protected def create(sessionId: String): Session
+  protected def create(sessionId: String): Future[Session]
 
   /**
     * Saves a potentially modified Session to this manager

@@ -73,6 +73,7 @@ class Color private(val value: Long) extends AnyVal {
   override def toString: String = s"Color(red: $red, green: $green, blue: $blue, alpha: $alpha)"
 }
 
+// TODO: Regenerate using https://en.wikipedia.org/wiki/List_of_colors:_A–F
 object Color {
   val Clear: Color = fromLong(0x00000000)
   val AliceBlue: Color = fromLong(0xF0F8FFFF)

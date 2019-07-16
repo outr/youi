@@ -30,6 +30,8 @@ package object stream {
     override def close(): Unit = reader.close()
   }
 
+  implicit def array2Reader(array: Array[Byte]): InputStreamReader = new InputStreamReader(new ByteArrayInputStream(array))
+
   implicit def file2Reader(file: File): InputStreamReader = new InputStreamReader(new FileInputStream(file)) {
     override def length: Option[Long] = Some(file.length())
   }

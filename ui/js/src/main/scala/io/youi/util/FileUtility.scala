@@ -10,7 +10,7 @@ object FileUtility {
   def loadDataURL(file: File, useFileReader: Boolean = false): Future[String] = if (useFileReader) {
     val reader = new FileReader
     val promise = Promise[String]
-    reader.addEventListener("load", (evt: Event) => {
+    reader.addEventListener("load", (_: Event) => {
       promise.success(reader.result.asInstanceOf[String])
     })
     reader.readAsDataURL(file)

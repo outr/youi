@@ -1,5 +1,6 @@
 package io.youi.example.ui
 
+import io.youi.component.bootstrap.Button
 import io.youi.component.recycled.{BatchedData, RecycledRenderer, RecycledScroller}
 import io.youi.{Color, Key}
 import io.youi.component.{Container, HTMLTextInput, HTMLTextView}
@@ -14,6 +15,8 @@ class RecycledScrollingExample extends UIExampleScreen {
   override def title: String = "Recycled Scrolling Example"
   override def path: Path = path"/examples/recycled-scrolling.html"
 
+  private val tenThousand = BatchedData((0 until 10000).toList)
+
   override def createUI(): Future[Unit] = {
     val scroller = new RecycledScroller[Int, NumberComponent](8, NumberComponentRenderer) {
       pane1.background := Color.LightBlue
@@ -25,13 +28,17 @@ class RecycledScrollingExample extends UIExampleScreen {
       size.width := 1000.0
       size.height := 500.0
       background := Color.LightGray
-      batch.data := BatchedData((0 until 10000).toList)
+      batch.data := tenThousand
+
+      batch.position.attach { p =>
+        scribe.info(s"Position set to $p")
+      }
     }
 
     val inputSlider: HTMLTextInput = new HTMLTextInput {
       `type` := InputType.Range
       min := "0"
-      max := scroller.batch.total().toString
+      max := scroller.batch.data.total.toString
       position.left := scroller.position.left
       position.bottom := scroller.position.top
       size.width := 200.0
@@ -58,7 +65,7 @@ class RecycledScrollingExample extends UIExampleScreen {
       position.right := scroller.position.right
       position.bottom := scroller.position.top
       font.size := 24.0
-      value := s"of ${scroller.batch.total()}"
+      value := s"of ${scroller.batch.data.total}"
     }
     val inputPosition = new HTMLTextInput {
       position.right := textTotal.position.left - 10.0
@@ -77,7 +84,26 @@ class RecycledScrollingExample extends UIExampleScreen {
         }
       }
     }
-    container.children ++= List(scroller, inputSlider, textTotal, inputPosition)
+
+    val setNone = new Button {
+      value := "Set None"
+      position.left := scroller.position.left
+      position.top := scroller.position.bottom + 10.0
+      event.click.on {
+        scroller.batch.data := BatchedData.empty
+      }
+    }
+
+    val set10k = new Button {
+      value := "Set 10,000"
+      position.left := setNone.position.right + 10.0
+      position.top := scroller.position.bottom + 10.0
+      event.click.on {
+        scroller.batch.data := tenThousand
+      }
+    }
+
+    container.children ++= List(scroller, inputSlider, textTotal, inputPosition, setNone, set10k)
 
     Future.successful(())
   }

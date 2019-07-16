@@ -10,7 +10,7 @@ object BatchedData {
   }
 
   def apply[T](data: Seq[T]): BatchedData[T] = new BatchedData[T] {
-    override def total: Int = data.length
+    override lazy val total: Int = data.length
 
     override def get(start: Int, end: Int): Future[Vector[T]] = Future.successful(data.slice(start, start + end).toVector)
   }

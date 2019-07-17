@@ -24,5 +24,5 @@ trait FontAwesomeViewTheme extends HTMLComponentTheme with HTMLFontTheme {
         }
       }
     }
-  }), updatesTransform = false)
+  }), updatesTransform = true)
 }

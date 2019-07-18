@@ -15,6 +15,7 @@ class RecycledScrollingExample extends UIExampleScreen {
   override def title: String = "Recycled Scrolling Example"
   override def path: Path = path"/examples/recycled-scrolling.html"
 
+  private val one = BatchedData(List(0))
   private val tenThousand = BatchedData((0 until 10000).toList)
 
   override def createUI(): Future[Unit] = {
@@ -28,7 +29,7 @@ class RecycledScrollingExample extends UIExampleScreen {
       size.width := 1000.0
       size.height := 500.0
       background := Color.LightGray
-      batch.data := tenThousand
+      batch.data := one
 
       batch.position.attach { p =>
         scribe.info(s"Position set to $p")
@@ -94,16 +95,25 @@ class RecycledScrollingExample extends UIExampleScreen {
       }
     }
 
+    val set1 = new Button {
+      value := "Set 1"
+      position.left := setNone.position.right + 10.0
+      position.top := scroller.position.bottom + 10.0
+      event.click.on {
+        scroller.batch.data := one
+      }
+    }
+
     val set10k = new Button {
       value := "Set 10,000"
-      position.left := setNone.position.right + 10.0
+      position.left := set1.position.right + 10.0
       position.top := scroller.position.bottom + 10.0
       event.click.on {
         scroller.batch.data := tenThousand
       }
     }
 
-    container.children ++= List(scroller, inputSlider, textTotal, inputPosition, setNone, set10k)
+    container.children ++= List(scroller, inputSlider, textTotal, inputPosition, setNone, set1, set10k)
 
     Future.successful(())
   }

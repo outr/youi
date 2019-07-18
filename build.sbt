@@ -48,6 +48,7 @@ val undertowVersion = "2.0.22.Final"
 val closureCompilerVersion = "v20190618"
 val jSoupVersion = "1.12.1"
 val scalaXMLVersion = "1.2.0"
+val collectionCompat = "2.1.1"
 val scalaTestVersion = "3.1.0-SNAP13"
 val scalaCheckVersion = "1.14.0"
 
@@ -68,6 +69,7 @@ lazy val macros = crossProject(JSPlatform, JVMPlatform).in(file("macros"))
     description := "Dependency for internal Macro functionality",
     libraryDependencies ++= Seq(
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
+      "org.scala-lang.modules" %% "scala-collection-compat" % collectionCompat,
       "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
     )
   )

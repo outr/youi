@@ -23,7 +23,7 @@ object ResourceServer {
     //as resource manager methods are potentially blocking
     val dispatchTask: HttpHandler = new HttpHandler() {
       @throws[Exception]
-      def handleRequest(exchange: HttpServerExchange) {
+      def handleRequest(exchange: HttpServerExchange): Unit = {
         val resource: Resource = new FileResource(content.file, defaultResourceManager, content.file.getAbsolutePath)
         val etag: ETag = resource.getETag
         val lastModified: Date = resource.getLastModified

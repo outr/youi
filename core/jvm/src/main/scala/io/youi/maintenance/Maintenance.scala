@@ -54,6 +54,7 @@ object Maintenance {
           status match {
             case TaskStatus.Repeat => schedule(task, None, firstRun = false)
             case TaskStatus.RepeatNow => schedule(task, Some(0.seconds), firstRun = false)
+            case TaskStatus.RepeatIn(t) => schedule(task, Some(t), firstRun = false)
             case TaskStatus.Stop => // Stop
           }
         }

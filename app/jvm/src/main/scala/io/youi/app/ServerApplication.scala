@@ -285,7 +285,7 @@ trait ServerApplication extends YouIApplication with Server {
 
   def main(args: Array[String]): Unit = {
     Profig.loadDefaults()
-    Profig.merge(args)
+    Profig.merge(args.toSeq)
     start().failed.map { throwable =>
       scribe.error("Error during application startup", throwable)
       dispose()

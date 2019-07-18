@@ -26,7 +26,7 @@ import io.youi.stream._
 import org.xnio.streams.ChannelInputStream
 import org.xnio.{OptionMap, Xnio}
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scribe.Execution.global
 
 class UndertowServerImplementation(val server: Server) extends ServerImplementation with UndertowHttpHandler {

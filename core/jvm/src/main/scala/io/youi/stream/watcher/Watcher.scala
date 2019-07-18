@@ -6,7 +6,7 @@ import java.nio.file.attribute.BasicFileAttributes
 import java.nio.file._
 
 import scala.annotation.tailrec
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.collection.mutable
 
 abstract class Watcher(directory: Path,

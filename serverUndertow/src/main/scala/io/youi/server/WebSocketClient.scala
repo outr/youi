@@ -17,7 +17,7 @@ import io.youi.server.util.SSLUtil
 import io.youi.util.Time
 import org.xnio.{IoFuture, OptionMap, Options, Xnio}
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.concurrent.duration._
 import scribe.Execution.global
 

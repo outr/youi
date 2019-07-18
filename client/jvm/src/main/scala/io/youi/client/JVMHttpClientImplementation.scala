@@ -15,7 +15,7 @@ import okhttp3.Dns
 import io.youi.stream._
 import javax.net.ssl.{HostnameVerifier, HttpsURLConnection, SSLContext, SSLSession, SSLSocketFactory, TrustManager, TrustManagerFactory, X509TrustManager}
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.concurrent.{ExecutionContext, Future, Promise}
 import scala.util.{Failure, Success}
 
@@ -145,8 +145,8 @@ class JVMHttpClientImplementation(config: HttpClientConfig) extends HttpClientIm
 
     // Content
     val body = request.content.map {
-      case StringContent(value, contentType, _) => okhttp3.RequestBody.create(ct(contentType), value)
-      case FileContent(file, contentType, _) => okhttp3.RequestBody.create(ct(contentType), file)
+      case StringContent(value, contentType, _) => okhttp3.RequestBody.create(value, ct(contentType))
+      case FileContent(file, contentType, _) => okhttp3.RequestBody.create(file, ct(contentType))
       case FormDataContent(data) => {
         val form = new okhttp3.MultipartBody.Builder()
         form.setType(ct(ContentType.`multipart/form-data`))
@@ -155,7 +155,7 @@ class JVMHttpClientImplementation(config: HttpClientConfig) extends HttpClientIm
             case StringEntry(value, _) => form.addFormDataPart(key, value)
             case FileEntry(fileName, file, headers) => {
               val partType = Headers.`Content-Type`.value(headers).getOrElse(ContentType.`application/octet-stream`)
-              val part = okhttp3.RequestBody.create(ct(partType), file)
+              val part = okhttp3.RequestBody.create(file, ct(partType))
               form.addFormDataPart(key, fileName, part)
             }
           }
@@ -165,7 +165,7 @@ class JVMHttpClientImplementation(config: HttpClientConfig) extends HttpClientIm
       case c => throw new RuntimeException(s"Unsupported request content: $c")
     }.getOrElse {
       if (request.method != HttpMethod.Get) {
-        okhttp3.RequestBody.create(None.orNull, "")
+        okhttp3.RequestBody.create("", None.orNull)
       } else {
         None.orNull
       }

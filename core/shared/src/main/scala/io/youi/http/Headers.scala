@@ -26,7 +26,7 @@ case class Headers(map: TreeMap[String, List[String]] = TreeMap.empty(Ordering.b
 object Headers {
   val empty: Headers = Headers()
 
-  def apply(map: Map[String, List[String]]): Headers = apply(TreeMap[String, List[String]](map.toArray: _*)(Ordering.by(_.toLowerCase)))
+  def apply(map: Map[String, List[String]]): Headers = apply(TreeMap[String, List[String]](map.toList: _*)(Ordering.by(_.toLowerCase)))
 
   def `Cache-Control`: CacheControl.type = CacheControl
   case object `Connection` extends StringHeaderKey("Connection")

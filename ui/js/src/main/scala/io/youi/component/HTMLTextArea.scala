@@ -15,7 +15,12 @@ class HTMLTextArea(protected val element: html.TextArea,
     super.init()
 
     element.addEventListener("input", (_: Event) => {
-      value := element.value
+      valueChanging = true
+      try {
+        value := element.value
+      } finally {
+        valueChanging = false
+      }
     })
   }
 

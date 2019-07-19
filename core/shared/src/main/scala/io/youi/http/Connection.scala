@@ -99,7 +99,7 @@ class Connection {
   }
 
   def close(): Unit = if (connected()) {
-    send.close := Unit
+    send.close := ()
     _connected := false
   }
 }

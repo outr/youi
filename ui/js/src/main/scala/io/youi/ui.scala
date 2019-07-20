@@ -1,6 +1,7 @@
 package io.youi
 
 import io.youi.component.Container
+import io.youi.event.{EventSupport, HTMLEvents}
 import io.youi.style.{Display, Visibility}
 import io.youi.util.CanvasPool
 import org.scalajs.dom.{Event, document, window}
@@ -29,6 +30,15 @@ object ui extends Container(document.body) {
   lazy val ratio: Var[Double] = Var(displayRatio)
 
   lazy val title: Var[String] = Var(document.title)
+
+  override val event: EventSupport = new HTMLEvents(this, window)
+
+  event.key.down.attach { evt =>
+    evt.key.pressed.asInstanceOf[Var[Boolean]] := true
+  }
+  event.key.up.attach { evt =>
+    evt.key.pressed.asInstanceOf[Var[Boolean]] := false
+  }
 
   title.attach(document.title = _)
 

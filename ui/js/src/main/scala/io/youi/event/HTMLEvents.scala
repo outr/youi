@@ -3,7 +3,7 @@ package io.youi.event
 import io.youi._
 import io.youi.component.Component
 import io.youi.net.URL
-import org.scalajs.dom.html
+import org.scalajs.dom.raw.EventTarget
 import org.scalajs.{dom => jsdom}
 import reactify.{Channel, Val, Var}
 
@@ -84,7 +84,7 @@ trait EventSupport {
   def link(path: String): Unit = link(History.url().withPart(path))
 }
 
-class HTMLEvents(override protected val component: Component, element: html.Element) extends EventSupport {
+class HTMLEvents(override protected val component: Component, element: EventTarget) extends EventSupport {
   override protected def keyEvents(eventType: String, `type`: KeyEvent.Type): Channel[KeyEvent] = {
     val originalEvents = events[jsdom.KeyboardEvent](eventType)
     val channel = Channel[KeyEvent]

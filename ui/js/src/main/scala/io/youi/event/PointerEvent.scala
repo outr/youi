@@ -1,5 +1,6 @@
 package io.youi.event
 
+import io.youi.Key
 import io.youi.component.Component
 import io.youi.spatial.Point
 import org.scalajs.dom.raw
@@ -50,6 +51,17 @@ class PointerEvent private[event](val target: Component,
   lazy val twist: Double = htmlPointerEvent.map(_.twist).getOrElse(0.0)
   lazy val pointerType: String = htmlPointerEvent.map(_.pointerType).getOrElse("mouse")
   lazy val isPrimary: Boolean = htmlPointerEvent.forall(_.isPrimary)
+
+  private def modifierState(key: Key): Boolean = htmlMouseEvent.exists(_.getModifierState(key.value))
+
+  def altPressed: Boolean = modifierState(Key.Alt)
+  def altGraphPressed: Boolean = modifierState(Key.AltGraph)
+  def controlPressed: Boolean = modifierState(Key.Control)
+  def shiftPressed: Boolean = modifierState(Key.Shift)
+
+  def capsLockOn: Boolean = modifierState(Key.CapsLock)
+  def numLockOn: Boolean = modifierState(Key.NumLock)
+  def scrollLockOn: Boolean = modifierState(Key.ScrollLock)
 
   override def stopPropagation(): Unit = {
     super.stopPropagation()

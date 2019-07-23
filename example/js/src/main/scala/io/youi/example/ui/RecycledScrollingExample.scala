@@ -1,7 +1,7 @@
 package io.youi.example.ui
 
 import io.youi.component.bootstrap.Button
-import io.youi.component.recycled.{BatchedData, RecycledRenderer, RecycledScroller}
+import io.youi.component.recycled.{BatchedData, BetterRecycledScroller, RecycledRenderer, RecycledScroller}
 import io.youi.{Color, Key}
 import io.youi.component.{Container, HTMLTextInput, HTMLTextView}
 import io.youi.example.screen.UIExampleScreen
@@ -16,20 +16,18 @@ class RecycledScrollingExample extends UIExampleScreen {
   override def path: Path = path"/examples/recycled-scrolling.html"
 
   private val one = BatchedData(List(0))
+  private val five = BatchedData(List(0, 1, 2, 3, 4))
+  private val oneHundred = BatchedData((0 until 100).toList)
   private val tenThousand = BatchedData((0 until 10000).toList)
 
   override def createUI(): Future[Unit] = {
-    val scroller = new RecycledScroller[Int, NumberComponent](8, NumberComponentRenderer) {
-      pane1.background := Color.LightBlue
-      pane2.background := Color.LightPink
-      pane3.background := Color.LightGreen
-
+    val scroller = new BetterRecycledScroller[Int, NumberComponent](NumberComponentRenderer, cacheSize = 10000, pageSize = 10000) {
       position.center := container.size.center
       position.middle := container.size.middle
       size.width := 1000.0
       size.height := 500.0
       background := Color.LightGray
-      batch.data := one
+      batch.data := tenThousand
 
       batch.position.attach { p =>
         scribe.info(s"Position set to $p")
@@ -104,16 +102,34 @@ class RecycledScrollingExample extends UIExampleScreen {
       }
     }
 
+    val set5 = new Button {
+      value := "Set 5"
+      position.left := setNone.position.right + 10.0
+      position.top := scroller.position.bottom + 10.0
+      event.click.on {
+        scroller.batch.data := five
+      }
+    }
+
+    val set100 = new Button {
+      value := "Set 100"
+      position.left := set5.position.right + 10.0
+      position.top := scroller.position.bottom + 10.0
+      event.click.on {
+        scroller.batch.data := oneHundred
+      }
+    }
+
     val set10k = new Button {
       value := "Set 10,000"
-      position.left := set1.position.right + 10.0
+      position.left := set100.position.right + 10.0
       position.top := scroller.position.bottom + 10.0
       event.click.on {
         scroller.batch.data := tenThousand
       }
     }
 
-    container.children ++= List(scroller, inputSlider, textTotal, inputPosition, setNone, set1, set10k)
+    container.children ++= List(scroller, inputSlider, textTotal, inputPosition, setNone, set1, set5, set100, set10k)
 
     Future.successful(())
   }
@@ -123,7 +139,7 @@ class RecycledScrollingExample extends UIExampleScreen {
 
     position.`type` := Position.Absolute
     size.width := 1000.0
-    size.height := 50.0
+    size.height := 50.0 + (value() / 200.0)
     htmlBorder.radius := 5.0
     htmlBorder := HTMLBorder(1.0, HTMLBorderStyle.Dashed, Color.DarkRed)
 

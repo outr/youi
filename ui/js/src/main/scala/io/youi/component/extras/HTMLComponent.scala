@@ -1,13 +1,15 @@
 package io.youi.component.extras
 
 import io.youi.component.Component
-import io.youi.{AnimationFrame, dom, ui}
+import io.youi.{AnimationFrame, ResizeObserver, ResizeObserverEntry, dom, ui}
 import io.youi.dom._
 import io.youi.event.{EventSupport, HTMLEvents}
 import io.youi.style.{Display, Visibility}
 import io.youi.theme.{HTMLComponentTheme, Theme}
 import org.scalajs.dom.{Element, _}
 import reactify.{Val, Var}
+
+import scala.scalajs.js
 
 trait HTMLComponent[E <: html.Element] extends Component with HTMLComponentTheme {
   protected def element: E
@@ -66,6 +68,13 @@ trait HTMLComponent[E <: html.Element] extends Component with HTMLComponentTheme
     e.addEventListener("scroll", (_: Event) => {
       invalidateTransform()
     })
+
+    if (ui.supportsResizeObserver) {
+      val observer = new ResizeObserver((entries: js.Array[ResizeObserverEntry]) => {
+        invalidateTransform()
+      })
+      observer.observe(element)
+    }
 
     position.scroll.x.attach { v =>
       if (!scrolling) {

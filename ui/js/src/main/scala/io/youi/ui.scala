@@ -61,4 +61,6 @@ object ui extends Container(document.body) {
   override protected def measuredWidth: Double = window.innerWidth
 
   override protected def measuredHeight: Double = window.innerHeight
+
+  lazy val supportsResizeObserver: Boolean = js.eval("typeof ResizeObserver !== 'undefined'").asInstanceOf[Boolean]
 }

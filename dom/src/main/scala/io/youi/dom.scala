@@ -25,6 +25,8 @@ object dom extends ExtendedElement(None) {
 
   def create[T <: Element](tagName: String): T = document.createElement(tagName).asInstanceOf[T]
 
+  def text(value: String): Text = document.createTextNode(value)
+
   def fromString[T <: Element](htmlString: String): List[T] = {
     val container: Div = create[Div]("div")
     container.innerHTML = htmlString

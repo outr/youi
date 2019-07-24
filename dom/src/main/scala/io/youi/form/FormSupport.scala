@@ -20,45 +20,30 @@ trait FormSupport {
   object input {
     private var list = List.empty[FormInput]
 
-    def byId(id: String): FormInput = {
-      val fi = new FormInput(FormSupport.this, form.byId[html.Element](id))
-      list = list ::: List(fi)
-      fi
-    }
+    def byId(id: String): FormInput = apply(form.byId[html.Element](id))
+    def byName(name: String): FormInput = apply(form.oneByName[html.Element](name))
+    def byClass(className: String): FormInput = apply(form.oneByClass[html.Element](className))
 
-    def byName(name: String): FormInput = {
-      val fi = new FormInput(FormSupport.this, form.oneByName[html.Element](name))
-      list = list ::: List(fi)
-      fi
-    }
+    def get(element: html.Element): Option[FormInput] = list.find(_.element == element)
 
-    def byClass(className: String): FormInput = {
-      val fi = new FormInput(FormSupport.this, form.oneByClass[html.Element](className))
-      list = list ::: List(fi)
-      fi
+    def apply(element: html.Element): FormInput = get(element) match {
+      case Some(fi) => fi
+      case None => {
+        val fi = new FormInput(FormSupport.this, element)
+        list = list ::: List(fi)
+        fi
+      }
     }
 
     def all(): List[FormInput] = list
   }
 
-  def init(): Unit = {
+  def initForm(): Unit = {
     form.addEventListener("submit", (evt: Event) => {
       evt.preventDefault()
       evt.stopPropagation()
 
-      disable()
-      if (validate(ValidationMode.FormSubmit)) {
-        val future = submit()
-        future.onComplete {
-          case Success(result) => result.invoke(this)
-          case Failure(exception) => {
-            scribe.error(exception)
-            alert.danger("An internal error occurred")
-          }
-        }
-      } else {
-        enable()
-      }
+      submit()
     })
   }
 
@@ -93,10 +78,13 @@ trait FormSupport {
     form.byTag[html.TextArea]("textarea").foreach(_.value = "")
   }
 
-  object alert {
-    private val container = dom.create[html.Div]("div")
+  protected lazy val alertContainer: html.Element = {
+    val container = dom.create[html.Div]("div")
     container.insertFirst(form)
+    container
+  }
 
+  object alert {
     def success(message: String,
                 clearFirst: Boolean = true,
                 removeAfter: Option[FiniteDuration] = None): html.Div = {
@@ -131,7 +119,7 @@ trait FormSupport {
       alert.classList.add("alert-dismissible")
       alert.classList.add(s"alert-${`type`}")
       alert.innerHTML = message
-      container.appendChild(alert)
+      alertContainer.appendChild(alert)
 
       removeAfter.foreach { d =>
         Time.delay(d).foreach(_ => alert.remove())
@@ -141,7 +129,7 @@ trait FormSupport {
     }
 
     def clear(): Unit = {
-      container.innerHTML = ""
+      alertContainer.innerHTML = ""
     }
   }
 
@@ -155,7 +143,23 @@ trait FormSupport {
     invalidFields.isEmpty
   }
 
-  protected def submit(): Future[FormResult]
+  final def submit(): Unit = {
+    disable()
+    if (validate(ValidationMode.FormSubmit)) {
+      val future = process()
+      future.onComplete {
+        case Success(result) => result.invoke(this)
+        case Failure(exception) => {
+          scribe.error(exception)
+          alert.danger("An internal error occurred")
+        }
+      }
+    } else {
+      enable()
+    }
+  }
+
+  protected def process(): Future[FormResult]
 
   protected def onSuccess(): Unit = {
     clear()

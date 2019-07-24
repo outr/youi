@@ -5,10 +5,13 @@ import org.scalajs.dom.html
 import org.scalajs.dom.html.Element
 
 case class BootstrapFieldError(input: FormInput) extends FieldError {
-  private val errorDiv = create[html.Div]("div")
-  errorDiv.classList.add("invalid-tooltip")
-  clear()
-  input.element.parentElement.appendChild(errorDiv)
+  private lazy val errorDiv = {
+    val div = create[html.Div]("div")
+    div.classList.add("invalid-tooltip")
+    input.element.parentElement.appendChild(div)
+    div.style.display = "none"
+    div
+  }
 
   override lazy val element: Option[Element] = Some(errorDiv)
 

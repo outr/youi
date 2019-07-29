@@ -241,7 +241,7 @@ object UndertowServerImplementation extends ServerImplementationCreator {
           }
 
           override def onFullCloseMessage(channel: WebSocketChannel, message: BufferedBinaryMessage): Unit = {
-            connection.receive.close := ()
+            connection.receive.close.set(())
             super.onFullCloseMessage(channel, message)
           }
         })

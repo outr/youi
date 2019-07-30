@@ -2,9 +2,9 @@ package io.youi.layout
 
 import io.youi.component.Component
 import io.youi.layout.snap.Snap
+import reactify._
 
-class HorizontalLayout(spacing: Double = 0.0,
-                       initialSpacing: Double = 0.0) extends Layout {
+case class HorizontalLayout(spacing: Double = 0.0, initialSpacing: Double = 0.0) extends Layout {
   override def connect(container: Component): Unit = {
     update(container, Vector.empty)
   }
@@ -25,7 +25,7 @@ class HorizontalLayout(spacing: Double = 0.0,
       Snap(c).horizontalReset()
     }
     items.filter(c => c.visible() && c.includeInLayout()).foldLeft(Option.empty[Component])((previous, current) => {
-      Snap(current).horizontalReset().leftTo(previous.map(_.position.right()).getOrElse(initialSpacing) + spacing)
+      Snap(current).horizontalReset().leftTo(previous.map(_.position.right + spacing).getOrElse(initialSpacing))
       Some(current)
     })
   }

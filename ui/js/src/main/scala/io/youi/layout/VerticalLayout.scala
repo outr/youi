@@ -4,8 +4,7 @@ import io.youi.component.Component
 import io.youi.layout.snap.Snap
 import reactify._
 
-class VerticalLayout(spacing: Double = 0.0,
-                     initialSpacing: Double = 0.0) extends Layout {
+case class VerticalLayout(spacing: Double = 0.0, initialSpacing: Double = 0.0) extends Layout {
   override def connect(container: Component): Unit = {
     update(container, Vector.empty)
   }
@@ -26,7 +25,7 @@ class VerticalLayout(spacing: Double = 0.0,
       Snap(c).verticalReset()
     }
     items.filter(c => c.visible() && c.includeInLayout()).foldLeft(Option.empty[Component])((previous, current) => {
-      Snap(current).verticalReset().topTo(previous.map(_.position.bottom()).getOrElse(initialSpacing) + spacing)
+      Snap(current).verticalReset().topTo(previous.map(_.position.bottom + spacing).getOrElse(initialSpacing))
       Some(current)
     })
   }

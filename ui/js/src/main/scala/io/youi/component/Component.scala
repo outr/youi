@@ -110,8 +110,8 @@ trait Component extends TaskSupport with ComponentTheme {
   override def updateTransform(): Unit = {
     super.updateTransform()
 
-    size.measured.width := measuredWidth
-    size.measured.height := measuredHeight
+    size.measured.width.static(measuredWidth)
+    size.measured.height.static(measuredHeight)
   }
 
   @tailrec
@@ -146,6 +146,15 @@ trait Component extends TaskSupport with ComponentTheme {
 
   protected def measuredWidth: Double
   protected def measuredHeight: Double
+
+  def hasParent(parent: Component): Boolean = this.parent() match {
+    case Some(p) => if (parent == p) {
+      true
+    } else {
+      p.hasParent(parent)
+    }
+    case None => false
+  }
 
   override def toString: String = id()
 }

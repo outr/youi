@@ -20,12 +20,13 @@ class HTMLComponentPosition(override protected val component: HTMLComponent[_ <:
     e.style.zIndex = value.toString
   }
 
-  val `type`: StyleProp[Position] = component.style[Position]("position", if (x() == 0.0 && y() == 0.0) {
-    Position.Static
-  } else {
-    Position.Absolute
-  }, StyleConnect.style[Position], ignoreParent = true)
+  val `type`: StyleProp[Position] = component.style[Position]("position", Position.Static, StyleConnect.style[Position], ignoreParent = true)
 
+  x.and(y).once { _ =>
+    if (`type`() == Position.Static) {
+      `type` := Position.Absolute
+    }
+  }
   `type`.attach { _ =>
     e.style.left = s"${x()}px"
     e.style.top = s"${y()}px"

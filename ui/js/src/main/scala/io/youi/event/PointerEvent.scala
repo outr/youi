@@ -2,6 +2,7 @@ package io.youi.event
 
 import io.youi.Key
 import io.youi.component.Component
+import io.youi.component.extras.HTMLComponent
 import io.youi.spatial.Point
 import org.scalajs.dom.raw
 
@@ -51,6 +52,7 @@ class PointerEvent private[event](val target: Component,
   lazy val twist: Double = htmlPointerEvent.map(_.twist).getOrElse(0.0)
   lazy val pointerType: String = htmlPointerEvent.map(_.pointerType).getOrElse("mouse")
   lazy val isPrimary: Boolean = htmlPointerEvent.forall(_.isPrimary)
+  lazy val actualTarget: Option[Component] = HTMLComponent.find(target, htmlEvent.target)
 
   private def modifierState(key: Key): Boolean = htmlMouseEvent.exists(_.getModifierState(key.value))
 

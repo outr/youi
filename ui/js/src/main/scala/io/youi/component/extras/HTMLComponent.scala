@@ -1,6 +1,6 @@
 package io.youi.component.extras
 
-import io.youi.component.Component
+import io.youi.component.{AbstractContainer, Component}
 import io.youi.{AnimationFrame, ResizeObserver, ResizeObserverEntry, dom, ui}
 import io.youi.dom._
 import io.youi.event.{EventSupport, HTMLEvents}
@@ -156,4 +156,10 @@ object HTMLComponent extends HTMLComponentTheme {
   }
 
   def element(component: Component): html.Element = component.asInstanceOf[HTMLComponent[html.Element]].element
+
+  def find(component: Component, element: EventTarget): Option[Component] = component match {
+    case c: HTMLComponent[_] if c.element == element => Some(c)
+    case c: AbstractContainer[_] => AbstractContainer.children(c).flatMap(HTMLComponent.find(_, element)).headOption
+    case _ => None
+  }
 }

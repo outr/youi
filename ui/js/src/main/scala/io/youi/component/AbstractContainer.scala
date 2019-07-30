@@ -64,3 +64,7 @@ trait AbstractContainer[Child <: Component] extends Component { self =>
 
   override protected def childComponents: Vector[Component] = children()
 }
+
+object AbstractContainer {
+  def children[Child <: Component](container: AbstractContainer[Child]): Vector[Child] = container.children()
+}

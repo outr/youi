@@ -11,5 +11,7 @@ class MySession {
 }
 
 object MySession extends InMemorySessionManager[MySession] {
+  override protected def applyToURL: Boolean = true
+
   override protected def create(sessionId: String): Future[MySession] = Future.successful(new MySession)
 }

@@ -15,6 +15,11 @@ import scribe.Execution.global
   */
 trait SessionManager[Session] {
   /**
+    * Set to true to apply the session id to the URL. Defaults to false.
+    */
+  protected def applyToURL: Boolean = false
+
+  /**
     * Functional use of a Session via a transaction that is fully managed with the result being updated to the manager
     *
     * @param connection the HttpConnection to work with
@@ -133,7 +138,7 @@ trait SessionManager[Session] {
   protected def generateSessionId: String = Unique()
 
   /**
-    * Retrieves the session id from the request / response cookies if available.
+    * Retrieves the session id from the request / response cookies if available and from the URL if applyToURL is true.
     *
     * @param connection the HttpConnection to look in
     * @return the session id if found
@@ -141,6 +146,7 @@ trait SessionManager[Session] {
   protected def sessionId(connection: HttpConnection): Option[String] = {
     connection.store.get[String]("sessionId") match {
       case Some(id) => Some(id)
+      case _ if applyToURL => connection.request.url.param("sessionId")
       case None => {
         val config = connection.server.config.session
         connection.request.cookies.find(_.name == config.name()).map(_.value) match {
@@ -155,7 +161,8 @@ trait SessionManager[Session] {
   }
 
   /**
-    * Applies a new session id to an HttpConnection. Creates a cookie and sets it on the HttpResponse.
+    * Applies a new session id to an HttpConnection. Creates a cookie and sets it on the HttpResponse. Also updates the
+    * URL if applyToURL is true.
     *
     * @param id the session id to apply
     * @param connection the HttpConnection to use
@@ -178,7 +185,11 @@ trait SessionManager[Session] {
           httpOnly = config.httpOnly(),
           sameSite = config.sameSite()
         )
-        response.withHeader(Headers.Response.`Set-Cookie`(cookie))
+        if (applyToURL) {
+          response.withRedirect(connection.request.url.withParam("sessionId", id).toString)
+        } else {
+          response.withHeader(Headers.Response.`Set-Cookie`(cookie))
+        }
       }
     }
   }

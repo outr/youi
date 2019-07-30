@@ -2,7 +2,7 @@ package io.youi.app
 
 import io.youi.ajax.AjaxRequest
 import io.youi.app.screen.ScreenManager
-import io.youi.{History, JavaScriptError, JavaScriptLog}
+import io.youi.{History, JavaScriptError, JavaScriptLog, LocalStorage}
 import io.youi.app.sourceMap.ErrorTrace
 import org.scalajs.dom._
 import io.youi.dom._
@@ -50,6 +50,21 @@ trait ClientApplication extends YouIApplication with ScreenManager {
       if (!configuredConnectivity.contains(connectivity)) {
         configuredConnectivity += connectivity -> new ClientConnectivity(connectivity, this)
       }
+    }
+  }
+
+  // Client-side management and caching of URL-based session id
+  LocalStorage.get[String]("sessionId") match {
+    case Some(sessionId) => if (History.url().param("sessionId").contains(sessionId)) {
+      // Already set, nothing needed
+    } else {
+      // Redirect to stored session id
+      val url = History.url().withParam("sessionId", sessionId, append = false)
+      History.set(url)
+    }
+    case None => History.url.param("sessionId").foreach { sessionId =>
+      // Store the session id in local storage
+      LocalStorage("sessionId") = sessionId
     }
   }
 

@@ -5,7 +5,7 @@ import io.youi.component.{Container, HTMLTextView}
 import io.youi.example.screen.UIExampleScreen
 import io.youi.font.GoogleFont
 import io.youi.net._
-import io.youi.style.{HTMLBorder, HTMLBorderStyle}
+import io.youi.style.{HTMLBorder, HTMLBorderStyle, PointerEvents, WhiteSpace}
 import reactify._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -22,17 +22,37 @@ class MeasuredExample extends UIExampleScreen {
       font.size := 24.px
       color := Color.DarkBlue
       size.width := 600.px
-      position.center := container.size.center()
-      position.middle := container.size.middle()
+      position.center := container.size.center
+      position.middle := container.size.middle
     }
-    val outline = new Container {
+    val heading = new HTMLTextView {
+      value := "Heading Test"
+      font := fnt
+      font.size := 36.px
+      whiteSpace := WhiteSpace.NoWrap
+      color := Color.DarkBlue
+      position.center := container.size.center
+      position.bottom := textView.position.top - 10.0
+      event.click.on {
+        font.size.option.static(Some(font.size() + 5.0))
+      }
+    }
+    val textOutline = new Container {
+      pointerEvents := PointerEvents.None
       htmlBorder := HTMLBorder(2.0, HTMLBorderStyle.Dotted, Color.DarkRed)
-      size.width := textView.size.view.width()
-      size.height := textView.size.view.height()
-      position.center := container.size.center()
-      position.middle := container.size.middle()
+      size.width := textView.size.view.width
+      size.height := textView.size.view.height
+      position.center := container.size.center
+      position.middle := container.size.middle
     }
-    container.children += outline
-    container.children += textView
+    val headingOutline = new Container {
+      pointerEvents := PointerEvents.None
+      htmlBorder := HTMLBorder(2.0, HTMLBorderStyle.Dotted, Color.DarkGreen)
+      position.left := heading.position.left
+      position.top := heading.position.top
+      size.width := heading.size.view.width
+      size.height := heading.size.view.height
+    }
+    container.children ++= List(heading, textView, headingOutline, textOutline)
   }
 }

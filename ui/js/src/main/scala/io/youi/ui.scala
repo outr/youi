@@ -2,6 +2,7 @@ package io.youi
 
 import io.youi.component.Container
 import io.youi.event.{EventSupport, HTMLEvents}
+import io.youi.spatial.Size
 import io.youi.style.{Display, Visibility}
 import io.youi.util.CanvasPool
 import org.scalajs.dom.{Event, document, window}
@@ -58,9 +59,8 @@ object ui extends Container(document.body) {
     update(d)
   }
 
-  override protected def measuredWidth: Double = window.innerWidth
 
-  override protected def measuredHeight: Double = window.innerHeight
+  override protected def measure(s: Size): Size = s.set(window.innerWidth, window.innerHeight)
 
   lazy val supportsResizeObserver: Boolean = js.eval("typeof ResizeObserver !== 'undefined'").asInstanceOf[Boolean]
 }

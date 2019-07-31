@@ -4,6 +4,7 @@ import io.youi.component.{AbstractContainer, Component}
 import io.youi.{AnimationFrame, ResizeObserver, ResizeObserverEntry, dom, ui}
 import io.youi.dom._
 import io.youi.event.{EventSupport, HTMLEvents}
+import io.youi.spatial.Size
 import io.youi.style.{Display, Visibility}
 import io.youi.theme.{HTMLComponentTheme, Theme}
 import org.scalajs.dom.{Element, _}
@@ -127,8 +128,8 @@ trait HTMLComponent[E <: html.Element] extends Component with HTMLComponentTheme
     }
   }
 
-  override protected def measuredWidth: Double = size.view.width
-  override protected def measuredHeight: Double = size.view.height
+
+  override protected def measure(s: Size): Size = s.set(size.view.width, size.view.height)
 
   class Attribute(attribute: String, name: String) {
     lazy val key: String = s"$attribute-$name"

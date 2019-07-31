@@ -2,6 +2,7 @@ package io.youi.component
 
 import io.youi.component.extras.{ComponentPosition, ComponentSize}
 import io.youi.event.{EventSupport, Events, HTMLEvents}
+import io.youi.spatial.Size
 import io.youi.style.Visibility
 import io.youi.{MapStore, Store, Unique, Updatable}
 import io.youi.task.TaskSupport
@@ -107,11 +108,13 @@ trait Component extends TaskSupport with ComponentTheme {
     updateUpdatables(delta, internalUpdatables())
   }
 
+  private val measuredSize = Size.mutable()
   override def updateTransform(): Unit = {
     super.updateTransform()
 
-    size.measured.width.static(measuredWidth)
-    size.measured.height.static(measuredHeight)
+    measure(measuredSize)
+    size.measured.width.static(measuredSize.width)
+    size.measured.height.static(measuredSize.height)
   }
 
   @tailrec
@@ -144,8 +147,7 @@ trait Component extends TaskSupport with ComponentTheme {
     }
   }
 
-  protected def measuredWidth: Double
-  protected def measuredHeight: Double
+  protected def measure(size: Size): Size
 
   def hasParent(parent: Component): Boolean = this.parent() match {
     case Some(p) => if (parent == p) {
@@ -163,42 +165,4 @@ object Component extends ComponentTheme {
   override protected def defaultParentTheme: Theme = Theme
 
   def childrenFor(component: Component): Vector[Component] = component.childComponents
-
-  /*def prop[T](component: Component, get: => T): Val[T] = {
-    val v = Var(get)
-    var updating = false
-    component.every(25.millis) {
-      updating = true
-      try {
-        v := get
-      } finally {
-        updating = false
-      }
-    }
-    v
-  }
-
-  def prop[T](component: Component, get: => T, set: T => Unit): Var[T] = {
-    val v = Var(get)
-    var updating = false
-    component.every(25.millis) {
-      updating = true
-      try {
-        v.static(get)
-      } finally {
-        updating = false
-      }
-    }
-    v.attach { d =>
-      if (!updating) {
-        set(d)
-      }
-    }
-    v
-  }*/
-
-  object measured {
-    def width(component: Component): Double = component.measuredWidth
-    def height(component: Component): Double = component.measuredHeight
-  }
 }

@@ -7,6 +7,7 @@ import io.youi.event.{EventSupport, HTMLEvents}
 import io.youi.spatial.Size
 import io.youi.style.{Display, Visibility}
 import io.youi.theme.{HTMLComponentTheme, Theme}
+import io.youi.util.Measurer
 import org.scalajs.dom.{Element, _}
 import reactify.{Val, Var}
 
@@ -114,8 +115,9 @@ trait HTMLComponent[E <: html.Element] extends Component with HTMLComponentTheme
   override def updateTransform(): Unit = {
     super.updateTransform()
 
-    size.view.width.asInstanceOf[Var[Double]] := element.clientWidth
-    size.view.height.asInstanceOf[Var[Double]] := element.clientHeight
+    Measurer.measure(this, measuredSize)
+    size.view.width.asInstanceOf[Var[Double]] := measuredSize.width
+    size.view.height.asInstanceOf[Var[Double]] := measuredSize.height
     val rect = element.getBoundingClientRect()
     scrolling = true
     try {
@@ -127,7 +129,6 @@ trait HTMLComponent[E <: html.Element] extends Component with HTMLComponentTheme
       scrolling = false
     }
   }
-
 
   override protected def measure(s: Size): Size = s.set(size.view.width, size.view.height)
 

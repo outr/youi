@@ -20,7 +20,7 @@ class HTMLTextView(protected val element: html.Element,
   override def componentType: String = "HTMLTextView"
 
   override protected def measure(s: Size): Size = {
-    Measurer.measure(element, s)
+    Measurer.measure(this, s)
   }
 }
 

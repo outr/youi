@@ -1,7 +1,7 @@
 package io.youi.component.extras
 
 import io.youi.component.Component
-import io.youi.spatial.Size
+import io.youi.spatial.{Dim, DimType, Size}
 import reactify.{Val, Var}
 
 import scala.language.implicitConversions
@@ -29,7 +29,7 @@ trait ComponentSize {
   reset()
 
   def reset(width: Boolean = true, height: Boolean = true): Unit = {
-    if (width) this.width.set(measured.width())
-    if (height) this.height.set(measured.height())
+    if (width) this.width.set(Dim(measured.width(), DimType.Auto))
+    if (height) this.height.set(Dim(measured.height(), DimType.Auto))
   }
 }

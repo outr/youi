@@ -1,7 +1,9 @@
 package io.youi.util
 
+import io.youi.component.Component
+import io.youi.component.extras.HTMLComponent
 import io.youi.dom
-import io.youi.spatial.Size
+import io.youi.spatial.{DimType, Size}
 import org.scalajs.dom._
 
 object Measurer {
@@ -11,23 +13,31 @@ object Measurer {
     span.style.visibility = "hidden"
     span.style.width = "auto"
     span.style.height = "auto"
-    span.style.whiteSpace = "nowrap"
     document.body.appendChild(span)
     span
   }
 
-  def measure(element: html.Element, size: Size = Size.zero): Size = measureHTML(element.outerHTML, size)
+  def measure(component: Component, size: Size): Size = {
+    val width = if (component.size.width().`type` == DimType.Auto) "auto" else s"${component.size.width().value}px"
+    val height = if (component.size.height().`type` == DimType.Auto) "auto" else s"${component.size.height().value}px"
+    measure(HTMLComponent.element(component), width, height, size)
+  }
 
-  def measureHTML(htmlString: String, size: Size = Size.zero): Size = {
+  def measure(element: html.Element,
+              width: String,
+              height: String,
+              size: Size): Size = measureHTML(element.outerHTML, width, height, size)
+
+  def measureHTML(htmlString: String, width: String, height: String, size: Size): Size = {
     container.innerHTML = htmlString
     val e = container.firstElementChild.asInstanceOf[html.Element]
-    e.style.width = "auto"
-    e.style.height = "auto"
-    e.style.whiteSpace = "nowrap"
+    e.style.width = width
+    if (width != "auto") e.style.display = "block"
+    e.style.height = height
     e.style.position = "static"
-    e.style.visibility = "hidden"
 
     val bounding = e.getBoundingClientRect()
+    container.innerHTML = ""
     size.set(bounding.width, bounding.height)
   }
 }

@@ -2,7 +2,7 @@ package io.youi.component
 
 import io.youi.component.extras.{ComponentPosition, ComponentSize}
 import io.youi.event.{EventSupport, Events, HTMLEvents}
-import io.youi.spatial.Size
+import io.youi.spatial.{MutableSize, Size}
 import io.youi.style.Visibility
 import io.youi.{MapStore, Store, Unique, Updatable}
 import io.youi.task.TaskSupport
@@ -108,7 +108,7 @@ trait Component extends TaskSupport with ComponentTheme {
     updateUpdatables(delta, internalUpdatables())
   }
 
-  private val measuredSize = Size.mutable()
+  protected val measuredSize: MutableSize = Size.mutable()
   override def updateTransform(): Unit = {
     super.updateTransform()
 

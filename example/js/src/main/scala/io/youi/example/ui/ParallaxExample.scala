@@ -25,6 +25,7 @@ class ParallaxExample extends UIExampleScreen {
       font := fnt
       font.size := {
         val p = ui.position.scroll.percent.y()
+        scribe.info(s"Percent: $p / ${ui.position.scroll.y()} / ${ui.size.view.height()} / ${ui.size.scroll.height()} / ${ui.size.height()}")
         val modifier = 24.0 * ((p - 0.5) * 2.0)
         64.0 + modifier
       }

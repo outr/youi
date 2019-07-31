@@ -115,9 +115,8 @@ trait HTMLComponent[E <: html.Element] extends Component with HTMLComponentTheme
   override def updateTransform(): Unit = {
     super.updateTransform()
 
-    Measurer.measure(this, measuredSize)
-    size.view.width.asInstanceOf[Var[Double]] := measuredSize.width
-    size.view.height.asInstanceOf[Var[Double]] := measuredSize.height
+    size.view.width.asInstanceOf[Var[Double]] := element.clientWidth
+    size.view.height.asInstanceOf[Var[Double]] := element.clientHeight
     val rect = element.getBoundingClientRect()
     scrolling = true
     try {
@@ -130,7 +129,7 @@ trait HTMLComponent[E <: html.Element] extends Component with HTMLComponentTheme
     }
   }
 
-  override protected def measure(s: Size): Size = s.set(size.view.width, size.view.height)
+  override protected def measure(s: Size): Size = Measurer.measure(this, s)
 
   class Attribute(attribute: String, name: String) {
     lazy val key: String = s"$attribute-$name"

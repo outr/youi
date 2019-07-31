@@ -28,10 +28,10 @@ class RecycledScroller[T, C <: Component](perPage: Int, renderer: RecycledRender
 
   // TODO: create "scroll" in gestures
   event.pointer.wheel.attach { evt =>
-    val delta = if (evt.delta.y > middle.size.height()) {
-      middle.size.height()
+    val delta: Double = if (evt.delta.y > middle.size.height()) {
+      middle.size.height
     } else if (evt.delta.y < -middle.size.height()) {
-      -middle.size.height()
+      -middle.size.height
     } else {
       evt.delta.y
     }

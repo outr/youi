@@ -2,6 +2,7 @@ package io.youi.component
 
 import io.youi.component.extras.HTMLComponent
 import io.youi.dom._
+import io.youi.spatial.Size
 import io.youi.theme.{Theme, VideoViewTheme}
 import org.scalajs.dom.{document, html}
 
@@ -20,9 +21,7 @@ class VideoView(override protected val element: html.Element = create[html.Eleme
     if (autoPauseOnHide() && !b) pause()
   }
 
-  override protected def measuredWidth: Double = video.width.toDouble
-
-  override protected def measuredHeight: Double = video.height.toDouble
+  override protected def measure(s: Size): Size = s.set(video.width.toDouble, video.height.toDouble)
 }
 
 object VideoView extends VideoViewTheme {

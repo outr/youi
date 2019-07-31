@@ -2,6 +2,7 @@ package io.youi.component
 
 import io.youi.component.extras.HTMLComponent
 import io.youi.layout.Layout
+import io.youi.spatial.Size
 import io.youi.theme.{HTMLContainerTheme, Theme}
 import org.scalajs.dom.html
 import reactify.Var
@@ -13,12 +14,11 @@ abstract class HTMLContainer[Child <: Component](override protected val element:
 
   override protected def defaultParentTheme: Theme = HTMLContainer
 
-  override protected def measuredWidth: Double = {
-    math.max(super.measuredWidth, children.foldLeft(0.0)((max, child) => math.max(max, child.position.right)))
-  }
-
-  override protected def measuredHeight: Double = {
-    math.max(super.measuredHeight, children.foldLeft(0.0)((max, child) => math.max(max, child.position.bottom)))
+  override protected def measure(s: Size): Size = {
+    super.measure(s)
+    val width = math.max(s.width, children.foldLeft(0.0)((max, child) => math.max(max, child.position.right)))
+    val height = math.max(s.height, children.foldLeft(0.0)((max, child) => math.max(max, child.position.bottom)))
+    s.set(width, height)
   }
 }
 

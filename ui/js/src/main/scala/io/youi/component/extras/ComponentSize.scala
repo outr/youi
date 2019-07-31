@@ -4,6 +4,8 @@ import io.youi.component.Component
 import io.youi.spatial.Size
 import reactify.{Val, Var}
 
+import scala.language.implicitConversions
+
 trait ComponentSize {
   protected def component: Component
 
@@ -18,8 +20,8 @@ trait ComponentSize {
     lazy val height: Var[Double] = Var(0.0)
   }
 
-  lazy val width: Var[Double] = Var(0.0)
-  lazy val height: Var[Double] = Var(0.0)
+  lazy val width: NumberVar = new NumberVar
+  lazy val height: NumberVar = new NumberVar
 
   lazy val center: Val[Double] = Val(width / 2.0)
   lazy val middle: Val[Double] = Val(height / 2.0)

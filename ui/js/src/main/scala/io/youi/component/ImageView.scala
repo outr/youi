@@ -16,7 +16,7 @@ class ImageView(implementation: ImageViewImplementation = HTMLImageViewImplement
   override protected def defaultParentTheme: Theme = ImageView
 
   lazy val image: StyleProp[Image] = {
-    val i = style[Image]("src", Image.empty, None)
+    val i = style[Image]("src", Image.empty, None, updatesTransform = true)
     i.attach { img =>
       implementation(this, img)
     }

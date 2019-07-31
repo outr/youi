@@ -16,9 +16,9 @@ object Measurer {
     span
   }
 
-  def measure(element: html.Element): Size = measure(element.outerHTML)
+  def measure(element: html.Element, size: Size = Size.zero): Size = measureHTML(element.outerHTML, size)
 
-  def measure(htmlString: String): Size = {
+  def measureHTML(htmlString: String, size: Size = Size.zero): Size = {
     container.innerHTML = htmlString
     val e = container.firstElementChild.asInstanceOf[html.Element]
     e.style.width = "auto"
@@ -28,6 +28,6 @@ object Measurer {
     e.style.visibility = "hidden"
 
     val bounding = e.getBoundingClientRect()
-    Size(bounding.width, bounding.height)
+    size.set(bounding.width, bounding.height)
   }
 }

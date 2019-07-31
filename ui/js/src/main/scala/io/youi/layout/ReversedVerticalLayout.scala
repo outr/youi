@@ -24,7 +24,7 @@ class ReversedVerticalLayout(spacing: Double = 0.0) extends Layout {
       Snap(c).verticalReset()
     }
     items.filter(c => c.visible() && c.includeInLayout()).foldLeft(Option.empty[Component])((previous, current) => {
-      Snap(current).verticalReset().bottomTo(previous.map(_.position.top()).getOrElse(container.size.height()) - spacing)
+      Snap(current).verticalReset().bottomTo(previous.map(_.position.top()).getOrElse(container.size.height.value) - spacing)
       Some(current)
     })
   }

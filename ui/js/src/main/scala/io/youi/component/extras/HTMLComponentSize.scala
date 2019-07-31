@@ -9,18 +9,10 @@ class HTMLComponentSize(override protected val component: Component) extends Com
   private def e: html.Element = HTMLComponent.element(component)
 
   width.attach { value =>
-//    if (value != measured.width()) {
-      e.style.width = s"${value.ceil}px"
-//    } else {
-//      e.style.removeProperty("width")
-//    }
+    e.style.width = s"${value.ceil}px"
   }
   height.attach { value =>
-//    if (value != measured.height()) {
-      e.style.height = s"${value.ceil}px"
-//    } else {
-//      e.style.removeProperty("height")
-//    }
+    e.style.height = s"${value.ceil}px"
   }
 
   object view {

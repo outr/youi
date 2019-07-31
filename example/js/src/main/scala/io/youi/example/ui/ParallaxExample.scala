@@ -5,6 +5,7 @@ import io.youi.component.HTMLTextView
 import io.youi.example.screen.UIExampleScreen
 import io.youi.font.GoogleFont
 import io.youi.net._
+import io.youi.spatial.Dim
 import io.youi.style.{Overflow, Position}
 import reactify._
 
@@ -17,7 +18,7 @@ class ParallaxExample extends UIExampleScreen {
 
   override def createUI(): Future[Unit] = GoogleFont.`Lobster`.load().map { fnt =>
     register(ui.overflow.y, Overflow.Auto)
-    register(ui.size.height, 4000.px)
+    register(ui.size.height, Dim(4000))
 
     val textView = new HTMLTextView {
       value := s"Hello, World"

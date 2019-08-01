@@ -5,7 +5,8 @@ import io.youi.font.{FontAwesome, GoogleFont, GoogleFontWeight, MaterialIcon, Ma
 import io.youi.paint.Paint
 import io.youi.task.PartialAnimate
 import io.youi.theme.StyleProp
-import org.scalajs.dom.html.Div
+import io.youi.util.Time
+import org.scalajs.dom._
 import org.scalajs.dom.raw.CanvasRenderingContext2D
 import org.scalajs.dom.{KeyboardEvent, document, html}
 import reactify._
@@ -16,9 +17,11 @@ import scala.language.implicitConversions
 import scala.scalajs.js
 import scribe.Execution.global
 
+import scala.concurrent.duration._
+
 package object youi {
   lazy val ppi: Double = {
-    val div = dom.create[Div]("div")
+    val div = dom.create[html.Div]("div")
     div.style.width = "1in"
     document.body.appendChild(div)
     try {
@@ -40,9 +43,32 @@ package object youi {
 
   implicit class ExtendedFontAwesome(font: FontAwesome) {
     def load(): Future[FontAwesome] = {
-      dom.addScript("https://kit.fontawesome.com/afbab8b8a9.js", addToHead = true).map { _ =>
-        font
+      val e = dom.create[html.Element]("i")
+      e.classList.add("fas")
+      e.classList.add("fa-question")
+      e.style.visibility = "hidden"
+      document.body.appendChild(e)
+      dom.addScript("https://kit.fontawesome.com/afbab8b8a9.js").flatMap { _ =>
+        waitForComputed(e, "font-family", 50.milliseconds) { value =>
+          val b = value.contains("Font Awesome")
+          if (b) document.body.removeChild(e)
+          b
+        }.map(_ => font)
       }
+    }
+  }
+
+  private def waitForComputed(e: html.Element,
+                              key: String,
+                              delay: FiniteDuration)
+                             (matcher: String => Boolean): Future[Unit] = {
+    val value = window.getComputedStyle(e).getPropertyValue(key)
+    if (matcher(value)) {
+      // Finished
+      Future.successful(())
+    } else {
+      // Delay and try again
+      Time.delay(delay).flatMap(_ => waitForComputed(e, key, delay)(matcher))
     }
   }
 

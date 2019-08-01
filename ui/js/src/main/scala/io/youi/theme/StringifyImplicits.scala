@@ -15,6 +15,7 @@ trait StringifyImplicits {
   implicit def stringifyPointerEvents: Stringify[PointerEvents] = PointerEvents
   implicit def stringifyButtonType: Stringify[ButtonType] = ButtonType
   implicit def stringifyButtonSize: Stringify[ButtonSize] = ButtonSize
+  implicit def stringifyTextAlign: Stringify[TextAlign] = TextAlign
   implicit def stringifyWhiteSpace: Stringify[WhiteSpace] = WhiteSpace
   implicit def stringifyPosition: Stringify[Position] = Position
   implicit def stringifyPaint: Stringify[Paint] = Paint

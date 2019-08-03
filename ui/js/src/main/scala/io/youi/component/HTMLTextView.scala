@@ -3,9 +3,7 @@ package io.youi.component
 import io.youi.component.extras.HTMLComponent
 import io.youi._
 import io.youi.dom._
-import io.youi.spatial.Size
 import io.youi.theme.{HTMLTextViewTheme, Theme}
-import io.youi.util.Measurer
 import org.scalajs.dom._
 import org.scalajs.dom.html.Input
 
@@ -18,10 +16,6 @@ class HTMLTextView(protected val element: html.Element,
   override protected def defaultParentTheme: Theme = HTMLTextView
 
   override def componentType: String = "HTMLTextView"
-
-  override protected def measure(s: Size): Size = {
-    Measurer.measure(this, s)
-  }
 }
 
 object HTMLTextView extends HTMLTextViewTheme {

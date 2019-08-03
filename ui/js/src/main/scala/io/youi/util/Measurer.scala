@@ -23,6 +23,7 @@ object Measurer {
     measure(HTMLComponent.element(component), width, height, size)
   }
 
+  // TODO: create element pool and reuse
   def measure(element: html.Element,
               width: String,
               height: String,

@@ -16,7 +16,8 @@ class UIExamples extends UIExampleScreen {
   override def path: Path = path"/ui-examples.html"
 
   override def createUI(): Future[Unit] = super.load().map { _ =>
-    register(ui.overflow.y, Overflow.Auto)
+//    register(ui.overflow.y, Overflow.Auto)
+    ui.overflow.y := Overflow.Auto
     var previous: Option[Button] = None
     ClientExampleApplication.screens().collect {
       case screen: UIExampleScreen if screen.title != title => screen

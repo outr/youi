@@ -53,6 +53,7 @@ object ClientExampleApplication extends ExampleApplication with ClientApplicatio
   val parallax: ParallaxExample = new ParallaxExample
   val recycledScrolling: RecycledScrollingExample = new RecycledScrollingExample
   val scale9: Scale9Example = new Scale9Example
+  val select: SelectExample = new SelectExample
   val snap: SnapExample = new SnapExample
   val svgImage: SVGImageExample = new SVGImageExample
   val text: TextViewExample = new TextViewExample

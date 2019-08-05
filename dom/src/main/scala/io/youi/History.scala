@@ -46,8 +46,8 @@ object History {
     })
   }
 
-  def set(url: URL): Unit = {
-    document.location.href = url.toString
+  def set(url: URL, target: String = "_self"): Unit = {
+    window.open(url.toString, target)
     stateChange := HistoryStateChange(url, StateType.Set, null)
   }
 

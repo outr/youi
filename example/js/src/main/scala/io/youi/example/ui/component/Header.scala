@@ -4,10 +4,13 @@ import io.youi.component.{Container, HTMLTextView, ImageView}
 import io.youi.example.ClientExampleApplication
 import io.youi._
 import io.youi.app.screen.ScreenManager
+import io.youi.example.screen.UIExampleScreen
+import io.youi.example.ui.UIExamples
 import io.youi.font.GoogleFont
 import io.youi.image.Image
 import io.youi.paint.Paint
-import io.youi.style.{Position, WhiteSpace}
+import io.youi.style.{Display, Position, WhiteSpace}
+import reactify._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -45,6 +48,28 @@ class Header extends Container { self =>
     position.top := 15.0
   }
 
-  children += logo
-  children += title
+  val link: HTMLTextView = new HTMLTextView {
+    GoogleFont.`Open Sans`.`600`.load().foreach { fnt =>
+      font := fnt
+    }
+    font.size := 14.pt
+    color := application.colors.blue.dark
+    value := "View Source"
+    cursor := Cursor.Pointer
+    ScreenManager().active.attachAndFire {
+      case _: UIExampleScreen => display := Display.Block
+      case _ => display := Display.None
+    }
+    event.click.on {
+      ScreenManager().active() match {
+        case screen: UIExampleScreen => History.set(screen.url, "_blank")
+        case _ =>
+      }
+    }
+    whiteSpace := WhiteSpace.NoWrap
+    position.right := ui.size.width - 25.0
+    position.top := title.position.bottom - 5.0
+  }
+
+  children ++= List(logo, title, link)
 }

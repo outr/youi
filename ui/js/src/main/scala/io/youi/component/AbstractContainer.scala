@@ -60,6 +60,7 @@ trait AbstractContainer[Child <: Component] extends Component { self =>
     added.foreach(_.parent := Some(self))
 
     layout.childrenChanged(self, removed, added)
+    invalidateTransform()
   }
 
   override protected def childComponents: Vector[Component] = children()

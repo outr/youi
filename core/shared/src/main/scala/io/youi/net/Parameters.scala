@@ -21,7 +21,12 @@ case class Parameters(entries: List[(String, Param)]) {
     replaceParam(key, List(value))
   }
 
-  def param(key: String, param: Param): Parameters = copy(entries = key -> param :: removeParam(key).entries)
+  def param(key: String, param: Param, append: Boolean = false): Parameters = if (append) {
+    val updated = Param(values(key) ::: param.values)
+    copy(entries = key -> updated :: removeParam(key).entries)
+  } else {
+    copy(entries = key -> param :: removeParam(key).entries)
+  }
 
   def appendParam(key: String, value: String): Parameters = {
     val values = this.values(key)
@@ -97,7 +102,7 @@ object Parameters {
       case (key, value) if key.nonEmpty => URL.decode(key) -> Param(List(URL.decode(value.substring(1))))
       case (_, value) if value.nonEmpty => URL.decode(value) -> Param(Nil)
     }.foreach {
-      case (key, value) => params = params.param(key, value)
+      case (key, value) => params = params.param(key, value, append = true)
     }
     params
   }

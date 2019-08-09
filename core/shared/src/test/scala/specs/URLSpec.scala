@@ -21,6 +21,10 @@ class URLSpec extends WordSpec with Matchers {
         val url = URL("http://www.outr.com/test?test=one&test=two")
         url.paramList("test") should be(List("one", "two"))
       }
+      "properly encode a URL with a pipe" in {
+        val url = URL("http://youi.io").withParam("testing", "one|two")
+        url.encoded.toString should be("http://youi.io/?testing=one%7Ctwo")
+      }
       "properly parse a relative URL" in {
         val url = URL("http://www.outr.com/examples/../images/test.png")
         url.path.encoded should equal("/images/test.png")

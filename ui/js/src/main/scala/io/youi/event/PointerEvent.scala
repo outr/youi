@@ -19,9 +19,9 @@ class PointerEvent private[event](val target: Component,
   lazy val local: Point = Point(x, y)
   lazy val global: Point = Point(globalX, globalY)
 
-  def isTouch: Boolean = htmlEventType == HTMLEventType.Touch
-  def isPointer: Boolean = htmlEventType == HTMLEventType.Pointer
-  def isMouse: Boolean = !isTouch
+  def isTouch: Boolean = `type`.isTouch
+  def isPointer: Boolean = `type`.isPointer
+  def isMouse: Boolean = `type`.isMouse
 
   def htmlMouseEvent: Option[raw.MouseEvent] = if (isMouse) {
     Some(htmlEvent.asInstanceOf[raw.MouseEvent])
@@ -103,6 +103,10 @@ object PointerEvent {
       case s if s.startsWith("touch") => HTMLEventType.Touch
       case _ => HTMLEventType.Mouse
     }
+
+    def isTouch: Boolean = htmlType == HTMLEventType.Touch
+    def isPointer: Boolean = htmlType == HTMLEventType.Pointer
+    def isMouse: Boolean = !isTouch
   }
 
   object Type {

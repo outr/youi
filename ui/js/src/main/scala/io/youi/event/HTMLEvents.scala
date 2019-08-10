@@ -109,17 +109,21 @@ class HTMLEvents(override protected val component: Component, element: EventTarg
   override protected def pointerChannel(`type`: PointerEvent.Type): Channel[PointerEvent] = {
     val channel = Channel[PointerEvent]
     element.addEventListener(`type`.htmlTypeString, (evt: jsdom.MouseEvent) => {
-      val p = PointerEvent(
-        target = component,
-        `type` = `type`,
-        x = evt.clientX,
-        y = evt.clientY,
-        globalX = evt.pageX,
-        globalY = evt.pageY,
-        htmlEvent = evt,
-        htmlEventType = `type`.htmlType
-      )
-      channel := p
+      try {
+        val p = PointerEvent(
+          target = component,
+          `type` = `type`,
+          x = if (`type`.isTouch) 0.0 else evt.clientX,
+          y = if (`type`.isTouch) 0.0 else evt.clientY,
+          globalX = if (`type`.isTouch) 0.0 else evt.pageX,
+          globalY = if (`type`.isTouch) 0.0 else evt.pageY,
+          htmlEvent = evt,
+          htmlEventType = `type`.htmlType
+        )
+        channel := p
+      } catch {
+        case t: Throwable => throw new RuntimeException(s"Error while creating pointer event for ${`type`}", t)
+      }
     })
     channel
   }

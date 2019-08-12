@@ -8,7 +8,7 @@ import org.scalajs.dom._
 import io.youi.dom._
 import io.youi.net.URL
 import profig.JsonUtil
-import scribe.LogRecord
+import scribe.{Level, LogRecord}
 import scribe.output.LogOutput
 import scribe.writer.Writer
 
@@ -74,8 +74,28 @@ trait ClientApplication extends YouIApplication with ScreenManager {
 }
 
 object ClientApplication {
-  lazy val logWriter: Writer = new Writer {
-    override def write[M](record: LogRecord[M], output: LogOutput): Unit = sendLog(JavaScriptLog(output.plainText))
+  def logWriter(maximumBytes: Long = -1L,
+                maximumRecords: Int = -1,
+                maximumErrors: Int = -1): Writer = new Writer {
+    private var bytesWritten = 0L
+    private var recordsWritten = 0
+    private var errorsWritten = 0
+    private var enabled = true
+
+    override def write[M](record: LogRecord[M], output: LogOutput): Unit = if (enabled) {
+      val text = output.plainText
+      bytesWritten += text.length
+      recordsWritten += 1
+      if (record.level >= Level.Error) errorsWritten += 1
+      sendLog(JavaScriptLog(text))
+      if (maximumBytes != -1L && bytesWritten >= maximumBytes) {
+        enabled = false
+      } else if (maximumRecords != -1 && recordsWritten >= maximumRecords) {
+        enabled = false
+      } else if (maximumErrors != -1 && errorsWritten >= maximumErrors) {
+        enabled = false
+      }
+    }
   }
 
   private var instance: ClientApplication = _

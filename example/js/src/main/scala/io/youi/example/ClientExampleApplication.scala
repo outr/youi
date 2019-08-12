@@ -82,7 +82,7 @@ object ClientExampleApplication extends ExampleApplication with ClientApplicatio
   def main(): Unit = {
     // Write the JavaScript logging messages to the server console
     scribe.Logger.root.withHandler(
-      writer = ClientApplication.logWriter,
+      writer = ClientApplication.logWriter(),
       minimumLevel = Some(scribe.Level.Info)
     ).replace()
 

@@ -32,7 +32,7 @@ trait Updates extends Updatable {
 
         untilTimeout.foreach { total =>
           if (totalElapsed >= total) {
-            delta.reactions += reaction
+            delta.reactions -= reaction
           }
         }
       }

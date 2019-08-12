@@ -77,7 +77,7 @@ trait HTMLComponent[E <: html.Element] extends Component with HTMLComponentTheme
       })
       observer.observe(element)
     } else {
-      val observer = new MutationObserver((entries: js.Array[MutationRecord], _) => {
+      val observer = new MutationObserver((entries: js.Array[MutationRecord], _: MutationObserver) => {
         val records = entries.toList.filterNot(_.attributeName.startsWith("aria"))
         if (records.nonEmpty) {
           invalidateTransform()

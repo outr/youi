@@ -25,9 +25,9 @@ trait Updates extends Updatable {
     var reaction: Reaction[Double] = null
     reaction = delta.attach { d =>
       elapsed += d
-      totalElapsed += d
       if (elapsed >= timeout) {
         elapsed = 0.0
+        totalElapsed += timeout
         f
 
         untilTimeout.foreach { total =>

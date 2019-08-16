@@ -14,5 +14,11 @@ abstract class HTMLEvent(val target: Component,
     htmlEvent.stopPropagation()
   }
 
+  def stopImmediatePropagation(): Unit = {
+    stopPropagation()
+
+    htmlEvent.stopImmediatePropagation()
+  }
+
   def preventDefault(): Unit = htmlEvent.preventDefault()
 }

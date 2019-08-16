@@ -8,14 +8,14 @@ import org.scalajs.dom.raw
 
 import scala.scalajs.js
 
-class PointerEvent private[event](val target: Component,
+class PointerEvent private[event](target: Component,
                                   val `type`: PointerEvent.Type,
                                   val x: Double,
                                   val y: Double,
                                   val globalX: Double,
                                   val globalY: Double,
-                                  val htmlEvent: raw.UIEvent,
-                                  val htmlEventType: HTMLEventType) extends Event {
+                                  htmlEvent: raw.UIEvent,
+                                  val htmlEventType: HTMLEventType) extends HTMLEvent(target, htmlEvent) {
   lazy val local: Point = Point(x, y)
   lazy val global: Point = Point(globalX, globalY)
 
@@ -52,7 +52,6 @@ class PointerEvent private[event](val target: Component,
   lazy val twist: Double = htmlPointerEvent.map(_.twist).getOrElse(0.0)
   lazy val pointerType: String = htmlPointerEvent.map(_.pointerType).getOrElse("mouse")
   lazy val isPrimary: Boolean = htmlPointerEvent.forall(_.isPrimary)
-  lazy val actualTarget: Option[Component] = HTMLComponent.find(target, htmlEvent.target)
 
   private def modifierState(key: Key): Boolean = htmlMouseEvent.exists(_.getModifierState(key.value))
 
@@ -64,13 +63,6 @@ class PointerEvent private[event](val target: Component,
   def capsLockOn: Boolean = modifierState(Key.CapsLock)
   def numLockOn: Boolean = modifierState(Key.NumLock)
   def scrollLockOn: Boolean = modifierState(Key.ScrollLock)
-
-  override def stopPropagation(): Unit = {
-    super.stopPropagation()
-
-    htmlEvent.stopPropagation()
-  }
-  def preventDefault(): Unit = htmlEvent.preventDefault()
 
   override def toString: String = s"PointerEvent(type: ${`type`}, local: $local, global: $global)"
 }

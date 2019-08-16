@@ -89,7 +89,7 @@ class HTMLEvents(override protected val component: Component, element: EventTarg
     val originalEvents = events[jsdom.KeyboardEvent](eventType)
     val channel = Channel[KeyEvent]
     originalEvents.attach { ke =>
-      ke.toKeyEvent(`type`).foreach(channel := _)
+      ke.toKeyEvent(component, `type`).foreach(channel := _)
     }
     channel
   }

@@ -1,5 +1,6 @@
 package io
 
+import io.youi.component.Component
 import io.youi.event.KeyEvent
 import io.youi.font.{FontAwesome, GoogleFont, GoogleFontWeight, MaterialIcon, MaterialIconView}
 import io.youi.paint.Paint
@@ -111,17 +112,14 @@ package object youi {
   }
 
   implicit class ExtendedKeyboardEvent(evt: KeyboardEvent) {
-    def toKeyEvent(`type`: KeyEvent.Type): Option[KeyEvent] = {
+    def toKeyEvent(target: Component, `type`: KeyEvent.Type): Option[KeyEvent] = {
       Key.get(evt.key).map { key =>
-        KeyEvent(
+        new KeyEvent(
+          target = target,
           `type` = `type`,
           key = key,
           repeat = evt.repeat,
-          modifierState = (k: Key) => evt.getModifierState(k.value),
-          preventDefault = () => evt.preventDefault(),
-          defaultPrevented = () => evt.defaultPrevented,
-          stopImmediatePropagation = () => evt.stopImmediatePropagation(),
-          stopPropagation = () => evt.stopPropagation()
+          htmlEvent = evt
         )
       }
     }

@@ -68,7 +68,22 @@ trait ClientApplication extends YouIApplication with ScreenManager {
     }
   }
 
-  def autoReload: Boolean = true
+  def reconnectStrategy: ReconnectStrategy = ReconnectStrategy.Reload
+
+  def reConnect(): Unit = {
+    configuredConnectivity.values.foreach(_.disconnect())
+    configuredConnectivity = Map.empty
+
+    connectivityEntries.foreach { connectivity =>
+      if (!configuredConnectivity.contains(connectivity)) {
+        configuredConnectivity += connectivity -> new ClientConnectivity(connectivity, this)
+      }
+    }
+
+    reConnected()
+  }
+
+  protected def reConnected(): Unit = {}
 
   override def cached(url: URL): String = url.asPath()
 }

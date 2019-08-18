@@ -4,6 +4,7 @@ import io.youi.{AnimationFrame, History}
 import io.youi.http.{Connection, WebSocketUtil}
 import io.youi.net.URL
 import io.youi.stream.StreamURL
+import io.youi.util.Time
 import org.scalajs.dom.{WebSocket, window}
 import org.scalajs.dom.ext.AjaxException
 import reactify._
@@ -26,7 +27,7 @@ class ClientConnectivity(connectivity: ApplicationConnectivity, application: Cli
   }
 
   connection.connected.changes {
-    case (oldValue, newValue) => if (oldValue && !newValue && application.autoReload) {
+    case (oldValue, newValue) => if (oldValue && !newValue && application.reconnectStrategy != ReconnectStrategy.Stop) {
       attemptReload()
     }
   }
@@ -60,7 +61,14 @@ class ClientConnectivity(connectivity: ApplicationConnectivity, application: Cli
 
   private def attemptReload(attempt: Int = 0): Unit = {
     StreamURL.stream(History.url()).onComplete {
-      case Success(_) => History.reload(force = true)
+      case Success(_) => if (application.reconnectStrategy == ReconnectStrategy.Reload) {
+        History.reload(force = true)
+      } else {
+        Time.delay(5.seconds).map { _ =>
+          scribe.info("Attempting reconnect...")
+          application.reConnect()
+        }
+      }
       case Failure(exception) => {
         exception match {
           case exc: AjaxException if exc.xhr.status > 0 => History.reload(force = true)

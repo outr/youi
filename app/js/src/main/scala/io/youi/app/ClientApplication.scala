@@ -20,7 +20,7 @@ import scala.scalajs.js.|
 trait ClientApplication extends YouIApplication with ScreenManager {
   ClientApplication.instance = this
 
-  def remoteHost: String = window.location.host
+  def communicationHost: String = window.location.host
 
   addScript("/source-map.min.js")
 

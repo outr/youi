@@ -30,9 +30,19 @@ trait ContentScreen extends Screen with PathActivation {
         .withParam("part", "true")
         .withParam("selector", "screen")
       scribe.debug(s"Loading content $url...")
-      StreamURL.stream(url).map { htmlString =>
+      StreamURL
+        .stream(url)
+        .map { html =>              // Fix for non-youi-server
+          val start = html.indexOf("<screen>")
+          val end = html.indexOf("</screen>")
+          html.substring(start, end + 9)
+        }
+        .map { htmlString =>
         scribe.debug(s"Content loaded successfully (${htmlString.length} characters)")
-        val screen = dom.fromString[html.Element](htmlString).headOption.getOrElse(throw new RuntimeException(s"No content found in: [$htmlString] for URL: $url"))
+        val screen = dom
+          .fromString[html.Element](htmlString)
+          .headOption
+          .getOrElse(throw new RuntimeException(s"No content found in: [$htmlString] for URL: $url"))
         loadScreen(screen)
       }
     } else {                          // Content has already been loaded either by page load or by previous load

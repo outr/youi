@@ -41,7 +41,7 @@ class ClientConnectivity(connectivity: ApplicationConnectivity, application: Cli
     } else {
       "ws"
     }
-    val url = URL(s"$protocol://${application.remoteHost}${connectivity.path}")
+    val url = URL(s"$protocol://${application.communicationHost}${connectivity.path}")
     webSocket := Some(WebSocketUtil.connect(url, connection))
   }
 

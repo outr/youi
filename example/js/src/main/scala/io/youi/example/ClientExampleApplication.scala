@@ -7,10 +7,6 @@ import io.youi.{Color, dom}
 import io.youi.dom._
 import io.youi.example.screen.{CommunicationScreen, ExampleBootstrapScreen, LoginScreen}
 import io.youi.example.ui._
-//import io.youi.example.ui._
-//import io.youi.example.ui.drawable._
-//import io.youi.example.ui.hypertext.DataTransferExample
-//import io.youi.util.DebugSupport
 import org.scalajs.dom._
 
 import scala.scalajs.js.annotation.JSExportTopLevel

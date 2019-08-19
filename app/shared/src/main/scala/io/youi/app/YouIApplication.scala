@@ -28,14 +28,15 @@ trait YouIApplication extends ErrorSupport with CacheImplementation {
 
   val connectivityEntries: Var[Set[ApplicationConnectivity]] = Var(Set.empty[ApplicationConnectivity])
 
+  protected def autoConnectCommunication: Boolean = true
+
   /**
     * Default connectivity using "/communication" as the path. Can be overridden if this path is not desirable.
     */
   val connectivity: ApplicationConnectivity = createConnectivity()
 
-  def createConnectivity(path: String = "/communication",
-                         autoConnect: Boolean = true): ApplicationConnectivity = {
-    new ApplicationConnectivity(this, path, autoConnect)
+  def createConnectivity(path: String = "/communication"): ApplicationConnectivity = {
+    new ApplicationConnectivity(this, path, autoConnectCommunication)
   }
 }
 

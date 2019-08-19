@@ -54,23 +54,23 @@ trait Server extends HttpHandler with ErrorSupport {
   def isInitialized: Boolean = initialized.get()
   def isRunning: Boolean = isInitialized && implementation.isRunning
 
+  def initialize(): Future[Unit] = {
+    val shouldInit = initialized.compareAndSet(false, true)
+    if (shouldInit) {
+      init()
+    } else {
+      Future.successful(())
+    }
+  }
+
   /**
     * Init is called on start(), but only the first time. If the server is restarted it is not invoked again.
     */
   protected def init(): Future[Unit] = Future.successful(())
 
-  def start(): Future[Unit] = {
-    val shouldInit = initialized.compareAndSet(false, true)
-    val future = if (shouldInit) {
-      init()
-    } else {
-      Future.successful(())
-    }
-
-    future.map { _ =>
-      implementation.start()
-      scribe.info(s"Server started on ${config.enabledListeners.mkString(", ")}")
-    }
+  def start(): Future[Unit] = initialize().map { _ =>
+    implementation.start()
+    scribe.info(s"Server started on ${config.enabledListeners.mkString(", ")}")
   }
 
   def stop(): Unit = synchronized {

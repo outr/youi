@@ -36,10 +36,9 @@ object ServerExampleApplication extends ExampleApplication with ServerApplicatio
         combined.any(
           path.matches("/examples/.*[.]html"),
           path.exact("/ui-examples.html")
-        ) / Application / ProxyCache.delta("/cache") / ServerApplication.AppTemplate,
+        ) / Application / ServerApplication.AppTemplate,
         path"/cookies.html" / CookiesExample,
         path"/session.html" / SessionExample,
-        path"/cache" / ProxyCache(),
         ClassLoaderPath(pathTransform = (path: String) => s"content$path") / CachingManager.LastModified(),
         path.startsWith("/app") / ClassLoaderPath()
       )

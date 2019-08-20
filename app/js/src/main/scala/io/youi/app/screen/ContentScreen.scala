@@ -24,27 +24,7 @@ trait ContentScreen extends Screen with PathActivation {
     }
 
     if (contentOption.isEmpty) {      // Content hasn't been loaded yet
-      val url = History
-        .url()
-        .copy(path = path, parameters = Parameters.empty)
-        .withParam("part", "true")
-        .withParam("selector", "screen")
-      scribe.debug(s"Loading content $url...")
-      StreamURL
-        .stream(url)
-        .map { html =>              // Fix for non-youi-server
-          val start = html.indexOf("<screen>")
-          val end = html.indexOf("</screen>")
-          html.substring(start, end + 9)
-        }
-        .map { htmlString =>
-        scribe.debug(s"Content loaded successfully (${htmlString.length} characters)")
-        val screen = dom
-          .fromString[html.Element](htmlString)
-          .headOption
-          .getOrElse(throw new RuntimeException(s"No content found in: [$htmlString] for URL: $url"))
-        loadScreen(screen)
-      }
+      generateScreen().map(loadScreen)
     } else {                          // Content has already been loaded either by page load or by previous load
       Future.successful(())
     }
@@ -55,6 +35,29 @@ trait ContentScreen extends Screen with PathActivation {
   }
 
   def preload(): Future[Unit] = preloaded
+
+  protected def generateScreen(): Future[html.Element] = {
+    val url = History
+      .url()
+      .copy(path = path, parameters = Parameters.empty)
+      .withParam("part", "true")
+      .withParam("selector", "screen")
+    scribe.debug(s"Loading content $url...")
+    StreamURL
+      .stream(url)
+      .map { html =>              // Fix for non-youi-server
+        val start = html.indexOf("<screen>")
+        val end = html.indexOf("</screen>")
+        html.substring(start, end + 9)
+      }
+      .map { htmlString =>
+        scribe.debug(s"Content loaded successfully (${htmlString.length} characters)")
+        dom
+          .fromString[html.Element](htmlString)
+          .headOption
+          .getOrElse(throw new RuntimeException(s"No content found in: [$htmlString] for URL: $url"))
+      }
+  }
 
   private def loadScreen(screen: html.Element): Unit = {
     val span = dom.create[html.Span]("span")

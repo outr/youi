@@ -36,13 +36,7 @@ class ClientConnectivity(connectivity: ApplicationConnectivity, application: Cli
     connectivity.activeConnections := Set(connection)
 
     disconnect()
-    val protocol = if (window.location.protocol == "https:") {
-      "wss"
-    } else {
-      "ws"
-    }
-    val url = URL(s"$protocol://${application.communicationHost}${connectivity.path}")
-    webSocket := Some(WebSocketUtil.connect(url, connection))
+    webSocket := Some(WebSocketUtil.connect(application.communicationURL, connection))
   }
 
   def disconnect(): Unit = synchronized {

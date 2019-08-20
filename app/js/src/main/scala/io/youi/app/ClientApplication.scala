@@ -20,7 +20,14 @@ import scala.scalajs.js.|
 trait ClientApplication extends YouIApplication with ScreenManager {
   ClientApplication.instance = this
 
-  def communicationHost: String = window.location.host
+  def communicationURL: URL = {
+    val protocol = if (window.location.protocol == "https:") {
+      "wss"
+    } else {
+      "ws"
+    }
+    URL(s"$protocol://${window.location.host}${connectivity.path}")
+  }
 
   addScript("/source-map.min.js")
 

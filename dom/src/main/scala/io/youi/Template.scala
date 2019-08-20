@@ -2,7 +2,7 @@ package io.youi
 
 import java.io.File
 
-import io.youi.stream.{ByClass, ById, HTMLParser}
+import io.youi.stream.{ByClass, ById, ByTag, HTMLParser}
 import org.scalajs.dom.Element
 import profig.Profig
 
@@ -13,6 +13,7 @@ import scala.reflect.macros.blackbox
 object Template {
   def byId[E <: Element](path: String, id: String, appName: String): E = macro TemplateMacros.existingById[E]
   def byClass[E <: Element](path: String, className: String, appName: String): List[E] = macro TemplateMacros.existingByClass[E]
+  def byTag[E <: Element](path: String, tagName: String, appName: String): List[E] = macro TemplateMacros.existingByTag[E]
 }
 
 @compileTimeOnly("Enable Macros for expansion")
@@ -95,6 +96,47 @@ object TemplateMacros {
            io.youi.dom.fromString[$e]($template)
          } catch {
            case t: Throwable => throw new RuntimeException("Error parsing HTML [" + $template + "] byClass " + $classValue, t)
+         }
+       """)
+  }
+
+  def existingByTag[E <: Element](context: blackbox.Context)(path: context.Expr[String],
+                                                             tagName: context.Expr[String],
+                                                             appName: context.Expr[String])(implicit e: context.WeakTypeTag[E]): context.Expr[List[E]] = {
+    import context.universe._
+
+    Profig.loadDefaultsMacro()
+
+    val pathValue = path match {
+      case Expr(Literal(Constant(value: String))) => value
+    }
+    val tagValue = tagName match {
+      case Expr(Literal(Constant(value: String))) => value
+    }
+    val pathKey = appName match {
+      case Expr(Literal(Constant(value: String))) => s"$value.template.path"
+    }
+    val templatePath = Profig(pathKey).opt[String]
+    val file = templatePath match {
+      case Some(basePath) => new File(basePath, pathValue)
+      case None => new File(pathValue)
+    }
+    if (!file.exists()) {
+      context.warning(context.enclosingPosition, s"No configuration defined for $pathKey.")
+      context.abort(context.enclosingPosition, s"Unable to find path for ${file.getAbsolutePath}.")
+    }
+    val parser = HTMLParser(file)
+    val template = parser.stream(Nil, selector = Some(ByTag(tagValue)), includeAllMatches = true)
+    if (template.trim.isEmpty) {
+      context.abort(context.enclosingPosition, s"No content found for $tagValue in ${file.getAbsolutePath}")
+    }
+
+    context.Expr[List[E]](
+      q"""
+         try {
+           io.youi.dom.fromString[$e]($template)
+         } catch {
+           case t: Throwable => throw new RuntimeException("Error parsing HTML [" + $template + "] byTag " + $tagValue, t)
          }
        """)
   }

@@ -1,14 +1,15 @@
 package io.youi.example.screen
 
+import io.youi.Template
+import io.youi.app.screen.PreloadedContentScreen
 import io.youi.dom._
-import io.youi.example.ClientExampleApplication._
 import io.youi.net._
 import org.scalajs.dom.{Event, html, window}
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-object CommunicationScreen extends ExampleScreen {
+object CommunicationScreen extends ExampleScreen with PreloadedContentScreen {
   def connectedInput: html.Input = content.byId[html.Input]("communicationConnected")
   def connectedButton: html.Button = content.byId[html.Button]("communicationConnectButton")
   def reverseInput: html.Input = content.byId[html.Input]("communicationReverse")
@@ -23,6 +24,12 @@ object CommunicationScreen extends ExampleScreen {
   def broadcastButton: html.Button = content.byId[html.Button]("communicationBroadcastButton")
 
   override def path: Path = path"/communication.html"
+
+  override protected def preloadScreen: html.Element = Template.byTag[html.Element](
+    "example/jvm/src/main/resources/content/templates/communication.html",
+    "screen",
+    "youi"
+  ).head
 
   override protected def load(): Future[Unit] = super.load().map { _ =>
     configure()

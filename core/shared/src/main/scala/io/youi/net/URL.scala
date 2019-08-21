@@ -66,7 +66,7 @@ case class URL(protocol: Protocol = Protocol.Http,
     b.append(protocol.scheme)
     b.append("://")
     b.append(host)
-    if (!protocol.defaultPort.contains(port)) {
+    if (!protocol.defaultPort.contains(port) && port != -1) {
       b.append(s":$port")       // Not using the default port for the protocol
     }
     b.toString()
@@ -157,7 +157,7 @@ object URL {
     }
     val colonIndex2 = hostAndPort.indexOf(':')
     val (host, port) = if (colonIndex2 == -1) {
-      hostAndPort -> protocol.defaultPort.getOrElse(throw new RuntimeException(s"Unknown port for $url."))
+      hostAndPort -> protocol.defaultPort.getOrElse(-1)
     } else {
       hostAndPort.substring(0, colonIndex2) -> hostAndPort.substring(colonIndex2 + 1).toInt
     }
@@ -188,7 +188,7 @@ object URL {
     Some(URL(protocol = protocol, host = host, port = port, path = path, parameters = parameters, fragment = fragment))
   } catch {
     case t: Throwable => {
-      scribe.warn(s"Unable to parse URL [$url]. Exception: ${t.getMessage}")
+      scribe.warn(s"Unable to parse URL [$url]. Exception: ${t.getMessage}", t)
       None
     }
   }

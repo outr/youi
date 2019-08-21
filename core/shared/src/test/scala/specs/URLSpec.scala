@@ -17,6 +17,12 @@ class URLSpec extends WordSpec with Matchers {
         val url = URL("http://www.outr.com/test?wsdl")
         url.parameters.encoded should be("?wsdl")
       }
+      "properly parse a simple file URL" in {
+        val url = URL("file:///android_asset/www/app/test.js")
+        url.host should be("")
+        url.path.encoded should be("/android_asset/www/app/test.js")
+        url.toString should be("file:///android_asset/www/app/test.js")
+      }
       "properly parse a URL with two for the same key" in {
         val url = URL("http://www.outr.com/test?test=one&test=two")
         url.paramList("test") should be(List("one", "two"))

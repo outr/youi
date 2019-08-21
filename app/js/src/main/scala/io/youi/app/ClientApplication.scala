@@ -98,7 +98,8 @@ trait ClientApplication extends YouIApplication with ScreenManager {
 }
 
 object ClientApplication {
-  def logWriter(maximumBytes: Long = -1L,
+  def logWriter(baseURL: => URL = History.url(),
+                maximumBytes: Long = -1L,
                 maximumRecords: Int = -1,
                 maximumErrors: Int = -1): Writer = new Writer {
     private var bytesWritten = 0L
@@ -111,7 +112,7 @@ object ClientApplication {
       bytesWritten += text.length
       recordsWritten += 1
       if (record.level >= Level.Error) errorsWritten += 1
-      sendLog(JavaScriptLog(text))
+      sendLog(baseURL, JavaScriptLog(text))
       if (maximumBytes != -1L && bytesWritten >= maximumBytes) {
         enabled = false
       } else if (maximumRecords != -1 && recordsWritten >= maximumRecords) {
@@ -140,11 +141,15 @@ object ClientApplication {
     ErrorTrace.toError(event).flatMap(sendError)
   }
 
-  def sendLog(log: JavaScriptLog): Future[XMLHttpRequest] = {
+  def sendLog(baseURL: URL, log: JavaScriptLog): Future[XMLHttpRequest] = {
     val formData = new FormData
     val jsonString = JsonUtil.toJsonString(log)
     formData.append("message", jsonString)
-    val request = new AjaxRequest(History.url().replacePathAndParams(instance.logPath), data = Some(formData))
+    val request = new AjaxRequest(
+      url = baseURL.replacePathAndParams(instance.logPath),
+      data = Some(formData),
+      withCredentials = false
+    )
     request.send()
   }
 }

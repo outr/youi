@@ -1,5 +1,6 @@
 package io.youi.ajax
 
+import io.youi.http.HttpMethod
 import io.youi.net.URL
 import org.scalajs.dom.XMLHttpRequest
 import org.scalajs.dom.raw.FormData
@@ -16,12 +17,13 @@ class AjaxManager(val maxConcurrent: Int) extends Logging {
   def running: Int = _running.size
 
   def enqueue(url: URL,
+              method: HttpMethod = HttpMethod.Post,
               data: Option[FormData] = None,
               timeout: Int = 0,
               headers: Map[String, String] = Map.empty,
               withCredentials: Boolean = true,
               responseType: String = ""): AjaxAction = {
-    val request = new AjaxRequest(url, data, timeout, headers, withCredentials, responseType)
+    val request = new AjaxRequest(url, method, data, timeout, headers, withCredentials, responseType)
     val action = new AjaxAction(request)
     enqueue(action)
     action

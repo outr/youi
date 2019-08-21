@@ -3,6 +3,7 @@ package io.youi.app.screen
 import reactify.{Val, Var}
 import io.youi.{History, dom}
 import io.youi.dom._
+import io.youi.http.HttpMethod
 import io.youi.net.Parameters
 import io.youi.stream.StreamURL
 import org.scalajs.dom.html
@@ -44,7 +45,7 @@ trait ContentScreen extends Screen with PathActivation {
       .withParam("selector", "screen")
     scribe.debug(s"Loading content $url...")
     StreamURL
-      .stream(url)
+      .stream(url, method = HttpMethod.Get)
       .map { html =>              // Fix for non-youi-server
         val start = html.indexOf("<screen>")
         val end = html.indexOf("</screen>")

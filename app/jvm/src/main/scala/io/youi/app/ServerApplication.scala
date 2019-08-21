@@ -139,12 +139,12 @@ trait ServerApplication extends YouIApplication with Server {
         val url = httpConnection.request.url
         val fileName = url.path.decoded
         val mapped = mappings.toStream.flatMap(_ (httpConnection)).headOption
-        val withHTML = if (excludeDotHTML) {
+        val content = lookup(fileName).orElse { if (excludeDotHTML) {
           lookup(s"$fileName.html")
         } else {
           None
-        }
-        mapped.orElse(lookup(fileName).orElse(withHTML)).map { content =>
+        }}
+        mapped.orElse(content).map { content =>
           if (content.contentType == ContentType.`text/html`) {
             CachingManager.NotCached.handle(httpConnection)
             serveHTML(httpConnection, content, deltas, includeApplication(url))

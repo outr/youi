@@ -3,7 +3,7 @@ import sbtcrossproject.CrossPlugin.autoImport.crossProject
 
 name := "youi"
 organization in ThisBuild := "io.youi"
-version in ThisBuild := "0.11.24"
+version in ThisBuild := "0.11.25-SNAPSHOT"
 scalaVersion in ThisBuild := "2.13.0"
 crossScalaVersions in ThisBuild := List("2.13.0", "2.12.8", "2.11.12")
 resolvers in ThisBuild ++= Seq(
@@ -44,7 +44,7 @@ val scalaJSDOM = "0.9.7"
 val okHttpVersion = "4.0.0"
 val circeVersion = "0.12.0-M3"
 val uaDetectorVersion = "2014.10"
-val undertowVersion = "2.0.22.Final"
+val undertowVersion = "2.0.25.Final"
 val closureCompilerVersion = "v20190618"
 val jSoupVersion = "1.12.1"
 val scalaXMLVersion = "1.2.0"

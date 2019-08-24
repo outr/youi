@@ -305,7 +305,9 @@ object UndertowServerImplementation extends ServerImplementationCreator {
           case StringContent(s, _, _) => {
             exchange.getResponseSender.send(s, new IoCallback {
               override def onComplete(exchange: HttpServerExchange, sender: Sender): Unit = {
-                exchange.endExchange()
+                if (s.nonEmpty) {
+                  exchange.endExchange()
+                }
                 sender.close()
               }
 

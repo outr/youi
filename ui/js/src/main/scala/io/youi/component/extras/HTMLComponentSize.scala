@@ -2,6 +2,7 @@ package io.youi.component.extras
 
 import io.youi.component.Component
 import io.youi.theme.StringifyImplicits
+import io.youi.ui
 import org.scalajs.dom.html
 import reactify.{Val, Var}
 
@@ -9,10 +10,10 @@ class HTMLComponentSize(override protected val component: Component) extends Com
   private def e: html.Element = HTMLComponent.element(component)
 
   width.attach { value =>
-    e.style.width = s"${value.ceil}px"
+    if (component != ui) e.style.width = s"${value.ceil}px"
   }
   height.attach { value =>
-    e.style.height = s"${value.ceil}px"
+    if (component != ui) e.style.height = s"${value.ceil}px"
   }
 
   object view {

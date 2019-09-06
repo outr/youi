@@ -21,11 +21,14 @@ case class Parameters(entries: List[(String, Param)]) {
     replaceParam(key, List(value))
   }
 
-  def param(key: String, param: Param, append: Boolean = false): Parameters = if (append) {
+  def param(key: String, param: Param, append: Boolean = false): Parameters = if (append && value(key).nonEmpty) {
     val updated = Param(values(key) ::: param.values)
-    copy(entries = key -> updated :: removeParam(key).entries)
+    copy(entries = entries.map {
+      case (k, _) if key == k => k -> updated
+      case p => p
+    })
   } else {
-    copy(entries = key -> param :: removeParam(key).entries)
+    copy(entries = removeParam(key).entries ::: List(key -> param))
   }
 
   def appendParam(key: String, value: String): Parameters = {
@@ -98,11 +101,14 @@ object Parameters {
     parse(query.substring(1))
   } else {
     var params = Parameters.empty
-    query.split('&').map(param => param.trim.splitAt(param.indexOf('='))).collect {
-      case (key, value) if key.nonEmpty => URL.decode(key) -> Param(List(URL.decode(value.substring(1))))
-      case (_, value) if value.nonEmpty => URL.decode(value) -> Param(Nil)
-    }.foreach {
-      case (key, value) => params = params.param(key, value, append = true)
+    query.split('&').toList.foreach { s =>
+      val equals = s.indexOf('=')
+      val (key, values) = if (equals == -1) {
+        URL.decode(s) -> Nil
+      } else {
+        URL.decode(s.substring(0, equals)) -> List(URL.decode(s.substring(equals + 1)))
+      }
+      params = params.param(key, Param(values), append = true)
     }
     params
   }

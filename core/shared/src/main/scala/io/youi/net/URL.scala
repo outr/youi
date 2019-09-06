@@ -141,12 +141,12 @@ object URL {
 
   def apply(url: String): URL = apply(url, absolutizePath = true)
 
-  def get(url: String): Option[URL] = get(url, absolutizePath = true)
+  def get(url: String): Either[URLParseException, URL] = get(url, absolutizePath = true)
 
   def apply(url: String, absolutizePath: Boolean): URL = get(url, absolutizePath)
     .getOrElse(throw MalformedURLException(s"Unable to parse URL: [$url].", url))
 
-  def get(url: String, absolutizePath: Boolean): Option[URL] = try {
+  def get(url: String, absolutizePath: Boolean): Either[URLParseException, URL] = try {
     val colonIndex1 = url.indexOf(':')
     val protocol = Protocol(url.substring(0, colonIndex1))
     val slashIndex = url.indexOf('/', colonIndex1 + 3)
@@ -185,12 +185,9 @@ object URL {
     } else {
       None
     }
-    Some(URL(protocol = protocol, host = host, port = port, path = path, parameters = parameters, fragment = fragment))
+    Right(URL(protocol = protocol, host = host, port = port, path = path, parameters = parameters, fragment = fragment))
   } catch {
-    case t: Throwable => {
-      scribe.warn(s"Unable to parse URL [$url]. Exception: ${t.getMessage}", t)
-      None
-    }
+    case t: Throwable => Left(new URLParseException(s"Unable to parse URL [$url]. Exception: ${t.getMessage}", t))
   }
 
   private val unreservedCharacters = Set('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
@@ -206,10 +203,20 @@ object URL {
     case c => s"%${c.toLong.toHexString.toUpperCase}"
   }.mkString
 
-  def decode(part: String): String = encodedRegex.replaceAllIn(part, (m: Regex.Match) => {
-    val code = Integer.parseInt(m.group(1), 16)
-    code.toChar.toString
-  })
+  def decode(part: String): String = try {
+    encodedRegex.replaceAllIn(part.replace("\\", "\\\\"), (m: Regex.Match) => {
+      val g = m.group(1)
+      val code = Integer.parseInt(g, 16)
+      val c = code.toChar
+      if (c == '\\') {
+        "\\\\"
+      } else {
+        c.toString
+      }
+    })
+  } catch {
+    case t: Throwable => throw new RuntimeException(s"Failed to decode: [$part]", t)
+  }
 
   def interpolate(c: blackbox.Context)(args: c.Expr[Any]*): c.Expr[URL] = {
     import c.universe._

@@ -1,9 +1,10 @@
 package specs
 
 import io.youi.net._
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.Matchers
 
-class URLSpec extends WordSpec with Matchers {
+class URLSpec extends AnyWordSpec with Matchers {
   "URL" when {
     "parsing" should {
       "properly parse a simple URL" in {
@@ -26,6 +27,10 @@ class URLSpec extends WordSpec with Matchers {
       "properly parse a URL with two for the same key" in {
         val url = URL("http://www.outr.com/test?test=one&test=two")
         url.paramList("test") should be(List("one", "two"))
+      }
+      "properly parse a URL with some crazy characters" in {
+        val url = URL("http://127.0.0.1/elrekt.php?s=%2f%69%6e%64%65%78%2f%5c%74%68%69%6e%6b%5c%61%70%70%2f%69%6e%76%6f%6b%65%66%75%6e%63%74%69%6f%6e&function=%63%61%6c%6c%5f%75%73%65%72%5f%66%75%6e%63%5f%61%72%72%61%79&vars[0]=%6d%645&vars[1][]=%48%65%6c%6c%6f%54%68%69%6e%6b%50%48%50")
+        url.toString should be("http://127.0.0.1/elrekt.php?vars%5B1%5D%5B%5D=HelloThinkPHP&vars%5B0%5D=md5&function=call_user_func_array&s=%2Findex%2F%5Cthink%5Capp%2Finvokefunction")
       }
       "properly encode a URL with a pipe" in {
         val url = URL("http://youi.io").withParam("testing", "one|two")

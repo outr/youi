@@ -101,7 +101,7 @@ object Parameters {
     parse(query.substring(1))
   } else {
     var params = Parameters.empty
-    query.split('&').toList.foreach { s =>
+    query.split('&').toList.filter(_.trim.nonEmpty).foreach { s =>
       val equals = s.indexOf('=')
       val (key, values) = if (equals == -1) {
         URL.decode(s) -> Nil

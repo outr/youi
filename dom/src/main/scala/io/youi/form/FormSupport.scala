@@ -110,27 +110,34 @@ trait FormSupport {
                        message: String,
                        clearFirst: Boolean,
                        removeAfter: Option[FiniteDuration]): html.Div = {
-      if (clearFirst) {
-        clear()
-      }
-
-      val alert = dom.create[html.Div]("div")
-      alert.classList.add("alert")
-      alert.classList.add("alert-dismissible")
-      alert.classList.add(s"alert-${`type`}")
-      alert.innerHTML = message
-      alertContainer.appendChild(alert)
-
-      removeAfter.foreach { d =>
-        Time.delay(d).foreach(_ => alert.remove())
-      }
-
-      alert
+      createAlert(`type`, message, clearFirst, removeAfter)
     }
 
     def clear(): Unit = {
       alertContainer.innerHTML = ""
     }
+  }
+
+  protected def createAlert(`type`: String,
+                            message: String,
+                            clearFirst: Boolean,
+                            removeAfter: Option[FiniteDuration]): html.Div = {
+    if (clearFirst) {
+      alert.clear()
+    }
+
+    val a = dom.create[html.Div]("div")
+    a.classList.add("alert")
+    a.classList.add("alert-dismissible")
+    a.classList.add(s"alert-${`type`}")
+    a.innerHTML = message
+    alertContainer.appendChild(a)
+
+    removeAfter.foreach { d =>
+      Time.delay(d).foreach(_ => a.remove())
+    }
+
+    a
   }
 
   def createFieldError(input: FormInput): FieldError = BootstrapFieldError(input)

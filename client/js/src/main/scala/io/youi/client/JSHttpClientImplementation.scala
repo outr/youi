@@ -8,7 +8,7 @@ import io.youi.net.ContentType
 import scala.concurrent.{ExecutionContext, Future}
 
 class JSHttpClientImplementation(config: HttpClientConfig) extends HttpClientImplementation(config) {
-  private val HeaderRegex = """(.+)[=](.+)""".r
+  private val HeaderRegex = """(.+)[:](.+)""".r
 
   override def send(request: HttpRequest, executionContext: ExecutionContext): Future[HttpResponse] = {
     implicit val implicitContext: ExecutionContext = executionContext
@@ -23,15 +23,16 @@ class JSHttpClientImplementation(config: HttpClientConfig) extends HttpClientImp
     )
     val action = new AjaxAction(ajaxRequest)
     manager.enqueue(action).map { xmlHttpRequest =>
-      val headers: Map[String, List[String]] = xmlHttpRequest.getAllResponseHeaders().split('&').map {
-        case HeaderRegex(key, value) => key -> value
+      val headers: Map[String, List[String]] = xmlHttpRequest.getAllResponseHeaders().split('\n').map(_.trim).map {
+        case HeaderRegex(key, value) => key.trim -> value.trim
+        case s => throw new RuntimeException(s"Invalid Header: [$s]")
       }.groupBy(_._1).map {
         case (key, array) => key -> array.toList.map(_._2)
       }
       val content = xmlHttpRequest.responseType match {
-        case null | "" => None
+        case null => None
         case _ => {
-          val `type` = ContentType.parse(xmlHttpRequest.responseType)
+          val `type` = if (xmlHttpRequest.responseType == "") ContentType.`text/plain` else ContentType.parse(xmlHttpRequest.responseType)
           Some(Content.string(xmlHttpRequest.responseText, `type`))
         }
       }

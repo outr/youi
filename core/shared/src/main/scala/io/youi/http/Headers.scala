@@ -45,7 +45,7 @@ object Headers {
     case object `Accept-Encoding` extends StringHeaderKey("Accept-Encoding")
     case object `Accept-Language` extends StringHeaderKey("Accept-Language")
     case object `Authorization` extends StringHeaderKey("Authorization")
-    def `Cookie` = CookieHeader
+    def `Cookie`: CookieHeader.type = CookieHeader
     case object `If-Modified-Since` extends DateHeaderKey("If-Modified-Since")
     case object `Origin` extends StringHeaderKey("Origin")
     case object `User-Agent` extends StringHeaderKey("User-Agent", commaSeparated = false)
@@ -63,7 +63,7 @@ object Headers {
       }
     }
     case object `Server` extends StringHeaderKey("Server")
-    def `Set-Cookie` = SetCookie
+    def `Set-Cookie`: SetCookie.type = SetCookie
     case object `Content-Disposition` extends HeaderKey {
       override def key: String = "Content-Disposition"
       override protected def commaSeparated: Boolean = false

@@ -1,8 +1,7 @@
 package io.youi.client.intercept
 
-import java.util.concurrent.{Executors, ThreadFactory}
-
 import io.youi.http.{HttpRequest, HttpResponse}
+import io.youi.util.Time
 
 import scala.concurrent.duration._
 import scala.concurrent.{Future, Promise}
@@ -22,7 +21,7 @@ case class RateLimiter(perRequestDelay: FiniteDuration) extends InterceptorAdapt
       val elapsed = now - _lastTime
       val delay = maxDelay - elapsed
       if (delay > 0L) {
-        RateLimiter.delayedFuture(delay.millis, Future.successful(request)).onComplete {
+        Time.delay(delay.millis).map(_ => request).onComplete {
           case Success(v) => p.success(v)
           case Failure(exception) => p.failure(exception)
         }
@@ -39,26 +38,5 @@ case class RateLimiter(perRequestDelay: FiniteDuration) extends InterceptorAdapt
     _lastTime = System.currentTimeMillis()
 
     super.after(request, response)
-  }
-}
-
-object RateLimiter {
-  private lazy val scheduler = Executors.newScheduledThreadPool(1, new ThreadFactory {
-    override def newThread(r: Runnable): Thread = {
-      val t = new Thread(r)
-      t.setDaemon(true)
-      t
-    }
-  })
-
-  def delayedFuture[T](delay: FiniteDuration, t: => Future[T]): Future[T] = {
-    val promise = Promise[T]
-    scheduler.schedule(new Runnable {
-      override def run(): Unit = t.onComplete {
-        case Success(value) => promise.success(value)
-        case Failure(exception) => promise.failure(exception)
-      }
-    }, delay.length, delay.unit)
-    promise.future
   }
 }

@@ -9,4 +9,6 @@ object ClientPlatform {
                  keepAlive: FiniteDuration = ConnectionPool.keepAlive): ConnectionPool = {
     JVMConnectionPool(maxIdleConnections, keepAlive)
   }
+
+  def defaultSaveDirectory: String = System.getProperty("java.io.tmpdir")
 }

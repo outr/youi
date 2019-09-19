@@ -1,8 +1,5 @@
 package io.youi.http
 
-import java.text.SimpleDateFormat
-import java.util.Locale
-
 class DateHeaderKey(val key: String, val commaSeparated: Boolean = false) extends TypedHeaderKey[Long] {
   import DateHeaderKey._
 
@@ -12,20 +9,7 @@ class DateHeaderKey(val key: String, val commaSeparated: Boolean = false) extend
 }
 
 object DateHeaderKey {
-  def parse(date: String): Option[Long] = {
-    val parser = new SimpleDateFormat("EEE, dd MMMM yyyy HH:mm:ss zzz", Locale.ENGLISH)
-    try {
-      Some(parser.parse(date.replace('-', ' ')).getTime)
-    } catch {
-      case t: Throwable => {
-        scribe.warn(s"Unable to parse date header: $date (${t.getMessage})")
-        None
-      }
-    }
-  }
+  def parse(date: String): Option[Long] = io.youi.YouIPlatform.parseHTTPDate(date)
 
-  def format(date: Long): String = {
-    val parser = new SimpleDateFormat("EEE, dd MMMM yyyy HH:mm:ss zzz", Locale.ENGLISH)
-    parser.format(date)
-  }
+  def format(date: Long): String = io.youi.YouIPlatform.toHTTPDate(date)
 }

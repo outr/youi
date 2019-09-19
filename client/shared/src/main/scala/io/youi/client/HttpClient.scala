@@ -6,6 +6,7 @@ import io.youi.http.cookie.RequestCookie
 import io.youi.http._
 import io.youi.http.content.{Content, StringContent}
 import io.youi.net.{ContentType, Path, URL}
+import io.youi.util.Time
 
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future}
@@ -102,7 +103,7 @@ case class HttpClient(request: HttpRequest,
     future.recoverWith {
       case t: Throwable if retries > 0 => {
         scribe.warn(s"Request to ${request.url} failed (${t.getMessage}). Retrying after $retryDelay...")
-        RateLimiter.delayedFuture(retryDelay, send(retries - 1))
+        Time.delay(retryDelay).flatMap(_ => send(retries - 1))
       }
     }.map { response =>
       sessionManager.foreach { sm =>

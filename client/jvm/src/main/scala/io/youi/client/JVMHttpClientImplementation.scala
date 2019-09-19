@@ -195,7 +195,7 @@ class JVMHttpClientImplementation(config: HttpClientConfig) extends HttpClientIm
       } else if (contentToBytes(contentType, contentLength)) {
         Content.bytes(responseBody.bytes(), contentType)
       } else {
-        val file = File.createTempFile("youi", "client", config.saveDirectory.toFile)
+        val file = File.createTempFile("youi", "client", new File(config.saveDirectory))
         IO.stream(responseBody.byteStream(), file)
         Content.file(file, contentType)
       }

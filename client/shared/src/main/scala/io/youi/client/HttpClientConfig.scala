@@ -1,7 +1,5 @@
 package io.youi.client
 
-import java.nio.file.{Path, Paths}
-
 import io.youi.client.intercept.Interceptor
 import reactify.Var
 
@@ -11,7 +9,7 @@ case class HttpClientConfig(retries: Int = 0,
                             retryDelay: FiniteDuration = 5.seconds,
                             interceptor: Interceptor = Interceptor.empty,
                             connectionPool: ConnectionPool = ConnectionPool.default,
-                            saveDirectory: Path = Paths.get(System.getProperty("java.io.tmpdir")),
+                            saveDirectory: String = ClientPlatform.defaultSaveDirectory,
                             timeout: FiniteDuration = 15.seconds,
                             pingInterval: Option[FiniteDuration] = None,
                             dns: DNS = DNS.default,
@@ -23,7 +21,7 @@ case class HttpClientConfig(retries: Int = 0,
   def retryDelay(retryDelay: FiniteDuration): HttpClientConfig = copy(retryDelay = retryDelay)
   def interceptor(interceptor: Interceptor): HttpClientConfig = copy(interceptor = interceptor)
   def connectionPool(connectionPool: ConnectionPool): HttpClientConfig = copy(connectionPool = connectionPool)
-  def saveDirectory(saveDirectory: Path): HttpClientConfig = copy(saveDirectory = saveDirectory)
+  def saveDirectory(saveDirectory: String): HttpClientConfig = copy(saveDirectory = saveDirectory)
   def timeout(timeout: FiniteDuration): HttpClientConfig = copy(timeout = timeout)
   def pingInterval(pingInterval: Option[FiniteDuration]): HttpClientConfig = copy(pingInterval = pingInterval)
   def dns(dns: DNS): HttpClientConfig = copy(dns = dns)

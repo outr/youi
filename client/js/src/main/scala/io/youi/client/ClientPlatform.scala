@@ -10,4 +10,6 @@ object ClientPlatform {
                  keepAlive: FiniteDuration = ConnectionPool.keepAlive): ConnectionPool = {
     JSConnectionPool(maxIdleConnections, keepAlive)
   }
+
+  def defaultSaveDirectory: String = "/"
 }

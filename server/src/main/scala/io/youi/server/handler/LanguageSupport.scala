@@ -57,11 +57,9 @@ class LanguageSupport(val default: Locale = Locale.ENGLISH, languagePath: Path =
       scribe.info(s"Clearing language cache...")
       clear()
     }
-    scribe.info(s"Param Locales: $paramLocales")
     val cookieLocales = request.cookies.find(_.name == cookieName).map(c => parseLocale(c.value)).toList
     val headerLocales = request.headers.get(Headers.Request.`Accept-Language`).flatMap(_.split(',')).map(parseLocale)
     val locales = (paramLocales ::: cookieLocales ::: headerLocales ::: List(default)).distinct
-    scribe.info(s"Locales: $locales")
 
     // Param override - set a cookie to store it
     val c = if (paramLocales.nonEmpty) {

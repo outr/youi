@@ -3,7 +3,7 @@ package io.youi.net
 case class Protocol private(scheme: String, description: String, rfc: String, defaultPort: Option[Int] = None) {
   Protocol.schemeMap += scheme -> this
 
-  override def toString = scheme
+  override def toString: String = scheme
 }
 
 object Protocol {

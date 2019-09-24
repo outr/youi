@@ -16,6 +16,8 @@ case class URL(protocol: Protocol = Protocol.Http,
   def replaceBase(base: String): URL = URL(s"$base${encoded.pathAndArgs}")
   def replacePathAndParams(pathAndParams: String): URL = URL(s"$base$pathAndParams")
 
+  def withProtocol(protocol: Protocol): URL = copy(protocol = protocol)
+
   def withPart(part: String): URL = if (part.indexOf("://") != -1) {
     URL(part)
   } else if (part.startsWith("?")) {

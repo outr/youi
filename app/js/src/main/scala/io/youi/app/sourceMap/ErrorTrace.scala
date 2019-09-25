@@ -1,8 +1,9 @@
 package io.youi.app.sourceMap
 
 import io.youi.app.ClientApplication
+import io.youi.http.HttpMethod
 import io.youi.{History, _}
-import io.youi.net.URL
+import io.youi.net._
 import io.youi.stream.StreamURL
 import org.scalajs.dom.{ErrorEvent, Event}
 import scribe.output.LogOutput
@@ -58,16 +59,23 @@ object ErrorTrace extends Writer {
   private def sourceMapConsumerFor(fileName: String): Future[Option[SourceMapConsumer]] = if (fileName != null) {
     sourceMaps.get(fileName) match {
       case Some(sourceMapConsumer) => Future.successful(Some(sourceMapConsumer))
-      case None => StreamURL.stream(URL(s"$fileName.map")).map { jsonString =>
-        try {
-          val json = js.JSON.parse(jsonString).asInstanceOf[js.Object]
-          val sourceMapConsumer = new SourceMapConsumer(json)
-          sourceMaps += fileName -> sourceMapConsumer
-          Some(sourceMapConsumer)
-        } catch {
-          case t: Throwable => {
-            scribe.error(t)
-            None
+      case None => {
+        val url = URL(s"$fileName.map")
+        if (url.path == path"/.map") {
+          Future.successful(None)
+        } else {
+          StreamURL.stream(url, method = HttpMethod.Get).map { jsonString =>
+            try {
+              val json = js.JSON.parse(jsonString).asInstanceOf[js.Object]
+              val sourceMapConsumer = new SourceMapConsumer(json)
+              sourceMaps += fileName -> sourceMapConsumer
+              Some(sourceMapConsumer)
+            } catch {
+              case t: Throwable => {
+                scribe.error(t)
+                None
+              }
+            }
           }
         }
       }

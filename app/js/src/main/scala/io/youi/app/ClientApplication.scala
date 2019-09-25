@@ -4,7 +4,7 @@ import io.youi.ajax.AjaxRequest
 import io.youi.app.screen.ScreenManager
 import io.youi.{History, JavaScriptError, JavaScriptLog, LocalStorage}
 import io.youi.app.sourceMap.ErrorTrace
-import org.scalajs.dom._
+import org.scalajs.dom.{window, XMLHttpRequest, FormData, ErrorEvent}
 import io.youi.dom._
 import io.youi.net._
 import profig.JsonUtil
@@ -20,17 +20,20 @@ import scala.scalajs.js.|
 trait ClientApplication extends YouIApplication with ScreenManager {
   ClientApplication.instance = this
 
-  def baseURL: URL = History.url()
+  def baseURL: URL = URL(window.location.href)
 
   def communicationURL: URL = {
+    scribe.info(s"BaseURL: ${baseURL}, Location: ${window.location}")
     val protocol = if (baseURL.protocol == Protocol.Https) {
       Protocol.Wss
     } else {
       Protocol.Ws
     }
-    baseURL
+    val url = baseURL
       .withProtocol(protocol)
       .withPath(connectivity.path)
+    scribe.info(s"URL: $url")
+    url
   }
 
   addScript(baseURL.withPath(path"/source-map.min.js").toString)

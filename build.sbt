@@ -32,7 +32,7 @@ val profigVersion = "2.3.6"
 val scribeVersion = "2.7.10"
 val reactifyVersion = "3.0.4"
 val hasherVersion = "1.2.2"
-val hookupVersion = "2.0.3"
+val hookupVersion = "2.0.4-SNAPSHOT"
 
 val canvgVersion = "1.4.0_2"
 val openTypeVersion = "0.7.3_1"

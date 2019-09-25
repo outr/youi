@@ -98,6 +98,7 @@ class Connection(client: Boolean) {
     }
     val reaction = store[Reaction[Json]]("applicationConnectivity")
     hookups.io.output.reactions -= reaction
+    HookupManager.remove(hookups)
   }
 
   def close(): Unit = if (connected()) {

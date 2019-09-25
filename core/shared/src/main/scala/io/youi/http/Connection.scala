@@ -53,12 +53,14 @@ class Connection(client: Boolean) {
         send.text.reactions -= textReaction
         send.binary.reactions -= binaryReaction
         if (b) {
+          hookup()
           backlog.foreach {
             case s: String => send.text := s
             case b: ByteBuffer => send.binary := b
           }
           backlog.clear()
         } else {
+          unHookup()
           send.text.reactions += textReaction
           send.binary.reactions += binaryReaction
         }
@@ -66,7 +68,7 @@ class Connection(client: Boolean) {
     }
   }
 
-  def hookup(): Unit = {
+  private def hookup(): Unit = {
     val hookups = if (client) {
       HookupManager.clients
     } else {
@@ -88,7 +90,7 @@ class Connection(client: Boolean) {
     }
   }
 
-  def unHookup(): Unit = {
+  private def unHookup(): Unit = {
     val hookups = if (client) {
       HookupManager.clients
     } else {
@@ -102,12 +104,6 @@ class Connection(client: Boolean) {
     send.close.set(())
     _connected := false
   }
-}
-
-class WebSocketChannels {
-  val text: Channel[String] = Channel[String]
-  val binary: Channel[ByteBuffer] = Channel[ByteBuffer]
-  val close: Channel[Unit] = Channel[Unit]
 }
 
 object Connection {

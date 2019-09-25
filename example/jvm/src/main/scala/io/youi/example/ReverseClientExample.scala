@@ -13,8 +13,6 @@ object ReverseClientExample {
   val connection: WebSocketClient = new WebSocketClient(URL("http://localhost:8080/communication"))
   val hookup: SimpleHookup = Hookup.client[SimpleHookup]
 
-  connection.hookup()
-
   def mainOld(args: Array[String]): Unit = {
     Await.result(connection.connect(), 5.seconds)
     try {

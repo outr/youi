@@ -15,9 +15,11 @@ trait ServerExampleCommunication extends ExampleCommunication with HookupSupport
 
   override def time: Future[Long] = Future(System.currentTimeMillis())
   override def counter: Future[Int] = Future(increment.getAndIncrement())
-  override def broadcast(message: String): Future[Unit] = Future(ServerExampleApplication.hookup.all.foreach { instance =>
-    instance.communication.show(message)
-  })
+  override def broadcast(message: String): Future[Unit] = Future {
+    ServerExampleApplication.hookup.all.foreach { instance =>
+      instance.communication.show(message)
+    }
+  }
   override def logIn(username: String, password: String): Future[Option[String]] = Future {
     val authorized = username == "user" && password == "password"
     if (authorized) {

@@ -27,15 +27,4 @@ class ApplicationConnectivity private[app](val application: YouIApplication,
     val entries = application.connectivityEntries()
     application.connectivityEntries.asInstanceOf[Var[Set[ApplicationConnectivity]]] := entries + this
   }
-
-  connections.changes((before, after) => {
-    val added = after -- before
-    val removed = before -- after
-    added.foreach { connection =>
-      connection.hookup()
-    }
-    removed.foreach { connection =>
-      connection.unHookup()
-    }
-  })
 }

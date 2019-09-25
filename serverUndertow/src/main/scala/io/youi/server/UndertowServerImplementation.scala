@@ -244,6 +244,11 @@ object UndertowServerImplementation extends ServerImplementationCreator {
             connection.receive.close.set(())
             super.onFullCloseMessage(channel, message)
           }
+
+          override def onClose(webSocketChannel: WebSocketChannel, channel: StreamSourceFrameChannel): Unit = {
+            connection.close()
+            super.onClose(webSocketChannel, channel)
+          }
         })
         channel.resumeReceives()
         connection._connected := true

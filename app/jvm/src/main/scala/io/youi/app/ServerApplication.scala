@@ -3,7 +3,7 @@ package io.youi.app
 import java.io.File
 
 import akka.actor.{ActorSystem, Cancellable}
-import com.outr.hookup.Hookup
+import com.outr.hookup.{Hookup, HookupServer}
 import io.youi.http._
 import io.youi.http.content.{Content, FileContent, FormDataContent, StringContent, URLContent}
 import io.youi.net.{ContentType, URL}
@@ -254,6 +254,9 @@ trait ServerApplication extends YouIApplication with Server {
       connection.connected.attach { b =>
         if (!b) appComm.activeConnections.synchronized {
           appComm.activeConnections := (appComm.activeConnections() - connection)
+          HookupServer().foreach { hs =>
+            hs.remove(connection)
+          }
           disconnected := connection
         }
       }

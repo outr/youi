@@ -23,17 +23,14 @@ trait ClientApplication extends YouIApplication with ScreenManager {
   def baseURL: URL = URL(window.location.href)
 
   def communicationURL: URL = {
-    scribe.info(s"BaseURL: ${baseURL}, Location: ${window.location}")
     val protocol = if (baseURL.protocol == Protocol.Https) {
       Protocol.Wss
     } else {
       Protocol.Ws
     }
-    val url = baseURL
+    baseURL
       .withProtocol(protocol)
       .withPath(connectivity.path)
-    scribe.info(s"URL: $url")
-    url
   }
 
   addScript(baseURL.withPath(path"/source-map.min.js").toString)

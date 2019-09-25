@@ -14,7 +14,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 
 class ClientConnectivity(connectivity: ApplicationConnectivity, application: ClientApplication) {
-  val connection: Connection = new Connection
+  val connection: Connection = new Connection(client = true)
   val webSocket: Var[Option[WebSocket]] = Var(None)
 
   connection.receive.text.attach {

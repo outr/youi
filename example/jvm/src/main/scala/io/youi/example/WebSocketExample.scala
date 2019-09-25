@@ -6,7 +6,7 @@ import io.youi.server.handler.HttpHandler
 
 import scala.concurrent.Future
 
-object WebSocketExample extends Connection with HttpHandler with Logging {
+object WebSocketExample extends Connection(client = false) with HttpHandler with Logging {
   receive.text.attach { message =>
     logger.info(s"Received message: $message.")
     send.text := message

@@ -247,7 +247,7 @@ trait ServerApplication extends YouIApplication with Server {
 
   private class ServerConnectionHandler(appComm: ApplicationConnectivity) extends HttpHandler {
     override def handle(httpConnection: HttpConnection): Future[HttpConnection] = appComm.activeConnections.synchronized {
-      val connection = new Connection
+      val connection = new Connection(client = false)
       connection.store.update("httpConnection", httpConnection)
       appComm.activeConnections := (appComm.activeConnections() + connection)
       connected := connection

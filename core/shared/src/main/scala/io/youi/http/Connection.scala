@@ -11,7 +11,7 @@ import reactify.reaction.Reaction
 
 import scala.collection.mutable.ListBuffer
 
-class Connection {
+class Connection(client: Boolean) {
   private[youi] val _connected: Var[Boolean] = Var[Boolean](false)
   val connected: Val[Boolean] = Val(_connected)
 
@@ -66,8 +66,8 @@ class Connection {
     }
   }
 
-  def hookup(isClient: Boolean): Unit = {
-    val hookups = if (isClient) {
+  def hookup(): Unit = {
+    val hookups = if (client) {
       HookupManager.clients
     } else {
       HookupManager(this, registerAllServers = true)
@@ -88,8 +88,8 @@ class Connection {
     }
   }
 
-  def unHookup(isClient: Boolean): Unit = {
-    val hookups = if (isClient) {
+  def unHookup(): Unit = {
+    val hookups = if (client) {
       HookupManager.clients
     } else {
       HookupManager(this)

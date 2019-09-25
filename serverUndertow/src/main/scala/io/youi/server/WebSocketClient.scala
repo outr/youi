@@ -36,7 +36,7 @@ class WebSocketClient(url: URL,
                       maxThreads: Int = 30,
                       noDelay: Boolean = true,
                       buffered: Boolean = true,
-                      authorization: => Option[String] = None) extends Connection {
+                      authorization: => Option[String] = None) extends Connection(client = true) {
   private lazy val worker = Xnio.getInstance().createWorker(OptionMap.builder()
     .set(Options.KEEP_ALIVE, true)
     .set(Options.WORKER_IO_THREADS, workerThreads)

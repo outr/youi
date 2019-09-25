@@ -32,10 +32,10 @@ class ApplicationConnectivity private[app](val application: YouIApplication,
     val added = after -- before
     val removed = before -- after
     added.foreach { connection =>
-      connection.hookup(application.isClient)
+      connection.hookup()
     }
     removed.foreach { connection =>
-      connection.unHookup(application.isClient)
+      connection.unHookup()
     }
   })
 }

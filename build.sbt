@@ -42,7 +42,6 @@ val webFontLoaderVersion = "1.6.28_1"
 val akkaVersion = "2.5.25"
 val scalaJSDOM = "0.9.7"
 val okHttpVersion = "4.2.0"
-val circeVersion = "0.12.0-M3"
 val uaDetectorVersion = "2014.10"
 val undertowVersion = "2.0.26.Final"
 val closureCompilerVersion = "v20190618"
@@ -92,12 +91,7 @@ lazy val core = crossProject(JSPlatform, JVMPlatform).in(file("core"))
       "com.outr" %%% "reactify" % reactifyVersion,
       "com.outr" %%% "hookup" % hookupVersion,
       "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
-    ),
-    libraryDependencies ++= Seq(
-      "io.circe" %%% "circe-core",
-      "io.circe" %%% "circe-generic",
-      "io.circe" %%% "circe-parser"
-    ).map(_ % circeVersion)
+    )
   )
   .jvmSettings(
     libraryDependencies ++= Seq(
@@ -260,4 +254,3 @@ lazy val utilities = project.in(file("utilities"))
       "org.jsoup" % "jsoup" % jSoupVersion
     )
   )
-  .dependsOn(coreJVM)

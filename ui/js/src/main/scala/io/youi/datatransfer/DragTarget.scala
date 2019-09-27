@@ -28,14 +28,14 @@ trait DragTarget {
   }
 
   private def showOverlay(): Unit = if (manager.enabled()) {
-    manager.overlay.current := Some(this)
-    manager.overlay.visible := true
+    manager.overlay.current @= Some(this)
+    manager.overlay.visible @= true
   }
 
   private def hideOverlay(): Unit = if (manager.enabled()) {
     entered = 0
-    manager.overlay.visible := false
-    manager.overlay.current := None
+    manager.overlay.visible @= false
+    manager.overlay.current @= None
   }
 }
 

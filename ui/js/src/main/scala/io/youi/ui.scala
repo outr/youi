@@ -12,7 +12,7 @@ import scala.concurrent.duration._
 import scala.scalajs.js
 
 object ui extends Container(document.body) {
-  id := "ui"
+  id @= "ui"
 
   override val visible: Val[Boolean] = Val(visibility() == Visibility.Visible && display() != Display.None)
 
@@ -35,23 +35,23 @@ object ui extends Container(document.body) {
   override val event: EventSupport = new HTMLEvents(this, window)
 
   event.key.down.attach { evt =>
-    evt.key.pressed.asInstanceOf[Var[Boolean]] := true
+    evt.key.pressed.asInstanceOf[Var[Boolean]] @= true
   }
   event.key.up.attach { evt =>
-    evt.key.pressed.asInstanceOf[Var[Boolean]] := false
+    evt.key.pressed.asInstanceOf[Var[Boolean]] @= false
   }
 
   title.attach(document.title = _)
 
   window.addEventListener("resize", (_: Event) => {
-    size.measured.width := window.innerWidth
-    size.measured.height := window.innerHeight
+    size.measured.width @= window.innerWidth
+    size.measured.height @= window.innerHeight
   })
 
   AnimationFrame.every(1.second) {
     val r = devicePixelRatio / backingStoreRatio
     if (r != displayRatio()) {
-      displayRatio.asInstanceOf[Var[Double]] := r
+      displayRatio.asInstanceOf[Var[Double]] @= r
     }
   }
 

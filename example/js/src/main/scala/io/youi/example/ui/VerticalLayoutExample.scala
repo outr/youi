@@ -15,20 +15,20 @@ class VerticalLayoutExample extends UIExampleScreen {
   override def path: Path = path"/examples/vertical.html"
 
   override def createUI(): Future[Unit] = {
-    ui.overflow := Overflow.Auto
+    ui.overflow @= Overflow.Auto
 
     val boxes: Container = new Container {
-      layout := new VerticalLayout(spacing = 10.0)
-      background := Color.LightBlue
+      layout @= new VerticalLayout(spacing = 10.0)
+      background @= Color.LightBlue
 //      border := Border(Stroke(Color.Black), radius = 10.0)
-      htmlBorder := HTMLBorder(1.0, HTMLBorderStyle.Solid, Color.Black)
-      htmlBorder.radius := 10.0
-      htmlBorder.radius.topLeft := 15.0
-      overflow := Overflow.Hidden
+      htmlBorder @= HTMLBorder(1.0, HTMLBorderStyle.Solid, Color.Black)
+      htmlBorder.radius @= 10.0
+      htmlBorder.radius.topLeft @= 15.0
+      overflow @= Overflow.Hidden
       position.center := container.size.center
       position.middle := container.size.middle
-      size.width := 120.0
-      size.height := 475.0
+      size.width @= 120.0
+      size.height @= 475.0
 
       val black = Box(Color.Black)
       val red = Box(Color.Red)
@@ -49,14 +49,14 @@ class VerticalLayoutExample extends UIExampleScreen {
   }
 
   class Box extends Container {
-    position.left := 10.0
-    size.width := 100.0
-    size.height := 100.0
+    position.left @= 10.0
+    size.width @= 100.0
+    size.height @= 100.0
   }
 
   object Box {
     def apply(paint: Paint): Box = new Box {
-      background := paint
+      background @= paint
     }
   }
 }

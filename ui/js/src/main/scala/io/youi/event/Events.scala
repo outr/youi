@@ -24,20 +24,20 @@ class Events(component: Component) {
       val px = Var[Double](0.0)
       val py = Var[Double](0.0)
       val o = Var[Boolean](false)
-      pointer.enter.on(o := true)
-      pointer.exit.on(o := false)
+      pointer.enter.on(o @= true)
+      pointer.exit.on(o @= false)
       pointer.move.attach { evt =>
-        px := evt.local.x
-        py := evt.local.y
+        px @= evt.local.x
+        py @= evt.local.y
       }
       (px, py, o)
     }
 
     lazy val downState: Val[Boolean] = {
       val d = Var[Boolean](false)
-      pointer.down.on(d := true)
-      pointer.up.on(d := false)
-      pointer.exit.on(d := false)
+      pointer.down.on(d @= true)
+      pointer.up.on(d @= false)
+      pointer.exit.on(d @= false)
       d
     }
 

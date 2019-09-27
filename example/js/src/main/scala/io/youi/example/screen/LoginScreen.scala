@@ -26,7 +26,7 @@ object LoginScreen extends ExampleScreen {
         case Success(error) => {
           message.innerHTML = error.getOrElse("")
           if (error.isEmpty) {
-            ClientExampleApplication.active := CommunicationScreen
+            ClientExampleApplication.active @= CommunicationScreen
           }
         }
         case Failure(exception) => scribe.warn(s"Failed to log in with exception: ${exception.getMessage}")

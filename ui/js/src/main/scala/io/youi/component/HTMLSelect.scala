@@ -20,7 +20,7 @@ class HTMLSelect(protected val element: html.Select,
     element.addEventListener("change", (_: Event) => {
       valueChanging = true
       try {
-        value := element.value
+        value @= element.value
       } finally {
         valueChanging = false
       }

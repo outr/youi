@@ -35,7 +35,7 @@ object FileSystemSupport {
         case n => n
       }
       file.file((f: File) => {
-        manager.fileReceived := DataTransferFile(f, fileName, path)
+        manager.fileReceived @= DataTransferFile(f, fileName, path)
       })
     } else {
       throw new RuntimeException(s"Neither a directory nor file: ${entry.name}")

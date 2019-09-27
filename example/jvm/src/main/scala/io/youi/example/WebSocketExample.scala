@@ -9,7 +9,7 @@ import scala.concurrent.Future
 object WebSocketExample extends Connection(client = false) with HttpHandler with Logging {
   receive.text.attach { message =>
     logger.info(s"Received message: $message.")
-    send.text := message
+    send.text @= message
   }
 
   override def handle(connection: HttpConnection): Future[HttpConnection] = {

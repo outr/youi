@@ -42,20 +42,20 @@ class Gestures(component: Component) {
 
   private def add(evt: PointerEvent): Unit = {
     val p = Pointer(evt.identifier, evt, evt, evt)
-    _pointers := _pointers() + (evt.identifier -> p)
+    _pointers @= _pointers() + (evt.identifier -> p)
 
-    pointers.added := p
+    pointers.added @= p
   }
   private def dragging(evt: PointerEvent): Unit = pointers.get(evt.identifier).foreach { p =>
     val updated = p.withEvent(evt)
 
-    _pointers := _pointers() + (p.identifier -> updated)
-    pointers.dragged := updated
+    _pointers @= _pointers() + (p.identifier -> updated)
+    pointers.dragged @= updated
   }
   private def remove(evt: PointerEvent): Unit = pointers.get(evt.identifier).foreach { p =>
-    _pointers := _pointers() - evt.identifier
+    _pointers @= _pointers() - evt.identifier
 
-    pointers.removed := p.copy()
+    pointers.removed @= p.copy()
   }
 }
 

@@ -17,24 +17,24 @@ class UIExamples extends UIExampleScreen {
 
   override def createUI(): Future[Unit] = super.load().map { _ =>
 //    register(ui.overflow.y, Overflow.Auto)
-    ui.overflow.y := Overflow.Auto
+    ui.overflow.y @= Overflow.Auto
     var previous: Option[Button] = None
     ClientExampleApplication.screens().collect {
       case screen: UIExampleScreen if screen.title != title => screen
     }.foreach { screen =>
       if (screen != this) {
         val button: Button = new Button {
-          value := screen.title
-          color := Color.White
-          size.width := 250.0
+          value @= screen.title
+          color @= Color.White
+          size.width @= 250.0
           val offset: Double = previous.map(_.position.bottom + 45.0).getOrElse(20.0)
-          position.top := offset
+          position.top @= offset
           position.center := container.size.center
           event.click.attach { evt =>
             evt.stopPropagation()
             evt.preventDefault()
 
-            ClientExampleApplication.active := screen
+            ClientExampleApplication.active @= screen
           }
         }
         previous = Some(button)

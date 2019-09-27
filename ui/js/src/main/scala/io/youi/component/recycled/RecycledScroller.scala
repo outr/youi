@@ -16,7 +16,7 @@ class RecycledScroller[T, C <: Component](perPage: Int, renderer: RecycledRender
     val position: Var[Int] = Var(math.min(1, data().total))
   }
 
-  overflow := Overflow.Hidden
+  overflow @= Overflow.Hidden
 
   protected val pane1 = new RecycledPane
   protected val pane2 = new RecycledPane
@@ -87,7 +87,7 @@ class RecycledScroller[T, C <: Component](perPage: Int, renderer: RecycledRender
     } else {
       1
     }
-    batch.position := position
+    batch.position @= position
   }
 
   pane1.position.bottom := size.height
@@ -101,9 +101,9 @@ class RecycledScroller[T, C <: Component](perPage: Int, renderer: RecycledRender
   batch.position.attach { p =>
     if (!updatingPosition) {
       if (batch.data().isEmpty) {
-        batch.position := 0
+        batch.position @= 0
       } else if (p < 1) {
-        batch.position := 1
+        batch.position @= 1
       } else if (p > batch.data().total) {
         batch.position.static(batch.data.total)
       } else {
@@ -140,21 +140,21 @@ class RecycledScroller[T, C <: Component](perPage: Int, renderer: RecycledRender
           val entryHeight = middle.components.head.size.height()
           val perScreen = math.floor(size.height() / entryHeight).toInt
           if (batch.data.total == 0) {
-            batch.value := None
-            batch.position := 0
+            batch.value @= None
+            batch.position @= 0
           } else if (p + perScreen >= batch.data.total) {
             batch.data().get(batch.data.total - 1, batch.data.total).foreach { v =>
               updatingPosition = true
               try {
-                batch.value := v.headOption
+                batch.value @= v.headOption
                 batch.position.static(batch.data.total)
               } finally {
                 updatingPosition = false
               }
             }
           } else {
-            batch.value := Some(item)
-            batch.position := p + 1
+            batch.value @= Some(item)
+            batch.position @= p + 1
           }
         } finally {
           updatingPosition = false
@@ -173,7 +173,7 @@ class RecycledScroller[T, C <: Component](perPage: Int, renderer: RecycledRender
       renderer.hide(c)
     }
 
-    layout := new VerticalLayout
+    layout @= new VerticalLayout
     size.width := scroller.size.width
     size.height := components.last.position.bottom
     children ++= components

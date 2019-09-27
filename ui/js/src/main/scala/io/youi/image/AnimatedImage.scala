@@ -25,13 +25,13 @@ class AnimatedImage(frames: Vector[Image], delay: Double) extends Image {
       if (frames.length > index + 1) {
         index.static(index + 1)
       } else {
-        index := 0
+        index @= 0
       }
       lastFrame = time
     }
     frame.draw(context, x, y, width, height)
 
-    modified := time
+    modified @= time
   }
 
   override def resize(width: Double, height: Double): Future[Image] = {

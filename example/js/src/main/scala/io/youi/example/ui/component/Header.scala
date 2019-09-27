@@ -17,48 +17,48 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class Header extends Container { self =>
   protected def application: ClientExampleApplication.type = ClientExampleApplication
 
-  position.`type` := Position.Absolute
-  position.left := 0.0
-  position.top := 0.0
+  position.`type` @= Position.Absolute
+  position.left @= 0.0
+  position.top @= 0.0
   size.width := ui.size.width
-  size.height := 75.0
+  size.height @= 75.0
   background := Paint.vertical(75.0).distributeColors(Color.White, Color.LightGray, Color.DarkGray)
 
   val logo: ImageView = new ImageView {
     Image("/images/youi.png").foreach { img =>
-      image := img
-      size := img.size.scale(height = Some(65.0))
+      image @= img
+      size @= img.size.scale(height = Some(65.0))
     }
-    position.left := 10.0
+    position.left @= 10.0
     position.middle := self.size.middle
     event.link("/ui-examples.html")
   }
 
   val title: HTMLTextView = new HTMLTextView {
     GoogleFont.`Open Sans`.`600`.load().foreach { fnt =>
-      font := fnt
+      font @= fnt
     }
-    font.size := 20.pt
-    color := application.colors.blue.dark
+    font.size @= 20.pt
+    color @= application.colors.blue.dark
     ScreenManager().active.attachAndFire { screen =>
-      value := screen.title
+      value @= screen.title
     }
-    whiteSpace := WhiteSpace.NoWrap
+    whiteSpace @= WhiteSpace.NoWrap
     position.right := ui.size.width - 25.0
-    position.top := 15.0
+    position.top @= 15.0
   }
 
   val link: HTMLTextView = new HTMLTextView {
     GoogleFont.`Open Sans`.`600`.load().foreach { fnt =>
-      font := fnt
+      font @= fnt
     }
-    font.size := 14.pt
-    color := application.colors.blue.dark
-    value := "View Source"
-    cursor := Cursor.Pointer
+    font.size @= 14.pt
+    color @= application.colors.blue.dark
+    value @= "View Source"
+    cursor @= Cursor.Pointer
     ScreenManager().active.attachAndFire {
-      case _: UIExampleScreen => display := Display.Block
-      case _ => display := Display.None
+      case _: UIExampleScreen => display @= Display.Block
+      case _ => display @= Display.None
     }
     event.click.on {
       ScreenManager().active() match {
@@ -66,7 +66,7 @@ class Header extends Container { self =>
         case _ =>
       }
     }
-    whiteSpace := WhiteSpace.NoWrap
+    whiteSpace @= WhiteSpace.NoWrap
     position.right := ui.size.width - 25.0
     position.top := title.position.bottom - 5.0
   }

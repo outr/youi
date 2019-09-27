@@ -18,7 +18,7 @@ class Scale9(element: html.Element = HTMLComponent.create[html.Div]("div")) exte
 
   def this(image: Image) = {
     this()
-    this.image := image
+    this.image @= image
   }
 
   val image: Var[Image] = Var(Image.empty)
@@ -38,63 +38,63 @@ class Scale9(element: html.Element = HTMLComponent.create[html.Div]("div")) exte
   size.measured.height := image.height
 
   private val topLeft = new ImageView {
-    position.`type` := Position.Absolute
-    position.left := 0.0
-    position.top := 0.0
+    position.`type` @= Position.Absolute
+    position.left @= 0.0
+    position.top @= 0.0
     size.width := x1
     size.height := y1
   }
   private val top = new ImageView {
-    position.`type` := Position.Absolute
+    position.`type` @= Position.Absolute
     position.left := x1
-    position.top := 0.0
+    position.top @= 0.0
     size.width := centerWidth
     size.height := y1
   }
   private val topRight = new ImageView {
-    position.`type` := Position.Absolute
+    position.`type` @= Position.Absolute
     position.right := self.size.width
-    position.top := 0.0
+    position.top @= 0.0
     size.width := rightWidth
     size.height := y1
   }
   private val left = new ImageView {
-    position.`type` := Position.Absolute
-    position.left := 0.0
+    position.`type` @= Position.Absolute
+    position.left @= 0.0
     position.top := y1
     size.width := x1
     size.height := middleHeight
   }
   private val center = new ImageView {
-    position.`type` := Position.Absolute
+    position.`type` @= Position.Absolute
     position.left := x1
     position.top := y1
     size.width := centerWidth
     size.height := middleHeight
   }
   private val right = new ImageView {
-    position.`type` := Position.Absolute
+    position.`type` @= Position.Absolute
     position.right := self.size.width
     position.top := y1
     size.width := rightWidth
     size.height := middleHeight
   }
   private val bottomLeft = new ImageView {
-    position.`type` := Position.Absolute
-    position.left := 0.0
+    position.`type` @= Position.Absolute
+    position.left @= 0.0
     position.bottom := self.size.height
     size.width := x1
     size.height := bottomHeight
   }
   private val bottom = new ImageView {
-    position.`type` := Position.Absolute
+    position.`type` @= Position.Absolute
     position.left := x1
     position.bottom := self.size.height
     size.width := centerWidth
     size.height := bottomHeight
   }
   private val bottomRight = new ImageView {
-    position.`type` := Position.Absolute
+    position.`type` @= Position.Absolute
     position.right := self.size.width
     position.bottom := self.size.height
     size.width := rightWidth
@@ -105,7 +105,7 @@ class Scale9(element: html.Element = HTMLComponent.create[html.Div]("div")) exte
     if (x1 + y1 + x2 + y2 > 0.0) {
       def update(view: ImageView, x1: Double, y1: Double, x2: Double, y2: Double): Unit = {
         image().clip(x1, y1, x2, y2).onComplete {
-          case Success(clipped) => view.image := clipped
+          case Success(clipped) => view.image @= clipped
           case Failure(t) => scribe.error(t)
         }
       }

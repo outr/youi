@@ -39,10 +39,10 @@ object WebSocketUtil {
       }
     }
     ws.onopen = (_: Event) => {
-      listener._connected := true
+      listener._connected @= true
     }
     ws.onerror = (_: Event) => {
-      listener.error := new RuntimeException("WebSocket error!")
+      listener.error @= new RuntimeException("WebSocket error!")
       listener.close()
     }
     ws.onclose = (_: CloseEvent) => {
@@ -50,16 +50,16 @@ object WebSocketUtil {
     }
     ws.onmessage = (evt: MessageEvent) => {
       evt.data match {
-        case s: String => listener.receive.text := s
+        case s: String => listener.receive.text @= s
         case blob: Blob => {
           val fileReader = new FileReader
           fileReader.onload = (_: Event) => {
             val arrayBuffer = fileReader.result.asInstanceOf[ArrayBuffer]
-            listener.receive.binary := TypedArrayBuffer.wrap(arrayBuffer)
+            listener.receive.binary @= TypedArrayBuffer.wrap(arrayBuffer)
           }
           fileReader.readAsArrayBuffer(blob)
         }
-        case ab: ArrayBuffer => listener.receive.binary := TypedArrayBuffer.wrap(ab)
+        case ab: ArrayBuffer => listener.receive.binary @= TypedArrayBuffer.wrap(ab)
       }
     }
     ws

@@ -25,16 +25,16 @@ class AccordionEntry(accordion: Accordion,
 
     val cardHeader = new CardHeader {
       children += new Button {
-        `type` := ButtonType.Link
-        data("toggle") := "collapse"
-        data("target") := s"#${collapsible.id()}"
-        aria("expanded") := "false"
-        aria("controls") := collapsible.id()
+        `type` @= ButtonType.Link
+        data("toggle") @= "collapse"
+        data("target") @= s"#${collapsible.id()}"
+        aria("expanded") @= "false"
+        aria("controls") @= collapsible.id()
         children += header
       }
     }
 
-    collapsible.aria("labelledby") := cardHeader.id()
+    collapsible.aria("labelledby") @= cardHeader.id()
 
     children += cardHeader
     children += collapsible

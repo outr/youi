@@ -30,23 +30,23 @@ class Video(private[youi] val element: html.Video) extends Drawable {
   private def init(autoPlay: Boolean,
                    loop: Boolean,
                    muted: Boolean): Unit = if (!isEmpty) {
-    this.autoPlay := autoPlay
-    this.loop := loop
-    this.muted := muted
+    this.autoPlay @= autoPlay
+    this.loop @= loop
+    this.muted @= muted
 
     this.autoPlay.attach(element.autoplay = _)
     this.loop.attach(element.loop = _)
     this.muted.attach(element.muted = _)
 
-    position := element.currentTime
+    position @= element.currentTime
     position.attach { p =>
       if (!updatingTime) element.currentTime = p
     }
     element.addEventListener("timeupdate", (_: Event) => {
-      modified := System.currentTimeMillis()
+      modified @= System.currentTimeMillis()
       updatingTime = true
       try {
-        position := element.currentTime
+        position @= element.currentTime
       } finally {
         updatingTime = false
       }
@@ -54,26 +54,26 @@ class Video(private[youi] val element: html.Video) extends Drawable {
     element.addEventListener("seeked", (_: Event) => {
       updatingTime = true
       try {
-        position := element.currentTime
+        position @= element.currentTime
       } finally {
         updatingTime = false
       }
     })
 
     var updatingVolume = false
-    volume := element.volume
+    volume @= element.volume
     volume.attach { v =>
       if (!updatingVolume) element.volume = v
     }
     element.addEventListener("volumechange", (_: Event) => {
       updatingVolume = true
       try {
-        volume := element.volume
+        volume @= element.volume
       } finally {
         updatingVolume = false
       }
     })
-    modified := System.currentTimeMillis()
+    modified @= System.currentTimeMillis()
   }
 
   def play(): Unit = element.play()
@@ -86,7 +86,7 @@ class Video(private[youi] val element: html.Video) extends Drawable {
     this.position.once(_ => {
       promise.success(())
     }, d => math.abs(position - d) <= 1.0)
-    this.position := position
+    this.position @= position
     promise.future
   } else {
     Future.successful(())
@@ -104,11 +104,11 @@ class Video(private[youi] val element: html.Video) extends Drawable {
     if (position() > 0.0 && !isPaused && !isEnded) {
       updatingTime = true
       try {
-        position := element.currentTime
+        position @= element.currentTime
       } finally {
         updatingTime = false
       }
-      modified := System.currentTimeMillis()
+      modified @= System.currentTimeMillis()
     }
   }
 

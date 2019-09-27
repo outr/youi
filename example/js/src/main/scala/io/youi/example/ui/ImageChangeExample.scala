@@ -19,7 +19,7 @@ class ImageChangeExample extends UIExampleScreen {
     cuteness <- Image("/images/cuteness.jpg")
     tiger <- Image("/images/tiger.svg")
   } yield {
-    imageView.image := tiger
+    imageView.image @= tiger
     imageView.position.center := container.size.center
     imageView.position.middle := container.size.middle
 
@@ -27,13 +27,13 @@ class ImageChangeExample extends UIExampleScreen {
       val img = imageView.image()
       if (img == icon) {
         scribe.info("Icon -> Cuteness")
-        imageView.image := cuteness
+        imageView.image @= cuteness
       } else if (img == cuteness) {
         scribe.info("Cuteness -> Tiger")
-        imageView.image := tiger
+        imageView.image @= tiger
       } else if (img == tiger) {
         scribe.info("Tiger -> Icon")
-        imageView.image := icon
+        imageView.image @= icon
       } else {
         scribe.error("No match!")
       }

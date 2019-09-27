@@ -74,7 +74,7 @@ object CommunicationScreen extends ExampleScreen with PreloadedContentScreen {
     nameButton.addEventListener("click", (evt: Event) => {
       evt.preventDefault()
       evt.stopPropagation()
-      hookup.name := Some(nameInput.value)
+      hookup.name @= Some(nameInput.value)
     })
     hookup.name.attach { name =>
       val s = name.getOrElse("")

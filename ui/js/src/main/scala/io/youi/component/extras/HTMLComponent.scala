@@ -26,7 +26,7 @@ trait HTMLComponent[E <: html.Element] extends Component with HTMLComponentTheme
 
   Option(element.getAttribute("id")).foreach {
     case "" => // Ignore
-    case s => id := s
+    case s => id @= s
   }
 
   lazy val classList: Var[List[String]] = {
@@ -124,15 +124,15 @@ trait HTMLComponent[E <: html.Element] extends Component with HTMLComponentTheme
   override def updateTransform(): Unit = {
     super.updateTransform()
 
-    size.view.width.asInstanceOf[Var[Double]] := element.clientWidth
-    size.view.height.asInstanceOf[Var[Double]] := element.clientHeight
+    size.view.width.asInstanceOf[Var[Double]] @= element.clientWidth
+    size.view.height.asInstanceOf[Var[Double]] @= element.clientHeight
     val rect = element.getBoundingClientRect()
     scrolling = true
     try {
-      position.scroll.x := rect.left
-      position.scroll.y := rect.top
-      size.scroll.width.asInstanceOf[Var[Double]] := rect.width
-      size.scroll.height.asInstanceOf[Var[Double]] := rect.height
+      position.scroll.x @= rect.left
+      position.scroll.y @= rect.top
+      size.scroll.width.asInstanceOf[Var[Double]] @= rect.width
+      size.scroll.height.asInstanceOf[Var[Double]] @= rect.height
     } finally {
       scrolling = false
     }
@@ -145,6 +145,7 @@ trait HTMLComponent[E <: html.Element] extends Component with HTMLComponentTheme
 
     def apply(): Option[String] = Option(element.getAttribute(key))
     def :=(value: String): Unit = element.setAttribute(key, value)
+    def @=(value: String): Unit = element.setAttribute(key, value)
     def toVar: Var[Option[String]] = {
       val v = Var(apply())
       v.attach {

@@ -226,17 +226,17 @@ object UndertowServerImplementation extends ServerImplementationCreator {
         channel.getReceiveSetter.set(new AbstractReceiveListener {
           override def onFullTextMessage(channel: WebSocketChannel, message: BufferedTextMessage): Unit = {
             val data = message.getData
-            connection.receive.text := data
+            connection.receive.text @= data
             super.onFullTextMessage(channel, message)
           }
 
           override def onFullBinaryMessage(channel: WebSocketChannel, message: BufferedBinaryMessage): Unit = {
-            message.getData.getResource.foreach(connection.receive.binary := _)
+            message.getData.getResource.foreach(connection.receive.binary @= _)
             super.onFullBinaryMessage(channel, message)
           }
 
           override def onError(channel: WebSocketChannel, error: Throwable): Unit = {
-            connection.error := error
+            connection.error @= error
             super.onError(channel, error)
           }
 
@@ -251,7 +251,7 @@ object UndertowServerImplementation extends ServerImplementationCreator {
           }
         })
         channel.resumeReceives()
-        connection._connected := true
+        connection._connected @= true
       }
     })
     if (impl.webSocketCompression) {

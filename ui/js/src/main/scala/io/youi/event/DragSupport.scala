@@ -13,7 +13,7 @@ abstract class DragSupport[T](component: Component) {
 
   gestures.pointers.added.attach { p =>
     if (gestures.pointers.map.size > 1) {
-      value := None
+      value @= None
     } else {
       checkForDown(p)
     }
@@ -34,7 +34,7 @@ abstract class DragSupport[T](component: Component) {
   def dragging(pointer: Pointer, value: T): Unit = {}
 
   def dropped(pointer: Pointer, value: T): Unit = {
-    drop := Dropped(pointer, value)
+    drop @= Dropped(pointer, value)
   }
 
   protected def checkForDown(pointer: Pointer): Unit = {
@@ -43,6 +43,6 @@ abstract class DragSupport[T](component: Component) {
 
   protected def checkForUp(pointer: Pointer): Unit = value().foreach { v =>
     dropped(pointer, v)
-    value := None
+    value @= None
   }
 }

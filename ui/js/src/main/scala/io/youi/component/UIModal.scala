@@ -13,20 +13,20 @@ trait UIModal {
 
   position.center := ui.position.center
   position.middle := ui.position.middle
-  position.`type` := Position.Fixed
-  display := Display.None
+  position.`type` @= Position.Fixed
+  display @= Display.None
 
   def show(): Unit = {
-    UIModal.active := Some(this)
+    UIModal.active @= Some(this)
     if (position.z() <= UIModal.backdrop.position.z()) {
       position.z.static(UIModal.backdrop.position.z() + 1)
     }
-    display := Display.Block
+    display @= Display.Block
   }
 
   def hide(): Unit = {
-    UIModal.active := None
-    display := Display.None
+    UIModal.active @= None
+    display @= Display.None
   }
 }
 
@@ -34,15 +34,15 @@ object UIModal {
   val active: Var[Option[UIModal]] = Var(None)
 
   val backdrop: Container = new Container {
-    background := Color.Black
-    opacity := 0.5
-    position.x := 0.0
-    position.y := 0.0
-    position.z := 100
-    position.`type` := Position.Fixed
+    background @= Color.Black
+    opacity @= 0.5
+    position.x @= 0.0
+    position.y @= 0.0
+    position.z @= 100
+    position.`type` @= Position.Fixed
     size.width := ui.size.width
     size.height := ui.size.height
-    display := Display.None
+    display @= Display.None
 
     ui.children += this
 
@@ -61,12 +61,12 @@ object UIModal {
     a match {
       case Some(modal) => {
         modal.show()
-        backdrop.display := Display.Block
+        backdrop.display @= Display.Block
       }
-      case None => backdrop.display := Display.None
+      case None => backdrop.display @= Display.None
     }
     previous = a
   }
 
-  def hide(): Unit = active := None
+  def hide(): Unit = active @= None
 }

@@ -25,13 +25,13 @@ class AnimationExample extends UIExampleScreen {
       Easing.map.toList.sortBy(_._1).foreach {
         case (name, easingFunction) => {
           val label = new HTMLTextView {
-            value := s"$name Example"
-            font.size := 24.0
-            font := fnt
-            position.`type` := Position.Absolute
-            position.top := shift
-            position.left := 50.0
-            color := Color.DarkSlateBlue
+            value @= s"$name Example"
+            font.size @= 24.0
+            font @= fnt
+            position.`type` @= Position.Absolute
+            position.top @= shift
+            position.left @= 50.0
+            color @= Color.DarkSlateBlue
 
             shift += 25.0
           }
@@ -50,9 +50,9 @@ class AnimationExample extends UIExampleScreen {
       }
 
       val image = new ImageView {
-        image := img
-        position.`type` := Position.Absolute
-        position.left := 0.0
+        image @= img
+        position.`type` @= Position.Absolute
+        position.left @= 0.0
         position.middle := container.size.middle
       }
 
@@ -61,7 +61,7 @@ class AnimationExample extends UIExampleScreen {
       forever(
         parallel(
           sequential(
-            synchronous(image.rotation := 0.0),
+            synchronous(image.rotation @= 0.0),
             image.rotation to 6.0 in 20.seconds
           ),
           sequential(

@@ -42,7 +42,7 @@ class DataTransferManager {
 
   def process(files: FileList): Unit = files.toList.foreach { file =>
     if (file.`type`.isEmpty) {
-      folderFeatureMissing := file
+      folderFeatureMissing @= file
     } else {
       val fullName = try {
         file.webkitRelativePath match {
@@ -60,7 +60,7 @@ class DataTransferManager {
         }
         case n => Nil -> n
       }
-      fileReceived := DataTransferFile(file, fileName, path)
+      fileReceived @= DataTransferFile(file, fileName, path)
     }
   }
 }

@@ -39,7 +39,7 @@ class LazyFuture[T](f: () => Future[T], maxFrequency: FiniteDuration, automatic:
     if (finished) {
       if (future.nonEmpty) {
         future = None
-        lastUpdate := System.currentTimeMillis()
+        lastUpdate @= System.currentTimeMillis()
       }
 
       if ((isReady && dirty.compareAndSet(true, false)) || force) {

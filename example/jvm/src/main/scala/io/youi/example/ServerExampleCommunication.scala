@@ -24,7 +24,7 @@ trait ServerExampleCommunication extends ExampleCommunication with HookupSupport
     val authorized = username == "user" && password == "password"
     if (authorized) {
       MySession.withConnection(connection) { transaction =>
-        transaction.session.username := Some(username)
+        transaction.session.username @= Some(username)
         Future.successful(transaction)
       }
       None

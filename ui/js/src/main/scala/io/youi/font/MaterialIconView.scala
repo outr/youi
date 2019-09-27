@@ -15,7 +15,7 @@ class MaterialIconView(protected val element: html.Element,
 
   element.classList.add("material-icons")
 
-  Material.load().map(fnt => font := fnt)
+  Material.load().map(fnt => font @= fnt)
 
   override protected def defaultParentTheme: Theme = MaterialIconView
 

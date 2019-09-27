@@ -25,6 +25,6 @@ class ApplicationConnectivity private[app](val application: YouIApplication,
   // Make sure the application knows about it
   application.synchronized {
     val entries = application.connectivityEntries()
-    application.connectivityEntries.asInstanceOf[Var[Set[ApplicationConnectivity]]] := entries + this
+    application.connectivityEntries.asInstanceOf[Var[Set[ApplicationConnectivity]]] @= entries + this
   }
 }

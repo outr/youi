@@ -16,7 +16,7 @@ object AnimationFrame extends TaskSupport {
       (highResTimeStamp - lastUpdate) / 1000.0
     }
     try {
-      timeStamp.asInstanceOf[Var[Double]] := highResTimeStamp
+      timeStamp.asInstanceOf[Var[Double]] @= highResTimeStamp
       update(delta)
     } finally {
       lastUpdate = highResTimeStamp

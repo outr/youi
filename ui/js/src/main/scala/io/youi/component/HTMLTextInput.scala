@@ -17,7 +17,7 @@ class HTMLTextInput(protected val element: html.Input,
     element.addEventListener("input", (_: Event) => {
       valueChanging = true
       try {
-        value := element.value
+        value @= element.value
       } finally {
         valueChanging = false
       }

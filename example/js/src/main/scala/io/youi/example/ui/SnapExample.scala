@@ -16,7 +16,7 @@ class SnapExample extends UIExampleScreen {
 
   override def createUI(): Future[Unit] = {
     val box = new Box {
-      background := Color.Black
+      background @= Color.Black
       position.center := container.size.center
       position.middle := container.size.middle
     }
@@ -41,13 +41,13 @@ class SnapExample extends UIExampleScreen {
   }
 
   class Box extends Container {
-    size.width := 100.0
-    size.height := 100.0
+    size.width @= 100.0
+    size.height @= 100.0
   }
 
   object Box {
     def apply(paint: Paint): Box = new Box {
-      background := paint
+      background @= paint
     }
   }
 }

@@ -18,7 +18,7 @@ class ClientConnectivity(connectivity: ApplicationConnectivity, application: Cli
   val webSocket: Var[Option[WebSocket]] = Var(None)
 
   connection.receive.text.attach {
-    case "PING" => connection.send.text := "PONG"
+    case "PING" => connection.send.text @= "PONG"
     case _ => // Ignore
   }
 
@@ -33,10 +33,10 @@ class ClientConnectivity(connectivity: ApplicationConnectivity, application: Cli
   }
 
   def connect(): Unit = {
-    connectivity.activeConnections := Set(connection)
+    connectivity.activeConnections @= Set(connection)
 
     disconnect()
-    webSocket := Some(WebSocketUtil.connect(application.communicationURL, connection))
+    webSocket @= Some(WebSocketUtil.connect(application.communicationURL, connection))
   }
 
   def disconnect(): Unit = synchronized {
@@ -44,7 +44,7 @@ class ClientConnectivity(connectivity: ApplicationConnectivity, application: Cli
       if (ws.readyState == WebSocket.OPEN) {
         ws.close()
       }
-      webSocket := None
+      webSocket @= None
     }
   }
 

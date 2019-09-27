@@ -27,8 +27,8 @@ object History {
     val urlString = document.location.href
     val newURL = URL(urlString)
     if (newURL != url()) {
-      currentURL := newURL
-      stateChange := HistoryStateChange(newURL, StateType.Pop, evt.state)
+      currentURL @= newURL
+      stateChange @= HistoryStateChange(newURL, StateType.Pop, evt.state)
     }
   })
 
@@ -48,7 +48,7 @@ object History {
 
   def set(url: URL, target: String = "_self"): Unit = {
     window.open(url.toString, target)
-    stateChange := HistoryStateChange(url, StateType.Set, null)
+    stateChange @= HistoryStateChange(url, StateType.Set, null)
   }
 
   def pushPath(path: Path, keepParams: Boolean = false, state: js.Any = null): Unit = {
@@ -63,8 +63,8 @@ object History {
   } else if (url != this.url()) {
     val urlString = url.toString
     window.history.pushState(state, urlString, urlString)
-    currentURL := url
-    stateChange := HistoryStateChange(url, StateType.Push, state)
+    currentURL @= url
+    stateChange @= HistoryStateChange(url, StateType.Push, state)
   }
 
   def replacePath(path: Path, keepParams: Boolean = false, state: js.Any = null): Unit = {
@@ -79,8 +79,8 @@ object History {
   } else if (url != this.url()) {
     val urlString = url.toString
     window.history.replaceState(state, urlString, urlString)
-    currentURL := url
-    stateChange := HistoryStateChange(url, StateType.Replace, state)
+    currentURL @= url
+    stateChange @= HistoryStateChange(url, StateType.Replace, state)
   }
 
   def back(delta: Int = 1): Unit = window.history.go(-delta)

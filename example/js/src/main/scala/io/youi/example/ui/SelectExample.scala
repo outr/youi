@@ -17,11 +17,11 @@ class SelectExample extends UIExampleScreen {
     pacifico <- GoogleFont.`Pacifico`.`regular`.load()
   } yield {
     val select = new HTMLSelect {
-      items := Vector("One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten")
-      value := "Three"
-      font := pacifico
-      font.size := 32.0
-      color := Color.Green
+      items @= Vector("One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten")
+      value @= "Three"
+      font @= pacifico
+      font.size @= 32.0
+      color @= Color.Green
       position.center := container.size.center
       position.middle := container.size.middle
 

@@ -68,9 +68,9 @@ object StyleConnect {
       val isOn = on.exists(classes.contains)
       val isOff = off.exists(classes.contains)
       if (isOn) {
-        v := true
+        v @= true
       } else if (isOff) {
-        v := false
+        v @= false
       }
       v.attachAndFire {
         case true => {

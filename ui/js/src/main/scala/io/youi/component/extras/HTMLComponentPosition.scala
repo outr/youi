@@ -24,7 +24,7 @@ class HTMLComponentPosition(override protected val component: HTMLComponent[_ <:
 
   x.and(y).once { _ =>
     if (`type`() == Position.Static) {
-      `type` := Position.Absolute
+      `type` @= Position.Absolute
     }
   }
   `type`.attach { _ =>

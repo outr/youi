@@ -10,7 +10,7 @@ import scala.concurrent.Future
 trait UIScreen extends Screen with PathActivation {
   protected lazy val container: Container = {
     val c = new Container
-    c.id := title
+    c.id @= title
     c
   }
 
@@ -24,7 +24,7 @@ trait UIScreen extends Screen with PathActivation {
 
   def createUI(): Future[Unit]
 
-  override protected def activate(): Future[Unit] = super.activate().map(_ => container.display := Display.Block)
+  override protected def activate(): Future[Unit] = super.activate().map(_ => container.display @= Display.Block)
 
-  override protected def deactivate(): Future[Unit] = super.deactivate().map(_ => container.display := Display.None)
+  override protected def deactivate(): Future[Unit] = super.deactivate().map(_ => container.display @= Display.None)
 }

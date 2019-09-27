@@ -14,7 +14,7 @@ class ContentEditor extends Container with HTMLFontTheme {
   element.addEventListener("input", (_: Event) => {
     changing = true
     try {
-      value := element.innerHTML
+      value @= element.innerHTML
     } finally {
       changing = false
     }

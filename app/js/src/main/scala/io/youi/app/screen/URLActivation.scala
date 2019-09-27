@@ -14,7 +14,7 @@ trait URLActivation extends Screen {
     if (state() == ScreenState.Activated) {
       urlChanged(url)
     } else {
-      ScreenManager().active := this
+      ScreenManager().active @= this
     }
   }
 

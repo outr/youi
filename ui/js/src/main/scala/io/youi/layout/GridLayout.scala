@@ -127,14 +127,14 @@ class GridLayout extends Layout {
         val maxWidth: Double = (column until column + colSpan).foldLeft(0.0)((total, columnIndex) => maxWidths.getOrElse(columnIndex, 0.0) + total)
         val maxHeight: Double = (row until row + rowSpan).foldLeft(0.0)((total, rowIndex) => maxHeights.getOrElse(rowIndex, 0.0) + total)
         vertical match {
-          case Vertical.Top => child.position.top := offsetY
-          case Vertical.Middle => child.position.middle := offsetY + (maxHeight / 2.0)
-          case Vertical.Bottom => child.position.bottom := offsetY + maxHeight
+          case Vertical.Top => child.position.top @= offsetY
+          case Vertical.Middle => child.position.middle @= offsetY + (maxHeight / 2.0)
+          case Vertical.Bottom => child.position.bottom @= offsetY + maxHeight
         }
         horizontal match {
-          case Horizontal.Left => child.position.left := offsetX
-          case Horizontal.Center => child.position.center := offsetX + (maxWidth / 2.0)
-          case Horizontal.Right => child.position.right := offsetX + maxWidth
+          case Horizontal.Left => child.position.left @= offsetX
+          case Horizontal.Center => child.position.center @= offsetX + (maxWidth / 2.0)
+          case Horizontal.Right => child.position.right @= offsetX + maxWidth
         }
       }
     }

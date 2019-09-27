@@ -15,6 +15,8 @@ trait HTMLFontTheme extends Theme {
       family := FontFamily(gfw.font.family)
       weight := FontWeight(gfw.name)
     }
+    def @=(gf: GoogleFont): Unit = :=(gf)
+    def @=(gfw: GoogleFontWeight): Unit = :=(gfw)
 
     val family: StyleProp[FontFamily] = style[FontFamily]("font-family", FontFamily.default, StyleConnect.style[FontFamily], updatesTransform = true)
     val weight: StyleProp[FontWeight] = style[FontWeight]("font-weight", FontWeight.default, StyleConnect.style[FontWeight], updatesTransform = true)

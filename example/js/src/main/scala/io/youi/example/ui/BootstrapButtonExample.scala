@@ -16,12 +16,12 @@ class BootstrapButtonExample extends UIExampleScreen {
 
   override def createUI(): Future[Unit] = GoogleFont.`Lobster`.load().map { fnt =>
     val button = new Button {
-      value := "Hello, World!"
+      value @= "Hello, World!"
       position.center := container.size.center
       position.middle := container.size.middle
-      font := fnt
-      font.size := 64.px
-      color := Color.White
+      font @= fnt
+      font.size @= 64.px
+      color @= Color.White
     }
     container.children += button
   }

@@ -25,8 +25,8 @@ trait EventSupport {
   lazy val blur: Channel[jsdom.FocusEvent] = events("blur")
   lazy val focusState: Val[Boolean] = {
     val o = Var[Boolean](false)
-    focus.on(o := true)
-    blur.on(o := false)
+    focus.on(o @= true)
+    blur.on(o @= false)
     o
   }
   object key {
@@ -47,20 +47,20 @@ trait EventSupport {
       val px = Var[Double](0.0)
       val py = Var[Double](0.0)
       val o = Var[Boolean](false)
-      pointer.enter.on(o := true)
-      pointer.exit.on(o := false)
+      pointer.enter.on(o @= true)
+      pointer.exit.on(o @= false)
       pointer.move.attach { evt =>
-        px := evt.local.x
-        py := evt.local.y
+        px @= evt.local.x
+        py @= evt.local.y
       }
       (px, py, o)
     }
 
     lazy val downState: Val[Boolean] = {
       val d = Var[Boolean](false)
-      pointer.down.on(d := true)
-      pointer.up.on(d := false)
-      pointer.exit.on(d := false)
+      pointer.down.on(d @= true)
+      pointer.up.on(d @= false)
+      pointer.exit.on(d @= false)
       d
     }
   }
@@ -77,7 +77,7 @@ trait EventSupport {
   protected def wheelChannel(): Channel[WheelEvent]
 
   def link(url: URL): Unit = {
-    component.cursor := Cursor.Pointer
+    component.cursor @= Cursor.Pointer
     click.on(History.push(url))
   }
 
@@ -89,7 +89,7 @@ class HTMLEvents(override protected val component: Component, element: EventTarg
     val originalEvents = events[jsdom.KeyboardEvent](eventType)
     val channel = Channel[KeyEvent]
     originalEvents.attach { ke =>
-      ke.toKeyEvent(component, `type`).foreach(channel := _)
+      ke.toKeyEvent(component, `type`).foreach(channel @= _)
     }
     channel
   }
@@ -101,7 +101,7 @@ class HTMLEvents(override protected val component: Component, element: EventTarg
         evt.preventDefault()
         evt.stopPropagation()
       }
-      channel := evt
+      channel @= evt
     })
     channel
   }
@@ -120,7 +120,7 @@ class HTMLEvents(override protected val component: Component, element: EventTarg
           htmlEvent = evt,
           htmlEventType = `type`.htmlType
         )
-        channel := p
+        channel @= p
       } catch {
         case t: Throwable => throw new RuntimeException(s"Error while creating pointer event for ${`type`}", t)
       }
@@ -145,7 +145,7 @@ class HTMLEvents(override protected val component: Component, element: EventTarg
         globalY = evt.pageY,
         delta = delta
       )
-      channel := p
+      channel @= p
     })
     channel
   }

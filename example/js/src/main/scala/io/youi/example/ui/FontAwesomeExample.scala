@@ -17,10 +17,10 @@ class FontAwesomeExample extends UIExampleScreen {
     _ <- FontAwesome.load()
   } yield {
     val iconView = new FontAwesomeView {
-      value := FontAwesome.Brands.Android
-      font.weight := FontWeight("bold")
-      font.size := 128.0
-      color := Color.Blue
+      value @= FontAwesome.Brands.Android
+      font.weight @= FontWeight("bold")
+      font.size @= 128.0
+      color @= Color.Blue
       position.center := container.size.center
       position.middle := container.size.middle
     }

@@ -22,7 +22,7 @@ trait Screen {
   protected def load(): Future[Unit] = Future.successful(())
 
   protected def activate(): Future[Unit] = {
-    ui.title := title
+    ui.title @= title
     registration.values.foreach(_.activate())
     Future.successful(())
   }

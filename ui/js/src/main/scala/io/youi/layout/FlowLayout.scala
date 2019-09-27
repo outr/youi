@@ -36,8 +36,8 @@ class FlowLayout(margins: Margins = Margins()) extends Layout {
         rowCount = 0
         rowMaxHeight = 0.0
       }
-      widget.position.left := x
-      widget.position.top := y
+      widget.position.left @= x
+      widget.position.top @= y
       x += widget.size.width
       rowCount += 1
       rowMaxHeight = math.max(rowMaxHeight, widget.size.height)

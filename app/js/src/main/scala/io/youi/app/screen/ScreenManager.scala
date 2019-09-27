@@ -34,18 +34,18 @@ trait ScreenManager {
           scribe.info("Window loading complete. Loading application...")
           load().foreach { _ =>
             scribe.info("Application loaded.")
-            loaded.asInstanceOf[Var[Boolean]] := true
+            loaded.asInstanceOf[Var[Boolean]] @= true
           }
         })
       } else {
         scribe.info("Application initialized. Loading application...")
         load().foreach { _ =>
           scribe.info("Application loaded.")
-          loaded.asInstanceOf[Var[Boolean]] := true
+          loaded.asInstanceOf[Var[Boolean]] @= true
         }
       }
     }
-    case Failure(t) => ErrorSupport.error := new RuntimeException("Error during application initialization!", t)
+    case Failure(t) => ErrorSupport.error @= new RuntimeException("Error during application initialization!", t)
   }
 
   active.changes {
@@ -54,7 +54,7 @@ trait ScreenManager {
 
   protected def init(): Future[Unit] = {
     // Redirect Hookup errors to error support
-    Hookup.error.attach(t => ErrorSupport.error := t)
+    Hookup.error.attach(t => ErrorSupport.error @= t)
 
     Future.successful(())
   }
@@ -91,7 +91,7 @@ trait ScreenManager {
   }
 
   private[screen] def addScreen(screen: Screen): Unit = synchronized {
-    allScreens := (allScreens() ::: List(screen))
+    allScreens @= (allScreens() ::: List(screen))
   }
 
   def load(screen: Screen): Future[Unit] = managerFuture.map { _ =>
@@ -101,9 +101,9 @@ trait ScreenManager {
 
     def applyState(applying: ScreenState, applied: ScreenState, call: => Future[Unit]): Unit = if (state.index < applying.index || state == ScreenState.Disposed) {
       future = future.flatMap { _ =>
-        screen.currentState := applying
+        screen.currentState @= applying
         call.map { _ =>
-          screen.currentState := applied
+          screen.currentState @= applied
         }
       }
     }
@@ -123,9 +123,9 @@ trait ScreenManager {
 
     def applyState(applying: ScreenState, applied: ScreenState, call: => Future[Unit], applyToStates: ScreenState*): Unit = if (applyToStates.contains(state)) {
       future = future.flatMap { _ =>
-        screen.currentState := applying
+        screen.currentState @= applying
         call.map { _ =>
-          screen.currentState := applied
+          screen.currentState @= applied
         }
       }
     }
@@ -141,9 +141,9 @@ trait ScreenManager {
 
   private def deactivate(screen: Screen): Future[Unit] = {
     if (screen.state() == ScreenState.Activated) {
-      screen.currentState := ScreenState.Deactivating
+      screen.currentState @= ScreenState.Deactivating
       val future = Screen.deactivate(screen).map { _ =>
-        screen.currentState := ScreenState.Deactivated
+        screen.currentState @= ScreenState.Deactivated
       }
 
       future.failed.foreach(YouIApplication().error)
@@ -156,9 +156,9 @@ trait ScreenManager {
 
   def dispose(screen: Screen): Future[Unit] = {
     if (screen.state() != ScreenState.Disposed) {
-      screen.currentState := ScreenState.Disposing
+      screen.currentState @= ScreenState.Disposing
       val future = Screen.dispose(screen).map { _ =>
-        screen.currentState := ScreenState.Disposed
+        screen.currentState @= ScreenState.Disposed
       }
 
       future.failed.foreach(YouIApplication().error)

@@ -19,7 +19,7 @@ import scala.scalajs._
 class SVGImage private(private val svg: SVGSVGElement, override protected val canvas: html.Canvas, measured: Size) extends CanvasImage {
   private val reDrawer = LazyFuture {
     SVGImage.drawToCanvas(canvas, svg, 0.0, 0.0, canvas.width, canvas.height).map { _ =>
-      modified := System.currentTimeMillis()
+      modified @= System.currentTimeMillis()
     }
   }
 

@@ -21,6 +21,8 @@ trait ComponentTheme extends Theme {
 
     def :=(f: => Double): Unit = set(f)
 
+    def @=(f: Double): Unit = set(f)
+
     def set(f: => Double): Unit = {
       left.set(f)
       right.set(f)
@@ -39,6 +41,8 @@ trait ComponentTheme extends Theme {
     lazy val bottom: StyleProp[Double] = style[Double]("margin-bottom", 0.0, StyleConnect.style[Double])
 
     def :=(f: => Double): Unit = set(f)
+
+    def @=(f: Double): Unit = set(f)
 
     def set(f: => Double): Unit = {
       left.set(f)

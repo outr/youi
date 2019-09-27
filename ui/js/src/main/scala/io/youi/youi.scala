@@ -37,7 +37,7 @@ package object youi {
   implicit class ExtendedMaterialIcon(icon: MaterialIcon) {
     def toView: MaterialIconView = {
       val view = new MaterialIconView
-      view.value := icon
+      view.value @= icon
       view
     }
   }

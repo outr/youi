@@ -15,7 +15,7 @@ class VideoExample extends UIExampleScreen {
 
   override def createUI(): Future[Unit] = Video(History.url().withPath("/sample.mp4"), autoPlay = true, loop = false, muted = false).map { v =>
     container.children += new VideoView {
-      video := v
+      video @= v
       position.center := container.size.center
       position.middle := container.size.middle
       event.click.on {

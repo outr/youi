@@ -76,14 +76,14 @@ class WebSocketClient(url: URL,
     val promise = Promise[Unit]
     connectionBuilder.connect().addNotifier(new IoFuture.HandlingNotifier[WebSocketChannel, Any] {
       override def handleDone(data: WebSocketChannel, attachment: Any): Unit = {
-        _channel := Some(data)
+        _channel @= Some(data)
         channel.resumeReceives()
 
         // Receive messages
         channel.getReceiveSetter.set(new AbstractReceiveListener {
           override def onFullTextMessage(channel: WebSocketChannel, message: BufferedTextMessage): Unit = {
             val data = message.getData
-            receive.text := data
+            receive.text @= data
           }
 
           override def onError(channel: WebSocketChannel, error: Throwable): Unit = {
@@ -101,7 +101,7 @@ class WebSocketClient(url: URL,
           checkBacklog()
           sendMessage(message)
         }
-        _connected := true
+        _connected @= true
         scribe.info(s"Connected to $url successfully")
 
         checkBacklog()
@@ -110,7 +110,7 @@ class WebSocketClient(url: URL,
       }
 
       override def handleFailed(exception: IOException, attachment: Any): Unit = {
-        _channel := None
+        _channel @= None
         if (autoReconnect) {
           scribe.warn(s"Connection closed or unable to connect to $url (${exception.getMessage}). Trying again in ${reconnectDelay.toSeconds} seconds...")
           Time.delay(reconnectDelay).foreach(_ => connect())
@@ -126,7 +126,7 @@ class WebSocketClient(url: URL,
 
   def disconnect(): Unit = if (connected()) {
     channel.close()
-    _connected := false
+    _connected @= false
   }
 
   def dispose(): Unit = {
@@ -175,7 +175,7 @@ class WebSocketClient(url: URL,
 
   connected.attach { b =>
     if (!b) {
-      _channel := None
+      _channel @= None
 
       if (autoReconnect) {
         connect()

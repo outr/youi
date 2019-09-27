@@ -74,7 +74,7 @@ trait ContentScreen extends Screen with PathActivation {
 
     hideContent(span)
     pageTag.appendChild(span)
-    contentOptionVar := Some(span)
+    contentOptionVar @= Some(span)
   }
 
   protected def showContent(content: html.Element): Unit = {

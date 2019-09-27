@@ -23,7 +23,7 @@ class Cacheable extends Drawable {
       val old = canvas
       canvas = Some(c)
       old.foreach(CanvasPool.restore)
-      modified := System.currentTimeMillis()
+      modified @= System.currentTimeMillis()
     }
   }
 
@@ -37,7 +37,7 @@ class Cacheable extends Drawable {
         val old = canvas
         canvas = Some(c)
         old.foreach(CanvasPool.restore)
-        modified := System.currentTimeMillis()
+        modified @= System.currentTimeMillis()
         promise.success(())
       }
       case Failure(t) => {

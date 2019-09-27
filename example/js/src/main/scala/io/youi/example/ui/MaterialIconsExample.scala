@@ -18,10 +18,10 @@ class MaterialIconsExample extends UIExampleScreen {
     _ <- Material.load()
   } yield {
     val iconView = new MaterialIconView {
-      value := Material.Icons.Action.Alarm
-      font.weight := FontWeight("bold")
-      font.size := 128.0
-      color := Color.Blue
+      value @= Material.Icons.Action.Alarm
+      font.weight @= FontWeight("bold")
+      font.size @= 128.0
+      color @= Color.Blue
       position.center := container.size.center
       position.middle := container.size.middle
     }

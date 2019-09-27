@@ -42,10 +42,10 @@ class Connection(client: Boolean) {
       if (Connection.debug) scribe.info(s"Receive: $s")
     }
     send.close.on {
-      _connected := false
+      _connected @= false
     }
     receive.close.on {
-      _connected := false
+      _connected @= false
     }
 
     connected.attach { b =>
@@ -55,8 +55,8 @@ class Connection(client: Boolean) {
         if (b) {
           hookup()
           backlog.foreach {
-            case s: String => send.text := s
-            case b: ByteBuffer => send.binary := b
+            case s: String => send.text @= s
+            case b: ByteBuffer => send.binary @= b
           }
           backlog.clear()
         } else {
@@ -76,7 +76,7 @@ class Connection(client: Boolean) {
     }
     // Send output from Hookups
     val reaction = hookups.io.output.attach { json =>
-      send.text := s"[HKP]${json.spaces2}"
+      send.text @= s"[HKP]${json.spaces2}"
     }
     store("applicationConnectivity") = reaction
     // Receive input from connection
@@ -84,7 +84,7 @@ class Connection(client: Boolean) {
       if (s.startsWith("[HKP]")) {
         parse(s.substring(5)) match {
           case Left(pf) => throw pf
-          case Right(json) => hookups.io.input := json
+          case Right(json) => hookups.io.input @= json
         }
       }
     }
@@ -103,7 +103,7 @@ class Connection(client: Boolean) {
 
   def close(): Unit = if (connected()) {
     send.close.set(())
-    _connected := false
+    _connected @= false
   }
 }
 

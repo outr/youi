@@ -68,12 +68,12 @@ class ServerConfig(server: Server) {
   def enabledListeners: List[ServerSocketListener] = listeners().filter(_.enabled)
 
   def clearListeners(): ServerConfig = {
-    listeners := Nil
+    listeners @= Nil
     this
   }
 
   def addHttpListener(host: String = "127.0.0.1", port: Int = 8080): ServerConfig = {
-    listeners := HttpServerListener(host, port) :: listeners()
+    listeners @= HttpServerListener(host, port) :: listeners()
     this
   }
 
@@ -81,7 +81,7 @@ class ServerConfig(server: Server) {
                        port: Int = 8443,
                        keyStorePassword: String = "password",
                        keyStoreLocation: File = new File("keystore.jks")): ServerConfig = {
-    listeners := HttpsServerListener(host, port, KeyStore(keyStoreLocation.getAbsolutePath, keyStorePassword), enabled = true) :: listeners()
+    listeners @= HttpsServerListener(host, port, KeyStore(keyStoreLocation.getAbsolutePath, keyStorePassword), enabled = true) :: listeners()
     this
   }
 

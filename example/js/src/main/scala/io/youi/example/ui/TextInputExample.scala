@@ -20,28 +20,28 @@ class TextInputExample extends UIExampleScreen {
     berkshire <- GoogleFont.`Berkshire Swash`.`regular`.load()
   } yield {
     val pacificoView = new HTMLTextInput {
-      value := "Pacifico Regular"
-      font := pacifico
-      font.size := 64.0
-      color := Color.Red
+      value @= "Pacifico Regular"
+      font @= pacifico
+      font.size @= 64.0
+      color @= Color.Red
       position.center := container.size.center
       position.middle := container.size.middle
-      padding := 10.0
+      padding @= 10.0
     }
     val robotoView = new HTMLTextInput {
-      value := "Roboto 900"
-      font := roboto
-      color := Color.Green
-      font.size := 64.0
+      value @= "Roboto 900"
+      font @= roboto
+      color @= Color.Green
+      font.size @= 64.0
       position.center := container.size.center
       position.bottom := pacificoView.position.top - 30.0
     }
     val berkshireView = new HTMLTextInput {
-      value := "Berkshire Swash Regular"
-      font := berkshire
-      color := Color.Blue
-      font.size := 64.0
-      size.width := 900.0
+      value @= "Berkshire Swash Regular"
+      font @= berkshire
+      color @= Color.Blue
+      font.size @= 64.0
+      size.width @= 900.0
       value.attach { v =>
         scribe.info(s"Value: $v")
       }

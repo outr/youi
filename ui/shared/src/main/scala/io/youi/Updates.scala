@@ -10,7 +10,7 @@ trait Updates extends Updatable {
 
   def nextFrame(f: => Unit): Unit = delta.once(_ => f)
 
-  override def update(delta: Double): Unit = this.delta := delta
+  override def update(delta: Double): Unit = this.delta @= delta
 
   def once(delay: FiniteDuration)(f: => Unit): Unit = every(delay, Some(delay))(f)
 

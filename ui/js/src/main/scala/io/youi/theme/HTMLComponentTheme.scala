@@ -19,6 +19,8 @@ trait HTMLComponentTheme extends ComponentTheme {
       x := overflow
       y := overflow
     }
+
+    def @=(overflow: Overflow): Unit = :=(overflow)
   }
   lazy val userSelect: StyleProp[UserSelect] = style[UserSelect]("user-select", UserSelect.Auto, StyleConnect.style[UserSelect])
 
@@ -40,30 +42,35 @@ trait HTMLComponentTheme extends ComponentTheme {
         bottomLeft := value
         bottomRight := value
       }
+      def @=(value: Double): Unit = :=(value)
 
       object top {
         def :=(value: => Double): Unit = {
           topLeft := value
           topRight := value
         }
+        def @=(value: Double): Unit = :=(value)
       }
       object bottom {
         def :=(value: => Double): Unit = {
           bottomLeft := value
           bottomRight := value
         }
+        def @=(value: Double): Unit = :=(value)
       }
       object left {
         def :=(value: => Double): Unit = {
           topLeft := value
           bottomLeft := value
         }
+        def @=(value: Double): Unit = :=(value)
       }
       object right {
         def :=(value: => Double): Unit = {
           topRight := value
           bottomRight := value
         }
+        def @=(value: Double): Unit = :=(value)
       }
     }
 
@@ -73,6 +80,7 @@ trait HTMLComponentTheme extends ComponentTheme {
       left := border
       right := border
     }
+    def @=(border: HTMLBorder): Unit = :=(border)
   }
 
   lazy val outline: StyleProp[HTMLBorder] = style[HTMLBorder]("outline", HTMLBorder.empty, StyleConnect.style[HTMLBorder])

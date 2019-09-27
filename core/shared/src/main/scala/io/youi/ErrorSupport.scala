@@ -7,7 +7,7 @@ import reactify.Channel
 import reactify.reaction.Reaction
 
 trait ErrorSupport {
-  def error(t: Throwable): Unit = ErrorSupport.error := t
+  def error(t: Throwable): Unit = ErrorSupport.error @= t
 
   def errorSupport[R](f: => R): R = try {
     f

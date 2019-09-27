@@ -16,18 +16,18 @@ class GridLayoutExample extends UIExampleScreen {
 
   override def createUI(): Future[Unit] = {
     val grid = new Container {
-      background := Color.AliceBlue
-      padding := 15.0
+      background @= Color.AliceBlue
+      padding @= 15.0
 //      border := Border(Stroke(Color.Black))
       position.center := container.size.center
       position.middle := container.size.middle
     }
-    grid.layout := new GridLayout {
-      columns := 3
-      config.default.margin.left := Some(10.0)
-      config.cell(1, 1).margin.right := Some(10.0)
-      config.cell(2, 0).span.columns := Some(2)
-      config.cell(2, 0).alignment.horizontal := Some(Horizontal.Center)
+    grid.layout @= new GridLayout {
+      columns @= 3
+      config.default.margin.left @= Some(10.0)
+      config.cell(1, 1).margin.right @= Some(10.0)
+      config.cell(2, 0).span.columns @= Some(2)
+      config.cell(2, 0).alignment.horizontal @= Some(Horizontal.Center)
     }
 
     grid.children ++= List(
@@ -49,14 +49,14 @@ class GridLayoutExample extends UIExampleScreen {
   }
 
   class Box extends Container {
-    position.left := 10.0
-    size.width := 100.0
-    size.height := 100.0
+    position.left @= 10.0
+    size.width @= 100.0
+    size.height @= 100.0
   }
 
   object Box {
     def apply(paint: Paint): Box = new Box {
-      background := paint
+      background @= paint
     }
   }
 }

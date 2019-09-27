@@ -17,7 +17,7 @@ object Container extends ContainerTheme {
 
   def apply(children: Component*): Container = {
     val container = new Container
-    container.children := children.toVector
+    container.children @= children.toVector
     container
   }
 

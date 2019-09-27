@@ -63,7 +63,7 @@ class CachedGlyph(size: CachedFontSize, glyph: Glyph) extends Drawable {
     context.clear()
     glyph.draw(context, 0.0, 0.0, size.size)
     context.fill(Color.White, apply = true)
-    modified := System.currentTimeMillis()
+    modified @= System.currentTimeMillis()
   }
 
   override def draw(context: Context, x: Double, y: Double): Unit = context.drawCanvas(canvas)(x, y)

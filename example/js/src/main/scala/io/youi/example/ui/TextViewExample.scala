@@ -22,35 +22,35 @@ class TextViewExample extends UIExampleScreen {
       berkshire <- GoogleFont.`Berkshire Swash`.`regular`.load()
     } yield {
       val openSansView = new HTMLTextView {
-        value := "Open Sans"
-        font := openSans
-        font.size := 96.0
-        color := Color.Black
-        position.x := 100.0
-        position.y := 100.0
+        value @= "Open Sans"
+        font @= openSans
+        font.size @= 96.0
+        color @= Color.Black
+        position.x @= 100.0
+        position.y @= 100.0
       }
       container.children += new Container {
-        position.x := 100.0
-        position.y := 100.0
-        size.width := openSansView.size.width
-        size.height := openSansView.size.height
-        background := Color.Yellow
+        position.x @= 100.0
+        position.y @= 100.0
+        size.width @= openSansView.size.width
+        size.height @= openSansView.size.height
+        background @= Color.Yellow
       }
       val pacificoView = new HTMLTextView {
-        value := "Pacifico Regular"
-        font := pacifico
-        font.size := 128.0
-        color := Color.Red
+        value @= "Pacifico Regular"
+        font @= pacifico
+        font.size @= 128.0
+        color @= Color.Red
 //        fill := Paint.horizontal(size.width).distributeColors(Color.Red, Color.Green, Color.Blue)
         position.center := container.size.center
         position.middle := container.size.middle
 //        border := Border(Stroke(Color.Purple, None, 2.0), 10.0)
-        padding := 10.0
+        padding @= 10.0
       }
       val robotoView = new HTMLTextView {
-        value := "Roboto 900"
-        font := roboto
-        font.size := 96.0
+        value @= "Roboto 900"
+        font @= roboto
+        font.size @= 96.0
         // TODO: fix calling `:=` perpetually calling load
 //        Paint.image("/images/cuteness.jpg").foreach(fill := _)
 //        stroke := Stroke(Color.Black, None, lineWidth = 0.5)
@@ -58,11 +58,11 @@ class TextViewExample extends UIExampleScreen {
         position.bottom := pacificoView.position.top - 20.0
       }
       val berkshireView = new HTMLTextView {
-        value := "Berkshire Swash Regular"
+        value @= "Berkshire Swash Regular"
 //        cache := false
 //        font.file := berkshire
-        font := berkshire
-        font.size := 96.0
+        font @= berkshire
+        font.size @= 96.0
 //        Paint.video(History.url().withPath("/sample.mp4")).foreach(fill := _)
 //        stroke := Stroke(Color.Black, None, lineWidth = 0.5)
         position.center := container.size.center

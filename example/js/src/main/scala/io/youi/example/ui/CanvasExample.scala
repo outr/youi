@@ -17,8 +17,8 @@ class CanvasExample extends UIExampleScreen {
       position.center := container.size.center
       position.middle := container.size.middle
 
-      size.width := 500.0
-      size.height := 500.0
+      size.width @= 500.0
+      size.height @= 500.0
 
       override protected def draw(context: Context): Unit = {
         context.rect(0.0, 0.0, 500.0, 500.0)

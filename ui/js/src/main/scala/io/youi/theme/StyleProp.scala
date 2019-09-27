@@ -10,8 +10,9 @@ class StyleProp[T](val name: String, parent: Var[Theme], default: => T) {
   def apply(): T = value()
   def get: T = apply()
   def :=(value: => T): Unit = option := Option(value)
+  def @=(value: T): Unit = option @= Option(value)
   def set(value: => T): Unit = option := Option(value)
-  def clear(): Unit = option := None
+  def clear(): Unit = option @= None
 
   def attach(f: T => Unit,
              priority: Double = Priority.Normal): Reaction[T] = value.attach(f, priority)

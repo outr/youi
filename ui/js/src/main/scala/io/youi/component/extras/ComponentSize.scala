@@ -14,6 +14,10 @@ trait ComponentSize {
     width := size.width
     height := size.height
   }
+  def @=(size: Size): Unit = {
+    width @= size.width
+    height @= size.height
+  }
 
   object measured {
     lazy val width: Var[Double] = Var(0.0)

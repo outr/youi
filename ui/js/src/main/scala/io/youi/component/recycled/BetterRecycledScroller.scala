@@ -25,11 +25,11 @@ class BetterRecycledScroller[T, C <: Component](renderer: RecycledRenderer[T, C]
   override protected def init(): Unit = {
     super.init()
 
-    overflow := Overflow.Hidden
+    overflow @= Overflow.Hidden
 
     batch.data.attachAndFire { data =>
       cache = Map.empty
-      batch.position := 0
+      batch.position @= 0
       scribe.info(s"Data changed! ${data.total}")
       if (data.nonEmpty) {
         loadData(0, pageSize)
@@ -42,7 +42,7 @@ class BetterRecycledScroller[T, C <: Component](renderer: RecycledRenderer[T, C]
     batch.position.attach { p =>
       if (!updatingDisplay) {
         if (p < 0) {
-          batch.position := 0
+          batch.position @= 0
         } else if (p >= batch.data.total) {
           batch.position.static(batch.data.total - 1)
         } else {
@@ -105,7 +105,7 @@ class BetterRecycledScroller[T, C <: Component](renderer: RecycledRenderer[T, C]
 //    scribe.info(s"Position: $position")
     if (position < batch.data.total) {
       val c = reuse.headOption.getOrElse(retrieve)
-      c.position.bottom := verticalOffset
+      c.position.bottom @= verticalOffset
       val released = if (c.position.top() > size.height()) {
         release(c)
         true

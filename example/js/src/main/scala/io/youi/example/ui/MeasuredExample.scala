@@ -17,20 +17,20 @@ class MeasuredExample extends UIExampleScreen {
 
   override def createUI(): Future[Unit] = GoogleFont.`Lobster`.load().map { fnt =>
     val textView = new HTMLTextView {
-      value := "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.<br/><br/>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-      font := fnt
-      font.size := 24.px
-      color := Color.DarkBlue
-      size.width := 600.px
+      value @= "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.<br/><br/>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+      font @= fnt
+      font.size @= 24.px
+      color @= Color.DarkBlue
+      size.width @= 600.px
       position.center := container.size.center
       position.middle := container.size.middle
     }
     val heading = new HTMLTextView {
-      value := "Heading Test"
-      font := fnt
-      font.size := 36.px
-      whiteSpace := WhiteSpace.NoWrap
-      color := Color.DarkBlue
+      value @= "Heading Test"
+      font @= fnt
+      font.size @= 36.px
+      whiteSpace @= WhiteSpace.NoWrap
+      color @= Color.DarkBlue
       position.center := container.size.center
       position.bottom := textView.position.top - 10.0
       event.click.on {
@@ -38,16 +38,16 @@ class MeasuredExample extends UIExampleScreen {
       }
     }
     val textOutline = new Container {
-      pointerEvents := PointerEvents.None
-      htmlBorder := HTMLBorder(2.0, HTMLBorderStyle.Dotted, Color.DarkRed)
+      pointerEvents @= PointerEvents.None
+      htmlBorder @= HTMLBorder(2.0, HTMLBorderStyle.Dotted, Color.DarkRed)
       size.width := textView.size.view.width
       size.height := textView.size.view.height
       position.center := container.size.center
       position.middle := container.size.middle
     }
     val headingOutline = new Container {
-      pointerEvents := PointerEvents.None
-      htmlBorder := HTMLBorder(2.0, HTMLBorderStyle.Dotted, Color.DarkGreen)
+      pointerEvents @= PointerEvents.None
+      htmlBorder @= HTMLBorder(2.0, HTMLBorderStyle.Dotted, Color.DarkGreen)
       position.left := heading.position.left
       position.top := heading.position.top
       size.width := heading.size.view.width

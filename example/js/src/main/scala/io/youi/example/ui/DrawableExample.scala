@@ -21,9 +21,9 @@ class DrawableExample extends UIExampleScreen {
     fnt <- GoogleFont.`Lobster`.`regular`.load()
   } yield {
     val component = new DrawableComponent {
-      border := Border(Stroke(Color.Red, lineWidth = 2.0), radius = 5.0)
-      size.width := image.width
-      size.height := image.height
+      border @= Border(Stroke(Color.Red, lineWidth = 2.0), radius = 5.0)
+      size.width @= image.width
+      size.height @= image.height
       position.center := container.size.center
       position.middle := container.size.middle
 
@@ -32,7 +32,7 @@ class DrawableExample extends UIExampleScreen {
       scribe.info(s"Font: $fnt")
       val text = CanvasText(font, "Hello, Arial!", 36.0, Int.MaxValue, kerning = false)
       val textDrawable = new TextDrawable(text, Color.White, Stroke.none)
-      drawable := Group(
+      drawable @= Group(
         image,
         Transformation(50.0, 25.0)(textDrawable)
       )

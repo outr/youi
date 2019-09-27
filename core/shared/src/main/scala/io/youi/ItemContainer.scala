@@ -9,10 +9,10 @@ class ItemContainer[T](implicit ord: Ordering[T]) extends Iterable[T] {
   val items: Val[List[T]] = list
 
   def +=(item: T): Unit = synchronized {
-    list := (item :: list()).sorted
+    list @= (item :: list()).sorted
   }
   def -=(item: T): Unit = synchronized {
-    list := list().filterNot(_ == item)
+    list @= list().filterNot(_ == item)
   }
   def apply(): List[T] = items()
 

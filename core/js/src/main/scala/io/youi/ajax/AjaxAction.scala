@@ -17,9 +17,9 @@ class AjaxAction(request: AjaxRequest) {
 
   private[ajax] def start(manager: AjaxManager): Unit = {
     if (!cancelled()) {
-      _state := ActionState.Running
+      _state @= ActionState.Running
       future.onComplete { result =>
-        _state := ActionState.Finished
+        _state @= ActionState.Finished
         manager.remove(this)
       }
       request.send()

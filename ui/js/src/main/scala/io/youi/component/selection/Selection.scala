@@ -39,9 +39,9 @@ abstract class Selection[T](root: html.Element,
   val selected: Var[ListSet[T]] = Var(ListSet.empty)
 
   // Default settings
-  visibility := Visibility.Hidden
+  visibility @= Visibility.Hidden
   if (autoStyle) {
-    htmlBorder := HTMLBorder(1.0, HTMLBorderStyle.Solid, Color.Black)
+    htmlBorder @= HTMLBorder(1.0, HTMLBorderStyle.Solid, Color.Black)
   }
   element.style.zIndex = "9999"
 
@@ -86,7 +86,7 @@ abstract class Selection[T](root: html.Element,
   }
 
   protected def changeHighlighting(highlighting: ListSet[T]): Unit = {
-    highlighted := highlighting
+    highlighted @= highlighting
   }
 
   protected def selectHighlighted(toggle: Boolean): Unit = {
@@ -97,8 +97,8 @@ abstract class Selection[T](root: html.Element,
     } else {
       selected() ++ highlighted()
     }
-    highlighted := ListSet.empty
-    selected := items
+    highlighted @= ListSet.empty
+    selected @= items
   }
 
   highlighted.changes {
@@ -148,12 +148,12 @@ abstract class Selection[T](root: html.Element,
       evt.preventDefault()
       evt.stopPropagation()
 
-      time := System.currentTimeMillis()
-      x1 := evt.pageX
-      y1 := evt.pageY
-      x2 := evt.pageX
-      y2 := evt.pageY
-      visibility := Visibility.Visible
+      time @= System.currentTimeMillis()
+      x1 @= evt.pageX
+      y1 @= evt.pageY
+      x2 @= evt.pageX
+      y2 @= evt.pageY
+      visibility @= Visibility.Visible
       true
     } else {
       false
@@ -168,8 +168,8 @@ abstract class Selection[T](root: html.Element,
         evt.preventDefault()
         evt.stopPropagation()
 
-        x2 := evt.pageX
-        y2 := evt.pageY
+        x2 @= evt.pageX
+        y2 @= evt.pageY
 
         updateHighlighting(x1, y1, x2, y2)
       } else if (evt.getModifierState(Key.Shift.value) || evt.getModifierState(Key.Control.value)) {
@@ -186,11 +186,11 @@ abstract class Selection[T](root: html.Element,
 
         selectHighlighted(evt.getModifierState(Key.Control.value))
 
-        x1 := 0.0
-        y1 := 0.0
-        x2 := 0.0
-        y2 := 0.0
-        visibility := Visibility.Hidden
+        x1 @= 0.0
+        y1 @= 0.0
+        x2 @= 0.0
+        y2 @= 0.0
+        visibility @= Visibility.Hidden
       } else if (evt.getModifierState(Key.Control.value)) {
         updateHighlighting(evt.pageX, evt.pageY, evt.pageX, evt.pageY)
         selectHighlighted(toggle = true)

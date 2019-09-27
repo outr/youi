@@ -31,7 +31,7 @@ class AjaxManager(val maxConcurrent: Int) extends Logging {
 
   def enqueue(action: AjaxAction): Future[XMLHttpRequest] = {
     _queue = _queue.enqueue(action)
-    action._state := ActionState.Enqueued
+    action._state @= ActionState.Enqueued
     checkQueue()
     action.future
   }

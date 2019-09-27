@@ -21,8 +21,8 @@ class ParallaxExample extends UIExampleScreen {
     register(ui.size.height, Dim(4000))
 
     val textView = new HTMLTextView {
-      value := s"Hello, World"
-      font := fnt
+      value @= s"Hello, World"
+      font @= fnt
       font.size := {
         val p = ui.position.scroll.percent.y()
         val modifier = 24.0 * ((p - 0.5) * 2.0)
@@ -31,8 +31,8 @@ class ParallaxExample extends UIExampleScreen {
       color := Color.DarkBlue.withRed(ui.position.scroll.percent.y())
       position.center := container.size.center()
       position.top := header.size.height - math.min(header.size.height, -ui.position.scroll.y())
-      position.`type` := Position.Fixed
-      position.depth := 100
+      position.`type` @= Position.Fixed
+      position.depth @= 100
     }
     container.children += textView
   }

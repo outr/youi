@@ -17,8 +17,8 @@ class BootstrapLoginExample extends UIExampleScreen {
   private lazy val form: html.Form = Template.byId[html.Form]("login-example.html", "login-form", "youi")
 
   override def createUI(): Future[Unit] = {
-    Button.color := Color.White
-    container.background := Color.fromLong(0xf5f5f5ff)
+    Button.color @= Color.White
+    container.background @= Color.fromLong(0xf5f5f5ff)
     dom.addCSS(
       """
         |.form-signin {

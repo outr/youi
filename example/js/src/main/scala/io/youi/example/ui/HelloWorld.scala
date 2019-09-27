@@ -16,10 +16,10 @@ class HelloWorld extends UIExampleScreen {
 
   override def createUI(): Future[Unit] = GoogleFont.`Lobster`.load().map { fnt =>
     val textView = new HTMLTextView {
-      value := "Hello, World!"
-      font := fnt
-      font.size := 64.px
-      color := Color.DarkBlue
+      value @= "Hello, World!"
+      font @= fnt
+      font.size @= 64.px
+      color @= Color.DarkBlue
       position.center := container.size.center()
       position.middle := container.size.middle()
     }

@@ -57,7 +57,7 @@ trait ServerApplication extends YouIApplication with Server {
 
   override protected def init(): Future[Unit] = super.init().map { _ =>
     // Redirect Hookup errors to error support
-    Hookup.error.attach(t => ErrorSupport.error := t)
+    Hookup.error.attach(t => ErrorSupport.error @= t)
 
     connectivityEntries.attachAndFire { entries =>
       ServerApplication.this.synchronized {
@@ -249,15 +249,15 @@ trait ServerApplication extends YouIApplication with Server {
     override def handle(httpConnection: HttpConnection): Future[HttpConnection] = appComm.activeConnections.synchronized {
       val connection = new Connection(client = false)
       connection.store.update("httpConnection", httpConnection)
-      appComm.activeConnections := (appComm.activeConnections() + connection)
-      connected := connection
+      appComm.activeConnections @= (appComm.activeConnections() + connection)
+      connected @= connection
       connection.connected.attach { b =>
         if (!b) appComm.activeConnections.synchronized {
-          appComm.activeConnections := (appComm.activeConnections() - connection)
+          appComm.activeConnections @= (appComm.activeConnections() - connection)
           HookupServer().foreach { hs =>
             hs.remove(connection)
           }
-          disconnected := connection
+          disconnected @= connection
         }
       }
       connection.receive.text.attach {
@@ -270,7 +270,7 @@ trait ServerApplication extends YouIApplication with Server {
 
   private def pingClients(): Unit = connectivityEntries().foreach { entry =>
     entry.connections().foreach { connection =>
-      connection.send.text := "PING"
+      connection.send.text @= "PING"
     }
   }
 

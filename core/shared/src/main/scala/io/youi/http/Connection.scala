@@ -47,13 +47,13 @@ class Connection(client: Boolean) {
     receive.close.on {
       _connected @= false
     }
+    hookup()
 
     connected.attach { b =>
       synchronized {
         send.text.reactions -= textReaction
         send.binary.reactions -= binaryReaction
         if (b) {
-          hookup()
           backlog.foreach {
             case s: String => send.text @= s
             case b: ByteBuffer => send.binary @= b

@@ -20,7 +20,7 @@ import scala.scalajs.js.|
 trait ClientApplication extends YouIApplication with ScreenManager {
   ClientApplication.instance = this
 
-  def baseURL: URL = URL(window.location.href).withPath(path"/").clearParams().copy(fragment = None)
+  def baseURL: URL = URL(window.location.href).withPath(path"/").clearParams().withoutFragment()
 
   def communicationURL: URL = {
     val protocol = if (baseURL.protocol == Protocol.Https) {

@@ -84,15 +84,20 @@ object ErrorTrace extends Writer {
     Future.successful(None)
   }
 
-  private def map(sourceMapConsumer: SourceMapConsumer, line: Int, column: Int): SourcePosition = {
+  private def map(sourceMapConsumer: SourceMapConsumer, line: Int, column: Int): Option[SourcePosition] = try {
     val position = js.JSON.parse(profig.JsonUtil.toJsonString(JavaScriptPosition(line, column))).asInstanceOf[js.Object]
-    sourceMapConsumer.originalPositionFor(position)
+    Some(sourceMapConsumer.originalPositionFor(position))
+  } catch {
+    case t: Throwable => {
+      scribe.warn(s"Unable to determine original position for, line: $line, column: $column: ${t.getMessage}")
+      None
+    }
   }
 
   private def toErrorInternal(consumerOption: Option[SourceMapConsumer], message: String, source: String, line: Int, column: Int, error: Option[Throwable]): JavaScriptError = {
     val (fileName, sourcePosition) = consumerOption.map { consumer =>
       val sourcePosition = map(consumer, line, column)
-      sourcePosition.source -> JavaScriptPosition(sourcePosition.line, sourcePosition.column)
+      sourcePosition.map(_.source).getOrElse("Unknown Source") -> JavaScriptPosition(sourcePosition.map(_.line).getOrElse(-1), sourcePosition.map(_.column).getOrElse(-1))
     }.getOrElse(source -> JavaScriptPosition(-1, -1))
     val cause = error.map(toCause(consumerOption, _))
     JavaScriptError(
@@ -114,9 +119,9 @@ object ErrorTrace extends Writer {
           className = element.getClassName,
           methodName = element.getMethodName,
           fileName = element.getFileName,
-          source = tracePosition.source,
+          source = tracePosition.map(_.source).getOrElse("Unknown Source"),
           jsPosition = JavaScriptPosition(element.getLineNumber, element.getColumnNumber()),
-          position = JavaScriptPosition(tracePosition.line, tracePosition.column)
+          position = JavaScriptPosition(tracePosition.map(_.line).getOrElse(-1), tracePosition.map(_.column).getOrElse(-1))
         )
       }.collect {
         case t if !t.source.endsWith("scala/scalajs/runtime/StackTrace.scala") && !t.source.endsWith("java/lang/Throwables.scala") => t

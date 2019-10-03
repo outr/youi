@@ -1,8 +1,8 @@
 package io.youi.example
 
 import com.outr.hookup.{Hookup, HookupSupport}
+import io.youi.client.WebSocketClient
 import io.youi.net.URL
-import io.youi.server.WebSocketClient
 import io.youi.util.Time
 
 import scala.concurrent.{Await, Future}

@@ -1,27 +1,27 @@
-package io.youi.server
+package io.youi.client
 
 import java.io.IOException
 import java.net.URI
 import java.nio.ByteBuffer
 
-import reactify.Var
 import io.undertow.protocols.ssl.UndertowXnioSsl
 import io.undertow.server.DefaultByteBufferPool
 import io.undertow.util.Headers
 import io.undertow.websockets.client.WebSocketClient.ConnectionBuilder
 import io.undertow.websockets.client.{WebSocketClientNegotiation, WebSocketClient => UndertowWebSocketClient}
-import io.undertow.websockets.core.{AbstractReceiveListener, BufferedTextMessage, WebSocketCallback, WebSocketChannel, WebSockets}
+import io.undertow.websockets.core._
 import io.youi.http.Connection
 import io.youi.net.URL
+import io.youi.server.KeyStore
 import io.youi.server.util.SSLUtil
 import io.youi.util.Time
 import org.xnio.{IoFuture, OptionMap, Options, Xnio}
-
-import scala.jdk.CollectionConverters._
-import scala.concurrent.duration._
+import reactify.Var
 import scribe.Execution.global
 
+import scala.concurrent.duration._
 import scala.concurrent.{Future, Promise}
+import scala.jdk.CollectionConverters._
 
 class WebSocketClient(url: URL,
                       keyStore: Option[KeyStore] = None,

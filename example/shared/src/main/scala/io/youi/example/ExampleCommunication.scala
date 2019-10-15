@@ -1,7 +1,5 @@
 package io.youi.example
 
-import com.outr.hookup.{client, server}
-
 import scala.concurrent.Future
 
 trait ExampleCommunication {

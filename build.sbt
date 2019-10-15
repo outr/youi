@@ -1,9 +1,10 @@
 import org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv
 import sbtcrossproject.CrossPlugin.autoImport.crossProject
+import sbtcrossproject.CrossType
 
 name := "youi"
 organization in ThisBuild := "io.youi"
-version in ThisBuild := "0.11.32"
+version in ThisBuild := "0.11.33-SNAPSHOT"
 scalaVersion in ThisBuild := "2.13.1"
 crossScalaVersions in ThisBuild := List("2.13.1", "2.12.8")
 resolvers in ThisBuild ++= Seq(
@@ -32,7 +33,6 @@ val profigVersion = "2.3.6"
 val scribeVersion = "2.7.10"
 val reactifyVersion = "3.0.5"
 val hasherVersion = "1.2.2"
-val hookupVersion = "2.0.5"
 
 val canvgVersion = "1.4.0_2"
 val openTypeVersion = "0.7.3_1"
@@ -41,7 +41,7 @@ val webFontLoaderVersion = "1.6.28_1"
 
 val akkaVersion = "2.5.25"
 val scalaJSDOM = "0.9.7"
-val okHttpVersion = "4.2.0"
+val okHttpVersion = "4.2.2"
 val uaDetectorVersion = "2014.10"
 val undertowVersion = "2.0.26.Final"
 val closureCompilerVersion = "v20190618"
@@ -53,11 +53,10 @@ val scalaCheckVersion = "1.14.0"
 
 lazy val root = project.in(file("."))
   .aggregate(
-    macrosJS, macrosJVM, coreJS, coreJVM, spatialJS, spatialJVM, stream, dom, clientJS, clientJVM, server,
-    serverUndertow, uiJS, uiJVM, optimizer, appJS, appJVM, exampleJS, exampleJVM
+    macrosJS, macrosJVM, coreJS, coreJVM, spatialJS, spatialJVM, stream, dom, clientJS, clientJVM, communicationJS,
+    communicationJVM, server, serverUndertow, uiJS, uiJVM, optimizer, appJS, appJVM, exampleJS, exampleJVM
   )
   .settings(
-    resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases",
     publish := {},
     publishLocal := {}
   )
@@ -83,13 +82,11 @@ lazy val core = crossProject(JSPlatform, JVMPlatform).in(file("core"))
   .settings(
     name := "youi-core",
     description := "Core functionality leveraged and shared by most other sub-projects of YouI.",
-    resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases",
     libraryDependencies ++= Seq(
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
       "com.outr" %%% "profig" % profigVersion,
       "com.outr" %%% "scribe" % scribeVersion,
       "com.outr" %%% "reactify" % reactifyVersion,
-      "com.outr" %%% "hookup" % hookupVersion,
       "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
     )
   )
@@ -160,6 +157,21 @@ lazy val dom = project.in(file("dom"))
   .dependsOn(coreJS)
   .dependsOn(stream % "compile")
 
+lazy val communication = crossProject(JSPlatform, JVMPlatform)
+  .crossType(CrossType.Pure)
+  .in(file("communication"))
+  .settings(
+    name := "youi-communication",
+    libraryDependencies ++= Seq(
+      "org.scala-lang" % "scala-reflect" % scalaVersion.value,
+      "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
+    )
+  )
+  .dependsOn(core)
+
+lazy val communicationJS = communication.js
+lazy val communicationJVM = communication.jvm
+
 lazy val server = project.in(file("server"))
   .settings(
     name := "youi-server",
@@ -168,7 +180,7 @@ lazy val server = project.in(file("server"))
       "org.scalatest" %% "scalatest" % scalaTestVersion % "test"
     )
   )
-  .dependsOn(coreJVM, stream)
+  .dependsOn(communicationJVM, stream)
 
 lazy val serverUndertow = project.in(file("serverUndertow"))
   .settings(

@@ -105,7 +105,7 @@ trait TestInterface1 {
   def createUser(name: String, age: Int, city: Option[String]): Future[User]
 }
 
-class Test1 extends TestInterface1 {
+class Test1 extends TestInterface1 with Hookup[TestInterface1] {
   override def reverse(value: String): Future[String] = Future.successful(value.reverse)
 
   override def createUser(name: String, age: Int, city: Option[String]): Future[User] = Future.successful {

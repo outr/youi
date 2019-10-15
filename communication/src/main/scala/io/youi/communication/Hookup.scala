@@ -6,9 +6,9 @@ import scala.concurrent.Future
 import scala.language.experimental.macros
 
 trait Hookup[Interface] {
-  def connection: Connection
-  def local: Map[String, Json => Future[Json]]
-  def instance: Interface
+  def connection: Connection = throw new NotImplementedError("This will be implemented by HookupMacros")
+  def local: Map[String, Json => Future[Json]] = throw new NotImplementedError("This will be implemented by HookupMacros")
+  def instance: Interface = throw new NotImplementedError("This will be implemented by HookupMacros")
 
   /**
     * Supply JSON to invoke a local method on Interface and return Future[Json]

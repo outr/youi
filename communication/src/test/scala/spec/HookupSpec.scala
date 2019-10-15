@@ -1,19 +1,20 @@
 package spec
 
 import io.circe.Json
-import io.youi.communication.{Connection, Hookup, HookupQueue}
+import io.youi.communication.{Connection, Hookup}
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.{BeforeAndAfterEach, Matchers}
 
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
+import scribe.Execution.global
 
 class HookupSpec extends AnyWordSpec with Matchers with BeforeAndAfterEach {
   "Hookup" should {
     "define an interface" in {
-      val connection = new TestConnection
+      val connection = TestInterfaceConnection
       val queue = connection.queue
-      val h = Test.interface(connection)
+      val h = connection.interface
       h.local.isEmpty should be(true)
       queue.hasNext should be(false)
       val future = h.instance.reverse("Hello, World!")
@@ -29,9 +30,9 @@ class HookupSpec extends AnyWordSpec with Matchers with BeforeAndAfterEach {
       future.isCompleted should be(false)
     }
     "define an implementation" in {
-      val connection = new TestConnection
+      val connection = TestImplementationConnection
       val queue = connection.queue
-      val h = Test.successImplementation(connection)
+      val h = connection.interface
       h.local.isEmpty should be(false)
       val request = Json.obj(
         "endpoint" -> Json.fromString("reverse"),
@@ -44,20 +45,14 @@ class HookupSpec extends AnyWordSpec with Matchers with BeforeAndAfterEach {
       result should be(Json.fromString("!dlroW ,olleH"))
     }
     "complete cycle" in {
-      val connection = new TestConnection
-      val queue = connection.queue
-      val future = Test.fullTest(connection)
+      val future = Test.fullTest()
       val result = Await.result(future, 1.second)
       result should be("!dlroW ,olleH")
-      queue.hasNext should be(false)
     }
     "complete cycle with error" in {
-      val connection = new TestConnection
-      val queue = connection.queue
-      val future = Test.failTest(connection)
+      val future = Test.failTest()
       val result = Await.result(future.failed, 1.second)
       result.getMessage should be("Reverse failed!")
-      queue.hasNext should be(false)
     }
   }
 }
@@ -65,30 +60,22 @@ class HookupSpec extends AnyWordSpec with Matchers with BeforeAndAfterEach {
 object Test {
   import scribe.Execution.global
 
-  def interface(connection: Connection): Hookup[TestInterface1] = Hookup[TestInterface1](connection)
-  def successImplementation(connection: Connection): Hookup[TestInterface1] = {
-    Hookup[TestInterface1, Test1](connection)
-  }
-  def failImplementation(connection: Connection): Hookup[TestInterface1] = {
-    Hookup[TestInterface1, Test1Fail](connection)
-  }
-
-  def fullTest(connection: Connection): Future[String] = {
-    val interface = Test.interface(connection)
-    val implementation = Test.successImplementation(connection)
-    val future = interface.instance.reverse("Hello, World!")
-    val request = connection.queue.next().getOrElse(throw new RuntimeException("Request not in queue"))
+  def fullTest(): Future[String] = {
+    val interface = TestInterfaceConnection.interface
+    val implementation = TestImplementationConnection.interface
+    val future = interface.reverse("Hello, World!")
+    val request = TestInterfaceConnection.queue.next().getOrElse(throw new RuntimeException("Request not in queue"))
     implementation.receive(request.json).map { json =>
       request.success(json)
     }
     future
   }
 
-  def failTest(connection: Connection): Future[String] = {
-    val interface = Test.interface(connection)
-    val implementation = Test.failImplementation(connection)
-    val future = interface.instance.reverse("Hello, World!")
-    val request = connection.queue.next().getOrElse(throw new RuntimeException("Request not in queue"))
+  def failTest(): Future[String] = {
+    val interface = TestInterfaceConnection.interface
+    val implementation = TestFailConnection.interface
+    val future = interface.reverse("Hello, World!")
+    val request = TestInterfaceConnection.queue.next().getOrElse(throw new RuntimeException("Request not in queue"))
     implementation.receive(request.json).failed.map { t =>
       request.failure(t)
     }
@@ -96,7 +83,16 @@ object Test {
   }
 }
 
-class TestConnection extends Connection {
+object TestInterfaceConnection extends Connection {
+  val interface: TestInterface1 with Hookup[TestInterface1] = apply[TestInterface1]
+}
+
+object TestImplementationConnection extends Connection {
+  val interface: TestInterface1 with Hookup[TestInterface1] = apply[TestInterface1, Test1]
+}
+
+object TestFailConnection extends Connection {
+  val interface: TestInterface1 with Hookup[TestInterface1] = apply[TestInterface1, Test1Fail]
 }
 
 trait TestInterface1 {

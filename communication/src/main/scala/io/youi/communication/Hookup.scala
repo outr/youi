@@ -30,8 +30,3 @@ trait Hookup[Interface] {
     case t: Throwable => Future.failed(t)
   }
 }
-
-object Hookup {
-  def apply[Interface](connection: Connection): Interface with Hookup[Interface] = macro HookupMacros.interface[Interface]
-  def apply[Interface, Implementation <: Interface](connection: Connection): Implementation with Hookup[Interface] = macro HookupMacros.implementation[Interface, Implementation]
-}

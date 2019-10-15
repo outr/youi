@@ -5,10 +5,10 @@ import scala.reflect.macros.blackbox
 
 object HookupMacros {
   def interface[Interface](context: blackbox.Context)
-                          (connection: context.Expr[Connection])
                           (implicit interface: context.WeakTypeTag[Interface]): context.Expr[Interface with Hookup[Interface]] = {
     import context.universe._
 
+    val connection = context.prefix.tree
     val methods = lookupMethods(context)(interface.tpe)
     val remote = methods.filter(_.isAbstract)
 
@@ -60,11 +60,11 @@ object HookupMacros {
   }
 
   def implementation[Interface, Implementation <: Interface](context: blackbox.Context)
-                               (connection: context.Expr[Connection])
-                               (implicit interface: context.WeakTypeTag[Interface],
-                                         implementation: context.WeakTypeTag[Implementation]): context.Expr[Implementation with Hookup[Interface]] = {
+                                                            (implicit interface: context.WeakTypeTag[Interface],
+                                                                      implementation: context.WeakTypeTag[Implementation]): context.Expr[Implementation with Hookup[Interface]] = {
     import context.universe._
 
+    val connection = context.prefix.tree
     val methods = lookupMethods(context)(interface.tpe)
     val local = methods.filter(_.isAbstract)
 

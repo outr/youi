@@ -54,6 +54,15 @@ class HookupSpec extends AnyWordSpec with Matchers with BeforeAndAfterEach {
       val result = Await.result(future.failed, 1.second)
       result.getMessage should be("Reverse failed!")
     }
+    "use Connection" in {
+      val future = TestInterfaceConnection.i.createUser("John Doe", 21, Some("Somewhere"))
+      val request = TestInterfaceConnection.queue.next().getOrElse(fail())
+      TestImplementationConnection.receive(request.json).map { response =>
+        request.success(response)
+      }
+      val result = Await.result(future, 1.second)
+      result should be(User("John Doe", 21, Some("Somewhere")))
+    }
   }
 }
 

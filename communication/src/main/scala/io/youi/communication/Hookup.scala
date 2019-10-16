@@ -11,6 +11,9 @@ trait Hookup[Interface] {
   def local: Map[String, Json => Future[Json]] = throw new NotImplementedError("This will be implemented by HookupMacros")
   def instance: Interface = throw new NotImplementedError("This will be implemented by HookupMacros")
 
+  // Register the hookup with the connection
+  connection.hookups.register(this)
+
   /**
     * Supply JSON to invoke a local method on Interface and return Future[Json]
     *

@@ -4,7 +4,8 @@ import io.youi.ajax.AjaxRequest
 import io.youi.app.screen.ScreenManager
 import io.youi.{History, JavaScriptError, JavaScriptLog, LocalStorage}
 import io.youi.app.sourceMap.ErrorTrace
-import org.scalajs.dom.{window, XMLHttpRequest, FormData, ErrorEvent}
+import io.youi.communication.Connection
+import org.scalajs.dom.{ErrorEvent, FormData, XMLHttpRequest, window}
 import io.youi.dom._
 import io.youi.net._
 import profig.JsonUtil
@@ -38,6 +39,8 @@ trait ClientApplication extends YouIApplication with ScreenManager {
   override def isClient: Boolean = true
 
   override def isServer: Boolean = false
+
+  def connection: Connection
 
   // Configure communication end-points
   private var configuredConnectivity: Map[ApplicationConnectivity, ClientConnectivity] = Map.empty

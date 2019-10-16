@@ -234,7 +234,7 @@ lazy val app = crossProject(JSPlatform, JVMPlatform).in(file("app"))
   .jsSettings(
     jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv
   )
-  .dependsOn(core, ui)
+  .dependsOn(core, communication, ui)
 
 lazy val appJS = app.js
 lazy val appJVM = app.jvm.dependsOn(server)

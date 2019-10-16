@@ -13,12 +13,3 @@ trait Connection {
   protected def interface[Interface]: Interface with Hookup[Interface] = macro HookupMacros.interface[Interface]
   protected def implementation[Interface, Implementation <: Interface]: Implementation with Hookup[Interface] = macro HookupMacros.implementation[Interface, Implementation]
 }
-
-sealed trait ConnectionStatus
-
-object ConnectionStatus {
-  case object Disconnected extends ConnectionStatus
-  case object Connecting extends ConnectionStatus
-  case object Connected extends ConnectionStatus
-  case object Disposed extends ConnectionStatus
-}

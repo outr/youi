@@ -4,14 +4,17 @@ import scala.concurrent.Future
 import scala.reflect.macros.blackbox
 
 object HookupMacros {
+  private val VariableExtraction = """.*val (\S+)[:].+""".r
+
   def interface[Interface](context: blackbox.Context)
-                          (name: context.Expr[String])
                           (implicit interface: context.WeakTypeTag[Interface]): context.Expr[Interface with Hookup[Interface]] = {
     import context.universe._
 
     val connection = context.prefix.tree
     val methods = lookupMethods(context)(interface.tpe)
     val remote = methods.filter(_.isAbstract)
+
+    val name = extractVariableName(context)
 
     val remoteMethods = remote.map { m =>
       val methodName = m.name.decodedName.toString
@@ -28,11 +31,12 @@ object HookupMacros {
       }
       val returnTypeFuture = m.typeSignature.resultType
       val returnType = returnTypeFuture.typeArgs.head
+      val endPoint = s"$name.$methodName"
       q"""
          override def ${m.name.toTermName}(..$params): $returnTypeFuture = {
            val params: Json = Json.obj(..$jsonify)
            val request = Json.obj(
-             "endpoint" -> Json.fromString(name + "." + $methodName),
+             "endpoint" -> Json.fromString($endPoint),
              "params" -> params
            )
            connection.queue.enqueue(request).map { response =>
@@ -62,7 +66,6 @@ object HookupMacros {
   }
 
   def implementation[Interface, Implementation <: Interface](context: blackbox.Context)
-                                                            (name: context.Expr[String])
                                                             (implicit interface: context.WeakTypeTag[Interface],
                                                                       implementation: context.WeakTypeTag[Implementation]): context.Expr[Implementation with Hookup[Interface]] = {
     import context.universe._
@@ -70,6 +73,8 @@ object HookupMacros {
     val connection = context.prefix.tree
     val methods = lookupMethods(context)(interface.tpe)
     val local = methods.filter(_.isAbstract)
+
+    val name = extractVariableName(context)
 
     val localMethods = local.map { m =>
       val args = m.typeSignature.paramLists.headOption.getOrElse(Nil)
@@ -125,6 +130,13 @@ object HookupMacros {
 
     tpe.members.toList.collect {
       case s if s.isMethod && s.asMethod.isPublic && s.typeSignature.resultType <:< typeOf[Future[Any]] => s
+    }
+  }
+
+  private def extractVariableName(context: blackbox.Context): String = {
+    context.enclosingPosition.source.lineToString(context.enclosingPosition.line - 1) match {
+      case VariableExtraction(name) => name
+      case line => context.abort(context.enclosingPosition, s"Unable to extract variable name from line: $line")
     }
   }
 }

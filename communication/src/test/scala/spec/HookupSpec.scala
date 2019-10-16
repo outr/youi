@@ -14,7 +14,7 @@ class HookupSpec extends AnyWordSpec with Matchers with BeforeAndAfterEach {
     "define an interface" in {
       val connection = TestInterfaceConnection
       val queue = connection.queue
-      val h = connection.interface
+      val h = connection.i
       h.local.isEmpty should be(true)
       queue.hasNext should be(false)
       val future = h.instance.reverse("Hello, World!")
@@ -32,7 +32,7 @@ class HookupSpec extends AnyWordSpec with Matchers with BeforeAndAfterEach {
     "define an implementation" in {
       val connection = TestImplementationConnection
       val queue = connection.queue
-      val h = connection.interface
+      val h = connection.i
       h.local.isEmpty should be(false)
       val request = Json.obj(
         "endpoint" -> Json.fromString("i.reverse"),
@@ -61,8 +61,8 @@ object Test {
   import scribe.Execution.global
 
   def fullTest(): Future[String] = {
-    val interface = TestInterfaceConnection.interface
-    val implementation = TestImplementationConnection.interface
+    val interface = TestInterfaceConnection.i
+    val implementation = TestImplementationConnection.i
     val future = interface.reverse("Hello, World!")
     val request = TestInterfaceConnection.queue.next().getOrElse(throw new RuntimeException("Request not in queue"))
     implementation.receive(request.json).map { json =>
@@ -72,8 +72,8 @@ object Test {
   }
 
   def failTest(): Future[String] = {
-    val interface = TestInterfaceConnection.interface
-    val implementation = TestFailConnection.interface
+    val interface = TestInterfaceConnection.i
+    val implementation = TestFailConnection.i
     val future = interface.reverse("Hello, World!")
     val request = TestInterfaceConnection.queue.next().getOrElse(throw new RuntimeException("Request not in queue"))
     implementation.receive(request.json).failed.map { t =>
@@ -84,15 +84,15 @@ object Test {
 }
 
 object TestInterfaceConnection extends Connection {
-  val interface: TestInterface1 with Hookup[TestInterface1] = apply[TestInterface1]("i")
+  val i: TestInterface1 with Hookup[TestInterface1] = interface[TestInterface1]
 }
 
 object TestImplementationConnection extends Connection {
-  val interface: TestInterface1 with Hookup[TestInterface1] = apply[TestInterface1, Test1]("i")
+  val i: TestInterface1 with Hookup[TestInterface1] = implementation[TestInterface1, Test1]
 }
 
 object TestFailConnection extends Connection {
-  val interface: TestInterface1 with Hookup[TestInterface1] = apply[TestInterface1, Test1Fail]("i")
+  val i: TestInterface1 with Hookup[TestInterface1] = implementation[TestInterface1, Test1Fail]
 }
 
 trait TestInterface1 {

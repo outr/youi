@@ -16,9 +16,9 @@ class HookupSpec extends AnyWordSpec with Matchers with BeforeAndAfterEach {
       val queue = connection.queue
       val h = connection.i
       h.local.isEmpty should be(true)
-      queue.hasNext should be(false)
+      queue.hasNext() should be(false)
       val future = h.instance.reverse("Hello, World!")
-      queue.hasNext should be(true)
+      queue.hasNext() should be(true)
       val request = queue.next().getOrElse(fail())
       request.id should be(1L)
       request.json should be(Json.obj(
@@ -55,13 +55,22 @@ class HookupSpec extends AnyWordSpec with Matchers with BeforeAndAfterEach {
       result.getMessage should be("Reverse failed!")
     }
     "use Connection" in {
+      TestInterfaceConnection.queue.clear()
+      TestInterfaceConnection.queue.hasNext() should be(false)
+      TestInterfaceConnection.queue.hasRunning() should be(false)
       val future = TestInterfaceConnection.i.createUser("John Doe", 21, Some("Somewhere"))
+      TestInterfaceConnection.queue.hasNext() should be(true)
+      TestInterfaceConnection.queue.hasRunning() should be(false)
       val request = TestInterfaceConnection.queue.next().getOrElse(fail())
       TestImplementationConnection.receive(request.json).map { response =>
-        request.success(response)
+        TestInterfaceConnection.queue.hasNext() should be(false)
+        TestInterfaceConnection.queue.hasRunning() should be(true)
+        TestInterfaceConnection.queue.success(request.id, response)
       }
       val result = Await.result(future, 1.second)
       result should be(User("John Doe", 21, Some("Somewhere")))
+      TestInterfaceConnection.queue.hasNext() should be(false)
+      TestInterfaceConnection.queue.hasRunning() should be(false)
     }
   }
 }

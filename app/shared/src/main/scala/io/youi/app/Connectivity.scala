@@ -12,9 +12,9 @@ import reactify.reaction.Reaction
 import scala.util.{Failure, Success}
 import scribe.Execution.global
 
-trait Connectivity {
-  def connection: Connection
+import scala.concurrent.Future
 
+class Connectivity(creator: () => WebSocket, connection: Connection) {
   val webSocket: Var[Option[WebSocket]] = Var(None)
 
   private val receiveText: Reaction[String] = Reaction[String] {
@@ -60,7 +60,7 @@ trait Connectivity {
         c.receive.text.reactions -= receiveText
         c.receive.binary.reactions -= receiveBinary
 
-        c.dispose()
+        c.disconnect()
       }
       newClient.foreach { c =>
         c.receive.text.reactions += receiveText
@@ -70,9 +70,15 @@ trait Connectivity {
   }
   connection.queue.hasNext.attach(_ => checkQueue())
 
-  def connect(): Unit
+  def connect(): Future[Unit] = {
+    disconnect()
 
-  def disconnect(): Unit
+    val ws = creator()
+    webSocket := Some(ws)
+    ws.connect()
+  }
+
+  def disconnect(): Unit = webSocket := None
 
   /**
     * Checks for queue entries if connected

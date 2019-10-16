@@ -13,7 +13,7 @@ import scala.scalajs.js.typedarray.TypedArrayBufferOps._
 class WebSocketClient(url: URL) extends WebSocket {
   private lazy val webSocket: WS = new WS(url.toString)
 
-  def connect(): Future[Unit] = {
+  override def connect(): Future[Unit] = {
     webSocket
     webSocket.addEventListener("open", (_: Event) => {
       updateStatus()
@@ -23,7 +23,7 @@ class WebSocketClient(url: URL) extends WebSocket {
     })
     webSocket.addEventListener("error", (_: Event) => {
       error @= new RuntimeException("WebSocket error! Closing...")
-      dispose()
+      disconnect()
       updateStatus()
     })
     webSocket.addEventListener("message", (evt: MessageEvent) => {
@@ -65,6 +65,4 @@ class WebSocketClient(url: URL) extends WebSocket {
     webSocket.close()
     _status @= ConnectionStatus.Closed
   }
-
-  override def dispose(): Unit = disconnect()
 }

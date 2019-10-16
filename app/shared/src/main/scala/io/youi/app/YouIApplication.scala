@@ -1,6 +1,6 @@
 package io.youi.app
 
-import reactify._
+import io.youi.net._
 import io.youi.{Cache, CacheImplementation, ErrorSupport}
 import profig.Profig
 
@@ -26,18 +26,8 @@ trait YouIApplication extends ErrorSupport with CacheImplementation {
 
   protected val logPath: String = "/client/log"
 
-  val connectivityEntries: Var[Set[ApplicationConnectivity]] = Var(Set.empty[ApplicationConnectivity])
-
   protected def autoConnectCommunication: Boolean = true
-
-  /**
-    * Default connectivity using "/communication" as the path. Can be overridden if this path is not desirable.
-    */
-  val connectivity: ApplicationConnectivity = createConnectivity()
-
-  def createConnectivity(path: String = "/communication"): ApplicationConnectivity = {
-    new ApplicationConnectivity(this, path, autoConnectCommunication)
-  }
+  protected def communicationPath: Path = path"/communication"
 }
 
 object YouIApplication {

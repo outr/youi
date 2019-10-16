@@ -39,7 +39,7 @@ object HookupMacros {
              "endpoint" -> Json.fromString($endPoint),
              "params" -> params
            )
-           connection.queue.enqueue(request).map { response =>
+           connection.queue.enqueue(MessageType.Invoke, request).map { response =>
              JsonUtil.fromJson[$returnType](response)
            }
          }

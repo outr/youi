@@ -20,11 +20,11 @@ class HookupQueue {
   val hasNext: Val[Boolean] = _hasNext
   val hasRunning: Val[Boolean] = _hasRunning
 
-  def enqueue(json: Json): Future[Json] = if (disposed) {
+  def enqueue(`type`: MessageType, json: Json, id: Long = idGenerator.incrementAndGet()): Future[Json] = if (disposed) {
     throw new RuntimeException("Queue is disposed")
   } else {
     val promise = Promise[Json]
-    queue.add(HookupRequest(idGenerator.incrementAndGet(), json, promise))
+    queue.add(HookupRequest(id, `type`, json, promise))
     _hasNext @= true
     promise.future
   }

@@ -2,12 +2,15 @@ package io.youi.app
 
 import java.nio.ByteBuffer
 
+import io.circe.Json
 import io.youi.client.WebSocketClient
 import io.youi.{AnimationFrame, History}
 import io.youi.net.URL
 import io.youi.stream.StreamURL
 import io.youi.util.Time
-import org.scalajs.dom.{WebSocket, window}
+import io.circe.parser._
+import io.youi.http.WebSocket
+import org.scalajs.dom.window
 import org.scalajs.dom.ext.AjaxException
 import reactify._
 import reactify.reaction.Reaction
@@ -17,22 +20,42 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 
 class ClientConnectivity(connectivity: ApplicationConnectivity, application: ClientApplication) {
-  val webSocket: Var[Option[WebSocketClient]] = Var(None)
+  val webSocket: Var[Option[WebSocket]] = Var(None)
 
   private val receiveText: Reaction[String] = Reaction[String] {
     case "PING" => webSocket.foreach(_.send.text @= "PONG")
     case message if message.startsWith("[youi id=") => {
       val splitPoint = message.indexOf(']')
-      val prefix = message.substring(0, splitPoint + 1) match {
-        case ClientConnectivity.PrefixRegex(id) => id.toLong
+      val (id, typ) = message.substring(0, splitPoint + 1) match {
+        case ClientConnectivity.PrefixRegex(i, t) => (i.toLong, t)
       }
-      application.connection.re
+      val content = message.substring(splitPoint + 1)
+      val json = parse(content).getOrElse(throw new RuntimeException(s"Unable to parse JSON for $id ($typ): $content"))
+      typ match {
+        case "invoke" => application.connection.receive(json).onComplete {
+          case Success(response) => application.connection.queue.enqueue(response, id)
+          case Failure(throwable) => {
+            scribe.error(s"Error while processing method request: $json", throwable)
+            application.connection.queue.enqueue(Json.fromString(throwable.getMessage), id)
+          }
+        }
+        case "response" => if (application.connection.queue.success(id, json)) {
+          // Success
+        } else {
+          scribe.warn(s"No id found for $id. Cannot apply: $json")
+        }
+        case "error" => if (application.connection.queue.failure(id, new RuntimeException(json.asString.getOrElse(json.toString())))) {
+          // Success
+        } else {
+          scribe.warn(s"No id found for $id. Cannot fail: $json")
+        }
+      }
     }
     case message => scribe.warn(s"Unhandled: $message")
   }
 
   private val receiveBinary: Reaction[ByteBuffer] = Reaction[ByteBuffer] { message =>
-
+    scribe.warn("Received unhandled binary data on WebSocket!")
   }
 
   webSocket.changes {
@@ -121,5 +144,5 @@ class ClientConnectivity(connectivity: ApplicationConnectivity, application: Cli
 }
 
 object ClientConnectivity {
-  private val PrefixRegex = """\[youi id="(\d+)"\]""".r
+  private val PrefixRegex = """\[youi id=(\d+) type="(\S+)"\]""".r
 }

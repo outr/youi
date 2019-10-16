@@ -1,16 +1,12 @@
 package io.youi.communication
 
 import io.circe.Json
-import reactify.{Val, Var}
 
 import scala.concurrent.Future
 import scala.language.experimental.macros
 
 trait Connection {
-  protected val _status: Var[ConnectionStatus] = Var(ConnectionStatus.Disconnected)
-
   val queue: HookupQueue = new HookupQueue
-  val status: Val[ConnectionStatus] = _status
 
   object hookups {
     private var map = Map.empty[String, Hookup[Any]]

@@ -1,6 +1,6 @@
 package io.youi.client
 
-import io.youi.http.WebSocket
+import io.youi.http.{ConnectionStatus, WebSocket}
 import io.youi.net.URL
 import org.scalajs.dom.{Blob, Event, FileReader, MessageEvent, WebSocket => WS}
 
@@ -40,7 +40,6 @@ class WebSocketClient(url: URL) extends WebSocket {
         case ab: ArrayBuffer => receive.binary @= TypedArrayBuffer.wrap(ab)
       }
     })
-    connected.future(b => b).map(_ => ())
     send.text.attach(webSocket.send)
     send.binary.attach { message =>
       if (message.hasTypedArray()) {
@@ -52,20 +51,20 @@ class WebSocketClient(url: URL) extends WebSocket {
         webSocket.send(arrayBuffer)
       }
     }
-    connected.future(_ == true).map(_ => ())
+    status.future(s => s == ConnectionStatus.Open).map(_ => ())
   }
 
   private def updateStatus(): Unit = webSocket.readyState match {
-    case WS.CLOSED => _connected @= false
-    case WS.CLOSING => _connected @= false
-    case WS.CONNECTING => _connected @= false
-    case WS.OPEN => _connected @= true
+    case WS.CLOSED => _status @= ConnectionStatus.Closed
+    case WS.CLOSING => _status @= ConnectionStatus.Closing
+    case WS.CONNECTING => _status @= ConnectionStatus.Connecting
+    case WS.OPEN => _status @= ConnectionStatus.Open
   }
 
-  def disconnect(): Unit = {
+  override def disconnect(): Unit = {
     webSocket.close()
-    _connected @= false
+    _status @= ConnectionStatus.Closed
   }
 
-  def dispose(): Unit = disconnect()
+  override def dispose(): Unit = disconnect()
 }

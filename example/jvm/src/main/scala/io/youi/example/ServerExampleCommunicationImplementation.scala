@@ -2,16 +2,13 @@ package io.youi.example
 
 import java.util.concurrent.atomic.AtomicInteger
 
-import com.outr.hookup.HookupSupport
-import io.youi.http.Connection
+import io.youi.communication.Hookup
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait ServerExampleCommunication extends ExampleCommunication with HookupSupport {
+trait ServerExampleCommunicationImplementation extends ServerExampleCommunication with Hookup[ServerExampleCommunication] {
   private val increment = new AtomicInteger(0)
-
-  lazy val connection: Connection = hookup.keyAs[Connection]
 
   override def time: Future[Long] = Future(System.currentTimeMillis())
   override def counter: Future[Int] = Future(increment.getAndIncrement())

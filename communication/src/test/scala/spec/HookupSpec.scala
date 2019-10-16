@@ -22,7 +22,7 @@ class HookupSpec extends AnyWordSpec with Matchers with BeforeAndAfterEach {
       val request = queue.next().getOrElse(fail())
       request.id should be(1L)
       request.json should be(Json.obj(
-        "endpoint" -> Json.fromString("reverse"),
+        "endpoint" -> Json.fromString("i.reverse"),
         "params" -> Json.obj(
           "value" -> Json.fromString("Hello, World!")
         )
@@ -35,7 +35,7 @@ class HookupSpec extends AnyWordSpec with Matchers with BeforeAndAfterEach {
       val h = connection.interface
       h.local.isEmpty should be(false)
       val request = Json.obj(
-        "endpoint" -> Json.fromString("reverse"),
+        "endpoint" -> Json.fromString("i.reverse"),
         "params" -> Json.obj(
           "value" -> Json.fromString("Hello, World!")
         )
@@ -84,15 +84,15 @@ object Test {
 }
 
 object TestInterfaceConnection extends Connection {
-  val interface: TestInterface1 with Hookup[TestInterface1] = apply[TestInterface1]
+  val interface: TestInterface1 with Hookup[TestInterface1] = apply[TestInterface1]("i")
 }
 
 object TestImplementationConnection extends Connection {
-  val interface: TestInterface1 with Hookup[TestInterface1] = apply[TestInterface1, Test1]
+  val interface: TestInterface1 with Hookup[TestInterface1] = apply[TestInterface1, Test1]("i")
 }
 
 object TestFailConnection extends Connection {
-  val interface: TestInterface1 with Hookup[TestInterface1] = apply[TestInterface1, Test1Fail]
+  val interface: TestInterface1 with Hookup[TestInterface1] = apply[TestInterface1, Test1Fail]("i")
 }
 
 trait TestInterface1 {

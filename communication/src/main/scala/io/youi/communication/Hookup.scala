@@ -6,6 +6,7 @@ import scala.concurrent.Future
 import scala.language.experimental.macros
 
 trait Hookup[Interface] {
+  def name: String = throw new NotImplementedError("This will be implemented by HookupMacros")
   def connection: Connection = throw new NotImplementedError("This will be implemented by HookupMacros")
   def local: Map[String, Json => Future[Json]] = throw new NotImplementedError("This will be implemented by HookupMacros")
   def instance: Interface = throw new NotImplementedError("This will be implemented by HookupMacros")
@@ -18,6 +19,7 @@ trait Hookup[Interface] {
     */
   def receive(json: Json): Future[Json] = try {
     val endPoint = (json \\ "endpoint").head.asString.getOrElse(throw new RuntimeException(s"No 'method' entry defined for: $json"))
+    assert(endPoint.startsWith(s"$name."))
     val lastDot = endPoint.lastIndexOf('.')
     val methodName = if (lastDot != -1) {
       endPoint.substring(lastDot + 1)

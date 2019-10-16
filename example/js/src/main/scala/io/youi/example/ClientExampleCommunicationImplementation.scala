@@ -7,7 +7,7 @@ import scala.concurrent.Future
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-trait ClientExampleCommunication extends ExampleCommunication {
+class ClientExampleCommunicationImplementation extends ClientExampleCommunication {
   override def url: Future[String] = Future.successful(window.location.href)
 
   override def navigateTo(url: String, push: Boolean): Future[Unit] = Future.successful(if (push) {

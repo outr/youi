@@ -5,6 +5,7 @@ import scala.reflect.macros.blackbox
 
 object HookupMacros {
   def interface[Interface](context: blackbox.Context)
+                          (name: context.Expr[String])
                           (implicit interface: context.WeakTypeTag[Interface]): context.Expr[Interface with Hookup[Interface]] = {
     import context.universe._
 
@@ -31,7 +32,7 @@ object HookupMacros {
          override def ${m.name.toTermName}(..$params): $returnTypeFuture = {
            val params: Json = Json.obj(..$jsonify)
            val request = Json.obj(
-             "endpoint" -> Json.fromString($methodName),
+             "endpoint" -> Json.fromString(name + "." + $methodName),
              "params" -> params
            )
            connection.queue.enqueue(request).map { response =>
@@ -49,6 +50,7 @@ object HookupMacros {
         import _root_.scala.concurrent.Future
 
         new Hookup[$interface] with $interface {
+          override def name: String = $name
           override def connection: Connection = $connection
           override val local: Map[String, Json => Future[Json]] = Map.empty
           override def instance: $interface = this
@@ -60,6 +62,7 @@ object HookupMacros {
   }
 
   def implementation[Interface, Implementation <: Interface](context: blackbox.Context)
+                                                            (name: context.Expr[String])
                                                             (implicit interface: context.WeakTypeTag[Interface],
                                                                       implementation: context.WeakTypeTag[Implementation]): context.Expr[Implementation with Hookup[Interface]] = {
     import context.universe._
@@ -103,6 +106,7 @@ object HookupMacros {
          import _root_.scala.concurrent.Future
 
          new $implementation with Hookup[$interface] {
+           override def name: String = $name
            override def connection: Connection = $connection
            override val local: Map[String, Json => Future[Json]] = Map(..$localMappings)
            override def instance: $interface = this

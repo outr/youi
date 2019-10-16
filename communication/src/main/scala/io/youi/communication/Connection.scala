@@ -10,8 +10,8 @@ trait Connection {
   val queue: HookupQueue = new HookupQueue
   val status: Val[ConnectionStatus] = _status
 
-  protected def apply[Interface]: Interface with Hookup[Interface] = macro HookupMacros.interface[Interface]
-  protected def apply[Interface, Implementation <: Interface]: Implementation with Hookup[Interface] = macro HookupMacros.implementation[Interface, Implementation]
+  protected def apply[Interface](name: String): Interface with Hookup[Interface] = macro HookupMacros.interface[Interface]
+  protected def apply[Interface, Implementation <: Interface](name: String): Implementation with Hookup[Interface] = macro HookupMacros.implementation[Interface, Implementation]
 }
 
 sealed trait ConnectionStatus

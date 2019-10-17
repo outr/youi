@@ -13,7 +13,8 @@ import scala.scalajs.js.typedarray.TypedArrayBufferOps._
 class WebSocketClient(url: URL) extends WebSocket {
   private lazy val webSocket: WS = new WS(url.toString)
 
-  override def connect(): Future[Unit] = {
+  override def connect(): Future[ConnectionStatus] = {
+    _status @= ConnectionStatus.Connecting
     webSocket
     webSocket.addEventListener("open", (_: Event) => {
       updateStatus()
@@ -51,7 +52,7 @@ class WebSocketClient(url: URL) extends WebSocket {
         webSocket.send(arrayBuffer)
       }
     }
-    status.future(s => s == ConnectionStatus.Open).map(_ => ())
+    status.future(s => s != ConnectionStatus.Connecting)
   }
 
   private def updateStatus(): Unit = webSocket.readyState match {

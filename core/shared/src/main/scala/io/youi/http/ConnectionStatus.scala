@@ -2,6 +2,8 @@ package io.youi.http
 
 sealed trait ConnectionStatus {
   lazy val name: String = getClass.getSimpleName.replaceAllLiterally("$", "")
+
+  override def toString: String = name
 }
 
 object ConnectionStatus {

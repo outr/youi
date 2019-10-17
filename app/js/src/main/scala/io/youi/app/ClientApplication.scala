@@ -57,8 +57,6 @@ trait ClientApplication extends YouIApplication with ScreenManager {
     }
   }
 
-  def reconnectStrategy: ReconnectStrategy = ReconnectStrategy.Reload
-
   override def cached(url: URL): String = url.asPath()
 }
 

@@ -12,7 +12,7 @@ trait WebSocket {
   val receive: WebSocketChannels = new WebSocketChannels
   val error: Channel[Throwable] = Channel[Throwable]
 
-  def connect(): Future[Unit]
+  def connect(): Future[ConnectionStatus]
 
   def disconnect(): Unit
 }

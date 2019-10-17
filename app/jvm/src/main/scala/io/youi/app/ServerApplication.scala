@@ -3,7 +3,6 @@ package io.youi.app
 import java.io.File
 
 import akka.actor.{ActorSystem, Cancellable}
-import com.outr.hookup.{Hookup, HookupServer}
 import io.youi.http._
 import io.youi.http.content.{Content, FileContent, FormDataContent, StringContent, URLContent}
 import io.youi.net.{ContentType, URL}
@@ -28,11 +27,8 @@ trait ServerApplication extends YouIApplication with Server {
 
   override def isServer: Boolean = true
 
-  val connected: Channel[Connection] = Channel[Connection]
-  val disconnected: Channel[Connection] = Channel[Connection]
   lazy val cacheDirectory: Var[File] = Var(new File(System.getProperty("user.home"), ".cache"))
 
-  private var configuredEndPoints = Set.empty[ApplicationConnectivity]
   private lazy val userAgentParser = UADetectorServiceFactory.getResourceModuleParser
 
   protected def applicationBasePath: String = "app/application"
@@ -56,21 +52,6 @@ trait ServerApplication extends YouIApplication with Server {
   protected def responseMap(httpConnection: HttpConnection): Map[String, String] = Map.empty
 
   override protected def init(): Future[Unit] = super.init().map { _ =>
-    // Redirect Hookup errors to error support
-    Hookup.error.attach(t => ErrorSupport.error @= t)
-
-    connectivityEntries.attachAndFire { entries =>
-      ServerApplication.this.synchronized {
-        entries.foreach { appComm =>
-          if (!configuredEndPoints.contains(appComm)) {
-            val appCommHandler = new ServerConnectionHandler(appComm)
-            handler.matcher(path.exact(appComm.path)).wrap(appCommHandler)
-            configuredEndPoints += appComm
-          }
-        }
-      }
-    }
-
     handler.matcher(path.exact("/source-map.min.js")).resource(Content.classPath("source-map.min.js"))
     if (logJavaScriptErrors) {
       handler.matcher(path.exact(logPath)).handle { httpConnection =>
@@ -159,10 +140,6 @@ trait ServerApplication extends YouIApplication with Server {
     }
   }
 
-  protected val cancellable: Option[Cancellable] = Some(system.scheduler.schedule(30.seconds, 30.seconds) {
-    pingClients()
-  })
-
   protected def errorInfo(error: JavaScriptError, httpConnection: HttpConnection): Map[String, String] = Map.empty
 
   protected def page(page: Page): Page = {
@@ -243,35 +220,6 @@ trait ServerApplication extends YouIApplication with Server {
     val html = stream.stream(d, selector)
     httpConnection.deltas.clear()
     SenderHandler.handle(httpConnection, Content.string(html, ContentType.`text/html`), caching = CachingManager.NotCached)
-  }
-
-  private class ServerConnectionHandler(appComm: ApplicationConnectivity) extends HttpHandler {
-    override def handle(httpConnection: HttpConnection): Future[HttpConnection] = appComm.activeConnections.synchronized {
-      val connection = new Connection(client = false)
-      connection.store.update("httpConnection", httpConnection)
-      appComm.activeConnections @= (appComm.activeConnections() + connection)
-      connected @= connection
-      connection.connected.attach { b =>
-        if (!b) appComm.activeConnections.synchronized {
-          appComm.activeConnections @= (appComm.activeConnections() - connection)
-          HookupServer().foreach { hs =>
-            hs.remove(connection)
-          }
-          disconnected @= connection
-        }
-      }
-      connection.receive.text.attach {
-        case "PONG" => // Nothing to do, this finishes the workflow
-        case _ => // Ignore everything else
-      }
-      Future.successful(httpConnection.withWebSocket(connection))
-    }
-  }
-
-  private def pingClients(): Unit = connectivityEntries().foreach { entry =>
-    entry.connections().foreach { connection =>
-      connection.send.text @= "PING"
-    }
   }
 
   // Creates a cached version of the URL and adds an explicit matcher to serve it

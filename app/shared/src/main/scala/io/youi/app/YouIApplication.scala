@@ -1,6 +1,5 @@
 package io.youi.app
 
-import io.youi.net._
 import io.youi.{Cache, CacheImplementation, ErrorSupport}
 import profig.Profig
 
@@ -25,9 +24,6 @@ trait YouIApplication extends ErrorSupport with CacheImplementation {
   protected def logJavaScriptErrors: Boolean = Profig("logJavaScriptErrors").opt[Boolean].getOrElse(true)
 
   protected val logPath: String = "/client/log"
-
-  protected def autoConnectCommunication: Boolean = true
-  protected def communicationPath: Path = path"/communication"
 }
 
 object YouIApplication {

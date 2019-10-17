@@ -22,7 +22,7 @@ object LoginScreen extends ExampleScreen {
       evt.stopPropagation()
       evt.preventDefault()
 
-      hookup.communication.logIn(username.value, password.value).onComplete {
+      connection.server.logIn(username.value, password.value).onComplete {
         case Success(error) => {
           message.innerHTML = error.getOrElse("")
           if (error.isEmpty) {

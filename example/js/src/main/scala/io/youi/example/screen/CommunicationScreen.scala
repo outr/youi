@@ -56,7 +56,7 @@ object CommunicationScreen extends ExampleScreen with PreloadedContentScreen {
       if (value.isEmpty) {
         window.alert("Reverse value must not be empty!")
       } else {
-        hookup.simple.reverse(value).foreach { reversed =>
+        connection.server.reverse(value).foreach { reversed =>
           reverseInput.value = reversed
         }
       }
@@ -65,12 +65,12 @@ object CommunicationScreen extends ExampleScreen with PreloadedContentScreen {
     timeButton.addEventListener("click", (evt: Event) => {
       evt.preventDefault()
       evt.stopPropagation()
-      hookup.communication.time.foreach { time =>
+      connection.server.time.foreach { time =>
         timeInput.value = time.toString
       }
     })
 
-    nameInput.value = hookup.name().getOrElse("")
+    /*nameInput.value = hookup.name().getOrElse("")
     nameButton.addEventListener("click", (evt: Event) => {
       evt.preventDefault()
       evt.stopPropagation()
@@ -81,12 +81,12 @@ object CommunicationScreen extends ExampleScreen with PreloadedContentScreen {
       if (nameInput.value != s) {
         nameInput.value = s
       }
-    }
+    }*/
 
     counterButton.addEventListener("click", (evt: Event) => {
       evt.preventDefault()
       evt.stopPropagation()
-      hookup.communication.counter.foreach { count =>
+      connection.server.counter.foreach { count =>
         counterInput.value = count.toString
       }
     })
@@ -94,7 +94,7 @@ object CommunicationScreen extends ExampleScreen with PreloadedContentScreen {
     broadcastButton.addEventListener("click", (evt: Event) => {
       evt.preventDefault()
       evt.stopPropagation()
-      hookup.communication.broadcast(broadcastInput.value)
+      connection.server.broadcast(broadcastInput.value)
     })
   }
 }

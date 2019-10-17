@@ -1,8 +1,7 @@
 package io.youi.example
 
-import com.outr.hookup.Hookup
 import io.youi.app.screen.LoadingTransitionSupport
-import io.youi.app.{ClientApplication, ClientConnectivity}
+import io.youi.app.{ClientApplication, ClientConnectedApplication}
 import io.youi.{Color, dom}
 import io.youi.dom._
 import io.youi.example.screen.{CommunicationScreen, ExampleBootstrapScreen, LoginScreen}
@@ -11,7 +10,7 @@ import org.scalajs.dom._
 
 import scala.scalajs.js.annotation.JSExportTopLevel
 
-object ClientExampleApplication extends ExampleApplication with ClientApplication with LoadingTransitionSupport {
+object ClientExampleApplication extends ExampleApplication with ClientConnectedApplication[ExampleConnection] with LoadingTransitionSupport {
   object colors {
     object blue {
       val dark: Color = Color.fromLong(0x166196ff)
@@ -23,9 +22,9 @@ object ClientExampleApplication extends ExampleApplication with ClientApplicatio
 //  val debug = new DebugSupport
 //  debug.enabled := true
 
-  val communicationScreen = CommunicationScreen
-  val login = LoginScreen
-  val bootstrap = ExampleBootstrapScreen
+  val communicationScreen: CommunicationScreen.type = CommunicationScreen
+  val login: LoginScreen.type = LoginScreen
+  val bootstrap: ExampleBootstrapScreen.type = ExampleBootstrapScreen
 
 //  val paths = PathsExample
 //  val text = TextExample
@@ -70,7 +69,7 @@ object ClientExampleApplication extends ExampleApplication with ClientApplicatio
 //  val dataTransfer = DataTransferExample
 //  val selection = hypertext.SelectionExample
 
-  val hookup: ExampleHookup = Hookup.client[ExampleHookup]
+  override def connection: ExampleConnection = ClientConnection
 
   override protected val loadingElement: html.Element = getById[html.Div]("loading").getOrElse(dom.create[html.Div]("div"))
 

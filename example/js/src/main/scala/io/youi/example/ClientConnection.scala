@@ -1,6 +1,8 @@
 package io.youi.example
 
+import scribe.Execution.global
+
 object ClientConnection extends ExampleConnection {
-  override val server: ServerExampleCommunication = apply[ServerExampleCommunication]("server")
-  override val client: ClientExampleCommunication = apply[ClientExampleCommunication, ClientExampleCommunicationImplementation]("client")
+  override val server: ServerExampleCommunication = interface[ServerExampleCommunication]
+  override val client: ClientExampleCommunication = implementation[ClientExampleCommunication, ClientExampleCommunicationImplementation]
 }

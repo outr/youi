@@ -31,7 +31,6 @@ class HookupSpec extends AnyWordSpec with Matchers with BeforeAndAfterEach {
     }
     "define an implementation" in {
       val connection = TestImplementationConnection
-      val queue = connection.queue
       val h = connection.i
       h.local.isEmpty should be(false)
       val request = Json.obj(
@@ -54,7 +53,7 @@ class HookupSpec extends AnyWordSpec with Matchers with BeforeAndAfterEach {
       val result = Await.result(future.failed, 1.second)
       result.getMessage should be("Reverse failed!")
     }
-    "use Connection" in {
+    "use Connection to createUser" in {
       TestInterfaceConnection.queue.clear()
       TestInterfaceConnection.queue.hasNext() should be(false)
       TestInterfaceConnection.queue.hasRunning() should be(false)
@@ -69,6 +68,25 @@ class HookupSpec extends AnyWordSpec with Matchers with BeforeAndAfterEach {
       }
       val result = Await.result(future, 1.second)
       result should be(User("John Doe", 21, Some("Somewhere")))
+      TestInterfaceConnection.queue.hasNext() should be(false)
+      TestInterfaceConnection.queue.hasRunning() should be(false)
+    }
+    "use Connection to time" in {
+      TestInterfaceConnection.queue.clear()
+      TestInterfaceConnection.queue.hasNext() should be(false)
+      TestInterfaceConnection.queue.hasRunning() should be(false)
+      val time = System.currentTimeMillis()
+      val future = TestInterfaceConnection.i.time
+      TestInterfaceConnection.queue.hasNext() should be(true)
+      TestInterfaceConnection.queue.hasRunning() should be(false)
+      val request = TestInterfaceConnection.queue.next().getOrElse(fail())
+      TestImplementationConnection.receive(request.json).map { response =>
+        TestInterfaceConnection.queue.hasNext() should be(false)
+        TestInterfaceConnection.queue.hasRunning() should be(true)
+        TestInterfaceConnection.queue.success(request.id, response)
+      }
+      val result = Await.result(future, 1.second)
+      result should be >= time
       TestInterfaceConnection.queue.hasNext() should be(false)
       TestInterfaceConnection.queue.hasRunning() should be(false)
     }
@@ -114,12 +132,16 @@ object TestFailConnection extends Connection {
 }
 
 trait TestInterface1 {
+  def time: Future[Long]
+
   def reverse(value: String): Future[String]
 
   def createUser(name: String, age: Int, city: Option[String]): Future[User]
 }
 
 class Test1 extends TestInterface1 with Hookup[TestInterface1] {
+  override def time: Future[Long] = Future.successful(System.currentTimeMillis())
+
   override def reverse(value: String): Future[String] = Future.successful(value.reverse)
 
   override def createUser(name: String, age: Int, city: Option[String]): Future[User] = Future.successful {
@@ -128,6 +150,8 @@ class Test1 extends TestInterface1 with Hookup[TestInterface1] {
 }
 
 class Test1Fail extends TestInterface1 {
+  override def time: Future[Long] = throw new RuntimeException("Time failed!")
+
   override def reverse(value: String): Future[String] = throw new RuntimeException("Reverse failed!")
 
   override def createUser(name: String, age: Int, city: Option[String]): Future[User] = throw new RuntimeException("Create User failed!")

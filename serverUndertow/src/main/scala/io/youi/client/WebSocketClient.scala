@@ -10,7 +10,7 @@ import io.undertow.util.Headers
 import io.undertow.websockets.client.WebSocketClient.ConnectionBuilder
 import io.undertow.websockets.client.{WebSocketClientNegotiation, WebSocketClient => UndertowWebSocketClient}
 import io.undertow.websockets.core._
-import io.youi.http.WebSocket
+import io.youi.http.{ConnectionStatus, WebSocket}
 import io.youi.net.URL
 import io.youi.server.KeyStore
 import io.youi.server.util.SSLUtil
@@ -101,7 +101,7 @@ class WebSocketClient(url: URL,
           checkBacklog()
           sendMessage(message)
         }
-        _connected @= true
+        _status @= ConnectionStatus.Open
         scribe.info(s"Connected to $url successfully")
 
         checkBacklog()
@@ -124,9 +124,9 @@ class WebSocketClient(url: URL,
     Future.successful(())
   }
 
-  def disconnect(): Unit = if (connected()) {
+  def disconnect(): Unit = if (status() == ConnectionStatus.Open) {
     channel.close()
-    _connected @= false
+    _status @= ConnectionStatus.Closed
   }
 
   def dispose(): Unit = {
@@ -173,13 +173,14 @@ class WebSocketClient(url: URL,
     })
   }
 
-  connected.attach { b =>
-    if (!b) {
+  status.attach {
+    case ConnectionStatus.Closed => {
       _channel @= None
 
       if (autoReconnect) {
         connect()
       }
     }
+    case _ => // Ignore others
   }
 }

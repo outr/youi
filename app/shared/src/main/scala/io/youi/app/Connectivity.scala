@@ -12,9 +12,7 @@ import reactify.reaction.Reaction
 import scala.util.{Failure, Success}
 import scribe.Execution.global
 
-import scala.concurrent.Future
-
-class Connectivity(creator: () => WebSocket, connection: Connection) {
+class Connectivity[C <: Connection](val connection: C) {
   val webSocket: Var[Option[WebSocket]] = Var(None)
 
   private val receiveText: Reaction[String] = Reaction[String] {
@@ -69,14 +67,6 @@ class Connectivity(creator: () => WebSocket, connection: Connection) {
     }
   }
   connection.queue.hasNext.attach(_ => checkQueue())
-
-  def connect(): Future[Unit] = {
-    disconnect()
-
-    val ws = creator()
-    webSocket := Some(ws)
-    ws.connect()
-  }
 
   def disconnect(): Unit = webSocket := None
 

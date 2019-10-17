@@ -88,9 +88,14 @@ object HookupMacros {
           q"""$n = JsonUtil.fromJson[$t](((json \\ "params").head \\ $paramName).head)"""
         }
       }
+      val call = if (m.typeSignature.paramLists.nonEmpty) {
+        q"instance.${m.name.toTermName}(..$params)"
+      } else {
+        q"instance.${m.name.toTermName}"
+      }
       q"""
          def ${m.name.toTermName}(json: Json): Future[Json] = {
-           val future = instance.${m.name.toTermName}(..$params)
+           val future = $call
            future.map { response =>
              JsonUtil.toJson(response)
            }

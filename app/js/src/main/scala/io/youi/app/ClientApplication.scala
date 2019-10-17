@@ -4,8 +4,6 @@ import io.youi.ajax.AjaxRequest
 import io.youi.app.screen.ScreenManager
 import io.youi.{History, JavaScriptError, JavaScriptLog, LocalStorage}
 import io.youi.app.sourceMap.ErrorTrace
-import io.youi.client.WebSocketClient
-import io.youi.communication.Connection
 import org.scalajs.dom.{ErrorEvent, FormData, XMLHttpRequest, window}
 import io.youi.dom._
 import io.youi.net._
@@ -24,26 +22,11 @@ trait ClientApplication extends YouIApplication with ScreenManager {
 
   def baseURL: URL = URL(window.location.href).withPath(path"/").clearParams().withoutFragment()
 
-  def communicationURL: URL = {
-    val protocol = if (baseURL.protocol == Protocol.Https) {
-      Protocol.Wss
-    } else {
-      Protocol.Ws
-    }
-    baseURL
-      .withProtocol(protocol)
-      .withPath(communicationPath)
-  }
-
   addScript(baseURL.withPath(path"/source-map.min.js").toString)
 
   override def isClient: Boolean = true
 
   override def isServer: Boolean = false
-
-  def connection: Connection
-
-  val connectivity: Connectivity = new Connectivity(() => new WebSocketClient(communicationURL), connection)
 
   private val errorFunction: js.Function5[String, String, Int, Int, Throwable | js.Error, Unit] = (message: String, source: String, line: Int, column: Int, err: Throwable | js.Error) => {
     err match {

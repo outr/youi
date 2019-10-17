@@ -15,8 +15,8 @@ trait ServerExampleCommunicationImplementation extends ServerExampleCommunicatio
   override def time: Future[Long] = Future(System.currentTimeMillis())
   override def counter: Future[Int] = Future(increment.getAndIncrement())
   override def broadcast(message: String): Future[Unit] = Future {
-    ServerExampleApplication.connectivity.connections.foreach { connectivity =>
-      connectivity.connection.client.show(message)
+    ServerExampleApplication.connectivity.connections.foreach { connection =>
+      connection.client.show(message)
     }
   }
   override def logIn(username: String, password: String): Future[Option[String]] = Future {

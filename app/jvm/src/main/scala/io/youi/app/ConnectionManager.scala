@@ -7,9 +7,9 @@ import reactify.{Val, Var}
 import scala.concurrent.Future
 
 class ConnectionManager[C <: Connection](app: ServerConnectedApplication[C]) {
-  private val _connections: Var[List[Connectivity[C]]] = Var(Nil)
+  private val _connections: Var[List[C]] = Var(Nil)
 
-  val connections: Val[List[Connectivity[C]]] = _connections
+  val connections: Val[List[C]] = _connections
 
   app.handler.handle { connection =>
     Future.successful {
@@ -25,18 +25,17 @@ class ConnectionManager[C <: Connection](app: ServerConnectedApplication[C]) {
 
   private def addConnection(listener: WebSocketListener): Unit = synchronized {
     val connection = app.createConnection()
-    val connectivity = new Connectivity[C](connection)
-    connectivity.webSocket := Some(listener)
-    _connections @= connectivity :: _connections()
+    connection.webSocket := Some(listener)
+    _connections @= connection :: _connections()
   }
 
   // TODO: Every thirty seconds unless killed by app.dispose
   // TODO: Ping / Pong - Shouldn't it be the client, not the server?
   // TODO: Timeout long-closed connections
 
-  private def removeConnection(connectivity: Connectivity[C]): Unit = synchronized {
-    _connections @= _connections.filterNot(_ eq connectivity)
-    connectivity.disconnect()
-    connectivity.connection.queue.dispose()
+  private def removeConnection(connection: C): Unit = synchronized {
+    _connections @= _connections.filterNot(_ eq connection)
+    connection.disconnect()
+    connection.queue.dispose()
   }
 }

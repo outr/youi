@@ -23,11 +23,15 @@ trait ClientConnectedApplication[C <: Connection] extends ClientApplication with
 
   override protected def init(): Future[Unit] = super.init().flatMap { _ =>
     if (autoConnectCommunication) {
-      val ws = new WebSocketClient(communicationURL)
-      connection.webSocket @= Some(ws)
-      ws.connect()
+      connect()
     } else {
       Future.successful(())
     }
+  }
+
+  def connect(): Future[Unit] = {
+    val ws = new WebSocketClient(communicationURL)
+    connection.webSocket @= Some(ws)
+    ws.connect()
   }
 }

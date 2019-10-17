@@ -1,6 +1,8 @@
 package io.youi.http
 
-sealed trait ConnectionStatus
+sealed trait ConnectionStatus {
+  lazy val name: String = getClass.getSimpleName.replaceAllLiterally("$", "")
+}
 
 object ConnectionStatus {
   case object Closed extends ConnectionStatus

@@ -3,6 +3,7 @@ package io.youi.example.screen
 import io.youi.Template
 import io.youi.app.screen.PreloadedContentScreen
 import io.youi.dom._
+import io.youi.example.ClientExampleApplication
 import io.youi.net._
 import org.scalajs.dom.{Event, html, window}
 
@@ -36,18 +37,12 @@ object CommunicationScreen extends ExampleScreen with PreloadedContentScreen {
   }
 
   private def configure(): Unit = {
-    /*cc.connection.connected.attachAndFire { c =>
-      connectedInput.value = if (c) "Yes" else "No"
+    connection.status.attachAndFire { status =>
+      connectedInput.value = status.name
     }
-    connectedButton.addEventListener("click", (evt: Event) => {
-      evt.preventDefault()
-      evt.stopPropagation()
-      if (cc.connection.connected()) {
-        cc.disconnect()
-      } else {
-        cc.connect()
-      }
-    })*/
+    connectedButton.addEventListener("click", (_: Event) => {
+      ClientExampleApplication.connect()
+    })
 
     reverseButton.addEventListener("click", (evt: Event) => {
       evt.preventDefault()

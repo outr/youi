@@ -13,11 +13,12 @@ import io.youi.{ErrorSupport, JavaScriptError, JavaScriptLog, Priority, http}
 import net.sf.uadetector.UserAgentType
 import net.sf.uadetector.service.UADetectorServiceFactory
 import io.youi.stream._
+import io.youi.util.Time
 import profig.{JsonUtil, Profig}
 import reactify.{Channel, Var}
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
 
 trait ServerApplication extends YouIApplication with Server {
@@ -234,13 +235,23 @@ trait ServerApplication extends YouIApplication with Server {
     path
   }
 
+  def whileRunning(delay: FiniteDuration = 1.second): Future[Unit] = if (isRunning) {
+    Time.delay(delay).flatMap(_ => whileRunning(delay))
+  } else {
+    Future.successful(())
+  }
+
   def main(args: Array[String]): Unit = {
     Profig.loadDefaults()
     Profig.merge(args.toSeq)
-    start().failed.map { throwable =>
+    val future = start()
+    future.failed.map { throwable =>
       scribe.error("Error during application startup", throwable)
       dispose()
     }
+
+    Await.result(future, Duration.Inf)
+    Await.result(whileRunning(), Duration.Inf)
   }
 
   override def dispose(): Unit = {

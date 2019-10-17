@@ -18,26 +18,28 @@ object ServerExampleApplication extends ExampleApplication with ServerConnectedA
 
   override def createConnection(): ExampleConnection = new ServerConnection
 
-  override protected def init(): Future[Unit] = super.init().map { _ =>
-    // TODO: add support to `Connection` to add deltas so they may all be processed at the end
-    proxies += ProxyHandler(path.exact("/proxy.html")) { url =>
-      URL("http://google.com").copy(path = url.path)
-    }
-    handler(
-      filters(
-        path"/" / redirect(path"/ui-examples.html"),
-        path"/hello.txt" / CachingManager.MaxAge(120L) / "Hello, World!".withContentType(ContentType.`text/plain`),
-        path"/hello.json" / Content.json(JsonUtil.toJson(Greeting("Hello", "World"))),
-        combined.any(
-          path.matches("/examples/.*[.]html"),
-          path.exact("/ui-examples.html")
-        ) / Application / ServerApplication.AppTemplate,
-        path"/cookies.html" / CookiesExample,
-        path"/session.html" / SessionExample,
-        ClassLoaderPath(pathTransform = (path: String) => s"content$path") / CachingManager.LastModified(),
-        path.startsWith("/app") / ClassLoaderPath()
+  override protected def init(): Future[Unit] = {
+    super.init().map { _ =>
+      // TODO: add support to `Connection` to add deltas so they may all be processed at the end
+      proxies += ProxyHandler(path.exact("/proxy.html")) { url =>
+        URL("http://google.com").copy(path = url.path)
+      }
+      handler(
+        filters(
+          path"/" / redirect(path"/ui-examples.html"),
+          path"/hello.txt" / CachingManager.MaxAge(120L) / "Hello, World!".withContentType(ContentType.`text/plain`),
+          path"/hello.json" / Content.json(JsonUtil.toJson(Greeting("Hello", "World"))),
+          combined.any(
+            path.matches("/examples/.*[.]html"),
+            path.exact("/ui-examples.html")
+          ) / Application / ServerApplication.AppTemplate,
+          path"/cookies.html" / CookiesExample,
+          path"/session.html" / SessionExample,
+          ClassLoaderPath(pathTransform = (path: String) => s"content$path") / CachingManager.LastModified(),
+          path.startsWith("/app") / ClassLoaderPath()
+        )
       )
-    )
-    handlers += new LanguageSupport()
+      handlers += new LanguageSupport()
+    }
   }
 }

@@ -4,6 +4,9 @@ import io.youi.client.WebSocketClient
 import io.youi.communication.Connection
 import io.youi.net.{Protocol, URL}
 
+import scala.concurrent.Future
+import scribe.Execution.global
+
 trait ClientConnectedApplication[C <: Connection] extends ClientApplication with YouIConnectedApplication[C] {
   def communicationURL: URL = {
     val protocol = if (baseURL.protocol == Protocol.Https) {
@@ -18,5 +21,13 @@ trait ClientConnectedApplication[C <: Connection] extends ClientApplication with
 
   def connection: C
 
-  val connectivity: Connectivity[C] = new ClientConnectivity[C](() => new WebSocketClient(communicationURL), connection)
+  val connectivity: ClientConnectivity[C] = new ClientConnectivity[C](() => new WebSocketClient(communicationURL), connection)
+
+  override protected def init(): Future[Unit] = super.init().flatMap { _ =>
+    if (autoConnectCommunication) {
+      connectivity.connect()
+    } else {
+      Future.successful(())
+    }
+  }
 }

@@ -13,8 +13,6 @@ trait ExampleScreen extends ContentScreen with PathActivation {
   def heading: Option[html.Element] = dom.getById[html.Element]("heading")
 
   override protected def activate(): Future[Unit] = super.activate().map { _ =>
-    val name = getClass.getSimpleName
-    document.title = name
-    heading.foreach(_.innerHTML = name)
+    heading.foreach(_.innerHTML = title)
   }
 }

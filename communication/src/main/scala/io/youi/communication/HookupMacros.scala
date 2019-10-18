@@ -1,12 +1,13 @@
 package io.youi.communication
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.macros.blackbox
 
 object HookupMacros {
   private val VariableExtraction = """.*val (\S+)[:].+""".r
 
   def interface[Interface](context: blackbox.Context)
+                          (ec: context.Expr[ExecutionContext])
                           (implicit interface: context.WeakTypeTag[Interface]): context.Expr[Interface with Hookup[Interface]] = {
     import context.universe._
 
@@ -66,6 +67,7 @@ object HookupMacros {
   }
 
   def implementation[Interface, Implementation <: Interface](context: blackbox.Context)
+                                                            (ec: context.Expr[ExecutionContext])
                                                             (implicit interface: context.WeakTypeTag[Interface],
                                                                       implementation: context.WeakTypeTag[Implementation]): context.Expr[Implementation with Hookup[Interface]] = {
     import context.universe._

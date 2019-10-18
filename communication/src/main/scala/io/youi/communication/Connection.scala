@@ -8,7 +8,7 @@ import io.youi.http.{ConnectionStatus, WebSocket}
 import reactify.{Val, Var}
 import reactify.reaction.Reaction
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.language.experimental.macros
 import scala.util.{Failure, Success}
 import scribe.Execution.global
@@ -36,8 +36,8 @@ trait Connection {
     hookup.receive(json)
   }
 
-  protected def interface[Interface]: Interface with Hookup[Interface] = macro HookupMacros.interface[Interface]
-  protected def implementation[Interface, Implementation <: Interface]: Implementation with Hookup[Interface] = macro HookupMacros.implementation[Interface, Implementation]
+  protected def interface[Interface](implicit ec: ExecutionContext): Interface with Hookup[Interface] = macro HookupMacros.interface[Interface]
+  protected def implementation[Interface, Implementation <: Interface](implicit ec: ExecutionContext): Implementation with Hookup[Interface] = macro HookupMacros.implementation[Interface, Implementation]
 
   private val receiveText: Reaction[String] = Reaction[String] { message =>
     lastActive.asInstanceOf[Var[Long]] @= System.currentTimeMillis()

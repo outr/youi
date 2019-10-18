@@ -7,7 +7,7 @@ import io.youi.communication.Hookup
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait ServerExampleCommunicationImplementation extends ServerExampleCommunication with Hookup[ServerExampleCommunication] {
+class ServerExampleCommunicationImplementation extends ServerExampleCommunication with Hookup[ServerExampleCommunication] {
   private val increment = new AtomicInteger(0)
 
   override def reverse(value: String): Future[String] = Future.successful(value.reverse)

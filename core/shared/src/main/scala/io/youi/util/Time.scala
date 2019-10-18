@@ -43,4 +43,18 @@ object Time {
       }
     }
   }
+
+  def repeat(delay: FiniteDuration,
+             initialDelay: Option[FiniteDuration] = None,
+             stopOnError: Boolean = true,
+             errorHandler: Throwable => Unit = (t: Throwable) => scribe.error("Error during repeat task", t),
+             autoStart: Boolean = true)
+            (task: => Future[Unit])
+            (implicit ec: ExecutionContext): Repeatable = {
+    val r = Repeatable(delay, initialDelay, stopOnError, () => task, errorHandler)
+    if (autoStart) {
+      r.start()
+    }
+    r
+  }
 }

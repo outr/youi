@@ -219,7 +219,9 @@ object UndertowServerImplementation extends ServerImplementationCreator {
           WebSockets.sendBinary(message, channel, null)
         }
         listener.send.close.attach { _ =>
-          channel.sendClose()
+          if (channel.isOpen) {
+            channel.sendClose()
+          }
         }
 
         // Handle receiving messages

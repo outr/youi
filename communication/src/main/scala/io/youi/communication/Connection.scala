@@ -43,6 +43,7 @@ trait Connection {
     lastActive.asInstanceOf[Var[Long]] @= System.currentTimeMillis()
     message match {
       case "PING" => webSocket.foreach(_.send.text @= "PONG")
+      case "PONG" => // Ignore keep-alive
       case _ if message.startsWith("[youi id=") => {
         val splitPoint = message.indexOf(']')
         val (id, typ) = message.substring(0, splitPoint + 1) match {

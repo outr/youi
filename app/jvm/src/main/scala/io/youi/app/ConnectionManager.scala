@@ -54,7 +54,6 @@ class ConnectionManager[C <: Connection](app: ServerConnectedApplication[C]) {
       if (connection.status() == ConnectionStatus.Closed) {
         val closedFor = System.currentTimeMillis() - connection.lastActive()
         if (closedFor > app.connectionTimeout.toMillis) {
-          scribe.info(s"Connection timeout, disposing!")
           removeConnection(connection)
         }
       }

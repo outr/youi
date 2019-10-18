@@ -42,11 +42,11 @@ val webFontLoaderVersion = "1.6.28_1"
 val scalaJSDOM = "0.9.7"
 val okHttpVersion = "4.2.2"
 val uaDetectorVersion = "2014.10"
-val undertowVersion = "2.0.26.Final"
+val undertowVersion = "2.0.27.Final"
 val closureCompilerVersion = "v20190618"
 val jSoupVersion = "1.12.1"
 val scalaXMLVersion = "1.2.0"
-val collectionCompat = "2.1.1"
+val collectionCompat = "2.1.2"
 val scalaTestVersion = "3.1.0-SNAP13"
 val scalaCheckVersion = "1.14.0"
 
@@ -160,6 +160,9 @@ lazy val communication = crossProject(JSPlatform, JVMPlatform)
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
       "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
     )
+  )
+  .jsSettings(
+    test := {}
   )
   .dependsOn(core)
 

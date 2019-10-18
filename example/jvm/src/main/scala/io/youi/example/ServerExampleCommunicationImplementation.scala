@@ -22,23 +22,13 @@ trait ServerExampleCommunicationImplementation extends ServerExampleCommunicatio
   override def logIn(username: String, password: String): Future[Option[String]] = Future {
     val authorized = username == "user" && password == "password"
     if (authorized) {
-      // TODO: Fix
-//
-//      MySession.webWebSocketListener(connection) { transaction =>
-//        transaction.session.username @= Some(username)
-//        Future.successful(transaction)
-//      }
-      scribe.info("Not implemented!")
+      MySession.withConnection(connection) { transaction =>
+        transaction.session.username @= Some(username)
+        Future.successful(transaction)
+      }
       None
     } else {
       Some("Invalid username / password combination")
     }
   }
-
-  /*MySession.withConnection(connection) { transaction =>
-    val hookup = ServerExampleApplication.hookup(connection)
-    val name = hookup.name
-    name := transaction.session.username
-    Future.successful(transaction)
-  }*/
 }

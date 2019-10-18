@@ -1,6 +1,7 @@
 package io.youi.server.session
 
 import io.youi.Unique
+import io.youi.communication.Connection
 import io.youi.http.cookie.ResponseCookie
 import io.youi.http.{Headers, HttpConnection}
 import io.youi.net.Protocol
@@ -27,10 +28,16 @@ trait SessionManager[Session] {
     * @param f the functionality to work with and potentially modify a session instance
     * @return Future[Unit] since Connection cannot modify the state of HttpConnection
     */
-  def webWebSocketListener(listener: WebSocketListener)
+  def withWebSocketListener(listener: WebSocketListener)
                           (f: SessionTransaction[Session] => Future[SessionTransaction[Session]] = t => Future.successful(t)): Future[Session] = {
     val httpConnection = listener.httpConnection
     session(httpConnection, f, requestModifiable = false).map(_.session)
+  }
+
+  def withConnection(connection: Connection)
+                    (f: SessionTransaction[Session] => Future[SessionTransaction[Session]] = t => Future.successful(t)): Future[Session] = {
+    val listener = connection.webSocket.getOrElse(throw new RuntimeException("No active connection")).asInstanceOf[WebSocketListener]
+    withWebSocketListener(listener)(f)
   }
 
   /**

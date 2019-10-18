@@ -26,9 +26,9 @@ case class Repeatable(delay: FiniteDuration,
   }
 
   private def run(delay: FiniteDuration): Unit = synchronized {
-    if (keepAlive) {
+    if (keepAlive && Repeatable.keepAlive) {
       future = Time.delay(delay).flatMap { _ =>
-        if (keepAlive) {
+        if (keepAlive && Repeatable.keepAlive) {
           task()
         } else {
           Future.successful(())
@@ -51,4 +51,11 @@ case class Repeatable(delay: FiniteDuration,
   def stop(): Unit = synchronized {
     keepAlive = false
   }
+}
+
+// TODO: Merge Maintenane functionality and TaskStatus for much more powerful implementation
+object Repeatable {
+  private var keepAlive: Boolean = true
+
+  def dispose(): Unit = keepAlive = false
 }

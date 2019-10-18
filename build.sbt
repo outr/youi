@@ -4,7 +4,7 @@ import sbtcrossproject.CrossType
 
 name := "youi"
 organization in ThisBuild := "io.youi"
-version in ThisBuild := "0.11.33-SNAPSHOT"
+version in ThisBuild := "0.12.0-SNAPSHOT"
 scalaVersion in ThisBuild := "2.13.1"
 crossScalaVersions in ThisBuild := List("2.13.1", "2.12.8")
 resolvers in ThisBuild ++= Seq(
@@ -39,7 +39,6 @@ val openTypeVersion = "0.7.3_1"
 val picaVersion = "3.0.5_1"
 val webFontLoaderVersion = "1.6.28_1"
 
-val akkaVersion = "2.5.25"
 val scalaJSDOM = "0.9.7"
 val okHttpVersion = "4.2.2"
 val uaDetectorVersion = "2014.10"
@@ -88,11 +87,6 @@ lazy val core = crossProject(JSPlatform, JVMPlatform).in(file("core"))
       "com.outr" %%% "scribe" % scribeVersion,
       "com.outr" %%% "reactify" % reactifyVersion,
       "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
-    )
-  )
-  .jvmSettings(
-    libraryDependencies ++= Seq(
-      "com.typesafe.akka" %% "akka-actor" % akkaVersion
     )
   )
   .jsSettings(

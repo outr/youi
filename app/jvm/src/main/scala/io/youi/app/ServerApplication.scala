@@ -2,28 +2,25 @@ package io.youi.app
 
 import java.io.File
 
-import akka.actor.{ActorSystem, Cancellable}
 import io.youi.http._
 import io.youi.http.content.{Content, FileContent, FormDataContent, StringContent, URLContent}
 import io.youi.net.{ContentType, URL}
 import io.youi.server.Server
 import io.youi.server.handler.{CachingManager, HttpHandler, HttpHandlerBuilder, SenderHandler}
 import io.youi.stream.{ByTag, Delta, HTMLParser, Selector}
-import io.youi.{ErrorSupport, JavaScriptError, JavaScriptLog, Priority, http}
+import io.youi.{JavaScriptError, JavaScriptLog, Priority, http}
 import net.sf.uadetector.UserAgentType
 import net.sf.uadetector.service.UADetectorServiceFactory
 import io.youi.stream._
 import io.youi.util.Time
 import profig.{JsonUtil, Profig}
-import reactify.{Channel, Var}
+import reactify.Var
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
 
 trait ServerApplication extends YouIApplication with Server {
-  private lazy val system = ActorSystem("ServerApplication")
-
   override def isClient: Boolean = false
 
   override def isServer: Boolean = true
@@ -252,12 +249,6 @@ trait ServerApplication extends YouIApplication with Server {
 
     Await.result(future, Duration.Inf)
     Await.result(whileRunning(), Duration.Inf)
-  }
-
-  override def dispose(): Unit = {
-    super.dispose()
-
-    system.terminate()
   }
 }
 

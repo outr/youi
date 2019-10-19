@@ -4,7 +4,7 @@ import sbtcrossproject.CrossType
 
 name := "youi"
 organization in ThisBuild := "io.youi"
-version in ThisBuild := "0.12.0"
+version in ThisBuild := "0.12.1-SNAPSHOT"
 scalaVersion in ThisBuild := "2.13.1"
 crossScalaVersions in ThisBuild := List("2.13.1", "2.12.8")
 resolvers in ThisBuild ++= Seq(
@@ -239,7 +239,10 @@ lazy val appJVM = app.jvm.dependsOn(server)
 lazy val example = crossApplication.in(file("example"))
   .settings(
     name := "youi-example",
-    youiVersion := version.value
+    youiVersion := version.value,
+    publishArtifact in (Compile, packageDoc) := false,
+    publishArtifact in packageDoc := false,
+    sources in (Compile,doc) := Seq.empty
   )
   .jsSettings(
     jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv

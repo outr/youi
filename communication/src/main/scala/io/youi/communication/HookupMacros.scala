@@ -95,11 +95,13 @@ object HookupMacros {
       } else {
         q"instance.${m.name.toTermName}"
       }
+      val returnTypeFuture = m.typeSignature.resultType
+      val returnType = returnTypeFuture.typeArgs.head
       q"""
          def ${m.name.toTermName}(json: Json): Future[Json] = {
            val future = $call
            future.map { response =>
-             JsonUtil.toJson(response)
+             JsonUtil.toJson[$returnType](response)
            }
          }
        """

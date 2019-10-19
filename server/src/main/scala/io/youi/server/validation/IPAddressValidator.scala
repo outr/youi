@@ -7,7 +7,7 @@ import scala.concurrent.Future
 
 class IPAddressValidator(allow: Set[IP], reject: Set[IP], defaultAllow: Boolean) extends Validator {
   override def validate(connection: HttpConnection): Future[ValidationResult] = Future.successful {
-    val ip = connection.request.source
+    val ip = connection.request.originalSource
     if ((allow.contains(ip) || defaultAllow) && !reject.contains(ip)) {
       ValidationResult.Continue(connection)
     } else {

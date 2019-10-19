@@ -57,7 +57,7 @@ trait ServerApplication extends YouIApplication with Server {
         content match {
           case Some(requestContent) => requestContent match {
             case formData: FormDataContent => {
-              val ip = httpConnection.request.source
+              val ip = httpConnection.request.originalSource
               val userAgentString = Headers.Request.`User-Agent`.value(httpConnection.request.headers).getOrElse("")
               val userAgent = userAgentParser.parse(userAgentString)
 

@@ -1,16 +1,13 @@
 package io.youi.communication
 
 import java.nio.ByteBuffer
-
-import io.circe.Json
-import io.circe.parser.parse
 import io.youi.http.{ConnectionStatus, WebSocket}
+import profig.JsonUtil
 import reactify.{Val, Var}
 import reactify.reaction.Reaction
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.language.experimental.macros
-import scala.util.{Failure, Success}
 import scribe.Execution.global
 
 trait Connection {
@@ -31,50 +28,38 @@ trait Connection {
     def byName(name: String): Hookup[Any] = map.getOrElse(name, throw new RuntimeException(s"Unable to find hookup by name: $name (names: ${map.keySet.mkString(", ")})"))
   }
 
-  def receive(json: Json): Future[Json] = {
-    val endPoint = (json \\ "endpoint").head.asString.getOrElse(throw new RuntimeException(s"No 'method' entry defined for: $json"))
-    val name = endPoint.substring(0, endPoint.indexOf('.'))
-    val hookup = hookups.byName(name)
-    hookup.receive(json)
+  def receive(message: Message): Future[Message] = {
+    val hookup = hookups.byName(message.name.get)
+    hookup.receive(message)
   }
 
   protected def interface[Interface](implicit ec: ExecutionContext): Interface with Hookup[Interface] = macro HookupMacros.interface[Interface]
   protected def implementation[Interface, Implementation <: Interface](implicit ec: ExecutionContext): Implementation with Hookup[Interface] = macro HookupMacros.implementation[Interface, Implementation]
 
-  private val receiveText: Reaction[String] = Reaction[String] { message =>
+  private val receiveText: Reaction[String] = Reaction[String] { text =>
     lastActive.asInstanceOf[Var[Long]] @= System.currentTimeMillis()
-    message match {
+    text match {
       case "PING" => webSocket.foreach(_.send.text @= "PONG")
       case "PONG" => // Ignore keep-alive
-      case _ if message.startsWith("[youi id=") => {
-        val splitPoint = message.indexOf(']')
-        val (id, typ) = message.substring(0, splitPoint + 1) match {
-          case Connection.PrefixRegex(i, t) => (i.toLong, t)
-        }
-        val messageType = MessageType.byName(typ)
-        val content = message.substring(splitPoint + 1)
-        val json = parse(content).getOrElse(throw new RuntimeException(s"Unable to parse JSON for $id ($typ): $content"))
-        messageType match {
-          case MessageType.Invoke => receive(json).onComplete {
-            case Success(response) => queue.enqueue(MessageType.Response, response, id)
-            case Failure(throwable) => {
-              scribe.error(s"Error while processing method request: $json", throwable)
-              queue.enqueue(MessageType.Error, Json.fromString(throwable.getMessage), id)
-            }
+      case _ if text.startsWith("{") && text.endsWith("}") => {
+        val message = JsonUtil.fromJsonString[Message](text)
+        message.`type` match {
+          case MessageType.Invoke => receive(message).foreach { response =>
+            queue.enqueue(response)
           }
-          case MessageType.Response => if (queue.success(id, json)) {
+          case MessageType.Response => if (queue.success(message)) {
             // Success
           } else {
-            scribe.warn(s"No id found for $id. Cannot apply: $json")
+            scribe.warn(s"No id found for ${message.id}. Cannot apply: $message")
           }
-          case MessageType.Error => if (queue.failure(id, new RuntimeException(json.asString.getOrElse(json.toString())))) {
+          case MessageType.Error => if (queue.failure(message.id, new RuntimeException(message.toString))) {
             // Success
           } else {
-            scribe.warn(s"No id found for $id. Cannot fail: $json")
+            scribe.warn(s"No id found for ${message.id}. Cannot fail: $message")
           }
         }
       }
-      case _ => scribe.warn(s"Unhandled: $message")
+      case _ => scribe.warn(s"Unhandled: $text")
     }
   }
 
@@ -118,16 +103,8 @@ trait Connection {
   private def checkQueue(): Unit = if (webSocket().exists(_.status() == ConnectionStatus.Open)) {
     val ws = webSocket().get
     queue.next() match {
-      case Some(request) => ws.send.text @= Connection(request.id, request.`type`, request.json)
+      case Some(request) => ws.send.text @= JsonUtil.toJsonString(request.request)
       case None => // Nothing in the queue
     }
-  }
-}
-
-object Connection {
-  private val PrefixRegex = """\[youi id=(\d+) type=(\S+)\]""".r
-
-  private def apply(id: Long, `type`: MessageType, json: Json): String = {
-    s"[youi id=$id type=${`type`.name}]${json.spaces2}"
   }
 }

@@ -26,6 +26,7 @@ class ConnectionPlatform(connection: Connection) {
           val written = f.channel.write(bb)
           val remaining = f.bytes - written
           fileReceive = Some(f.copy(bytes = remaining))
+          // TODO: Notify Connection of written bytes and remaining
           scribe.info(s"written: $written, Remaining: $remaining")
           if (remaining == 0L) {
             scribe.info(s"Finished writing ${f.fileName} to ${f.file.getAbsolutePath}")

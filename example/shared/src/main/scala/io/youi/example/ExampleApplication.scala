@@ -1,5 +1,5 @@
 package io.youi.example
 
-import io.youi.app.YouIApplication
+import io.youi.app.YouIConnectedApplication
 
-trait ExampleApplication extends YouIApplication
+trait ExampleApplication extends YouIConnectedApplication[ExampleConnection]

@@ -1,6 +1,5 @@
 package io.youi.app.screen
 
-import com.outr.hookup.Hookup
 import io.youi.ErrorSupport
 import reactify._
 import io.youi.app.{ClientApplication, YouIApplication}
@@ -52,12 +51,7 @@ trait ScreenManager {
     case (oldScreen, newScreen) => screenChange(oldScreen, newScreen)
   }
 
-  protected def init(): Future[Unit] = {
-    // Redirect Hookup errors to error support
-    Hookup.error.attach(t => ErrorSupport.error @= t)
-
-    Future.successful(())
-  }
+  protected def init(): Future[Unit] = Future.successful(())
 
   protected def load(): Future[Unit] = Future.successful(())
 

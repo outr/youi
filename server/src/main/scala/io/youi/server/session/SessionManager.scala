@@ -1,9 +1,11 @@
 package io.youi.server.session
 
 import io.youi.Unique
+import io.youi.communication.Connection
 import io.youi.http.cookie.ResponseCookie
-import io.youi.http.{Connection, Headers, HttpConnection, HttpResponse}
+import io.youi.http.{Headers, HttpConnection}
 import io.youi.net.Protocol
+import io.youi.server.WebSocketListener
 
 import scala.concurrent.Future
 import scribe.Execution.global
@@ -22,14 +24,20 @@ trait SessionManager[Session] {
   /**
     * Functional use of a Session via a transaction that is fully managed with the result being updated to the manager
     *
-    * @param connection the HttpConnection to work with
+    * @param listener the WebSocketListener
     * @param f the functionality to work with and potentially modify a session instance
     * @return Future[Unit] since Connection cannot modify the state of HttpConnection
     */
+  def withWebSocketListener(listener: WebSocketListener)
+                          (f: SessionTransaction[Session] => Future[SessionTransaction[Session]] = t => Future.successful(t)): Future[Session] = {
+    val httpConnection = listener.httpConnection
+    session(httpConnection, f, requestModifiable = false).map(_.session)
+  }
+
   def withConnection(connection: Connection)
                     (f: SessionTransaction[Session] => Future[SessionTransaction[Session]] = t => Future.successful(t)): Future[Session] = {
-    val httpConnection = connection.store[HttpConnection]("httpConnection")
-    session(httpConnection, f, requestModifiable = false).map(_.session)
+    val listener = connection.webSocket.getOrElse(throw new RuntimeException("No active connection")).asInstanceOf[WebSocketListener]
+    withWebSocketListener(listener)(f)
   }
 
   /**

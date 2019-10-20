@@ -2,22 +2,21 @@ package io.youi.example
 
 import java.util.concurrent.atomic.AtomicInteger
 
-import com.outr.hookup.HookupSupport
-import io.youi.http.Connection
+import io.youi.communication.Hookup
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait ServerExampleCommunication extends ExampleCommunication with HookupSupport {
+class ServerExampleCommunicationImplementation extends ServerExampleCommunication with Hookup[ServerExampleCommunication] {
   private val increment = new AtomicInteger(0)
 
-  lazy val connection: Connection = hookup.keyAs[Connection]
+  override def reverse(value: String): Future[String] = Future.successful(value.reverse)
 
   override def time: Future[Long] = Future(System.currentTimeMillis())
   override def counter: Future[Int] = Future(increment.getAndIncrement())
   override def broadcast(message: String): Future[Unit] = Future {
-    ServerExampleApplication.hookup.all.foreach { instance =>
-      instance.communication.show(message)
+    ServerExampleApplication.connectionManager.connections.foreach { connection =>
+      connection.client.show(message)
     }
   }
   override def logIn(username: String, password: String): Future[Option[String]] = Future {
@@ -32,11 +31,4 @@ trait ServerExampleCommunication extends ExampleCommunication with HookupSupport
       Some("Invalid username / password combination")
     }
   }
-
-  /*MySession.withConnection(connection) { transaction =>
-    val hookup = ServerExampleApplication.hookup(connection)
-    val name = hookup.name
-    name := transaction.session.username
-    Future.successful(transaction)
-  }*/
 }

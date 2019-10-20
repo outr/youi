@@ -10,7 +10,7 @@ import io.undertow.util.Headers
 import io.undertow.websockets.client.WebSocketClient.ConnectionBuilder
 import io.undertow.websockets.client.{WebSocketClientNegotiation, WebSocketClient => UndertowWebSocketClient}
 import io.undertow.websockets.core._
-import io.youi.http.Connection
+import io.youi.http.{ConnectionStatus, WebSocket}
 import io.youi.net.URL
 import io.youi.server.KeyStore
 import io.youi.server.util.SSLUtil
@@ -36,7 +36,7 @@ class WebSocketClient(url: URL,
                       maxThreads: Int = 30,
                       noDelay: Boolean = true,
                       buffered: Boolean = true,
-                      authorization: => Option[String] = None) extends Connection(client = true) {
+                      authorization: => Option[String] = None) extends WebSocket {
   private lazy val worker = Xnio.getInstance().createWorker(OptionMap.builder()
     .set(Options.KEEP_ALIVE, true)
     .set(Options.WORKER_IO_THREADS, workerThreads)
@@ -72,8 +72,8 @@ class WebSocketClient(url: URL,
 
   private var backlog = List.empty[AnyRef]
 
-  def connect(): Future[Unit] = if (_channel.get.isEmpty) {
-    val promise = Promise[Unit]
+  def connect(): Future[ConnectionStatus] = if (_channel.get.isEmpty) {
+    val promise = Promise[ConnectionStatus]
     connectionBuilder.connect().addNotifier(new IoFuture.HandlingNotifier[WebSocketChannel, Any] {
       override def handleDone(data: WebSocketChannel, attachment: Any): Unit = {
         _channel @= Some(data)
@@ -101,12 +101,12 @@ class WebSocketClient(url: URL,
           checkBacklog()
           sendMessage(message)
         }
-        _connected @= true
+        _status @= ConnectionStatus.Open
         scribe.info(s"Connected to $url successfully")
 
         checkBacklog()
 
-        promise.success(())
+        promise.success(ConnectionStatus.Open)
       }
 
       override def handleFailed(exception: IOException, attachment: Any): Unit = {
@@ -121,12 +121,12 @@ class WebSocketClient(url: URL,
     }, None.orNull)
     promise.future
   } else {
-    Future.successful(())
+    Future.successful(status())
   }
 
-  def disconnect(): Unit = if (connected()) {
+  def disconnect(): Unit = if (status() == ConnectionStatus.Open) {
     channel.close()
-    _connected @= false
+    _status @= ConnectionStatus.Closed
   }
 
   def dispose(): Unit = {
@@ -173,13 +173,14 @@ class WebSocketClient(url: URL,
     })
   }
 
-  connected.attach { b =>
-    if (!b) {
+  status.attach {
+    case ConnectionStatus.Closed => {
       _channel @= None
 
       if (autoReconnect) {
         connect()
       }
     }
+    case _ => // Ignore others
   }
 }

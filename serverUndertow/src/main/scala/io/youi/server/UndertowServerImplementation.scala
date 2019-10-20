@@ -199,7 +199,7 @@ object UndertowServerImplementation extends ServerImplementationCreator {
   }
 
   def response(impl: UndertowServerImplementation, connection: HttpConnection, exchange: HttpServerExchange): Unit = {
-    connection.webSocketSupport match {
+    connection.webSocketListener match {
       case Some(webSocketListener) => handleWebSocket(impl, connection, webSocketListener, exchange)
       case None => handleStandard(impl, connection, exchange)
     }
@@ -207,51 +207,53 @@ object UndertowServerImplementation extends ServerImplementationCreator {
 
   private def handleWebSocket(impl: UndertowServerImplementation,
                               httpConnection: HttpConnection,
-                              connection: Connection,
+                              listener: WebSocketListener,
                               exchange: HttpServerExchange): Unit = {
     val handler = Handlers.websocket(new WebSocketConnectionCallback {
       override def onConnect(exchange: WebSocketHttpExchange, channel: WebSocketChannel): Unit = {
         // Handle sending messages
-        connection.send.text.attach { message =>
+        listener.send.text.attach { message =>
           WebSockets.sendText(message, channel, null)
         }
-        connection.send.binary.attach { message =>
+        listener.send.binary.attach { message =>
           WebSockets.sendBinary(message, channel, null)
         }
-        connection.send.close.attach { _ =>
-          channel.sendClose()
+        listener.send.close.attach { _ =>
+          if (channel.isOpen) {
+            channel.sendClose()
+          }
         }
 
         // Handle receiving messages
         channel.getReceiveSetter.set(new AbstractReceiveListener {
           override def onFullTextMessage(channel: WebSocketChannel, message: BufferedTextMessage): Unit = {
             val data = message.getData
-            connection.receive.text @= data
+            listener.receive.text @= data
             super.onFullTextMessage(channel, message)
           }
 
           override def onFullBinaryMessage(channel: WebSocketChannel, message: BufferedBinaryMessage): Unit = {
-            message.getData.getResource.foreach(connection.receive.binary @= _)
+            message.getData.getResource.foreach(listener.receive.binary @= _)
             super.onFullBinaryMessage(channel, message)
           }
 
           override def onError(channel: WebSocketChannel, error: Throwable): Unit = {
-            connection.error @= error
+            listener.error @= error
             super.onError(channel, error)
           }
 
           override def onFullCloseMessage(channel: WebSocketChannel, message: BufferedBinaryMessage): Unit = {
-            connection.receive.close.set(())
+            listener.receive.close.set(())
             super.onFullCloseMessage(channel, message)
           }
 
           override def onClose(webSocketChannel: WebSocketChannel, channel: StreamSourceFrameChannel): Unit = {
-            connection.close()
+            listener.disconnect()
             super.onClose(webSocketChannel, channel)
           }
         })
         channel.resumeReceives()
-        connection._connected @= true
+        listener.connect()
       }
     })
     if (impl.webSocketCompression) {

@@ -1,3 +1,0 @@
-package io.youi.example
-
-trait ClientSimpleCommunication extends SimpleCommunication

@@ -2,37 +2,31 @@ package io.youi.app
 
 import java.io.File
 
-import akka.actor.{ActorSystem, Cancellable}
-import com.outr.hookup.{Hookup, HookupServer}
 import io.youi.http._
 import io.youi.http.content.{Content, FileContent, FormDataContent, StringContent, URLContent}
 import io.youi.net.{ContentType, URL}
 import io.youi.server.Server
 import io.youi.server.handler.{CachingManager, HttpHandler, HttpHandlerBuilder, SenderHandler}
 import io.youi.stream.{ByTag, Delta, HTMLParser, Selector}
-import io.youi.{ErrorSupport, JavaScriptError, JavaScriptLog, Priority, http}
+import io.youi.{JavaScriptError, JavaScriptLog, Priority, http}
 import net.sf.uadetector.UserAgentType
 import net.sf.uadetector.service.UADetectorServiceFactory
 import io.youi.stream._
+import io.youi.util.Time
 import profig.{JsonUtil, Profig}
-import reactify.{Channel, Var}
+import reactify.Var
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
 
 trait ServerApplication extends YouIApplication with Server {
-  private lazy val system = ActorSystem("ServerApplication")
-
   override def isClient: Boolean = false
 
   override def isServer: Boolean = true
 
-  val connected: Channel[Connection] = Channel[Connection]
-  val disconnected: Channel[Connection] = Channel[Connection]
   lazy val cacheDirectory: Var[File] = Var(new File(System.getProperty("user.home"), ".cache"))
 
-  private var configuredEndPoints = Set.empty[ApplicationConnectivity]
   private lazy val userAgentParser = UADetectorServiceFactory.getResourceModuleParser
 
   protected def applicationBasePath: String = "app/application"
@@ -56,21 +50,6 @@ trait ServerApplication extends YouIApplication with Server {
   protected def responseMap(httpConnection: HttpConnection): Map[String, String] = Map.empty
 
   override protected def init(): Future[Unit] = super.init().map { _ =>
-    // Redirect Hookup errors to error support
-    Hookup.error.attach(t => ErrorSupport.error @= t)
-
-    connectivityEntries.attachAndFire { entries =>
-      ServerApplication.this.synchronized {
-        entries.foreach { appComm =>
-          if (!configuredEndPoints.contains(appComm)) {
-            val appCommHandler = new ServerConnectionHandler(appComm)
-            handler.matcher(path.exact(appComm.path)).wrap(appCommHandler)
-            configuredEndPoints += appComm
-          }
-        }
-      }
-    }
-
     handler.matcher(path.exact("/source-map.min.js")).resource(Content.classPath("source-map.min.js"))
     if (logJavaScriptErrors) {
       handler.matcher(path.exact(logPath)).handle { httpConnection =>
@@ -78,7 +57,7 @@ trait ServerApplication extends YouIApplication with Server {
         content match {
           case Some(requestContent) => requestContent match {
             case formData: FormDataContent => {
-              val ip = httpConnection.request.source
+              val ip = httpConnection.request.originalSource
               val userAgentString = Headers.Request.`User-Agent`.value(httpConnection.request.headers).getOrElse("")
               val userAgent = userAgentParser.parse(userAgentString)
 
@@ -158,10 +137,6 @@ trait ServerApplication extends YouIApplication with Server {
       }
     }
   }
-
-  protected val cancellable: Option[Cancellable] = Some(system.scheduler.schedule(30.seconds, 30.seconds) {
-    pingClients()
-  })
 
   protected def errorInfo(error: JavaScriptError, httpConnection: HttpConnection): Map[String, String] = Map.empty
 
@@ -245,35 +220,6 @@ trait ServerApplication extends YouIApplication with Server {
     SenderHandler.handle(httpConnection, Content.string(html, ContentType.`text/html`), caching = CachingManager.NotCached)
   }
 
-  private class ServerConnectionHandler(appComm: ApplicationConnectivity) extends HttpHandler {
-    override def handle(httpConnection: HttpConnection): Future[HttpConnection] = appComm.activeConnections.synchronized {
-      val connection = new Connection(client = false)
-      connection.store.update("httpConnection", httpConnection)
-      appComm.activeConnections @= (appComm.activeConnections() + connection)
-      connected @= connection
-      connection.connected.attach { b =>
-        if (!b) appComm.activeConnections.synchronized {
-          appComm.activeConnections @= (appComm.activeConnections() - connection)
-          HookupServer().foreach { hs =>
-            hs.remove(connection)
-          }
-          disconnected @= connection
-        }
-      }
-      connection.receive.text.attach {
-        case "PONG" => // Nothing to do, this finishes the workflow
-        case _ => // Ignore everything else
-      }
-      Future.successful(httpConnection.withWebSocket(connection))
-    }
-  }
-
-  private def pingClients(): Unit = connectivityEntries().foreach { entry =>
-    entry.connections().foreach { connection =>
-      connection.send.text @= "PING"
-    }
-  }
-
   // Creates a cached version of the URL and adds an explicit matcher to serve it
   override def cached(url: URL): String = {
     val path = url.asPath()
@@ -286,19 +232,23 @@ trait ServerApplication extends YouIApplication with Server {
     path
   }
 
+  def whileRunning(delay: FiniteDuration = 1.second): Future[Unit] = if (isRunning) {
+    Time.delay(delay).flatMap(_ => whileRunning(delay))
+  } else {
+    Future.successful(())
+  }
+
   def main(args: Array[String]): Unit = {
     Profig.loadDefaults()
     Profig.merge(args.toSeq)
-    start().failed.map { throwable =>
+    val future = start()
+    future.failed.map { throwable =>
       scribe.error("Error during application startup", throwable)
       dispose()
     }
-  }
 
-  override def dispose(): Unit = {
-    super.dispose()
-
-    system.terminate()
+    Await.result(future, Duration.Inf)
+    Await.result(whileRunning(), Duration.Inf)
   }
 }
 

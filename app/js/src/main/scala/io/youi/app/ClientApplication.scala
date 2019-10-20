@@ -4,7 +4,7 @@ import io.youi.ajax.AjaxRequest
 import io.youi.app.screen.ScreenManager
 import io.youi.{History, JavaScriptError, JavaScriptLog, LocalStorage}
 import io.youi.app.sourceMap.ErrorTrace
-import org.scalajs.dom.{window, XMLHttpRequest, FormData, ErrorEvent}
+import org.scalajs.dom.{ErrorEvent, FormData, XMLHttpRequest, window}
 import io.youi.dom._
 import io.youi.net._
 import profig.JsonUtil
@@ -22,27 +22,11 @@ trait ClientApplication extends YouIApplication with ScreenManager {
 
   def baseURL: URL = URL(window.location.href).withPath(path"/").clearParams().withoutFragment()
 
-  def communicationURL: URL = {
-    val protocol = if (baseURL.protocol == Protocol.Https) {
-      Protocol.Wss
-    } else {
-      Protocol.Ws
-    }
-    baseURL
-      .withProtocol(protocol)
-      .withPath(connectivity.path)
-  }
-
   addScript(baseURL.withPath(path"/source-map.min.js").toString)
 
   override def isClient: Boolean = true
 
   override def isServer: Boolean = false
-
-  // Configure communication end-points
-  private var configuredConnectivity: Map[ApplicationConnectivity, ClientConnectivity] = Map.empty
-
-  def clientConnectivity(connectivity: ApplicationConnectivity): ClientConnectivity = configuredConnectivity(connectivity)
 
   private val errorFunction: js.Function5[String, String, Int, Int, Throwable | js.Error, Unit] = (message: String, source: String, line: Int, column: Int, err: Throwable | js.Error) => {
     err match {
@@ -56,14 +40,6 @@ trait ClientApplication extends YouIApplication with ScreenManager {
   if (logJavaScriptErrors) {
     js.Dynamic.global.window.onerror = errorFunction
     scribe.Logger.root.withHandler(writer = ErrorTrace).replace()
-  }
-
-  connectivityEntries.attachAndFire { entries =>
-    entries.foreach { connectivity =>
-      if (!configuredConnectivity.contains(connectivity)) {
-        configuredConnectivity += connectivity -> new ClientConnectivity(connectivity, this)
-      }
-    }
   }
 
   // Client-side management and caching of URL-based session id
@@ -80,23 +56,6 @@ trait ClientApplication extends YouIApplication with ScreenManager {
       LocalStorage("sessionId") = sessionId
     }
   }
-
-  def reconnectStrategy: ReconnectStrategy = ReconnectStrategy.Reload
-
-  def reConnect(): Unit = {
-    configuredConnectivity.values.foreach(_.disconnect())
-    configuredConnectivity = Map.empty
-
-    connectivityEntries.foreach { connectivity =>
-      if (!configuredConnectivity.contains(connectivity)) {
-        configuredConnectivity += connectivity -> new ClientConnectivity(connectivity, this)
-      }
-    }
-
-    reConnected()
-  }
-
-  protected def reConnected(): Unit = {}
 
   override def cached(url: URL): String = url.asPath()
 }

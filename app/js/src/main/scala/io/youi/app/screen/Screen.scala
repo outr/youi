@@ -9,7 +9,7 @@ import scala.concurrent.Future
 trait Screen {
   private var registration = Map.empty[Var[_], ScreenRegistration[_]]
 
-  def title: String = getClass.getSimpleName
+  def title: String = getClass.getSimpleName.replaceAllLiterally("$", "")
 
   private[screen] val currentState = Var[ScreenState](ScreenState.New)
 

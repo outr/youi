@@ -14,6 +14,8 @@ import scala.util.{Failure, Success}
 import scribe.Execution.global
 
 trait Connection {
+  private lazy val platform: ConnectionPlatform = new ConnectionPlatform(this)
+
   val webSocket: Var[Option[WebSocket]] = Var(None)
   val queue: HookupQueue = new HookupQueue
   val status: Val[ConnectionStatus] = Val(webSocket().map(_.status()).getOrElse(ConnectionStatus.Closed))
@@ -78,7 +80,8 @@ trait Connection {
 
   private val receiveBinary: Reaction[ByteBuffer] = Reaction[ByteBuffer] { message =>
     lastActive.asInstanceOf[Var[Long]] @= System.currentTimeMillis()
-    scribe.warn("Received unhandled binary data on WebSocket!")
+
+    platform.receiveBinary(message)
   }
 
   webSocket.changes {

@@ -1,14 +1,17 @@
 package io.youi.example.screen
 
+import java.nio.ByteBuffer
+
 import io.youi.Template
 import io.youi.app.screen.PreloadedContentScreen
 import io.youi.dom._
 import io.youi.example.ClientExampleApplication
 import io.youi.net._
-import org.scalajs.dom.{Event, html, window}
+import org.scalajs.dom.{Event, FileReader, html, window}
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.scalajs.js.typedarray.{ArrayBuffer, TypedArrayBuffer}
 
 object CommunicationScreen extends ExampleScreen with PreloadedContentScreen {
   def connectedInput: html.Input = content.byId[html.Input]("communicationConnected")
@@ -23,6 +26,8 @@ object CommunicationScreen extends ExampleScreen with PreloadedContentScreen {
   def counterButton: html.Button = content.byId[html.Button]("communicationCounterButton")
   def broadcastInput: html.Input = content.byId[html.Input]("communicationBroadcast")
   def broadcastButton: html.Button = content.byId[html.Button]("communicationBroadcastButton")
+  def uploadInput: html.Input = content.byId[html.Input]("communicationUpload")
+  def uploadButton: html.Button = content.byId[html.Button]("communicationUploadButton")
 
   override def path: Path = path"/communication.html"
 
@@ -90,6 +95,31 @@ object CommunicationScreen extends ExampleScreen with PreloadedContentScreen {
       evt.preventDefault()
       evt.stopPropagation()
       connection.server.broadcast(broadcastInput.value)
+    })
+
+    uploadButton.addEventListener("click", (evt: Event) => {
+      evt.preventDefault()
+      evt.stopPropagation()
+      val file = uploadInput.files.item(0)
+      val webSocket = connection.webSocket().get
+
+      val fileReader = new FileReader
+      fileReader.onload = (_: Event) => {
+        val arrayBuffer = fileReader.result.asInstanceOf[ArrayBuffer]
+        scribe.info(s"Sending: ${file.name} / ${arrayBuffer.byteLength} bytes")
+        val nameBytes = file.name.getBytes("UTF-8")
+        val nameLength = ByteBuffer.allocate(java.lang.Integer.BYTES)
+        nameLength.putInt(nameBytes.length)
+        nameLength.flip()
+        val byteLength = ByteBuffer.allocate(java.lang.Long.BYTES)
+        byteLength.putLong(file.size.toLong)
+        byteLength.flip()
+        webSocket.send.binary @= nameLength
+        webSocket.send.binary @= ByteBuffer.wrap(nameBytes)
+        webSocket.send.binary @= byteLength
+        webSocket.send.binary @= TypedArrayBuffer.wrap(arrayBuffer)
+      }
+      fileReader.readAsArrayBuffer(file)
     })
   }
 }

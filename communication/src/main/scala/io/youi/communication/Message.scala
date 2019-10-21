@@ -10,6 +10,7 @@ case class Message(id: Long,
                    method: Option[String] = None,
                    params: Option[Json] = None,
                    returnValue: Option[Json] = None,
+                   bytes: Option[Long] = None,
                    errorMessage: Option[String] = None)
 
 object Message {
@@ -28,6 +29,17 @@ object Message {
     name = Some(name),
     method = Some(method),
     returnValue = Some(returnValue)
+  )
+  def uploadStart(fileName: String, bytes: Long): Message = Message(
+    id = idGenerator.incrementAndGet(),
+    `type` = MessageType.UploadStart,
+    name = Some(fileName),
+    bytes = Some(bytes)
+  )
+  def uploadComplete(id: Long, fileName: String): Message = Message(
+    id = id,
+    `type` = MessageType.UploadComplete,
+    name = Some(fileName)
   )
   def error(id: Long, message: String): Message = Message(
     id = id,

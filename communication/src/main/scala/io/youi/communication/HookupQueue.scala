@@ -30,8 +30,10 @@ class HookupQueue {
   def next(): Option[HookupRequest] = {
     val o = Option(queue.poll())
     o.foreach { r =>
-      running.put(r.request.id, r)
-      _hasRunning @= true
+      if (r.isRunning) {
+        running.put(r.request.id, r)
+        _hasRunning @= true
+      }
     }
     _hasNext @= !queue.isEmpty
     o

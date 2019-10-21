@@ -11,12 +11,13 @@ import scala.language.experimental.macros
 import scribe.Execution.global
 
 trait Connection {
-  private lazy val platform: ConnectionPlatform = new ConnectionPlatform(this)
-
   val webSocket: Var[Option[WebSocket]] = Var(None)
   val queue: HookupQueue = new HookupQueue
   val status: Val[ConnectionStatus] = Val(webSocket().map(_.status()).getOrElse(ConnectionStatus.Closed))
   val lastActive: Val[Long] = Var[Long](0L)
+
+  // Created for binary output and removed upon completion
+  private var writer: Option[ByteBufferWriter] = None
 
   object hookups {
     private var map = Map.empty[String, Hookup[Any]]
@@ -31,6 +32,12 @@ trait Connection {
   def receive(message: Message): Future[Message] = {
     val hookup = hookups.byName(message.name.get)
     hookup.receive(message)
+  }
+
+  def upload(fileName: String, bytes: Long): Future[String] = {
+    queue.enqueue(Message.uploadStart(fileName, bytes)).map { response =>
+      response.name.get
+    }
   }
 
   protected def interface[Interface](implicit ec: ExecutionContext): Interface with Hookup[Interface] = macro HookupMacros.interface[Interface]
@@ -52,6 +59,18 @@ trait Connection {
           } else {
             scribe.warn(s"No id found for ${message.id}. Cannot apply: $message")
           }
+          case MessageType.UploadStart => {
+            val w = CommunicationPlatform.createWriter(message.name.get, message.bytes.get)
+            writer = Some(w)
+            w.promise.future.foreach { _ =>
+              queue.enqueue(Message.uploadComplete(message.id, w.actualFileName))
+            }
+          }
+          case MessageType.UploadComplete => if (queue.success(message)) {
+            // Success
+          } else {
+            scribe.warn(s"No id found for ${message.id}. Cannot apply: $message")
+          }
           case MessageType.Error => if (queue.failure(message.id, new RuntimeException(message.toString))) {
             // Success
           } else {
@@ -66,7 +85,17 @@ trait Connection {
   private val receiveBinary: Reaction[ByteBuffer] = Reaction[ByteBuffer] { message =>
     lastActive.asInstanceOf[Var[Long]] @= System.currentTimeMillis()
 
-    platform.receiveBinary(message)
+    writer match {
+      case Some(w) => {
+        w.write(message)
+        // TODO: support MessageType.UploadStatus
+        if (w.remaining == 0L) {
+          w.close()
+          w.promise.success(())
+        }
+      }
+      case None => scribe.info("No writer assigned!")
+    }
   }
 
   webSocket.changes {

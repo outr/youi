@@ -101,25 +101,9 @@ object CommunicationScreen extends ExampleScreen with PreloadedContentScreen {
       evt.preventDefault()
       evt.stopPropagation()
       val file = uploadInput.files.item(0)
-      val webSocket = connection.webSocket().get
-
-      val fileReader = new FileReader
-      fileReader.onload = (_: Event) => {
-        val arrayBuffer = fileReader.result.asInstanceOf[ArrayBuffer]
-        scribe.info(s"Sending: ${file.name} / ${arrayBuffer.byteLength} bytes")
-        val nameBytes = file.name.getBytes("UTF-8")
-        val nameLength = ByteBuffer.allocate(java.lang.Integer.BYTES)
-        nameLength.putInt(nameBytes.length)
-        nameLength.flip()
-        val byteLength = ByteBuffer.allocate(java.lang.Long.BYTES)
-        byteLength.putLong(file.size.toLong)
-        byteLength.flip()
-        webSocket.send.binary @= nameLength
-        webSocket.send.binary @= ByteBuffer.wrap(nameBytes)
-        webSocket.send.binary @= byteLength
-        webSocket.send.binary @= TypedArrayBuffer.wrap(arrayBuffer)
+      ClientExampleApplication.upload(file).foreach { actualFileName =>
+        scribe.info(s"Uploaded successfully: $actualFileName")
       }
-      fileReader.readAsArrayBuffer(file)
     })
   }
 }

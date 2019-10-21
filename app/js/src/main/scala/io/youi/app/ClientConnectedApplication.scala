@@ -6,11 +6,13 @@ import io.youi.communication.Connection
 import io.youi.http.ConnectionStatus
 import io.youi.net.{Protocol, URL}
 import io.youi.util.Time
+import org.scalajs.dom.{Event, File, FileReader}
 
-import scala.concurrent.Future
+import scala.concurrent.{Future, Promise}
 import scribe.Execution.global
 
 import scala.concurrent.duration._
+import scala.scalajs.js.typedarray.{ArrayBuffer, TypedArrayBuffer}
 
 trait ClientConnectedApplication[C <: Connection] extends ClientApplication with YouIConnectedApplication[C] {
   def communicationURL: URL = {
@@ -52,6 +54,22 @@ trait ClientConnectedApplication[C <: Connection] extends ClientApplication with
     val ws = new WebSocketClient(communicationURL)
     connection.webSocket @= Some(ws)
     ws.connect()
+  }
+
+  def upload(file: File): Future[String] = {
+    val fileReader = new FileReader
+    val promise = Promise[String]
+    fileReader.onload = (_: Event) => {
+      val fileName = file.name
+      val bytes = file.size.toLong
+      val future = connection.upload(fileName, bytes)
+      val arrayBuffer = fileReader.result.asInstanceOf[ArrayBuffer]
+      val webSocket = connection.webSocket().getOrElse(throw new RuntimeException("Not connected!"))
+      webSocket.send.binary @= TypedArrayBuffer.wrap(arrayBuffer)
+      promise.completeWith(future)
+    }
+    fileReader.readAsArrayBuffer(file)
+    promise.future
   }
 
   private def updateConnection(): Future[Unit] = {

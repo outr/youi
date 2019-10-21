@@ -9,6 +9,7 @@ import org.scalajs.dom.raw.HTMLElement
 import scala.collection.mutable
 import scala.concurrent.{Future, Promise}
 import scala.language.implicitConversions
+import scala.scalajs.js
 
 object dom extends ExtendedElement(None) {
   def bySelector[T <: Element](selectors: String, root: Option[Element] = None): Vector[T] = {
@@ -84,6 +85,9 @@ object dom extends ExtendedElement(None) {
       child.asInstanceOf[T]
     }
   }
+
+  // Existing HTML features that Scala.js doesn't already provide
+  implicit def element2Features(element: html.Element): ElementFeatures = element.asInstanceOf[ElementFeatures]
 
   implicit class ElementExtras[E <: Element](e: E) extends ExtendedElement(Some(e)) {
     def parentByTag[T <: HTMLElement](tagName: String): Option[T] = findParentRecursive[T](e.asInstanceOf[HTMLElement], (p: HTMLElement) => {

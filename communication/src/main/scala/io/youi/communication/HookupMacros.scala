@@ -34,11 +34,10 @@ object HookupMacros {
       val returnType = returnTypeFuture.typeArgs.head
       q"""
          override def ${m.name.toTermName}(..$params): $returnTypeFuture = {
-           val params: Json = Json.obj(..$jsonify)
-           val message = Message.invoke($name, $methodName, params)
-           connection.queue.enqueue(message).map { response =>
+           val m = Message.invoke($name, $methodName, Json.obj(..$jsonify))
+           connection.queue.enqueue(m).map { response =>
              response.`type` match {
-               case MessageType.Response => JsonUtil.fromJson[$returnType](response.returnValue.get)
+               case MessageType.Response => JsonUtil.fromJson[$returnType](response.returnValue.getOrElse(Json.Null))
                case MessageType.Error => throw new RuntimeException(response.errorMessage.get)
                case _ => throw new RuntimeException("Unsupported message type: " + response.`type`)
              }

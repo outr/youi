@@ -15,7 +15,7 @@ import scala.concurrent.duration._
 import scala.scalajs.js.typedarray.{ArrayBuffer, TypedArrayBuffer}
 
 trait ClientConnectedApplication[C <: Connection] extends ClientApplication with YouIConnectedApplication[C] {
-  def communicationURL: URL = {
+  def communicationURL: Future[URL] = Future.successful {
     val protocol = if (baseURL.protocol == Protocol.Https) {
       Protocol.Wss
     } else {
@@ -50,8 +50,8 @@ trait ClientConnectedApplication[C <: Connection] extends ClientApplication with
     }
   }
 
-  def connect(): Future[ConnectionStatus] = {
-    val ws = new WebSocketClient(communicationURL)
+  def connect(): Future[ConnectionStatus] = communicationURL.flatMap { url =>
+    val ws = new WebSocketClient(url)
     connection.webSocket @= Some(ws)
     ws.connect()
   }

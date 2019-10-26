@@ -43,10 +43,13 @@ trait ClientConnectedApplication[C <: Connection] extends ClientApplication with
         disconnected()
       }
     }
-    if (autoConnectCommunication) {
-      connect().map(_ => ())
-    } else {
-      Future.successful(())
+    connectCommunication match {
+      case ConnectCommunication.AutoConnectSynchronous => connect().map(_ => ())
+      case ConnectCommunication.AutoConnectAsynchronous => {
+        connect()
+        Future.successful(())
+      }
+      case ConnectCommunication.ManualConnect => Future.successful(())
     }
   }
 

@@ -2,11 +2,12 @@ package io.youi.app
 
 import io.youi.ajax.AjaxRequest
 import io.youi.app.screen.ScreenManager
-import io.youi.{History, JavaScriptError, JavaScriptLog, LocalStorage}
+import io.youi.{History, JavaScriptError, JavaScriptLog}
 import io.youi.app.sourceMap.ErrorTrace
 import org.scalajs.dom.{ErrorEvent, FormData, XMLHttpRequest, window}
 import io.youi.dom._
 import io.youi.net._
+import io.youi.storage.LocalStorage
 import profig.JsonUtil
 import scribe.{Level, LogRecord}
 import scribe.output.LogOutput

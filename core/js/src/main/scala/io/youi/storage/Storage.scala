@@ -1,7 +1,8 @@
-package io.youi
+package io.youi.storage
 
 import reactify.Var
 
+import scala.concurrent.Future
 import scala.language.experimental.macros
 import scala.reflect.macros.blackbox
 
@@ -34,7 +35,7 @@ object Storage {
 
     c.Expr[Option[T]](
       q"""
-         io.youi.LocalStorage.string.get($key).flatMap { s =>
+         io.youi.storage.LocalStorage.string.get($key).flatMap { s =>
            profig.JsonUtil.fromJsonString[Option[$t]](s)
          }
        """)
@@ -46,7 +47,7 @@ object Storage {
     c.Expr[Unit](
       q"""
          val json = profig.JsonUtil.toJsonString[$t]($value)
-         io.youi.LocalStorage.string.update($key, json)
+         io.youi.storage.LocalStorage.string.update($key, json)
        """
     )
   }
@@ -58,20 +59,42 @@ object Storage {
     c.Expr[Var[T]](
       q"""
          val initial = try {
-           _root_.io.youi.LocalStorage.get[$t]($key).getOrElse($default)
+           _root_.io.youi.storage.LocalStorage.get[$t]($key).getOrElse($default)
          } catch {
            case t: Throwable => {
              _root_.scribe.warn(t.getMessage + " Deleting stored data and resetting to default value.")
-             _root_.io.youi.LocalStorage.remove($key)
+             _root_.io.youi.storage.LocalStorage.remove($key)
              $default
            }
          }
          val p = reactify.Var[$t](initial)
          p.attach { value =>
-           io.youi.LocalStorage.update($key, value)
+           io.youi.storage.LocalStorage.update($key, value)
          }
          p
        """
     )
+  }
+
+  def universalProp[T](c: blackbox.Context)
+                      (key: c.Expr[String], v: c.Expr[Var[T]])
+                      (t: c.WeakTypeTag[T]): c.Expr[Future[Unit]] = {
+    import c.universe._
+
+    c.Expr[Future[Unit]](
+      q"""
+        import _root_.io.youi.storage._
+        import _root_.profig._
+
+        UniversalStorage.get($key).map { result =>
+          result match {
+            case Some(value) => $v @= JsonUtil.fromJsonString[$t](value)
+            case None => // No current value
+          }
+          $v.attach { value =>
+            UniversalStorage.set($key, JsonUtil.toJsonString[$t](value))
+          }
+        }
+       """)
   }
 }

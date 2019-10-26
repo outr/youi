@@ -114,8 +114,10 @@ trait Connection {
   }
   queue.hasNext.attach(_ => checkQueue())
   status.changes {
-    case (oldStatus, _) => if (oldStatus == ConnectionStatus.Open) {
+    case (oldStatus, newStatus) => if (oldStatus == ConnectionStatus.Open) {
       lastActive.asInstanceOf[Var[Long]] @= System.currentTimeMillis()
+    } else if (newStatus == ConnectionStatus.Open) {
+      checkQueue()
     }
   }
 

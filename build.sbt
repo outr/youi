@@ -11,7 +11,7 @@ resolvers in ThisBuild ++= Seq(
   Resolver.sonatypeRepo("releases"),
   Resolver.sonatypeRepo("snapshots")
 )
-scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation", "-feature")
+scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation", "-feature", "-P:scalajs:sjsDefinedByDefault")
 
 publishTo in ThisBuild := sonatypePublishToBundle.value
 sonatypeProfileName in ThisBuild := "io.youi"

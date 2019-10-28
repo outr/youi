@@ -36,6 +36,7 @@ object Protocol {
   val Im = Protocol("im", "Instant Messaging", "RFC3860")
   val Imap = Protocol("imap", "internet message access protocol", "RFC5092")
   val Info = Protocol("info", "Information Assets with Identifiers in Public Namespaces", "RFC4452")
+  val Ionic = Protocol("ionic", "Ionic", "IONIC")
   val Ipp = Protocol("ipp", "Internet Printing Protocol", "RFC3510")
   val Iris = Protocol("iris", "Internet Registry Information Service", "RFC3981")
   val IrisBeep = Protocol("iris.beep", "iris.beep", "RFC3983")
@@ -91,5 +92,13 @@ object Protocol {
   val Z3950r = Protocol("z39.50r", "Z39.50 Retrieval", "RFC2056")
   val Z3950s = Protocol("z39.50s", "Z39.50 Session", "RFC2056")
 
-  def apply(scheme: String): Protocol = schemeMap.getOrElse(scheme.toLowerCase, throw new RuntimeException(s"Unable to find $scheme in Protocol."))
+  def apply(scheme: String): Protocol = apply(scheme, allowUnsupported = true)
+
+  def apply(scheme: String, allowUnsupported: Boolean): Protocol = {
+    schemeMap.getOrElse(scheme.toLowerCase, if (allowUnsupported) {
+      Protocol(scheme, "Adhoc", "Unknown")
+    } else {
+      throw new RuntimeException(s"Unable to find $scheme in Protocol.")
+    })
+  }
 }

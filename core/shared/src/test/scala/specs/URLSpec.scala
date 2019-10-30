@@ -18,6 +18,10 @@ class URLSpec extends AnyWordSpec with Matchers {
         val url = URL("http://www.outr.com/test?wsdl")
         url.parameters.encoded should be("?wsdl")
       }
+      "properly parse a simple HTTPS URL" in {
+        val url = URL("https://techcrunch.com/2019/10/13/ban-facebook-campaign-ads/?utm_medium=TCnewsletter&tpcc=TCdailynewsletter")
+        url.toString should be("https://techcrunch.com/2019/10/13/ban-facebook-campaign-ads/?utm_medium=TCnewsletter&tpcc=TCdailynewsletter")
+      }
       "properly parse a simple file URL" in {
         val url = URL("file:///android_asset/www/app/test.js")
         url.host should be("")

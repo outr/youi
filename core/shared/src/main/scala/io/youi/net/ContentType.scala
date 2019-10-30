@@ -21,7 +21,7 @@ case class ContentType(`type`: String,
     }
     b.toString()
   }
-  lazy val extension: Option[String] = ContentType.mimeType2Extensions.getOrElse(`type`, Nil).headOption
+  lazy val extension: Option[String] = ContentType.mimeType2Extensions.getOrElse(mimeType, Nil).headOption
 
   def withExtra(key: String, value: String): ContentType = copy(extras = extras + (key -> value))
   def withCharSet(charSet: String): ContentType = withExtra("charset", charSet)

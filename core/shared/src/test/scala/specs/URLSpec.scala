@@ -19,8 +19,8 @@ class URLSpec extends AnyWordSpec with Matchers {
         url.parameters.encoded should be("?wsdl")
       }
       "properly parse a simple HTTPS URL" in {
-        val url = URL("https://techcrunch.com/2019/10/13/ban-facebook-campaign-ads/?utm_medium=TCnewsletter&tpcc=TCdailynewsletter")
-        url.toString should be("https://techcrunch.com/2019/10/13/ban-facebook-campaign-ads/?utm_medium=TCnewsletter&tpcc=TCdailynewsletter")
+        val url = URL("https://techcrunch.com/2019/10/13/ban-facebook-campaign-ads?utm_medium=TCnewsletter&tpcc=TCdailynewsletter")
+        url.toString should be("https://techcrunch.com/2019/10/13/ban-facebook-campaign-ads?utm_medium=TCnewsletter&tpcc=TCdailynewsletter")
       }
       "properly parse a simple file URL" in {
         val url = URL("file:///android_asset/www/app/test.js")
@@ -61,6 +61,16 @@ class URLSpec extends AnyWordSpec with Matchers {
         val url = URL("http://www.outr.com/examples/otherstuff/test.html")
         val updated = url.withPath("/absolute.html")
         updated.path.encoded should equal("/absolute.html")
+      }
+      "apply a full part to an existing URL" in {
+        val url = URL("https://imgur.com/a/xSXO7pF")
+        val updated = url.withPart("//s.imgur.com/images/favicon-32x32.png")
+        updated.toString should be("https://s.imgur.com/images/favicon-32x32.png")
+      }
+      "apply a relative path as a part to an existing URL" in {
+        val url = URL("https://www.outr.com")
+        val updated = url.withPart("images/favicon.png")
+        updated.toString should be("https://www.outr.com/images/favicon.png")
       }
       "properly parse an extremely long URL and spit it back syntactically equal" in {
         val s = "http://www.a.com.qa/pps/a/publish/Pages/System Pages/Document View Page?com.a.b.pagesvc.renderParams.sub-53343f7a_1279673d2a9_-78af0a000136=rp.currentDocumentID=-4591476d_14a4cb0cbbf_-6cb00a000121&"

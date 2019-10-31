@@ -20,6 +20,8 @@ case class URL(protocol: Protocol = Protocol.Http,
 
   def withPart(part: String): URL = if (part.indexOf("://") != -1) {
     URL(part)
+  } else if (part.startsWith("//")) {
+    URL(s"${protocol.scheme}:$part")
   } else if (part.startsWith("?")) {
     copy(parameters = Parameters.parse(part))
   } else if (part.startsWith("/") || part.startsWith("..")) {
@@ -32,7 +34,7 @@ case class URL(protocol: Protocol = Protocol.Http,
       withPath(path).copy(parameters = Parameters.parse(params))
     }
   } else {
-    throw new RuntimeException(s"Unable to parse URL part: $part")
+    URL(s"$toString/$part")
   }
 
   def withPath(path: String, absolutize: Boolean = true): URL = {

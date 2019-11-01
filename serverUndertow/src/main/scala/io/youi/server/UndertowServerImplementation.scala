@@ -323,7 +323,7 @@ object UndertowServerImplementation extends ServerImplementationCreator {
                 if (exception.getMessage == "Stream closed") {
                   scribe.warn(s"Stream closed for $s")
                 } else {
-                  impl.server.error(exception)
+                  impl.server.error(new RuntimeException(s"Error occurred while sending String content for ${connection.request.url}, Bytes: ${s.length}, Content-Length: ${connection.response.headers.first(Headers.`Content-Length`)}", exception))
                 }
               }
             })

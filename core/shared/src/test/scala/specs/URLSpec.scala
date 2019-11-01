@@ -28,6 +28,18 @@ class URLSpec extends AnyWordSpec with Matchers {
         url.path.encoded should be("/android_asset/www/app/test.js")
         url.toString should be("file:///android_asset/www/app/test.js")
       }
+      "properly parse a URL without the protocol defined" in {
+        val url = URL("//cdn.framework7.io/i/share-banner.jpg")
+        url.toString should be("https://cdn.framework7.io/i/share-banner.jpg")
+      }
+      "properly parse a URL with just the domain name" in {
+        val url = URL("outr.com")
+        url.toString should be("https://outr.com/")
+      }
+      "properly detect an invalid TLD" in {
+        val url = URL.get("event.which")
+        url should not be Right
+      }
       "properly parse a URL with two for the same key" in {
         val url = URL("http://www.outr.com/test?test=one&test=two")
         url.paramList("test") should be(List("one", "two"))

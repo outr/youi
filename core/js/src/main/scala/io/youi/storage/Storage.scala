@@ -88,7 +88,11 @@ object Storage {
 
         UniversalStorage.get($key).map { result =>
           result match {
-            case Some(value) => $v @= JsonUtil.fromJsonString[$t](value)
+            case Some(value) => try {
+              $v @= JsonUtil.fromJsonString[$t](value)
+            } catch {
+              case t: Throwable => scribe.warn("JSON incompatibility while attempting to load " + $key, t)
+            }
             case None => // No current value
           }
           $v.attach { value =>

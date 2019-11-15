@@ -1,13 +1,12 @@
 package io.youi.example.screen
 
-import java.nio.ByteBuffer
-
-import io.youi.Template
+import io.youi.{History, Template}
+import io.youi.ajax.AjaxManager
 import io.youi.app.screen.PreloadedContentScreen
 import io.youi.dom._
 import io.youi.example.ClientExampleApplication
 import io.youi.net._
-import org.scalajs.dom.{Event, FileReader, html, window}
+import org.scalajs.dom.{Event, File, FormData, html, window}
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -101,9 +100,32 @@ object CommunicationScreen extends ExampleScreen with PreloadedContentScreen {
       evt.preventDefault()
       evt.stopPropagation()
       val file = uploadInput.files.item(0)
-      ClientExampleApplication.upload(file).foreach { actualFileName =>
-        scribe.info(s"Uploaded successfully: $actualFileName")
-      }
+      scribe.info("Upload start!")
+      uploadWebSocket(file)
+//      uploadAJAX(file)
     })
+  }
+
+  private def uploadWebSocket(file: File): Unit = {
+    ClientExampleApplication.upload(file).foreach { actualFileName =>
+      scribe.info(s"Uploaded successfully: $actualFileName")
+    }
+  }
+
+  private lazy val ajax = new AjaxManager(1)
+
+  private def uploadAJAX(file: File): Unit = {
+    val action = ajax.enqueue(
+      url = History.url.withPath(path"/upload"),
+      data = Some(new FormData {
+        append("file", file, file.name)
+      })
+    )
+    action.percentage.attach { p =>
+      scribe.info(s"Percentage: $p")
+    }
+    action.future.foreach { request =>
+      scribe.info(s"Completed! ${action.percentage()}, ${action.cancelled()}, ${action.loaded()}")
+    }
   }
 }

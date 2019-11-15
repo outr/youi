@@ -1,7 +1,6 @@
 package io.youi.communication
 
-import java.nio.ByteBuffer
-import io.youi.http.{ConnectionStatus, WebSocket}
+import io.youi.http.{BinaryData, ByteBufferData, ConnectionStatus, WebSocket}
 import profig.JsonUtil
 import reactify.{Val, Var}
 import reactify.reaction.Reaction
@@ -18,6 +17,7 @@ trait Connection {
 
   // Created for binary output and removed upon completion
   private var writer: Option[ByteBufferWriter] = None
+  private var uploads: Map[Long, Upload] = Map.empty
 
   object hookups {
     private var map = Map.empty[String, Hookup[Any]]
@@ -34,10 +34,14 @@ trait Connection {
     hookup.receive(message)
   }
 
-  def upload(fileName: String, bytes: Long): Future[String] = {
-    queue.enqueue(Message.uploadStart(fileName, bytes)).map { response =>
+  def upload(fileName: String, bytes: Long): Upload = synchronized {
+    val message = Message.uploadStart(fileName, bytes)
+    val future = queue.enqueue(message).map { response =>
       response.name.get
     }
+    val upload = Upload(fileName, bytes, future)
+    uploads += message.id -> upload
+    upload
   }
 
   protected def interface[Interface](implicit ec: ExecutionContext): Interface with Hookup[Interface] = macro HookupMacros.interface[Interface]
@@ -82,16 +86,18 @@ trait Connection {
     }
   }
 
-  private val receiveBinary: Reaction[ByteBuffer] = Reaction[ByteBuffer] { message =>
+  private val receiveBinary: Reaction[BinaryData] = Reaction[BinaryData] { message =>
     lastActive.asInstanceOf[Var[Long]] @= System.currentTimeMillis()
 
     writer match {
-      case Some(w) => {
-        w.write(message)
-        // TODO: support MessageType.UploadStatus
-        if (w.remaining == 0L) {
-          w.close()
-          w.promise.success(())
+      case Some(w) => message match {
+        case ByteBufferData(m) => {
+          w.write(m)
+          // TODO: support MessageType.UploadStatus
+          if (w.remaining == 0L) {
+            w.close()
+            w.promise.success(())
+          }
         }
       }
       case None => scribe.info("No writer assigned!")

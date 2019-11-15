@@ -1,11 +1,9 @@
 package io.youi.http
 
-import java.nio.ByteBuffer
-
 import reactify.Channel
 
 class WebSocketChannels {
   val text: Channel[String] = Channel[String]
-  val binary: Channel[ByteBuffer] = Channel[ByteBuffer]
+  val binary: Channel[BinaryData] = Channel[BinaryData]
   val close: Channel[Unit] = Channel[Unit]
 }

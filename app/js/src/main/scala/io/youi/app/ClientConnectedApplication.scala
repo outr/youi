@@ -1,18 +1,17 @@
 package io.youi.app
 
 import io.youi.History
-import io.youi.client.WebSocketClient
+import io.youi.client.{BlobData, WebSocketClient}
 import io.youi.communication.Connection
 import io.youi.http.ConnectionStatus
 import io.youi.net.{Protocol, URL}
 import io.youi.util.Time
-import org.scalajs.dom.{Event, File, FileReader}
+import org.scalajs.dom.File
 
-import scala.concurrent.{Future, Promise}
+import scala.concurrent.Future
 import scribe.Execution.global
 
 import scala.concurrent.duration._
-import scala.scalajs.js.typedarray.{ArrayBuffer, TypedArrayBuffer}
 
 trait ClientConnectedApplication[C <: Connection] extends ClientApplication with YouIConnectedApplication[C] {
   def communicationURL: Future[URL] = Future.successful {
@@ -60,19 +59,21 @@ trait ClientConnectedApplication[C <: Connection] extends ClientApplication with
   }
 
   def upload(file: File): Future[String] = {
-    val fileReader = new FileReader
-    val promise = Promise[String]
-    fileReader.onload = (_: Event) => {
-      val fileName = file.name
-      val bytes = file.size.toLong
-      val future = connection.upload(fileName, bytes)
-      val arrayBuffer = fileReader.result.asInstanceOf[ArrayBuffer]
-      val webSocket = connection.webSocket().getOrElse(throw new RuntimeException("Not connected!"))
-      webSocket.send.binary @= TypedArrayBuffer.wrap(arrayBuffer)
-      promise.completeWith(future)
+    val webSocket = connection.webSocket().getOrElse(throw new RuntimeException("Not connected!"))
+    val fileName = file.name
+    val bytes = file.size.toLong
+    val upload = connection.upload(fileName, bytes)
+    webSocket.send.binary @= BlobData(file)
+    upload.progress.attach { p =>
+      scribe.info(s"Progress: $p")
     }
-    fileReader.readAsArrayBuffer(file)
-    promise.future
+    upload.percentage.attach { p =>
+      scribe.info(s"Percentage: $p")
+    }
+    upload.remaining.attach { r =>
+      scribe.info(s"Remaining: $r")
+    }
+    upload.future
   }
 
   private def updateConnection(): Future[Unit] = {

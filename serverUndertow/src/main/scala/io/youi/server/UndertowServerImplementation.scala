@@ -215,8 +215,8 @@ object UndertowServerImplementation extends ServerImplementationCreator {
         listener.send.text.attach { message =>
           WebSockets.sendText(message, channel, null)
         }
-        listener.send.binary.attach { message =>
-          WebSockets.sendBinary(message, channel, null)
+        listener.send.binary.attach {
+          case ByteBufferData(message) => WebSockets.sendBinary(message, channel, null)
         }
         listener.send.close.attach { _ =>
           if (channel.isOpen) {
@@ -233,7 +233,7 @@ object UndertowServerImplementation extends ServerImplementationCreator {
           }
 
           override def onFullBinaryMessage(channel: WebSocketChannel, message: BufferedBinaryMessage): Unit = {
-            message.getData.getResource.foreach(listener.receive.binary @= _)
+            message.getData.getResource.foreach(bb => listener.receive.binary @= ByteBufferData(bb))
             super.onFullBinaryMessage(channel, message)
           }
 

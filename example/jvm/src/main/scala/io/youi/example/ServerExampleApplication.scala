@@ -35,6 +35,7 @@ object ServerExampleApplication extends ExampleApplication with ServerConnectedA
           ) / Application / ServerApplication.AppTemplate,
           path"/cookies.html" / CookiesExample,
           path"/session.html" / SessionExample,
+          path"/upload" / AJAXUploadExample,
           ClassLoaderPath(pathTransform = (path: String) => s"content$path") / CachingManager.LastModified(),
           path.startsWith("/app") / ClassLoaderPath()
         )

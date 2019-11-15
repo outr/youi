@@ -10,7 +10,7 @@ import io.undertow.util.Headers
 import io.undertow.websockets.client.WebSocketClient.ConnectionBuilder
 import io.undertow.websockets.client.{WebSocketClientNegotiation, WebSocketClient => UndertowWebSocketClient}
 import io.undertow.websockets.core._
-import io.youi.http.{ConnectionStatus, WebSocket}
+import io.youi.http.{ByteBufferData, ConnectionStatus, WebSocket}
 import io.youi.net.URL
 import io.youi.server.KeyStore
 import io.youi.server.util.SSLUtil
@@ -97,9 +97,11 @@ class WebSocketClient(url: URL,
           checkBacklog()
           sendMessage(message)
         }
-        send.binary.attach { message =>
-          checkBacklog()
-          sendMessage(message)
+        send.binary.attach {
+          case ByteBufferData(message) => {
+            checkBacklog()
+            sendMessage(message)
+          }
         }
         _status @= ConnectionStatus.Open
         scribe.info(s"Connected to $url successfully")

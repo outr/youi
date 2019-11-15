@@ -51,11 +51,14 @@ class ConnectionManager[C <: Connection](app: ServerConnectedApplication[C]) {
 
   private def update(): Future[Unit] = {
     connections.foreach { connection =>
+      val timeSinceActive = System.currentTimeMillis() - connection.lastActive
+      val timedOut = timeSinceActive > app.connectionTimeout.toMillis
       if (connection.status() == ConnectionStatus.Closed) {
-        val closedFor = System.currentTimeMillis() - connection.lastActive()
-        if (closedFor > app.connectionTimeout.toMillis) {
+        if (timedOut) {
           removeConnection(connection)
         }
+      } else if (timedOut) {
+        connection.disconnect()
       }
     }
 

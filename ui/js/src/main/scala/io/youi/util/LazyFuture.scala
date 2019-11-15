@@ -2,7 +2,7 @@ package io.youi.util
 
 import java.util.concurrent.atomic.AtomicBoolean
 
-import io.youi.AnimationFrame
+import io.youi.BackgroundUpdates
 import reactify.Var
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -19,7 +19,7 @@ class LazyFuture[T](f: () => Future[T], maxFrequency: FiniteDuration, automatic:
         if (isReady) {
           update()
         } else {
-          AnimationFrame.once(delay.millis)(update())
+          BackgroundUpdates.once(delay.millis)(update())
         }
       }
     }

@@ -34,14 +34,10 @@ class ConnectionManager[C <: Connection](app: ServerConnectedApplication[C]) {
   }
 
   private def addConnection(listener: WebSocketListener): Unit = synchronized {
-    val connection = app.createConnection()
+    val connection = app.getOrCreateConnection(listener)
     connection.webSocket := Some(listener)
-    _connections @= connection :: _connections()
+    _connections @= (connection :: _connections()).distinct
   }
-
-  // TODO: Every thirty seconds unless killed by app.dispose
-  // TODO: Ping / Pong - Shouldn't it be the client, not the server?
-  // TODO: Timeout long-closed connections
 
   private def removeConnection(connection: C): Unit = synchronized {
     _connections @= _connections.filterNot(_ eq connection)

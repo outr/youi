@@ -1,6 +1,6 @@
 package io.youi.app
 
-import io.youi.{AnimationFrame, History}
+import io.youi.{BackgroundUpdates, History}
 import io.youi.client.{BlobData, WebSocketClient}
 import io.youi.communication.Connection
 import io.youi.http.ConnectionStatus
@@ -58,6 +58,8 @@ trait ClientConnectedApplication[C <: Connection] extends ClientApplication with
     ws.connect()
   }
 
+  def reconnected(): Future[Unit] = Future.successful(())
+
   def upload(file: File): Future[String] = {
     val webSocket = connection.webSocket().getOrElse(throw new RuntimeException("Not connected!"))
     val fileName = file.name
@@ -76,10 +78,10 @@ trait ClientConnectedApplication[C <: Connection] extends ClientApplication with
     upload.future
   }
 
-  AnimationFrame.delta.attach { d =>
+  BackgroundUpdates.delta.attach { d =>
     if (d >= 60.0) {
       scribe.info(s"RESUME FROM SLEEP! Delta: $d, reconnecting...")
-      disconnected()
+      connection.disconnect()
     }
   }
 
@@ -98,7 +100,10 @@ trait ClientConnectedApplication[C <: Connection] extends ClientApplication with
         case _ => // Ignore others
       }
     }
-    case ReconnectStrategy.Reconnect => Time.delay(reconnectDelay).flatMap(_ => connect()).map(_ => ())
+    case ReconnectStrategy.Reconnect => Time
+      .delay(reconnectDelay)
+      .flatMap(_ => connect())
+      .flatMap(_ => reconnected())
     case ReconnectStrategy.Stop => ()
   }
 

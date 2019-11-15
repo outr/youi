@@ -4,6 +4,7 @@ import io.youi.app._
 import io.youi.http._
 import io.youi.http.content.Content
 import io.youi.net._
+import io.youi.server.WebSocketListener
 import io.youi.server.handler.{CachingManager, LanguageSupport}
 import io.youi.server.dsl._
 import profig.JsonUtil
@@ -16,7 +17,7 @@ object ServerExampleApplication extends ExampleApplication with ServerConnectedA
 
   case class Greeting(message: String, name: String)
 
-  override def createConnection(): ExampleConnection = new ServerConnection
+  override def getOrCreateConnection(listener: WebSocketListener): ExampleConnection = new ServerConnection
 
   override protected def init(): Future[Unit] = {
     super.init().map { _ =>

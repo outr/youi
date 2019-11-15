@@ -1,6 +1,6 @@
 package io.youi.app
 
-import io.youi.History
+import io.youi.{AnimationFrame, History}
 import io.youi.client.{BlobData, WebSocketClient}
 import io.youi.communication.Connection
 import io.youi.http.ConnectionStatus
@@ -74,6 +74,13 @@ trait ClientConnectedApplication[C <: Connection] extends ClientApplication with
       scribe.info(s"Remaining: $r")
     }
     upload.future
+  }
+
+  AnimationFrame.delta.attach { d =>
+    if (d >= 60.0) {
+      scribe.info(s"RESUME FROM SLEEP! Delta: $d, reconnecting...")
+      disconnected()
+    }
   }
 
   private def updateConnection(): Future[Unit] = {

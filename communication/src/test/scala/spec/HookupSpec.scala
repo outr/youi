@@ -1,7 +1,7 @@
 package spec
 
 import io.circe.Json
-import io.youi.communication.{Connection, Hookup}
+import io.youi.communication.{Connection, Hookup, Message, MessageType}
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.{BeforeAndAfterEach, Matchers}
 
@@ -20,28 +20,17 @@ class HookupSpec extends AnyWordSpec with Matchers with BeforeAndAfterEach {
       val future = h.instance.reverse("Hello, World!")
       queue.hasNext() should be(true)
       val request = queue.next().getOrElse(fail())
-      request.id should be(1L)
-      request.json should be(Json.obj(
-        "endpoint" -> Json.fromString("i.reverse"),
-        "params" -> Json.obj(
-          "value" -> Json.fromString("Hello, World!")
-        )
-      ))
+      request.request.id should be(1L)
+      request.request.params.get should be(Json.obj("value" -> Json.fromString("Hello, World!")))
       future.isCompleted should be(false)
     }
     "define an implementation" in {
       val connection = TestImplementationConnection
       val h = connection.i
       h.local.isEmpty should be(false)
-      val request = Json.obj(
-        "endpoint" -> Json.fromString("i.reverse"),
-        "params" -> Json.obj(
-          "value" -> Json.fromString("Hello, World!")
-        )
-      )
-      val future = h.receive(request)
+      val future = h.receive(Message.invoke("i", "reverse", Json.obj("value"  -> Json.fromString("Hello, World!"))))
       val result = Await.result(future, 1.second)
-      result should be(Json.fromString("!dlroW ,olleH"))
+      result.returnValue.get should be(Json.fromString("!dlroW ,olleH"))
     }
     "complete cycle" in {
       val future = Test.fullTest()
@@ -49,9 +38,12 @@ class HookupSpec extends AnyWordSpec with Matchers with BeforeAndAfterEach {
       result should be("!dlroW ,olleH")
     }
     "complete cycle with error" in {
-      val future = Test.failTest()
-      val result = Await.result(future.failed, 1.second)
-      result.getMessage should be("Reverse failed!")
+      val interface = TestInterfaceConnection.i
+      val implementation = TestFailConnection.i
+      interface.reverse("Hello, World!")
+      val request = TestInterfaceConnection.queue.next().getOrElse(throw new RuntimeException("Request not in queue"))
+      val result = Await.result(implementation.receive(request.request), 1.second)
+      result.`type` should be(MessageType.Error)
     }
     "use Connection to createUser" in {
       TestInterfaceConnection.queue.clear()
@@ -61,10 +53,10 @@ class HookupSpec extends AnyWordSpec with Matchers with BeforeAndAfterEach {
       TestInterfaceConnection.queue.hasNext() should be(true)
       TestInterfaceConnection.queue.hasRunning() should be(false)
       val request = TestInterfaceConnection.queue.next().getOrElse(fail())
-      TestImplementationConnection.receive(request.json).map { response =>
+      TestImplementationConnection.receive(request.request).map { response =>
         TestInterfaceConnection.queue.hasNext() should be(false)
         TestInterfaceConnection.queue.hasRunning() should be(true)
-        TestInterfaceConnection.queue.success(request.id, response)
+        TestInterfaceConnection.queue.success(response)
       }
       val result = Await.result(future, 1.second)
       result should be(User("John Doe", 21, Some("Somewhere")))
@@ -80,10 +72,10 @@ class HookupSpec extends AnyWordSpec with Matchers with BeforeAndAfterEach {
       TestInterfaceConnection.queue.hasNext() should be(true)
       TestInterfaceConnection.queue.hasRunning() should be(false)
       val request = TestInterfaceConnection.queue.next().getOrElse(fail())
-      TestImplementationConnection.receive(request.json).map { response =>
+      TestImplementationConnection.receive(request.request).map { response =>
         TestInterfaceConnection.queue.hasNext() should be(false)
         TestInterfaceConnection.queue.hasRunning() should be(true)
-        TestInterfaceConnection.queue.success(request.id, response)
+        TestInterfaceConnection.queue.success(response)
       }
       val result = Await.result(future, 1.second)
       result should be >= time
@@ -101,19 +93,8 @@ object Test {
     val implementation = TestImplementationConnection.i
     val future = interface.reverse("Hello, World!")
     val request = TestInterfaceConnection.queue.next().getOrElse(throw new RuntimeException("Request not in queue"))
-    implementation.receive(request.json).map { json =>
-      request.success(json)
-    }
-    future
-  }
-
-  def failTest(): Future[String] = {
-    val interface = TestInterfaceConnection.i
-    val implementation = TestFailConnection.i
-    val future = interface.reverse("Hello, World!")
-    val request = TestInterfaceConnection.queue.next().getOrElse(throw new RuntimeException("Request not in queue"))
-    implementation.receive(request.json).failed.map { t =>
-      request.failure(t)
+    implementation.receive(request.request).map { response =>
+      request.success(response)
     }
     future
   }

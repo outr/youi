@@ -10,7 +10,6 @@ import scala.concurrent.{Future, Promise}
 
 class HookupQueue {
   private var disposed = false
-  private val idGenerator = new AtomicLong(0L)
   private val queue = new ConcurrentLinkedQueue[HookupRequest]
   private val running = new ConcurrentHashMap[Long, HookupRequest]
 
@@ -20,27 +19,29 @@ class HookupQueue {
   val hasNext: Val[Boolean] = _hasNext
   val hasRunning: Val[Boolean] = _hasRunning
 
-  def enqueue(`type`: MessageType, json: Json, id: Long = idGenerator.incrementAndGet()): Future[Json] = if (disposed) {
+  def enqueue(message: Message): Future[Message] = if (disposed) {
     throw new RuntimeException("Queue is disposed")
   } else {
-    val promise = Promise[Json]
-    queue.add(HookupRequest(id, `type`, json, promise))
+    val promise = Promise[Message]
+    queue.add(HookupRequest(message, promise))
     _hasNext @= true
     promise.future
   }
   def next(): Option[HookupRequest] = {
     val o = Option(queue.poll())
     o.foreach { r =>
-      running.put(r.id, r)
-      _hasRunning @= true
+      if (r.isRunning) {
+        running.put(r.request.id, r)
+        _hasRunning @= true
+      }
     }
     _hasNext @= !queue.isEmpty
     o
   }
 
-  def success(id: Long, json: Json): Boolean = running(id) match {
+  def success(message: Message): Boolean = running(message.id) match {
     case Some(request) => {
-      request.success(json)
+      request.success(message)
       true
     }
     case None => false

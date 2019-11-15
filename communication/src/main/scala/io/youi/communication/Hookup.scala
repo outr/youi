@@ -2,13 +2,16 @@ package io.youi.communication
 
 import io.circe._
 
-import scala.concurrent.Future
+import scala.concurrent.{Future, Promise}
 import scala.language.experimental.macros
+import scala.util.{Failure, Success}
+
+import scribe.Execution.global
 
 trait Hookup[Interface] {
   def name: String = throw new NotImplementedError("This will be implemented by HookupMacros")
   def connection: Connection = throw new NotImplementedError("This will be implemented by HookupMacros")
-  def local: Map[String, Json => Future[Json]] = throw new NotImplementedError("This will be implemented by HookupMacros")
+  def local: Map[String, Message => Future[Json]] = throw new NotImplementedError("This will be implemented by HookupMacros")
   def instance: Interface = throw new NotImplementedError("This will be implemented by HookupMacros")
 
   // Register the hookup with the connection
@@ -17,21 +20,24 @@ trait Hookup[Interface] {
   /**
     * Supply JSON to invoke a local method on Interface and return Future[Json]
     *
-    * @param json the invocation JSON code with parameters
+    * @param message the Message
     * @return Future[Json] of the return
     */
-  def receive(json: Json): Future[Json] = try {
-    val endPoint = (json \\ "endpoint").head.asString.getOrElse(throw new RuntimeException(s"No 'method' entry defined for: $json"))
-    assert(endPoint.startsWith(s"$name."))
-    val lastDot = endPoint.lastIndexOf('.')
-    val methodName = if (lastDot != -1) {
-      endPoint.substring(lastDot + 1)
-    } else {
-      endPoint
+  def receive(message: Message): Future[Message] = try {
+    val method = local.getOrElse(message.method.get, throw new RuntimeException(s"No local method found for name: ${message.method} (${local.keySet.mkString(", ")})"))
+    val promise = Promise[Message]
+    method(message).onComplete {
+      case Success(response) => promise.success(Message.response(message.id, message.name.get, message.method.get, response))
+      case Failure(throwable) => {
+        scribe.error(s"Error processing method request future: $message", throwable)
+        promise.success(Message.error(message.id, throwable.getMessage))
+      }
     }
-    val method = local.getOrElse(methodName, throw new RuntimeException(s"No local method found for name: $methodName (${local.keySet.mkString(", ")})"))
-    method(json)
+    promise.future
   } catch {
-    case t: Throwable => Future.failed(t)
+    case t: Throwable => {
+      scribe.error(s"Error processing method request: $message", t)
+      Future.successful(Message.error(message.id, t.getMessage))
+    }
   }
 }

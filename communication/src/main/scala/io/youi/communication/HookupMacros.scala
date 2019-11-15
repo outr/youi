@@ -32,16 +32,15 @@ object HookupMacros {
       }
       val returnTypeFuture = m.typeSignature.resultType
       val returnType = returnTypeFuture.typeArgs.head
-      val endPoint = s"$name.$methodName"
       q"""
          override def ${m.name.toTermName}(..$params): $returnTypeFuture = {
-           val params: Json = Json.obj(..$jsonify)
-           val request = Json.obj(
-             "endpoint" -> Json.fromString($endPoint),
-             "params" -> params
-           )
-           connection.queue.enqueue(MessageType.Invoke, request).map { response =>
-             JsonUtil.fromJson[$returnType](response)
+           val m = Message.invoke($name, $methodName, Json.obj(..$jsonify))
+           connection.queue.enqueue(m).map { response =>
+             response.`type` match {
+               case MessageType.Response => JsonUtil.fromJson[$returnType](response.returnValue.getOrElse(Json.Null))
+               case MessageType.Error => throw new RuntimeException(response.errorMessage.get)
+               case _ => throw new RuntimeException("Unsupported message type: " + response.`type`)
+             }
            }
          }
        """
@@ -57,7 +56,7 @@ object HookupMacros {
         new Hookup[$interface] with $interface {
           override def name: String = $name
           override def connection: Connection = $connection
-          override val local: Map[String, Json => Future[Json]] = Map.empty
+          override val local: Map[String, Message => Future[Json]] = Map.empty
           override def instance: $interface = this
 
           // Define method implementations
@@ -87,7 +86,7 @@ object HookupMacros {
       val params = argNames.zip(argTypes).map {
         case (n, t) => {
           val paramName = n.decodedName.toString
-          q"""$n = JsonUtil.fromJson[$t](((json \\ "params").head \\ $paramName).head)"""
+          q"""$n = JsonUtil.fromJson[$t]((params \\ $paramName).head)"""
         }
       }
       val call = if (m.typeSignature.paramLists.nonEmpty) {
@@ -98,7 +97,8 @@ object HookupMacros {
       val returnTypeFuture = m.typeSignature.resultType
       val returnType = returnTypeFuture.typeArgs.head
       q"""
-         def ${m.name.toTermName}(json: Json): Future[Json] = {
+         def ${m.name.toTermName}(message: Message): Future[Json] = {
+           val params = message.params.get
            val future = $call
            future.map { response =>
              JsonUtil.toJson[$returnType](response)
@@ -109,7 +109,7 @@ object HookupMacros {
 
     val localMappings = local.map { m =>
       val methodName = m.name.decodedName.toString
-      q"$methodName -> ((json: Json) => callers.${m.name.toTermName}(json))"
+      q"$methodName -> ((message: Message) => callers.${m.name.toTermName}(message))"
     }
 
     context.Expr[Implementation with Hookup[Interface]](
@@ -122,7 +122,7 @@ object HookupMacros {
          new $implementation with Hookup[$interface] {
            override def name: String = $name
            override def connection: Connection = $connection
-           override val local: Map[String, Json => Future[Json]] = Map(..$localMappings)
+           override val local: Map[String, Message => Future[Json]] = Map(..$localMappings)
            override def instance: $interface = this
 
            object callers {

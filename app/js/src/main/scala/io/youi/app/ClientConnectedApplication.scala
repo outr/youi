@@ -1,11 +1,12 @@
 package io.youi.app
 
-import io.youi.History
-import io.youi.client.WebSocketClient
+import io.youi.{AnimationFrame, History}
+import io.youi.client.{BlobData, WebSocketClient}
 import io.youi.communication.Connection
 import io.youi.http.ConnectionStatus
 import io.youi.net.{Protocol, URL}
 import io.youi.util.Time
+import org.scalajs.dom.File
 
 import scala.concurrent.Future
 import scribe.Execution.global
@@ -13,7 +14,7 @@ import scribe.Execution.global
 import scala.concurrent.duration._
 
 trait ClientConnectedApplication[C <: Connection] extends ClientApplication with YouIConnectedApplication[C] {
-  def communicationURL: URL = {
+  def communicationURL: Future[URL] = Future.successful {
     val protocol = if (baseURL.protocol == Protocol.Https) {
       Protocol.Wss
     } else {
@@ -41,17 +42,45 @@ trait ClientConnectedApplication[C <: Connection] extends ClientApplication with
         disconnected()
       }
     }
-    if (autoConnectCommunication) {
-      connect().map(_ => ())
-    } else {
-      Future.successful(())
+    connectCommunication match {
+      case ConnectCommunication.AutoConnectSynchronous => connect().map(_ => ())
+      case ConnectCommunication.AutoConnectAsynchronous => {
+        connect()
+        Future.successful(())
+      }
+      case ConnectCommunication.ManualConnect => Future.successful(())
     }
   }
 
-  def connect(): Future[ConnectionStatus] = {
-    val ws = new WebSocketClient(communicationURL)
+  def connect(): Future[ConnectionStatus] = communicationURL.flatMap { url =>
+    val ws = new WebSocketClient(url)
     connection.webSocket @= Some(ws)
     ws.connect()
+  }
+
+  def upload(file: File): Future[String] = {
+    val webSocket = connection.webSocket().getOrElse(throw new RuntimeException("Not connected!"))
+    val fileName = file.name
+    val bytes = file.size.toLong
+    val upload = connection.upload(fileName, bytes)
+    webSocket.send.binary @= BlobData(file)
+    upload.progress.attach { p =>
+      scribe.info(s"Progress: $p")
+    }
+    upload.percentage.attach { p =>
+      scribe.info(s"Percentage: $p")
+    }
+    upload.remaining.attach { r =>
+      scribe.info(s"Remaining: $r")
+    }
+    upload.future
+  }
+
+  AnimationFrame.delta.attach { d =>
+    if (d >= 60.0) {
+      scribe.info(s"RESUME FROM SLEEP! Delta: $d, reconnecting...")
+      disconnected()
+    }
   }
 
   private def updateConnection(): Future[Unit] = {

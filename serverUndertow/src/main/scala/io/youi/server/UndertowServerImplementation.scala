@@ -32,7 +32,7 @@ import scribe.Execution.global
 class UndertowServerImplementation(val server: Server) extends ServerImplementation with UndertowHttpHandler {
   val enableHTTP2: Boolean = Server.config("enableHTTP2").opt[Boolean].getOrElse(true)
   val persistentConnections: Boolean = Server.config("persistentConnections").as[Boolean](true)
-  val webSocketCompression: Boolean = Server.config("webSocketCompression").opt[Boolean].getOrElse(false)     // TODO: Re-enable once more testing can be done - I think this is causing periodic "Invalid frame header"
+  val webSocketCompression: Boolean = Server.config("webSocketCompression").opt[Boolean].getOrElse(true)
 
   private var instance: Option[Undertow] = None
 
@@ -215,8 +215,8 @@ object UndertowServerImplementation extends ServerImplementationCreator {
         listener.send.text.attach { message =>
           WebSockets.sendText(message, channel, null)
         }
-        listener.send.binary.attach { message =>
-          WebSockets.sendBinary(message, channel, null)
+        listener.send.binary.attach {
+          case ByteBufferData(message) => WebSockets.sendBinary(message, channel, null)
         }
         listener.send.close.attach { _ =>
           if (channel.isOpen) {
@@ -233,7 +233,7 @@ object UndertowServerImplementation extends ServerImplementationCreator {
           }
 
           override def onFullBinaryMessage(channel: WebSocketChannel, message: BufferedBinaryMessage): Unit = {
-            message.getData.getResource.foreach(listener.receive.binary @= _)
+            message.getData.getResource.foreach(bb => listener.receive.binary @= ByteBufferData(bb))
             super.onFullBinaryMessage(channel, message)
           }
 

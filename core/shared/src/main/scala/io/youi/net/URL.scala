@@ -13,6 +13,16 @@ case class URL(protocol: Protocol = Protocol.Http,
                path: Path = Path.empty,
                parameters: Parameters = Parameters.empty,
                fragment: Option[String] = None) extends Location {
+  lazy val ip: Option[IP] = IP.get(host)
+  lazy val tld: Option[String] = {
+    val lastDot = host.lastIndexOf('.')
+    if (lastDot != -1 && ip.isEmpty) {
+      Some(host.substring(lastDot + 1))
+    } else {
+      None
+    }
+  }
+
   def replaceBase(base: String): URL = URL(s"$base${encoded.pathAndArgs}")
   def replacePathAndParams(pathAndParams: String): URL = URL(s"$base$pathAndParams")
 
@@ -20,6 +30,8 @@ case class URL(protocol: Protocol = Protocol.Http,
 
   def withPart(part: String): URL = if (part.indexOf("://") != -1) {
     URL(part)
+  } else if (part.startsWith("//")) {
+    URL(s"${protocol.scheme}:$part")
   } else if (part.startsWith("?")) {
     copy(parameters = Parameters.parse(part))
   } else if (part.startsWith("/") || part.startsWith("..")) {
@@ -32,7 +44,7 @@ case class URL(protocol: Protocol = Protocol.Http,
       withPath(path).copy(parameters = Parameters.parse(params))
     }
   } else {
-    throw new RuntimeException(s"Unable to parse URL part: $part")
+    URL(s"$toString/$part")
   }
 
   def withPath(path: String, absolutize: Boolean = true): URL = {
@@ -121,6 +133,9 @@ case class URL(protocol: Protocol = Protocol.Http,
 }
 
 object URL {
+  var DefaultProtocol: Protocol = Protocol.Https
+  var ValidateTLD: Boolean = true
+
   implicit val encoder: Encoder[URL] = new Encoder[URL] {
     override def apply(url: URL): Json = Json.fromString(url.toString)
   }
@@ -150,10 +165,20 @@ object URL {
 
   def get(url: String, absolutizePath: Boolean): Either[URLParseException, URL] = try {
     val colonIndex1 = url.indexOf(':')
-    val protocol = Protocol(url.substring(0, colonIndex1))
+    val protocol = if (url.startsWith("//")) {
+      DefaultProtocol
+    } else if (colonIndex1 != -1) {
+      Protocol(url.substring(0, colonIndex1))
+    } else {
+      DefaultProtocol
+    }
     val slashIndex = url.indexOf('/', colonIndex1 + 3)
     val hostAndPort = if (slashIndex == -1) {
-      url.substring(colonIndex1 + 3)
+      if (colonIndex1 == -1) {
+        url
+      } else {
+        url.substring(colonIndex1 + 3)
+      }
     } else {
       url.substring(colonIndex1 + 3, slashIndex)
     }
@@ -187,9 +212,17 @@ object URL {
     } else {
       None
     }
-    Right(URL(protocol = protocol, host = host, port = port, path = path, parameters = parameters, fragment = fragment))
+    val u = URL(protocol = protocol, host = host, port = port, path = path, parameters = parameters, fragment = fragment)
+    if (ValidateTLD) {
+      u.tld match {
+        case Some(tld) if !TopLevelDomains.isValid(tld) => Left(new URLParseException(s"Invalid top-level domain: [$tld]", None))
+        case _ => Right(u)
+      }
+    } else {
+      Right(u)
+    }
   } catch {
-    case t: Throwable => Left(new URLParseException(s"Unable to parse URL [$url]. Exception: ${t.getMessage}", t))
+    case t: Throwable => Left(new URLParseException(s"Unable to parse URL [$url]. Exception: ${t.getMessage}", Some(t)))
   }
 
   private val unreservedCharacters = Set('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',

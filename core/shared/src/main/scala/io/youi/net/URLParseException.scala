@@ -1,3 +1,3 @@
 package io.youi.net
 
-class URLParseException(message: String, cause: Throwable) extends RuntimeException(message, cause)
+class URLParseException(message: String, cause: Option[Throwable]) extends RuntimeException(message, cause.orNull)

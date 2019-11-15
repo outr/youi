@@ -18,11 +18,27 @@ class URLSpec extends AnyWordSpec with Matchers {
         val url = URL("http://www.outr.com/test?wsdl")
         url.parameters.encoded should be("?wsdl")
       }
+      "properly parse a simple HTTPS URL" in {
+        val url = URL("https://techcrunch.com/2019/10/13/ban-facebook-campaign-ads?utm_medium=TCnewsletter&tpcc=TCdailynewsletter")
+        url.toString should be("https://techcrunch.com/2019/10/13/ban-facebook-campaign-ads?utm_medium=TCnewsletter&tpcc=TCdailynewsletter")
+      }
       "properly parse a simple file URL" in {
         val url = URL("file:///android_asset/www/app/test.js")
         url.host should be("")
         url.path.encoded should be("/android_asset/www/app/test.js")
         url.toString should be("file:///android_asset/www/app/test.js")
+      }
+      "properly parse a URL without the protocol defined" in {
+        val url = URL("//cdn.framework7.io/i/share-banner.jpg")
+        url.toString should be("https://cdn.framework7.io/i/share-banner.jpg")
+      }
+      "properly parse a URL with just the domain name" in {
+        val url = URL("outr.com")
+        url.toString should be("https://outr.com/")
+      }
+      "properly detect an invalid TLD" in {
+        val url = URL.get("event.which")
+        url should not be Right
       }
       "properly parse a URL with two for the same key" in {
         val url = URL("http://www.outr.com/test?test=one&test=two")
@@ -57,6 +73,16 @@ class URLSpec extends AnyWordSpec with Matchers {
         val url = URL("http://www.outr.com/examples/otherstuff/test.html")
         val updated = url.withPath("/absolute.html")
         updated.path.encoded should equal("/absolute.html")
+      }
+      "apply a full part to an existing URL" in {
+        val url = URL("https://imgur.com/a/xSXO7pF")
+        val updated = url.withPart("//s.imgur.com/images/favicon-32x32.png")
+        updated.toString should be("https://s.imgur.com/images/favicon-32x32.png")
+      }
+      "apply a relative path as a part to an existing URL" in {
+        val url = URL("https://www.outr.com")
+        val updated = url.withPart("images/favicon.png")
+        updated.toString should be("https://www.outr.com/images/favicon.png")
       }
       "properly parse an extremely long URL and spit it back syntactically equal" in {
         val s = "http://www.a.com.qa/pps/a/publish/Pages/System Pages/Document View Page?com.a.b.pagesvc.renderParams.sub-53343f7a_1279673d2a9_-78af0a000136=rp.currentDocumentID=-4591476d_14a4cb0cbbf_-6cb00a000121&"

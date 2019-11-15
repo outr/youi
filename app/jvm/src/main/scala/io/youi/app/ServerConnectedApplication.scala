@@ -6,7 +6,7 @@ import scala.concurrent.duration._
 
 trait ServerConnectedApplication[C <: Connection] extends ServerApplication with YouIConnectedApplication[C] {
   def createConnection(): C
-  def connectionTimeout: FiniteDuration = 0.seconds
+  def connectionTimeout: FiniteDuration = 90.seconds
 
   val connectionManager: ConnectionManager[C] = new ConnectionManager[C](this)
 

@@ -57,7 +57,6 @@ trait Server extends HttpHandler with ErrorSupport {
   def initialize(): Future[Unit] = {
     val shouldInit = initialized.compareAndSet(false, true)
     if (shouldInit) {
-      scribe.info("Init!")
       init()
     } else {
       Future.successful(())

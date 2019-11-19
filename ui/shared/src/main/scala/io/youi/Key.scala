@@ -490,9 +490,13 @@ object Key {
     map += key.value -> key
   }
 
-  def get(value: String): Option[Key] = map.get(value)
+  def get(value: => String): Option[Key] = try {
+    map.get(value)
+  } catch {
+    case t: Throwable => None
+  }
 
-  def apply(value: String): Key = get(value).getOrElse(throw new RuntimeException(s"Unable to find Key for '$value'."))
+  def apply(value: => String): Key = get(value).getOrElse(Key.Unidentified)
 }
 
 case class KeyType private(name: String)

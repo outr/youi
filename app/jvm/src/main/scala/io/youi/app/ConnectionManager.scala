@@ -39,7 +39,7 @@ class ConnectionManager[C <: Connection](app: ServerConnectedApplication[C]) {
     _connections @= (connection :: _connections()).distinct
   }
 
-  private def removeConnection(connection: C): Unit = synchronized {
+  def removeConnection(connection: C): Unit = synchronized {
     _connections @= _connections.filterNot(_ eq connection)
     connection.disconnect()
     connection.queue.dispose()

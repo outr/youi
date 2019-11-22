@@ -1810,13 +1810,15 @@ object ContentType {
     var contentType = ContentType(`type`, subType)
     parts.tail.foreach { s =>
       val block = s.trim
-      val divider = block.indexOf('=')
-      if (divider == -1) {
-        throw new RuntimeException(s"Unable to parse content type: [$contentTypeString]")
+      if (block.nonEmpty) {
+        val divider = block.indexOf('=')
+        if (divider == -1) {
+          throw new RuntimeException(s"Unable to parse content type: [$contentTypeString], block: [$block]")
+        }
+        val name = block.substring(0, divider)
+        val value = block.substring(divider + 1)
+        contentType = contentType.withExtra(name, value)
       }
-      val name = block.substring(0, divider)
-      val value = block.substring(divider + 1)
-      contentType = contentType.withExtra(name, value)
     }
     contentType
   }

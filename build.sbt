@@ -4,7 +4,7 @@ import sbtcrossproject.CrossType
 
 name := "youi"
 organization in ThisBuild := "io.youi"
-version in ThisBuild := "0.12.9-SNAPSHOT"
+version in ThisBuild := "0.12.9"
 scalaVersion in ThisBuild := "2.13.1"
 crossScalaVersions in ThisBuild := List("2.13.1", "2.12.10")
 resolvers in ThisBuild ++= Seq(
@@ -29,7 +29,7 @@ developers in ThisBuild := List(
   Developer(id="darkfrog", name="Matt Hicks", email="matt@matthicks.com", url=url("http://matthicks.com"))
 )
 
-val profigVersion = "2.3.6"
+val profigVersion = "2.3.7"
 val scribeVersion = "2.7.10"
 val reactifyVersion = "3.0.5"
 val hasherVersion = "1.2.2"

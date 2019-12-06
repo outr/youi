@@ -55,9 +55,7 @@ trait Connection {
       case _ if text.startsWith("{") && text.endsWith("}") => {
         val message = JsonUtil.fromJsonString[Message](text)
         message.`type` match {
-          case MessageType.Invoke => receive(message).foreach { response =>
-            queue.enqueue(response)
-          }
+          case MessageType.Invoke => receive(message).foreach(queue.enqueue)
           case MessageType.Response => if (queue.success(message)) {
             // Success
           } else {
@@ -137,11 +135,20 @@ trait Connection {
   /**
     * Checks for queue entries if connected
     */
-  private def checkQueue(): Unit = if (webSocket().exists(_.status() == ConnectionStatus.Open)) {
-    val ws = webSocket().get
-    queue.next() match {
-      case Some(request) => ws.send.text @= JsonUtil.toJsonString(request.request)
-      case None => // Nothing in the queue
+  private def checkQueue(): Unit = synchronized {
+    try {
+      if (webSocket().exists(_.status() == ConnectionStatus.Open)) {
+        val ws = webSocket().get
+        queue.next() match {
+          case Some(request) => {
+            ws.send.text @= JsonUtil.toJsonString(request.request)
+            checkQueue()
+          }
+          case None => // Nothing in the queue
+        }
+      }
+    } catch {
+      case t: Throwable => scribe.error(s"Error while checking queue", t)
     }
   }
 }

@@ -6,7 +6,7 @@ import io.youi.communication.Connection
 import io.youi.http.ConnectionStatus
 import io.youi.net.{Protocol, URL}
 import io.youi.util.Time
-import org.scalajs.dom.File
+import org.scalajs.dom._
 
 import scala.concurrent.Future
 import scribe.Execution.global
@@ -40,6 +40,16 @@ trait ClientConnectedApplication[C <: Connection] extends ClientApplication with
     connection.status.attach { status =>
       if (status == ConnectionStatus.Closed) {
         disconnected()
+      }
+    }
+    window.addEventListener("online", (_: Event) => {
+      scribe.info("Back online, reconnecting...")
+      connection.disconnect()
+    })
+    BackgroundUpdates.delta.attach { d =>
+      if (d >= 60.0) {
+        scribe.info(s"Resumed from sleeping, reconnecting...")
+        connection.disconnect()
       }
     }
     connectCommunication match {
@@ -76,13 +86,6 @@ trait ClientConnectedApplication[C <: Connection] extends ClientApplication with
       scribe.info(s"Remaining: $r")
     }
     upload.future
-  }
-
-  BackgroundUpdates.delta.attach { d =>
-    if (d >= 60.0) {
-      scribe.info(s"RESUME FROM SLEEP! Delta: $d, reconnecting...")
-      connection.disconnect()
-    }
   }
 
   private def updateConnection(): Future[Unit] = {

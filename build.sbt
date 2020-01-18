@@ -4,7 +4,7 @@ import sbtcrossproject.CrossType
 
 name := "youi"
 organization in ThisBuild := "io.youi"
-version in ThisBuild := "0.12.12"
+version in ThisBuild := "0.12.13-SNAPSHOT"
 scalaVersion in ThisBuild := "2.13.1"
 crossScalaVersions in ThisBuild := List("2.13.1", "2.12.10")
 resolvers in ThisBuild ++= Seq(
@@ -39,14 +39,14 @@ val openTypeVersion = "0.7.3_1"
 val picaVersion = "3.0.5_1"
 val webFontLoaderVersion = "1.6.28_1"
 
-val scalaJSDOM = "0.9.7"
-val okHttpVersion = "4.2.2"
+val scalaJSDOM = "0.9.8"
+val okHttpVersion = "4.3.1"
 val uaDetectorVersion = "2014.10"
-val undertowVersion = "2.0.28.Final"
-val closureCompilerVersion = "v20191111"
+val undertowVersion = "2.0.29.Final"
+val closureCompilerVersion = "v20200112"
 val jSoupVersion = "1.12.1"
 val scalaXMLVersion = "1.2.0"
-val collectionCompat = "2.1.2"
+val collectionCompat = "2.1.3"
 val scalaTestVersion = "3.1.0-SNAP13"
 val scalaCheckVersion = "1.14.0"
 

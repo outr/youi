@@ -5,7 +5,7 @@ import io.youi.image.resize.ImageResizer
 import io.youi.video.Video
 import io.youi.{dom, _}
 import org.scalajs.dom._
-import org.scalajs.dom.raw.{CanvasRenderingContext2D, File, FileReader, URL}
+import org.scalajs.dom.raw.{CanvasRenderingContext2D, File}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Future, Promise}
@@ -61,10 +61,9 @@ object ImageUtility {
   }
 
   private val tempImage = dom.create[html.Image]("img")
-  private val loadImageFuture = new SingleThreadedFuture()
 
   def loadImage[R](file: File)(process: html.Image => Future[R]): Future[R] = {
-    loadImageFuture {
+    KeyedSequence(this) {
       val promise = Promise[Unit]
       val listener: js.Function1[Event, _] = (_: Event) => promise.success(())
       tempImage.addEventListener("load", listener)

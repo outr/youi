@@ -1,23 +1,56 @@
 package io.youi.net
 
-case class IPv6(part1: Option[String] = None, part2: Option[String] = None, part3: Option[String] = None, part4: Option[String] = None, part5: Option[String] = None, part6: Option[String] = None, part7: Option[String] = None, part8: Option[String] = Some("1"), scope: Option[String] = None) extends IP {
-  private def s(part: Option[String]) = part.getOrElse("0")
-  def p1 = s(part1)
-  def p2 = s(part2)
-  def p3 = s(part3)
-  def p4 = s(part4)
-  def p5 = s(part5)
-  def p6 = s(part6)
-  def p7 = s(part7)
-  def p8 = s(part8)
+case class IPv6(parts: Vector[Int], scope: Option[String]) extends IP {
+  assert(parts.length == 8, s"IPv6 requires exactly 8 parts, but received: ${parts.mkString("[", ", ", "]")} (${parts.length})")
 
-  def toInt(part: Option[String]) = Integer.parseInt(part.getOrElse("0"), 16)
+  private def s(i: Int, canonical: Boolean): String = if (canonical) {
+    f"$i%04x"
+  } else {
+    i.toHexString
+  }
 
-  lazy val address = Array(toInt(part1), toInt(part2), toInt(part3), toInt(part4), toInt(part5), toInt(part6), toInt(part7), toInt(part8))
-  lazy val addressString = s"$p1:$p2:$p3:$p4:$p5:$p6:$p7:$p8${scope.map(s => s"%$s").getOrElse("")}"
+  lazy val address: Array[Int] = parts.toArray
+  lazy val addressString: String = {
+    val base = parts.map(i => s(i, canonical = false)).mkString(":")
+    scope match {
+      case Some(scp) => s"$base%$scp"
+      case None => base
+    }
+  }
+  lazy val canonicalString: String = {
+    val base = parts.map(i => s(i, canonical = true)).mkString(":")
+    scope match {
+      case Some(scp) => s"$base%$scp"
+      case None => base
+    }
+  }
 
-  override def equals(o: scala.Any) = o match {
+  override def equals(o: scala.Any): Boolean = o match {
     case ip: IPv6 => addressString == ip.addressString
     case _ => false
   }
+}
+
+object IPv6 {
+  val Empty: IPv6 = IPv6(parts = Vector(0, 0, 0, 0, 0, 0, 0, 1), scope = None)
+
+  def apply(address: String): IPv6 = {
+    val percent = address.indexOf('%')
+    val (a, scope) = if (percent != -1) {
+      (address.substring(0, percent), Some(address.substring(percent + 1)))
+    } else {
+      (address, None)
+    }
+    val separator = a.indexOf("::")
+    if (separator != -1) {
+      val left = a.substring(0, separator).split(':').map(Some.apply).toList
+      val right = a.substring(separator + 2).split(':').map(Some.apply).toList
+      val middle = (0 until (8 - (left.length + right.length))).map(_ => None).toList
+      apply((left ::: middle ::: right).map(toInt).toVector, scope)
+    } else {
+      apply(a.split(':').map(Some.apply).map(toInt).toVector, scope)
+    }
+  }
+
+  private def toInt(part: Option[String]): Int = Integer.parseInt(part.getOrElse("0"), 16)
 }

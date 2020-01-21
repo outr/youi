@@ -28,12 +28,14 @@ object KeyedSequence {
     }
     map += key -> future
     future.onComplete { result =>
-      if (map(key) eq future) {
-        map -= key
-      }
-      result match {
-        case Success(_) => // Success, nothing to do
-        case Failure(exception) => errorHandler(exception)
+      KeyedSequence.synchronized {
+        if (map(key) eq future) {
+          map -= key
+        }
+        result match {
+          case Success(_) => // Success, nothing to do
+          case Failure(exception) => errorHandler(exception)
+        }
       }
     }
     future

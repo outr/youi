@@ -11,7 +11,8 @@ import io.youi.http.content.{Content, StringContent}
 import io.youi.net.{ContentType, Path, URL, URLMatcher}
 import io.youi.server.Server
 import io.youi.server.validation.{ValidationResult, Validator}
-import io.youi.stream.{Delta, HTMLParser, Selector}
+import io.youi.stream.delta.Delta
+import io.youi.stream.{HTMLParser, Selector}
 
 import scala.concurrent.Future
 import scribe.Execution.global

@@ -1,7 +1,7 @@
 package io.youi.http
 
 import io.youi.server.{Server, WebSocketListener}
-import io.youi.stream.Delta
+import io.youi.stream.delta.Delta
 import io.youi.{MapStore, Store}
 
 case class HttpConnection(server: Server,

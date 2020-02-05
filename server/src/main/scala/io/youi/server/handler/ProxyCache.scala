@@ -6,7 +6,7 @@ import java.nio.file.{Path, Paths}
 import io.youi.http.content.Content
 import io.youi.http.{HttpConnection, HttpStatus}
 import io.youi.net.ContentType
-import io.youi.stream.Delta
+import io.youi.stream.delta.Delta
 import io.youi.stream.Selector._
 import io.youi.stream._
 

@@ -9,7 +9,7 @@ import io.youi.net.{ContentType, IP, Path, URLMatcher}
 import io.youi.server.handler._
 import io.youi.server.rest.Restful
 import io.youi.server.validation.{ValidationResult, Validator}
-import io.youi.stream.Delta
+import io.youi.stream.delta.Delta
 
 import scala.concurrent.Future
 import scala.language.implicitConversions

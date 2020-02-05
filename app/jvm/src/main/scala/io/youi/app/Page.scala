@@ -4,7 +4,7 @@ import io.youi.http.HttpConnection
 import io.youi.http.content.Content
 import io.youi.server.handler.{CachingManager, HttpProcessor}
 import io.youi.server.validation.Validator
-import io.youi.stream._
+import io.youi.stream.delta.Delta
 
 import scala.concurrent.Future
 

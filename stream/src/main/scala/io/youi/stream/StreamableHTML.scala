@@ -4,6 +4,8 @@ import java.io.File
 import java.nio.channels.FileChannel
 import java.nio.file.StandardOpenOption
 
+import io.youi.stream.delta.Delta
+
 class StreamableHTML(file: File, cacheBuilder: CacheBuilder) {
   private var cache = cacheBuilder.buildCache()
 

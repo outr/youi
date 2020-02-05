@@ -7,11 +7,12 @@ import io.youi.http.content.{Content, FileContent, FormDataContent, StringConten
 import io.youi.net.{ContentType, URL}
 import io.youi.server.Server
 import io.youi.server.handler.{CachingManager, HttpHandler, HttpHandlerBuilder, SenderHandler}
-import io.youi.stream.{Delta, HTMLParser, Selector}
+import io.youi.stream.{HTMLParser, Selector}
 import io.youi.{JavaScriptError, JavaScriptLog, Priority, http}
 import net.sf.uadetector.UserAgentType
 import net.sf.uadetector.service.UADetectorServiceFactory
 import io.youi.stream._
+import io.youi.stream.delta.Delta
 import io.youi.util.Time
 import profig.{JsonUtil, Profig}
 import reactify.Var

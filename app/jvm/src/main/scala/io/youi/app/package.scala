@@ -2,7 +2,8 @@ package io.youi
 
 import io.youi.http.HttpConnection
 import io.youi.server.dsl.{ConnectionFilter, DeltaKey, FilterResponse}
-import io.youi.stream.{Selector, Delta}
+import io.youi.stream.delta.Delta
+import io.youi.stream.Selector
 
 import scala.concurrent.Future
 

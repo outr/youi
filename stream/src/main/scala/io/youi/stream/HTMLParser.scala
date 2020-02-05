@@ -63,9 +63,9 @@ object HTMLParser {
         try {
           val parser = new HTMLParser(input)
           val tags = parser.parse()
-          var byId = Map.empty[String, OpenTag]
-          var byClass = Map.empty[String, Set[OpenTag]]
-          var byTag = Map.empty[String, Set[OpenTag]]
+          var byId = Map.empty[String, Tag.Open]
+          var byClass = Map.empty[String, Set[Tag.Open]]
+          var byTag = Map.empty[String, Set[Tag.Open]]
           tags.foreach { tag =>
             if (tag.attributes.contains("id")) {
               byId += tag.attributes("id") -> tag
@@ -73,12 +73,12 @@ object HTMLParser {
             tag.attributes.getOrElse("class", "").split(" ").foreach { className =>
               val cn = className.trim
               if (cn.nonEmpty) {
-                var classTags = byClass.getOrElse(cn, Set.empty[OpenTag])
+                var classTags = byClass.getOrElse(cn, Set.empty[Tag.Open])
                 classTags += tag
                 byClass += cn -> classTags
               }
             }
-            var tagsByName = byTag.getOrElse(tag.tagName, Set.empty[OpenTag])
+            var tagsByName = byTag.getOrElse(tag.tagName, Set.empty[Tag.Open])
             tagsByName += tag
             byTag += tag.tagName -> tagsByName
           }
@@ -104,11 +104,11 @@ class HTMLParser(input: InputStream) {
   private var tagStart = -1
   private var tagEnd = -1
 
-  private var open = List.empty[OpenTag]
-  private var tags = Set.empty[OpenTag]
+  private var open = List.empty[Tag.Open]
+  private var tags = Set.empty[Tag.Open]
 
   @tailrec
-  final def parse(): Set[OpenTag] = input.read() match {
+  final def parse(): Set[Tag.Open] = input.read() match {
     case -1 => tags   // Finished
     case i => {
       val c = i.toChar
@@ -144,18 +144,18 @@ class HTMLParser(input: InputStream) {
   private def parseTag(): Unit = b.toString() match {
     case s if s.startsWith("<!--") || s.endsWith("-->") => // Ignore
     case CloseTagRegex(tagName) => {
-      val closeTag = CloseTag(tagName, tagStart, tagEnd)
+      val closeTag = Tag.Close(tagName, tagStart, tagEnd)
       val openTag = closeUntil(tagName).copy(close = Some(closeTag))
       tags += openTag
     }
     case SelfClosingTagRegex(tagName, attributes) => {
       val a = parseAttributes(attributes)
-      val tag = OpenTag(tagName, a, tagStart, tagEnd, close = None)
+      val tag = Tag.Open(tagName, a, tagStart, tagEnd, close = None)
       tags += tag
     }
     case OpenTagRegex(tagName, attributes) => {
       val a = parseAttributes(attributes)
-      val tag = OpenTag(tagName, a, tagStart, tagEnd, close = None)
+      val tag = Tag.Open(tagName, a, tagStart, tagEnd, close = None)
       open = tag :: open
     }
   }
@@ -193,7 +193,7 @@ class HTMLParser(input: InputStream) {
   }
 
   @tailrec
-  private def closeUntil(tagName: String): OpenTag = {
+  private def closeUntil(tagName: String): Tag.Open = {
     if (open.isEmpty) {
       throw new RuntimeException(s"Missing close tag for $tagName!")
     }

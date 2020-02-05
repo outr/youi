@@ -7,9 +7,9 @@ import java.nio.file.StandardOpenOption
 class StreamableHTML(file: File, cacheBuilder: CacheBuilder) {
   private var cache = cacheBuilder.buildCache()
 
-  def byId: Map[String, OpenTag] = cache.byId
-  def byClass: Map[String, Set[OpenTag]] = cache.byClass
-  def byTag: Map[String, Set[OpenTag]] = cache.byTag
+  def byId: Map[String, Tag.Open] = cache.byId
+  def byClass: Map[String, Set[Tag.Open]] = cache.byClass
+  def byTag: Map[String, Set[Tag.Open]] = cache.byTag
 
   def stream(deltas: List[Delta],
              selector: Option[Selector] = None,
@@ -73,12 +73,3 @@ class StreamableHTML(file: File, cacheBuilder: CacheBuilder) {
     }
   }
 }
-
-trait CacheBuilder {
-  def isStale: Boolean
-  def buildCache(): CachedInformation
-}
-
-case class CachedInformation(byId: Map[String, OpenTag],
-                             byClass: Map[String, Set[OpenTag]],
-                             byTag: Map[String, Set[OpenTag]])

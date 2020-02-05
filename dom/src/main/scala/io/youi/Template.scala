@@ -2,7 +2,7 @@ package io.youi
 
 import java.io.File
 
-import io.youi.stream.{ByClass, ById, ByTag, HTMLParser}
+import io.youi.stream.{HTMLParser, Selector}
 import org.scalajs.dom.Element
 import profig.Profig
 
@@ -44,7 +44,7 @@ object TemplateMacros {
       context.abort(context.enclosingPosition, s"Unable to find path for ${file.getAbsolutePath}.")
     }
     val parser = HTMLParser(file)
-    val template = parser.stream(Nil, selector = Some(ById(idValue)))
+    val template = parser.stream(Nil, selector = Some(Selector.ById(idValue)))
     if (template.trim.isEmpty) {
       context.abort(context.enclosingPosition, s"No content found for #$idValue in ${file.getAbsolutePath}")
     }
@@ -85,7 +85,7 @@ object TemplateMacros {
       context.abort(context.enclosingPosition, s"Unable to find path for ${file.getAbsolutePath}.")
     }
     val parser = HTMLParser(file)
-    val template = parser.stream(Nil, selector = Some(ByClass(classValue)), includeAllMatches = true)
+    val template = parser.stream(Nil, selector = Some(Selector.ByClass(classValue)), includeAllMatches = true)
     if (template.trim.isEmpty) {
       context.abort(context.enclosingPosition, s"No content found for .$classValue in ${file.getAbsolutePath}")
     }
@@ -126,7 +126,7 @@ object TemplateMacros {
       context.abort(context.enclosingPosition, s"Unable to find path for ${file.getAbsolutePath}.")
     }
     val parser = HTMLParser(file)
-    val template = parser.stream(Nil, selector = Some(ByTag(tagValue)), includeAllMatches = true)
+    val template = parser.stream(Nil, selector = Some(Selector.ByTag(tagValue)), includeAllMatches = true)
     if (template.trim.isEmpty) {
       context.abort(context.enclosingPosition, s"No content found for $tagValue in ${file.getAbsolutePath}")
     }

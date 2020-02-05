@@ -10,6 +10,8 @@ import io.youi.stream._
 import scala.collection.mutable.ListBuffer
 
 object HTMLOptimizer {
+  import Selector._
+
   private def createTempFile(fileType: String, extension: String): File = {
     val temp = File.createTempFile(s"youi-optimizer-$fileType", s".$extension")
     temp.deleteOnExit()
@@ -27,7 +29,7 @@ object HTMLOptimizer {
     val stream = HTMLParser(input)
     var scripts = ListBuffer.empty[ScriptFile]
     val result = stream.stream(List(
-      Delta.Process(ByTag("script"), replace = true, onlyOpenTag = false, processor = (openTag: OpenTag, content: String) => {
+      Delta.Process(ByTag("script"), replace = true, onlyOpenTag = false, processor = (openTag: Tag.Open, content: String) => {
         val script: ScriptFile = openTag.attributes.get("src") match {
           case Some(src) => {           // External script file
             val minified = src.toLowerCase.endsWith(".min.js")

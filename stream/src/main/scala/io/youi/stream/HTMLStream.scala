@@ -3,6 +3,8 @@ package io.youi.stream
 import java.nio.channels.SeekableByteChannel
 
 class HTMLStream(val streamable: StreamableHTML) {
+  import StreamAction._
+
   private var actions = Set.empty[StreamAction]
   private var group: Option[Group] = None
 

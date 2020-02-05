@@ -2,7 +2,7 @@ package io.youi
 
 import io.youi.http.HttpConnection
 import io.youi.server.dsl.{ConnectionFilter, DeltaKey, FilterResponse}
-import io.youi.stream.{ByTag, Delta}
+import io.youi.stream.{Selector, Delta}
 
 import scala.concurrent.Future
 
@@ -17,7 +17,7 @@ package object app {
         ""
       }
       val applicationDeltas = List(
-        Delta.InsertLastChild(ByTag("body"),
+        Delta.InsertLastChild(Selector.ByTag("body"),
           s"""
              |$jsDeps
              |<script src="${server.applicationJSPath}"></script>

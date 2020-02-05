@@ -2,18 +2,18 @@ package io.youi.stream
 
 sealed trait Delta {
   def selector: Selector
-  def apply(streamer: HTMLStream, tag: OpenTag): Unit
+  def apply(streamer: HTMLStream, tag: Tag.Open): Unit
 }
 
 class Replace(val selector: Selector, val content: () => String) extends Delta {
-  override def apply(streamer: HTMLStream, tag: OpenTag): Unit = {
+  override def apply(streamer: HTMLStream, tag: Tag.Open): Unit = {
     streamer.replace(tag.start, tag.close.map(_.end).getOrElse(tag.end), content())
   }
 }
 class ReplaceAttribute(val selector: Selector, attributeName: String, val content: () => String) extends Delta {
   private val AttributeRegex = s"""$attributeName="(.*?)"""".r
 
-  override def apply(streamer: HTMLStream, tag: OpenTag): Unit = {
+  override def apply(streamer: HTMLStream, tag: Tag.Open): Unit = {
     val attribute = s"""$attributeName="${content()}""""
     streamer.process(tag.start, tag.end, (block: String) => {
       AttributeRegex.replaceAllIn(block, replacer => {
@@ -33,9 +33,9 @@ class ReplaceAttribute(val selector: Selector, attributeName: String, val conten
 class Processor(val selector: Selector,
                 replace: Boolean,
                 onlyOpenTag: Boolean,
-                processor: (OpenTag, String) => String,
-                closeTagProcessor: Option[(OpenTag, CloseTag, String) => String]) extends Delta {
-  override def apply(streamer: HTMLStream, tag: OpenTag): Unit = {
+                processor: (Tag.Open, String) => String,
+                closeTagProcessor: Option[(Tag.Open, Tag.Close, String) => String]) extends Delta {
+  override def apply(streamer: HTMLStream, tag: Tag.Open): Unit = {
     val end = if (onlyOpenTag) {
       tag.end
     } else {
@@ -50,32 +50,32 @@ class Processor(val selector: Selector,
   }
 }
 class InsertBefore(val selector: Selector, val content: () => String) extends Delta {
-  override def apply(streamer: HTMLStream, tag: OpenTag): Unit = {
+  override def apply(streamer: HTMLStream, tag: Tag.Open): Unit = {
     streamer.insert(tag.start, content())
   }
 }
 class InsertFirstChild(val selector: Selector, val content: () => String) extends Delta {
-  override def apply(streamer: HTMLStream, tag: OpenTag): Unit = {
+  override def apply(streamer: HTMLStream, tag: Tag.Open): Unit = {
     streamer.insert(tag.end, content())
   }
 }
 class ReplaceContent(val selector: Selector, val content: () => String) extends Delta {
-  override def apply(streamer: HTMLStream, tag: OpenTag): Unit = {
+  override def apply(streamer: HTMLStream, tag: Tag.Open): Unit = {
     streamer.replace(tag.end, tag.close.get.start, content())
   }
 }
 class InsertLastChild(val selector: Selector, val content: () => String) extends Delta {
-  override def apply(streamer: HTMLStream, tag: OpenTag): Unit = {
+  override def apply(streamer: HTMLStream, tag: Tag.Open): Unit = {
     streamer.insert(tag.close.get.start, content())
   }
 }
 class InsertAfter(val selector: Selector, val content: () => String) extends Delta {
-  override def apply(streamer: HTMLStream, tag: OpenTag): Unit = {
+  override def apply(streamer: HTMLStream, tag: Tag.Open): Unit = {
     streamer.insert(tag.close.map(_.end).getOrElse(tag.end), content())
   }
 }
 class Repeat[Data](val selector: Selector, data: List[Data], deltas: Data => List[Delta]) extends Delta {
-  override def apply(streamer: HTMLStream, tag: OpenTag): Unit = {
+  override def apply(streamer: HTMLStream, tag: Tag.Open): Unit = {
     data.zipWithIndex.foreach {
       case (d, index) => {
         streamer.grouped(index) {
@@ -93,12 +93,12 @@ class Repeat[Data](val selector: Selector, data: List[Data], deltas: Data => Lis
   }
 }
 class Template(val selector: Selector, deltas: List[Delta]) extends Delta {
-  override def apply(streamer: HTMLStream, tag: OpenTag): Unit = {
+  override def apply(streamer: HTMLStream, tag: Tag.Open): Unit = {
     streamer.insert(tag.start, streamer.streamable.stream(deltas, Some(selector)))
   }
 }
 class Grouped(val selector: Selector, deltas: List[Delta]) extends Delta {
-  override def apply(streamer: HTMLStream, tag: OpenTag): Unit = {
+  override def apply(streamer: HTMLStream, tag: Tag.Open): Unit = {
     deltas.zipWithIndex.foreach {
       case (d, index) => {
         streamer.grouped(index) {
@@ -114,8 +114,8 @@ object Delta {
   def Process(selector: Selector,
               replace: Boolean,
               onlyOpenTag: Boolean,
-              processor: (OpenTag, String) => String,
-              closeTagProcessor: Option[(OpenTag, CloseTag, String) => String] = None): Processor = new Processor(selector, replace, onlyOpenTag, processor, closeTagProcessor)
+              processor: (Tag.Open, String) => String,
+              closeTagProcessor: Option[(Tag.Open, Tag.Close, String) => String] = None): Processor = new Processor(selector, replace, onlyOpenTag, processor, closeTagProcessor)
   def InsertBefore(selector: Selector, content: => String): InsertBefore = new InsertBefore(selector, () => content)
   def InsertFirstChild(selector: Selector, content: => String): InsertFirstChild = new InsertFirstChild(selector, () => content)
   def ReplaceContent(selector: Selector, content: => String): ReplaceContent = new ReplaceContent(selector, () => content)

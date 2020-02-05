@@ -1,11 +1,13 @@
 package io.youi.server.handler
+
 import java.net.{URL, URLEncoder}
 import java.nio.file.{Path, Paths}
 
 import io.youi.http.content.Content
 import io.youi.http.{HttpConnection, HttpStatus}
 import io.youi.net.ContentType
-import io.youi.stream.{ByMultiple, ByTag, Delta}
+import io.youi.stream.Delta
+import io.youi.stream.Selector._
 import io.youi.stream._
 
 import scala.concurrent.Future

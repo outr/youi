@@ -7,7 +7,7 @@ import io.youi.http.content.{Content, FileContent, FormDataContent, StringConten
 import io.youi.net.{ContentType, URL}
 import io.youi.server.Server
 import io.youi.server.handler.{CachingManager, HttpHandler, HttpHandlerBuilder, SenderHandler}
-import io.youi.stream.{ByTag, Delta, HTMLParser, Selector}
+import io.youi.stream.{Delta, HTMLParser, Selector}
 import io.youi.{JavaScriptError, JavaScriptLog, Priority, http}
 import net.sf.uadetector.UserAgentType
 import net.sf.uadetector.service.UADetectorServiceFactory
@@ -198,7 +198,7 @@ trait ServerApplication extends YouIApplication with Server {
         ""
       }
       List(
-        Delta.InsertLastChild(ByTag("body"),
+        Delta.InsertLastChild(Selector.ByTag("body"),
           s"""
              |${scriptPaths.map(p => s"""<script src="$p"></script>""").mkString("\n")}
              |${responseFields.mkString("\n")}

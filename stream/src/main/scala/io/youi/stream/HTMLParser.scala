@@ -5,7 +5,6 @@ import java.net.URL
 import java.util.concurrent.ConcurrentHashMap
 
 import io.youi.http.content._
-import io.youi.stream._
 
 import scala.annotation.tailrec
 import scala.jdk.CollectionConverters._
@@ -24,9 +23,9 @@ object HTMLParser {
   /**
     * The set of attributes to limit to if filterAttributes is set to true.
     *
-    * Defaults to "id" and "class".
+    * Defaults to "id", "class", and "data-youi".
     */
-  var validAttributes: Set[String] = Set("id", "class")
+  var validAttributes: Set[String] = Set("id", "class", "data-youi", "data-youi-class")
 
   private val parsers = new ConcurrentHashMap[File, StreamableHTML]().asScala
 
@@ -53,7 +52,7 @@ object HTMLParser {
   }
 
   def apply(file: File): StreamableHTML = {
-    val cacheBuilder = new CacheBuilder {
+    val cacheBuilder: CacheBuilder = new CacheBuilder {
       private var lastModified: Long = 0L
 
       override def isStale: Boolean = lastModified != file.lastModified()
@@ -66,6 +65,7 @@ object HTMLParser {
           var byId = Map.empty[String, Tag.Open]
           var byClass = Map.empty[String, Set[Tag.Open]]
           var byTag = Map.empty[String, Set[Tag.Open]]
+          var byAttribute = Map.empty[String, Set[Tag.Open]]
           tags.foreach { tag =>
             if (tag.attributes.contains("id")) {
               byId += tag.attributes("id") -> tag
@@ -78,12 +78,17 @@ object HTMLParser {
                 byClass += cn -> classTags
               }
             }
+            tag.attributes.keys.foreach { attributeName =>
+              var attributeNameTags = byAttribute.getOrElse(attributeName, Set.empty[Tag.Open])
+              attributeNameTags += tag
+              byAttribute += attributeName -> attributeNameTags
+            }
             var tagsByName = byTag.getOrElse(tag.tagName, Set.empty[Tag.Open])
             tagsByName += tag
             byTag += tag.tagName -> tagsByName
           }
           lastModified = file.lastModified()
-          CachedInformation(byId, byClass, byTag)
+          CachedInformation(byId, byClass, byTag, byAttribute)
         } catch {
           case throwable: Throwable => throw new RuntimeException(s"Error parsing ${file.getAbsolutePath}", throwable)
         } finally {

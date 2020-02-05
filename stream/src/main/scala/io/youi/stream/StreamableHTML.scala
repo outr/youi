@@ -12,6 +12,7 @@ class StreamableHTML(file: File, cacheBuilder: CacheBuilder) {
   def byId: Map[String, Tag.Open] = cache.byId
   def byClass: Map[String, Set[Tag.Open]] = cache.byClass
   def byTag: Map[String, Set[Tag.Open]] = cache.byTag
+  def byAttribute: Map[String, Set[Tag.Open]] = cache.byAttribute
 
   def stream(deltas: List[Delta],
              selector: Option[Selector] = None,

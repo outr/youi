@@ -17,6 +17,10 @@ object Selector {
     override def lookup(streamable: StreamableHTML): Set[Tag.Open] = streamable.byTag.getOrElse(tagName, Set.empty)
   }
 
+  case class HasAtribute(attributeName: String) extends Selector {
+    override def lookup(streamable: StreamableHTML): Set[Tag.Open] = streamable.byAttribute.getOrElse(attributeName, Set.empty)
+  }
+
   case class ByMultiple(selectors: Selector*) extends Selector {
     override def lookup(streamable: StreamableHTML): Set[Tag.Open] = selectors.flatMap(_.lookup(streamable)).toSet
   }

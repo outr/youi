@@ -140,7 +140,11 @@ lazy val spatialJVM = spatial.jvm
 
 lazy val stream = project.in(file("stream"))
   .settings(
-    name := "youi-stream"
+    name := "youi-stream",
+    libraryDependencies ++= Seq(
+      "org.scalatest" %%% "scalatest" % scalaTestVersion % "test",
+      "org.scalacheck" %%% "scalacheck" % scalaCheckVersion % "test"
+    )
   )
   .dependsOn(coreJVM)
 

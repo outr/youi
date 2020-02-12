@@ -29,7 +29,7 @@ developers in ThisBuild := List(
   Developer(id="darkfrog", name="Matt Hicks", email="matt@matthicks.com", url=url("http://matthicks.com"))
 )
 
-val profigVersion = "2.3.7"
+val profigVersion = "2.3.8-SNAPSHOT"
 val scribeVersion = "2.7.10"
 val reactifyVersion = "3.0.5"
 val hasherVersion = "1.2.2"

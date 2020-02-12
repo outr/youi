@@ -157,7 +157,7 @@ case class HttpHandlerBuilder(server: Server,
           case Right(request) => Future.successful {
             val response = handler(request)
             val responseJson = response.asJson
-            val responseJsonString = printer.pretty(responseJson)
+            val responseJsonString = printer.print(responseJson)
             connection.modify { httpResponse =>
               httpResponse.withContent(Content.string(responseJsonString, ContentType.`application/json`))
             }

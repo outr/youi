@@ -54,7 +54,7 @@ class RestfulHandler[Request, Response](restful: Restful[Request, Response])
     future.map { result =>
       // Encode response
       val responseJson = result.response.asJson
-      val responseJsonString = RestfulHandler.printer.pretty(responseJson)
+      val responseJsonString = RestfulHandler.printer.print(responseJson)
 
       // Attach content
       connection.modify { httpResponse =>

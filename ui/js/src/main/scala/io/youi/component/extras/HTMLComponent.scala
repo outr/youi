@@ -160,7 +160,7 @@ trait HTMLComponent[E <: html.Element] extends Component with HTMLComponentTheme
 object HTMLComponent extends HTMLComponentTheme {
   override protected def defaultParentTheme: Theme = Component
 
-  def create[T <: Element](tagName: String): T = {
+  def create[T <: html.Element](tagName: String): T = {
     val e = dom.create[T](tagName)
     // TODO: init
     e

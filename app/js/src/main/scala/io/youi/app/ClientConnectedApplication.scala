@@ -37,10 +37,10 @@ trait ClientConnectedApplication[C <: Connection] extends ClientApplication with
   )(updateConnection())
 
   override protected def init(): Future[Unit] = super.init().flatMap { _ =>
-    connection.status.attach { status =>
-      if (status == ConnectionStatus.Closed) {
-        disconnected()
-      }
+    connection.status.attach {
+      case ConnectionStatus.Open => connection.webSocket.foreach(_.send.text @= "PING")
+      case ConnectionStatus.Closed => disconnected()
+      case _ => // Ignore others
     }
     window.addEventListener("online", (_: Event) => {
       scribe.info("Back online, reconnecting...")

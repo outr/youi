@@ -28,6 +28,7 @@ object dom extends ExtendedElement(None) {
     def apply[T <: html.Element](tagName: String): T = document.createElement(tagName).asInstanceOf[T]
 
     def div: html.Div = create[html.Div]("div")
+    def span: html.Span = create[html.Span]("span")
     def input: html.Input = create[html.Input]("input")
     def text(value: String): Text = document.createTextNode(value)
   }

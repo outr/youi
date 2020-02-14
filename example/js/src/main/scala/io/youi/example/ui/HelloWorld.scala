@@ -1,9 +1,10 @@
 package io.youi.example.ui
 
 import io.youi._
-import io.youi.component.HTMLTextView
+import io.youi.component.extras.HTMLComponent
 import io.youi.example.screen.UIExampleScreen
 import io.youi.font.GoogleFont
+import io.youi.gui._
 import io.youi.net._
 import reactify._
 
@@ -15,14 +16,15 @@ class HelloWorld extends UIExampleScreen {
   override def path: Path = path"/examples/hello.html"
 
   override def createUI(): Future[Unit] = GoogleFont.`Lobster`.load().map { fnt =>
-    val textView = new HTMLTextView {
-      value @= "Hello, World!"
-      font @= fnt
+    val text = new Text() with PositionSupport {
+      content @= "Hello, World!"
+      font.family @= fnt.family
       font.size @= 64.px
-      color @= Color.DarkBlue
-      position.center := container.size.center()
-      position.middle := container.size.middle()
+      color @= Some(Color.DarkBlue)
+      position.`type` @= PositionType.Absolute
+      position.center := container.size.center
+      position.middle := container.size.middle
     }
-    container.children += textView
+    HTMLComponent.element(container).appendChild(text)
   }
 }

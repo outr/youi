@@ -1,8 +1,8 @@
 package io.youi.server.handler
 
-import io.youi.Priority
 import io.youi.http.content.Content
 import io.youi.http.{HttpConnection, HttpStatus, StringHeaderKey}
+import scribe.Priority
 
 import scala.concurrent.Future
 

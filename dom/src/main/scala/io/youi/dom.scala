@@ -24,9 +24,13 @@ object dom extends ExtendedElement(None) {
     firstBySelector[T](selectors, root).getOrElse(throw new RuntimeException(s"Unable to find element by selector: $selectors."))
   }
 
-  def create[T <: Element](tagName: String): T = document.createElement(tagName).asInstanceOf[T]
+  object create {
+    def apply[T <: html.Element](tagName: String): T = document.createElement(tagName).asInstanceOf[T]
 
-  def text(value: String): Text = document.createTextNode(value)
+    def div: html.Div = create[html.Div]("div")
+    def input: html.Input = create[html.Input]("input")
+    def text(value: String): Text = document.createTextNode(value)
+  }
 
   def fromString[T <: Element](htmlString: String): List[T] = {
     val container: Div = create[Div]("div")

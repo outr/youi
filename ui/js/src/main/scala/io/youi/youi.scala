@@ -3,6 +3,7 @@ package io
 import io.youi.component.Component
 import io.youi.event.KeyEvent
 import io.youi.font.{FontAwesome, GoogleFont, GoogleFontWeight, MaterialIcon, MaterialIconView}
+import io.youi.gui
 import io.youi.paint.Paint
 import io.youi.task.PartialAnimate
 import io.youi.theme.StyleProp
@@ -112,7 +113,7 @@ package object youi {
   }
 
   implicit class ExtendedKeyboardEvent(evt: KeyboardEvent) {
-    def toKeyEvent(target: Component, `type`: KeyEvent.Type): Option[KeyEvent] = {
+    def toKeyEvent(target: gui.Component, `type`: KeyEvent.Type): Option[KeyEvent] = {
       Key.get(evt.key).map { key =>
         new KeyEvent(
           target = target,

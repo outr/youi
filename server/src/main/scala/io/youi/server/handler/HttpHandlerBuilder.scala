@@ -5,7 +5,6 @@ import java.io.File
 import io.circe.parser._
 import io.circe.syntax._
 import io.circe.{Decoder, Encoder, Json, Printer}
-import io.youi.Priority
 import io.youi.http._
 import io.youi.http.content.{Content, StringContent}
 import io.youi.net.{ContentType, Path, URL, URLMatcher}
@@ -16,6 +15,7 @@ import io.youi.stream.{HTMLParser, Selector}
 
 import scala.concurrent.Future
 import scribe.Execution.global
+import scribe.Priority
 
 case class HttpHandlerBuilder(server: Server,
                               urlMatcher: Option[URLMatcher] = None,

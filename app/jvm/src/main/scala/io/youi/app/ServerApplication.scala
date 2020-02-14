@@ -8,7 +8,7 @@ import io.youi.net.{ContentType, URL}
 import io.youi.server.Server
 import io.youi.server.handler.{CachingManager, HttpHandler, HttpHandlerBuilder, SenderHandler}
 import io.youi.stream.{HTMLParser, Selector}
-import io.youi.{JavaScriptError, JavaScriptLog, Priority, http}
+import io.youi.{JavaScriptError, JavaScriptLog, http}
 import net.sf.uadetector.UserAgentType
 import net.sf.uadetector.service.UADetectorServiceFactory
 import io.youi.stream._
@@ -16,6 +16,7 @@ import io.youi.stream.delta.Delta
 import io.youi.util.Time
 import profig.{JsonUtil, Profig}
 import reactify.Var
+import scribe.Priority
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}

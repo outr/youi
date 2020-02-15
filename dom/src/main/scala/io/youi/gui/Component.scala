@@ -18,6 +18,10 @@ class Component(val element: html.Element) {
     get = Color.unapply(element.style.color),
     set = o => element.style.color = o.map(_.toRGBA).getOrElse("")
   )
+  lazy val backgroundColor: Prop[Option[Color]] = new Prop[Option[Color]](
+    get = Color.unapply(element.style.color),
+    set = o => element.style.backgroundColor = o.map(_.toRGBA).getOrElse("")
+  )
 
   protected def measure(): Unit = {}
 }

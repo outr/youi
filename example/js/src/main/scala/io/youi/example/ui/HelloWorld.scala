@@ -16,7 +16,7 @@ class HelloWorld extends Screen with PathActivation {
   override def title: String = "Hello World"
   override def path: Path = path"/examples/hello.html"
 
-  private val text = new Text() with PositionSupport {
+  private val text = new Text() with PositionSupport with MeasuredSupport {
     content @= "Hello, World!"
     font.size @= 64.px
     color @= Some(Color.DarkBlue)

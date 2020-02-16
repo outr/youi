@@ -53,7 +53,7 @@ val scalaCheckVersion = "1.14.0"
 lazy val root = project.in(file("."))
   .aggregate(
     macrosJS, macrosJVM, coreJS, coreJVM, spatialJS, spatialJVM, stream, dom, clientJS, clientJVM, communicationJS,
-    communicationJVM, server, serverUndertow, uiJS, uiJVM, optimizer, appJS, appJVM, exampleJS, exampleJVM
+    communicationJVM, server, serverUndertow, uiJS, uiJVM, gui, optimizer, appJS, appJVM, exampleJS, exampleJVM
   )
   .settings(
     publish := {},
@@ -221,6 +221,14 @@ lazy val ui = crossProject(JSPlatform, JVMPlatform).in(file("ui"))
 lazy val uiJS = ui.js.dependsOn(dom)
 lazy val uiJVM = ui.jvm
 
+lazy val gui = project.in(file("gui"))
+  .enablePlugins(ScalaJSPlugin)
+  .settings(
+    name := "youi-gui",
+    jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv
+  )
+  .dependsOn(dom)
+
 lazy val optimizer = project.in(file("optimizer"))
   .settings(
     name := "youi-optimizer",
@@ -267,7 +275,7 @@ lazy val example = crossApplication.in(file("example"))
     )
   )
 
-lazy val exampleJS = example.js.dependsOn(appJS)
+lazy val exampleJS = example.js.dependsOn(appJS, gui)
 lazy val exampleJVM = example.jvm.dependsOn(serverUndertow, appJVM)
 
 lazy val utilities = project.in(file("utilities"))

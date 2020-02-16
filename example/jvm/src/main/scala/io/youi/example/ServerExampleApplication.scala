@@ -31,6 +31,7 @@ object ServerExampleApplication extends ExampleApplication with ServerConnectedA
           path"/hello.txt" / CachingManager.MaxAge(120L) / "Hello, World!".withContentType(ContentType.`text/plain`),
           path"/hello.json" / Content.json(JsonUtil.toJson(Greeting("Hello", "World"))),
           combined.any(
+            path.exact(path"/courio.html"),
             path.matches("/examples/.*[.]html"),
             path.exact("/ui-examples.html")
           ) / Application / ServerApplication.AppTemplate,

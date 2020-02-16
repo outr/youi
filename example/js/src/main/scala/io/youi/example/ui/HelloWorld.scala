@@ -4,9 +4,10 @@ import io.youi._
 import io.youi.app.screen.{PathActivation, Screen}
 import io.youi.font.GoogleFont
 import io.youi.gui._
+import io.youi.gui.support.{MeasuredSupport, PositionSupport}
+import io.youi.gui.types.PositionType
 import io.youi.net._
 import reactify._
-
 import org.scalajs.dom.document
 
 import scala.concurrent.Future
@@ -16,7 +17,7 @@ class HelloWorld extends Screen with PathActivation {
   override def title: String = "Hello World"
   override def path: Path = path"/examples/hello.html"
 
-  private val text = new Text() with PositionSupport with MeasuredSupport {
+  private val text = new TextView() with PositionSupport with MeasuredSupport {
     content @= "Hello, World!"
     font.size @= 64.px
     color @= Some(Color.DarkBlue)

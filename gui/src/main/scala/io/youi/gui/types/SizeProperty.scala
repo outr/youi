@@ -1,4 +1,4 @@
-package io.youi.gui
+package io.youi.gui.types
 
 import reactify.Var
 import reactify.standard.StandardVar

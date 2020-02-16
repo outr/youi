@@ -3,6 +3,8 @@ package io.youi.example.ui
 import io.youi.app.screen.{PathActivation, Screen}
 import io.youi.{Color, dom, ui}
 import io.youi.gui._
+import io.youi.gui.support.{MarginSupport, PositionSupport, SizeSupport}
+import io.youi.gui.types.PositionType
 import io.youi.net._
 import org.scalajs.dom._
 

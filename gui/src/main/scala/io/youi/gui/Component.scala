@@ -1,6 +1,7 @@
 package io.youi.gui
 
 import io.youi.Color
+import io.youi.gui.types.Prop
 import org.scalajs.dom.html
 
 class Component(val element: html.Element) {

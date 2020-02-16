@@ -1,4 +1,7 @@
-package io.youi.gui
+package io.youi.gui.support
+
+import io.youi.gui.types.{Prop, SizeProperty}
+import io.youi.gui.Component
 
 trait FontSupport {
   this: Component =>

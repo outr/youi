@@ -1,5 +1,7 @@
-package io.youi.gui
+package io.youi.gui.support
 
+import io.youi.gui.types.{PositionType, Prop, SizeProperty}
+import io.youi.gui.Component
 import reactify.{Dep, Var}
 
 trait PositionSupport {

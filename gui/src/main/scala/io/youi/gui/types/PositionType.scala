@@ -1,4 +1,4 @@
-package io.youi.gui
+package io.youi.gui.types
 
 sealed abstract class PositionType(val name: String)
 

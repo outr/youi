@@ -227,7 +227,7 @@ lazy val gui = project.in(file("gui"))
     name := "youi-gui",
     jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv
   )
-  .dependsOn(dom)
+  .dependsOn(dom, spatialJS)
 
 lazy val optimizer = project.in(file("optimizer"))
   .settings(

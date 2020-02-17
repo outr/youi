@@ -1,11 +1,11 @@
 package io.youi.gui.event
 
 import io.youi.gui.Component
-
 import org.scalajs.{dom => jsdom}
+
 import scala.scalajs.js
 
-class EventSupport {
+trait EventSupport {
   this: Component =>
 
   lazy val event: Events = new Events(this)

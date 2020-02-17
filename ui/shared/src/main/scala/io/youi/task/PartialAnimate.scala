@@ -9,7 +9,7 @@ case class PartialAnimate(get: () => Double,
                           destination: () => Double) {
   def from(value: => Double): PartialAnimate = copy(get = () => value)
 
-  def in(duration: FiniteDuration) = AnimateIn(get, apply, destination, duration, Easing.linear)
+  def in(duration: FiniteDuration): AnimateIn = AnimateIn(get, apply, destination, duration, Easing.linear)
 
   def by(stepBy: Double): Task = AnimateBy(stepBy, get, apply, destination)
 }

@@ -7,6 +7,7 @@ import io.youi.gui.event.{EventSupport, GestureSupport}
 import io.youi.gui.support.{MarginSupport, PositionSupport, SizeSupport}
 import io.youi.gui.types.PositionType
 import io.youi.net._
+import io.youi.task.AnimateBy
 import org.scalajs.dom._
 
 import scala.concurrent.Future
@@ -61,18 +62,17 @@ object Sidebar extends Component(dom.create.div) with PositionSupport with SizeS
     backgroundColor @= Color.Red
 
     gestures.pointers.dragged.attach { pointer =>
-      val x = math.min(0.0, pointer.movedFromStart.deltaX)
+      val x = math.min(0.0, pointer.move.global.x - 250.0)
       Sidebar.position.x @= x
     }
+
+    import io.youi.task._
+    val adjust = 800.0
     gestures.pointers.removed.on {
       if (Sidebar.position.x < -(Sidebar.size.width / 2)) {
-        // TODO: animate
-        Sidebar.position.x @= -Sidebar.size.width
-        scribe.info("Collapse!")
+        Sidebar.position.x to -Sidebar.size.width() by adjust start(ui)
       } else {
-        // TODO: animate
-        Sidebar.position.x @= 0.0
-        scribe.info("Expand!")
+        Sidebar.position.x to 0.0 by adjust start(ui)
       }
     }
   }

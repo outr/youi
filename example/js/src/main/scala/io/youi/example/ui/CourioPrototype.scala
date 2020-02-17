@@ -61,7 +61,19 @@ object Sidebar extends Component(dom.create.div) with PositionSupport with SizeS
     backgroundColor @= Color.Red
 
     gestures.pointers.dragged.attach { pointer =>
-      scribe.info(s"Dragging: $pointer")
+      val x = math.min(0.0, pointer.movedFromStart.deltaX)
+      Sidebar.position.x @= x
+    }
+    gestures.pointers.removed.on {
+      if (Sidebar.position.x < -(Sidebar.size.width / 2)) {
+        // TODO: animate
+        Sidebar.position.x @= -Sidebar.size.width
+        scribe.info("Collapse!")
+      } else {
+        // TODO: animate
+        Sidebar.position.x @= 0.0
+        scribe.info("Expand!")
+      }
     }
   }
 

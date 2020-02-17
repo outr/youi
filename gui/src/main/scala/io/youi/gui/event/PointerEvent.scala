@@ -12,13 +12,15 @@ class PointerEvent(underlying: jsdom.MouseEvent | HTMLPointerEvent | jsdom.Touch
     val e = underlying.asInstanceOf[jsdom.MouseEvent]
     Point(e.clientX, e.clientY)
   } else {
-    Point.zero
+    val e = underlying.asInstanceOf[jsdom.TouchEvent]
+    Point(e.touches(0).clientX, e.touches(0).clientY)
   }
   lazy val global: Point = if (isMouse) {
     val e = underlying.asInstanceOf[jsdom.MouseEvent]
     Point(e.pageX, e.pageY)
   } else {
-    Point.zero
+    val e = underlying.asInstanceOf[jsdom.TouchEvent]
+    Point(e.touches(0).pageX, e.touches(0).pageY)
   }
 
   private lazy val hpe: Option[HTMLPointerEvent] = if (isPointer) {

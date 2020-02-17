@@ -54,6 +54,8 @@ class PointerEvent(underlying: jsdom.MouseEvent | HTMLPointerEvent | jsdom.Touch
   def capsLockOn: Boolean = modifierState(Key.CapsLock)
   def numLockOn: Boolean = modifierState(Key.NumLock)
   def scrollLockOn: Boolean = modifierState(Key.ScrollLock)
+
+  override def toString: String = s"PointerEvent(type: ${`type`}, local: $local, global: $global)"
 }
 
 object PointerEvent {

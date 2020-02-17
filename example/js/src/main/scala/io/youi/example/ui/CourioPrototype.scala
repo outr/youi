@@ -3,7 +3,7 @@ package io.youi.example.ui
 import io.youi.app.screen.{PathActivation, Screen}
 import io.youi.{Color, dom, ui}
 import io.youi.gui._
-import io.youi.gui.event.EventSupport
+import io.youi.gui.event.{EventSupport, GestureSupport}
 import io.youi.gui.support.{MarginSupport, PositionSupport, SizeSupport}
 import io.youi.gui.types.PositionType
 import io.youi.net._
@@ -52,7 +52,7 @@ object Sidebar extends Component(dom.create.div) with PositionSupport with SizeS
     margin.left @= 20.0
   }
 
-  private val grabArea: Component = new Component(dom.create.div) with SizeSupport with PositionSupport with EventSupport {
+  private val grabArea: Component = new Component(dom.create.div) with SizeSupport with PositionSupport with GestureSupport {
     position.x @= 250.0
     position.y @= 0.0
     position.`type` @= PositionType.Absolute
@@ -60,14 +60,8 @@ object Sidebar extends Component(dom.create.div) with PositionSupport with SizeS
     size.height := ui.size.height
     backgroundColor @= Color.Red
 
-    event.touch.start.attach { evt =>
-      scribe.info("Touch start!")
-    }
-    event.touch.move.attach { evt =>
-      scribe.info(s"Touch move! ${evt.local}")
-    }
-    event.touch.end.attach { evt =>
-      scribe.info("Touch end!")
+    gestures.pointers.dragged.attach { pointer =>
+      scribe.info(s"Dragging: $pointer")
     }
   }
 

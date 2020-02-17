@@ -59,7 +59,7 @@ class PointerEvent(underlying: jsdom.MouseEvent | HTMLPointerEvent | jsdom.Touch
 object PointerEvent {
   sealed abstract class Type(`type`: String, includePrefix: Boolean = true) {
     lazy val htmlTypeString: String = if (includePrefix) {
-      val prefix = if (HTMLEvent.hasPointerSupport) {
+      val prefix = if (EventSupport.hasPointerSupport) {
         "pointer"
       } else {
         "mouse"

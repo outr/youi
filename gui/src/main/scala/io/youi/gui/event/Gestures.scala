@@ -21,7 +21,6 @@ class Gestures(component: Component, event: Events) {
   lazy val click: Click = new Click(component, this)
   lazy val doubleClick: DoubleClick = new DoubleClick(component)
   lazy val longPress: LongPress = new LongPress(component)
-
   lazy val pinch: Pinch = new Pinch(component, this)
 
   // TODO: `state` to represent drag, swype, fling, pan, rotate
@@ -30,13 +29,11 @@ class Gestures(component: Component, event: Events) {
     event.touch.start.attach(add)
     event.touch.move.attach(dragging)
     event.touch.end.attach(remove)
-  } else {
-    event.pointer.down.attach(add)
-    event.pointer.move.attach(dragging)
-
-    (event.pointer.up & event.pointer.cancel).attach(remove)
   }
+  event.pointer.down.attach(add)
+  event.pointer.move.attach(dragging)
 
+  (event.pointer.up & event.pointer.cancel).attach(remove)
 
   private def add(evt: PointerEvent): Unit = {
     val p = Pointer(evt.identifier, evt, evt, evt)

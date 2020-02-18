@@ -57,6 +57,7 @@ class Events(component: Component) {
     lazy val cancel: Channel[PointerEvent] = pointerChannel(PointerEvent.Type.TouchCancel)
     lazy val end: Channel[PointerEvent] = pointerChannel(PointerEvent.Type.TouchEnd)
   }
+  lazy val pointers: Pointers = new Pointers(this)
   object key {
     lazy val down: Channel[KeyEvent] = keyEvents("keydown", KeyEvent.Type.Down)
     lazy val press: Channel[KeyEvent] = keyEvents("keypress", KeyEvent.Type.Press)

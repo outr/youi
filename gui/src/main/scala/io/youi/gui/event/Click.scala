@@ -3,7 +3,7 @@ package io.youi.gui.event
 import io.youi.gui.Component
 import reactify.reaction.{Reaction, ReactionStatus}
 
-class Click(component: Component, gestures: Gestures) extends Reaction[Pointer] {
+/*class Click(component: Component, gestures: Gestures) extends Reaction[Pointer] {
   private var lastClick = 0L
 
   gestures.pointers.removed.attach { p =>
@@ -23,4 +23,4 @@ class Click(component: Component, gestures: Gestures) extends Reaction[Pointer] 
   }
 
   override def apply(value: Pointer, previous: Option[Pointer]): ReactionStatus = ReactionStatus.Continue
-}
+}*/

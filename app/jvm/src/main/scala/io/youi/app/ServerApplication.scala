@@ -290,7 +290,10 @@ object ServerApplication {
       | <title></title>
       | <!-- Required meta tags -->
       | <meta charset="utf-8">
-      | <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+      | <meta name="viewport" content="width=device-width, height=device-height, user-scalable=no">
+      | <meta name="msapplication-tap-highlight" content="no">
+      | <meta name="apple-mobile-web-app-capable" content="yes">
+      | <meta name="apple-mobile-web-app-status-bar-style" content="default">
       |
       | <!-- Bootstrap CSS -->
       | <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
@@ -298,15 +301,13 @@ object ServerApplication {
       |   body {
       |     margin: 0;
       |     overflow: hidden;
-      |     width: 100vw;
-      |     height: 100vh;
+      |     width: 100%;
+      |     height: 100%;
       |   }
       |   :focus {
       |     outline: none;
       |   }
       | </style>
-      | <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-      | <meta name="HandheldFriendly" content="true" />
       |</head>
       |<body>
       |<!-- Scripts -->

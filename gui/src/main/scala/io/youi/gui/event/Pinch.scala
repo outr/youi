@@ -1,3 +1,4 @@
+/*
 package io.youi.gui.event
 
 import io.youi.gui.Component
@@ -45,3 +46,4 @@ class Pinch(component: Component, gestures: Gestures) extends Reaction[PinchEven
 
   override def apply(value: PinchEvent, previous: Option[PinchEvent]): ReactionStatus = ReactionStatus.Continue
 }
+*/

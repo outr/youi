@@ -112,6 +112,10 @@ trait Component extends TaskSupport with ComponentTheme {
   override def updateTransform(): Unit = {
     super.updateTransform()
 
+    resize()
+  }
+
+  protected def resize(): Unit = {
     measure(measuredSize)
     size.measured.width.static(measuredSize.width)
     size.measured.height.static(measuredSize.height)

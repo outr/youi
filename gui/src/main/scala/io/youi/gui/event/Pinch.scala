@@ -1,15 +1,14 @@
-/*
 package io.youi.gui.event
 
 import io.youi.gui.Component
 import io.youi.spatial.BoundingBox
-import reactify.reaction.{Reaction, ReactionStatus}
+import reactify.standard.StandardChannel
 
-class Pinch(component: Component, gestures: Gestures) extends Reaction[PinchEvent] {
-  gestures.pointers.dragged.attach(dragging)
+class Pinch(component: Component, event: Events) extends StandardChannel[PinchEvent](None) {
+  event.pointers.dragged.attach(dragging)
 
-  private def dragging(pointer: Pointer): Unit = if (gestures.pointers.map.size == 2 && pointer.moved.distance != 0.0) {
-    val other = gestures.pointers.map.find(_._1 != pointer.identifier).get._2
+  private def dragging(pointer: Pointer): Unit = if (event.pointers.map.size == 2 && pointer.moved.distance != 0.0) {
+    val other = event.pointers.map.find(_._1 != pointer.identifier).get._2
 
     val ox = other.move.local.x
     val oy = other.move.local.y
@@ -41,9 +40,6 @@ class Pinch(component: Component, gestures: Gestures) extends Reaction[PinchEven
       deltaDistance = cd - pd,
       direction = direction
     )
-    apply(pe, None)
+    fire(pe, None)
   }
-
-  override def apply(value: PinchEvent, previous: Option[PinchEvent]): ReactionStatus = ReactionStatus.Continue
 }
-*/

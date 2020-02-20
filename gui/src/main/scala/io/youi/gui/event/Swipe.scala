@@ -64,7 +64,6 @@ object Swipe {
     */
   var Start: Double = 20.0
 
-  // TODO: extract and deduplication this
   sealed trait Direction {
     def plane: Plane
   }
@@ -93,8 +92,3 @@ object Swipe {
     case object Vertical extends Plane
   }
 }
-
-case class SwipeEvent(direction: Swipe.Direction,
-                      pointer: Pointer,
-                      distance: Double,
-                      acceleration: Double)

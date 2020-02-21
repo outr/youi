@@ -101,9 +101,15 @@ object BottomBar extends Component(dom.create.div) with SizeSupport {
   size.height := 50.0
   backgroundColor := Color.Blue
 
-  private val input = new TextInput() with SizeSupport {
+  private val input = new TextArea() with SizeSupport {
     size.width := BottomBar.this.size.width - 10
     size.height := 40.0
+
+    element.addEventListener("paste", (evt: Event) => {
+      scribe.info("PASTE!")
+      evt.preventDefault()
+      evt.stopPropagation()
+    })
   }
   this.appendChild(input)
 }

@@ -30,6 +30,7 @@ object dom extends ExtendedElement(None) {
     def div: html.Div = create[html.Div]("div")
     def span: html.Span = create[html.Span]("span")
     def input: html.Input = create[html.Input]("input")
+    def textArea: html.TextArea = create[html.TextArea]("textarea")
     def image: html.Image = create[html.Image]("img")
     def text(value: String): Text = document.createTextNode(value)
   }

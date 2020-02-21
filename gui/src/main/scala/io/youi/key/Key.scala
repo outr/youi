@@ -1,4 +1,4 @@
-package io.youi.gui
+package io.youi.key
 
 import reactify.{Val, Var}
 
@@ -8,23 +8,6 @@ class Key private[youi](val value: String, val description: String, val `type`: 
   val pressed: Val[Boolean] = Var(false)
 
   override def toString: String = s"Key(value: $value, description: $description, type: ${`type`})"
-}
-
-class CharacterKey private[youi](val char: Char,
-                                 description: String,
-                                 `type`: KeyType,
-                                 reverse: => CharacterKey) extends Key(char.toString, description, `type`) {
-  def isLower: Boolean = char.isLower
-  def isUpper: Boolean = char.isUpper
-  def toUpper: CharacterKey = if (isUpper) this else reverse
-  def toLower: CharacterKey = if (isLower) this else reverse
-
-  override def toString: String = s"CharacterKey(char: $char, description: $description)"
-}
-
-class SymbolKey private[youi](val char: Char,
-                              description: String) extends Key(char.toString, description, KeyType.Symbols) {
-  override def toString: String = s"SymbolKey(char: $char, description: $description)"
 }
 
 object Key {
@@ -497,31 +480,4 @@ object Key {
   }
 
   def apply(value: => String): Key = get(value).getOrElse(Key.Unidentified)
-}
-
-case class KeyType private(name: String)
-
-object KeyType {
-  val Lowercase: KeyType = KeyType("Lowercase")
-  val Uppercase: KeyType = KeyType("Uppercase")
-  val Numeric: KeyType = KeyType("Numeric")
-  val Symbols: KeyType = KeyType("Symbols")
-  val Special: KeyType = KeyType("Special")
-  val Modifier: KeyType = KeyType("Modifier")
-  val Whitespace: KeyType = KeyType("Whitespace")
-  val Navigation: KeyType = KeyType("Navigation")
-  val Editing: KeyType = KeyType("Editing")
-  val UI: KeyType = KeyType("UI")
-  val Device: KeyType = KeyType("Device")
-  val IME: KeyType = KeyType("IME")
-  val Function: KeyType = KeyType("Function")
-  val Phone: KeyType = KeyType("Phone")
-  val Multimedia: KeyType = KeyType("Multimedia")
-  val Audio: KeyType = KeyType("Audio")
-  val TV: KeyType = KeyType("TV")
-  val Media: KeyType = KeyType("Media")
-  val Speech: KeyType = KeyType("Speech")
-  val Document: KeyType = KeyType("Document")
-  val Application: KeyType = KeyType("Application")
-  val Browser: KeyType = KeyType("Browser")
 }

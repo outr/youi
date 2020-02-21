@@ -3,9 +3,9 @@ package io.youi.example.ui
 import io.youi._
 import io.youi.app.screen.{PathActivation, Screen}
 import io.youi.font.GoogleFont
-import io.youi.gui._
-import io.youi.gui.support.{MeasuredSupport, PositionSupport}
-import io.youi.gui.types.PositionType
+import io.youi.ui._
+import io.youi.ui.support.{MeasuredSupport, PositionSupport}
+import io.youi.ui.types.PositionType
 import io.youi.net._
 import reactify._
 import org.scalajs.dom.document

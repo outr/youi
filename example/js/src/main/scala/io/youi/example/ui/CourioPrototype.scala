@@ -2,10 +2,10 @@ package io.youi.example.ui
 
 import io.youi.app.screen.{PathActivation, Screen}
 import io.youi.{Color, dom, ui}
-import io.youi.gui._
-import io.youi.gui.event.{EventSupport, Swipe}
-import io.youi.gui.support.{FontSupport, MarginSupport, PositionSupport, SizeSupport}
-import io.youi.gui.types.PositionType
+import io.youi.ui._
+import io.youi.ui.event.{EventSupport, Swipe}
+import io.youi.ui.support.{FontSupport, MarginSupport, PositionSupport, SizeSupport}
+import io.youi.ui.types.PositionType
 import io.youi.net._
 import io.youi.task._
 import org.scalajs.dom._

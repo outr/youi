@@ -468,7 +468,6 @@ object Key {
   val BrowserSearch: Key = new Key("BrowserSearch", "Activates the user's preferred search engine or the search interface within their browser.", KeyType.Browser)
   val BrowserStop: Key = new Key("BrowserStop", "Stops loading the currently displayed Web view or content.", KeyType.Browser)
 
-
   private def register(key: Key): Unit = {
     map += key.value -> key
   }

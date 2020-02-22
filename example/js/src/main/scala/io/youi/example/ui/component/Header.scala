@@ -20,7 +20,7 @@ class Header extends Container { self =>
   position.`type` @= Position.Absolute
   position.left @= 0.0
   position.top @= 0.0
-  size.width := ui.size.width
+  size.width := component.size.width
   size.height @= 75.0
   background := Paint.vertical(75.0).distributeColors(Color.White, Color.LightGray, Color.DarkGray)
 
@@ -44,7 +44,7 @@ class Header extends Container { self =>
       value @= screen.title
     }
     whiteSpace @= WhiteSpace.NoWrap
-    position.right := ui.size.width - 25.0
+    position.right := component.size.width - 25.0
     position.top @= 15.0
   }
 
@@ -67,7 +67,7 @@ class Header extends Container { self =>
       }
     }
     whiteSpace @= WhiteSpace.NoWrap
-    position.right := ui.size.width - 25.0
+    position.right := component.size.width - 25.0
     position.top := title.position.bottom - 5.0
   }
 

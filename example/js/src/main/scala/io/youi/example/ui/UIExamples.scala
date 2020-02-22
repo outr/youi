@@ -1,6 +1,6 @@
 package io.youi.example.ui
 
-import io.youi.{Color, ui}
+import io.youi.{Color, component}
 import io.youi.example.ClientExampleApplication
 import io.youi.component.bootstrap.Button
 import io.youi.example.screen.UIExampleScreen
@@ -17,7 +17,7 @@ class UIExamples extends UIExampleScreen {
 
   override def createUI(): Future[Unit] = super.load().map { _ =>
 //    register(ui.overflow.y, Overflow.Auto)
-    ui.overflow.y @= Overflow.Auto
+    component.overflow.y @= Overflow.Auto
     var previous: Option[Button] = None
     ClientExampleApplication.screens().collect {
       case screen: UIExampleScreen if screen.title != title => screen

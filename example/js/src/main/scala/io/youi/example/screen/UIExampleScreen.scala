@@ -3,7 +3,7 @@ package io.youi.example.screen
 import io.youi.app.screen.UIScreen
 import io.youi.example.ui.component.Header
 import io.youi.net.URL
-import io.youi.ui
+import io.youi.component
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -14,14 +14,14 @@ trait UIExampleScreen extends UIScreen {
 
   override protected def init(): Future[Unit] = super.init().map { _ =>
     container.position.top := header.position.bottom
-    container.size.height := ui.size.height - header.size.height
+    container.size.height := component.size.height - header.size.height
   }
 }
 
 object UIExampleScreen {
   lazy val header: Header = {
     val h = new Header
-    ui.children += h
+    component.children += h
     h
   }
 }

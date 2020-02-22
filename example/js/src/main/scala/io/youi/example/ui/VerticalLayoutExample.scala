@@ -15,7 +15,7 @@ class VerticalLayoutExample extends UIExampleScreen {
   override def path: Path = path"/examples/vertical.html"
 
   override def createUI(): Future[Unit] = {
-    ui.overflow @= Overflow.Auto
+    component.overflow @= Overflow.Auto
 
     val boxes: Container = new Container {
       layout @= new VerticalLayout(spacing = 10.0)

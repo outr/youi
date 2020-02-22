@@ -1,7 +1,6 @@
 package io.youi.app.screen
 
-import io.youi.theme.StyleProp
-import io.youi.ui
+import io.youi.{component, ui}
 import reactify.{Val, Var}
 
 import scala.concurrent.Future
@@ -40,8 +39,6 @@ trait Screen {
     }
     registration += v -> r
   }
-
-  def register[Value](v: StyleProp[Value], value: => Value): Unit = register[Option[Value]](v.option, Some(value))
 
   protected def dispose(): Future[Unit] = Future.successful(())
 }

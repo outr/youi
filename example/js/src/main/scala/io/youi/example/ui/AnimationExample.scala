@@ -38,7 +38,7 @@ class AnimationExample extends UIExampleScreen {
 
           forever(
             sequential(
-              label.position.right to ui.size.width - 50.0 in 5.seconds easing easingFunction,
+              label.position.right to component.size.width - 50.0 in 5.seconds easing easingFunction,
               sleep(2.seconds),
               label.position.left to 50.0 in 5.seconds easing easingFunction,
               sleep(2.seconds)

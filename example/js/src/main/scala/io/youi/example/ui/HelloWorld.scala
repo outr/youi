@@ -3,9 +3,9 @@ package io.youi.example.ui
 import io.youi._
 import io.youi.app.screen.{PathActivation, Screen}
 import io.youi.font.GoogleFont
-import io.youi.ui._
-import io.youi.ui.support.{MeasuredSupport, PositionSupport}
-import io.youi.ui.types.PositionType
+import io.youi.component._
+import io.youi.component.support.{MeasuredSupport, PositionSupport}
+import io.youi.component.types.PositionType
 import io.youi.net._
 import reactify._
 import org.scalajs.dom.document
@@ -22,8 +22,8 @@ class HelloWorld extends Screen with PathActivation {
     font.size @= 64.px
     color @= Some(Color.DarkBlue)
     position.`type` @= PositionType.Absolute
-    position.center := ui.size.center
-    position.middle := ui.size.middle
+    position.center := component.size.center
+    position.middle := component.size.middle
   }
 
   override protected def init(): Future[Unit] = super.init().flatMap { _ =>

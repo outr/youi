@@ -27,12 +27,13 @@ object dom extends ExtendedElement(None) {
   object create {
     def apply[T <: html.Element](tagName: String): T = document.createElement(tagName).asInstanceOf[T]
 
+    def button: html.Button = create[html.Button]("button")
     def div: html.Div = create[html.Div]("div")
-    def span: html.Span = create[html.Span]("span")
-    def input: html.Input = create[html.Input]("input")
-    def textArea: html.TextArea = create[html.TextArea]("textarea")
     def image: html.Image = create[html.Image]("img")
+    def input: html.Input = create[html.Input]("input")
+    def span: html.Span = create[html.Span]("span")
     def text(value: String): Text = document.createTextNode(value)
+    def textArea: html.TextArea = create[html.TextArea]("textarea")
   }
 
   def fromString[T <: Element](htmlString: String): List[T] = {

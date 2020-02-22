@@ -1,6 +1,6 @@
 package io.youi.component.types
 
-import io.youi.component.util.Stringify
+import io.youi.Stringify
 
 sealed abstract class Display(val value: String)
 

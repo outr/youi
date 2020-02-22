@@ -76,7 +76,7 @@ class Color private(val value: Long) extends AnyVal {
 }
 
 // TODO: Regenerate using https://en.wikipedia.org/wiki/List_of_colors:_A–F
-object Color {
+object Color extends Stringify[Color] {
   lazy val Clear: Color = fromLong(0x00000000)
   lazy val AliceBlue: Color = fromLong(0xF0F8FFFF)
   lazy val AntiqueWhite: Color = fromLong(0xFAEBD7FF)
@@ -409,6 +409,7 @@ object Color {
     *
     * @param value String representation of a hex String
     */
+  @scala.annotation.tailrec
   def fromHex(value: String): Color = value.length match {
     case _ if value.startsWith("#") => fromHex(value.substring(1))
     case 1 => fromHex((0 until 8).map(_ => value).mkString)
@@ -491,4 +492,8 @@ object Color {
       }
     }
   }
+
+  override def fromString(value: String): Option[Color] = unapply(value)
+
+  override def toString(value: Color): Option[String] = Some(if (value.alpha != 1.0) value.toRGBA else value.toHex)
 }

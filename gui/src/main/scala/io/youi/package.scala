@@ -1,9 +1,14 @@
 package io
 
 import io.youi.component.util.CanvasPool
+import io.youi.font.{GoogleFont, GoogleFontWeight}
+import io.youi.paint.Paint
 import org.scalajs.dom.{CanvasRenderingContext2D, document, html, window}
 import reactify.{Val, Var}
+import typekit.{GoogleConfig, WebFont, WebFontConfiguration}
 
+import scala.concurrent.{Future, Promise}
+import scala.language.implicitConversions
 import scala.scalajs.js
 
 package object youi {
@@ -34,8 +39,44 @@ package object youi {
     }
   }
 
+  implicit def color2Paint(color: Color): Paint = Paint.color(color)
+
   implicit class ExtendedCanvas(canvas: html.Canvas) {
     def context: CanvasRenderingContext2D = canvas.getContext("2d").asInstanceOf[CanvasRenderingContext2D]
+  }
+
+  implicit class ExtendedGoogleFont(font: GoogleFont) {
+    def load(): Future[GoogleFont] = {
+      val promise = Promise[GoogleFont]
+      val f: js.Function0[Unit] = () => {
+        promise.success(font)
+        ()
+      }
+      WebFont.load(new WebFontConfiguration {
+        google = new GoogleConfig {
+          families = js.Array(font.family)
+        }
+        active = f
+      })
+      promise.future
+    }
+  }
+
+  implicit class ExtendedGoogleFontWeight(weight: GoogleFontWeight) {
+    def load(): Future[GoogleFontWeight] = {
+      val promise = Promise[GoogleFontWeight]
+      val f: js.Function0[Unit] = () => {
+        promise.success(weight)
+        ()
+      }
+      WebFont.load(new WebFontConfiguration {
+        google = new GoogleConfig {
+          families = js.Array(s"${weight.font.family}:${weight.name}")
+        }
+        active = f
+      })
+      promise.future
+    }
   }
 
   implicit class UINumericSize[T](t: T)(implicit n: Numeric[T]) {

@@ -36,32 +36,32 @@ object ClientExampleApplication extends ExampleApplication with ClientConnectedA
 
   val hello: HelloWorld = new HelloWorld
 
-  val animation: AnimationExample = new AnimationExample
-  val canvas: CanvasExample = new CanvasExample
-  val drawable: DrawableExample = new DrawableExample
-  val fontAwesome: FontAwesomeExample = new FontAwesomeExample
-  val grid: GridLayoutExample = new GridLayoutExample
-  val hit: HitTestExample = new HitTestExample
-  val image: ImageExample = new ImageExample
-  val imageChange: ImageChangeExample = new ImageChangeExample
-  val materialIcons: MaterialIconsExample = new MaterialIconsExample
-  val measured: MeasuredExample = new MeasuredExample
-  val modal: ModalExample = new ModalExample
-  val parallax: ParallaxExample = new ParallaxExample
-  val recycledScrolling: RecycledScrollingExample = new RecycledScrollingExample
-  val scale9: Scale9Example = new Scale9Example
-  val select: SelectExample = new SelectExample
-  val snap: SnapExample = new SnapExample
-  val svgImage: SVGImageExample = new SVGImageExample
-  val text: TextViewExample = new TextViewExample
-  val input: TextInputExample = new TextInputExample
-  val vertical: VerticalLayoutExample = new VerticalLayoutExample
-  val video: VideoExample = new VideoExample
-  val virtual: VirtualSizeExample = new VirtualSizeExample
+//  val animation: AnimationExample = new AnimationExample
+//  val canvas: CanvasExample = new CanvasExample
+//  val drawable: DrawableExample = new DrawableExample
+//  val fontAwesome: FontAwesomeExample = new FontAwesomeExample
+//  val grid: GridLayoutExample = new GridLayoutExample
+//  val hit: HitTestExample = new HitTestExample
+//  val image: ImageExample = new ImageExample
+//  val imageChange: ImageChangeExample = new ImageChangeExample
+//  val materialIcons: MaterialIconsExample = new MaterialIconsExample
+//  val measured: MeasuredExample = new MeasuredExample
+//  val modal: ModalExample = new ModalExample
+//  val parallax: ParallaxExample = new ParallaxExample
+//  val recycledScrolling: RecycledScrollingExample = new RecycledScrollingExample
+//  val scale9: Scale9Example = new Scale9Example
+//  val select: SelectExample = new SelectExample
+//  val snap: SnapExample = new SnapExample
+//  val svgImage: SVGImageExample = new SVGImageExample
+//  val text: TextViewExample = new TextViewExample
+//  val input: TextInputExample = new TextInputExample
+//  val vertical: VerticalLayoutExample = new VerticalLayoutExample
+//  val video: VideoExample = new VideoExample
+//  val virtual: VirtualSizeExample = new VirtualSizeExample
 
   // Bootstrap
-  val bootstrapButton: BootstrapButtonExample = new BootstrapButtonExample
-  val bootstrapLogin: BootstrapLoginExample = new BootstrapLoginExample
+//  val bootstrapButton: BootstrapButtonExample = new BootstrapButtonExample
+//  val bootstrapLogin: BootstrapLoginExample = new BootstrapLoginExample
 
   val examples: UIExamples = new UIExamples
 

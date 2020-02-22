@@ -1,4 +1,4 @@
-package io.youi.component.util
+package io.youi
 
 trait Stringify[T] {
   def fromString(value: String): Option[T]

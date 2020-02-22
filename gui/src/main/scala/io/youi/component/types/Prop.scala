@@ -1,6 +1,6 @@
 package io.youi.component.types
 
-import io.youi.component.util.Stringify
+import io.youi.Stringify
 import reactify.Var
 import reactify.standard.StandardVar
 

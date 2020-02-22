@@ -2,9 +2,8 @@ package io.youi.example.ui
 
 import io.youi.app.screen.{PathActivation, Screen}
 import io.youi.event.{EventSupport, Swipe}
-import io.youi.{Color, dom, component}
+import io.youi.{AnimationFrame, Color, component, dom, ui}
 import io.youi.component._
-import io.youi.component.event.Swipe
 import io.youi.component.support.{FontSupport, MarginSupport, PositionSupport, SizeSupport}
 import io.youi.component.types.PositionType
 import io.youi.net._
@@ -32,17 +31,17 @@ class CourioPrototype extends Screen with PathActivation {
     }
     swipe.end.on {
       if (Sidebar.position.x < -(Sidebar.size.width / 2)) {
-        Sidebar.position.x to -Sidebar.size.width() by adjust start(ui)
+        Sidebar.position.x to -Sidebar.size.width() by adjust start(AnimationFrame)
       } else {
-        Sidebar.position.x to 0.0 by adjust start(ui)
+        Sidebar.position.x to 0.0 by adjust start(AnimationFrame)
       }
     }
   }
 
   override protected def init(): Future[Unit] = super.init().map { _ =>
     container.style.display = "none"
-    container.size.width := component.size.width
-    container.size.height := component.size.height
+    container.size.width := ui.size.width
+    container.size.height := ui.size.height
 
     container.appendChild(Sidebar)
     container.appendChild(TopBar)
@@ -66,8 +65,8 @@ object Sidebar extends Component(dom.create.div) with PositionSupport with SizeS
   position.y @= 0.0
   position.`type` @= PositionType.Absolute
   size.width @= 260
-  size.height := component.size.height
-  backgroundColor @= Some(Color.fromLong(0x1F3142FF))
+  size.height := ui.size.height
+  backgroundColor @= Color.fromLong(0x1F3142FF)
 
   private val logo: ImageView = new ImageView() with SizeSupport with MarginSupport {
     src @= "https://app.courio.com/images/logo-dark.svg"
@@ -80,14 +79,14 @@ object Sidebar extends Component(dom.create.div) with PositionSupport with SizeS
 }
 
 object TopBar extends Component(dom.create.div) with SizeSupport {
-  size.width := component.size.width
+  size.width := ui.size.width
   size.height := 56.0
   backgroundColor := Color.Red
 }
 
 object Messages extends Component(dom.create.div) with SizeSupport {
-  size.width := component.size.width
-  size.height := component.size.height - (TopBar.size.height + BottomBar.size.height)
+  size.width := ui.size.width
+  size.height := ui.size.height - (TopBar.size.height + BottomBar.size.height)
   backgroundColor := Color.Green
 
   this.style.overflowY = "auto"
@@ -98,7 +97,7 @@ object Messages extends Component(dom.create.div) with SizeSupport {
 }
 
 object BottomBar extends Component(dom.create.div) with SizeSupport {
-  size.width := component.size.width
+  size.width := ui.size.width
   size.height := 50.0
   backgroundColor := Color.Blue
 
@@ -116,7 +115,7 @@ object BottomBar extends Component(dom.create.div) with SizeSupport {
 }
 
 class Message extends Component(dom.create.div) with SizeSupport with FontSupport {
-  size.width := component.size.width - 10.0
+  size.width := ui.size.width - 10.0
   size.height @= 54.0
   backgroundColor @= Color.random
   this.style.borderRadius = "15px"

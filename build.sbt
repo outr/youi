@@ -225,7 +225,11 @@ lazy val gui = project.in(file("gui"))
   .enablePlugins(ScalaJSPlugin)
   .settings(
     name := "youi-gui",
-    jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv
+    jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv,
+    libraryDependencies ++= Seq(
+      "com.outr" %%% "webfontloader-scala-js" % webFontLoaderVersion,
+      "com.outr" %%% "opentype-scala-js" % openTypeVersion
+    )
   )
   .dependsOn(dom, spatialJS)
 

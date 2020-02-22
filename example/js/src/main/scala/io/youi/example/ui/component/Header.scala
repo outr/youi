@@ -1,60 +1,60 @@
 package io.youi.example.ui.component
 
-import io.youi.component.{Container, HTMLTextView, ImageView}
+import io.youi.component.{Component, Container, ImageView}
+import io.youi.component.support.{FontSupport, MarginSupport, MeasuredSupport, PositionSupport, SizeSupport}
+import io.youi.event.EventSupport
 import io.youi.example.ClientExampleApplication
+import io.youi.font.GoogleFont
+import io.youi.paint.Paint
 import io.youi._
 import io.youi.app.screen.ScreenManager
+import io.youi.component.types.{Cursor, Display, PositionType, WhiteSpace}
 import io.youi.example.screen.UIExampleScreen
-import io.youi.example.ui.UIExamples
-import io.youi.font.GoogleFont
-import io.youi.image.Image
-import io.youi.paint.Paint
-import io.youi.style.{Display, Position, WhiteSpace}
-import reactify._
+import io.youi.net._
+import scribe.Execution.global
 
-import scala.concurrent.ExecutionContext.Implicits.global
-
-class Header extends Container { self =>
+class Header extends Container with SizeSupport { self =>
   protected def application: ClientExampleApplication.type = ClientExampleApplication
 
-  position.`type` @= Position.Absolute
-  position.left @= 0.0
-  position.top @= 0.0
-  size.width := component.size.width
+  size.width := ui.size.width
   size.height @= 75.0
   background := Paint.vertical(75.0).distributeColors(Color.White, Color.LightGray, Color.DarkGray)
 
-  val logo: ImageView = new ImageView {
-    Image("/images/youi.png").foreach { img =>
-      image @= img
-      size @= img.size.scale(height = Some(65.0))
+  private val logo: ImageView = new ImageView with SizeSupport with MarginSupport with EventSupport {
+    src @= "/images/youi.png"
+    size.height @= 65.0
+    margin.left @= 10.0
+    margin.top @= 5.0
+
+    event.click.on {
+      History.pushPath(path"/ui-examples.html")
     }
-    position.left @= 10.0
-    position.middle := self.size.middle
-    event.link("/ui-examples.html")
   }
 
-  val title: HTMLTextView = new HTMLTextView {
+  private val title = new Component(dom.create.span) with FontSupport with PositionSupport with MeasuredSupport {
     GoogleFont.`Open Sans`.`600`.load().foreach { fnt =>
-      font @= fnt
+      font.family @= fnt.font.family
+      font.weight @= fnt.name
     }
     font.size @= 20.pt
     color @= application.colors.blue.dark
     ScreenManager().active.attachAndFire { screen =>
-      value @= screen.title
+      content @= screen.title
     }
     whiteSpace @= WhiteSpace.NoWrap
-    position.right := component.size.width - 25.0
+    position.`type` @= PositionType.Absolute
+    position.right := ui.size.width - 25.0
     position.top @= 15.0
   }
 
-  val link: HTMLTextView = new HTMLTextView {
+  private val link = new Component(dom.create.span) with FontSupport with PositionSupport with MeasuredSupport with EventSupport {
     GoogleFont.`Open Sans`.`600`.load().foreach { fnt =>
-      font @= fnt
+      font.family @= fnt.font.family
+      font.weight @= fnt.name
     }
     font.size @= 14.pt
     color @= application.colors.blue.dark
-    value @= "View Source"
+    content @= "View Source"
     cursor @= Cursor.Pointer
     ScreenManager().active.attachAndFire {
       case _: UIExampleScreen => display @= Display.Block
@@ -67,8 +67,9 @@ class Header extends Container { self =>
       }
     }
     whiteSpace @= WhiteSpace.NoWrap
-    position.right := component.size.width - 25.0
-    position.top := title.position.bottom - 5.0
+    position.`type` @= PositionType.Absolute
+    position.right := ui.size.width - 25.0
+    position.top := title.position.bottom - 10.0
   }
 
   children ++= List(logo, title, link)

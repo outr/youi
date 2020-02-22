@@ -1,7 +1,8 @@
 package io.youi.component
 
 import io.youi.Color
-import io.youi.component.types.{Display, Prop}
+import io.youi.component.types.{Cursor, Display, Prop, WhiteSpace}
+import io.youi.paint.Paint
 import org.scalajs.dom.html
 
 class Component(val element: html.Element) {
@@ -11,15 +12,12 @@ class Component(val element: html.Element) {
     set = values => element.setAttribute("class", values.mkString(" "))
   )
   lazy val content: Prop[String] = new Prop[String](element.innerHTML, element.innerHTML_=, measure)
-  lazy val color: Prop[Option[Color]] = new Prop[Option[Color]](
-    get = Color.unapply(element.style.color),
-    set = o => element.style.color = o.map(_.toRGBA).getOrElse("")
-  )
-  lazy val backgroundColor: Prop[Option[Color]] = new Prop[Option[Color]](
-    get = Color.unapply(element.style.color),
-    set = o => element.style.backgroundColor = o.map(_.toRGBA).getOrElse("")
-  )
+  lazy val color: Prop[Color] = Prop.stringify(element.style.color, element.style.color_=, Color, Color.Clear)
+  lazy val background: Prop[Paint] = Prop.stringify(element.style.background, element.style.background_=, Paint, Paint.none)
+  lazy val backgroundColor: Prop[Color] = Prop.stringify(element.style.backgroundColor, element.style.backgroundColor_=, Color, Color.Clear)
   lazy val display: Prop[Display] = Prop.stringify(element.style.display, element.style.display_=, Display, Display.Inherit, measure)
+  lazy val cursor: Prop[Cursor] = Prop.stringify(element.style.cursor, element.style.cursor_=, Cursor, Cursor.Default)
+  lazy val whiteSpace: Prop[WhiteSpace] = Prop.stringify(element.style.whiteSpace, element.style.whiteSpace_=, WhiteSpace, WhiteSpace.Normal, measure)
 
   protected def measure(): Unit = {}
 }

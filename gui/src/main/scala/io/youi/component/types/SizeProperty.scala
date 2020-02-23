@@ -5,13 +5,13 @@ import reactify.standard.StandardVar
 
 import scala.util.matching.Regex
 
-class SizeProperty(get: => String, set: String => Unit, callbacks: (() => Unit)*) extends StandardVar[Double](0.0, Var.Mode.Normal, None) {
+class SizeProperty(get: => String, set: String => Unit, callbacks: (() => Unit)*) extends StandardVar[Double](-1.0, Var.Mode.Normal, None) {
   val `type`: Var[SizeType] = Var(SizeType.Auto)
 
   refresh()
 
   attach { d =>
-    if (d != 0.0 && `type`() == SizeType.Auto) {
+    if (d != -1.0 && `type`() == SizeType.Auto) {
       `type` @= SizeType.Pixel
     }
     set()
@@ -32,15 +32,15 @@ class SizeProperty(get: => String, set: String => Unit, callbacks: (() => Unit)*
 
   def refresh(): Unit = get match {
     case null | "" | "auto" => {
-      this @= 0.0
+      this @= -1.0
       `type` @= SizeType.Auto
     }
     case "initial" => {
-      this @= 0.0
+      this @= -1.0
       `type` @= SizeType.Initial
     }
     case "inherit" => {
-      this @= 0.0
+      this @= -1.0
       `type` @= SizeType.Inherit
     }
     case SizeProperty.ValueRegex(number, unit) => {

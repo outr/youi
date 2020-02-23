@@ -5,7 +5,7 @@ import io.youi.event.{EventSupport, Swipe}
 import io.youi.{AnimationFrame, Color, component, dom, ui}
 import io.youi.component._
 import io.youi.component.support.{FontSupport, MarginSupport, PositionSupport, SizeSupport}
-import io.youi.component.types.PositionType
+import io.youi.component.types.{Display, PositionType}
 import io.youi.net._
 import io.youi.task._
 import org.scalajs.dom._
@@ -18,11 +18,30 @@ class CourioPrototype extends Screen with PathActivation {
   override def title: String = "Courio"
   override def path: Path = path"/courio.html"
 
-  private lazy val container = new Component(dom.create.div) with SizeSupport with EventSupport {
-    val swipe = new Swipe(this, event, onlyTouch = true, Set(Swipe.Direction.Left, Swipe.Direction.Right))
+  private var animateFuture: Future[Double] = Future.successful(0.0)
+
+  private lazy val container = new Component(dom.create.div) with SizeSupport
+
+  private lazy val glassPane = new Component(dom.create.div) with SizeSupport with PositionSupport {
+    id @= "glassPane"
+    scribe.info(s"Position: ${position.x()}x${position.y()}")
+    position.`type` @= PositionType.Absolute
+    position.x @= 0.0
+    position.y @= 0.0
+    position.z @= 1000
+    size.width := ui.size.width
+    size.height := ui.size.height
+    backgroundColor @= Color.Clear
+    display @= Display.None
+  }
+
+  override protected def init(): Future[Unit] = super.init().map { _ =>
+    val swipe = new Swipe(ui, ui.event, onlyTouch = true, Set(Swipe.Direction.Left, Swipe.Direction.Right))
     val adjust = 800.0
     var start = 0.0
+    ui.event.touch.move.attach(_.stopPropagation())
     swipe.start.on {
+      glassPane.display @= Display.Block
       start = Sidebar.position.x
     }
     swipe.move.attach { evt =>
@@ -30,16 +49,17 @@ class CourioPrototype extends Screen with PathActivation {
       Sidebar.position.x @= x
     }
     swipe.end.on {
-      if (Sidebar.position.x < -(Sidebar.size.width / 2)) {
-        Sidebar.position.x to -Sidebar.size.width() by adjust start(AnimationFrame)
-      } else {
-        Sidebar.position.x to 0.0 by adjust start(AnimationFrame)
+      glassPane.display @= Display.None
+      animateFuture = animateFuture.flatMap { _ =>
+        (if (Sidebar.position.x < -(Sidebar.size.width / 2)) {
+          Sidebar.position.x to -Sidebar.size.width() by adjust start (AnimationFrame)
+        } else {
+          Sidebar.position.x to 0.0 by adjust start (AnimationFrame)
+        }).future
       }
     }
-  }
 
-  override protected def init(): Future[Unit] = super.init().map { _ =>
-    container.style.display = "none"
+    container.display @= Display.None
     container.size.width := ui.size.width
     container.size.height := ui.size.height
 
@@ -48,15 +68,16 @@ class CourioPrototype extends Screen with PathActivation {
     container.appendChild(Messages)
     container.appendChild(BottomBar)
 
-    document.body.appendChild(container)
+    ui.children += container
+    ui.children += glassPane
   }
 
   override protected def activate(): Future[Unit] = super.activate().map { _ =>
-    container.style.display = "block"
+    container.display @= Display.Block
   }
 
   override protected def deactivate(): Future[Unit] = super.activate().map { _ =>
-    container.style.display = "none"
+    container.display @= Display.Block
   }
 }
 

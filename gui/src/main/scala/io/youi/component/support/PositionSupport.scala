@@ -4,6 +4,8 @@ import io.youi.component.types.{PositionType, Prop, SizeProperty}
 import io.youi.component.Component
 import reactify.{Dep, Var}
 
+import scala.util.Try
+
 trait PositionSupport {
   this: Component =>
 
@@ -18,7 +20,7 @@ trait PositionSupport {
     )
     lazy val x: SizeProperty = new SizeProperty(element.style.left, element.style.left_=)
     lazy val y: SizeProperty = new SizeProperty(element.style.top, element.style.top_=)
-    lazy val z: Prop[Int] = new Prop[Int](element.style.zIndex.toInt, i => element.style.zIndex = i.toString)
+    lazy val z: Prop[Int] = new Prop[Int](Try(element.style.zIndex.toInt).getOrElse(0), i => element.style.zIndex = i.toString)
 
     lazy val left: Var[Double] = x
     lazy val center: Dep[Double, Double] = PositionSupport.this match {

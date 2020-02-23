@@ -17,6 +17,7 @@ class Pointers(event: Events) {
   if (EventSupport.hasTouchSupport) {
     event.touch.start.attach(add)
     event.touch.move.attach(dragging)
+    event.touch.cancel.attach(remove)
     event.touch.end.attach(remove)
   }
   event.pointer.down.attach(add)

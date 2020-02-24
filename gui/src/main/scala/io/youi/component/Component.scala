@@ -1,7 +1,7 @@
 package io.youi.component
 
 import io.youi.Color
-import io.youi.component.types.{Cursor, Display, Prop, WhiteSpace}
+import io.youi.component.types.{Cursor, Display, Prop, UserSelect, WhiteSpace}
 import io.youi.paint.Paint
 import org.scalajs.dom.html
 
@@ -18,6 +18,7 @@ class Component(val element: html.Element) {
   lazy val display: Prop[Display] = Prop.stringify(element.style.display, element.style.display_=, Display, Display.Inherit, measure)
   lazy val cursor: Prop[Cursor] = Prop.stringify(element.style.cursor, element.style.cursor_=, Cursor, Cursor.Default)
   lazy val whiteSpace: Prop[WhiteSpace] = Prop.stringify(element.style.whiteSpace, element.style.whiteSpace_=, WhiteSpace, WhiteSpace.Normal, measure)
+  lazy val userSelect: Prop[UserSelect] = Prop.stringify(element.style.getPropertyValue("user-select"), element.style.setProperty("user-select", _), UserSelect, UserSelect.Initial)
 
   protected def measure(): Unit = {}
 }

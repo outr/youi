@@ -1,11 +1,12 @@
 package io.youi.app.screen
 
+import io.youi.task.TaskSupport
 import io.youi.{component, ui}
 import reactify.{Val, Var}
 
 import scala.concurrent.Future
 
-trait Screen {
+trait Screen extends TaskSupport {
   private var registration = Map.empty[Var[_], ScreenRegistration[_]]
 
   def title: String = getClass.getSimpleName.replaceAllLiterally("$", "")

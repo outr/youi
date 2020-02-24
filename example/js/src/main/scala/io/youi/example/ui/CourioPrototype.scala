@@ -4,12 +4,12 @@ import io.youi.app.screen.{PathActivation, Screen}
 import io.youi.event.{EventSupport, Swipe}
 import io.youi._
 import io.youi.component._
-import io.youi.component.support.{FontSupport, MarginSupport, PositionSupport, SizeSupport}
-import io.youi.component.types.{Display, PositionType}
+import io.youi.component.support.{BorderSupport, FontSupport, MarginSupport, OverflowSupport, PositionSupport, SizeSupport}
+import io.youi.component.types.{Display, Overflow, PositionType, UserSelect}
 import io.youi.easing.Easing
+import io.youi.example.ClientExampleApplication
 import io.youi.net._
 import io.youi.task._
-import org.scalajs.dom._
 import reactify._
 
 import scala.concurrent.Future
@@ -26,29 +26,36 @@ class CourioPrototype extends Screen with PathActivation {
 
   override protected def init(): Future[Unit] = super.init().map { _ =>
     val swipe = new Swipe(ui, ui.event, onlyTouch = true, Set(Swipe.Direction.Left, Swipe.Direction.Right))
-    val adjust = 800.0
+    var started = false
     var start = 0.0
-    ui.event.touch.move.attach(_.stopPropagation())
     swipe.start.on {
-      if (!GlassPane.isActive) {
-        Messages.style.overflowY = "hidden"
+      if (!GlassPane.isActive || Sidebar.isOpen) {
+        started = true
+        GlassPane.show(() => {
+          Sidebar.hide()
+          true
+        }, fadeIn = true)
+        ui.userSelect @= UserSelect.None
+        Messages.overflow.y @= Overflow.Hidden
         start = Sidebar.position.x
       }
     }
     swipe.move.attach { evt =>
-      if (!GlassPane.isActive) {
+      if (started) {
         val x = math.min(0.0, start + evt.distance)
         Sidebar.position.x @= x
       }
     }
     swipe.end.on {
-      if (!GlassPane.isActive) {
-        Messages.style.overflowY = "auto"
+      if (started) {
+        started = false
+        ui.userSelect @= UserSelect.Auto
+        Messages.overflow.y @= Overflow.Auto
         animateFuture = animateFuture.flatMap { _ =>
-          (if (Sidebar.position.x < -(Sidebar.size.width / 2)) {
-            Sidebar.position.x to -Sidebar.size.width() by adjust start (AnimationFrame)
-          } else {
-            Sidebar.position.x to 0.0 by adjust start (AnimationFrame)
+          (if (Sidebar.position.x < -(Sidebar.size.width / 2)) {        // Close
+            Sidebar.hide()
+          } else {                                                      // Open
+            Sidebar.show()
           }).future
         }
       }
@@ -78,8 +85,11 @@ class CourioPrototype extends Screen with PathActivation {
 }
 
 object Sidebar extends Component(dom.create.div) with PositionSupport with SizeSupport {
+  private val adjust = 800.0
+
   position.x @= -260.0
   position.y @= 0.0
+  position.z @= 1000
   position.`type` @= PositionType.Absolute
   size.width @= 260
   size.height := ui.size.height
@@ -93,6 +103,17 @@ object Sidebar extends Component(dom.create.div) with PositionSupport with SizeS
   }
 
   this.appendChild(logo)
+
+  def isOpen: Boolean = position.x() > -260.0
+
+  def show(): TaskInstance = {
+    Sidebar.position.x.to(0.0).by(adjust).start()
+  }
+
+  def hide(): TaskInstance = {
+    GlassPane.hide(fadeOut = true)
+    Sidebar.position.x.to(-Sidebar.size.width).by(adjust).start()
+  }
 }
 
 object TopBar extends Container with SizeSupport {
@@ -100,17 +121,21 @@ object TopBar extends Container with SizeSupport {
   size.height := 56.0
   backgroundColor := Color.Red
 
-  private val icon = new ImageView with MarginSupport with EventSupport {
+  private val icon = new ImageView with MarginSupport with EventSupport with BorderSupport {
     src @= "https://s3.us-west-1.wasabisys.com/courio/user/TBNBSUpGif4ZTuay6sLTxVPPPho8adLV-icon.png?m=1573234001845"
 
     margin.top @= 10.px
     margin.right @= 10.px
+    border.radius @= 10.px
 
-    element.style.borderRadius = "10px"
     element.style.cssFloat = "right"
 
     event.click.on {
-      GlassPane.activate(TopBarDropdown)
+      TopBarDropdown.show()
+      GlassPane.show(() => {
+        TopBarDropdown.hide()
+        true
+      }, fadeIn = true)
     }
   }
 
@@ -123,33 +148,39 @@ trait Modal {
   def toggle(): Unit
 }
 
-object TopBarDropdown extends Container with SizeSupport with PositionSupport with Modal {
+object TopBarDropdown extends Container with SizeSupport with PositionSupport with Modal with BorderSupport with OverflowSupport {
   position.`type` @= PositionType.Absolute
   position.z @= 1000
   size.width @= 260.px
   size.height @= 246.px
   backgroundColor @= Color.White
   display @= Display.None
-
-  element.style.borderRadius = "10px"
+  border.radius @= 10.px
+  overflow @= Overflow.Hidden
 
   override def show(): Unit = {
     position.right := ui.size.width - 10.px
     position.top := 50.0
 
-    size.height @= 0.0
-    display @= Display.Block
-    element.style.overflow = "hidden"
-    val task = size.height to 246.px in 500.millis easing Easing.elasticOut
-    task.start(AnimationFrame)
+    sequential(
+      size.width @= 0.0,
+      size.height @= 0.0,
+      display @= Display.Block,
+      parallel(
+        size.width to 260.px in 250.millis easing Easing.exponentialOut,
+        size.height to 246.px in 250.millis easing Easing.exponentialOut
+      )
+    ).start()
   }
 
   override def hide(): Unit = {
-    val task = sequential(
-      size.height to 0.px in 250.millis easing Easing.exponentialIn,
+    sequential(
+      parallel(
+        size.width to 0.px in 250.millis easing Easing.exponentialOut,
+        size.height to 0.px in 250.millis easing Easing.exponentialOut
+      ),
       display @= Display.None
-    )
-    task.start(AnimationFrame)
+    ).start()
   }
 
   def toggle(): Unit = if (display() == Display.None) {
@@ -159,60 +190,11 @@ object TopBarDropdown extends Container with SizeSupport with PositionSupport wi
   }
 }
 
-object GlassPane extends Component(dom.create.div) with SizeSupport with PositionSupport with EventSupport {
-  private var active: Option[Modal] = None
-
-  private val backgroundAlpha = Var(0.5)
-
-  def isActive: Boolean = active.nonEmpty
-
-  position.`type` @= PositionType.Absolute
-  position.x @= 0.0
-  position.y @= 0.0
-  position.z @= 100
-  size.width := ui.size.width
-  size.height := ui.size.height
-  backgroundColor := Color.Black.withAlpha(backgroundAlpha)
-  display @= Display.None
-
-  event.click.on(deactivate())
-
-  private def show(): Unit = {
-    val task = sequential(
-      backgroundAlpha @= 0.0,
-      display @= Display.Block,
-      backgroundAlpha to 0.5 in 250.millis
-    )
-    task.start(AnimationFrame)
-  }
-
-  private def hide(): Unit = {
-    val task = sequential(
-      backgroundAlpha to 0.0 in 250.millis,
-      display @= Display.None
-    )
-    task.start(AnimationFrame)
-  }
-
-  def activate(modal: Modal): Unit = {
-    active = Some(modal)
-    show()
-    modal.show()
-  }
-
-  def deactivate(): Unit = {
-    active.foreach(_.hide())
-    hide()
-    active = None
-  }
-}
-
-object Messages extends Component(dom.create.div) with SizeSupport {
+object Messages extends Component(dom.create.div) with SizeSupport with OverflowSupport {
   size.width := ui.size.width
   size.height := ui.size.height - (TopBar.size.height + BottomBar.size.height)
   backgroundColor := Color.Green
-
-  this.style.overflowY = "auto"
+  overflow.y @= Overflow.Auto
 
   (0 until 100).foreach { _ =>
     this.appendChild(new Message)
@@ -227,12 +209,6 @@ object BottomBar extends Component(dom.create.div) with SizeSupport {
   private val input = new TextArea() with SizeSupport {
     size.width := BottomBar.this.size.width - 10
     size.height := 40.0
-
-    element.addEventListener("paste", (evt: Event) => {
-      scribe.info("PASTE!")
-      evt.preventDefault()
-      evt.stopPropagation()
-    })
   }
   this.appendChild(input)
 }

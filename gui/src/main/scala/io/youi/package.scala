@@ -26,8 +26,7 @@ package object youi {
     val default = opt(ctx.backingStorePixelRatio)
     webkit.orElse(moz).orElse(ms).orElse(o).orElse(default).getOrElse(1.0)
   }
-  lazy val displayRatio: Val[Double] = Var(devicePixelRatio / backingStoreRatio)
-  lazy val ratio: Var[Double] = Var(displayRatio)
+  def ratio: Double = devicePixelRatio / backingStoreRatio
   lazy val ppi: Double = {
     val div = dom.create[html.Div]("div")
     div.style.width = "1in"

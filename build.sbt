@@ -1,4 +1,3 @@
-import org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv
 import sbtcrossproject.CrossPlugin.autoImport.crossProject
 import sbtcrossproject.CrossType
 
@@ -47,7 +46,7 @@ val closureCompilerVersion = "v20200112"
 val jSoupVersion = "1.12.1"
 val scalaXMLVersion = "1.2.0"
 val collectionCompat = "2.1.3"
-val scalaTestVersion = "3.1.0-SNAP13"
+val scalaTestVersion = "3.2.0-M2"
 val scalaCheckVersion = "1.14.0"
 
 lazy val root = project.in(file("."))
@@ -71,7 +70,6 @@ lazy val macros = crossProject(JSPlatform, JVMPlatform).in(file("macros"))
     )
   )
   .jsSettings(
-    jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv,
     scalacOptions += "-P:scalajs:sjsDefinedByDefault"
   )
 
@@ -130,7 +128,6 @@ lazy val spatial = crossProject(JSPlatform, JVMPlatform).in(file("spatial"))
     )
   )
   .jsSettings(
-    jsEnv := new JSDOMNodeJSEnv,
     scalacOptions += "-P:scalajs:sjsDefinedByDefault"
   )
   .dependsOn(core)
@@ -156,7 +153,6 @@ lazy val dom = project.in(file("dom"))
       "com.outr" %% "profig" % profigVersion,
       "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
     ),
-    jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv,
     scalacOptions += "-P:scalajs:sjsDefinedByDefault"
   )
   .dependsOn(coreJS)
@@ -225,7 +221,6 @@ lazy val gui = project.in(file("gui"))
   .enablePlugins(ScalaJSPlugin)
   .settings(
     name := "youi-gui",
-    jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv,
     libraryDependencies ++= Seq(
       "com.outr" %%% "webfontloader-scala-js" % webFontLoaderVersion,
       "com.outr" %%% "opentype-scala-js" % openTypeVersion
@@ -254,7 +249,6 @@ lazy val app = crossProject(JSPlatform, JVMPlatform).in(file("app"))
     )
   )
   .jsSettings(
-    jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv,
     scalacOptions += "-P:scalajs:sjsDefinedByDefault"
   )
   .dependsOn(core, communication)
@@ -268,7 +262,6 @@ lazy val example = crossApplication.in(file("example"))
     youiVersion := version.value
   )
   .jsSettings(
-    jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv,
     scalacOptions += "-P:scalajs:sjsDefinedByDefault"
   )
   .jvmSettings(

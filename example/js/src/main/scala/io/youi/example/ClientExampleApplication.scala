@@ -32,8 +32,6 @@ object ClientExampleApplication extends ExampleApplication with ClientConnectedA
 //  val animatedImage = AnimatedImageExample
 //  val heavyText = HeavyTextExample
 
-  val courio: CourioPrototype = new CourioPrototype
-
   val hello: HelloWorld = new HelloWorld
 
 //  val animation: AnimationExample = new AnimationExample

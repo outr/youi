@@ -16,6 +16,8 @@ import scribe.Execution.global
 class Header extends Container with SizeSupport { self =>
   protected def application: ClientExampleApplication.type = ClientExampleApplication
 
+  private lazy val headerFont = GoogleFont.`Open Sans`.`600`.load()
+
   size.width := ui.size.width
   size.height @= 75.0
   background := Paint.vertical(75.0).distributeColors(Color.White, Color.LightGray, Color.DarkGray)
@@ -32,10 +34,7 @@ class Header extends Container with SizeSupport { self =>
   }
 
   private val title = new Component(dom.create.span) with FontSupport with PositionSupport with MeasuredSupport {
-    GoogleFont.`Open Sans`.`600`.load().foreach { fnt =>
-      font.family @= fnt.font.family
-      font.weight @= fnt.name
-    }
+    font.weight ! headerFont
     font.size @= 20.pt
     color @= application.colors.blue.dark
     ScreenManager().active.attachAndFire { screen =>
@@ -48,10 +47,7 @@ class Header extends Container with SizeSupport { self =>
   }
 
   private val link = new Component(dom.create.span) with FontSupport with PositionSupport with MeasuredSupport with EventSupport {
-    GoogleFont.`Open Sans`.`600`.load().foreach { fnt =>
-      font.family @= fnt.font.family
-      font.weight @= fnt.name
-    }
+    font.weight ! headerFont
     font.size @= 14.pt
     color @= application.colors.blue.dark
     content @= "View Source"

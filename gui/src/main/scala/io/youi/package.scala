@@ -37,6 +37,10 @@ package object youi {
       document.body.removeChild(div)
     }
   }
+  lazy val isMobileDevice: Boolean = {
+    val ua = window.navigator.userAgent.toLowerCase
+    ua.contains("iphone") || ua.contains("ipad") || ua.contains("android")
+  }
 
   implicit def color2Paint(color: Color): Paint = Paint.color(color)
 

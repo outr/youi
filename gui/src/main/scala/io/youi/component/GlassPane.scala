@@ -12,7 +12,6 @@ import scala.concurrent.duration._
 
 class GlassPane extends Component(dom.create.div) with SizeSupport with PositionSupport with EventSupport {
   val backgroundAlpha: Var[Double] = Var(0.5)
-  backgroundAlpha.attach(d => scribe.info(s"Alpha: $d"))
 
   def isActive: Boolean = display() != Display.None
 

@@ -25,7 +25,7 @@ trait CrossFadeSupport extends ScreenManager {
           get = () => crossFadeElement.style.opacity.toDouble,
           apply = (d: Double) => crossFadeElement.style.opacity = d.toString,
           destination = () => 1.0,
-          duration = crossFadeDuration,
+          duration = () => crossFadeDuration,
           easing = crossFadeEaseIn
         ))
       workflow.start(AnimationFrame).future.map(_ => ())
@@ -40,7 +40,7 @@ trait CrossFadeSupport extends ScreenManager {
         get = () => crossFadeElement.style.opacity.toDouble,
         apply = (d: Double) => crossFadeElement.style.opacity = d.toString,
         destination = () => 0.0,
-        duration = crossFadeDuration,
+        duration = () => crossFadeDuration,
         easing = crossFadeEaseOut
       ).andThen(synchronous(crossFadeElement.style.visibility = "hidden")).start(AnimationFrame).future.map(_ => ())
     } else {

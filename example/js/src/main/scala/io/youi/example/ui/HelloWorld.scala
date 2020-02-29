@@ -3,8 +3,8 @@ package io.youi.example.ui
 import io.youi._
 import io.youi.font.GoogleFont
 import io.youi.component._
-import io.youi.component.support.{MeasuredSupport, PositionSupport, SizeSupport}
-import io.youi.component.types.{Display, PositionType, SizeType}
+import io.youi.component.support.{BorderSupport, MarginSupport, MeasuredSupport, PositionSupport, SizeSupport}
+import io.youi.component.types.{Border, BorderStyle, Display, PositionType, SizeType}
 import io.youi.event.EventSupport
 import io.youi.example.screen.UIExampleScreen
 import io.youi.net._
@@ -30,8 +30,19 @@ class HelloWorld extends UIExampleScreen {
     text.font.family @= fnt.family
     container.children += text
 
-    val sidebar = new Sidebar()
+    val example = new Container with MarginSupport with SizeSupport with BorderSupport {
+      backgroundColor @= Color.Yellow
+      color @= Color.Black
+      border @= Border(2.0, BorderStyle.Solid, Color.Red)
+      size.height := container.size.height
+
+      content @= "Hello, world!"
+    }
+    val sidebar = new Sidebar(container = Some(example))
+    sidebar.backgroundColor @= Color.Green
+    sidebar.content @= "Sidebar!"
     container.children += sidebar
+    container.children += example
 
     text.event.click.on {
       sidebar.open @= !sidebar.open

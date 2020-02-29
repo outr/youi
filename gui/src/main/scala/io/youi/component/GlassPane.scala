@@ -10,9 +10,9 @@ import reactify.Var
 
 import scala.concurrent.duration._
 
-object GlassPane extends Component(dom.create.div) with SizeSupport with PositionSupport with EventSupport {
-  var onClick: Option[() => Boolean] = None
+class GlassPane extends Component(dom.create.div) with SizeSupport with PositionSupport with EventSupport {
   val backgroundAlpha: Var[Double] = Var(0.5)
+  backgroundAlpha.attach(d => scribe.info(s"Alpha: $d"))
 
   def isActive: Boolean = display() != Display.None
 
@@ -25,15 +25,7 @@ object GlassPane extends Component(dom.create.div) with SizeSupport with Positio
   backgroundColor := Color.Black.withAlpha(backgroundAlpha)
   display @= Display.None
 
-  event.click.on {
-    onClick match {
-      case Some(f) => if (f()) hide(fadeOut = true)
-      case None => hide(fadeOut = true)
-    }
-  }
-
-  def show(onClick: () => Boolean, fadeIn: Boolean): Unit = {
-    this.onClick = Some(onClick)
+  def show(fadeIn: Boolean): Unit = {
     if (fadeIn) {
       sequential(
         backgroundAlpha @= 0.0,

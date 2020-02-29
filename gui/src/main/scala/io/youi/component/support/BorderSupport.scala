@@ -7,6 +7,9 @@ import io.youi.component.types.{Border, Prop}
 trait BorderSupport {
   this: Component =>
 
+  // TODO: Support customization of this
+  element.style.boxSizing = "border-box"
+
   object border {
     lazy val top: Prop[Border] = Prop.stringify(element.style.borderTop, element.style.borderTop_=, Border, Border.empty)
     lazy val bottom: Prop[Border] = Prop.stringify(element.style.borderBottom, element.style.borderBottom_=, Border, Border.empty)

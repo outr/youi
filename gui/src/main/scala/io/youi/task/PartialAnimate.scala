@@ -2,14 +2,17 @@ package io.youi.task
 
 import io.youi.easing.Easing
 
-import scala.concurrent.duration.FiniteDuration
+import scala.concurrent.duration._
 
 case class PartialAnimate(get: () => Double,
                           apply: Double => Unit,
                           destination: () => Double) {
   def from(value: => Double): PartialAnimate = copy(get = () => value)
 
-  def in(duration: FiniteDuration): AnimateIn = AnimateIn(get, apply, destination, duration, Easing.linear)
+  def in(duration: => FiniteDuration): AnimateIn = AnimateIn(get, apply, destination, () => duration, Easing.linear)
 
-  def by(stepBy: Double): Task = AnimateBy(stepBy, get, apply, destination)
+  def by(stepBy: Double): AnimateIn = {
+    val duration = () => ((math.abs(get() - destination()) * 1000.0) / stepBy).millis
+    AnimateIn(get, apply, destination, duration, Easing.linear)
+  }
 }

@@ -30,22 +30,14 @@ class HelloWorld extends UIExampleScreen {
     text.font.family @= fnt.family
     container.children += text
 
-    val example = new Container with MarginSupport with SizeSupport with BorderSupport {
-      backgroundColor @= Color.Yellow
-      color @= Color.Black
-      border @= Border(2.0, BorderStyle.Solid, Color.Red)
-      size.height := container.size.height
-
-      content @= "Hello, world!"
-    }
-    val sidebar = new Sidebar(container = Some(example))
-    sidebar.backgroundColor @= Color.Green
-    sidebar.content @= "Sidebar!"
-    container.children += sidebar
-    container.children += example
+    val popup = new Popup with EventSupport
+    container.children += popup
 
     text.event.click.on {
-      sidebar.open @= !sidebar.open
+      popup.show()
+    }
+    popup.event.click.on {
+      popup.hide()
     }
   }
 }

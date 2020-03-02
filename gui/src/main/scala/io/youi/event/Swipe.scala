@@ -62,7 +62,7 @@ object Swipe {
   /**
     * The distance of the line before it is considering a swipe.
     */
-  var Start: Double = 20.0
+  var Start: Double = 50.0
 
   sealed trait Direction {
     def plane: Plane

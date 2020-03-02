@@ -16,7 +16,7 @@ class Sidebar(container: Option[Component with SizeSupport with MarginSupport],
   private var future: Future[Unit] = Future.successful(())
   private val glassPane: Option[GlassPane] = if (showGlassPane) {
     val gp = new GlassPane
-    gp.backgroundAlpha := (math.max(0.0, size.width) / width) / 2.0
+    gp.backgroundAlpha := (math.max(0.0, width + position.x) / width) / 2.0
     ui.children += gp
     Some(gp)
   } else {
@@ -29,6 +29,7 @@ class Sidebar(container: Option[Component with SizeSupport with MarginSupport],
   val open: Var[Boolean] = Var(true)
   val swipe: Var[Boolean] = Var(true)
   val swiping: Val[Boolean] = Var(false)
+  val swipeAcceleration: Var[Boolean] = Var(false)
 
   val contents: Component with SizeSupport = new Component(dom.create.div) with SizeSupport {
     size.width @= width
@@ -47,8 +48,8 @@ class Sidebar(container: Option[Component with SizeSupport with MarginSupport],
 
   // Set up container adjustments
   container.foreach { c =>
-    c.size.width := (if (pinned) ui.size.width - size.width else ui.size.width)
-    c.margin.left := (if (pinned) size.width else 0.0)
+    c.size.width := (if (pinned) ui.size.width - (width + position.x) else ui.size.width)
+    c.margin.left := (if (pinned) width + position.x else 0.0)
   }
 
   // GlassPane set up
@@ -71,21 +72,43 @@ class Sidebar(container: Option[Component with SizeSupport with MarginSupport],
   ui.swipe.start.on {
     if (swipe) {
       swiping.asInstanceOf[Var[Boolean]] @= true
-      start = size.width
+//      start = size.width
+      start = position.x
       glassPane.foreach(_.display @= Display.Block)
       ui.userSelect @= UserSelect.None
     }
   }
   ui.swipe.move.attach { evt =>
     if (swiping) {
-      size.width @= math.min(start + evt.distance, width)
+//      size.width @= math.min(start + evt.distance, width)
+      position.x @= math.min(0.0, start + evt.distance)
     }
   }
-  ui.swipe.end.on {
+  ui.swipe.end.attach { evt =>
     if (swiping) {
       swiping.asInstanceOf[Var[Boolean]] @= false
       ui.userSelect @= UserSelect.Auto
-      open @= size.width >= width / 2.0
+
+      if (swipeAcceleration) {
+        open @= (if (evt.acceleration == Double.NegativeInfinity || evt.acceleration == Double.PositiveInfinity || math.abs(evt.acceleration) < 1000.0) {
+          size.width >= width / 2.0
+        } else if (evt.acceleration > 0.0) {
+          true
+        } else {
+          false
+        })
+      } else {
+        if (open) {
+          if (position.x <= width * -0.05) {
+//          if (size.width <= width * 0.95) {
+            open @= false
+          }
+//        } else if (size.width >= width * 0.05) {
+        } else if (position.x >= width * -0.95) {
+          open @= true
+        }
+      }
+
       // Work-around for partial open
       if (open) {
         show()
@@ -99,7 +122,8 @@ class Sidebar(container: Option[Component with SizeSupport with MarginSupport],
     future = future.flatMap { _ =>
       sequential(
         glassPane.foreach(_.display @= Display.Block),
-        size.width.to(width).by(speed).easing(easing)
+        position.x.to(0.0).by(speed).easing(easing)
+//        size.width.to(width).by(speed).easing(easing)
       ).start().future.map(_ => ())
     }
     future
@@ -108,7 +132,8 @@ class Sidebar(container: Option[Component with SizeSupport with MarginSupport],
   private def hide(): Future[Unit] = {
     future = future.flatMap { _ =>
       sequential(
-        size.width.to(0.0).by(speed).easing(easing),
+//        size.width.to(0.0).by(speed).easing(easing),
+        position.x.to(-width).by(speed).easing(easing),
         glassPane.foreach(_.display @= Display.None)
       ).start().future.map(_ => ())
     }

@@ -25,7 +25,7 @@ class Popup(showGlassPane: Boolean = true,
   }
   val easing: Var[Easing] = Var(Easing.exponentialOut)
 
-  val speed: Var[FiniteDuration] = Var(300.millis)
+  val speed: Var[FiniteDuration] = Var(150.millis)
   position.x @= 0.0
   position.y @= 0.0
   position.z @= 200

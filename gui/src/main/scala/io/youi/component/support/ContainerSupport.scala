@@ -7,8 +7,14 @@ trait ContainerSupport {
 
   object children {
     def length: Int = element.childElementCount
-    def +=(component: Component): Unit = element.appendChild(component.element)
-    def -=(component: Component): Unit = element.removeChild(component.element)
+    def +=(component: Component): Unit = {
+      element.appendChild(component.element)
+      measure()
+    }
+    def -=(component: Component): Unit = {
+      element.removeChild(component.element)
+      measure()
+    }
     def ++=(seq: Seq[Component]): Unit = seq.foreach(+=)
     def --=(seq: Seq[Component]): Unit = seq.foreach(-=)
   }

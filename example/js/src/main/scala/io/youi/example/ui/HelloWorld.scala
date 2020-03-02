@@ -5,6 +5,7 @@ import io.youi.font.GoogleFont
 import io.youi.component._
 import io.youi.component.support.{BorderSupport, MarginSupport, MeasuredSupport, PositionSupport, SizeSupport}
 import io.youi.component.types.{Border, BorderStyle, Display, PositionType, SizeType}
+import io.youi.easing.Linear
 import io.youi.event.EventSupport
 import io.youi.example.screen.UIExampleScreen
 import io.youi.net._
@@ -30,7 +31,8 @@ class HelloWorld extends UIExampleScreen {
     text.font.family @= fnt.family
     container.children += text
 
-    val popup = new Popup(showGlassPane = true) with EventSupport
+    /*val popup = new Popup(showGlassPane = false) with EventSupport
+    popup.easing @= Linear
     container.children += popup
 
     text.event.click.on {
@@ -38,6 +40,37 @@ class HelloWorld extends UIExampleScreen {
     }
     popup.event.click.on {
       popup.hide()
+    }*/
+
+    /*val dropdown = new Drop with EventSupport
+    dropdown.container.children += new TextView {
+      content @= "This is dropdown text!<br/>One<br/>Two<br/>Three"
+    }
+    container.children += dropdown
+
+    text.event.click.attach { evt =>
+      dropdown.toggle(text)
+    }
+    dropdown.event.click.on {
+      dropdown.hide()
+    }*/
+
+    val example = new Container with MarginSupport with SizeSupport with BorderSupport {
+      backgroundColor @= Color.Yellow
+      color @= Color.Black
+      border @= Border(2.0, BorderStyle.Solid, Color.Red)
+      size.height := container.size.height
+
+      content @= "Hello, world!"
+    }
+    val sidebar = new Sidebar(container = Some(example))
+    sidebar.backgroundColor @= Color.Green
+    sidebar.content @= "Hello, world! Hello, world! Hello, world! Hello, world! Hello, world! Hello, world! Hello, world! Hello, world! Hello, world!"
+    container.children += sidebar
+    container.children += example
+
+    text.event.click.on {
+      sidebar.open @= !sidebar.open
     }
   }
 }

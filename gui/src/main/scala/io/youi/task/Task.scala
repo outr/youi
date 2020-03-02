@@ -11,3 +11,9 @@ trait Task {
 
   def start(taskSupport: TaskSupport = ui): TaskInstance = taskSupport.start(this)
 }
+
+object Task {
+  lazy val None: Task = new Task {
+    override def update(delta: Double, reset: Boolean): Conclusion = Conclusion.Finished
+  }
+}

@@ -3,6 +3,7 @@ package io.youi.component
 import io.youi.Color
 import io.youi.component.types.{Cursor, Display, Prop, UserSelect, WhiteSpace}
 import io.youi.paint.Paint
+import io.youi.path.Rectangle
 import org.scalajs.dom.html
 
 class Component(val element: html.Element) {
@@ -21,4 +22,12 @@ class Component(val element: html.Element) {
   lazy val userSelect: Prop[UserSelect] = Prop.stringify(element.style.getPropertyValue("user-select"), element.style.setProperty("user-select", _), UserSelect, UserSelect.Initial)
 
   protected def measure(): Unit = {}
+
+  /**
+    * Returns the absolute bounding rectangle for this element
+    */
+  def absoluteBounding: Rectangle = {
+    val r = element.getBoundingClientRect()
+    Rectangle(x = r.left, y = r.top, width = r.width, height = r.height)
+  }
 }

@@ -30,7 +30,7 @@ class HelloWorld extends UIExampleScreen {
     text.font.family @= fnt.family
     container.children += text
 
-    val popup = new Popup with EventSupport
+    val popup = new Popup(showGlassPane = true) with EventSupport
     container.children += popup
 
     text.event.click.on {

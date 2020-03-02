@@ -11,20 +11,34 @@ import scala.concurrent.Future
 import scala.concurrent.duration._
 import scribe.Execution.global
 
-class Popup extends Container with SizeSupport with PositionSupport {
-  val easing: Var[Easing] = Var(Easing.exponentialOut)
-  val speed: Var[FiniteDuration] = Var(300.millis)
+class Popup(showGlassPane: Boolean = true,
+            preferredWidth: Double = 600.0,
+            preferredHeight: Double = 800.0) extends Container with SizeSupport with PositionSupport {
+  private var future: Future[Unit] = Future.successful(())
 
+  private val glassPane: Option[GlassPane] = if (showGlassPane) {
+    val gp = new GlassPane
+    ui.children += gp
+    Some(gp)
+  } else {
+    None
+  }
+  val easing: Var[Easing] = Var(Easing.exponentialOut)
+
+  val speed: Var[FiniteDuration] = Var(300.millis)
   position.x @= 0.0
   position.y @= 0.0
-  position.z @= 100
+  position.z @= 200
   position.`type` @= PositionType.Absolute
-  size.width := math.min(600.0, ui.size.width)
-  size.height := math.min(800.0, ui.size.height)
+  size.width := math.min(preferredWidth, ui.size.width)
+  size.height := math.min(preferredHeight, ui.size.height)
   display @= Display.None
   backgroundColor @= Color.Cyan
 
-  private var future: Future[Unit] = Future.successful(())
+  // GlassPane set up
+  glassPane.foreach { gp =>
+    gp.event.click.on(hide())
+  }
 
   def show(): Future[Unit] = {
     future = future.flatMap { _ =>
@@ -32,7 +46,14 @@ class Popup extends Container with SizeSupport with PositionSupport {
         position.center := ui.size.center,
         position.y @= ui.size.height,
         display @= Display.Block,
-        position.middle.to(ui.size.middle).in(speed).easing(easing)
+        glassPane.foreach(_.backgroundAlpha @= 0.0),
+        glassPane.foreach(_.display @= Display.Block),
+        parallel(
+          position.middle.to(ui.size.middle).in(speed).easing(easing),
+          glassPane.map { gp =>
+            gp.backgroundAlpha.to(0.5).in(speed).easing(easing)
+          }.getOrElse(Task.None)
+        )
       ).start().future.map(_ => ())
     }
     future
@@ -41,8 +62,14 @@ class Popup extends Container with SizeSupport with PositionSupport {
   def hide(): Future[Unit] = {
     future = future.flatMap { _ =>
       sequential(
-        position.y.to(ui.size.height).in(speed).easing(easing),
-        display @= Display.None
+        parallel(
+          position.y.to(ui.size.height).in(speed).easing(easing),
+          glassPane.map { gp =>
+            gp.backgroundAlpha.to(0.0).in(speed).easing(easing)
+          }.getOrElse(Task.None)
+        ),
+        display @= Display.None,
+        glassPane.foreach(_.display @= Display.None)
       ).start().future.map(_ => ())
     }
     future

@@ -1,5 +1,6 @@
 package io.youi.event
 
+import io.youi.Plane
 import io.youi.component.Component
 import reactify.Channel
 
@@ -19,18 +20,18 @@ class Swipe(component: Component,
       val absY = math.abs(p.movedFromStart.deltaY)
       val plane = dragging.map(_.direction.plane).orElse(
         if (absX > absY && absX > Swipe.Start) {
-          Some(Swipe.Plane.Horizontal)
+          Some(Plane.Horizontal)
         } else if (absX < absY && absY > Swipe.Start) {
-          Some(Swipe.Plane.Vertical)
+          Some(Plane.Vertical)
         } else {
           None
         }
       )
       val option = plane match {
-        case Some(Swipe.Plane.Horizontal) if p.deltaX < 0.0 => Some((Swipe.Direction.Left, p.movedFromStart.deltaX, p.velocityX))
-        case Some(Swipe.Plane.Horizontal) => Some((Swipe.Direction.Right, p.movedFromStart.deltaX, p.velocityX))
-        case Some(Swipe.Plane.Vertical) if p.deltaY < 0.0 => Some((Swipe.Direction.Up, p.movedFromStart.deltaY, p.velocityY))
-        case Some(Swipe.Plane.Vertical) => Some((Swipe.Direction.Down, p.movedFromStart.deltaY, p.velocityY))
+        case Some(Plane.Horizontal) if p.deltaX < 0.0 => Some((Swipe.Direction.Left, p.movedFromStart.deltaX, p.velocityX))
+        case Some(Plane.Horizontal) => Some((Swipe.Direction.Right, p.movedFromStart.deltaX, p.velocityX))
+        case Some(Plane.Vertical) if p.deltaY < 0.0 => Some((Swipe.Direction.Up, p.movedFromStart.deltaY, p.velocityY))
+        case Some(Plane.Vertical) => Some((Swipe.Direction.Down, p.movedFromStart.deltaY, p.velocityY))
         case _ => None
       }
       option.foreach {
@@ -83,12 +84,5 @@ object Swipe {
     }
 
     lazy val All: Set[Direction] = Set(Up, Down, Left, Right)
-  }
-
-  sealed trait Plane
-
-  object Plane {
-    case object Horizontal extends Plane
-    case object Vertical extends Plane
   }
 }

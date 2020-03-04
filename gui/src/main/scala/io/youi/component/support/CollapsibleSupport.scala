@@ -1,5 +1,6 @@
 package io.youi.component.support
 
+import io.youi.Plane
 import io.youi.component.types.Display
 import io.youi.component.Component
 import io.youi.easing.Easing
@@ -13,15 +14,21 @@ import scribe.Execution.global
 trait CollapsibleSupport {
   this: Component with SizeSupport =>
 
-  private var future: Future[Unit] = Future.successful(())
+  protected var future: Future[Unit] = Future.successful(())
 
   val easing: Var[Easing] = Var(Easing.exponentialOut)
   val speed: Var[FiniteDuration] = Var(300.millis)
-  val collapsed: Var[Boolean] = Var(false)
+  val collapsed: Var[Boolean] = Var(true)
 
-  protected def expandedHeight: Double
+  protected def direction: Plane
+  protected def expanded: Double
 
-  size.height := expandedHeight
+  private val prop: Var[Double] = direction match {
+    case Plane.Vertical => size.height
+    case Plane.Horizontal => size.width
+  }
+
+  prop := 0.0
 
   collapsed.attach {
     case true => collapse()
@@ -31,9 +38,9 @@ trait CollapsibleSupport {
   private def expand(): Future[Unit] = {
     future = future.flatMap { _ =>
       sequential(
-        size.height @= 0.0,
+        prop @= 0.0,
         display @= Display.Block,
-        size.height.to(expandedHeight).in(speed).easing(easing)
+        prop.to(expanded).in(speed).easing(easing)
       ).start().future.map(_ => ())
     }
     future
@@ -42,7 +49,7 @@ trait CollapsibleSupport {
   private def collapse(): Future[Unit] = {
     future = future.flatMap { _ =>
       sequential(
-        size.height.to(0.0).in(speed).easing(easing),
+        prop.to(0.0).in(speed).easing(easing),
         display @= Display.None
       ).start().future.map(_ => ())
     }

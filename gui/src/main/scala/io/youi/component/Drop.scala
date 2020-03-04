@@ -1,25 +1,16 @@
 package io.youi.component
 
-import io.youi.component.support.{BorderSupport, MeasuredSupport, OverflowSupport, PositionSupport, SizeSupport}
-import io.youi.component.types.{Border, BorderStyle, Display, DropType, Overflow, PositionType}
-import io.youi.easing.Easing
-import io.youi.{Color, dom, ui}
-import io.youi.task._
+import io.youi.component.support.{BorderSupport, CollapsibleSupport, MeasuredSupport, OverflowSupport, PositionSupport, SizeSupport}
+import io.youi.component.types.{Display, DropType, Overflow, PositionType}
+import io.youi._
 import reactify._
 
 import scala.concurrent.Future
-import scala.concurrent.duration._
-import scribe.Execution.global
 
-class Drop extends Component(dom.create.div) with SizeSupport with PositionSupport with BorderSupport with OverflowSupport {
-  private var future: Future[Unit] = Future.successful(())
+class Drop extends Component(dom.create.div) with SizeSupport with PositionSupport with BorderSupport with OverflowSupport with CollapsibleSupport {
   private var showing: Option[Component] = None
 
-  val easing: Var[Easing] = Var(Easing.exponentialOut)
-  val speed: Var[FiniteDuration] = Var(300.millis)
-
-  // TODO: Make container mix-in CollapsibleSupport
-  val container: Container with MeasuredSupport = new Container with MeasuredSupport
+  lazy val container: Container with MeasuredSupport = new Container with MeasuredSupport
 
   element.appendChild(container)
   position.x @= 0.0
@@ -31,55 +22,42 @@ class Drop extends Component(dom.create.div) with SizeSupport with PositionSuppo
   display @= Display.None
 
   overflow @= Overflow.Hidden
-//  border @= Border(1.0, BorderStyle.Solid, Color.Black)
-  backgroundColor @= Color.LightBlue
 
   def show(target: Component, `type`: DropType = DropType.Auto): Future[Unit] = {
     showing = Some(target)
-    future = future.flatMap { _ =>
-      Drop.opening(this)
-      val rect = target.absoluteBounding
-      position.x @= rect.left
-      position.y @= rect.bottom
+    Drop.opening(this)
+    val rect = target.absoluteBounding
+    position.x @= rect.left
+    position.y @= rect.bottom
 
-      val distanceToTop = rect.top
-      val distanceToBottom = ui.size.height - rect.bottom
-      val down = `type` == DropType.Down || (`type` == DropType.Auto && distanceToBottom >= distanceToTop)
-      val distanceToEnd = if (down) distanceToBottom else distanceToTop
+    val distanceToTop = rect.top
+    val distanceToBottom = ui.size.height - rect.bottom
+    val down = `type` == DropType.Down || (`type` == DropType.Auto && distanceToBottom >= distanceToTop)
 
-      if (!down) {
-        position.y := rect.top - size.height
-      }
-
-      val destinationHeight = math.min(math.round(container.measured.height + 2.0), distanceToEnd)
-
-      sequential(
-        size.height @= 0.0,
-        display @= Display.Block,
-        size.height.to(destinationHeight).in(speed).easing(easing)
-      ).start().future.map(_ => ())
+    if (!down) {
+      position.y := rect.top - size.height
     }
+    collapsed @= false
     future
   }
 
   def hide(): Future[Unit] = {
     showing = None
     Drop.open = None
-    future = future.flatMap { _ =>
-      scribe.info("Starting hide!")
-      sequential(
-        size.height.to(0.0).in(speed).easing(easing),
-        display @= Display.None,
-      ).start().future.map(_ => ())
-    }
+    collapsed @= true
     future
   }
 
-  def toggle(target: Component): Future[Unit] = if (showing.isEmpty) {
-    show(target)
+  def toggle(target: Component, `type`: DropType = DropType.Auto): Future[Unit] = if (showing.isEmpty) {
+    show(target, `type`)
   } else {
     hide()
   }
+
+
+  override protected def direction: Plane = Plane.Vertical
+
+  override protected def expanded: Double = container.measured.height + 2.0
 }
 
 object Drop {

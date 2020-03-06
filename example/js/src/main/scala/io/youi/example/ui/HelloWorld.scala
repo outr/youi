@@ -9,7 +9,7 @@ import io.youi.component.types.{Border, BorderStyle, Display, DropType, Position
 import io.youi.easing.Linear
 import io.youi.event.EventSupport
 import io.youi.example.screen.UIExampleScreen
-import io.youi.material.{MDCTextField, Material}
+import io.youi.material.{MDCButton, MDCTextField, Material}
 import io.youi.net._
 import org.scalajs.dom.html
 import reactify._
@@ -61,39 +61,11 @@ class HelloWorld extends UIExampleScreen {
       dropdown.hide()
     }*/
 
-    /*
-    <button class="mdc-button foo-button">
-  <div class="mdc-button__ripple"></div>
-  <span class="mdc-button__label">Button</span>
-</button>
-     */
-
-    val button = dom.create.button
-    button.addClasses("mdc-button", "foo-button")
-
-    val div = dom.create.div
-    div.addClasses("mdc-button__ripple")
-    button.appendChild(div)
-
-    val span = dom.create.span
-    span.addClasses("mdc-button__label")
-    span.innerHTML = "Button"
-    button.appendChild(span)
-
-    container.appendChild(button)
-
-    /*val field = dom.fromString[html.Div](
-      """
-        |<div class="mdc-text-field username">
-        |  <input type="text" class="mdc-text-field__input" id="username-input" name="username">
-        |  <label class="mdc-floating-label" for="username-input">Username</label>
-        |  <div class="mdc-line-ripple"></div>
-        |</div>
-        |""".stripMargin).head
-    container.appendChild(field)*/
+    val button = new MDCButton
+    button.label @= "My Button"
+    container.children += button
 
     val textField = new MDCTextField
-    textField.id @= "myTextField"
     textField.label @= "Username Test"
     container.children += textField
 

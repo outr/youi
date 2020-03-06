@@ -1,6 +1,6 @@
 package io.youi.material
 
-import io.youi.component.Container
+import io.youi.component.{Component, Container}
 import io.youi.{Unique, dom}
 import io.youi.dom._
 import io.youi.net._
@@ -22,7 +22,32 @@ object MaterialComponents {
   }
 }
 
-class MDCTextField extends Container {
+class MDCButton extends Component(dom.create.button) {
+  classes := Set("mdc-button")
+
+  val label: Var[String] = Var("")
+
+  private object elements {
+    val ripple: html.Div = {
+      val div = dom.create.div
+      div.addClasses("mdc-button__ripple")
+      div
+    }
+    val label: html.Span = {
+      val span = dom.create.span
+      span.addClasses("mdc-button__label")
+      MDCButton.this.label.attach(span.innerHTML_=)
+      span
+    }
+  }
+
+  element.appendChild(elements.ripple)
+  element.appendChild(elements.label)
+
+  private val adapter: Future[MDCButtonImplementation] = MaterialComponents.loaded.map(_ => MDCButton.attachTo(element))
+}
+
+class MDCTextField extends Component(dom.create.div) {
   classes := Set("mdc-text-field")
 
   val label: Var[String] = Var("")
@@ -61,9 +86,19 @@ class MDCTextField extends Container {
 }
 
 @js.native
+@JSGlobal("mdc.ripple.MDCRipple")
+object MDCButton extends js.Object {
+  def attachTo(element: html.Element): MDCButtonImplementation = js.native
+}
+
+@js.native
 @JSGlobal("mdc.textField.MDCTextField")
 object MDCTextField extends js.Object {
   def attachTo(element: html.Element): MDCTextFieldImplementation = js.native
+}
+
+@js.native
+trait MDCButtonImplementation extends js.Object {
 }
 
 @js.native

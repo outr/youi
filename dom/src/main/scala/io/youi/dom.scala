@@ -31,6 +31,8 @@ object dom extends ExtendedElement(None) {
     def div: html.Div = create[html.Div]("div")
     def image: html.Image = create[html.Image]("img")
     def input: html.Input = create[html.Input]("input")
+    def label: html.Label = create[html.Label]("label")
+    def script: html.Script = create[html.Script]("script")
     def span: html.Span = create[html.Span]("span")
     def text(value: String): Text = document.createTextNode(value)
     def textArea: html.TextArea = create[html.TextArea]("textarea")
@@ -51,22 +53,22 @@ object dom extends ExtendedElement(None) {
     case script if Option(script.src).nonEmpty && script.src.nonEmpty => script.src
   }.map(_ -> Future.successful(())): _*)
 
-  def addScript(url: String, addToHead: Boolean = false): Future[Unit] = addedScripts.get(url) match {
+  def addScript(url: URL, addToHead: Boolean = false): Future[Unit] = addedScripts.get(url.toString) match {
     case Some(f) => f
     case None => {
       val promise = Promise[Unit]
-      val script = create[html.Script]("script")
+      val script = create.script
       script.addEventListener("load", (_: Event) => {
         promise.success(())
       })
-      script.src = url
+      script.src = url.toString
       if (addToHead) {
         document.head.appendChild(script)
       } else {
         document.body.appendChild(script)
       }
       val future = promise.future
-      addedScripts += url -> future
+      addedScripts += url.toString -> future
       future
     }
   }
@@ -80,6 +82,7 @@ object dom extends ExtendedElement(None) {
   def addCSS(url: URL): Unit = {
     val link = create[html.Link]("link")
     link.href = url.toString
+    link.setAttribute("rel", "stylesheet")
     link.setAttribute("as", "style")
     link.setAttribute("crossorigin", "crossorigin")
     document.head.appendChild(link)

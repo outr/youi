@@ -1,7 +1,7 @@
 package io.youi.material
 
 import io.youi.component.{Component, Container}
-import io.youi.{Unique, dom}
+import io.youi.{History, Unique, dom}
 import io.youi.dom._
 import io.youi.net._
 import org.scalajs.dom.html
@@ -15,11 +15,57 @@ import scala.scalajs.js.annotation.JSGlobal
 
 object MaterialComponents {
   lazy val loaded: Future[Unit] = {
-    dom.addCSS(url"https://unpkg.com/material-components-web@v4.0.0/dist/material-components-web.min.css")
-    dom.addScript(url"https://unpkg.com/material-components-web@v4.0.0/dist/material-components-web.min.js").flatMap { _ =>
+    dom.addCSS(History.url.withPath(path"/material-components-web.min.css"))
+    dom.addScript(History.url.withPath(path"/material-components-web.min.js")).flatMap { _ =>
       Material.load().map(_ => ())
     }
   }
+}
+
+/*
+<button id="add-to-favorites"
+   class="mdc-icon-button"
+   aria-label="Add to favorites"
+   aria-pressed="false">
+   <i class="material-icons mdc-icon-button__icon mdc-icon-button__icon--on">favorite</i>
+   <i class="material-icons mdc-icon-button__icon">favorite_border</i>
+</button>
+
+<button class="mdc-icon-button material-icons">favorite</button>
+ */
+class MDCIconButton extends Component(dom.create.button) {
+  classes := Set("mdc-icon-button", "material-icons")
+
+  val icon: Var[MaterialIcon] = Var(Material.Icons.Alert.Warning)
+
+  icon.attachAndFire(i => content @= i.name)
+
+  private val adapter: Future[MDCRippleImplementation] = MaterialComponents.loaded.map(_ => MDCRipple.attachTo(element))
+  adapter.foreach(_.unbounded = true)
+}
+
+class MDCIconButtonToggle extends Component(dom.create.button) {
+  classes := Set("mdc-icon-button")
+  element.setAttribute("aria-pressed", "false")
+
+  val on: Var[MaterialIcon] = Var(Material.Icons.Alert.ErrorOutline)
+  val off: Var[MaterialIcon] = Var(Material.Icons.Alert.Error)
+
+  private object elements {
+    val on: html.Element = dom.create[html.Element]("i")
+    val off: html.Element = dom.create[html.Element]("i")
+
+    on.addClasses("material-icons", "mdc-icon-button__icon", "mdc-icon-button__icon--on")
+    MDCIconButtonToggle.this.on.attachAndFire(i => on.innerHTML = i.name)
+
+    off.addClasses("material-icons", "mdc-icon-button__icon")
+    MDCIconButtonToggle.this.off.attachAndFire(i => off.innerHTML = i.name)
+  }
+
+  element.appendChild(elements.on)
+  element.appendChild(elements.off)
+
+  private val adapter: Future[MDCIconButtonToggleImplementation] = MaterialComponents.loaded.map(_ => MDCIconButtonToggle.attachTo(element))
 }
 
 class MDCButton extends Component(dom.create.button) {
@@ -44,7 +90,7 @@ class MDCButton extends Component(dom.create.button) {
   element.appendChild(elements.ripple)
   element.appendChild(elements.label)
 
-  private val adapter: Future[MDCButtonImplementation] = MaterialComponents.loaded.map(_ => MDCButton.attachTo(element))
+  private val adapter: Future[MDCRippleImplementation] = MaterialComponents.loaded.map(_ => MDCRipple.attachTo(element))
 }
 
 class MDCTextField extends Component(dom.create.div) {
@@ -87,8 +133,14 @@ class MDCTextField extends Component(dom.create.div) {
 
 @js.native
 @JSGlobal("mdc.ripple.MDCRipple")
-object MDCButton extends js.Object {
-  def attachTo(element: html.Element): MDCButtonImplementation = js.native
+object MDCRipple extends js.Object {
+  def attachTo(element: html.Element): MDCRippleImplementation = js.native
+}
+
+@js.native
+@JSGlobal("mdc.iconButton.MDCIconButtonToggle")
+object MDCIconButtonToggle extends js.Object {
+  def attachTo(element: html.Element): MDCIconButtonToggleImplementation = js.native
 }
 
 @js.native
@@ -98,7 +150,12 @@ object MDCTextField extends js.Object {
 }
 
 @js.native
-trait MDCButtonImplementation extends js.Object {
+trait MDCRippleImplementation extends js.Object {
+  var unbounded: Boolean
+}
+
+@js.native
+trait MDCIconButtonToggleImplementation extends js.Object {
 }
 
 @js.native

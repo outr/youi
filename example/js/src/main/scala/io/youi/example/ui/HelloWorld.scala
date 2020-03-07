@@ -9,7 +9,7 @@ import io.youi.component.types.{Border, BorderStyle, Display, DropType, Position
 import io.youi.easing.Linear
 import io.youi.event.EventSupport
 import io.youi.example.screen.UIExampleScreen
-import io.youi.material.{MDCButton, MDCTextField, Material}
+import io.youi.material.{MDCButton, MDCIconButton, MDCIconButtonToggle, MDCTextField, Material}
 import io.youi.net._
 import org.scalajs.dom.html
 import reactify._
@@ -68,6 +68,12 @@ class HelloWorld extends UIExampleScreen {
     val textField = new MDCTextField
     textField.label @= "Username Test"
     container.children += textField
+
+    val iconButton = new MDCIconButton
+    container.children += iconButton
+
+    val iconButtonToggle = new MDCIconButtonToggle
+    container.children += iconButtonToggle
 
     text.event.click.on {
       textField.shakeLabel()

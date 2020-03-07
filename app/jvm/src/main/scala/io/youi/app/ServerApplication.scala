@@ -52,7 +52,7 @@ trait ServerApplication extends YouIApplication with Server {
   protected def responseMap(httpConnection: HttpConnection): Map[String, String] = Map.empty
 
   override protected def init(): Future[Unit] = super.init().map { _ =>
-    handler.matcher(path.exact("/source-map.min.js")).resource(Content.classPath("source-map.min.js"))
+    handler.resource(url => Content.classPathOption(s"assets/${url.path.encoded}"))
     if (logJavaScriptErrors) {
       handler.matcher(path.exact(logPath)).handle { httpConnection =>
         val content = httpConnection.request.content

@@ -1,8 +1,10 @@
 package io.youi.material
 
+import io.youi.component.types.Prop
 import io.youi.component.{Component, Container}
 import io.youi.{History, Unique, dom}
 import io.youi.dom._
+import io.youi.event.EventSupport
 import io.youi.net._
 import org.scalajs.dom.html
 import reactify.Var
@@ -36,6 +38,11 @@ object MaterialComponents {
 class MDCIconButton extends Component(dom.create.button) {
   classes := Set("mdc-icon-button", "material-icons")
 
+  def this(icon: MaterialIcon) = {
+    this()
+    this.icon @= icon
+  }
+
   val icon: Var[MaterialIcon] = Var(Material.Icons.Alert.Warning)
 
   icon.attachAndFire(i => content @= i.name)
@@ -68,6 +75,52 @@ class MDCIconButtonToggle extends Component(dom.create.button) {
   private val adapter: Future[MDCIconButtonToggleImplementation] = MaterialComponents.loaded.map(_ => MDCIconButtonToggle.attachTo(element))
 }
 
+class MDCTopAppBar extends Component(dom.create[html.Element]("header")) {
+  classes := Set("mdc-top-app-bar")
+
+  val title: Var[String] = Var("")
+
+  val fixed: Prop[Boolean] = classes.toggle("mdc-top-app-bar--fixed")
+  val short: Prop[Boolean] = classes.toggle("mdc-top-app-bar--short")
+  val collapsed: Prop[Boolean] = classes.toggle("mdc-top-app-bar--short-collapsed")
+  val prominent: Prop[Boolean] = classes.toggle("mdc-top-app-bar--prominent")
+  val dense: Prop[Boolean] = classes.toggle("mdc-top-app-bar--dense")
+
+  private object elements {
+    val row: html.Div = dom.create.div
+    row.addClasses("mdc-top-app-bar__row")
+
+    val section: html.Element = dom.create[html.Element]("section")
+    section.addClasses("mdc-top-app-bar__section", "mdc-top-app-bar__section--align-start")
+
+    val button: html.Button = dom.create.button
+    button.addClasses("material-icons", "mdc-top-app-bar__navigation-icon", "mdc-icon-button")
+    button.innerHTML = "menu"
+
+    val span: html.Span = dom.create.span
+    span.addClasses("mdc-top-app-bar__title")
+    title.attachAndFire(span.innerHTML_=)
+
+    val right: html.Element = dom.create[html.Element]("section")
+    right.addClasses("mdc-top-app-bar__section", "mdc-top-app-bar__section--align-end")
+  }
+
+  elements.section.appendChild(elements.button)
+  elements.section.appendChild(elements.span)
+  elements.row.appendChild(elements.section)
+  elements.row.appendChild(elements.right)
+  element.appendChild(elements.row)
+
+  val menu: Component with EventSupport = new Component(elements.button) with EventSupport
+  val main: Container = new Container(elements.section)
+  val controls: Container = new Container(elements.right)
+
+  private val adapter: MDCTopAppBarImplementation = {
+    assert(MaterialComponents.loaded.isCompleted)
+    MDCTopAppBar.attachTo(element)
+  }
+}
+
 class MDCButton extends Component(dom.create.button) {
   classes := Set("mdc-button")
 
@@ -90,7 +143,10 @@ class MDCButton extends Component(dom.create.button) {
   element.appendChild(elements.ripple)
   element.appendChild(elements.label)
 
-  private val adapter: Future[MDCRippleImplementation] = MaterialComponents.loaded.map(_ => MDCRipple.attachTo(element))
+  private val adapter: MDCRippleImplementation = {
+    assert(MaterialComponents.loaded.isCompleted)
+    MDCRipple.attachTo(element)
+  }
 }
 
 class MDCTextField extends Component(dom.create.div) {
@@ -126,9 +182,18 @@ class MDCTextField extends Component(dom.create.div) {
   element.appendChild(elements.lineRipple)
   element.appendChild(elements.label)
 
-  private val adapter: Future[MDCTextFieldImplementation] = MaterialComponents.loaded.map(_ => MDCTextField.attachTo(element))
+  private val adapter: MDCTextFieldImplementation = {
+    assert(MaterialComponents.loaded.isCompleted)
+    MDCTextField.attachTo(element)
+  }
 
-  def shakeLabel(): Unit = adapter.foreach(_.getLabelAdapterMethods_().shakeLabel(true))
+  def shakeLabel(): Unit = adapter.getLabelAdapterMethods_().shakeLabel(true)
+}
+
+@js.native
+@JSGlobal("mdc.topAppBar.MDCTopAppBar")
+object MDCTopAppBar extends js.Object {
+  def attachTo(element: html.Element): MDCTopAppBarImplementation = js.native
 }
 
 @js.native
@@ -147,6 +212,10 @@ object MDCIconButtonToggle extends js.Object {
 @JSGlobal("mdc.textField.MDCTextField")
 object MDCTextField extends js.Object {
   def attachTo(element: html.Element): MDCTextFieldImplementation = js.native
+}
+
+@js.native
+trait MDCTopAppBarImplementation extends js.Object {
 }
 
 @js.native

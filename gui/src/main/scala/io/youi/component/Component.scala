@@ -10,10 +10,15 @@ import scala.util.Try
 
 class Component(val element: html.Element) {
   lazy val id: Prop[String] = new Prop[String](element.id, element.id_=)
-  lazy val classes: Prop[Set[String]] = new Prop[Set[String]](
+  object classes extends Prop[Set[String]](
     get = Option(element.getAttribute("class")).getOrElse("").split(' ').toSet,
     set = values => element.setAttribute("class", values.mkString(" "))
-  )
+  ) {
+    def toggle(className: String): Prop[Boolean] = new Prop[Boolean](
+      get = get.contains(className),
+      set = b => if (b) this @= get + className else this @= get - className
+    )
+  }
   lazy val content: Prop[String] = new Prop[String](element.innerHTML, element.innerHTML_=, measure)
   lazy val color: Prop[Color] = Prop.stringify(element.style.color, element.style.color_=, Color, Color.Clear)
   lazy val background: Prop[Paint] = Prop.stringify(element.style.background, element.style.background_=, Paint, Paint.none)

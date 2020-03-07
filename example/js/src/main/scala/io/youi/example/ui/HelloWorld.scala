@@ -9,7 +9,7 @@ import io.youi.component.types.{Border, BorderStyle, Display, DropType, Position
 import io.youi.easing.Linear
 import io.youi.event.EventSupport
 import io.youi.example.screen.UIExampleScreen
-import io.youi.material.{MDCButton, MDCIconButton, MDCIconButtonToggle, MDCTextField, Material}
+import io.youi.material.{MDCButton, MDCIconButton, MDCIconButtonToggle, MDCTextField, MDCTopAppBar, Material, MaterialComponents}
 import io.youi.net._
 import org.scalajs.dom.html
 import reactify._
@@ -31,7 +31,10 @@ class HelloWorld extends UIExampleScreen {
     position.middle := ui.size.middle
   }
 
-  override def createUI(): Future[Unit] = GoogleFont.`Lobster`.load().map { fnt =>
+  override def createUI(): Future[Unit] = for {
+    fnt <- GoogleFont.`Lobster`.load()
+    _ <- MaterialComponents.loaded
+  } yield {
     text.font.family @= fnt.family
     container.children += text
 
@@ -74,6 +77,17 @@ class HelloWorld extends UIExampleScreen {
 
     val iconButtonToggle = new MDCIconButtonToggle
     container.children += iconButtonToggle
+
+    val topBar = new MDCTopAppBar
+    topBar.menu.event.click.on {
+      topBar.collapsed @= !topBar.collapsed()
+    }
+    topBar.main.children += new MDCTextField {
+      label @= "Testing"
+    }
+    topBar.controls.children += new MDCIconButton(Material.Icons.Action.Bookmarks)
+    topBar.controls.children += new MDCIconButton(Material.Icons.Action.Eject)
+    container.children += topBar
 
     text.event.click.on {
       textField.shakeLabel()

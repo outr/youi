@@ -24,17 +24,6 @@ object MaterialComponents {
   }
 }
 
-/*
-<button id="add-to-favorites"
-   class="mdc-icon-button"
-   aria-label="Add to favorites"
-   aria-pressed="false">
-   <i class="material-icons mdc-icon-button__icon mdc-icon-button__icon--on">favorite</i>
-   <i class="material-icons mdc-icon-button__icon">favorite_border</i>
-</button>
-
-<button class="mdc-icon-button material-icons">favorite</button>
- */
 class MDCIconButton extends Component(dom.create.button) {
   classes := Set("mdc-icon-button", "material-icons")
 

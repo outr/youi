@@ -73,6 +73,16 @@ object dom extends ExtendedElement(None) {
     }
   }
 
+  def getCSSVariable(name: String): String = {
+    val varName = if (name.startsWith("--")) name else s"--$name"
+    window.getComputedStyle(document.documentElement).getPropertyValue(varName)
+  }
+
+  def setCSSVariable(name: String, value: String): Unit = {
+    val varName = if (name.startsWith("--")) name else s"--$name"
+    document.documentElement.asInstanceOf[html.Element].style.setProperty(varName, value)
+  }
+
   def addCSS(css: String): Unit = {
     val style = create[html.Style]("style")
     style.innerHTML = css

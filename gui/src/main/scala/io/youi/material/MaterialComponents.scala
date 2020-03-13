@@ -2,7 +2,7 @@ package io.youi.material
 
 import io.youi.component.types.Prop
 import io.youi.component.{Component, Container}
-import io.youi.{History, Unique, dom}
+import io.youi.{Color, History, Unique, dom}
 import io.youi.dom._
 import io.youi.event.EventSupport
 import io.youi.net._
@@ -21,6 +21,14 @@ object MaterialComponents {
     dom.addScript(History.url.withPath(path"/material-components-web.min.js")).flatMap { _ =>
       Material.load().map(_ => ())
     }
+  }
+
+  // dom.setCSSVariable("mdc-theme-primary", ClientExampleApplication.colors.blue.dark.toHex)
+  object theme {
+    lazy val primary: Prop[Color] = new Prop[Color](
+      get = Color.unapply(dom.getCSSVariable("mdc-theme-primary")).getOrElse(Color.Clear),
+      set = c => dom.setCSSVariable("mdc-theme-primary", c.toRGBA)
+    )
   }
 }
 

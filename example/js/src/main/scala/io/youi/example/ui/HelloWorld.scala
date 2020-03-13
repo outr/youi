@@ -8,6 +8,7 @@ import io.youi.component.support.{BorderSupport, MarginSupport, MeasuredSupport,
 import io.youi.component.types.{Border, BorderStyle, Display, DropType, PositionType, SizeType}
 import io.youi.easing.Linear
 import io.youi.event.EventSupport
+import io.youi.example.ClientExampleApplication
 import io.youi.example.screen.UIExampleScreen
 import io.youi.material.{MDCButton, MDCIconButton, MDCIconButtonToggle, MDCTextField, MDCTopAppBar, Material, MaterialComponents}
 import io.youi.net._
@@ -35,6 +36,8 @@ class HelloWorld extends UIExampleScreen {
     fnt <- GoogleFont.`Lobster`.load()
     _ <- MaterialComponents.loaded
   } yield {
+    MaterialComponents.theme.primary := ClientExampleApplication.colors.blue.dark
+
     text.font.family @= fnt.family
     container.children += text
 

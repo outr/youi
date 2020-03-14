@@ -28,26 +28,24 @@ developers in ThisBuild := List(
   Developer(id="darkfrog", name="Matt Hicks", email="matt@matthicks.com", url=url("http://matthicks.com"))
 )
 
-val profigVersion = "2.3.7"
-val scribeVersion = "2.7.10"
-val reactifyVersion = "3.0.5"
+val profigVersion = "2.3.8"
+val scribeVersion = "2.7.12"
+val reactifyVersion = "3.0.6"
 val hasherVersion = "1.2.2"
 
-val canvgVersion = "1.4.0_2"
-val openTypeVersion = "0.7.3_1"
-val picaVersion = "3.0.5_1"
-val webFontLoaderVersion = "1.6.28_1"
+val openTypeVersion = "1.1.0"
+val webFontLoaderVersion = "1.6.28_2"
 
-val scalaJSDOM = "0.9.8"
-val okHttpVersion = "4.3.1"
+val scalaJSDOM = "1.0.0"
+val okHttpVersion = "4.4.1"
 val uaDetectorVersion = "2014.10"
-val undertowVersion = "2.0.29.Final"
-val closureCompilerVersion = "v20200112"
-val jSoupVersion = "1.12.1"
-val scalaXMLVersion = "1.2.0"
-val collectionCompat = "2.1.3"
-val scalaTestVersion = "3.2.0-M2"
-val scalaCheckVersion = "1.14.0"
+val undertowVersion = "2.0.30.Final"
+val closureCompilerVersion = "v20200224"
+val jSoupVersion = "1.13.1"
+val scalaXMLVersion = "2.0.0-M1"
+val collectionCompat = "2.1.4"
+val scalaTestVersion = "3.2.0-M3"
+val scalaCheckVersion = "1.14.3"
 
 lazy val root = project.in(file("."))
   .aggregate(

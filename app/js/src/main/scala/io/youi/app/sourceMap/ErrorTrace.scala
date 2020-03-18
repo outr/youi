@@ -13,9 +13,13 @@ import scribe.{Level, LogRecord}
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.scalajs._
-import scala.scalajs.runtime.StackTrace.Implicits._
 
 object ErrorTrace extends Writer {
+  type StackTraceElementWithColumnNumber = StackTraceElement {
+    def getColumnNumber(): Int
+  }
+  implicit def withColumnNumber(ste: StackTraceElement): StackTraceElementWithColumnNumber = ste.asInstanceOf[StackTraceElementWithColumnNumber]
+
   private var sourceMaps = Map.empty[String, SourceMapConsumer]
 
   def toError(event: ErrorEvent): Future[JavaScriptError] = {

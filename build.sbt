@@ -67,9 +67,6 @@ lazy val macros = crossProject(JSPlatform, JVMPlatform).in(file("macros"))
       "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
     )
   )
-  .jsSettings(
-    scalacOptions += "-P:scalajs:sjsDefinedByDefault"
-  )
 
 lazy val macrosJS = macros.js
 lazy val macrosJVM = macros.jvm
@@ -89,8 +86,7 @@ lazy val core = crossProject(JSPlatform, JVMPlatform).in(file("core"))
   .jsSettings(
     libraryDependencies ++= Seq(
       "org.scala-js" %%% "scalajs-dom" % scalaJSDOM
-    ),
-    scalacOptions += "-P:scalajs:sjsDefinedByDefault"
+    )
   )
   .dependsOn(macros)
 
@@ -103,9 +99,6 @@ lazy val client = crossProject(JSPlatform, JVMPlatform).in(file("client"))
     libraryDependencies ++= Seq(
       "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
     )
-  )
-  .jsSettings(
-    scalacOptions += "-P:scalajs:sjsDefinedByDefault"
   )
   .jvmSettings(
     libraryDependencies ++= Seq(
@@ -124,9 +117,6 @@ lazy val spatial = crossProject(JSPlatform, JVMPlatform).in(file("spatial"))
       "org.scalatest" %%% "scalatest" % scalaTestVersion % "test",
       "org.scalacheck" %%% "scalacheck" % scalaCheckVersion % "test"
     )
-  )
-  .jsSettings(
-    scalacOptions += "-P:scalajs:sjsDefinedByDefault"
   )
   .dependsOn(core)
 
@@ -150,8 +140,7 @@ lazy val dom = project.in(file("dom"))
     libraryDependencies ++= Seq(
       "com.outr" %% "profig" % profigVersion,
       "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
-    ),
-    scalacOptions += "-P:scalajs:sjsDefinedByDefault"
+    )
   )
   .dependsOn(coreJS)
   .dependsOn(stream % "compile")
@@ -167,8 +156,7 @@ lazy val communication = crossProject(JSPlatform, JVMPlatform)
     )
   )
   .jsSettings(
-    test := {},
-    scalacOptions += "-P:scalajs:sjsDefinedByDefault"
+    test := {}
   )
   .dependsOn(core)
 
@@ -207,8 +195,7 @@ lazy val serverUndertow = project.in(file("serverUndertow"))
       "com.outr" %%% "opentype-scala-js" % openTypeVersion,
       "com.outr" %%% "pica-scala-js" % picaVersion
     ),
-    jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv,
-    scalacOptions += "-P:scalajs:sjsDefinedByDefault"
+    jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv
   )
   .dependsOn(spatial)
 
@@ -246,9 +233,6 @@ lazy val app = crossProject(JSPlatform, JVMPlatform).in(file("app"))
       "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
     )
   )
-  .jsSettings(
-    scalacOptions += "-P:scalajs:sjsDefinedByDefault"
-  )
   .dependsOn(core, communication)
 
 lazy val appJS = app.js.dependsOn(gui)
@@ -258,9 +242,6 @@ lazy val example = crossApplication.in(file("example"))
   .settings(
     name := "youi-example",
     youiVersion := version.value
-  )
-  .jsSettings(
-    scalacOptions += "-P:scalajs:sjsDefinedByDefault"
   )
   .jvmSettings(
     scalaJSUseMainModuleInitializer := true,

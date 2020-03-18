@@ -28,6 +28,6 @@ object YouIPlatform {
 
   def toHTTPDate(time: Long): String = {
     val date = new Date(time)
-    s"${DayNames(date.getUTCDay())}, ${date.getUTCDate().f(i = 2)} ${MonthNames(date.getUTCMonth())} ${date.getUTCFullYear()} ${date.getUTCHours().f(i = 2)}:${date.getUTCMinutes().f(i = 2)}:${date.getUTCSeconds().f(i = 2)} GMT"
+    s"${DayNames(date.getUTCDay().toInt)}, ${date.getUTCDate().f(i = 2)} ${MonthNames(date.getUTCMonth().toInt)} ${date.getUTCFullYear()} ${date.getUTCHours()}:${date.getUTCMinutes().f(i = 2)}:${date.getUTCSeconds().f(i = 2)} GMT"
   }
 }

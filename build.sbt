@@ -140,7 +140,8 @@ lazy val dom = project.in(file("dom"))
     libraryDependencies ++= Seq(
       "com.outr" %% "profig" % profigVersion,
       "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
-    )
+    ),
+    jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv()
   )
   .dependsOn(coreJS)
   .dependsOn(stream % "compile")
@@ -242,7 +243,8 @@ lazy val example = crossApplication.in(file("example"))
   .settings(
     name := "youi-example",
     youiVersion := version.value,
-    libraryDependencies += "com.outr" %%% "scribe" % scribeVersion
+    libraryDependencies += "com.outr" %%% "scribe" % scribeVersion,
+    jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv()
   )
   .jvmSettings(
     scalaJSUseMainModuleInitializer := true,

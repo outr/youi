@@ -2,7 +2,7 @@ package specs
 
 import io.youi.net._
 import org.scalatest.wordspec.AnyWordSpec
-import org.scalatest.Matchers
+import org.scalatest.matchers.should.Matchers
 
 class URLSpec extends AnyWordSpec with Matchers {
   "URL" when {

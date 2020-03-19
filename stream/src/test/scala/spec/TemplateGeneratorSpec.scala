@@ -3,7 +3,7 @@ package spec
 import io.youi.stream.{HTMLParser, Selector}
 import io.youi.stream.delta.Delta
 import org.scalatest.wordspec.AnyWordSpec
-import org.scalatest.Matchers
+import org.scalatest.matchers.should.Matchers
 
 class TemplateGeneratorSpec extends AnyWordSpec with Matchers {
   "TemplateGenerator" should {

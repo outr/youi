@@ -3,7 +3,8 @@ package spec
 import io.circe.Json
 import io.youi.communication.{Connection, Hookup, Message, MessageType}
 import org.scalatest.wordspec.AnyWordSpec
-import org.scalatest.{BeforeAndAfterEach, Matchers}
+import org.scalatest.BeforeAndAfterEach
+import org.scalatest.matchers.should.Matchers
 
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._

@@ -5,7 +5,8 @@ import io.youi.client.intercept.Interceptor
 import io.youi.http.content.StringContent
 import io.youi.http.HttpStatus
 import io.youi.net._
-import org.scalatest.{AsyncWordSpec, Matchers}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AsyncWordSpec
 
 import scala.concurrent.Future
 import scala.concurrent.duration._

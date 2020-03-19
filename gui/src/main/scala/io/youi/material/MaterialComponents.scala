@@ -26,8 +26,8 @@ object MaterialComponents {
   // dom.setCSSVariable("mdc-theme-primary", ClientExampleApplication.colors.blue.dark.toHex)
   object theme {
     lazy val primary: Prop[Color] = new Prop[Color](
-      get = Color.unapply(dom.getCSSVariable("mdc-theme-primary")).getOrElse(Color.Clear),
-      set = c => dom.setCSSVariable("mdc-theme-primary", c.toRGBA)
+      getter = Color.unapply(dom.getCSSVariable("mdc-theme-primary")).getOrElse(Color.Clear),
+      setter = c => dom.setCSSVariable("mdc-theme-primary", c.toRGBA)
     )
   }
 }

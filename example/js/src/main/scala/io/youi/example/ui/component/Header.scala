@@ -11,6 +11,7 @@ import io.youi.app.screen.ScreenManager
 import io.youi.component.types.{Cursor, Display, PositionType, WhiteSpace}
 import io.youi.example.screen.UIExampleScreen
 import io.youi.net._
+import reactify._
 import scribe.Execution.global
 
 class Header extends Container with SizeSupport { self =>

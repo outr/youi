@@ -23,7 +23,7 @@ trait ClientApplication extends YouIApplication with ScreenManager {
 
   def baseURL: URL = URL(window.location.href).withPath(path"/").clearParams().withoutFragment()
 
-  addScript(baseURL.withPath(path"/source-map.min.js"))
+  addScript(baseURL.withPath(path"/source-map.js"))
 
   override def isClient: Boolean = true
 

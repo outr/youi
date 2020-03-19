@@ -12,10 +12,11 @@ import scribe.{Level, LogRecord}
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.language.implicitConversions
 import scala.scalajs._
 
 object ErrorTrace extends Writer {
-  type StackTraceElementWithColumnNumber = StackTraceElement {
+  trait StackTraceElementWithColumnNumber {
     def getColumnNumber(): Int
   }
   implicit def withColumnNumber(ste: StackTraceElement): StackTraceElementWithColumnNumber = ste.asInstanceOf[StackTraceElementWithColumnNumber]

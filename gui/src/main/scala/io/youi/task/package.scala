@@ -1,6 +1,6 @@
 package io.youi
 
-import reactify.Var
+import reactify.{Mutable, Stateful, Var}
 
 import scala.concurrent.Future
 import scala.concurrent.duration.FiniteDuration
@@ -10,7 +10,7 @@ package object task {
   implicit def future2Task[R](future: => Future[R]): Task = FutureTask[R](future)
   implicit def f2Task(f: => Unit): Task = Action(f)
 
-  implicit class StateChannelWorkflowDouble(state: Var[Double]) {
+  implicit class StateChannelWorkflowDouble(state: Stateful[Double] with Mutable[Double]) {
     def to(destination: => Double): PartialAnimate = PartialAnimate(
       get = () => state(),
       apply = (d: Double) => state := d,

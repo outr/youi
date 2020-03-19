@@ -2,9 +2,9 @@ package io.youi.event
 
 import io.youi.component.Component
 import io.youi.spatial.BoundingBox
-import reactify.standard.StandardChannel
+import reactify.Channel
 
-class Pinch(component: Component, event: Events) extends StandardChannel[PinchEvent](None) {
+class Pinch(component: Component, event: Events) extends Channel[PinchEvent] {
   event.pointers.dragged.attach(dragging)
 
   private def dragging(pointer: Pointer): Unit = if (event.pointers.map.size == 2 && pointer.moved.distance != 0.0) {

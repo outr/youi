@@ -1,11 +1,10 @@
 package io.youi.component.types
 
 import reactify.Var
-import reactify.standard.StandardVar
 
 import scala.util.matching.Regex
 
-class SizeProperty(get: => String, set: String => Unit, callbacks: (() => Unit)*) extends StandardVar[Double](-1.0, Var.Mode.Normal, None) {
+class SizeProperty(get: => String, set: String => Unit, callbacks: (() => Unit)*) extends Var[Double](-1.0) {
   val `type`: Var[SizeType] = Var(SizeType.Auto)
 
   refresh()

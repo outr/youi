@@ -1,7 +1,7 @@
 package io.youi.event
 
 import io.youi.component.Component
-import reactify.standard.StandardChannel
+import reactify.Channel
 
 class Touch(component: Component,
             event: Events,
@@ -10,7 +10,7 @@ class Touch(component: Component,
             maximumTime: Long,
             maxDistance: Double,
             lastTimeMin: Long,
-            lastTimeMax: Long) extends StandardChannel[Pointer](None) {
+            lastTimeMax: Long) extends Channel[Pointer] {
   private var lastClick = 0L
 
   event.pointers.removed.attach { p =>

@@ -30,7 +30,7 @@ developers in ThisBuild := List(
 
 val profigVersion = "2.3.8"
 val scribeVersion = "2.7.12"
-val reactifyVersion = "3.0.6"
+val reactifyVersion = "4.0.0"
 val hasherVersion = "1.2.2"
 
 val openTypeVersion = "1.1.0"
@@ -241,7 +241,8 @@ lazy val appJVM = app.jvm.dependsOn(server)
 lazy val example = crossApplication.in(file("example"))
   .settings(
     name := "youi-example",
-    youiVersion := version.value
+    youiVersion := version.value,
+    libraryDependencies += "com.outr" %%% "scribe" % scribeVersion
   )
   .jvmSettings(
     scalaJSUseMainModuleInitializer := true,

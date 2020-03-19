@@ -11,8 +11,8 @@ trait PositionSupport {
 
   object position {
     lazy val `type`: Prop[PositionType] = new Prop[PositionType](
-      get = PositionType(element.style.position),
-      set = pt => {
+      getter = PositionType(element.style.position),
+      setter = pt => {
         element.style.position = pt.name
         element.style.left = x.toString
         element.style.top = y.toString

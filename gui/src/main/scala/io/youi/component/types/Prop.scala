@@ -2,12 +2,11 @@ package io.youi.component.types
 
 import io.youi.Stringify
 import reactify.Var
-import reactify.standard.StandardVar
 
-class Prop[T](get: => T, set: T => Unit, callbacks: (() => Unit)*) extends StandardVar[T](get, Var.Mode.Normal, None) {
+class Prop[T](getter: => T, setter: T => Unit, callbacks: (() => Unit)*) extends Var[T](getter) {
   refresh()
   attach { v =>
-    set(v)
+    setter(v)
     callbacks.foreach(_())
   }
 

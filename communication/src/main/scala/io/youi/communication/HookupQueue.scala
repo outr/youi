@@ -1,17 +1,14 @@
 package io.youi.communication
 
-import java.util.concurrent.{ConcurrentHashMap, ConcurrentLinkedQueue}
-import java.util.concurrent.atomic.AtomicLong
-
-import io.circe.Json
 import reactify.{Val, Var}
 
+import scala.collection.mutable
 import scala.concurrent.{Future, Promise}
 
 class HookupQueue {
   private var disposed = false
-  private val queue = new ConcurrentLinkedQueue[HookupRequest]
-  private val running = new ConcurrentHashMap[Long, HookupRequest]
+  private val queue = new SafeQueue[HookupRequest]
+  private val running = new SafeMap[Long, HookupRequest]
 
   private val _hasNext: Var[Boolean] = Var(false)
   private val _hasRunning: Var[Boolean] = Var(false)
@@ -28,7 +25,7 @@ class HookupQueue {
     promise.future
   }
   def next(): Option[HookupRequest] = {
-    val o = Option(queue.poll())
+    val o = queue.poll()
     o.foreach { r =>
       if (r.isRunning) {
         running.put(r.request.id, r)
@@ -55,7 +52,7 @@ class HookupQueue {
     case None => false
   }
 
-  private def running(id: Long): Option[HookupRequest] = Option(running.get(id)) match {
+  private def running(id: Long): Option[HookupRequest] = running.get(id) match {
     case s: Some[HookupRequest] => {
       running.remove(id)
       _hasRunning @= !running.isEmpty
@@ -74,9 +71,7 @@ class HookupQueue {
       }
     }
     recurse()
-    running.forEachValue(1000L, (request: HookupRequest) => {
-      request.failure(t)
-    })
+    running.values.foreach(_.failure(t))
     running.clear()
     _hasNext @= false
     _hasRunning @= false
@@ -85,5 +80,33 @@ class HookupQueue {
   def dispose(): Unit = {
     disposed = true
     clear()
+  }
+
+  class SafeQueue[T] {
+    private val queue = mutable.Queue.empty[T]
+
+    def add(t: T): Unit = synchronized(queue += t)
+
+    def isEmpty: Boolean = queue.isEmpty
+
+    def poll(): Option[T] = synchronized(queue.removeHeadOption())
+  }
+
+  class SafeMap[K, V] {
+    private var map = Map.empty[K, V]
+
+    def values: Iterable[V] = map.values
+
+    def isEmpty: Boolean = map.isEmpty
+
+    def get(key: K): Option[V] = map.get(key)
+
+    def put(key: K, value: V): Unit = synchronized(map += key -> value)
+
+    def remove(key: K): Unit = synchronized(map -= key)
+
+    def clear(): Unit = synchronized {
+      map = Map.empty[K, V]
+    }
   }
 }

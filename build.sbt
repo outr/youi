@@ -3,9 +3,9 @@ import sbtcrossproject.CrossType
 
 name := "youi"
 organization in ThisBuild := "io.youi"
-version in ThisBuild := "0.12.14-SNAPSHOT"
+version in ThisBuild := "0.12.14"
 scalaVersion in ThisBuild := "2.13.1"
-crossScalaVersions in ThisBuild := List("2.13.1", "2.12.10")
+crossScalaVersions in ThisBuild := List("2.13.1", "2.12.11")
 resolvers in ThisBuild ++= Seq(
   Resolver.sonatypeRepo("releases"),
   Resolver.sonatypeRepo("snapshots")
@@ -44,7 +44,7 @@ val closureCompilerVersion = "v20200224"
 val jSoupVersion = "1.13.1"
 val scalaXMLVersion = "2.0.0-M1"
 val collectionCompat = "2.1.4"
-val scalaTestVersion = "3.2.0-M3"
+val scalaTestVersion = "3.2.0-M4"
 val scalaCheckVersion = "1.14.3"
 
 lazy val root = project.in(file("."))

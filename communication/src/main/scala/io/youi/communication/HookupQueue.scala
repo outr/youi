@@ -2,7 +2,6 @@ package io.youi.communication
 
 import reactify.{Val, Var}
 
-import scala.collection.mutable
 import scala.concurrent.{Future, Promise}
 
 class HookupQueue {
@@ -83,13 +82,21 @@ class HookupQueue {
   }
 
   class SafeQueue[T] {
-    private val queue = mutable.Queue.empty[T]
+    private var queue = List.empty[T]
 
-    def add(t: T): Unit = synchronized(queue += t)
+    def add(t: T): Unit = synchronized {
+      queue = queue ::: List(t)
+    }
 
     def isEmpty: Boolean = queue.isEmpty
 
-    def poll(): Option[T] = synchronized(queue.removeHeadOption())
+    def poll(): Option[T] = synchronized {
+      val head = queue.headOption
+      if (head.nonEmpty) {
+        queue = queue.tail
+      }
+      head
+    }
   }
 
   class SafeMap[K, V] {

@@ -6,16 +6,10 @@ import scala.concurrent.{Future, Promise}
 import scribe.Execution.global
 
 import scala.language.experimental.macros
-import scala.scalajs.js
+import scala.util.Try
 
 object UniversalStorage {
-  //noinspection ComparingUnrelatedTypes
-  private lazy val native: Option[NativeLocalStorage.type] = if (js.isUndefined(NativeLocalStorage)) {
-    None
-  } else {
-    scribe.info("Using native storage")
-    Some(NativeLocalStorage)
-  }
+  private lazy val native: Option[NativeLocalStorage.type] = Try(Some(NativeLocalStorage)).getOrElse(None)
 
   def getOrCreate(key: String, default: => String): Future[String] = {
     get(key).flatMap {

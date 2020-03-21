@@ -1,7 +1,7 @@
 package io.youi.component
 
 import io.youi.Color
-import io.youi.component.types.{Cursor, Display, Prop, UserSelect, WhiteSpace}
+import io.youi.component.types.{Cursor, Display, Prop, UserSelect, VerticalAlign, WhiteSpace}
 import io.youi.paint.Paint
 import io.youi.path.Rectangle
 import org.scalajs.dom.html
@@ -19,7 +19,6 @@ class Component(val element: html.Element) {
       setter = b => if (b) this @= get + className else this @= get - className
     )
   }
-  lazy val content: Prop[String] = new Prop[String](element.innerHTML, element.innerHTML_=, measure)
   lazy val color: Prop[Color] = Prop.stringify(element.style.color, element.style.color_=, Color, Color.Clear)
   lazy val background: Prop[Paint] = Prop.stringify(element.style.background, element.style.background_=, Paint, Paint.none)
   lazy val backgroundColor: Prop[Color] = Prop.stringify(element.style.backgroundColor, element.style.backgroundColor_=, Color, Color.Clear)
@@ -27,6 +26,7 @@ class Component(val element: html.Element) {
   lazy val display: Prop[Display] = Prop.stringify(element.style.display, element.style.display_=, Display, Display.Inherit, measure)
   lazy val opacity: Prop[Double] = new Prop[Double](Try(element.style.opacity.toDouble).getOrElse(1.0), d => element.style.opacity = d.toString)
   lazy val userSelect: Prop[UserSelect] = Prop.stringify(element.style.getPropertyValue("user-select"), element.style.setProperty("user-select", _), UserSelect, UserSelect.Initial)
+  lazy val verticalAlign: Prop[VerticalAlign] = Prop.stringify(element.style.verticalAlign, element.style.verticalAlign_=, VerticalAlign, VerticalAlign.Unset)
   lazy val whiteSpace: Prop[WhiteSpace] = Prop.stringify(element.style.whiteSpace, element.style.whiteSpace_=, WhiteSpace, WhiteSpace.Normal, measure)
 
   protected def measure(): Unit = {}

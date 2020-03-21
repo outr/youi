@@ -10,7 +10,7 @@ import io.youi.easing.Linear
 import io.youi.event.EventSupport
 import io.youi.example.ClientExampleApplication
 import io.youi.example.screen.UIExampleScreen
-import io.youi.material.{MDCButton, MDCIconButton, MDCIconButtonToggle, MDCTextField, MDCTopAppBar, Material, MaterialComponents}
+import io.youi.material.{MDCButton, MDCChip, MDCChipSet, MDCIconButton, MDCIconButtonToggle, MDCTextField, MDCTopAppBar, Material, MaterialComponents}
 import io.youi.net._
 import org.scalajs.dom.html
 import reactify._
@@ -66,6 +66,18 @@ class HelloWorld extends UIExampleScreen {
     dropdown.event.click.on {
       dropdown.hide()
     }*/
+
+    val chipSet = new MDCChipSet
+    chipSet.children += new MDCChip("Chip One")
+    val two = new MDCChip("Chip Two")
+    two.leading @= Material.Icons.Navigation.ArrowBackIos
+    two.trailing @= Material.Icons.Navigation.ArrowForward
+    two.event.click.on {
+      chipSet.children += new MDCChip("Chip Again!")
+    }
+    chipSet.children += two
+    chipSet.children += new MDCChip("Chip Three")
+    container.children += chipSet
 
     val button = new MDCButton
     button.label @= "My Button"

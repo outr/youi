@@ -12,11 +12,12 @@ import scribe.{Level, LogRecord}
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.language.implicitConversions
+import scala.language.{implicitConversions, reflectiveCalls}
 import scala.scalajs._
 
+// TODO: source-map.js appears to be newer than source-map.min.js, but having trouble getting it to work
 object ErrorTrace extends Writer {
-  trait StackTraceElementWithColumnNumber {
+  type StackTraceElementWithColumnNumber = StackTraceElement {
     def getColumnNumber(): Int
   }
   implicit def withColumnNumber(ste: StackTraceElement): StackTraceElementWithColumnNumber = ste.asInstanceOf[StackTraceElementWithColumnNumber]

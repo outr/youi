@@ -1,7 +1,7 @@
 package io.youi.example.ui.component
 
 import io.youi.component.{Component, Container, ImageView}
-import io.youi.component.support.{FontSupport, MarginSupport, MeasuredSupport, PositionSupport, SizeSupport}
+import io.youi.component.support.{ContentSupport, FontSupport, MarginSupport, MeasuredSupport, PositionSupport, SizeSupport}
 import io.youi.event.EventSupport
 import io.youi.example.ClientExampleApplication
 import io.youi.font.GoogleFont
@@ -34,7 +34,7 @@ class Header extends Container with SizeSupport { self =>
     }
   }
 
-  private val title = new Component(dom.create.span) with FontSupport with PositionSupport with MeasuredSupport {
+  private val title = new Component(dom.create.span) with FontSupport with PositionSupport with MeasuredSupport with ContentSupport {
     font.weight ! headerFont
     font.size @= 20.pt
     color @= application.colors.blue.dark
@@ -47,7 +47,7 @@ class Header extends Container with SizeSupport { self =>
     position.top @= 15.0
   }
 
-  private val link = new Component(dom.create.span) with FontSupport with PositionSupport with MeasuredSupport with EventSupport {
+  private val link = new Component(dom.create.span) with FontSupport with PositionSupport with MeasuredSupport with EventSupport with ContentSupport {
     font.weight ! headerFont
     font.size @= 14.pt
     color @= application.colors.blue.dark

@@ -172,7 +172,7 @@ trait ServerApplication extends YouIApplication with Server {
       Future.successful(connection)
     }
 
-    def page(template: Content = ServerApplication.CanvasTemplate,
+    def page(template: Content = ServerApplication.AppTemplate,
              deltas: List[Delta] = Nil,
              includeApplication: Boolean = true): HttpHandler = builder.handle { connection =>
       serveHTML(connection, template, deltas, includeApplication)
@@ -263,30 +263,6 @@ trait ServerApplication extends YouIApplication with Server {
 
 object ServerApplication {
   /**
-    * Empty page template with overflow on the body disabled.
-    */
-  lazy val CanvasTemplate: Content = Content.string(
-    """
-      |<html>
-      |<head>
-      | <title></title>
-      | <style>
-      |   body {
-      |     margin: 0;
-      |     width: 100vw;
-      |     height: 100vh;
-      |   }
-      |   :focus {
-      |     outline: none;
-      |   }
-      | </style>
-      |</head>
-      |<body>
-      |</body>
-      |</html>
-    """.stripMargin.trim, ContentType.`text/html`)
-
-  /**
     * Empty page template with overflow on the body disabled and viewport fixed to avoid zooming.
     */
   lazy val AppTemplate: Content = Content.string(
@@ -300,6 +276,7 @@ object ServerApplication {
       | <meta name="msapplication-tap-highlight" content="no">
       | <meta name="apple-mobile-web-app-capable" content="yes">
       | <meta name="apple-mobile-web-app-status-bar-style" content="default">
+      | <script src="/source-map.min.js"></script>
       | <style>
       |   body {
       |     margin: 0;

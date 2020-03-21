@@ -1,7 +1,7 @@
 package io.youi.component.support
 
 import io.youi.component.Component
-import io.youi.component.types.SizeProperty
+import io.youi.component.types.{Prop, SizeProperty}
 import reactify.Val
 
 trait SizeSupport {

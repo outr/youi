@@ -11,10 +11,10 @@ trait BorderSupport {
   element.style.boxSizing = "border-box"
 
   object border {
-    lazy val top: Prop[Border] = Prop.stringify(element.style.borderTop, element.style.borderTop_=, Border, Border.empty)
-    lazy val bottom: Prop[Border] = Prop.stringify(element.style.borderBottom, element.style.borderBottom_=, Border, Border.empty)
-    lazy val left: Prop[Border] = Prop.stringify(element.style.borderLeft, element.style.borderLeft_=, Border, Border.empty)
-    lazy val right: Prop[Border] = Prop.stringify(element.style.borderRight, element.style.borderRight_=, Border, Border.empty)
+    lazy val top: Prop[Border] = Prop.stringify(element.style.borderTop, element.style.borderTop_=, Border, Border.undefined)
+    lazy val bottom: Prop[Border] = Prop.stringify(element.style.borderBottom, element.style.borderBottom_=, Border, Border.undefined)
+    lazy val left: Prop[Border] = Prop.stringify(element.style.borderLeft, element.style.borderLeft_=, Border, Border.undefined)
+    lazy val right: Prop[Border] = Prop.stringify(element.style.borderRight, element.style.borderRight_=, Border, Border.undefined)
 
     def :=(border: => Border): Unit = {
       top := border

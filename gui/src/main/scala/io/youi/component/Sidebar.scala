@@ -26,14 +26,14 @@ class Sidebar(container: Option[Component with SizeSupport with MarginSupport],
   val speed: Var[Double] = Var(260.0)
   val easing: Var[Easing] = Var(Easing.exponentialOut)
   val pinned: Var[Boolean] = Var(!isMobileDevice)
-  val open: Var[Boolean] = Var(true)
+  val open: Var[Boolean] = Var(!isMobileDevice)
   val swipe: Var[Boolean] = Var(true)
   val swiping: Val[Boolean] = Var(false)
   val swipeAcceleration: Var[Boolean] = Var(false)
 
   val contents: Component with SizeSupport = new Component(dom.create.div) with SizeSupport {
     size.width @= width
-    size.height @= ui.size.height
+    size.height := Sidebar.this.size.height
   }
 
   position.x @= 0.0

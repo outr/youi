@@ -30,9 +30,11 @@ object dom extends ExtendedElement(None) {
     def button: html.Button = create[html.Button]("button")
     def div: html.Div = create[html.Div]("div")
     def image: html.Image = create[html.Image]("img")
+    def i: html.Element = create[html.Element]("i")
     def input: html.Input = create[html.Input]("input")
     def label: html.Label = create[html.Label]("label")
     def script: html.Script = create[html.Script]("script")
+    def style: html.Style = create[html.Style]("style")
     def span: html.Span = create[html.Span]("span")
     def text(value: String): Text = document.createTextNode(value)
     def textArea: html.TextArea = create[html.TextArea]("textarea")
@@ -84,7 +86,7 @@ object dom extends ExtendedElement(None) {
   }
 
   def addCSS(css: String): Unit = {
-    val style = create[html.Style]("style")
+    val style = create.style
     style.innerHTML = css
     document.head.appendChild(style)
   }

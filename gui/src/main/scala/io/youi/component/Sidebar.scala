@@ -69,8 +69,8 @@ class Sidebar(container: Option[Component with SizeSupport with MarginSupport],
 
   // Swipe support
   private var start = 0.0
-  ui.swipe.start.on {
-    if (swipe) {
+  ui.swipe.start.attach { evt =>
+    if (swipe && evt.direction.plane == Plane.Horizontal) {
       swiping.asInstanceOf[Var[Boolean]] @= true
 //      start = size.width
       start = position.x

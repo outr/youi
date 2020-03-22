@@ -11,6 +11,7 @@ class Drop extends Component(dom.create.div) with SizeSupport with PositionSuppo
   private var showing: Option[Component] = None
 
   lazy val container: Container with MeasuredSupport = new Container with MeasuredSupport
+  val offset: Var[Double] = Var(0.0)
 
   element.appendChild(container)
   position.x @= 0.0
@@ -27,8 +28,8 @@ class Drop extends Component(dom.create.div) with SizeSupport with PositionSuppo
     showing = Some(target)
     Drop.opening(this)
     val rect = target.absoluteBounding
-    position.x @= rect.left
-    position.y @= rect.bottom
+    position.x @= math.min(rect.left, ui.size.width - container.measured.width)
+    position.y @= rect.bottom + offset
 
     val distanceToTop = rect.top
     val distanceToBottom = ui.size.height - rect.bottom

@@ -12,9 +12,11 @@ class MDCChip extends Component(dom.create.div) with EventSupport {
   val leading: Var[Option[MaterialIcon]] = Var(None)
   val trailing: Var[Option[MaterialIcon]] = Var(None)
 
-  def this(content: String) = {
+  def this(content: String, leading: Option[MaterialIcon] = None, trailing: Option[MaterialIcon] = None) = {
     this()
     this.content @= content
+    this.leading @= leading
+    this.trailing @= trailing
   }
 
   classes := Set("mdc-chip")
@@ -29,6 +31,7 @@ class MDCChip extends Component(dom.create.div) with EventSupport {
     val leadingIcon: html.Element = {
       val i = dom.create.i
       i.addClasses("material-icons", "mdc-chip__icon", "mdc-chip__icon--leading")
+      color.attach(c => i.style.color = c.toRGBA)
       leading.attachAndFire {
         case Some(mi) => {
           i.style.display = "block"
@@ -63,6 +66,7 @@ class MDCChip extends Component(dom.create.div) with EventSupport {
     val trailingIcon: html.Element = {
       val i = dom.create.i
       i.addClasses("material-icons", "mdc-chip__icon", "mdc-chip__icon--trailing")
+      color.attach(c => i.style.color = c.toRGBA)
       trailing.attachAndFire {
         case Some(mi) => {
           trailingCell.style.display = "block"

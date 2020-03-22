@@ -10,6 +10,11 @@ import reactify.Var
 class MDCButton extends Component(dom.create.button) {
   classes := Set("mdc-button")
 
+  def this(label: String) = {
+    this()
+    this.label @= label
+  }
+
   val label: Var[String] = Var("")
 
   private object elements {

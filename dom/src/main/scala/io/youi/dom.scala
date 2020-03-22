@@ -29,6 +29,7 @@ object dom extends ExtendedElement(None) {
 
     def button: html.Button = create[html.Button]("button")
     def div: html.Div = create[html.Div]("div")
+    def hr: html.HR = create[html.HR]("hr")
     def image: html.Image = create[html.Image]("img")
     def i: html.Element = create[html.Element]("i")
     def input: html.Input = create[html.Input]("input")

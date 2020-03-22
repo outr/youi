@@ -52,7 +52,7 @@ class HelloWorld extends UIExampleScreen {
       popup.hide()
     }*/
 
-    /*val dropdown = new Drop with EventSupport
+    val dropdown = new Drop with EventSupport
     dropdown.backgroundColor @= Color.LightCoral
     dropdown.border.radius @= 5.0
     dropdown.container.children += new TextView {
@@ -65,9 +65,9 @@ class HelloWorld extends UIExampleScreen {
     }
     dropdown.event.click.on {
       dropdown.hide()
-    }*/
+    }
 
-    val chipSet = new MDCChipSet
+    /*val chipSet = new MDCChipSet
     chipSet.children += new MDCChip("Chip One")
     val two = new MDCChip("Chip Two")
     two.leading @= Material.Icons.Navigation.ArrowBackIos
@@ -106,7 +106,7 @@ class HelloWorld extends UIExampleScreen {
 
     text.event.click.on {
       textField.shakeLabel()
-    }
+    }*/
 
     /*val example = new Container with MarginSupport with SizeSupport with BorderSupport {
       backgroundColor @= Color.Yellow

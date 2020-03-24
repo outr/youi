@@ -31,7 +31,7 @@ class Sidebar(container: Option[Component with SizeSupport with MarginSupport],
   val swiping: Val[Boolean] = Var(false)
   val swipeAcceleration: Var[Boolean] = Var(false)
 
-  val contents: Component with SizeSupport = new Component(dom.create.div) with SizeSupport {
+  val contents: Container with SizeSupport = new Container with SizeSupport {
     size.width @= width
     size.height := Sidebar.this.size.height
   }

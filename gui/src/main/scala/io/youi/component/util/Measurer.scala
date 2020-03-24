@@ -15,7 +15,7 @@ object Measurer {
     span
   }
 
-  def measureHTML(htmlString: String, width: String, height: String, x: Var[Double], y: Var[Double], w: Var[Double], h: Var[Double]): Unit = {
+  def measureHTML(htmlString: String, width: String, height: String, w: Var[Double], h: Var[Double]): Unit = {
     container.innerHTML = htmlString
     val e = container.firstElementChild.asInstanceOf[html.Element]
     e.style.width = width
@@ -25,8 +25,6 @@ object Measurer {
 
     val bounding = e.getBoundingClientRect()
     container.innerHTML = ""
-    x @= bounding.left
-    y @= bounding.top
     w @= bounding.width
     h @= bounding.height
   }

@@ -28,6 +28,8 @@ trait CollapsibleSupport {
     case Plane.Horizontal => size.width
   }
 
+  element.style.overflow = "hidden"
+
   prop := 0.0
 
   collapsed.attach {

@@ -1,6 +1,6 @@
 package io.youi.component
 
-import io.youi.component.support.{BorderSupport, CollapsibleSupport, MeasuredSupport, OverflowSupport, PositionSupport, SizeSupport}
+import io.youi.component.support.{BorderSupport, CollapsibleSupport, MeasuredSupport, OverflowSupport, PositionSupport, PreferredSizeSupport, SizeSupport}
 import io.youi.component.types.{Display, DropType, Overflow, PositionType}
 import io.youi._
 import reactify._
@@ -10,15 +10,15 @@ import scala.concurrent.Future
 class Drop extends Component(dom.create.div) with SizeSupport with PositionSupport with BorderSupport with OverflowSupport with CollapsibleSupport {
   private var showing: Option[Component] = None
 
-  lazy val container: Container with MeasuredSupport = new Container with MeasuredSupport
+  lazy val container: Container with PreferredSizeSupport = new Container with PreferredSizeSupport
   val offset: Var[Double] = Var(0.0)
 
   element.appendChild(container)
   position.x @= 0.0
   position.y @= 0.0
-  position.z @= 200
+  position.z @= 2000
   position.`type` @= PositionType.Absolute
-  size.width := math.round(container.measured.width + 2.0)
+  size.width := math.round(container.preferred.width + 2.0)
   size.height := 0.0
   display @= Display.None
 
@@ -28,7 +28,7 @@ class Drop extends Component(dom.create.div) with SizeSupport with PositionSuppo
     showing = Some(target)
     Drop.opening(this)
     val rect = target.absoluteBounding
-    position.x @= math.min(rect.left, ui.size.width - container.measured.width)
+    position.x @= math.min(rect.left, ui.size.width - container.preferred.width)
     position.y @= rect.bottom + offset
 
     val distanceToTop = rect.top
@@ -58,7 +58,7 @@ class Drop extends Component(dom.create.div) with SizeSupport with PositionSuppo
 
   override protected def direction: Plane = Plane.Vertical
 
-  override protected def expanded: Double = container.measured.height + 2.0
+  override protected def expanded: Double = container.preferred.height + 2.0
 }
 
 object Drop {

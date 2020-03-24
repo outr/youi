@@ -12,7 +12,7 @@ import scribe.Execution.global
 
 class Sidebar(container: Option[Component with SizeSupport with MarginSupport],
               showGlassPane: Boolean = isMobileDevice,
-              width: Double = 260.0) extends Container() with PositionSupport with SizeSupport with OverflowSupport {
+              val width: Double = 260.0) extends Container() with PositionSupport with SizeSupport with OverflowSupport {
   private var future: Future[Unit] = Future.successful(())
   private val glassPane: Option[GlassPane] = if (showGlassPane) {
     val gp = new GlassPane

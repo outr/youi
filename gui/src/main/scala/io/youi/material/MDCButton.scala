@@ -40,7 +40,7 @@ class MDCButton extends Component(dom.create.button) {
       color.attach(c => i.style.color = c.toRGBA)
       leading.attachAndFire {
         case Some(mi) => {
-          i.style.display = "block"
+          i.style.display = "inline-block"
           i.innerText = mi.name
         }
         case None => i.style.display = "none"
@@ -59,7 +59,7 @@ class MDCButton extends Component(dom.create.button) {
       color.attach(c => i.style.color = c.toRGBA)
       trailing.attachAndFire {
         case Some(mi) => {
-          i.style.display = "block"
+          i.style.display = "inline-block"
           i.innerText = mi.name
         }
         case None => i.style.display = "none"

@@ -1,6 +1,7 @@
 package io.youi.material
 
 import io.youi.component.Component
+import io.youi.component.types.Prop
 import io.youi.material.impl.MDCTextFieldImplementation
 import io.youi.{Unique, dom}
 import io.youi.dom._
@@ -15,6 +16,7 @@ class MDCTextField extends Component(dom.create.div) {
 
   val label: Var[String] = Var("")
   val value: Var[String] = Var("")
+  val fullWidth: Prop[Boolean] = classes.toggle("mdc-text-field--fullwidth")
 
   private object elements {
     val input: html.Input = {

@@ -20,7 +20,7 @@ object ui extends Container(document.body) with SizeSupport with EventSupport wi
     update(d)
   }
 
-  override protected def measure(): Unit = {
+  override def measure(): Unit = {
     super.measure()
 
     size.width @= window.innerWidth

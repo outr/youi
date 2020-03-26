@@ -14,7 +14,7 @@ trait MeasuredSupport {
     lazy val height: Val[Double] = h
   }
 
-  override protected def measure(): Unit = {
+  override def measure(): Unit = {
     val rect = element.getBoundingClientRect()
     w @= rect.width
     h @= rect.height

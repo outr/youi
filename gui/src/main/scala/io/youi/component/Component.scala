@@ -4,7 +4,8 @@ import io.youi.Color
 import io.youi.component.types.{Clear, Cursor, Display, FloatStyle, Prop, UserSelect, VerticalAlign, WhiteSpace}
 import io.youi.paint.Paint
 import io.youi.path.Rectangle
-import org.scalajs.dom.html
+import org.scalajs.dom.raw.MutationObserverInit
+import org.scalajs.dom.{MutationObserver, html}
 
 import scala.util.Try
 
@@ -14,6 +15,8 @@ class Component(val element: html.Element) {
     getter = Option(element.getAttribute("class")).getOrElse("").split(' ').toSet,
     setter = values => element.setAttribute("class", values.mkString(" "))
   ) {
+    def +=(className: String): Unit = this @= (this() + className)
+    def -=(className: String): Unit = this @= (this() - className)
     def toggle(className: String): Prop[Boolean] = new Prop[Boolean](
       getter = get.contains(className),
       setter = b => if (b) this @= get + className else this @= get - className
@@ -31,7 +34,7 @@ class Component(val element: html.Element) {
   lazy val verticalAlign: Prop[VerticalAlign] = Prop.stringify(element.style.verticalAlign, element.style.verticalAlign_=, VerticalAlign, VerticalAlign.Unset)
   lazy val whiteSpace: Prop[WhiteSpace] = Prop.stringify(element.style.whiteSpace, element.style.whiteSpace_=, WhiteSpace, WhiteSpace.Normal, measure)
 
-  protected def measure(): Unit = {}
+  def measure(): Unit = {}
 
   /**
     * Returns the absolute bounding rectangle for this element

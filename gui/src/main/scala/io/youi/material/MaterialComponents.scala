@@ -7,11 +7,19 @@ import io.youi.net._
 import scala.concurrent.Future
 import scribe.Execution.global
 
+import scala.scalajs.js
+import scala.util.Try
+
 object MaterialComponents {
   lazy val loaded: Future[Unit] = {
-    dom.addCSS(History.url.withPath(path"/material-components-web.min.css"))
-    dom.addScript(History.url.withPath(path"/material-components-web.min.js")).flatMap { _ =>
+    val mdcDefined = Try(js.Dynamic.global.mdc).isSuccess
+    if (mdcDefined) {
       Material.load().map(_ => ())
+    } else {
+      dom.addCSS(History.url.withPath(path"/material-components-web.min.css"))
+      dom.addScript(History.url.withPath(path"/material-components-web.min.js")).flatMap { _ =>
+        Material.load().map(_ => ())
+      }
     }
   }
 
@@ -20,7 +28,6 @@ object MaterialComponents {
     f
   }
 
-  // dom.setCSSVariable("mdc-theme-primary", ClientExampleApplication.colors.blue.dark.toHex)
   object theme {
     lazy val primary: Prop[Color] = new Prop[Color](
       getter = Color.unapply(dom.getCSSVariable("mdc-theme-primary")).getOrElse(Color.Clear),

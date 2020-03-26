@@ -3,12 +3,14 @@ package io.youi.component
 import io.youi.component.support.{BorderSupport, CollapsibleSupport, MeasuredSupport, OverflowSupport, PositionSupport, PreferredSizeSupport, SizeSupport}
 import io.youi.component.types.{Display, DropType, Overflow, PositionType}
 import io.youi._
+import org.scalajs.dom.html
 import reactify._
 
 import scala.concurrent.Future
 
 class Drop extends Component(dom.create.div) with SizeSupport with PositionSupport with BorderSupport with OverflowSupport with CollapsibleSupport {
   private var showing: Option[Component] = None
+  private var `type`: DropType = DropType.Auto
 
   lazy val container: Container with PreferredSizeSupport = new Container with PreferredSizeSupport
   val offset: Var[Double] = Var(0.0)
@@ -26,7 +28,14 @@ class Drop extends Component(dom.create.div) with SizeSupport with PositionSuppo
 
   def show(target: Component, `type`: DropType = DropType.Auto): Future[Unit] = {
     showing = Some(target)
+    this.`type` = `type`
     Drop.opening(this)
+    updatePosition()
+    collapsed @= false
+    future
+  }
+
+  def updatePosition(): Unit = showing.foreach { target =>
     val rect = target.absoluteBounding
     position.x @= math.min(rect.left, ui.size.width - container.preferred.width)
     position.y @= rect.bottom + offset
@@ -38,8 +47,6 @@ class Drop extends Component(dom.create.div) with SizeSupport with PositionSuppo
     if (!down) {
       position.y := rect.top - size.height
     }
-    collapsed @= false
-    future
   }
 
   def hide(): Future[Unit] = {
@@ -73,9 +80,16 @@ object Drop {
 
   def hide(): Unit = open.foreach(_.hide())
 
-  ui.event.click.on {
+  ui.event.click.attach { evt =>
     if (System.currentTimeMillis() - openStart > 250L) {
-      hide()
+      val target = evt.underlying.target.asInstanceOf[html.Element]
+      val ignore = target.classList.contains("drop-ignore-click")
+      if (!ignore) {
+        hide()
+      }
     }
+  }
+  ui.size.width.and(ui.size.height).on {
+    open.foreach(_.updatePosition())
   }
 }

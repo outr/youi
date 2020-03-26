@@ -4,7 +4,7 @@ import io.youi._
 import io.youi.dom._
 import io.youi.font.GoogleFont
 import io.youi.component._
-import io.youi.component.support.{BorderSupport, MarginSupport, MeasuredSupport, PositionSupport, SizeSupport}
+import io.youi.component.support.{BorderSupport, MarginSupport, MeasuredSupport, PositionSupport, PreferredSizeSupport, SizeSupport}
 import io.youi.component.types.{Border, BorderStyle, Display, DropType, PositionType, SizeType}
 import io.youi.easing.Linear
 import io.youi.event.EventSupport
@@ -41,7 +41,7 @@ class HelloWorld extends UIExampleScreen {
     text.font.family @= fnt.family
     container.children += text
 
-    /*val popup = new Popup(showGlassPane = false) with EventSupport
+    val popup = new Popup(showGlassPane = false) with EventSupport
     popup.easing @= Linear
     container.children += popup
 
@@ -50,9 +50,9 @@ class HelloWorld extends UIExampleScreen {
     }
     popup.event.click.on {
       popup.hide()
-    }*/
+    }
 
-    val dropdown = new Drop with EventSupport
+    /*val dropdown = new Drop with EventSupport
     dropdown.backgroundColor @= Color.LightCoral
     dropdown.border.radius @= 5.0
     dropdown.container.children += new TextView {
@@ -65,7 +65,7 @@ class HelloWorld extends UIExampleScreen {
     }
     dropdown.event.click.on {
       dropdown.hide()
-    }
+    }*/
 
     /*val chipSet = new MDCChipSet
     chipSet.children += new MDCChip("Chip One")

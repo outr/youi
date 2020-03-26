@@ -13,7 +13,9 @@ trait FontSupport {
     lazy val family: Prop[String] = new Prop[String](element.style.fontFamily, element.style.fontFamily_=, measure)
     object weight extends Prop[String](element.style.fontWeight, element.style.fontWeight_=, measure) {
       def @=(fontWeight: GoogleFontWeight): Unit = {
+        scribe.info(s"Setting font: ${fontWeight.font.family}")
         family @= fontWeight.font.family
+        scribe.info(s"Setting font name: ${fontWeight.name}")
         this @= fontWeight.name
       }
       def !(fontWeight: Future[GoogleFontWeight])(implicit ec: ExecutionContext): Unit = fontWeight.foreach(fw => this @= fw)

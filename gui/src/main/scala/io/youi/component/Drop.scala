@@ -18,7 +18,7 @@ class Drop extends Component(dom.create.div) with SizeSupport with PositionSuppo
   element.appendChild(container)
   position.x @= 0.0
   position.y @= 0.0
-  position.z @= 2000
+  position.z @= 3000
   position.`type` @= PositionType.Absolute
   size.width := math.round(container.preferred.width + 2.0)
   size.height := 0.0

@@ -42,6 +42,7 @@ class HelloWorld extends UIExampleScreen {
     container.children += text
 
     /*val popup = new Popup(showGlassPane = false) with EventSupport
+    popup.init()
     popup.easing @= Linear
     container.children += popup
 

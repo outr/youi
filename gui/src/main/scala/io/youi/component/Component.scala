@@ -4,8 +4,7 @@ import io.youi.Color
 import io.youi.component.types.{Clear, Cursor, Display, FloatStyle, Prop, UserSelect, VerticalAlign, WhiteSpace}
 import io.youi.paint.Paint
 import io.youi.path.Rectangle
-import org.scalajs.dom.raw.MutationObserverInit
-import org.scalajs.dom.{MutationObserver, html}
+import org.scalajs.dom.html
 
 import scala.util.Try
 

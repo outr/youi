@@ -27,18 +27,20 @@ class Popup(showGlassPane: Boolean = true) extends Container with SizeSupport wi
   val easing: Var[Easing] = Var(Easing.exponentialOut)
 
   val speed: Var[FiniteDuration] = Var(150.millis)
-  position.x @= 0.0
-  position.y @= 0.0
-  position.z @= 200
-  position.`type` @= PositionType.Absolute
-  size.width := math.min(preferredWidth, ui.size.width)
-  size.height := math.min(preferredHeight, ui.size.height)
-  display @= Display.None
-  backgroundColor @= Color.Cyan
 
-  // GlassPane set up
-  glassPane.foreach { gp =>
-    gp.event.click.on(hide())
+  def init(): Unit = {
+    position.x @= 0.0
+    position.y @= 0.0
+    position.z @= 2000
+    position.`type` @= PositionType.Absolute
+    size.width := math.min(preferredWidth, ui.size.width)
+    size.height := math.min(preferredHeight, ui.size.height)
+    display @= Display.None
+
+    // GlassPane set up
+    glassPane.foreach { gp =>
+      gp.event.click.on(hide())
+    }
   }
 
   def show(): Future[Unit] = {

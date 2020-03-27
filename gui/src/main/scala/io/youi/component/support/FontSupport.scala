@@ -1,6 +1,6 @@
 package io.youi.component.support
 
-import io.youi.component.types.{Prop, SizeProperty}
+import io.youi.component.types.{Prop, SizeProperty, TextAlign}
 import io.youi.component.Component
 import io.youi.font.{GoogleFont, GoogleFontWeight}
 
@@ -25,4 +25,5 @@ trait FontSupport {
     def !(font: Future[GoogleFont])(implicit ec: ExecutionContext): Unit = family ! font.map(_.family)
     def @=(font: GoogleFont): Unit = family @= font.family
   }
+  lazy val textAlign: Prop[TextAlign] = Prop.stringify(element.style.textAlign, element.style.textAlign_=, TextAlign, TextAlign.Initial)
 }

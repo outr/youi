@@ -18,7 +18,7 @@ class GlassPane extends Component(dom.create.div) with SizeSupport with Position
   position.`type` @= PositionType.Absolute
   position.x @= 0.0
   position.y @= 0.0
-  position.z @= 100
+  position.z @= 1500
   size.width := ui.size.width
   size.height := ui.size.height
   backgroundColor := Color.Black.withAlpha(backgroundAlpha)

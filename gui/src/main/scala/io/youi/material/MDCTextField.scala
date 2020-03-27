@@ -17,6 +17,7 @@ class MDCTextField extends Component(dom.create.div) {
   val label: Var[String] = Var("")
   val value: Var[String] = Var("")
   val fullWidth: Prop[Boolean] = classes.toggle("mdc-text-field--fullwidth")
+  val outlined: Prop[Boolean] = classes.toggle("mdc-text-field--outlined")
 
   private object elements {
     val input: html.Input = {

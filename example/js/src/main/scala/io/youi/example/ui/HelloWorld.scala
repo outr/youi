@@ -41,7 +41,7 @@ class HelloWorld extends UIExampleScreen {
     text.font.family @= fnt.family
     container.children += text
 
-    val popup = new Popup(showGlassPane = false) with EventSupport
+    /*val popup = new Popup(showGlassPane = false) with EventSupport
     popup.easing @= Linear
     container.children += popup
 
@@ -50,7 +50,7 @@ class HelloWorld extends UIExampleScreen {
     }
     popup.event.click.on {
       popup.hide()
-    }
+    }*/
 
     /*val dropdown = new Drop with EventSupport
     dropdown.backgroundColor @= Color.LightCoral
@@ -67,7 +67,7 @@ class HelloWorld extends UIExampleScreen {
       dropdown.hide()
     }*/
 
-    /*val chipSet = new MDCChipSet
+    val chipSet = new MDCChipSet
     chipSet.children += new MDCChip("Chip One")
     val two = new MDCChip("Chip Two")
     two.leading @= Material.Icons.Navigation.ArrowBackIos
@@ -84,6 +84,7 @@ class HelloWorld extends UIExampleScreen {
     container.children += button
 
     val textField = new MDCTextField
+    textField.outlined @= true
     textField.label @= "Username Test"
     container.children += textField
 
@@ -106,7 +107,7 @@ class HelloWorld extends UIExampleScreen {
 
     text.event.click.on {
       textField.shakeLabel()
-    }*/
+    }
 
     /*val example = new Container with MarginSupport with SizeSupport with BorderSupport {
       backgroundColor @= Color.Yellow

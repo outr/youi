@@ -11,10 +11,11 @@ import scala.concurrent.Future
 import scala.concurrent.duration._
 import scribe.Execution.global
 
-class Popup(showGlassPane: Boolean = true,
-            preferredWidth: Double = 600.0,
-            preferredHeight: Double = 800.0) extends Container with SizeSupport with PositionSupport {
+class Popup(showGlassPane: Boolean = true) extends Container with SizeSupport with PositionSupport {
   private var future: Future[Unit] = Future.successful(())
+
+  def preferredWidth: Double = 600.0
+  def preferredHeight: Double = 600.0
 
   private val glassPane: Option[GlassPane] = if (showGlassPane) {
     val gp = new GlassPane
@@ -53,7 +54,8 @@ class Popup(showGlassPane: Boolean = true,
           glassPane.map { gp =>
             gp.backgroundAlpha.to(0.5).in(speed).easing(easing)
           }.getOrElse(Task.None)
-        )
+        ),
+        position.middle := ui.size.middle
       ).start().future.map(_ => ())
     }
     future

@@ -4,9 +4,7 @@ import io.youi.component.Component
 import org.scalajs.dom.html
 import reactify.{Val, Var}
 
-trait ContainerSupport {
-  this: Component =>
-
+trait ContainerSupport extends Component {
   object children {
     private val _entries = Var(List.empty[Component])
 
@@ -36,5 +34,10 @@ trait ContainerSupport {
     }
     def ++=(seq: Seq[Component]): Unit = seq.foreach(+=)
     def --=(seq: Seq[Component]): Unit = seq.foreach(-=)
+  }
+
+  override def measure(): Unit = {
+    children().foreach(_.measure())
+    super.measure()
   }
 }

@@ -42,7 +42,8 @@ trait CollapsibleSupport {
       sequential(
         prop @= 0.0,
         display @= Display.Block,
-        prop.to(expanded).in(speed).easing(easing)
+        prop.to(expanded).in(speed).easing(easing),
+        prop := expanded
       ).start().future.map(_ => ())
     }
     future

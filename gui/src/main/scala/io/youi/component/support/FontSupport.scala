@@ -1,6 +1,6 @@
 package io.youi.component.support
 
-import io.youi.component.types.{Prop, SizeProperty}
+import io.youi.component.types.{Prop, SizeProperty, TextAlign}
 import io.youi.component.Component
 import io.youi.font.{GoogleFont, GoogleFontWeight}
 
@@ -13,7 +13,9 @@ trait FontSupport {
     lazy val family: Prop[String] = new Prop[String](element.style.fontFamily, element.style.fontFamily_=, measure)
     object weight extends Prop[String](element.style.fontWeight, element.style.fontWeight_=, measure) {
       def @=(fontWeight: GoogleFontWeight): Unit = {
+        scribe.info(s"Setting font: ${fontWeight.font.family}")
         family @= fontWeight.font.family
+        scribe.info(s"Setting font name: ${fontWeight.name}")
         this @= fontWeight.name
       }
       def !(fontWeight: Future[GoogleFontWeight])(implicit ec: ExecutionContext): Unit = fontWeight.foreach(fw => this @= fw)
@@ -23,4 +25,5 @@ trait FontSupport {
     def !(font: Future[GoogleFont])(implicit ec: ExecutionContext): Unit = family ! font.map(_.family)
     def @=(font: GoogleFont): Unit = family @= font.family
   }
+  lazy val textAlign: Prop[TextAlign] = Prop.stringify(element.style.textAlign, element.style.textAlign_=, TextAlign, TextAlign.Initial)
 }

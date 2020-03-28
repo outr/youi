@@ -27,6 +27,7 @@ object dom extends ExtendedElement(None) {
   object create {
     def apply[T <: html.Element](tagName: String): T = document.createElement(tagName).asInstanceOf[T]
 
+    def br: html.BR = create[html.BR]("br")
     def button: html.Button = create[html.Button]("button")
     def div: html.Div = create[html.Div]("div")
     def hr: html.HR = create[html.HR]("hr")

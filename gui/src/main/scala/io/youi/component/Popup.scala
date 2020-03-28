@@ -19,6 +19,7 @@ class Popup(showGlassPane: Boolean = true) extends Container with SizeSupport wi
 
   private val glassPane: Option[GlassPane] = if (showGlassPane) {
     val gp = new GlassPane
+    gp.position.z := position.z - 1
     ui.children += gp
     Some(gp)
   } else {

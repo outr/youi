@@ -17,6 +17,7 @@ class Sidebar(container: Option[Component with SizeSupport with MarginSupport],
   private val glassPane: Option[GlassPane] = if (showGlassPane) {
     val gp = new GlassPane
     gp.backgroundAlpha := (math.max(0.0, width + position.x) / width) / 2.0
+    gp.position.z @= 999
     ui.children += gp
     Some(gp)
   } else {

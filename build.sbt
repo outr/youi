@@ -3,7 +3,7 @@ import sbtcrossproject.CrossType
 
 name := "youi"
 organization in ThisBuild := "io.youi"
-version in ThisBuild := "0.12.15-SNAPSHOT"
+version in ThisBuild := "0.13.0-SNAPSHOT"
 scalaVersion in ThisBuild := "2.13.1"
 crossScalaVersions in ThisBuild := List("2.13.1", "2.12.11")
 resolvers in ThisBuild ++= Seq(
@@ -184,24 +184,6 @@ lazy val serverUndertow = project.in(file("serverUndertow"))
     )
   )
   .dependsOn(server, clientJVM % "test->test")
-
-/*lazy val ui = crossProject(JSPlatform, JVMPlatform).in(file("ui"))
-  .settings(
-    name := "youi-ui"
-  )
-  .jsSettings(
-    libraryDependencies ++= Seq(
-      "com.outr" %%% "webfontloader-scala-js" % webFontLoaderVersion,
-      "com.outr" %%% "canvg-scala-js" % canvgVersion,
-      "com.outr" %%% "opentype-scala-js" % openTypeVersion,
-      "com.outr" %%% "pica-scala-js" % picaVersion
-    ),
-    jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv
-  )
-  .dependsOn(spatial)
-
-lazy val uiJS = ui.js.dependsOn(dom)
-lazy val uiJVM = ui.jvm*/
 
 lazy val gui = project.in(file("gui"))
   .enablePlugins(ScalaJSPlugin)

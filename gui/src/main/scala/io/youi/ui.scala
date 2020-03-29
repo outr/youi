@@ -11,19 +11,17 @@ object ui extends Container(document.body) with SizeSupport with EventSupport wi
   lazy val title: Prop[String] = new Prop(document.title, document.title_=)
   lazy val swipe: Swipe = new Swipe(ui, ui.event, onlyTouch = true)
 
-  measure()
+  measure.on {
+    size.width @= window.innerWidth
+    size.height @= window.innerHeight
+  }
+
+  measure.trigger()
   window.addEventListener("resize", (_: Event) => {
-    measure()
+    measure.trigger()
   })
 
   AnimationFrame.delta.attach { d =>
     update(d)
-  }
-
-  override def measure(): Unit = {
-    super.measure()
-
-    size.width @= window.innerWidth
-    size.height @= window.innerHeight
   }
 }

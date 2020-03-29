@@ -8,6 +8,6 @@ import scala.util.Try
 
 class IFrame(val iframe: html.IFrame = dom.create.iframe) extends Component(iframe) {
   lazy val src: Prop[String] = new Prop[String](iframe.src, iframe.src_=)
-  lazy val width: Prop[Int] = new Prop[Int](Try(iframe.width.toInt).getOrElse(0), i => iframe.width = i.toString(), measure)
-  lazy val height: Prop[Int] = new Prop[Int](Try(iframe.height.toInt).getOrElse(0), i => iframe.height = i.toString(), measure)
+  lazy val width: Prop[Int] = new Prop[Int](Try(iframe.width.toInt).getOrElse(0), i => iframe.width = i.toString(), measure.trigger)
+  lazy val height: Prop[Int] = new Prop[Int](Try(iframe.height.toInt).getOrElse(0), i => iframe.height = i.toString(), measure.trigger)
 }

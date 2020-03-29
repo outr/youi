@@ -12,11 +12,11 @@ class MDCChipSet extends Component(dom.create.div) {
     def length: Int = element.childElementCount
     def +=(chip: MDCChip): Unit = {
       element.appendChild(chip.element)
-      measure()
+      measure.trigger()
     }
     def -=(chip: MDCChip): Unit = {
       element.removeChild(chip.element)
-      measure()
+      measure.trigger()
     }
     def ++=(seq: Seq[MDCChip]): Unit = seq.foreach(+=)
     def --=(seq: Seq[MDCChip]): Unit = seq.foreach(-=)

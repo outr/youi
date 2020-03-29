@@ -6,5 +6,5 @@ import io.youi.component.types.Prop
 trait ContentSupport {
   this: Component =>
 
-  lazy val content: Prop[String] = new Prop[String](element.innerHTML, element.innerHTML_=, measure)
+  lazy val content: Prop[String] = new Prop[String](element.innerHTML, element.innerHTML_=, measure.trigger)
 }

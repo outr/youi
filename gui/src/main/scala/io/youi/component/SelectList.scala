@@ -8,7 +8,7 @@ import reactify.Var
 class SelectList[T](val select: html.Select = dom.create.select)
                    (implicit stringify: T => String) extends Component(select) {
   val list: Var[List[T]] = Var(Nil)
-  val rows: Prop[Int] = new Prop[Int](select.size, select.size_=, measure)
+  val rows: Prop[Int] = new Prop[Int](select.size, select.size_=, measure.trigger)
   val selected: Var[Option[T]] = Var(None)
 
   list.attach { l =>

@@ -15,7 +15,5 @@ trait PreferredSizeSupport {
     lazy val height: Val[Double] = h
   }
 
-  override def measure(): Unit = {
-    Measurer.measureHTML(element.outerHTML, element.style.width, element.style.height, w, h)
-  }
+  measure.on(Measurer.measureHTML(element.outerHTML, element.style.width, element.style.height, w, h))
 }

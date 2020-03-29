@@ -4,7 +4,7 @@ import io.youi._
 import io.youi.dom._
 import io.youi.font.GoogleFont
 import io.youi.component._
-import io.youi.component.support.{BorderSupport, MarginSupport, MeasuredSupport, PositionSupport, PreferredSizeSupport, SizeSupport}
+import io.youi.component.support.{BorderSupport, ContentSupport, MarginSupport, MeasuredSupport, PositionSupport, PreferredSizeSupport, SizeSupport}
 import io.youi.component.types.{Border, BorderStyle, Display, DropType, PositionType, SizeType}
 import io.youi.easing.Linear
 import io.youi.event.EventSupport
@@ -42,6 +42,7 @@ class HelloWorld extends UIExampleScreen {
     container.children += text
 
     /*val popup = new Popup(showGlassPane = false) with EventSupport
+    popup.backgroundColor @= Color.Green.withAlpha(0.5)
     popup.init()
     popup.easing @= Linear
     container.children += popup
@@ -68,7 +69,7 @@ class HelloWorld extends UIExampleScreen {
       dropdown.hide()
     }*/
 
-    val chipSet = new MDCChipSet
+    /*val chipSet = new MDCChipSet
     chipSet.children += new MDCChip("Chip One")
     val two = new MDCChip("Chip Two")
     two.leading @= Material.Icons.Navigation.ArrowBackIos
@@ -108,9 +109,9 @@ class HelloWorld extends UIExampleScreen {
 
     text.event.click.on {
       textField.shakeLabel()
-    }
+    }*/
 
-    /*val example = new Container with MarginSupport with SizeSupport with BorderSupport {
+    val example = new Container with MarginSupport with SizeSupport with BorderSupport with ContentSupport {
       backgroundColor @= Color.Yellow
       color @= Color.Black
       border @= Border(2.0, BorderStyle.Solid, Color.Red)
@@ -118,7 +119,7 @@ class HelloWorld extends UIExampleScreen {
 
       content @= "Hello, world!"
     }
-    val sidebar = new Sidebar(container = Some(example))
+    val sidebar = new Sidebar(container = Some(example)) with ContentSupport
     sidebar.backgroundColor @= Color.Green
     sidebar.content @= "Hello, world! Hello, world! Hello, world! Hello, world! Hello, world! Hello, world! Hello, world! Hello, world! Hello, world!"
     container.children += sidebar
@@ -126,6 +127,6 @@ class HelloWorld extends UIExampleScreen {
 
     text.event.click.on {
       sidebar.open @= !sidebar.open
-    }*/
+    }
   }
 }

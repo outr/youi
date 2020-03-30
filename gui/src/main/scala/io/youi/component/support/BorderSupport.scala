@@ -6,5 +6,5 @@ import io.youi.component.feature.BorderFeature
 trait BorderSupport {
   this: Component =>
 
-  val border: BorderFeature = new BorderFeature(this)
+  lazy val border: BorderFeature = new BorderFeature(this)
 }

@@ -4,18 +4,18 @@ import io.youi.component.Component
 import org.scalajs.dom.html
 import reactify.{Priority, Val, Var}
 
-class ContainerFeature(component: Component) extends Feature(component) {
-  private val _entries = Var(List.empty[Component])
+class ContainerFeature[Child <: Component](component: Component) extends Feature(component) {
+  private val _entries = Var(List.empty[Child])
 
-  def entries: Val[List[Component]] = _entries
+  def entries: Val[List[Child]] = _entries
 
-  def apply(): List[Component] = entries
+  def apply(): List[Child] = entries
 
   def isEmpty: Boolean = entries.isEmpty
   def nonEmpty: Boolean = entries.nonEmpty
 
   def length: Int = element.childElementCount
-  def +=(component: Component): Unit = {
+  def +=(component: Child): Unit = {
     _entries @= entries ::: List(component)
     +=(component.element)
   }
@@ -23,7 +23,7 @@ class ContainerFeature(component: Component) extends Feature(component) {
     element.appendChild(child)
     component.measure.trigger()
   }
-  def -=(component: Component): Unit = {
+  def -=(component: Child): Unit = {
     _entries @= entries.filterNot(_ eq component)
     -=(component.element)
   }
@@ -31,8 +31,8 @@ class ContainerFeature(component: Component) extends Feature(component) {
     element.removeChild(child)
     component.measure.trigger()
   }
-  def ++=(seq: Seq[Component]): Unit = seq.foreach(+=)
-  def --=(seq: Seq[Component]): Unit = seq.foreach(-=)
+  def ++=(seq: Seq[Child]): Unit = seq.foreach(+=)
+  def --=(seq: Seq[Child]): Unit = seq.foreach(-=)
 
   component.measure.on({
     entries.foreach(_.measure.trigger())

@@ -15,7 +15,7 @@ import scala.scalajs.js.annotation.JSGlobal
 class MDCTopAppBar extends Component(dom.create[html.Element]("header")) {
   classes := Set("mdc-top-app-bar")
 
-  val title: Var[String] = Var("")
+  val heading: Var[String] = Var("")
 
   val fixed: Prop[Boolean] = classes.toggle("mdc-top-app-bar--fixed")
   val short: Prop[Boolean] = classes.toggle("mdc-top-app-bar--short")
@@ -41,7 +41,7 @@ class MDCTopAppBar extends Component(dom.create[html.Element]("header")) {
 
     val span: html.Span = dom.create.span
     span.addClasses("mdc-top-app-bar__title")
-    title.attachAndFire(span.innerHTML_=)
+    heading.attachAndFire(span.innerHTML_=)
 
     val right: html.Element = dom.create[html.Element]("section")
     right.addClasses("mdc-top-app-bar__section", "mdc-top-app-bar__section--align-end")

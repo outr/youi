@@ -34,6 +34,7 @@ class Component(val element: html.Element) {
   lazy val display: Prop[Display] = Prop.stringify(element.style.display, element.style.display_=, Display, Display.Inherit, measure.trigger)
   lazy val floatStyle: Prop[FloatStyle] = Prop.stringify(element.style.cssFloat, element.style.cssFloat_=, FloatStyle, FloatStyle.None)
   lazy val opacity: Prop[Double] = new Prop[Double](Try(element.style.opacity.toDouble).getOrElse(1.0), d => element.style.opacity = d.toString)
+  lazy val title: Prop[String] = new Prop[String](element.title, element.title_=)
   lazy val userSelect: Prop[UserSelect] = Prop.stringify(element.style.getPropertyValue("user-select"), element.style.setProperty("user-select", _), UserSelect, UserSelect.Initial)
   lazy val verticalAlign: Prop[VerticalAlign] = Prop.stringify(element.style.verticalAlign, element.style.verticalAlign_=, VerticalAlign, VerticalAlign.Unset)
   lazy val whiteSpace: Prop[WhiteSpace] = Prop.stringify(element.style.whiteSpace, element.style.whiteSpace_=, WhiteSpace, WhiteSpace.Normal, measure.trigger)

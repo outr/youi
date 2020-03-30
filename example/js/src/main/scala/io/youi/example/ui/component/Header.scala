@@ -34,7 +34,7 @@ class Header extends Container with SizeSupport { self =>
     }
   }
 
-  private val title = new Component(dom.create.span) with FontSupport with PositionSupport with MeasuredSupport with ContentSupport {
+  private val heading = new Component(dom.create.span) with FontSupport with PositionSupport with MeasuredSupport with ContentSupport {
     font.weight ! headerFont
     font.size @= 20.pt
     color @= application.colors.blue.dark
@@ -66,8 +66,8 @@ class Header extends Container with SizeSupport { self =>
     whiteSpace @= WhiteSpace.NoWrap
     position.`type` @= PositionType.Absolute
     position.right := ui.size.width - 25.0
-    position.top := title.position.bottom - 10.0
+    position.top := heading.position.bottom - 10.0
   }
 
-  children ++= List(logo, title, link)
+  children ++= List(logo, heading, link)
 }

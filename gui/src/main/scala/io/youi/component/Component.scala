@@ -1,7 +1,7 @@
 package io.youi.component
 
 import io.youi.Color
-import io.youi.component.feature.{Feature, MeasuredFeature, PreferredSizeFeature, SizeFeature}
+import io.youi.component.feature.{Feature, HeightFeature, MeasuredFeature, PreferredSizeFeature, SizeFeature, WidthFeature}
 import io.youi.component.types.{Clear, Cursor, Display, FloatStyle, Prop, UserSelect, VerticalAlign, WhiteSpace}
 import io.youi.paint.Paint
 import io.youi.path.Rectangle
@@ -61,15 +61,17 @@ class Component(val element: html.Element) {
 object Component {
   def hasFeature[F <: Feature](component: Component)(implicit tag: ClassTag[F]): Boolean = component.features.contains(Feature.nameFor[F](tag))
   def addFeature[F <: Feature](component: Component, feature: F): Unit = {
-    component.features += Feature.nameFor[F](feature) -> feature
+    addFeature[F](Feature.nameFor[F](feature), component, feature)
+  }
+  def addFeature[F <: Feature](name: String, component: Component, feature: F): Unit = {
+    component.features += name -> feature
   }
   def getFeature[F <: Feature](component: Component)(implicit tag: ClassTag[F]): Option[F] = {
-    component.features.get(Feature.nameFor[F](tag)).asInstanceOf[Option[F]]
+    getFeature[F](Feature.nameFor[F](tag), component)
   }
-  def width(component: Component): Option[Val[Double]] = getFeature[PreferredSizeFeature](component).map(_.width)
-      .orElse(getFeature[MeasuredFeature](component).map(_.width))
-      .orElse(getFeature[SizeFeature](component).map(_.width))
-  def height(component: Component): Option[Val[Double]] = getFeature[PreferredSizeFeature](component).map(_.height)
-    .orElse(getFeature[MeasuredFeature](component).map(_.height))
-    .orElse(getFeature[SizeFeature](component).map(_.height))
+  def getFeature[F <: Feature](name: String, component: Component): Option[F] = {
+    component.features.get(name).asInstanceOf[Option[F]]
+  }
+  def width(component: Component): Option[Val[Double]] = WidthFeature(component)
+  def height(component: Component): Option[Val[Double]] = HeightFeature(component)
 }

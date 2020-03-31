@@ -5,8 +5,8 @@ import org.scalajs.dom.html
 
 import scala.reflect.ClassTag
 
-abstract class Feature(protected val component: Component) {
-  protected def element: html.Element = component.element
+trait Feature {
+  protected def component: Component
 
   Component.addFeature(component, this)
 }

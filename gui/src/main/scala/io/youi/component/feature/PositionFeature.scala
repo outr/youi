@@ -6,18 +6,18 @@ import reactify._
 
 import scala.util.Try
 
-class PositionFeature(component: Component) extends Feature(component) {
-  lazy val x: SizeProperty = new SizeProperty(element.style.left, element.style.left_=)
-  lazy val y: SizeProperty = new SizeProperty(element.style.top, element.style.top_=)
-  lazy val z: Prop[Int] = new Prop[Int](Try(element.style.zIndex.toInt).getOrElse(0), i => element.style.zIndex = i.toString)
+class PositionFeature(override val component: Component) extends Feature {
+  lazy val x: SizeProperty = new SizeProperty(component.element.style.left, component.element.style.left_=)
+  lazy val y: SizeProperty = new SizeProperty(component.element.style.top, component.element.style.top_=)
+  lazy val z: Prop[Int] = new Prop[Int](Try(component.element.style.zIndex.toInt).getOrElse(0), i => component.element.style.zIndex = i.toString)
 
   val `type`: Prop[PositionType] = {
     val p = new Prop[PositionType](
-      getter = PositionType(element.style.position),
+      getter = PositionType(component.element.style.position),
       setter = pt => {
-        element.style.position = pt.name
-        element.style.left = x.toString
-        element.style.top = y.toString
+        component.element.style.position = pt.name
+        component.element.style.left = x.toString
+        component.element.style.top = y.toString
       }
     )
     x.and(y).on {

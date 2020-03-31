@@ -4,7 +4,7 @@ import io.youi.component.Component
 import org.scalajs.dom.html
 import reactify.{Priority, Val, Var}
 
-class ContainerFeature[Child <: Component](component: Component) extends Feature(component) {
+class ContainerFeature[Child <: Component](override val component: Component) extends Feature {
   private val _entries = Var(List.empty[Child])
 
   def entries: Val[List[Child]] = _entries
@@ -15,17 +15,17 @@ class ContainerFeature[Child <: Component](component: Component) extends Feature
   def nonEmpty: Boolean = entries.nonEmpty
 
   def clear(): Unit = {
-    element.innerHTML = ""
+    component.element.innerHTML = ""
     _entries @= Nil
   }
 
-  def length: Int = element.childElementCount
+  def length: Int = component.element.childElementCount
   def +=(component: Child): Unit = {
     _entries @= entries ::: List(component)
     +=(component.element)
   }
   def +=(child: html.Element): Unit = {
-    element.appendChild(child)
+    component.element.appendChild(child)
     component.measure.trigger()
   }
   def -=(component: Child): Unit = {
@@ -33,7 +33,7 @@ class ContainerFeature[Child <: Component](component: Component) extends Feature
     -=(component.element)
   }
   def -=(child: html.Element): Unit = {
-    element.removeChild(child)
+    component.element.removeChild(child)
     component.measure.trigger()
   }
   def ++=(seq: Seq[Child]): Unit = seq.foreach(+=)

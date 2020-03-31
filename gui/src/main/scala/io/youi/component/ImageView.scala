@@ -1,14 +1,16 @@
 package io.youi.component
 
+import io.youi.component.feature.{HeightFeature, WidthFeature}
 import io.youi.dom
 import io.youi.component.types.Prop
 import io.youi.image.{CanvasImage, EmptyImage, HTMLImage, Image}
 import org.scalajs.dom.html
 import reactify.Var
-
 import scribe.Execution.global
 
-class ImageView(img: html.Image = dom.create.image) extends Component(img) {
+class ImageView(img: html.Image = dom.create.image) extends Component(img) with WidthFeature with HeightFeature {
+  override protected def component: Component = this
+
   lazy val src: Prop[String] = new Prop[String](img.src, img.src_=, measure.trigger)
   lazy val image: Var[Image] = {
     val v = Var[Image](Image.empty)
@@ -23,6 +25,6 @@ class ImageView(img: html.Image = dom.create.image) extends Component(img) {
     }
     v
   }
-  lazy val width: Prop[Int] = new Prop[Int](img.width, img.width_=, measure.trigger)
-  lazy val height: Prop[Int] = new Prop[Int](img.height, img.height_=, measure.trigger)
+  override lazy val width: Prop[Double] = new Prop[Double](img.width.toDouble, d => img.width = math.ceil(d).toInt, measure.trigger)
+  override lazy val height: Prop[Double] = new Prop[Double](img.height.toDouble, d => img.height = math.ceil(d).toInt, measure.trigger)
 }

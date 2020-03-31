@@ -1,7 +1,7 @@
 package io.youi.component.feature
 
 import io.youi.component.Component
-import io.youi.component.util.Measurer
+import io.youi.util.Measurer
 import reactify.{Val, Var}
 
 class PreferredSizeFeature(component: Component) extends Feature(component) {

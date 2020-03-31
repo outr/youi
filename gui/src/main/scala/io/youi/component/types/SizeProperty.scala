@@ -18,6 +18,11 @@ class SizeProperty(get: => String, set: String => Unit, callbacks: (() => Unit)*
   }
   `type`.on(set())
 
+  def set(value: Double, `type`: => SizeType): Unit = {
+    set(value)
+    this.`type` := `type`
+  }
+
   private def set(): Unit = {
     val t = `type`().name
     val value = if (`type`.includeNumeric) {

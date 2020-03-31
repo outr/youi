@@ -1,4 +1,4 @@
-package io.youi.component.util
+package io.youi.util
 
 import io.youi.dom
 import org.scalajs.dom.{document, html}

@@ -1,6 +1,6 @@
 package io.youi.drawable
 
-import io.youi.component.util.CanvasPool
+import io.youi.util.CanvasPool
 import io.youi._
 import org.scalajs.dom.html
 

@@ -13,4 +13,6 @@ abstract class Feature(protected val component: Component) {
 
 object Feature {
   def nameFor[F <: Feature](tag: ClassTag[F]): String = tag.runtimeClass.getName
+
+  def nameFor[F <: Feature](feature: F): String = feature.getClass.getName
 }

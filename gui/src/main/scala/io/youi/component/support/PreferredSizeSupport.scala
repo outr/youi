@@ -6,5 +6,5 @@ import io.youi.component.feature.PreferredSizeFeature
 trait PreferredSizeSupport {
   this: Component =>
 
-  lazy val preferred: PreferredSizeFeature = new PreferredSizeFeature(this)
+  val preferred: PreferredSizeFeature = new PreferredSizeFeature(this)
 }

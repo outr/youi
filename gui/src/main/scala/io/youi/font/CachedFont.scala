@@ -1,6 +1,6 @@
 package io.youi.font
 
-import io.youi.component.util.CanvasPool
+import io.youi.util.CanvasPool
 import io.youi.drawable.{Context, Drawable}
 import io.youi._
 import org.scalajs.dom._

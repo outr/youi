@@ -1,6 +1,6 @@
 package io
 
-import io.youi.component.util.CanvasPool
+import io.youi.util.CanvasPool
 import io.youi.font.{GoogleFont, GoogleFontWeight}
 import io.youi.paint.Paint
 import org.scalajs.dom.{CanvasRenderingContext2D, document, html, window}
@@ -10,6 +10,8 @@ import typekit.{GoogleConfig, WebFont, WebFontConfiguration}
 import scala.concurrent.{Future, Promise}
 import scala.language.implicitConversions
 import scala.scalajs.js
+
+import scribe.Execution.global
 
 package object youi {
   lazy val isIOS: Boolean = Set("iPad Simulator", "iPhone Simulator", "iPod Simulator", "iPad", "iPhone", "iPod")
@@ -48,38 +50,32 @@ package object youi {
     def context: CanvasRenderingContext2D = canvas.getContext("2d").asInstanceOf[CanvasRenderingContext2D]
   }
 
+  private var googleFontFutures = Map.empty[GoogleFont, Future[GoogleFont]]
+
   implicit class ExtendedGoogleFont(font: GoogleFont) {
-    def load(): Future[GoogleFont] = {
-      val promise = Promise[GoogleFont]
-      val f: js.Function0[Unit] = () => {
-        promise.success(font)
-        ()
-      }
-      WebFont.load(new WebFontConfiguration {
-        google = new GoogleConfig {
-          families = js.Array(font.family)
+    def load(): Future[GoogleFont] = googleFontFutures.get(font) match {
+      case Some(future) => future
+      case None => {
+        val promise = Promise[GoogleFont]
+        val f: js.Function0[Unit] = () => {
+          promise.success(font)
+          ()
         }
-        active = f
-      })
-      promise.future
+        WebFont.load(new WebFontConfiguration {
+          google = new GoogleConfig {
+            families = js.Array(font.family)
+          }
+          active = f
+        })
+        val future = promise.future
+        googleFontFutures += font -> future
+        future
+      }
     }
   }
 
   implicit class ExtendedGoogleFontWeight(weight: GoogleFontWeight) {
-    def load(): Future[GoogleFontWeight] = {
-      val promise = Promise[GoogleFontWeight]
-      val f: js.Function0[Unit] = () => {
-        promise.success(weight)
-        ()
-      }
-      WebFont.load(new WebFontConfiguration {
-        google = new GoogleConfig {
-          families = js.Array(s"${weight.font.family}:${weight.name}")
-        }
-        active = f
-      })
-      promise.future
-    }
+    def load(): Future[GoogleFontWeight] = weight.font.load().map(_ => weight)
   }
 
   implicit class UINumericSize[T](t: T)(implicit n: Numeric[T]) {

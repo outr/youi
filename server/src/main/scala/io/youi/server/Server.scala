@@ -16,7 +16,7 @@ trait Server extends HttpHandler with ErrorSupport {
 
   val config = new ServerConfig(this)
 
-  val handler = HttpHandlerBuilder(this)
+  val handler: HttpHandlerBuilder = HttpHandlerBuilder(this)
 
   object proxies extends ItemContainer[ProxyHandler]
   object handlers extends ItemContainer[HttpHandler]

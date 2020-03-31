@@ -4,7 +4,7 @@ import java.io.File
 
 import io.youi.http._
 import io.youi.http.content.{Content, FileContent, FormDataContent, StringContent, URLContent}
-import io.youi.net.{ContentType, URL}
+import io.youi.net._
 import io.youi.server.Server
 import io.youi.server.handler.{CachingManager, HttpHandler, HttpHandlerBuilder, SenderHandler}
 import io.youi.stream.{HTMLParser, Selector}
@@ -59,6 +59,22 @@ trait ServerApplication extends YouIApplication with Server {
         case s => Some(s)
       }
       path.flatMap(p => Content.classPathOption(s"assets/$p"))
+    }
+    handler.matcher(path.exact(path"/wrap-image")).handle { httpConnection =>
+      Future.successful(
+        httpConnection.modify { response =>
+          val imageURL = httpConnection.request.url.param("src").getOrElse("")
+          response.withContent(Content.string(
+            s"""<html>
+              |<head>
+              |<title>Wrap Image</title>
+              |</head>
+              |<body>
+              |<img src="$imageURL"/>
+              |</body>
+              |</html>""".stripMargin, ContentType.`text/html`))
+        }
+      )
     }
     if (logJavaScriptErrors) {
       handler.matcher(path.exact(logPath)).handle { httpConnection =>

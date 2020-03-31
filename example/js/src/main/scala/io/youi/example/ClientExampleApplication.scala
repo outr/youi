@@ -34,13 +34,18 @@ object ClientExampleApplication extends ExampleApplication with ClientConnectedA
 
   val hello: HelloWorld = new HelloWorld
 
-//  val animation: AnimationExample = new AnimationExample
-//  val canvas: CanvasExample = new CanvasExample
+  val drop: DropExample = new DropExample
+  val mdc: MDCExample = new MDCExample
+  val popup: PopupExample = new PopupExample
+  val sidebar: SidebarExample = new SidebarExample
+
+  val animation: AnimationExample = new AnimationExample
+  val canvas: CanvasExample = new CanvasExample
 //  val drawable: DrawableExample = new DrawableExample
 //  val fontAwesome: FontAwesomeExample = new FontAwesomeExample
 //  val grid: GridLayoutExample = new GridLayoutExample
 //  val hit: HitTestExample = new HitTestExample
-//  val image: ImageExample = new ImageExample
+  val image: ImageExample = new ImageExample
 //  val imageChange: ImageChangeExample = new ImageChangeExample
 //  val materialIcons: MaterialIconsExample = new MaterialIconsExample
 //  val measured: MeasuredExample = new MeasuredExample
@@ -51,7 +56,7 @@ object ClientExampleApplication extends ExampleApplication with ClientConnectedA
 //  val select: SelectExample = new SelectExample
 //  val snap: SnapExample = new SnapExample
 //  val svgImage: SVGImageExample = new SVGImageExample
-//  val text: TextViewExample = new TextViewExample
+  val text: TextViewExample = new TextViewExample
 //  val input: TextInputExample = new TextInputExample
 //  val vertical: VerticalLayoutExample = new VerticalLayoutExample
 //  val video: VideoExample = new VideoExample

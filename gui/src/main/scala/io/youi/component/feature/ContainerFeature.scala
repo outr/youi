@@ -14,6 +14,11 @@ class ContainerFeature[Child <: Component](component: Component) extends Feature
   def isEmpty: Boolean = entries.isEmpty
   def nonEmpty: Boolean = entries.nonEmpty
 
+  def clear(): Unit = {
+    element.innerHTML = ""
+    _entries @= Nil
+  }
+
   def length: Int = element.childElementCount
   def +=(component: Child): Unit = {
     _entries @= entries ::: List(component)

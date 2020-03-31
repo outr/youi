@@ -1,7 +1,7 @@
 package io.youi.paint
 
 import io.youi.Updates
-import io.youi.component.util.CanvasPool
+import io.youi.util.CanvasPool
 import io.youi.drawable.{Context, Drawable}
 import org.scalajs.dom.CanvasPattern
 

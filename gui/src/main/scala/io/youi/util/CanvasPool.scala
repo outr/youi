@@ -1,4 +1,4 @@
-package io.youi.component.util
+package io.youi.util
 
 import io.youi._
 import io.youi.util.ObjectPool

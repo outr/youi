@@ -3,6 +3,8 @@ package io.youi.paint
 import io.youi.net.URL
 import io.youi._
 import io.youi.drawable.{Context, Drawable}
+import io.youi.image.Image
+import io.youi.video.Video
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -44,25 +46,25 @@ object Paint extends Stringify[Paint] {
     ratio = ratio
   )
 
-  /*def image(url: String | URL,
+  def image(url: String | URL,
             repetition: Repetition = Repetition.Repeat,
             mode: ImageMode = ImageMode.Quality,
             x: => Double = 0.0,
             y: => Double = 0.0,
-            ratio: => Double = ui.ratio): Future[DrawablePaint[Image]] = Image(url.toString).map { image =>
+            ratio: => Double = ratio): Future[DrawablePaint[Image]] = Image(url.toString).map { image =>
     new DrawablePaint[Image](image, repetition, image.width, image.height, x, y, ratio)
-  }*/
+  }
 
-  /*def video(url: URL,
+  def video(url: URL,
             repetition: Repetition = Repetition.Repeat,
             autoPlay: Boolean = true,
             loop: Boolean = true,
             muted: Boolean = true,
             x: => Double = 0.0,
             y: => Double = 0.0,
-            ratio: => Double = ui.ratio): Future[DrawablePaint[Video]] = Video(url, autoPlay, loop, muted).map { video =>
+            ratio: => Double = ratio): Future[DrawablePaint[Video]] = Video(url, autoPlay, loop, muted).map { video =>
     new DrawablePaint[Video](video, repetition, video.width, video.height, x, y, ratio)
-  }*/
+  }
 
   override def fromString(value: String): Option[Paint] = None
 

@@ -1,6 +1,6 @@
 package io.youi
 
-import io.youi.net.URL
+import io.youi.net._
 import org.scalajs.dom._
 import org.scalajs.dom.ext._
 import org.scalajs.dom.html.Div
@@ -9,7 +9,6 @@ import org.scalajs.dom.raw.HTMLElement
 import scala.collection.mutable
 import scala.concurrent.{Future, Promise}
 import scala.language.implicitConversions
-import scala.scalajs.js
 
 object dom extends ExtendedElement(None) {
   def bySelector[T <: Element](selectors: String, root: Option[Element] = None): Vector[T] = {
@@ -29,6 +28,7 @@ object dom extends ExtendedElement(None) {
 
     def br: html.BR = create[html.BR]("br")
     def button: html.Button = create[html.Button]("button")
+    def canvas: html.Canvas = create[html.Canvas]("canvas")
     def div: html.Div = create[html.Div]("div")
     def hr: html.HR = create[html.HR]("hr")
     def image: html.Image = create[html.Image]("img")
@@ -103,6 +103,38 @@ object dom extends ExtendedElement(None) {
     link.setAttribute("as", "style")
     link.setAttribute("crossorigin", "crossorigin")
     document.head.appendChild(link)
+  }
+
+  /**
+    * Forces loading of the supplied image URL in a hidden iframe.
+    *
+    * @param url the image URL to load
+    * @return Future[URL]
+    */
+  def reloadImage(url: URL): Future[URL] = {
+    val iframe = create.iframe
+    iframe.style.display = "none"
+    document.body.appendChild(iframe)
+    var counter = 0
+    val promise = Promise[URL]
+    iframe.addEventListener("load", (_: Event) => {
+      if (counter == 0) {
+        counter += 1
+        iframe.contentWindow.location.reload(true)
+      } else {
+        promise.success(url)
+      }
+    }, useCapture = false)
+    val src = if (url.base != History.url.base) { // Cross-Domain
+      History.url.withPath(path"/wrap-image").withParam("src", url.toString).toString
+    } else {
+      url.toString
+    }
+    iframe.src = src
+    iframe.addEventListener("error", (evt: ErrorEvent) => {
+      promise.failure(new RuntimeException(s"Error loading: $url - ${evt.message}"))
+    }, useCapture = false)
+    promise.future
   }
 
   implicit class StringExtras(s: String) {

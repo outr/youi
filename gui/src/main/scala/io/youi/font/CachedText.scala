@@ -1,6 +1,6 @@
 package io.youi.font
 
-import io.youi.component.util.CanvasPool
+import io.youi.util.CanvasPool
 import io.youi.drawable.{Composite, Context}
 import io.youi.paint.{Paint, Stroke}
 import io.youi._

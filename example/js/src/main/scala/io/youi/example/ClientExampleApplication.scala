@@ -41,7 +41,7 @@ object ClientExampleApplication extends ExampleApplication with ClientConnectedA
 
   val animation: AnimationExample = new AnimationExample
   val canvas: CanvasExample = new CanvasExample
-//  val drawable: DrawableExample = new DrawableExample
+  val drawable: DrawableExample = new DrawableExample
 //  val fontAwesome: FontAwesomeExample = new FontAwesomeExample
 //  val grid: GridLayoutExample = new GridLayoutExample
 //  val hit: HitTestExample = new HitTestExample

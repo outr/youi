@@ -8,7 +8,7 @@ import io.youi.example.screen.UIExampleScreen
 import io.youi.font.{CanvasFont, CanvasText, GoogleFont}
 import io.youi.image.Image
 import io.youi.net._
-import io.youi.paint.{Border, Stroke}
+import io.youi.paint.{Border, GradientPaint, Paint, Stroke}
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -29,8 +29,9 @@ class DrawableExample extends UIExampleScreen {
       position.middle := container.size.middle
 
       val font: CanvasFont = CanvasFont(fnt.font.family, "normal", "normal", fnt.name)
-      val text: CanvasText = CanvasText(font, "Hello, Arial!", 36.0, Int.MaxValue, kerning = false)
-      val textDrawable = new TextDrawable(text, Color.White, Stroke.none)
+      val text: CanvasText = CanvasText(font, "Hello, Lobster Font!", 36.0, Int.MaxValue, kerning = false)
+      val paint: GradientPaint = Paint.horizontal(text.boundingBox.width).distributeColors(Color.Red, Color.Green, Color.Blue)
+      val textDrawable = new TextDrawable(text, paint, Stroke(Color.White))
       drawable @= Group(
         image,
         Transformation(50.0, 25.0)(textDrawable)

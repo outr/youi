@@ -1,5 +1,6 @@
 package io.youi.image
 
+import com.outr.{CanvgOptions, canvg}
 import io.youi._
 import io.youi.dom._
 import io.youi.image.resize.ImageResizer
@@ -78,7 +79,7 @@ object SVGImage {
   }
 
   def drawToCanvas(canvas: html.Canvas, svg: SVGSVGElement, x: Double, y: Double, width: Double, height: Double): Future[Unit] = {
-    /*val promise = Promise[Unit]
+    val promise = Promise[Unit]
     val callback: js.Function = () => {
       promise.success(())
     }
@@ -93,8 +94,7 @@ object SVGImage {
       scaleHeight = math.ceil(height).toInt
       renderCallback = callback
     })
-    promise.future*/
-    ???
+    promise.future
   }
 
   def measure(svg: SVGSVGElement, applyDimension: Boolean = true, force: Boolean = false): BoundingBox = {

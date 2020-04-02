@@ -35,6 +35,7 @@ val hasherVersion = "1.2.2"
 
 val openTypeVersion = "1.1.0"
 val webFontLoaderVersion = "1.6.28_2"
+val canvgVersion = "1.4.0_3"
 
 val scalaJSDOM = "1.0.0"
 val okHttpVersion = "4.4.1"
@@ -191,7 +192,8 @@ lazy val gui = project.in(file("gui"))
     name := "youi-gui",
     libraryDependencies ++= Seq(
       "com.outr" %%% "webfontloader-scala-js" % webFontLoaderVersion,
-      "com.outr" %%% "opentype-scala-js" % openTypeVersion
+      "com.outr" %%% "opentype-scala-js" % openTypeVersion,
+      "com.outr" %%% "canvg-scala-js" % canvgVersion
     )
   )
   .dependsOn(dom, spatialJS)

@@ -9,9 +9,12 @@ class SizeProperty(get: => String, set: String => Unit, callbacks: (() => Unit)*
 
   refresh()
 
+  private var changed = false
+
   attach { d =>
-    if (d != -1.0 && `type`() == SizeType.Auto) {
+    if (d != -1.0 && `type`() == SizeType.Auto && !changed) {
       `type` @= SizeType.Pixel
+      changed = true
     }
     set()
     callbacks.foreach(_())
@@ -19,12 +22,15 @@ class SizeProperty(get: => String, set: String => Unit, callbacks: (() => Unit)*
   `type`.on(set())
 
   def set(value: Double, `type`: => SizeType): Unit = {
-    set(value)
     this.`type` := `type`
+    set(value)
   }
 
   private def set(): Unit = {
-    val t = `type`().name
+    val t = `type`() match {
+      case SizeType.Auto => ""
+      case t => t.name
+    }
     val value = if (`type`.includeNumeric) {
       val d = apply()
       s"$d$t"

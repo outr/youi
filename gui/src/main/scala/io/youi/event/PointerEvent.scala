@@ -51,6 +51,7 @@ class PointerEvent(underlying: jsdom.MouseEvent | HTMLPointerEvent | jsdom.Touch
   def altPressed: Boolean = modifierState(Key.Alt)
   def altGraphPressed: Boolean = modifierState(Key.AltGraph)
   def controlPressed: Boolean = modifierState(Key.Control)
+  def metaPressed: Boolean = modifierState(Key.Meta)
   def shiftPressed: Boolean = modifierState(Key.Shift)
 
   def capsLockOn: Boolean = modifierState(Key.CapsLock)

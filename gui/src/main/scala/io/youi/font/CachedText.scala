@@ -4,6 +4,7 @@ import io.youi.util.CanvasPool
 import io.youi.drawable.{Composite, Context}
 import io.youi.paint.{Paint, Stroke}
 import io.youi._
+import io.youi.spatial.BoundingBox
 
 case class CachedText(font: CachedFont,
                       text: String,
@@ -11,6 +12,17 @@ case class CachedText(font: CachedFont,
                       maxWidth: Double,
                       kerning: Boolean,
                       lines: Vector[Vector[CharacterPath]]) extends Text {
+  override lazy val boundingBox: BoundingBox = {
+    val bb = BoundingBox.temp.zero()
+    lines.foreach { line =>
+      line.foreach { character =>
+        bb.set(x2 = math.max(bb.x2, character.x + character.glyph.actualWidth(size)))
+      }
+    }
+    bb.set(y1 = 0.0, y2 = lineHeight * lines.length)
+    bb.immutable
+  }
+
   override def draw(context: Context, x: Double, y: Double, fill: Paint, stroke: Stroke): Unit = {
     CanvasPool.withCanvas(boundingBox.width, boundingBox.height, ratio) { canvas =>
       val ctx = new Context(canvas, ratio)

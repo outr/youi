@@ -2,13 +2,16 @@ package io.youi.font
 
 import io.youi.drawable.Context
 import io.youi.paint.{Paint, Stroke}
+import io.youi.spatial.BoundingBox
 
 case class CanvasText(font: CanvasFont, text: String, size: Double, maxWidth: Double, kerning: Boolean) extends Text {
-  override def lines: Vector[Vector[CharacterPath]] = Vector.empty
+  lazy val boundingBox: BoundingBox = {
+    val measured = CanvasFont.measure(text, font, size)
+    BoundingBox(x2 = measured.width, y2 = measured.height)
+  }
 
   override def draw(context: Context, x: Double, y: Double, fill: Paint, stroke: Stroke): Unit = {
     font(context, size)
-    scribe.info(s"Font: ${context.ctx.font}")
     if (fill.nonEmpty) {
       context.fill(fill, apply = false)
       context.fillText(text, x, y)

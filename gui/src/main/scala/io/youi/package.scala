@@ -1,17 +1,19 @@
 package io
 
-import io.youi.util.CanvasPool
-import io.youi.font.{GoogleFont, GoogleFontWeight}
+import io.youi.net._
+import io.youi.util.{CanvasPool, Time}
+import io.youi.font.{FontAwesome, GoogleFont, GoogleFontWeight}
 import io.youi.paint.Paint
 import org.scalajs.dom.{CanvasRenderingContext2D, document, html, window}
-import reactify.{Val, Var}
+import reactify.Val
 import typekit.{GoogleConfig, WebFont, WebFontConfiguration}
 
 import scala.concurrent.{Future, Promise}
 import scala.language.implicitConversions
 import scala.scalajs.js
-
 import scribe.Execution.global
+
+import scala.concurrent.duration._
 
 package object youi {
   lazy val isIOS: Boolean = Set("iPad Simulator", "iPhone Simulator", "iPod Simulator", "iPad", "iPhone", "iPod")
@@ -44,10 +46,42 @@ package object youi {
     ua.contains("iphone") || ua.contains("ipad") || ua.contains("android")
   }
 
+  private def waitForComputed(e: html.Element,
+                              key: String,
+                              delay: FiniteDuration)
+                             (matcher: String => Boolean): Future[Unit] = {
+    val value = window.getComputedStyle(e).getPropertyValue(key)
+    if (matcher(value)) {
+      // Finished
+      Future.successful(())
+    } else {
+      // Delay and try again
+      Time.delay(delay).flatMap(_ => waitForComputed(e, key, delay)(matcher))
+    }
+  }
+
   implicit def color2Paint(color: Color): Paint = Paint.color(color)
 
   implicit class ExtendedCanvas(canvas: html.Canvas) {
     def context: CanvasRenderingContext2D = canvas.getContext("2d").asInstanceOf[CanvasRenderingContext2D]
+  }
+
+  private lazy val fontAwesomeFuture: Future[Unit] = {
+    val e = dom.create[html.Element]("i")
+    e.classList.add("fas")
+    e.classList.add("fa-question")
+    e.style.visibility = "hidden"
+    document.body.appendChild(e)
+    dom.addScript(url"https://kit.fontawesome.com/afbab8b8a9.js").flatMap { _ =>
+      waitForComputed(e, "font-family", 50.milliseconds) { value =>
+        val b = value.contains("Font Awesome")
+        if (b) document.body.removeChild(e)
+        b
+      }
+    }
+  }
+  implicit class ExtendedFontAwesome(font: FontAwesome) {
+    def load(): Future[FontAwesome] = fontAwesomeFuture.map(_ => font)
   }
 
   private var googleFontFutures = Map.empty[GoogleFont, Future[GoogleFont]]

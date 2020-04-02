@@ -20,7 +20,6 @@ class UIExamples extends UIExampleScreen {
       case screen: UIExampleScreen if screen.title != title => screen
     }.foreach { screen =>
       if (screen != this) {
-        scribe.info(s"Screen: ${screen.title}")
         val button = new ExampleButton(screen)
         container.children += button
       }

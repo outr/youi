@@ -1,6 +1,6 @@
 package io.youi.component
 
-import io.youi.component.support.{BorderSupport, CollapsibleSupport, MeasuredSupport, OverflowSupport, PositionSupport, PreferredSizeSupport, SizeSupport}
+import io.youi.component.support.{BorderSupport, CollapsibleSupport, MaxSizeSupport, MeasuredSupport, OverflowSupport, PositionSupport, PreferredSizeSupport, SizeSupport}
 import io.youi.component.types.{Display, DropType, Overflow, PositionType}
 import io.youi._
 import org.scalajs.dom.html
@@ -8,7 +8,7 @@ import reactify._
 
 import scala.concurrent.Future
 
-class Drop extends Component(dom.create.div) with SizeSupport with PositionSupport with BorderSupport with OverflowSupport with CollapsibleSupport {
+class Drop extends Component(dom.create.div) with MaxSizeSupport with SizeSupport with PositionSupport with BorderSupport with OverflowSupport with CollapsibleSupport {
   private var showing: Option[Component] = None
   private var `type`: DropType = DropType.Auto
 
@@ -21,7 +21,6 @@ class Drop extends Component(dom.create.div) with SizeSupport with PositionSuppo
   position.z @= 3000
   position.`type` @= PositionType.Absolute
   size.width := math.round(container.preferred.width + 2.0)
-  size.height := 0.0
   display @= Display.None
 
   overflow @= Overflow.Hidden
@@ -45,7 +44,7 @@ class Drop extends Component(dom.create.div) with SizeSupport with PositionSuppo
     val down = `type` == DropType.Down || (`type` == DropType.Auto && distanceToBottom >= distanceToTop)
 
     if (!down) {
-      position.y := rect.top - size.height
+      position.y := rect.top - maxSize.height
     }
   }
 

@@ -1,6 +1,7 @@
 package io.youi.component.feature
 
 import io.youi.component.Component
+import io.youi.spatial.Size
 import reactify.{Val, Var}
 
 class MeasuredFeature(override val component: Component) extends Feature with WidthFeature with HeightFeature {
@@ -14,5 +15,12 @@ class MeasuredFeature(override val component: Component) extends Feature with Wi
     val rect = component.element.getBoundingClientRect()
     w @= rect.width
     h @= rect.height
+  }
+}
+
+object MeasuredFeature {
+  def apply(component: Component): Size = {
+    val rect = component.element.getBoundingClientRect()
+    Size(rect.width, rect.height)
   }
 }

@@ -1,22 +1,24 @@
 package io.youi.material
 
 import io.youi.component.Component
+import io.youi.component.support.{ContentSupport, InternalContainerSupport}
+import io.youi.component.types.Display
 import io.youi.dom
 import io.youi.dom._
 import io.youi.event.EventSupport
 import org.scalajs.dom.html
 import reactify.Var
 
-class MDCChip extends Component(dom.create.div) with EventSupport {
+class MDCChip extends Component(dom.create.div) with EventSupport with InternalContainerSupport[Component] {
   val content: Var[String] = Var("")
-  val leading: Var[Option[MaterialIcon]] = Var(None)
-  val trailing: Var[Option[MaterialIcon]] = Var(None)
+  val leading: ChipIcon = new ChipIcon("leading")
+  val trailing: ChipIcon = new ChipIcon("trailing")
 
-  def this(content: String, leading: Option[MaterialIcon] = None, trailing: Option[MaterialIcon] = None) = {
+  def this(content: String, leading: MaterialIcon = Material.Icons.Empty, trailing: MaterialIcon = Material.Icons.Empty) = {
     this()
     this.content @= content
-    this.leading @= leading
-    this.trailing @= trailing
+    this.leading.value @= leading
+    this.trailing.value @= trailing
   }
 
   classes := Set("mdc-chip")
@@ -27,19 +29,6 @@ class MDCChip extends Component(dom.create.div) with EventSupport {
       val div = dom.create.div
       div.addClasses("mdc-chip__ripple")
       div
-    }
-    val leadingIcon: html.Element = {
-      val i = dom.create.i
-      i.addClasses("material-icons", "mdc-chip__icon", "mdc-chip__icon--leading")
-      color.attach(c => i.style.color = c.toRGBA)
-      leading.attachAndFire {
-        case Some(mi) => {
-          i.style.display = "block"
-          i.innerText = mi.name
-        }
-        case None => i.style.display = "none"
-      }
-      i
     }
     val cell: html.Span = {
       val span = dom.create.span
@@ -63,26 +52,22 @@ class MDCChip extends Component(dom.create.div) with EventSupport {
       span.setAttribute("role", "gridcell")
       span
     }
-    val trailingIcon: html.Element = {
-      val i = dom.create.i
-      i.addClasses("material-icons", "mdc-chip__icon", "mdc-chip__icon--trailing")
-      color.attach(c => i.style.color = c.toRGBA)
-      trailing.attachAndFire {
-        case Some(mi) => {
-          trailingCell.style.display = "block"
-          i.innerText = mi.name
-        }
-        case None => trailingCell.style.display = "none"
-      }
-      i
-    }
   }
 
-  element.appendChild(elements.ripple)
-  element.appendChild(elements.leadingIcon)
-  elements.button.appendChild(elements.label)
-  elements.cell.appendChild(elements.button)
-  element.appendChild(elements.cell)
-  elements.trailingCell.appendChild(elements.trailingIcon)
-  element.appendChild(elements.trailingCell)
+  children += elements.ripple
+  children += leading
+  children += elements.label
+  children += elements.button
+  children += elements.cell
+  children += trailing
+  children += elements.trailingCell
+
+  class ChipIcon(position: String) extends Component(dom.create.i) with EventSupport with ContentSupport {
+    val value: Var[MaterialIcon] = Var(Material.Icons.Empty)
+
+    classes ++= List("material-icons", "mdc-chip__icon", s"mdc-chip__icon--$position")
+    color := MDCChip.this.color
+    display := (if (value().isEmpty) Display.None else Display.Block)
+    content := value().name
+  }
 }

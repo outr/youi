@@ -16,6 +16,7 @@ object Material extends GoogleFont {
   override lazy val weights: List[GoogleFontWeight] = List(`regular`)
 
   object Icons {
+    lazy val Empty: MaterialIcon = MaterialIcon("")
     object Action {
       lazy val `3dRotation`: MaterialIcon = MaterialIcon("3d_rotation")
       lazy val Accessibility: MaterialIcon = MaterialIcon("accessibility")

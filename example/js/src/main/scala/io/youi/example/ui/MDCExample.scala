@@ -22,8 +22,8 @@ class MDCExample extends UIExampleScreen {
     val chipSet = new MDCChipSet
     chipSet.children += new MDCChip("Chip One")
     val two = new MDCChip("Chip Two")
-    two.leading @= Material.Icons.Navigation.ArrowBackIos
-    two.trailing @= Material.Icons.Navigation.ArrowForward
+    two.leading.value @= Material.Icons.Navigation.ArrowBackIos
+    two.trailing.value @= Material.Icons.Navigation.ArrowForward
     two.event.click.on {
       chipSet.children += new MDCChip("Chip Again!")
     }

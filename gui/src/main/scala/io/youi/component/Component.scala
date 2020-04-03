@@ -21,6 +21,8 @@ class Component(val element: html.Element) {
   ) {
     def +=(className: String): Unit = this @= (this() + className)
     def -=(className: String): Unit = this @= (this() - className)
+    def ++=(classNames: Seq[String]): Unit = this @= (this() ++ classNames)
+    def --=(classNames: Seq[String]): Unit = this @= (this() -- classNames)
     def toggle(className: String): Prop[Boolean] = new Prop[Boolean](
       getter = get.contains(className),
       setter = b => if (b) this @= get + className else this @= get - className

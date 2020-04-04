@@ -44,7 +44,8 @@ class Drop extends Component(dom.create.div) with MaxSizeSupport with SizeSuppor
     val down = `type` == DropType.Down || (`type` == DropType.Auto && distanceToBottom >= distanceToTop)
 
     if (!down) {
-      position.y := rect.top - maxSize.height
+//      position.y := rect.top - maxSize.height
+      position.bottom := rect.top
     }
   }
 

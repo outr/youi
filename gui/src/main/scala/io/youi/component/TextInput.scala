@@ -7,6 +7,7 @@ import org.scalajs.dom.{Event, html}
 
 class TextInput(element: html.Input = dom.create.input,
                 password: Boolean = false) extends Component(element) with FontSupport {
+  lazy val name: Prop[String] = new Prop[String](element.name, element.name_=)
   lazy val value: Prop[String] = new Prop[String](element.value, element.value_=)
   lazy val placeholder: Prop[String] = new Prop[String](element.placeholder, element.placeholder_=)
   lazy val disabled: Prop[Boolean] = new Prop[Boolean](element.disabled, element.disabled_=)

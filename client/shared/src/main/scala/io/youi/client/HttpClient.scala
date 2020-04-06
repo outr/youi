@@ -40,6 +40,7 @@ case class HttpClient(request: HttpRequest,
       case s: String => params(name -> s)
       case b: Boolean => params(name -> b.toString)
       case i: Int => params(name -> i.toString)
+      case l: Long => params(name -> l.toString)
       case l: List[Any] => params(name -> l.mkString(","))
       case s: Some[Any] => param[Any](name, s.head, default)
       case None => this

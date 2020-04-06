@@ -46,6 +46,7 @@ class Popup(showGlassPane: Boolean = true) extends Container with SizeSupport wi
 
   def show(): Future[Unit] = {
     future = future.flatMap { _ =>
+      Popup._active += this
       sequential(
         position.center := ui.size.center,
         position.y @= ui.size.height,
@@ -66,6 +67,7 @@ class Popup(showGlassPane: Boolean = true) extends Container with SizeSupport wi
 
   def hide(): Future[Unit] = {
     future = future.flatMap { _ =>
+      Popup._active -= this
       sequential(
         parallel(
           position.y.to(ui.size.height).in(speed).easing(easing),
@@ -79,4 +81,10 @@ class Popup(showGlassPane: Boolean = true) extends Container with SizeSupport wi
     }
     future
   }
+}
+
+object Popup {
+  private var _active = Set.empty[Popup]
+
+  def active: Set[Popup] = _active
 }

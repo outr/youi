@@ -196,7 +196,6 @@ class JVMHttpClientImplementation(config: HttpClientConfig) extends HttpClientIm
         Content.bytes(responseBody.bytes(), contentType)
       } else {
         val suffix = contentType.extension.getOrElse("client")
-        if (suffix == "client") scribe.warn(s"No extension found for: $contentType")
         val file = File.createTempFile("youi", s".$suffix", new File(config.saveDirectory))
         IO.stream(responseBody.byteStream(), file)
         Content.file(file, contentType)

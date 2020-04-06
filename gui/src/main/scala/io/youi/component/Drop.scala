@@ -51,7 +51,7 @@ class Drop extends Component(dom.create.div) with MaxSizeSupport with SizeSuppor
 
   def hide(): Future[Unit] = {
     showing = None
-    Drop.open = None
+    Drop._open = None
     collapsed @= true
     future
   }
@@ -70,15 +70,17 @@ class Drop extends Component(dom.create.div) with MaxSizeSupport with SizeSuppor
 
 object Drop {
   private var openStart = 0L
-  private var open: Option[Drop] = None
+  private var _open: Option[Drop] = None
+
+  def open: Option[Drop] = _open
 
   private def opening(drop: Drop): Unit = {
     openStart = System.currentTimeMillis()
     hide()
-    open = Some(drop)
+    _open = Some(drop)
   }
 
-  def hide(): Unit = open.foreach(_.hide())
+  def hide(): Unit = _open.foreach(_.hide())
 
   ui.event.click.attach { evt =>
     if (System.currentTimeMillis() - openStart > 250L) {
@@ -90,6 +92,6 @@ object Drop {
     }
   }
   ui.size.width.and(ui.size.height).on {
-    open.foreach(_.updatePosition())
+    _open.foreach(_.updatePosition())
   }
 }

@@ -1,6 +1,7 @@
 package io.youi.component.feature
 
 import io.youi.component.Component
+import io.youi.dom._
 import org.scalajs.dom.html
 import reactify.{Priority, Val, Var}
 
@@ -20,6 +21,25 @@ class ContainerFeature[Child <: Component](override val component: Component) ex
   }
 
   def length: Int = component.element.childElementCount
+  def prepend(child: Child): Unit = {
+    _entries @= child :: entries
+    prepend(child.element)
+  }
+  def prepend(child: html.Element): Unit = {
+    child.insertFirst(component.element)
+    component.measure.trigger()
+  }
+  def replace(current: Child, replacement: Child): Unit = {
+    _entries @= entries.map {
+      case c if c eq current => replacement
+      case c => c
+    }
+    replace(current.element, replacement.element)
+  }
+  def replace(current: html.Element, replacement: html.Element): Unit = {
+    component.element.replaceChild(replacement, current)
+    component.measure.trigger()
+  }
   def +=(component: Child): Unit = {
     _entries @= entries ::: List(component)
     +=(component.element)

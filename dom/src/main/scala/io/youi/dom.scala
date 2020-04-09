@@ -30,6 +30,7 @@ object dom extends ExtendedElement(None) {
     def br: html.BR = create[html.BR]("br")
     def button: html.Button = create[html.Button]("button")
     def canvas: html.Canvas = create[html.Canvas]("canvas")
+    def datalist: html.DataList = create[html.DataList]("datalist")
     def div: html.Div = create[html.Div]("div")
     def hr: html.HR = create[html.HR]("hr")
     def image: html.Image = create[html.Image]("img")

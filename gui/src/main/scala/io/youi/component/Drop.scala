@@ -74,7 +74,7 @@ object Drop {
 
   def open: Option[Drop] = _open
 
-  private def opening(drop: Drop): Unit = {
+  private def opening(drop: Drop): Unit = if (!_open.contains(drop)) {
     openStart = System.currentTimeMillis()
     hide()
     _open = Some(drop)

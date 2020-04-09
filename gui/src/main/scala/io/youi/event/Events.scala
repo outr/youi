@@ -1,10 +1,11 @@
 package io.youi.event
 
 import io.youi.component.Component
+import io.youi.component.feature.Feature
 import reactify.{Channel, Val, Var}
 import org.scalajs.{dom => jsdom}
 
-class Events(component: Component) {
+class Events(protected val component: Component) extends Feature {
   def hasPointerSupport: Boolean = EventSupport.hasPointerSupport
   def hasTouchSupport: Boolean = EventSupport.hasTouchSupport
 

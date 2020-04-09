@@ -36,6 +36,10 @@ class URLSpec extends AnyWordSpec with Matchers {
         val url = URL("outr.com")
         url.toString should be("https://outr.com/")
       }
+      "properly parse a fairly long URL" in {
+        val url = URL("https://www.youi.io/testing/1/favicon-32x32.png?arg1=true&v=0.7.0-1586440828356")
+        url.toString should be("https://www.youi.io/testing/1/favicon-32x32.png?arg1=true&v=0.7.0-1586440828356")
+      }
       "properly detect an invalid TLD" in {
         val url = URL.get("event.which")
         url should not be Right
@@ -135,10 +139,13 @@ class URLSpec extends AnyWordSpec with Matchers {
         url.withPart("?wahoo=true") should be(URL("http://www.youi.io/testing/1/test.html?wahoo=true"))
       }
       "replace the path and params" in {
-        url.withPart("/index.html?wahoo=true") should be(URL("http://www.youi.io/index.html?wahoo=true"))
+        url.withPart("/index.html?wahoo=true") should be(URL("http://www.youi.io/index.html?arg1=true&wahoo=true"))
       }
       "apply relative path" in {
         url.withPart("../2/test.html") should be(URL("http://www.youi.io/testing/2/test.html"))
+      }
+      "apply a new path without forward-slash" in {
+        url.withPart("favicon-32x32.png?v=0.7.0-1586440828356") should be(URL("http://www.youi.io/testing/1/favicon-32x32.png?arg1=true&v=0.7.0-1586440828356"))
       }
     }
     "encoding to path" should {

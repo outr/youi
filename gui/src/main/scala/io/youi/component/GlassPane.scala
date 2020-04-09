@@ -11,7 +11,7 @@ import reactify.Var
 import scala.concurrent.duration._
 
 class GlassPane extends Component(dom.create.div) with SizeSupport with PositionSupport with EventSupport {
-  val backgroundAlpha: Var[Double] = Var(0.5)
+  val backgroundAlpha: Var[Double] = Var(0.4)
 
   def isActive: Boolean = display() != Display.None
 

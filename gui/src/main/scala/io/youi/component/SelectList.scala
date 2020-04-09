@@ -10,6 +10,7 @@ class SelectList[T](val select: html.Select = dom.create.select)
   val list: Var[List[T]] = Var(Nil)
   val rows: Prop[Int] = new Prop[Int](select.size, select.size_=, measure.trigger)
   val selected: Var[Option[T]] = Var(None)
+  lazy val disabled: Prop[Boolean] = new Prop[Boolean](select.disabled, select.disabled_=)
 
   list.attach { l =>
     element.innerHTML = ""

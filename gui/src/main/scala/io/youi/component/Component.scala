@@ -62,11 +62,12 @@ class Component(val element: html.Element) {
 
 object Component {
   def hasFeature[F <: Feature](component: Component)(implicit tag: ClassTag[F]): Boolean = component.features.contains(Feature.nameFor[F](tag))
-  def addFeature[F <: Feature](component: Component, feature: F): Unit = {
+  def addFeature[F <: Feature](component: Component, feature: F): F = {
     addFeature[F](Feature.nameFor[F](feature), component, feature)
   }
-  def addFeature[F <: Feature](name: String, component: Component, feature: F): Unit = {
+  def addFeature[F <: Feature](name: String, component: Component, feature: F): F = {
     component.features += name -> feature
+    feature
   }
   def getFeature[F <: Feature](component: Component)(implicit tag: ClassTag[F]): Option[F] = {
     getFeature[F](Feature.nameFor[F](tag), component)

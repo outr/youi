@@ -13,7 +13,8 @@ class Drop extends Component(dom.create.div) with MaxSizeSupport with SizeSuppor
   private var `type`: DropType = DropType.Auto
 
   lazy val container: Container with PreferredSizeSupport = new Container with PreferredSizeSupport
-  val offset: Var[Double] = Var(0.0)
+  val offsetDown: Var[Double] = Var(0.0)
+  val offsetUp: Var[Double] = Var(0.0)
 
   element.appendChild(container)
   position.x @= 0.0
@@ -37,7 +38,7 @@ class Drop extends Component(dom.create.div) with MaxSizeSupport with SizeSuppor
   def updatePosition(): Unit = showing.foreach { target =>
     val rect = target.absoluteBounding
     position.x @= math.min(rect.left, ui.size.width - container.preferred.width)
-    position.y @= rect.bottom + offset
+    position.y @= rect.bottom + offsetDown
 
     val distanceToTop = rect.top
     val distanceToBottom = ui.size.height - rect.bottom
@@ -45,7 +46,7 @@ class Drop extends Component(dom.create.div) with MaxSizeSupport with SizeSuppor
 
     if (!down) {
 //      position.y := rect.top - maxSize.height
-      position.bottom := rect.top
+      position.bottom := rect.top - offsetUp
     }
   }
 

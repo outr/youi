@@ -5,7 +5,7 @@ import io.youi.component.types.{Display, PositionType}
 import io.youi.easing.Easing
 import io.youi.{Color, ui}
 import io.youi.task._
-import reactify.Var
+import reactify.{Mutable, Stateful, Var}
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
@@ -54,12 +54,12 @@ class Popup(showGlassPane: Boolean = true) extends Container with SizeSupport wi
         glassPane.foreach(_.backgroundAlpha @= 0.0),
         glassPane.foreach(_.display @= Display.Block),
         parallel(
-          position.middle.to(ui.size.middle).in(speed).easing(easing),
+          positionProperty.to(positionDestination).in(speed).easing(easing),
           glassPane.map { gp =>
             gp.backgroundAlpha.to(0.5).in(speed).easing(easing)
           }.getOrElse(Task.None)
         ),
-        position.middle := ui.size.middle
+        positionProperty := positionDestination
       ).start().future.map(_ => ())
     }
     future
@@ -81,6 +81,9 @@ class Popup(showGlassPane: Boolean = true) extends Container with SizeSupport wi
     }
     future
   }
+
+  protected def positionProperty: Stateful[Double] with Mutable[Double] = position.middle
+  protected def positionDestination: Double = ui.size.middle
 }
 
 object Popup {

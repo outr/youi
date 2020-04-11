@@ -63,7 +63,7 @@ object ImageUtility {
   private val tempImage = dom.create[html.Image]("img")
 
   def loadImage[R](file: File)(process: html.Image => Future[R]): Future[R] = {
-    KeyedSequence(this) {
+    Blocked(this) {
       val promise = Promise[Unit]
       val listener: js.Function1[Event, _] = (_: Event) => promise.success(())
       tempImage.addEventListener("load", listener)

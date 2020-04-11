@@ -36,7 +36,7 @@ trait CollapsibleSupport {
 
   prop := 0.0
 
-  collapsed.attach {
+  collapsed.attachAndFire {
     case true => collapse()
     case false => expand()
   }

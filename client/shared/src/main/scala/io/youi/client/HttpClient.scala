@@ -77,7 +77,7 @@ case class HttpClient(request: HttpRequest,
     case Some(c) => this.content(c)
     case None => this
   }
-  def json(json: Json): HttpClient = content(StringContent(printer.pretty(json), ContentType.`application/json`))
+  def json(json: Json): HttpClient = content(StringContent(printer.print(json), ContentType.`application/json`))
 
   /**
     * Sends an HttpRequest and receives an asynchronous HttpResponse future.

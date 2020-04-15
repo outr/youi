@@ -26,7 +26,7 @@ trait SharedContentHelpers {
 
   def json(value: Json, pretty: Boolean = false): Content = {
     val printer = if (pretty) Printer.spaces2 else Printer.noSpaces
-    bytes(value.pretty(printer).getBytes, ContentType.`application/json`)
+    bytes(value.printWith(printer).getBytes, ContentType.`application/json`)
   }
   def string(value: String, contentType: ContentType): Content = StringContent(value, contentType)
   def bytes(value: Array[Byte], contentType: ContentType): Content = BytesContent(value, contentType)

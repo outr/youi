@@ -54,6 +54,7 @@ object ErrorTrace extends Writer {
       case t: Throwable => ClientApplication.sendError(t)
       case _ => // Ignore others
     }
+    record.throwable.foreach(ClientApplication.sendError)
   }
 
   /**
@@ -66,7 +67,8 @@ object ErrorTrace extends Writer {
     sourceMaps.get(fileName) match {
       case Some(sourceMapConsumer) => Future.successful(Some(sourceMapConsumer))
       case None => {
-        val url = URL(s"$fileName.map")
+        val jsURL = URL(fileName)
+        val url = jsURL.withPath(s"${jsURL.path.toString}.map")
         if (url.path == path"/.map") {
           Future.successful(None)
         } else {
@@ -78,7 +80,7 @@ object ErrorTrace extends Writer {
               Some(sourceMapConsumer)
             } catch {
               case t: Throwable => {
-                scribe.error(t)
+                scribe.error(s"Failed to parse source-map: $url [${jsonString.take(20)}]", t)
                 None
               }
             }

@@ -19,4 +19,5 @@ class TextArea(element: html.TextArea = dom.create.textArea) extends Component(e
   })
 
   def focus(): Unit = element.focus()
+  def blur(): Unit = element.blur()
 }

@@ -14,7 +14,14 @@ class Prop[T](getter: => T, setter: T => Unit, callbacks: (() => Unit)*) extends
     callbacks.foreach(_())
   }
 
-  def refresh(): Unit = this @= get
+  def refresh(): Unit = {
+    valueChanging = true
+    try {
+      this @= get
+    } finally {
+      valueChanging = false
+    }
+  }
 }
 
 object Prop {

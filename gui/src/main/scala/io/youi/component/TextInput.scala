@@ -21,4 +21,6 @@ class TextInput(element: html.Input = dom.create.input,
   })
 
   def focus(): Unit = element.focus()
+  def blur(): Unit = element.blur()
 }
+

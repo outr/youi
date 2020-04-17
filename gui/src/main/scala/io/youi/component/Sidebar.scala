@@ -63,9 +63,16 @@ class Sidebar(container: Option[Component with SizeSupport with MarginSupport],
   }
 
   // Monitor open state
-  open.attachAndFire {
+  open.attach {
     case true => show()
     case false => hide()
+  }
+  if (open) {
+    position.x @= 0.0
+    display @= Display.Block
+  } else {
+    display @= Display.None
+    position.x @= -width
   }
 
   // Swipe support
@@ -73,7 +80,6 @@ class Sidebar(container: Option[Component with SizeSupport with MarginSupport],
   ui.swipe.start.attach { evt =>
     if (swipe && evt.direction.plane == Plane.Horizontal) {
       swiping.asInstanceOf[Var[Boolean]] @= true
-//      start = size.width
       start = position.x
       glassPane.foreach(_.display @= Display.Block)
       ui.userSelect @= UserSelect.None
@@ -81,7 +87,6 @@ class Sidebar(container: Option[Component with SizeSupport with MarginSupport],
   }
   ui.swipe.move.attach { evt =>
     if (swiping) {
-//      size.width @= math.min(start + evt.distance, width)
       position.x @= math.min(0.0, start + evt.distance)
     }
   }
@@ -101,7 +106,6 @@ class Sidebar(container: Option[Component with SizeSupport with MarginSupport],
       } else {
         if (open) {
           if (position.x <= width * -0.05) {
-//          if (size.width <= width * 0.95) {
             open @= false
           }
 //        } else if (size.width >= width * 0.05) {
@@ -124,7 +128,6 @@ class Sidebar(container: Option[Component with SizeSupport with MarginSupport],
       sequential(
         glassPane.foreach(_.display @= Display.Block),
         position.x.to(0.0).by(speed).easing(easing)
-//        size.width.to(width).by(speed).easing(easing)
       ).start().future.map(_ => ())
     }
     future
@@ -133,7 +136,6 @@ class Sidebar(container: Option[Component with SizeSupport with MarginSupport],
   private def hide(): Future[Unit] = {
     future = future.flatMap { _ =>
       sequential(
-//        size.width.to(0.0).by(speed).easing(easing),
         position.x.to(-width).by(speed).easing(easing),
         glassPane.foreach(_.display @= Display.None)
       ).start().future.map(_ => ())

@@ -24,7 +24,7 @@ class MDCChip extends Component(dom.create.div) with EventSupport with InternalC
   classes := Set("mdc-chip")
   element.setAttribute("role", "row")
 
-  private object elements {
+  protected object elements {
     val ripple: html.Div = {
       val div = dom.create.div
       div.addClasses("mdc-chip__ripple")

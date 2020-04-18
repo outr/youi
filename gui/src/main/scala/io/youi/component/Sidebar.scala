@@ -69,10 +69,10 @@ class Sidebar(container: Option[Component with SizeSupport with MarginSupport],
   }
   if (open) {
     position.x @= 0.0
-    display @= Display.Block
+    glassPane.foreach(_.display @= Display.Block)
   } else {
-    display @= Display.None
     position.x @= -width
+    glassPane.foreach(_.display @= Display.None)
   }
 
   // Swipe support

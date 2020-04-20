@@ -1,8 +1,5 @@
 package io.youi.virtual
 
-import io.youi.ui
-import reactify.{Val, Var}
-
 trait VirtualSizeSupport {
   val virtualWidth: Var[Double] = Var[Double](1024.0)
   val virtualHeight: Var[Double] = Var[Double](768.0)

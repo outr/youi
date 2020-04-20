@@ -1,10 +1,5 @@
 package io.youi.font
 
-import io.youi.dom
-import io.youi.drawable.Context
-import io.youi.spatial.Size
-import org.scalajs.dom._
-
 case class CanvasFont(family: String, style: String, variant: String, weight: String) extends Font {
   override def lineHeight(size: Double): Double = CanvasFont.measure("H", this, size).height
 

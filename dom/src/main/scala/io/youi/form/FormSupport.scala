@@ -4,10 +4,9 @@ import io.youi.dom
 import io.youi.dom._
 import io.youi.util.Time
 import org.scalajs.dom.{Event, html}
-
-import scala.concurrent.Future
 import scribe.Execution.global
 
+import scala.concurrent.Future
 import scala.concurrent.duration.FiniteDuration
 import scala.util.{Failure, Success}
 

@@ -1,9 +1,5 @@
 package io.youi.layout
 
-import io.youi.component.Component
-import io.youi.layout.snap.Snap
-import reactify._
-
 case class HorizontalLayout(spacing: Double = 0.0, initialSpacing: Double = 0.0) extends Layout {
   override def connect(container: Component): Unit = {
     update(container, Vector.empty)

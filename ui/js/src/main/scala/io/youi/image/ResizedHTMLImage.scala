@@ -1,10 +1,5 @@
 package io.youi.image
 
-import io.youi.image.resize.ImageResizer
-import io.youi.util.{CanvasPool, ImageUtility}
-import org.scalajs.dom.html
-
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class ResizedHTMLImage private(override protected val canvas: html.Canvas,

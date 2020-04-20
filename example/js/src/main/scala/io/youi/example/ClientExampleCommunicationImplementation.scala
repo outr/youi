@@ -3,9 +3,8 @@ package io.youi.example
 import io.youi.dom
 import org.scalajs.dom._
 
-import scala.concurrent.Future
-
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class ClientExampleCommunicationImplementation extends ClientExampleCommunication {
   override def url: Future[String] = Future.successful(window.location.href)

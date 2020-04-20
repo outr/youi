@@ -1,8 +1,5 @@
 package io.youi
 
-import reactify._
-import reactify.reaction.Reaction
-
 import scala.concurrent.duration._
 
 trait Updates extends Updatable {

@@ -1,11 +1,5 @@
 package io.youi.component
 
-import io.youi.component.extras.HTMLComponent
-import io.youi.theme.{HTMLComponentTheme, Theme}
-import org.scalajs.dom._
-import io.youi.dom._
-import io.youi.form.{FormInput, FormSupport}
-
 abstract class UIFormSupport(override val form: html.Form) extends Container(form) with FormSupport {
   def this() = {
     this(create[html.Form]("form"))

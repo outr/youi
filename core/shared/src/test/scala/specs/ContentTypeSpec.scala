@@ -1,7 +1,7 @@
 package specs
 
 import io.youi.net.ContentType
-import org.scalatest.Matchers
+import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
 class ContentTypeSpec extends AnyWordSpec with Matchers {

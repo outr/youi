@@ -1,12 +1,5 @@
 package io.youi.component
 
-import io.youi.component.extras.{HTMLComponent, HTMLImageViewImplementation, ImageViewImplementation}
-import io.youi.image.Image
-import io.youi.spatial.Size
-import io.youi.theme.{ImageViewTheme, StyleProp, Theme}
-import org.scalajs.dom.html
-import reactify.Var
-
 class ImageView(implementation: ImageViewImplementation = HTMLImageViewImplementation)
     extends HTMLComponent[html.Element] with ImageViewTheme {
   override protected lazy val element: html.Element = implementation.createElement()

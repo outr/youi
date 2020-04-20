@@ -2,8 +2,8 @@ package io.youi.util
 
 import java.util.concurrent.TimeoutException
 
-import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration._
+import scala.concurrent.{ExecutionContext, Future}
 
 /**
   * Cross-platform functionality for dealing with time

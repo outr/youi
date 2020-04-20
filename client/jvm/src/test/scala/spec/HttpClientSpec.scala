@@ -2,10 +2,11 @@ package spec
 
 import io.youi.client.HttpClient
 import io.youi.client.intercept.Interceptor
-import io.youi.http.content.StringContent
 import io.youi.http.HttpStatus
+import io.youi.http.content.StringContent
 import io.youi.net._
-import org.scalatest.{AsyncWordSpec, Matchers}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AsyncWordSpec
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
@@ -57,6 +58,13 @@ class HttpClientSpec extends AsyncWordSpec with Matchers {
         p.id should be(101)
         p.title should be("Test YouI")
         p.completed should be(false)
+      }
+    }
+    "call a URL and get an image back" in {
+      val url = URL("https://s.yimg.com/ny/api/res/1.2/8Qe5c2B.moDrzo4jn7T5VQ--~A/YXBwaWQ9aGlnaGxhbmRlcjt3PTU2MzI7aD0zNzU1O3NtPTE7aWw9cGxhbmU-/https://media-mbst-pub-ue1.s3.amazonaws.com/creatr-images/2020-04/81f62d40-7ff9-11ea-bfdd-25ac22907561.cf.jpg")
+      HttpClient.url(url).send().map { response =>
+        response.status should be(HttpStatus.OK)
+        response.content.map(_.contentType) should be(Some(ContentType.`image/jpeg`))
       }
     }
   }

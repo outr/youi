@@ -5,10 +5,10 @@ import io.youi.http.ConnectionStatus
 import io.youi.server.WebSocketListener
 import io.youi.util.Time
 import reactify.{Val, Var}
+import scribe.Execution.global
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
-import scribe.Execution.global
 
 class ConnectionManager[C <: Connection](app: ServerConnectedApplication[C]) {
   private val _connections: Var[List[C]] = Var(Nil)

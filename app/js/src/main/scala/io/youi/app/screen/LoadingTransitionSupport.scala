@@ -2,8 +2,8 @@ package io.youi.app.screen
 
 import org.scalajs.dom.html
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 trait LoadingTransitionSupport extends ScreenManager {
   protected def loadingElement: html.Element

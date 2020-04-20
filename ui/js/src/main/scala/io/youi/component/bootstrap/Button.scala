@@ -1,12 +1,5 @@
 package io.youi.component.bootstrap
 
-import io.youi.component.Container
-import io.youi.component.extras.HTMLComponent
-import io.youi.dom._
-import io.youi.theme.{StyleConnect, StyleProp, Theme}
-import io.youi.theme.bootstrap.ButtonTheme
-import org.scalajs.dom._
-
 class Button(element: html.Button,
              existing: Boolean = false) extends Container(element, existing) with BootstrapComponent[html.Element] with ButtonTheme {
   def this() = {

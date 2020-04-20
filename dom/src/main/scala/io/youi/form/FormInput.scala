@@ -25,6 +25,7 @@ class FormInput(formSupport: FormSupport, val element: html.Element) {
   }
 
   def focus(): Unit = element.focus()
+  def blur(): Unit = element.blur()
 
   def select(): Unit = element match {
     case i: html.Input => i.select()

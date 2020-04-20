@@ -1,10 +1,5 @@
 package io.youi.theme
 
-import io.youi.{Cursor, _}
-import io.youi.paint.Paint
-import io.youi.style.{Display, Visibility}
-import reactify._
-
 trait ComponentTheme extends Theme {
   val cursor: StyleProp[Cursor] = style[Cursor]("cursor", Cursor.Default, StyleConnect.style[Cursor])
   val interactive: StyleProp[Boolean] = style[Boolean]("interactive", true, StyleConnect.style[Boolean])

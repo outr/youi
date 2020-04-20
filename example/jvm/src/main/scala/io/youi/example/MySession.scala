@@ -1,7 +1,7 @@
 package io.youi.example
 
-import reactify.Var
 import io.youi.server.session.InMemorySessionManager
+import reactify.Var
 
 import scala.concurrent.Future
 

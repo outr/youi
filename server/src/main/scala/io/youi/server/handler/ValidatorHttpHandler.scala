@@ -4,9 +4,9 @@ import io.youi.http.content.Content
 import io.youi.http.{HttpConnection, HttpStatus}
 import io.youi.server.validation.ValidationResult.{Continue, Error, Redirect}
 import io.youi.server.validation.{ValidationResult, Validator}
+import scribe.Execution.global
 
 import scala.concurrent.Future
-import scribe.Execution.global
 
 class ValidatorHttpHandler(validators: List[Validator]) extends HttpHandler {
   override def handle(connection: HttpConnection): Future[HttpConnection] = {

@@ -1,8 +1,8 @@
 package io.youi.app
 
 import io.youi.http.HttpRequest
-import io.youi.{JavaScriptError, MessageException}
 import io.youi.net.IP
+import io.youi.{JavaScriptError, MessageException}
 import net.sf.uadetector.ReadableUserAgent
 
 class JavaScriptException(val error: JavaScriptError,

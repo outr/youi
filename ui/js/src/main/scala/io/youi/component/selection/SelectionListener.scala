@@ -1,8 +1,5 @@
 package io.youi.component.selection
 
-import io.youi.event.HTMLEvents
-import org.scalajs.dom.html
-
 class SelectionListener[T](selection: Selection[T], base: html.Element, deferToRoot: Boolean, includeChildTargets: Boolean) {
   var active: Boolean = false
 

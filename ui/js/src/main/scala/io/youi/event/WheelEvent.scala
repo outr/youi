@@ -1,7 +1,5 @@
 package io.youi.event
 
-import io.youi.component.Component
-
 class WheelEvent(target: Component,
                  x: Double,
                  y: Double,

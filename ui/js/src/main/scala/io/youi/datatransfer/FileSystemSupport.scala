@@ -1,9 +1,6 @@
 package io.youi.datatransfer
 
-import org.scalajs.dom.{DataTransfer, DragEvent, File}
-
 import scala.language.implicitConversions
-import scala.scalajs.js
 
 object FileSystemSupport {
   implicit def dataTransfer2FileSystem(dataTransfer: DataTransfer): FileSystemDataTransfer = {

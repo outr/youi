@@ -5,8 +5,8 @@ import io.youi.dom
 import io.youi.net._
 import org.scalajs.dom.{document, html}
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 import scala.language.implicitConversions
 
 object ExampleBootstrapScreen extends PathActivation {

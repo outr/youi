@@ -1,10 +1,10 @@
 package io.youi.client
 
 import io.circe.{Json, Printer}
-import io.youi.client.intercept.{Interceptor, RateLimiter}
-import io.youi.http.cookie.RequestCookie
+import io.youi.client.intercept.Interceptor
 import io.youi.http._
 import io.youi.http.content.{Content, StringContent}
+import io.youi.http.cookie.RequestCookie
 import io.youi.net.{ContentType, Path, URL}
 import io.youi.util.Time
 
@@ -40,6 +40,7 @@ case class HttpClient(request: HttpRequest,
       case s: String => params(name -> s)
       case b: Boolean => params(name -> b.toString)
       case i: Int => params(name -> i.toString)
+      case l: Long => params(name -> l.toString)
       case l: List[Any] => params(name -> l.mkString(","))
       case s: Some[Any] => param[Any](name, s.head, default)
       case None => this
@@ -76,7 +77,7 @@ case class HttpClient(request: HttpRequest,
     case Some(c) => this.content(c)
     case None => this
   }
-  def json(json: Json): HttpClient = content(StringContent(printer.pretty(json), ContentType.`application/json`))
+  def json(json: Json): HttpClient = content(StringContent(printer.print(json), ContentType.`application/json`))
 
   /**
     * Sends an HttpRequest and receives an asynchronous HttpResponse future.

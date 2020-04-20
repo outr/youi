@@ -1,27 +1,26 @@
 package io.youi.example.screen
 
 import io.youi.app.screen.UIScreen
+import io.youi.component.types.Display
 import io.youi.example.ui.component.Header
 import io.youi.net.URL
 import io.youi.ui
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 trait UIExampleScreen extends UIScreen {
-  protected def header: Header = UIExampleScreen.header
+  protected val header: Header = new Header
   def url: URL = URL(s"https://github.com/outr/youi/tree/master/example/js/src/main/scala/io/youi/example/ui/${getClass.getSimpleName}.scala")
 
-  override protected def init(): Future[Unit] = super.init().map { _ =>
-    container.position.top := header.position.bottom
-    container.size.height := ui.size.height - header.size.height
+  override protected def init(): Future[Unit] = {
+    ui.children += header
+    super.init().map { _ =>
+      container.size.height := ui.size.height - header.size.height
+    }
   }
-}
 
-object UIExampleScreen {
-  lazy val header: Header = {
-    val h = new Header
-    ui.children += h
-    h
-  }
+  override protected def activate(): Future[Unit] = super.activate().map(_ => header.display @= Display.Block)
+
+  override protected def deactivate(): Future[Unit] = super.deactivate().map(_ => header.display @= Display.None)
 }

@@ -1,14 +1,5 @@
 package io.youi.event
 
-import io.youi._
-import io.youi.component.Component
-import io.youi.net.URL
-import org.scalajs.dom.raw.EventTarget
-import org.scalajs.{dom => jsdom}
-import reactify.{Channel, Val, Var}
-
-import scala.scalajs.js
-
 trait EventSupport {
   protected def component: Component
 

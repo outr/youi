@@ -1,7 +1,5 @@
 package io.youi.style
 
-import io.youi.theme.Stringify
-
 sealed abstract class PointerEvents(val value: String)
 
 object PointerEvents extends Stringify[PointerEvents] {

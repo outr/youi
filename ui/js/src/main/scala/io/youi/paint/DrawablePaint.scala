@@ -1,10 +1,5 @@
 package io.youi.paint
 
-import io.youi.{Updates, ui}
-import io.youi.drawable.{Context, Drawable}
-import io.youi.util.CanvasPool
-import org.scalajs.dom.CanvasPattern
-
 class DrawablePaint[D <: Drawable](drawable: D,
                                    repetition: Repetition,
                                    width: => Double,

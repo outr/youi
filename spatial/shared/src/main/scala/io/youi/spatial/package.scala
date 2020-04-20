@@ -1,7 +1,5 @@
 package io.youi
 
-import reactify.{State, Val}
-
 package object spatial {
   /**
    * Our precision value for equality testing

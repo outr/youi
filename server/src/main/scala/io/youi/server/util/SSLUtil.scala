@@ -3,6 +3,7 @@ package io.youi.server.util
 import java.io.File
 import java.nio.file.Files
 import java.security.KeyStore
+
 import javax.net.ssl.{KeyManagerFactory, SSLContext, TrustManagerFactory}
 
 object SSLUtil {

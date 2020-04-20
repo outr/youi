@@ -1,5 +1,7 @@
 package io.youi.net
 
+import scala.annotation.tailrec
+
 case class Parameters(entries: List[(String, Param)]) {
   lazy val map: Map[String, Param] = entries.toMap
 
@@ -29,6 +31,17 @@ case class Parameters(entries: List[(String, Param)]) {
     })
   } else {
     copy(entries = removeParam(key).entries ::: List(key -> param))
+  }
+
+  def +(that: Parameters): Parameters = this + that.entries
+
+  @tailrec
+  final def +(list: List[(String, Param)]): Parameters = if (list.isEmpty) {
+    this
+  } else {
+    val (key, value) = list.head
+    val params = param(key, value)
+    params + list.tail
   }
 
   def appendParam(key: String, value: String): Parameters = {
@@ -95,8 +108,9 @@ case class Parameters(entries: List[(String, Param)]) {
 }
 
 object Parameters {
-  val empty = Parameters(Nil)
+  val empty: Parameters = Parameters(Nil)
 
+  @tailrec
   def parse(query: String): Parameters = if (query.startsWith("?")) {
     parse(query.substring(1))
   } else {

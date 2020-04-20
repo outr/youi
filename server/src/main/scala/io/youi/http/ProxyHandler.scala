@@ -1,8 +1,8 @@
 package io.youi.http
 
-import io.youi.Priority
 import io.youi.net.{URL, URLMatcher}
 import io.youi.server.KeyStore
+import scribe.Priority
 
 trait ProxyHandler extends Ordered[ProxyHandler] {
   def priority: Priority = Priority.Normal

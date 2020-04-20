@@ -1,7 +1,5 @@
 package io.youi.font
 
-import io.youi.net.URL
-
 trait GoogleFont {
   def family: String
   def category: String

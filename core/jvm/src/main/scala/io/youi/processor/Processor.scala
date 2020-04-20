@@ -1,7 +1,7 @@
 package io.youi.processor
 
-import java.util.concurrent.{ConcurrentLinkedQueue, Executors}
 import java.util.concurrent.atomic.AtomicLong
+import java.util.concurrent.{ConcurrentLinkedQueue, Executors}
 
 import scala.concurrent.{ExecutionContext, Future}
 

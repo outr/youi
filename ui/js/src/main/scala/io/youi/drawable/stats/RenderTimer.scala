@@ -1,7 +1,5 @@
 package io.youi.drawable.stats
 
-import io.youi.drawable.{Context, Drawable}
-
 class RenderTimer(drawable: Drawable) extends RenderStats with Drawable {
   modified := drawable.modified
 

@@ -1,10 +1,5 @@
 package io.youi.component.bootstrap
 
-import io.youi.component.{Component, Container, HTMLContainer}
-import io.youi.dom
-import io.youi.theme.Theme
-import org.scalajs.dom.html
-
 class Accordion(element: html.Element) extends HTMLContainer[AccordionEntry](element) with BootstrapComponent[html.Element] {
   def this() = {
     this(dom.create[html.Div]("div"))

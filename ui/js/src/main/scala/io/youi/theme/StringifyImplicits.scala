@@ -1,10 +1,5 @@
 package io.youi.theme
 
-import io.youi.component.bootstrap.{ButtonSize, ButtonType}
-import io.youi.{Color, Cursor}
-import io.youi.paint.Paint
-import io.youi.style._
-
 trait StringifyImplicits {
   implicit def stringifyVisibility: Stringify[Visibility] = Visibility
   implicit def stringifyDisplay: Stringify[Display] = Display

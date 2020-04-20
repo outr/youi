@@ -2,7 +2,7 @@ package io.youi.client
 
 import java.io.{File, IOException}
 import java.net.{InetAddress, Socket}
-import java.security.{KeyStore, SecureRandom}
+import java.security.SecureRandom
 import java.security.cert.X509Certificate
 import java.util
 import java.util.concurrent.TimeUnit
@@ -11,12 +11,12 @@ import java.util.concurrent.atomic.AtomicLong
 import io.youi.http._
 import io.youi.http.content._
 import io.youi.net.ContentType
-import okhttp3.Dns
 import io.youi.stream._
-import javax.net.ssl.{HostnameVerifier, HttpsURLConnection, SSLContext, SSLSession, SSLSocketFactory, TrustManager, TrustManagerFactory, X509TrustManager}
+import javax.net.ssl._
+import okhttp3.Dns
 
-import scala.jdk.CollectionConverters._
 import scala.concurrent.{ExecutionContext, Future, Promise}
+import scala.jdk.CollectionConverters._
 import scala.util.{Failure, Success}
 
 /**
@@ -196,7 +196,6 @@ class JVMHttpClientImplementation(config: HttpClientConfig) extends HttpClientIm
         Content.bytes(responseBody.bytes(), contentType)
       } else {
         val suffix = contentType.extension.getOrElse("client")
-        if (suffix == "client") scribe.warn(s"No extension found for: $contentType")
         val file = File.createTempFile("youi", s".$suffix", new File(config.saveDirectory))
         IO.stream(responseBody.byteStream(), file)
         Content.file(file, contentType)

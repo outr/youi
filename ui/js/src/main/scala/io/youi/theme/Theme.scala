@@ -1,8 +1,5 @@
 package io.youi.theme
 
-import io.youi.MapStore
-import reactify._
-
 trait Theme extends StringifyImplicits {
   protected def defaultParentTheme: Theme
 

@@ -1,7 +1,5 @@
 package io.youi.drawable
 
-import reactify._
-
 import scala.annotation.tailrec
 
 trait Group extends Drawable {

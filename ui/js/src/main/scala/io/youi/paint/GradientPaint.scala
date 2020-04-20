@@ -1,7 +1,5 @@
 package io.youi.paint
 
-import io.youi.Color
-
 trait GradientPaint extends Paint {
   def stops: Vector[GradientStop]
   def replaceStops(stops: Vector[GradientStop]): GradientPaint

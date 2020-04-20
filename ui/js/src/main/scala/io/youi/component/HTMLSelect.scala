@@ -1,11 +1,5 @@
 package io.youi.component
 
-import io.youi.component.extras.HTMLComponent
-import io.youi.dom._
-import io.youi.theme.{HTMLSelectTheme, Theme}
-import org.scalajs.dom._
-import reactify.Var
-
 class HTMLSelect(protected val element: html.Select,
                  val existing: Boolean = false) extends HTMLComponent[html.Select] with HTMLSelectTheme {
   lazy val items: Var[Vector[String]] = Var(Vector.empty)

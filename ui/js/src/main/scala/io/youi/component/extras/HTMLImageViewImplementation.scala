@@ -1,12 +1,5 @@
 package io.youi.component.extras
 
-import io.youi.component.ImageView
-import io.youi.dom
-import io.youi.image._
-import org.scalajs.dom.html
-
-import scala.concurrent.ExecutionContext.Implicits.global
-
 object HTMLImageViewImplementation extends ImageViewImplementation {
   override def createElement(): html.Element = dom.create[html.Image]("img")
 

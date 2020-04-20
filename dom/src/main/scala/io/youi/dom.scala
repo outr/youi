@@ -1,6 +1,6 @@
 package io.youi
 
-import io.youi.net.URL
+import io.youi.net._
 import org.scalajs.dom._
 import org.scalajs.dom.ext._
 import org.scalajs.dom.html.Div
@@ -9,7 +9,6 @@ import org.scalajs.dom.raw.HTMLElement
 import scala.collection.mutable
 import scala.concurrent.{Future, Promise}
 import scala.language.implicitConversions
-import scala.scalajs.js
 
 object dom extends ExtendedElement(None) {
   def bySelector[T <: Element](selectors: String, root: Option[Element] = None): Vector[T] = {
@@ -24,9 +23,29 @@ object dom extends ExtendedElement(None) {
     firstBySelector[T](selectors, root).getOrElse(throw new RuntimeException(s"Unable to find element by selector: $selectors."))
   }
 
-  def create[T <: Element](tagName: String): T = document.createElement(tagName).asInstanceOf[T]
+  object create {
+    def apply[T <: html.Element](tagName: String): T = document.createElement(tagName).asInstanceOf[T]
 
-  def text(value: String): Text = document.createTextNode(value)
+    def anchor: html.Anchor = create[html.Anchor]("a")
+    def br: html.BR = create[html.BR]("br")
+    def button: html.Button = create[html.Button]("button")
+    def canvas: html.Canvas = create[html.Canvas]("canvas")
+    def datalist: html.DataList = create[html.DataList]("datalist")
+    def div: html.Div = create[html.Div]("div")
+    def hr: html.HR = create[html.HR]("hr")
+    def image: html.Image = create[html.Image]("img")
+    def i: html.Element = create[html.Element]("i")
+    def iframe: html.IFrame = create[html.IFrame]("iframe")
+    def input: html.Input = create[html.Input]("input")
+    def label: html.Label = create[html.Label]("label")
+    def option: html.Option = create[html.Option]("option")
+    def script: html.Script = create[html.Script]("script")
+    def select: html.Select = create[html.Select]("select")
+    def style: html.Style = create[html.Style]("style")
+    def span: html.Span = create[html.Span]("span")
+    def text(value: String): Text = document.createTextNode(value)
+    def textArea: html.TextArea = create[html.TextArea]("textarea")
+  }
 
   def fromString[T <: Element](htmlString: String): List[T] = {
     val container: Div = create[Div]("div")
@@ -43,28 +62,38 @@ object dom extends ExtendedElement(None) {
     case script if Option(script.src).nonEmpty && script.src.nonEmpty => script.src
   }.map(_ -> Future.successful(())): _*)
 
-  def addScript(url: String, addToHead: Boolean = false): Future[Unit] = addedScripts.get(url) match {
+  def addScript(url: URL, addToHead: Boolean = false): Future[Unit] = addedScripts.get(url.toString) match {
     case Some(f) => f
     case None => {
       val promise = Promise[Unit]
-      val script = create[html.Script]("script")
+      val script = create.script
       script.addEventListener("load", (_: Event) => {
         promise.success(())
       })
-      script.src = url
+      script.src = url.toString
       if (addToHead) {
         document.head.appendChild(script)
       } else {
         document.body.appendChild(script)
       }
       val future = promise.future
-      addedScripts += url -> future
+      addedScripts += url.toString -> future
       future
     }
   }
 
+  def getCSSVariable(name: String): String = {
+    val varName = if (name.startsWith("--")) name else s"--$name"
+    window.getComputedStyle(document.documentElement).getPropertyValue(varName)
+  }
+
+  def setCSSVariable(name: String, value: String): Unit = {
+    val varName = if (name.startsWith("--")) name else s"--$name"
+    document.documentElement.asInstanceOf[html.Element].style.setProperty(varName, value)
+  }
+
   def addCSS(css: String): Unit = {
-    val style = create[html.Style]("style")
+    val style = create.style
     style.innerHTML = css
     document.head.appendChild(style)
   }
@@ -72,9 +101,42 @@ object dom extends ExtendedElement(None) {
   def addCSS(url: URL): Unit = {
     val link = create[html.Link]("link")
     link.href = url.toString
+    link.setAttribute("rel", "stylesheet")
     link.setAttribute("as", "style")
     link.setAttribute("crossorigin", "crossorigin")
     document.head.appendChild(link)
+  }
+
+  /**
+    * Forces loading of the supplied image URL in a hidden iframe.
+    *
+    * @param url the image URL to load
+    * @return Future[URL]
+    */
+  def reloadImage(url: URL): Future[URL] = {
+    val iframe = create.iframe
+    iframe.style.display = "none"
+    document.body.appendChild(iframe)
+    var counter = 0
+    val promise = Promise[URL]
+    iframe.addEventListener("load", (_: Event) => {
+      if (counter == 0) {
+        counter += 1
+        iframe.contentWindow.location.reload(true)
+      } else {
+        promise.success(url)
+      }
+    }, useCapture = false)
+    val src = if (url.base != History.url.base) { // Cross-Domain
+      History.url.withPath(path"/wrap-image").withParam("src", url.toString).toString
+    } else {
+      url.toString
+    }
+    iframe.src = src
+    iframe.addEventListener("error", (evt: ErrorEvent) => {
+      promise.failure(new RuntimeException(s"Error loading: $url - ${evt.message}"))
+    }, useCapture = false)
+    promise.future
   }
 
   implicit class StringExtras(s: String) {

@@ -1,7 +1,5 @@
 package io.youi.component.bootstrap
 
-import io.youi.theme.Stringify
-
 object ButtonType extends Stringify[ButtonType] {
   case object Primary extends ButtonType("primary")
   case object Secondary extends ButtonType("secondary")

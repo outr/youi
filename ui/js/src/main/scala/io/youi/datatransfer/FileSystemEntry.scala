@@ -1,7 +1,5 @@
 package io.youi.datatransfer
 
-import scala.scalajs.js
-
 @js.native
 trait FileSystemEntry extends js.Object {
   def fullPath: String = js.native

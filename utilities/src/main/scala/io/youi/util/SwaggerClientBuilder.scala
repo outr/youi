@@ -1,12 +1,6 @@
 package io.youi.util
 
-import io.circe.parser._
 import java.io.File
-import java.net.URL
-
-import io.circe.Json
-import io.youi.stream._
-import profig.JsonUtil
 
 object SwaggerClientBuilder {
   def main(args: Array[String]): Unit = {

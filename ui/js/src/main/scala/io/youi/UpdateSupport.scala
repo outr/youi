@@ -1,8 +1,5 @@
 package io.youi
 
-import io.youi.task.TaskSupport
-import reactify.{Val, Var}
-
 trait UpdateSupport extends TaskSupport {
   private var lastUpdate: Double = 0.0
 

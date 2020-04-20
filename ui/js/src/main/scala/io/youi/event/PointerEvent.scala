@@ -1,13 +1,5 @@
 package io.youi.event
 
-import io.youi.Key
-import io.youi.component.Component
-import io.youi.component.extras.HTMLComponent
-import io.youi.spatial.Point
-import org.scalajs.dom.raw
-
-import scala.scalajs.js
-
 class PointerEvent private[event](target: Component,
                                   val `type`: PointerEvent.Type,
                                   val x: Double,

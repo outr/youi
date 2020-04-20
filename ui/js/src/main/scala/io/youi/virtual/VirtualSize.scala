@@ -1,7 +1,5 @@
 package io.youi.virtual
 
-import reactify._
-
 class VirtualSize(screen: VirtualSizeSupport) {
   private val size: Val[(Double, Double, Double, Double)] = Val {
     if (screen.actual.width > 0.0 && screen.actual.height > 0.0) {

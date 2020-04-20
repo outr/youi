@@ -1,6 +1,6 @@
 package io.youi
 
-import io.youi.net.{Parameters, Path, Protocol, URL}
+import io.youi.net.{Path, Protocol, URL}
 import org.scalajs.dom._
 import reactify.{Channel, Val, Var}
 
@@ -125,25 +125,4 @@ object History {
   } else {
     LinkType.External
   }
-}
-
-case class HistoryStateChange(url: URL, stateType: StateType, state: js.Any = null)
-
-sealed trait StateType
-
-object StateType {
-  case object Push extends StateType
-  case object Replace extends StateType
-  case object Set extends StateType
-  case object Pop extends StateType
-}
-
-sealed trait LinkType
-
-object LinkType {
-  case object Empty extends LinkType
-  case object JavaScript extends LinkType
-  case object Hash extends LinkType
-  case object Internal extends LinkType
-  case object External extends LinkType
 }

@@ -1,8 +1,5 @@
 package io.youi.font
 
-import io.youi.drawable.Context
-import io.youi.path.Path
-
 case class OpenTypeGlyph(font: OpenTypeFont, char: Char, otg: opentype.Glyph, unitsPerEm: Double) extends Glyph {
   override lazy val path: Path = try {
     Path(otg.path.toPathData()).withoutOpen().withoutClose()

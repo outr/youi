@@ -1,9 +1,5 @@
 package io.youi.image
 
-import io.youi.drawable.Context
-import io.youi.image.resize.ImageResizer
-import org.scalajs.dom.html
-
 import scala.concurrent.Future
 
 object EmptyImage extends Image {

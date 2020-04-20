@@ -2,21 +2,21 @@ package io.youi.server
 
 import java.util.concurrent.atomic.AtomicBoolean
 
-import reactify._
-import io.youi.{ErrorSupport, ItemContainer}
 import io.youi.http.{HttpConnection, HttpStatus, ProxyHandler}
 import io.youi.server.handler.{HttpHandler, HttpHandlerBuilder}
+import io.youi.{ErrorSupport, ItemContainer}
 import profig.{Profig, ProfigPath}
+import reactify._
+import scribe.Execution.global
 
 import scala.concurrent.Future
-import scribe.Execution.global
 
 trait Server extends HttpHandler with ErrorSupport {
   private val initialized = new AtomicBoolean(false)
 
   val config = new ServerConfig(this)
 
-  val handler = HttpHandlerBuilder(this)
+  val handler: HttpHandlerBuilder = HttpHandlerBuilder(this)
 
   object proxies extends ItemContainer[ProxyHandler]
   object handlers extends ItemContainer[HttpHandler]

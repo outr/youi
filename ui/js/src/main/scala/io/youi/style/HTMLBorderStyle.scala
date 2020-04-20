@@ -1,7 +1,5 @@
 package io.youi.style
 
-import io.youi.theme.Stringify
-
 object HTMLBorderStyle extends Stringify[HTMLBorderStyle] {
   case object None extends HTMLBorderStyle("none")
   case object Hidden extends HTMLBorderStyle("hidden")

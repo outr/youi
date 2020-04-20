@@ -1,7 +1,5 @@
 package io.youi.style
 
-import io.youi.theme.Stringify
-
 object Position extends Stringify[Position] {
   case object Static extends Position
   case object Relative extends Position

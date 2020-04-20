@@ -2,9 +2,6 @@ package io.youi.util
 
 import java.util.concurrent.atomic.AtomicBoolean
 
-import io.youi.BackgroundUpdates
-import reactify.Var
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 import scala.concurrent.{Future, Promise}

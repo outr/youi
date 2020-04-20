@@ -1,7 +1,5 @@
 package io.youi.style
 
-import io.youi.theme.Stringify
-
 sealed abstract class WhiteSpace(val value: String)
 
 object WhiteSpace extends Stringify[WhiteSpace] {

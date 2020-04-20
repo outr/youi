@@ -1,7 +1,5 @@
 package io.youi.style
 
-import io.youi.theme.Stringify
-
 sealed abstract class UserSelect(val value: String)
 
 object UserSelect extends Stringify[UserSelect] {

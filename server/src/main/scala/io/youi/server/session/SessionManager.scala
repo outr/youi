@@ -6,9 +6,9 @@ import io.youi.http.cookie.ResponseCookie
 import io.youi.http.{Headers, HttpConnection}
 import io.youi.net.Protocol
 import io.youi.server.WebSocketListener
+import scribe.Execution.global
 
 import scala.concurrent.Future
-import scribe.Execution.global
 
 /**
   * SessionManager must be implemented in order to have support for sessions

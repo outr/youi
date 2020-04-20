@@ -1,9 +1,5 @@
 package io.youi.style
 
-import io.youi.Color
-import io.youi.theme.Stringify
-import perfolation._
-
 case class HTMLBorder(width: Double, style: HTMLBorderStyle, color: Color)
 
 object HTMLBorder extends Stringify[HTMLBorder] {

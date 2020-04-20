@@ -1,7 +1,5 @@
 package io.youi.style
 
-import io.youi.theme.Stringify
-
 sealed abstract class Display(val value: String)
 
 object Display extends Stringify[Display] {

@@ -1,9 +1,5 @@
 package io.youi.component.extras
 
-import io.youi.component.Component
-import io.youi.spatial.{Dim, DimType, Size}
-import reactify.{Val, Var}
-
 import scala.language.implicitConversions
 
 trait ComponentSize {

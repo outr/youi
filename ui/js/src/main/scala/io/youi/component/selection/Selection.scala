@@ -1,14 +1,5 @@
 package io.youi.component.selection
 
-import io.youi.component.Container
-import io.youi.event.Mouse
-import io.youi.spatial.BoundingBox
-import io.youi.style.{HTMLBorder, HTMLBorderStyle, Visibility}
-import io.youi.{Color, Key, _}
-import org.scalajs.dom.raw.MouseEvent
-import org.scalajs.dom.{html, window}
-import reactify._
-
 import scala.collection.immutable.ListSet
 
 /**

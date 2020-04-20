@@ -1,10 +1,11 @@
 package spec
 
-import io.youi.http.{HttpConnection, HttpRequest, HttpStatus, HttpMethod}
-import io.youi.server.dsl._
+import io.youi.http.{HttpConnection, HttpMethod, HttpRequest, HttpStatus}
 import io.youi.net._
+import io.youi.server.dsl._
 import io.youi.server.{DefaultErrorHandler, Server}
-import org.scalatest.{AsyncWordSpec, Matchers, WordSpec}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AsyncWordSpec
 
 class ServerDSLSpec extends AsyncWordSpec with Matchers {
   private lazy val text = "Hello, World!".withContentType(ContentType.`text/plain`)

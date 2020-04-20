@@ -1,7 +1,5 @@
 package io.youi.task
 
-import io.youi.easing.Easing
-
 import scala.concurrent.duration.FiniteDuration
 
 case class AnimateIn(get: () => Double,

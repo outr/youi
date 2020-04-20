@@ -1,9 +1,5 @@
 package io.youi.font
 
-import io.youi.drawable.Context
-import io.youi.paint.{Paint, Stroke}
-import io.youi.path.{Fill, Path}
-
 case class OpenTypeText(font: Font,
                         text: String,
                         size: Double,

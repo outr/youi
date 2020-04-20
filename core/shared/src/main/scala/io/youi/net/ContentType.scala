@@ -1,7 +1,7 @@
 package io.youi.net
 
 import io.circe.Decoder.Result
-import io.circe.{Decoder, DecodingFailure, Encoder, HCursor, Json}
+import io.circe._
 
 case class ContentType(`type`: String,
                        subType: String,

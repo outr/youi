@@ -1,19 +1,13 @@
 package io.youi.component
 
-import io.youi.Color
-import io.youi.component.feature.{Feature, HeightFeature, MeasuredFeature, PreferredSizeFeature, SizeFeature, WidthFeature}
-import io.youi.component.types.{Clear, Cursor, Display, FloatStyle, Prop, UserSelect, VerticalAlign, WhiteSpace}
-import io.youi.paint.Paint
+import io.youi.component.feature.{FeatureParent, HeightFeature, WidthFeature}
+import io.youi.component.types.Prop
 import io.youi.path.Rectangle
 import org.scalajs.dom.html
+import org.scalajs.dom.raw.CSSStyleDeclaration
 import reactify.{Trigger, Val}
 
-import scala.reflect.ClassTag
-import scala.util.Try
-
-class Component(val element: html.Element) {
-  private var features = Map.empty[String, Feature]
-
+class Component(val element: html.Element) extends FeatureParent {
   lazy val id: Prop[String] = new Prop[String](element.id, s => element.setAttribute("id", s))
   object classes extends Prop[Set[String]](
     getter = Option(element.getAttribute("class")).getOrElse("").split(' ').toSet,
@@ -28,26 +22,10 @@ class Component(val element: html.Element) {
       setter = b => if (b) this @= get + className else this @= get - className
     )
   }
-  lazy val color: Prop[Color] = Prop.stringify(element.style.color, element.style.color_=, Color, Color.Clear)
-  lazy val background: Prop[Paint] = Prop.stringify(element.style.background, element.style.background_=, Paint, Paint.none)
-  lazy val backgroundColor: Prop[Color] = Prop.stringify(element.style.backgroundColor, element.style.backgroundColor_=, Color, Color.Clear)
-  lazy val clear: Prop[Clear] = Prop.stringify(element.style.clear, element.style.clear_=, Clear, Clear.None)
-  lazy val cursor: Prop[Cursor] = Prop.stringify(element.style.cursor, element.style.cursor_=, Cursor, Cursor.Default)
-  lazy val display: Prop[Display] = Prop.stringify(element.style.display, element.style.display_=, Display, Display.Inherit, measure.trigger)
-  lazy val floatStyle: Prop[FloatStyle] = Prop.stringify(element.style.cssFloat, element.style.cssFloat_=, FloatStyle, FloatStyle.None)
-  lazy val opacity: Prop[Double] = new Prop[Double](Try(element.style.opacity.toDouble).getOrElse(1.0), d => element.style.opacity = d.toString)
-  lazy val rotation: Prop[Double] = new Prop[Double](0.0, d => {
-    val s = if (d != 0.0) {
-      s"rotate(${d * 360.0}deg)"
-    } else {
-      ""
-    }
-    element.style.transform = s
-  })
+
+  override def css: CSSStyleDeclaration = element.style
+
   lazy val title: Prop[String] = new Prop[String](element.title, element.title_=)
-  lazy val userSelect: Prop[UserSelect] = Prop.stringify(element.style.getPropertyValue("user-select"), element.style.setProperty("user-select", _), UserSelect, UserSelect.Initial)
-  lazy val verticalAlign: Prop[VerticalAlign] = Prop.stringify(element.style.verticalAlign, element.style.verticalAlign_=, VerticalAlign, VerticalAlign.Unset)
-  lazy val whiteSpace: Prop[WhiteSpace] = Prop.stringify(element.style.whiteSpace, element.style.whiteSpace_=, WhiteSpace, WhiteSpace.Normal, measure.trigger)
 
   lazy val measure: Trigger = Trigger()
 
@@ -61,20 +39,6 @@ class Component(val element: html.Element) {
 }
 
 object Component {
-  def hasFeature[F <: Feature](component: Component)(implicit tag: ClassTag[F]): Boolean = component.features.contains(Feature.nameFor[F](tag))
-  def addFeature[F <: Feature](component: Component, feature: F): F = {
-    addFeature[F](Feature.nameFor[F](feature), component, feature)
-  }
-  def addFeature[F <: Feature](name: String, component: Component, feature: F): F = {
-    component.features += name -> feature
-    feature
-  }
-  def getFeature[F <: Feature](component: Component)(implicit tag: ClassTag[F]): Option[F] = {
-    getFeature[F](Feature.nameFor[F](tag), component)
-  }
-  def getFeature[F <: Feature](name: String, component: Component): Option[F] = {
-    component.features.get(name).asInstanceOf[Option[F]]
-  }
   def width(component: Component): Option[Val[Double]] = WidthFeature(component)
   def height(component: Component): Option[Val[Double]] = HeightFeature(component)
 }

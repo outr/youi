@@ -6,11 +6,11 @@ import reactify.Val
 trait HeightFeature extends Feature {
   def height: Val[Double]
 
-  Component.addFeature("height", component, this)
+  addFeature("height")
 }
 
 object HeightFeature {
   def apply(component: Component): Option[Val[Double]] = {
-    Component.getFeature[HeightFeature]("height", component).map(_.height)
+    FeatureParent.get[HeightFeature]("height", component).map(_.height)
   }
 }

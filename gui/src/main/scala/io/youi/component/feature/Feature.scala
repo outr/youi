@@ -1,14 +1,24 @@
 package io.youi.component.feature
 
 import io.youi.component.Component
-import org.scalajs.dom.html
+import io.youi.theme.Theme
 
 import scala.reflect.ClassTag
 
 trait Feature {
-  protected def component: Component
+  addFeature(Feature.nameFor(this))
 
-  Component.addFeature(component, this)
+  protected def parent: FeatureParent
+
+  protected def componentOption: Option[Component] = (parent: Any) match {
+    case c: Component => Some(c)
+    case _ => None
+  }
+
+  protected def addFeature(name: String): Unit = (parent: Any) match {
+    case c: Component => FeatureParent.add(name, c, this)
+    case t: Theme => FeatureParent.add(name, t, this)
+  }
 }
 
 object Feature {

@@ -10,7 +10,7 @@ import org.scalajs.dom._
 
 import scala.scalajs.js.annotation.JSExportTopLevel
 
-object ClientExampleApplication extends ExampleApplication with ClientConnectedApplication[ExampleConnection] with LoadingTransitionSupport {
+object ClientExampleApplication extends ExampleApplication with ClientConnectedApplication[ExampleConnection] {
   object colors {
     object blue {
       val dark: Color = Color.fromLong(0x166196ff)
@@ -74,8 +74,6 @@ object ClientExampleApplication extends ExampleApplication with ClientConnectedA
 //  val selection = hypertext.SelectionExample
 
   override def connection: ExampleConnection = ClientConnection
-
-  override protected val loadingElement: html.Element = getById[html.Div]("loading").getOrElse(dom.create[html.Div]("div"))
 
   @JSExportTopLevel("application")
   def main(): Unit = {

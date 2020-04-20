@@ -6,11 +6,11 @@ import reactify.Val
 trait WidthFeature extends Feature {
   def width: Val[Double]
 
-  Component.addFeature("width", component, this)
+  addFeature("width")
 }
 
 object WidthFeature {
   def apply(component: Component): Option[Val[Double]] = {
-    Component.getFeature[WidthFeature]("width", component).map(_.width)
+    FeatureParent.get[WidthFeature]("width", component).map(_.width)
   }
 }

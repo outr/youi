@@ -1,10 +1,5 @@
 package io.youi.util
 
-import io.youi._
-import org.scalajs.dom.html
-import org.scalajs.dom.html.Canvas
-import org.scalajs.dom.raw.CanvasRenderingContext2D
-
 import scala.concurrent.Future
 
 object CanvasPool extends ObjectPool[html.Canvas] {

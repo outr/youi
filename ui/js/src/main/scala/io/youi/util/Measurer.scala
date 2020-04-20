@@ -1,11 +1,5 @@
 package io.youi.util
 
-import io.youi.component.Component
-import io.youi.component.extras.HTMLComponent
-import io.youi.dom
-import io.youi.spatial.{DimType, Size}
-import org.scalajs.dom._
-
 object Measurer {
   private lazy val container = {
     val span = dom.create[html.Span]("span")

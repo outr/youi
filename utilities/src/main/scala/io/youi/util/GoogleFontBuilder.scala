@@ -3,10 +3,6 @@ package io.youi.util
 import java.io.File
 import java.net
 
-import io.youi.net.URL
-import io.youi.stream._
-import profig.{Profig, JsonUtil}
-
 object GoogleFontBuilder {
   private lazy val apiKey: String = Profig("googleApiKey").as[String](throw new RuntimeException("No configuration setting present for googleApiKey."))
   private lazy val url = URL(s"https://www.googleapis.com/webfonts/v1/webfonts?key=$apiKey")

@@ -1,8 +1,5 @@
 package io.youi.drawable.stats
 
-import io.youi.drawable.{Context, Drawable}
-import reactify._
-
 class RenderStats {
   private val samples = 1000
 

@@ -1,9 +1,5 @@
 package io.youi.paint
 
-import io.youi.drawable.Context
-
-import scala.scalajs.js
-
 case class LinearGradientPaint(x0: Double,
                                y0: Double,
                                x1: Double,

@@ -5,12 +5,12 @@ import io.youi.http._
 import io.youi.http.content.Content
 import io.youi.net._
 import io.youi.server.WebSocketListener
-import io.youi.server.handler.{CachingManager, LanguageSupport}
 import io.youi.server.dsl._
+import io.youi.server.handler.{CachingManager, LanguageSupport}
 import profig.JsonUtil
+import scribe.Execution.global
 
 import scala.concurrent.Future
-import scribe.Execution.global
 
 object ServerExampleApplication extends ExampleApplication with ServerConnectedApplication[ExampleConnection] {
   val generalPages: Page = page(GeneralPages)
@@ -31,6 +31,7 @@ object ServerExampleApplication extends ExampleApplication with ServerConnectedA
           path"/hello.txt" / CachingManager.MaxAge(120L) / "Hello, World!".withContentType(ContentType.`text/plain`),
           path"/hello.json" / Content.json(JsonUtil.toJson(Greeting("Hello", "World"))),
           combined.any(
+            path.exact(path"/courio.html"),
             path.matches("/examples/.*[.]html"),
             path.exact("/ui-examples.html")
           ) / Application / ServerApplication.AppTemplate,

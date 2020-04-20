@@ -1,7 +1,5 @@
 package io.youi.style
 
-import io.youi.theme.Stringify
-
 class FontWeight(val value: String) extends AnyVal
 
 object FontWeight extends Stringify[FontWeight] {

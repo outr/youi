@@ -1,11 +1,11 @@
 package io.youi.net
 
 import io.circe.Decoder.Result
-import io.circe.{Decoder, DecodingFailure, Encoder, HCursor, Json}
+import io.circe._
 
+import scala.language.experimental.macros
 import scala.reflect.macros.blackbox
 import scala.util.matching.Regex
-import scala.language.experimental.macros
 
 case class URL(protocol: Protocol = Protocol.Http,
                host: String = "localhost",
@@ -34,17 +34,15 @@ case class URL(protocol: Protocol = Protocol.Http,
     URL(s"${protocol.scheme}:$part")
   } else if (part.startsWith("?")) {
     copy(parameters = Parameters.parse(part))
-  } else if (part.startsWith("/") || part.startsWith("..")) {
+  } else {
     val index = part.indexOf('?')
     if (index == -1) {
       withPath(part).copy(parameters = Parameters.empty)
     } else {
       val path = part.substring(0, index)
       val params = part.substring(index + 1)
-      withPath(path).copy(parameters = Parameters.parse(params))
+      withPath(path).copy(parameters = parameters + Parameters.parse(params))
     }
-  } else {
-    URL(s"$toString/$part")
   }
 
   def withPath(path: String, absolutize: Boolean = true): URL = {

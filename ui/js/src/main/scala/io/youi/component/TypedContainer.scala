@@ -1,9 +1,5 @@
 package io.youi.component
 
-import io.youi.component.extras.HTMLComponent
-import io.youi.theme.{ContainerTheme, Theme}
-import org.scalajs.dom.html
-
 class TypedContainer[Child <: Component](element: html.Element = HTMLComponent.create[html.Div]("div")) extends HTMLContainer[Child](element) {
   override protected def defaultParentTheme: Theme = TypedContainer
 

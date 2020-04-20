@@ -1,12 +1,12 @@
 package io.youi.app.screen
 
-import io.youi.theme.StyleProp
+import io.youi.task.TaskSupport
 import io.youi.ui
 import reactify.{Val, Var}
 
 import scala.concurrent.Future
 
-trait Screen {
+trait Screen extends TaskSupport {
   private var registration = Map.empty[Var[_], ScreenRegistration[_]]
 
   def title: String = getClass.getSimpleName.replaceAllLiterally("$", "")
@@ -40,8 +40,6 @@ trait Screen {
     }
     registration += v -> r
   }
-
-  def register[Value](v: StyleProp[Value], value: => Value): Unit = register[Option[Value]](v.option, Some(value))
 
   protected def dispose(): Future[Unit] = Future.successful(())
 }

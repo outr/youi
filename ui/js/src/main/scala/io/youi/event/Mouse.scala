@@ -1,9 +1,5 @@
 package io.youi.event
 
-import io.youi.ui
-import org.scalajs.dom.raw
-import reactify.{Channel, Val, Var}
-
 object Mouse {
   private val _x = Var(0.0)
   private val _y = Var(0.0)

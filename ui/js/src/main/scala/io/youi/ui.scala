@@ -1,20 +1,14 @@
 package io.youi
 
-import io.youi.component.Container
-import io.youi.event.{EventSupport, HTMLEvents}
-import io.youi.spatial.Size
-import io.youi.style.{Display, Visibility}
-import io.youi.util.CanvasPool
-import org.scalajs.dom.{Event, document, window}
-import reactify._
-
 import scala.concurrent.duration._
-import scala.scalajs.js
 
 object ui extends Container(document.body) {
   id @= "ui"
 
   override val visible: Val[Boolean] = Val(visibility() == Visibility.Visible && display() != Display.None)
+
+  lazy val isIOS: Boolean = Set("iPad Simulator", "iPhone Simulator", "iPod Simulator", "iPad", "iPhone", "iPod")
+      .contains(window.navigator.platform)
 
   def devicePixelRatio: Double = window.devicePixelRatio
   def backingStoreRatio: Double = CanvasPool.withCanvas(1.0, 1.0) { canvas =>
@@ -43,10 +37,27 @@ object ui extends Container(document.body) {
 
   title.attach(document.title = _)
 
-  window.addEventListener("resize", (_: Event) => {
-    size.measured.width @= window.innerWidth
-    size.measured.height @= window.innerHeight
+  private var lastFocus = 0L
+  private var ignoringSize: Size = Size.zero
+  document.body.addEventListener("focusin", (evt: Event) => { // Work-around for iOS keyboard resize glitch
+    if (evt.target.isInstanceOf[html.Input] && ui.isIOS) {
+      lastFocus = System.currentTimeMillis()
+    }
   })
+
+  window.addEventListener("resize", (_: Event) => {
+    resize()
+  })
+
+  override protected def resize(): Unit = {
+    val s = measure(measuredSize)
+    if (lastFocus < System.currentTimeMillis() - 500L && s != ignoringSize) {
+      size.measured.width @= s.width
+      size.measured.height @= s.height
+    } else {
+      ignoringSize = s
+    }
+  }
 
   AnimationFrame.every(1.second) {
     val r = devicePixelRatio / backingStoreRatio
@@ -58,7 +69,6 @@ object ui extends Container(document.body) {
   AnimationFrame.delta.attach { d =>
     update(d)
   }
-
 
   override protected def measure(s: Size): Size = s.set(window.innerWidth, window.innerHeight)
 

@@ -1,7 +1,5 @@
 package io.youi.layout.snap
 
-import io.youi.component.Component
-
 case class HorizontalSnapping(left: Option[() => Double] = None,
                               right: Option[() => Double] = None) {
   def connect(component: Component): Unit = {

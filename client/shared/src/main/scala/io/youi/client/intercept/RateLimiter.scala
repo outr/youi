@@ -2,11 +2,11 @@ package io.youi.client.intercept
 
 import io.youi.http.{HttpRequest, HttpResponse}
 import io.youi.util.Time
+import scribe.Execution.global
 
 import scala.concurrent.duration._
 import scala.concurrent.{Future, Promise}
 import scala.util.{Failure, Success}
-import scribe.Execution.global
 
 case class RateLimiter(perRequestDelay: FiniteDuration) extends InterceptorAdapter {
   private val maxDelay = perRequestDelay.toMillis

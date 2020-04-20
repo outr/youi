@@ -5,8 +5,8 @@ import io.youi.http.HttpMethod
 import io.youi.net.URL
 import org.scalajs.dom.FormData
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 object StreamURL {
   def stream(url: URL,

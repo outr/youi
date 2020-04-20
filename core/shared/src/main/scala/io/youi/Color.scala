@@ -1,5 +1,7 @@
 package io.youi
 
+import scala.util.Random
+
 /**
   * Color provides a primitive wrapper around a Long representing a Color. This class takes up no more memory space than
   * a `Long` value and can be used to work powerfully around RGBA values.
@@ -74,149 +76,295 @@ class Color private(val value: Long) extends AnyVal {
 }
 
 // TODO: Regenerate using https://en.wikipedia.org/wiki/List_of_colors:_A–F
-object Color {
-  val Clear: Color = fromLong(0x00000000)
-  val AliceBlue: Color = fromLong(0xF0F8FFFF)
-  val AntiqueWhite: Color = fromLong(0xFAEBD7FF)
-  val Aqua: Color = fromLong(0x00FFFFFF)
-  val Aquamarine: Color = fromLong(0x7FFFD4FF)
-  val Azure: Color = fromLong(0xF0FFFFFF)
-  val Beige: Color = fromLong(0xF5F5DCFF)
-  val Bisque: Color = fromLong(0xFFE4C4FF)
-  val Black: Color = fromLong(0x000000FF)
-  val BlanchedAlmond: Color = fromLong(0xFFEBCDFF)
-  val Blue: Color = fromLong(0x0000FFFF)
-  val BlueViolet: Color = fromLong(0x8A2BE2FF)
-  val Brown: Color = fromLong(0xA52A2AFF)
-  val BurlyWood: Color = fromLong(0xDEB887FF)
-  val CadetBlue: Color = fromLong(0x5F9EA0FF)
-  val Chartreuse: Color = fromLong(0x7FFF00FF)
-  val Chocolate: Color = fromLong(0xD2691EFF)
-  val Coral: Color = fromLong(0xFF7F50FF)
-  val CornflowerBlue: Color = fromLong(0x6495EDFF)
-  val Cornsilk: Color = fromLong(0xFFF8DCFF)
-  val Crimson: Color = fromLong(0xDC143CFF)
-  val Cyan: Color = fromLong(0x00FFFFFF)
-  val DarkBlue: Color = fromLong(0x00008BFF)
-  val DarkCyan: Color = fromLong(0x008B8BFF)
-  val DarkGoldenRod: Color = fromLong(0xB8860BFF)
-  val DarkGray: Color = fromLong(0xA9A9A9FF)
-  val DarkGreen: Color = fromLong(0x006400FF)
-  val DarkKhaki: Color = fromLong(0xBDB76BFF)
-  val DarkMagenta: Color = fromLong(0x8B008BFF)
-  val DarkOliveGreen: Color = fromLong(0x556B2FFF)
-  val DarkOrange: Color = fromLong(0xFF8C00FF)
-  val DarkOrchid: Color = fromLong(0x9932CCFF)
-  val DarkRed: Color = fromLong(0x8B0000FF)
-  val DarkSalmon: Color = fromLong(0xE9967AFF)
-  val DarkSeaGreen: Color = fromLong(0x8FBC8FFF)
-  val DarkSlateBlue: Color = fromLong(0x483D8BFF)
-  val DarkSlateGray: Color = fromLong(0x2F4F4FFF)
-  val DarkTurquoise: Color = fromLong(0x00CED1FF)
-  val DarkViolet: Color = fromLong(0x9400D3FF)
-  val DeepPink: Color = fromLong(0xFF1493FF)
-  val DeepSkyBlue: Color = fromLong(0x00BFFFFF)
-  val DimGray: Color = fromLong(0x696969FF)
-  val DodgerBlue: Color = fromLong(0x1E90FFFF)
-  val FireBrick: Color = fromLong(0xB22222FF)
-  val FloralWhite: Color = fromLong(0xFFFAF0FF)
-  val ForestGreen: Color = fromLong(0x228B22FF)
-  val Fuchsia: Color = fromLong(0xFF00FFFF)
-  val Gainsboro: Color = fromLong(0xDCDCDCFF)
-  val GhostWhite: Color = fromLong(0xF8F8FFFF)
-  val Gold: Color = fromLong(0xFFD700FF)
-  val GoldenRod: Color = fromLong(0xDAA520FF)
-  val Gray: Color = fromLong(0x808080FF)
-  val Green: Color = fromLong(0x008000FF)
-  val GreenYellow: Color = fromLong(0xADFF2FFF)
-  val HoneyDew: Color = fromLong(0xF0FFF0FF)
-  val HotPink: Color = fromLong(0xFF69B4FF)
-  val IndianRed: Color = fromLong(0xCD5C5CFF)
-  val Indigo: Color = fromLong(0x4B0082FF)
-  val Ivory: Color = fromLong(0xFFFFF0FF)
-  val Khaki: Color = fromLong(0xF0E68CFF)
-  val Lavender: Color = fromLong(0xE6E6FAFF)
-  val LavenderBlush: Color = fromLong(0xFFF0F5FF)
-  val LawnGreen: Color = fromLong(0x7CFC00FF)
-  val LemonChiffon: Color = fromLong(0xFFFACDFF)
-  val LightBlue: Color = fromLong(0xADD8E6FF)
-  val LightCoral: Color = fromLong(0xF08080FF)
-  val LightCyan: Color = fromLong(0xE0FFFFFF)
-  val LightGoldenRodYellow: Color = fromLong(0xFAFAD2FF)
-  val LightGray: Color = fromLong(0xD3D3D3FF)
-  val LightGreen: Color = fromLong(0x90EE90FF)
-  val LightPink: Color = fromLong(0xFFB6C1FF)
-  val LightSalmon: Color = fromLong(0xFFA07AFF)
-  val LightSeaGreen: Color = fromLong(0x20B2AAFF)
-  val LightSkyBlue: Color = fromLong(0x87CEFAFF)
-  val LightSlateGray: Color = fromLong(0x778899FF)
-  val LightSteelBlue: Color = fromLong(0xB0C4DEFF)
-  val LightYellow: Color = fromLong(0xFFFFE0FF)
-  val Lime: Color = fromLong(0x00FF00FF)
-  val LimeGreen: Color = fromLong(0x32CD32FF)
-  val Linen: Color = fromLong(0xFAF0E6FF)
-  val Magenta: Color = fromLong(0xFF00FFFF)
-  val Maroon: Color = fromLong(0x800000FF)
-  val MediumAquaMarine: Color = fromLong(0x66CDAAFF)
-  val MediumBlue: Color = fromLong(0x0000CDFF)
-  val MediumOrchid: Color = fromLong(0xBA55D3FF)
-  val MediumPurple: Color = fromLong(0x9370DBFF)
-  val MediumSeaGreen: Color = fromLong(0x3CB371FF)
-  val MediumSlateBlue: Color = fromLong(0x7B68EEFF)
-  val MediumSpringGreen: Color = fromLong(0x00FA9AFF)
-  val MediumTurquoise: Color = fromLong(0x48D1CCFF)
-  val MediumVioletRed: Color = fromLong(0xC71585FF)
-  val MidnightBlue: Color = fromLong(0x191970FF)
-  val MintCream: Color = fromLong(0xF5FFFAFF)
-  val MistyRose: Color = fromLong(0xFFE4E1FF)
-  val Moccasin: Color = fromLong(0xFFE4B5FF)
-  val NavajoWhite: Color = fromLong(0xFFDEADFF)
-  val Navy: Color = fromLong(0x000080FF)
-  val OldLace: Color = fromLong(0xFDF5E6FF)
-  val Olive: Color = fromLong(0x808000FF)
-  val OliveDrab: Color = fromLong(0x6B8E23FF)
-  val Orange: Color = fromLong(0xFFA500FF)
-  val OrangeRed: Color = fromLong(0xFF4500FF)
-  val Orchid: Color = fromLong(0xDA70D6FF)
-  val PaleGoldenRod: Color = fromLong(0xEEE8AAFF)
-  val PaleGreen: Color = fromLong(0x98FB98FF)
-  val PaleTurquoise: Color = fromLong(0xAFEEEEFF)
-  val PaleVioletRed: Color = fromLong(0xDB7093FF)
-  val PapayaWhip: Color = fromLong(0xFFEFD5FF)
-  val PeachPuff: Color = fromLong(0xFFDAB9FF)
-  val Peru: Color = fromLong(0xCD853FFF)
-  val Pink: Color = fromLong(0xFFC0CBFF)
-  val Plum: Color = fromLong(0xDDA0DDFF)
-  val PowderBlue: Color = fromLong(0xB0E0E6FF)
-  val Purple: Color = fromLong(0x800080FF)
-  val RebeccaPurple: Color = fromLong(0x663399FF)
-  val Red: Color = fromLong(0xFF0000FF)
-  val RosyBrown: Color = fromLong(0xBC8F8FFF)
-  val RoyalBlue: Color = fromLong(0x4169E1FF)
-  val SaddleBrown: Color = fromLong(0x8B4513FF)
-  val Salmon: Color = fromLong(0xFA8072FF)
-  val SandyBrown: Color = fromLong(0xF4A460FF)
-  val SeaGreen: Color = fromLong(0x2E8B57FF)
-  val SeaShell: Color = fromLong(0xFFF5EEFF)
-  val Sienna: Color = fromLong(0xA0522DFF)
-  val Silver: Color = fromLong(0xC0C0C0FF)
-  val SkyBlue: Color = fromLong(0x87CEEBFF)
-  val SlateBlue: Color = fromLong(0x6A5ACDFF)
-  val SlateGray: Color = fromLong(0x708090FF)
-  val Snow: Color = fromLong(0xFFFAFAFF)
-  val SpringGreen: Color = fromLong(0x00FF7FFF)
-  val SteelBlue: Color = fromLong(0x4682B4FF)
-  val Tan: Color = fromLong(0xD2B48CFF)
-  val Teal: Color = fromLong(0x008080FF)
-  val Thistle: Color = fromLong(0xD8BFD8FF)
-  val Tomato: Color = fromLong(0xFF6347FF)
-  val Turquoise: Color = fromLong(0x40E0D0FF)
-  val Violet: Color = fromLong(0xEE82EEFF)
-  val Wheat: Color = fromLong(0xF5DEB3FF)
-  val White: Color = fromLong(0xFFFFFFFF)
-  val WhiteSmoke: Color = fromLong(0xF5F5F5FF)
-  val Yellow: Color = fromLong(0xFFFF00FF)
-  val YellowGreen: Color = fromLong(0x9ACD32FF)
+object Color extends Stringify[Color] {
+  lazy val Clear: Color = fromLong(0x00000000)
+  lazy val AliceBlue: Color = fromLong(0xF0F8FFFF)
+  lazy val AntiqueWhite: Color = fromLong(0xFAEBD7FF)
+  lazy val Aqua: Color = fromLong(0x00FFFFFF)
+  lazy val Aquamarine: Color = fromLong(0x7FFFD4FF)
+  lazy val Azure: Color = fromLong(0xF0FFFFFF)
+  lazy val Beige: Color = fromLong(0xF5F5DCFF)
+  lazy val Bisque: Color = fromLong(0xFFE4C4FF)
+  lazy val Black: Color = fromLong(0x000000FF)
+  lazy val BlanchedAlmond: Color = fromLong(0xFFEBCDFF)
+  lazy val Blue: Color = fromLong(0x0000FFFF)
+  lazy val BlueViolet: Color = fromLong(0x8A2BE2FF)
+  lazy val Brown: Color = fromLong(0xA52A2AFF)
+  lazy val BurlyWood: Color = fromLong(0xDEB887FF)
+  lazy val CadetBlue: Color = fromLong(0x5F9EA0FF)
+  lazy val Chartreuse: Color = fromLong(0x7FFF00FF)
+  lazy val Chocolate: Color = fromLong(0xD2691EFF)
+  lazy val Coral: Color = fromLong(0xFF7F50FF)
+  lazy val CornflowerBlue: Color = fromLong(0x6495EDFF)
+  lazy val Cornsilk: Color = fromLong(0xFFF8DCFF)
+  lazy val Crimson: Color = fromLong(0xDC143CFF)
+  lazy val Cyan: Color = fromLong(0x00FFFFFF)
+  lazy val DarkBlue: Color = fromLong(0x00008BFF)
+  lazy val DarkCyan: Color = fromLong(0x008B8BFF)
+  lazy val DarkGoldenRod: Color = fromLong(0xB8860BFF)
+  lazy val DarkGray: Color = fromLong(0xA9A9A9FF)
+  lazy val DarkGreen: Color = fromLong(0x006400FF)
+  lazy val DarkKhaki: Color = fromLong(0xBDB76BFF)
+  lazy val DarkMagenta: Color = fromLong(0x8B008BFF)
+  lazy val DarkOliveGreen: Color = fromLong(0x556B2FFF)
+  lazy val DarkOrange: Color = fromLong(0xFF8C00FF)
+  lazy val DarkOrchid: Color = fromLong(0x9932CCFF)
+  lazy val DarkRed: Color = fromLong(0x8B0000FF)
+  lazy val DarkSalmon: Color = fromLong(0xE9967AFF)
+  lazy val DarkSeaGreen: Color = fromLong(0x8FBC8FFF)
+  lazy val DarkSlateBlue: Color = fromLong(0x483D8BFF)
+  lazy val DarkSlateGray: Color = fromLong(0x2F4F4FFF)
+  lazy val DarkTurquoise: Color = fromLong(0x00CED1FF)
+  lazy val DarkViolet: Color = fromLong(0x9400D3FF)
+  lazy val DeepPink: Color = fromLong(0xFF1493FF)
+  lazy val DeepSkyBlue: Color = fromLong(0x00BFFFFF)
+  lazy val DimGray: Color = fromLong(0x696969FF)
+  lazy val DodgerBlue: Color = fromLong(0x1E90FFFF)
+  lazy val FireBrick: Color = fromLong(0xB22222FF)
+  lazy val FloralWhite: Color = fromLong(0xFFFAF0FF)
+  lazy val ForestGreen: Color = fromLong(0x228B22FF)
+  lazy val Fuchsia: Color = fromLong(0xFF00FFFF)
+  lazy val Gainsboro: Color = fromLong(0xDCDCDCFF)
+  lazy val GhostWhite: Color = fromLong(0xF8F8FFFF)
+  lazy val Gold: Color = fromLong(0xFFD700FF)
+  lazy val GoldenRod: Color = fromLong(0xDAA520FF)
+  lazy val Gray: Color = fromLong(0x808080FF)
+  lazy val Green: Color = fromLong(0x008000FF)
+  lazy val GreenYellow: Color = fromLong(0xADFF2FFF)
+  lazy val HoneyDew: Color = fromLong(0xF0FFF0FF)
+  lazy val HotPink: Color = fromLong(0xFF69B4FF)
+  lazy val IndianRed: Color = fromLong(0xCD5C5CFF)
+  lazy val Indigo: Color = fromLong(0x4B0082FF)
+  lazy val Ivory: Color = fromLong(0xFFFFF0FF)
+  lazy val Khaki: Color = fromLong(0xF0E68CFF)
+  lazy val Lavender: Color = fromLong(0xE6E6FAFF)
+  lazy val LavenderBlush: Color = fromLong(0xFFF0F5FF)
+  lazy val LawnGreen: Color = fromLong(0x7CFC00FF)
+  lazy val LemonChiffon: Color = fromLong(0xFFFACDFF)
+  lazy val LightBlue: Color = fromLong(0xADD8E6FF)
+  lazy val LightCoral: Color = fromLong(0xF08080FF)
+  lazy val LightCyan: Color = fromLong(0xE0FFFFFF)
+  lazy val LightGoldenRodYellow: Color = fromLong(0xFAFAD2FF)
+  lazy val LightGray: Color = fromLong(0xD3D3D3FF)
+  lazy val LightGreen: Color = fromLong(0x90EE90FF)
+  lazy val LightPink: Color = fromLong(0xFFB6C1FF)
+  lazy val LightSalmon: Color = fromLong(0xFFA07AFF)
+  lazy val LightSeaGreen: Color = fromLong(0x20B2AAFF)
+  lazy val LightSkyBlue: Color = fromLong(0x87CEFAFF)
+  lazy val LightSlateGray: Color = fromLong(0x778899FF)
+  lazy val LightSteelBlue: Color = fromLong(0xB0C4DEFF)
+  lazy val LightYellow: Color = fromLong(0xFFFFE0FF)
+  lazy val Lime: Color = fromLong(0x00FF00FF)
+  lazy val LimeGreen: Color = fromLong(0x32CD32FF)
+  lazy val Linen: Color = fromLong(0xFAF0E6FF)
+  lazy val Magenta: Color = fromLong(0xFF00FFFF)
+  lazy val Maroon: Color = fromLong(0x800000FF)
+  lazy val MediumAquaMarine: Color = fromLong(0x66CDAAFF)
+  lazy val MediumBlue: Color = fromLong(0x0000CDFF)
+  lazy val MediumOrchid: Color = fromLong(0xBA55D3FF)
+  lazy val MediumPurple: Color = fromLong(0x9370DBFF)
+  lazy val MediumSeaGreen: Color = fromLong(0x3CB371FF)
+  lazy val MediumSlateBlue: Color = fromLong(0x7B68EEFF)
+  lazy val MediumSpringGreen: Color = fromLong(0x00FA9AFF)
+  lazy val MediumTurquoise: Color = fromLong(0x48D1CCFF)
+  lazy val MediumVioletRed: Color = fromLong(0xC71585FF)
+  lazy val MidnightBlue: Color = fromLong(0x191970FF)
+  lazy val MintCream: Color = fromLong(0xF5FFFAFF)
+  lazy val MistyRose: Color = fromLong(0xFFE4E1FF)
+  lazy val Moccasin: Color = fromLong(0xFFE4B5FF)
+  lazy val NavajoWhite: Color = fromLong(0xFFDEADFF)
+  lazy val Navy: Color = fromLong(0x000080FF)
+  lazy val OldLace: Color = fromLong(0xFDF5E6FF)
+  lazy val Olive: Color = fromLong(0x808000FF)
+  lazy val OliveDrab: Color = fromLong(0x6B8E23FF)
+  lazy val Orange: Color = fromLong(0xFFA500FF)
+  lazy val OrangeRed: Color = fromLong(0xFF4500FF)
+  lazy val Orchid: Color = fromLong(0xDA70D6FF)
+  lazy val PaleGoldenRod: Color = fromLong(0xEEE8AAFF)
+  lazy val PaleGreen: Color = fromLong(0x98FB98FF)
+  lazy val PaleTurquoise: Color = fromLong(0xAFEEEEFF)
+  lazy val PaleVioletRed: Color = fromLong(0xDB7093FF)
+  lazy val PapayaWhip: Color = fromLong(0xFFEFD5FF)
+  lazy val PeachPuff: Color = fromLong(0xFFDAB9FF)
+  lazy val Peru: Color = fromLong(0xCD853FFF)
+  lazy val Pink: Color = fromLong(0xFFC0CBFF)
+  lazy val Plum: Color = fromLong(0xDDA0DDFF)
+  lazy val PowderBlue: Color = fromLong(0xB0E0E6FF)
+  lazy val Purple: Color = fromLong(0x800080FF)
+  lazy val RebeccaPurple: Color = fromLong(0x663399FF)
+  lazy val Red: Color = fromLong(0xFF0000FF)
+  lazy val RosyBrown: Color = fromLong(0xBC8F8FFF)
+  lazy val RoyalBlue: Color = fromLong(0x4169E1FF)
+  lazy val SaddleBrown: Color = fromLong(0x8B4513FF)
+  lazy val Salmon: Color = fromLong(0xFA8072FF)
+  lazy val SandyBrown: Color = fromLong(0xF4A460FF)
+  lazy val SeaGreen: Color = fromLong(0x2E8B57FF)
+  lazy val SeaShell: Color = fromLong(0xFFF5EEFF)
+  lazy val Sienna: Color = fromLong(0xA0522DFF)
+  lazy val Silver: Color = fromLong(0xC0C0C0FF)
+  lazy val SkyBlue: Color = fromLong(0x87CEEBFF)
+  lazy val SlateBlue: Color = fromLong(0x6A5ACDFF)
+  lazy val SlateGray: Color = fromLong(0x708090FF)
+  lazy val Snow: Color = fromLong(0xFFFAFAFF)
+  lazy val SpringGreen: Color = fromLong(0x00FF7FFF)
+  lazy val SteelBlue: Color = fromLong(0x4682B4FF)
+  lazy val Tan: Color = fromLong(0xD2B48CFF)
+  lazy val Teal: Color = fromLong(0x008080FF)
+  lazy val Thistle: Color = fromLong(0xD8BFD8FF)
+  lazy val Tomato: Color = fromLong(0xFF6347FF)
+  lazy val Turquoise: Color = fromLong(0x40E0D0FF)
+  lazy val Violet: Color = fromLong(0xEE82EEFF)
+  lazy val Wheat: Color = fromLong(0xF5DEB3FF)
+  lazy val White: Color = fromLong(0xFFFFFFFF)
+  lazy val WhiteSmoke: Color = fromLong(0xF5F5F5FF)
+  lazy val Yellow: Color = fromLong(0xFFFF00FF)
+  lazy val YellowGreen: Color = fromLong(0x9ACD32FF)
+  lazy val all: Vector[Color] = Vector(
+    Clear,
+    AliceBlue,
+    AntiqueWhite,
+    Aqua,
+    Aquamarine,
+    Azure,
+    Beige,
+    Bisque,
+    Black,
+    BlanchedAlmond,
+    Blue,
+    BlueViolet,
+    Brown,
+    BurlyWood,
+    CadetBlue,
+    Chartreuse,
+    Chocolate,
+    Coral,
+    CornflowerBlue,
+    Cornsilk,
+    Crimson,
+    Cyan,
+    DarkBlue,
+    DarkCyan,
+    DarkGoldenRod,
+    DarkGray,
+    DarkGreen,
+    DarkKhaki,
+    DarkMagenta,
+    DarkOliveGreen,
+    DarkOrange,
+    DarkOrchid,
+    DarkRed,
+    DarkSalmon,
+    DarkSeaGreen,
+    DarkSlateBlue,
+    DarkSlateGray,
+    DarkTurquoise,
+    DarkViolet,
+    DeepPink,
+    DeepSkyBlue,
+    DimGray,
+    DodgerBlue,
+    FireBrick,
+    FloralWhite,
+    ForestGreen,
+    Fuchsia,
+    Gainsboro,
+    GhostWhite,
+    Gold,
+    GoldenRod,
+    Gray,
+    Green,
+    GreenYellow,
+    HoneyDew,
+    HotPink,
+    IndianRed,
+    Indigo,
+    Ivory,
+    Khaki,
+    Lavender,
+    LavenderBlush,
+    LawnGreen,
+    LemonChiffon,
+    LightBlue,
+    LightCoral,
+    LightCyan,
+    LightGoldenRodYellow,
+    LightGray,
+    LightGreen,
+    LightPink,
+    LightSalmon,
+    LightSeaGreen,
+    LightSkyBlue,
+    LightSlateGray,
+    LightSteelBlue,
+    LightYellow,
+    Lime,
+    LimeGreen,
+    Linen,
+    Magenta,
+    Maroon,
+    MediumAquaMarine,
+    MediumBlue,
+    MediumOrchid,
+    MediumPurple,
+    MediumSeaGreen,
+    MediumSlateBlue,
+    MediumSpringGreen,
+    MediumTurquoise,
+    MediumVioletRed,
+    MidnightBlue,
+    MintCream,
+    MistyRose,
+    Moccasin,
+    NavajoWhite,
+    Navy,
+    OldLace,
+    Olive,
+    OliveDrab,
+    Orange,
+    OrangeRed,
+    Orchid,
+    PaleGoldenRod,
+    PaleGreen,
+    PaleTurquoise,
+    PaleVioletRed,
+    PapayaWhip,
+    PeachPuff,
+    Peru,
+    Pink,
+    Plum,
+    PowderBlue,
+    Purple,
+    RebeccaPurple,
+    Red,
+    RosyBrown,
+    RoyalBlue,
+    SaddleBrown,
+    Salmon,
+    SandyBrown,
+    SeaGreen,
+    SeaShell,
+    Sienna,
+    Silver,
+    SkyBlue,
+    SlateBlue,
+    SlateGray,
+    Snow,
+    SpringGreen,
+    SteelBlue,
+    Tan,
+    Teal,
+    Thistle,
+    Tomato,
+    Turquoise,
+    Violet,
+    Wheat,
+    White,
+    WhiteSmoke,
+    Yellow,
+    YellowGreen
+  )
+
+  def random: Color = all(Random.nextInt(all.length))
 
   private def hexify(value: Double): String = hexify(math.floor(value * 255.0).toInt)
   private def hexify(value: Int): String = f"$value%02x"
@@ -225,7 +373,7 @@ object Color {
   private val Hex6Regex = """#?([\w\d]{2})([\w\d]{2})([\w\d]{2})""".r
   private val RGBARegex = """rgba\((\d+), (\d+), (\d+), ([\d.]+)\)""".r
 
-  def unapply(value: String): Option[Color] = value match {
+  def unapply(value: String): Option[Color] = value.trim match {
     case null | "" => None
     case Hex3Regex(r, g, b) => Some(fromLong(java.lang.Long.parseLong(s"$r$r$g$g$b${b}ff", 16)))
     case Hex6Regex(r, g, b) => Some(fromLong(java.lang.Long.parseLong(s"$r$g${b}ff", 16)))
@@ -237,7 +385,7 @@ object Color {
       Some(fromLong(java.lang.Long.parseLong(s"$red$green$blue$alpha", 16)))
     }
     case _ => {
-      scribe.warn(s"Unknown conversion for color value from String: $value")
+      scribe.warn(s"Unknown conversion for color value from String: [$value]")
       None
     }
   }
@@ -261,6 +409,7 @@ object Color {
     *
     * @param value String representation of a hex String
     */
+  @scala.annotation.tailrec
   def fromHex(value: String): Color = value.length match {
     case _ if value.startsWith("#") => fromHex(value.substring(1))
     case 1 => fromHex((0 until 8).map(_ => value).mkString)
@@ -343,4 +492,8 @@ object Color {
       }
     }
   }
+
+  override def fromString(value: String): Option[Color] = unapply(value)
+
+  override def toString(value: Color): Option[String] = Some(if (value.alpha != 1.0) value.toRGBA else value.toHex)
 }

@@ -1,16 +1,17 @@
 package spec
 
+import io.circe.generic.auto._
 import io.youi.ValidationError
+import io.youi.client.HttpClient
 import io.youi.http._
+import io.youi.http.content.Content
 import io.youi.net._
 import io.youi.server.Server
 import io.youi.server.dsl._
-import io.youi.server.rest.{Restful, RestfulResponse}
-import org.scalatest.{AsyncWordSpec, Matchers}
-import io.circe.generic.auto._
-import io.youi.client.HttpClient
-import io.youi.http.content.Content
 import io.youi.server.handler.HttpHandler
+import io.youi.server.rest.{Restful, RestfulResponse}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AsyncWordSpec
 import profig.Profig
 
 import scala.concurrent.Future

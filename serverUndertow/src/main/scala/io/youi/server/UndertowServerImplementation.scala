@@ -25,9 +25,9 @@ import io.youi.server.util.SSLUtil
 import io.youi.stream._
 import org.xnio.streams.ChannelInputStream
 import org.xnio.{OptionMap, Xnio}
+import scribe.Execution.global
 
 import scala.jdk.CollectionConverters._
-import scribe.Execution.global
 
 class UndertowServerImplementation(val server: Server) extends ServerImplementation with UndertowHttpHandler {
   val enableHTTP2: Boolean = Server.config("enableHTTP2").opt[Boolean].getOrElse(true)

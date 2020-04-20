@@ -1,11 +1,5 @@
 package io.youi.component.extras
 
-import io.youi.component.Component
-import io.youi.theme.StringifyImplicits
-import io.youi.ui
-import org.scalajs.dom.html
-import reactify.{Val, Var}
-
 class HTMLComponentSize(override protected val component: Component) extends ComponentSize with StringifyImplicits {
   private def e: html.Element = HTMLComponent.element(component)
 

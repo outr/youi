@@ -1,7 +1,5 @@
 package io.youi.event
 
-import io.youi.component.Component
-
 trait Event {
   def target: Component
 

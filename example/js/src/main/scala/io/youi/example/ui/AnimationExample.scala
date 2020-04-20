@@ -1,19 +1,20 @@
 package io.youi.example.ui
 
 import io.youi._
-import io.youi.component.{HTMLTextView, ImageView}
+import io.youi.component.support.{MeasuredSupport, PositionSupport}
+import io.youi.component.types.{PositionType, WhiteSpace}
+import io.youi.component.{ImageView, TextView}
 import io.youi.easing.Easing
 import io.youi.example.screen.UIExampleScreen
 import io.youi.font.GoogleFont
 import io.youi.image.Image
 import io.youi.net._
-import io.youi.style.Position
 import io.youi.task._
 import reactify._
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.duration._
-import scala.concurrent.ExecutionContext.Implicits.global
 
 class AnimationExample extends UIExampleScreen {
   override def title: String = "Animation Example"
@@ -21,39 +22,40 @@ class AnimationExample extends UIExampleScreen {
 
   override def createUI(): Future[Unit] = Image("/images/icon.png").flatMap { img =>
     GoogleFont.`Open Sans`.`regular`.load().map { fnt =>
-      var shift = 50.0
+      var shift = header.size.height()
       Easing.map.toList.sortBy(_._1).foreach {
         case (name, easingFunction) => {
-          val label = new HTMLTextView {
-            value @= s"$name Example"
+          val label = new TextView with PositionSupport with MeasuredSupport {
+            content @= s"$name Example"
             font.size @= 24.0
-            font @= fnt
-            position.`type` @= Position.Absolute
+            font.weight @= fnt
+            position.`type` @= PositionType.Absolute
             position.top @= shift
             position.left @= 50.0
             color @= Color.DarkSlateBlue
+            whiteSpace @= WhiteSpace.NoWrap
 
             shift += 25.0
           }
 
           forever(
             sequential(
-              label.position.right to ui.size.width - 50.0 in 5.seconds easing easingFunction,
+              label.position.right to container.size.width - 50.0 in 5.seconds easing easingFunction,
               sleep(2.seconds),
               label.position.left to 50.0 in 5.seconds easing easingFunction,
               sleep(2.seconds)
             )
-          ).start(label)
+          ).start(this)
 
           container.children += label
         }
       }
 
-      val image = new ImageView {
+      val image = new ImageView with PositionSupport with MeasuredSupport {
         image @= img
-        position.`type` @= Position.Absolute
+        position.`type` @= PositionType.Absolute
         position.left @= 0.0
-        position.middle := container.size.middle
+        position.middle := container.size.middle + header.size.height
       }
 
       container.children += image
@@ -65,13 +67,13 @@ class AnimationExample extends UIExampleScreen {
             image.rotation to 6.0 in 20.seconds
           ),
           sequential(
-            image.position.right to container.size.width in 5.seconds easing Easing.bounceOut,
-            image.position.bottom to container.size.height in 5.seconds easing Easing.bounceOut,
+            image.position.right to ui.size.width in 5.seconds easing Easing.bounceOut,
+            image.position.bottom to ui.size.height in 5.seconds easing Easing.bounceOut,
             image.position.left to 0.0 in 5.seconds easing Easing.bounceOut,
-            image.position.top to 0.0 in 5.seconds easing Easing.bounceOut
+            image.position.top to header.size.height in 5.seconds easing Easing.bounceOut
           )
         )
-      ).start(image)
+      ).start(this)
     }
   }
 }

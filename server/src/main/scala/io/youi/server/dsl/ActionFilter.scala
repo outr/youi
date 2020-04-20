@@ -1,9 +1,9 @@
 package io.youi.server.dsl
 
 import io.youi.http.HttpConnection
+import scribe.Execution.global
 
 import scala.concurrent.Future
-import scribe.Execution.global
 
 class ActionFilter(f: HttpConnection => Future[HttpConnection]) extends ConnectionFilter {
   override def filter(connection: HttpConnection): Future[FilterResponse] = {

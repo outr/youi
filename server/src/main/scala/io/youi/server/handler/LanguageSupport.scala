@@ -4,15 +4,15 @@ import java.util.Locale
 import java.util.concurrent.{ConcurrentHashMap, TimeUnit}
 import java.util.regex.Matcher
 
-import io.youi.Priority
 import io.youi.http.content.Content
 import io.youi.http.cookie.ResponseCookie
 import io.youi.http.{Headers, HttpConnection}
 import io.youi.net._
 import profig.{Profig, ProfigLookupPath}
+import scribe.Execution.global
+import scribe.Priority
 
 import scala.concurrent.Future
-import scribe.Execution.global
 
 /**
   * LanguageSupport adds simple multi-lingual support to HTML files
@@ -104,7 +104,7 @@ class LanguageSupport(val default: Locale = Locale.ENGLISH, languagePath: Path =
     */
   def clear(): Unit = languageConfig.clear()
 
-  override def priority: Priority = Priority.Fallback
+  override def priority: Priority = Priority.Fallthrough
 
   def firstConfig(localeStrings: List[String]): Profig = if (localeStrings.isEmpty) {
     emptyConfig

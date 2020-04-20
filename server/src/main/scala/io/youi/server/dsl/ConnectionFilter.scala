@@ -2,9 +2,9 @@ package io.youi.server.dsl
 
 import io.youi.http.HttpConnection
 import io.youi.server.handler.HttpHandler
+import scribe.Execution.global
 
 import scala.concurrent.Future
-import scribe.Execution.global
 
 trait ConnectionFilter extends HttpHandler {
   def filter(connection: HttpConnection): Future[FilterResponse]

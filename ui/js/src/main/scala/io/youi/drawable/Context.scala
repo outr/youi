@@ -1,13 +1,5 @@
 package io.youi.drawable
 
-import io.youi.paint._
-import io.youi.path.Path
-import io.youi.spatial.{Matrix3, Size}
-import io.youi.{Color, dom, _}
-import org.scalajs.dom.{html, _}
-
-import scala.scalajs.js
-
 class Context(val canvas: html.Canvas, _ratio: => Double) {
   private var adjustScaleX: Double = 1.0
   private var adjustScaleY: Double = 1.0

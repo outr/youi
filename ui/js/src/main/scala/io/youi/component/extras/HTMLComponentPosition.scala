@@ -1,10 +1,5 @@
 package io.youi.component.extras
 
-import io.youi.style.Position
-import io.youi.theme.{StringifyImplicits, StyleConnect, StyleProp}
-import org.scalajs.dom._
-import reactify.{Val, Var}
-
 class HTMLComponentPosition(override protected val component: HTMLComponent[_ <: html.Element]) extends ComponentPosition with StringifyImplicits {
   private def e: html.Element = HTMLComponent.element(component)
 

@@ -1,10 +1,5 @@
 package io.youi.paint
 
-import io.youi.drawable.Context
-import io.youi.path.{Path, PathAction}
-
-import scala.scalajs.js
-
 case class Stroke(paint: Paint,
                   path: Option[Path] = None,
                   lineWidth: Double = 1.0,

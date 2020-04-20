@@ -1,8 +1,5 @@
 package io.youi.layout
 
-import io.youi.component.Component
-import reactify._
-
 class FlowLayout(margins: Margins = Margins()) extends Layout {
   private var map = Map.empty[Component, Val[Double]]
 

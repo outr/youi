@@ -3,23 +3,23 @@ package io.youi.app
 import java.io.File
 
 import io.youi.http._
-import io.youi.http.content.{Content, FileContent, FormDataContent, StringContent, URLContent}
-import io.youi.net.{ContentType, URL}
+import io.youi.http.content._
+import io.youi.net._
 import io.youi.server.Server
 import io.youi.server.handler.{CachingManager, HttpHandler, HttpHandlerBuilder, SenderHandler}
-import io.youi.stream.{HTMLParser, Selector}
-import io.youi.{JavaScriptError, JavaScriptLog, Priority, http}
+import io.youi.stream.delta.Delta
+import io.youi.stream.{HTMLParser, Selector, _}
+import io.youi.util.Time
+import io.youi.{JavaScriptError, JavaScriptLog, http}
 import net.sf.uadetector.UserAgentType
 import net.sf.uadetector.service.UADetectorServiceFactory
-import io.youi.stream._
-import io.youi.stream.delta.Delta
-import io.youi.util.Time
 import profig.{JsonUtil, Profig}
 import reactify.Var
+import scribe.Priority
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
+import scala.concurrent.{Await, Future}
 
 trait ServerApplication extends YouIApplication with Server {
   override def isClient: Boolean = false
@@ -51,7 +51,30 @@ trait ServerApplication extends YouIApplication with Server {
   protected def responseMap(httpConnection: HttpConnection): Map[String, String] = Map.empty
 
   override protected def init(): Future[Unit] = super.init().map { _ =>
-    handler.matcher(path.exact("/source-map.min.js")).resource(Content.classPath("source-map.min.js"))
+    handler.resource { url =>
+      val path = url.path.encoded match {
+        case "/" => None
+        case s if s.startsWith("/") => Some(s.substring(1))
+        case s => Some(s)
+      }
+      path.flatMap(p => Content.classPathOption(s"assets/$p"))
+    }
+    handler.matcher(path.exact(path"/wrap-image")).handle { httpConnection =>
+      Future.successful(
+        httpConnection.modify { response =>
+          val imageURL = httpConnection.request.url.param("src").getOrElse("")
+          response.withContent(Content.string(
+            s"""<html>
+              |<head>
+              |<title>Wrap Image</title>
+              |</head>
+              |<body>
+              |<img src="$imageURL"/>
+              |</body>
+              |</html>""".stripMargin, ContentType.`text/html`))
+        }
+      )
+    }
     if (logJavaScriptErrors) {
       handler.matcher(path.exact(logPath)).handle { httpConnection =>
         val content = httpConnection.request.content
@@ -164,7 +187,7 @@ trait ServerApplication extends YouIApplication with Server {
       Future.successful(connection)
     }
 
-    def page(template: Content = ServerApplication.CanvasTemplate,
+    def page(template: Content = ServerApplication.AppTemplate,
              deltas: List[Delta] = Nil,
              includeApplication: Boolean = true): HttpHandler = builder.handle { connection =>
       serveHTML(connection, template, deltas, includeApplication)
@@ -255,31 +278,6 @@ trait ServerApplication extends YouIApplication with Server {
 
 object ServerApplication {
   /**
-    * Empty page template with overflow on the body disabled.
-    */
-  lazy val CanvasTemplate: Content = Content.string(
-    """
-      |<html>
-      |<head>
-      | <title></title>
-      | <style>
-      |   body {
-      |     margin: 0;
-      |     overflow: hidden;
-      |     width: 100vw;
-      |     height: 100vh;
-      |   }
-      |   :focus {
-      |     outline: none;
-      |   }
-      | </style>
-      |</head>
-      |<body>
-      |</body>
-      |</html>
-    """.stripMargin.trim, ContentType.`text/html`)
-
-  /**
     * Empty page template with overflow on the body disabled and viewport fixed to avoid zooming.
     */
   lazy val AppTemplate: Content = Content.string(
@@ -289,29 +287,24 @@ object ServerApplication {
       | <title></title>
       | <!-- Required meta tags -->
       | <meta charset="utf-8">
-      | <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-      |
-      | <!-- Bootstrap CSS -->
-      | <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+      | <meta name="viewport" content="width=device-width, height=device-height, user-scalable=no">
+      | <meta name="msapplication-tap-highlight" content="no">
+      | <meta name="apple-mobile-web-app-capable" content="yes">
+      | <meta name="apple-mobile-web-app-status-bar-style" content="default">
+      | <script src="/source-map.min.js"></script>
       | <style>
       |   body {
       |     margin: 0;
       |     overflow: hidden;
-      |     width: 100vw;
-      |     height: 100vh;
+      |     width: 100%;
+      |     height: 100%;
       |   }
       |   :focus {
       |     outline: none;
       |   }
       | </style>
-      | <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-      | <meta name="HandheldFriendly" content="true" />
       |</head>
       |<body>
-      |<!-- Scripts -->
-      |<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-      |<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-      |<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
       |</body>
       |</html>
     """.stripMargin.trim, ContentType.`text/html`)

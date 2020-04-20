@@ -1,8 +1,5 @@
 package io.youi.theme
 
-import reactify.reaction.Reaction
-import reactify.{Priority, Val, Var}
-
 class StyleProp[T](val name: String, parent: Var[Theme], default: => T) {
   val option: Var[Option[T]] = Var(None)
   val value: Val[T] = Val[T](option().orElse(parent.get.get[T](name).map(_.get)).getOrElse(default))

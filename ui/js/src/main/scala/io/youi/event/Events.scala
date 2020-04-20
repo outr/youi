@@ -1,10 +1,6 @@
 package io.youi.event
 
-import io.youi.component.Component
-import reactify._
-
 class Events(component: Component) {
-  import PointerEvent.Type
 
   lazy val click: Channel[PointerEvent] = pointer.byType(Type.Click)
   lazy val doubleClick: Channel[PointerEvent] = pointer.byType(Type.DoubleClick)
@@ -71,7 +67,6 @@ class Events(component: Component) {
   }
 
   object key extends Channel[KeyEvent] {
-    import KeyEvent.Type._
 
     lazy val down: Channel[KeyEvent] = byType(Down)
     lazy val press: Channel[KeyEvent] = byType(Press)

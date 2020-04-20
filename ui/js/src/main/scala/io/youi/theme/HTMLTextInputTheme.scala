@@ -1,10 +1,5 @@
 package io.youi.theme
 
-import io.youi.style.InputType
-import io.youi.theme.StyleConnect.withElement
-import io.youi.theme.mixins.HTMLFontTheme
-import org.scalajs.dom.html
-
 trait HTMLTextInputTheme extends HTMLComponentTheme with HTMLFontTheme {
   protected var valueChanging = false
 

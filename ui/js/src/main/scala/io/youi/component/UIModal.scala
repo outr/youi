@@ -1,11 +1,5 @@
 package io.youi.component
 
-import io.youi.{Color, ui}
-import io.youi.component.extras.HTMLComponent
-import io.youi.style.{Display, Position}
-import org.scalajs.dom.html
-import reactify.Var
-
 trait UIModal {
   this: HTMLComponent[_ <: html.Element] =>
 

@@ -1,18 +1,20 @@
 package io.youi.example.ui
 
 import io.youi.component.ImageView
+import io.youi.component.support.{MeasuredSupport, PositionSupport}
+import io.youi.event.EventSupport
 import io.youi.example.screen.UIExampleScreen
 import io.youi.image.Image
 import io.youi.net._
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class ImageChangeExample extends UIExampleScreen {
   override def title: String = "Image Change"
   override def path: Path = path"/examples/image-change.html"
 
-  lazy val imageView: ImageView = new ImageView
+  lazy val imageView: ImageView with PositionSupport with MeasuredSupport with EventSupport = new ImageView with PositionSupport with MeasuredSupport with EventSupport
 
   override def createUI(): Future[Unit] = for {
     icon <- Image("/images/icon.png")

@@ -1,14 +1,5 @@
 package io.youi.component
 
-import io.youi.component.extras.{ComponentPosition, ComponentSize}
-import io.youi.event.{EventSupport, Events, HTMLEvents}
-import io.youi.spatial.{MutableSize, Size}
-import io.youi.style.Visibility
-import io.youi.{MapStore, Store, Unique, Updatable}
-import io.youi.task.TaskSupport
-import io.youi.theme.{ComponentTheme, Theme}
-import reactify._
-
 import scala.annotation.tailrec
 import scala.concurrent.duration._
 
@@ -112,6 +103,10 @@ trait Component extends TaskSupport with ComponentTheme {
   override def updateTransform(): Unit = {
     super.updateTransform()
 
+    resize()
+  }
+
+  protected def resize(): Unit = {
     measure(measuredSize)
     size.measured.width.static(measuredSize.width)
     size.measured.height.static(measuredSize.height)

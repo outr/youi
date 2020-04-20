@@ -1,9 +1,5 @@
 package io.youi.font
 
-import io.youi.drawable.{Context, TextDrawable}
-import io.youi.paint.{Paint, Stroke}
-import io.youi.spatial.BoundingBox
-
 trait Text {
   def font: Font
   def text: String

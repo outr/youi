@@ -1,7 +1,5 @@
 package io.youi
 
-import reactify.{Val, Var}
-
 class Key private[youi](val value: String, val description: String, val `type`: KeyType) {
   Key.register(this)
 

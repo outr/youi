@@ -4,7 +4,6 @@ import java.io.File
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
-import io.youi.stream._
 
 import scala.collection.JavaConverters._
 

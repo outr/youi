@@ -1,10 +1,5 @@
 package io.youi.paint
 
-import io.youi.drawable.Context
-import org.scalajs.dom.CanvasPattern
-
-import scala.scalajs.js
-
 trait PatternPaint extends Paint {
   def createPattern(): CanvasPattern
 

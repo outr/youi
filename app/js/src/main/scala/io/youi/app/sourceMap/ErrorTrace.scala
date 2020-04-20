@@ -2,20 +2,26 @@ package io.youi.app.sourceMap
 
 import io.youi.app.ClientApplication
 import io.youi.http.HttpMethod
-import io.youi.{History, _}
 import io.youi.net._
 import io.youi.stream.StreamURL
+import io.youi.{History, _}
 import org.scalajs.dom.{ErrorEvent, Event}
 import scribe.output.LogOutput
 import scribe.writer.Writer
 import scribe.{Level, LogRecord}
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+import scala.language.{implicitConversions, reflectiveCalls}
 import scala.scalajs._
-import scala.scalajs.runtime.StackTrace.Implicits._
 
+// TODO: source-map.js appears to be newer than source-map.min.js, but having trouble getting it to work
 object ErrorTrace extends Writer {
+  type StackTraceElementWithColumnNumber = StackTraceElement {
+    def getColumnNumber(): Int
+  }
+  implicit def withColumnNumber(ste: StackTraceElement): StackTraceElementWithColumnNumber = ste.asInstanceOf[StackTraceElementWithColumnNumber]
+
   private var sourceMaps = Map.empty[String, SourceMapConsumer]
 
   def toError(event: ErrorEvent): Future[JavaScriptError] = {
@@ -48,6 +54,7 @@ object ErrorTrace extends Writer {
       case t: Throwable => ClientApplication.sendError(t)
       case _ => // Ignore others
     }
+    record.throwable.foreach(ClientApplication.sendError)
   }
 
   /**
@@ -60,7 +67,8 @@ object ErrorTrace extends Writer {
     sourceMaps.get(fileName) match {
       case Some(sourceMapConsumer) => Future.successful(Some(sourceMapConsumer))
       case None => {
-        val url = URL(s"$fileName.map")
+        val jsURL = URL(fileName)
+        val url = jsURL.withPath(s"${jsURL.path.toString}.map")
         if (url.path == path"/.map") {
           Future.successful(None)
         } else {
@@ -72,7 +80,7 @@ object ErrorTrace extends Writer {
               Some(sourceMapConsumer)
             } catch {
               case t: Throwable => {
-                scribe.error(t)
+                scribe.error(s"Failed to parse source-map: $url [${jsonString.take(20)}]", t)
                 None
               }
             }

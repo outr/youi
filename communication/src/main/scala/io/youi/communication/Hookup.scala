@@ -1,12 +1,11 @@
 package io.youi.communication
 
 import io.circe._
+import scribe.Execution.global
 
 import scala.concurrent.{Future, Promise}
 import scala.language.experimental.macros
 import scala.util.{Failure, Success}
-
-import scribe.Execution.global
 
 trait Hookup[Interface] {
   def name: String = throw new NotImplementedError("This will be implemented by HookupMacros")

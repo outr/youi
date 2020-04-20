@@ -5,7 +5,6 @@ import java.net.URL
 
 import com.roundeights.hasher.Hasher
 import io.youi.stream._
-import io.youi.stream._
 import io.youi.stream.delta.Delta
 
 import scala.collection.mutable.ListBuffer

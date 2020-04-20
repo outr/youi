@@ -4,9 +4,9 @@ import io.youi.http.content.Content
 import io.youi.http.{HttpConnection, HttpStatus}
 import io.youi.net.ContentType
 import io.youi.server.handler.HttpHandler
+import scribe.Execution.global
 
 import scala.concurrent.Future
-import scribe.Execution.global
 
 object AJAXUploadExample extends HttpHandler {
   override def handle(connection: HttpConnection): Future[HttpConnection] = Future {

@@ -1,7 +1,5 @@
 package io.youi.path
 
-import io.youi.drawable.Context
-
 case class RoundedRectangle(x: Double,
                             y: Double,
                             width: Double,

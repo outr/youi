@@ -1,8 +1,8 @@
 package io.youi.maintenance
 
 import io.youi.util.Time
-import scribe.Execution.global
 import perfolation._
+import scribe.Execution.global
 
 import scala.concurrent.Future
 import scala.concurrent.duration._

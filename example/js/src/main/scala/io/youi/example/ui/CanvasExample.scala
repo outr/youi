@@ -1,7 +1,8 @@
 package io.youi.example.ui
 
 import io.youi.Color
-import io.youi.component.CanvasComponent
+import io.youi.component.CanvasView
+import io.youi.component.support.PositionSupport
 import io.youi.drawable.Context
 import io.youi.example.screen.UIExampleScreen
 import io.youi.net._
@@ -13,12 +14,12 @@ class CanvasExample extends UIExampleScreen {
   override def path: Path = path"/examples/canvas.html"
 
   override def createUI(): Future[Unit] = Future.successful {
-    val canvas = new CanvasComponent {
+    val canvas = new CanvasView with PositionSupport {
       position.center := container.size.center
       position.middle := container.size.middle
 
-      size.width @= 500.0
-      size.height @= 500.0
+      width @= 500
+      height @= 500
 
       override protected def draw(context: Context): Unit = {
         context.rect(0.0, 0.0, 500.0, 500.0)

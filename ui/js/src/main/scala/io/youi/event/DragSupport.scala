@@ -1,8 +1,5 @@
 package io.youi.event
 
-import io.youi.component.Component
-import reactify.{Channel, Var}
-
 abstract class DragSupport[T](component: Component) {
   val value: Var[Option[T]] = Var(None)
   val drop: Channel[Dropped[T]] = Channel[Dropped[T]]

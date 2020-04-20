@@ -1,9 +1,5 @@
 package io.youi.layout
 
-import io.youi.component.Component
-import io.youi.{Horizontal, Vertical}
-import reactify._
-
 class GridLayout extends Layout {
   val columns: Var[Int] = Var(1)
 

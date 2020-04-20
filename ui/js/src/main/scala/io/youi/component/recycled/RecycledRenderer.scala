@@ -1,8 +1,5 @@
 package io.youi.component.recycled
 
-import io.youi.component.Component
-import io.youi.style.Display
-
 trait RecycledRenderer[T, C <: Component] {
   def createComponent: C
   def setData(data: T, component: C): Unit

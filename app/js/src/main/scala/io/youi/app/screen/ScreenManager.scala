@@ -1,16 +1,16 @@
 package io.youi.app.screen
 
-import io.youi.ErrorSupport
-import reactify._
-import io.youi.app.{ClientApplication, YouIApplication}
-
-import scala.concurrent.{Future, Promise}
-import scala.concurrent.ExecutionContext.Implicits.global
+import io.youi.app.YouIApplication
+import io.youi.task.TaskSupport
+import io.youi.{AnimationFrame, ErrorSupport}
 import org.scalajs.dom
+import reactify._
 
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Future, Promise}
 import scala.util.{Failure, Success}
 
-trait ScreenManager {
+trait ScreenManager extends TaskSupport {
   ScreenManager.instance = Some(this)
 
   // TODO: remove and switch to using SingleThreadedFuture
@@ -51,9 +51,21 @@ trait ScreenManager {
     case (oldScreen, newScreen) => screenChange(oldScreen, newScreen)
   }
 
-  protected def init(): Future[Unit] = Future.successful(())
+  protected def init(): Future[Unit] = {
+    AnimationFrame.delta.attach { d =>
+      update(d)
+    }
+    Future.successful(())
+  }
 
   protected def load(): Future[Unit] = Future.successful(())
+
+
+  override def update(delta: Double): Unit = {
+    super.update(delta)
+
+    active.update(delta)
+  }
 
   private def screenChange(oldScreen: Screen, newScreen: Screen): Unit = synchronized {
     if (managerFuture.isCompleted) {

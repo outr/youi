@@ -4,16 +4,16 @@ import io.circe.parser._
 import io.circe.syntax._
 import io.circe.{Decoder, Encoder, Json, Printer}
 import io.youi.ValidationError
-import io.youi.http.content.{Content, StringContent}
 import io.youi.http.HttpConnection
+import io.youi.http.content.{Content, StringContent}
 import io.youi.net.{ContentType, URL}
 import io.youi.server.dsl.PathFilter
 import io.youi.server.handler.HttpHandler
 import profig.JsonUtil
+import scribe.Execution.global
 
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.Future
-import scribe.Execution.global
 
 class RestfulHandler[Request, Response](restful: Restful[Request, Response])
                                        (implicit decoder: Decoder[Request], encoder: Encoder[Response]) extends HttpHandler {

@@ -1,9 +1,5 @@
 package io.youi.paint
 
-import io.youi.path.Path
-import io.youi.Compass
-import io.youi.drawable.Context
-
 //TODO: Make Border a glorified Path
 trait Border {
   def paint: Paint

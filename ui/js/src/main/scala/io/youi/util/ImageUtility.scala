@@ -1,16 +1,7 @@
 package io.youi.util
 
-import io.youi.image.Image
-import io.youi.image.resize.ImageResizer
-import io.youi.video.Video
-import io.youi.{dom, _}
-import org.scalajs.dom._
-import org.scalajs.dom.raw.{CanvasRenderingContext2D, File}
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Future, Promise}
-import scala.scalajs.js
-import scala.scalajs.js.|
 
 object ImageUtility {
   def drawToCanvas(source: html.Image | html.Canvas,

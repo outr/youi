@@ -1,15 +1,16 @@
 package io.youi.app.screen
 
 import io.youi.component.Container
-import io.youi.style.{Display, Visibility}
+import io.youi.component.support.{MarginSupport, SizeSupport}
+import io.youi.component.types.Display
 import io.youi.ui
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 trait UIScreen extends Screen with PathActivation {
-  protected lazy val container: Container = {
-    val c = new Container
+  protected lazy val container: Container with SizeSupport with MarginSupport = {
+    val c = new Container with SizeSupport with MarginSupport
     c.id @= title
     c
   }

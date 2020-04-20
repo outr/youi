@@ -1,12 +1,5 @@
 package io.youi.component.extras
 
-import io.youi.component.ImageView
-import io.youi.drawable.Context
-import io.youi.image.Image
-import io.youi.{dom, ui}
-import org.scalajs.dom.html
-import reactify.Var
-
 class CanvasImageViewImplementation(ratio: Var[Double] = ui.ratio) extends ImageViewImplementation {
   override def createElement(): html.Element = dom.create[html.Canvas]("canvas")
 

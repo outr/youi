@@ -1,17 +1,6 @@
 package io.youi.paint
 
-import io.youi.net.URL
-import io.youi.{Color, ImageMode, Modifiable, Updatable, ui}
-import io.youi.drawable.{Context, Drawable}
-import io.youi.image.Image
-import io.youi.theme.Stringify
-import io.youi.video.Video
-import reactify.Var
-
 import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.scalajs._
-import scala.scalajs.js.|
 
 trait Paint extends Modifiable with Updatable {
   def isEmpty: Boolean = false

@@ -1,7 +1,5 @@
 package io.youi.style
 
-import io.youi.theme.Stringify
-
 sealed abstract class InputType(val value: String)
 
 object InputType extends Stringify[InputType] {

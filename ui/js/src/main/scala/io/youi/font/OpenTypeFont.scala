@@ -1,8 +1,5 @@
 package io.youi.font
 
-import io.youi.net.URL
-
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 case class OpenTypeFont(otf: opentype.Font) extends Font {

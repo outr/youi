@@ -1,7 +1,5 @@
 package io.youi
 
-import reactify.Var
-
 import scala.concurrent.Future
 import scala.concurrent.duration.FiniteDuration
 import scala.language.implicitConversions

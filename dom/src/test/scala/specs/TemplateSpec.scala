@@ -1,11 +1,11 @@
 package specs
 
 import io.youi.Template
-import org.scalatest.{Matchers, WordSpec}
-
 import org.scalajs.dom.html
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class TemplateSpec extends WordSpec with Matchers {
+class TemplateSpec extends AnyWordSpec with Matchers {
   "Template" should {
     "load from id" in {
       val div = Template.byId[html.Div]("template.html", "hello", "youi")

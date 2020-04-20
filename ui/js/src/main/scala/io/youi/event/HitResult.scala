@@ -1,8 +1,5 @@
 package io.youi.event
 
-import io.youi.component.Component
-import io.youi.spatial.Point
-
 sealed trait HitResult
 
 object HitResult {

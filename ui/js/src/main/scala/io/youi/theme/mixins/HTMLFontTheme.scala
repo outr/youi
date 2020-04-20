@@ -1,10 +1,5 @@
 package io.youi.theme.mixins
 
-import io.youi.Color
-import io.youi.font.{GoogleFont, GoogleFontWeight}
-import io.youi.style.{FontFamily, FontWeight, TextAlign, WhiteSpace}
-import io.youi.theme.{StyleConnect, StyleProp, Theme}
-
 trait HTMLFontTheme extends Theme {
   object font {
     def :=(gf: GoogleFont): Unit = {

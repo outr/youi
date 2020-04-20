@@ -2,12 +2,12 @@ package io.youi.communication
 
 import io.youi.http.{BinaryData, ByteBufferData, ConnectionStatus, WebSocket}
 import profig.JsonUtil
-import reactify.{Val, Var}
 import reactify.reaction.Reaction
+import reactify.{Val, Var}
+import scribe.Execution.global
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.language.experimental.macros
-import scribe.Execution.global
 
 trait Connection {
   val webSocket: Var[Option[WebSocket]] = Var(None)

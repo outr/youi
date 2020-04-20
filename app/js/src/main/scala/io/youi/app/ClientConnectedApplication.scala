@@ -1,16 +1,15 @@
 package io.youi.app
 
-import io.youi.{BackgroundUpdates, History}
 import io.youi.client.{BlobData, WebSocketClient}
 import io.youi.communication.Connection
 import io.youi.http.ConnectionStatus
 import io.youi.net.{Protocol, URL}
 import io.youi.util.Time
+import io.youi.{BackgroundUpdates, History}
 import org.scalajs.dom._
-
-import scala.concurrent.Future
 import scribe.Execution.global
 
+import scala.concurrent.Future
 import scala.concurrent.duration._
 
 trait ClientConnectedApplication[C <: Connection] extends ClientApplication with YouIConnectedApplication[C] {
@@ -37,10 +36,10 @@ trait ClientConnectedApplication[C <: Connection] extends ClientApplication with
   )(updateConnection())
 
   override protected def init(): Future[Unit] = super.init().flatMap { _ =>
-    connection.status.attach { status =>
-      if (status == ConnectionStatus.Closed) {
-        disconnected()
-      }
+    connection.status.attach {
+      case ConnectionStatus.Open => connection.webSocket.foreach(_.send.text @= "PING")
+      case ConnectionStatus.Closed => disconnected()
+      case _ => // Ignore others
     }
     window.addEventListener("online", (_: Event) => {
       scribe.info("Back online, reconnecting...")

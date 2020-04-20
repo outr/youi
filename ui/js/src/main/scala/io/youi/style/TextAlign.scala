@@ -1,7 +1,5 @@
 package io.youi.style
 
-import io.youi.theme.Stringify
-
 object TextAlign extends Stringify[TextAlign] {
   case object Left extends TextAlign("left")
   case object Right extends TextAlign("right")

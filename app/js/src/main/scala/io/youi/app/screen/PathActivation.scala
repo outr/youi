@@ -1,7 +1,7 @@
 package io.youi.app.screen
 
-import io.youi.{HistoryStateChange, StateType, http}
 import io.youi.net.{Parameters, Path, URL, URLMatcher}
+import io.youi.{HistoryStateChange, StateType, http}
 
 trait PathActivation extends URLActivation {
   def path: Path

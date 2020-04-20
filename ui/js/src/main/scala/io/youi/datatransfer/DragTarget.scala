@@ -1,7 +1,5 @@
 package io.youi.datatransfer
 
-import org.scalajs.dom.{DragEvent, Event, html}
-
 trait DragTarget {
   def manager: DataTransferManager
   private var entered = 0

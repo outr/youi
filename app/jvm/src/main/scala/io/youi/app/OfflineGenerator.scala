@@ -6,9 +6,9 @@ import io.youi.http.content.{StringContent, URLContent}
 import io.youi.http.{HttpConnection, HttpRequest, HttpStatus}
 import io.youi.net.{Path, URL}
 import io.youi.stream._
+import scribe.Execution.global
 
 import scala.concurrent.Future
-import scribe.Execution.global
 
 class OfflineGenerator(application: ServerApplication,
                        outputDirectory: File,

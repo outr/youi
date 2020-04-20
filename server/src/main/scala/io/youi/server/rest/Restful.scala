@@ -5,8 +5,8 @@ import io.youi.ValidationError
 import io.youi.http.{HttpConnection, HttpStatus}
 import io.youi.server.handler.HttpHandler
 
-import scala.concurrent.duration.Duration
 import scala.concurrent.Future
+import scala.concurrent.duration.Duration
 import scala.language.experimental.macros
 
 trait Restful[Request, Response] {

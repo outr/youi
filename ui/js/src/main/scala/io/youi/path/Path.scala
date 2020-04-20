@@ -1,13 +1,6 @@
 package io.youi.path
 
-import io.youi.drawable.Context
-import io.youi.spatial.BoundingBox
-import io.youi.ui
-import reactify.Val
-
 import scala.collection.mutable.ListBuffer
-import scala.scalajs.js
-import scala.scalajs.js.annotation.JSGlobal
 
 case class Path(actions: List[PathAction]) extends PathBuilder with PathAction {
   lazy val boundingBox: BoundingBox = Path.boundingBox(actions)

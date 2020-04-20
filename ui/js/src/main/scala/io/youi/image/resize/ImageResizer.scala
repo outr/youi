@@ -1,9 +1,6 @@
 package io.youi.image.resize
 
-import org.scalajs.dom.html
-
 import scala.concurrent.Future
-import scala.scalajs.js.|
 
 trait ImageResizer {
   final def resize(source: html.Image | html.Canvas, destination: html.Canvas): Future[html.Canvas] = {

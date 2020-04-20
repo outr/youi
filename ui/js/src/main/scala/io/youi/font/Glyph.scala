@@ -1,8 +1,5 @@
 package io.youi.font
 
-import io.youi.drawable.Context
-import io.youi.path.Path
-
 trait Glyph {
   def font: Font
   def char: Char

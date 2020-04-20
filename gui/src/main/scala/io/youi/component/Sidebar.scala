@@ -1,14 +1,14 @@
 package io.youi.component
 
+import io.youi._
 import io.youi.component.support.{MarginSupport, OverflowSupport, PositionSupport, SizeSupport}
 import io.youi.component.types.{Display, Overflow, PositionType, UserSelect}
 import io.youi.easing.Easing
 import io.youi.task._
-import io.youi._
 import reactify.{Val, Var}
+import scribe.Execution.global
 
 import scala.concurrent.Future
-import scribe.Execution.global
 
 class Sidebar(container: Option[Component with SizeSupport with MarginSupport],
               showGlassPane: Boolean = isMobileDevice,

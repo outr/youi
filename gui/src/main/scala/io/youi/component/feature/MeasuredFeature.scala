@@ -2,10 +2,7 @@ package io.youi.component.feature
 
 import io.youi.component.Component
 import io.youi.spatial.Size
-import io.youi.theme.Theme
 import reactify.{Val, Var}
-
-import scala.scalajs.js.|
 
 class MeasuredFeature(val component: Component) extends Feature with WidthFeature with HeightFeature {
   override protected def parent: FeatureParent = component

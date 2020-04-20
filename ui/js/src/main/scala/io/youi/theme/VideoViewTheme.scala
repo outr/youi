@@ -1,9 +1,5 @@
 package io.youi.theme
 
-import io.youi.component.extras.HTMLComponent
-import io.youi.video.Video
-import reactify.Var
-
 trait VideoViewTheme extends HTMLComponentTheme {
   lazy val video: StyleProp[Video] = style[Video]("video", Video.empty, Some(VideoViewTheme))
   lazy val autoPauseOnHide: StyleProp[Boolean] = style[Boolean]("autoPauseOnHide", true, None)

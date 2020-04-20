@@ -1,8 +1,8 @@
 package io.youi.path
 
+import io.youi._
 import io.youi.drawable.Context
 import io.youi.spatial.BoundingBox
-import io.youi._
 import reactify.Val
 
 import scala.collection.mutable.ListBuffer

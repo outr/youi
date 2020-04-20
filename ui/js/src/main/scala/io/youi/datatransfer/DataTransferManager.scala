@@ -1,10 +1,5 @@
 package io.youi.datatransfer
 
-import io.youi.dom
-import io.youi.dom._
-import org.scalajs.dom._
-import reactify._
-
 import scala.language.implicitConversions
 
 class DataTransferManager {

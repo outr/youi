@@ -1,15 +1,15 @@
 package io.youi.app.screen
 
-import reactify.{Val, Var}
-import io.youi.{History, dom}
 import io.youi.dom._
 import io.youi.http.HttpMethod
 import io.youi.net.Parameters
 import io.youi.stream.StreamURL
+import io.youi.{History, dom}
 import org.scalajs.dom.html
+import reactify.{Val, Var}
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 trait ContentScreen extends Screen with PathActivation {
   private def pageTag: html.Element = dom.byTag[html.Element]("page").head

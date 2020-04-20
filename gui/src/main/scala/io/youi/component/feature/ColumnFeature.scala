@@ -1,10 +1,6 @@
 package io.youi.component.feature
 
-import io.youi.component.Component
 import io.youi.component.types.{Border, ColumnFill, Prop, SizeProperty}
-import io.youi.theme.Theme
-
-import scala.scalajs.js.|
 
 class ColumnFeature(override val parent: FeatureParent) extends Feature {
   lazy val count: Prop[Int] = new Prop[Int](-1, i => parent.css.columnCount = i)

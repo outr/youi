@@ -1,7 +1,6 @@
 package io.youi.util
 
 import io.youi._
-import io.youi.util.ObjectPool
 import org.scalajs.dom.html
 import org.scalajs.dom.html.Canvas
 import org.scalajs.dom.raw.CanvasRenderingContext2D

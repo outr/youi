@@ -1,16 +1,16 @@
 package io.youi.example.ui
 
+import io.youi.Color
+import io.youi.component.support.{MeasuredSupport, PaddingSupport, PositionSupport, SizeSupport}
+import io.youi.component.types.PositionType
 import io.youi.component.{Container, TextView}
 import io.youi.example.screen.UIExampleScreen
 import io.youi.font.GoogleFont
 import io.youi.net._
-import io.youi.Color
-import io.youi.component.support.{MeasuredSupport, PaddingSupport, PositionSupport, SizeSupport}
-import io.youi.component.types.PositionType
 import reactify._
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class TextViewExample extends UIExampleScreen {
   override def title: String = "TextView Example"

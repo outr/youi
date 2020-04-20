@@ -1,9 +1,5 @@
 package io.youi.component.extras
 
-import io.youi.component.Component
-import io.youi.theme.StringifyImplicits
-import reactify._
-
 trait ComponentPosition extends StringifyImplicits {
   protected def component: Component
 

@@ -1,7 +1,7 @@
 package io.youi.app.sourceMap
 
 import scala.scalajs.js
-import scala.scalajs.js.annotation.{JSGlobal, JSName}
+import scala.scalajs.js.annotation.JSGlobal
 
 @js.native
 @JSGlobal("window.sourceMap.SourceMapConsumer")

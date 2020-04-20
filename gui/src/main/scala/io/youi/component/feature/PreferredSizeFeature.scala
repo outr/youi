@@ -1,11 +1,8 @@
 package io.youi.component.feature
 
 import io.youi.component.Component
-import io.youi.theme.Theme
 import io.youi.util.Measurer
 import reactify.{Val, Var}
-
-import scala.scalajs.js.|
 
 class PreferredSizeFeature(val component: Component) extends Feature with WidthFeature with HeightFeature {
   override protected def parent: FeatureParent = component

@@ -12,10 +12,10 @@ import io.youi.server.Server
 import io.youi.server.validation.{ValidationResult, Validator}
 import io.youi.stream.delta.Delta
 import io.youi.stream.{HTMLParser, Selector}
-
-import scala.concurrent.Future
 import scribe.Execution.global
 import scribe.Priority
+
+import scala.concurrent.Future
 
 case class HttpHandlerBuilder(server: Server,
                               urlMatcher: Option[URLMatcher] = None,

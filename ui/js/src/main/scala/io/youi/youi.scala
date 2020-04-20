@@ -1,25 +1,8 @@
 package io
 
-import io.youi.component.Component
-import io.youi.event.KeyEvent
-import io.youi.font.{FontAwesome, GoogleFont, GoogleFontWeight, MaterialIcon, MaterialIconView}
-import io.youi.gui
-import io.youi.paint.Paint
-import io.youi.task.PartialAnimate
-import io.youi.theme.StyleProp
-import io.youi.util.Time
-import org.scalajs.dom._
-import org.scalajs.dom.raw.CanvasRenderingContext2D
-import org.scalajs.dom.{KeyboardEvent, document, html}
-import reactify._
-import typekit.{GoogleConfig, WebFont, WebFontConfiguration}
-
+import scala.concurrent.duration._
 import scala.concurrent.{Future, Promise}
 import scala.language.implicitConversions
-import scala.scalajs.js
-import scribe.Execution.global
-
-import scala.concurrent.duration._
 
 package object youi {
   lazy val ppi: Double = {

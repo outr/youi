@@ -1,8 +1,8 @@
 package io.youi.font
 
-import io.youi.util.CanvasPool
-import io.youi.drawable.{Context, Drawable}
 import io.youi._
+import io.youi.drawable.{Context, Drawable}
+import io.youi.util.CanvasPool
 import org.scalajs.dom._
 import reactify._
 

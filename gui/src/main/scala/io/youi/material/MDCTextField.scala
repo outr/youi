@@ -2,9 +2,9 @@ package io.youi.material
 
 import io.youi.component.Component
 import io.youi.component.types.Prop
+import io.youi.dom._
 import io.youi.material.impl.MDCTextFieldImplementation
 import io.youi.{Unique, dom}
-import io.youi.dom._
 import org.scalajs.dom.html
 import reactify.Var
 

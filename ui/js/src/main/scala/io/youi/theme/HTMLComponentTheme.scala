@@ -1,7 +1,5 @@
 package io.youi.theme
 
-import io.youi.style.{HTMLBorder, Overflow, PointerEvents, UserSelect}
-
 trait HTMLComponentTheme extends ComponentTheme {
   lazy val rotation: StyleProp[Double] = style[Double]("transform", 0.0, StyleConnect.style[Double](new Stringify[Double] {
     override def fromString(value: String): Option[Double] = None

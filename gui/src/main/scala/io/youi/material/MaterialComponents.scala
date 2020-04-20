@@ -1,12 +1,11 @@
 package io.youi.material
 
 import io.youi.component.types.Prop
-import io.youi.{Color, History, dom}
 import io.youi.net._
-
-import scala.concurrent.Future
+import io.youi.{Color, History, dom}
 import scribe.Execution.global
 
+import scala.concurrent.Future
 import scala.scalajs.js
 import scala.util.Try
 

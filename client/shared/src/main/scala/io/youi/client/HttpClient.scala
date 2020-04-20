@@ -1,10 +1,10 @@
 package io.youi.client
 
 import io.circe.{Json, Printer}
-import io.youi.client.intercept.{Interceptor, RateLimiter}
-import io.youi.http.cookie.RequestCookie
+import io.youi.client.intercept.Interceptor
 import io.youi.http._
 import io.youi.http.content.{Content, StringContent}
+import io.youi.http.cookie.RequestCookie
 import io.youi.net.{ContentType, Path, URL}
 import io.youi.util.Time
 

@@ -1,13 +1,13 @@
 package io.youi.paint
 
-import io.youi.net.URL
 import io.youi._
 import io.youi.drawable.{Context, Drawable}
 import io.youi.image.Image
+import io.youi.net.URL
 import io.youi.video.Video
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 import scala.scalajs._
 import scala.scalajs.js.|
 

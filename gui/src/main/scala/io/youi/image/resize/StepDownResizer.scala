@@ -1,12 +1,12 @@
 package io.youi.image.resize
 
-import org.scalajs.dom.html
-
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.scalajs.js.|
 import io.youi._
 import io.youi.util.CanvasPool
+import org.scalajs.dom.html
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+import scala.scalajs.js.|
 
 object StepDownResizer extends ImageResizer {
   override protected def resizeInternal(source: html.Image | html.Canvas, destination: html.Canvas): Future[html.Canvas] = {

@@ -1,15 +1,15 @@
 package io.youi.component.support
 
 import io.youi.Plane
-import io.youi.component.types.{Display, SizeProperty, SizeType}
 import io.youi.component.Component
+import io.youi.component.types.{Display, SizeProperty, SizeType}
 import io.youi.easing.Easing
 import io.youi.task._
 import reactify.Var
+import scribe.Execution.global
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
-import scribe.Execution.global
 
 trait CollapsibleSupport {
   this: Component with MaxSizeSupport =>

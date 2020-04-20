@@ -1,12 +1,11 @@
 package io.youi.image.resize
 
+import io.youi._
 import org.scalajs.dom.html
 
 import scala.concurrent.Future
-import scala.scalajs.js.|
-import io.youi._
-
 import scala.scalajs.js
+import scala.scalajs.js.|
 
 class SmoothingResizer(mode: String) extends ImageResizer {
   override protected def resizeInternal(source: html.Image | html.Canvas, destination: html.Canvas): Future[html.Canvas] = {

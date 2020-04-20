@@ -1,9 +1,5 @@
 package io.youi.component.bootstrap
 
-import org.scalajs.dom.html
-
-import scala.scalajs.js
-
 trait Modal {
   protected val element: html.Element
 

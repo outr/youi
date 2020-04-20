@@ -1,9 +1,5 @@
 package io.youi.theme
 
-import io.youi.component.extras.HTMLComponent
-import org.scalajs.dom._
-import io.youi.dom._
-
 trait StyleConnect[T] {
   def init(theme: Theme, v: StyleProp[T], name: String): Unit
 }

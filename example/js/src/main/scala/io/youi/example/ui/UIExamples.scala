@@ -1,15 +1,15 @@
 package io.youi.example.ui
 
 import io.youi.component.Component
-import io.youi.{Color, dom, ui}
-import io.youi.example.ClientExampleApplication
 import io.youi.component.support.{MarginSupport, SizeSupport}
 import io.youi.event.EventSupport
+import io.youi.example.ClientExampleApplication
 import io.youi.example.screen.UIExampleScreen
 import io.youi.net._
+import io.youi.{dom, ui}
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class UIExamples extends UIExampleScreen {
   override def title: String = "UI Examples"

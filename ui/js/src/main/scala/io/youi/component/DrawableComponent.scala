@@ -1,9 +1,4 @@
 package io.youi.component
-import io.youi.{Compass, dom}
-import io.youi.drawable.{Context, Drawable}
-import io.youi.theme.{DrawableComponentTheme, Theme}
-import org.scalajs.dom.html
-import reactify.{Val, Var}
 
 class DrawableComponent(element: html.Canvas = dom.create[html.Canvas]("canvas"),
                         existing: Boolean = false) extends CanvasComponent(element, existing) with DrawableComponentTheme {

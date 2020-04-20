@@ -1,16 +1,16 @@
 package io.youi.example.ui.component
 
-import io.youi.component.{Component, Container, ImageView}
-import io.youi.component.support.{ContentSupport, FontSupport, MarginSupport, MeasuredSupport, PositionSupport, SizeSupport}
-import io.youi.event.EventSupport
-import io.youi.example.ClientExampleApplication
-import io.youi.font.GoogleFont
-import io.youi.paint.Paint
 import io.youi._
 import io.youi.app.screen.ScreenManager
+import io.youi.component.support._
 import io.youi.component.types.{Cursor, Display, PositionType, WhiteSpace}
+import io.youi.component.{Component, Container, ImageView}
+import io.youi.event.EventSupport
+import io.youi.example.ClientExampleApplication
 import io.youi.example.screen.UIExampleScreen
+import io.youi.font.GoogleFont
 import io.youi.net._
+import io.youi.paint.Paint
 import reactify._
 import scribe.Execution.global
 

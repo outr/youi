@@ -5,8 +5,8 @@ import io.youi.image.resize.ImageResizer
 import org.scalajs.dom.html.Canvas
 import reactify._
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class AnimatedImage(frames: Vector[Image], delay: Double) extends Image {
   assert(frames.nonEmpty, "AnimatedImage.frames cannot be empty")

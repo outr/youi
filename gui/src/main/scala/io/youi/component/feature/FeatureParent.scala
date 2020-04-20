@@ -2,7 +2,7 @@ package io.youi.component.feature
 
 import io.youi.Color
 import io.youi.component.Component
-import io.youi.component.types.{Clear, Cursor, Display, FloatStyle, Prop, UserSelect, VerticalAlign, WhiteSpace}
+import io.youi.component.types._
 import io.youi.paint.Paint
 import org.scalajs.dom.raw.CSSStyleDeclaration
 

@@ -1,15 +1,12 @@
 package io.youi.component
 
 import io.youi.component.feature.{FeatureParent, HeightFeature, WidthFeature}
-import io.youi.dom
 import io.youi.component.types.Prop
+import io.youi.dom
 import io.youi.image.{CanvasImage, EmptyImage, HTMLImage, Image}
-import io.youi.theme.Theme
 import org.scalajs.dom.html
 import reactify.Var
 import scribe.Execution.global
-
-import scala.scalajs.js.|
 
 class ImageView(img: html.Image = dom.create.image) extends Component(img) with WidthFeature with HeightFeature {
   override protected def parent: FeatureParent = this

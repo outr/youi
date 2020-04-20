@@ -1,10 +1,6 @@
 package io.youi.util
 
-import org.scalajs.dom.Event
-import org.scalajs.dom.raw.{File, FileReader, URL}
-
 import scala.concurrent.{Future, Promise}
-import scribe.Execution.global
 
 object FileUtility {
   def loadDataURL(file: File, useFileReader: Boolean = false): Future[String] = if (useFileReader) {

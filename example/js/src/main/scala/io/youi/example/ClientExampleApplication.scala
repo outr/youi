@@ -1,12 +1,9 @@
 package io.youi.example
 
-import io.youi.app.screen.LoadingTransitionSupport
+import io.youi.Color
 import io.youi.app.{ClientApplication, ClientConnectedApplication}
-import io.youi.{Color, dom}
-import io.youi.dom._
 import io.youi.example.screen.{CommunicationScreen, ExampleBootstrapScreen, LoginScreen}
 import io.youi.example.ui._
-import org.scalajs.dom._
 
 import scala.scalajs.js.annotation.JSExportTopLevel
 

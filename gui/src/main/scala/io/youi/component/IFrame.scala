@@ -3,10 +3,8 @@ package io.youi.component
 import io.youi.component.feature.{FeatureParent, HeightFeature, WidthFeature}
 import io.youi.component.types.Prop
 import io.youi.dom
-import io.youi.theme.Theme
 import org.scalajs.dom.html
 
-import scala.scalajs.js.|
 import scala.util.Try
 
 class IFrame(val iframe: html.IFrame = dom.create.iframe) extends Component(iframe) with WidthFeature with HeightFeature {

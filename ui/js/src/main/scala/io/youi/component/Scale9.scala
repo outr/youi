@@ -1,15 +1,6 @@
 package io.youi.component
 
-import io.youi.LazyUpdate
-import io.youi.component.extras.HTMLComponent
-import io.youi.image.Image
-import io.youi.style.Position
-import io.youi.theme.{Scale9Theme, Theme}
-import org.scalajs.dom.html
-import reactify._
-
 import scala.util.{Failure, Success}
-import scala.concurrent.ExecutionContext.Implicits.global
 
 class Scale9(element: html.Element = HTMLComponent.create[html.Div]("div")) extends HTMLContainer[ImageView](element) with Scale9Theme { self =>
   override protected def defaultParentTheme: Theme = Scale9

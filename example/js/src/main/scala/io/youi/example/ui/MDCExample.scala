@@ -1,10 +1,9 @@
 package io.youi.example.ui
 
-import io.youi.component._
 import io.youi.dom
 import io.youi.example.ClientExampleApplication
 import io.youi.example.screen.UIExampleScreen
-import io.youi.material.{MDCButton, MDCChip, MDCChipSet, MDCIconButton, MDCIconButtonToggle, MDCProgressBar, MDCTextField, MDCTopAppBar, Material, MaterialComponents}
+import io.youi.material._
 import io.youi.net._
 
 import scala.concurrent.ExecutionContext.Implicits.global

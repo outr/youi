@@ -1,10 +1,10 @@
 package io.youi.font
 
-import io.youi.util.CanvasPool
+import io.youi._
 import io.youi.drawable.{Composite, Context}
 import io.youi.paint.{Paint, Stroke}
-import io.youi._
 import io.youi.spatial.BoundingBox
+import io.youi.util.CanvasPool
 
 case class CachedText(font: CachedFont,
                       text: String,

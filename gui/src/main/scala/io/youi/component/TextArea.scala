@@ -1,8 +1,8 @@
 package io.youi.component
 
-import io.youi.dom
 import io.youi.component.support.FontSupport
 import io.youi.component.types.Prop
+import io.youi.dom
 import org.scalajs.dom.{Event, html}
 
 class TextArea(element: html.TextArea = dom.create.textArea) extends Component(element) with FontSupport {

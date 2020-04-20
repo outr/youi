@@ -1,8 +1,8 @@
 package io.youi.component.support
 
-import io.youi.component.types.{Prop, TextAlign, TextOverflow}
 import io.youi.component.Component
 import io.youi.component.feature.FontFeature
+import io.youi.component.types.{Prop, TextAlign, TextOverflow}
 
 trait FontSupport {
   this: Component =>

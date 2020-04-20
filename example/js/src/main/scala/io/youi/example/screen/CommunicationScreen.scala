@@ -1,16 +1,15 @@
 package io.youi.example.screen
 
-import io.youi.{History, Template}
 import io.youi.ajax.AjaxManager
 import io.youi.app.screen.PreloadedContentScreen
 import io.youi.dom._
 import io.youi.example.ClientExampleApplication
 import io.youi.net._
-import org.scalajs.dom.{Event, File, FormData, html, window}
+import io.youi.{History, Template}
+import org.scalajs.dom._
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.scalajs.js.typedarray.{ArrayBuffer, TypedArrayBuffer}
+import scala.concurrent.Future
 
 object CommunicationScreen extends ExampleScreen with PreloadedContentScreen {
   def connectedInput: html.Input = content.byId[html.Input]("communicationConnected")

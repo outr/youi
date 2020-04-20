@@ -1,11 +1,5 @@
 package io.youi.font
 
-import io.youi.drawable.{Context, Drawable}
-import io.youi.util.CanvasPool
-import io.youi.{Color, ui}
-import org.scalajs.dom._
-import reactify._
-
 class CachedFont(font: Font) extends Font {
   private var map = Map.empty[Double, CachedFontSize]
 

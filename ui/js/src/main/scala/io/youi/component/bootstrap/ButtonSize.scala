@@ -1,7 +1,5 @@
 package io.youi.component.bootstrap
 
-import io.youi.theme.Stringify
-
 sealed abstract class ButtonSize(key: String) {
   private val className: String = s"btn-$key"
 }

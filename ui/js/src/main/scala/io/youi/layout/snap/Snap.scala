@@ -1,7 +1,5 @@
 package io.youi.layout.snap
 
-import io.youi.component.Component
-
 case class Snap(component: Component,
                 horizontal: Option[HorizontalSnapping],
                 vertical: Option[VerticalSnapping]) {

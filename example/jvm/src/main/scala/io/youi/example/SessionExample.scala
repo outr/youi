@@ -4,9 +4,9 @@ import io.youi.http.HttpConnection
 import io.youi.http.content.Content
 import io.youi.net.ContentType
 import io.youi.server.handler.{HttpHandler, SenderHandler}
+import scribe.Execution.global
 
 import scala.concurrent.Future
-import scribe.Execution.global
 
 object SessionExample extends HttpHandler {
   override def handle(connection: HttpConnection): Future[HttpConnection] = MySession.withHttpConnection(connection) { transaction =>

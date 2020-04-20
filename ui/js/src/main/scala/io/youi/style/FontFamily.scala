@@ -1,7 +1,5 @@
 package io.youi.style
 
-import io.youi.theme.Stringify
-
 class FontFamily(val value: String) extends AnyVal
 
 object FontFamily extends Stringify[FontFamily] {

@@ -7,8 +7,8 @@ import io.youi.example.screen.UIExampleScreen
 import io.youi.image.Image
 import io.youi.net._
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class ImageChangeExample extends UIExampleScreen {
   override def title: String = "Image Change"

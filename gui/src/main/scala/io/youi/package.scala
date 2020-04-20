@@ -1,19 +1,18 @@
 package io
 
-import io.youi.net._
-import io.youi.util.{CanvasPool, Time}
 import io.youi.font.{FontAwesome, GoogleFont, GoogleFontWeight}
+import io.youi.net._
 import io.youi.paint.Paint
+import io.youi.util.{CanvasPool, Time}
 import org.scalajs.dom.{CanvasRenderingContext2D, document, html, window}
 import reactify.Val
+import scribe.Execution.global
 import typekit.{GoogleConfig, WebFont, WebFontConfiguration}
 
+import scala.concurrent.duration._
 import scala.concurrent.{Future, Promise}
 import scala.language.implicitConversions
 import scala.scalajs.js
-import scribe.Execution.global
-
-import scala.concurrent.duration._
 
 package object youi {
   lazy val isIOS: Boolean = Set("iPad Simulator", "iPhone Simulator", "iPod Simulator", "iPad", "iPhone", "iPod")

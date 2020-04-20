@@ -1,10 +1,5 @@
 package io.youi.component
 
-import io.youi.component.extras.HTMLComponent
-import io.youi.dom._
-import io.youi.theme.{HTMLTextInputTheme, Theme}
-import org.scalajs.dom._
-
 class HTMLTextInput(protected val element: html.Input,
                     val existing: Boolean = false) extends HTMLComponent[html.Input] with HTMLTextInputTheme {
   def this() = {

@@ -1,9 +1,5 @@
 package io.youi.theme
 
-import io.youi.font.{FontAwesome, FontAwesomeIcon}
-import io.youi.theme.StyleConnect.withElement
-import io.youi.theme.mixins.HTMLFontTheme
-
 trait FontAwesomeViewTheme extends HTMLComponentTheme with HTMLFontTheme {
   lazy val value: StyleProp[FontAwesomeIcon] = style[FontAwesomeIcon]("value", FontAwesome.None, Some(new StyleConnect[FontAwesomeIcon] {
     override def init(theme: Theme, v: StyleProp[FontAwesomeIcon], name: String): Unit = {

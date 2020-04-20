@@ -2,8 +2,8 @@ package io.youi.event
 
 import io.youi.key.Key
 import io.youi.spatial.Point
-
 import org.scalajs.{dom => jsdom}
+
 import scala.scalajs.js.|
 
 class PointerEvent(underlying: jsdom.MouseEvent | HTMLPointerEvent | jsdom.TouchEvent,

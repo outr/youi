@@ -1,13 +1,6 @@
 package io.youi.component.recycled
 
-import io.youi.component.{Component, Container}
-import io.youi.layout.VerticalLayout
-import io.youi.style.Overflow
-import io.youi.util.Time
-import reactify.{Val, Var}
-
 import scala.concurrent.duration._
-import scribe.Execution.global
 
 class RecycledScroller[T, C <: Component](perPage: Int, renderer: RecycledRenderer[T, C]) extends Container { scroller =>
   object batch {

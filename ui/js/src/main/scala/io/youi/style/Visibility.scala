@@ -1,7 +1,5 @@
 package io.youi.style
 
-import io.youi.theme.Stringify
-
 sealed abstract class Visibility(val value: String)
 
 object Visibility extends Stringify[Visibility] {

@@ -5,12 +5,12 @@ import io.youi.http._
 import io.youi.http.content.Content
 import io.youi.net._
 import io.youi.server.WebSocketListener
-import io.youi.server.handler.{CachingManager, LanguageSupport}
 import io.youi.server.dsl._
+import io.youi.server.handler.{CachingManager, LanguageSupport}
 import profig.JsonUtil
+import scribe.Execution.global
 
 import scala.concurrent.Future
-import scribe.Execution.global
 
 object ServerExampleApplication extends ExampleApplication with ServerConnectedApplication[ExampleConnection] {
   val generalPages: Page = page(GeneralPages)

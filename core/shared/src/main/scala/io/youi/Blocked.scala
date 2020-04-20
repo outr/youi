@@ -1,7 +1,8 @@
 package io.youi
 
-import scala.concurrent.{Future, Promise}
 import scribe.Execution.global
+
+import scala.concurrent.Future
 
 /**
   * Allows blocking on a key for sequential futures

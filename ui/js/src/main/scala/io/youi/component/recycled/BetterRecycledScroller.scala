@@ -1,11 +1,6 @@
 package io.youi.component.recycled
 
-import io.youi.component.{Component, Container}
-import io.youi.style.Overflow
-import reactify._
-
 import scala.collection.immutable.Queue
-import scribe.Execution.global
 
 class BetterRecycledScroller[T, C <: Component](renderer: RecycledRenderer[T, C],
                                                 cacheSize: Int = 1000,

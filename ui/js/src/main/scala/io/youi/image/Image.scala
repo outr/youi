@@ -1,13 +1,5 @@
 package io.youi.image
 
-import io.youi._
-import io.youi.drawable.{Context, Drawable}
-import io.youi.image.resize.ImageResizer
-import io.youi.net.URL
-import io.youi.spatial.{BoundingBox, Size}
-import io.youi.util.{CanvasPool, FileUtility, ImageUtility}
-import org.scalajs.dom._
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 

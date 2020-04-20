@@ -2,8 +2,8 @@ package spec
 
 import io.youi.client.HttpClient
 import io.youi.client.intercept.Interceptor
-import io.youi.http.content.StringContent
 import io.youi.http.HttpStatus
+import io.youi.http.content.StringContent
 import io.youi.net._
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AsyncWordSpec

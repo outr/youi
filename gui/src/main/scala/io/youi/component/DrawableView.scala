@@ -1,8 +1,8 @@
 package io.youi.component
 
-import io.youi.{Compass, dom}
 import io.youi.drawable.{Context, Drawable}
 import io.youi.paint.Border
+import io.youi.{Compass, dom}
 import org.scalajs.dom.html
 import reactify.{Val, Var}
 

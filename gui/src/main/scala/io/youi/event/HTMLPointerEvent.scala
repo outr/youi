@@ -1,6 +1,7 @@
 package io.youi.event
 
 import org.scalajs.{dom => jsdom}
+
 import scala.scalajs.js
 
 @js.native

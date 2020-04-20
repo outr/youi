@@ -5,9 +5,9 @@ import io.youi.easing.Easing
 import io.youi.task._
 import org.scalajs.dom.html
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.duration._
-import scala.concurrent.ExecutionContext.Implicits.global
 
 trait CrossFadeSupport extends ScreenManager {
   protected def crossFadeElement: html.Element

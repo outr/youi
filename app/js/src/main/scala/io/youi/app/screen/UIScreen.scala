@@ -1,9 +1,9 @@
 package io.youi.app.screen
 
-import io.youi.ui
 import io.youi.component.Container
 import io.youi.component.support.{MarginSupport, SizeSupport}
 import io.youi.component.types.Display
+import io.youi.ui
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

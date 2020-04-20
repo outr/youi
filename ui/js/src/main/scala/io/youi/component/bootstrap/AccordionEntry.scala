@@ -1,10 +1,5 @@
 package io.youi.component.bootstrap
 
-import io.youi.component.{Component, Container}
-import io.youi.dom
-import io.youi.theme.Theme
-import org.scalajs.dom.html
-
 class AccordionEntry(accordion: Accordion,
                      header: Component,
                      body: Component,

@@ -2,7 +2,7 @@ package io.youi.example.ui
 
 import io.youi._
 import io.youi.component.support.{MeasuredSupport, PositionSupport}
-import io.youi.component.types.{PositionType, TextOverflow, WhiteSpace}
+import io.youi.component.types.{PositionType, WhiteSpace}
 import io.youi.component.{ImageView, TextView}
 import io.youi.easing.Easing
 import io.youi.example.screen.UIExampleScreen
@@ -12,9 +12,9 @@ import io.youi.net._
 import io.youi.task._
 import reactify._
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.duration._
-import scala.concurrent.ExecutionContext.Implicits.global
 
 class AnimationExample extends UIExampleScreen {
   override def title: String = "Animation Example"

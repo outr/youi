@@ -1,18 +1,5 @@
 package io.youi.component.extras
 
-import io.youi.component.{AbstractContainer, Component}
-import io.youi.{AnimationFrame, ResizeObserver, ResizeObserverEntry, dom, ui}
-import io.youi.dom._
-import io.youi.event.{EventSupport, HTMLEvents}
-import io.youi.spatial.Size
-import io.youi.style.{Display, Visibility}
-import io.youi.theme.{HTMLComponentTheme, Theme}
-import io.youi.util.Measurer
-import org.scalajs.dom.{Element, _}
-import reactify.{Val, Var}
-
-import scala.scalajs.js
-
 trait HTMLComponent[E <: html.Element] extends Component with HTMLComponentTheme {
   protected def element: E
   protected val e: HTMLExtras[E] = new HTMLExtras[E](element)

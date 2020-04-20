@@ -1,9 +1,9 @@
 package io.youi.client.intercept
 
 import io.youi.http.{HttpRequest, HttpResponse}
+import scribe.Execution.global
 
 import scala.concurrent.Future
-import scribe.Execution.global
 
 case class MultiInterceptor(interceptors: List[Interceptor]) extends Interceptor {
   override def before(request: HttpRequest): Future[HttpRequest] = beforeRecursive(request, interceptors)

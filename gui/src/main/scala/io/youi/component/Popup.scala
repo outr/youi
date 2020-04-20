@@ -3,13 +3,13 @@ package io.youi.component
 import io.youi.component.support.{PositionSupport, SizeSupport}
 import io.youi.component.types.{Display, PositionType}
 import io.youi.easing.Easing
-import io.youi.{Color, ui}
 import io.youi.task._
+import io.youi.ui
 import reactify.{Mutable, Stateful, Var}
+import scribe.Execution.global
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
-import scribe.Execution.global
 
 class Popup(showGlassPane: Boolean = true) extends Container with SizeSupport with PositionSupport {
   private var future: Future[Unit] = Future.successful(())

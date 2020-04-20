@@ -1,6 +1,6 @@
 package io.youi
 
-import io.youi.net.{Parameters, Path, Protocol, URL}
+import io.youi.net.{Path, Protocol, URL}
 import org.scalajs.dom._
 import reactify.{Channel, Val, Var}
 

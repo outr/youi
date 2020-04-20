@@ -1,10 +1,5 @@
 package io.youi.font
 
-import io.youi.component.extras.HTMLComponent
-import io.youi.dom._
-import io.youi.theme.{FontAwesomeViewTheme, Theme}
-import org.scalajs.dom._
-
 class FontAwesomeView(protected val element: html.Element,
                       val existing: Boolean = false) extends HTMLComponent[html.Element] with FontAwesomeViewTheme {
   def this() = {

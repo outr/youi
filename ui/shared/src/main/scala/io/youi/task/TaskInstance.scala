@@ -1,9 +1,5 @@
 package io.youi.task
 
-import io.youi.Updates
-import reactify._
-import reactify.reaction.Reaction
-
 import scala.concurrent.{Future, Promise}
 
 class TaskInstance(task: Task, updates: Updates) {

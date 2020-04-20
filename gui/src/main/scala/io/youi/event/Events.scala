@@ -2,11 +2,8 @@ package io.youi.event
 
 import io.youi.component.Component
 import io.youi.component.feature.{Feature, FeatureParent}
-import io.youi.theme.Theme
-import reactify.{Channel, Val, Var}
 import org.scalajs.{dom => jsdom}
-
-import scala.scalajs.js.|
+import reactify.{Channel, Val, Var}
 
 class Events(protected val component: Component) extends Feature {
   override protected def parent: FeatureParent = component

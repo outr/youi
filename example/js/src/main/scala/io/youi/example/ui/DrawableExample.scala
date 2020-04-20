@@ -1,8 +1,8 @@
 package io.youi.example.ui
 
 import io.youi.Color
-import io.youi.component.support.PositionSupport
 import io.youi.component.DrawableView
+import io.youi.component.support.PositionSupport
 import io.youi.drawable.{Group, TextDrawable, Transformation}
 import io.youi.example.screen.UIExampleScreen
 import io.youi.font.{CanvasFont, CanvasText, GoogleFont}
@@ -10,8 +10,8 @@ import io.youi.image.Image
 import io.youi.net._
 import io.youi.paint.{Border, GradientPaint, Paint, Stroke}
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class DrawableExample extends UIExampleScreen {
   override def title: String = "Drawable Example"

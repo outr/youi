@@ -6,8 +6,8 @@ import io.youi.example.ui.component.Header
 import io.youi.net.URL
 import io.youi.ui
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 trait UIExampleScreen extends UIScreen {
   protected val header: Header = new Header

@@ -1,6 +1,7 @@
 package io.youi
 
 import org.scalajs.dom.Element
+
 import scala.language.experimental.macros
 
 object Template {

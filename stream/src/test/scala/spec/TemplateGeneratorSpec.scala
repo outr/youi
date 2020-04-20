@@ -1,9 +1,9 @@
 package spec
 
-import io.youi.stream.{HTMLParser, Selector}
 import io.youi.stream.delta.Delta
-import org.scalatest.wordspec.AnyWordSpec
+import io.youi.stream.{HTMLParser, Selector}
 import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
 class TemplateGeneratorSpec extends AnyWordSpec with Matchers {
   "TemplateGenerator" should {

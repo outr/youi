@@ -1,17 +1,17 @@
 package io.youi.example.ui
 
 import io.youi._
-import io.youi.font.GoogleFont
 import io.youi.component._
 import io.youi.component.support.{MeasuredSupport, PositionSupport, ThemeSupport}
 import io.youi.component.types.PositionType
 import io.youi.event.EventSupport
 import io.youi.example.screen.UIExampleScreen
+import io.youi.font.GoogleFont
 import io.youi.net._
 import reactify._
+import scribe.Execution.global
 
 import scala.concurrent.Future
-import scribe.Execution.global
 
 class HelloWorld extends UIExampleScreen {
   override def title: String = "Hello World"

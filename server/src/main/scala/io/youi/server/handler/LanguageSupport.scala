@@ -9,10 +9,10 @@ import io.youi.http.cookie.ResponseCookie
 import io.youi.http.{Headers, HttpConnection}
 import io.youi.net._
 import profig.{Profig, ProfigLookupPath}
-
-import scala.concurrent.Future
 import scribe.Execution.global
 import scribe.Priority
+
+import scala.concurrent.Future
 
 /**
   * LanguageSupport adds simple multi-lingual support to HTML files

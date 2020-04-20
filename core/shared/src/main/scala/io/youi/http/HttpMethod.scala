@@ -1,7 +1,7 @@
 package io.youi.http
 
 import io.circe.Decoder.Result
-import io.circe.{Decoder, DecodingFailure, Encoder, HCursor, Json}
+import io.circe._
 
 sealed abstract class HttpMethod private(val value: String) {
   HttpMethod.map += value -> this

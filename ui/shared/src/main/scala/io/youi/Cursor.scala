@@ -1,7 +1,5 @@
 package io.youi
 
-import io.youi.theme.Stringify
-
 sealed abstract class Cursor(val value: String)
 
 case class ImageCursor(url: String) extends Cursor(s"url($url)")

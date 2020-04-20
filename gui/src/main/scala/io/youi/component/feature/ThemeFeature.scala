@@ -3,8 +3,6 @@ package io.youi.component.feature
 import io.youi.component.Component
 import io.youi.theme.{ElementState, Theme}
 
-import scala.scalajs.js.|
-
 class ThemeFeature(val component: Component) extends Feature {
   override protected def parent: FeatureParent = component
 

@@ -1,7 +1,7 @@
 package io.youi.drawable
 
-import io.youi.util.CanvasPool
 import io.youi._
+import io.youi.util.CanvasPool
 import org.scalajs.dom.html
 
 import scala.concurrent.ExecutionContext.Implicits.global

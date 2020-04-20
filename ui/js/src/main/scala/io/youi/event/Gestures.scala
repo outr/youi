@@ -1,10 +1,5 @@
 package io.youi.event
 
-import io.youi.component.Component
-import io.youi.spatial.{BoundingBox, Point}
-import reactify.reaction.{Reaction, ReactionStatus}
-import reactify.{Channel, Val, Var}
-
 class Gestures(component: Component) {
   private val _pointers = Var[Map[Int, Pointer]](Map.empty)
 

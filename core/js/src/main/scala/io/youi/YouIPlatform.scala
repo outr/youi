@@ -1,9 +1,9 @@
 package io.youi
 
-import scala.concurrent.{Future, Promise}
 import org.scalajs.dom._
 import perfolation._
 
+import scala.concurrent.{Future, Promise}
 import scala.scalajs.js.Date
 
 object YouIPlatform {

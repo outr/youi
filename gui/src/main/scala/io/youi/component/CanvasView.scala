@@ -4,10 +4,7 @@ import io.youi._
 import io.youi.component.feature.{FeatureParent, HeightFeature, WidthFeature}
 import io.youi.component.types.Prop
 import io.youi.drawable.Context
-import io.youi.theme.Theme
 import org.scalajs.dom.html
-
-import scala.scalajs.js.|
 
 abstract class CanvasView(canvas: html.Canvas = dom.create.canvas) extends Component(canvas) with WidthFeature with HeightFeature {
   protected lazy val context: Context = new Context(canvas, ratio)

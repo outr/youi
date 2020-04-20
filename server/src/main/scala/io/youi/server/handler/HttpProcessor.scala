@@ -2,9 +2,9 @@ package io.youi.server.handler
 
 import io.youi.http.HttpConnection
 import io.youi.server.validation.{ValidationResult, Validator}
+import scribe.Execution.global
 
 import scala.concurrent.Future
-import scribe.Execution.global
 
 /**
   * HttpProcessor extends HttpHandler to provide a clean and efficient mechanism to manage proper

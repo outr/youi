@@ -1,9 +1,5 @@
 package io.youi.event
 
-import io.youi.Key
-import io.youi.component.Component
-import org.scalajs.dom.KeyboardEvent
-
 class KeyEvent (target: Component,
                 val `type`: KeyEvent.Type,
                 val key: Key,

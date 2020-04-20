@@ -2,16 +2,16 @@ package io.youi.app.sourceMap
 
 import io.youi.app.ClientApplication
 import io.youi.http.HttpMethod
-import io.youi.{History, _}
 import io.youi.net._
 import io.youi.stream.StreamURL
+import io.youi.{History, _}
 import org.scalajs.dom.{ErrorEvent, Event}
 import scribe.output.LogOutput
 import scribe.writer.Writer
 import scribe.{Level, LogRecord}
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 import scala.language.{implicitConversions, reflectiveCalls}
 import scala.scalajs._
 

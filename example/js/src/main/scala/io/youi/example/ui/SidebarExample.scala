@@ -2,7 +2,7 @@ package io.youi.example.ui
 
 import io.youi._
 import io.youi.component._
-import io.youi.component.support.{BorderSupport, ContentSupport, MarginSupport, MeasuredSupport, PositionSupport, SizeSupport}
+import io.youi.component.support._
 import io.youi.component.types.{Border, BorderStyle, PositionType}
 import io.youi.event.EventSupport
 import io.youi.example.screen.UIExampleScreen

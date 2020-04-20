@@ -1,10 +1,6 @@
 package io.youi.component.feature
 
-import io.youi.component.Component
 import io.youi.component.types.SizeProperty
-import io.youi.theme.Theme
-
-import scala.scalajs.js.|
 
 class MinSizeFeature(override val parent: FeatureParent) extends Feature {
   lazy val width: SizeProperty = new SizeProperty(parent.css.minWidth, parent.css.minWidth_=)

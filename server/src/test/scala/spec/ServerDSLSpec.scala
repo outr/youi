@@ -1,8 +1,8 @@
 package spec
 
 import io.youi.http.{HttpConnection, HttpMethod, HttpRequest, HttpStatus}
-import io.youi.server.dsl._
 import io.youi.net._
+import io.youi.server.dsl._
 import io.youi.server.{DefaultErrorHandler, Server}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AsyncWordSpec

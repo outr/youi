@@ -1,11 +1,6 @@
 package io.youi.image.resize
 
-import com.outr.pica.{Pica, ResizeOptions}
-import io.youi.KeyedSequence
-import org.scalajs.dom.html
-
 import scala.concurrent.Future
-import scala.scalajs.js.|
 
 object PicaResizer extends ImageResizer {
   private lazy val pica: Pica = Pica()

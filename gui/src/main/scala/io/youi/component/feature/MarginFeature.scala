@@ -1,10 +1,6 @@
 package io.youi.component.feature
 
-import io.youi.component.Component
 import io.youi.component.types.Prop
-import io.youi.theme.Theme
-
-import scala.scalajs.js.|
 
 class MarginFeature(override val parent: FeatureParent) extends Feature {
   lazy val left: Prop[Double] = new Prop[Double](-1.0, d => parent.css.marginLeft = d.toString)

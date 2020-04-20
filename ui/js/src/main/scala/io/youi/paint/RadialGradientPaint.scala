@@ -1,9 +1,5 @@
 package io.youi.paint
 
-import io.youi.drawable.Context
-
-import scala.scalajs.js
-
 case class RadialGradientPaint(x0: Double,
                                y0: Double,
                                r0: Double,

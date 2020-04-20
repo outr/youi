@@ -1,8 +1,5 @@
 package io.youi.theme
 
-import io.youi.font.{Material, MaterialIcon}
-import io.youi.theme.mixins.HTMLFontTheme
-
 trait MaterialIconViewTheme extends HTMLComponentTheme with HTMLFontTheme {
   private implicit val iconStringify: Stringify[MaterialIcon] = new Stringify[MaterialIcon] {
     override def fromString(value: String): Option[MaterialIcon] = Some(MaterialIcon(value))

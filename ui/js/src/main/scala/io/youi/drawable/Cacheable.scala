@@ -1,9 +1,5 @@
 package io.youi.drawable
 
-import io.youi.ui
-import io.youi.util.CanvasPool
-import org.scalajs.dom.html
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Future, Promise}
 import scala.util.{Failure, Success}

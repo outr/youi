@@ -1,7 +1,7 @@
 package io.youi.app.screen
 
 import io.youi.task.TaskSupport
-import io.youi.{component, ui}
+import io.youi.ui
 import reactify.{Val, Var}
 
 import scala.concurrent.Future

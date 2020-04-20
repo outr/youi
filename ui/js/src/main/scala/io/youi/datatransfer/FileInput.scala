@@ -1,7 +1,5 @@
 package io.youi.datatransfer
 
-import org.scalajs.dom.{Event, document, html}
-
 class FileInput(input: html.Input, modify: Boolean, folderSupport: Boolean, manager: DataTransferManager) {
   if (modify) {
     input.style.display = "none"

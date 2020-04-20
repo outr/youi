@@ -2,10 +2,8 @@ package io.youi.component.feature
 
 import io.youi.component.Component
 import io.youi.component.types.{PositionType, Prop, SizeProperty}
-import io.youi.theme.Theme
 import reactify._
 
-import scala.scalajs.js.|
 import scala.util.Try
 
 class PositionFeature(override val parent: FeatureParent) extends Feature {

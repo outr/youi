@@ -1,16 +1,15 @@
 package io.youi.app
 
-import io.youi.{BackgroundUpdates, History}
 import io.youi.client.{BlobData, WebSocketClient}
 import io.youi.communication.Connection
 import io.youi.http.ConnectionStatus
 import io.youi.net.{Protocol, URL}
 import io.youi.util.Time
+import io.youi.{BackgroundUpdates, History}
 import org.scalajs.dom._
-
-import scala.concurrent.Future
 import scribe.Execution.global
 
+import scala.concurrent.Future
 import scala.concurrent.duration._
 
 trait ClientConnectedApplication[C <: Connection] extends ClientApplication with YouIConnectedApplication[C] {

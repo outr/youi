@@ -1,8 +1,5 @@
 package io.youi.component
 
-import io.youi.layout.Layout
-import reactify._
-
 trait AbstractContainer[Child <: Component] extends Component { self =>
   protected lazy val children: Var[Vector[Child]] = Var(Vector.empty)
   protected lazy val layout: Var[Layout] = Var(Layout.None)

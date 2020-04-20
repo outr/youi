@@ -1,7 +1,7 @@
 package io.youi.theme
 
+import io.youi.component.feature._
 import io.youi.{CSSManager, Unique}
-import io.youi.component.feature.{BorderFeature, FeatureParent, FontFeature, MarginFeature, MaxSizeFeature, MinSizeFeature, OverflowFeature, PaddingFeature, PositionFeature, SizeFeature, TextDecorationFeature}
 import org.scalajs.dom.raw.CSSStyleDeclaration
 
 import scala.annotation.tailrec

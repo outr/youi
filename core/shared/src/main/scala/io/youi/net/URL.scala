@@ -1,11 +1,11 @@
 package io.youi.net
 
 import io.circe.Decoder.Result
-import io.circe.{Decoder, DecodingFailure, Encoder, HCursor, Json}
+import io.circe._
 
+import scala.language.experimental.macros
 import scala.reflect.macros.blackbox
 import scala.util.matching.Regex
-import scala.language.experimental.macros
 
 case class URL(protocol: Protocol = Protocol.Http,
                host: String = "localhost",

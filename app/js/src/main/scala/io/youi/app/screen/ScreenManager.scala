@@ -1,14 +1,13 @@
 package io.youi.app.screen
 
-import io.youi.{AnimationFrame, ErrorSupport}
-import reactify._
-import io.youi.app.{ClientApplication, YouIApplication}
+import io.youi.app.YouIApplication
 import io.youi.task.TaskSupport
-
-import scala.concurrent.{Future, Promise}
-import scala.concurrent.ExecutionContext.Implicits.global
+import io.youi.{AnimationFrame, ErrorSupport}
 import org.scalajs.dom
+import reactify._
 
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Future, Promise}
 import scala.util.{Failure, Success}
 
 trait ScreenManager extends TaskSupport {

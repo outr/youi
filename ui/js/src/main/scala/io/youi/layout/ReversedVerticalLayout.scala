@@ -1,8 +1,5 @@
 package io.youi.layout
 
-import io.youi.component.Component
-import io.youi.layout.snap.Snap
-
 class ReversedVerticalLayout(spacing: Double = 0.0) extends Layout {
   override def connect(container: Component): Unit = {
     update(container, Vector.empty)

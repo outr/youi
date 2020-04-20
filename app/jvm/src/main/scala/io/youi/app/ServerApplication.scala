@@ -3,24 +3,23 @@ package io.youi.app
 import java.io.File
 
 import io.youi.http._
-import io.youi.http.content.{Content, FileContent, FormDataContent, StringContent, URLContent}
+import io.youi.http.content._
 import io.youi.net._
 import io.youi.server.Server
 import io.youi.server.handler.{CachingManager, HttpHandler, HttpHandlerBuilder, SenderHandler}
-import io.youi.stream.{HTMLParser, Selector}
+import io.youi.stream.delta.Delta
+import io.youi.stream.{HTMLParser, Selector, _}
+import io.youi.util.Time
 import io.youi.{JavaScriptError, JavaScriptLog, http}
 import net.sf.uadetector.UserAgentType
 import net.sf.uadetector.service.UADetectorServiceFactory
-import io.youi.stream._
-import io.youi.stream.delta.Delta
-import io.youi.util.Time
 import profig.{JsonUtil, Profig}
 import reactify.Var
 import scribe.Priority
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
+import scala.concurrent.{Await, Future}
 
 trait ServerApplication extends YouIApplication with Server {
   override def isClient: Boolean = false

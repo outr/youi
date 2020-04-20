@@ -1,8 +1,8 @@
 package io.youi.component
 
-import io.youi.component.support.{BorderSupport, CollapsibleSupport, MaxSizeSupport, MeasuredSupport, OverflowSupport, PositionSupport, PreferredSizeSupport, SizeSupport}
-import io.youi.component.types.{Display, DropType, Overflow, PositionType}
 import io.youi._
+import io.youi.component.support._
+import io.youi.component.types.{Display, DropType, Overflow, PositionType}
 import org.scalajs.dom.html
 import reactify._
 
@@ -45,8 +45,7 @@ class Drop extends Component(dom.create.div) with MaxSizeSupport with SizeSuppor
     val down = `type` == DropType.Down || (`type` == DropType.Auto && distanceToBottom >= distanceToTop)
 
     if (!down) {
-//      position.y := rect.top - maxSize.height
-      position.bottom := rect.top - offsetUp
+      position.y := rect.top - maxSize.height - offsetUp
     }
   }
 

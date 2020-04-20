@@ -1,7 +1,5 @@
 package io.youi.layout
 
-import io.youi.component.Component
-
 /**
   * Layouts can be defined and connected to an AbstractContainer to manage the layout of the children. By default
   * Layout.None is defined and each child is responsible for its own positioning and sizing.

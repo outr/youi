@@ -1,12 +1,5 @@
 package io.youi.font
 
-import io.youi.component.extras.HTMLComponent
-import io.youi.dom._
-import io.youi.theme.{MaterialIconViewTheme, Theme}
-import org.scalajs.dom._
-
-import scribe.Execution.global
-
 class MaterialIconView(protected val element: html.Element,
                        val existing: Boolean = false) extends HTMLComponent[html.Element] with MaterialIconViewTheme {
   def this() = {

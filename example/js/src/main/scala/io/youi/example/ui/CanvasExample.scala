@@ -2,7 +2,7 @@ package io.youi.example.ui
 
 import io.youi.Color
 import io.youi.component.CanvasView
-import io.youi.component.support.{PositionSupport, SizeSupport}
+import io.youi.component.support.PositionSupport
 import io.youi.drawable.Context
 import io.youi.example.screen.UIExampleScreen
 import io.youi.net._

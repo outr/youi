@@ -1,10 +1,5 @@
 package io.youi.path
 
-import io.youi.drawable.Context
-import io.youi.paint.Paint
-
-import scala.scalajs.js
-
 case class Fill(paint: Paint, path: Option[Path] = None, apply: Boolean = true) extends PathAction {
   modified := paint.modified
 

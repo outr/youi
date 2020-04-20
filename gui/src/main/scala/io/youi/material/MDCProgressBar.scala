@@ -1,7 +1,7 @@
 package io.youi.material
 
-import io.youi.component.Component
 import io.youi._
+import io.youi.component.Component
 import io.youi.material.impl.{MDCLinearProgress, MDCLinearProgressImplementation}
 import reactify.Var
 

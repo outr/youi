@@ -1,12 +1,5 @@
 package io.youi.component
 
-import io.youi.component.extras.HTMLComponent
-import io.youi._
-import io.youi.dom._
-import io.youi.theme.{HTMLTextViewTheme, Theme}
-import org.scalajs.dom._
-import org.scalajs.dom.html.Input
-
 class HTMLTextView(protected val element: html.Element,
                    val existing: Boolean = false) extends HTMLComponent[html.Element] with HTMLTextViewTheme {
   def this() = {

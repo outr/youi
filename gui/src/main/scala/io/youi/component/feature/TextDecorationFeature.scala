@@ -1,11 +1,7 @@
 package io.youi.component.feature
 
 import io.youi.Color
-import io.youi.component.Component
 import io.youi.component.types.{Prop, TextDecorationLine, TextDecorationStyle}
-import io.youi.theme.Theme
-
-import scala.scalajs.js.|
 
 class TextDecorationFeature(override val parent: FeatureParent) extends Feature {
   lazy val line: Prop[Set[TextDecorationLine]] = new Prop(

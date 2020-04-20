@@ -1,6 +1,4 @@
 package io.youi.font
-import io.youi.drawable.Context
-import io.youi.paint.{Paint, Stroke}
 
 case class CanvasText(font: CanvasFont, text: String, size: Double, maxWidth: Double, kerning: Boolean) extends Text {
   override def lines: Vector[Vector[CharacterPath]] = Vector.empty

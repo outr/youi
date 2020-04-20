@@ -1,12 +1,9 @@
 package io.youi.component.feature
 
-import io.youi.component.Component
 import io.youi.component.types.{Prop, SizeProperty}
 import io.youi.font.{GoogleFont, GoogleFontWeight}
-import io.youi.theme.Theme
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.scalajs.js.|
 
 class FontFeature(override val parent: FeatureParent) extends Feature {
   lazy val family: Prop[String] = new Prop[String](parent.css.fontFamily, parent.css.fontFamily_=, parent.measureComponent)

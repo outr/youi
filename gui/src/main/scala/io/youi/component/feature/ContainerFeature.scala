@@ -2,11 +2,8 @@ package io.youi.component.feature
 
 import io.youi.component.Component
 import io.youi.dom._
-import io.youi.theme.Theme
 import org.scalajs.dom.html
 import reactify.{Priority, Val, Var}
-
-import scala.scalajs.js.|
 
 class ContainerFeature[Child <: Component](val component: Component) extends Feature {
   override protected def parent: FeatureParent = component

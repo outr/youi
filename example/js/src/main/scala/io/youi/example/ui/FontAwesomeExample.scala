@@ -6,9 +6,9 @@ import io.youi.component.support.{MeasuredSupport, PositionSupport}
 import io.youi.example.screen.UIExampleScreen
 import io.youi.font.FontAwesome
 import io.youi.net._
+import scribe.Execution.global
 
 import scala.concurrent.Future
-import scribe.Execution.global
 
 class FontAwesomeExample extends UIExampleScreen {
   override def title: String = "Font Awesome Example"

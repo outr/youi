@@ -5,8 +5,8 @@ import io.youi.example.ClientExampleApplication
 import io.youi.net._
 import org.scalajs.dom._
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 import scala.util.{Failure, Success}
 
 object LoginScreen extends ExampleScreen {

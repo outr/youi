@@ -1,6 +1,6 @@
 package io.youi
 
-import reactify.{Mutable, Stateful, Var}
+import reactify.{Mutable, Stateful}
 
 import scala.concurrent.Future
 import scala.concurrent.duration.FiniteDuration

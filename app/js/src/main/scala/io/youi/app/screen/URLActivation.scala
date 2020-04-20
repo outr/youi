@@ -1,10 +1,10 @@
 package io.youi.app.screen
 
-import io.youi.{History, HistoryStateChange}
 import io.youi.net.{URL, URLMatcher}
+import io.youi.{History, HistoryStateChange}
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 trait URLActivation extends Screen {
   History.url.attach(validateURL)

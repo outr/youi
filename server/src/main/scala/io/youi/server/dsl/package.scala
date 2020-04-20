@@ -4,17 +4,17 @@ import java.io.File
 
 import io.circe.{Decoder, Encoder}
 import io.youi.http.content.Content
-import io.youi.http.{HttpConnection, HttpStatus, HttpMethod}
+import io.youi.http.{HttpConnection, HttpMethod, HttpStatus}
 import io.youi.net.{ContentType, IP, Path, URLMatcher}
 import io.youi.server.handler._
 import io.youi.server.rest.Restful
 import io.youi.server.validation.{ValidationResult, Validator}
 import io.youi.stream.delta.Delta
+import scribe.Execution.global
 
 import scala.concurrent.Future
 import scala.language.implicitConversions
 import scala.xml.Elem
-import scribe.Execution.global
 
 package object dsl {
   private[youi] val DeltaKey: String = "deltas"

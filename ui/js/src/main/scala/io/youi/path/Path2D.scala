@@ -1,8 +1,5 @@
 package io.youi.path
 
-import scala.scalajs.js
-import scala.scalajs.js.annotation.JSGlobal
-
 @js.native
 @JSGlobal("Path2D")
 class Path2D extends js.Object {

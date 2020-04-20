@@ -1,20 +1,7 @@
 package io.youi.image
 
-import com.outr.{CanvgOptions, canvg}
-import io.youi._
-import io.youi.dom._
-import io.youi.image.resize.ImageResizer
-import io.youi.net.URL
-import io.youi.path.Path
-import io.youi.spatial.{BoundingBox, Size}
-import io.youi.stream.StreamURL
-import io.youi.util.{CanvasPool, LazyFuture}
-import org.scalajs.dom.html
-import org.scalajs.dom.raw._
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Future, Promise}
-import scala.scalajs._
 
 class SVGImage private(private val svg: SVGSVGElement, override protected val canvas: html.Canvas, measured: Size) extends CanvasImage {
   private val reDrawer = LazyFuture {

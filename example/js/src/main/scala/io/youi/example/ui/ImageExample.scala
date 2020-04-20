@@ -8,12 +8,11 @@ import io.youi.image.Image
 import io.youi.net._
 import io.youi.task._
 import io.youi.ui
-
 import reactify._
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.duration._
-import scala.concurrent.ExecutionContext.Implicits.global
 
 class ImageExample extends UIExampleScreen {
   override def title: String = "Image Example"

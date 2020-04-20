@@ -1,7 +1,7 @@
 package io.youi.server.handler
 
 import io.youi.http.content.Content
-import io.youi.http.{CacheControl, CacheControlEntry, Headers, HttpConnection, HttpStatus}
+import io.youi.http._
 
 import scala.concurrent.Future
 

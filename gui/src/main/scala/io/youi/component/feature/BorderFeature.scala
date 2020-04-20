@@ -1,11 +1,7 @@
 package io.youi.component.feature
 
 import io.youi.Stringify
-import io.youi.component.Component
 import io.youi.component.types.{Border, Prop}
-import io.youi.theme.Theme
-
-import scala.scalajs.js.|
 
 class BorderFeature(override val parent: FeatureParent) extends Feature {
   parent.css.boxSizing = "border-box"

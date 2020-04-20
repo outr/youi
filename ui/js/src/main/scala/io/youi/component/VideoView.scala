@@ -1,11 +1,5 @@
 package io.youi.component
 
-import io.youi.component.extras.HTMLComponent
-import io.youi.dom._
-import io.youi.spatial.Size
-import io.youi.theme.{Theme, VideoViewTheme}
-import org.scalajs.dom.{document, html}
-
 class VideoView(override protected val element: html.Element = create[html.Element]("span"),
                 val existing: Boolean = false) extends HTMLComponent[html.Element] with VideoViewTheme {
   override protected def defaultParentTheme: Theme = VideoView

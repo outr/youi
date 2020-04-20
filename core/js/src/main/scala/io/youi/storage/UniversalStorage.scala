@@ -1,10 +1,9 @@
 package io.youi.storage
 
 import reactify.Var
-
-import scala.concurrent.{Future, Promise}
 import scribe.Execution.global
 
+import scala.concurrent.{Future, Promise}
 import scala.language.experimental.macros
 import scala.util.Try
 

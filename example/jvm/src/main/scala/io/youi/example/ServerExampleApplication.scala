@@ -7,6 +7,7 @@ import io.youi.net._
 import io.youi.server.WebSocketListener
 import io.youi.server.dsl._
 import io.youi.server.handler.{CachingManager, LanguageSupport}
+import io.youi.upload.UploadManager
 import profig.JsonUtil
 import scribe.Execution.global
 
@@ -14,12 +15,16 @@ import scala.concurrent.Future
 
 object ServerExampleApplication extends ExampleApplication with ServerConnectedApplication[ExampleConnection] {
   val generalPages: Page = page(GeneralPages)
+  val uploadManager: UploadManager = UploadManager()
 
   case class Greeting(message: String, name: String)
 
   override def getOrCreateConnection(listener: WebSocketListener): ExampleConnection = new ServerConnection
 
   override protected def init(): Future[Unit] = {
+    uploadManager.received.attach { file =>
+      scribe.info(s"File received: ${file.getAbsolutePath}")
+    }
     super.init().map { _ =>
       // TODO: add support to `Connection` to add deltas so they may all be processed at the end
       proxies += ProxyHandler(path.exact("/proxy.html")) { url =>
@@ -37,7 +42,7 @@ object ServerExampleApplication extends ExampleApplication with ServerConnectedA
           ) / Application / ServerApplication.AppTemplate,
           path"/cookies.html" / CookiesExample,
           path"/session.html" / SessionExample,
-          path"/upload" / AJAXUploadExample,
+          uploadManager,
           ClassLoaderPath(pathTransform = (path: String) => s"content$path") / CachingManager.LastModified(),
           path.startsWith("/app") / ClassLoaderPath()
         )

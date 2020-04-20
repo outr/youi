@@ -4,6 +4,7 @@ import io.youi.Color
 import io.youi.app.{ClientApplication, ClientConnectedApplication}
 import io.youi.example.screen.{CommunicationScreen, ExampleBootstrapScreen, LoginScreen}
 import io.youi.example.ui._
+import io.youi.upload.UploadManager
 
 import scala.scalajs.js.annotation.JSExportTopLevel
 
@@ -14,6 +15,8 @@ object ClientExampleApplication extends ExampleApplication with ClientConnectedA
       val light: Color = Color.fromLong(0x63b4edff)
     }
   }
+
+  val uploadManager: UploadManager = UploadManager()
 
   // Adds debug support to the application (press F2)
 //  val debug = new DebugSupport

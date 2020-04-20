@@ -1,6 +1,6 @@
 package io.youi.stream
 
-import java.io.{File, IOException}
+import java.io.{File, FileOutputStream, IOException}
 
 import scala.annotation.tailrec
 
@@ -55,6 +55,15 @@ object IO {
     } else {
       stream(source, destination)
     }
+  }
+
+  def merge(sources: List[File], destination: File): Unit = {
+    val outputStream = new FileOutputStream(destination)
+    sources.foreach { source =>
+      stream(source, outputStream, closeOnComplete = false)
+    }
+    outputStream.flush()
+    outputStream.close()
   }
 
   def delete(file: File): Boolean = {

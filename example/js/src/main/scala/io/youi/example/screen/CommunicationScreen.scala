@@ -100,31 +100,28 @@ object CommunicationScreen extends ExampleScreen with PreloadedContentScreen {
       evt.stopPropagation()
       val file = uploadInput.files.item(0)
       scribe.info("Upload start!")
-      uploadWebSocket(file)
-//      uploadAJAX(file)
+//      uploadWebSocket(file)
+      uploadAJAX(file)
     })
   }
 
   private def uploadWebSocket(file: File): Unit = {
+    val start = System.currentTimeMillis()
     ClientExampleApplication.upload(file).foreach { actualFileName =>
-      scribe.info(s"Uploaded successfully: $actualFileName")
+      scribe.info(s"Uploaded successfully: $actualFileName in ${System.currentTimeMillis() - start} milliseconds")
     }
   }
 
-  private lazy val ajax = new AjaxManager(1)
-
   private def uploadAJAX(file: File): Unit = {
-    val action = ajax.enqueue(
-      url = History.url.withPath(path"/upload"),
-      data = Some(new FormData {
-        append("file", file, file.name)
-      })
-    )
-    action.percentage.attach { p =>
+    val uploading = ClientExampleApplication.uploadManager.upload(file)
+    uploading.future.foreach { fileName =>
+      scribe.info(s"Uploaded $fileName!")
+    }
+    uploading.percentage.attach { p =>
       scribe.info(s"Percentage: $p")
     }
-    action.future.foreach { request =>
-      scribe.info(s"Completed! ${action.percentage()}, ${action.cancelled()}, ${action.loaded()}")
+    uploading.progress.attach { p =>
+      scribe.info(s"Progress: $p of ${file.size}")
     }
   }
 }

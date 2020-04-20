@@ -12,6 +12,17 @@ import reactify.Channel
 import scala.concurrent.Future
 import scribe.Execution.global
 
+/**
+  * UploadManager represents a system to support uploads to the server and should be coupled with the Scala.js
+  * UploadManager counter-part.
+  *
+  * Must be instantiated and added as an `HttpHandler` on the server and have the same upload path as the Scala.js
+  * instance.
+  *
+  * @param path the path to receive uploads
+  * @param directory the directory to store uploads to
+  * @param authenticator an optional authenticator to determine uploads to accept or reject - default accepts anything
+  */
 case class UploadManager(path: Path = path"/upload",
                          directory: File = new File(System.getProperty("java.io.tmpdir")),
                          authenticator: Option[HttpConnection => Boolean] = None) extends HttpHandler {

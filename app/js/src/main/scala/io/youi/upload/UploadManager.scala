@@ -2,6 +2,7 @@ package io.youi.upload
 
 import io.youi.History
 import io.youi.ajax.AjaxManager
+import io.youi.component.FileInput
 import io.youi.http.Headers
 import io.youi.net._
 import org.scalajs.dom.raw.{File, FormData}
@@ -30,8 +31,38 @@ case class UploadManager(url: URL = History.url.withPath(path"/upload"),
                          headers: Headers = Headers.empty,
                          withCredentials: Boolean = true,
                          ajaxManager: AjaxManager = new AjaxManager(4)) {
-  def upload(file: File, headers: Headers = Headers.empty): Uploading = {
-    val headersMap = this.headers.merge(headers).map.map {
+  private var verifier: File => Future[Boolean] = _ => Future.successful(true)
+  private var action: Uploading => Unit = _ => ()
+  private val fileInput = new FileInput {
+    files.attach { files =>
+      if (files.nonEmpty) {
+        verifyAndUpload(files)
+        reset()
+      }
+    }
+  }
+
+  private def verifyAndUpload(files: List[File]): Future[Unit] = if (files.nonEmpty) {
+    val file = files.head
+    verifier(file).flatMap { verified =>
+      if (verified) upload(file)
+      verifyAndUpload(files.tail)
+    }
+  } else {
+    Future.successful(())
+  }
+
+  def select(multiple: Boolean = false,
+             verifier: File => Future[Boolean] = _ => Future.successful(true))
+            (action: Uploading => Unit): Unit = {
+    this.verifier = verifier
+    this.action = action
+    fileInput.multiple @= multiple
+    fileInput.click()
+  }
+
+  def upload(file: File): Uploading = {
+    val headersMap = headers.map.map {
       case (key, values) => key -> values.head
     }
     val progress = Var[Long](0)
@@ -43,7 +74,9 @@ case class UploadManager(url: URL = History.url.withPath(path"/upload"),
       progress = progress,
       headers = headersMap
     )
-    Uploading(progress, percentage, future)
+    val uploading = Uploading(file, progress, percentage, future)
+    action(uploading)
+    uploading
   }
 
   private def uploadSlice(file: File,

@@ -26,7 +26,7 @@ import scribe.Execution.global
 case class UploadManager(path: Path = path"/upload",
                          directory: File = new File(System.getProperty("java.io.tmpdir")),
                          authenticator: Option[HttpConnection => Boolean] = None) extends HttpHandler {
-  val received: Channel[File] = Channel[File]
+  val received: Channel[UploadedFile] = Channel[UploadedFile]
 
   private def extensionFromFileName(fileName: String): String = {
     val lastDotIndex = fileName.lastIndexOf('.')
@@ -49,7 +49,7 @@ case class UploadManager(path: Path = path"/upload",
                 val ext = extensionFromFileName(fileEntry.fileName)
                 val f = File.createTempFile(fileEntry.fileName, s".$ext")
                 fileEntry.file.renameTo(f)
-                received @= f
+                received @= UploadedFile(f, fileEntry.fileName)
                 f.getName
               }
               case "mergeSlices" => {
@@ -59,7 +59,7 @@ case class UploadManager(path: Path = path"/upload",
                 val sources = slices.map(fn => new File(directory, fn))
                 val destination = File.createTempFile(fileName, s".$ext")
                 IO.merge(sources, destination)
-                received @= destination
+                received @= UploadedFile(destination, fileName)
                 destination.getName
               }
             }
@@ -67,8 +67,8 @@ case class UploadManager(path: Path = path"/upload",
               response.withContent(Content.string(fileName, ContentType.`text/plain`))
             }
           }
-          case None => connection.modify { response =>
-            response.withStatus(HttpStatus.NoContent).withContent(Content.string("No content sent", ContentType.`text/plain`))
+          case _ => connection.modify { response =>
+            response.withStatus(HttpStatus.OK).withContent(Content.string("No content sent", ContentType.`text/plain`))
           }
         }
       } else {

@@ -23,7 +23,7 @@ object ServerExampleApplication extends ExampleApplication with ServerConnectedA
 
   override protected def init(): Future[Unit] = {
     uploadManager.received.attach { file =>
-      scribe.info(s"File received: ${file.getAbsolutePath}")
+      scribe.info(s"File received: ${file.file.getAbsolutePath}")
     }
     super.init().map { _ =>
       // TODO: add support to `Connection` to add deltas so they may all be processed at the end

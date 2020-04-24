@@ -31,8 +31,8 @@ case class UploadManager(url: URL = History.url.withPath(path"/upload"),
                          headers: Headers = Headers.empty,
                          withCredentials: Boolean = true,
                          ajaxManager: AjaxManager = new AjaxManager(4)) {
-  private var verifier: File => Future[Boolean] = _ => Future.successful(true)
-  private var action: Uploading => Unit = _ => ()
+  private var verifier: File => Future[Boolean] = (_: File) => Future.successful(true)
+  private var action: Uploading => Unit = (_: Uploading) => ()
   private val fileInput = new FileInput {
     files.attach { files =>
       if (files.nonEmpty) {

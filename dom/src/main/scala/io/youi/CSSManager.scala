@@ -12,8 +12,8 @@ object CSSManager {
   private lazy val styleSheet: CSSStyleSheet = style.sheet.asInstanceOf[CSSStyleSheet]
 
   def insertRule(selector: String): CSSStyleDeclaration = {
-    styleSheet.insertRule(s"$selector {}")
-    val index = styleSheet.cssRules.length - 1
+    val index = styleSheet.insertRule(s"$selector {}")
+    scribe.info(s"Creating rule: $selector")
     styleSheet.cssRules(index).asInstanceOf[CSSPageRule].style
   }
 }

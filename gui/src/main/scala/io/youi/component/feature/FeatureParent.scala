@@ -31,6 +31,7 @@ trait FeatureParent {
   })
   lazy val userSelect: Prop[UserSelect] = Prop.stringify(css.getPropertyValue("user-select"), css.setProperty("user-select", _), UserSelect, UserSelect.Initial)
   lazy val verticalAlign: Prop[VerticalAlign] = Prop.stringify(css.verticalAlign, css.verticalAlign_=, VerticalAlign, VerticalAlign.Unset)
+  lazy val visibility: Prop[Visibility] = Prop.stringify(css.visibility, css.visibility_=, Visibility, Visibility.Unset)
   lazy val whiteSpace: Prop[WhiteSpace] = Prop.stringify(css.whiteSpace, css.whiteSpace_=, WhiteSpace, WhiteSpace.Normal, measureComponent)
 
   def measureComponent(): Unit = this match {

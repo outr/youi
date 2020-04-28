@@ -16,10 +16,12 @@ trait CollapsibleSupport {
 
   protected var future: Future[Unit] = Future.successful(())
 
+  protected def startCollapsed: Boolean = true
+
   val easing: Var[Easing] = Var(Easing.exponentialOut)
   val speed: Var[FiniteDuration] = Var(300.millis)
   val animate: Var[Boolean] = Var(true)
-  val collapsed: Var[Boolean] = Var(true)
+  val collapsed: Var[Boolean] = Var(startCollapsed)
 
   protected def direction: Plane
   protected def expanded: Double = direction match {
@@ -36,9 +38,20 @@ trait CollapsibleSupport {
 
   prop := 0.0
 
-  collapsed.attachAndFire {
+  collapsed.attach {
     case true => collapse()
     case false => expand()
+  }
+
+  animate @= false
+  try {
+    if (collapsed) {
+      collapse()
+    } else {
+      expand()
+    }
+  } finally {
+    animate @= true
   }
 
   private def expand(): Future[Unit] = if (animate) {

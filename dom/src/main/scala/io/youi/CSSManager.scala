@@ -13,7 +13,6 @@ object CSSManager {
 
   def insertRule(selector: String): CSSStyleDeclaration = {
     val index = styleSheet.insertRule(s"$selector {}")
-    scribe.info(s"Creating rule: $selector")
     styleSheet.cssRules(index).asInstanceOf[CSSPageRule].style
   }
 }

@@ -3,7 +3,7 @@ package io.youi.upload
 import io.youi.History
 import io.youi.ajax.AjaxManager
 import io.youi.component.FileInput
-import io.youi.http.Headers
+import io.youi.http.{Headers, HttpMethod}
 import io.youi.net._
 import org.scalajs.dom.raw.{File, FormData}
 import reactify.{Val, Var}
@@ -22,14 +22,14 @@ import scribe.Execution.global
   * @param chunkSize the size to slice large files to (defaults to 50 meg)
   * @param timeout the timeout in seconds (defaults to 0 - no timeout)
   * @param headers headers to be passed (defaults to empty)
-  * @param withCredentials whether credentials should be passed (defaults to true)
+  * @param withCredentials whether credentials should be passed (defaults to false)
   * @param ajaxManager an AJAXManager to use (defaults to a new instance with four maximum concurrent)
   */
 case class UploadManager(url: URL = History.url.withPath(path"/upload"),
                          chunkSize: Long = 50L * 1000L * 1000L,
                          timeout: Int = 0,
                          headers: Headers = Headers.empty,
-                         withCredentials: Boolean = true,
+                         withCredentials: Boolean = false,
                          ajaxManager: AjaxManager = new AjaxManager(4)) {
   private var verifier: File => Future[Boolean] = (_: File) => Future.successful(true)
   private var action: Uploading => Unit = (_: Uploading) => ()
@@ -91,11 +91,14 @@ case class UploadManager(url: URL = History.url.withPath(path"/upload"),
     val sliceName = file.name
     val action = ajaxManager.enqueue(
       url = url,
+      method = HttpMethod.Post,
       data = Some(new FormData {
         append("type", "upload")
         append("file", sliced, sliceName)
       }),
-      headers = headers
+      timeout = timeout,
+      headers = headers,
+      withCredentials = withCredentials
     )
     val reaction = action.loaded.attach(d => progress @= math.min(offset + d.toLong, total))
     action.future.transformWith { t =>

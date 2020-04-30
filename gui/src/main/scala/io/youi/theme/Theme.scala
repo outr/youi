@@ -39,6 +39,12 @@ object Theme {
   private var classNames = Set.empty[String]
   private var cache = Map.empty[String, Theme]
 
+  def create(selector: String)(creator: Theme => Unit): Theme = {
+    val theme = bySelector(selector)
+    creator(theme)
+    theme
+  }
+
   def bySelector(selector: String): Theme = cache.get(selector) match {
     case Some(theme) => theme
     case None => {

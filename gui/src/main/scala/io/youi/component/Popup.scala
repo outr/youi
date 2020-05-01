@@ -4,14 +4,14 @@ import io.youi.component.support.{PositionSupport, SizeSupport}
 import io.youi.component.types.{Display, PositionType}
 import io.youi.easing.Easing
 import io.youi.task._
-import io.youi.ui
+import io.youi.{Initializable, ui}
 import reactify.{Mutable, Stateful, Var}
 import scribe.Execution.global
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
 
-class Popup(showGlassPane: Boolean = true) extends Container with SizeSupport with PositionSupport {
+class Popup(showGlassPane: Boolean = true) extends Container with SizeSupport with PositionSupport with Initializable {
   private var future: Future[Unit] = Future.successful(())
 
   def preferredWidth: Double = 600.0
@@ -29,7 +29,7 @@ class Popup(showGlassPane: Boolean = true) extends Container with SizeSupport wi
 
   val speed: Var[FiniteDuration] = Var(150.millis)
 
-  def init(): Unit = {
+  override protected def initialize(): Unit = {
     position.x @= 0.0
     position.y @= 0.0
     position.z @= 2000
@@ -45,6 +45,8 @@ class Popup(showGlassPane: Boolean = true) extends Container with SizeSupport wi
   }
 
   def show(): Future[Unit] = {
+    init()
+
     future = future.flatMap { _ =>
       Popup._active += this
       sequential(

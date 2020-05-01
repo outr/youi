@@ -8,7 +8,7 @@ import reactify._
 
 import scala.concurrent.Future
 
-class Drop extends Component(dom.create.div) with MaxSizeSupport with SizeSupport with PositionSupport with BorderSupport with OverflowSupport with CollapsibleSupport {
+class Drop extends Component(dom.create.div) with MaxSizeSupport with SizeSupport with PositionSupport with BorderSupport with OverflowSupport with CollapsibleSupport with Initializable {
   private var showing: Option[Component] = None
   private var `type`: DropType = DropType.Auto
 
@@ -16,17 +16,22 @@ class Drop extends Component(dom.create.div) with MaxSizeSupport with SizeSuppor
   val offsetDown: Var[Double] = Var(0.0)
   val offsetUp: Var[Double] = Var(0.0)
 
-  element.appendChild(container)
-  position.x @= 0.0
-  position.y @= 0.0
-  position.z @= 3000
-  position.`type` @= PositionType.Absolute
-  size.width := math.round(container.preferred.width + 2.0)
-  display @= Display.None
+  override protected def initialize(): Unit = {
+    element.appendChild(container)
+    position.x @= 0.0
+    position.y @= 0.0
+    position.z @= 3000
+    position.`type` @= PositionType.Absolute
+    size.width := math.round(container.preferred.width + 2.0)
+    display @= Display.None
 
-  overflow @= Overflow.Hidden
+    overflow @= Overflow.Hidden
+    ui.children += this
+  }
 
   def show(target: Component, `type`: DropType = DropType.Auto): Future[Unit] = {
+    init()
+
     showing = Some(target)
     this.`type` = `type`
     Drop.opening(this)

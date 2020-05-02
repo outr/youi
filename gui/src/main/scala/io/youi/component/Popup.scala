@@ -1,7 +1,7 @@
 package io.youi.component
 
 import io.youi.component.support.{PositionSupport, SizeSupport}
-import io.youi.component.types.{Display, PositionType}
+import io.youi.component.types.{Display, PositionType, UserSelect}
 import io.youi.easing.Easing
 import io.youi.task._
 import io.youi.{Initializable, ui}
@@ -70,6 +70,7 @@ class Popup(showGlassPane: Boolean = true) extends Container with SizeSupport wi
   def hide(): Future[Unit] = {
     future = future.flatMap { _ =>
       Popup._active -= this
+      glassPane.foreach(_.element.style.pointerEvents = "none")
       sequential(
         parallel(
           position.y.to(ui.size.height).in(speed).easing(easing),
@@ -78,7 +79,8 @@ class Popup(showGlassPane: Boolean = true) extends Container with SizeSupport wi
           }.getOrElse(Task.None)
         ),
         display @= Display.None,
-        glassPane.foreach(_.display @= Display.None)
+        glassPane.foreach(_.display @= Display.None),
+        glassPane.foreach(_.element.style.pointerEvents = "auto")
       ).start().future.map(_ => ())
     }
     future

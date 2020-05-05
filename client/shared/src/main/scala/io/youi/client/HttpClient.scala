@@ -72,11 +72,34 @@ case class HttpClient(request: HttpRequest,
   def noFailOnHttpStatus: HttpClient = failOnHttpStatus(failOnHttpStatus = false)
   def ignoreSSLCertificates: HttpClient = copy(validateSSLCertificates = false)
 
-  def content(content: Content): HttpClient = modify(_.copy(content = Some(content)))
+  /**
+    * Sets the content to be sent. If this request is set to GET, it will automatically be changed to POST.
+    *
+    * @param content the content to set
+    * @return HttpClient
+    */
+  def content(content: Content): HttpClient = modify(r => r.copy(
+    content = Some(content),
+    method = if (r.method == HttpMethod.Get) HttpMethod.Post else r.method)
+  )
+
+  /**
+    * Sets the content to be sent optionally. If this request is set to GET, it will automatically be changed to POST.
+    *
+    * @param content the content to set - if None, nothing will be changed
+    * @return HttpClient
+    */
   def content(content: Option[Content]): HttpClient = content match {
     case Some(c) => this.content(c)
     case None => this
   }
+
+  /**
+    * Convenience method to sending JSON content.
+    *
+    * @param json the JSON content to send
+    * @return HttpClient
+    */
   def json(json: Json): HttpClient = content(StringContent(printer.print(json), ContentType.`application/json`))
 
   /**

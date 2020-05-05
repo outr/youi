@@ -21,6 +21,7 @@ trait FeatureParent {
   lazy val display: Prop[Display] = Prop.stringify(css.display, css.display_=, Display, Display.Inherit, measureComponent)
   lazy val floatStyle: Prop[FloatStyle] = Prop.stringify(css.cssFloat, css.cssFloat_=, FloatStyle, FloatStyle.None)
   lazy val opacity: Prop[Double] = new Prop[Double](Try(css.opacity.toDouble).getOrElse(1.0), d => css.opacity = d.toString)
+  lazy val pointerEvents: Prop[PointerEvents] = Prop.stringify(css.pointerEvents, css.pointerEvents_=, PointerEvents, PointerEvents.Unset)
   lazy val rotation: Prop[Double] = new Prop[Double](0.0, d => {
     val s = if (d != 0.0) {
       s"rotate(${d * 360.0}deg)"

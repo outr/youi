@@ -27,9 +27,10 @@ class Events(protected val component: Component) extends Feature {
   object pointer {
     lazy val move: Channel[PointerEvent] = pointerChannel(PointerEvent.Type.Move)
     lazy val enter: Channel[PointerEvent] = pointerChannel(PointerEvent.Type.Enter)
-    lazy val exit: Channel[PointerEvent] = pointerChannel(PointerEvent.Type.Exit)
+    lazy val leave: Channel[PointerEvent] = pointerChannel(PointerEvent.Type.Leave)
     lazy val down: Channel[PointerEvent] = pointerChannel(PointerEvent.Type.Down)
     lazy val up: Channel[PointerEvent] = pointerChannel(PointerEvent.Type.Up)
+    lazy val out: Channel[PointerEvent] = pointerChannel(PointerEvent.Type.Out)
     lazy val cancel: Channel[PointerEvent] = pointerChannel(PointerEvent.Type.Cancel)
     lazy val wheel: Channel[WheelEvent] = wheelChannel()
 
@@ -38,7 +39,7 @@ class Events(protected val component: Component) extends Feature {
       val py = Var[Double](0.0)
       val o = Var[Boolean](false)
       pointer.enter.on(o @= true)
-      pointer.exit.on(o @= false)
+      pointer.leave.on(o @= false)
       pointer.move.attach { evt =>
         px @= evt.local.x
         py @= evt.local.y
@@ -50,7 +51,7 @@ class Events(protected val component: Component) extends Feature {
       val d = Var[Boolean](false)
       pointer.down.on(d @= true)
       pointer.up.on(d @= false)
-      pointer.exit.on(d @= false)
+      pointer.leave.on(d @= false)
       d
     }
   }

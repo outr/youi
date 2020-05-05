@@ -43,14 +43,14 @@ class Drop extends Component(dom.create.div) with MaxSizeSupport with SizeSuppor
   def updatePosition(): Unit = showing.foreach { target =>
     val rect = target.absoluteBounding
     position.x @= math.min(rect.left, ui.size.width - container.preferred.width)
-    position.y @= rect.bottom + offsetDown
+    position.y @= (rect.bottom + offsetDown) - ui.margin.top
 
     val distanceToTop = rect.top
     val distanceToBottom = ui.size.height - rect.bottom
     val down = `type` == DropType.Down || (`type` == DropType.Auto && distanceToBottom >= distanceToTop)
 
     if (!down) {
-      position.y := rect.top - maxSize.height - offsetUp
+      position.y := (rect.top - maxSize.height - offsetUp) - ui.margin.top
     }
   }
 

@@ -24,6 +24,8 @@ class MDCButton extends Component(dom.create.button) with InternalContainerSuppo
   val leading: ButtonIcon = new ButtonIcon
   val trailing: ButtonIcon = new ButtonIcon
 
+  label.on(measure.trigger())
+
   def this(label: String, leading: MaterialIcon = Material.Icons.Empty, trailing: MaterialIcon = Material.Icons.Empty) = {
     this()
     this.label @= label

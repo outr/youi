@@ -14,30 +14,28 @@ class Pointers(event: Events) {
   def get(identifier: Int): Option[Pointer] = map().get(identifier)
   def apply(identifier: Int): Pointer = get(identifier).getOrElse(throw new RuntimeException(s"Unable to find pointer by id: $identifier."))
 
-  if (EventSupport.hasTouchSupport) {
-    event.touch.start.attach(add)
-    event.touch.move.attach(dragging)
-    event.touch.cancel.attach(remove)
-    event.touch.end.attach(remove)
-  }
-  event.pointer.down.attach(add)
-  event.pointer.move.attach(dragging)
+  event.pointer.down.attach(pointerDown)
+  event.pointer.move.attach(pointerMove)
+  event.pointer.up.attach(pointerUp)
+  event.pointer.cancel.attach(pointerUp)
+  event.pointer.out.attach(pointerUp)
+  event.pointer.leave.attach(pointerUp)
 
-  (event.pointer.up & event.pointer.cancel).attach(remove)
-
-  private def add(evt: PointerEvent): Unit = {
+  private def pointerDown(evt: PointerEvent): Unit = {
     val p = Pointer(evt.identifier, evt, evt, evt)
     _pointers @= _pointers() + (evt.identifier -> p)
 
     added @= p
   }
-  private def dragging(evt: PointerEvent): Unit = get(evt.identifier).foreach { p =>
+
+  private def pointerMove(evt: PointerEvent): Unit = get(evt.identifier).foreach { p =>
     val updated = p.withEvent(evt)
 
     _pointers @= _pointers() + (p.identifier -> updated)
     dragged @= updated
   }
-  private def remove(evt: PointerEvent): Unit = get(evt.identifier).foreach { p =>
+
+  private def pointerUp(evt: PointerEvent): Unit = get(evt.identifier).foreach { p =>
     _pointers @= _pointers() - evt.identifier
 
     removed @= p.copy()

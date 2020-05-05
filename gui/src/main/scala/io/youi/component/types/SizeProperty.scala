@@ -40,26 +40,20 @@ class SizeProperty(get: => String, set: String => Unit, callbacks: (() => Unit)*
     set(value)
   }
 
-  def refresh(): Unit = get match {
-    case null | "" | "auto" => {
-      this @= -1.0
-      `type` @= SizeType.Auto
-    }
-    case "initial" => {
-      this @= -1.0
-      `type` @= SizeType.Initial
-    }
-    case "inherit" => {
-      this @= -1.0
-      `type` @= SizeType.Inherit
-    }
-    case SizeProperty.ValueRegex(number, unit) => {
-      this @= number.toDouble
-      `type` @= SizeType(unit)
-    }
+  def refresh(): Unit = {
+    val (v, t) = SizeProperty(get)
+    this @= v
+    `type` @= t
   }
 }
 
 object SizeProperty {
   val ValueRegex: Regex = """([0-9.]+)(ch|em|ex|rem|vh|vw|vmin|vmax|px|cm|mm|in|pc|pt)""".r
+
+  def apply(value: String): (Double, SizeType) = value.trim match {
+    case null | "" | "auto" => -1.0 -> SizeType.Auto
+    case "initial" => -1.0 -> SizeType.Initial
+    case "inherit" => -1.0 -> SizeType.Inherit
+    case SizeProperty.ValueRegex(number, unit) => number.toDouble -> SizeType(unit)
+  }
 }

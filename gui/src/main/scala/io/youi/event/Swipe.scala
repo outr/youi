@@ -1,12 +1,12 @@
 package io.youi.event
 
-import io.youi.Plane
+import io.youi._
 import io.youi.component.Component
 import reactify.Channel
 
 class Swipe(component: Component,
             events: Events,
-            onlyTouch: Boolean,
+            onlyMobile: Boolean,
             directions: Set[Swipe.Direction] = Swipe.Direction.All) {
   private var dragging: Option[SwipeEvent] = None
 
@@ -15,7 +15,7 @@ class Swipe(component: Component,
   lazy val end: Channel[SwipeEvent] = Channel[SwipeEvent]
 
   events.pointers.dragged.attach { p =>
-    if (!onlyTouch || p.start.isTouch) {
+    if (!onlyMobile || isMobileDevice) {
       val absX = math.abs(p.movedFromStart.deltaX)
       val absY = math.abs(p.movedFromStart.deltaY)
       val plane = dragging.map(_.direction.plane).orElse(

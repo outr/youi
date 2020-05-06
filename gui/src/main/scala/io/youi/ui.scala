@@ -11,7 +11,7 @@ import reactify._
 
 object ui extends Container(document.body) with SizeSupport with EventSupport with TaskSupport with MarginSupport {
   override lazy val title: Prop[String] = new Prop(document.title, document.title_=)
-  lazy val swipe: Swipe = new Swipe(ui, ui.event, onlyTouch = true)
+  lazy val swipe: Swipe = new Swipe(ui, ui.event, onlyMobile = true)
   val windowMeasurer: Var[Size => Size] = Var(_.set(measuredWidth, measuredHeight))
 
   private val mutableSize = Size.mutable()

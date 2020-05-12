@@ -8,22 +8,23 @@ import reactify._
 
 import scala.concurrent.Future
 
-class Drop extends Component(dom.create.div) with MaxSizeSupport with SizeSupport with PositionSupport with BorderSupport with OverflowSupport with CollapsibleSupport with Initializable {
+class Drop extends Collapsible with PositionSupport with BorderSupport with Initializable {
   private var showing: Option[Component] = None
   private var `type`: DropType = DropType.Auto
 
-  lazy val container: Container with PreferredSizeSupport = new Container with PreferredSizeSupport
+  override lazy val container: Container with MeasuredSupport with PaddingSupport = new Container with MeasuredSupport with PaddingSupport
   val offsetDown: Var[Double] = Var(0.0)
   val offsetUp: Var[Double] = Var(0.0)
 
+  display @= Display.None
+
   override protected def initialize(): Unit = {
-    element.appendChild(container)
+    super.initialize()
+
     position.x @= 0.0
     position.y @= 0.0
     position.z @= 3000
     position.`type` @= PositionType.Absolute
-    size.width := math.round(container.preferred.width + 2.0)
-    display @= Display.None
 
     overflow @= Overflow.Hidden
     ui.children += this
@@ -42,7 +43,7 @@ class Drop extends Component(dom.create.div) with MaxSizeSupport with SizeSuppor
 
   def updatePosition(): Unit = showing.foreach { target =>
     val rect = target.absoluteBounding
-    position.x @= math.min(rect.left, ui.size.width - container.preferred.width)
+    position.x @= math.min(rect.left, ui.size.width - width)
     position.y @= (rect.bottom + offsetDown) - ui.margin.top
 
     val distanceToTop = rect.top
@@ -50,7 +51,7 @@ class Drop extends Component(dom.create.div) with MaxSizeSupport with SizeSuppor
     val down = `type` == DropType.Down || (`type` == DropType.Auto && distanceToBottom >= distanceToTop)
 
     if (!down) {
-      position.y := (rect.top - maxSize.height - offsetUp) - ui.margin.top
+      position.y := (rect.top - size.height - offsetUp) - ui.margin.top
     }
   }
 
@@ -70,7 +71,7 @@ class Drop extends Component(dom.create.div) with MaxSizeSupport with SizeSuppor
 
   override protected def direction: Plane = Plane.Vertical
 
-  override protected def expanded: Double = container.preferred.height + 2.0
+//  override protected def expanded: Double = container.preferred.height + 2.0
 }
 
 object Drop {

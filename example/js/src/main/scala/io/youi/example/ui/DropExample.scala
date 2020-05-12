@@ -2,7 +2,7 @@ package io.youi.example.ui
 
 import io.youi._
 import io.youi.component._
-import io.youi.component.support.{MeasuredSupport, PositionSupport}
+import io.youi.component.support.{MeasuredSupport, PaddingSupport, PositionSupport}
 import io.youi.component.types.{DropType, PositionType}
 import io.youi.event.EventSupport
 import io.youi.example.screen.UIExampleScreen
@@ -32,9 +32,10 @@ class DropExample extends UIExampleScreen {
     text.font.family @= fnt.family
     container.children += text
 
-    val dropdown = new Drop with EventSupport
+    val dropdown = new Drop with EventSupport with PaddingSupport
     dropdown.backgroundColor @= Color.LightCoral
     dropdown.border.radius @= 5.0
+    dropdown.container.padding @= 10.px
     dropdown.container.children += new TextView {
       content @= "This is dropdown text!<br/>One<br/>Two<br/>Three"
     }
@@ -43,8 +44,12 @@ class DropExample extends UIExampleScreen {
     text.event.click.attach { evt =>
       dropdown.toggle(text, DropType.Up)
     }
-    dropdown.event.click.on {
-      dropdown.hide()
+    dropdown.event.click.attach { evt =>
+      evt.preventDefault()
+      evt.stopPropagation()
+      dropdown.container.children += new TextView {
+        content @= "This is dropdown text!<br/>One<br/>Two<br/>Three"
+      }
     }
   }
 }

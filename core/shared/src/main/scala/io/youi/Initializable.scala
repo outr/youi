@@ -5,8 +5,8 @@ trait Initializable {
 
   final def init(): Unit = synchronized {
     if (!initialized) {
-      initialize()
       initialized = true
+      initialize()
     }
   }
 

@@ -6,5 +6,5 @@ import io.youi.component.feature.SizeFeature
 trait SizeSupport {
   this: Component =>
 
-  val size: SizeFeature = new SizeFeature(this)
+  val size: SizeFeature = new SizeFeature(this)()
 }

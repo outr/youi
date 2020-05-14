@@ -31,7 +31,7 @@ class Theme(val selector: String) extends FeatureParent {
   def overflow: OverflowFeature = FeatureParent[OverflowFeature](this, new OverflowFeature(this))
   def padding: PaddingFeature = FeatureParent[PaddingFeature](this, new PaddingFeature(this))
   def position: PositionFeature = FeatureParent[PositionFeature](this, new PositionFeature(this))
-  def size: SizeFeature = FeatureParent[SizeFeature](this, new SizeFeature(this))
+  def size: SizeFeature = FeatureParent[SizeFeature](this, new SizeFeature(this)())
   def textDecoration: TextDecorationFeature = FeatureParent[TextDecorationFeature](this, new TextDecorationFeature(this))
 }
 

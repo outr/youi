@@ -1,6 +1,10 @@
 package io.youi.font
 
+import io.youi.net._
+
 object FontAwesome extends FontAwesome {
+  var url: URL = url"https://kit.fontawesome.com/afbab8b8a9.js"
+
   val None: FontAwesomeIcon = FontAwesomeIcon("", "")
 
   lazy val Ad: FontAwesomeType = FontAwesomeType("ad")

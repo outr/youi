@@ -19,8 +19,8 @@ class GlassPane extends Component(dom.create.div) with SizeSupport with Position
   position.x @= 0.0
   position.y @= 0.0
   position.z @= 1500
-  size.width := ui.size.width
-  size.height := ui.size.height
+  size.width := GlassPane.width
+  size.height := GlassPane.height
   backgroundColor := Color.Black.withAlpha(backgroundAlpha)
   display @= Display.None
 
@@ -46,4 +46,9 @@ class GlassPane extends Component(dom.create.div) with SizeSupport with Position
       display @= Display.None
     }
   }
+}
+
+object GlassPane {
+  var width: Var[Double] = ui.size.width
+  var height: Var[Double] = ui.size.height
 }

@@ -15,7 +15,7 @@ import net.sf.uadetector.UserAgentType
 import net.sf.uadetector.service.UADetectorServiceFactory
 import profig.{JsonUtil, Profig}
 import reactify.Var
-import scribe.Priority
+import scribe.{MDC, Priority}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
@@ -105,7 +105,11 @@ trait ServerApplication extends YouIApplication with Server {
               formData.stringOption("message").map(_.value).foreach { jsonString =>
                 val log = JsonUtil.fromJsonString[JavaScriptLog](jsonString)
 
-                scribe.info(s"[JS] ${log.message.trim} (ip: $ip, userAgent: $userAgentString)")
+                MDC.contextualize("ip", ip.toString) {
+                  MDC.contextualize("userAgent", userAgentString) {
+                    scribe.info(s"[JS] ${log.message.trim}")
+                  }
+                }
               }
             }
             case otherContent => scribe.error(s"Unsupported content type: $otherContent (${otherContent.getClass.getName})")

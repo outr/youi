@@ -6,8 +6,6 @@ class FontAwesomeView(protected val element: html.Element,
     this(create[html.Element]("i"))
   }
 
-  FontAwesome.load()
-
   override protected def defaultParentTheme: Theme = FontAwesomeView
 
   override def componentType: String = "FontAwesomeView"

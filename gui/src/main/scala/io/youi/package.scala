@@ -71,7 +71,7 @@ package object youi {
     e.classList.add("fa-question")
     e.style.visibility = "hidden"
     document.body.appendChild(e)
-    dom.addScript(url"https://kit.fontawesome.com/afbab8b8a9.js").flatMap { _ =>
+    dom.addScript(FontAwesome.url).flatMap { _ =>
       waitForComputed(e, "font-family", 50.milliseconds) { value =>
         val b = value.contains("Font Awesome")
         if (b) document.body.removeChild(e)
@@ -86,6 +86,8 @@ package object youi {
   private var googleFontFutures = Map.empty[GoogleFont, Future[GoogleFont]]
 
   implicit class ExtendedGoogleFont(font: GoogleFont) {
+    def loaded(): Unit = googleFontFutures += font -> Future.successful(font)
+
     def load(): Future[GoogleFont] = googleFontFutures.get(font) match {
       case Some(future) => future
       case None => {

@@ -43,7 +43,7 @@ class SizeProperty(get: => String, set: String => Unit, callbacks: (() => Unit)*
   def refresh(): Unit = {
     val (v, t) = SizeProperty(get)
     this @= v
-    `type` @= t
+    `type`.static(t)
   }
 }
 

@@ -186,6 +186,29 @@ object dom extends ExtendedElement(None) {
       e
     }
 
+    def verifyChildrenInOrder(children: Element*): E = {
+      if (children.nonEmpty) {
+        val collection = e.children
+        val head = children.head
+        var lastIndex = collection.indexOf(head)
+        if (lastIndex == -1) {
+          head.insertFirst(e)
+          lastIndex = 0
+        }
+        children.tail.foreach { child =>
+          lastIndex = collection.indexOf(child) match {
+            case n if n == -1 || n < lastIndex => {
+              if (n != -1) child.remove()
+              e.appendChild(child)
+              collection.indexOf(child)
+            }
+            case n => n
+          }
+        }
+      }
+      e
+    }
+
     def addClasses(classes: String*): E = {
       classes.foreach(c => e.classList.add(c))
       e

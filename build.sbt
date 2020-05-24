@@ -3,7 +3,7 @@ import sbtcrossproject.CrossType
 
 name := "youi"
 organization in ThisBuild := "io.youi"
-version in ThisBuild := "0.13.13"
+version in ThisBuild := "0.13.14-SNAPSHOT"
 scalaVersion in ThisBuild := "2.13.2"
 crossScalaVersions in ThisBuild := List("2.13.2", "2.12.11")
 resolvers in ThisBuild ++= Seq(

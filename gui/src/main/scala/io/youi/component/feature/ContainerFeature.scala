@@ -8,9 +8,13 @@ import reactify.{Priority, Var}
 class ContainerFeature[Child <: Component](val component: Component) extends Var[Vector[Child]](Vector.empty) with Feature {
   override protected def parent: FeatureParent = component
 
-  on {
-    component.element.verifyChildrenInOrder(get.map(_.element): _*)
-    component.measure.trigger()
+  changes {
+    case (old, current) => {
+      val removed = old.diff(current)
+      removed.foreach(_.element.remove())
+      component.element.verifyChildrenInOrder(get.map(_.element): _*)
+      component.measure.trigger()
+    }
   }
 
   def clear(): Unit = {

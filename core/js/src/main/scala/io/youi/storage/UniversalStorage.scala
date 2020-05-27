@@ -8,7 +8,16 @@ import scala.language.experimental.macros
 import scala.util.Try
 
 object UniversalStorage {
-  private lazy val native: Option[NativeLocalStorage.type] = Try(Some(NativeLocalStorage)).getOrElse(None)
+  private lazy val native: Option[NativeLocalStorage.type] = Try {
+    val n = Some(NativeLocalStorage)
+    scribe.info("Found NativeLocalStorage")
+    n
+  }.getOrElse(None)
+  private lazy val forage: Option[LocalForage.type] = Try {
+    val f = Some(LocalForage)
+    scribe.info("Found LocalForage")
+    f
+  }.getOrElse(None)
 
   def getOrCreate(key: String, default: => String): Future[String] = {
     get(key).flatMap {
@@ -26,9 +35,14 @@ object UniversalStorage {
       }, (_: NativeStorageError) => {
         promise.success(None)
       })
-      case None => LocalStorage.string.get(key) match {
-        case Some(value) => promise.success(Some(value))
-        case None => promise.success(None)
+      case None => forage match {
+        case Some(s) => s.getItem(key).toFuture.map { s =>
+          promise.success(Option(s))
+        }
+        case None => LocalStorage.string.get(key) match {
+          case Some(value) => promise.success(Some(value))
+          case None => promise.success(None)
+        }
       }
     }
 
@@ -44,9 +58,12 @@ object UniversalStorage {
       }, (error: NativeStorageError) => {
         promise.failure(new RuntimeException(s"Error using native storage: ${error.code}"))
       })
-      case None => {
-        LocalStorage.string(key) = value
-        promise.success(value)
+      case None => forage match {
+        case Some(s) => s.setItem(key, value).toFuture.map(_ => value)
+        case None => {
+          LocalStorage.string(key) = value
+          promise.success(value)
+        }
       }
     }
 

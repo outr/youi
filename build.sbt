@@ -203,7 +203,6 @@ lazy val capacitor = project.in(file("capacitor"))
   .settings(
     name := "youi-capacitor"
   )
-  .dependsOn(dom)
 
 lazy val optimizer = project.in(file("optimizer"))
   .settings(

@@ -13,13 +13,13 @@ import scala.concurrent.Future
 import scala.concurrent.duration._
 
 trait ClientConnectedApplication[C <: Connection] extends ClientApplication with YouIConnectedApplication[C] {
-  def communicationURL: Future[URL] = Future.successful {
-    val protocol = if (baseURL.protocol == Protocol.Https) {
+  def communicationURL: Future[URL] = baseURL.map { url =>
+    val protocol = if (url.protocol == Protocol.Https) {
       Protocol.Wss
     } else {
       Protocol.Ws
     }
-    baseURL
+    url
       .withProtocol(protocol)
       .withPath(communicationPath)
   }

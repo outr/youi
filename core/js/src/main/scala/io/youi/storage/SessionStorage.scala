@@ -1,7 +1,7 @@
 package io.youi.storage
 
-import org.scalajs.dom.{raw, window}
+import org.scalajs.dom.window
 
 object SessionStorage extends Storage {
-  override protected def storage: raw.Storage = window.sessionStorage
+  override def implementation: StorageImplementation = new JavaScriptStorageImplementation(window.sessionStorage)
 }

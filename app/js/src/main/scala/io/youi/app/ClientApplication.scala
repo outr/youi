@@ -4,7 +4,7 @@ import io.youi.ajax.AjaxRequest
 import io.youi.app.screen.ScreenManager
 import io.youi.app.sourceMap.ErrorTrace
 import io.youi.net._
-import io.youi.storage.LocalStorage
+import io.youi.storage.{LocalStorage, UniversalStorage}
 import io.youi.{History, JavaScriptError, JavaScriptLog}
 import org.scalajs.dom.{ErrorEvent, FormData, XMLHttpRequest, window}
 import profig.JsonUtil
@@ -20,7 +20,7 @@ import scala.scalajs.js.|
 trait ClientApplication extends YouIApplication with ScreenManager {
   ClientApplication.instance = this
 
-  def baseURL: URL = URL(window.location.href).withPath(path"/").clearParams().withoutFragment()
+  def baseURL: Future[URL] = Future.successful(URL(window.location.href).withPath(path"/").clearParams().withoutFragment())
 
   override def isClient: Boolean = true
 
@@ -41,7 +41,7 @@ trait ClientApplication extends YouIApplication with ScreenManager {
   }
 
   // Client-side management and caching of URL-based session id
-  LocalStorage.get[String]("sessionId") match {
+  UniversalStorage.string.get("sessionId").map {
     case Some(sessionId) => if (History.url().param("sessionId").contains(sessionId)) {
       // Already set, nothing needed
     } else {
@@ -51,7 +51,7 @@ trait ClientApplication extends YouIApplication with ScreenManager {
     }
     case None => History.url.param("sessionId").foreach { sessionId =>
       // Store the session id in local storage
-      LocalStorage("sessionId") = sessionId
+      UniversalStorage("sessionId") = sessionId
     }
   }
 

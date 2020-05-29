@@ -15,7 +15,7 @@ object YouIPlatform {
     val promise = Promise[Unit]
     window.setTimeout(() => {
       promise.success(())
-    }, millis)
+    }, millis.toDouble)
     promise.future
   }
 
@@ -27,7 +27,7 @@ object YouIPlatform {
   }
 
   def toHTTPDate(time: Long): String = {
-    val date = new Date(time)
+    val date = new Date(time.toDouble)
     s"${DayNames(date.getUTCDay().toInt)}, ${date.getUTCDate().f(i = 2)} ${MonthNames(date.getUTCMonth().toInt)} ${date.getUTCFullYear()} ${date.getUTCHours()}:${date.getUTCMinutes().f(i = 2)}:${date.getUTCSeconds().f(i = 2)} GMT"
   }
 }

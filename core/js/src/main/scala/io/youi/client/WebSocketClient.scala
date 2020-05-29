@@ -40,7 +40,7 @@ class WebSocketClient(url: URL) extends WebSocket {
         val blobs = (0 until chunks).toList.map { index =>
           val start = chunkSize * index
           val end = start + chunkSize
-          blob.slice(start, end)
+          blob.slice(start.toDouble, end.toDouble)
         }
         blobs.foreach { b =>
           webSocket.send(b)

@@ -5,49 +5,111 @@ import reactify.Var
 import scala.concurrent.Future
 import scala.language.experimental.macros
 import scala.reflect.macros.blackbox
+import scribe.Execution.global
 
 trait Storage {
-  protected def storage: org.scalajs.dom.raw.Storage
+  def implementation: StorageImplementation
 
   object string {
-    def get(key: String): Option[String] = Option(storage.getItem(key))
-    def update(key: String, value: String): Unit = storage.setItem(key, value)
-    def remove(key: String): Unit = storage.removeItem(key)
+    def get(key: String): Future[Option[String]] = implementation.get(key)
+    def getOrElse(key: String, default: => String): Future[String] = get(key).map(_.getOrElse(default))
+    def update(key: String, value: String): Future[Unit] = implementation.set(key, value)
+    def remove(key: String): Future[Unit] = implementation.remove(key)
     def prop(key: String, default: => String): Var[String] = {
-      val p = Var[String](get(key).getOrElse(default))
-      p.attach { value =>
-        update(key, value)
+      val p = Var(default)
+      get(key).foreach(_.foreach(p.static))
+      p.attach { v =>
+        update(key, v)
       }
       p
     }
   }
 
-  def get[T](key: String): Option[T] = macro Storage.macroGet[T]
-  def update[T](key: String, value: T): Unit = macro Storage.macroUpdate[T]
-  def remove(key: String): Unit = string.remove(key)
+  def get[T](key: String): Future[Option[T]] = macro Storage.macroGet[T]
+  def getOrElse[T](key: String, default: => T): Future[T] = macro Storage.macroGetOrElse[T]
+  def getOrCreate[T](key: String, default: => T): Future[T] = macro Storage.macroGetOrCreate[T]
+  def update[T](key: String, value: T): Future[Unit] = macro Storage.macroUpdate[T]
+  def remove(key: String): Future[Unit] = string.remove(key)
 
-  def prop[T](key: String, default: => T): Var[T] =  macro Storage.macroProp[T]
+  def prop[T](key: String, default: => T): Var[T] = macro Storage.macroProp[T]
+  def connect[T](key: String, prop: Var[T]): Future[Option[T]] = macro Storage.macroConnect[T]
 }
 
+
+
 object Storage {
-  def macroGet[T](c: blackbox.Context)(key: c.Expr[String])(t: c.WeakTypeTag[T]): c.Expr[Option[T]] = {
+  def macroGet[T](c: blackbox.Context)(key: c.Expr[String])(t: c.WeakTypeTag[T]): c.Expr[Future[Option[T]]] = {
     import c.universe._
 
-    c.Expr[Option[T]](
+    val prefix = c.prefix.tree
+
+    c.Expr[Future[Option[T]]](
       q"""
-         io.youi.storage.LocalStorage.string.get($key).flatMap { s =>
-           profig.JsonUtil.fromJsonString[Option[$t]](s)
-         }
+          import profig._
+
+          $prefix.string.get($key).map { o =>
+            o.flatMap(s => JsonUtil.fromJsonString[Option[$t]](s))
+          }
        """)
   }
 
-  def macroUpdate[T](c: blackbox.Context)(key: c.Expr[String], value: c.Expr[T])(t: c.WeakTypeTag[T]): c.Expr[Unit] = {
+  def macroGetOrElse[T](c: blackbox.Context)(key: c.Expr[String], default: c.Tree)(t: c.WeakTypeTag[T]): c.Expr[Future[T]] = {
     import c.universe._
 
-    c.Expr[Unit](
+    val prefix = c.prefix.tree
+
+    c.Expr[Future[T]](
       q"""
-         val json = profig.JsonUtil.toJsonString[$t]($value)
-         io.youi.storage.LocalStorage.string.update($key, json)
+          import profig._
+
+          $prefix.string.getOrElse($key, JsonUtil.toJsonString[$t]($default)).map { s =>
+            JsonUtil.fromJsonString[Option[$t]](s).getOrElse($default)
+          }
+       """)
+  }
+
+  def macroGetOrCreate[T](c: blackbox.Context)(key: c.Expr[String], default: c.Tree)(t: c.WeakTypeTag[T]): c.Expr[Future[T]] = {
+    import c.universe._
+
+    val prefix = c.prefix.tree
+
+    c.Expr[Future[T]](
+      q"""
+          import profig._
+
+          def create(): Future[$t] = {
+            val d = $default
+            val s = JsonUtil.toJsonString[$t](d)
+            $prefix.string.update($key, s).map { _ =>
+              d
+            }
+          }
+
+          $prefix.string.get($key).flatMap {
+            case Some(s) => try {
+              Future.successful(JsonUtil.fromJsonString[$t](s))
+            } catch {
+              case t: Throwable => {
+                scribe.warn("Error loading " + $key + ": " + t.getMessage)
+                create()
+              }
+            }
+            case None => create()
+          }
+       """)
+  }
+
+  def macroUpdate[T](c: blackbox.Context)(key: c.Expr[String], value: c.Expr[T])(t: c.WeakTypeTag[T]): c.Expr[Future[Unit]] = {
+    import c.universe._
+
+    val prefix = c.prefix.tree
+
+    c.Expr[Future[Unit]](
+      q"""
+          import profig._
+
+          val json = JsonUtil.toJsonString[$t]($value)
+          $prefix.string.update($key, json)
        """
     )
   }
@@ -56,49 +118,50 @@ object Storage {
                                         default: c.Tree)(t: c.WeakTypeTag[T]): c.Expr[Var[T]] = {
     import c.universe._
 
+    val prefix = c.prefix.tree
+
     c.Expr[Var[T]](
       q"""
-         val initial = try {
-           _root_.io.youi.storage.LocalStorage.get[$t]($key).getOrElse($default)
-         } catch {
-           case t: Throwable => {
-             _root_.scribe.warn(t.getMessage + " Deleting stored data and resetting to default value.")
-             _root_.io.youi.storage.LocalStorage.remove($key)
-             $default
-           }
-         }
-         val p = reactify.Var[$t](initial)
-         p.attach { value =>
-           io.youi.storage.LocalStorage.update($key, value)
-         }
-         p
+          import _root_.reactify._
+
+          val v = Var[$t]($default)
+          val future = $prefix.getOrElse[$t]($key, $default)
+          future.foreach(v.static)
+          future.failed.foreach { t =>
+            _root_.scribe.warn(t.getMessage + " Failure to load value for properly. Resetting to default value.")
+            $prefix.remove($key)
+          }
+          v.attach { value =>
+            $prefix.update($key, value)
+          }
+          v
        """
     )
   }
 
-  def universalProp[T](c: blackbox.Context)
-                      (key: c.Expr[String], v: c.Expr[Var[T]])
-                      (t: c.WeakTypeTag[T]): c.Expr[Future[Unit]] = {
+  def macroConnect[T](c: blackbox.Context)
+                     (key: c.Expr[String], prop: c.Expr[Var[T]])
+                     (t: c.WeakTypeTag[T]): c.Expr[Future[Option[T]]] = {
     import c.universe._
 
-    c.Expr[Future[Unit]](
-      q"""
-        import _root_.io.youi.storage._
-        import _root_.profig._
+    val prefix = c.prefix.tree
 
-        UniversalStorage.get($key).map { result =>
-          result match {
-            case Some(value) => try {
-              $v @= JsonUtil.fromJsonString[$t](value)
-            } catch {
-              case t: Throwable => scribe.warn("JSON incompatibility while attempting to load " + $key, t)
+    val value = macroGet[T](c)(key)(t)
+    c.Expr[Future[Option[T]]](
+      q"""
+            import profig._
+
+            $value.map { o =>
+              o.foreach { t =>
+                $prop @= t
+              }
+              $prop.attach { t =>
+                val json = JsonUtil.toJsonString[$t](t)
+                $prefix.string.update($key, json)
+              }
+              o
             }
-            case None => // No current value
-          }
-          $v.attach { value =>
-            UniversalStorage.set($key, JsonUtil.toJsonString[$t](value))
-          }
-        }
-       """)
+         """
+    )
   }
 }

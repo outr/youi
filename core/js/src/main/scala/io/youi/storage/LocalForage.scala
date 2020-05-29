@@ -1,16 +1,14 @@
 package io.youi.storage
 
-import scala.scalajs.js
-import scala.scalajs.js.annotation.JSGlobal
+import scala.concurrent.Future
 
-@js.native
-@JSGlobal("localforage")
-object LocalForage extends js.Object {
-  def getItem(key: String): js.Promise[String] = js.native
-  def setItem(key: String, value: String): js.Promise[String] = js.native
-  def removeItem(key: String): js.Promise[Unit] = js.native
-  def clear(): js.Promise[Unit] = js.native
-  def length(): js.Promise[Int] = js.native
-  def key(keyIndex: Int): js.Promise[String] = js.native
-  def keys(): js.Promise[js.Array[String]] = js.native
+import scribe.Execution.global
+
+object LocalForage extends Storage {
+  override def implementation: StorageImplementation = new StorageImplementation {
+    override def get(key: String): Future[Option[String]] = JavaScriptLocalForage.getItem(key).toFuture.map(Option.apply)
+    override def set(key: String, value: String): Future[Unit] = JavaScriptLocalForage.setItem(key, value).toFuture.map(_ => ())
+    override def remove(key: String): Future[Unit] = JavaScriptLocalForage.removeItem(key).toFuture
+    override def clear(): Future[Unit] = JavaScriptLocalForage.clear().toFuture
+  }
 }

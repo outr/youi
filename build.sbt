@@ -38,7 +38,7 @@ val webFontLoaderVersion = "1.6.28_2"
 val canvgVersion = "1.4.0_3"
 
 val scalaJSDOM = "1.0.0"
-val okHttpVersion = "4.7.0"
+val okHttpVersion = "4.7.2"
 val uaDetectorVersion = "2014.10"
 val undertowVersion = "2.1.1.Final"
 val closureCompilerVersion = "v20200406"

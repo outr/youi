@@ -1,7 +1,7 @@
 package io.youi.storage
 
-import org.scalajs.dom.{raw, window}
+import org.scalajs.dom.window
 
 object LocalStorage extends Storage {
-  override protected def storage: raw.Storage = window.localStorage
+  override def implementation: StorageImplementation = new JavaScriptStorageImplementation(window.localStorage)
 }

@@ -51,7 +51,7 @@ val scalaCheckVersion = "1.14.3"
 lazy val root = project.in(file("."))
   .aggregate(
     macrosJS, macrosJVM, coreJS, coreJVM, spatialJS, spatialJVM, stream, dom, clientJS, clientJVM, communicationJS,
-    communicationJVM, server, serverUndertow, gui, optimizer, appJS, appJVM, exampleJS, exampleJVM
+    communicationJVM, server, serverUndertow, gui, capacitor, optimizer, appJS, appJVM, exampleJS, exampleJVM
   )
   .settings(
     publish := {},
@@ -197,6 +197,13 @@ lazy val gui = project.in(file("gui"))
     )
   )
   .dependsOn(dom, spatialJS)
+
+lazy val capacitor = project.in(file("capacitor"))
+  .enablePlugins(ScalaJSPlugin)
+  .settings(
+    name := "youi-capacitor"
+  )
+  .dependsOn(dom)
 
 lazy val optimizer = project.in(file("optimizer"))
   .settings(

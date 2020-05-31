@@ -26,8 +26,6 @@ class HelloWorld extends UIExampleScreen {
   }
 
   class HelloText extends TextView with PositionSupport with MeasuredSupport with EventSupport with ThemedComponent {
-    override protected def defaultTheme: Theme = HelloText
-
     content @= "Hello, World!"
 
     position.`type` @= PositionType.Absolute

@@ -6,11 +6,8 @@ import org.scalajs.dom.raw.CSSStyleDeclaration
 
 import scala.annotation.tailrec
 
-class Theme(sel: String = "") extends FeatureParent {
-  val selector: String = sel match {
-    case "" => s".${getClass.getSimpleName.replace("$", "")}"
-    case s => s
-  }
+trait Theme extends FeatureParent {
+  def selector: String = s".${getClass.getSimpleName.replace("$", "")}"
 
   def className: Option[String] = Theme.classNameFromSelector(selector)
 
@@ -55,7 +52,7 @@ object Theme {
   def bySelector(selector: String): Theme = cache.get(selector) match {
     case Some(theme) => theme
     case None => {
-      val theme = new Theme(selector)
+      val theme = SelectorTheme(selector)
       classNameFromSelector(selector).foreach { className =>
         classNames += className
       }
@@ -96,4 +93,6 @@ object Theme {
       Some(className)
     }
   }
+
+  case class SelectorTheme(override val selector: String) extends Theme
 }

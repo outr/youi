@@ -2,13 +2,11 @@ package io.youi.example.ui
 
 import io.youi._
 import io.youi.component._
-import io.youi.component.support.{MeasuredSupport, PositionSupport, ThemedComponent}
+import io.youi.component.support.{MeasuredSupport, PositionSupport, SingletonThemedComponent}
 import io.youi.component.types.PositionType
-import io.youi.event.EventSupport
 import io.youi.example.screen.UIExampleScreen
 import io.youi.font.GoogleFont
 import io.youi.net._
-import io.youi.theme.Theme
 import reactify._
 import scribe.Execution.global
 
@@ -22,19 +20,17 @@ class HelloWorld extends UIExampleScreen {
     fnt <- GoogleFont.`Lobster`.load()
   } yield {
     HelloText.font.family @= fnt.family
-    container.children += new HelloText
+    container.children += HelloText
   }
 
-  class HelloText extends TextView with PositionSupport with MeasuredSupport with EventSupport with ThemedComponent {
+  object HelloText extends TextView with SingletonThemedComponent with MeasuredSupport with PositionSupport {
     content @= "Hello, World!"
 
     position.`type` @= PositionType.Absolute
     position.center := ui.size.center
     position.middle := ui.size.middle
-  }
 
-  object HelloText extends Theme {
-    font.size @= 64.px
-    color @= Color.DarkBlue
+    theme.font.size @= 64.px
+    theme.color @= Color.DarkBlue
   }
 }

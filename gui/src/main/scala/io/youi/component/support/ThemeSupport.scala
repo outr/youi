@@ -1,7 +1,7 @@
 package io.youi.component.support
 
 import io.youi.component.Component
-import io.youi.component.feature.ThemeFeature
+import io.youi.component.feature.{FeatureParent, ThemeFeature}
 
 trait ThemeSupport {
   this: Component =>

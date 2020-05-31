@@ -6,7 +6,14 @@ import org.scalajs.dom.raw.CSSStyleDeclaration
 
 import scala.annotation.tailrec
 
-class Theme(val selector: String) extends FeatureParent {
+class Theme(sel: String = "") extends FeatureParent {
+  val selector: String = sel match {
+    case "" => s".${getClass.getSimpleName.replace("$", "")}"
+    case s => s
+  }
+
+  def className: Option[String] = Theme.classNameFromSelector(selector)
+
   override lazy val css: CSSStyleDeclaration = CSSManager.insertRule(selector)
 
   def apply(state: ElementState): Theme = {

@@ -21,7 +21,7 @@ class MDCChip extends Component(dom.create.div) with EventSupport with InternalC
     this.trailing.value @= trailing
   }
 
-  classes := Set("mdc-chip")
+  classes := List("mdc-chip")
   element.setAttribute("role", "row")
 
   protected object elements {

@@ -13,7 +13,7 @@ import scala.scalajs.js
 import scala.scalajs.js.annotation.JSGlobal
 
 class MDCTopAppBar extends Component(dom.create[html.Element]("header")) {
-  classes := Set("mdc-top-app-bar")
+  classes := List("mdc-top-app-bar")
 
   val heading: Var[String] = Var("")
 

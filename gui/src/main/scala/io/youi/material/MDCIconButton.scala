@@ -6,7 +6,7 @@ import io.youi.material.impl.{MDCRipple, MDCRippleImplementation}
 import reactify.Var
 
 class MDCIconButton extends Component(dom.create.button) {
-  classes := Set("mdc-icon-button", "material-icons")
+  classes := List("mdc-icon-button", "material-icons")
 
   def this(icon: MaterialIcon) = {
     this()

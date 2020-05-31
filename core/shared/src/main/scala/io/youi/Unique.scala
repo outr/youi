@@ -11,7 +11,7 @@ object Unique {
   val LettersAndNumbers = s"$LettersLower$Numbers"
   val AllLettersAndNumbers = s"$LettersLower$LettersUpper$Numbers"
 
-  private def r = ThreadLocalRandom.current()
+  private def r: ThreadLocalRandom = ThreadLocalRandom.current()
 
   /**
     * Generates a unique String using the characters supplied at the length defined.

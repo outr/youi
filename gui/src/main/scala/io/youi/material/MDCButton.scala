@@ -11,7 +11,7 @@ import org.scalajs.dom.html
 import reactify.Var
 
 class MDCButton extends Component(dom.create.button) with InternalContainerSupport[Component] {
-  classes := Set("mdc-button")
+  classes := List("mdc-button")
 
   protected def button: html.Button = element.asInstanceOf[html.Button]
 

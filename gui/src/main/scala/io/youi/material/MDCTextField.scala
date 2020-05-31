@@ -12,7 +12,7 @@ import scala.scalajs.js
 import scala.scalajs.js.annotation.JSGlobal
 
 class MDCTextField extends Component(dom.create.div) {
-  classes := Set("mdc-text-field")
+  classes := List("mdc-text-field")
 
   val label: Var[String] = Var("")
   val value: Var[String] = Var("")

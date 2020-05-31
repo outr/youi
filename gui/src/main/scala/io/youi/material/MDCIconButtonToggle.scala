@@ -11,7 +11,7 @@ import scala.scalajs.js
 import scala.scalajs.js.annotation.JSGlobal
 
 class MDCIconButtonToggle extends Component(dom.create.button) {
-  classes := Set("mdc-icon-button")
+  classes := List("mdc-icon-button")
   element.setAttribute("aria-pressed", "false")
 
   val on: Var[MaterialIcon] = Var(Material.Icons.Alert.ErrorOutline)

@@ -1,6 +1,6 @@
 package io.youi.material
 
-import io.youi.component.Component
+import io.youi.component.{Component, TextView}
 import io.youi.component.support.{ContentSupport, InternalContainerSupport}
 import io.youi.component.types.Display
 import io.youi.dom
@@ -9,7 +9,7 @@ import io.youi.event.EventSupport
 import org.scalajs.dom.html
 import reactify.Var
 
-class MDCChip extends Component(dom.create.div) with EventSupport with InternalContainerSupport[Component] {
+class MDCChip extends Component(dom.create.div) with EventSupport with InternalContainerSupport[Component] { chip =>
   val content: Var[String] = Var("")
   val leading: ChipIcon = new ChipIcon("leading")
   val trailing: ChipIcon = new ChipIcon("trailing")
@@ -41,11 +41,10 @@ class MDCChip extends Component(dom.create.div) with EventSupport with InternalC
       span.addClasses("mdc-chip__primary-action")
       span
     }
-    val label: html.Span = {
-      val span = dom.create.span
-      span.addClasses("mdc-chip__text")
-      content.attachAndFire(span.innerHTML_=)
-      span
+    val label: TextView = new TextView {
+      classes += "mdc-chip__text"
+      content := chip.content
+      display := (if (chip.content().isEmpty) Display.None else Display.InlineBlock)
     }
     val trailingCell: html.Span = {
       val span = dom.create.span

@@ -15,9 +15,6 @@ import scala.language.implicitConversions
 import scala.scalajs.js
 
 package object youi {
-  lazy val isIOS: Boolean = Set("iPad Simulator", "iPhone Simulator", "iPod Simulator", "iPad", "iPhone", "iPod")
-    .contains(window.navigator.platform)
-
   def devicePixelRatio: Double = window.devicePixelRatio
   def backingStoreRatio: Double = CanvasPool.withCanvas(1.0, 1.0) { canvas =>
     def opt(d: js.Dynamic): Option[Double] = d.asInstanceOf[js.UndefOr[Double]].toOption
@@ -40,10 +37,12 @@ package object youi {
       document.body.removeChild(div)
     }
   }
-  lazy val isMobileDevice: Boolean = {
-    val ua = window.navigator.userAgent.toLowerCase
-    ua.contains("iphone") || ua.contains("ipad") || ua.contains("android")
-  }
+  lazy val ua: String = window.navigator.userAgent.toLowerCase
+  lazy val isIPhone: Boolean = ua.contains("iphone")
+  lazy val isIPad: Boolean = ua.contains("ipad")
+  lazy val isIOS: Boolean = isIPhone || isIPad
+  lazy val isAndroid: Boolean = ua.contains("android")
+  lazy val isMobileDevice: Boolean = isIOS || isAndroid
 
   private def waitForComputed(e: html.Element,
                               key: String,

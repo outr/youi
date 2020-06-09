@@ -43,6 +43,7 @@ object ClientExampleApplication extends ExampleApplication with ClientConnectedA
   val imageChange: ImageChangeExample = new ImageChangeExample
   val mdc: MDCExample = new MDCExample
   val popup: PopupExample = new PopupExample
+  val scrolling: ScrollingExample = new ScrollingExample
   val sidebar: SidebarExample = new SidebarExample
   val text: TextViewExample = new TextViewExample
   //  val grid: GridLayoutExample = new GridLayoutExample

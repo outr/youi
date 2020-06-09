@@ -78,7 +78,7 @@ class Sidebar(container: Option[Component with SizeSupport with MarginSupport],
   // Swipe support
   private var start = 0.0
   ui.swipe.start.attach { evt =>
-    if (swipe && evt.direction.plane == Plane.Horizontal) {
+    if (swipe && Popup.active.isEmpty && evt.direction.plane == Plane.Horizontal) {
       swiping.asInstanceOf[Var[Boolean]] @= true
       start = position.x
       glassPane.foreach(_.display @= Display.Block)

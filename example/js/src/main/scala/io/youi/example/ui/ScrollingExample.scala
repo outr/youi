@@ -1,74 +1,82 @@
-//package io.youi.example.ui
-//
-//import io.youi._
-//import io.youi.app.screen.UIScreen
-//import io.youi.component.mixins.{ScrollBar, ScrollSupport}
-//import io.youi.component.{Container, TextView}
-//import io.youi.font.{GoogleFont, OpenTypeFont}
-//import io.youi.layout.VerticalLayout
-//import io.youi.paint.{Paint, Stroke}
-//import reactify._
-//
-//import scala.concurrent.Future
-//
-//object ScrollingExample extends UIExampleScreen with UIScreen {
-//  override def name: String = "Scrolling"
-//  override def path: String = "/examples/scrolling.html"
-//
-//  override def createUI(): Future[Unit] = {
-//    val scrollable = new Container with ScrollSupport {
-//      size.width := ui.width
-//      size.height := ui.height
-//      background := Paint.vertical(container.size.height).distributeColors(Color.White, Color.Black)
-//      layoutManager := new VerticalLayout(25.0)
-//      scroll.vertical.bar := ScrollBar.simple(stroke = Stroke(Color.Black), fill = Color.LightBlue)
-//    }
-//
-//    Color.all.take(20).foreach { color =>
-//      val box = Box(color)
-//      scrollable.children += box
-//      box
-//    }
-//
-//    container.children += scrollable
-//    Future.successful(())
-//  }
-//
-//  class Box(val message: String, color: Color, w: Double, h: Double) extends Container {
-//    background := color
-//    children += new TextView {
-//      value := message
-//      OpenTypeFont.fromURL(GoogleFont.`Open Sans`.`regular`).foreach { fnt =>
-//        font.file := fnt
-//      }
-//      fill := Color.White
-//      stroke := Stroke(Color.Black)
-//      font.size := 48.0
-//      position.left := 20.0
-//      position.top := 10.0
-//    }
-//    position.left := 25.0
-//    size.width := w
-//    size.height := h
-//
-//    event.pointer.overState.attach {
-//      case true => background := Color.Red
-//      case false => background := color
-//    }
-//    event.click.on {
-//      if (size.height() == h) {
-//        size.height := h * 1.25
-//      } else {
-//        size.height := h
-//      }
-//    }
-//
-//    override def toString: String = message
-//  }
-//
-//  object Box {
-//    def apply(color: Color, width: Double = 500.0, height: Double = 200.0): Box = {
-//      new Box(Color.name(color).get, color, width, height)
-//    }
-//  }
-//}
+package io.youi.example.ui
+
+import io.youi._
+import io.youi.component.support.{OverflowSupport, ScrollSupport, SizeSupport}
+import io.youi.component.types.{Display, Overflow}
+import io.youi.component.{Container, TextView}
+import io.youi.easing.Easing
+import io.youi.event.EventSupport
+import io.youi.example.screen.UIExampleScreen
+import io.youi.font.{GoogleFont, GoogleFontWeight}
+import io.youi.material.{MDCButton, MaterialComponents}
+import io.youi.net._
+import io.youi.paint.Paint
+import reactify._
+
+import scala.concurrent.Future
+import scala.concurrent.duration._
+import scribe.Execution.global
+
+class ScrollingExample extends UIExampleScreen {
+  override def title: String = "Scrolling Example"
+  override def path: Path = path"/examples/scrolling.html"
+
+  override def createUI(): Future[Unit] = {
+    MaterialComponents.loaded.flatMap { _ =>
+      GoogleFont.`Open Sans`.`regular`.load().map { fnt =>
+        val scrollable = new Container with SizeSupport with ScrollSupport with OverflowSupport {
+          size.width := container.size.width
+          size.height := container.size.height
+          background := Paint.vertical(container.size.height).distributeColors(Color.White, Color.Black)
+          overflow @= Overflow.Auto
+        }
+
+        val button = new MDCButton("Scroll to 50") with EventSupport
+        button.event.click.on {
+          val box = scrollable.children()(51).asInstanceOf[Box]
+          box.text @= "SELECTED"
+          scrollable.scroll.to(box, in = 500.millis, easing = Easing.elasticOut, horizontal = true, alignBottom = true)
+        }
+        scrollable.children += button
+        scrollable.children += dom.create.br
+
+        Color.all.take(100).foreach { color =>
+          val box = Box(color, fnt)
+          scrollable.children += box
+          box
+        }
+
+        container.children += scrollable
+      }
+    }
+  }
+
+  class Box(val message: String, fnt: GoogleFontWeight, color: Color, w: Double, h: Double) extends Container with SizeSupport with EventSupport {
+    val text: Var[String] = Var(message)
+
+    background := color
+    display @= Display.InlineBlock
+    children += new TextView {
+      content := text
+      font.weight @= fnt
+      backgroundColor := Color.White
+      color := Color.Black
+      font.size := 24.0
+    }
+    size.width := w
+    size.height := h
+
+    event.pointer.overState.attach {
+      case true => background := Color.Red
+      case false => background := color
+    }
+
+    override def toString: String = message
+  }
+
+  object Box {
+    def apply(color: Color, font: GoogleFontWeight, width: Double = 200.0, height: Double = 200.0): Box = {
+      new Box(s"Color: ${color.toHex}", font, color, width, height)
+    }
+  }
+}

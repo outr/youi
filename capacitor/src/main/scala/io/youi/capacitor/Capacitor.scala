@@ -249,8 +249,12 @@ object Capacitor extends js.Object {
     def removeAllDeliveredNotifications(): Promise[Unit]
     def removeAllListeners(): Unit
     def removeDeliveredNotifications(delivered: PushNotificationDeliveredList): Promise[Unit]
-    def requestPermission(): Promise[Unit]
+    def requestPermission(): Promise[NotificationPermissionResponse]
     def addListener(eventName: String, listenerFunc: js.Function1[js.Any, Unit]): PluginListenerHandle
+  }
+
+  trait NotificationPermissionResponse extends js.Object {
+    def granted: Boolean
   }
 
   trait SplashScreen extends js.Object {

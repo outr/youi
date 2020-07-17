@@ -14,6 +14,9 @@ class URLSpec extends AnyWordSpec with Matchers {
         url.path.encoded should equal("/")
         url.port should equal(80)
       }
+      "quick fail parsing a non-URL" in {
+        URL.get("test") should be(Left(URLParseFailure("test is not a valid URL")))
+      }
       "properly parse a simple URL with key-only param" in {
         val url = URL("http://www.outr.com/test?wsdl")
         url.parameters.encoded should be("?wsdl")

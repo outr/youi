@@ -156,71 +156,75 @@ object URL {
 
   def apply(url: String): URL = apply(url, absolutizePath = true)
 
-  def get(url: String): Either[URLParseException, URL] = get(url, absolutizePath = true)
+  def get(url: String): Either[URLParseFailure, URL] = get(url, absolutizePath = true)
 
   def apply(url: String, absolutizePath: Boolean): URL = get(url, absolutizePath)
     .getOrElse(throw MalformedURLException(s"Unable to parse URL: [$url].", url))
 
-  def get(url: String, absolutizePath: Boolean): Either[URLParseException, URL] = try {
-    val colonIndex1 = url.indexOf(':')
-    val protocol = if (url.startsWith("//")) {
-      DefaultProtocol
-    } else if (colonIndex1 != -1) {
-      Protocol(url.substring(0, colonIndex1))
-    } else {
-      DefaultProtocol
-    }
-    val slashIndex = url.indexOf('/', colonIndex1 + 3)
-    val hostAndPort = if (slashIndex == -1) {
-      if (colonIndex1 == -1) {
-        url
+  def get(url: String, absolutizePath: Boolean): Either[URLParseFailure, URL] = try {
+    if (url.contains('.') || url.contains(":")) {
+      val colonIndex1 = url.indexOf(':')
+      val protocol = if (url.startsWith("//")) {
+        DefaultProtocol
+      } else if (colonIndex1 != -1) {
+        Protocol(url.substring(0, colonIndex1))
       } else {
-        url.substring(colonIndex1 + 3)
+        DefaultProtocol
+      }
+      val slashIndex = url.indexOf('/', colonIndex1 + 3)
+      val hostAndPort = if (slashIndex == -1) {
+        if (colonIndex1 == -1) {
+          url
+        } else {
+          url.substring(colonIndex1 + 3)
+        }
+      } else {
+        url.substring(colonIndex1 + 3, slashIndex)
+      }
+      val colonIndex2 = hostAndPort.indexOf(':')
+      val (host, port) = if (colonIndex2 == -1) {
+        hostAndPort -> protocol.defaultPort.getOrElse(-1)
+      } else {
+        hostAndPort.substring(0, colonIndex2) -> hostAndPort.substring(colonIndex2 + 1).toInt
+      }
+      val questionIndex = url.indexOf('?')
+      val hashIndex = url.indexOf('#')
+      val pathString = if (slashIndex == -1) {
+        "/"
+      } else if (questionIndex == -1 && hashIndex == -1) {
+        url.substring(slashIndex)
+      } else if (questionIndex != -1) {
+        url.substring(slashIndex, questionIndex)
+      } else {
+        url.substring(slashIndex, hashIndex)
+      }
+      val path = Path.parse(pathString, absolutizePath)
+      val parameters = if (questionIndex == -1) {
+        Parameters.empty
+      } else {
+        val endIndex = if (hashIndex == -1) url.length else hashIndex
+        val query = url.substring(questionIndex + 1, endIndex)
+        Parameters.parse(query)
+      }
+      val fragment = if (hashIndex != -1) {
+        Some(url.substring(hashIndex + 1))
+      } else {
+        None
+      }
+      val u = URL(protocol = protocol, host = host, port = port, path = path, parameters = parameters, fragment = fragment)
+      if (ValidateTLD) {
+        u.tld match {
+          case Some(tld) if !TopLevelDomains.isValid(tld) => Left(URLParseFailure(s"Invalid top-level domain: [$tld]"))
+          case _ => Right(u)
+        }
+      } else {
+        Right(u)
       }
     } else {
-      url.substring(colonIndex1 + 3, slashIndex)
-    }
-    val colonIndex2 = hostAndPort.indexOf(':')
-    val (host, port) = if (colonIndex2 == -1) {
-      hostAndPort -> protocol.defaultPort.getOrElse(-1)
-    } else {
-      hostAndPort.substring(0, colonIndex2) -> hostAndPort.substring(colonIndex2 + 1).toInt
-    }
-    val questionIndex = url.indexOf('?')
-    val hashIndex = url.indexOf('#')
-    val pathString = if (slashIndex == -1) {
-      "/"
-    } else if (questionIndex == -1 && hashIndex == -1) {
-      url.substring(slashIndex)
-    } else if (questionIndex != -1) {
-      url.substring(slashIndex, questionIndex)
-    } else {
-      url.substring(slashIndex, hashIndex)
-    }
-    val path = Path.parse(pathString, absolutizePath)
-    val parameters = if (questionIndex == -1) {
-      Parameters.empty
-    } else {
-      val endIndex = if (hashIndex == -1) url.length else hashIndex
-      val query = url.substring(questionIndex + 1, endIndex)
-      Parameters.parse(query)
-    }
-    val fragment = if (hashIndex != -1) {
-      Some(url.substring(hashIndex + 1))
-    } else {
-      None
-    }
-    val u = URL(protocol = protocol, host = host, port = port, path = path, parameters = parameters, fragment = fragment)
-    if (ValidateTLD) {
-      u.tld match {
-        case Some(tld) if !TopLevelDomains.isValid(tld) => Left(new URLParseException(s"Invalid top-level domain: [$tld]", None))
-        case _ => Right(u)
-      }
-    } else {
-      Right(u)
+      Left(URLParseFailure(s"$url is not a valid URL"))
     }
   } catch {
-    case t: Throwable => Left(new URLParseException(s"Unable to parse URL [$url]. Exception: ${t.getMessage}", Some(t)))
+    case t: Throwable => Left(URLParseFailure(s"Unable to parse URL [$url]. Exception: ${t.getMessage}", Some(t)))
   }
 
   private val unreservedCharacters = Set('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',

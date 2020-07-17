@@ -47,7 +47,7 @@ object ProxyCache {
       def fixContent(attributeName: String): String = {
         val value = tag.attributes.getOrElse(attributeName, "")
         if (value.toLowerCase.startsWith("http")) {
-          content.replaceAllLiterally(value, s"/cache?url=${URLEncoder.encode(value, "UTF-8")}")
+          content.replace(value, s"/cache?url=${URLEncoder.encode(value, "UTF-8")}")
         } else {
           content
         }

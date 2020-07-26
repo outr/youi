@@ -15,7 +15,22 @@ class URLSpec extends AnyWordSpec with Matchers {
         url.port should equal(80)
       }
       "quick fail parsing a non-URL" in {
-        URL.get("test") should be(Left(URLParseFailure("test is not a valid URL")))
+        URL.get("test") should be(Left(URLParseFailure("test is not a valid URL", URLParseFailure.QuickFail)))
+      }
+      "fail to parse an email address" in {
+        URL.get("test@youi.io") should be(Left(URLParseFailure("test@youi.io appears to be an email address", URLParseFailure.EmailAddress)))
+      }
+      "fail to parse 'it...'" in {
+        URL.get("it...") should be(Left(URLParseFailure("it... has an invalid host", URLParseFailure.InvalidHost)))
+      }
+      "fail to parse 'it.'" in {
+        URL.get("it.") should be(Left(URLParseFailure("it. has an invalid host", URLParseFailure.InvalidHost)))
+      }
+      "fail to parse ':smile'" in {
+        URL.get(":smile") should be(Left(URLParseFailure(":smile is not a valid URL", URLParseFailure.QuickFail)))
+      }
+      "test" in {
+        URL.get("https://app.courio.com/?stream=%2BKNrsnsMRtkw0nkZUuS3PR2hAEccwnDTA&public=true") should be(Right(URL("https://app.courio.com/?stream=%2BKNrsnsMRtkw0nkZUuS3PR2hAEccwnDTA&public=true")))
       }
       "properly parse a simple URL with key-only param" in {
         val url = URL("http://www.outr.com/test?wsdl")
@@ -31,6 +46,10 @@ class URLSpec extends AnyWordSpec with Matchers {
         url.path.encoded should be("/android_asset/www/app/test.js")
         url.toString should be("file:///android_asset/www/app/test.js")
       }
+//      "properly parse a UK domain" in {
+//        val url = URL("https://google.co.uk")
+//        url.tld should be(Some("co.uk"))
+//      }
       "properly parse a URL without the protocol defined" in {
         val url = URL("//cdn.framework7.io/i/share-banner.jpg")
         url.toString should be("https://cdn.framework7.io/i/share-banner.jpg")
@@ -47,13 +66,21 @@ class URLSpec extends AnyWordSpec with Matchers {
         val url = URL.get("event.which")
         url should not be Right
       }
+      "properly unapply from a String" in {
+        "http://youi.io" match {
+          case URL(url) => url.domain should be("youi.io")
+          case _ => fail("unapply did not match")
+        }
+      }
       "properly parse a URL with two for the same key" in {
         val url = URL("http://www.outr.com/test?test=one&test=two")
         url.paramList("test") should be(List("one", "two"))
+        url.domain should be("outr.com")
       }
       "properly parse a URL with some crazy characters" in {
         val url = URL("http://127.0.0.1/elrekt.php?s=%2f%69%6e%64%65%78%2f%5c%74%68%69%6e%6b%5c%61%70%70%2f%69%6e%76%6f%6b%65%66%75%6e%63%74%69%6f%6e&function=%63%61%6c%6c%5f%75%73%65%72%5f%66%75%6e%63%5f%61%72%72%61%79&vars[0]=%6d%645&vars[1][]=%48%65%6c%6c%6f%54%68%69%6e%6b%50%48%50")
         url.decoded.toString should be("http://127.0.0.1/elrekt.php?s=/index/\\think\\app/invokefunction&function=call_user_func_array&vars[0]=md5&vars[1][]=HelloThinkPHP")
+        url.domain should be("127.0.0.1")
       }
       "properly encode a URL with a pipe" in {
         val url = URL("http://youi.io").withParam("testing", "one|two")

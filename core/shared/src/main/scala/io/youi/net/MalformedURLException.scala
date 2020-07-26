@@ -1,3 +1,3 @@
 package io.youi.net
 
-case class MalformedURLException(message: String, url: String) extends RuntimeException(message)
+case class MalformedURLException(message: String, url: String, cause: Option[Throwable]) extends RuntimeException(message, cause.orNull)

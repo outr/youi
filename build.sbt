@@ -255,3 +255,4 @@ lazy val utilities = project.in(file("utilities"))
       "org.jsoup" % "jsoup" % jSoupVersion
     )
   )
+  .dependsOn(coreJVM)

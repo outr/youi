@@ -41,7 +41,7 @@ case class FormResult(messages: List[FormMessage] = Nil,
         case Some(delay) => {
           window.setTimeout(() => {
             f()
-          }, delay.toMillis)
+          }, delay.toMillis.toDouble)
         }
         case None => f()
       }

@@ -9,7 +9,7 @@ import scala.concurrent.Future
 trait Screen extends TaskSupport {
   private var registration = Map.empty[Var[_], ScreenRegistration[_]]
 
-  def title: String = getClass.getSimpleName.replaceAllLiterally("$", "")
+  def title: String = getClass.getSimpleName.replace("$", "")
 
   private[screen] val currentState = Var[ScreenState](ScreenState.New)
 

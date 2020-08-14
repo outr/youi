@@ -1,7 +1,7 @@
 package io.youi.maintenance
 
 sealed trait MaintenanceStatus {
-  override def toString: String = getClass.getSimpleName.replaceAllLiterally("$", "")
+  override def toString: String = getClass.getSimpleName.replace("$", "")
 }
 
 object MaintenanceStatus {

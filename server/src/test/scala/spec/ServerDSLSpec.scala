@@ -16,7 +16,7 @@ class ServerDSLSpec extends AsyncWordSpec with Matchers {
     <body>
       <h1>Hello, World!</h1>
     </body>
-  </html>.withContentType(ContentType.`text/html`)
+  </html>.toString().withContentType(ContentType.`text/html`)
 
   "Server DSL" when {
     "creating a simple handler" should {

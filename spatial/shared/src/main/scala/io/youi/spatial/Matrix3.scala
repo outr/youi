@@ -150,10 +150,10 @@ trait Matrix3 extends SpatialValue[Matrix3] {
   /*
   Basic scalar operations
    */
-  def *(scalar: Double): Matrix3 = withArray(duplicate = true)(_.transform(_ * scalar))
-  def +(scalar: Double): Matrix3 = withArray(duplicate = true)(_.transform(_ + scalar))
-  def -(scalar: Double): Matrix3 = withArray(duplicate = true)(_.transform(_ - scalar))
-  def /(scalar: Double): Matrix3 = withArray(duplicate = true)(_.transform(_ / scalar))
+  def *(scalar: Double): Matrix3 = withArray(duplicate = true)(_.mapInPlace(_ * scalar))
+  def +(scalar: Double): Matrix3 = withArray(duplicate = true)(_.mapInPlace(_ + scalar))
+  def -(scalar: Double): Matrix3 = withArray(duplicate = true)(_.mapInPlace(_ - scalar))
+  def /(scalar: Double): Matrix3 = withArray(duplicate = true)(_.mapInPlace(_ / scalar))
 
   def mutable: MutableMatrix3 = MutableMatrix3(m00, m01, m02, m10, m11, m12, m20, m21, m22)
   def immutable: ImmutableMatrix3 = ImmutableMatrix3(m00, m01, m02, m10, m11, m12, m20, m21, m22)

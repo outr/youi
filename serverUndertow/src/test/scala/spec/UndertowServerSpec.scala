@@ -22,7 +22,7 @@ class UndertowServerSpec extends AsyncWordSpec with Matchers {
     val client = HttpClient.url(url"http://localhost:8080")
 
     "configure the server" in {
-      Profig.loadDefaults()
+      Profig.initConfigurationBlocking()
       server.handler.matcher(path.exact("/test.txt")).wrap(new HttpHandler {
         override def handle(connection: HttpConnection): Future[HttpConnection] = Future.successful {
           connection.modify { response =>

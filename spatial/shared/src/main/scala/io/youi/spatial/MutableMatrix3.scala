@@ -47,10 +47,10 @@ case class MutableMatrix3(var m00: Double,
   def *=(that: Matrix3): Matrix3 = Matrix3Multiply(this, that, set)
   def +=(that: Matrix3): Matrix3 = Matrix3Addition(this, that, set)
   def -=(that: Matrix3): Matrix3 = Matrix3Subtraction(this, that, set)
-  def *=(scalar: Double): Matrix3 = withArray(duplicate = false)(_.transform(_ * scalar))
-  def +=(scalar: Double): Matrix3 = withArray(duplicate = false)(_.transform(_ + scalar))
-  def -=(scalar: Double): Matrix3 = withArray(duplicate = false)(_.transform(_ - scalar))
-  def /=(scalar: Double): Matrix3 = withArray(duplicate = false)(_.transform(_ / scalar))
+  def *=(scalar: Double): Matrix3 = withArray(duplicate = false)(_.mapInPlace(_ * scalar))
+  def +=(scalar: Double): Matrix3 = withArray(duplicate = false)(_.mapInPlace(_ + scalar))
+  def -=(scalar: Double): Matrix3 = withArray(duplicate = false)(_.mapInPlace(_ - scalar))
+  def /=(scalar: Double): Matrix3 = withArray(duplicate = false)(_.mapInPlace(_ / scalar))
 
   override def mutable: MutableMatrix3 = this
 }

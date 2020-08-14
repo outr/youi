@@ -5,12 +5,9 @@ import java.net.URL
 
 import io.youi.net.ContentType
 
-import scala.xml.Elem
-
 trait ContentHelpers extends SharedContentHelpers {
   private def unsupported: Content = throw new UnsupportedOperationException("Not supported in Scala.js")
   
-  override def xml(value: Elem, contentType: ContentType): Content = unsupported
   override def file(file: File): Content = unsupported
   override def file(file: File, contentType: ContentType): Content = unsupported
   override def url(url: URL): Content = unsupported

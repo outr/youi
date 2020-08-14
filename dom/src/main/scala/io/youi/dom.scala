@@ -68,7 +68,7 @@ object dom extends ExtendedElement(None) {
   def addScript(url: URL, addToHead: Boolean = false): Future[Unit] = addedScripts.get(url.toString) match {
     case Some(f) => f
     case None => {
-      val promise = Promise[Unit]
+      val promise = Promise[Unit]()
       val script = create.script
       script.addEventListener("load", (_: Event) => {
         promise.success(())
@@ -121,7 +121,7 @@ object dom extends ExtendedElement(None) {
     iframe.style.display = "none"
     document.body.appendChild(iframe)
     var counter = 0
-    val promise = Promise[URL]
+    val promise = Promise[URL]()
     iframe.addEventListener("load", (_: Event) => {
       if (counter == 0) {
         counter += 1

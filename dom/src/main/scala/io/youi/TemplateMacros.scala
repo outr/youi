@@ -5,6 +5,7 @@ import java.io.File
 import io.youi.stream.{HTMLParser, Selector}
 import org.scalajs.dom.Element
 import profig.Profig
+import profig.jdk._
 
 import scala.annotation.compileTimeOnly
 import scala.reflect.macros.blackbox
@@ -16,7 +17,7 @@ object TemplateMacros {
                                                             appName: context.Expr[String])(implicit e: context.WeakTypeTag[E]): context.Expr[E] = {
     import context.universe._
 
-    Profig.loadDefaultsMacro()
+    Profig.initConfigurationBlocking()
 
     val pathValue = path match {
       case Expr(Literal(Constant(value: String))) => value
@@ -59,7 +60,7 @@ object TemplateMacros {
                                                                appName: context.Expr[String])(implicit e: context.WeakTypeTag[E]): context.Expr[List[E]] = {
     import context.universe._
 
-    Profig.loadDefaultsMacro()
+    Profig.initConfigurationBlocking()
 
     val pathValue = path match {
       case Expr(Literal(Constant(value: String))) => value
@@ -102,7 +103,7 @@ object TemplateMacros {
                                                              appName: context.Expr[String])(implicit e: context.WeakTypeTag[E]): context.Expr[List[E]] = {
     import context.universe._
 
-    Profig.loadDefaultsMacro()
+    Profig.initConfigurationBlocking()
 
     val pathValue = path match {
       case Expr(Literal(Constant(value: String))) => value

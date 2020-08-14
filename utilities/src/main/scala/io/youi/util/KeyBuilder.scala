@@ -22,24 +22,24 @@ object KeyBuilder {
     val grouped = map.toList.sortBy(_._1.index)
 
     val lowerCase = map(Title("Lowercase")).reverse.map { value =>
-      val name = value.value.replaceAllLiterally(" ", "")
+      val name = value.value.replace(" ", "")
       val char = value.value.charAt(0)
       s"""  val $name: CharacterKey = new CharacterKey('$char', "${value.description}", KeyType.Lowercase, Key.${char.toUpper})"""
     }.mkString("\n")
     val upperCase = map(Title("Uppercase")).reverse.map { value =>
-      val name = value.value.replaceAllLiterally(" ", "")
+      val name = value.value.replace(" ", "")
       val char = value.value.charAt(0)
       s"""  val $name: CharacterKey = new CharacterKey('$char', "${value.description}", KeyType.Uppercase, Key.${char.toLower})"""
     }.mkString("\n")
     val symbols = map(Title("Symbols")).reverse.map { value =>
-      val name = value.description.replaceAllLiterally(" ", "")
+      val name = value.description.replace(" ", "")
       val char = value.value.charAt(0)
       val charString = if (char == '\\') "'\\\\'" else if (char == '\'') "'\\''" else s"'$char'"
       s"""  val $name: SymbolKey = new SymbolKey($charString, "${value.description}")"""
     }.mkString("\n")
     val others = grouped.collect {
       case (title, list) if !Set("Lowercase", "Uppercase", "Symbols").contains(title.name) => title.name -> list.reverse.map { value =>
-        val name = value.value.replaceAllLiterally(" ", "") match {
+        val name = value.value.replace(" ", "") match {
           case "0" => "Zero"
           case "1" => "One"
           case "2" => "Two"
@@ -53,7 +53,7 @@ object KeyBuilder {
           case "" => "Space"
           case s => s
         }
-        val description = value.description.replaceAllLiterally("\"", "\\\"")
+        val description = value.description.replace("\"", "\\\"")
         s"""  val $name: Key = new Key("${value.value}", "$description", KeyType.${title.name})"""
       }
     }.map {

@@ -15,7 +15,7 @@ case class RateLimiter(perRequestDelay: FiniteDuration) extends InterceptorAdapt
   private var future: Future[_] = Future.successful(())
 
   override def before(request: HttpRequest): Future[HttpRequest] = synchronized {
-    val p = Promise[HttpRequest]
+    val p = Promise[HttpRequest]()
     future.onComplete { _ =>
       val now = System.currentTimeMillis()
       val elapsed = now - _lastTime

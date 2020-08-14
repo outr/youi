@@ -13,7 +13,7 @@ import io.youi.util.Time
 import io.youi.{JavaScriptError, JavaScriptLog, http}
 import net.sf.uadetector.UserAgentType
 import net.sf.uadetector.service.UADetectorServiceFactory
-import profig.{JsonUtil, Profig}
+import profig._
 import reactify.Var
 import scribe.{MDC, Priority}
 
@@ -145,7 +145,7 @@ trait ServerApplication extends YouIApplication with Server {
       if (httpConnection.response.content.isEmpty) {
         val url = httpConnection.request.url
         val fileName = url.path.decoded
-        val mapped = mappings.toStream.flatMap(_ (httpConnection)).headOption
+        val mapped = mappings.flatMap(_ (httpConnection)).headOption
         val content = lookup(fileName).orElse { if (excludeDotHTML) {
           lookup(s"$fileName.html")
         } else {
@@ -267,9 +267,12 @@ trait ServerApplication extends YouIApplication with Server {
   }
 
   def main(args: Array[String]): Unit = {
-    Profig.loadDefaults()
-    Profig.merge(args.toSeq)
-    val future = start()
+    val future = Profig.init().flatMap { _ =>
+      Profig.loadConfiguration()
+      Profig.merge(args.toSeq)
+
+      start()
+    }
     future.failed.map { throwable =>
       scribe.error("Error during application startup", throwable)
       dispose()

@@ -4,8 +4,8 @@ import sbtcrossproject.CrossType
 name := "youi"
 organization in ThisBuild := "io.youi"
 version in ThisBuild := "0.13.17-SNAPSHOT"
-scalaVersion in ThisBuild := "2.13.2"
-crossScalaVersions in ThisBuild := List("2.13.2", "2.12.11")
+scalaVersion in ThisBuild := "2.13.3"
+crossScalaVersions in ThisBuild := List("2.13.3", "2.12.12")
 resolvers in ThisBuild ++= Seq(
   Resolver.sonatypeRepo("releases"),
   Resolver.sonatypeRepo("snapshots")
@@ -28,7 +28,7 @@ developers in ThisBuild := List(
   Developer(id="darkfrog", name="Matt Hicks", email="matt@matthicks.com", url=url("http://matthicks.com"))
 )
 
-val profigVersion = "2.3.8"
+val profigVersion = "3.0.2"
 val scribeVersion = "2.7.12"
 val reactifyVersion = "4.0.0"
 val hasherVersion = "1.2.2"
@@ -37,14 +37,14 @@ val openTypeVersion = "1.1.0"
 val webFontLoaderVersion = "1.6.28_2"
 val canvgVersion = "1.4.0_3"
 
-val scalaJSDOM = "1.0.0"
-val okHttpVersion = "4.7.2"
+val scalaJSDOM = "1.1.0"
+val okHttpVersion = "4.8.1"
 val uaDetectorVersion = "2014.10"
 val undertowVersion = "2.1.3.Final"
-val closureCompilerVersion = "v20200406"
+val closureCompilerVersion = "v20200719"
 val jSoupVersion = "1.13.1"
 val scalaXMLVersion = "2.0.0-M1"
-val collectionCompat = "2.1.5"
+val collectionCompat = "2.1.6"
 val scalaTestVersion = "3.2.0-M4"
 val scalaCheckVersion = "1.14.3"
 
@@ -86,7 +86,13 @@ lazy val core = crossProject(JSPlatform, JVMPlatform).in(file("core"))
   )
   .jsSettings(
     libraryDependencies ++= Seq(
-      "org.scala-js" %%% "scalajs-dom" % scalaJSDOM
+      "org.scala-js" %%% "scalajs-dom" % scalaJSDOM,
+      "com.outr" %% "profig-all" % profigVersion % Provided
+    )
+  )
+  .jvmSettings(
+    libraryDependencies ++= Seq(
+      "com.outr" %% "profig-all" % profigVersion
     )
   )
   .dependsOn(macros)
@@ -139,7 +145,8 @@ lazy val dom = project.in(file("dom"))
   .settings(
     name := "youi-dom",
     libraryDependencies ++= Seq(
-      "com.outr" %% "profig" % profigVersion,
+      "com.outr" %%% "profig" % profigVersion,
+      "com.outr" %% "profig-all" % profigVersion % Provided,
       "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
     ),
     jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv()

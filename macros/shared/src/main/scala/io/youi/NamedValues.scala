@@ -21,7 +21,7 @@ trait NamedValues[T] {
 }
 
 object NamedValues {
-  private def fixName(name: String): String = name.toLowerCase.replaceAllLiterally(" ", "")
+  private def fixName(name: String): String = name.toLowerCase.replace(" ", "")
 
   def register[T](nv: NamedValues[T], name: String, value: T): Unit = nv.synchronized {
     val n = fixName(name)

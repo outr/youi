@@ -16,7 +16,7 @@ object Stringify {
 
   object Pixels extends Stringify[Double] {
     override def fromString(value: String): Option[Double] = try {
-      Some(value.replaceAllLiterally("px", "").toDouble)
+      Some(value.replace("px", "").toDouble)
     } catch {
       case _: Throwable => None
     }

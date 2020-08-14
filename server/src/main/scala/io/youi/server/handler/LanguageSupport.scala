@@ -8,10 +8,11 @@ import io.youi.http.content.Content
 import io.youi.http.cookie.ResponseCookie
 import io.youi.http.{Headers, HttpConnection}
 import io.youi.net._
-import profig.{Profig, ProfigLookupPath}
+import profig._
 import scribe.Execution.global
 import scribe.Priority
 
+import scala.annotation.tailrec
 import scala.concurrent.Future
 
 /**
@@ -113,9 +114,16 @@ class LanguageSupport(val default: Locale = Locale.ENGLISH, languagePath: Path =
     Option(languageConfig.get(locale)) match {
       case Some(config) => config
       case None => {
-        val lookupPaths = ProfigLookupPath.paths(mergePaths = Nil, defaultPaths = List(s"language-$locale"))
         val config = new Profig(None)
-        config.load(lookupPaths: _*)
+        config.loadConfiguration(fileNameMatcher = new FileNameMatcher {
+          override def matches(prefix: String, extension: String): Option[MergeType] = {
+            if (FileNameMatcher.DefaultExtensions.contains(extension) && prefix == s"language-$locale") {
+              Some(MergeType.Overwrite)
+            } else {
+              None
+            }
+          }
+        })
         if (config.json.asObject.get.nonEmpty) {
           languageConfig.put(locale, config)
           config
@@ -126,6 +134,7 @@ class LanguageSupport(val default: Locale = Locale.ENGLISH, languagePath: Path =
     }
   }
 
+  @tailrec
   private def parseLocale(s: String): Locale = if (s.contains(';')) {
     parseLocale(s.substring(0, s.indexOf(';')))
   } else {

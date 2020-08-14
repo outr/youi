@@ -12,7 +12,7 @@ object YouIPlatform {
   private val MonthNames = Vector("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
 
   def delay(millis: Long): Future[Unit] = {
-    val promise = Promise[Unit]
+    val promise = Promise[Unit]()
     window.setTimeout(() => {
       promise.success(())
     }, millis.toDouble)

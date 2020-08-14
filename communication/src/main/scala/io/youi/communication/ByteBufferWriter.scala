@@ -5,7 +5,7 @@ import java.nio.ByteBuffer
 import scala.concurrent.Promise
 
 trait ByteBufferWriter {
-  val promise: Promise[Unit] = Promise[Unit]
+  val promise: Promise[Unit] = Promise[Unit]()
 
   def fileName: String
   def actualFileName: String

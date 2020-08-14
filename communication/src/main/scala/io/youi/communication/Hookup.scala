@@ -24,7 +24,7 @@ trait Hookup[Interface] {
     */
   def receive(message: Message): Future[Message] = try {
     val method = local.getOrElse(message.method.get, throw new RuntimeException(s"No local method found for name: ${message.method} (${local.keySet.mkString(", ")})"))
-    val promise = Promise[Message]
+    val promise = Promise[Message]()
     method(message).onComplete {
       case Success(response) => promise.success(Message.response(message.id, message.name.get, message.method.get, response))
       case Failure(throwable) => {

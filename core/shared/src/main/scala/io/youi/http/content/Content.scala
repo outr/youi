@@ -6,8 +6,6 @@ import java.net.URL
 import io.circe.{Json, Printer}
 import io.youi.net.ContentType
 
-import scala.xml.Elem
-
 trait Content {
   def length: Long
   def lastModified: Long
@@ -36,7 +34,6 @@ trait SharedContentHelpers {
     o.map(classPath)
   }
 
-  def xml(value: Elem, contentType: ContentType): Content
   def file(file: File): Content
   def file(file: File, contentType: ContentType): Content
   def url(url: URL): Content

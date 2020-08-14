@@ -35,7 +35,7 @@ trait StringifyImplicits {
     case _: Throwable => None
   }}
   def pixels: Stringify[Double] = Stringify[Double](d => Some(s"${d}px")) { s => try {
-    Some(s.replaceAllLiterally("px", "").toDouble)
+    Some(s.replace("px", "").toDouble)
   } catch {
     case _: Throwable => None
   }}

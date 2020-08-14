@@ -121,7 +121,7 @@ class JVMHttpClientImplementation(config: HttpClientConfig) extends HttpClientIm
   override def send(request: HttpRequest,
                     executionContext: ExecutionContext): Future[HttpResponse] = {
     val req = requestToOk(request)
-    val promise = Promise[HttpResponse]
+    val promise = Promise[HttpResponse]()
     client.newCall(req).enqueue(new okhttp3.Callback {
       override def onResponse(call: okhttp3.Call, res: okhttp3.Response): Unit = {
         val response = responseFromOk(res)

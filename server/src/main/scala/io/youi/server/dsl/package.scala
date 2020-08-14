@@ -113,5 +113,4 @@ package object dsl {
   }
 
   implicit def string2Content(value: String): Content = Content.string(value, ContentType.`text/plain`)
-  implicit def xml2Content(value: Elem): Content = Content.xml(value, ContentType.`text/xml`)
 }

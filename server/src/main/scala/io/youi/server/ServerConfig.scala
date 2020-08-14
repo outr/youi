@@ -32,7 +32,7 @@ class ServerConfig(server: Server) {
       case "strict" => SameSite.Strict
     })
 
-    case class SessionConfig(name: String = server.getClass.getSimpleName.replaceAllLiterally("$", ""),
+    case class SessionConfig(name: String = server.getClass.getSimpleName.replace("$", ""),
                              maxAge: Long = TimeUnit.DAYS.toSeconds(365L),
                              domain: Option[String] = None,
                              path: Option[String] = Some("/"),

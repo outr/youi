@@ -73,7 +73,7 @@ class WebSocketClient(url: URL,
   private var backlog = List.empty[AnyRef]
 
   def connect(): Future[ConnectionStatus] = if (_channel.get.isEmpty) {
-    val promise = Promise[ConnectionStatus]
+    val promise = Promise[ConnectionStatus]()
     connectionBuilder.connect().addNotifier(new IoFuture.HandlingNotifier[WebSocketChannel, Any] {
       override def handleDone(data: WebSocketChannel, attachment: Any): Unit = {
         _channel @= Some(data)

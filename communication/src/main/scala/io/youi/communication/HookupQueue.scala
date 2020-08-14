@@ -18,7 +18,7 @@ class HookupQueue {
   def enqueue(message: Message): Future[Message] = if (disposed) {
     throw new RuntimeException("Queue is disposed")
   } else {
-    val promise = Promise[Message]
+    val promise = Promise[Message]()
     queue.add(HookupRequest(message, promise))
     _hasNext @= true
     promise.future

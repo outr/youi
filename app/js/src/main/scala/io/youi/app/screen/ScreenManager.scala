@@ -74,7 +74,7 @@ trait ScreenManager extends TaskSupport {
     scribe.debug(s"Screen change from $oldScreen to $newScreen...")
     if (!loaded()) {
       // Wait for the page to fully load before finishing screen change
-      val promise = Promise[Unit]
+      val promise = Promise[Unit]()
       loaded.once { _ =>
         promise.success(())
       }

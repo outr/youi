@@ -64,7 +64,7 @@ object ImageUtility {
 
   def loadImage[R](file: File)(process: html.Image => Future[R]): Future[R] = {
     Blocked(this) {
-      val promise = Promise[Unit]
+      val promise = Promise[Unit]()
       val listener: js.Function1[Event, _] = (_: Event) => promise.success(())
       tempImage.addEventListener("load", listener)
       FileUtility.loadDataURL(file).foreach(tempImage.src = _)
@@ -82,7 +82,7 @@ object ImageUtility {
   def loadImage(img: html.Image): Future[html.Image] = if (img.width > 0 && img.height > 0) {
     Future.successful(img)
   } else {
-    val promise = Promise[html.Image]
+    val promise = Promise[html.Image]()
     val listener: js.Function1[Event, _] = (_: Event) => {
       promise.success(img)
     }

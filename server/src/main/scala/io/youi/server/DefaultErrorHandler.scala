@@ -11,7 +11,7 @@ import scala.concurrent.Future
 object DefaultErrorHandler extends ErrorHandler {
   lazy val lastModified: Long = System.currentTimeMillis()
 
-  def html(status: HttpStatus): Content = p"""<html>
+  def html(status: HttpStatus): Content = s"""<html>
     <head>
       <title>Error ${status.code}</title>
     </head>

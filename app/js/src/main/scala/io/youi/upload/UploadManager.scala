@@ -87,7 +87,7 @@ case class UploadManager(url: URL = History.url.withPath(path"/upload"),
                           slices: Set[String] = Set.empty): Future[String] = {
     val start = offset
     val end = math.min(total, offset + chunkSize)
-    val sliced = file.slice(start, end)
+    val sliced = file.slice(start.toDouble, end.toDouble)
     val sliceName = file.name
     val action = ajaxManager.enqueue(
       url = url,

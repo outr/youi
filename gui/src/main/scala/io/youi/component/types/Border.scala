@@ -12,7 +12,7 @@ object Border extends Stringify[Border] {
   override def fromString(value: String): Option[Border] = None
 
   override def toString(value: Border): Option[String] = if (value.width >= 0.0) {
-    Some(p"${value.width}px ${value.style.value} ${value.color.toRGBA}")
+    Some(s"${value.width}px ${value.style.value} ${value.color.toRGBA}")
   } else {
     None
   }

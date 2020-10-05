@@ -6,7 +6,7 @@ import reactify.reaction.Reaction
 import scala.concurrent.{Future, Promise}
 
 class TaskInstance(task: Task, updates: Updates) {
-  private val promise = Promise[Double]
+  private val promise = Promise[Double]()
   private var reaction: Reaction[Double] = _
   private var first = true
   private var elapsed: Double = 0.0

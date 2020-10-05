@@ -44,8 +44,8 @@ trait Connection {
     upload
   }
 
-  protected def interface[Interface](implicit ec: ExecutionContext): Interface with Hookup[Interface] = macro HookupMacros.interface[Interface]
-  protected def implementation[Interface, Implementation <: Interface](implicit ec: ExecutionContext): Implementation with Hookup[Interface] = macro HookupMacros.implementation[Interface, Implementation]
+  protected def interface[Interface]()(implicit ec: ExecutionContext): Interface with Hookup[Interface] = macro HookupMacros.interface[Interface]
+  protected def implementation[Interface, Implementation <: Interface]()(implicit ec: ExecutionContext): Implementation with Hookup[Interface] = macro HookupMacros.implementation[Interface, Implementation]
 
   private val receiveText: Reaction[String] = Reaction[String] { text =>
     lastActive.asInstanceOf[Var[Long]] @= System.currentTimeMillis()

@@ -90,7 +90,7 @@ package object youi {
     def load(): Future[GoogleFont] = googleFontFutures.get(font) match {
       case Some(future) => future
       case None => {
-        val promise = Promise[GoogleFont]
+        val promise = Promise[GoogleFont]()
         val f: js.Function0[Unit] = () => {
           promise.success(font)
           ()

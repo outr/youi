@@ -9,7 +9,7 @@ import scala.concurrent.{Future, Promise}
 object FileUtility {
   def loadDataURL(file: File, useFileReader: Boolean = false): Future[String] = if (useFileReader) {
     val reader = new FileReader
-    val promise = Promise[String]
+    val promise = Promise[String]()
     reader.addEventListener("load", (_: Event) => {
       promise.success(reader.result.asInstanceOf[String])
     })
@@ -23,7 +23,7 @@ object FileUtility {
 
   def loadText(file: File): Future[String] = {
     val reader = new FileReader
-    val promise = Promise[String]
+    val promise = Promise[String]()
     reader.addEventListener("load", (_: Event) => {
       promise.success(reader.result.asInstanceOf[String])
     })

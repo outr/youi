@@ -31,7 +31,7 @@ class Cacheable extends Drawable {
     val c = CanvasPool(width * ratio, height * ratio)
     val context = new Context(c, ratio)
     val future = f(context)
-    val promise = Promise[Unit]
+    val promise = Promise[Unit]()
     future.onComplete {
       case Success(_) => {
         val old = canvas

@@ -48,7 +48,7 @@ object ErrorTrace extends Writer {
   }
 
   override def write[M](record: LogRecord[M], output: LogOutput): Unit = if (record.level.value >= Level.Error.value) {
-    val value = record.m
+    val value = record.message.value
     value match {
       case evt: Event if evt.`type` == "error" => ClientApplication.sendError(evt.asInstanceOf[ErrorEvent])
       case t: Throwable => ClientApplication.sendError(t)

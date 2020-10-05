@@ -79,7 +79,7 @@ object SVGImage {
   }
 
   def drawToCanvas(canvas: html.Canvas, svg: SVGSVGElement, x: Double, y: Double, width: Double, height: Double): Future[Unit] = {
-    val promise = Promise[Unit]
+    val promise = Promise[Unit]()
     val callback: js.Function = () => {
       promise.success(())
     }

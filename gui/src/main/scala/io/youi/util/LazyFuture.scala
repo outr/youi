@@ -23,7 +23,7 @@ class LazyFuture[T](f: () => Future[T], maxFrequency: FiniteDuration, automatic:
         }
       }
     }
-    val p = Promise[Unit]
+    val p = Promise[Unit]()
     lastUpdate.once(_ => p.success(()))
     p.future
   }

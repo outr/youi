@@ -53,7 +53,7 @@ object HTMLImage {
   def apply(img: html.Image): Future[HTMLImage] = if (img.width > 0 && img.height > 0) {
     Future.successful(new HTMLImage(img))
   } else {
-    val promise = Promise[HTMLImage]
+    val promise = Promise[HTMLImage]()
     val listener: js.Function1[Event, _] = (_: Event) => {
       promise.success(new HTMLImage(img))
     }

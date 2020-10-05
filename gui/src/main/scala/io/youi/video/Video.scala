@@ -82,7 +82,7 @@ class Video(private[youi] val element: html.Video) extends Drawable {
   def isEnded: Boolean = element.ended
 
   def seek(position: Double): Future[Unit] = if (this.position() != position) {
-    val promise = Promise[Unit]
+    val promise = Promise[Unit]()
     this.position.once(_ => {
       promise.success(())
     }, d => math.abs(position - d) <= 1.0)
@@ -139,7 +139,7 @@ object Video {
     element.autoplay = autoPlay
     element.loop = loop
     element.muted = muted
-    val promise = Promise[Video]
+    val promise = Promise[Video]()
     element.addEventListener("loadedmetadata", (_: Event) => {
       val v = new Video(element)
       v.init(autoPlay, loop, muted)

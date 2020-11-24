@@ -13,7 +13,7 @@ trait ProxyHandler extends Ordered[ProxyHandler] {
 
   def keyStore: Option[KeyStore] = None
 
-  override def compare(that: ProxyHandler): Int = priority.compare(that.priority)
+  override def compare(that: ProxyHandler): Int = Priority.PriorityOrdering.compare(this.priority, that.priority)
 }
 
 object ProxyHandler {

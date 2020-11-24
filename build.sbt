@@ -29,7 +29,7 @@ developers in ThisBuild := List(
 )
 
 val profigVersion = "3.0.4"
-val scribeVersion = "2.8.2"
+val scribeVersion = "3.0.4"
 val reactifyVersion = "4.0.2"
 val hasherVersion = "1.2.2"
 

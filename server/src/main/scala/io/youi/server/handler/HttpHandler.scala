@@ -11,7 +11,7 @@ trait HttpHandler extends Ordered[HttpHandler] {
 
   def handle(connection: HttpConnection): Future[HttpConnection]
 
-  override def compare(that: HttpHandler): Int = -priority.compare(that.priority)
+  override def compare(that: HttpHandler): Int = Priority.PriorityOrdering.compare(this.priority, that.priority)
 }
 
 object HttpHandler {

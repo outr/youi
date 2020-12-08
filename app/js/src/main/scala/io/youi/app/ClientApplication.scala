@@ -9,6 +9,7 @@ import io.youi.{History, JavaScriptError, JavaScriptLog}
 import org.scalajs.dom.{ErrorEvent, FormData, XMLHttpRequest, window}
 import profig.JsonUtil
 import scribe.output.LogOutput
+import scribe.output.format.OutputFormat
 import scribe.writer.Writer
 import scribe.{Level, LogRecord}
 
@@ -68,7 +69,7 @@ object ClientApplication {
     private var errorsWritten = 0
     private var enabled = true
 
-    override def write[M](record: LogRecord[M], output: LogOutput): Unit = if (enabled) {
+    override def write[M](record: LogRecord[M], output: LogOutput, outputFormat: OutputFormat): Unit = if (enabled) {
       val text = output.plainText
       bytesWritten += text.length
       recordsWritten += 1

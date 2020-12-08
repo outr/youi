@@ -3,9 +3,9 @@ import sbtcrossproject.CrossType
 
 name := "youi"
 organization in ThisBuild := "io.youi"
-version in ThisBuild := "0.13.18"
-scalaVersion in ThisBuild := "2.13.3"
-crossScalaVersions in ThisBuild := List("2.13.3", "2.12.12")
+version in ThisBuild := "0.13.19-SNAPSHOT"
+scalaVersion in ThisBuild := "2.13.4"
+crossScalaVersions in ThisBuild := List("2.13.4", "2.12.12")
 resolvers in ThisBuild ++= Seq(
   Resolver.sonatypeRepo("releases"),
   Resolver.sonatypeRepo("snapshots")
@@ -29,7 +29,7 @@ developers in ThisBuild := List(
 )
 
 val profigVersion = "3.0.4"
-val scribeVersion = "3.0.4"
+val scribeVersion = "3.1.7"
 val reactifyVersion = "4.0.2"
 val hasherVersion = "1.2.2"
 
@@ -40,11 +40,11 @@ val canvgVersion = "1.4.0_3"
 val scalaJSDOM = "1.1.0"
 val okHttpVersion = "4.9.0"
 val uaDetectorVersion = "2014.10"
-val undertowVersion = "2.2.2.Final"
-val closureCompilerVersion = "v20200719"
+val undertowVersion = "2.2.3.Final"
+val closureCompilerVersion = "v20200830"
 val jSoupVersion = "1.13.1"
-val scalaXMLVersion = "2.0.0-M1"
-val collectionCompat = "2.1.6"
+val scalaXMLVersion = "2.0.0-M3"
+val collectionCompat = "2.3.1"
 val scalaTestVersion = "3.2.0-M4"
 val scalaCheckVersion = "1.14.3"
 

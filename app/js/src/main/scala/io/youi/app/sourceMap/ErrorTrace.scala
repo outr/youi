@@ -7,6 +7,7 @@ import io.youi.stream.StreamURL
 import io.youi.{History, _}
 import org.scalajs.dom.{ErrorEvent, Event}
 import scribe.output.LogOutput
+import scribe.output.format.OutputFormat
 import scribe.writer.Writer
 import scribe.{Level, LogRecord}
 
@@ -47,7 +48,7 @@ object ErrorTrace extends Writer {
     toError(message, source, line, column, Some(throwable))
   }
 
-  override def write[M](record: LogRecord[M], output: LogOutput): Unit = if (record.level.value >= Level.Error.value) {
+  override def write[M](record: LogRecord[M], output: LogOutput, outputFormat: OutputFormat): Unit = if (record.level.value >= Level.Error.value) {
     val value = record.message.value
     value match {
       case evt: Event if evt.`type` == "error" => ClientApplication.sendError(evt.asInstanceOf[ErrorEvent])

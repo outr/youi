@@ -49,6 +49,9 @@ object Storage {
 
           $prefix.string.get($key).map { o =>
             o.flatMap(s => JsonUtil.fromJsonString[Option[$t]](s))
+          }.recover { t =>
+            scribe.info("Error retrieving " + $key + " from Storage", t)
+            None
           }
        """)
   }

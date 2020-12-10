@@ -47,7 +47,7 @@ case class UploadManager(path: Path = path"/upload",
               case "upload" => {
                 val fileEntry = content.file("file")
                 val ext = extensionFromFileName(fileEntry.fileName)
-                val f = File.createTempFile(fileEntry.fileName, s".$ext")
+                val f = File.createTempFile(fileEntry.fileName, s".$ext", directory)
                 fileEntry.file.renameTo(f)
                 received @= UploadedFile(f, fileEntry.fileName)
                 f.getName
@@ -57,7 +57,7 @@ case class UploadManager(path: Path = path"/upload",
                 val ext = extensionFromFileName(fileName)
                 val slices = content.string("slices").value.split(',').toList
                 val sources = slices.map(fn => new File(directory, fn))
-                val destination = File.createTempFile(fileName, s".$ext")
+                val destination = File.createTempFile(fileName, s".$ext", directory)
                 IO.merge(sources, destination)
                 received @= UploadedFile(destination, fileName)
                 destination.getName

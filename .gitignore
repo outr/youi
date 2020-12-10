@@ -1,4 +1,5 @@
 .idea/
+.bsp/
 target/
 node_modules/
 npm-debug.log

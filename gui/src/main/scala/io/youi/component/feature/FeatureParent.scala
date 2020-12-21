@@ -13,9 +13,11 @@ trait FeatureParent {
   private var features = Map.empty[String, Feature]
   def css: CSSStyleDeclaration
 
-  lazy val color: Prop[Color] = Prop.stringify(css.color, css.color_=, Color, Color.Clear)
+  private val colorNone: Color = Color.fromLong(0xFFFFFF00)
+
+  lazy val color: Prop[Color] = Prop.stringify(css.color, css.color_=, Color, colorNone)
   lazy val background: Prop[Paint] = Prop.stringify(css.background, css.background_=, Paint, Paint.none)
-  lazy val backgroundColor: Prop[Color] = Prop.stringify(css.backgroundColor, css.backgroundColor_=, Color, Color.Clear)
+  lazy val backgroundColor: Prop[Color] = Prop.stringify(css.backgroundColor, css.backgroundColor_=, Color, colorNone)
   lazy val clear: Prop[Clear] = Prop.stringify(css.clear, css.clear_=, Clear, Clear.None)
   lazy val cursor: Prop[Cursor] = Prop.stringify(css.cursor, css.cursor_=, Cursor, Cursor.Default)
   lazy val display: Prop[Display] = Prop.stringify(css.display, css.display_=, Display, Display.Inherit, measureComponent)

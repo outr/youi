@@ -16,7 +16,7 @@ object ClientExampleApplication extends ExampleApplication with ClientConnectedA
     }
   }
 
-  val uploadManager: UploadManager = UploadManager()
+  val uploadManager: UploadManager = UploadManager(withCredentials = false)
 
   // Adds debug support to the application (press F2)
 //  val debug = new DebugSupport

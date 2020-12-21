@@ -172,12 +172,12 @@ object dom extends ExtendedElement(None) {
       }
     }
 
-    def insertAfter(previous: Element): Unit = Option(previous.nextElementSibling) match {
+    def insertAfter(previous: Node): Unit = Option(previous.nextSibling) match {
       case Some(next) => previous.parentNode.insertBefore(e, next)
       case None => previous.parentNode.appendChild(e)
     }
 
-    def insertFirst(parent: Element): Unit = Option(parent.firstElementChild) match {
+    def insertFirst(parent: Node): Unit = Option(parent.firstChild) match {
       case Some(first) => parent.insertBefore(e, first)
       case None => parent.appendChild(e)
     }

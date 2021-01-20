@@ -3,7 +3,7 @@ import sbtcrossproject.CrossType
 
 name := "youi"
 organization in ThisBuild := "io.youi"
-version in ThisBuild := "0.13.21-SNAPSHOT"
+version in ThisBuild := "0.14.0-SNAPSHOT"
 scalaVersion in ThisBuild := "2.13.4"
 crossScalaVersions in ThisBuild := List("2.13.4", "2.12.12")
 resolvers in ThisBuild ++= Seq(
@@ -28,9 +28,9 @@ developers in ThisBuild := List(
   Developer(id="darkfrog", name="Matt Hicks", email="matt@matthicks.com", url=url("http://matthicks.com"))
 )
 
-val profigVersion = "3.0.4"
-val scribeVersion = "3.1.7"
-val reactifyVersion = "4.0.2"
+val profigVersion = "3.1.1"
+val scribeVersion = "3.2.3"
+val reactifyVersion = "4.0.3"
 val hasherVersion = "1.2.2"
 
 val openTypeVersion = "1.1.0"

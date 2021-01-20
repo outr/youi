@@ -1,7 +1,6 @@
 package io.youi
 
-import io.circe.Decoder.Result
-import io.circe.{Decoder, Encoder, HCursor, Json}
+import profig._
 
 import scala.util.matching.Regex
 
@@ -54,21 +53,11 @@ case class Version(major: Int = 1,
 }
 
 object Version {
-  val Zero = Version(0)
+  val Zero: Version = Version(0)
+
   private val Matcher: Regex = """(\d+)[.]?(\d*)[.]?(\d*)[.]?(\d*)[-]?(.*)""".r
 
-  implicit val encoder: Encoder[Version] = new Encoder[Version] {
-    override def apply(a: Version): Json = Json.fromString(a.toString)
-  }
-  implicit val decoder: Decoder[Version] = new Decoder[Version] {
-    override def apply(c: HCursor): Result[Version] = c.value.asString match {
-      case Some(value) => Right(Version(value))
-      case None => {
-        val original = (c.value \\ "original").head.asString.getOrElse(throw new RuntimeException(s"Unable to decode Version: ${c.value}"))
-        Right(Version(original))
-      }
-    }
-  }
+  implicit val rw: ReadWriter[Version] = readwriter[String].bimap[Version](_.toString, apply)
 
   def apply(version: String): Version = version match {
     case Version(v) => v

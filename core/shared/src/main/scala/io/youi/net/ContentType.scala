@@ -1,7 +1,6 @@
 package io.youi.net
 
-import io.circe.Decoder.Result
-import io.circe._
+import profig._
 
 case class ContentType(`type`: String,
                        subType: String,
@@ -1840,14 +1839,5 @@ object ContentType {
     extension2MimeType.get(extension.toLowerCase).map(new ContentType(_))
   }
 
-  implicit val encoder: Encoder[ContentType] = new Encoder[ContentType] {
-    override def apply(ct: ContentType): Json = Json.fromString(ct.outputString)
-  }
-
-  implicit val decoder: Decoder[ContentType] = new Decoder[ContentType] {
-    override def apply(c: HCursor): Result[ContentType] = c.value.asString match {
-      case Some(value) => Right(parse(value))
-      case None => Left(DecodingFailure(s"Unable to decode ContentType from ${c.value}", Nil))
-    }
-  }
+  implicit val rw: ReadWriter[ContentType] = readwriter[String].bimap[ContentType](_.outputString, parse)
 }

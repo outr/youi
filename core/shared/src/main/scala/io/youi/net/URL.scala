@@ -1,12 +1,11 @@
 package io.youi.net
 
-import io.circe.Decoder.Result
-import io.circe._
-
 import scala.language.experimental.macros
 import scala.reflect.macros.blackbox
 import scala.util.Try
 import scala.util.matching.Regex
+
+import profig._
 
 case class URL(protocol: Protocol = Protocol.Http,
                host: String = "localhost",
@@ -139,18 +138,7 @@ object URL {
   var DefaultProtocol: Protocol = Protocol.Https
   var ValidateTLD: Boolean = true
 
-  implicit val encoder: Encoder[URL] = new Encoder[URL] {
-    override def apply(url: URL): Json = Json.fromString(url.toString)
-  }
-  implicit val decoder: Decoder[URL] = new Decoder[URL] {
-    override def apply(c: HCursor): Result[URL] = c.value.asString match {
-      case Some(s) => Try(Right(URL(s))).getOrElse {
-        scribe.warn(s"Unable to decode URL: $s")
-        Right(URL())
-      }
-      case None => Left(DecodingFailure(s"Cannot decode URL from ${c.value}", Nil))
-    }
-  }
+  implicit val rw: ReadWriter[URL] = readwriter[String].bimap[URL](_.toString, apply)
 
   def build(protocol: String,
             host: String,

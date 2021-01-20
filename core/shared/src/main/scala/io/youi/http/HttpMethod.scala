@@ -1,7 +1,6 @@
 package io.youi.http
 
-import io.circe.Decoder.Result
-import io.circe._
+import profig._
 
 sealed abstract class HttpMethod private(val value: String) {
   HttpMethod.map += value -> this
@@ -12,15 +11,7 @@ sealed abstract class HttpMethod private(val value: String) {
 object HttpMethod {
   private var map = Map.empty[String, HttpMethod]
 
-  implicit val encoder: Encoder[HttpMethod] = new Encoder[HttpMethod] {
-    override def apply(m: HttpMethod): Json = Json.fromString(m.value)
-  }
-  implicit val decoder: Decoder[HttpMethod] = new Decoder[HttpMethod] {
-    override def apply(c: HCursor): Result[HttpMethod] = c.value.asString match {
-      case Some(s) => Right(HttpMethod(s))
-      case None => Left(DecodingFailure(s"Cannot decode HttpMethod from ${c.value}", Nil))
-    }
-  }
+  implicit val rw: ReadWriter[HttpMethod] = readwriter[String].bimap[HttpMethod](_.value, apply)
 
   val Get: HttpMethod = new HttpMethod("GET") {}
   val Put: HttpMethod = new HttpMethod("PUT") {}

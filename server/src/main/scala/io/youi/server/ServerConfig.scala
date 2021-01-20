@@ -4,7 +4,7 @@ import java.io.File
 import java.util.concurrent.TimeUnit
 
 import io.youi.http.cookie.SameSite
-import profig.Profig
+import profig._
 import reactify._
 
 class ServerConfig(server: Server) {
@@ -40,6 +40,10 @@ class ServerConfig(server: Server) {
                              forceSecure: Boolean = false,
                              httpOnly: Boolean = true,
                              sameSite: String = "strict")
+
+    object SessionConfig {
+      implicit val rw: ReadWriter[SessionConfig] = macroRW
+    }
   }
 
   /**
@@ -112,6 +116,10 @@ case class HttpServerListener(host: String = "127.0.0.1",
   }
 }
 
+object HttpServerListener {
+  implicit val rw: ReadWriter[HttpServerListener] = macroRW
+}
+
 case class HttpsServerListener(host: String = "127.0.0.1",
                                port: Int = 8443,
                                keyStore: KeyStore = KeyStore(),
@@ -123,6 +131,14 @@ case class HttpsServerListener(host: String = "127.0.0.1",
   }
 }
 
+object HttpsServerListener {
+  implicit val rw: ReadWriter[HttpsServerListener] = macroRW
+}
+
 case class KeyStore(path: String = "keystore.jks", password: String = "password") {
   lazy val location: File = new File(path)
+}
+
+object KeyStore {
+  implicit val rw: ReadWriter[KeyStore] = macroRW
 }

@@ -28,7 +28,7 @@ import scala.concurrent.Future
   * @param default the default locale to fall-back on
   */
 class LanguageSupport(val default: Locale = Locale.ENGLISH, languagePath: Path = path"/language.json") extends HttpHandler {
-  private lazy val emptyConfig = new Profig(None)
+  private lazy val emptyConfig = new Profig
   private val languageConfig = new ConcurrentHashMap[String, Profig]
   private val cookieName = "lang"
 
@@ -37,7 +37,7 @@ class LanguageSupport(val default: Locale = Locale.ENGLISH, languagePath: Path =
       val (c, l) = locales(connection)
       val config = firstConfig(l)
       c.modify { response =>
-        response.withContent(Content.string(config.json.spaces2, ContentType.`application/json`))
+        response.withContent(Content.string(config.json.render(2), ContentType.`application/json`))
       }
     }
   } else {
@@ -114,7 +114,7 @@ class LanguageSupport(val default: Locale = Locale.ENGLISH, languagePath: Path =
     Option(languageConfig.get(locale)) match {
       case Some(config) => config
       case None => {
-        val config = new Profig(None)
+        val config = new Profig
         config.loadConfiguration(fileNameMatcher = new FileNameMatcher {
           override def matches(prefix: String, extension: String): Option[MergeType] = {
             if (FileNameMatcher.DefaultExtensions.contains(extension) && prefix == s"language-$locale") {

@@ -1,5 +1,7 @@
 package io.youi
 
+import profig._
+
 case class JavaScriptError(message: String,
                            source: String,
                            fileName: String,
@@ -19,6 +21,10 @@ case class JavaScriptError(message: String,
      """.stripMargin.trim
 }
 
+object JavaScriptError {
+  implicit val rw: ReadWriter[JavaScriptError] = macroRW
+}
+
 case class JavaScriptCause(message: String,
                            trace: List[JavaScriptTrace],
                            cause: Option[JavaScriptCause]) {
@@ -32,6 +38,10 @@ case class JavaScriptCause(message: String,
      """.stripMargin.trim
 }
 
+object JavaScriptCause {
+  implicit val rw: ReadWriter[JavaScriptCause] = macroRW
+}
+
 case class JavaScriptTrace(className: String,
                            methodName: String,
                            fileName: String,
@@ -41,6 +51,14 @@ case class JavaScriptTrace(className: String,
   override def toString: String = s"$source:${position.line}:${position.column} ($className.$methodName)"
 }
 
+object JavaScriptTrace {
+  implicit val rw: ReadWriter[JavaScriptTrace] = macroRW
+}
+
 case class JavaScriptPosition(line: Int, column: Int) {
   override def toString: String = s"Position(line: $line, column: $column)"
+}
+
+object JavaScriptPosition {
+  implicit val rw: ReadWriter[JavaScriptPosition] = macroRW
 }

@@ -59,7 +59,7 @@ object RestfulHandler {
   private val key: String = "restful"
 
   def store(connection: HttpConnection, json: Json): Unit = {
-    val merged = connection.store.getOrElse[Json](key, Json.obj()).merge(json)
+    val merged = Json.merge(connection.store.getOrElse[Json](key, Json.obj()), json)
     connection.store.update[Json](key, merged)
   }
 
@@ -88,16 +88,14 @@ object RestfulHandler {
     val storeJson = connection.store.getOrElse[Json](key, Json.obj())
     contentJson match {
       case Left(err) => Left(err)
-      case Right(json) => Right(json.deepMerge(urlJson).deepMerge(pathJson).deepMerge(storeJson))
+      case Right(json) => Right(Json.merge(json, urlJson, pathJson, storeJson))
     }
   }
 
   def jsonFromContent(content: Content): Either[ValidationError, Json] = content match {
-    case StringContent(jsonString, _, _) => parse(jsonString) match {
-      case Left(failure) => {
-        Left(ValidationError(s"Failed to parse JSON (${failure.getMessage()}): $jsonString", ValidationError.RequestParsing))
-      }
-      case Right(j) => Right(j)
+    case StringContent(jsonString, _, _) => {
+      val json = Json.parse(jsonString)
+      Right(json)
     }
     case _ => {
       Left(ValidationError(s"Unsupported content for restful end-point: $content.", ValidationError.RequestParsing))
@@ -109,9 +107,9 @@ object RestfulHandler {
       case (key, param) => {
         val values = param.values
         val valuesJson = if (values.length > 1) {
-          Json.arr(values.map(Json.fromString): _*)
+          Json.array(values.map(Json.string): _*)
         } else {
-          Json.fromString(values.head)
+          Json.string(values.head)
         }
         key -> valuesJson
       }

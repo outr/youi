@@ -3,7 +3,6 @@ package io.youi.server.handler
 import java.util.Locale
 import java.util.concurrent.{ConcurrentHashMap, TimeUnit}
 import java.util.regex.Matcher
-
 import io.youi.http.content.Content
 import io.youi.http.cookie.ResponseCookie
 import io.youi.http.{Headers, HttpConnection}
@@ -115,7 +114,7 @@ class LanguageSupport(val default: Locale = Locale.ENGLISH, languagePath: Path =
       case Some(config) => config
       case None => {
         val config = new Profig
-        config.loadConfiguration(fileNameMatcher = new FileNameMatcher {
+        config.initConfiguration(fileNameMatcher = new FileNameMatcher {
           override def matches(prefix: String, extension: String): Option[MergeType] = {
             if (FileNameMatcher.DefaultExtensions.contains(extension) && prefix == s"language-$locale") {
               Some(MergeType.Overwrite)
@@ -124,7 +123,7 @@ class LanguageSupport(val default: Locale = Locale.ENGLISH, languagePath: Path =
             }
           }
         })
-        if (config.json.asObject.get.nonEmpty) {
+        if (config.json.nonEmpty) {
           languageConfig.put(locale, config)
           config
         } else {

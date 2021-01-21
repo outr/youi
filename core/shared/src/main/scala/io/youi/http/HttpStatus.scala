@@ -1,5 +1,7 @@
 package io.youi.http
 
+import profig._
+
 case class HttpStatus(code: Int, message: String) extends Ordered[HttpStatus] {
   HttpStatus.synchronized {
     HttpStatus.codeMap += code -> this
@@ -27,6 +29,8 @@ case class HttpStatus(code: Int, message: String) extends Ordered[HttpStatus] {
 
 object HttpStatus {
   private var codeMap = Map.empty[Int, HttpStatus]
+
+  implicit val rw: ReadWriter[HttpStatus] = macroRW
 
   val Continue = new HttpStatus(100, "Continue")
   val SwitchingProtocols = new HttpStatus(101, "Switching Protocols")

@@ -27,7 +27,7 @@ trait Restful[Request, Response] {
 
 object Restful {
   def apply[Request, Response](restful: Restful[Request, Response])
-                              (implicit writer: Writer[Request], reader: Reader[Response]): HttpHandler = {
-    new RestfulHandler[Request, Response](restful)(writer, reader)
+                              (implicit reader: Reader[Request], writer: Writer[Response]): HttpHandler = {
+    new RestfulHandler[Request, Response](restful)(reader, writer)
   }
 }

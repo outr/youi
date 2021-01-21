@@ -8,7 +8,7 @@ import io.youi.server.WebSocketListener
 import io.youi.server.dsl._
 import io.youi.server.handler.{CachingManager, LanguageSupport}
 import io.youi.upload.UploadManager
-import profig.JsonUtil
+import profig._
 import scribe.Execution.global
 
 import scala.concurrent.Future
@@ -18,6 +18,10 @@ object ServerExampleApplication extends ExampleApplication with ServerConnectedA
   val uploadManager: UploadManager = UploadManager()
 
   case class Greeting(message: String, name: String)
+
+  object Greeting {
+    implicit val rw: ReadWriter[Greeting] = macroRW
+  }
 
   override def getOrCreateConnection(listener: WebSocketListener): ExampleConnection = new ServerConnection
 

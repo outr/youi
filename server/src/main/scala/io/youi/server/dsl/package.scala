@@ -10,6 +10,7 @@ import io.youi.server.rest.Restful
 import io.youi.server.validation.{ValidationResult, Validator}
 import io.youi.stream.delta.Delta
 import scribe.Execution.global
+import profig._
 
 import scala.concurrent.Future
 import scala.language.implicitConversions
@@ -86,8 +87,8 @@ package object dsl {
   implicit def content2Filter(content: Content): ConnectionFilter = handler2Filter(ContentHandler(content, HttpStatus.OK))
 
   implicit def restful[Request, Response](restful: Restful[Request, Response])
-                                         (implicit writer: profig.Writer[Request], reader: profig.Reader[Response]): ConnectionFilter = {
-    handler2Filter(Restful(restful)(writer, reader))
+                                         (implicit reader: Reader[Request], writer: Writer[Response]): ConnectionFilter = {
+    handler2Filter(Restful(restful)(reader, writer))
   }
 
   implicit def path2AllowFilter(path: Path): ConnectionFilter = PathFilter(path)

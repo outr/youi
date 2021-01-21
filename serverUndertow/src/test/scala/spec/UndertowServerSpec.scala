@@ -1,6 +1,5 @@
 package spec
 
-import io.circe.generic.auto._
 import io.youi.ValidationError
 import io.youi.client.HttpClient
 import io.youi.http._
@@ -12,7 +11,7 @@ import io.youi.server.handler.HttpHandler
 import io.youi.server.rest.{Restful, RestfulResponse}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AsyncWordSpec
-import profig.Profig
+import profig._
 
 import scala.concurrent.Future
 
@@ -22,7 +21,7 @@ class UndertowServerSpec extends AsyncWordSpec with Matchers {
     val client = HttpClient.url(url"http://localhost:8080")
 
     "configure the server" in {
-      Profig.initConfigurationBlocking()
+      Profig.initConfiguration()
       server.handler.matcher(path.exact("/test.txt")).wrap(new HttpHandler {
         override def handle(connection: HttpConnection): Future[HttpConnection] = Future.successful {
           connection.modify { response =>
@@ -107,7 +106,15 @@ class UndertowServerSpec extends AsyncWordSpec with Matchers {
 
   case class ReverseRequest(value: String)
 
+  object ReverseRequest {
+    implicit val rw: ReadWriter[ReverseRequest] = macroRW
+  }
+
   case class ReverseResponse(reversed: Option[String], errors: List[ValidationError])
+
+  object ReverseResponse {
+    implicit val rw: ReadWriter[ReverseResponse] = macroRW
+  }
 
   object ReverseService extends Restful[ReverseRequest, ReverseResponse] {
     override def apply(connection: HttpConnection, request: ReverseRequest): Future[RestfulResponse[ReverseResponse]] = {

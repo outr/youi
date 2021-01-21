@@ -1,6 +1,5 @@
 package spec
 
-import io.circe.generic.auto._
 import io.youi.ValidationError
 import io.youi.http._
 import io.youi.http.content.{Content, StringContent}
@@ -11,7 +10,7 @@ import io.youi.server.handler.HttpHandler
 import io.youi.server.rest.{Restful, RestfulResponse}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AsyncWordSpec
-import profig.JsonUtil
+import profig._
 
 import scala.concurrent.Future
 
@@ -109,7 +108,15 @@ class ServerSpec extends AsyncWordSpec with Matchers {
 
   case class ReverseRequest(value: String)
 
+  object ReverseRequest {
+    implicit val rw: ReadWriter[ReverseRequest] = macroRW
+  }
+
   case class ReverseResponse(reversed: Option[String], errors: List[ValidationError])
+
+  object ReverseResponse {
+    implicit val rw: ReadWriter[ReverseResponse] = macroRW
+  }
 
   object ReverseService extends Restful[ReverseRequest, ReverseResponse] {
     override def apply(connection: HttpConnection, request: ReverseRequest): Future[RestfulResponse[ReverseResponse]] = {

@@ -50,7 +50,6 @@ object HookupMacros {
       q"""
         import _root_.io.youi.communication._
         import _root_.profig._
-        import _root_.io.circe._
         import _root_.scala.concurrent.Future
 
         new Hookup[$interface] with $interface {
@@ -86,7 +85,7 @@ object HookupMacros {
       val params = argNames.zip(argTypes).map {
         case (n, t) => {
           val paramName = n.decodedName.toString
-          q"""$n = JsonUtil.fromJson[$t]((params \\ $paramName).head)"""
+          q"""$n = JsonUtil.fromJson[$t](params \\ $paramName)"""
         }
       }
       val call = if (m.typeSignature.paramLists.nonEmpty) {
@@ -116,7 +115,6 @@ object HookupMacros {
       q"""
          import _root_.io.youi.communication._
          import _root_.profig._
-         import _root_.io.circe._
          import _root_.scala.concurrent.Future
 
          new $implementation with Hookup[$interface] {

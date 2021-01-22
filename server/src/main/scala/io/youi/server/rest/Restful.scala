@@ -1,9 +1,9 @@
 package io.youi.server.rest
 
-import io.circe.{Decoder, Encoder}
 import io.youi.ValidationError
 import io.youi.http.{HttpConnection, HttpStatus}
 import io.youi.server.handler.HttpHandler
+import profig._
 
 import scala.concurrent.Future
 import scala.concurrent.duration.Duration
@@ -27,7 +27,7 @@ trait Restful[Request, Response] {
 
 object Restful {
   def apply[Request, Response](restful: Restful[Request, Response])
-                              (implicit decoder: Decoder[Request], encoder: Encoder[Response]): HttpHandler = {
-    new RestfulHandler[Request, Response](restful)(decoder, encoder)
+                              (implicit reader: Reader[Request], writer: Writer[Response]): HttpHandler = {
+    new RestfulHandler[Request, Response](restful)(reader, writer)
   }
 }

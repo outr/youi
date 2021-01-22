@@ -1,10 +1,6 @@
 package io.youi.server.handler
 
 import java.io.File
-
-import io.circe.parser._
-import io.circe.syntax._
-import io.circe.{Decoder, Encoder, Json, Printer}
 import io.youi.http._
 import io.youi.http.content.{Content, StringContent}
 import io.youi.net.{ContentType, Path, URL, URLMatcher}
@@ -14,8 +10,10 @@ import io.youi.stream.delta.Delta
 import io.youi.stream.{HTMLParser, Selector}
 import scribe.Execution.global
 import scribe.Priority
+import profig._
 
 import scala.concurrent.Future
+import scala.util.Try
 
 case class HttpHandlerBuilder(server: Server,
                               urlMatcher: Option[URLMatcher] = None,
@@ -125,24 +123,17 @@ case class HttpHandlerBuilder(server: Server,
   }
 
   def restful[Request, Response](handler: Request => Response)
-                                (implicit decoder: Decoder[Request], encoder: Encoder[Response]): HttpHandler = {
-    val printer = Printer.spaces2.copy(dropNullValues = false)
+                                (implicit reader: Reader[Request], writer: Writer[Response]): HttpHandler = {
     handle { connection =>
       val jsonOption: Option[Json] = connection.request.method match {
         case HttpMethod.Get => {
           Some(Json.obj(connection.request.url.parameters.entries.map {
-            case (key, param) => key -> Json.fromString(param.value)
+            case (key, param) => key -> Json.string(param.value)
           }: _*))
         }
         case _ => connection.request.content match {
           case Some(content) => content match {
-            case StringContent(jsonString, _, _) => parse(jsonString) match {
-              case Left(failure) => {
-                scribe.warn(failure)
-                None
-              }
-              case Right(json) => Some(json)
-            }
+            case StringContent(jsonString, _, _) => Try(Json.parse(jsonString)).toOption
             case _ => {
               scribe.error(s"Unsupported content for restful end-point: $content.")
               None
@@ -151,19 +142,16 @@ case class HttpHandlerBuilder(server: Server,
           case None => None     // Ignore calls to this end-point that have no content
         }
       }
-      jsonOption.map { json =>
-        json.as[Request] match {
-          case Left(error) => throw new RuntimeException(s"Error parsing $json", error)
-          case Right(request) => Future.successful {
-            val response = handler(request)
-            val responseJson = response.asJson
-            val responseJsonString = printer.print(responseJson)
-            connection.modify { httpResponse =>
-              httpResponse.withContent(Content.string(responseJsonString, ContentType.`application/json`))
-            }
+      Future.successful {
+        jsonOption.map { json =>
+          val request = json.as[Request]
+          val response = handler(request)
+          val responseJsonString = JsonUtil.toJsonString(response)
+          connection.modify { httpResponse =>
+            httpResponse.withContent(Content.string(responseJsonString, ContentType.`application/json`))
           }
-        }
-      }.getOrElse(Future.successful(connection))
+        }.getOrElse(connection)
+      }
     }
   }
 

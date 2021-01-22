@@ -1,6 +1,6 @@
 package io.youi.client
 
-import io.circe.{Json, Printer}
+import profig._
 import io.youi.client.intercept.Interceptor
 import io.youi.http._
 import io.youi.http.content.{Content, StringContent}
@@ -22,8 +22,6 @@ case class HttpClient(request: HttpRequest,
                       dropNullValuesInJson: Boolean,
                       failOnHttpStatus: Boolean,
                       validateSSLCertificates: Boolean) {
-  protected lazy val printer: Printer = Printer.spaces2.copy(dropNullValues = dropNullValuesInJson)
-
   def modify(f: HttpRequest => HttpRequest): HttpClient = copy(request = f(request))
 
   def url: URL = request.url
@@ -100,7 +98,7 @@ case class HttpClient(request: HttpRequest,
     * @param json the JSON content to send
     * @return HttpClient
     */
-  def json(json: Json): HttpClient = content(StringContent(printer.print(json), ContentType.`application/json`))
+  def json(json: Json): HttpClient = content(StringContent(json.render(2), ContentType.`application/json`))
 
   /**
     * Sends an HttpRequest and receives an asynchronous HttpResponse future.

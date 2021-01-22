@@ -2,7 +2,6 @@ package io.youi.server
 
 import java.io.File
 
-import io.circe.{Decoder, Encoder}
 import io.youi.http.content.Content
 import io.youi.http.{HttpConnection, HttpMethod, HttpStatus}
 import io.youi.net.{ContentType, IP, Path, URLMatcher}
@@ -11,10 +10,10 @@ import io.youi.server.rest.Restful
 import io.youi.server.validation.{ValidationResult, Validator}
 import io.youi.stream.delta.Delta
 import scribe.Execution.global
+import profig._
 
 import scala.concurrent.Future
 import scala.language.implicitConversions
-import scala.xml.Elem
 
 package object dsl {
   private[youi] val DeltaKey: String = "deltas"
@@ -88,8 +87,8 @@ package object dsl {
   implicit def content2Filter(content: Content): ConnectionFilter = handler2Filter(ContentHandler(content, HttpStatus.OK))
 
   implicit def restful[Request, Response](restful: Restful[Request, Response])
-                                         (implicit decoder: Decoder[Request], encoder: Encoder[Response]): ConnectionFilter = {
-    handler2Filter(Restful(restful)(decoder, encoder))
+                                         (implicit reader: Reader[Request], writer: Writer[Response]): ConnectionFilter = {
+    handler2Filter(Restful(restful)(reader, writer))
   }
 
   implicit def path2AllowFilter(path: Path): ConnectionFilter = PathFilter(path)

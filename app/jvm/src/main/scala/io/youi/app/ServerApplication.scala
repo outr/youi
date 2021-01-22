@@ -267,12 +267,10 @@ trait ServerApplication extends YouIApplication with Server {
   }
 
   def main(args: Array[String]): Unit = {
-    val future = Profig.init().flatMap { _ =>
-      Profig.loadConfiguration()
-      Profig.merge(args.toSeq)
+    Profig.initConfiguration()
+    Profig.merge(args.toSeq)
 
-      start()
-    }
+    val future = start()
     future.failed.map { throwable =>
       scribe.error("Error during application startup", throwable)
       dispose()

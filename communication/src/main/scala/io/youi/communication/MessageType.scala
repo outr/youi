@@ -1,7 +1,6 @@
 package io.youi.communication
 
-import io.circe.Decoder.Result
-import io.circe.{Decoder, Encoder, HCursor, Json}
+import profig._
 
 sealed trait MessageType {
   def name: String
@@ -9,15 +8,7 @@ sealed trait MessageType {
 }
 
 object MessageType {
-  implicit val encoder: Encoder[MessageType] = new Encoder[MessageType] {
-    override def apply(a: MessageType): Json = Json.fromString(a.name)
-  }
-  implicit val decoder: Decoder[MessageType] = new Decoder[MessageType] {
-    override def apply(c: HCursor): Result[MessageType] = {
-      val s = c.value.asString.getOrElse(throw new RuntimeException(s"Invalid JSON: ${c.value}"))
-      Right(byName(s))
-    }
-  }
+  implicit val rw: ReadWriter[MessageType] = readwriter[String].bimap[MessageType](_.name, byName)
 
   case object Invoke extends MessageType {
     override def name: String = "invoke"

@@ -2,8 +2,8 @@ package io.youi.http.content
 
 import java.io.File
 import java.net.URL
+import profig._
 
-import io.circe.{Json, Printer}
 import io.youi.net.ContentType
 
 trait Content {
@@ -23,8 +23,8 @@ trait SharedContentHelpers {
   lazy val form: FormDataContent = FormDataContent(Nil)
 
   def json(value: Json, pretty: Boolean = false): Content = {
-    val printer = if (pretty) Printer.spaces2 else Printer.noSpaces
-    bytes(value.printWith(printer).getBytes, ContentType.`application/json`)
+    val jsonString = if (pretty) value.render(indent = 2) else value.render()
+    bytes(jsonString.getBytes, ContentType.`application/json`)
   }
   def string(value: String, contentType: ContentType): Content = StringContent(value, contentType)
   def bytes(value: Array[Byte], contentType: ContentType): Content = BytesContent(value, contentType)

@@ -7,7 +7,7 @@ import io.youi.net._
 import io.youi.storage.{LocalStorage, UniversalStorage}
 import io.youi.{History, JavaScriptError, JavaScriptLog}
 import org.scalajs.dom.{ErrorEvent, FormData, XMLHttpRequest, window}
-import profig.JsonUtil
+import profig._
 import scribe.output.LogOutput
 import scribe.output.format.OutputFormat
 import scribe.writer.Writer

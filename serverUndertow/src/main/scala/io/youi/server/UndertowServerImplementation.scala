@@ -38,8 +38,8 @@ class UndertowServerImplementation(val server: Server) extends ServerImplementat
 
   override def start(): Unit = synchronized {
     val contentEncodingRepository = new ContentEncodingRepository()
-      .addEncodingHandler("gzip", new GzipEncodingProvider, 100, Predicates.maxContentSize(5L))
-      .addEncodingHandler("deflate", new DeflateEncodingProvider, 50, Predicates.maxContentSize(5L))
+      .addEncodingHandler("gzip", new GzipEncodingProvider, 100, Predicates.requestLargerThan(5L))
+      .addEncodingHandler("deflate", new DeflateEncodingProvider, 50, Predicates.requestLargerThan(5L))
     val encodingHandler = new EncodingHandler(contentEncodingRepository).setNext(this)
 
     val builder = Undertow.builder().setHandler(encodingHandler)
@@ -60,6 +60,7 @@ class UndertowServerImplementation(val server: Server) extends ServerImplementat
           }
         }
       }
+      case listener => throw new UnsupportedOperationException(s"Unsupported listener: $listener")
     }
     val u = builder.build()
     u.start()

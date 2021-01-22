@@ -11,6 +11,8 @@ import org.scalatest.wordspec.AsyncWordSpec
 import scala.concurrent.Future
 import scala.concurrent.duration._
 
+import profig._
+
 class HttpClientSpec extends AsyncWordSpec with Matchers {
   "HttpClient" should {
     "GET the user-agent" in {
@@ -71,3 +73,7 @@ class HttpClientSpec extends AsyncWordSpec with Matchers {
 }
 
 case class Placeholder(userId: Int, id: Int, title: String, completed: Boolean)
+
+object Placeholder {
+  implicit val rw: ReadWriter[Placeholder] = macroRW
+}

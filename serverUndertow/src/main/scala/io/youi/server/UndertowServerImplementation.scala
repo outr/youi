@@ -60,6 +60,7 @@ class UndertowServerImplementation(val server: Server) extends ServerImplementat
           }
         }
       }
+      case listener => throw new UnsupportedOperationException(s"Unsupported listener: $listener")
     }
     val u = builder.build()
     u.start()

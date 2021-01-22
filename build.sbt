@@ -44,9 +44,9 @@ val undertowVersion = "2.2.3.Final"
 val closureCompilerVersion = "v20200830"
 val jSoupVersion = "1.13.1"
 val scalaXMLVersion = "2.0.0-M3"
-val collectionCompat = "2.3.1"
-val scalaTestVersion = "3.2.0-M4"
-val scalaCheckVersion = "1.14.3"
+val collectionCompat = "2.3.2"
+val scalaTestVersion = "3.2.3"
+val scalaCheckVersion = "1.15.2"
 
 lazy val root = project.in(file("."))
   .aggregate(

@@ -51,7 +51,8 @@ val scalaCheckVersion = "1.15.2"
 lazy val root = project.in(file("."))
   .aggregate(
     macrosJS, macrosJVM, coreJS, coreJVM, spatialJS, spatialJVM, stream, dom, clientJS, clientJVM, communicationJS,
-    communicationJVM, server, serverUndertow, gui, capacitor, optimizer, appJS, appJVM, exampleJS, exampleJVM
+    communicationJVM, commJS, commJVM, server, serverUndertow, gui, capacitor, optimizer, appJS, appJVM, exampleJS,
+    exampleJVM
   )
   .settings(
     publish := {},
@@ -171,6 +172,20 @@ lazy val communication = crossProject(JSPlatform, JVMPlatform)
 
 lazy val communicationJS = communication.js
 lazy val communicationJVM = communication.jvm
+
+lazy val comm = crossProject(JSPlatform, JVMPlatform)
+  .crossType(CrossType.Pure)
+  .in(file("comm"))
+  .settings(
+    name := "youi-comm",
+    libraryDependencies ++= Seq(
+      "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
+    )
+  )
+  .dependsOn(core)
+
+lazy val commJS = comm.js
+lazy val commJVM = comm.jvm
 
 lazy val server = project.in(file("server"))
   .settings(

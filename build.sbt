@@ -37,14 +37,15 @@ val openTypeVersion = "1.1.0"
 val webFontLoaderVersion = "1.6.28_2"
 val canvgVersion = "1.4.0_3"
 
-val scalaJSDOM = "1.1.0"
+val catsEffectVersion = "2.3.1"
+val scalaJSDOMVersion = "1.1.0"
 val okHttpVersion = "4.9.0"
 val uaDetectorVersion = "2014.10"
 val undertowVersion = "2.2.3.Final"
 val closureCompilerVersion = "v20200830"
 val jSoupVersion = "1.13.1"
 val scalaXMLVersion = "2.0.0-M3"
-val collectionCompat = "2.3.2"
+val collectionCompatVersion = "2.3.2"
 val scalaTestVersion = "3.2.3"
 val scalaCheckVersion = "1.15.2"
 
@@ -65,7 +66,7 @@ lazy val macros = crossProject(JSPlatform, JVMPlatform).in(file("macros"))
     description := "Dependency for internal Macro functionality",
     libraryDependencies ++= Seq(
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-      "org.scala-lang.modules" %% "scala-collection-compat" % collectionCompat,
+      "org.scala-lang.modules" %% "scala-collection-compat" % collectionCompatVersion,
       "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
     )
   )
@@ -87,7 +88,7 @@ lazy val core = crossProject(JSPlatform, JVMPlatform).in(file("core"))
   )
   .jsSettings(
     libraryDependencies ++= Seq(
-      "org.scala-js" %%% "scalajs-dom" % scalaJSDOM,
+      "org.scala-js" %%% "scalajs-dom" % scalaJSDOMVersion,
       "com.outr" %% "profig-all" % profigVersion % Provided
     )
   )
@@ -179,6 +180,7 @@ lazy val comm = crossProject(JSPlatform, JVMPlatform)
   .settings(
     name := "youi-comm",
     libraryDependencies ++= Seq(
+      "org.typelevel" %%% "cats-effect" % catsEffectVersion,
       "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
     )
   )

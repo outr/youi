@@ -44,7 +44,7 @@ val undertowVersion = "2.2.4.Final"
 val closureCompilerVersion = "v20210202"
 val jSoupVersion = "1.13.1"
 val scalaXMLVersion = "2.0.0-M3"
-val collectionCompat = "2.3.2"
+val collectionCompat = "2.4.1"
 val scalaTestVersion = "3.2.3"
 val scalaCheckVersion = "1.15.2"
 

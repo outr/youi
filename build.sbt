@@ -30,7 +30,7 @@ developers in ThisBuild := List(
 
 val profigVersion = "3.1.2"
 val scribeVersion = "3.3.2"
-val reactifyVersion = "4.0.3"
+val reactifyVersion = "4.0.4"
 val hasherVersion = "1.2.2"
 
 val openTypeVersion = "1.1.0"
@@ -38,10 +38,10 @@ val webFontLoaderVersion = "1.6.28_2"
 val canvgVersion = "1.4.0_3"
 
 val scalaJSDOM = "1.1.0"
-val okHttpVersion = "4.9.0"
+val okHttpVersion = "4.9.1"
 val uaDetectorVersion = "2014.10"
 val undertowVersion = "2.2.4.Final"
-val closureCompilerVersion = "v20200830"
+val closureCompilerVersion = "v20210202"
 val jSoupVersion = "1.13.1"
 val scalaXMLVersion = "2.0.0-M3"
 val collectionCompat = "2.3.2"

@@ -12,7 +12,7 @@ install:
   - npm install
   - npm install jsdom source-map-support
 script:
-  - sbt clean +test
+  - sbt clean
   - sbt coverage coreJVM/test communicationJVM/test server/test serverUndertow/test stream/test appJVM/test coverageReport
   - sbt coverageAggregate
   - bash <(curl -Ls https://coverage.codacy.com/get.sh) report --skip

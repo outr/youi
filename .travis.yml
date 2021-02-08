@@ -5,17 +5,17 @@ scala:
 jdk:
   - openjdk8
 install:
-  - . $HOME/.nvm/nvm.sh
-  - nvm install 7
-  - nvm use 7
-  - export NODE_PATH="$(npm config get prefix)"/lib/node_modules
-  - npm install
-  - npm install jsdom source-map-support
+#  - . $HOME/.nvm/nvm.sh
+#  - nvm install 7
+#  - nvm use 7
+#  - export NODE_PATH="$(npm config get prefix)"/lib/node_modules
+#  - npm install
+#  - npm install jsdom source-map-support
 script:
-  - sbt clean
-  - sbt coverage coreJVM/test communicationJVM/test server/test serverUndertow/test stream/test appJVM/test coverageReport
-  - sbt coverageAggregate
-  - bash <(curl -Ls https://coverage.codacy.com/get.sh) report --skip
+  - sbt clean coreJVM/test communicationJVM/test server/test serverUndertow/test stream/test appJVM/test
+#  - sbt coverage coreJVM/test communicationJVM/test server/test serverUndertow/test stream/test appJVM/test coverageReport
+#  - sbt coverageAggregate
+#  - bash <(curl -Ls https://coverage.codacy.com/get.sh) report --skip
 cache:
   directories:
     - $HOME/.cache/coursier/v1

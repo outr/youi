@@ -1,85 +1,100 @@
 package io.youi.comm
 
-import cats.effect.IO
 import profig._
-import reactify.{Channel, Var}
+import reactify._
 
-import java.lang.reflect.{Method, Modifier}
-import scala.concurrent.{ExecutionContext, Future}
+import cats.effect.IO
+
+//import scala.concurrent.{ExecutionContext, Future}
+//
+//trait Communication {
+//  protected val communicator: Communicator = ??? // TODO: this needs to be defined by implementations
+//
+//  def method[Send: Writer, Receive: Reader](endpoint: String)
+//                                           (implicit ec: ExecutionContext): AsyncMethod[Send, Receive] = new AsyncMethod[Send, Receive] {
+//    override def apply(send: Send): Future[Receive] = {
+//      val sendJson = JsonUtil.toJson(send)
+//      communicator.sendAndReceive(endpoint, sendJson).map { receiveJson =>
+//        JsonUtil.fromJson[Receive](receiveJson)
+//      }
+//    }
+//  }
+//}
+//
+//trait Communicator {
+//  def sendAndReceive(endpoint: String, json: Json): Future[Json]
+//  def createVar[T: ReadWriter](name: String): Var[T]
+//  def createChannel[T: ReadWriter](name: String): Channel[T]
+//}
+//
+//trait AsyncMethod[Send, Receive] {
+//  def apply(send: Send): Future[Receive]
+//}
+//
+//object Test extends Communication {
+//  import scribe.Execution.global
+//
+//  val savePerson: AsyncMethod[Person, Boolean] = method[Person, Boolean]("savePerson")
+//
+//  case class Person(name: String, age: Int)
+//
+//  object Person {
+//    implicit val rw: ReadWriter[Person] = macroRW
+//  }
+//}
+
+object Communication {
+  def implementation[Interface](communicator: Communicator, implementation: Interface): Interface with Communication = ???
+  def interface[Interface](communicator: Communicator): Interface with Communication = ???
+}
 
 trait Communication {
-  /*protected val communicator: Communicator = ??? // TODO: this needs to be defined by implementations
-
-  def method[Send: Writer, Receive: Reader](endpoint: String)
-                                           (implicit ec: ExecutionContext): AsyncMethod[Send, Receive] = new AsyncMethod[Send, Receive] {
-    override def apply(send: Send): Future[Receive] = {
-      val sendJson = JsonUtil.toJson(send)
-      communicator.sendAndReceive(endpoint, sendJson).map { receiveJson =>
-        JsonUtil.fromJson[Receive](receiveJson)
-      }
-    }
-  }*/
-
-  protected def method(endpoint: String, parameters: (String, Json)*): IO[Json]
+  def communicator: Communicator
 }
 
-trait ReflectiveCommunication[Interface] extends Communication {
-  protected def implementation: Interface
-
-  private val methods: Map[String, Method] = implementation
-    .getClass
-    .getDeclaredMethods
-    .toList
-    .filter(m => Modifier.isPublic(m.getModifiers))
-    .filterNot(_.getName.startsWith("$"))
-    .map { m =>
-      m.getName -> m
-    }
-    .toMap
-
-  override def method(name: String, parameters: (String, Json)*): IO[Json] = methods.get(name) match {
-    case Some(m) =>
+trait Communicator {
+  def method(endpoint: String, send: Json): IO[Json] = {
+    scribe.info(s"Should call: $endpoint with $send")
+    ???
   }
 }
 
-/*trait Communicator {
-  def sendAndReceive(endpoint: String, json: Json): Future[Json]
-  def createVar[T: ReadWriter](name: String): Var[T]
-  def createChannel[T: ReadWriter](name: String): Channel[T]
+case class TestCommunicator() extends Communicator
+
+trait Test {
+  val person: Var[Person] = Var[Person](Person("Default", 21))
+  val message: Channel[String] = Channel[String]
+  def reverse(s: String): IO[String]
 }
 
-trait AsyncMethod[Send, Receive] {
-  def apply(send: Send): Future[Receive]
+class TestImplementation extends Test {
+  override def reverse(s: String): IO[String] = IO(s.reverse)
 }
 
-object Test extends Communication {
-  import scribe.Execution.global
+object Prototype {
+  private val testCommunicator = new TestCommunicator
 
-  val savePerson: AsyncMethod[Person, Boolean] = method[Person, Boolean]("savePerson")
+  val interface: Test with Communication = new Test with Communication {
+    override def reverse(s: String): IO[String] = communicator
+      .method("reverse", Json.obj("s" -> Json.string(s)))
+      .map(_.as[String])
 
-  case class Person(name: String, age: Int)
-
-  object Person {
-    implicit val rw: ReadWriter[Person] = macroRW
+    override def communicator: Communicator = testCommunicator
   }
-}*/
 
-trait Simple {
-  def reverse(value: String): IO[String]
-}
+  val implementation: Test with Communication = new TestImplementation with Communication {
+    override def communicator: Communicator = testCommunicator
+  }
 
-object SimpleImplementation extends Simple {
-  override def reverse(value: String): IO[String] = IO(value.reverse)
-}
-
-object SimpleRemote extends Simple with ReflectiveCommunication[Simple] {
-  override protected def implementation: Simple = SimpleImplementation
-
-  override def reverse(value: String): IO[String] = method("reverse", "value" -> Json.string(value)).map(_.as[String])
-}
-
-object Test {
   def main(args: Array[String]): Unit = {
-    SimpleRemote
+    val io: IO[String] = interface.reverse("Hello, World!")
+    val reversed = io.unsafeRunSync()
+    scribe.info(s"Reversed: $reversed")
   }
+}
+
+case class Person(name: String, age: Int)
+
+object Person {
+  implicit val rw: ReadWriter[Person] = macroRW
 }

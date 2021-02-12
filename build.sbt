@@ -29,8 +29,8 @@ developers in ThisBuild := List(
 )
 
 val profigVersion = "3.1.2"
-val scribeVersion = "3.2.4"
-val reactifyVersion = "4.0.3"
+val scribeVersion = "3.3.3"
+val reactifyVersion = "4.0.4"
 val hasherVersion = "1.2.2"
 
 val openTypeVersion = "1.1.0"
@@ -39,13 +39,16 @@ val canvgVersion = "1.4.0_3"
 
 val catsEffectVersion = "2.3.1"
 val scalaJSDOMVersion = "1.1.0"
-val okHttpVersion = "4.9.0"
+val scalaJSDOM = "1.1.0"
+val okHttpVersion = "4.9.1"
 val uaDetectorVersion = "2014.10"
-val undertowVersion = "2.2.3.Final"
+val undertowVersion = "2.2.4.Final"
 val closureCompilerVersion = "v20200830"
+val guavaVersion = "25.1-jre"
 val jSoupVersion = "1.13.1"
-val scalaXMLVersion = "2.0.0-M3"
-val collectionCompatVersion = "2.3.2"
+val scalaXMLVersion = "2.0.0-M4"
+val collectionCompat = "2.4.1"
+val catsEffectVersion = "2.3.1"
 val scalaTestVersion = "3.2.3"
 val scalaCheckVersion = "1.15.2"
 

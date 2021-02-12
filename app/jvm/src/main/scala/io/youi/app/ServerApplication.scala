@@ -1,7 +1,6 @@
 package io.youi.app
 
 import java.io.File
-
 import io.youi.http._
 import io.youi.http.content._
 import io.youi.net._
@@ -15,7 +14,8 @@ import net.sf.uadetector.UserAgentType
 import net.sf.uadetector.service.UADetectorServiceFactory
 import profig._
 import reactify.Var
-import scribe.{MDC, Priority}
+import scribe._
+import scribe.data.MDC
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._

@@ -12,8 +12,8 @@ class ServerExampleCommunicationImplementation extends ServerExampleCommunicatio
 
   override def reverse(value: String): Future[String] = Future.successful(value.reverse)
 
-  override def time: Future[Long] = Future(System.currentTimeMillis())
-  override def counter: Future[Int] = Future(increment.getAndIncrement())
+  override def time(): Future[Long] = Future(System.currentTimeMillis())
+  override def counter(): Future[Int] = Future(increment.getAndIncrement())
   override def broadcast(message: String): Future[Unit] = Future {
     ServerExampleApplication.connectionManager.connections.foreach { connection =>
       connection.client.show(message)

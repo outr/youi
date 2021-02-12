@@ -1,7 +1,7 @@
 package spec
 
 import cats.effect.IO
-import io.youi.comm.{Communication, CommunicationImplementation, Communicator, DirectCommunicator}
+import io.youi.comm.{CommunicationInterface, CommunicationImplementation, Communicator, DirectCommunicator}
 import profig._
 import reactify.{Channel, Var}
 
@@ -16,12 +16,10 @@ object TestImplementation extends Test {
 }
 
 object Prototype {
-  private implicit val testCommunicator: DirectCommunicator[Test] = new DirectCommunicator[Test]
+  val implementation: CommunicationImplementation[Test] = CommunicationInterface.implementation[Test](TestImplementation)
 
-  val interface: Test with Communication = Communication.interface[Test]()
-  val implementation: CommunicationImplementation[Test] = Communication.implementation[Test](TestImplementation)
-
-  testCommunicator.register(implementation)
+  private implicit val testCommunicator: DirectCommunicator[Test] = new DirectCommunicator[Test](implementation)
+  val interface: Test with CommunicationInterface = CommunicationInterface.interface[Test]()
 
   def main(args: Array[String]): Unit = {
     val io: IO[String] = interface.reverse("Hello, World!")

@@ -7,15 +7,15 @@ import cats.effect.IO
 import scala.language.experimental.macros
 import scala.reflect.macros.blackbox
 
-object Communication {
-  def interface[Interface]()(implicit communicator: Communicator): Interface with Communication = macro macroInterface[Interface]
-  def implementation[Interface](implementation: Interface)(implicit communicator: Communicator): CommunicationImplementation[Interface] = macro macroImplementation[Interface]
+object CommunicationInterface {
+  def interface[Interface]()(implicit communicator: Communicator): Interface with CommunicationInterface = macro macroInterface[Interface]
+  def implementation[Interface](implementation: Interface): CommunicationImplementation[Interface] = macro macroImplementation[Interface]
 
   /////////////// Macros ///////////////////////
 
   def macroInterface[Interface](context: blackbox.Context)()
                                (communicator: context.Expr[Communicator])
-                               (implicit interface: context.WeakTypeTag[Interface]): context.Expr[Interface with Communication] = {
+                               (implicit interface: context.WeakTypeTag[Interface]): context.Expr[Interface with CommunicationInterface] = {
     import context.universe._
 
     val methods = lookupMethods(context)(interface.tpe)
@@ -36,13 +36,13 @@ object Communication {
             .map(_.as[$returnType])
        """
     }
-    context.Expr[Interface with Communication](
+    context.Expr[Interface with CommunicationInterface](
       q"""
           import _root_.io.youi.comm._
           import _root_.profig._
           import _root_.cats.effect._
 
-          new $interface with Communication {
+          new $interface with CommunicationInterface {
             ..$remoteMethods
 
             override def communicator: Communicator = $communicator
@@ -51,7 +51,7 @@ object Communication {
   }
 
   def macroImplementation[Interface](context: blackbox.Context)
-                                    (implementation: context.Expr[Interface])(communicator: context.Expr[Communicator])
+                                    (implementation: context.Expr[Interface])
                                     (implicit interface: context.WeakTypeTag[Interface]): context.Expr[CommunicationImplementation[Interface]] = {
     import context.universe._
 
@@ -82,9 +82,6 @@ object Communication {
             new CommunicationImplementation[$interface] {
               private val map: Map[String, Json => IO[Json]] = Map(..$localMethods)
 
-              override def implementation: $interface = $implementation
-              override def communicator: Communicator = $communicator
-
               override def receiveMethod(endpoint: String, receive: Json): IO[Json] = map.get(endpoint) match {
                 case Some(f) => f(receive)
                 case None => IO.raiseError(new RuntimeException("No endpoint found: " + endpoint))
@@ -104,6 +101,6 @@ object Communication {
   }
 }
 
-trait Communication {
+trait CommunicationInterface {
   def communicator: Communicator
 }

@@ -37,9 +37,7 @@ val openTypeVersion = "1.1.0"
 val webFontLoaderVersion = "1.6.28_2"
 val canvgVersion = "1.4.0_3"
 
-val catsEffectVersion = "2.3.1"
 val scalaJSDOMVersion = "1.1.0"
-val scalaJSDOM = "1.1.0"
 val okHttpVersion = "4.9.1"
 val uaDetectorVersion = "2014.10"
 val undertowVersion = "2.2.4.Final"
@@ -47,7 +45,7 @@ val closureCompilerVersion = "v20200830"
 val guavaVersion = "25.1-jre"
 val jSoupVersion = "1.13.1"
 val scalaXMLVersion = "2.0.0-M4"
-val collectionCompat = "2.4.1"
+val collectionCompatVersion = "2.4.1"
 val catsEffectVersion = "2.3.1"
 val scalaTestVersion = "3.2.3"
 val scalaCheckVersion = "1.15.2"
@@ -184,6 +182,7 @@ lazy val comm = crossProject(JSPlatform, JVMPlatform)
     name := "youi-comm",
     libraryDependencies ++= Seq(
       "org.typelevel" %%% "cats-effect" % catsEffectVersion,
+      "org.scala-lang" % "scala-reflect" % scalaVersion.value,
       "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
     )
   )

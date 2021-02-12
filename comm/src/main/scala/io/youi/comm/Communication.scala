@@ -2,99 +2,135 @@ package io.youi.comm
 
 import profig._
 import reactify._
-
 import cats.effect.IO
 
-//import scala.concurrent.{ExecutionContext, Future}
-//
-//trait Communication {
-//  protected val communicator: Communicator = ??? // TODO: this needs to be defined by implementations
-//
-//  def method[Send: Writer, Receive: Reader](endpoint: String)
-//                                           (implicit ec: ExecutionContext): AsyncMethod[Send, Receive] = new AsyncMethod[Send, Receive] {
-//    override def apply(send: Send): Future[Receive] = {
-//      val sendJson = JsonUtil.toJson(send)
-//      communicator.sendAndReceive(endpoint, sendJson).map { receiveJson =>
-//        JsonUtil.fromJson[Receive](receiveJson)
-//      }
-//    }
-//  }
-//}
-//
-//trait Communicator {
-//  def sendAndReceive(endpoint: String, json: Json): Future[Json]
-//  def createVar[T: ReadWriter](name: String): Var[T]
-//  def createChannel[T: ReadWriter](name: String): Channel[T]
-//}
-//
-//trait AsyncMethod[Send, Receive] {
-//  def apply(send: Send): Future[Receive]
-//}
-//
-//object Test extends Communication {
-//  import scribe.Execution.global
-//
-//  val savePerson: AsyncMethod[Person, Boolean] = method[Person, Boolean]("savePerson")
-//
-//  case class Person(name: String, age: Int)
-//
-//  object Person {
-//    implicit val rw: ReadWriter[Person] = macroRW
-//  }
-//}
+import scala.language.experimental.macros
+import scala.reflect.macros.blackbox
 
 object Communication {
-  def implementation[Interface](communicator: Communicator, implementation: Interface): Interface with Communication = ???
-  def interface[Interface](communicator: Communicator): Interface with Communication = ???
+  def interface[Interface]()(implicit communicator: Communicator): Interface with Communication = macro macroInterface[Interface]
+  def implementation[Interface](implementation: Interface)(implicit communicator: Communicator): CommunicationImplementation[Interface] = macro macroImplementation[Interface]
+
+  /////////////// Macros ///////////////////////
+
+  def macroInterface[Interface](context: blackbox.Context)()
+                               (communicator: context.Expr[Communicator])
+                               (implicit interface: context.WeakTypeTag[Interface]): context.Expr[Interface with Communication] = {
+    import context.universe._
+
+    val methods = lookupMethods(context)(interface.tpe)
+    val remoteMethods = methods.map { m =>
+      val methodName = m.name.decodedName.toString
+      val args = m.typeSignature.paramLists.headOption.getOrElse(Nil)
+      val argNames = args.map(_.name.toTermName)
+      val argTypes = args.map(_.typeSignature.resultType)
+      val jsonify = argNames.map(n => q"${n.decodedName.toString} -> JsonUtil.toJson($n)")
+      val params = argNames.zip(argTypes).map {
+        case (n, t) => q"$n: $t"
+      }
+      val returnTypeIO = m.typeSignature.resultType
+      val returnType = returnTypeIO.typeArgs.head
+      q"""
+          override def ${m.name.toTermName}(..$params): $returnTypeIO = communicator
+            .method($methodName, Json.obj(..$jsonify))
+            .map(_.as[$returnType])
+       """
+    }
+    context.Expr[Interface with Communication](
+      q"""
+          import _root_.io.youi.comm._
+          import _root_.profig._
+          import _root_.cats.effect._
+
+          new $interface with Communication {
+            ..$remoteMethods
+
+            override def communicator: Communicator = $communicator
+          }
+        """)
+  }
+
+  def macroImplementation[Interface](context: blackbox.Context)
+                                    (implementation: context.Expr[Interface])(communicator: context.Expr[Communicator])
+                                    (implicit interface: context.WeakTypeTag[Interface]): context.Expr[CommunicationImplementation[Interface]] = {
+    import context.universe._
+
+    val methods = lookupMethods(context)(interface.tpe).filter(_.isAbstract)
+    val localMethods = methods.map { m =>
+      val methodName = m.name.decodedName.toString
+      val args = m.typeSignature.paramLists.headOption.getOrElse(Nil)
+      val argNames = args.map(_.name.toTermName)
+      val argTypes = args.map(_.typeSignature.resultType)
+      val params = argNames.zip(argTypes).map {
+        case (n, t) => q"""receive.obj(${n.decodedName.toString}).as[$t]"""
+      }
+      val call = if (m.typeSignature.paramLists.nonEmpty) {
+        q"$implementation.${m.name.toTermName}(..$params)"
+      } else {
+        q"$implementation.${m.name.toTermName}"
+      }
+      val returnTypeFuture = m.typeSignature.resultType
+      val returnType = returnTypeFuture.typeArgs.head
+      q"$methodName -> ((receive: Json) => $call.map(response => JsonUtil.toJson[$returnType](response)))"
+    }
+    context.Expr[CommunicationImplementation[Interface]](
+      q"""
+            import _root_.io.youi.comm._
+            import _root_.profig._
+            import _root_.cats.effect._
+
+            new CommunicationImplementation[$interface] {
+              private val map: Map[String, Json => IO[Json]] = Map(..$localMethods)
+
+              override def implementation: $interface = $implementation
+              override def communicator: Communicator = $communicator
+
+              override def receiveMethod(endpoint: String, receive: Json): IO[Json] = map.get(endpoint) match {
+                case Some(f) => f(receive)
+                case None => IO.raiseError(new RuntimeException("No endpoint found: " + endpoint))
+              }
+            }
+         """
+    )
+  }
+
+  private def lookupMethods(context: blackbox.Context)
+                           (tpe: context.universe.Type): List[context.Symbol] = {
+    import context.universe._
+
+    tpe.members.toList.collect {
+      case s if s.isMethod && s.asMethod.isPublic && s.typeSignature.resultType <:< typeOf[IO[Any]] => s
+    }
+  }
 }
 
 trait Communication {
   def communicator: Communicator
 }
 
+trait CommunicationImplementation[Interface] extends Communication {
+  def implementation: Interface
+
+  def receiveMethod(endpoint: String, receive: Json): IO[Json]
+}
+
 trait Communicator {
-  def method(endpoint: String, send: Json): IO[Json] = {
-    scribe.info(s"Should call: $endpoint with $send")
-    ???
-  }
+  def method(endpoint: String, send: Json): IO[Json]
 }
 
-case class TestCommunicator() extends Communicator
+class TestCommunicator[Interface]() extends Communicator {
+  private var implementation: Option[CommunicationImplementation[Interface]] = None
 
-trait Test {
-  val person: Var[Person] = Var[Person](Person("Default", 21))
-  val message: Channel[String] = Channel[String]
-  def reverse(s: String): IO[String]
-}
-
-class TestImplementation extends Test {
-  override def reverse(s: String): IO[String] = IO(s.reverse)
-}
-
-object Prototype {
-  private val testCommunicator = new TestCommunicator
-
-  val interface: Test with Communication = new Test with Communication {
-    override def reverse(s: String): IO[String] = communicator
-      .method("reverse", Json.obj("s" -> Json.string(s)))
-      .map(_.as[String])
-
-    override def communicator: Communicator = testCommunicator
+  def register(implementation: CommunicationImplementation[Interface]): Unit = {
+    assert(this.implementation.isEmpty, "Only one implementation can be registered!")
+    this.implementation = Some(implementation)
   }
 
-  val implementation: Test with Communication = new TestImplementation with Communication {
-    override def communicator: Communicator = testCommunicator
+  override def method(endpoint: String, send: Json): IO[Json] = {
+    scribe.info(s"Endpoint: $endpoint, Send: $send")
+    implementation match {
+      case Some(i) => i.receiveMethod(endpoint, send)
+      case None => IO.raiseError(new RuntimeException("Implementation not defined"))
+    }
   }
-
-  def main(args: Array[String]): Unit = {
-    val io: IO[String] = interface.reverse("Hello, World!")
-    val reversed = io.unsafeRunSync()
-    scribe.info(s"Reversed: $reversed")
-  }
-}
-
-case class Person(name: String, age: Int)
-
-object Person {
-  implicit val rw: ReadWriter[Person] = macroRW
 }

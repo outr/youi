@@ -63,7 +63,7 @@ object CommunicationScreen extends ExampleScreen with PreloadedContentScreen {
     timeButton.addEventListener("click", (evt: Event) => {
       evt.preventDefault()
       evt.stopPropagation()
-      connection.server.time.foreach { time =>
+      connection.server.time().foreach { time =>
         timeInput.value = time.toString
       }
     })
@@ -84,7 +84,7 @@ object CommunicationScreen extends ExampleScreen with PreloadedContentScreen {
     counterButton.addEventListener("click", (evt: Event) => {
       evt.preventDefault()
       evt.stopPropagation()
-      connection.server.counter.foreach { count =>
+      connection.server.counter().foreach { count =>
         counterInput.value = count.toString
       }
     })

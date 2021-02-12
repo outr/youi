@@ -1,7 +1,7 @@
 package spec
 
 import cats.effect.IO
-import io.youi.comm.{Communication, CommunicationImplementation, Communicator, TestCommunicator}
+import io.youi.comm.{Communication, CommunicationImplementation, Communicator, DirectCommunicator}
 import profig._
 import reactify.{Channel, Var}
 
@@ -16,7 +16,7 @@ object TestImplementation extends Test {
 }
 
 object Prototype {
-  private implicit val testCommunicator: TestCommunicator[Test] = new TestCommunicator[Test]
+  private implicit val testCommunicator: DirectCommunicator[Test] = new DirectCommunicator[Test]
 
   val interface: Test with Communication = Communication.interface[Test]()
   val implementation: CommunicationImplementation[Test] = Communication.implementation[Test](TestImplementation)

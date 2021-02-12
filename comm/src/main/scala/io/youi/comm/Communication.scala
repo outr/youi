@@ -107,30 +107,3 @@ object Communication {
 trait Communication {
   def communicator: Communicator
 }
-
-trait CommunicationImplementation[Interface] extends Communication {
-  def implementation: Interface
-
-  def receiveMethod(endpoint: String, receive: Json): IO[Json]
-}
-
-trait Communicator {
-  def method(endpoint: String, send: Json): IO[Json]
-}
-
-class TestCommunicator[Interface]() extends Communicator {
-  private var implementation: Option[CommunicationImplementation[Interface]] = None
-
-  def register(implementation: CommunicationImplementation[Interface]): Unit = {
-    assert(this.implementation.isEmpty, "Only one implementation can be registered!")
-    this.implementation = Some(implementation)
-  }
-
-  override def method(endpoint: String, send: Json): IO[Json] = {
-    scribe.info(s"Endpoint: $endpoint, Send: $send")
-    implementation match {
-      case Some(i) => i.receiveMethod(endpoint, send)
-      case None => IO.raiseError(new RuntimeException("Implementation not defined"))
-    }
-  }
-}

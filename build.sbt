@@ -186,7 +186,7 @@ lazy val comm = crossProject(JSPlatform, JVMPlatform)
       "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
     )
   )
-  .dependsOn(core)
+  .dependsOn(core, client)
 
 lazy val commJS = comm.js
 lazy val commJVM = comm.jvm

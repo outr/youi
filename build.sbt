@@ -46,7 +46,7 @@ val guavaVersion = "25.1-jre"
 val jSoupVersion = "1.13.1"
 val scalaXMLVersion = "2.0.0-M5"
 val collectionCompat = "2.4.2"
-val scalaTestVersion = "3.2.6"
+val scalaTestVersion = "3.2.7"
 val scalaCheckVersion = "1.15.3"
 
 lazy val root = project.in(file("."))

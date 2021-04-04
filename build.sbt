@@ -45,7 +45,7 @@ val closureCompilerVersion = "v20210302"
 val guavaVersion = "25.1-jre"
 val jSoupVersion = "1.13.1"
 val scalaXMLVersion = "2.0.0-RC1"
-val collectionCompat = "2.4.2"
+val collectionCompat = "2.4.3"
 val scalaTestVersion = "3.2.7"
 val scalaCheckVersion = "1.15.3"
 

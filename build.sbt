@@ -28,8 +28,8 @@ developers in ThisBuild := List(
   Developer(id="darkfrog", name="Matt Hicks", email="matt@matthicks.com", url=url("http://matthicks.com"))
 )
 
-val profigVersion = "3.2.1"
-val scribeVersion = "3.5.0"
+val profigVersion = "3.1.2"
+val scribeVersion = "3.5.1"
 val reactifyVersion = "4.0.4"
 val hasherVersion = "1.2.2"
 
@@ -40,13 +40,13 @@ val canvgVersion = "1.4.0_3"
 val scalaJSDOM = "1.1.0"
 val okHttpVersion = "4.9.1"
 val uaDetectorVersion = "2014.10"
-val undertowVersion = "2.2.5.Final"
+val undertowVersion = "2.2.7.Final"
 val closureCompilerVersion = "v20210302"
 val guavaVersion = "25.1-jre"
 val jSoupVersion = "1.13.1"
-val scalaXMLVersion = "2.0.0-M5"
-val collectionCompat = "2.4.2"
-val scalaTestVersion = "3.2.6"
+val scalaXMLVersion = "2.0.0-RC1"
+val collectionCompat = "2.4.3"
+val scalaTestVersion = "3.2.7"
 val scalaCheckVersion = "1.15.3"
 
 lazy val root = project.in(file("."))

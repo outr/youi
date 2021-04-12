@@ -66,8 +66,8 @@ class ServerConfig(server: Server) {
     * To easily enable HTTPS just pass "-listeners.https.enabled=true".
     */
   lazy val listeners: Var[List[ServerSocketListener]] = prop(List(
-    Profig("listeners.http").as[HttpServerListener],
-    Profig("listeners.https").as[HttpsServerListener]
+    Profig("listeners.http").as[HttpServerListener](HttpServerListener()),
+    Profig("listeners.https").as[HttpsServerListener](HttpsServerListener())
   ))
 
   def enabledListeners: List[ServerSocketListener] = listeners().filter(_.enabled)

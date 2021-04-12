@@ -86,7 +86,6 @@ object RestfulHandler {
     val request = connection.request
     val contentJson = request.content.map(jsonFromContent).getOrElse(Right(obj()))
     val urlJson = jsonFromURL(request.url)
-//    val pathJson = JsonUtil.toJson(PathFilter.argumentsFromConnection(connection))
     val pathJson = PathFilter.argumentsFromConnection(connection).toValue
     val storeJson = connection.store.getOrElse[Value](key, obj())
     contentJson match {
@@ -95,15 +94,7 @@ object RestfulHandler {
     }
   }
 
-  def jsonFromContent(content: Content): Either[ValidationError, Value] = content match {
-    case StringContent(jsonString, _, _) => {
-      val json = Json.parse(jsonString)
-      Right(json)
-    }
-    case _ => {
-      Left(ValidationError(s"Unsupported content for restful end-point: $content.", ValidationError.RequestParsing))
-    }
-  }
+  def jsonFromContent(content: Content): Either[ValidationError, Value] = Right(Json.parse(content.asString))
 
   def jsonFromURL(url: URL): Value = {
     val entries = url.parameters.map.toList.map {

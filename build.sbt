@@ -28,7 +28,7 @@ ThisBuild / developers := List(
   Developer(id="darkfrog", name="Matt Hicks", email="matt@matthicks.com", url=url("http://matthicks.com"))
 )
 
-val fabricVersion = "1.0.3-SNAPSHOT"
+val fabricVersion = "1.0.3"
 val profigVersion = "3.2.1"
 val scribeVersion = "3.5.1"
 val reactifyVersion = "4.0.4"

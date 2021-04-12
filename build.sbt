@@ -3,7 +3,7 @@ import sbtcrossproject.CrossType
 
 name := "youi"
 ThisBuild / organization := "io.youi"
-ThisBuild / version := "0.14.0-SNAPSHOT"
+ThisBuild / version := "0.14.0"
 ThisBuild / scalaVersion := "2.13.5"
 ThisBuild / crossScalaVersions := List("2.13.5", "2.12.12")
 ThisBuild / resolvers ++= Seq(
@@ -28,6 +28,8 @@ ThisBuild / developers := List(
   Developer(id="darkfrog", name="Matt Hicks", email="matt@matthicks.com", url=url("http://matthicks.com"))
 )
 
+ThisBuild / versionScheme := Some("semver-spec")
+
 val fabricVersion = "1.0.3"
 val profigVersion = "3.2.1"
 val scribeVersion = "3.5.1"
@@ -49,6 +51,8 @@ val scalaXMLVersion = "2.0.0-RC1"
 val collectionCompat = "2.4.3"
 val scalaTestVersion = "3.2.7"
 val scalaCheckVersion = "1.15.3"
+
+ThisBuild / evictionErrorLevel := Level.Info
 
 lazy val root = project.in(file("."))
   .aggregate(

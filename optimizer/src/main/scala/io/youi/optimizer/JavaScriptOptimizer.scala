@@ -2,7 +2,7 @@ package io.youi.optimizer
 
 import java.io.File
 
-import com.google.common.base
+import com.google.javascript.jscomp.jarjar.com.google.common.base.{Function => JSF}
 import com.google.javascript.jscomp._
 
 import scala.collection.mutable.ListBuffer
@@ -25,7 +25,7 @@ object JavaScriptOptimizer {
     add("--create_source_map", new File(jsOutput.getParentFile, s"${jsOutput.getName}.map").getCanonicalPath)
 
     val runner = new CommandLineRunner(options.toArray) {}
-    runner.setExitCodeReceiver(new base.Function[java.lang.Integer, java.lang.Void] {
+    runner.setExitCodeReceiver(new JSF[java.lang.Integer, java.lang.Void] {
       override def apply(input: Integer): Void = null
     })
     if (runner.shouldRunCompiler()) {

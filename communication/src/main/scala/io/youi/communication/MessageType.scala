@@ -8,7 +8,7 @@ sealed trait MessageType {
 }
 
 object MessageType {
-  implicit val rw: ReaderWriter[MessageType] = readwriter[String].bimap[MessageType](_.name, byName)
+  implicit val rw: ReaderWriter[MessageType] = ReaderWriter(_.name, v => byName(v.asStr.value))
 
   case object Invoke extends MessageType {
     override def name: String = "invoke"

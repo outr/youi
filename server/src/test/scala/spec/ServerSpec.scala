@@ -1,5 +1,6 @@
 package spec
 
+import fabric.parse.Json
 import io.youi.ValidationError
 import io.youi.http._
 import io.youi.http.content.{Content, StringContent}
@@ -51,7 +52,7 @@ class ServerSpec extends AsyncWordSpec with Matchers {
       }
     }
     "reverse a String with the Restful endpoint via POST" in {
-      val content = Content.string(JsonUtil.toJsonString(ReverseRequest("Testing")), ContentType.`application/json`)
+      val content = Content.json(ReverseRequest("Testing").toValue)
       server.handle(HttpConnection(server, HttpRequest(
         method = HttpMethod.Post,
         url = URL("http://localhost/test/reverse"),
@@ -60,7 +61,7 @@ class ServerSpec extends AsyncWordSpec with Matchers {
         connection.response.status should equal(HttpStatus.OK)
         connection.response.content shouldNot equal(None)
         val jsonString = connection.response.content.get.asInstanceOf[StringContent].value
-        val response = JsonUtil.fromJsonString[ReverseResponse](jsonString)
+        val response = Json.parse(jsonString).as[ReverseResponse]
         response.errors should be(Nil)
         response.reversed should be(Some("gnitseT"))
       }
@@ -73,7 +74,7 @@ class ServerSpec extends AsyncWordSpec with Matchers {
         connection.response.status should equal(HttpStatus.OK)
         connection.response.content shouldNot equal(None)
         val jsonString = connection.response.content.get.asInstanceOf[StringContent].value
-        val response = JsonUtil.fromJsonString[ReverseResponse](jsonString)
+        val response = Json.parse(jsonString).as[ReverseResponse]
         response.errors should be(Nil)
         response.reversed should be(Some("gnitseT"))
       }
@@ -86,7 +87,7 @@ class ServerSpec extends AsyncWordSpec with Matchers {
         connection.response.status should equal(HttpStatus.OK)
         connection.response.content shouldNot equal(None)
         val jsonString = connection.response.content.get.asInstanceOf[StringContent].value
-        val response = JsonUtil.fromJsonString[ReverseResponse](jsonString)
+        val response = Json.parse(jsonString).as[ReverseResponse]
         response.errors should be(Nil)
         response.reversed should be(Some("gnitseT"))
       }
@@ -100,7 +101,7 @@ class ServerSpec extends AsyncWordSpec with Matchers {
         connection.response.status should equal(HttpStatus.OK)
         connection.response.content shouldNot equal(None)
         val jsonString = connection.response.content.get.asInstanceOf[StringContent].value
-        val response = JsonUtil.fromJsonString[Long](jsonString)
+        val response = Json.parse(jsonString).as[Long]
         response should be >= begin
       }
     }

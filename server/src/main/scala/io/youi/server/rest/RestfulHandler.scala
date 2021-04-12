@@ -1,5 +1,7 @@
 package io.youi.server.rest
 
+import fabric._
+import fabric.parse.Json
 import io.youi.ValidationError
 import io.youi.http.HttpConnection
 import io.youi.http.content.{Content, StringContent}
@@ -13,7 +15,7 @@ import scala.collection.mutable.ListBuffer
 import scala.concurrent.Future
 
 class RestfulHandler[Request, Response](restful: Restful[Request, Response])
-                                       (implicit reader: Reader[Request], writer: Writer[Response]) extends HttpHandler {
+                                       (implicit writer: Writer[Request], reader: Reader[Response]) extends HttpHandler {
   override def handle(connection: HttpConnection): Future[HttpConnection] = {
     // Build JSON
     val future: Future[RestfulResponse[Response]] = RestfulHandler.jsonFromConnection(connection) match {
@@ -43,7 +45,7 @@ class RestfulHandler[Request, Response](restful: Restful[Request, Response])
 
     future.map { result =>
       // Encode response
-      val responseJsonString = JsonUtil.toJsonString(result.response)
+      val responseJsonString = Json.format(result.response.toValue)
 
       // Attach content
       connection.modify { httpResponse =>
@@ -58,9 +60,9 @@ class RestfulHandler[Request, Response](restful: Restful[Request, Response])
 object RestfulHandler {
   private val key: String = "restful"
 
-  def store(connection: HttpConnection, json: Json): Unit = {
-    val merged = Json.merge(connection.store.getOrElse[Json](key, Json.obj()), json)
-    connection.store.update[Json](key, merged)
+  def store(connection: HttpConnection, json: Value): Unit = {
+    val merged = Value.merge(connection.store.getOrElse[Value](key, obj()), json)
+    connection.store.update[Value](key, merged)
   }
 
   def validate[Request](request: Request,
@@ -80,19 +82,20 @@ object RestfulHandler {
     }
   }
 
-  def jsonFromConnection(connection: HttpConnection): Either[ValidationError, Json] = {
+  def jsonFromConnection(connection: HttpConnection): Either[ValidationError, Value] = {
     val request = connection.request
-    val contentJson = request.content.map(jsonFromContent).getOrElse(Right(Json.obj()))
+    val contentJson = request.content.map(jsonFromContent).getOrElse(Right(obj()))
     val urlJson = jsonFromURL(request.url)
-    val pathJson = JsonUtil.toJson(PathFilter.argumentsFromConnection(connection))
-    val storeJson = connection.store.getOrElse[Json](key, Json.obj())
+//    val pathJson = JsonUtil.toJson(PathFilter.argumentsFromConnection(connection))
+    val pathJson = PathFilter.argumentsFromConnection(connection).toValue
+    val storeJson = connection.store.getOrElse[Value](key, obj())
     contentJson match {
       case Left(err) => Left(err)
-      case Right(json) => Right(Json.merge(json, urlJson, pathJson, storeJson))
+      case Right(json) => Right(Value.merge(json, urlJson, pathJson, storeJson))
     }
   }
 
-  def jsonFromContent(content: Content): Either[ValidationError, Json] = content match {
+  def jsonFromContent(content: Content): Either[ValidationError, Value] = content match {
     case StringContent(jsonString, _, _) => {
       val json = Json.parse(jsonString)
       Right(json)
@@ -102,18 +105,18 @@ object RestfulHandler {
     }
   }
 
-  def jsonFromURL(url: URL): Json = {
+  def jsonFromURL(url: URL): Value = {
     val entries = url.parameters.map.toList.map {
       case (key, param) => {
         val values = param.values
         val valuesJson = if (values.length > 1) {
-          Json.array(values.map(Json.string): _*)
+          arr(values.map(str): _*)
         } else {
-          Json.string(values.head)
+          str(values.head)
         }
         key -> valuesJson
       }
     }
-    Json.obj(entries: _*)
+    obj(entries: _*)
   }
 }

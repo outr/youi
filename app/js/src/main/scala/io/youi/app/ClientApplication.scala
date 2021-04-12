@@ -1,5 +1,6 @@
 package io.youi.app
 
+import fabric.parse.Json
 import io.youi.ajax.AjaxRequest
 import io.youi.app.screen.ScreenManager
 import io.youi.app.sourceMap.ErrorTrace
@@ -93,7 +94,7 @@ object ClientApplication {
 
   def sendError(error: JavaScriptError): Future[XMLHttpRequest] = {
     val formData = new FormData
-    val jsonString = JsonUtil.toJsonString(error)
+    val jsonString = Json.format(error.toValue)
     formData.append("error", jsonString)
     val request = new AjaxRequest(History.url().replacePathAndParams(instance.logPath), data = Some(formData))
     request.send()
@@ -105,7 +106,7 @@ object ClientApplication {
 
   def sendLog(baseURL: URL, log: JavaScriptLog): Future[XMLHttpRequest] = {
     val formData = new FormData
-    val jsonString = JsonUtil.toJsonString(log)
+    val jsonString = Json.format(log.toValue)
     formData.append("message", jsonString)
     val request = new AjaxRequest(
       url = baseURL.replacePathAndParams(instance.logPath),

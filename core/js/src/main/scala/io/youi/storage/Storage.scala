@@ -110,8 +110,9 @@ object Storage {
     c.Expr[Future[Unit]](
       q"""
           import fabric.rw._
+          import fabric.parse._
 
-          val json = JsonUtil.toJsonString[$t]($value)
+          val json = Json.format($value.toValue)
           $prefix.string.update($key, json)
        """
     )

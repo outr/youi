@@ -12,6 +12,7 @@ import io.youi.server.rest.{Restful, RestfulResponse}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AsyncWordSpec
 import fabric.rw._
+import profig.Profig
 
 import scala.concurrent.Future
 

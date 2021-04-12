@@ -45,7 +45,7 @@ object Storage {
 
     c.Expr[Future[Option[T]]](
       q"""
-          import profig._
+          import fabric.rw._
 
           $prefix.string.get($key).map { o =>
             o.flatMap(s => JsonUtil.fromJsonString[Option[$t]](s))
@@ -63,7 +63,7 @@ object Storage {
 
     c.Expr[Future[T]](
       q"""
-          import profig._
+          import fabric.rw._
 
           $prefix.string.getOrElse($key, JsonUtil.toJsonString[$t]($default)).map { s =>
             JsonUtil.fromJsonString[Option[$t]](s).getOrElse($default)
@@ -78,7 +78,7 @@ object Storage {
 
     c.Expr[Future[T]](
       q"""
-          import profig._
+          import fabric.rw._
 
           def create(): Future[$t] = {
             val d = $default
@@ -109,9 +109,10 @@ object Storage {
 
     c.Expr[Future[Unit]](
       q"""
-          import profig._
+          import fabric.rw._
+          import fabric.parse._
 
-          val json = JsonUtil.toJsonString[$t]($value)
+          val json = Json.format($value.toValue)
           $prefix.string.update($key, json)
        """
     )
@@ -152,7 +153,7 @@ object Storage {
     val value = macroGet[T](c)(key)(t)
     c.Expr[Future[Option[T]]](
       q"""
-            import profig._
+            import fabric.rw._
 
             $value.map { o =>
               o.foreach { t =>

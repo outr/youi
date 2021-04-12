@@ -1,5 +1,7 @@
 package io.youi.app
 
+import fabric.parse.Json
+
 import java.io.File
 import io.youi.http._
 import io.youi.http.content._
@@ -12,6 +14,7 @@ import io.youi.util.Time
 import io.youi.{JavaScriptError, JavaScriptLog, http}
 import net.sf.uadetector.UserAgentType
 import net.sf.uadetector.service.UADetectorServiceFactory
+import fabric.rw._
 import profig._
 import reactify.Var
 import scribe._
@@ -87,7 +90,7 @@ trait ServerApplication extends YouIApplication with Server {
 
               // Error logging
               formData.stringOption("error").map(_.value).foreach { jsonString =>
-                val jsError = JsonUtil.fromJsonString[JavaScriptError](jsonString)
+                val jsError = Json.parse(jsonString).as[JavaScriptError]
 
                 val exception = new JavaScriptException(
                   error = jsError,
@@ -103,7 +106,7 @@ trait ServerApplication extends YouIApplication with Server {
 
               // Message logging
               formData.stringOption("message").map(_.value).foreach { jsonString =>
-                val log = JsonUtil.fromJsonString[JavaScriptLog](jsonString)
+                val log = Json.parse(jsonString).as[JavaScriptLog]
 
                 MDC.contextualize("ip", ip.toString) {
                   MDC.contextualize("userAgent", userAgentString) {

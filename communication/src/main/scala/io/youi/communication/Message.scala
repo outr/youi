@@ -1,31 +1,32 @@
 package io.youi.communication
 
-import java.util.concurrent.atomic.AtomicLong
+import fabric.Value
 
-import profig._
+import java.util.concurrent.atomic.AtomicLong
+import fabric.rw._
 
 case class Message(id: Long,
                    `type`: MessageType,
                    name: Option[String] = None,
                    method: Option[String] = None,
-                   params: Option[Json] = None,
-                   returnValue: Option[Json] = None,
+                   params: Option[Value] = None,
+                   returnValue: Option[Value] = None,
                    bytes: Option[Long] = None,
                    errorMessage: Option[String] = None)
 
 object Message {
   private val idGenerator = new AtomicLong(0L)
 
-  implicit val rw: ReadWriter[Message] = macroRW
+  implicit val rw: ReaderWriter[Message] = ccRW
 
-  def invoke(name: String, method: String, params: Json): Message = Message(
+  def invoke(name: String, method: String, params: Value): Message = Message(
     id = idGenerator.incrementAndGet(),
     `type` = MessageType.Invoke,
     name = Some(name),
     method = Some(method),
     params = Some(params)
   )
-  def response(id: Long, name: String, method: String, returnValue: Json): Message = Message(
+  def response(id: Long, name: String, method: String, returnValue: Value): Message = Message(
     id = id,
     `type` = MessageType.Response,
     name = Some(name),

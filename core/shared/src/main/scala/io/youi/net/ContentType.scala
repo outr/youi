@@ -1,6 +1,6 @@
 package io.youi.net
 
-import profig._
+import fabric.rw._
 
 case class ContentType(`type`: String,
                        subType: String,
@@ -1839,5 +1839,5 @@ object ContentType {
     extension2MimeType.get(extension.toLowerCase).map(new ContentType(_))
   }
 
-  implicit val rw: ReadWriter[ContentType] = readwriter[String].bimap[ContentType](_.outputString, parse)
+  implicit val rw: ReaderWriter[ContentType] = ReaderWriter(_.outputString, v => parse(v.asStr.value))
 }

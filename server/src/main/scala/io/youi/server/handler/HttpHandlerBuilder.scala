@@ -1,5 +1,8 @@
 package io.youi.server.handler
 
+import fabric._
+import fabric.parse.Json
+
 import java.io.File
 import io.youi.http._
 import io.youi.http.content.{Content, StringContent}
@@ -10,7 +13,7 @@ import io.youi.stream.delta.Delta
 import io.youi.stream.{HTMLParser, Selector}
 import scribe.Execution.global
 import scribe.Priority
-import profig._
+import fabric.rw._
 
 import scala.concurrent.Future
 import scala.util.Try
@@ -123,12 +126,12 @@ case class HttpHandlerBuilder(server: Server,
   }
 
   def restful[Request, Response](handler: Request => Response)
-                                (implicit reader: Reader[Request], writer: Writer[Response]): HttpHandler = {
+                                (implicit writer: Writer[Request], reader: Reader[Response]): HttpHandler = {
     handle { connection =>
-      val jsonOption: Option[Json] = connection.request.method match {
+      val jsonOption: Option[Value] = connection.request.method match {
         case HttpMethod.Get => {
-          Some(Json.obj(connection.request.url.parameters.entries.map {
-            case (key, param) => key -> Json.string(param.value)
+          Some(obj(connection.request.url.parameters.entries.map {
+            case (key, param) => key -> str(param.value)
           }: _*))
         }
         case _ => connection.request.content match {
@@ -144,9 +147,9 @@ case class HttpHandlerBuilder(server: Server,
       }
       Future.successful {
         jsonOption.map { json =>
-          val request = json.as[Request]
-          val response = handler(request)
-          val responseJsonString = JsonUtil.toJsonString(response)
+          val request: Request = json.as[Request]
+          val response: Response = handler(request)
+          val responseJsonString = Json.format(response.toValue)
           connection.modify { httpResponse =>
             httpResponse.withContent(Content.string(responseJsonString, ContentType.`application/json`))
           }

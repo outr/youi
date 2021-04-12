@@ -1,6 +1,8 @@
 package io.youi.client
 
-import profig._
+import fabric.Value
+import fabric.parse.Json
+import fabric.rw._
 import io.youi.client.intercept.Interceptor
 import io.youi.http._
 import io.youi.http.content.{Content, StringContent}
@@ -98,7 +100,7 @@ case class HttpClient(request: HttpRequest,
     * @param json the JSON content to send
     * @return HttpClient
     */
-  def json(json: Json): HttpClient = content(StringContent(json.render(2), ContentType.`application/json`))
+  def json(json: Value): HttpClient = content(StringContent(Json.format(json), ContentType.`application/json`))
 
   /**
     * Sends an HttpRequest and receives an asynchronous HttpResponse future.
@@ -189,13 +191,16 @@ object HttpClient extends HttpClient(
     c.Expr[Future[Response]](
       q"""
          import _root_.io.youi.client._
+         import _root_.fabric._
+         import _root_.fabric.rw._
+         import _root_.fabric.parse._
 
          $client.send().map { response =>
            try {
              val responseJson = response.content.map($client.implementation.content2String).getOrElse("")
              if (!$client.failOnHttpStatus || response.status.isSuccess) {
                if (responseJson.isEmpty) throw new ClientException(s"No content received in response for $${$client.request.url}.", $client.request, response, None)
-               _root_.profig.JsonUtil.fromJsonString[$r](responseJson)
+               Json.parse(responseJson).as[$r]
              } else {
               throw new ClientException("HttpStatus was not successful", $client.request, response, None)
              }
@@ -217,15 +222,17 @@ object HttpClient extends HttpClient(
       q"""
          import _root_.io.youi.client._
          import _root_.io.youi.http._
-         import _root_.profig.JsonUtil
+         import _root_.fabric._
+         import _root_.fabric.rw._
+         import _root_.fabric.parse._
 
-         val requestJson = JsonUtil.toJson[$req]($request)
+         val requestJson = $request.toValue
          $client.method(if ($client.method == HttpMethod.Get) HttpMethod.Post else $client.method).json(requestJson).send().map { response =>
            try {
              val responseJson = response.content.map($client.implementation.content2String).getOrElse("")
              if (!$client.failOnHttpStatus || response.status.isSuccess) {
                if (responseJson.isEmpty) throw new ClientException(s"No content received in response for $${$client.request.url}.", $client.request, response, None)
-               _root_.profig.JsonUtil.fromJsonString[$res](responseJson)
+               Json.parse(responseJson).as[$res]
              } else {
               throw new ClientException("HttpStatus was not successful", $client.request, response, None)
              }
@@ -249,7 +256,9 @@ object HttpClient extends HttpClient(
       q"""
          import _root_.io.youi.client._
          import _root_.io.youi.http._
-         import _root_.profig.JsonUtil
+         import _root_.fabric._
+         import _root_.fabric.rw._
+         import _root_.fabric.parse._
 
          val requestJson = JsonUtil.toJson[$req]($request)
          $client.method(if ($client.method == HttpMethod.Get) HttpMethod.Post else $client.method).json(requestJson).send().map { response =>
@@ -257,9 +266,9 @@ object HttpClient extends HttpClient(
              val responseJson = response.content.map($client.implementation.content2String).getOrElse("")
          if (responseJson.isEmpty) throw new ClientException(s"No content received in response for $${$client.request.url}.", $client.request, response, None)
              if (response.status.isSuccess) {
-               Right(_root_.profig.JsonUtil.fromJsonString[$success](responseJson))
+               Right(Json.parse(responseJson).as[$success])
              } else {
-               Left(_root_.profig.JsonUtil.fromJsonString[$failure](responseJson))
+               Left(Json.parse(responseJson).as[$failure])
              }
            } catch {
              case t: Throwable => throw new ClientException("Response processing error", $client.request, response, Some(t))

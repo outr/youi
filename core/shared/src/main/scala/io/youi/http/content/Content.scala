@@ -1,9 +1,11 @@
 package io.youi.http.content
 
+import fabric.Value
+import fabric.parse.Json
+
 import java.io.File
 import java.net.URL
-import profig._
-
+import fabric.rw._
 import io.youi.net.ContentType
 
 trait Content {
@@ -22,8 +24,8 @@ trait SharedContentHelpers {
   val empty: Content = string("", ContentType.`text/plain`)
   lazy val form: FormDataContent = FormDataContent(Nil)
 
-  def json(value: Json, pretty: Boolean = false): Content = {
-    val jsonString = if (pretty) value.render(indent = 2) else value.render()
+  def json(value: Value, pretty: Boolean = false): Content = {
+    val jsonString = Json.format(value)
     bytes(jsonString.getBytes, ContentType.`application/json`)
   }
   def string(value: String, contentType: ContentType): Content = StringContent(value, contentType)

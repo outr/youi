@@ -1,27 +1,16 @@
-os: linux
+version: ~> 1.0
+import: scala/scala-dev:travis/default.yml
 language: scala
 scala:
-  - 2.13.4
-jdk:
-  - openjdk8
+  - 2.13.5
+env:
+  - ADOPTOPENJDK=8     SCALAJS_VERSION=1.5.0  CACHE_WORKAROUND=see-PR-335
 install:
-#  - . $HOME/.nvm/nvm.sh
-#  - nvm install 7
-#  - nvm use 7
-#  - export NODE_PATH="$(npm config get prefix)"/lib/node_modules
-#  - npm install
-#  - npm install jsdom source-map-support
-script:
-  - sbt clean coreJVM/test communicationJVM/test server/test serverUndertow/test stream/test appJVM/test
-#  - sbt coverage coreJVM/test communicationJVM/test server/test serverUndertow/test stream/test appJVM/test coverageReport
-#  - sbt coverageAggregate
-#  - bash <(curl -Ls https://coverage.codacy.com/get.sh) report --skip
-cache:
-  directories:
-    - $HOME/.cache/coursier/v1
-    - $HOME/.ivy2/cache
-    - $HOME/.sbt/boot
-    - .coverage-reporter
-before_cache:
-  - find $HOME/.ivy2 -name "ivydata-*.properties" -delete
-  - find $HOME/.sbt -name "*.lock" -delete
+  - . $HOME/.nvm/nvm.sh
+  - nvm install 14
+  - nvm use 14
+  - git fetch --tags
+script: sbt +clean +test
+notifications:
+  email:
+    - matt@matthicks.com

@@ -2,32 +2,33 @@ import sbtcrossproject.CrossPlugin.autoImport.crossProject
 import sbtcrossproject.CrossType
 
 name := "youi"
-organization in ThisBuild := "io.youi"
-version in ThisBuild := "0.14.0-SNAPSHOT"
-scalaVersion in ThisBuild := "2.13.4"
-crossScalaVersions in ThisBuild := List("2.13.4", "2.12.12")
-resolvers in ThisBuild ++= Seq(
+ThisBuild / organization := "io.youi"
+ThisBuild / version := "0.14.0-SNAPSHOT"
+ThisBuild / scalaVersion := "2.13.5"
+ThisBuild / crossScalaVersions := List("2.13.5", "2.12.12")
+ThisBuild / resolvers ++= Seq(
   Resolver.sonatypeRepo("releases"),
   Resolver.sonatypeRepo("snapshots")
 )
-scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation", "-feature")
+ThisBuild / scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 
-publishTo in ThisBuild := sonatypePublishToBundle.value
-sonatypeProfileName in ThisBuild := "io.youi"
-publishMavenStyle in ThisBuild := true
-licenses in ThisBuild := Seq("MIT" -> url("https://github.com/outr/youi/blob/master/LICENSE"))
-sonatypeProjectHosting in ThisBuild := Some(xerial.sbt.Sonatype.GitHubHosting("outr", "youi", "matt@outr.com"))
-homepage in ThisBuild := Some(url("https://github.com/outr/youi"))
-scmInfo in ThisBuild := Some(
+ThisBuild / publishTo := sonatypePublishToBundle.value
+ThisBuild / sonatypeProfileName := "io.youi"
+ThisBuild / publishMavenStyle := true
+ThisBuild / licenses := Seq("MIT" -> url("https://github.com/outr/youi/blob/master/LICENSE"))
+ThisBuild / sonatypeProjectHosting := Some(xerial.sbt.Sonatype.GitHubHosting("outr", "youi", "matt@outr.com"))
+ThisBuild / homepage := Some(url("https://github.com/outr/youi"))
+ThisBuild / scmInfo := Some(
   ScmInfo(
     url("https://github.com/outr/youi"),
     "scm:git@github.com:outr/youi.git"
   )
 )
-developers in ThisBuild := List(
+ThisBuild / developers := List(
   Developer(id="darkfrog", name="Matt Hicks", email="matt@matthicks.com", url=url("http://matthicks.com"))
 )
 
+val fabricVersion = "1.0.3-SNAPSHOT"
 val profigVersion = "3.2.1"
 val scribeVersion = "3.5.1"
 val reactifyVersion = "4.0.4"
@@ -79,6 +80,7 @@ lazy val core = crossProject(JSPlatform, JVMPlatform).in(file("core"))
     description := "Core functionality leveraged and shared by most other sub-projects of YouI.",
     libraryDependencies ++= Seq(
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
+      "com.outr" %%% "fabric-parse" % fabricVersion,
       "com.outr" %%% "profig" % profigVersion,
       "com.outr" %%% "scribe" % scribeVersion,
       "com.outr" %%% "reactify" % reactifyVersion,
@@ -87,13 +89,7 @@ lazy val core = crossProject(JSPlatform, JVMPlatform).in(file("core"))
   )
   .jsSettings(
     libraryDependencies ++= Seq(
-      "org.scala-js" %%% "scalajs-dom" % scalaJSDOM,
-      "com.outr" %% "profig-all" % profigVersion % Provided
-    )
-  )
-  .jvmSettings(
-    libraryDependencies ++= Seq(
-      "com.outr" %% "profig-all" % profigVersion
+      "org.scala-js" %%% "scalajs-dom" % scalaJSDOM
     )
   )
   .dependsOn(macros)
@@ -147,7 +143,6 @@ lazy val dom = project.in(file("dom"))
     name := "youi-dom",
     libraryDependencies ++= Seq(
       "com.outr" %%% "profig" % profigVersion,
-      "com.outr" %% "profig-all" % profigVersion % Provided,
       "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
     ),
     jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv()

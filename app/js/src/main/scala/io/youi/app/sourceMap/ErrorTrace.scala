@@ -1,5 +1,7 @@
 package io.youi.app.sourceMap
 
+import fabric.rw._
+import fabric.parse.Json
 import io.youi.app.ClientApplication
 import io.youi.http.HttpMethod
 import io.youi.net._
@@ -94,7 +96,7 @@ object ErrorTrace extends Writer {
   }
 
   private def map(sourceMapConsumer: SourceMapConsumer, line: Int, column: Int): Option[SourcePosition] = try {
-    val position = js.JSON.parse(profig.JsonUtil.toJsonString(JavaScriptPosition(line, column))).asInstanceOf[js.Object]
+    val position = js.JSON.parse(Json.format(JavaScriptPosition(line, column).toValue)).asInstanceOf[js.Object]
     Some(sourceMapConsumer.originalPositionFor(position))
   } catch {
     case t: Throwable => {

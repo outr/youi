@@ -1,6 +1,7 @@
 package io.youi.communication
 
-import profig._
+import fabric.Value
+import fabric.rw._
 import scribe.Execution.global
 
 import scala.concurrent.{Future, Promise}
@@ -10,7 +11,7 @@ import scala.util.{Failure, Success}
 trait Hookup[Interface] {
   def name: String = throw new NotImplementedError("This will be implemented by HookupMacros")
   def connection: Connection = throw new NotImplementedError("This will be implemented by HookupMacros")
-  def local: Map[String, Message => Future[Json]] = throw new NotImplementedError("This will be implemented by HookupMacros")
+  def local: Map[String, Message => Future[Value]] = throw new NotImplementedError("This will be implemented by HookupMacros")
   def instance: Interface = throw new NotImplementedError("This will be implemented by HookupMacros")
 
   // Register the hookup with the connection

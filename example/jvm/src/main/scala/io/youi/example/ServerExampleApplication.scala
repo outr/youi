@@ -8,7 +8,7 @@ import io.youi.server.WebSocketListener
 import io.youi.server.dsl._
 import io.youi.server.handler.{CachingManager, LanguageSupport}
 import io.youi.upload.UploadManager
-import profig._
+import fabric.rw._
 import scribe.Execution.global
 
 import scala.concurrent.Future
@@ -20,7 +20,7 @@ object ServerExampleApplication extends ExampleApplication with ServerConnectedA
   case class Greeting(message: String, name: String)
 
   object Greeting {
-    implicit val rw: ReadWriter[Greeting] = macroRW
+    implicit val rw: ReaderWriter[Greeting] = ccRW
   }
 
   override def getOrCreateConnection(listener: WebSocketListener): ExampleConnection = new ServerConnection
@@ -38,7 +38,7 @@ object ServerExampleApplication extends ExampleApplication with ServerConnectedA
         filters(
           path"/" / redirect(path"/ui-examples.html"),
           path"/hello.txt" / CachingManager.MaxAge(120L) / "Hello, World!".withContentType(ContentType.`text/plain`),
-          path"/hello.json" / Content.json(JsonUtil.toJson(Greeting("Hello", "World"))),
+          path"/hello.json" / Content.json(Greeting("Hello", "World").toValue),
           combined.any(
             path.exact(path"/courio.html"),
             path.matches("/examples/.*[.]html"),

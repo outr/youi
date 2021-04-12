@@ -1,5 +1,8 @@
 package io.youi.server.handler
 
+import fabric.MergeType
+import fabric.parse.Json
+
 import java.util.Locale
 import java.util.concurrent.{ConcurrentHashMap, TimeUnit}
 import java.util.regex.Matcher
@@ -7,7 +10,8 @@ import io.youi.http.content.Content
 import io.youi.http.cookie.ResponseCookie
 import io.youi.http.{Headers, HttpConnection}
 import io.youi.net._
-import profig._
+import fabric.rw._
+import profig.{FileNameMatcher, Profig}
 import scribe.Execution.global
 import scribe.Priority
 
@@ -36,7 +40,7 @@ class LanguageSupport(val default: Locale = Locale.ENGLISH, languagePath: Path =
       val (c, l) = locales(connection)
       val config = firstConfig(l)
       c.modify { response =>
-        response.withContent(Content.string(config.json.render(2), ContentType.`application/json`))
+        response.withContent(Content.string(Json.format(config.json), ContentType.`application/json`))
       }
     }
   } else {

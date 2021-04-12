@@ -1,6 +1,6 @@
 package io.youi.http
 
-import profig._
+import fabric.rw._
 
 sealed abstract class HttpMethod private(val value: String) {
   HttpMethod.map += value -> this
@@ -11,7 +11,7 @@ sealed abstract class HttpMethod private(val value: String) {
 object HttpMethod {
   private var map = Map.empty[String, HttpMethod]
 
-  implicit val rw: ReadWriter[HttpMethod] = readwriter[String].bimap[HttpMethod](_.value, apply)
+  implicit val rw: ReaderWriter[HttpMethod] = ReaderWriter(_.value, v => apply(v.asStr.value))
 
   val Get: HttpMethod = new HttpMethod("GET") {}
   val Put: HttpMethod = new HttpMethod("PUT") {}

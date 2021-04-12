@@ -10,18 +10,15 @@ import io.youi.server.Server
 import io.youi.server.handler.{CachingManager, HttpHandler, HttpHandlerBuilder, SenderHandler}
 import io.youi.stream.delta.Delta
 import io.youi.stream.{HTMLParser, Selector, _}
-import io.youi.util.Time
 import io.youi.{JavaScriptError, JavaScriptLog, http}
 import net.sf.uadetector.UserAgentType
 import net.sf.uadetector.service.UADetectorServiceFactory
 import fabric.rw._
-import profig._
 import reactify.Var
 import scribe._
 import scribe.data.MDC
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
 trait ServerApplication extends YouIApplication with Server {
@@ -261,26 +258,6 @@ trait ServerApplication extends YouIApplication with Server {
     val content = Content.file(file)
     handler.matcher(http.path.exact(path)).resource(content)
     path
-  }
-
-  def whileRunning(delay: FiniteDuration = 1.second): Future[Unit] = if (isRunning) {
-    Time.delay(delay).flatMap(_ => whileRunning(delay))
-  } else {
-    Future.successful(())
-  }
-
-  def main(args: Array[String]): Unit = {
-    Profig.initConfiguration()
-    Profig.merge(args.toSeq)
-
-    val future = start()
-    future.failed.map { throwable =>
-      scribe.error("Error during application startup", throwable)
-      dispose()
-    }
-
-    Await.result(future, Duration.Inf)
-    Await.result(whileRunning(), Duration.Inf)
   }
 }
 

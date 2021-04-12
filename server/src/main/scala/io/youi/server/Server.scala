@@ -3,13 +3,15 @@ package io.youi.server
 import java.util.concurrent.atomic.AtomicBoolean
 import io.youi.http.{HttpConnection, HttpStatus, ProxyHandler}
 import io.youi.server.handler.{HttpHandler, HttpHandlerBuilder}
+import io.youi.util.Time
 import io.youi.{ErrorSupport, ItemContainer}
 import moduload.Moduload
-import profig.{Profig, ProfigPath}
+import profig._
 import reactify._
 import scribe.Execution.global
 
-import scala.concurrent.Future
+import scala.concurrent.{Await, Future}
+import scala.concurrent.duration._
 
 trait Server extends HttpHandler with ErrorSupport {
   private val initialized = new AtomicBoolean(false)
@@ -73,6 +75,12 @@ trait Server extends HttpHandler with ErrorSupport {
     start()
   }
 
+  def whileRunning(delay: FiniteDuration = 1.second): Future[Unit] = if (isRunning) {
+    Time.delay(delay).flatMap(_ => whileRunning(delay))
+  } else {
+    Future.successful(())
+  }
+
   def dispose(): Unit = stop()
 
   override final def handle(connection: HttpConnection): Future[HttpConnection] = handleInternal(connection).recoverWith {
@@ -105,6 +113,20 @@ trait Server extends HttpHandler with ErrorSupport {
         handleRecursive(updated, handlers.tail)
       }
     }
+  }
+
+  def main(args: Array[String]): Unit = {
+    Profig.initConfiguration()
+    Profig.merge(args.toSeq)
+
+    val future = start()
+    future.failed.map { throwable =>
+      scribe.error("Error during application startup", throwable)
+      dispose()
+    }
+
+    Await.result(future, Duration.Inf)
+    Await.result(whileRunning(), Duration.Inf)
   }
 }
 

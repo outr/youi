@@ -1,10 +1,10 @@
 package io.youi.server
 
 import java.util.concurrent.atomic.AtomicBoolean
-
 import io.youi.http.{HttpConnection, HttpStatus, ProxyHandler}
 import io.youi.server.handler.{HttpHandler, HttpHandlerBuilder}
 import io.youi.{ErrorSupport, ItemContainer}
+import moduload.Moduload
 import profig.{Profig, ProfigPath}
 import reactify._
 import scribe.Execution.global
@@ -31,19 +31,10 @@ trait Server extends HttpHandler with ErrorSupport {
   val errorHandler: Var[ErrorHandler] = Var(DefaultErrorHandler)
 
   protected lazy val implementation: ServerImplementation = {
-    Server.config("implementation").opt[String] match {
-      case Some(className) => {
-        scribe.info(s"Using server implementation: $className...")
-        import scala.reflect.runtime._
-
-        val clazz = Class.forName(className)
-        val rootMirror = universe.runtimeMirror(Thread.currentThread().getContextClassLoader)
-        val moduleSymbol = rootMirror.moduleSymbol(clazz)
-        val moduleMirror = rootMirror.reflectModule(moduleSymbol)
-        val creator = moduleMirror.instance.asInstanceOf[ServerImplementationCreator]
-        creator.create(this)
-      }
-      case None => throw new RuntimeException("No server implementation available.")
+    Moduload.load()
+    Option(Server.implementationCreator) match {
+      case Some(creator) => creator.create(this)
+      case None => throw new RuntimeException("No server implementation found")
     }
   }
 
@@ -118,5 +109,7 @@ trait Server extends HttpHandler with ErrorSupport {
 }
 
 object Server {
+  var implementationCreator: ServerImplementationCreator = _
+
   def config: ProfigPath = Profig("youi.server")
 }

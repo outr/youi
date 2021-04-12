@@ -3,7 +3,6 @@ package io.youi.server
 import java.io.IOException
 import java.net.URI
 import java.nio.ByteBuffer
-
 import io.undertow.io.{IoCallback, Sender}
 import io.undertow.predicate.Predicates
 import io.undertow.protocols.ssl.UndertowXnioSsl
@@ -23,6 +22,7 @@ import io.youi.http.content._
 import io.youi.net.{ContentType, IP, MalformedURLException, Parameters, Path, URL}
 import io.youi.server.util.SSLUtil
 import io.youi.stream._
+import moduload.Moduload
 import org.xnio.streams.ChannelInputStream
 import org.xnio.{OptionMap, Xnio}
 import scribe.Execution.global
@@ -133,7 +133,11 @@ class UndertowServerImplementation(val server: Server) extends ServerImplementat
   }
 }
 
-object UndertowServerImplementation extends ServerImplementationCreator {
+object UndertowServerImplementation extends Moduload with ServerImplementationCreator {
+  override def load(): Unit = Server.implementationCreator = this
+
+  override def error(t: Throwable): Unit = scribe.error("Failure during moduload of UndertowServerImplementation", t)
+
   override def create(server: Server): ServerImplementation = {
     new UndertowServerImplementation(server)
   }

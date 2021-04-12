@@ -7,7 +7,7 @@ import io.youi.http.content.Content
 import io.youi.http.cookie.ResponseCookie
 import io.youi.http.{Headers, HttpConnection}
 import io.youi.net._
-import profig._
+import fabric.rw._
 import scribe.Execution.global
 import scribe.Priority
 

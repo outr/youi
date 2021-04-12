@@ -1,6 +1,6 @@
 package io.youi.communication
 
-import profig._
+import fabric.rw._
 import scribe.Execution.global
 
 import scala.concurrent.{Future, Promise}

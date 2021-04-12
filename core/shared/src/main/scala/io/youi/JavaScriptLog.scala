@@ -1,9 +1,9 @@
 package io.youi
 
-import profig._
+import fabric.rw._
 
 case class JavaScriptLog(message: String)
 
 object JavaScriptLog {
-  implicit val rw: ReadWriter[JavaScriptLog] = macroRW
+  implicit val rw: ReaderWriter[JavaScriptLog] = ccRW
 }

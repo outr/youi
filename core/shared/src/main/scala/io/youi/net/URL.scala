@@ -5,7 +5,7 @@ import scala.reflect.macros.blackbox
 import scala.util.Try
 import scala.util.matching.Regex
 
-import profig._
+import fabric.rw._
 
 case class URL(protocol: Protocol = Protocol.Http,
                host: String = "localhost",
@@ -138,7 +138,7 @@ object URL {
   var DefaultProtocol: Protocol = Protocol.Https
   var ValidateTLD: Boolean = true
 
-  implicit val rw: ReadWriter[URL] = readwriter[String].bimap[URL](_.toString, apply)
+  implicit val rw: ReaderWriter[URL] = ReaderWriter(_.toString, v => apply(v.asStr.value))
 
   def build(protocol: String,
             host: String,

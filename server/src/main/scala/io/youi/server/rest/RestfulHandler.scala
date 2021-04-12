@@ -6,7 +6,7 @@ import io.youi.http.content.{Content, StringContent}
 import io.youi.net.{ContentType, URL}
 import io.youi.server.dsl.PathFilter
 import io.youi.server.handler.HttpHandler
-import profig._
+import fabric.rw._
 import scribe.Execution.global
 
 import scala.collection.mutable.ListBuffer

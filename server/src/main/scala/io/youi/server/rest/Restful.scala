@@ -3,7 +3,7 @@ package io.youi.server.rest
 import io.youi.ValidationError
 import io.youi.http.{HttpConnection, HttpStatus}
 import io.youi.server.handler.HttpHandler
-import profig._
+import fabric.rw._
 
 import scala.concurrent.Future
 import scala.concurrent.duration.Duration

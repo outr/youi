@@ -1,6 +1,6 @@
 //package io.youi.persist
 //
-//import profig._
+//import fabric.rw._
 //
 //trait Persistence[T] {
 //  protected def identifier: String

@@ -1,6 +1,6 @@
 package io.youi.client
 
-import profig._
+import fabric.rw._
 import io.youi.client.intercept.Interceptor
 import io.youi.http._
 import io.youi.http.content.{Content, StringContent}

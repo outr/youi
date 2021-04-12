@@ -1,6 +1,6 @@
 package io.youi.communication
 
-import profig._
+import fabric.rw._
 
 sealed trait MessageType {
   def name: String
@@ -8,7 +8,7 @@ sealed trait MessageType {
 }
 
 object MessageType {
-  implicit val rw: ReadWriter[MessageType] = readwriter[String].bimap[MessageType](_.name, byName)
+  implicit val rw: ReaderWriter[MessageType] = readwriter[String].bimap[MessageType](_.name, byName)
 
   case object Invoke extends MessageType {
     override def name: String = "invoke"

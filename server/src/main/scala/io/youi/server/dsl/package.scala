@@ -10,7 +10,7 @@ import io.youi.server.rest.Restful
 import io.youi.server.validation.{ValidationResult, Validator}
 import io.youi.stream.delta.Delta
 import scribe.Execution.global
-import profig._
+import fabric.rw._
 
 import scala.concurrent.Future
 import scala.language.implicitConversions

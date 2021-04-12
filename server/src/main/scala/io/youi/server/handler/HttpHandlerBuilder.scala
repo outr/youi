@@ -10,7 +10,7 @@ import io.youi.stream.delta.Delta
 import io.youi.stream.{HTMLParser, Selector}
 import scribe.Execution.global
 import scribe.Priority
-import profig._
+import fabric.rw._
 
 import scala.concurrent.Future
 import scala.util.Try

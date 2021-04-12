@@ -11,7 +11,7 @@ import io.youi.server.handler.HttpHandler
 import io.youi.server.rest.{Restful, RestfulResponse}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AsyncWordSpec
-import profig._
+import fabric.rw._
 
 import scala.concurrent.Future
 
@@ -107,13 +107,13 @@ class UndertowServerSpec extends AsyncWordSpec with Matchers {
   case class ReverseRequest(value: String)
 
   object ReverseRequest {
-    implicit val rw: ReadWriter[ReverseRequest] = macroRW
+    implicit val rw: ReaderWriter[ReverseRequest] = ccRW
   }
 
   case class ReverseResponse(reversed: Option[String], errors: List[ValidationError])
 
   object ReverseResponse {
-    implicit val rw: ReadWriter[ReverseResponse] = macroRW
+    implicit val rw: ReaderWriter[ReverseResponse] = ccRW
   }
 
   object ReverseService extends Restful[ReverseRequest, ReverseResponse] {

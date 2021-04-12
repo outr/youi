@@ -12,7 +12,7 @@ import io.youi.util.Time
 import io.youi.{JavaScriptError, JavaScriptLog, http}
 import net.sf.uadetector.UserAgentType
 import net.sf.uadetector.service.UADetectorServiceFactory
-import profig._
+import fabric.rw._
 import reactify.Var
 import scribe._
 import scribe.data.MDC

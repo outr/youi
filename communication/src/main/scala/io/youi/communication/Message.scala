@@ -2,7 +2,7 @@ package io.youi.communication
 
 import java.util.concurrent.atomic.AtomicLong
 
-import profig._
+import fabric.rw._
 
 case class Message(id: Long,
                    `type`: MessageType,
@@ -16,7 +16,7 @@ case class Message(id: Long,
 object Message {
   private val idGenerator = new AtomicLong(0L)
 
-  implicit val rw: ReadWriter[Message] = macroRW
+  implicit val rw: ReaderWriter[Message] = ccRW
 
   def invoke(name: String, method: String, params: Json): Message = Message(
     id = idGenerator.incrementAndGet(),

@@ -4,8 +4,8 @@ import sbtcrossproject.CrossType
 name := "youi"
 organization in ThisBuild := "io.youi"
 version in ThisBuild := "0.14.0-SNAPSHOT"
-scalaVersion in ThisBuild := "2.13.4"
-crossScalaVersions in ThisBuild := List("2.13.4", "2.12.12")
+scalaVersion in ThisBuild := "2.13.5"
+crossScalaVersions in ThisBuild := List("2.13.5", "2.12.12")
 resolvers in ThisBuild ++= Seq(
   Resolver.sonatypeRepo("releases"),
   Resolver.sonatypeRepo("snapshots")
@@ -87,13 +87,7 @@ lazy val core = crossProject(JSPlatform, JVMPlatform).in(file("core"))
   )
   .jsSettings(
     libraryDependencies ++= Seq(
-      "org.scala-js" %%% "scalajs-dom" % scalaJSDOM,
-      "com.outr" %% "profig-all" % profigVersion % Provided
-    )
-  )
-  .jvmSettings(
-    libraryDependencies ++= Seq(
-      "com.outr" %% "profig-all" % profigVersion
+      "org.scala-js" %%% "scalajs-dom" % scalaJSDOM
     )
   )
   .dependsOn(macros)
@@ -147,7 +141,6 @@ lazy val dom = project.in(file("dom"))
     name := "youi-dom",
     libraryDependencies ++= Seq(
       "com.outr" %%% "profig" % profigVersion,
-      "com.outr" %% "profig-all" % profigVersion % Provided,
       "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
     ),
     jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv()

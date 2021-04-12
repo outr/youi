@@ -1,6 +1,6 @@
 package io.youi
 
-import profig._
+import fabric.rw._
 
 import scala.util.matching.Regex
 
@@ -57,7 +57,7 @@ object Version {
 
   private val Matcher: Regex = """(\d+)[.]?(\d*)[.]?(\d*)[.]?(\d*)[-]?(.*)""".r
 
-  implicit val rw: ReadWriter[Version] = readwriter[String].bimap[Version](_.toString, apply)
+  implicit val rw: ReaderWriter[Version] = ReaderWriter(_.toString, v => apply(v.asStr.value))
 
   def apply(version: String): Version = version match {
     case Version(v) => v

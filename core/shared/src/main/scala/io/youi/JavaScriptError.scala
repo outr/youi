@@ -1,6 +1,6 @@
 package io.youi
 
-import profig._
+import fabric.rw._
 
 case class JavaScriptError(message: String,
                            source: String,
@@ -22,7 +22,7 @@ case class JavaScriptError(message: String,
 }
 
 object JavaScriptError {
-  implicit val rw: ReadWriter[JavaScriptError] = macroRW
+  implicit val rw: ReaderWriter[JavaScriptError] = ccRW
 }
 
 case class JavaScriptCause(message: String,
@@ -39,7 +39,7 @@ case class JavaScriptCause(message: String,
 }
 
 object JavaScriptCause {
-  implicit val rw: ReadWriter[JavaScriptCause] = macroRW
+  implicit val rw: ReaderWriter[JavaScriptCause] = ccRW
 }
 
 case class JavaScriptTrace(className: String,
@@ -52,7 +52,7 @@ case class JavaScriptTrace(className: String,
 }
 
 object JavaScriptTrace {
-  implicit val rw: ReadWriter[JavaScriptTrace] = macroRW
+  implicit val rw: ReaderWriter[JavaScriptTrace] = ccRW
 }
 
 case class JavaScriptPosition(line: Int, column: Int) {
@@ -60,5 +60,5 @@ case class JavaScriptPosition(line: Int, column: Int) {
 }
 
 object JavaScriptPosition {
-  implicit val rw: ReadWriter[JavaScriptPosition] = macroRW
+  implicit val rw: ReaderWriter[JavaScriptPosition] = ccRW
 }

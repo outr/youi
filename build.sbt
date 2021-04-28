@@ -56,27 +56,13 @@ ThisBuild / evictionErrorLevel := Level.Info
 
 lazy val root = project.in(file("."))
   .aggregate(
-    macrosJS, macrosJVM, coreJS, coreJVM, spatialJS, spatialJVM, stream, dom, clientJS, clientJVM, communicationJS,
+    coreJS, coreJVM, spatialJS, spatialJVM, stream, dom, clientJS, clientJVM, communicationJS,
     communicationJVM, server, serverUndertow, gui, capacitor, optimizer, appJS, appJVM, exampleJS, exampleJVM
   )
   .settings(
     publish := {},
     publishLocal := {}
   )
-
-lazy val macros = crossProject(JSPlatform, JVMPlatform).in(file("macros"))
-  .settings(
-    name := "youi-macros",
-    description := "Dependency for internal Macro functionality",
-    libraryDependencies ++= Seq(
-      "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-      "org.scala-lang.modules" %% "scala-collection-compat" % collectionCompat,
-      "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
-    )
-  )
-
-lazy val macrosJS = macros.js
-lazy val macrosJVM = macros.jvm
 
 lazy val core = crossProject(JSPlatform, JVMPlatform).in(file("core"))
   .settings(
@@ -96,7 +82,6 @@ lazy val core = crossProject(JSPlatform, JVMPlatform).in(file("core"))
       "org.scala-js" %%% "scalajs-dom" % scalaJSDOM
     )
   )
-  .dependsOn(macros)
 
 lazy val coreJS = core.js
 lazy val coreJVM = core.jvm

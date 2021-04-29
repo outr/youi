@@ -1,22 +1,23 @@
 package spec
 
+import testy._
 import io.youi.http.{HttpConnection, HttpMethod, HttpRequest, HttpStatus}
 import io.youi.net._
 import io.youi.server.dsl._
 import io.youi.server.{DefaultErrorHandler, Server}
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AsyncWordSpec
 
-class ServerDSLSpec extends AsyncWordSpec with Matchers {
+import scribe.Execution.global
+
+class ServerDSLSpec extends Spec {
   private lazy val text = "Hello, World!".withContentType(ContentType.`text/plain`)
-  private lazy val html = <html>
+  private lazy val html = """<html>
     <head>
       <title>Hello, World!</title>
     </head>
     <body>
       <h1>Hello, World!</h1>
     </body>
-  </html>.toString().withContentType(ContentType.`text/html`)
+  </html>""".withContentType(ContentType.`text/html`)
 
   "Server DSL" when {
     "creating a simple handler" should {

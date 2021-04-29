@@ -1,5 +1,6 @@
 package spec
 
+import testy._
 import io.youi.ValidationError
 import io.youi.client.HttpClient
 import io.youi.http._
@@ -9,14 +10,17 @@ import io.youi.server.Server
 import io.youi.server.dsl._
 import io.youi.server.handler.HttpHandler
 import io.youi.server.rest.{Restful, RestfulResponse}
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AsyncWordSpec
 import fabric.rw._
 import profig.Profig
 
 import scala.concurrent.Future
+import scribe.Execution.global
 
-class UndertowServerSpec extends AsyncWordSpec with Matchers {
+class UndertowServerSpec extends Spec {
+  implicit object FutureAsync extends AsyncSupport[Future[Unit]] {
+    override def apply(async: Future[Unit]): Future[Unit] = async
+  }
+
   "UndertowServerSpec" should {
     object server extends Server
     val client = HttpClient.url(url"http://localhost:8080")
@@ -39,9 +43,9 @@ class UndertowServerSpec extends AsyncWordSpec with Matchers {
       )
       server.handlers.size should be(2)
     }
-    "start the server" in {
+    "start the server" async {
       server.start().map { _ =>
-        succeed
+        server.isRunning should be(true)
       }
     }
     "receive OK for test.txt" in {
@@ -101,7 +105,7 @@ class UndertowServerSpec extends AsyncWordSpec with Matchers {
     }
     "stop the server" in {
       server.stop()
-      succeed
+      server.isRunning should be(false)
     }
   }
 

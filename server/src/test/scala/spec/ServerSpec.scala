@@ -1,5 +1,6 @@
 package spec
 
+import testy._
 import fabric.parse.Json
 import io.youi.ValidationError
 import io.youi.http._
@@ -9,13 +10,12 @@ import io.youi.server.Server
 import io.youi.server.dsl._
 import io.youi.server.handler.HttpHandler
 import io.youi.server.rest.{Restful, RestfulResponse}
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AsyncWordSpec
 import fabric.rw._
 
 import scala.concurrent.Future
+import scribe.Execution.global
 
-class ServerSpec extends AsyncWordSpec with Matchers {
+class ServerSpec extends Spec {
   Server.config("implementation").store("io.youi.server.test.TestServerImplementation")
 
   object server extends Server
@@ -43,12 +43,12 @@ class ServerSpec extends AsyncWordSpec with Matchers {
     }
     "receive OK for test.html" in {
       server.handle(HttpConnection(server, HttpRequest(url = URL("http://localhost/test.html")))).map { connection =>
-        connection.response.status should equal(HttpStatus.OK)
+        connection.response.status should be(HttpStatus.OK)
       }
     }
     "receive NotFound for other.html" in {
       server.handle(HttpConnection(server, HttpRequest(url = URL("http://localhost/other.html")))).map { connection =>
-        connection.response.status should equal(HttpStatus.NotFound)
+        connection.response.status should be(HttpStatus.NotFound)
       }
     }
     "reverse a String with the Restful endpoint via POST" in {
@@ -58,8 +58,8 @@ class ServerSpec extends AsyncWordSpec with Matchers {
         url = URL("http://localhost/test/reverse"),
         content = Some(content)
       ))).map { connection =>
-        connection.response.status should equal(HttpStatus.OK)
-        connection.response.content shouldNot equal(None)
+        connection.response.status should be(HttpStatus.OK)
+        connection.response.content should be(Some(""))
         val jsonString = connection.response.content.get.asInstanceOf[StringContent].value
         val response = Json.parse(jsonString).as[ReverseResponse]
         response.errors should be(Nil)
@@ -71,8 +71,8 @@ class ServerSpec extends AsyncWordSpec with Matchers {
         method = HttpMethod.Get,
         url = URL("http://localhost/test/reverse?value=Testing")
       ))).map { connection =>
-        connection.response.status should equal(HttpStatus.OK)
-        connection.response.content shouldNot equal(None)
+        connection.response.status should be(HttpStatus.OK)
+        connection.response.content should be(Some(""))
         val jsonString = connection.response.content.get.asInstanceOf[StringContent].value
         val response = Json.parse(jsonString).as[ReverseResponse]
         response.errors should be(Nil)
@@ -84,8 +84,8 @@ class ServerSpec extends AsyncWordSpec with Matchers {
         method = HttpMethod.Get,
         url = URL("http://localhost/test/reverse/Testing")
       ))).map { connection =>
-        connection.response.status should equal(HttpStatus.OK)
-        connection.response.content shouldNot equal(None)
+        connection.response.status should be(HttpStatus.OK)
+        connection.response.content should be(Some(""))
         val jsonString = connection.response.content.get.asInstanceOf[StringContent].value
         val response = Json.parse(jsonString).as[ReverseResponse]
         response.errors should be(Nil)
@@ -98,8 +98,8 @@ class ServerSpec extends AsyncWordSpec with Matchers {
         method = HttpMethod.Get,
         url = URL("http://localhost/test/time")
       ))).map { connection =>
-        connection.response.status should equal(HttpStatus.OK)
-        connection.response.content shouldNot equal(None)
+        connection.response.status should be(HttpStatus.OK)
+        connection.response.content should be(Some(""))
         val jsonString = connection.response.content.get.asInstanceOf[StringContent].value
         val response = Json.parse(jsonString).as[Long]
         response should be >= begin

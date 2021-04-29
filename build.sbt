@@ -30,27 +30,26 @@ ThisBuild / developers := List(
 
 ThisBuild / versionScheme := Some("semver-spec")
 
-val fabricVersion = "1.0.4"
-val profigVersion = "3.2.1"
-val scribeVersion = "3.5.3"
-val reactifyVersion = "4.0.4"
-val hasherVersion = "1.2.2"
+val fabricVersion: String = "1.0.5"
+val profigVersion: String = "3.2.2"
+val scribeVersion: String = "3.5.4"
+val reactifyVersion: String = "4.0.5"
+val hasherVersion: String = "1.2.2"
 
-val openTypeVersion = "1.1.0"
-val webFontLoaderVersion = "1.6.28_2"
-val canvgVersion = "1.4.0_3"
+val openTypeVersion: String = "1.1.0"
+val webFontLoaderVersion: String = "1.6.28_2"
+val canvgVersion: String = "1.4.0_3"
 
 val scalaJSDOM = "1.1.0"
-val okHttpVersion = "4.9.1"
-val uaDetectorVersion = "2014.10"
-val undertowVersion = "2.2.7.Final"
-val closureCompilerVersion = "v20210302"
-val guavaVersion = "25.1-jre"
-val jSoupVersion = "1.13.1"
-val scalaXMLVersion = "2.0.0-RC1"
+val okHttpVersion: String = "4.9.1"
+val uaDetectorVersion: String = "2014.10"
+val undertowVersion: String = "2.2.7.Final"
+val closureCompilerVersion: String = "v20210302"
+val guavaVersion: String = "25.1-jre"
+val jSoupVersion: String = "1.13.1"
+val scalaXMLVersion: String = "2.0.0-RC1"
 val collectionCompat = "2.4.3"
-val scalaTestVersion = "3.2.8"
-val scalaCheckVersion = "1.15.3"
+val testyVersion: String = "1.0.5"
 
 ThisBuild / evictionErrorLevel := Level.Info
 
@@ -68,19 +67,21 @@ lazy val core = crossProject(JSPlatform, JVMPlatform).in(file("core"))
   .settings(
     name := "youi-core",
     description := "Core functionality leveraged and shared by most other sub-projects of YouI.",
+    testFrameworks += new TestFramework("munit.Framework"),
     libraryDependencies ++= Seq(
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
       "com.outr" %%% "fabric-parse" % fabricVersion,
       "com.outr" %%% "profig" % profigVersion,
       "com.outr" %%% "scribe" % scribeVersion,
       "com.outr" %%% "reactify" % reactifyVersion,
-      "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
+      "com.outr" %%% "testy" % testyVersion % Test
     )
   )
   .jsSettings(
     libraryDependencies ++= Seq(
       "org.scala-js" %%% "scalajs-dom" % scalaJSDOM
-    )
+    ),
+    Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
   )
 
 lazy val coreJS = core.js
@@ -89,14 +90,18 @@ lazy val coreJVM = core.jvm
 lazy val client = crossProject(JSPlatform, JVMPlatform).in(file("client"))
   .settings(
     name := "youi-client",
+    testFrameworks += new TestFramework("munit.Framework"),
     libraryDependencies ++= Seq(
-      "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
+      "com.outr" %%% "testy" % testyVersion % Test
     )
   )
   .jvmSettings(
     libraryDependencies ++= Seq(
       "com.squareup.okhttp3" % "okhttp" % okHttpVersion
     )
+  )
+  .jsSettings(
+    Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
   )
   .dependsOn(core)
 
@@ -106,10 +111,13 @@ lazy val clientJVM = client.jvm
 lazy val spatial = crossProject(JSPlatform, JVMPlatform).in(file("spatial"))
   .settings(
     name := "youi-spatial",
+    testFrameworks += new TestFramework("munit.Framework"),
     libraryDependencies ++= Seq(
-      "org.scalatest" %%% "scalatest" % scalaTestVersion % "test",
-      "org.scalacheck" %%% "scalacheck" % scalaCheckVersion % "test"
+      "com.outr" %%% "testy" % testyVersion % Test
     )
+  )
+  .jsSettings(
+    Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
   )
   .dependsOn(core)
 
@@ -119,9 +127,9 @@ lazy val spatialJVM = spatial.jvm
 lazy val stream = project.in(file("stream"))
   .settings(
     name := "youi-stream",
+    testFrameworks += new TestFramework("munit.Framework"),
     libraryDependencies ++= Seq(
-      "org.scalatest" %%% "scalatest" % scalaTestVersion % "test",
-      "org.scalacheck" %%% "scalacheck" % scalaCheckVersion % "test"
+      "com.outr" %%% "testy" % testyVersion % Test
     )
   )
   .dependsOn(coreJVM)
@@ -130,11 +138,14 @@ lazy val dom = project.in(file("dom"))
   .enablePlugins(ScalaJSPlugin)
   .settings(
     name := "youi-dom",
+    testFrameworks += new TestFramework("munit.Framework"),
     libraryDependencies ++= Seq(
       "com.outr" %%% "profig" % profigVersion,
-      "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
+      "com.outr" %%% "testy" % testyVersion % Test
     ),
-    jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv()
+    test := {},     // TODO: figure out why this no longer works
+    jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv(),
+    Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
   )
   .dependsOn(coreJS)
   .dependsOn(stream % "compile")
@@ -144,13 +155,14 @@ lazy val communication = crossProject(JSPlatform, JVMPlatform)
   .in(file("communication"))
   .settings(
     name := "youi-communication",
+    testFrameworks += new TestFramework("munit.Framework"),
     libraryDependencies ++= Seq(
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-      "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
+      "com.outr" %%% "testy" % testyVersion % Test
     )
   )
   .jsSettings(
-    test := {}
+    Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
   )
   .dependsOn(core)
 
@@ -160,9 +172,10 @@ lazy val communicationJVM = communication.jvm
 lazy val server = project.in(file("server"))
   .settings(
     name := "youi-server",
+    testFrameworks += new TestFramework("munit.Framework"),
     libraryDependencies ++= Seq(
       "net.sf.uadetector" % "uadetector-resources" % uaDetectorVersion,
-      "org.scalatest" %% "scalatest" % scalaTestVersion % "test"
+      "com.outr" %%% "testy" % testyVersion % Test
     )
   )
   .dependsOn(communicationJVM, stream)
@@ -171,9 +184,10 @@ lazy val serverUndertow = project.in(file("serverUndertow"))
   .settings(
     name := "youi-server-undertow",
     fork := true,
+    testFrameworks += new TestFramework("munit.Framework"),
     libraryDependencies ++= Seq(
       "io.undertow" % "undertow-core" % undertowVersion,
-      "org.scalatest" %% "scalatest" % scalaTestVersion % "test"
+      "com.outr" %%% "testy" % testyVersion % Test
     )
   )
   .dependsOn(server, clientJVM % "test->test")
@@ -212,9 +226,13 @@ lazy val optimizer = project.in(file("optimizer"))
 lazy val app = crossProject(JSPlatform, JVMPlatform).in(file("app"))
   .settings(
     name := "youi-app",
+    testFrameworks += new TestFramework("munit.Framework"),
     libraryDependencies ++= Seq(
-      "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
+      "com.outr" %%% "testy" % testyVersion % Test
     )
+  )
+  .jsSettings(
+    Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
   )
   .dependsOn(core, communication)
 

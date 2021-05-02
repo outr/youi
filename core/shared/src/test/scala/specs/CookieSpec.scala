@@ -1,10 +1,9 @@
 package specs
 
+import testy._
 import io.youi.http.{CookieHeader, Headers}
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
 
-class CookieSpec extends AnyWordSpec with Matchers {
+class CookieSpec extends Spec {
   "Cookies" when {
     "parsing" should {
       "support a single entry" in {

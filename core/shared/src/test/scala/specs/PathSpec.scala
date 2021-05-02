@@ -1,10 +1,9 @@
 package specs
 
+import testy._
 import io.youi.net._
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
 
-class PathSpec extends AnyWordSpec with Matchers {
+class PathSpec extends Spec {
   "Path" should {
     "validate simple" in {
       Path.parse("/one/two/three").parts should be(List(

@@ -1,25 +1,25 @@
 package spec
 
+import testy._
 import io.youi.client.HttpClient
 import io.youi.client.intercept.Interceptor
 import io.youi.http.HttpStatus
 import io.youi.http.content.StringContent
 import io.youi.net._
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AsyncWordSpec
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
+import scribe.Execution.global
 
 import fabric.rw._
 
-class HttpClientSpec extends AsyncWordSpec with Matchers {
+class HttpClientSpec extends Spec {
   "HttpClient" should {
     "GET the user-agent" in {
       HttpClient.url(url"https://httpbin.org/user-agent").get.send().map { response =>
         response.status should be(HttpStatus.OK)
         val content = response.content.get.asInstanceOf[StringContent]
-        content.value should include("user-agent")
+        content.value.contains("user-agent") should be(true)
       }
     }
     "call a URL multiple times with a rate limiter" in {
@@ -38,10 +38,10 @@ class HttpClientSpec extends AsyncWordSpec with Matchers {
       }
 
       val start = System.currentTimeMillis()
-      callMultiple(5).flatMap { _ =>
+      callMultiple(5).map { _ =>
         calls should be(6)
         val elapsed = System.currentTimeMillis() - start
-        elapsed should be(5000L +- 5000L)
+        elapsed <= 10000L should be(true)
       }
     }
     "call a URL and get a case class back" in {

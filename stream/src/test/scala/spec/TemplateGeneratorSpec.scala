@@ -1,11 +1,10 @@
 package spec
 
+import testy._
 import io.youi.stream.delta.Delta
 import io.youi.stream.{HTMLParser, Selector}
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
 
-class TemplateGeneratorSpec extends AnyWordSpec with Matchers {
+class TemplateGeneratorSpec extends Spec {
   "TemplateGenerator" should {
     "generate source from a simple HTML file" in {
       val html = HTMLParser.cache(

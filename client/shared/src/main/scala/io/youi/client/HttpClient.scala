@@ -12,8 +12,6 @@ import io.youi.util.Time
 
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future}
-import scala.language.experimental.macros
-import scala.reflect.macros.blackbox
 
 case class HttpClient(request: HttpRequest,
                       implementation: HttpClientImplementation,
@@ -146,7 +144,19 @@ case class HttpClient(request: HttpRequest,
     * @tparam Response the response type
     * @return Future[Response]
     */
-  def call[Response]: Future[Response] = macro HttpClient.autoCall[Response]
+  def call[Response: Writer](implicit executionContext: ExecutionContext): Future[Response] = send().map { response =>
+    try {
+      val responseJson = response.content.map(implementation.content2String).getOrElse("")
+      if (!failOnHttpStatus || response.status.isSuccess) {
+        if (responseJson.isEmpty) throw new ClientException(s"No content received in response for ${request.url}.", request, response, None)
+        Json.parse(responseJson).as[Response]
+      } else {
+        throw new ClientException("HttpStatus was not successful", request, response, None)
+      }
+    } catch {
+      case t: Throwable => throw new ClientException("Response processing error", request, response, Some(t))
+    }
+  }
 
   /**
     * Builds on the send method by supporting basic restful calls that take a case class as the request and returns a
@@ -157,7 +167,11 @@ case class HttpClient(request: HttpRequest,
     * @tparam Response the response type
     * @return Future[Response]
     */
-  def restful[Request, Response](request: Request): Future[Response] = macro HttpClient.autoRestful[Request, Response]
+  def restful[Request: Reader, Response: Writer](request: Request)
+                                                (implicit executionContext: ExecutionContext): Future[Response] = {
+    val requestJson = request.toValue
+    method(if (method == HttpMethod.Get) HttpMethod.Post else method).json(requestJson).call[Response]
+  }
 
   /**
     * Similar to the restful call, but provides a different return-type if the response is an error.
@@ -168,7 +182,23 @@ case class HttpClient(request: HttpRequest,
     * @tparam Failure the failure (non-OK response) response type
     * @return either Failure or Success
     */
-  def restfulEither[Request, Success, Failure](request: Request): Future[Either[Failure, Success]] = macro HttpClient.autoRestfulEither[Request, Success, Failure]
+  def restfulEither[Request: Reader, Success: Writer, Failure: Writer](request: Request)
+                                                                      (implicit executionContext: ExecutionContext): Future[Either[Failure, Success]] = {
+    val requestJson = request.toValue
+    method(if (method == HttpMethod.Get) HttpMethod.Post else method).json(requestJson).send().map { response =>
+      try {
+        val responseJson = response.content.map(implementation.content2String).getOrElse("")
+        if (responseJson.isEmpty) throw new ClientException(s"No content received in response for ${this.request.url}.", this.request, response, None)
+        if (response.status.isSuccess) {
+          Right(Json.parse(responseJson).as[Success])
+        } else {
+          Left(Json.parse(responseJson).as[Failure])
+        }
+      } catch {
+        case t: Throwable => throw new ClientException("Response processing error", this.request, response, Some(t))
+      }
+    }
+  }
 }
 
 object HttpClient extends HttpClient(
@@ -181,99 +211,4 @@ object HttpClient extends HttpClient(
   dropNullValuesInJson = HttpClientConfig.default().dropNullValuesInJson,
   failOnHttpStatus = HttpClientConfig.default().failOnHttpStatus,
   validateSSLCertificates = HttpClientConfig.default().validateSSLCertificates
-) {
-  def autoCall[Response](c: blackbox.Context)
-                        (implicit r: c.WeakTypeTag[Response]): c.Expr[Future[Response]] = {
-    import c.universe._
-
-    val client = c.prefix.tree
-
-    c.Expr[Future[Response]](
-      q"""
-         import _root_.io.youi.client._
-         import _root_.fabric._
-         import _root_.fabric.rw._
-         import _root_.fabric.parse._
-
-         $client.send().map { response =>
-           try {
-             val responseJson = response.content.map($client.implementation.content2String).getOrElse("")
-             if (!$client.failOnHttpStatus || response.status.isSuccess) {
-               if (responseJson.isEmpty) throw new ClientException(s"No content received in response for $${$client.request.url}.", $client.request, response, None)
-               Json.parse(responseJson).as[$r]
-             } else {
-              throw new ClientException("HttpStatus was not successful", $client.request, response, None)
-             }
-           } catch {
-             case t: Throwable => throw new ClientException("Response processing error", $client.request, response, Some(t))
-           }
-         }
-       """)
-  }
-
-  def autoRestful[Request, Response](c: blackbox.Context)
-                                    (request: c.Expr[Request])
-                                    (implicit req: c.WeakTypeTag[Request], res: c.WeakTypeTag[Response]): c.Expr[Future[Response]] = {
-    import c.universe._
-
-    val client = c.prefix.tree
-
-    c.Expr[Future[Response]](
-      q"""
-         import _root_.io.youi.client._
-         import _root_.io.youi.http._
-         import _root_.fabric._
-         import _root_.fabric.rw._
-         import _root_.fabric.parse._
-
-         val requestJson = $request.toValue
-         $client.method(if ($client.method == HttpMethod.Get) HttpMethod.Post else $client.method).json(requestJson).send().map { response =>
-           try {
-             val responseJson = response.content.map($client.implementation.content2String).getOrElse("")
-             if (!$client.failOnHttpStatus || response.status.isSuccess) {
-               if (responseJson.isEmpty) throw new ClientException(s"No content received in response for $${$client.request.url}.", $client.request, response, None)
-               Json.parse(responseJson).as[$res]
-             } else {
-              throw new ClientException("HttpStatus was not successful", $client.request, response, None)
-             }
-           } catch {
-             case t: Throwable => throw new ClientException("Response processing error", $client.request, response, Some(t))
-           }
-         }
-      """)
-  }
-
-  def autoRestfulEither[Request, Success, Failure](c: blackbox.Context)
-                                                  (request: c.Expr[Request])
-                                                  (implicit req: c.WeakTypeTag[Request],
-                                                   success: c.WeakTypeTag[Success],
-                                                   failure: c.WeakTypeTag[Failure]): c.Expr[Future[Either[Failure, Success]]] = {
-    import c.universe._
-
-    val client = c.prefix.tree
-
-    c.Expr[Future[Either[Failure, Success]]](
-      q"""
-         import _root_.io.youi.client._
-         import _root_.io.youi.http._
-         import _root_.fabric._
-         import _root_.fabric.rw._
-         import _root_.fabric.parse._
-
-         val requestJson = JsonUtil.toJson[$req]($request)
-         $client.method(if ($client.method == HttpMethod.Get) HttpMethod.Post else $client.method).json(requestJson).send().map { response =>
-           try {
-             val responseJson = response.content.map($client.implementation.content2String).getOrElse("")
-         if (responseJson.isEmpty) throw new ClientException(s"No content received in response for $${$client.request.url}.", $client.request, response, None)
-             if (response.status.isSuccess) {
-               Right(Json.parse(responseJson).as[$success])
-             } else {
-               Left(Json.parse(responseJson).as[$failure])
-             }
-           } catch {
-             case t: Throwable => throw new ClientException("Response processing error", $client.request, response, Some(t))
-           }
-         }
-      """)
-  }
-}
+)

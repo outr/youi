@@ -10,6 +10,7 @@ install:
   - nvm install 14
   - nvm use 14
   - git fetch --tags
+  - npm install jsdom
 script: sbt +clean +test
 notifications:
   email:

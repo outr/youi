@@ -49,7 +49,7 @@ val guavaVersion: String = "25.1-jre"
 val jSoupVersion: String = "1.13.1"
 val scalaXMLVersion: String = "2.0.0"
 val collectionCompat = "2.4.3"
-val testyVersion: String = "1.0.6"
+val testyVersion: String = "1.0.7"
 
 ThisBuild / evictionErrorLevel := Level.Info
 

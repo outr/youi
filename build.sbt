@@ -47,7 +47,7 @@ val undertowVersion: String = "2.2.7.Final"
 val closureCompilerVersion: String = "v20210505"
 val guavaVersion: String = "25.1-jre"
 val jSoupVersion: String = "1.13.1"
-val scalaXMLVersion: String = "2.0.0"
+val scalaXMLVersion: String = "2.0.1"
 val collectionCompat = "2.4.3"
 val testyVersion: String = "1.0.6"
 

@@ -1,9 +1,10 @@
 package specs
 
-import testy._
 import io.youi.net._
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class URLSpec extends Spec {
+class URLSpec extends AnyWordSpec with Matchers {
   "URL" when {
     "parsing" should {
       "properly parse a simple URL" in {
@@ -135,6 +136,12 @@ class URLSpec extends Spec {
       "properly parse a URL with an encoded path and decode it" in {
         val url = URL("https://test.com/d/_VomiVDa---/s9knzlc2k/Matt%202007.jpg")
         url.path.decoded should be("/d/_VomiVDa---/s9knzlc2k/Matt 2007.jpg")
+      }
+      "properly parse a URL with a +" in {
+        val url = URL("https://test.com/a+b+c")
+        url.path.decoded should be("/a+b+c")
+        url.path.encoded should be("/a+b+c")
+        url.toString should be("https://test.com/a+b+c")
       }
       "properly interpolate a URL" in {
         val url = url"http://www.youi.io"

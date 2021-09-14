@@ -1,9 +1,9 @@
 package io.youi
 
-import java.io.{ByteArrayInputStream, File, FileInputStream, FileOutputStream, InputStream, OutputStream}
-import java.net.URL
+import java.io.{ByteArrayInputStream, File, FileInputStream, FileOutputStream, IOException, InputStream, OutputStream}
+import java.net.{HttpURLConnection, URL}
 import java.nio.file.Path
-
+import scala.annotation.tailrec
 import scala.language.implicitConversions
 
 package object stream {
@@ -38,14 +38,27 @@ package object stream {
 
   implicit def path2Reader(path: Path): InputStreamReader = file2Reader(path.toFile)
 
-  implicit def url2Reader(url: URL): InputStreamReader = {
-    val connection = url.openConnection()
-    val len = connection.getContentLengthLong
-    new InputStreamReader(connection.getInputStream) {
-      override def length: Option[Long] = len match {
-        case _ if len < 0 => None
-        case _ => Some(len)
-      }
+  implicit def url2Reader(url: URL): InputStreamReader = urlInputStream(url, Set.empty)
+
+  @tailrec
+  private def urlInputStream(url: URL, redirects: Set[String]): InputStreamReader = {
+    val connection: HttpURLConnection = url.openConnection().asInstanceOf[HttpURLConnection]
+    connection.getResponseCode match {
+      case code if !Set(HttpURLConnection.HTTP_MOVED_TEMP, HttpURLConnection.HTTP_MOVED_PERM, HttpURLConnection.HTTP_SEE_OTHER).contains(code) =>
+        val len = connection.getContentLengthLong
+        new InputStreamReader(connection.getInputStream) {
+          override def length: Option[Long] = len match {
+            case _ if len < 0 => None
+            case _ => Some(len)
+          }
+        }
+      case _ =>
+        val redirectURL = connection.getHeaderField("Location")
+        if (redirects.contains(redirectURL)) {
+          throw new IOException(s"Redirect loop detected: ${redirects.mkString(", ")}")
+        }
+        scribe.warn(s"Download URL redirecting from $url to $redirectURL")
+        urlInputStream(new URL(redirectURL), redirects + url.toString)
     }
   }
 

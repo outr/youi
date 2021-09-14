@@ -4,8 +4,8 @@ import sbtcrossproject.CrossType
 name := "youi"
 ThisBuild / organization := "io.youi"
 ThisBuild / version := "0.14.1-SNAPSHOT"
-ThisBuild / scalaVersion := "2.13.5"
-ThisBuild / crossScalaVersions := List("2.13.5", "2.12.12")
+ThisBuild / scalaVersion := "2.13.6"
+ThisBuild / crossScalaVersions := List("2.13.6", "2.12.12")
 ThisBuild / resolvers ++= Seq(
   Resolver.sonatypeRepo("releases"),
   Resolver.sonatypeRepo("snapshots")
@@ -49,14 +49,16 @@ val guavaVersion: String = "25.1-jre"
 val jSoupVersion: String = "1.13.1"
 val scalaXMLVersion: String = "2.0.1"
 val collectionCompat = "2.4.3"
-val testyVersion: String = "1.0.7"
+val testyVersion: String = "1.0.7"      // TODO: Remove
+val scalaTestVersion: String = "3.2.9"
 
 ThisBuild / evictionErrorLevel := Level.Info
 
+// TODO: Switch back to ScalaTest and remove all "Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }"
 lazy val root = project.in(file("."))
   .aggregate(
     coreJS, coreJVM, spatialJS, spatialJVM, stream, dom, clientJS, clientJVM, communicationJS,
-    communicationJVM, server, serverUndertow, gui, capacitor, optimizer, appJS, appJVM, exampleJS, exampleJVM
+    communicationJVM, server, serverUndertow, gui, capacitor, optimizer, appJS, appJVM
   )
   .settings(
     publish := {},
@@ -74,7 +76,8 @@ lazy val core = crossProject(JSPlatform, JVMPlatform).in(file("core"))
       "com.outr" %%% "profig" % profigVersion,
       "com.outr" %%% "scribe" % scribeVersion,
       "com.outr" %%% "reactify" % reactifyVersion,
-      "com.outr" %%% "testy" % testyVersion % Test
+      "com.outr" %%% "testy" % testyVersion % Test,
+      "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
     )
   )
   .jsSettings(

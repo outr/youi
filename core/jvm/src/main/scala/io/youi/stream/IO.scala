@@ -1,40 +1,60 @@
 package io.youi.stream
 
 import java.io.{File, FileOutputStream, IOException}
-
 import scala.annotation.tailrec
+import scala.concurrent.duration.{DurationInt, FiniteDuration}
 
 object IO {
-  @tailrec
   final def stream(reader: Reader,
                    writer: Writer,
                    monitor: Monitor = Monitor.Ignore,
-                   buffer: Array[Byte] = new Array[Byte](512),
+                   monitorDelay: FiniteDuration = 15.millis,
+                   buffer: Array[Byte] = new Array[Byte](1024),
                    closeOnComplete: Boolean = true): Writer = {
-    monitor.open(reader.length)
-    val len = reader.read(buffer)
-    if (len == -1) {
-      writer.flush()
-      if (closeOnComplete) {
-        writer.close()
-        reader.close()
-        monitor.closed()
-      }
-      writer.complete()
-      monitor.completed()
-      writer
-    } else {
-      try {
-        writer.write(buffer, 0, len)
-        monitor.written(len)
-      } catch {
-        case t: Throwable => {
-          monitor.failure(t)
-          throw new IOException(s"IO failed to write to writer with length: $len with reader: $reader, writer: $writer.", t)
+    val length = reader.length
+    monitor.open(length)
+    var total = 0L
+
+    val delay = monitorDelay.toMillis
+    var lastNotified = 0L
+
+    @tailrec
+    def recurse(): Unit = {
+      val len = reader.read(buffer)
+      if (len == -1) {
+        writer.flush()
+        if (closeOnComplete) {
+          writer.close()
+          reader.close()
+          monitor.closed()
         }
+        writer.complete()
+        monitor.completed()
+      } else {
+        try {
+          writer.write(buffer, 0, len)
+          total += len
+          val percentage = length.map { l =>
+            (total.toDouble / l.toDouble) * 100.0
+          }
+          val now = System.currentTimeMillis()
+          val elapsed = now - lastNotified
+          if (elapsed >= delay) {
+            monitor.written(len, total, percentage)
+            lastNotified = now
+          }
+        } catch {
+          case t: Throwable => {
+            monitor.failure(t)
+            throw new IOException(s"IO failed to write to writer with length: $len with reader: $reader, writer: $writer.", t)
+          }
+        }
+        recurse()
       }
-      stream(reader, writer, monitor, buffer, closeOnComplete)
     }
+
+    recurse()
+    writer
   }
 
   /**

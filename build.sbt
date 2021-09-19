@@ -50,7 +50,7 @@ val jSoupVersion: String = "1.13.1"
 val scalaXMLVersion: String = "2.0.1"
 val collectionCompat = "2.4.3"
 val testyVersion: String = "1.0.7"      // TODO: Remove
-val scalaTestVersion: String = "3.2.9"
+val scalaTestVersion: String = "3.2.10"
 
 ThisBuild / evictionErrorLevel := Level.Info
 

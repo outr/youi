@@ -151,6 +151,11 @@ class URLSpec extends AnyWordSpec with Matchers {
         url.path.toString should be("/")
         url.parameters should be(Parameters.empty)
       }
+      // TODO: Fix parsing host with colon
+//      "properly parse a URL with a colon" in {
+//        val url = URL("https://user1:detail@example.com/more/complex")
+//        url.toString should be("https://user1:detail@example.com/more/complex")
+//      }
       // TODO: Fix
       /*"failed to compile when interpolating a URL with a param" in {
         assertDoesNotCompile(

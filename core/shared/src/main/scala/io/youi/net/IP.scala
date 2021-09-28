@@ -17,7 +17,8 @@ object IP {
 
   def get(address: String): Option[IP] = address match {
     case IPv4Regex(p1, p2, p3, p4) => Some(IPv4(p1.toInt, p2.toInt, p3.toInt, p4.toInt))
-    case _ if address.indexOf(':') != -1 => Some(IPv6(address))
+    // TODO: Better IPv6 detection
+//    case _ if address.indexOf(':') != -1 => Some(IPv6(address))
     case _ => None
   }
 

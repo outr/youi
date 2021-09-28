@@ -21,10 +21,10 @@ class URLSpec extends AnyWordSpec with Matchers {
         URL.get("test@youi.io") should be(Left(URLParseFailure("test@youi.io appears to be an email address", URLParseFailure.EmailAddress)))
       }
       "fail to parse 'it...'" in {
-        URL.get("it...") should be(Left(URLParseFailure("it... has an invalid host", URLParseFailure.InvalidHost)))
+        URL.get("it...") should be(Left(URLParseFailure("it... is not a valid URL", URLParseFailure.QuickFail)))
       }
       "fail to parse 'it.'" in {
-        URL.get("it.") should be(Left(URLParseFailure("it. has an invalid host", URLParseFailure.InvalidHost)))
+        URL.get("it.") should be(Left(URLParseFailure("it. is not a valid URL", URLParseFailure.QuickFail)))
       }
       "fail to parse ':smile'" in {
         URL.get(":smile") should be(Left(URLParseFailure(":smile is not a valid URL", URLParseFailure.QuickFail)))
@@ -151,13 +151,15 @@ class URLSpec extends AnyWordSpec with Matchers {
         url.path.toString should be("/")
         url.parameters should be(Parameters.empty)
       }
-      // TODO: Fix parsing host with colon
-//      "properly parse a URL with a colon" in {
-//        val url = URL("https://user1:detail@example.com/more/complex")
-//        url.toString should be("https://user1:detail@example.com/more/complex")
-//      }
-      // TODO: Fix
-      /*"failed to compile when interpolating a URL with a param" in {
+      "properly parse a URL with a colon" in {
+        val url = URL("https://user1:detail@example.com/more/complex")
+        url.toString should be("https://user1:detail@example.com/more/complex")
+      }
+      "fail to parse an invalid URL" in {
+        val result = URLParser("http:www:youi:io")
+        result should be(Left(URLParseFailure("Invalid host: http:www:youi:io", URLParseFailure.InvalidHost)))
+      }
+      "fail to compile when interpolating a URL with a param" in {
         assertDoesNotCompile(
           """
             |val path = "wahoo"
@@ -166,7 +168,7 @@ class URLSpec extends AnyWordSpec with Matchers {
       }
       "fail to compile an invalid URL" in {
         assertDoesNotCompile("""url"http:www:youi:io"""")
-      }*/
+      }
     }
     "applying parts" should {
       val url = URL("http://www.youi.io/testing/1/test.html?arg1=true")

@@ -22,7 +22,6 @@ object IP {
   }
 
   def apply(address: String): IP = {
-    scribe.info(s"Valid IP6? $address - ${IPv6.isValid(address)}")
     get(address).getOrElse(throw new NullPointerException(s"Unable to parse: $address to IP address."))
   }
   def apply(address: Array[Byte]): IP = if (address.length == 4) {

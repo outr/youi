@@ -17,7 +17,7 @@ object URLParser {
 
       if (host.contains("..")) {
         Left(URLParseFailure(s"$s has an invalid host", URLParseFailure.InvalidHost))
-      } else if (protocolOption.isEmpty && path == Path.empty && host.contains('@')) {
+      } else if (protocolOption.isEmpty && host.contains('@') && !host.contains(':')) {
         Left(URLParseFailure(s"$s appears to be an email address", URLParseFailure.EmailAddress, None))
       } else {
         val protocol = protocolOption.getOrElse(defaultProtocol)

@@ -147,6 +147,7 @@ class JVMHttpClientImplementation(config: HttpClientConfig) extends HttpClientIm
     val body = request.content.map {
       case StringContent(value, contentType, _) => okhttp3.RequestBody.create(value, ct(contentType))
       case FileContent(file, contentType, _) => okhttp3.RequestBody.create(file, ct(contentType))
+      case BytesContent(array, contentType, _) => okhttp3.RequestBody.create(array, ct(contentType))
       case FormDataContent(data) => {
         val form = new okhttp3.MultipartBody.Builder()
         form.setType(ct(ContentType.`multipart/form-data`))

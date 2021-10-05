@@ -1,5 +1,7 @@
 package io.youi.net
 
+import scala.util.matching.Regex
+
 case class IPv6(parts: Vector[Int], scope: Option[String]) extends IP {
   assert(parts.length == 8, s"IPv6 requires exactly 8 parts, but received: ${parts.mkString("[", ", ", "]")} (${parts.length})")
 
@@ -32,7 +34,15 @@ case class IPv6(parts: Vector[Int], scope: Option[String]) extends IP {
 }
 
 object IPv6 {
+  private val Regex: Regex = """(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))""".r
+
   val Empty: IPv6 = IPv6(parts = Vector(0, 0, 0, 0, 0, 0, 0, 1), scope = None)
+
+  def isValid(s: String): Boolean = if (s.contains('%')) {
+    isValid(s.substring(0, s.indexOf('%')))
+  } else {
+    Regex.matches(s)
+  }
 
   def apply(address: String): IPv6 = {
     val percent = address.indexOf('%')

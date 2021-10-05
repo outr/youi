@@ -17,12 +17,14 @@ object IP {
 
   def get(address: String): Option[IP] = address match {
     case IPv4Regex(p1, p2, p3, p4) => Some(IPv4(p1.toInt, p2.toInt, p3.toInt, p4.toInt))
-    // TODO: Better IPv6 detection
-//    case _ if address.indexOf(':') != -1 => Some(IPv6(address))
+    case _ if IPv6.isValid(address) => Some(IPv6(address))
     case _ => None
   }
 
-  def apply(address: String): IP = get(address).getOrElse(throw new NullPointerException(s"Unable to parse: $address to IP address."))
+  def apply(address: String): IP = {
+    scribe.info(s"Valid IP6? $address - ${IPv6.isValid(address)}")
+    get(address).getOrElse(throw new NullPointerException(s"Unable to parse: $address to IP address."))
+  }
   def apply(address: Array[Byte]): IP = if (address.length == 4) {
     IPv4(address(0).toInt, address(1).toInt, address(2).toInt, address(3).toInt)
   } else {

@@ -1,11 +1,10 @@
 package io.youi.http.content
 
-import fabric.Value
+import fabric._
 import fabric.parse.Json
 
 import java.io.File
 import java.net.URL
-import fabric.rw._
 import io.youi.net.ContentType
 
 trait Content {
@@ -24,9 +23,15 @@ trait SharedContentHelpers {
   val empty: Content = string("", ContentType.`text/plain`)
   lazy val form: FormDataContent = FormDataContent(Nil)
 
+  def graphql(query: String, operationName: Option[String] = None, variables: List[(String, Value)] = Nil): Content = {
+    json(obj(
+      "query" -> str(query),
+      "operationName" -> operationName.map(str).getOrElse(Null),
+      "variables" -> obj(variables: _*)
+    ))
+  }
   def json(value: Value, pretty: Boolean = false): Content = {
-    val jsonString = Json.format(value)
-    bytes(jsonString.getBytes, ContentType.`application/json`)
+    string(Json.format(value), ContentType.`application/json`)
   }
   def string(value: String, contentType: ContentType): Content = StringContent(value, contentType)
   def bytes(value: Array[Byte], contentType: ContentType): Content = BytesContent(value, contentType)

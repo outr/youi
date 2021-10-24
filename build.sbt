@@ -40,7 +40,7 @@ val openTypeVersion: String = "1.1.0"
 val webFontLoaderVersion: String = "1.6.28_2"
 val canvgVersion: String = "1.4.0_3"
 
-val scalaJSDOM = "1.2.0"
+val scalaJSDOM = "2.0.0"
 val okHttpVersion: String = "4.9.1"
 val uaDetectorVersion: String = "2014.10"
 val undertowVersion: String = "2.2.10.Final"

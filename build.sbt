@@ -3,9 +3,9 @@ import sbtcrossproject.CrossType
 
 name := "youi"
 ThisBuild / organization := "io.youi"
-ThisBuild / version := "0.14.3"
-ThisBuild / scalaVersion := "2.13.6"
-ThisBuild / crossScalaVersions := List("2.13.6", "2.12.15")
+ThisBuild / version := "0.14.4"
+ThisBuild / scalaVersion := "2.13.7"
+ThisBuild / crossScalaVersions := List("2.13.7", "2.12.15")
 ThisBuild / resolvers ++= Seq(
   Resolver.sonatypeRepo("releases"),
   Resolver.sonatypeRepo("snapshots")
@@ -30,9 +30,9 @@ ThisBuild / developers := List(
 
 ThisBuild / versionScheme := Some("semver-spec")
 
-val fabricVersion: String = "1.0.11"
-val profigVersion: String = "3.2.6"
-val scribeVersion: String = "3.5.5"
+val fabricVersion: String = "1.1.1"
+val profigVersion: String = "3.2.7"
+val scribeVersion: String = "3.6.3"
 val reactifyVersion: String = "4.0.6"
 val hasherVersion: String = "1.2.2"
 

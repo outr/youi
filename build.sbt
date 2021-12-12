@@ -30,7 +30,7 @@ ThisBuild / developers := List(
 
 ThisBuild / versionScheme := Some("semver-spec")
 
-val fabricVersion: String = "1.1.1"
+val fabricVersion: String = "1.2.1"
 val profigVersion: String = "3.2.7"
 val scribeVersion: String = "3.6.3"
 val reactifyVersion: String = "4.0.6"

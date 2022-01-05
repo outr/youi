@@ -30,9 +30,9 @@ ThisBuild / developers := List(
 
 ThisBuild / versionScheme := Some("semver-spec")
 
-val fabricVersion: String = "1.1.1"
+val fabricVersion: String = "1.2.1"
 val profigVersion: String = "3.2.8"
-val scribeVersion: String = "3.6.3"
+val scribeVersion: String = "3.6.7"
 val reactifyVersion: String = "4.0.6"
 val hasherVersion: String = "1.2.2"
 
@@ -40,11 +40,11 @@ val openTypeVersion: String = "1.1.0"
 val webFontLoaderVersion: String = "1.6.28_2"
 val canvgVersion: String = "1.4.0_3"
 
-val scalaJSDOM = "1.2.0"
+val scalaJSDOM = "2.1.0"
 val okHttpVersion: String = "4.9.1"
 val uaDetectorVersion: String = "2014.10"
-val undertowVersion: String = "2.2.10.Final"
-val closureCompilerVersion: String = "v20210907"
+val undertowVersion: String = "2.2.14.Final"
+val closureCompilerVersion: String = "v20211201"
 val guavaVersion: String = "25.1-jre"
 val jSoupVersion: String = "1.13.1"
 val scalaXMLVersion: String = "2.0.1"

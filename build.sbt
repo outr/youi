@@ -5,7 +5,7 @@ name := "youi"
 ThisBuild / organization := "io.youi"
 ThisBuild / version := "0.14.4"
 ThisBuild / scalaVersion := "2.13.7"
-ThisBuild / crossScalaVersions := List("2.13.7", "2.12.15")
+ThisBuild / crossScalaVersions := List("2.13.7", "2.12.16")
 ThisBuild / resolvers ++= Seq(
   Resolver.sonatypeRepo("releases"),
   Resolver.sonatypeRepo("snapshots")

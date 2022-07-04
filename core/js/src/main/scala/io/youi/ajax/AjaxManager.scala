@@ -1,13 +1,13 @@
 package io.youi.ajax
 
+import cats.effect.IO
 import io.youi.http.HttpMethod
 import io.youi.net.URL
+import org.scalajs.dom
 import org.scalajs.dom.XMLHttpRequest
-import org.scalajs.dom.raw.FormData
 import scribe.Logging
 
 import scala.collection.immutable.Queue
-import scala.concurrent.Future
 
 class AjaxManager(val maxConcurrent: Int) extends Logging {
   private var _queue = Queue.empty[AjaxAction]
@@ -18,7 +18,7 @@ class AjaxManager(val maxConcurrent: Int) extends Logging {
 
   def enqueue(url: URL,
               method: HttpMethod = HttpMethod.Post,
-              data: Option[FormData] = None,
+              data: Option[dom.FormData] = None,
               timeout: Int = 0,
               headers: Map[String, String] = Map.empty,
               withCredentials: Boolean = true,
@@ -29,11 +29,11 @@ class AjaxManager(val maxConcurrent: Int) extends Logging {
     action
   }
 
-  def enqueue(action: AjaxAction): Future[XMLHttpRequest] = {
+  def enqueue(action: AjaxAction): IO[Either[Throwable, XMLHttpRequest]] = {
     _queue = _queue.enqueue(action)
     action._state @= ActionState.Enqueued
     checkQueue()
-    action.future
+    action.io
   }
 
   def checkQueue(): Unit = if (_running.size < maxConcurrent && _queue.nonEmpty) {

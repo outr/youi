@@ -1,13 +1,13 @@
 package io.youi.ajax
 
+import cats.effect.IO
 import org.scalajs.dom.XMLHttpRequest
 import reactify._
 
-import scala.scalajs.concurrent.JSExecutionContext.queue
-import scala.concurrent.Future
+import cats.effect.unsafe.implicits.global
 
 class AjaxAction(request: AjaxRequest) {
-  lazy val future: Future[XMLHttpRequest] = request.promise.future
+  lazy val io: IO[Either[Throwable, XMLHttpRequest]] = request.deferred.get
   private[ajax] val _state = Var[ActionState](ActionState.New)
   def state: Val[ActionState] = _state
   def loaded: Val[Double] = request.loaded
@@ -18,10 +18,11 @@ class AjaxAction(request: AjaxRequest) {
   private[ajax] def start(manager: AjaxManager): Unit = {
     if (!cancelled()) {
       _state @= ActionState.Running
-      future.onComplete { _ =>
+      io.flatMap { _ =>
         _state @= ActionState.Finished
         manager.remove(this)
-      }(queue)
+        IO.unit
+      }.unsafeRunAndForget()
       request.send()
     } else {
       manager.remove(this)

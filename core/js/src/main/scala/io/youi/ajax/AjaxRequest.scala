@@ -1,13 +1,12 @@
 package io.youi.ajax
 
+import cats.effect.{Deferred, IO}
 import io.youi.http.HttpMethod
 import io.youi.net.URL
 import org.scalajs.dom
 import org.scalajs.dom._
-import org.scalajs.dom.ext.AjaxException
 import reactify._
 
-import scala.concurrent.{Future, Promise}
 import scala.scalajs.js
 import scala.scalajs.js.|
 
@@ -19,7 +18,7 @@ class AjaxRequest(url: URL,
                   withCredentials: Boolean = true,
                   responseType: String = "") {
   val req = new dom.XMLHttpRequest()
-  val promise: Promise[XMLHttpRequest] = Promise[dom.XMLHttpRequest]()
+  val deferred: Deferred[IO, Either[Throwable, XMLHttpRequest]] = Deferred.unsafe[IO, Either[Throwable, XMLHttpRequest]]
   val loaded: Val[Double] = Var(0.0)
   val total: Val[Double] = Var(0.0)
   val percentage: Val[Int] = Var(0)
@@ -28,9 +27,9 @@ class AjaxRequest(url: URL,
   req.onreadystatechange = { _: dom.Event =>
     if (req.readyState == 4) {
       if ((req.status >= 200 && req.status < 300) || req.status == 304) {
-        promise.success(req)
+        deferred.complete(Right(req))
       } else {
-        promise.failure(AjaxException(req))
+        deferred.complete(Left(new RuntimeException(s"AjaxRequest failed: ${req.readyState}")))
       }
     }
   }
@@ -46,12 +45,12 @@ class AjaxRequest(url: URL,
   req.withCredentials = withCredentials
   headers.foreach(x => req.setRequestHeader(x._1, x._2))
 
-  def send(): Future[dom.XMLHttpRequest] = {
+  def send(): IO[Either[Throwable, XMLHttpRequest]] = {
     data match {
       case Some(formData) => req.send(formData.asInstanceOf[js.Any])
       case None => req.send()
     }
-    promise.future
+    deferred.get
   }
 
   def cancel(): Unit = if (percentage.get != 100) {

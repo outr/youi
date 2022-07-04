@@ -1,17 +1,17 @@
 package io.youi.client
 
+import cats.effect.IO
 import io.youi.http.{ByteBufferData, ConnectionStatus, WebSocket}
 import io.youi.net.URL
 import org.scalajs.dom.{Blob, Event, MessageEvent, WebSocket => WS}
 
-import scala.concurrent.Future
 import scala.scalajs.js.typedarray.TypedArrayBufferOps._
 import scala.scalajs.js.typedarray._
 
 class WebSocketClient(url: URL) extends WebSocket {
   private lazy val webSocket: WS = new WS(url.toString)
 
-  override def connect(): Future[ConnectionStatus] = {
+  override def connect(): IO[ConnectionStatus] = {
     _status @= ConnectionStatus.Connecting
     webSocket.binaryType = "blob"
     webSocket.addEventListener("open", (_: Event) => {
@@ -57,7 +57,7 @@ class WebSocketClient(url: URL) extends WebSocket {
         }
       }
     }
-    status.future(s => s != ConnectionStatus.Connecting)
+    IO.fromFuture(IO.pure(status.future(s => s != ConnectionStatus.Connecting)))
   }
 
   private def updateStatus(): Unit = webSocket.readyState match {

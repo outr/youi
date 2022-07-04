@@ -1,5 +1,6 @@
 package io.youi.http
 
+import cats.effect.IO
 import reactify.{Channel, Val, Var}
 
 import scala.concurrent.Future
@@ -12,7 +13,7 @@ trait WebSocket {
   val receive: WebSocketChannels = new WebSocketChannels
   val error: Channel[Throwable] = Channel[Throwable]
 
-  def connect(): Future[ConnectionStatus]
+  def connect(): IO[ConnectionStatus]
 
   def disconnect(): Unit
 }

@@ -1,15 +1,14 @@
 package io.youi.storage
 
-import org.scalajs.dom.raw
+import cats.effect.IO
+import org.scalajs.dom
 
-import scala.concurrent.Future
+class JavaScriptStorageImplementation(storage: dom.Storage) extends StorageImplementation {
+  override def get(key: String): IO[Option[String]] = IO.pure(Option(storage.getItem(key)))
 
-class JavaScriptStorageImplementation(storage: raw.Storage) extends StorageImplementation {
-  override def get(key: String): Future[Option[String]] = Future.successful(Option(storage.getItem(key)))
+  override def set(key: String, value: String): IO[Unit] = IO.pure(storage.setItem(key, value))
 
-  override def set(key: String, value: String): Future[Unit] = Future.successful(storage.setItem(key, value))
+  override def remove(key: String): IO[Unit] = IO.pure(storage.removeItem(key))
 
-  override def remove(key: String): Future[Unit] = Future.successful(storage.removeItem(key))
-
-  override def clear(): Future[Unit] = Future.successful(storage.clear())
+  override def clear(): IO[Unit] = IO.pure(storage.clear())
 }

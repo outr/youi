@@ -1,12 +1,10 @@
 package io.youi.stream
 
+import cats.effect.IO
 import io.youi.ajax.AjaxRequest
 import io.youi.http.HttpMethod
 import io.youi.net.URL
 import org.scalajs.dom.FormData
-
-import scala.scalajs.concurrent.JSExecutionContext.queue
-import scala.concurrent.Future
 
 object StreamURL {
   def stream(url: URL,
@@ -15,9 +13,11 @@ object StreamURL {
              timeout: Int = 0,
              headers: Map[String, String] = Map.empty,
              withCredentials: Boolean = true,
-             responseType: String = ""): Future[String] = {
+             responseType: String = ""): IO[String] = {
     val request = new AjaxRequest(url, method, data, timeout, headers + ("streaming" -> "true"), withCredentials, responseType)
-    val future = request.send()
-    future.map(_.responseText)(queue)
+    request.send().map {
+      case Left(throwable) => throw throwable
+      case Right(req) => req.responseText
+    }
   }
 }

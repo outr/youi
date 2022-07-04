@@ -3,7 +3,7 @@ package io.youi.ajax
 import org.scalajs.dom.XMLHttpRequest
 import reactify._
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.scalajs.concurrent.JSExecutionContext.queue
 import scala.concurrent.Future
 
 class AjaxAction(request: AjaxRequest) {
@@ -18,10 +18,10 @@ class AjaxAction(request: AjaxRequest) {
   private[ajax] def start(manager: AjaxManager): Unit = {
     if (!cancelled()) {
       _state @= ActionState.Running
-      future.onComplete { result =>
+      future.onComplete { _ =>
         _state @= ActionState.Finished
         manager.remove(this)
-      }
+      }(queue)
       request.send()
     } else {
       manager.remove(this)

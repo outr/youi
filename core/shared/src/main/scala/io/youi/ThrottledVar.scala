@@ -1,6 +1,7 @@
 package io.youi
 
-import io.youi.util.Time
+import cats.effect.IO
+import cats.effect.unsafe.implicits.global
 import reactify.Var
 
 import scala.concurrent.ExecutionContext
@@ -33,11 +34,11 @@ class ThrottledVar[T](initialValue: => T, throttle: FiniteDuration)(implicit ec:
         lastModification = now
       } else {
         pending = Some(() => super.set(value))
-        Time.delay(delay.milli).foreach { _ =>
+        IO.sleep(delay.milli).map { _ =>
           pending.foreach(f => f())
           pending = None
           lastModification = System.currentTimeMillis()
-        }
+        }.unsafeRunAndForget()
       }
     }
   }

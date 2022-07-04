@@ -9,10 +9,9 @@ object YouIPlatform {
     try {
       Some(parser.parse(date.replace('-', ' ')).getTime)
     } catch {
-      case t: Throwable => {
+      case t: Throwable =>
         scribe.warn(s"Unable to parse date header: $date (${t.getMessage})")
         None
-      }
     }
   }
 

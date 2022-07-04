@@ -50,6 +50,7 @@ val jSoupVersion: String = "1.13.1"
 val scalaXMLVersion: String = "2.0.1"
 val collectionCompatVersion: String = "2.4.3"
 val catsVersion: String = "3.3.13"
+val fs2Version: String = "3.2.8"
 val scalaTestVersion: String = "3.2.12"
 
 ThisBuild / evictionErrorLevel := Level.Info
@@ -74,6 +75,7 @@ lazy val core = crossProject(JSPlatform, JVMPlatform).in(file("core"))
       "com.outr" %%% "scribe" % scribeVersion,
       "com.outr" %%% "reactify" % reactifyVersion,
       "org.typelevel" %%% "cats-effect" % catsVersion,
+      "co.fs2" %% "fs2-core" % fs2Version,
       "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
     )
   )

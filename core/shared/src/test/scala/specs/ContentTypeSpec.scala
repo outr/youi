@@ -1,9 +1,10 @@
 package specs
 
-import testy._
 import io.youi.net.ContentType
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class ContentTypeSpec extends Spec {
+class ContentTypeSpec extends AnyWordSpec with Matchers {
   "ContentType" should {
     "parse a massive type" in {
       val s = """multipart/related;start="<rootpart*1faa50c8-1aec-4659-ba8b-372a789b1945@example.jaxws.sun.com>";type="application/xop+xml";boundary="uuid:1faa50c8-1aec-4659-ba8b-372a789b1945";start-info="text/xml""""

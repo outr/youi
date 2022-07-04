@@ -1,9 +1,10 @@
 package specs
 
-import testy._
 import io.youi.net.EmailAddress
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class EmailAddressSpec extends Spec {
+class EmailAddressSpec extends AnyWordSpec with Matchers {
   "EmailAddress" when {
     "validating" should {
       "parse simple@example.com" in {

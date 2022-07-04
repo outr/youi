@@ -1,12 +1,13 @@
 package specs
 
-import testy._
 import io.youi.net.{IP, IPv4, IPv6}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
 /**
  * @author Matt Hicks <matt@outr.com>
  */
-class IPSpec extends Spec {
+class IPSpec extends AnyWordSpec with Matchers {
   "IP" when {
     "parsing IPv4 addresses" should {
       "properly parse 127.0.01" in {

@@ -1,9 +1,10 @@
 package specs
 
-import testy._
 import io.youi.Color
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class ColorSpec extends Spec {
+class ColorSpec extends AnyWordSpec with Matchers {
   "Color" should {
     "properly parse from a Long" in {
       val color = Color.fromLong(0x11223344)

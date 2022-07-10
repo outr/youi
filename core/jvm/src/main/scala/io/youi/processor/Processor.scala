@@ -3,9 +3,7 @@ package io.youi.processor
 import cats.effect.IO
 import cats.implicits._
 
-import java.util.concurrent.atomic.AtomicLong
-import java.util.concurrent.{ConcurrentLinkedQueue, Executors}
-import scala.concurrent.duration.DurationInt
+import java.util.concurrent.ConcurrentLinkedQueue
 
 object Processor {
   lazy val DefaultThreads: Int = Runtime.getRuntime.availableProcessors() * 2

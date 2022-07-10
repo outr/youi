@@ -1,5 +1,7 @@
 package io.youi.client
 
+import cats.effect.IO
+
 import java.io.{File, IOException}
 import java.net.{InetAddress, Socket}
 import java.security.SecureRandom
@@ -7,15 +9,15 @@ import java.security.cert.X509Certificate
 import java.util
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicLong
-
 import io.youi.http._
 import io.youi.http.content._
 import io.youi.net.ContentType
 import io.youi.stream._
+
 import javax.net.ssl._
 import okhttp3.Dns
 
-import scala.concurrent.{ExecutionContext, Future, Promise}
+import scala.concurrent.Future
 import scala.jdk.CollectionConverters._
 import scala.util.{Failure, Success}
 
@@ -118,8 +120,7 @@ class JVMHttpClientImplementation(config: HttpClientConfig) extends HttpClientIm
     HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid)
   }*/
 
-  override def send(request: HttpRequest,
-                    executionContext: ExecutionContext): Future[HttpResponse] = {
+  override def send(request: HttpRequest): IO[HttpResponse] = {
     val req = requestToOk(request)
     val promise = Promise[HttpResponse]()
     client.newCall(req).enqueue(new okhttp3.Callback {

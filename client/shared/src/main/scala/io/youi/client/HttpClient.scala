@@ -1,5 +1,6 @@
 package io.youi.client
 
+import cats.effect.IO
 import fabric.Value
 import fabric.parse.Json
 import fabric.rw._
@@ -12,6 +13,7 @@ import io.youi.util.Time
 
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Failure, Success, Try}
 
 case class HttpClient(request: HttpRequest,
                       implementation: HttpClientImplementation,
@@ -105,7 +107,7 @@ case class HttpClient(request: HttpRequest,
     *
     * @return Future[HttpResponse]
     */
-  final def send(retries: Int = this.retries)(implicit executionContext: ExecutionContext): Future[HttpResponse] = {
+  final def send(retries: Int = this.retries): IO[Try[HttpResponse]] = {
     val updatedHeaders = sessionManager match {
       case Some(sm) => {
         val cookieHeaders = sm.session.cookies.map { cookie =>
@@ -115,25 +117,27 @@ case class HttpClient(request: HttpRequest,
       }
       case None => request.headers
     }
-    val future = for {
+    val io = for {
       updatedRequest <- interceptor.before(request.copy(headers = updatedHeaders))
-      response <- implementation.send(updatedRequest, executionContext)
-      updatedResponse <- interceptor.after(updatedRequest, response)
+      responseTry <- implementation.send(updatedRequest)
+      updatedResponse <- interceptor.after(updatedRequest, responseTry)
     } yield {
       updatedResponse
     }
-    future.recoverWith {
-      case t: Throwable if retries > 0 => {
-        scribe.warn(s"Request to ${request.url} failed (${t.getMessage}). Retrying after $retryDelay...")
-        Time.delay(retryDelay).flatMap(_ => send(retries - 1))
-      }
-    }.map { response =>
-      sessionManager.foreach { sm =>
-        val cookies = response.cookies
-        sm(cookies)
-      }
+    io.flatMap {
+      case Success(response) =>
+        sessionManager.foreach { sm =>
+          val cookies = response.cookies
+          sm(cookies)
+        }
 
-      response
+        IO.pure(Success(response))
+      case Failure(t) if retries > 0 =>
+        scribe.warn(s"Request to ${request.url} failed (${t.getMessage}). Retrying after $retryDelay...")
+        IO.sleep(retryDelay).flatMap { _ =>
+          send(retries - 1)
+        }
+      case Failure(t) => IO(throw t)
     }
   }
 
@@ -144,17 +148,19 @@ case class HttpClient(request: HttpRequest,
     * @tparam Response the response type
     * @return Future[Response]
     */
-  def call[Response: Writer](implicit executionContext: ExecutionContext): Future[Response] = send().map { response =>
-    try {
-      val responseJson = response.content.map(implementation.content2String).getOrElse("")
-      if (!failOnHttpStatus || response.status.isSuccess) {
-        if (responseJson.isEmpty) throw new ClientException(s"No content received in response for ${request.url}.", request, response, None)
-        Json.parse(responseJson).as[Response]
-      } else {
-        throw new ClientException("HttpStatus was not successful", request, response, None)
+  def call[Response: Writer]: IO[Try[Response]] = send().flatMap { responseTry =>
+    IO {
+      responseTry match {
+        case Success(response) =>
+          val responseJson = response.content.map(implementation.content2String).getOrElse("")
+          if (!failOnHttpStatus || response.status.isSuccess) {
+            if (responseJson.isEmpty) throw new ClientException(s"No content received in response for ${request.url}.", request, response, None)
+            Success(Json.parse(responseJson).as[Response])
+          } else {
+            throw new ClientException("HttpStatus was not successful", request, response, None)
+          }
+        case Failure(exception) => throw exception
       }
-    } catch {
-      case t: Throwable => throw new ClientException("Response processing error", request, response, Some(t))
     }
   }
 
@@ -167,8 +173,7 @@ case class HttpClient(request: HttpRequest,
     * @tparam Response the response type
     * @return Future[Response]
     */
-  def restful[Request: Reader, Response: Writer](request: Request)
-                                                (implicit executionContext: ExecutionContext): Future[Response] = {
+  def restful[Request: Reader, Response: Writer](request: Request): IO[Try[Response]] = {
     val requestJson = request.toValue
     method(if (method == HttpMethod.Get) HttpMethod.Post else method).json(requestJson).call[Response]
   }
@@ -182,11 +187,10 @@ case class HttpClient(request: HttpRequest,
     * @tparam Failure the failure (non-OK response) response type
     * @return either Failure or Success
     */
-  def restfulEither[Request: Reader, Success: Writer, Failure: Writer](request: Request)
-                                                                      (implicit executionContext: ExecutionContext): Future[Either[Failure, Success]] = {
+  def restfulEither[Request: Reader, Success: Writer, Failure: Writer](request: Request): IO[Either[Failure, Success]] = {
     val requestJson = request.toValue
-    method(if (method == HttpMethod.Get) HttpMethod.Post else method).json(requestJson).send().map { response =>
-      try {
+    method(if (method == HttpMethod.Get) HttpMethod.Post else method).json(requestJson).send().flatMap {
+      case Success(response) => IO {
         val responseJson = response.content.map(implementation.content2String).getOrElse("")
         if (responseJson.isEmpty) throw new ClientException(s"No content received in response for ${this.request.url}.", this.request, response, None)
         if (response.status.isSuccess) {
@@ -194,9 +198,8 @@ case class HttpClient(request: HttpRequest,
         } else {
           Left(Json.parse(responseJson).as[Failure])
         }
-      } catch {
-        case t: Throwable => throw new ClientException("Response processing error", this.request, response, Some(t))
       }
+      case Failure(exception) => throw exception
     }
   }
 }

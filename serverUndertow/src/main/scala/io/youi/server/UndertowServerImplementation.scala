@@ -31,8 +31,8 @@ import scala.jdk.CollectionConverters._
 
 class UndertowServerImplementation(val server: Server) extends ServerImplementation with UndertowHttpHandler {
   val enableHTTP2: Boolean = Server.config("enableHTTP2").opt[Boolean].getOrElse(true)
-  val persistentConnections: Boolean = Server.config("persistentConnections").as[Boolean](true)
-  val webSocketCompression: Boolean = Server.config("webSocketCompression").opt[Boolean].getOrElse(true)
+  val persistentConnections: Boolean = Server.config("persistentConnections").asOr[Boolean](true)
+  val webSocketCompression: Boolean = Server.config("webSocketCompression").asOr[Boolean](true)
 
   private var instance: Option[Undertow] = None
 
@@ -123,7 +123,7 @@ class UndertowServerImplementation(val server: Server) extends ServerImplementat
     UndertowServerImplementation.processRequest(exchange, url) { request =>
       try {
         val connection: HttpConnection = HttpConnection(server, request)
-        server.handle(connection).foreach { c =>
+        server.handle(connection).map { c =>
           UndertowServerImplementation.response(this, c, exchange)
         }
       } catch {
@@ -184,7 +184,7 @@ object UndertowServerImplementation extends Moduload with ServerImplementationCr
             val runnable = new Runnable {
               override def run(): Unit = {
                 val cis = new ChannelInputStream(exchange.getRequestChannel)
-                val data = IO.stream(cis, new StringBuilder).toString
+                val data = Stream.apply(cis, new StringBuilder).toString
                 handle(Some(StringContent(data, ct)))
               }
             }

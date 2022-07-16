@@ -40,14 +40,14 @@ object HTMLParser {
   def cache(url: URL): StreamableHTML = {
     val file = File.createTempFile("htmlparser", "cache")
     file.deleteOnExit()
-    IO.stream(url, file)
+    Stream.apply(url, file)
     cache(file)
   }
 
   def cache(html: String): StreamableHTML = {
     val file = File.createTempFile("htmlparser", "cache")
     file.deleteOnExit()
-    IO.stream(html, file)
+    Stream.apply(html, file)
     cache(file)
   }
 

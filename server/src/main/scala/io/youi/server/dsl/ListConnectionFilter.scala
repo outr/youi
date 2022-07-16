@@ -1,20 +1,18 @@
 package io.youi.server.dsl
 
+import cats.effect.IO
 import io.youi.http.HttpConnection
-import scribe.Execution.global
-
-import scala.concurrent.Future
 
 case class ListConnectionFilter(filters: List[ConnectionFilter]) extends ConnectionFilter {
-  override def filter(connection: HttpConnection): Future[FilterResponse] = firstPath(connection, filters)
+  override def filter(connection: HttpConnection): IO[FilterResponse] = firstPath(connection, filters)
 
   private def firstPath(connection: HttpConnection,
-                        filters: List[ConnectionFilter]): Future[FilterResponse] = if (filters.isEmpty) {
-    Future.successful(FilterResponse.Stop(connection))
+                        filters: List[ConnectionFilter]): IO[FilterResponse] = if (filters.isEmpty) {
+    IO.pure(FilterResponse.Stop(connection))
   } else {
     val filter = filters.head
     filter.filter(connection).flatMap {
-      case r: FilterResponse.Continue => Future.successful(r)
+      case r: FilterResponse.Continue => IO.pure(r)
       case r: FilterResponse.Stop => firstPath(r.connection, filters.tail)
     }
   }

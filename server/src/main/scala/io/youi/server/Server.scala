@@ -1,19 +1,17 @@
 package io.youi.server
 
+import cats.effect.{ExitCode, IO, IOApp}
+
 import java.util.concurrent.atomic.AtomicBoolean
 import io.youi.http.{HttpConnection, HttpStatus, ProxyHandler}
 import io.youi.server.handler.{HttpHandler, HttpHandlerBuilder}
-import io.youi.util.Time
 import io.youi.{ErrorSupport, ItemContainer}
 import moduload.Moduload
 import profig._
 import reactify._
-import scribe.Execution.global
-
-import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
 
-trait Server extends HttpHandler with ErrorSupport {
+trait Server extends HttpHandler with ErrorSupport with IOApp {
   private val initialized = new AtomicBoolean(false)
 
   val config = new ServerConfig(this)
@@ -47,21 +45,21 @@ trait Server extends HttpHandler with ErrorSupport {
   def isInitialized: Boolean = initialized.get()
   def isRunning: Boolean = isInitialized && implementation.isRunning
 
-  def initialize(): Future[Unit] = {
+  def initialize(): IO[Unit] = {
     val shouldInit = initialized.compareAndSet(false, true)
     if (shouldInit) {
       init()
     } else {
-      Future.successful(())
+      IO.unit
     }
   }
 
   /**
     * Init is called on start(), but only the first time. If the server is restarted it is not invoked again.
     */
-  protected def init(): Future[Unit] = Future.successful(())
+  protected def init(): IO[Unit] = IO.unit
 
-  def start(): Future[Unit] = initialize().map { _ =>
+  def start(): IO[Unit] = initialize().map { _ =>
     implementation.start()
     scribe.info(s"Server started on ${config.enabledListeners.mkString(", ")}")
   }
@@ -75,22 +73,20 @@ trait Server extends HttpHandler with ErrorSupport {
     start()
   }
 
-  def whileRunning(delay: FiniteDuration = 1.second): Future[Unit] = if (isRunning) {
-    Time.delay(delay).flatMap(_ => whileRunning(delay))
+  def whileRunning(delay: FiniteDuration = 1.second): IO[Unit] = if (isRunning) {
+    IO.sleep(delay).flatMap(_ => whileRunning(delay))
   } else {
-    Future.successful(())
+    IO.unit
   }
 
   def dispose(): Unit = stop()
 
-  override final def handle(connection: HttpConnection): Future[HttpConnection] = handleInternal(connection).recoverWith {
-    case t => {
-      error(t)
-      errorHandler.get.handle(connection, Some(t))
-    }
+  override final def handle(connection: HttpConnection): IO[HttpConnection] = handleInternal(connection).handleErrorWith { throwable =>
+    error(throwable)
+    errorHandler.get.handle(connection, Some(throwable))
   }
 
-  protected def handleInternal(connection: HttpConnection): Future[HttpConnection] = {
+  protected def handleInternal(connection: HttpConnection): IO[HttpConnection] = {
     handleRecursive(connection, handlers()).flatMap { updated =>
       // NotFound handling
       if (updated.response.content.isEmpty && updated.response.status == HttpStatus.OK) {
@@ -99,14 +95,14 @@ trait Server extends HttpHandler with ErrorSupport {
         }
         errorHandler.get.handle(notFound, None)
       } else {
-        Future.successful(updated)
+        IO.pure(updated)
       }
     }
   }
 
-  private def handleRecursive(connection: HttpConnection, handlers: List[HttpHandler]): Future[HttpConnection] = {
+  private def handleRecursive(connection: HttpConnection, handlers: List[HttpHandler]): IO[HttpConnection] = {
     if (connection.finished || handlers.isEmpty) {
-      Future.successful(connection)     // Finished
+      IO.pure(connection)     // Finished
     } else {
       val handler = handlers.head
       handler.handle(connection).flatMap { updated =>
@@ -115,18 +111,21 @@ trait Server extends HttpHandler with ErrorSupport {
     }
   }
 
-  def main(args: Array[String]): Unit = {
+  override def run(args: List[String]): IO[ExitCode] = IO.unit.flatMap { _ =>
     Profig.initConfiguration()
     Profig.merge(args.toSeq)
 
-    val future = start()
-    future.failed.map { throwable =>
-      scribe.error("Error during application startup", throwable)
-      dispose()
+    for {
+      _ <- start().handleError { throwable =>
+        scribe.error("Error during application startup", throwable)
+        dispose()
+        sys.exit(1)
+      }
+      _ <- whileRunning()
+    } yield {
+      scribe.info("Server terminated successfully.")
+      ExitCode.Success
     }
-
-    Await.result(future, Duration.Inf)
-    Await.result(whileRunning(), Duration.Inf)
   }
 }
 

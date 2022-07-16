@@ -6,7 +6,7 @@ import io.youi.http.content.{Content, FormDataContent}
 import io.youi.http.{HttpConnection, HttpStatus}
 import io.youi.net._
 import io.youi.server.handler.HttpHandler
-import io.youi.stream.IO
+import io.youi.stream.Stream
 import reactify.Channel
 
 import scala.concurrent.Future
@@ -58,7 +58,7 @@ case class UploadManager(path: Path = path"/upload",
                 val slices = content.string("slices").value.split(',').toList
                 val sources = slices.map(fn => new File(directory, fn))
                 val destination = File.createTempFile(fileName, s".$ext", directory)
-                IO.merge(sources, destination)
+                Stream.merge(sources, destination)
                 received @= UploadedFile(destination, fileName)
                 destination.getName
               }

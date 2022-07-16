@@ -25,8 +25,8 @@ class OfflineGenerator(application: ServerApplication,
                 file.getParentFile.mkdirs()
                 scribe.info(s"Writing $path to ${file.getAbsolutePath}..")
                 content match {
-                  case c: StringContent => IO.stream(c.value, file)
-                  case c: URLContent => IO.stream(c.url, file)
+                  case c: StringContent => Stream.apply(c.value, file)
+                  case c: URLContent => Stream.apply(c.url, file)
                   case _ => throw new RuntimeException(s"Unsupported Content-Type: $content")
                 }
               }

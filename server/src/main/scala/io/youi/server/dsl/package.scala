@@ -1,7 +1,8 @@
 package io.youi.server
 
-import java.io.File
+import cats.effect.IO
 
+import java.io.File
 import io.youi.http.content.Content
 import io.youi.http.{HttpConnection, HttpMethod, HttpStatus}
 import io.youi.net.{ContentType, IP, Path, URLMatcher}
@@ -9,10 +10,8 @@ import io.youi.server.handler._
 import io.youi.server.rest.Restful
 import io.youi.server.validation.{ValidationResult, Validator}
 import io.youi.stream.delta.Delta
-import scribe.Execution.global
 import fabric.rw._
 
-import scala.concurrent.Future
 import scala.language.implicitConversions
 
 package object dsl {
@@ -21,7 +20,7 @@ package object dsl {
   implicit class ValidatorFilter(val validator: Validator) extends ConnectionFilter {
     private lazy val list = List(validator)
 
-    override def filter(connection: HttpConnection): Future[FilterResponse] = {
+    override def filter(connection: HttpConnection): IO[FilterResponse] = {
       ValidatorHttpHandler.validate(connection, list).map {
         case ValidationResult.Continue(c) => FilterResponse.Continue(c)
         case vr => FilterResponse.Stop(vr.connection)
@@ -35,24 +34,24 @@ package object dsl {
     if (PathPart.fulfilled(connection)) {
       handler.handle(connection)
     } else {
-      Future.successful(connection)
+      IO.pure(connection)
     }
   }
 
   implicit class CachingManagerFilter(val caching: CachingManager) extends LastConnectionFilter(handler2Filter(caching))
 
-  implicit class DeltasFilter(val deltas: List[Delta]) extends ActionFilter(connection => Future.successful {
+  implicit class DeltasFilter(val deltas: List[Delta]) extends ActionFilter(connection => IO {
     connection.deltas ++= deltas
     connection
   })
 
-  implicit class DeltaFilter(delta: Delta) extends ActionFilter(connection => Future.successful {
+  implicit class DeltaFilter(delta: Delta) extends ActionFilter(connection => IO {
     connection.deltas += delta
     connection
   })
 
   implicit class StringFilter(val s: String) extends ConnectionFilter {
-    override def filter(connection: HttpConnection): Future[FilterResponse] = Future.successful {
+    override def filter(connection: HttpConnection): IO[FilterResponse] = IO {
       PathPart.take(connection, s) match {
         case Some(c) => FilterResponse.Continue(c)
         case None => FilterResponse.Stop(connection)
@@ -69,7 +68,7 @@ package object dsl {
       directory
     }
 
-    override def filter(connection: HttpConnection): Future[FilterResponse] = {
+    override def filter(connection: HttpConnection): IO[FilterResponse] = {
       val path = pathTransform(connection.request.url.path.decoded)
       val resourcePath = s"$dir$path" match {
         case s if s.startsWith("/") => s.substring(1)
@@ -80,7 +79,7 @@ package object dsl {
         .filter(_.isFile)
         .map { file =>
           SenderHandler(Content.file(file)).handle(connection)
-        }.map(_.map(FilterResponse.Continue)).getOrElse(Future.successful(FilterResponse.Stop(connection)))
+        }.map(_.map(FilterResponse.Continue)).getOrElse(IO.pure(FilterResponse.Stop(connection)))
     }
   }
 
@@ -106,7 +105,7 @@ package object dsl {
   }
 
   def redirect(path: Path): ConnectionFilter = new ConnectionFilter {
-    override def filter(connection: HttpConnection): Future[FilterResponse] = Future.successful {
+    override def filter(connection: HttpConnection): IO[FilterResponse] = IO.pure {
       FilterResponse.Continue(HttpHandler.redirect(connection, path.encoded))
     }
   }

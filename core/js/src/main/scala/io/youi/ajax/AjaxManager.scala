@@ -8,6 +8,7 @@ import org.scalajs.dom.XMLHttpRequest
 import scribe.Logging
 
 import scala.collection.immutable.Queue
+import scala.util.Try
 
 class AjaxManager(val maxConcurrent: Int) extends Logging {
   private var _queue = Queue.empty[AjaxAction]
@@ -29,7 +30,7 @@ class AjaxManager(val maxConcurrent: Int) extends Logging {
     action
   }
 
-  def enqueue(action: AjaxAction): IO[Either[Throwable, XMLHttpRequest]] = {
+  def enqueue(action: AjaxAction): IO[Try[XMLHttpRequest]] = {
     _queue = _queue.enqueue(action)
     action._state @= ActionState.Enqueued
     checkQueue()

@@ -3,8 +3,6 @@ package io.youi.server
 import cats.effect.IO
 import io.youi.http.{ConnectionStatus, HttpConnection, WebSocket}
 
-import scala.concurrent.Future
-
 class WebSocketListener(val httpConnection: HttpConnection) extends WebSocket {
   override def connect(): IO[ConnectionStatus] = {
     _status @= ConnectionStatus.Open

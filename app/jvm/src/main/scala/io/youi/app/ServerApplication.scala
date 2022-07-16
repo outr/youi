@@ -254,7 +254,7 @@ trait ServerApplication extends YouIApplication with Server {
     val directory = cacheDirectory()
     val file = new File(directory, path)
     file.getParentFile.mkdirs()
-    IO.stream(new java.net.URL(url.toString), file)
+    Stream.apply(new java.net.URL(url.toString), file)
     val content = Content.file(file)
     handler.matcher(http.path.exact(path)).resource(content)
     path

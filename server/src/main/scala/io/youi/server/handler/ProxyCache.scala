@@ -1,8 +1,9 @@
 package io.youi.server.handler
 
+import cats.effect.IO
+
 import java.net.{URL, URLEncoder}
 import java.nio.file.{Path, Paths}
-
 import io.youi.http.content.Content
 import io.youi.http.{HttpConnection, HttpStatus}
 import io.youi.net.ContentType
@@ -10,10 +11,8 @@ import io.youi.stream.Selector._
 import io.youi.stream._
 import io.youi.stream.delta.Delta
 
-import scala.concurrent.Future
-
 case class ProxyCache(directory: Path = Paths.get(System.getProperty("java.io.tmpdir"))) extends HttpHandler {
-  override def handle(connection: HttpConnection): Future[HttpConnection] = connection.request.url.param("url") match {
+  override def handle(connection: HttpConnection): IO[HttpConnection] = connection.request.url.param("url") match {
     case Some(cacheURL) => {
       val url = new URL(cacheURL)
       val fileName = URLEncoder.encode(cacheURL, "UTF-8")
@@ -21,8 +20,8 @@ case class ProxyCache(directory: Path = Paths.get(System.getProperty("java.io.tm
       if (!file.exists()) {
         scribe.debug(s"Downloading $cacheURL...")
         val tmp = directory.resolve(s"$fileName.tmp").toAbsolutePath.toFile
-        IO.stream(url, tmp)
-        IO.stream(tmp, file)
+        Stream.apply(url, tmp)
+        Stream.apply(tmp, file)
         if (!tmp.delete()) {
           tmp.deleteOnExit()
         }
@@ -30,9 +29,9 @@ case class ProxyCache(directory: Path = Paths.get(System.getProperty("java.io.tm
         scribe.debug(s"$cacheURL already exists")
       }
 
-      Future.successful(connection.modify(_.withContent(Content.file(file)).withStatus(HttpStatus.OK)))
+      IO(connection.modify(_.withContent(Content.file(file)).withStatus(HttpStatus.OK)))
     }
-    case None => Future.successful {
+    case None => IO {
       connection.modify(_.withStatus(HttpStatus.BadRequest).withContent(Content.string("Must include `url` as GET parameter", ContentType.`text/plain`)))
     }
   }

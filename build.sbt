@@ -10,7 +10,7 @@ ThisBuild / scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 
 ThisBuild / publishTo := sonatypePublishToBundle.value
 ThisBuild / sonatypeProfileName := "io.youi"
-ThisBuild / publishMavenStyle := true
+//ThisBuild / publishMavenStyle := true
 ThisBuild / licenses := Seq("MIT" -> url("https://github.com/outr/youi/blob/master/LICENSE"))
 ThisBuild / sonatypeProjectHosting := Some(xerial.sbt.Sonatype.GitHubHosting("outr", "youi", "matt@outr.com"))
 ThisBuild / homepage := Some(url("https://github.com/outr/youi"))
@@ -48,6 +48,7 @@ val collectionCompatVersion: String = "2.4.3"
 val catsVersion: String = "3.3.13"
 val fs2Version: String = "3.2.8"
 val scalaTestVersion: String = "3.2.12"
+val catsEffectTestVersion: String = "1.4.0"
 
 ThisBuild / evictionErrorLevel := Level.Info
 
@@ -72,7 +73,8 @@ lazy val core = crossProject(JSPlatform, JVMPlatform).in(file("core"))
       "com.outr" %%% "reactify" % reactifyVersion,
       "org.typelevel" %%% "cats-effect" % catsVersion,
       "co.fs2" %% "fs2-core" % fs2Version,
-      "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
+      "org.scalatest" %%% "scalatest" % scalaTestVersion % Test,
+      "org.typelevel" %%% "cats-effect-testing-scalatest" % catsEffectTestVersion % Test
     )
   )
   .jsSettings(
@@ -88,7 +90,8 @@ lazy val client = crossProject(JSPlatform, JVMPlatform).in(file("client"))
   .settings(
     name := "youi-client",
     libraryDependencies ++= Seq(
-      "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
+      "org.scalatest" %%% "scalatest" % scalaTestVersion % Test,
+      "org.typelevel" %%% "cats-effect-testing-scalatest" % catsEffectTestVersion % Test
     )
   )
   .jvmSettings(
@@ -105,7 +108,8 @@ lazy val spatial = crossProject(JSPlatform, JVMPlatform).in(file("spatial"))
   .settings(
     name := "youi-spatial",
     libraryDependencies ++= Seq(
-      "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
+      "org.scalatest" %%% "scalatest" % scalaTestVersion % Test,
+      "org.typelevel" %%% "cats-effect-testing-scalatest" % catsEffectTestVersion % Test
     )
   )
   .dependsOn(core)
@@ -117,7 +121,8 @@ lazy val stream = project.in(file("stream"))
   .settings(
     name := "youi-stream",
     libraryDependencies ++= Seq(
-      "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
+      "org.scalatest" %%% "scalatest" % scalaTestVersion % Test,
+      "org.typelevel" %%% "cats-effect-testing-scalatest" % catsEffectTestVersion % Test
     )
   )
   .dependsOn(coreJVM)
@@ -128,7 +133,8 @@ lazy val dom = project.in(file("dom"))
     name := "youi-dom",
     libraryDependencies ++= Seq(
       "com.outr" %%% "profig" % profigVersion,
-      "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
+      "org.scalatest" %%% "scalatest" % scalaTestVersion % Test,
+      "org.typelevel" %%% "cats-effect-testing-scalatest" % catsEffectTestVersion % Test
     ),
     test := {},     // TODO: figure out why this no longer works
     jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv()
@@ -143,7 +149,8 @@ lazy val communication = crossProject(JSPlatform, JVMPlatform)
     name := "youi-communication",
     libraryDependencies ++= Seq(
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-      "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
+      "org.scalatest" %%% "scalatest" % scalaTestVersion % Test,
+      "org.typelevel" %%% "cats-effect-testing-scalatest" % catsEffectTestVersion % Test
     )
   )
   .dependsOn(core)
@@ -156,7 +163,9 @@ lazy val server = project.in(file("server"))
     name := "youi-server",
     libraryDependencies ++= Seq(
       "net.sf.uadetector" % "uadetector-resources" % uaDetectorVersion,
-      "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
+      "org.typelevel" %% "cats-effect" % catsVersion,
+      "org.scalatest" %% "scalatest" % scalaTestVersion % Test,
+      "org.typelevel" %% "cats-effect-testing-scalatest" % catsEffectTestVersion % Test
     )
   )
   .dependsOn(communicationJVM, stream)
@@ -167,7 +176,8 @@ lazy val serverUndertow = project.in(file("serverUndertow"))
     fork := true,
     libraryDependencies ++= Seq(
       "io.undertow" % "undertow-core" % undertowVersion,
-      "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
+      "org.scalatest" %%% "scalatest" % scalaTestVersion % Test,
+      "org.typelevel" %%% "cats-effect-testing-scalatest" % catsEffectTestVersion % Test
     )
   )
   .dependsOn(server, clientJVM % "test->test")
@@ -207,7 +217,8 @@ lazy val app = crossProject(JSPlatform, JVMPlatform).in(file("app"))
   .settings(
     name := "youi-app",
     libraryDependencies ++= Seq(
-      "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
+      "org.scalatest" %%% "scalatest" % scalaTestVersion % Test,
+      "org.typelevel" %%% "cats-effect-testing-scalatest" % catsEffectTestVersion % Test
     )
   )
   .dependsOn(core, communication)
@@ -223,7 +234,6 @@ lazy val example = crossApplication.in(file("example"))
     jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv()
   )
   .jvmSettings(
-    scalaJSUseMainModuleInitializer := true,
     libraryDependencies ++= Seq(
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
       "org.scala-lang.modules" %% "scala-xml" % scalaXMLVersion

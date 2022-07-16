@@ -1,9 +1,8 @@
 package io.youi.server.validation
 
+import cats.effect.IO
 import io.youi.http.HttpConnection
 
-import scala.concurrent.Future
-
 trait Validator {
-  def validate(connection: HttpConnection): Future[ValidationResult]
+  def validate(connection: HttpConnection): IO[ValidationResult]
 }

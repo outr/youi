@@ -1,9 +1,8 @@
 package io.youi.server
 
+import cats.effect.IO
 import io.youi.http.HttpConnection
 
-import scala.concurrent.Future
-
 trait ErrorHandler {
-  def handle(connection: HttpConnection, t: Option[Throwable]): Future[HttpConnection]
+  def handle(connection: HttpConnection, t: Option[Throwable]): IO[HttpConnection]
 }

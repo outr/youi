@@ -19,7 +19,6 @@ import javax.net.ssl._
 import okhttp3.Dns
 
 import scala.collection.mutable
-import scala.concurrent.Future
 import scala.jdk.CollectionConverters._
 import scala.util.{Failure, Success, Try}
 
@@ -200,7 +199,7 @@ class JVMHttpClientImplementation(config: HttpClientConfig) extends HttpClientIm
       } else {
         val suffix = contentType.extension.getOrElse("client")
         val file = File.createTempFile("youi", s".$suffix", new File(config.saveDirectory))
-        stream.IO.stream(responseBody.byteStream(), file)
+        stream.Stream.apply(responseBody.byteStream(), file)
         Content.file(file, contentType)
       }
     }
@@ -220,7 +219,7 @@ class JVMHttpClientImplementation(config: HttpClientConfig) extends HttpClientIm
   override def content2String(content: Content): String = content match {
     case c: StringContent => c.value
     case c: BytesContent => String.valueOf(c.value)
-    case c: FileContent => stream.IO.stream(c.file, new mutable.StringBuilder).toString
+    case c: FileContent => stream.Stream.apply(c.file, new mutable.StringBuilder).toString
     case _ => throw new RuntimeException(s"$content not supported")
   }
 
@@ -231,7 +230,7 @@ class JVMHttpClientImplementation(config: HttpClientConfig) extends HttpClientIm
   protected def content2Bytes(content: Content): Array[Byte] = content match {
     case c: StringContent => c.value.getBytes("UTF-8")
     case c: BytesContent => c.value
-    case c: FileContent => stream.IO.stream(c.file, new mutable.StringBuilder).toString.getBytes("UTF-*")
+    case c: FileContent => stream.Stream.apply(c.file, new mutable.StringBuilder).toString.getBytes("UTF-*")
     case _ => throw new RuntimeException(s"$content not supported")
   }
 

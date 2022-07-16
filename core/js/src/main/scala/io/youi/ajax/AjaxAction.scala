@@ -3,11 +3,12 @@ package io.youi.ajax
 import cats.effect.IO
 import org.scalajs.dom.XMLHttpRequest
 import reactify._
-
 import cats.effect.unsafe.implicits.global
 
+import scala.util.Try
+
 class AjaxAction(request: AjaxRequest) {
-  lazy val io: IO[Either[Throwable, XMLHttpRequest]] = request.deferred.get
+  lazy val io: IO[Try[XMLHttpRequest]] = request.deferred.get
   private[ajax] val _state = Var[ActionState](ActionState.New)
   def state: Val[ActionState] = _state
   def loaded: Val[Double] = request.loaded

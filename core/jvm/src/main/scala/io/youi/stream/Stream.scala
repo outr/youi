@@ -4,13 +4,13 @@ import java.io.{File, FileOutputStream, IOException}
 import scala.annotation.tailrec
 import scala.concurrent.duration.{DurationInt, FiniteDuration}
 
-object IO {
-  final def stream(reader: Reader,
-                   writer: Writer,
-                   monitor: Monitor = Monitor.Ignore,
-                   monitorDelay: FiniteDuration = 15.millis,
-                   buffer: Array[Byte] = new Array[Byte](1024),
-                   closeOnComplete: Boolean = true): Writer = {
+object Stream {
+  final def apply(reader: Reader,
+                  writer: Writer,
+                  monitor: Monitor = Monitor.Ignore,
+                  monitorDelay: FiniteDuration = 15.millis,
+                  buffer: Array[Byte] = new Array[Byte](1024),
+                  closeOnComplete: Boolean = true): Writer = {
     val length = reader.length
     monitor.open(length)
     var total = 0L
@@ -71,16 +71,16 @@ object IO {
     }
   } else if (source.isFile) {
     if (destination.isDirectory) {
-      stream(source, new File(destination, source.getName))
+      apply(source, new File(destination, source.getName))
     } else {
-      stream(source, destination)
+      apply(source, destination)
     }
   }
 
   def merge(sources: List[File], destination: File): Unit = {
     val outputStream = new FileOutputStream(destination)
     sources.foreach { source =>
-      stream(source, outputStream, closeOnComplete = false)
+      apply(source, outputStream, closeOnComplete = false)
     }
     outputStream.flush()
     outputStream.close()

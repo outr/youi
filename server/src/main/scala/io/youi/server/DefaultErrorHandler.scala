@@ -1,12 +1,11 @@
 package io.youi.server
 
+import cats.effect.IO
 import io.youi.http.content.Content
 import io.youi.http.{CacheControl, HttpConnection, HttpStatus}
 import io.youi.net.ContentType
 import io.youi.server.dsl._
 import perfolation._
-
-import scala.concurrent.Future
 
 object DefaultErrorHandler extends ErrorHandler {
   lazy val lastModified: Long = System.currentTimeMillis()
@@ -20,7 +19,7 @@ object DefaultErrorHandler extends ErrorHandler {
     </body>
   </html>""".withContentType(ContentType.`text/html`).withLastModified(lastModified)
 
-  override def handle(connection: HttpConnection, t: Option[Throwable]): Future[HttpConnection] = Future.successful {
+  override def handle(connection: HttpConnection, t: Option[Throwable]): IO[HttpConnection] = IO {
     connection.modify { response =>
       val status = if (response.status.isError) {
         response.status

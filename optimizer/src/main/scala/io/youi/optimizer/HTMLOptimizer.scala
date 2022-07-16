@@ -36,12 +36,12 @@ object HTMLOptimizer {
             if (src.startsWith("http://") || src.startsWith("https://") || src.startsWith("//")) {    // Remote script
               val file = createTempFile("remote", "js")
               val url = new URL(src)
-              IO.stream(url, file)
+              Stream.apply(url, file)
               val map = if (minified) {
                 try {
                   val minifiedFile = createTempFile("remote", "js.map")
                   val minifiedURL = new URL(s"$src.map")
-                  IO.stream(minifiedURL, minifiedFile)
+                  Stream.apply(minifiedURL, minifiedFile)
                   Some(minifiedFile)
                 } catch {
                   case exc: FileNotFoundException => {
@@ -75,7 +75,7 @@ object HTMLOptimizer {
             val script = content.substring(start, start + end).trim
             val file = createTempFile("inline", "js")
             file.deleteOnExit()
-            IO.stream(script, file)
+            Stream.apply(script, file)
             ScriptFile(file, None)
           }
         }
@@ -85,7 +85,7 @@ object HTMLOptimizer {
     ))
 
     val output = createTempFile("stage1", "html")
-    IO.stream(result, output)
+    Stream.apply(result, output)
     Optimized(output, scripts.toList, input.length())
   }
 
@@ -123,7 +123,7 @@ object HTMLOptimizer {
     val content = stream.stream(List(
       Delta.InsertLastChild(ByTag("body"), s"""<script src="$jsPath"></script>""")
     ))
-    IO.stream(content, htmlFileOut)
+    Stream.apply(content, htmlFileOut)
   }
 
   /**

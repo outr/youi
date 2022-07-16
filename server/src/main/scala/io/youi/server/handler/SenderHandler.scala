@@ -1,12 +1,11 @@
 package io.youi.server.handler
 
+import cats.effect.IO
 import io.youi.http.content.Content
 import io.youi.http._
 
-import scala.concurrent.Future
-
 class SenderHandler private(content: Content, length: Option[Long], caching: CachingManager) extends HttpHandler {
-  override def handle(connection: HttpConnection): Future[HttpConnection] = {
+  override def handle(connection: HttpConnection): IO[HttpConnection] = {
     SenderHandler.handle(connection, content, length, caching)
   }
 }
@@ -20,7 +19,7 @@ object SenderHandler {
              content: Content,
              length: Option[Long] = None,
              caching: CachingManager = CachingManager.Default,
-             replace: Boolean = false): Future[HttpConnection] = {
+             replace: Boolean = false): IO[HttpConnection] = {
     if (connection.response.content.nonEmpty && !replace) {
       throw new RuntimeException(s"Content already set (${connection.response.content.get}) for HttpResponse in ${connection.request.url} when attempting to set $content.")
     }
@@ -34,17 +33,17 @@ sealed trait CachingManager extends HttpHandler
 
 object CachingManager {
   case object Default extends CachingManager {
-    override def handle(connection: HttpConnection): Future[HttpConnection] = Future.successful(connection)
+    override def handle(connection: HttpConnection): IO[HttpConnection] = IO.pure(connection)
   }
   case object NotCached extends CachingManager {
-    override def handle(connection: HttpConnection): Future[HttpConnection] = Future.successful {
+    override def handle(connection: HttpConnection): IO[HttpConnection] = IO {
       connection.modify(_.withHeader(Headers.`Cache-Control`(CacheControl.NoCache, CacheControl.NoStore)))
     }
   }
   case class LastModified(publicCache: Boolean = true) extends CachingManager {
     val visibility: CacheControlEntry = if (publicCache) CacheControl.Public else CacheControl.Private
 
-    override def handle(connection: HttpConnection): Future[HttpConnection] = Future.successful {
+    override def handle(connection: HttpConnection): IO[HttpConnection] = IO {
       connection.modify { response =>
         response.content match {
           case Some(content) => {
@@ -63,7 +62,7 @@ object CachingManager {
     }
   }
   case class MaxAge(seconds: Long) extends CachingManager {
-    override def handle(connection: HttpConnection): Future[HttpConnection] = Future.successful {
+    override def handle(connection: HttpConnection): IO[HttpConnection] = IO {
       connection.modify(_.withHeader(Headers.`Cache-Control`(CacheControl.MaxAge(seconds))))
     }
   }

@@ -24,7 +24,7 @@ class StreamZipContent(entries: List[ZipFileEntry],
     entries.foreach { e =>
       val entry = new ZipEntry(e.path)
       zos.putNextEntry(entry)
-      IO.stream(e.file, zos, closeOnComplete = false)
+      Stream.apply(e.file, zos, closeOnComplete = false)
       zos.closeEntry()
     }
     zos.flush()

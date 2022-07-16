@@ -1,5 +1,6 @@
 package io.youi.server.handler
 
+import cats.effect.IO
 import fabric._
 import fabric.parse.Json
 
@@ -11,11 +12,9 @@ import io.youi.server.Server
 import io.youi.server.validation.{ValidationResult, Validator}
 import io.youi.stream.delta.Delta
 import io.youi.stream.{HTMLParser, Selector}
-import scribe.Execution.global
 import scribe.Priority
 import fabric.rw._
 
-import scala.concurrent.Future
 import scala.util.Try
 
 case class HttpHandlerBuilder(server: Server,
@@ -42,7 +41,7 @@ case class HttpHandlerBuilder(server: Server,
     handle { connection =>
       f(connection.request.url).map { content =>
         SenderHandler(content, caching = cachingManager).handle(connection)
-      }.getOrElse(Future.successful(connection))
+      }.getOrElse(IO.pure(connection))
     }
   }
 
@@ -53,7 +52,7 @@ case class HttpHandlerBuilder(server: Server,
       if (file.isFile) {
         SenderHandler(Content.file(file), caching = cachingManager).handle(connection)
       } else {
-        Future.successful(connection)
+        IO.pure(connection)
       }
     }
   }
@@ -75,9 +74,9 @@ case class HttpHandlerBuilder(server: Server,
         if (!file.isDirectory) {
           SenderHandler(Content.classPath(url), caching = cachingManager).handle(connection)
         } else {
-          Future.successful(connection)
+          IO.pure(connection)
         }
-      }.getOrElse(Future.successful(connection))
+      }.getOrElse(IO.pure(connection))
     }
   }
 
@@ -96,29 +95,29 @@ case class HttpHandlerBuilder(server: Server,
         val handler = SenderHandler(content, caching = cachingManager)
         handler.handle(connection)
       } else {
-        Future.successful(connection)
+        IO.pure(connection)
       }
     } else {
-      Future.successful(connection)
+      IO.pure(connection)
     }
   }
 
-  def handle(f: HttpConnection => Future[HttpConnection]): HttpHandler = wrap(new HttpHandler {
-    override def handle(connection: HttpConnection): Future[HttpConnection] = f(connection)
+  def handle(f: HttpConnection => IO[HttpConnection]): HttpHandler = wrap(new HttpHandler {
+    override def handle(connection: HttpConnection): IO[HttpConnection] = f(connection)
   })
 
-  def validation(validator: HttpConnection => Future[ValidationResult]): HttpHandler = validation(new Validator {
-    override def validate(connection: HttpConnection): Future[ValidationResult] = validator(connection)
+  def validation(validator: HttpConnection => IO[ValidationResult]): HttpHandler = validation(new Validator {
+    override def validate(connection: HttpConnection): IO[ValidationResult] = validator(connection)
   })
 
   def validation(validators: Validator*): HttpHandler = wrap(new ValidatorHttpHandler(validators.toList))
 
   def redirect(path: Path): HttpHandler = handle { connection =>
-    Future.successful(HttpHandler.redirect(connection, path.encoded))
+    IO.pure(HttpHandler.redirect(connection, path.encoded))
   }
 
   def content(content: => Content): HttpHandler = handle { connection =>
-    Future.successful {
+    IO {
       connection.modify { response =>
         response.withContent(content)
       }
@@ -145,7 +144,7 @@ case class HttpHandlerBuilder(server: Server,
           case None => None     // Ignore calls to this end-point that have no content
         }
       }
-      Future.successful {
+      IO {
         jsonOption.map { json =>
           val request: Request = json.as[Request]
           val response: Response = handler(request)
@@ -165,14 +164,14 @@ case class HttpHandlerBuilder(server: Server,
     val wrapper = new HttpHandler {
       override def priority: Priority = p
 
-      override def handle(connection: HttpConnection): Future[HttpConnection] = {
+      override def handle(connection: HttpConnection): IO[HttpConnection] = {
         if (urlMatcher.forall(_.matches(connection.request.url)) && requestMatchers.forall(_(connection.request))) {
           ValidatorHttpHandler.validate(connection, validators).flatMap {
             case ValidationResult.Continue(c) => handler.handle(c)
-            case vr => Future.successful(vr.connection) // Validation failed, handled by ValidatorHttpHandler
+            case vr => IO.pure(vr.connection) // Validation failed, handled by ValidatorHttpHandler
           }
         } else {
-          Future.successful(connection)
+          IO.pure(connection)
         }
       }
     }

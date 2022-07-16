@@ -1,14 +1,12 @@
 package io.youi.server.session
 
+import cats.effect.IO
 import io.youi.Unique
 import io.youi.communication.Connection
 import io.youi.http.cookie.ResponseCookie
 import io.youi.http.{Headers, HttpConnection}
 import io.youi.net.Protocol
 import io.youi.server.WebSocketListener
-import scribe.Execution.global
-
-import scala.concurrent.Future
 
 /**
   * SessionManager must be implemented in order to have support for sessions
@@ -26,16 +24,16 @@ trait SessionManager[Session] {
     *
     * @param listener the WebSocketListener
     * @param f the functionality to work with and potentially modify a session instance
-    * @return Future[Unit] since Connection cannot modify the state of HttpConnection
+    * @return IO[Unit] since Connection cannot modify the state of HttpConnection
     */
   def withWebSocketListener(listener: WebSocketListener)
-                          (f: SessionTransaction[Session] => Future[SessionTransaction[Session]] = t => Future.successful(t)): Future[Session] = {
+                          (f: SessionTransaction[Session] => IO[SessionTransaction[Session]] = t => IO.pure(t)): IO[Session] = {
     val httpConnection = listener.httpConnection
     session(httpConnection, f, requestModifiable = false).map(_.session)
   }
 
   def withConnection(connection: Connection)
-                    (f: SessionTransaction[Session] => Future[SessionTransaction[Session]] = t => Future.successful(t)): Future[Session] = {
+                    (f: SessionTransaction[Session] => IO[SessionTransaction[Session]] = t => IO.pure(t)): IO[Session] = {
     val listener = connection.webSocket.getOrElse(throw new RuntimeException("No active connection")).asInstanceOf[WebSocketListener]
     withWebSocketListener(listener)(f)
   }
@@ -48,7 +46,7 @@ trait SessionManager[Session] {
     * @return potentially modified HttpConnection
     */
   def withHttpConnection(connection: HttpConnection)
-                        (f: SessionTransaction[Session] => Future[SessionTransaction[Session]] = t => Future.successful(t)): Future[SessionTransaction[Session]] = {
+                        (f: SessionTransaction[Session] => IO[SessionTransaction[Session]] = t => IO.pure(t)): IO[SessionTransaction[Session]] = {
     session(connection, f, requestModifiable = true).map(_.copy(sessionModifiable = false))
   }
 
@@ -61,15 +59,16 @@ trait SessionManager[Session] {
     * @return the final, modified HttpConnection
     */
   protected def session(connection: HttpConnection,
-                        f: SessionTransaction[Session] => Future[SessionTransaction[Session]],
-                        requestModifiable: Boolean): Future[SessionTransaction[Session]] = for {
+                        f: SessionTransaction[Session] => IO[SessionTransaction[Session]],
+                        requestModifiable: Boolean): IO[SessionTransaction[Session]] = for {
     // Load or create the session id
-    (modifiedConnection, sessionId) <- Future.successful(getOrCreateSessionId(connection))
+    tuple <- IO(getOrCreateSessionId(connection))
+    (modifiedConnection, sessionId) = tuple
     // Get the existing session if it exists
     originalTransaction <- loadBySessionId(sessionId, modifiedConnection)
     // Update the existing transaction or create a new one if none exists
     transaction <- originalTransaction match {
-      case Some(t) => Future.successful(t.copy(requestModifiable = requestModifiable))
+      case Some(t) => IO(t.copy(requestModifiable = requestModifiable))
       case None => createBySessionId(sessionId, modifiedConnection).map(_.copy(requestModifiable = requestModifiable))
     }
     // Apply the transaction handler
@@ -80,7 +79,7 @@ trait SessionManager[Session] {
     saved <- if (modified) {
       save(updatedTransaction)
     } else {
-      Future.successful(updatedTransaction)
+      IO.pure(updatedTransaction)
     }
   } yield {
     saved
@@ -91,20 +90,20 @@ trait SessionManager[Session] {
     *
     * @param sessionId the session id to load from
     * @param connection the HttpConnection to work with
-    * @return a future SessionTransaction[Session] if one is persisted for this manager
+    * @return a IO SessionTransaction[Session] if one is persisted for this manager
     */
   protected def loadBySessionId(sessionId: String,
-                                connection: HttpConnection): Future[Option[SessionTransaction[Session]]]
+                                connection: HttpConnection): IO[Option[SessionTransaction[Session]]]
 
   /**
     * Creates a new session by session id
     *
     * @param sessionId the session id to create from
     * @param connection the HttpConnection to work with
-    * @return a future SessionTransaction[Session]
+    * @return a IO SessionTransaction[Session]
     */
   protected def createBySessionId(sessionId: String,
-                                  connection: HttpConnection): Future[SessionTransaction[Session]] = {
+                                  connection: HttpConnection): IO[SessionTransaction[Session]] = {
     create(sessionId).map { session =>
       SessionTransaction[Session](sessionId, session, connection)
     }
@@ -115,7 +114,7 @@ trait SessionManager[Session] {
     *
     * @param sessionId the session id to create a Session for
     */
-  protected def create(sessionId: String): Future[Session]
+  protected def create(sessionId: String): IO[Session]
 
   /**
     * Saves a potentially modified Session to this manager
@@ -123,7 +122,7 @@ trait SessionManager[Session] {
     * @param transaction the transaction to persist from
     * @return a potentially modified HttpConnection
     */
-  protected def save(transaction: SessionTransaction[Session]): Future[SessionTransaction[Session]]
+  protected def save(transaction: SessionTransaction[Session]): IO[SessionTransaction[Session]]
 
   /**
     * Gets a session id if it already exists or creates a new one (and applies it on the HttpConnection) if it doesn't

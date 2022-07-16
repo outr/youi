@@ -1,6 +1,7 @@
 package spec
 
-import testy._
+import cats.effect.IO
+import cats.effect.testing.scalatest.AsyncIOSpec
 import fabric.parse.Json
 import io.youi.ValidationError
 import io.youi.http._
@@ -11,11 +12,10 @@ import io.youi.server.dsl._
 import io.youi.server.handler.HttpHandler
 import io.youi.server.rest.{Restful, RestfulResponse}
 import fabric.rw._
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AsyncWordSpec
 
-import scala.concurrent.Future
-import scribe.Execution.global
-
-class ServerSpec extends Spec {
+class ServerSpec extends AsyncWordSpec with AsyncIOSpec with Matchers {
   Server.config("implementation").store("io.youi.server.test.TestServerImplementation")
 
   object server extends Server
@@ -23,7 +23,7 @@ class ServerSpec extends Spec {
   "TestHttpApplication" should {
     "configure the TestServer" in {
       server.handler.matcher(path.exact("/test.html")).wrap(new HttpHandler {
-        override def handle(connection: HttpConnection): Future[HttpConnection] = Future.successful {
+        override def handle(connection: HttpConnection): IO[HttpConnection] = IO {
           connection.modify { response =>
             response.withContent(Content.string("test!", ContentType.`text/plain`))
           }
@@ -59,7 +59,6 @@ class ServerSpec extends Spec {
         content = Some(content)
       ))).map { connection =>
         connection.response.status should be(HttpStatus.OK)
-        connection.response.content should be(Some(""))
         val jsonString = connection.response.content.get.asInstanceOf[StringContent].value
         val response = Json.parse(jsonString).as[ReverseResponse]
         response.errors should be(Nil)
@@ -72,7 +71,6 @@ class ServerSpec extends Spec {
         url = URL("http://localhost/test/reverse?value=Testing")
       ))).map { connection =>
         connection.response.status should be(HttpStatus.OK)
-        connection.response.content should be(Some(""))
         val jsonString = connection.response.content.get.asInstanceOf[StringContent].value
         val response = Json.parse(jsonString).as[ReverseResponse]
         response.errors should be(Nil)
@@ -85,7 +83,6 @@ class ServerSpec extends Spec {
         url = URL("http://localhost/test/reverse/Testing")
       ))).map { connection =>
         connection.response.status should be(HttpStatus.OK)
-        connection.response.content should be(Some(""))
         val jsonString = connection.response.content.get.asInstanceOf[StringContent].value
         val response = Json.parse(jsonString).as[ReverseResponse]
         response.errors should be(Nil)
@@ -99,7 +96,6 @@ class ServerSpec extends Spec {
         url = URL("http://localhost/test/time")
       ))).map { connection =>
         connection.response.status should be(HttpStatus.OK)
-        connection.response.content should be(Some(""))
         val jsonString = connection.response.content.get.asInstanceOf[StringContent].value
         val response = Json.parse(jsonString).as[Long]
         response should be >= begin
@@ -120,8 +116,8 @@ class ServerSpec extends Spec {
   }
 
   object ReverseService extends Restful[ReverseRequest, ReverseResponse] {
-    override def apply(connection: HttpConnection, request: ReverseRequest): Future[RestfulResponse[ReverseResponse]] = {
-      Future.successful(RestfulResponse(ReverseResponse(Some(request.value.reverse), Nil), HttpStatus.OK))
+    override def apply(connection: HttpConnection, request: ReverseRequest): IO[RestfulResponse[ReverseResponse]] = {
+      IO.pure(RestfulResponse(ReverseResponse(Some(request.value.reverse), Nil), HttpStatus.OK))
     }
 
     override def error(errors: List[ValidationError], status: HttpStatus): RestfulResponse[ReverseResponse] = {
@@ -130,8 +126,8 @@ class ServerSpec extends Spec {
   }
 
   object ServerTimeService extends Restful[Unit, Long] {
-    override def apply(connection: HttpConnection, request: Unit): Future[RestfulResponse[Long]] = {
-      Future.successful(RestfulResponse(System.currentTimeMillis(), HttpStatus.OK))
+    override def apply(connection: HttpConnection, request: Unit): IO[RestfulResponse[Long]] = {
+      IO.pure(RestfulResponse(System.currentTimeMillis(), HttpStatus.OK))
     }
 
     override def error(errors: List[ValidationError], status: HttpStatus): RestfulResponse[Long] = {

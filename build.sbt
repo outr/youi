@@ -31,13 +31,19 @@ ThisBuild / developers := List(
 ThisBuild / versionScheme := Some("semver-spec")
 
 val fabricVersion: String = "1.3.0"
-val profigVersion: String = "3.3.3"
+
+val profigVersion: String = "3.4.1"
+
 val scribeVersion: String = "3.10.0"
+
 val reactifyVersion: String = "4.0.8"
+
 val hasherVersion: String = "1.2.2"
 
 val openTypeVersion: String = "1.1.0"
+
 val webFontLoaderVersion: String = "1.6.28_2"
+
 val canvgVersion: String = "1.4.0_3"
 
 val scalaJSDOMVersion: String = "2.2.0"

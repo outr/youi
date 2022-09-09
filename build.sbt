@@ -34,7 +34,7 @@ val fabricVersion: String = "1.3.0"
 
 val profigVersion: String = "3.4.1"
 
-val scribeVersion: String = "3.10.0"
+val scribeVersion: String = "3.10.3"
 
 val reactifyVersion: String = "4.0.8"
 

@@ -1,7 +1,7 @@
 package io.youi.server.handler
 
 import fabric._
-import fabric.parse.Json
+import fabric.parse.JsonParser
 
 import java.io.File
 import io.youi.http._
@@ -136,7 +136,7 @@ case class HttpHandlerBuilder(server: Server,
         }
         case _ => connection.request.content match {
           case Some(content) => content match {
-            case StringContent(jsonString, _, _) => Try(Json.parse(jsonString)).toOption
+            case StringContent(jsonString, _, _) => Try(JsonParser.parse(jsonString)).toOption
             case _ => {
               scribe.error(s"Unsupported content for restful end-point: $content.")
               None
@@ -149,7 +149,7 @@ case class HttpHandlerBuilder(server: Server,
         jsonOption.map { json =>
           val request: Request = json.as[Request]
           val response: Response = handler(request)
-          val responseJsonString = Json.format(response.toValue)
+          val responseJsonString = JsonParser.format(response.json)
           connection.modify { httpResponse =>
             httpResponse.withContent(Content.string(responseJsonString, ContentType.`application/json`))
           }

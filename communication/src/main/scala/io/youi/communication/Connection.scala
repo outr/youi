@@ -1,6 +1,6 @@
 package io.youi.communication
 
-import fabric.parse.Json
+import fabric.parse.JsonParser
 import fabric.rw._
 import io.youi.http.{BinaryData, ByteBufferData, ConnectionStatus, WebSocket}
 import reactify.reaction.Reaction
@@ -54,7 +54,7 @@ trait Connection {
       case "PING" => webSocket.foreach(_.send.text @= "PONG")
       case "PONG" => // Ignore keep-alive
       case _ if text.startsWith("{") && text.endsWith("}") => {
-        val message = Json.parse(text).as[Message]
+        val message = JsonParser.parse(text).as[Message]
         message.`type` match {
           case MessageType.Invoke => receive(message).foreach(queue.enqueue)
           case MessageType.Response => if (queue.success(message)) {
@@ -142,7 +142,7 @@ trait Connection {
         val ws = webSocket().get
         queue.next() match {
           case Some(request) => {
-            ws.send.text @= Json.format(request.request.toValue)
+            ws.send.text @= JsonParser.format(request.request.json)
             checkQueue()
           }
           case None => // Nothing in the queue

@@ -25,7 +25,7 @@ object HookupMacros {
         arg.typeSignature.resultType
       }
       val jsonify = argNames.map { n =>
-        q"${n.decodedName.toString} -> $n.toValue"
+        q"${n.decodedName.toString} -> $n.json"
       }
       val params = argNames.zip(argTypes).map {
         case (n, t) => q"$n: $t"
@@ -103,7 +103,7 @@ object HookupMacros {
            val params = message.params.get
            val future = $call
            future.map { response =>
-             response.toValue
+             response.json
            }
          }
        """

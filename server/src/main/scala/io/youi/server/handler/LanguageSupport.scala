@@ -1,7 +1,7 @@
 package io.youi.server.handler
 
 import fabric.MergeType
-import fabric.parse.Json
+import fabric.parse.JsonParser
 
 import java.util.Locale
 import java.util.concurrent.{ConcurrentHashMap, TimeUnit}
@@ -40,7 +40,7 @@ class LanguageSupport(val default: Locale = Locale.ENGLISH, languagePath: Path =
       val (c, l) = locales(connection)
       val config = firstConfig(l)
       c.modify { response =>
-        response.withContent(Content.string(Json.format(config.json), ContentType.`application/json`))
+        response.withContent(Content.string(JsonParser.format(config.json), ContentType.`application/json`))
       }
     }
   } else {

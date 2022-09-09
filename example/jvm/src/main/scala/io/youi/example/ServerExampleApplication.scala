@@ -38,7 +38,7 @@ object ServerExampleApplication extends ExampleApplication with ServerConnectedA
         filters(
           path"/" / redirect(path"/ui-examples.html"),
           path"/hello.txt" / CachingManager.MaxAge(120L) / "Hello, World!".withContentType(ContentType.`text/plain`),
-          path"/hello.json" / Content.json(Greeting("Hello", "World").toValue),
+          path"/hello.json" / Content.json(Greeting("Hello", "World").json),
           combined.any(
             path.exact(path"/courio.html"),
             path.matches("/examples/.*[.]html"),

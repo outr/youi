@@ -1,7 +1,7 @@
 package io.youi.server.rest
 
 import fabric._
-import fabric.parse.Json
+import fabric.parse.JsonParser
 import io.youi.ValidationError
 import io.youi.http.HttpConnection
 import io.youi.http.content.{Content, StringContent}
@@ -45,7 +45,7 @@ class RestfulHandler[Request, Response](restful: Restful[Request, Response])
 
     future.map { result =>
       // Encode response
-      val responseJsonString = Json.format(result.response.toValue)
+      val responseJsonString = JsonParser.format(result.response.json)
 
       // Attach content
       connection.modify { httpResponse =>
@@ -86,7 +86,7 @@ object RestfulHandler {
     val request = connection.request
     val contentJson = request.content.map(jsonFromContent).getOrElse(Right(obj()))
     val urlJson = jsonFromURL(request.url)
-    val pathJson = PathFilter.argumentsFromConnection(connection).toValue
+    val pathJson = PathFilter.argumentsFromConnection(connection).json
     val storeJson = connection.store.getOrElse[Value](key, obj())
     contentJson match {
       case Left(err) => Left(err)
@@ -94,7 +94,7 @@ object RestfulHandler {
     }
   }
 
-  def jsonFromContent(content: Content): Either[ValidationError, Value] = Right(Json.parse(content.asString))
+  def jsonFromContent(content: Content): Either[ValidationError, Value] = Right(JsonParser.parse(content.asString))
 
   def jsonFromURL(url: URL): Value = {
     val entries = url.parameters.map.toList.map {

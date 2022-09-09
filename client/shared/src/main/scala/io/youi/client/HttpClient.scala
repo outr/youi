@@ -1,7 +1,7 @@
 package io.youi.client
 
-import fabric.Value
-import fabric.parse.Json
+import fabric.Json
+import fabric.parse.JsonParser
 import fabric.rw._
 import io.youi.client.intercept.Interceptor
 import io.youi.http._
@@ -98,7 +98,7 @@ case class HttpClient(request: HttpRequest,
     * @param json the JSON content to send
     * @return HttpClient
     */
-  def json(json: Value): HttpClient = content(StringContent(Json.format(json), ContentType.`application/json`))
+  def json(json: Json): HttpClient = content(StringContent(JsonParser.format(json), ContentType.`application/json`))
 
   /**
     * Sends an HttpRequest and receives an asynchronous HttpResponse future.
@@ -149,7 +149,7 @@ case class HttpClient(request: HttpRequest,
       val responseJson = response.content.map(implementation.content2String).getOrElse("")
       if (!failOnHttpStatus || response.status.isSuccess) {
         if (responseJson.isEmpty) throw new ClientException(s"No content received in response for ${request.url}.", request, response, None)
-        Json.parse(responseJson).as[Response]
+        JsonParser.parse(responseJson).as[Response]
       } else {
         throw new ClientException("HttpStatus was not successful", request, response, None)
       }
@@ -169,7 +169,7 @@ case class HttpClient(request: HttpRequest,
     */
   def restful[Request: Reader, Response: Writer](request: Request)
                                                 (implicit executionContext: ExecutionContext): Future[Response] = {
-    val requestJson = request.toValue
+    val requestJson = request.json
     method(if (method == HttpMethod.Get) HttpMethod.Post else method).json(requestJson).call[Response]
   }
 
@@ -184,15 +184,15 @@ case class HttpClient(request: HttpRequest,
     */
   def restfulEither[Request: Reader, Success: Writer, Failure: Writer](request: Request)
                                                                       (implicit executionContext: ExecutionContext): Future[Either[Failure, Success]] = {
-    val requestJson = request.toValue
+    val requestJson = request.json
     method(if (method == HttpMethod.Get) HttpMethod.Post else method).json(requestJson).send().map { response =>
       try {
         val responseJson = response.content.map(implementation.content2String).getOrElse("")
         if (responseJson.isEmpty) throw new ClientException(s"No content received in response for ${this.request.url}.", this.request, response, None)
         if (response.status.isSuccess) {
-          Right(Json.parse(responseJson).as[Success])
+          Right(JsonParser.parse(responseJson).as[Success])
         } else {
-          Left(Json.parse(responseJson).as[Failure])
+          Left(JsonParser.parse(responseJson).as[Failure])
         }
       } catch {
         case t: Throwable => throw new ClientException("Response processing error", this.request, response, Some(t))

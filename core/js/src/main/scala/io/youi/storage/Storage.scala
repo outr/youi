@@ -7,7 +7,7 @@ import scala.language.experimental.macros
 import scala.reflect.macros.blackbox
 import cats.effect.unsafe.implicits.global
 import fabric._
-import fabric.parse.Json
+import fabric.parse.JsonParser
 import fabric.rw._
 
 trait Storage {
@@ -28,7 +28,7 @@ trait Storage {
     }
   }
 
-  def get[T: Writer](key: String): IO[Option[T]] = string.get(key).map(_.map(Json.parse).map(_.as[T]))
+  def get[T: Writer](key: String): IO[Option[T]] = string.get(key).map(_.map(JsonParser.parse).map(_.as[T]))
   def getOrElse[T: Writer](key: String, default: => T): IO[T] = get[T](key).map(_.getOrElse(default))
   def getOrCreate[T: ReaderWriter](key: String, default: => T): IO[T] = get[T](key).flatMap {
     case Some(value) => IO.pure(value)
@@ -36,7 +36,7 @@ trait Storage {
       val value: T = default
       update[T](key, value).map(_ => value)
   }
-  def update[T: Reader](key: String, value: T): IO[Unit] = string.update(key, Json.format(value.toValue))
+  def update[T: Reader](key: String, value: T): IO[Unit] = string.update(key, JsonParser.format(value.json))
   def remove(key: String): IO[Unit] = string.remove(key)
 
   def prop[T: ReaderWriter](key: String, default: => T): Var[T] = {

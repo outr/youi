@@ -41,13 +41,21 @@ val webFontLoaderVersion: String = "1.6.28_2"
 val canvgVersion: String = "1.4.0_3"
 
 val scalaJSDOMVersion: String = "2.2.0"
+
 val okHttpVersion: String = "4.10.0"
+
 val uaDetectorVersion: String = "2014.10"
-val undertowVersion: String = "2.2.18.Final"
+
+val undertowVersion: String = "2.2.19.Final"
+
 val closureCompilerVersion: String = "v20220803"
+
 val guavaVersion: String = "25.1-jre"
+
 val jSoupVersion: String = "1.13.1"
+
 val scalaXMLVersion: String = "2.0.1"
+
 val collectionCompatVersion: String = "2.4.3"
 
 val catsVersion: String = "3.3.14"

@@ -49,7 +49,7 @@ val guavaVersion: String = "25.1-jre"
 val jSoupVersion: String = "1.13.1"
 val scalaXMLVersion: String = "2.0.1"
 val collectionCompatVersion: String = "2.4.3"
-val catsVersion: String = "3.3.13"
+val catsVersion: String = "3.3.14"
 val fs2Version: String = "3.2.8"
 val scalaTestVersion: String = "3.2.12"
 

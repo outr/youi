@@ -66,7 +66,7 @@ val collectionCompatVersion: String = "2.4.3"
 
 val catsVersion: String = "3.3.14"
 
-val fs2Version: String = "3.2.12"
+val fs2Version: String = "3.2.14"
 
 val scalaTestVersion: String = "3.2.13"
 

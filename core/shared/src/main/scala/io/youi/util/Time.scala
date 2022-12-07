@@ -1,8 +1,7 @@
 package io.youi.util
 
-import cats.effect.IO
-
 import java.util.concurrent.TimeoutException
+
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -10,6 +9,14 @@ import scala.concurrent.{ExecutionContext, Future}
   * Cross-platform functionality for dealing with time
   */
 object Time {
+  /**
+    * Creates a non-blocking Future that is completed after `duration` is elapsed
+    *
+    * @param duration an amount of time that must elapse before the future is complete
+    * @return Future[Unit] that will be complete after `duration`
+    */
+  def delay(duration: FiniteDuration): Future[Unit] = io.youi.YouIPlatform.delay(duration.toMillis)
+
   /**
     * Waits for a condition to be true before returning.
     *
@@ -24,14 +31,14 @@ object Time {
               frequency: FiniteDuration = 100.milliseconds,
               timeout: FiniteDuration = 5.minutes,
               started: Long = System.currentTimeMillis())
-             (implicit ec: ExecutionContext): IO[Unit] = {
+             (implicit ec: ExecutionContext): Future[Unit] = {
     val elapsed = System.currentTimeMillis() - started
     if (condition) {
-      IO.unit
+      Future.successful(())
     } else if (elapsed > timeout.toMillis) {
       throw new TimeoutException("Timed out waiting for condition!")
     } else {
-      IO.sleep(frequency).flatMap { _ =>
+      delay(frequency).flatMap { _ =>
         waitFor(condition, frequency, timeout, started)
       }
     }
@@ -42,7 +49,7 @@ object Time {
              stopOnError: Boolean = true,
              errorHandler: Throwable => Unit = (t: Throwable) => scribe.error("Error during repeat task", t),
              autoStart: Boolean = true)
-            (task: => IO[Unit])
+            (task: => Future[Unit])
             (implicit ec: ExecutionContext): Repeatable = {
     val r = Repeatable(delay, initialDelay, stopOnError, () => task, errorHandler)
     if (autoStart) {

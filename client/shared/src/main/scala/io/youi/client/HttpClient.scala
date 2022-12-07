@@ -1,8 +1,9 @@
 package io.youi.client
 
 import cats.effect.IO
-import fabric.Value
-import fabric.parse.Json
+import fabric.Json
+import fabric.parse.JsonParser
+
 import fabric.rw._
 import io.youi.client.intercept.Interceptor
 import io.youi.http._
@@ -100,7 +101,7 @@ case class HttpClient(request: HttpRequest,
     * @param json the JSON content to send
     * @return HttpClient
     */
-  def json(json: Value): HttpClient = content(StringContent(Json.format(json), ContentType.`application/json`))
+  def json(json: Json): HttpClient = content(StringContent(JsonParser.format(json), ContentType.`application/json`))
 
   /**
     * Sends an HttpRequest and receives an asynchronous HttpResponse future.
@@ -148,6 +149,7 @@ case class HttpClient(request: HttpRequest,
     * @tparam Response the response type
     * @return Future[Response]
     */
+
   def call[Response: Writer]: IO[Try[Response]] = send().flatMap { responseTry =>
     IO {
       responseTry match {
@@ -173,8 +175,9 @@ case class HttpClient(request: HttpRequest,
     * @tparam Response the response type
     * @return Future[Response]
     */
+
   def restful[Request: Reader, Response: Writer](request: Request): IO[Try[Response]] = {
-    val requestJson = request.toValue
+    val requestJson = request.json
     method(if (method == HttpMethod.Get) HttpMethod.Post else method).json(requestJson).call[Response]
   }
 
@@ -194,9 +197,9 @@ case class HttpClient(request: HttpRequest,
         val responseJson = response.content.map(implementation.content2String).getOrElse("")
         if (responseJson.isEmpty) throw new ClientException(s"No content received in response for ${this.request.url}.", this.request, response, None)
         if (response.status.isSuccess) {
-          Right(Json.parse(responseJson).as[Success])
+          Right(JsonParser.parse(responseJson).as[Success])
         } else {
-          Left(Json.parse(responseJson).as[Failure])
+          Left(JsonParser.parse(responseJson).as[Failure])
         }
       }
       case Failure(exception) => throw exception

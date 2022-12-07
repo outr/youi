@@ -1,6 +1,6 @@
 package io.youi.app
 
-import fabric.parse.Json
+import fabric.parse.JsonParser
 
 import java.io.File
 import io.youi.http._
@@ -87,7 +87,7 @@ trait ServerApplication extends YouIApplication with Server {
 
               // Error logging
               formData.stringOption("error").map(_.value).foreach { jsonString =>
-                val jsError = Json.parse(jsonString).as[JavaScriptError]
+                val jsError = JsonParser.parse(jsonString).as[JavaScriptError]
 
                 val exception = new JavaScriptException(
                   error = jsError,
@@ -103,7 +103,7 @@ trait ServerApplication extends YouIApplication with Server {
 
               // Message logging
               formData.stringOption("message").map(_.value).foreach { jsonString =>
-                val log = Json.parse(jsonString).as[JavaScriptLog]
+                val log = JsonParser.parse(jsonString).as[JavaScriptLog]
 
                 MDC.contextualize("ip", ip.toString) {
                   MDC.contextualize("userAgent", userAgentString) {

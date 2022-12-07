@@ -1,8 +1,8 @@
 package io.youi.activate
 
 import io.youi.dom._
-import io.youi.net.Path
 import org.scalajs.dom._
+import spice.net.Path
 
 /**
   * Instantiate this to find, parse, and remove all activate tags in the body of the HTML.

@@ -1,15 +1,13 @@
 package io.youi.image
 
+import cats.effect.IO
 import io.youi._
 import io.youi.drawable.{Context, Drawable}
 import io.youi.image.resize.ImageResizer
-import io.youi.net.URL
 import io.youi.spatial.{BoundingBox, Size}
 import io.youi.util.{CanvasPool, FileUtility}
-import org.scalajs.dom._
-
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import org.scalajs.dom.{File, html}
+import spice.net.URL
 
 trait Image extends Drawable {
   val width: Double
@@ -20,11 +18,11 @@ trait Image extends Drawable {
 
   def draw(context: Context, x: Double, y: Double, width: Double, height: Double): Unit
 
-  def resize(width: Double, height: Double): Future[Image]
+  def resize(width: Double, height: Double): IO[Image]
 
-  def resizeTo(canvas: html.Canvas, width: Double, height: Double, resizer: ImageResizer): Future[html.Canvas]
+  def resizeTo(canvas: html.Canvas, width: Double, height: Double, resizer: ImageResizer): IO[html.Canvas]
 
-  def clip(x1: Double, y1: Double, x2: Double, y2: Double): Future[Image] = {
+  def clip(x1: Double, y1: Double, x2: Double, y2: Double): IO[Image] = {
     val w = x2 - x1
     val h = y2 - y1
     val dataURL = CanvasPool.withCanvas(w, h) { clipped =>
@@ -43,7 +41,7 @@ trait Image extends Drawable {
 
   def isRaster: Boolean = !isVector
 
-  def toDataURL: Future[String]
+  def toDataURL: IO[String]
 
   def dispose(): Unit
 }
@@ -51,9 +49,9 @@ trait Image extends Drawable {
 object Image {
   def empty: Image = EmptyImage
 
-  def apply(source: String, width: Double, height: Double): Future[Image] = apply(source).flatMap(_.resize(width, height))
+  def apply(source: String, width: Double, height: Double): IO[Image] = apply(source).flatMap(_.resize(width, height))
 
-  def apply(source: String): Future[Image] = if (source.indexOf("<svg") != -1) {
+  def apply(source: String): IO[Image] = if (source.indexOf("<svg") != -1) {
     SVGImage(source)
   } else if (source.startsWith("data:image/") || source.startsWith("blob:")) {
     val img = dom.create[html.Image]("img")
@@ -63,13 +61,13 @@ object Image {
     apply(History.url.withPart(source))
   }
 
-  def apply(url: URL): Future[Image] = if (url.path.encoded.toLowerCase.endsWith(".svg")) {
+  def apply(url: URL): IO[Image] = if (url.path.encoded.toLowerCase.endsWith(".svg")) {
     SVGImage(url)
   } else {
     HTMLImage(url)
   }
 
-  def apply(file: File): Future[Image] = file.`type` match {
+  def apply(file: File): IO[Image] = file.`type` match {
     case "image/svg+xml" => FileUtility.loadText(file).flatMap { svgString =>
       SVGImage(svgString)
     }

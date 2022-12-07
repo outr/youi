@@ -1,6 +1,6 @@
 package io.youi.form
 
-import io.youi.net._
+import spice.net.{Path, URL}
 
 import scala.concurrent.duration._
 

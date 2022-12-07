@@ -22,7 +22,7 @@ case class JavaScriptError(message: String,
 }
 
 object JavaScriptError {
-  implicit val rw: ReaderWriter[JavaScriptError] = ccRW
+  implicit val rw: RW[JavaScriptError] = RW.gen
 }
 
 case class JavaScriptCause(message: String,
@@ -39,7 +39,7 @@ case class JavaScriptCause(message: String,
 }
 
 object JavaScriptCause {
-  implicit val rw: ReaderWriter[JavaScriptCause] = ccRW
+  implicit val rw: RW[JavaScriptCause] = RW.gen
 }
 
 case class JavaScriptTrace(className: String,
@@ -52,7 +52,7 @@ case class JavaScriptTrace(className: String,
 }
 
 object JavaScriptTrace {
-  implicit val rw: ReaderWriter[JavaScriptTrace] = ccRW
+  implicit val rw: RW[JavaScriptTrace] = RW.gen
 }
 
 case class JavaScriptPosition(line: Int, column: Int) {
@@ -60,5 +60,5 @@ case class JavaScriptPosition(line: Int, column: Int) {
 }
 
 object JavaScriptPosition {
-  implicit val rw: ReaderWriter[JavaScriptPosition] = ccRW
+  implicit val rw: RW[JavaScriptPosition] = RW.gen
 }

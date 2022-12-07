@@ -1,10 +1,9 @@
 package io.youi
 
 import java.io.IOException
-
-import io.youi.net.MalformedURLException
 import reactify.Channel
 import reactify.reaction.Reaction
+import spice.net.MalformedURLException
 
 trait ErrorSupport {
   def error(t: Throwable): Unit = ErrorSupport.error @= t

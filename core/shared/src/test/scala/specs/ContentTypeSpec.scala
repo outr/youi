@@ -1,8 +1,8 @@
 package specs
 
-import io.youi.net.ContentType
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+import spice.net.ContentType
 
 class ContentTypeSpec extends AnyWordSpec with Matchers {
   "ContentType" should {

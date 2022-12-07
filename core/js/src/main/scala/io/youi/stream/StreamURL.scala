@@ -2,9 +2,9 @@ package io.youi.stream
 
 import cats.effect.IO
 import io.youi.ajax.AjaxRequest
-import io.youi.http.HttpMethod
-import io.youi.net.URL
 import org.scalajs.dom.FormData
+import spice.http.HttpMethod
+import spice.net.URL
 
 import scala.util.{Failure, Success}
 

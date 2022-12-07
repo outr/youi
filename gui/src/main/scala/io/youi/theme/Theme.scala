@@ -2,7 +2,7 @@ package io.youi.theme
 
 import io.youi.component.feature._
 import io.youi.{CSSManager, Unique}
-import org.scalajs.dom.raw.CSSStyleDeclaration
+import org.scalajs.dom.CSSStyleDeclaration
 
 import scala.annotation.tailrec
 

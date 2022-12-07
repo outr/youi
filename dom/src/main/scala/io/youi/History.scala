@@ -1,8 +1,8 @@
 package io.youi
 
-import io.youi.net.{Path, Protocol, URL}
-import org.scalajs.dom._
+import org.scalajs.dom.{Event, PopStateEvent, document, html, window}
 import reactify.{Channel, Val, Var}
+import spice.net.{Path, Protocol, URL}
 
 import scala.scalajs.js
 

@@ -4,7 +4,7 @@ import io.youi.Color
 import io.youi.component.Component
 import io.youi.component.types._
 import io.youi.paint.Paint
-import org.scalajs.dom.raw.CSSStyleDeclaration
+import org.scalajs.dom.CSSStyleDeclaration
 
 import scala.reflect.ClassTag
 import scala.util.Try

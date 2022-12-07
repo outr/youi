@@ -1,10 +1,9 @@
 package io.youi.image
 
+import cats.effect.IO
 import io.youi.drawable.Context
 import io.youi.image.resize.ImageResizer
 import org.scalajs.dom.html
-
-import scala.concurrent.Future
 
 object EmptyImage extends Image {
   override val width: Double = 0.0
@@ -16,11 +15,11 @@ object EmptyImage extends Image {
 
   override def isVector: Boolean = true
 
-  override def toDataURL: Future[String] = throw new RuntimeException("Empty image cannot be represented as a data url.")
+  override def toDataURL: IO[String] = throw new RuntimeException("Empty image cannot be represented as a data url.")
 
-  override def resize(width: Double, height: Double): Future[Image] = Future.successful(this)
+  override def resize(width: Double, height: Double): IO[Image] = IO.pure(this)
 
-  override def resizeTo(canvas: html.Canvas, width: Double, height: Double, resizer: ImageResizer): Future[html.Canvas] = Future.successful(canvas)
+  override def resizeTo(canvas: html.Canvas, width: Double, height: Double, resizer: ImageResizer): IO[html.Canvas] = IO.pure(canvas)
 
   override def toString: String = "EmptyImage"
 }

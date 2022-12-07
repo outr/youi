@@ -2,10 +2,9 @@ package io.youi.component
 
 import io.youi.component.types.Prop
 import io.youi.dom
-import io.youi.net.ContentType
-import org.scalajs.dom.raw.FileList
-import org.scalajs.dom.{Event, File, html}
+import org.scalajs.dom.{Event, File, FileList, html}
 import reactify.{Val, Var}
+import spice.net.ContentType
 
 import scala.scalajs.js.|
 

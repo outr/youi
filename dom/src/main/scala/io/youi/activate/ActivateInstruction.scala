@@ -1,8 +1,8 @@
 package io.youi.activate
 
-import io.youi.net.Path
 import io.youi.{History, dom}
 import org.scalajs.dom.{Event, document, html, window}
+import spice.net.Path
 
 import scala.scalajs.js
 

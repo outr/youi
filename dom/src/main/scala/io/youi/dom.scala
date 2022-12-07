@@ -1,13 +1,15 @@
 package io.youi
 
-import io.youi.net._
-import org.scalajs.dom._
-import org.scalajs.dom.ext._
+import cats.effect.{IO, Ref}
+import cats.effect.kernel.Deferred
+import cats.effect.unsafe.implicits.global
+import io.youi.util.Time
+import org.scalajs.dom.{DOMList, Element, ErrorEvent, Event, HTMLElement, Node, Text, document, html, window}
 import org.scalajs.dom.html.Div
-import org.scalajs.dom.raw.HTMLElement
+import spice.net._
 
 import scala.collection.mutable
-import scala.concurrent.{Future, Promise}
+import scala.concurrent.duration.DurationInt
 import scala.language.implicitConversions
 
 object dom extends ExtendedElement(None) {
@@ -61,28 +63,42 @@ object dom extends ExtendedElement(None) {
     }
   }
 
-  private lazy val addedScripts = mutable.Map((document.head.byTag[html.Script]("script").toList ::: byTag[html.Script]("script").toList).collect {
+  private def loadedScripts: List[String] = (document.head.byTag[html.Script]("script").toList ::: byTag[html.Script]("script").toList).collect {
     case script if Option(script.src).nonEmpty && script.src.nonEmpty => script.src
-  }.map(_ -> Future.successful(())): _*)
+  }
 
-  def addScript(url: URL, addToHead: Boolean = false): Future[Unit] = addedScripts.get(url.toString) match {
-    case Some(f) => f
-    case None => {
-      val promise = Promise[Unit]()
+  sealed trait ScriptStatus
+
+  object ScriptStatus {
+    case object NotAdded extends ScriptStatus
+    case object Loading extends ScriptStatus
+    case object Loaded extends ScriptStatus
+  }
+
+  private lazy val addedScripts: mutable.Map[String, ScriptStatus] = mutable.Map(
+    loadedScripts.map { script =>
+      script -> ScriptStatus.Loaded
+    }: _*
+  )
+
+  private def scriptStatus(url: URL): ScriptStatus = addedScripts.getOrElse(url.toString(), ScriptStatus.NotAdded)
+
+  def addScript(url: URL, addToHead: Boolean = false): IO[Unit] = scriptStatus(url) match {
+    case ScriptStatus.NotAdded =>
       val script = create.script
       script.addEventListener("load", (_: Event) => {
-        promise.success(())
+        addedScripts += url.toString() -> ScriptStatus.Loaded
       })
-      script.src = url.toString
+      script.src = url.toString()
       if (addToHead) {
         document.head.appendChild(script)
       } else {
         document.body.appendChild(script)
       }
-      val future = promise.future
-      addedScripts += url.toString -> future
-      future
-    }
+      Time.waitFor(scriptStatus(url) == ScriptStatus.Loaded, timeout = 30.seconds)
+    case ScriptStatus.Loading =>
+      Time.waitFor(scriptStatus(url) == ScriptStatus.Loaded, timeout = 30.seconds)
+    case ScriptStatus.Loaded => IO.unit
   }
 
   def getCSSVariable(name: String): String = {
@@ -114,20 +130,22 @@ object dom extends ExtendedElement(None) {
     * Forces loading of the supplied image URL in a hidden iframe.
     *
     * @param url the image URL to load
-    * @return Future[URL]
+    * @return Either[Throwable, URL]
     */
-  def reloadImage(url: URL): Future[URL] = {
+  def reloadImage(url: URL): IO[Either[Throwable, URL]] = {
     val iframe = create.iframe
     iframe.style.display = "none"
     document.body.appendChild(iframe)
     var counter = 0
-    val promise = Promise[URL]()
+    val d = Deferred[IO, Either[Throwable, URL]]
     iframe.addEventListener("load", (_: Event) => {
       if (counter == 0) {
         counter += 1
         iframe.contentWindow.location.reload(true)
       } else {
-        promise.success(url)
+        d.flatMap { d =>
+          d.complete(Right(url))
+        }.unsafeRunAndForget()
       }
     }, useCapture = false)
     val src = if (url.base != History.url.base) { // Cross-Domain
@@ -137,9 +155,13 @@ object dom extends ExtendedElement(None) {
     }
     iframe.src = src
     iframe.addEventListener("error", (evt: ErrorEvent) => {
-      promise.failure(new RuntimeException(s"Error loading: $url - ${evt.message}"))
+      d.flatMap { d =>
+        d.complete(Left(new RuntimeException(s"Error loading: $url - ${evt.message}")))
+      }
     }, useCapture = false)
-    promise.future
+    d.flatMap { d =>
+      d.get
+    }
   }
 
   implicit class StringExtras(s: String) {
@@ -237,7 +259,7 @@ object dom extends ExtendedElement(None) {
 
     override def next(): T = {
       position += 1
-      list.item(position)
+      list(position)
     }
   }
 

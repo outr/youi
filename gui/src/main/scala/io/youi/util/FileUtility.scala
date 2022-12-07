@@ -1,35 +1,37 @@
 package io.youi.util
 
-import org.scalajs.dom.Event
-import org.scalajs.dom.raw.{File, FileReader, URL}
-import scribe.Execution.global
-
-import scala.concurrent.{Future, Promise}
+import cats.effect.unsafe.implicits.global
+import cats.effect.{Deferred, IO}
+import org.scalajs.dom.{Event, File, FileReader, URL}
 
 object FileUtility {
-  def loadDataURL(file: File, useFileReader: Boolean = false): Future[String] = if (useFileReader) {
+  def loadDataURL(file: File, useFileReader: Boolean = false): IO[String] = if (useFileReader) {
     val reader = new FileReader
-    val promise = Promise[String]()
+    val d = Deferred[IO, String]
     reader.addEventListener("load", (_: Event) => {
-      promise.success(reader.result.asInstanceOf[String])
+      d.flatMap { d =>
+        d.complete(reader.result.asInstanceOf[String])
+      }.handleError { t =>
+        scribe.error(t)
+      }.unsafeRunAndForget()
     })
     reader.readAsDataURL(file)
-    val future = promise.future
-    future.failed.foreach(scribe.error(_))
-    future
+    d.flatMap(_.get)
   } else {
-    Future.successful(URL.createObjectURL(file))
+    IO.pure(URL.createObjectURL(file))
   }
 
-  def loadText(file: File): Future[String] = {
+  def loadText(file: File): IO[String] = {
     val reader = new FileReader
-    val promise = Promise[String]()
+    val d = Deferred[IO, String]
     reader.addEventListener("load", (_: Event) => {
-      promise.success(reader.result.asInstanceOf[String])
+      d.flatMap { d =>
+        d.complete(reader.result.asInstanceOf[String])
+      }.handleError { t =>
+        scribe.error(t)
+      }.unsafeRunAndForget()
     })
     reader.readAsText(file)
-    val future = promise.future
-    future.failed.foreach(scribe.error(_))
-    future
+    d.flatMap(_.get)
   }
 }

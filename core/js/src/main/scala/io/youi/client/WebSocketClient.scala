@@ -1,9 +1,9 @@
 package io.youi.client
 
 import cats.effect.IO
-import io.youi.http.{ByteBufferData, ConnectionStatus, WebSocket}
-import io.youi.net.URL
 import org.scalajs.dom.{Blob, Event, MessageEvent, WebSocket => WS}
+import spice.http.{BinaryData, ByteBufferData, ConnectionStatus, WebSocket}
+import spice.net.URL
 
 import scala.scalajs.js.typedarray.TypedArrayBufferOps._
 import scala.scalajs.js.typedarray._

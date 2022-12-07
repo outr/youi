@@ -1,11 +1,9 @@
 package io.youi.util
 
+import cats.effect.IO
 import io.youi._
-import org.scalajs.dom.html
+import org.scalajs.dom.{CanvasRenderingContext2D, html}
 import org.scalajs.dom.html.Canvas
-import org.scalajs.dom.raw.CanvasRenderingContext2D
-
-import scala.concurrent.Future
 
 object CanvasPool extends ObjectPool[html.Canvas] {
   def apply(width: Double, height: Double, ratio: Double = 1.0): html.Canvas = update(apply(), width * ratio, height * ratio)
@@ -30,7 +28,8 @@ object CanvasPool extends ObjectPool[html.Canvas] {
     f(canvas)
   }
 
-  def withCanvasFuture[R](width: Double, height: Double, ratio: Double = 1.0)(f: html.Canvas => Future[R]): Future[R] = future { canvas =>
+  def withCanvasIO[R](width: Double, height: Double, ratio: Double = 1.0)
+                     (f: html.Canvas => IO[R]): IO[R] = io { canvas =>
     update(canvas, width * ratio, height * ratio)
     f(canvas)
   }

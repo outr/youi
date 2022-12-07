@@ -1,16 +1,18 @@
 package io.youi.optimizer
 
+import cats.effect.unsafe.implicits.global
+
 import java.io.{File, FileNotFoundException}
 import java.net.URL
-
 import com.roundeights.hasher.Hasher
-import io.youi.stream._
-import io.youi.stream.delta.Delta
+import spice.delta.{HTMLParser, Tag}
+import spice.delta.types.Delta
+import spice.streamer.Streamer
 
 import scala.collection.mutable.ListBuffer
 
 object HTMLOptimizer {
-  import Selector._
+  import spice.delta.Selector._
 
   private def createTempFile(fileType: String, extension: String): File = {
     val temp = File.createTempFile(s"youi-optimizer-$fileType", s".$extension")
@@ -36,12 +38,12 @@ object HTMLOptimizer {
             if (src.startsWith("http://") || src.startsWith("https://") || src.startsWith("//")) {    // Remote script
               val file = createTempFile("remote", "js")
               val url = new URL(src)
-              Stream.apply(url, file)
+              Streamer(url, file).unsafeRunSync()
               val map = if (minified) {
                 try {
                   val minifiedFile = createTempFile("remote", "js.map")
                   val minifiedURL = new URL(s"$src.map")
-                  Stream.apply(minifiedURL, minifiedFile)
+                  Streamer(minifiedURL, minifiedFile).unsafeRunSync()
                   Some(minifiedFile)
                 } catch {
                   case exc: FileNotFoundException => {
@@ -75,7 +77,7 @@ object HTMLOptimizer {
             val script = content.substring(start, start + end).trim
             val file = createTempFile("inline", "js")
             file.deleteOnExit()
-            Stream.apply(script, file)
+            Streamer(script, file).unsafeRunSync()
             ScriptFile(file, None)
           }
         }
@@ -85,7 +87,7 @@ object HTMLOptimizer {
     ))
 
     val output = createTempFile("stage1", "html")
-    Stream.apply(result, output)
+    Streamer(result, output).unsafeRunSync()
     Optimized(output, scripts.toList, input.length())
   }
 
@@ -123,7 +125,7 @@ object HTMLOptimizer {
     val content = stream.stream(List(
       Delta.InsertLastChild(ByTag("body"), s"""<script src="$jsPath"></script>""")
     ))
-    Stream.apply(content, htmlFileOut)
+    Streamer(content, htmlFileOut).unsafeRunSync()
   }
 
   /**

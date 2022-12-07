@@ -1,5 +1,6 @@
 package io.youi.component.support
 
+import cats.effect.IO
 import io.youi.{Initializable, Plane, dom}
 import io.youi.component.Component
 import io.youi.component.feature.{HeightFeature, WidthFeature}
@@ -67,11 +68,11 @@ abstract class Collapsible extends Component(dom.create.div) with InternalContai
     if (animate) {
       future = future.flatMap { _ =>
         sequential(
-          prop @= 0.0,
-          display @= Display.Block,
+          IO(prop @= 0.0),
+          IO(display @= Display.Block),
           prop.to(expanded).in(speed).easing(easing),
 //          prop := expanded
-          prop.`type` @= SizeType.Auto
+          IO(prop.`type` @= SizeType.Auto)
         ).start().future.map(_ => ())
       }
       future
@@ -89,10 +90,10 @@ abstract class Collapsible extends Component(dom.create.div) with InternalContai
     if (animate) {
       future = future.flatMap { _ =>
         sequential(
-          prop.`type` @= SizeType.Pixel,
-          prop @= expanded,
+          IO(prop.`type` @= SizeType.Pixel),
+          IO(prop @= expanded),
           prop.to(0.0).in(speed).easing(easing),
-          display @= Display.None
+          IO(display @= Display.None)
         ).start().future.map(_ => ())
       }
       future

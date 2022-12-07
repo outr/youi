@@ -1,24 +1,24 @@
 package io.youi.image.resize
 
+import cats.effect.IO
 import org.scalajs.dom.html
 
-import scala.concurrent.Future
 import scala.scalajs.js.|
 
 trait ImageResizer {
-  final def resize(source: html.Image | html.Canvas, destination: html.Canvas): Future[html.Canvas] = {
+  final def resize(source: html.Image | html.Canvas, destination: html.Canvas): IO[html.Canvas] = {
     val src = source.asInstanceOf[html.Image]
     val srcWidth = src.width
     val srcHeight = src.height
     if (srcWidth <= 0 || srcHeight <= 0 || destination.width <= 0 || destination.height <= 0) {
-      Future.successful(destination)
+      IO.pure(destination)
     } else if (srcWidth == destination.width && srcHeight == destination.height) {
       FastResizer.resizeInternal(source, destination)
     } else {
       resizeInternal(source, destination)
     }
   }
-  protected def resizeInternal(source: html.Image | html.Canvas, destination: html.Canvas): Future[html.Canvas]
+  protected def resizeInternal(source: html.Image | html.Canvas, destination: html.Canvas): IO[html.Canvas]
 }
 
 object ImageResizer {

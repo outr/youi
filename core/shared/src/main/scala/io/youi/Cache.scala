@@ -1,6 +1,6 @@
 package io.youi
 
-import io.youi.net.URL
+import spice.net.URL
 
 object Cache {
   var implementation: CacheImplementation = _

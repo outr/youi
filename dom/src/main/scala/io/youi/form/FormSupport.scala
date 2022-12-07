@@ -1,14 +1,12 @@
 package io.youi.form
 
+import cats.effect.IO
+import cats.effect.unsafe.implicits.global
 import io.youi.dom
 import io.youi.dom._
-import io.youi.util.Time
 import org.scalajs.dom.{Event, html}
-import scribe.Execution.global
 
-import scala.concurrent.Future
 import scala.concurrent.duration.FiniteDuration
-import scala.util.{Failure, Success}
 
 trait FormSupport {
   val form: html.Form
@@ -133,7 +131,9 @@ trait FormSupport {
     alertContainer.appendChild(a)
 
     removeAfter.foreach { d =>
-      Time.delay(d).foreach(_ => a.remove())
+      IO.sleep(d).map { _ =>
+        a.remove()
+      }.unsafeRunAndForget()
     }
 
     a
@@ -152,20 +152,18 @@ trait FormSupport {
   final def submit(): Unit = {
     disable()
     if (validate(ValidationMode.FormSubmit)) {
-      val future = process()
-      future.onComplete {
-        case Success(result) => result.invoke(this)
-        case Failure(exception) => {
-          scribe.error(exception)
-          alert.danger("An internal error occurred")
-        }
-      }
+      process().map { result =>
+        result.invoke(this)
+      }.handleError { t =>
+        scribe.error(t)
+        alert.danger("An internal error occurred")
+      }.unsafeRunAndForget()
     } else {
       enable()
     }
   }
 
-  protected def process(): Future[FormResult]
+  protected def process(): IO[FormResult]
 
   protected def onSuccess(): Unit = {
     clear()

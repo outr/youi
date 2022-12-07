@@ -1,5 +1,6 @@
 package io.youi.component
 
+import cats.effect.IO
 import io.youi.component.support.{PositionSupport, SizeSupport}
 import io.youi.component.types.{Display, PositionType, UserSelect}
 import io.youi.easing.Easing
@@ -50,18 +51,18 @@ class Popup(showGlassPane: Boolean = true) extends Container with SizeSupport wi
     future = future.flatMap { _ =>
       Popup._active += this
       sequential(
-        position.center := ui.size.center,
-        position.y @= ui.size.height,
-        display @= Display.Block,
-        glassPane.foreach(_.backgroundAlpha @= 0.0),
-        glassPane.foreach(_.display @= Display.Block),
+        IO(position.center := ui.size.center),
+        IO(position.y @= ui.size.height),
+        IO(display @= Display.Block),
+        IO(glassPane.foreach(_.backgroundAlpha @= 0.0)),
+        IO(glassPane.foreach(_.display @= Display.Block)),
         parallel(
           positionProperty.to(positionDestination).in(speed).easing(easing),
           glassPane.map { gp =>
             gp.backgroundAlpha.to(0.5).in(speed).easing(easing)
           }.getOrElse(Task.None)
         ),
-        positionProperty := positionDestination
+        IO(positionProperty := positionDestination)
       ).start().future.map(_ => ())
     }
     future
@@ -78,9 +79,9 @@ class Popup(showGlassPane: Boolean = true) extends Container with SizeSupport wi
             gp.backgroundAlpha.to(0.0).in(speed).easing(easing)
           }.getOrElse(Task.None)
         ),
-        display @= Display.None,
-        glassPane.foreach(_.display @= Display.None),
-        glassPane.foreach(_.element.style.pointerEvents = "auto")
+        IO(display @= Display.None),
+        IO(glassPane.foreach(_.display @= Display.None)),
+        IO(glassPane.foreach(_.element.style.pointerEvents = "auto"))
       ).start().future.map(_ => ())
     }
     future

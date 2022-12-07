@@ -57,7 +57,7 @@ object Version {
 
   private val Matcher: Regex = """(\d+)[.]?(\d*)[.]?(\d*)[.]?(\d*)[-]?(.*)""".r
 
-  implicit val rw: ReaderWriter[Version] = ReaderWriter(_.toString, v => apply(v.asStr.value))
+  implicit val rw: RW[Version] = RW.from(_.toString, v => apply(v.asStr.value))
 
   def apply(version: String): Version = version match {
     case Version(v) => v

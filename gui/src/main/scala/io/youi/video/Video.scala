@@ -1,15 +1,15 @@
 package io.youi.video
 
+import cats.effect.unsafe.implicits.global
+import cats.effect.{Deferred, IO}
 import io.youi._
 import io.youi.drawable.{Context, Drawable}
 import io.youi.image.resize.ImageResizer
 import io.youi.image.{CanvasImage, Image}
-import io.youi.net.URL
 import io.youi.util.CanvasPool
 import org.scalajs.dom.{Event, File, html}
 import reactify._
-
-import scala.concurrent.{Future, Promise}
+import spice.net.URL
 
 class Video(private[youi] val element: html.Video) extends Drawable {
   def isEmpty: Boolean = false
@@ -81,15 +81,15 @@ class Video(private[youi] val element: html.Video) extends Drawable {
   def isPaused: Boolean = element.paused
   def isEnded: Boolean = element.ended
 
-  def seek(position: Double): Future[Unit] = if (this.position() != position) {
-    val promise = Promise[Unit]()
+  def seek(position: Double): IO[Unit] = if (this.position() != position) {
+    val d = Deferred[IO, Unit]
     this.position.once(_ => {
-      promise.success(())
+      d.flatMap(_.complete(())).unsafeRunAndForget()
     }, d => math.abs(position - d) <= 1.0)
     this.position @= position
-    promise.future
+    d.flatMap(_.get)
   } else {
-    Future.successful(())
+    IO.unit
   }
 
   def createImage(): Image = {
@@ -122,30 +122,30 @@ object Video {
 
   def isVideo(file: File): Boolean = file.`type`.startsWith("video/")
 
-  def apply(file: File, autoPlay: Boolean, loop: Boolean, muted: Boolean): Future[Video] = {
+  def apply(file: File, autoPlay: Boolean, loop: Boolean, muted: Boolean): IO[Video] = {
     val url = org.scalajs.dom.URL.createObjectURL(file)
     apply(url, autoPlay, loop, muted)
   }
 
-  def apply(url: URL, autoPlay: Boolean, loop: Boolean, muted: Boolean): Future[Video] = {
+  def apply(url: URL, autoPlay: Boolean, loop: Boolean, muted: Boolean): IO[Video] = {
     apply(url.toString, autoPlay, loop, muted)
   }
 
   def apply(url: String,
             autoPlay: Boolean,
             loop: Boolean,
-            muted: Boolean): Future[Video] = {
+            muted: Boolean): IO[Video] = {
     val element: html.Video = dom.create[html.Video]("video")
     element.autoplay = autoPlay
     element.loop = loop
     element.muted = muted
-    val promise = Promise[Video]()
+    val d = Deferred[IO, Video]
     element.addEventListener("loadedmetadata", (_: Event) => {
       val v = new Video(element)
       v.init(autoPlay, loop, muted)
-      promise.success(v)
+      d.flatMap(_.complete(v)).unsafeRunAndForget()
     })
     element.src = url
-    promise.future
+    d.flatMap(_.get)
   }
 }

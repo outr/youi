@@ -1,6 +1,6 @@
 package io.youi.font
 
-import io.youi.net._
+import spice.net._
 
 object FontAwesome extends FontAwesome {
   var url: URL = url"https://kit.fontawesome.com/afbab8b8a9.js"

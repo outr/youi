@@ -1,7 +1,6 @@
 package io.youi.util
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import cats.effect.IO
 
 trait ObjectPool[T] {
   private var created = 0
@@ -35,13 +34,12 @@ trait ObjectPool[T] {
     }
   }
 
-  protected def future[R](f: T => Future[R]): Future[R] = {
-    val t = apply()
-    val fut = f(t)
-    fut.onComplete { _ =>
-      restore(t)
+  protected def io[R](f: T => IO[R]): IO[R] = {
+    IO(apply()).flatMap { value =>
+      IO(f(value)).flatten.guarantee(IO {
+        restore(value)
+      })
     }
-    fut
   }
 
   def instances: Int = created
@@ -53,15 +51,5 @@ object ObjectPool {
 }
 
 class PublicObjectPool[T](createFunction: () => T) extends ObjectPool[T] {
-  override def get: Option[T] = super.get
-
-  override def apply(): T = super.apply()
-
-  override def restore(t: T): Unit = super.restore(t)
-
-  override def use[R](f: (T) => R): R = super.use(f)
-
-  override def future[R](f: (T) => Future[R]): Future[R] = super.future(f)
-
   override protected def create(): T = createFunction()
 }

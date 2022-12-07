@@ -1,11 +1,11 @@
 package io.youi.ajax
 
 import cats.effect.IO
-import io.youi.http.HttpMethod
-import io.youi.net.URL
 import org.scalajs.dom
 import org.scalajs.dom.XMLHttpRequest
 import scribe.Logging
+import spice.http.HttpMethod
+import spice.net.URL
 
 import scala.collection.immutable.Queue
 import scala.util.Try

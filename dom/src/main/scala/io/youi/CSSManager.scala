@@ -1,7 +1,6 @@
 package io.youi
 
 import org.scalajs.dom._
-import org.scalajs.dom.raw.{CSSPageRule, CSSStyleDeclaration, CSSStyleSheet}
 
 object CSSManager {
   private lazy val style: html.Style = {

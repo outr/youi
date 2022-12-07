@@ -1,5 +1,6 @@
 package io.youi.component
 
+import cats.effect.IO
 import io.youi._
 import io.youi.component.support.{MarginSupport, OverflowSupport, PositionSupport, SizeSupport}
 import io.youi.component.types.{Display, Overflow, PositionType, UserSelect}
@@ -126,7 +127,7 @@ class Sidebar(container: Option[Component with SizeSupport with MarginSupport],
   private def show(): Future[Unit] = {
     future = future.flatMap { _ =>
       sequential(
-        glassPane.foreach(_.display @= Display.Block),
+        IO(glassPane.foreach(_.display @= Display.Block)),
         position.x.to(0.0).by(speed).easing(easing)
       ).start().future.map(_ => ())
     }
@@ -137,7 +138,7 @@ class Sidebar(container: Option[Component with SizeSupport with MarginSupport],
     future = future.flatMap { _ =>
       sequential(
         position.x.to(-width).by(speed).easing(easing),
-        glassPane.foreach(_.display @= Display.None)
+        IO(glassPane.foreach(_.display @= Display.None))
       ).start().future.map(_ => ())
     }
     future

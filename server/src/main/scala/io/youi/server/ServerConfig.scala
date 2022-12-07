@@ -12,7 +12,7 @@ class ServerConfig(server: Server) {
   /**
     * The Server name set in the HTTP header
     */
-  val name: Var[String] = Var(Profig("server.name").as[String]("youi"))
+  val name: Var[String] = Var(Profig("server.name").asOr[String]("youi"))
 
   object session {
     private val config = Profig("session").as[SessionConfig]
@@ -66,8 +66,8 @@ class ServerConfig(server: Server) {
     * To easily enable HTTPS just pass "-listeners.https.enabled=true".
     */
   lazy val listeners: Var[List[ServerSocketListener]] = prop(List(
-    Profig("listeners.http").as[HttpServerListener](HttpServerListener()),
-    Profig("listeners.https").as[HttpsServerListener](HttpsServerListener())
+    Profig("listeners.http").asOr[HttpServerListener](HttpServerListener()),
+    Profig("listeners.https").asOr[HttpsServerListener](HttpsServerListener())
   ))
 
   def enabledListeners: List[ServerSocketListener] = listeners().filter(_.enabled)

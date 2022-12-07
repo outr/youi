@@ -1,14 +1,16 @@
 package io.youi.client.intercept
 
+import cats.effect.IO
 import io.youi.http.{HttpRequest, HttpResponse}
 
 import scala.concurrent.Future
 import scala.concurrent.duration.FiniteDuration
+import scala.util.Try
 
 trait Interceptor {
-  def before(request: HttpRequest): Future[HttpRequest]
+  def before(request: HttpRequest): IO[HttpRequest]
 
-  def after(request: HttpRequest, response: HttpResponse): Future[HttpResponse]
+  def after(request: HttpRequest, result: Try[HttpResponse]): IO[Try[HttpResponse]]
 }
 
 object Interceptor {

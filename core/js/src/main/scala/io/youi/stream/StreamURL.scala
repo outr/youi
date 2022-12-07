@@ -6,6 +6,8 @@ import io.youi.http.HttpMethod
 import io.youi.net.URL
 import org.scalajs.dom.FormData
 
+import scala.util.{Failure, Success}
+
 object StreamURL {
   def stream(url: URL,
              method: HttpMethod = HttpMethod.Post,
@@ -16,8 +18,8 @@ object StreamURL {
              responseType: String = ""): IO[String] = {
     val request = new AjaxRequest(url, method, data, timeout, headers + ("streaming" -> "true"), withCredentials, responseType)
     request.send().map {
-      case Left(throwable) => throw throwable
-      case Right(req) => req.responseText
+      case Failure(throwable) => throw throwable
+      case Success(req) => req.responseText
     }
   }
 }

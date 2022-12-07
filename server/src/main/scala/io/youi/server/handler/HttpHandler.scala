@@ -1,15 +1,14 @@
 package io.youi.server.handler
 
+import cats.effect.IO
 import io.youi.http.content.Content
 import io.youi.http.{HttpConnection, HttpStatus, StringHeaderKey}
 import scribe.Priority
 
-import scala.concurrent.Future
-
 trait HttpHandler extends Ordered[HttpHandler] {
   def priority: Priority = Priority.Normal
 
-  def handle(connection: HttpConnection): Future[HttpConnection]
+  def handle(connection: HttpConnection): IO[HttpConnection]
 
   override def compare(that: HttpHandler): Int = Priority.PriorityOrdering.compare(this.priority, that.priority)
 }

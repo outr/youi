@@ -3,7 +3,7 @@ package io.youi.http.content
 import java.net.{HttpURLConnection, JarURLConnection, URL}
 
 import io.youi.net.ContentType
-import io.youi.stream.IO
+import io.youi.stream.Stream
 import sun.net.www.protocol.file.FileURLConnection
 
 case class URLContent(url: URL, contentType: ContentType, lastModifiedOverride: Option[Long] = None) extends Content {
@@ -37,5 +37,5 @@ case class URLContent(url: URL, contentType: ContentType, lastModifiedOverride: 
 
   override def toString: String = s"URLContent(url: $url, contentType: $contentType)"
 
-  override def asString: String = IO.stream(url, new StringBuilder).toString
+  override def asString: String = Stream.apply(url, new StringBuilder).toString
 }

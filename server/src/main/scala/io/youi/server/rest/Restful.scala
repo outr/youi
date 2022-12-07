@@ -1,16 +1,16 @@
 package io.youi.server.rest
 
+import cats.effect.IO
 import io.youi.ValidationError
 import io.youi.http.{HttpConnection, HttpStatus}
 import io.youi.server.handler.HttpHandler
 import fabric.rw._
 
-import scala.concurrent.Future
 import scala.concurrent.duration.Duration
 import scala.language.experimental.macros
 
 trait Restful[Request, Response] {
-  def apply(connection: HttpConnection, request: Request): Future[RestfulResponse[Response]]
+  def apply(connection: HttpConnection, request: Request): IO[RestfulResponse[Response]]
 
   def validations: List[RestfulValidation[Request]] = Nil
 

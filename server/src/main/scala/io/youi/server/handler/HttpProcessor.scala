@@ -1,10 +1,8 @@
 package io.youi.server.handler
 
+import cats.effect.IO
 import io.youi.http.HttpConnection
 import io.youi.server.validation.{ValidationResult, Validator}
-import scribe.Execution.global
-
-import scala.concurrent.Future
 
 /**
   * HttpProcessor extends HttpHandler to provide a clean and efficient mechanism to manage proper
@@ -17,14 +15,14 @@ trait HttpProcessor[T] extends HttpHandler {
 
   protected def matches(connection: HttpConnection): Option[T]
 
-  protected def process(connection: HttpConnection, value: T): Future[HttpConnection]
+  protected def process(connection: HttpConnection, value: T): IO[HttpConnection]
 
-  override def handle(connection: HttpConnection): Future[HttpConnection] = {
+  override def handle(connection: HttpConnection): IO[HttpConnection] = {
     matches(connection).map { value =>
       ValidatorHttpHandler.validate(connection, validators(connection)).flatMap {
         case ValidationResult.Continue(c) => process(c, value)
-        case vr => Future.successful(vr.connection)
+        case vr => IO.pure(vr.connection)
       }
-    }.getOrElse(Future.successful(connection))
+    }.getOrElse(IO.pure(connection))
   }
 }

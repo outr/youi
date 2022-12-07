@@ -1,16 +1,14 @@
 package io.youi.server.dsl
 
+import cats.effect.IO
 import io.youi.http.HttpConnection
-import scribe.Execution.global
 
-import scala.concurrent.Future
-
-class ActionFilter(f: HttpConnection => Future[HttpConnection]) extends ConnectionFilter {
-  override def filter(connection: HttpConnection): Future[FilterResponse] = {
+class ActionFilter(f: HttpConnection => IO[HttpConnection]) extends ConnectionFilter {
+  override def filter(connection: HttpConnection): IO[FilterResponse] = {
     f(connection).map(FilterResponse.Continue)
   }
 }
 
 object ActionFilter {
-  def apply(f: HttpConnection => Future[HttpConnection]): ActionFilter = new ActionFilter(f)
+  def apply(f: HttpConnection => IO[HttpConnection]): ActionFilter = new ActionFilter(f)
 }

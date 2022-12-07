@@ -1,5 +1,6 @@
 package io.youi.server.rest
 
+import cats.effect.IO
 import fabric._
 import fabric.parse.JsonParser
 import io.youi.ValidationError
@@ -12,15 +13,14 @@ import fabric.rw._
 import scribe.Execution.global
 
 import scala.collection.mutable.ListBuffer
-import scala.concurrent.Future
 
 class RestfulHandler[Request, Response](restful: Restful[Request, Response])
                                        (implicit writer: Writer[Request], reader: Reader[Response]) extends HttpHandler {
-  override def handle(connection: HttpConnection): Future[HttpConnection] = {
+  override def handle(connection: HttpConnection): IO[HttpConnection] = {
     // Build JSON
-    val future: Future[RestfulResponse[Response]] = RestfulHandler.jsonFromConnection(connection) match {
+    val io: IO[RestfulResponse[Response]] = RestfulHandler.jsonFromConnection(connection) match {
       case Left(err) => {
-        Future.successful(restful.error(List(err), err.status))
+        IO.pure(restful.error(List(err), err.status))
       }
       case Right(json) => {
         // Decode request
@@ -29,21 +29,21 @@ class RestfulHandler[Request, Response](restful: Restful[Request, Response])
         RestfulHandler.validate(req, restful.validations) match {
           case Left(errors) => {
             val status = errors.map(_.status).max
-            Future.successful(restful.error(errors, status))
+            IO.pure(restful.error(errors, status))
           }
           case Right(request) => try {
             restful(connection, request)
           } catch {
             case t: Throwable => {
               val err = ValidationError(s"Error while calling restful: ${t.getMessage}", ValidationError.Internal)
-              Future.successful(restful.error(List(err), err.status))
+              IO.pure(restful.error(List(err), err.status))
             }
           }
         }
       }
     }
 
-    future.map { result =>
+    io.map { result =>
       // Encode response
       val responseJsonString = JsonParser.format(result.response.json)
 

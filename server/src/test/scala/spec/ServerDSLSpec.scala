@@ -1,14 +1,14 @@
 package spec
 
-import testy._
+import cats.effect.testing.scalatest.AsyncIOSpec
 import io.youi.http.{HttpConnection, HttpMethod, HttpRequest, HttpStatus}
 import io.youi.net._
 import io.youi.server.dsl._
 import io.youi.server.{DefaultErrorHandler, Server}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AsyncWordSpec
 
-import scribe.Execution.global
-
-class ServerDSLSpec extends Spec {
+class ServerDSLSpec extends AsyncWordSpec with AsyncIOSpec with Matchers {
   private lazy val text = "Hello, World!".withContentType(ContentType.`text/plain`)
   private lazy val html = """<html>
     <head>

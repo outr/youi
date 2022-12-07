@@ -1,5 +1,6 @@
 package io.youi.server.handler
 
+import cats.effect.IO
 import fabric.MergeType
 import fabric.parse.JsonParser
 
@@ -16,7 +17,6 @@ import scribe.Execution.global
 import scribe.Priority
 
 import scala.annotation.tailrec
-import scala.concurrent.Future
 
 /**
   * LanguageSupport adds simple multi-lingual support to HTML files
@@ -35,8 +35,8 @@ class LanguageSupport(val default: Locale = Locale.ENGLISH, languagePath: Path =
   private val languageConfig = new ConcurrentHashMap[String, Profig]
   private val cookieName = "lang"
 
-  override def handle(connection: HttpConnection): Future[HttpConnection] = if (connection.request.url.path == languagePath) {
-    Future {
+  override def handle(connection: HttpConnection): IO[HttpConnection] = if (connection.request.url.path == languagePath) {
+    IO {
       val (c, l) = locales(connection)
       val config = firstConfig(l)
       c.modify { response =>
@@ -51,7 +51,7 @@ class LanguageSupport(val default: Locale = Locale.ENGLISH, languagePath: Path =
       .map(_.asString)
       .map(translate(connection, _))
       .getOrElse(connection)
-    Future.successful(updated)
+    IO.pure(updated)
   }
 
   def locales(connection: HttpConnection): (HttpConnection, List[String]) = {

@@ -1,9 +1,10 @@
 package io.youi.client
 
+import cats.effect.IO
+
 import java.io.IOException
 import java.net.URI
 import java.nio.ByteBuffer
-
 import io.undertow.protocols.ssl.UndertowXnioSsl
 import io.undertow.server.DefaultByteBufferPool
 import io.undertow.util.Headers
@@ -72,7 +73,7 @@ class WebSocketClient(url: URL,
 
   private var backlog = List.empty[AnyRef]
 
-  def connect(): Future[ConnectionStatus] = if (_channel.get.isEmpty) {
+  def connect(): IO[ConnectionStatus] = if (_channel.get.isEmpty) {
     val promise = Promise[ConnectionStatus]()
     connectionBuilder.connect().addNotifier(new IoFuture.HandlingNotifier[WebSocketChannel, Any] {
       override def handleDone(data: WebSocketChannel, attachment: Any): Unit = {
@@ -115,7 +116,7 @@ class WebSocketClient(url: URL,
         _channel @= None
         if (autoReconnect) {
           scribe.warn(s"Connection closed or unable to connect to $url (${exception.getMessage}). Trying again in ${reconnectDelay.toSeconds} seconds...")
-          Time.delay(reconnectDelay).foreach(_ => connect())
+          IO.sleep(reconnectDelay).map(_ => connect())
         } else {
           scribe.warn("Connection closed or unable to connect.")
         }

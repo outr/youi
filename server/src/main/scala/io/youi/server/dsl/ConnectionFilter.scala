@@ -1,13 +1,11 @@
 package io.youi.server.dsl
 
+import cats.effect.IO
 import io.youi.http.HttpConnection
 import io.youi.server.handler.HttpHandler
-import scribe.Execution.global
-
-import scala.concurrent.Future
 
 trait ConnectionFilter extends HttpHandler {
-  def filter(connection: HttpConnection): Future[FilterResponse]
+  def filter(connection: HttpConnection): IO[FilterResponse]
 
   protected def continue(connection: HttpConnection): FilterResponse = FilterResponse.Continue(connection)
   protected def stop(connection: HttpConnection): FilterResponse = FilterResponse.Stop(connection)
@@ -27,13 +25,13 @@ trait ConnectionFilter extends HttpHandler {
     connection.store(ConnectionFilter.LastKey) = current ::: filters.toList
   }
 
-  override def handle(connection: HttpConnection): Future[HttpConnection] = {
+  override def handle(connection: HttpConnection): IO[HttpConnection] = {
     filter(connection).flatMap {
       case FilterResponse.Continue(c) => {
         val last = c.store.getOrElse[List[ConnectionFilter]](ConnectionFilter.LastKey, Nil)
         ConnectionFilter.recurse(c, last).map(_.connection)
       }
-      case FilterResponse.Stop(c) => Future.successful(c)
+      case FilterResponse.Stop(c) => IO.pure(c)
     }
   }
 }
@@ -41,12 +39,12 @@ trait ConnectionFilter extends HttpHandler {
 object ConnectionFilter {
   private val LastKey: String = "ConnectionFilterLast"
 
-  def recurse(connection: HttpConnection, filters: List[ConnectionFilter]): Future[FilterResponse] = if (filters.isEmpty) {
-    Future.successful(FilterResponse.Continue(connection))
+  def recurse(connection: HttpConnection, filters: List[ConnectionFilter]): IO[FilterResponse] = if (filters.isEmpty) {
+    IO.pure(FilterResponse.Continue(connection))
   } else {
     val filter = filters.head
     filter.filter(connection).flatMap {
-      case stop: FilterResponse.Stop => Future.successful(stop)
+      case stop: FilterResponse.Stop => IO.pure(stop)
       case FilterResponse.Continue(c) => recurse(c, filters.tail)
     }
   }

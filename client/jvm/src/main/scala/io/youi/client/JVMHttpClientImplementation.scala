@@ -1,5 +1,7 @@
 package io.youi.client
 
+import cats.effect.{Deferred, IO}
+
 import java.io.{File, IOException}
 import java.net.{InetAddress, Socket}
 import java.security.SecureRandom
@@ -7,17 +9,18 @@ import java.security.cert.X509Certificate
 import java.util
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicLong
-
 import io.youi.http._
 import io.youi.http.content._
 import io.youi.net.ContentType
+import io.youi.stream
 import io.youi.stream._
+
 import javax.net.ssl._
 import okhttp3.Dns
 
-import scala.concurrent.{ExecutionContext, Future, Promise}
+import scala.collection.mutable
 import scala.jdk.CollectionConverters._
-import scala.util.{Failure, Success}
+import scala.util.{Failure, Success, Try}
 
 /**
   * Asynchronous HttpClient for simple request response support.
@@ -118,19 +121,17 @@ class JVMHttpClientImplementation(config: HttpClientConfig) extends HttpClientIm
     HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid)
   }*/
 
-  override def send(request: HttpRequest,
-                    executionContext: ExecutionContext): Future[HttpResponse] = {
+  override def send(request: HttpRequest): IO[Try[HttpResponse]] = Deferred[IO, Try[HttpResponse]].flatMap { deferred =>
     val req = requestToOk(request)
-    val promise = Promise[HttpResponse]()
     client.newCall(req).enqueue(new okhttp3.Callback {
       override def onResponse(call: okhttp3.Call, res: okhttp3.Response): Unit = {
         val response = responseFromOk(res)
-        promise.success(response)
+        deferred.complete(Success(response))
       }
 
-      override def onFailure(call: okhttp3.Call, exc: IOException): Unit = promise.failure(exc)
+      override def onFailure(call: okhttp3.Call, exc: IOException): Unit = deferred.complete(Failure(exc))
     })
-    JVMHttpClientImplementation.process(promise.future)(executionContext)
+    JVMHttpClientImplementation.process(deferred.get)
   }
 
   private def requestToOk(request: HttpRequest): okhttp3.Request = {
@@ -198,7 +199,7 @@ class JVMHttpClientImplementation(config: HttpClientConfig) extends HttpClientIm
       } else {
         val suffix = contentType.extension.getOrElse("client")
         val file = File.createTempFile("youi", s".$suffix", new File(config.saveDirectory))
-        IO.stream(responseBody.byteStream(), file)
+        stream.Stream.apply(responseBody.byteStream(), file)
         Content.file(file, contentType)
       }
     }
@@ -218,7 +219,7 @@ class JVMHttpClientImplementation(config: HttpClientConfig) extends HttpClientIm
   override def content2String(content: Content): String = content match {
     case c: StringContent => c.value
     case c: BytesContent => String.valueOf(c.value)
-    case c: FileContent => IO.stream(c.file, new StringBuilder).toString
+    case c: FileContent => stream.Stream.apply(c.file, new mutable.StringBuilder).toString
     case _ => throw new RuntimeException(s"$content not supported")
   }
 
@@ -229,7 +230,7 @@ class JVMHttpClientImplementation(config: HttpClientConfig) extends HttpClientIm
   protected def content2Bytes(content: Content): Array[Byte] = content match {
     case c: StringContent => c.value.getBytes("UTF-8")
     case c: BytesContent => c.value
-    case c: FileContent => IO.stream(c.file, new StringBuilder).toString.getBytes("UTF-*")
+    case c: FileContent => stream.Stream.apply(c.file, new mutable.StringBuilder).toString.getBytes("UTF-*")
     case _ => throw new RuntimeException(s"$content not supported")
   }
 
@@ -245,20 +246,21 @@ object JVMHttpClientImplementation {
   private[client] val _successful = new AtomicLong(0L)
   private[client] val _failure = new AtomicLong(0L)
 
-  private[client] def process(future: Future[HttpResponse])(implicit executionContext: ExecutionContext): Future[HttpResponse] = {
+  private[client] def process(io: IO[Try[HttpResponse]]): IO[Try[HttpResponse]] = {
     _total.incrementAndGet()
     _active.incrementAndGet()
-    future.onComplete {
-      case Success(_) => {
-        _successful.incrementAndGet()
-        _active.decrementAndGet()
-      }
-      case Failure(_) => {
-        _failure.incrementAndGet()
-        _active.decrementAndGet()
-      }
+    io.flatMap { t =>
+      IO {
+        t match {
+          case Success(_) =>
+            _successful.incrementAndGet()
+            _active.decrementAndGet()
+          case Failure(_) =>
+            _failure.incrementAndGet()
+            _active.decrementAndGet()
+        }
+      }.map(_ => t)
     }
-    future
   }
 
   def total: Long = _total.get()

@@ -40,13 +40,12 @@ object OpenTypeFont {
   def fromPath(path: String, cached: Boolean = true): Future[Font] = {
     val openTypeFuture = pathMap.get(path) match {
       case Some(font) => Future.successful(font)
-      case None => {
+      case None =>
         opentype.OpenType.load(path).map { otf =>
           val font = new OpenTypeFont(otf)
           pathMap += path -> font
           font
         }
-      }
     }
     if (cached) {
       openTypeFuture.map(_.cached)

@@ -1,5 +1,6 @@
 package io.youi
 
+import fabric.define.DefType
 import fabric.rw._
 
 import scala.util.matching.Regex
@@ -57,7 +58,7 @@ object Version {
 
   private val Matcher: Regex = """(\d+)[.]?(\d*)[.]?(\d*)[.]?(\d*)[-]?(.*)""".r
 
-  implicit val rw: RW[Version] = RW.from(_.toString, v => apply(v.asStr.value))
+  implicit val rw: RW[Version] = RW.from(_.toString, v => apply(v.asStr.value), DefType.Str)
 
   def apply(version: String): Version = version match {
     case Version(v) => v

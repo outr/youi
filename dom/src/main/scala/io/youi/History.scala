@@ -17,7 +17,7 @@ object History {
     * Defaults to false.
     */
   val alwaysReload: Var[Boolean] = Var(false)
-  private val currentURL = Var[URL](URL(document.location.href))
+  private val currentURL = Var[URL](URL.parse(document.location.href))
   val url: Val[URL] = Val(currentURL)
   val stateChange: Channel[HistoryStateChange] = Channel[HistoryStateChange]
 
@@ -25,7 +25,7 @@ object History {
 
   window.addEventListener("popstate", (evt: PopStateEvent) => {
     val urlString = document.location.href
-    val newURL = URL(urlString)
+    val newURL = URL.parse(urlString)
     if (newURL != url()) {
       currentURL @= newURL
       stateChange @= HistoryStateChange(newURL, StateType.Pop, evt.state)
@@ -109,7 +109,7 @@ object History {
       evt.preventDefault()
       evt.stopPropagation()
 
-      push(URL(anchor.href))
+      push(URL.parse(anchor.href))
     }
     anchor
   }

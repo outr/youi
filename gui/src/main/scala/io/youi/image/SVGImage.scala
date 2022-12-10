@@ -29,7 +29,7 @@ class SVGImage private(private val svg: SVGSVGElement,
       Deferred[IO, Unit].flatMap { d =>
         SVGImage.drawToCanvas(canvas, svg, 0.0, 0.0, canvas.width, canvas.height).flatMap { _ =>
           modified @= System.currentTimeMillis()
-          d.complete(d)
+          d.complete(())
         }.map { _ =>
           d
         }

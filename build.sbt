@@ -66,7 +66,7 @@ val fs2Version: String = "3.2.12"
 
 val scalaTestVersion: String = "3.2.13"
 
-val catsEffectTestVersion: String = "1.4.0"
+val catsEffectTestVersion: String = "1.5.0"
 
 ThisBuild / evictionErrorLevel := Level.Info
 

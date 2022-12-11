@@ -5,15 +5,13 @@ import io.youi.component.support.{PositionSupport, SizeSupport}
 import io.youi.component.types.{Display, PositionType, UserSelect}
 import io.youi.easing.Easing
 import io.youi.task._
-import io.youi.{Initializable, ui}
+import io.youi.{Chained, Initializable, ui}
 import reactify.{Mutable, Stateful, Var}
-import scribe.Execution.global
 
-import scala.concurrent.Future
 import scala.concurrent.duration._
 
 class Popup(showGlassPane: Boolean = true) extends Container with SizeSupport with PositionSupport with Initializable {
-  private var future: Future[Unit] = Future.successful(())
+  private val chained = Chained(1)
 
   def preferredWidth: Double = 600.0
   def preferredHeight: Double = 600.0
@@ -45,11 +43,12 @@ class Popup(showGlassPane: Boolean = true) extends Container with SizeSupport wi
     }
   }
 
-  def show(): Future[Unit] = {
-    init()
+  def show(): IO[Unit] = chained {
+    IO {
+      init()
 
-    future = future.flatMap { _ =>
       Popup._active += this
+    }.flatMap { _ =>
       sequential(
         IO(position.center := ui.size.center),
         IO(position.y @= ui.size.height),
@@ -63,15 +62,15 @@ class Popup(showGlassPane: Boolean = true) extends Container with SizeSupport wi
           }.getOrElse(Task.None)
         ),
         IO(positionProperty := positionDestination)
-      ).start().future.map(_ => ())
+      ).start().map(_ => ())
     }
-    future
   }
 
-  def hide(): Future[Unit] = {
-    future = future.flatMap { _ =>
+  def hide(): IO[Unit] = chained {
+    IO {
       Popup._active -= this
       glassPane.foreach(_.element.style.pointerEvents = "none")
+    }.flatMap { _ =>
       sequential(
         parallel(
           position.y.to(ui.size.height).in(speed).easing(easing),
@@ -82,9 +81,8 @@ class Popup(showGlassPane: Boolean = true) extends Container with SizeSupport wi
         IO(display @= Display.None),
         IO(glassPane.foreach(_.display @= Display.None)),
         IO(glassPane.foreach(_.element.style.pointerEvents = "auto"))
-      ).start().future.map(_ => ())
+      ).start().map(_ => ())
     }
-    future
   }
 
   protected def positionProperty: Stateful[Double] with Mutable[Double] = position.middle

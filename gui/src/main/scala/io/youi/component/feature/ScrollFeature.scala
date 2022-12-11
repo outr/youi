@@ -1,5 +1,6 @@
 package io.youi.component.feature
 
+import cats.effect.IO
 import io.youi.{AnimationFrame, ui}
 import io.youi.component.Component
 import io.youi.component.types.Prop
@@ -53,7 +54,7 @@ class ScrollFeature(component: Component) extends Feature {
          horizontal: Boolean = false,
          alignBottom: Boolean = false,
          alignRight: Boolean = false,
-         parent: TaskSupport = ui): TaskInstance = {
+         parent: TaskSupport = ui): IO[TaskInstance] = {
     val parentRect = component.getBoundingClientRect()
     val childRect = child.getBoundingClientRect()
     val v = if (vertical) {

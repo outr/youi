@@ -1,22 +1,19 @@
 package io.youi.component.support
 
 import cats.effect.IO
-import io.youi.{Initializable, Plane, dom}
+import io.youi.{Chained, Initializable, Plane, dom}
 import io.youi.component.Component
 import io.youi.component.feature.{HeightFeature, WidthFeature}
 import io.youi.component.types.{Display, Overflow, SizeProperty, SizeType}
 import io.youi.easing.Easing
 import io.youi.task._
 import reactify.{Val, Var}
-import scribe.Execution.global
-
-import scala.concurrent.Future
 import scala.concurrent.duration._
 
 abstract class Collapsible extends Component(dom.create.div) with InternalContainerSupport[Component] with SizeSupport with OverflowSupport with Initializable {
   protected def container: Component
 
-  protected var future: Future[Unit] = Future.successful(())
+  protected lazy val chained = Chained(1)
 
   protected def startCollapsed: Boolean = true
 
@@ -63,46 +60,46 @@ abstract class Collapsible extends Component(dom.create.div) with InternalContai
     }
   }
 
-  private def expand(): Future[Unit] = {
+  private def expand(): IO[Unit] = {
     init()
     if (animate) {
-      future = future.flatMap { _ =>
+      chained {
         sequential(
           IO(prop @= 0.0),
           IO(display @= Display.Block),
           prop.to(expanded).in(speed).easing(easing),
 //          prop := expanded
           IO(prop.`type` @= SizeType.Auto)
-        ).start().future.map(_ => ())
+        ).start().map(_ => ())
       }
-      future
     } else {
-      future = future.map { _ =>
-        prop.set(0.0, SizeType.Auto)
-        display @= Display.Block
+      chained {
+        IO {
+          prop.set(0.0, SizeType.Auto)
+          display @= Display.Block
+        }
       }
-      future
     }
   }
 
-  private def collapse(): Future[Unit] = {
+  private def collapse(): IO[Unit] = {
     init()
     if (animate) {
-      future = future.flatMap { _ =>
+      chained {
         sequential(
           IO(prop.`type` @= SizeType.Pixel),
           IO(prop @= expanded),
           prop.to(0.0).in(speed).easing(easing),
           IO(display @= Display.None)
-        ).start().future.map(_ => ())
+        ).start().map(_ => ())
       }
-      future
     } else {
-      future = future.map { _ =>
-        prop.set(0.0, SizeType.Pixel)
-        display @= Display.None
+      chained {
+        IO {
+          prop.set(0.0, SizeType.Pixel)
+          display @= Display.None
+        }
       }
-      future
     }
   }
 }

@@ -1,12 +1,11 @@
 package io.youi.task
 
+import cats.effect.unsafe.implicits.global
+import cats.effect.{Deferred, IO}
 import io.youi.Updates
 import reactify.reaction.Reaction
 
-import scala.concurrent.{Future, Promise}
-
-class TaskInstance(task: Task, updates: Updates) {
-  private val promise = Promise[Double]()
+case class TaskInstance(task: Task, updates: Updates, deferred: Deferred[IO, Either[Throwable, Double]]) {
   private var reaction: Reaction[Double] = _
   private var first = true
   private var elapsed: Double = 0.0
@@ -25,25 +24,36 @@ class TaskInstance(task: Task, updates: Updates) {
         step = 0.0
         task.update(delta, first) match {
           case Conclusion.Continue => // Keep going
-          case Conclusion.Finished => {
+          case Conclusion.Finished =>
             updates.delta.reactions -= reaction
-            promise.success(elapsed)
-          }
+            deferred.complete(Right(elapsed)).unsafeRunAndForget()
         }
         first = false
       }
     }
   }
 
-  val future: Future[Double] = promise.future
-
-  def start(): Future[Double] = {
+  def start(): IO[Double] = IO {
     updates.delta.reactions += reaction
-    future
+  }.flatMap { _ =>
+    deferred.get.map {
+      case Left(t) => throw t
+      case Right(elapsed) => elapsed
+    }
   }
 
   def pause(): Unit = paused = true
   def play(): Unit = paused = false
 
-  def cancel(): Unit = promise.failure(new TaskCancelledException)
+  def cancel(): Unit = IO {
+    updates.delta.reactions -= reaction
+  }.flatMap { _ =>
+    deferred.complete(Left(new TaskCancelledException))
+  }
+}
+
+object TaskInstance {
+  def apply(task: Task, updated: Updates): IO[TaskInstance] = Deferred[IO, Either[Throwable, Double]].map { d =>
+    TaskInstance(task, updated, d)
+  }
 }

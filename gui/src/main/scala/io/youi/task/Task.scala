@@ -1,5 +1,6 @@
 package io.youi.task
 
+import cats.effect.IO
 import io.youi.ui
 
 trait Task {
@@ -9,7 +10,7 @@ trait Task {
 
   def andThen(that: Task): Task = new Sequential(List(this, that))
 
-  def start(taskSupport: TaskSupport = ui): TaskInstance = taskSupport.start(this)
+  def start(taskSupport: TaskSupport = ui): IO[TaskInstance] = taskSupport.start(this)
 }
 
 object Task {

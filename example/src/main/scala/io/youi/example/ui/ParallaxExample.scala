@@ -4,7 +4,7 @@
 //import io.youi.component.HTMLTextView
 //import io.youi.example.screen.UIExampleScreen
 //import io.youi.font.GoogleFont
-//import io.youi.net._
+//import spice.net._
 //import io.youi.spatial.Dim
 //import io.youi.style.{Overflow, Position}
 //import reactify._

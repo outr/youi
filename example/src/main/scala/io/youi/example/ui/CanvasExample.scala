@@ -1,19 +1,18 @@
 package io.youi.example.ui
 
+import cats.effect.IO
 import io.youi.Color
 import io.youi.component.CanvasView
 import io.youi.component.support.PositionSupport
 import io.youi.drawable.Context
 import io.youi.example.screen.UIExampleScreen
-import io.youi.net._
-
-import scala.concurrent.Future
+import spice.net._
 
 class CanvasExample extends UIExampleScreen {
   override def title: String = "Canvas Example"
   override def path: Path = path"/examples/canvas.html"
 
-  override def createUI(): Future[Unit] = Future.successful {
+  override def createUI(): IO[Unit] = IO {
     val canvas = new CanvasView with PositionSupport {
       position.center := container.size.center
       position.middle := container.size.middle

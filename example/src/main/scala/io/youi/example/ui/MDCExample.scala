@@ -1,22 +1,19 @@
 package io.youi.example.ui
 
-import io.youi.dom
-import io.youi.example.ClientExampleApplication
+import cats.effect.IO
+import io.youi.{Color, dom}
 import io.youi.example.screen.UIExampleScreen
 import io.youi.material._
-import io.youi.net._
-
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import spice.net._
 
 class MDCExample extends UIExampleScreen {
   override def title: String = "MDC Example"
   override def path: Path = path"/examples/mdc.html"
 
-  override def createUI(): Future[Unit] = for {
-    _ <- MaterialComponents.loaded
+  override def createUI(): IO[Unit] = for {
+    _ <- MaterialComponents.waitForLoaded()
   } yield {
-    MaterialComponents.theme.primary := ClientExampleApplication.colors.blue.dark
+    MaterialComponents.theme.primary := Color.DarkBlue //ClientExampleApplication.colors.blue.dark
 
     val chipSet = new MDCChipSet
     chipSet.children += new MDCChip("Chip One")

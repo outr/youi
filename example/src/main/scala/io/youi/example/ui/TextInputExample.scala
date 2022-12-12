@@ -4,7 +4,7 @@
 //import io.youi.component.HTMLTextInput
 //import io.youi.example.screen.UIExampleScreen
 //import io.youi.font.GoogleFont
-//import io.youi.net._
+//import spice.net._
 //import reactify._
 //
 //import scala.concurrent.ExecutionContext.Implicits.global

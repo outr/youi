@@ -133,6 +133,13 @@ lazy val optimizer = project.in(file("optimizer"))
     )
   )
 
+lazy val example = project.in(file("example"))
+  .enablePlugins(ScalaJSPlugin)
+  .settings(
+    name := "youi-example"
+  )
+  .dependsOn(gui)
+
 /*
 lazy val example = crossApplication.in(file("example"))
   .settings(

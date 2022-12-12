@@ -3,7 +3,7 @@
 //import io.youi.component.Scale9
 //import io.youi.example.screen.UIExampleScreen
 //import io.youi.image.Image
-//import io.youi.net._
+//import spice.net._
 //import reactify._
 //
 //import scala.concurrent.Future

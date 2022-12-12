@@ -5,7 +5,7 @@
 //import io.youi.easing.Easing
 //import io.youi.example.screen.UIExampleScreen
 //import io.youi.font.GoogleFont
-//import io.youi.net._
+//import spice.net._
 //import io.youi.style.{Display, HTMLBorder, HTMLBorderStyle}
 //import io.youi.task._
 //

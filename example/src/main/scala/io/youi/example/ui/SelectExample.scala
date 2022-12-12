@@ -4,7 +4,7 @@
 //import io.youi.component.HTMLSelect
 //import io.youi.example.screen.UIExampleScreen
 //import io.youi.font.GoogleFont
-//import io.youi.net._
+//import spice.net._
 //
 //import scala.concurrent.Future
 //import scribe.Execution.global

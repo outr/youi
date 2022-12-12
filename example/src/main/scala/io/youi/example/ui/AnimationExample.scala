@@ -1,5 +1,6 @@
 package io.youi.example.ui
 
+import cats.effect.IO
 import io.youi._
 import io.youi.component.support.{MeasuredSupport, PositionSupport}
 import io.youi.component.types.{PositionType, WhiteSpace}
@@ -8,19 +9,17 @@ import io.youi.easing.Easing
 import io.youi.example.screen.UIExampleScreen
 import io.youi.font.GoogleFont
 import io.youi.image.Image
-import io.youi.net._
 import io.youi.task._
 import reactify._
+import spice.net._
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 import scala.concurrent.duration._
 
 class AnimationExample extends UIExampleScreen {
   override def title: String = "Animation Example"
   override def path: Path = path"/examples/animation.html"
 
-  override def createUI(): Future[Unit] = Image("/images/icon.png").flatMap { img =>
+  override def createUI(): IO[Unit] = Image("/images/icon.png").flatMap { img =>
     GoogleFont.`Open Sans`.`regular`.load().map { fnt =>
       var shift = header.size.height()
       Easing.map.toList.sortBy(_._1).foreach {

@@ -5,7 +5,7 @@
 //import io.youi.example.screen.UIExampleScreen
 //import io.youi.font.GoogleFont
 //import io.youi.image.Image
-//import io.youi.net._
+//import spice.net._
 //import io.youi.virtual.VirtualSizeSupport
 //
 //import scala.concurrent.Future

@@ -1,20 +1,18 @@
 package io.youi.example.ui
 
+import cats.effect.IO
 import io.youi._
 import io.youi.component.FontAwesomeView
 import io.youi.component.support.{MeasuredSupport, PositionSupport}
 import io.youi.example.screen.UIExampleScreen
 import io.youi.font.FontAwesome
-import io.youi.net._
-import scribe.Execution.global
-
-import scala.concurrent.Future
+import spice.net._
 
 class FontAwesomeExample extends UIExampleScreen {
   override def title: String = "Font Awesome Example"
   override def path: Path = path"/examples/font-awesome.html"
 
-  override def createUI(): Future[Unit] = for {
+  override def createUI(): IO[Unit] = for {
     _ <- FontAwesome.load()
   } yield {
     val iconView = new FontAwesomeView with PositionSupport with MeasuredSupport {

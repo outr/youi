@@ -4,7 +4,7 @@
 //import io.youi.dom._
 //import io.youi.example.screen.UIExampleScreen
 //import io.youi.image.{Image, SVGImage}
-//import io.youi.net._
+//import spice.net._
 //import org.scalajs.dom.raw.SVGCircleElement
 //
 //import scala.concurrent.Future

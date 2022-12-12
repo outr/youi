@@ -4,7 +4,7 @@
 //import io.youi.component.Container
 //import io.youi.example.screen.UIExampleScreen
 //import io.youi.layout.VerticalLayout
-//import io.youi.net._
+//import spice.net._
 //import io.youi.paint.Paint
 //import io.youi.style.{HTMLBorder, HTMLBorderStyle, Overflow}
 //

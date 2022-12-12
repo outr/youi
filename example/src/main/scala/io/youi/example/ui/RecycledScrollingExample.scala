@@ -5,7 +5,7 @@
 //import io.youi.{Color, Key}
 //import io.youi.component.{Container, HTMLTextInput, HTMLTextView}
 //import io.youi.example.screen.UIExampleScreen
-//import io.youi.net._
+//import spice.net._
 //import io.youi.style.{HTMLBorder, HTMLBorderStyle, InputType, Position}
 //import reactify._
 //

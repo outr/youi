@@ -1,22 +1,20 @@
 package io.youi.example.ui
 
+import cats.effect.IO
 import io.youi.Color
 import io.youi.component.support.{MeasuredSupport, PaddingSupport, PositionSupport, SizeSupport}
 import io.youi.component.types.PositionType
 import io.youi.component.{Container, TextView}
 import io.youi.example.screen.UIExampleScreen
 import io.youi.font.GoogleFont
-import io.youi.net._
+import spice.net._
 import reactify._
-
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 class TextViewExample extends UIExampleScreen {
   override def title: String = "TextView Example"
   override def path: Path = path"/examples/text.html"
 
-  override def createUI(): Future[Unit] = {
+  override def createUI(): IO[Unit] = {
     for {
       openSans <- GoogleFont.`Open Sans`.`regular`.load()
       pacifico <- GoogleFont.`Pacifico`.`regular`.load()

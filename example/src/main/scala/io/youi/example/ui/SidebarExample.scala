@@ -1,5 +1,6 @@
 package io.youi.example.ui
 
+import cats.effect.IO
 import io.youi._
 import io.youi.component._
 import io.youi.component.support._
@@ -7,11 +8,8 @@ import io.youi.component.types.{Border, BorderStyle, PositionType}
 import io.youi.event.EventSupport
 import io.youi.example.screen.UIExampleScreen
 import io.youi.font.GoogleFont
-import io.youi.net._
+import spice.net._
 import reactify._
-
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 class SidebarExample extends UIExampleScreen {
   override def title: String = "Sidebar Example"
@@ -26,7 +24,7 @@ class SidebarExample extends UIExampleScreen {
     position.middle := ui.size.middle
   }
 
-  override def createUI(): Future[Unit] = for {
+  override def createUI(): IO[Unit] = for {
     fnt <- GoogleFont.`Lobster`.load()
   } yield {
     text.font.family @= fnt.family

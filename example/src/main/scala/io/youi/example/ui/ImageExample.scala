@@ -1,24 +1,23 @@
 package io.youi.example.ui
 
+import cats.effect.IO
 import io.youi.component._
 import io.youi.component.support.{MeasuredSupport, PositionSupport, SizeSupport}
 import io.youi.component.types.PositionType
 import io.youi.example.screen.UIExampleScreen
 import io.youi.image.Image
-import io.youi.net._
+import spice.net._
 import io.youi.task._
 import io.youi.ui
 import reactify._
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 import scala.concurrent.duration._
 
 class ImageExample extends UIExampleScreen {
   override def title: String = "Image Example"
   override def path: Path = path"/examples/image.html"
 
-  override def createUI(): Future[Unit] = Image("/images/icon.png").map { img =>
+  override def createUI(): IO[Unit] = Image("/images/icon.png").map { img =>
     container.children += Container(
       new ImageView with PositionSupport with SizeSupport {                       // Top-Left
         image @= img
@@ -55,7 +54,7 @@ class ImageExample extends UIExampleScreen {
         position.center := container.size.center
         position.middle := container.size.middle + header.size.height
           forever {
-          rotation to 1.0 in 1.seconds andThen(rotation @= 0.0)
+          rotation to 1.0 in 1.seconds andThen(IO(rotation @= 0.0))
         }.start(ImageExample.this)
       }
     )

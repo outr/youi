@@ -1,5 +1,6 @@
 package io.youi.example.ui
 
+import cats.effect.IO
 import io.youi._
 import io.youi.component._
 import io.youi.component.support.{MeasuredSupport, PaddingSupport, PositionSupport}
@@ -7,11 +8,8 @@ import io.youi.component.types.{DropType, PositionType}
 import io.youi.event.EventSupport
 import io.youi.example.screen.UIExampleScreen
 import io.youi.font.GoogleFont
-import io.youi.net._
+import spice.net._
 import reactify._
-
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 class DropExample extends UIExampleScreen {
   override def title: String = "Drop Example"
@@ -26,7 +24,7 @@ class DropExample extends UIExampleScreen {
     position.middle := ui.size.middle
   }
 
-  override def createUI(): Future[Unit] = for {
+  override def createUI(): IO[Unit] = for {
     fnt <- GoogleFont.`Lobster`.load()
   } yield {
     text.font.family @= fnt.family

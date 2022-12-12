@@ -3,7 +3,7 @@
 //import io.youi.Color
 //import io.youi.example.screen.UIExampleScreen
 //import io.youi.font.{Material, MaterialIconView}
-//import io.youi.net._
+//import spice.net._
 //import io.youi.style.FontWeight
 //
 //import scala.concurrent.Future

@@ -1,5 +1,6 @@
 package io.youi.example.ui
 
+import cats.effect.IO
 import io.youi._
 import io.youi.component.support.{OverflowSupport, ScrollSupport, SizeSupport}
 import io.youi.component.types.{Display, Overflow}
@@ -9,20 +10,18 @@ import io.youi.event.EventSupport
 import io.youi.example.screen.UIExampleScreen
 import io.youi.font.{GoogleFont, GoogleFontWeight}
 import io.youi.material.{MDCButton, MaterialComponents}
-import io.youi.net._
+import spice.net._
 import io.youi.paint.Paint
 import reactify._
 
-import scala.concurrent.Future
 import scala.concurrent.duration._
-import scribe.Execution.global
 
 class ScrollingExample extends UIExampleScreen {
   override def title: String = "Scrolling Example"
   override def path: Path = path"/examples/scrolling.html"
 
-  override def createUI(): Future[Unit] = {
-    MaterialComponents.loaded.flatMap { _ =>
+  override def createUI(): IO[Unit] = {
+    MaterialComponents.waitForLoaded().flatMap { _ =>
       GoogleFont.`Open Sans`.`regular`.load().map { fnt =>
         val scrollable = new Container with SizeSupport with ScrollSupport with OverflowSupport {
           size.width := container.size.width

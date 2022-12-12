@@ -5,7 +5,7 @@ import io.youi.ValidationError
 import io.youi.client.HttpClient
 import io.youi.http._
 import io.youi.http.content.Content
-import io.youi.net._
+import spice.net._
 import io.youi.server.Server
 import io.youi.server.dsl._
 import io.youi.server.handler.HttpHandler

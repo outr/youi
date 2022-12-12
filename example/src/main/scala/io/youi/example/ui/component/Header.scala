@@ -1,22 +1,19 @@
 package io.youi.example.ui.component
 
+import cats.effect.unsafe.implicits.global
 import io.youi._
 import io.youi.app.screen.ScreenManager
 import io.youi.component.support._
 import io.youi.component.types.{Cursor, Display, PositionType, WhiteSpace}
 import io.youi.component.{Component, Container, ImageView}
 import io.youi.event.EventSupport
-import io.youi.example.ClientExampleApplication
 import io.youi.example.screen.UIExampleScreen
 import io.youi.font.GoogleFont
-import io.youi.net._
 import io.youi.paint.Paint
 import reactify._
-import scribe.Execution.global
+import spice.net._
 
 class Header extends Container with SizeSupport { self =>
-  protected def application: ClientExampleApplication.type = ClientExampleApplication
-
   private lazy val headerFont = GoogleFont.`Open Sans`.`600`.load()
 
   size.width := ui.size.width
@@ -35,9 +32,11 @@ class Header extends Container with SizeSupport { self =>
   }
 
   private val heading = new Component(dom.create.span) with FontSupport with PositionSupport with MeasuredSupport with ContentSupport {
-    font.weight ! headerFont
+    headerFont.map { weight =>
+      font.weight @= weight
+    }.unsafeRunAndForget()
     font.size @= 20.pt
-    color @= application.colors.blue.dark
+    color @= Color.Blue //application.colors.blue.dark
     ScreenManager().active.attachAndFire { screen =>
       content @= screen.title
     }
@@ -48,9 +47,11 @@ class Header extends Container with SizeSupport { self =>
   }
 
   private val link = new Component(dom.create.span) with FontSupport with PositionSupport with MeasuredSupport with EventSupport with ContentSupport {
-    font.weight ! headerFont
+    headerFont.map { weight =>
+      font.weight @= weight
+    }.unsafeRunAndForget()
     font.size @= 14.pt
-    color @= application.colors.blue.dark
+    color @= Color.Blue //application.colors.blue.dark
     content @= "View Source"
     cursor @= Cursor.Pointer
     ScreenManager().active.attachAndFire {

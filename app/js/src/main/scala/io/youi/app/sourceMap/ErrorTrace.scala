@@ -4,7 +4,7 @@ import fabric.rw._
 import fabric.parse.JsonParser
 import io.youi.app.ClientApplication
 import io.youi.http.HttpMethod
-import io.youi.net._
+import spice.net._
 import io.youi.stream.StreamURL
 import io.youi.{History, _}
 import org.scalajs.dom.{ErrorEvent, Event}

@@ -4,7 +4,7 @@
 //import io.youi.component.Container
 //import io.youi.example.screen.UIExampleScreen
 //import io.youi.layout.GridLayout
-//import io.youi.net._
+//import spice.net._
 //import io.youi.paint.Paint
 //import reactify._
 //

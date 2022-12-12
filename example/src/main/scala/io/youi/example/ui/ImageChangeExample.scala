@@ -1,14 +1,12 @@
 package io.youi.example.ui
 
+import cats.effect.IO
 import io.youi.component.ImageView
 import io.youi.component.support.{MeasuredSupport, PositionSupport}
 import io.youi.event.EventSupport
 import io.youi.example.screen.UIExampleScreen
 import io.youi.image.Image
-import io.youi.net._
-
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import spice.net._
 
 class ImageChangeExample extends UIExampleScreen {
   override def title: String = "Image Change"
@@ -16,7 +14,7 @@ class ImageChangeExample extends UIExampleScreen {
 
   lazy val imageView: ImageView with PositionSupport with MeasuredSupport with EventSupport = new ImageView with PositionSupport with MeasuredSupport with EventSupport
 
-  override def createUI(): Future[Unit] = for {
+  override def createUI(): IO[Unit] = for {
     icon <- Image("/images/icon.png")
     cuteness <- Image("/images/cuteness.jpg")
     tiger <- Image("/images/tiger.svg")

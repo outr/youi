@@ -6,12 +6,19 @@ import io.youi.component.types.Prop
 import io.youi.{Color, History, dom}
 import spice.net._
 
+import scala.concurrent.duration._
 import scala.scalajs.js
 import scala.util.Try
 
 object MaterialComponents {
   private var _loaded = false
   def loaded: Boolean = _loaded
+
+  def waitForLoaded(): IO[Unit] = if (loaded) {
+    IO.unit
+  } else {
+    IO.sleep(100.millis).flatTap(_ => waitForLoaded())
+  }
 
   private val mdcDefined = Try(js.Dynamic.global.mdc).isSuccess
   if (mdcDefined) {

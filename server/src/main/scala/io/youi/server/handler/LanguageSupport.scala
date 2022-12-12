@@ -10,7 +10,7 @@ import java.util.regex.Matcher
 import io.youi.http.content.Content
 import io.youi.http.cookie.ResponseCookie
 import io.youi.http.{Headers, HttpConnection}
-import io.youi.net._
+import spice.net._
 import fabric.rw._
 import profig.{FileNameMatcher, Profig}
 import scribe.Execution.global

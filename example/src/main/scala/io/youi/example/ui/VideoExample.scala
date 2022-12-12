@@ -3,7 +3,7 @@
 //import io.youi._
 //import io.youi.component.VideoView
 //import io.youi.example.screen.UIExampleScreen
-//import io.youi.net._
+//import spice.net._
 //import io.youi.video.Video
 //
 //import scala.concurrent.Future

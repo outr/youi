@@ -6,7 +6,7 @@ import fabric.parse.JsonParser
 import io.youi.ValidationError
 import io.youi.http._
 import io.youi.http.content.{Content, StringContent}
-import io.youi.net._
+import spice.net._
 import io.youi.server.Server
 import io.youi.server.dsl._
 import io.youi.server.handler.HttpHandler

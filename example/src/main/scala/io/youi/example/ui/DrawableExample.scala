@@ -1,5 +1,6 @@
 package io.youi.example.ui
 
+import cats.effect.IO
 import io.youi.Color
 import io.youi.component.DrawableView
 import io.youi.component.support.PositionSupport
@@ -7,17 +8,14 @@ import io.youi.drawable.{Group, TextDrawable, Transformation}
 import io.youi.example.screen.UIExampleScreen
 import io.youi.font.{CanvasFont, CanvasText, GoogleFont}
 import io.youi.image.Image
-import io.youi.net._
 import io.youi.paint.{Border, GradientPaint, Paint, Stroke}
-
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import spice.net._
 
 class DrawableExample extends UIExampleScreen {
   override def title: String = "Drawable Example"
   override def path: Path = path"/examples/drawable.html"
 
-  override def createUI(): Future[Unit] = for {
+  override def createUI(): IO[Unit] = for {
     image <- Image("/images/cuteness.jpg")
     fnt <- GoogleFont.`Lobster`.`regular`.load()
   } yield {

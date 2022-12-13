@@ -1,9 +1,7 @@
 package io.youi.font
 
+import cats.effect.IO
 import spice.net.URL
-
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 case class OpenTypeFont(otf: opentype.Font) extends Font {
   private var glyphs = Map.empty[Char, OpenTypeGlyph]
@@ -12,11 +10,10 @@ case class OpenTypeFont(otf: opentype.Font) extends Font {
 
   override def glyph(char: Char): Glyph = glyphs.get(char) match {
     case Some(g) => g
-    case None => {
+    case None =>
       val g = OpenTypeGlyph(this, char, otf.charToGlyph(char.toString), otf.unitsPerEm)
       glyphs += char -> g
       g
-    }
   }
 
   override def kerning(first: Glyph, second: Glyph, size: Double): Double = {
@@ -37,14 +34,17 @@ case class OpenTypeFont(otf: opentype.Font) extends Font {
 object OpenTypeFont {
   private var pathMap = Map.empty[String, OpenTypeFont]
 
-  def fromPath(path: String, cached: Boolean = true): Future[Font] = {
+  def fromPath(path: String, cached: Boolean = true): IO[Font] = {
     val openTypeFuture = pathMap.get(path) match {
-      case Some(font) => Future.successful(font)
+      case Some(font) => IO.pure(font)
       case None =>
-        opentype.OpenType.load(path).map { otf =>
-          val font = new OpenTypeFont(otf)
-          pathMap += path -> font
-          font
+        opentype.OpenType.load(path).flatMap {
+          case Left(t) => IO.raiseError(t)
+          case Right(otf) => IO {
+            val font = new OpenTypeFont(otf)
+            pathMap += path -> font
+            font
+          }
         }
     }
     if (cached) {
@@ -54,5 +54,5 @@ object OpenTypeFont {
     }
   }
 
-  def fromURL(url: URL, cached: Boolean = true): Future[Font] = fromPath(url.toString)
+  def fromURL(url: URL, cached: Boolean = true): IO[Font] = fromPath(url.toString)
 }

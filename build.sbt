@@ -107,8 +107,6 @@ lazy val gui = project.in(file("gui"))
   .settings(
     name := "youi-gui",
     libraryDependencies ++= Seq(
-      "com.outr" %%% "webfontloader-scala-js" % webFontLoaderVersion,
-      "com.outr" %%% "opentype-scala-js" % openTypeVersion,
       "com.outr" %%% "canvg-scala-js" % canvgVersion
     )
   )
@@ -136,7 +134,8 @@ lazy val optimizer = project.in(file("optimizer"))
 lazy val example = project.in(file("example"))
   .enablePlugins(ScalaJSPlugin)
   .settings(
-    name := "youi-example"
+    name := "youi-example",
+    scalaJSUseMainModuleInitializer := true
   )
   .dependsOn(gui)
 

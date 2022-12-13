@@ -54,7 +54,6 @@ trait ScreenManager extends TaskSupport {
 
   protected def load(): IO[Unit] = IO.unit
 
-
   override def update(delta: Double): Unit = {
     super.update(delta)
 

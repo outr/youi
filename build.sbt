@@ -50,7 +50,7 @@ val uaDetectorVersion: String = "2014.10"
 
 val undertowVersion: String = "2.2.19.Final"
 
-val closureCompilerVersion: String = "v20220803"
+val closureCompilerVersion: String = "v20230103"
 
 val guavaVersion: String = "25.1-jre"
 

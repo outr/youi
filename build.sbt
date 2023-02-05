@@ -60,7 +60,7 @@ val scalaXMLVersion: String = "2.0.1"
 
 val collectionCompatVersion: String = "2.4.3"
 
-val catsVersion: String = "3.3.14"
+val catsVersion: String = "3.4.6"
 
 val fs2Version: String = "3.2.12"
 

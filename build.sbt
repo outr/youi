@@ -44,7 +44,7 @@ val canvgVersion: String = "1.4.0_3"
 
 val scalaJSDOMVersion: String = "2.3.0"
 
-val okHttpVersion: String = "4.10.0"
+val okHttpVersion: String = "4.11.0"
 
 val uaDetectorVersion: String = "2014.10"
 

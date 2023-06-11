@@ -48,7 +48,7 @@ val okHttpVersion: String = "4.10.0"
 
 val uaDetectorVersion: String = "2014.10"
 
-val undertowVersion: String = "2.2.19.Final"
+val undertowVersion: String = "2.2.25.Final"
 
 val closureCompilerVersion: String = "v20220803"
 

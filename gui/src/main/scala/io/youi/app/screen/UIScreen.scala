@@ -14,10 +14,12 @@ trait UIScreen extends Screen with PathActivation {
   }
 
   override protected def init(): IO[Unit] = super.init().flatMap { _ =>
+    scribe.info(s"UIScreen initting for ${getClass.getSimpleName}")
     container.size.width := ui.size.width
     container.size.height := ui.size.height
 
     ui.children += container
+    scribe.info("createUI...")
     createUI()
   }
 

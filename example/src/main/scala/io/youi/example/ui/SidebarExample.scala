@@ -13,7 +13,7 @@ import reactify._
 
 class SidebarExample extends UIExampleScreen {
   override def title: String = "Sidebar Example"
-  override def path: Path = path"/examples/sidebar.html"
+  override def path: URLPath = path"/examples/sidebar.html"
 
   private val text = new TextView() with PositionSupport with MeasuredSupport with EventSupport {
     content @= "Toggle Sidebar"

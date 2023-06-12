@@ -17,7 +17,7 @@ import scala.concurrent.duration._
 
 class AnimationExample extends UIExampleScreen {
   override def title: String = "Animation Example"
-  override def path: Path = path"/examples/animation.html"
+  override def path: URLPath = path"/examples/animation.html"
 
   override def createUI(): IO[Unit] = Image("/images/icon.png").flatMap { img =>
     GoogleFont.`Open Sans`.`regular`.load().map { fnt =>

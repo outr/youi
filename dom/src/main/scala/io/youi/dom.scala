@@ -141,7 +141,7 @@ object dom extends ExtendedElement(None) {
     iframe.addEventListener("load", (_: Event) => {
       if (counter == 0) {
         counter += 1
-        iframe.contentWindow.location.reload(true)
+        iframe.contentWindow.location.reload()
       } else {
         d.flatMap { d =>
           d.complete(Right(url))

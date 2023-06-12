@@ -10,7 +10,7 @@ import spice.net._
 
 class FontAwesomeExample extends UIExampleScreen {
   override def title: String = "Font Awesome Example"
-  override def path: Path = path"/examples/font-awesome.html"
+  override def path: URLPath = path"/examples/font-awesome.html"
 
   override def createUI(): IO[Unit] = for {
     _ <- FontAwesome.load()

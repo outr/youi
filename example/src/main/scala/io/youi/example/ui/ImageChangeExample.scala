@@ -10,7 +10,7 @@ import spice.net._
 
 class ImageChangeExample extends UIExampleScreen {
   override def title: String = "Image Change"
-  override def path: Path = path"/examples/image-change.html"
+  override def path: URLPath = path"/examples/image-change.html"
 
   lazy val imageView: ImageView with PositionSupport with MeasuredSupport with EventSupport = new ImageView with PositionSupport with MeasuredSupport with EventSupport
 

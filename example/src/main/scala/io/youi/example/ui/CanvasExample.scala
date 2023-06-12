@@ -10,7 +10,7 @@ import spice.net._
 
 class CanvasExample extends UIExampleScreen {
   override def title: String = "Canvas Example"
-  override def path: Path = path"/examples/canvas.html"
+  override def path: URLPath = path"/examples/canvas.html"
 
   override def createUI(): IO[Unit] = IO {
     val canvas = new CanvasView with PositionSupport {

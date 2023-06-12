@@ -12,7 +12,7 @@ import reactify._
 
 class HelloWorld extends UIExampleScreen {
   override def title: String = "Hello World"
-  override def path: Path = path"/examples/hello.html"
+  override def path: URLPath = path"/examples/hello.html"
 
   override def createUI(): IO[Unit] = for {
     fnt <- GoogleFont.`Lobster`.load()

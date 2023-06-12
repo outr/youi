@@ -14,7 +14,7 @@ import reactify._
 
 class PopupExample extends UIExampleScreen {
   override def title: String = "Popup Example"
-  override def path: Path = path"/examples/popup.html"
+  override def path: URLPath = path"/examples/popup.html"
 
   private val text = new TextView() with PositionSupport with MeasuredSupport with EventSupport {
     content @= "Show Popup"

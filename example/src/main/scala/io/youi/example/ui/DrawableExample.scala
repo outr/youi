@@ -13,7 +13,7 @@ import spice.net._
 
 class DrawableExample extends UIExampleScreen {
   override def title: String = "Drawable Example"
-  override def path: Path = path"/examples/drawable.html"
+  override def path: URLPath = path"/examples/drawable.html"
 
   override def createUI(): IO[Unit] = for {
     image <- Image("/images/cuteness.jpg")

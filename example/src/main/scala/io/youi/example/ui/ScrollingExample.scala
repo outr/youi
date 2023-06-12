@@ -18,7 +18,7 @@ import scala.concurrent.duration._
 
 class ScrollingExample extends UIExampleScreen {
   override def title: String = "Scrolling Example"
-  override def path: Path = path"/examples/scrolling.html"
+  override def path: URLPath = path"/examples/scrolling.html"
 
   override def createUI(): IO[Unit] = {
     MaterialComponents.waitForLoaded().flatMap { _ =>

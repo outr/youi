@@ -12,8 +12,10 @@ trait UIExampleScreen extends UIScreen {
   def url: URL = URL.parse(s"https://github.com/outr/youi/tree/master/example/js/src/main/scala/io/youi/example/ui/${getClass.getSimpleName}.scala")
 
   override protected def init(): IO[Unit] = {
+    scribe.info(s"Initializing screen! ${getClass.getSimpleName}")
     ui.children += header
     super.init().map { _ =>
+      scribe.info("Screen initialized!")
       container.size.height := ui.size.height - header.size.height
     }
   }

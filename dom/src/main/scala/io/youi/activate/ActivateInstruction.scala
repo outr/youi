@@ -2,7 +2,7 @@ package io.youi.activate
 
 import io.youi.{History, dom}
 import org.scalajs.dom.{Event, document, html, window}
-import spice.net.Path
+import spice.net.URLPath
 
 import scala.scalajs.js
 
@@ -169,7 +169,7 @@ class OnUnchecked(selector: String, instruction: ActivateInstruction) extends Ac
   override def deactivate(): Unit = dom.oneBySelector[html.Element](selector).removeEventListener("change", listener)
 }
 
-class Link(path: Path) extends ActivateInstruction {
+class Link(path: URLPath) extends ActivateInstruction {
   override def activate(): Unit = History.pushPath(path)
 
   override def deactivate(): Unit = {}

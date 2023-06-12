@@ -8,7 +8,7 @@ import spice.net._
 
 class MDCExample extends UIExampleScreen {
   override def title: String = "MDC Example"
-  override def path: Path = path"/examples/mdc.html"
+  override def path: URLPath = path"/examples/mdc.html"
 
   override def createUI(): IO[Unit] = for {
     _ <- MaterialComponents.waitForLoaded()

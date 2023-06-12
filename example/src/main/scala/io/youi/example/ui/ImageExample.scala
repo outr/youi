@@ -15,7 +15,7 @@ import scala.concurrent.duration._
 
 class ImageExample extends UIExampleScreen {
   override def title: String = "Image Example"
-  override def path: Path = path"/examples/image.html"
+  override def path: URLPath = path"/examples/image.html"
 
   override def createUI(): IO[Unit] = Image("/images/icon.png").map { img =>
     container.children += Container(

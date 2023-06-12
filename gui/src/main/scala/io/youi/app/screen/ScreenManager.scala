@@ -8,6 +8,8 @@ import org.scalajs.dom
 import org.scalajs.dom.DocumentReadyState
 import reactify._
 
+import scala.concurrent.duration.DurationInt
+
 trait ScreenManager extends TaskSupport {
   ScreenManager.instance = Some(this)
 
@@ -23,6 +25,7 @@ trait ScreenManager extends TaskSupport {
 
   scribe.info("Initializing application...")
   init().map { _ =>
+    scribe.info(s"Initialized. Waiting for page loading to complete...")
     if (waitForWindowLoad && dom.document.readyState != DocumentReadyState.complete) {
       scribe.info("Application initialized. Waiting for window load to complete...")
       dom.window.addEventListener("load", (_: dom.Event) => {
@@ -60,29 +63,40 @@ trait ScreenManager extends TaskSupport {
     active.update(delta)
   }
 
-  private def screenChange(oldScreen: Screen, newScreen: Screen): Unit = chained(IO {
-    scribe.debug(s"Screen change from $oldScreen to $newScreen...")
+  private def screenChange(oldScreen: Screen, newScreen: Screen): Unit = chained {
+    scribe.info(s"Screen change from $oldScreen to $newScreen...")
     val waitForLoaded: IO[Unit] = if (!loaded()) {
+      scribe.info("Waiting for the page to fully load...")
       // Wait for the page to fully load before finishing screen change
-      Deferred[IO, Unit].map { d =>
+      Deferred[IO, Unit].flatMap { d =>
+        scribe.info("Deferred!")
         loaded.once { _ =>
-          d.complete(())
+          scribe.info("Page fully loaded!")
+          d.complete(()).unsafeRunAndForget()
         }
-        d.get
+        scribe.info("Waiting for page load...")
+        d.get.map { _ =>
+          scribe.info("Page loaded!")
+        }
       }
     } else {
       IO.unit
     }
     for {
       _ <- waitForLoaded
+      _ = scribe.info("Loaded!")
       _ <- beforeScreenChange(oldScreen, newScreen)
+      _ = scribe.info("Before screen change!")
       _ <- deactivate(oldScreen)
+      _ = scribe.info("Deactivated!")
       _ <- activate(newScreen)
+      _ = scribe.info("Activated!")
       _ <- afterScreenChange(oldScreen, newScreen)
+      _ = scribe.info("After screen change!")
     } yield {
       ()
     }
-  }).unsafeRunAndForget()
+  }.unsafeRunAndForget()
 
   protected def beforeScreenChange(oldScreen: Screen, newScreen: Screen): IO[Unit] = {
     IO.unit
@@ -120,15 +134,19 @@ trait ScreenManager extends TaskSupport {
     }
   }
 
-  private def activate(screen: Screen): IO[Unit] = chained {
+  private def activate(screen: Screen): IO[Unit] = {
     val state = screen.state()
 
     def set(applying: ScreenState,
             applied: ScreenState,
-            call: IO[Unit], applyToStates: ScreenState*): IO[Unit] = if (applyToStates.contains(state)) {
+            call: IO[Unit],
+            applyToStates: ScreenState*): IO[Unit] = if (applyToStates.contains(state)) {
       for {
+        _ <- IO(scribe.info(s"Applying: $applying, Current state: $state"))
         _ <- IO(screen.currentState @= applying)
+        _ = scribe.info(s"Applied: $applied")
         _ <- call
+        _ = scribe.info("CALLED!")
         _ <- IO(screen.currentState @= applied)
       } yield {
         ()
@@ -146,7 +164,7 @@ trait ScreenManager extends TaskSupport {
     }
   }
 
-  private def deactivate(screen: Screen): IO[Unit] = chained {
+  private def deactivate(screen: Screen): IO[Unit] = {
     if (screen.state() == ScreenState.Activated) {
       screen.currentState @= ScreenState.Deactivating
       Screen.deactivate(screen).map { _ =>

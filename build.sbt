@@ -22,10 +22,10 @@ ThisBuild / developers := List(
 
 ThisBuild / versionScheme := Some("semver-spec")
 
-val spiceVersion: String = "0.0.7-SNAPSHOT"
-val fabricVersion: String = "1.8.3"
-val profigVersion: String = "3.4.6"
-val scribeVersion: String = "3.10.5"
+val spiceVersion: String = "0.0.34"
+val fabricVersion: String = "1.11.2"
+val profigVersion: String = "3.4.10"
+val scribeVersion: String = "3.11.5"
 val reactifyVersion: String = "4.0.8"
 val hasherVersion: String = "1.2.2"
 val openTypeVersion: String = "1.1.0"
@@ -42,7 +42,8 @@ ThisBuild / evictionErrorLevel := Level.Info
 
 lazy val root = project.in(file("."))
   .aggregate(
-    coreJS, coreJVM, spatialJS, spatialJVM, dom, gui, capacitor, optimizer
+    coreJS, coreJVM, spatialJS, spatialJVM, dom, gui, capacitor, optimizer,
+    example, exampleServer
   )
   .settings(
     publish := {},
@@ -104,11 +105,13 @@ lazy val dom = project.in(file("dom"))
 
 lazy val gui = project.in(file("gui"))
   .enablePlugins(ScalaJSPlugin)
+  .enablePlugins(JSDependenciesPlugin)
   .settings(
     name := "youi-gui",
-    libraryDependencies ++= Seq(
-      "com.outr" %%% "canvg-scala-js" % canvgVersion
-    )
+//    jsDependencies += ProvidedJS / "webfontloader.js",
+//    jsDependencies += ProvidedJS / "opentype.min.js",
+//    jsDependencies += ProvidedJS / "opentype.min.map",
+    packageJSDependencies / skip := false
   )
   .dependsOn(dom, spatialJS)
 
@@ -135,9 +138,18 @@ lazy val example = project.in(file("example"))
   .enablePlugins(ScalaJSPlugin)
   .settings(
     name := "youi-example",
-    scalaJSUseMainModuleInitializer := true
+    scalaJSUseMainModuleInitializer := true,
+    packageJSDependencies / skip := false
   )
   .dependsOn(gui)
+
+lazy val exampleServer = project.in(file("example/server"))
+  .settings(
+    name := "youi-example-server",
+    libraryDependencies ++= Seq(
+      "com.outr" %% "spice-server-undertow" % spiceVersion
+    )
+  )
 
 /*
 lazy val example = crossApplication.in(file("example"))

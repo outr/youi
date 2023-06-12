@@ -13,7 +13,7 @@ import reactify._
 
 class DropExample extends UIExampleScreen {
   override def title: String = "Drop Example"
-  override def path: Path = path"/examples/drop.html"
+  override def path: URLPath = path"/examples/drop.html"
 
   private val text = new TextView() with PositionSupport with MeasuredSupport with EventSupport {
     content @= "Show Dropdown"

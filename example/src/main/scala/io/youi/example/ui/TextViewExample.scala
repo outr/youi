@@ -12,7 +12,7 @@ import reactify._
 
 class TextViewExample extends UIExampleScreen {
   override def title: String = "TextView Example"
-  override def path: Path = path"/examples/text.html"
+  override def path: URLPath = path"/examples/text.html"
 
   override def createUI(): IO[Unit] = {
     for {

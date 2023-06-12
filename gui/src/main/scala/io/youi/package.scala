@@ -87,20 +87,18 @@ package object youi {
     def load(): IO[GoogleFont] = googleFonts.get(font) match {
       case Some(d) => d.get
       case None =>
-        val d = Deferred[IO, GoogleFont]
-        val f: js.Function0[Unit] = () => {
-          d.flatMap(_.complete(font)).unsafeRunAndForget()
-          ()
-        }
-        WebFont.load(new WebFontConfiguration {
-          google = new GoogleConfig {
-            families = js.Array(font.family)
+        Deferred[IO, GoogleFont].flatMap { d =>
+          val f: js.Function0[Unit] = () => {
+            d.complete(font).unsafeRunAndForget()
+            ()
           }
-          active = f
-        })
-        d.flatMap { d =>
+          WebFont.load(new WebFontConfiguration {
+            google = new GoogleConfig {
+              families = js.Array(font.family)
+            }
+            active = f
+          })
           googleFonts += font -> d
-
           d.get
         }
     }

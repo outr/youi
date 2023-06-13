@@ -12,7 +12,7 @@ import java.io.File
 
 object ExampleServer extends IOApp with StaticHttpServer {
   private lazy val classLoader = ClassLoaderPath(classPathRoot = "site", pathTransform = (s: String) => {
-    if (s.startsWith("/examples/") || s == "/") {
+    if (s.startsWith("/examples/") || s == "/" || s == "/ui-examples.html") {
       "/index.html"
     } else {
       s

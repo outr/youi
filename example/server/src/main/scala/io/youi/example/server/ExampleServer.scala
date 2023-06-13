@@ -15,7 +15,6 @@ object ExampleServer extends IOApp with StaticHttpServer {
     if (s.startsWith("/examples/") || s == "/") {
       "/index.html"
     } else {
-      scribe.info(s"Path: $s")
       s
     }
   })

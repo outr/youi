@@ -1,6 +1,6 @@
 package io.youi.task
 
-import cats.effect.IO
+import cats.effect.{Deferred, IO}
 import io.youi.ui
 
 trait Task {
@@ -10,7 +10,13 @@ trait Task {
 
   def andThen(that: Task): Task = new Sequential(List(this, that))
 
-  def start(taskSupport: TaskSupport = ui): IO[TaskInstance] = taskSupport.start(this)
+  def start(taskSupport: TaskSupport = ui, deferred: Option[Deferred[IO, Double]] = None): TaskInstance =
+    taskSupport.start(this, deferred)
+
+  def startDeferred(taskSupport: TaskSupport = ui): IO[Double] = Deferred[IO, Double].flatMap { deferred =>
+    start(taskSupport, Some(deferred))
+    deferred.get
+  }
 }
 
 object Task {

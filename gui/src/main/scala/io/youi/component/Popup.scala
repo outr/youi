@@ -1,6 +1,7 @@
 package io.youi.component
 
 import cats.effect.IO
+import cats.effect.kernel.Deferred
 import io.youi.component.support.{PositionSupport, SizeSupport}
 import io.youi.component.types.{Display, PositionType, UserSelect}
 import io.youi.easing.Easing
@@ -49,7 +50,7 @@ class Popup(showGlassPane: Boolean = true) extends Container with SizeSupport wi
 
       Popup._active += this
     }.flatMap { _ =>
-      sequential(
+      val animation = sequential(
         IO(position.center := ui.size.center),
         IO(position.y @= ui.size.height),
         IO(display @= Display.Block),
@@ -62,7 +63,11 @@ class Popup(showGlassPane: Boolean = true) extends Container with SizeSupport wi
           }.getOrElse(Task.None)
         ),
         IO(positionProperty := positionDestination)
-      ).start().map(_ => ())
+      )
+      Deferred[IO, Double].map { deferred =>
+        animation.start(deferred = Some(deferred))
+        deferred.get
+      }
     }
   }
 
@@ -71,7 +76,7 @@ class Popup(showGlassPane: Boolean = true) extends Container with SizeSupport wi
       Popup._active -= this
       glassPane.foreach(_.element.style.pointerEvents = "none")
     }.flatMap { _ =>
-      sequential(
+      val task = sequential(
         parallel(
           position.y.to(ui.size.height).in(speed).easing(easing),
           glassPane.map { gp =>
@@ -81,7 +86,11 @@ class Popup(showGlassPane: Boolean = true) extends Container with SizeSupport wi
         IO(display @= Display.None),
         IO(glassPane.foreach(_.display @= Display.None)),
         IO(glassPane.foreach(_.element.style.pointerEvents = "auto"))
-      ).start().map(_ => ())
+      )
+      Deferred[IO, Double].flatMap { deferred =>
+        task.start(deferred = Some(deferred))
+        deferred.get.map(_ => ())
+      }
     }
   }
 

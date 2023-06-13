@@ -126,13 +126,13 @@ class Sidebar(container: Option[Component with SizeSupport with MarginSupport],
     sequential(
       IO(glassPane.foreach(_.display @= Display.Block)),
       position.x.to(0.0).by(speed).easing(easing)
-    ).start().map(_ => ())
+    ).startDeferred().map(_ => ())
   }
 
   private def hide(): IO[Unit] = chained {
     sequential(
       position.x.to(-width).by(speed).easing(easing),
       IO(glassPane.foreach(_.display @= Display.None))
-    ).start().map(_ => ())
+    ).startDeferred().map(_ => ())
   }
 }

@@ -54,7 +54,7 @@ class ScrollFeature(component: Component) extends Feature {
          horizontal: Boolean = false,
          alignBottom: Boolean = false,
          alignRight: Boolean = false,
-         parent: TaskSupport = ui): IO[TaskInstance] = {
+         parent: TaskSupport = ui): TaskInstance = {
     val parentRect = component.getBoundingClientRect()
     val childRect = child.getBoundingClientRect()
     val v = if (vertical) {
@@ -79,6 +79,6 @@ class ScrollFeature(component: Component) extends Feature {
     } else {
       None
     }
-    parallel(List(v, h).flatten: _*).start(parent)
+    parallel(List(v, h).flatten: _*).start(parent, None)
   }
 }

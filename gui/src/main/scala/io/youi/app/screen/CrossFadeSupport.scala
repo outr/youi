@@ -1,6 +1,6 @@
 package io.youi.app.screen
 
-import cats.effect.IO
+import cats.effect.{Deferred, IO}
 import io.youi.AnimationFrame
 import io.youi.easing.Easing
 import io.youi.task._
@@ -27,7 +27,10 @@ trait CrossFadeSupport extends ScreenManager {
           duration = () => crossFadeDuration,
           easing = crossFadeEaseIn
         ))
-      workflow.start(AnimationFrame).map(_.deferred.get)
+      Deferred[IO, Double].flatMap { deferred =>
+        workflow.start(AnimationFrame, Some(deferred))
+        deferred.get.map(_ => ())
+      }
     } else {
       super.beforeScreenChange(oldScreen, newScreen)
     }
@@ -35,13 +38,18 @@ trait CrossFadeSupport extends ScreenManager {
 
   override protected def afterScreenChange(oldScreen: Screen, newScreen: Screen): IO[Unit] = {
     if (crossFadeElement.style.visibility == "visible") {
-      AnimateIn(
+      val animation = AnimateIn(
         get = () => crossFadeElement.style.opacity.toDouble,
         apply = (d: Double) => crossFadeElement.style.opacity = d.toString,
         destination = () => 0.0,
         duration = () => crossFadeDuration,
         easing = crossFadeEaseOut
-      ).andThen(synchronous(crossFadeElement.style.visibility = "hidden")).start(AnimationFrame).map(_.deferred.get)
+      )
+        .andThen(synchronous(crossFadeElement.style.visibility = "hidden"))
+      Deferred[IO, Double].flatMap { deferred =>
+        animation.start(AnimationFrame, Some(deferred))
+        deferred.get.map(_ => ())
+      }
     } else {
       super.afterScreenChange(oldScreen, newScreen)
     }

@@ -20,7 +20,6 @@ class AnimationExample extends UIExampleScreen {
   override def path: URLPath = path"/examples/animation.html"
 
   override def createUI(): IO[Unit] = {
-    scribe.info("Create UI!")
     Image("/images/icon.png").flatMap { img =>
       scribe.info(s"Image loaded! ${img.size}")
       GoogleFont.`Open Sans`.`regular`.load().map { fnt =>

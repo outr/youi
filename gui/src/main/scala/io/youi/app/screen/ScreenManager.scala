@@ -25,20 +25,14 @@ trait ScreenManager extends TaskSupport {
 
   scribe.info("Initializing application...")
   init().map { _ =>
-    scribe.info(s"Initialized. Waiting for page loading to complete...")
     if (waitForWindowLoad && dom.document.readyState != DocumentReadyState.complete) {
-      scribe.info("Application initialized. Waiting for window load to complete...")
       dom.window.addEventListener("load", (_: dom.Event) => {
-        scribe.info("Window loading complete. Loading application...")
         load().map { _ =>
-          scribe.info("Application loaded.")
           loaded.asInstanceOf[Var[Boolean]] @= true
         }.unsafeRunAndForget()
       })
     } else {
-      scribe.info("Application initialized. Loading application...")
       load().map { _ =>
-        scribe.info("Application loaded.")
         loaded.asInstanceOf[Var[Boolean]] @= true
       }.unsafeRunAndForget()
     }
@@ -69,30 +63,20 @@ trait ScreenManager extends TaskSupport {
       scribe.info("Waiting for the page to fully load...")
       // Wait for the page to fully load before finishing screen change
       Deferred[IO, Unit].flatMap { d =>
-        scribe.info("Deferred!")
         loaded.once { _ =>
-          scribe.info("Page fully loaded!")
           d.complete(()).unsafeRunAndForget()
         }
-        scribe.info("Waiting for page load...")
-        d.get.map { _ =>
-          scribe.info("Page loaded!")
-        }
+        d.get
       }
     } else {
       IO.unit
     }
     for {
       _ <- waitForLoaded
-      _ = scribe.info("Loaded!")
       _ <- beforeScreenChange(oldScreen, newScreen)
-      _ = scribe.info("Before screen change!")
       _ <- deactivate(oldScreen)
-      _ = scribe.info("Deactivated!")
       _ <- activate(newScreen)
-      _ = scribe.info("Activated!")
       _ <- afterScreenChange(oldScreen, newScreen)
-      _ = scribe.info("After screen change!")
     } yield {
       ()
     }
@@ -144,9 +128,7 @@ trait ScreenManager extends TaskSupport {
       for {
         _ <- IO(scribe.info(s"Applying: $applying, Current state: $state"))
         _ <- IO(screen.currentState @= applying)
-        _ = scribe.info(s"Applied: $applied")
         _ <- call
-        _ = scribe.info("CALLED!")
         _ <- IO(screen.currentState @= applied)
       } yield {
         ()

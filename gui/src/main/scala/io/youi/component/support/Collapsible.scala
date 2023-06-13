@@ -70,7 +70,7 @@ abstract class Collapsible extends Component(dom.create.div) with InternalContai
           prop.to(expanded).in(speed).easing(easing),
 //          prop := expanded
           IO(prop.`type` @= SizeType.Auto)
-        ).start().map(_ => ())
+        ).startDeferred().map(_ => ())
       }
     } else {
       chained {
@@ -91,7 +91,7 @@ abstract class Collapsible extends Component(dom.create.div) with InternalContai
           IO(prop @= expanded),
           prop.to(0.0).in(speed).easing(easing),
           IO(display @= Display.None)
-        ).start().map(_ => ())
+        ).startDeferred().map(_ => ())
       }
     } else {
       chained {

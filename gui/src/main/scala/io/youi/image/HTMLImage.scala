@@ -54,14 +54,15 @@ object HTMLImage {
   def apply(img: html.Image): IO[HTMLImage] = if (img.width > 0 && img.height > 0) {
     IO.pure(new HTMLImage(img))
   } else {
-    val d = Deferred[IO, HTMLImage]
-    var listener: js.Function1[Event, _] = null
-    listener = (_: Event) => {
-      d.flatMap(_.complete(new HTMLImage(img))).map { _ =>
-        img.removeEventListener("load", listener)
-      }.unsafeRunAndForget()
+    Deferred[IO, HTMLImage].flatMap { d =>
+      var listener: js.Function1[Event, _] = null
+      listener = (_: Event) => {
+        d.complete(new HTMLImage(img)).map { _ =>
+          img.removeEventListener("load", listener)
+        }.unsafeRunAndForget()
+      }
+      img.addEventListener("load", listener)
+      d.get
     }
-    img.addEventListener("load", listener)
-    d.flatMap(_.get)
   }
 }

@@ -85,10 +85,14 @@ package object youi {
 
   implicit class ExtendedGoogleFont(font: GoogleFont) {
     def load(): IO[GoogleFont] = googleFonts.get(font) match {
-      case Some(d) => d.get
+      case Some(d) =>
+        scribe.info("Existing!")
+        d.get
       case None =>
+        scribe.info("Load font!")
         Deferred[IO, GoogleFont].flatMap { d =>
           val f: js.Function0[Unit] = () => {
+            scribe.info("Loaded!")
             d.complete(font).unsafeRunAndForget()
             ()
           }
@@ -98,7 +102,8 @@ package object youi {
             }
             active = f
           })
-          googleFonts += font -> d
+          // TODO: Figure out why this break things
+//          googleFonts += font -> d
           d.get
         }
     }

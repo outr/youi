@@ -64,7 +64,7 @@ val catsVersion: String = "3.3.14"
 
 val fs2Version: String = "3.2.12"
 
-val scalaTestVersion: String = "3.2.13"
+val scalaTestVersion: String = "3.2.17"
 
 val catsEffectTestVersion: String = "1.4.0"
 

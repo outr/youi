@@ -23,19 +23,33 @@ ThisBuild / developers := List(
 ThisBuild / versionScheme := Some("semver-spec")
 
 val spiceVersion: String = "0.0.34"
+
 val fabricVersion: String = "1.14.3"
-val profigVersion: String = "3.4.10"
+
+val profigVersion: String = "3.4.14"
+
 val scribeVersion: String = "3.11.9"
+
 val reactifyVersion: String = "4.0.8"
+
 val hasherVersion: String = "1.2.2"
+
 val openTypeVersion: String = "1.1.0"
+
 val webFontLoaderVersion: String = "1.6.28_2"
+
 val canvgVersion: String = "1.4.0_3"
+
 val scalaJSDOMVersion: String = "2.3.0"
+
 val closureCompilerVersion: String = "v20220803"
+
 val catsVersion: String = "3.3.14"
+
 val fs2Version: String = "3.2.12"
+
 val scalaTestVersion: String = "3.2.13"
+
 val catsEffectTestVersion: String = "1.4.0"
 
 ThisBuild / evictionErrorLevel := Level.Info

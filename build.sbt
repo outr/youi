@@ -32,7 +32,7 @@ val scribeVersion: String = "3.11.9"
 
 val reactifyVersion: String = "4.0.8"
 
-val hasherVersion: String = "1.2.2"
+val hasherVersion: String = "1.2.3"
 
 val openTypeVersion: String = "1.1.0"
 

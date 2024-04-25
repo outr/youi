@@ -1,8 +1,8 @@
 name := "youi"
 ThisBuild / organization := "io.youi"
 ThisBuild / version := "1.0.0-SNAPSHOT"
-ThisBuild / scalaVersion := "2.13.10"
-ThisBuild / crossScalaVersions := List("2.13.10")
+ThisBuild / scalaVersion := "2.13.13"
+ThisBuild / crossScalaVersions := List("2.13.13")
 ThisBuild / scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 
 ThisBuild / publishTo := sonatypePublishToBundle.value
@@ -22,15 +22,15 @@ ThisBuild / developers := List(
 
 ThisBuild / versionScheme := Some("semver-spec")
 
-val spiceVersion: String = "0.0.34"
+val spiceVersion: String = "0.5.5"
 
 val fabricVersion: String = "1.14.3"
 
 val profigVersion: String = "3.4.14"
 
-val scribeVersion: String = "3.11.9"
+val scribeVersion: String = "3.13.4"
 
-val reactifyVersion: String = "4.0.8"
+val reactifyVersion: String = "4.1.1"
 
 val hasherVersion: String = "1.2.3"
 
@@ -40,17 +40,17 @@ val webFontLoaderVersion: String = "1.6.28_2"
 
 val canvgVersion: String = "1.4.0_3"
 
-val scalaJSDOMVersion: String = "2.3.0"
+val scalaJSDOMVersion: String = "2.8.0"
 
-val closureCompilerVersion: String = "v20220803"
+val closureCompilerVersion: String = "v20240317"
 
-val catsVersion: String = "3.3.14"
+val catsVersion: String = "3.5.4"
 
-val fs2Version: String = "3.2.12"
+val fs2Version: String = "3.10.2"
 
-val scalaTestVersion: String = "3.2.13"
+val scalaTestVersion: String = "3.2.18"
 
-val catsEffectTestVersion: String = "1.4.0"
+val catsEffectTestVersion: String = "1.5.0"
 
 ThisBuild / evictionErrorLevel := Level.Info
 

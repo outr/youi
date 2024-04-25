@@ -1,5 +1,6 @@
 package io.youi.component.feature
 
+import cats.effect.IO
 import io.youi.{AnimationFrame, ui}
 import io.youi.component.Component
 import io.youi.component.types.Prop
@@ -78,6 +79,6 @@ class ScrollFeature(component: Component) extends Feature {
     } else {
       None
     }
-    parallel(List(v, h).flatten: _*).start(parent)
+    parallel(List(v, h).flatten: _*).start(parent, None)
   }
 }

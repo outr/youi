@@ -1,11 +1,11 @@
 package io.youi.ajax
 
 import cats.effect.{Deferred, IO}
-import io.youi.http.HttpMethod
-import io.youi.net.URL
 import org.scalajs.dom
-import org.scalajs.dom._
+import org.scalajs.dom.{FormData, ProgressEvent, XMLHttpRequest}
 import reactify._
+import spice.http.HttpMethod
+import spice.net.URL
 
 import scala.scalajs.js
 import scala.scalajs.js.|

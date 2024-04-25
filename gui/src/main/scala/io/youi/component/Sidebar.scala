@@ -1,19 +1,18 @@
 package io.youi.component
 
+import cats.effect.IO
 import io.youi._
 import io.youi.component.support.{MarginSupport, OverflowSupport, PositionSupport, SizeSupport}
 import io.youi.component.types.{Display, Overflow, PositionType, UserSelect}
 import io.youi.easing.Easing
 import io.youi.task._
 import reactify.{Val, Var}
-import scribe.Execution.global
-
-import scala.concurrent.Future
 
 class Sidebar(container: Option[Component with SizeSupport with MarginSupport],
               showGlassPane: Boolean = isMobileDevice,
               val width: Double = 260.0) extends Container() with PositionSupport with SizeSupport with OverflowSupport {
-  private var future: Future[Unit] = Future.successful(())
+  private val chained = Chained(1)
+
   private val glassPane: Option[GlassPane] = if (showGlassPane) {
     val gp = new GlassPane
     gp.backgroundAlpha := (math.max(0.0, width + position.x) / width) / 2.0
@@ -123,23 +122,17 @@ class Sidebar(container: Option[Component with SizeSupport with MarginSupport],
     }
   }
 
-  private def show(): Future[Unit] = {
-    future = future.flatMap { _ =>
-      sequential(
-        glassPane.foreach(_.display @= Display.Block),
-        position.x.to(0.0).by(speed).easing(easing)
-      ).start().future.map(_ => ())
-    }
-    future
+  private def show(): IO[Unit] = chained {
+    sequential(
+      IO(glassPane.foreach(_.display @= Display.Block)),
+      position.x.to(0.0).by(speed).easing(easing)
+    ).startDeferred().map(_ => ())
   }
 
-  private def hide(): Future[Unit] = {
-    future = future.flatMap { _ =>
-      sequential(
-        position.x.to(-width).by(speed).easing(easing),
-        glassPane.foreach(_.display @= Display.None)
-      ).start().future.map(_ => ())
-    }
-    future
+  private def hide(): IO[Unit] = chained {
+    sequential(
+      position.x.to(-width).by(speed).easing(easing),
+      IO(glassPane.foreach(_.display @= Display.None))
+    ).startDeferred().map(_ => ())
   }
 }

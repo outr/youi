@@ -58,7 +58,7 @@ class MDCTopAppBar extends Component(dom.create[html.Element]("header")) {
   val controls: Container = new Container(elements.right)
 
   private val adapter: MDCTopAppBarImplementation = {
-    assert(MaterialComponents.loaded.isCompleted, "MaterialComponents is not loaded!")
+    assert(MaterialComponents.loaded, "MaterialComponents is not loaded!")
     MDCTopAppBar.attachTo(element)
   }
 }

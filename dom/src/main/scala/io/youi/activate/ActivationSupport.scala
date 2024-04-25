@@ -1,8 +1,8 @@
 package io.youi.activate
 
 import io.youi.dom._
-import io.youi.net.Path
 import org.scalajs.dom._
+import spice.net.URLPath
 
 /**
   * Instantiate this to find, parse, and remove all activate tags in the body of the HTML.
@@ -96,7 +96,7 @@ object ActivationSupport {
     case ReplaceAttributeRegex(selector, attributeName, content) => Some(new ReplaceAttributeInstruction(selector, attributeName, content))
     case AlertRegex(message) => Some(new AlertInstruction(message))
     case CallRegex(code) => Some(new Call(code))
-    case LinkRegex(path) => Some(new Link(Path.parse(path)))
+    case LinkRegex(path) => Some(new Link(URLPath.parse(path)))
     case OnClickRegex(selector, instruction) => {
       val i = parseInstruction(testing, instruction).getOrElse(throw new RuntimeException(s"Failed to parse instruction: [$instruction]"))
       Some(new OnClick(selector, i))

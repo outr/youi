@@ -1,12 +1,11 @@
 package io.youi.image
 
+import cats.effect.IO
+import cats.implicits.toTraverseOps
 import io.youi.drawable.Context
 import io.youi.image.resize.ImageResizer
 import org.scalajs.dom.html.Canvas
 import reactify._
-
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 class AnimatedImage(frames: Vector[Image], delay: Double) extends Image {
   assert(frames.nonEmpty, "AnimatedImage.frames cannot be empty")
@@ -34,17 +33,17 @@ class AnimatedImage(frames: Vector[Image], delay: Double) extends Image {
     modified @= time
   }
 
-  override def resize(width: Double, height: Double): Future[Image] = {
-    Future.sequence(frames.map(_.resize(width, height))).map(new AnimatedImage(_, delay))
+  override def resize(width: Double, height: Double): IO[Image] = {
+    frames.map(_.resize(width, height)).sequence.map(new AnimatedImage(_, delay))
   }
 
-  override def resizeTo(canvas: Canvas, width: Double, height: Double, resizer: ImageResizer): Future[Canvas] = {
+  override def resizeTo(canvas: Canvas, width: Double, height: Double, resizer: ImageResizer): IO[Canvas] = {
     frame.resizeTo(canvas, width, height, resizer)
   }
 
   override def isVector: Boolean = frame.isVector
 
-  override def toDataURL: Future[String] = frame.toDataURL
+  override def toDataURL: IO[String] = frame.toDataURL
 
   override def dispose(): Unit = frames.foreach(_.dispose())
 }

@@ -1,6 +1,6 @@
 package io.youi.client
 
-import io.youi.http.BinaryData
 import org.scalajs.dom.Blob
+import spice.http.BinaryData
 
 case class BlobData(blob: Blob) extends BinaryData

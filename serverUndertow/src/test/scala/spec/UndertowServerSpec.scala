@@ -5,7 +5,7 @@ import io.youi.ValidationError
 import io.youi.client.HttpClient
 import io.youi.http._
 import io.youi.http.content.Content
-import io.youi.net._
+import spice.net._
 import io.youi.server.Server
 import io.youi.server.dsl._
 import io.youi.server.handler.HttpHandler
@@ -112,13 +112,13 @@ class UndertowServerSpec extends Spec {
   case class ReverseRequest(value: String)
 
   object ReverseRequest {
-    implicit val rw: ReaderWriter[ReverseRequest] = ccRW
+    implicit val rw: RW[ReverseRequest] = RW.gen
   }
 
   case class ReverseResponse(reversed: Option[String], errors: List[ValidationError])
 
   object ReverseResponse {
-    implicit val rw: ReaderWriter[ReverseResponse] = ccRW
+    implicit val rw: RW[ReverseResponse] = RW.gen
   }
 
   object ReverseService extends Restful[ReverseRequest, ReverseResponse] {

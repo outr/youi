@@ -1,13 +1,11 @@
 package io.youi.image
 
+import cats.effect.IO
 import io.youi.drawable.Context
 import io.youi.image.resize.ImageResizer
 import io.youi.util.{CanvasPool, ImageUtility}
 import org.scalajs.dom.html
 import org.scalajs.dom.html.Canvas
-
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 trait CanvasImage extends Image {
   protected def canvas: html.Canvas
@@ -20,7 +18,7 @@ trait CanvasImage extends Image {
 
   override def isVector: Boolean = false
 
-  override def toDataURL: Future[String] = Future.successful(canvas.toDataURL("image/png"))
+  override def toDataURL: IO[String] = IO.pure(canvas.toDataURL("image/png"))
 
   override def dispose(): Unit = CanvasPool.restore(canvas)
 
@@ -34,22 +32,22 @@ object CanvasImage {
     val c = canvas
     new CanvasImage {
       override protected def canvas: Canvas = c
-      override def resize(width: Double, height: Double): Future[Image] = if (this.width == width && this.height == height) {
-        Future.successful(this)
+      override def resize(width: Double, height: Double): IO[Image] = if (this.width == width && this.height == height) {
+        IO.pure(this)
       } else if (original.map(_.width.toDouble).contains(width) && original.map(_.height.toDouble).contains(height)) {
-        Future.successful(apply(original.get, resizer, None))
+        IO(apply(original.get, resizer, None))
       } else {
         CanvasImage.resize(original.getOrElse(c), width, height, resizer)
       }
 
-      override def resizeTo(canvas: html.Canvas, width: Double, height: Double, resizer: ImageResizer): Future[html.Canvas] = {
+      override def resizeTo(canvas: html.Canvas, width: Double, height: Double, resizer: ImageResizer): IO[html.Canvas] = {
         val source: html.Canvas = original.getOrElse(c)
         ImageUtility.drawToCanvas(source, canvas, resizer)(0.0, 0.0, width, height)
       }
     }
   }
 
-  def resize(canvas: html.Canvas, width: Double, height: Double, resizer: ImageResizer): Future[CanvasImage] = {
+  def resize(canvas: html.Canvas, width: Double, height: Double, resizer: ImageResizer): IO[CanvasImage] = {
     ImageUtility.drawToCanvas(canvas, CanvasPool(width, height), resizer)().map { resized =>
       apply(resized, resizer, Some(canvas))
     }

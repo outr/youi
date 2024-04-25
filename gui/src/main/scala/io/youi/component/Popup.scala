@@ -1,18 +1,18 @@
 package io.youi.component
 
+import cats.effect.IO
+import cats.effect.kernel.Deferred
 import io.youi.component.support.{PositionSupport, SizeSupport}
 import io.youi.component.types.{Display, PositionType, UserSelect}
 import io.youi.easing.Easing
 import io.youi.task._
-import io.youi.{Initializable, ui}
+import io.youi.{Chained, Initializable, ui}
 import reactify.{Mutable, Stateful, Var}
-import scribe.Execution.global
 
-import scala.concurrent.Future
 import scala.concurrent.duration._
 
 class Popup(showGlassPane: Boolean = true) extends Container with SizeSupport with PositionSupport with Initializable {
-  private var future: Future[Unit] = Future.successful(())
+  private val chained = Chained(1)
 
   def preferredWidth: Double = 600.0
   def preferredHeight: Double = 600.0
@@ -44,46 +44,54 @@ class Popup(showGlassPane: Boolean = true) extends Container with SizeSupport wi
     }
   }
 
-  def show(): Future[Unit] = {
-    init()
+  def show(): IO[Unit] = chained {
+    IO {
+      init()
 
-    future = future.flatMap { _ =>
       Popup._active += this
-      sequential(
-        position.center := ui.size.center,
-        position.y @= ui.size.height,
-        display @= Display.Block,
-        glassPane.foreach(_.backgroundAlpha @= 0.0),
-        glassPane.foreach(_.display @= Display.Block),
+    }.flatMap { _ =>
+      val animation = sequential(
+        IO(position.center := ui.size.center),
+        IO(position.y @= ui.size.height),
+        IO(display @= Display.Block),
+        IO(glassPane.foreach(_.backgroundAlpha @= 0.0)),
+        IO(glassPane.foreach(_.display @= Display.Block)),
         parallel(
           positionProperty.to(positionDestination).in(speed).easing(easing),
           glassPane.map { gp =>
             gp.backgroundAlpha.to(0.5).in(speed).easing(easing)
           }.getOrElse(Task.None)
         ),
-        positionProperty := positionDestination
-      ).start().future.map(_ => ())
+        IO(positionProperty := positionDestination)
+      )
+      Deferred[IO, Double].map { deferred =>
+        animation.start(deferred = Some(deferred))
+        deferred.get
+      }
     }
-    future
   }
 
-  def hide(): Future[Unit] = {
-    future = future.flatMap { _ =>
+  def hide(): IO[Unit] = chained {
+    IO {
       Popup._active -= this
       glassPane.foreach(_.element.style.pointerEvents = "none")
-      sequential(
+    }.flatMap { _ =>
+      val task = sequential(
         parallel(
           position.y.to(ui.size.height).in(speed).easing(easing),
           glassPane.map { gp =>
             gp.backgroundAlpha.to(0.0).in(speed).easing(easing)
           }.getOrElse(Task.None)
         ),
-        display @= Display.None,
-        glassPane.foreach(_.display @= Display.None),
-        glassPane.foreach(_.element.style.pointerEvents = "auto")
-      ).start().future.map(_ => ())
+        IO(display @= Display.None),
+        IO(glassPane.foreach(_.display @= Display.None)),
+        IO(glassPane.foreach(_.element.style.pointerEvents = "auto"))
+      )
+      Deferred[IO, Double].flatMap { deferred =>
+        task.start(deferred = Some(deferred))
+        deferred.get.map(_ => ())
+      }
     }
-    future
   }
 
   protected def positionProperty: Stateful[Double] with Mutable[Double] = position.middle

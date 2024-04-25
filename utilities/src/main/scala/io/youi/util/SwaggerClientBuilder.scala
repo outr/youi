@@ -233,7 +233,7 @@ class SwaggerClientBuilder(directory: File,
         |import $packageName.model._
         |import io.youi.client.HttpClient
         |import io.youi.http.HttpMethod
-        |import io.youi.net._
+        |import spice.net._
         |import io.circe.Json
         |import scala.concurrent.{ExecutionContext, Future}
       """.stripMargin

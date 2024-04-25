@@ -4,7 +4,7 @@ import io.youi.History
 import io.youi.ajax.AjaxManager
 import io.youi.component.FileInput
 import io.youi.http.{Headers, HttpMethod}
-import io.youi.net._
+import spice.net._
 import org.scalajs.dom.raw.{File, FormData}
 import reactify.{Val, Var}
 

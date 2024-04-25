@@ -1,12 +1,12 @@
 package io.youi.component
 
+import cats.effect.unsafe.implicits.global
 import io.youi.component.feature.{FeatureParent, HeightFeature, WidthFeature}
 import io.youi.component.types.Prop
 import io.youi.dom
 import io.youi.image.{CanvasImage, EmptyImage, HTMLImage, Image}
 import org.scalajs.dom.html
 import reactify.Var
-import scribe.Execution.global
 
 class ImageView(img: html.Image = dom.create.image) extends Component(img) with WidthFeature with HeightFeature {
   override protected def parent: FeatureParent = this
@@ -18,9 +18,9 @@ class ImageView(img: html.Image = dom.create.image) extends Component(img) with 
       case i: HTMLImage => src @= i.source
       case EmptyImage => src @= ""
       //      case i: SVGImage => element.src = s"data:image/svg+xml;charset=utf-8,${i.toXML}"
-      case i: CanvasImage => i.toDataURL.foreach { url =>
+      case i: CanvasImage => i.toDataURL.map { url =>
         src @= url
-      }
+      }.unsafeRunAndForget()
       case _ => throw new RuntimeException(s"Unsupported Image type: $image")
     }
     v

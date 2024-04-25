@@ -1,16 +1,15 @@
 package io
 
+import cats.effect.unsafe.implicits.global
+import cats.effect.{Deferred, IO}
 import io.youi.font.{FontAwesome, GoogleFont, GoogleFontWeight}
-import io.youi.net._
 import io.youi.paint.Paint
 import io.youi.util.{CanvasPool, Time}
 import org.scalajs.dom.{CanvasRenderingContext2D, document, html, window}
 import reactify.Val
-import scribe.Execution.global
 import typekit.{GoogleConfig, WebFont, WebFontConfiguration}
 
 import scala.concurrent.duration._
-import scala.concurrent.{Future, Promise}
 import scala.language.implicitConversions
 import scala.scalajs.js
 
@@ -47,14 +46,14 @@ package object youi {
   private def waitForComputed(e: html.Element,
                               key: String,
                               delay: FiniteDuration)
-                             (matcher: String => Boolean): Future[Unit] = {
+                             (matcher: String => Boolean): IO[Unit] = {
     val value = window.getComputedStyle(e).getPropertyValue(key)
     if (matcher(value)) {
       // Finished
-      Future.successful(())
+      IO.unit
     } else {
       // Delay and try again
-      Time.delay(delay).flatMap(_ => waitForComputed(e, key, delay)(matcher))
+      IO.sleep(delay).flatMap(_ => waitForComputed(e, key, delay)(matcher))
     }
   }
 
@@ -64,7 +63,7 @@ package object youi {
     def context: CanvasRenderingContext2D = canvas.getContext("2d").asInstanceOf[CanvasRenderingContext2D]
   }
 
-  private lazy val fontAwesomeFuture: Future[Unit] = {
+  private lazy val fontAwesomeIO: IO[Unit] = {
     val e = dom.create[html.Element]("i")
     e.classList.add("fas")
     e.classList.add("fa-question")
@@ -79,37 +78,39 @@ package object youi {
     }
   }
   implicit class ExtendedFontAwesome(font: FontAwesome) {
-    def load(): Future[FontAwesome] = fontAwesomeFuture.map(_ => font)
+    def load(): IO[FontAwesome] = fontAwesomeIO.map(_ => font)
   }
 
-  private var googleFontFutures = Map.empty[GoogleFont, Future[GoogleFont]]
+  private var googleFonts = Map.empty[GoogleFont, Deferred[IO, GoogleFont]]
 
   implicit class ExtendedGoogleFont(font: GoogleFont) {
-    def loaded(): Unit = googleFontFutures += font -> Future.successful(font)
-
-    def load(): Future[GoogleFont] = googleFontFutures.get(font) match {
-      case Some(future) => future
-      case None => {
-        val promise = Promise[GoogleFont]()
-        val f: js.Function0[Unit] = () => {
-          promise.success(font)
-          ()
-        }
-        WebFont.load(new WebFontConfiguration {
-          google = new GoogleConfig {
-            families = js.Array(font.family)
+    def load(): IO[GoogleFont] = googleFonts.get(font) match {
+      case Some(d) =>
+        scribe.info("Existing!")
+        d.get
+      case None =>
+        scribe.info("Load font!")
+        Deferred[IO, GoogleFont].flatMap { d =>
+          val f: js.Function0[Unit] = () => {
+            scribe.info("Loaded!")
+            d.complete(font).unsafeRunAndForget()
+            ()
           }
-          active = f
-        })
-        val future = promise.future
-        googleFontFutures += font -> future
-        future
-      }
+          WebFont.load(new WebFontConfiguration {
+            google = new GoogleConfig {
+              families = js.Array(font.family)
+            }
+            active = f
+          })
+          // TODO: Figure out why this break things
+//          googleFonts += font -> d
+          d.get
+        }
     }
   }
 
   implicit class ExtendedGoogleFontWeight(weight: GoogleFontWeight) {
-    def load(): Future[GoogleFontWeight] = weight.font.load().map(_ => weight)
+    def load(): IO[GoogleFontWeight] = weight.font.load().map(_ => weight)
   }
 
   implicit class UINumericSize[T](t: T)(implicit n: Numeric[T]) {

@@ -6,7 +6,7 @@ import fabric.parse.JsonParser
 import io.youi.ValidationError
 import io.youi.http._
 import io.youi.http.content.{Content, StringContent}
-import io.youi.net._
+import spice.net._
 import io.youi.server.Server
 import io.youi.server.dsl._
 import io.youi.server.handler.HttpHandler
@@ -106,13 +106,13 @@ class ServerSpec extends AsyncWordSpec with AsyncIOSpec with Matchers {
   case class ReverseRequest(value: String)
 
   object ReverseRequest {
-    implicit val rw: ReaderWriter[ReverseRequest] = ccRW
+    implicit val rw: RW[ReverseRequest] = RW.gen
   }
 
   case class ReverseResponse(reversed: Option[String], errors: List[ValidationError])
 
   object ReverseResponse {
-    implicit val rw: ReaderWriter[ReverseResponse] = ccRW
+    implicit val rw: RW[ReverseResponse] = RW.gen
   }
 
   object ReverseService extends Restful[ReverseRequest, ReverseResponse] {

@@ -47,7 +47,7 @@ class MDCTextField extends Component(dom.create.div) {
   element.appendChild(elements.label)
 
   private val adapter: MDCTextFieldImplementation = {
-    assert(MaterialComponents.loaded.isCompleted, "MaterialComponents is not loaded!")
+    assert(MaterialComponents.loaded, "MaterialComponents is not loaded!")
     MDCTextField.attachTo(element)
   }
 

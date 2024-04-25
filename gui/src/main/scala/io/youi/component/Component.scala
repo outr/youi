@@ -3,8 +3,7 @@ package io.youi.component
 import io.youi.component.feature.{FeatureParent, HeightFeature, WidthFeature}
 import io.youi.component.types.Prop
 import io.youi.path.Rectangle
-import org.scalajs.dom.html
-import org.scalajs.dom.raw.CSSStyleDeclaration
+import org.scalajs.dom.{CSSStyleDeclaration, html}
 import reactify.{Trigger, Val}
 
 class Component(val element: html.Element) extends FeatureParent {

@@ -13,8 +13,7 @@ case class Repeatable(delay: FiniteDuration,
                       initialDelay: Option[FiniteDuration],
                       stopOnError: Boolean,
                       task: () => IO[Unit],
-                      errorHandler: Throwable => Unit)
-                     (implicit ec: ExecutionContext) {
+                      errorHandler: Throwable => Unit) {
   private var running = false
   private var keepAlive = true
 

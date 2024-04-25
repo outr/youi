@@ -1,11 +1,9 @@
 package io.youi
 
 import java.io.File
-
-import io.youi.stream.{HTMLParser, Selector}
 import org.scalajs.dom.Element
 import profig.Profig
-import profig.jdk._
+import spice.delta.{HTMLParser, Selector}
 
 import scala.annotation.compileTimeOnly
 import scala.reflect.macros.blackbox

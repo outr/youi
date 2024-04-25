@@ -27,28 +27,6 @@ class Cacheable extends Drawable {
     }
   }
 
-  def async(width: Double, height: Double)(f: Context => Future[Unit]): Future[Unit] = {
-    val c = CanvasPool(width * ratio, height * ratio)
-    val context = new Context(c, ratio)
-    val future = f(context)
-    val promise = Promise[Unit]()
-    future.onComplete {
-      case Success(_) => {
-        val old = canvas
-        canvas = Some(c)
-        old.foreach(CanvasPool.restore)
-        modified @= System.currentTimeMillis()
-        promise.success(())
-      }
-      case Failure(t) => {
-        scribe.error(t)
-        CanvasPool.restore(c)
-        promise.failure(t)
-      }
-    }
-    promise.future
-  }
-
   def invalidate(): Unit = {
     canvas.foreach(CanvasPool.restore)
     canvas = None

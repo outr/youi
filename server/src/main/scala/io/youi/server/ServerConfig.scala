@@ -43,7 +43,7 @@ class ServerConfig(server: Server) {
                              sameSite: String = "strict")
 
     object SessionConfig {
-      implicit val rw: ReaderWriter[SessionConfig] = ccRW
+      implicit val rw: RW[SessionConfig] = RW.gen
     }
   }
 
@@ -118,7 +118,7 @@ case class HttpServerListener(host: String = "127.0.0.1",
 }
 
 object HttpServerListener {
-  implicit val rw: ReaderWriter[HttpServerListener] = ccRW
+  implicit val rw: RW[HttpServerListener] = RW.gen
 }
 
 case class HttpsServerListener(host: String = "127.0.0.1",
@@ -133,7 +133,7 @@ case class HttpsServerListener(host: String = "127.0.0.1",
 }
 
 object HttpsServerListener {
-  implicit val rw: ReaderWriter[HttpsServerListener] = ccRW
+  implicit val rw: RW[HttpsServerListener] = RW.gen
 }
 
 case class KeyStore(path: String = "keystore.jks", password: String = "password") {
@@ -141,5 +141,5 @@ case class KeyStore(path: String = "keystore.jks", password: String = "password"
 }
 
 object KeyStore {
-  implicit val rw: ReaderWriter[KeyStore] = ccRW
+  implicit val rw: RW[KeyStore] = RW.gen
 }

@@ -1,12 +1,11 @@
 package io.youi.task
 
+import cats.effect.unsafe.implicits.global
+import cats.effect.{Deferred, IO}
 import io.youi.Updates
 import reactify.reaction.Reaction
 
-import scala.concurrent.{Future, Promise}
-
-class TaskInstance(task: Task, updates: Updates) {
-  private val promise = Promise[Double]()
+case class TaskInstance(task: Task, updates: Updates, deferred: Option[Deferred[IO, Double]]) {
   private var reaction: Reaction[Double] = _
   private var first = true
   private var elapsed: Double = 0.0
@@ -25,25 +24,23 @@ class TaskInstance(task: Task, updates: Updates) {
         step = 0.0
         task.update(delta, first) match {
           case Conclusion.Continue => // Keep going
-          case Conclusion.Finished => {
+          case Conclusion.Finished =>
             updates.delta.reactions -= reaction
-            promise.success(elapsed)
-          }
+            deferred.foreach(_.complete(elapsed).unsafeRunAndForget())
         }
         first = false
       }
     }
   }
 
-  val future: Future[Double] = promise.future
-
-  def start(): Future[Double] = {
+  def start(): Unit = {
     updates.delta.reactions += reaction
-    future
   }
 
   def pause(): Unit = paused = true
   def play(): Unit = paused = false
 
-  def cancel(): Unit = promise.failure(new TaskCancelledException)
+  def cancel(): Unit = {
+    updates.delta.reactions -= reaction
+  }
 }

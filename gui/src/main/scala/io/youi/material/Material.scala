@@ -1,7 +1,7 @@
 package io.youi.material
 
 import io.youi.font._
-import io.youi.net.URL
+import spice.net.URL
 
 object Material extends GoogleFont {
   override lazy val family: String = "Material Icons"

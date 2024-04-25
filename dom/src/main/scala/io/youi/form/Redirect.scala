@@ -1,6 +1,6 @@
 package io.youi.form
 
-import io.youi.net._
+import spice.net.{URLPath, URL}
 
 import scala.concurrent.duration._
 
@@ -12,5 +12,5 @@ case class Redirect(url: URL => URL, _push: Boolean = true, delay: Option[Finite
 
 object Redirect {
   def url(url: URL): Redirect = Redirect(url = _ => url)
-  def path(path: Path): Redirect = Redirect(url = url => url.withPath(path))
+  def path(path: URLPath): Redirect = Redirect(url = url => url.withPath(path))
 }

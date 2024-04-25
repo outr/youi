@@ -1,8 +1,8 @@
 package io.youi
 
-import io.youi.net.{Path, Protocol, URL}
-import org.scalajs.dom._
+import org.scalajs.dom.{Event, PopStateEvent, document, html, window}
 import reactify.{Channel, Val, Var}
+import spice.net.{URLPath, Protocol, URL}
 
 import scala.scalajs.js
 
@@ -17,7 +17,7 @@ object History {
     * Defaults to false.
     */
   val alwaysReload: Var[Boolean] = Var(false)
-  private val currentURL = Var[URL](URL(document.location.href))
+  private val currentURL = Var[URL](URL.parse(document.location.href))
   val url: Val[URL] = Val(currentURL)
   val stateChange: Channel[HistoryStateChange] = Channel[HistoryStateChange]
 
@@ -25,7 +25,7 @@ object History {
 
   window.addEventListener("popstate", (evt: PopStateEvent) => {
     val urlString = document.location.href
-    val newURL = URL(urlString)
+    val newURL = URL.parse(urlString)
     if (newURL != url()) {
       currentURL @= newURL
       stateChange @= HistoryStateChange(newURL, StateType.Pop, evt.state)
@@ -39,7 +39,7 @@ object History {
     case StateType.Pop => back()
   }
 
-  def setPath(path: Path, keepParams: Boolean = false): Unit = {
+  def setPath(path: URLPath, keepParams: Boolean = false): Unit = {
     set(url.withPath(path) match {
       case u if keepParams => u
       case u => u.clearParams()
@@ -51,7 +51,7 @@ object History {
     stateChange @= HistoryStateChange(url, StateType.Set, null)
   }
 
-  def pushPath(path: Path, keepParams: Boolean = false, state: js.Any = null): Unit = {
+  def pushPath(path: URLPath, keepParams: Boolean = false, state: js.Any = null): Unit = {
     push(url.withPath(path) match {
       case u if keepParams => u
       case u => u.clearParams()
@@ -67,7 +67,7 @@ object History {
     stateChange @= HistoryStateChange(url, StateType.Push, state)
   }
 
-  def replacePath(path: Path, keepParams: Boolean = false, state: js.Any = null): Unit = {
+  def replacePath(path: URLPath, keepParams: Boolean = false, state: js.Any = null): Unit = {
     replace(url.withPath(path) match {
       case u if keepParams => u
       case u => u.clearParams()
@@ -87,7 +87,7 @@ object History {
 
   def forward(delta: Int = 1): Unit = window.history.go(delta)
 
-  def reload(force: Boolean): Unit = window.location.reload(force)
+  def reload(): Unit = window.location.reload()
 
   /**
     * Updates all anchors on the page to internal links to push history instead of loading another page. Essentially
@@ -109,7 +109,7 @@ object History {
       evt.preventDefault()
       evt.stopPropagation()
 
-      push(URL(anchor.href))
+      push(URL.parse(anchor.href))
     }
     anchor
   }

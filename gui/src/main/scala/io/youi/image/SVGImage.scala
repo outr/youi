@@ -1,40 +1,55 @@
 package io.youi.image
 
+import cats.effect.IO
+import cats.effect.kernel.Deferred
+import cats.effect.unsafe.implicits.global
 import com.outr.{CanvgOptions, canvg}
 import io.youi._
 import io.youi.dom._
 import io.youi.image.resize.ImageResizer
-import io.youi.net.URL
 import io.youi.path.Path
 import io.youi.spatial.{BoundingBox, Size}
 import io.youi.stream.StreamURL
-import io.youi.util.{CanvasPool, LazyFuture}
-import org.scalajs.dom.html
-import org.scalajs.dom.raw._
+import io.youi.util.CanvasPool
+import org.scalajs.dom.{Element, SVGCircleElement, SVGEllipseElement, SVGGElement, SVGImageElement, SVGLength, SVGLinearGradientElement, SVGPathElement, SVGPolygonElement, SVGRectElement, SVGSVGElement, SVGStyleElement, SVGTransform, XMLSerializer, html}
+import spice.net.URL
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Future, Promise}
 import scala.scalajs._
 
-class SVGImage private(private val svg: SVGSVGElement, override protected val canvas: html.Canvas, measured: Size) extends CanvasImage {
-  private val reDrawer = LazyFuture {
-    SVGImage.drawToCanvas(canvas, svg, 0.0, 0.0, canvas.width, canvas.height).map { _ =>
-      modified @= System.currentTimeMillis()
+class SVGImage private(private val svg: SVGSVGElement,
+                       override protected val canvas: html.Canvas,
+                       measured: Size) extends CanvasImage {
+  private var deferred: IO[Deferred[IO, Unit]] = Deferred[IO, Unit].map { d =>
+    d.complete(())
+    d
+  }
+
+  private def reDraw(): IO[Deferred[IO, Unit]] = {
+    deferred = deferred.flatMap(_.get).flatMap { _ =>
+      Deferred[IO, Unit].flatMap { d =>
+        SVGImage.drawToCanvas(canvas, svg, 0.0, 0.0, canvas.width, canvas.height).flatMap { _ =>
+          modified @= System.currentTimeMillis()
+          d.complete(())
+        }.map { _ =>
+          d
+        }
+      }
     }
+    deferred
   }
 
-  def modify[R](f: SVGSVGElement => R): Future[R] = {
+  def modify[R](f: SVGSVGElement => R): IO[R] = {
     val result = f(svg)
-    reDrawer.flag().map(_ => result)
+    reDraw().flatMap(_.get).map(_ => result)
   }
 
-  override def resize(width: Double, height: Double): Future[SVGImage] = if (this.width == width && this.height == height) {
-    Future.successful(this)
+  override def resize(width: Double, height: Double): IO[SVGImage] = if (this.width == width && this.height == height) {
+    IO.pure(this)
   } else {
     SVGImage(svg, width, height)
   }
 
-  override def resizeTo(canvas: html.Canvas, width: Double, height: Double, resizer: ImageResizer): Future[html.Canvas] = {
+  override def resizeTo(canvas: html.Canvas, width: Double, height: Double, resizer: ImageResizer): IO[html.Canvas] = {
     SVGImage.drawToCanvas(canvas, svg, 0.0, 0.0, width, height).map(_ => canvas)
   }
 
@@ -48,12 +63,12 @@ class SVGImage private(private val svg: SVGSVGElement, override protected val ca
 object SVGImage {
   case class ViewBox(width: Double = 0.0, height: Double = 0.0)
 
-  def apply(url: URL): Future[SVGImage] = {
+  def apply(url: URL): IO[SVGImage] = {
     val stream = StreamURL.stream(url)
     stream.flatMap(apply)
   }
 
-  def apply(svgString: String): Future[SVGImage] = try {
+  def apply(svgString: String): IO[SVGImage] = try {
     val div = dom.create[html.Div]("div")
     div.innerHTML = svgString
     val svg = div.oneByTag[SVGSVGElement]("svg")
@@ -65,12 +80,12 @@ object SVGImage {
     }
   }
 
-  def apply(svg: SVGSVGElement): Future[SVGImage] = {
+  def apply(svg: SVGSVGElement): IO[SVGImage] = {
     val size = measure(svg).toSize
     apply(svg, size.width, size.height)
   }
 
-  def apply(svg: SVGSVGElement, width: Double, height: Double): Future[SVGImage] = {
+  def apply(svg: SVGSVGElement, width: Double, height: Double): IO[SVGImage] = {
     val size = measure(svg).toSize
     val canvas = CanvasPool(width, height)
     drawToCanvas(canvas, svg, 0.0, 0.0, width, height).map { _ =>
@@ -78,10 +93,12 @@ object SVGImage {
     }
   }
 
-  def drawToCanvas(canvas: html.Canvas, svg: SVGSVGElement, x: Double, y: Double, width: Double, height: Double): Future[Unit] = {
-    val promise = Promise[Unit]()
+  def drawToCanvas(canvas: html.Canvas, svg: SVGSVGElement, x: Double, y: Double, width: Double, height: Double): IO[Unit] = {
+    val d = Deferred[IO, Unit]
     val callback: js.Function = () => {
-      promise.success(())
+      d.flatMap { d =>
+        d.complete(())
+      }.unsafeRunAndForget()
     }
     canvg(canvas, svg.outerHTML, new CanvgOptions {
       ignoreMouse = true
@@ -94,7 +111,7 @@ object SVGImage {
       scaleHeight = math.ceil(height).toInt
       renderCallback = callback
     })
-    promise.future
+    d.flatMap(_.get)
   }
 
   def measure(svg: SVGSVGElement, applyDimension: Boolean = true, force: Boolean = false): BoundingBox = {

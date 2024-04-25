@@ -1,12 +1,11 @@
 package io.youi.component
 
+import cats.effect.IO
 import io.youi._
 import io.youi.component.support._
 import io.youi.component.types.{Display, DropType, Overflow, PositionType}
 import org.scalajs.dom.html
 import reactify._
-
-import scala.concurrent.Future
 
 class Drop extends Collapsible with PositionSupport with BorderSupport with Initializable {
   private var showing: Option[Component] = None
@@ -30,15 +29,15 @@ class Drop extends Collapsible with PositionSupport with BorderSupport with Init
     ui.children += this
   }
 
-  def show(target: Component, `type`: DropType = DropType.Auto): Future[Unit] = {
-    init()
-
-    showing = Some(target)
-    this.`type` = `type`
-    Drop.opening(this)
-    updatePosition()
-    collapsed @= false
-    future
+  def show(target: Component, `type`: DropType = DropType.Auto): IO[Unit] = chained {
+    IO {
+      init()
+      showing = Some(target)
+      this.`type` = `type`
+      Drop.opening(this)
+      updatePosition()
+      collapsed @= false
+    }
   }
 
   def updatePosition(): Unit = showing.foreach { target =>
@@ -55,14 +54,15 @@ class Drop extends Collapsible with PositionSupport with BorderSupport with Init
     }
   }
 
-  def hide(): Future[Unit] = {
-    showing = None
-    Drop._open = None
-    collapsed @= true
-    future
+  def hide(): IO[Unit] = chained {
+    IO {
+      showing = None
+      Drop._open = None
+      collapsed @= true
+    }
   }
 
-  def toggle(target: Component, `type`: DropType = DropType.Auto): Future[Unit] = if (showing.isEmpty) {
+  def toggle(target: Component, `type`: DropType = DropType.Auto): IO[Unit] = if (showing.isEmpty) {
     show(target, `type`)
   } else {
     hide()

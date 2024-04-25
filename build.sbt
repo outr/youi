@@ -24,7 +24,7 @@ ThisBuild / versionScheme := Some("semver-spec")
 
 val spiceVersion: String = "0.0.34"
 val fabricVersion: String = "1.11.2"
-val profigVersion: String = "3.4.10"
+val profigVersion: String = "3.4.14"
 val scribeVersion: String = "3.11.5"
 val reactifyVersion: String = "4.0.8"
 val hasherVersion: String = "1.2.2"

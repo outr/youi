@@ -53,26 +53,26 @@ class AnimationExample extends UIExampleScreen {
           }
         }
 
-        val image = new ImageView with PositionSupport with MeasuredSupport {
+        val imageView = new ImageView with PositionSupport with MeasuredSupport {
           image @= img
           position.`type` @= PositionType.Absolute
           position.left @= 0.0
           position.middle := container.size.middle + header.size.height
         }
 
-        container.children += image
+        container.children += imageView
 
         forever(
           parallel(
             sequential(
-              synchronous(image.rotation @= 0.0),
-              image.rotation to 6.0 in 20.seconds
+              synchronous(imageView.rotation @= 0.0),
+              imageView.rotation to 6.0 in 20.seconds
             ),
             sequential(
-              image.position.right to ui.size.width in 5.seconds easing Easing.bounceOut,
-              image.position.bottom to ui.size.height in 5.seconds easing Easing.bounceOut,
-              image.position.left to 0.0 in 5.seconds easing Easing.bounceOut,
-              image.position.top to header.size.height in 5.seconds easing Easing.bounceOut
+              imageView.position.right to ui.size.width in 5.seconds easing Easing.bounceOut,
+              imageView.position.bottom to ui.size.height in 5.seconds easing Easing.bounceOut,
+              imageView.position.left to 0.0 in 5.seconds easing Easing.bounceOut,
+              imageView.position.top to header.size.height in 5.seconds easing Easing.bounceOut
             )
           )
         ).start(this)

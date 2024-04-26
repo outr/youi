@@ -1,3 +1,5 @@
+import org.scalajs.linker.interface.ESVersion
+
 name := "youi"
 ThisBuild / organization := "io.youi"
 ThisBuild / version := "1.0.0-SNAPSHOT"
@@ -153,7 +155,8 @@ lazy val example = project.in(file("example"))
   .settings(
     name := "youi-example",
     scalaJSUseMainModuleInitializer := true,
-    packageJSDependencies / skip := false
+    packageJSDependencies / skip := false,
+    scalaJSLinkerConfig ~= { _.withESFeatures(_.withESVersion(ESVersion.ES2018)) }
   )
   .dependsOn(gui)
 

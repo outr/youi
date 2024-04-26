@@ -24,15 +24,15 @@ trait Storage {
     }
   }
 
-  def get[T: Writer](key: String): IO[Option[T]] = string.get(key).map(_.map(s => JsonParser(s, Format.Json)).map(_.as[T]))
-  def getOrElse[T: Writer](key: String, default: => T): IO[T] = get[T](key).map(_.getOrElse(default))
+  def get[T: RW](key: String): IO[Option[T]] = string.get(key).map(_.map(s => JsonParser(s, Format.Json)).map(_.as[T]))
+  def getOrElse[T: RW](key: String, default: => T): IO[T] = get[T](key).map(_.getOrElse(default))
   def getOrCreate[T: RW](key: String, default: => T): IO[T] = get[T](key).flatMap {
     case Some(value) => IO.pure(value)
     case None =>
       val value: T = default
       update[T](key, value).map(_ => value)
   }
-  def update[T: Reader](key: String, value: T): IO[Unit] = string.update(key, JsonFormatter.Default(value.json))
+  def update[T: RW](key: String, value: T): IO[Unit] = string.update(key, JsonFormatter.Default(value.json))
   def remove(key: String): IO[Unit] = string.remove(key)
 
   def prop[T: RW](key: String, default: => T): Var[T] = {

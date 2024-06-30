@@ -50,7 +50,7 @@ val catsVersion: String = "3.5.4"
 
 val fs2Version: String = "3.10.2"
 
-val scalaTestVersion: String = "3.2.18"
+val scalaTestVersion: String = "3.2.19"
 
 val catsEffectTestVersion: String = "1.5.0"
 

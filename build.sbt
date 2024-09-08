@@ -28,7 +28,7 @@ val spiceVersion: String = "0.5.11"
 
 val fabricVersion: String = "1.14.5"
 
-val profigVersion: String = "3.4.14"
+val profigVersion: String = "3.4.16"
 
 val scribeVersion: String = "3.13.5"
 

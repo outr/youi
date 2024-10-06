@@ -24,7 +24,7 @@ ThisBuild / developers := List(
 
 ThisBuild / versionScheme := Some("semver-spec")
 
-val spiceVersion: String = "0.5.11"
+val spiceVersion: String = "0.5.15"
 
 val fabricVersion: String = "1.14.5"
 

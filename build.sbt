@@ -46,7 +46,7 @@ val scalaJSDOMVersion: String = "2.8.0"
 
 val closureCompilerVersion: String = "v20240317"
 
-val catsVersion: String = "3.5.4"
+val catsVersion: String = "3.5.5"
 
 val fs2Version: String = "3.10.2"
 

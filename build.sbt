@@ -3,8 +3,8 @@ import org.scalajs.linker.interface.ESVersion
 name := "youi"
 ThisBuild / organization := "io.youi"
 ThisBuild / version := "1.0.0-SNAPSHOT"
-ThisBuild / scalaVersion := "2.13.14"
-ThisBuild / crossScalaVersions := List("2.13.14")
+ThisBuild / scalaVersion := "2.13.15"
+ThisBuild / crossScalaVersions := List("2.13.15")
 ThisBuild / scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 
 ThisBuild / publishTo := sonatypePublishToBundle.value
@@ -24,15 +24,15 @@ ThisBuild / developers := List(
 
 ThisBuild / versionScheme := Some("semver-spec")
 
-val spiceVersion: String = "0.5.11"
+val spiceVersion: String = "0.5.16"
 
-val fabricVersion: String = "1.14.5"
+val fabricVersion: String = "1.15.4"
 
-val profigVersion: String = "3.4.14"
+val profigVersion: String = "3.4.16"
 
-val scribeVersion: String = "3.13.5"
+val scribeVersion: String = "3.15.2"
 
-val reactifyVersion: String = "4.1.1"
+val reactifyVersion: String = "4.1.3"
 
 val hasherVersion: String = "1.2.3"
 
@@ -46,9 +46,9 @@ val scalaJSDOMVersion: String = "2.8.0"
 
 val closureCompilerVersion: String = "v20240317"
 
-val catsVersion: String = "3.5.4"
+val catsVersion: String = "3.5.6"
 
-val fs2Version: String = "3.10.2"
+val fs2Version: String = "3.11.0"
 
 val scalaTestVersion: String = "3.2.19"
 

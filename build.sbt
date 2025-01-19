@@ -3,8 +3,8 @@ import org.scalajs.linker.interface.ESVersion
 name := "youi"
 ThisBuild / organization := "io.youi"
 ThisBuild / version := "1.0.0-SNAPSHOT"
-ThisBuild / scalaVersion := "2.13.15"
-ThisBuild / crossScalaVersions := List("2.13.15")
+ThisBuild / scalaVersion := "2.13.16"
+ThisBuild / crossScalaVersions := List("2.13.16")
 ThisBuild / scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 
 ThisBuild / publishTo := sonatypePublishToBundle.value

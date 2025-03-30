@@ -48,7 +48,7 @@ val closureCompilerVersion: String = "v20240317"
 
 val catsVersion: String = "3.5.7"
 
-val fs2Version: String = "3.11.0"
+val fs2Version: String = "3.12.0"
 
 val scalaTestVersion: String = "3.2.19"
 

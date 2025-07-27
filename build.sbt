@@ -42,7 +42,7 @@ val webFontLoaderVersion: String = "1.6.28_2"
 
 val canvgVersion: String = "1.4.0_3"
 
-val scalaJSDOMVersion: String = "2.8.0"
+val scalaJSDOMVersion: String = "2.8.1"
 
 val closureCompilerVersion: String = "v20240317"
 

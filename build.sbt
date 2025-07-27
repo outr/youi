@@ -32,7 +32,7 @@ val profigVersion: String = "3.4.16"
 
 val scribeVersion: String = "3.15.2"
 
-val reactifyVersion: String = "4.1.3"
+val reactifyVersion: String = "4.1.5"
 
 val hasherVersion: String = "1.2.3"
 

@@ -44,7 +44,7 @@ val canvgVersion: String = "1.4.0_3"
 
 val scalaJSDOMVersion: String = "2.8.0"
 
-val closureCompilerVersion: String = "v20240317"
+val closureCompilerVersion: String = "v20250820"
 
 val catsVersion: String = "3.5.7"
 

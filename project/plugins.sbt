@@ -12,4 +12,4 @@ addSbtPlugin("org.scala-js" % "sbt-jsdependencies" % "1.0.2")
 
 addSbtPlugin("io.spray" % "sbt-revolver" % "0.10.0")
 
-libraryDependencies += "org.scala-js" %% "scalajs-env-jsdom-nodejs" % "1.1.0"
+libraryDependencies += "org.scala-js" %% "scalajs-env-jsdom-nodejs" % "1.1.1"

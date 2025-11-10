@@ -1,6 +1,6 @@
 package io.youi.example.server
 
-import cats.effect.{ExitCode, IO, IOApp}
+import rapid.{RapidApp, Task}
 import spice.http
 import spice.http.content.Content
 import spice.http.server.StaticHttpServer
@@ -10,7 +10,7 @@ import spice.net.{ContentType, URLPath, interpolation}
 
 import java.io.File
 
-object ExampleServer extends IOApp with StaticHttpServer {
+object ExampleServer extends RapidApp with StaticHttpServer {
   private lazy val classLoader = ClassLoaderPath(classPathRoot = "site", pathTransform = (s: String) => {
     if (s.startsWith("/examples/") || s == "/" || s == "/ui-examples.html") {
       "/index.html"
@@ -25,7 +25,7 @@ object ExampleServer extends IOApp with StaticHttpServer {
     classLoader
   )
 
-  override def run(args: List[String]): IO[ExitCode] = start().flatMap { _ =>
-    whileRunning().map(_ => ExitCode.Success)
+  override def run(args: List[String]): Task[Unit] = start().flatMap { _ =>
+    whileRunning()
   }
 }

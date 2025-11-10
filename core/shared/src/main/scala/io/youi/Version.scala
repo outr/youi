@@ -58,7 +58,10 @@ object Version {
 
   private val Matcher: Regex = """(\d+)[.]?(\d*)[.]?(\d*)[.]?(\d*)[-]?(.*)""".r
 
-  implicit val rw: RW[Version] = RW.from(_.toString, v => apply(v.asStr.value), DefType.Str)
+  implicit val rw: RW[Version] = RW.string(
+    asString = _.toString,
+    fromString = apply
+  )
 
   def apply(version: String): Version = version match {
     case Version(v) => v

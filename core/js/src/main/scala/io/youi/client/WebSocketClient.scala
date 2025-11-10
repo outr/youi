@@ -1,7 +1,7 @@
 package io.youi.client
 
-import cats.effect.IO
 import org.scalajs.dom.{Blob, Event, MessageEvent, WebSocket => WS}
+import rapid.Task
 import spice.http.{BinaryData, ByteBufferData, ConnectionStatus, WebSocket}
 import spice.net.URL
 
@@ -11,7 +11,7 @@ import scala.scalajs.js.typedarray._
 class WebSocketClient(url: URL) extends WebSocket {
   private lazy val webSocket: WS = new WS(url.toString)
 
-  override def connect(): IO[ConnectionStatus] = {
+  override def connect(): Task[ConnectionStatus] = {
     _status @= ConnectionStatus.Connecting
     webSocket.binaryType = "blob"
     webSocket.addEventListener("open", (_: Event) => {
@@ -57,7 +57,11 @@ class WebSocketClient(url: URL) extends WebSocket {
         }
       }
     }
-    IO.fromFuture(IO.pure(status.future(s => s != ConnectionStatus.Connecting)))
+    val c = Task.completable[ConnectionStatus]
+    status.once(status => {
+      c.success(status)
+    }, _ != ConnectionStatus.Connecting)
+    c
   }
 
   private def updateStatus(): Unit = webSocket.readyState match {

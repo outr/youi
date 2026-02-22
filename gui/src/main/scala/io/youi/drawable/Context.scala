@@ -181,7 +181,7 @@ class Context(val canvas: html.Canvas, _ratio: => Double) {
              apply: Boolean): Unit = if (paint.nonEmpty) {
     ctx.strokeStyle = paint.asJS(this)
     ctx.lineWidth = lineWidth * ratioX
-    ctx.setLineDash(js.Array(lineDash: _*))
+    ctx.setLineDash(js.Array(lineDash*))
     ctx.lineDashOffset = lineDashOffset * ratioX
     ctx.lineCap = lineCap.value
     ctx.lineJoin = lineJoin.value

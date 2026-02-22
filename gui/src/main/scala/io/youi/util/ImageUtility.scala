@@ -1,7 +1,7 @@
 package io.youi.util
 
-import cats.effect.unsafe.implicits.global
-import cats.effect.{Deferred, IO}
+import rapid.Task
+import rapid.task.Completable
 import io.youi.image.Image
 import io.youi.image.resize.ImageResizer
 import io.youi.video.Video
@@ -18,8 +18,8 @@ object ImageUtility {
                   (offsetX: Double = 0.0,
                    offsetY: Double = 0.0,
                    width: Double = source.asInstanceOf[html.Image].width,
-                   height: Double = source.asInstanceOf[html.Image].height): IO[html.Canvas] = {
-    CanvasPool.withCanvasIO(width, height) { canvas =>
+                   height: Double = source.asInstanceOf[html.Image].height): Task[html.Canvas] = {
+    CanvasPool.withCanvasTask(width, height) { canvas =>
       resizer.resize(source, canvas).map { _ =>
         destination.context.drawImage(canvas, offsetX, offsetY, width, height)
         destination
@@ -31,19 +31,19 @@ object ImageUtility {
                     width: Double,
                     height: Double,
                     destination: html.Image,
-                    resizer: ImageResizer): IO[html.Image] = {
+                    resizer: ImageResizer): Task[html.Image] = {
     resizeToDataURL(source, width, height, resizer).map { dataURL =>
       destination.src = dataURL
       destination
     }
   }
 
-  def resizeToDataURL(source: html.Image | html.Canvas, width: Double, height: Double, resizer: ImageResizer): IO[String] = {
+  def resizeToDataURL(source: html.Image | html.Canvas, width: Double, height: Double, resizer: ImageResizer): Task[String] = {
     val destinationCanvas = CanvasPool(width, height)
     val loader = if (source.asInstanceOf[html.Image].width == 0 || source.asInstanceOf[html.Image].height == 0) {
       loadImage(source.asInstanceOf[html.Image])
     } else {
-      IO.pure(source.asInstanceOf[html.Image])
+      Task.pure(source.asInstanceOf[html.Image])
     }
     loader.flatMap { _ =>
       drawToCanvas(source, destinationCanvas, resizer)(
@@ -52,43 +52,43 @@ object ImageUtility {
       ).map { _ =>
         destinationCanvas.toDataURL("image/png")
       }
-    }.guarantee(IO {
+    }.guarantee(Task {
       CanvasPool.restore(destinationCanvas)
     })
   }
 
   private val tempImage = dom.create[html.Image]("img")
 
-  def loadImage[R](file: File)(process: html.Image => IO[R]): IO[R] = {
-    val d = Deferred[IO, Unit]
-    val listener: js.Function1[Event, _] = (_: Event) => d.flatMap(_.complete(())).unsafeRunAndForget()
+  def loadImage[R](file: File)(process: html.Image => Task[R]): Task[R] = {
+    val c: Completable[Unit] = Task.completable[Unit]
+    var listener: js.Function1[Event, ?] = null
+    listener = (_: Event) => {
+      tempImage.removeEventListener("load", listener)
+      c.success(())
+    }
     tempImage.addEventListener("load", listener)
-    FileUtility.loadDataURL(file).map(tempImage.src = _).unsafeRunAndForget()
-    d.flatMap { d =>
-      d.get.flatMap { _ =>
-        tempImage.removeEventListener("load", listener)
-        process(tempImage).guarantee(IO {
-          tempImage.src = ""
-        })
-      }
+    FileUtility.loadDataURL(file).map(tempImage.src = _).startUnit()
+    c.flatMap { _ =>
+      process(tempImage).guarantee(Task {
+        tempImage.src = ""
+      })
     }
   }
 
-  def loadImage(img: html.Image): IO[html.Image] = if (img.width > 0 && img.height > 0) {
-    IO.pure(img)
+  def loadImage(img: html.Image): Task[html.Image] = if (img.width > 0 && img.height > 0) {
+    Task.pure(img)
   } else {
-    val d = Deferred[IO, html.Image]
-    var listener: js.Function1[Event, _] = null
+    val c: Completable[html.Image] = Task.completable[html.Image]
+    var listener: js.Function1[Event, ?] = null
     listener = (_: Event) => {
-      d.flatMap(_.complete(img)).map { _ =>
-        img.removeEventListener("load", listener)
-      }.unsafeRunAndForget()
+      img.removeEventListener("load", listener)
+      c.success(img)
     }
     img.addEventListener("load", listener)
-    d.flatMap(_.get)
+    c
   }
 
-  def toDataURL(img: html.Image): IO[String] = loadImage(img).map { _ =>
+  def toDataURL(img: html.Image): Task[String] = loadImage(img).map { _ =>
     CanvasPool.withCanvas(img.width, img.height) { canvas =>
       val ctx = canvas.getContext("2d").asInstanceOf[CanvasRenderingContext2D]
       ctx.drawImage(img, 0.0, 0.0)
@@ -96,7 +96,7 @@ object ImageUtility {
     }
   }
 
-  def preview(file: File): IO[Option[Image]] = if (Video.isVideo(file)) {
+  def preview(file: File): Task[Option[Image]] = if (Video.isVideo(file)) {
     Video(file, autoPlay = false, loop = false, muted = true).flatMap { video =>
       video.seek(video.duration / 2.0).map { _ =>
         val image = video.createImage()
@@ -107,10 +107,10 @@ object ImageUtility {
   } else if (Image.isImage(file)) {
     Image(file).map(Some.apply)
   } else {
-    IO.pure(None)
+    Task.pure(None)
   }
 
-  def preview(file: File, width: Double, height: Double, scaleUp: Boolean): IO[Option[Image]] = {
+  def preview(file: File, width: Double, height: Double, scaleUp: Boolean): Task[Option[Image]] = {
     preview(file).flatMap {
       case Some(image) => {
         val scaled = SizeUtility.scale(image.width, image.height, width, height, scaleUp)
@@ -119,19 +119,19 @@ object ImageUtility {
           Some(resized)
         }
       }
-      case None => IO.pure(None)
+      case None => Task.pure(None)
     }
   }
 
   /**
     * Supports a Video or Image file and generates a smooth image preview for it.
     */
-  def generatePreview(file: File, width: Double, height: Double, scaleUp: Boolean = false): IO[Option[String]] = {
+  def generatePreview(file: File, width: Double, height: Double, scaleUp: Boolean = false): Task[Option[String]] = {
     preview(file, width, height, scaleUp).flatMap {
       case Some(image) => {
         image.toDataURL.map(Some.apply)
       }
-      case None => IO.pure(None)
+      case None => Task.pure(None)
     }
   }
 }

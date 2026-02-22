@@ -1,9 +1,7 @@
 package io.youi.image
 
-import cats.effect.IO
-import cats.effect.kernel.Deferred
-import cats.effect.unsafe.implicits.global
-import com.outr.{CanvgOptions, canvg}
+import rapid.Task
+import rapid.task.Completable
 import io.youi._
 import io.youi.dom._
 import io.youi.image.resize.ImageResizer
@@ -12,44 +10,41 @@ import io.youi.spatial.{BoundingBox, Size}
 import io.youi.stream.StreamURL
 import io.youi.util.CanvasPool
 import org.scalajs.dom.{Element, SVGCircleElement, SVGEllipseElement, SVGGElement, SVGImageElement, SVGLength, SVGLinearGradientElement, SVGPathElement, SVGPolygonElement, SVGRectElement, SVGSVGElement, SVGStyleElement, SVGTransform, XMLSerializer, html}
-import spice.net.URL
+import spice.net._
 
 import scala.scalajs._
 
 class SVGImage private(private val svg: SVGSVGElement,
                        override protected val canvas: html.Canvas,
                        measured: Size) extends CanvasImage {
-  private var deferred: IO[Deferred[IO, Unit]] = Deferred[IO, Unit].map { d =>
-    d.complete(())
-    d
+  // Pending draw completable — initially already resolved
+  private var pending: Completable[Unit] = {
+    val c = Task.completable[Unit]
+    c.success(())
+    c
   }
 
-  private def reDraw(): IO[Deferred[IO, Unit]] = {
-    deferred = deferred.flatMap(_.get).flatMap { _ =>
-      Deferred[IO, Unit].flatMap { d =>
-        SVGImage.drawToCanvas(canvas, svg, 0.0, 0.0, canvas.width, canvas.height).flatMap { _ =>
-          modified @= System.currentTimeMillis()
-          d.complete(())
-        }.map { _ =>
-          d
-        }
+  def modify[R](f: SVGSVGElement => R): Task[R] = {
+    val result = f(svg)
+    val prev = pending
+    val next = Task.completable[Unit]
+    pending = next
+    prev.flatMap { _ =>
+      SVGImage.drawToCanvas(canvas, svg, 0.0, 0.0, canvas.width, canvas.height).map { _ =>
+        modified @= System.currentTimeMillis()
+        next.success(())
+        result
       }
     }
-    deferred
   }
 
-  def modify[R](f: SVGSVGElement => R): IO[R] = {
-    val result = f(svg)
-    reDraw().flatMap(_.get).map(_ => result)
-  }
-
-  override def resize(width: Double, height: Double): IO[SVGImage] = if (this.width == width && this.height == height) {
-    IO.pure(this)
+  override def resize(width: Double, height: Double): Task[SVGImage] = if (this.width == width && this.height == height) {
+    Task.pure(this)
   } else {
     SVGImage(svg, width, height)
   }
 
-  override def resizeTo(canvas: html.Canvas, width: Double, height: Double, resizer: ImageResizer): IO[html.Canvas] = {
+  override def resizeTo(canvas: html.Canvas, width: Double, height: Double, resizer: ImageResizer): Task[html.Canvas] = {
     SVGImage.drawToCanvas(canvas, svg, 0.0, 0.0, width, height).map(_ => canvas)
   }
 
@@ -63,12 +58,12 @@ class SVGImage private(private val svg: SVGSVGElement,
 object SVGImage {
   case class ViewBox(width: Double = 0.0, height: Double = 0.0)
 
-  def apply(url: URL): IO[SVGImage] = {
+  def apply(url: URL): Task[SVGImage] = {
     val stream = StreamURL.stream(url)
     stream.flatMap(apply)
   }
 
-  def apply(svgString: String): IO[SVGImage] = try {
+  def apply(svgString: String): Task[SVGImage] = try {
     val div = dom.create[html.Div]("div")
     div.innerHTML = svgString
     val svg = div.oneByTag[SVGSVGElement]("svg")
@@ -80,12 +75,12 @@ object SVGImage {
     }
   }
 
-  def apply(svg: SVGSVGElement): IO[SVGImage] = {
+  def apply(svg: SVGSVGElement): Task[SVGImage] = {
     val size = measure(svg).toSize
     apply(svg, size.width, size.height)
   }
 
-  def apply(svg: SVGSVGElement, width: Double, height: Double): IO[SVGImage] = {
+  def apply(svg: SVGSVGElement, width: Double, height: Double): Task[SVGImage] = {
     val size = measure(svg).toSize
     val canvas = CanvasPool(width, height)
     drawToCanvas(canvas, svg, 0.0, 0.0, width, height).map { _ =>
@@ -93,25 +88,19 @@ object SVGImage {
     }
   }
 
-  def drawToCanvas(canvas: html.Canvas, svg: SVGSVGElement, x: Double, y: Double, width: Double, height: Double): IO[Unit] = {
-    val d = Deferred[IO, Unit]
-    val callback: js.Function = () => {
-      d.flatMap { d =>
-        d.complete(())
-      }.unsafeRunAndForget()
-    }
-    canvg(canvas, svg.outerHTML, new CanvgOptions {
-      ignoreMouse = true
-      ignoreAnimation = true
-      ignoreDimensions = true
-      ignoreClear = true
-      offsetX = math.round(x).toInt
-      offsetY = math.round(y).toInt
-      scaleWidth = math.ceil(width).toInt
-      scaleHeight = math.ceil(height).toInt
-      renderCallback = callback
+  def drawToCanvas(canvas: html.Canvas, svg: SVGSVGElement, x: Double, y: Double, width: Double, height: Double): Task[Unit] = {
+    val c: Completable[Unit] = Task.completable[Unit]
+    val svgString = (new XMLSerializer).serializeToString(svg)
+    val encoded = js.URIUtils.encodeURIComponent(svgString)
+    val dataURL = s"data:image/svg+xml,$encoded"
+    val img = dom.create.image
+    img.addEventListener("load", (_: org.scalajs.dom.Event) => {
+      val ctx = canvas.getContext("2d").asInstanceOf[org.scalajs.dom.CanvasRenderingContext2D]
+      ctx.drawImage(img, x, y, width, height)
+      c.success(())
     })
-    d.flatMap(_.get)
+    img.src = dataURL
+    c
   }
 
   def measure(svg: SVGSVGElement, applyDimension: Boolean = true, force: Boolean = false): BoundingBox = {
@@ -134,7 +123,7 @@ object SVGImage {
     } else {
       None
     }
-    val bb = if (definedWidth.isEmpty || definedHeight.isEmpty || force) {
+    val (bb, needsViewBox) = if (definedWidth.isEmpty || definedHeight.isEmpty || force) {
       var minX = 0.0
       var minY = 0.0
       var maxX = 0.0
@@ -204,11 +193,14 @@ object SVGImage {
       }
 
       svg.children.foreach(child => measureInternal(child, 0.0, 0.0))
-      BoundingBox(minX, minY, maxX, maxY)
+      (BoundingBox(minX, minY, maxX, maxY), true)
     } else {
-      BoundingBox(0.0, 0.0, definedWidth.get, definedHeight.get)
+      (BoundingBox(0.0, 0.0, definedWidth.get, definedHeight.get), false)
     }
     if (applyDimension) {
+      if (needsViewBox) {
+        svg.setAttribute("viewBox", s"${bb.x1} ${bb.y1} ${bb.width} ${bb.height}")
+      }
       svg.setAttribute("width", bb.width.toString)
       svg.setAttribute("height", bb.height.toString)
     }

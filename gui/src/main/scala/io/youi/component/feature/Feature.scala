@@ -19,6 +19,13 @@ trait Feature {
     case c: Component => FeatureParent.add(name, c, this)
     case t: Theme => FeatureParent.add(name, t, this)
   }
+
+  /** Registers this feature under [[name]] only if no feature is already registered there.
+   *  Use this for "default" registrations that should yield to higher-priority features
+   *  (e.g. [[SizeFeature]] yielding to [[MeasuredFeature]] for width/height). */
+  protected def addFeatureIfAbsent(name: String): Unit = {
+    if (FeatureParent.get[Feature](name, parent).isEmpty) addFeature(name)
+  }
 }
 
 object Feature {

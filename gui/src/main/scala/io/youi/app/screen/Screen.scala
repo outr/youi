@@ -1,34 +1,34 @@
 package io.youi.app.screen
 
-import cats.effect.IO
+import rapid.Task
 import io.youi.task.TaskSupport
 import io.youi.ui
 import reactify.{Val, Var}
 
 trait Screen extends TaskSupport {
-  private var registration = Map.empty[Var[_], ScreenRegistration[_]]
+  private var registration = Map.empty[Var[?], ScreenRegistration[?]]
 
   def title: String = getClass.getSimpleName.replace("$", "")
 
   private[screen] val currentState = Var[ScreenState](ScreenState.New)
 
-  val state: Val[ScreenState] = Val(currentState)
+  val state: Val[ScreenState] = currentState
 
   ScreenManager().addScreen(this)
 
-  protected def init(): IO[Unit] = IO.unit
+  protected def init(): Task[Unit] = Task.unit
 
-  protected def load(): IO[Unit] = IO.unit
+  protected def load(): Task[Unit] = Task.unit
 
-  protected def activate(): IO[Unit] = {
+  protected def activate(): Task[Unit] = {
     ui.title @= title
     registration.values.foreach(_.activate())
-    IO.unit
+    Task.unit
   }
 
-  protected def deactivate(): IO[Unit] = {
+  protected def deactivate(): Task[Unit] = {
     registration.values.foreach(_.deactivate())
-    IO.unit
+    Task.unit
   }
 
   def register[Value](v: Var[Value], value: => Value): Unit = {
@@ -40,13 +40,13 @@ trait Screen extends TaskSupport {
     registration += v -> r
   }
 
-  protected def dispose(): IO[Unit] = IO.unit
+  protected def dispose(): Task[Unit] = Task.unit
 }
 
 object Screen {
-  private[screen] def init(screen: Screen): IO[Unit] = screen.init()
-  private[screen] def load(screen: Screen): IO[Unit] = screen.load()
-  private[screen] def activate(screen: Screen): IO[Unit] = screen.activate()
-  private[screen] def deactivate(screen: Screen): IO[Unit] = screen.deactivate()
-  private[screen] def dispose(screen: Screen): IO[Unit] = screen.dispose()
+  private[screen] def init(screen: Screen): Task[Unit] = screen.init()
+  private[screen] def load(screen: Screen): Task[Unit] = screen.load()
+  private[screen] def activate(screen: Screen): Task[Unit] = screen.activate()
+  private[screen] def deactivate(screen: Screen): Task[Unit] = screen.deactivate()
+  private[screen] def dispose(screen: Screen): Task[Unit] = screen.dispose()
 }

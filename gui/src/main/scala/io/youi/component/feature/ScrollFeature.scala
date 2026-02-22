@@ -1,6 +1,5 @@
 package io.youi.component.feature
 
-import cats.effect.IO
 import io.youi.{AnimationFrame, ui}
 import io.youi.component.Component
 import io.youi.component.types.Prop
@@ -55,8 +54,8 @@ class ScrollFeature(component: Component) extends Feature {
          alignBottom: Boolean = false,
          alignRight: Boolean = false,
          parent: TaskSupport = ui): TaskInstance = {
-    val parentRect = component.getBoundingClientRect()
-    val childRect = child.getBoundingClientRect()
+    val parentRect = component.element.getBoundingClientRect()
+    val childRect = child.element.getBoundingClientRect()
     val v = if (vertical) {
       val top = child.element.offsetTop - component.element.offsetTop
       val destination = if (alignBottom) {
@@ -64,7 +63,7 @@ class ScrollFeature(component: Component) extends Feature {
       } else {
         top
       }
-      Some(y to destination in in easing easing)
+      Some(y `to` destination `in` in `easing` easing)
     } else {
       None
     }
@@ -75,10 +74,10 @@ class ScrollFeature(component: Component) extends Feature {
       } else {
         left
       }
-      Some(x to destination in in easing easing)
+      Some(x `to` destination `in` in `easing` easing)
     } else {
       None
     }
-    parallel(List(v, h).flatten: _*).start(parent, None)
+    parallel(List(v, h).flatten*).start(parent, None)
   }
 }

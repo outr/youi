@@ -20,7 +20,7 @@ class SelectList[T](val select: html.Select = dom.create.select)
       val o = dom.create.option
       o.value = s
       o.innerHTML = s
-      if (selected.contains(t)) {
+      if (selected().contains(t)) {
         o.selected = true
         found = true
       }
@@ -39,7 +39,7 @@ class SelectList[T](val select: html.Select = dom.create.select)
     if (i == -1) {
       selected @= None
     } else {
-      selected @= Some(list(i))
+      selected @= Some(list()(i))
     }
   })
 }

@@ -18,7 +18,7 @@ object History {
     */
   val alwaysReload: Var[Boolean] = Var(false)
   private val currentURL = Var[URL](URL.parse(document.location.href))
-  val url: Val[URL] = Val(currentURL)
+  val url: Val[URL] = currentURL
   val stateChange: Channel[HistoryStateChange] = Channel[HistoryStateChange]
 
   def isSecure: Boolean = url().protocol == Protocol.Https
@@ -40,7 +40,7 @@ object History {
   }
 
   def setPath(path: URLPath, keepParams: Boolean = false): Unit = {
-    set(url.withPath(path) match {
+    set(url().withPath(path) match {
       case u if keepParams => u
       case u => u.clearParams()
     })
@@ -52,7 +52,7 @@ object History {
   }
 
   def pushPath(path: URLPath, keepParams: Boolean = false, state: js.Any = null): Unit = {
-    push(url.withPath(path) match {
+    push(url().withPath(path) match {
       case u if keepParams => u
       case u => u.clearParams()
     }, state)
@@ -68,7 +68,7 @@ object History {
   }
 
   def replacePath(path: URLPath, keepParams: Boolean = false, state: js.Any = null): Unit = {
-    replace(url.withPath(path) match {
+    replace(url().withPath(path) match {
       case u if keepParams => u
       case u => u.clearParams()
     }, state)

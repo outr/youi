@@ -4,11 +4,11 @@ import io.youi.drawable.{Context, Drawable}
 import io.youi.paint.Border
 import io.youi.{Compass, dom}
 import org.scalajs.dom.html
-import reactify.{Val, Var}
+import reactify._
 
 class DrawableView(canvas: html.Canvas = dom.create.canvas) extends CanvasView(canvas) {
   protected val drawable: Var[Drawable] = Var(Drawable.None)
-  val modified: Val[Long] = Val(drawable.modified)
+  val modified: Val[Long] = Val(drawable().modified())
 
   val border: Var[Border] = Var(Border.empty)
 
@@ -26,8 +26,8 @@ class DrawableView(canvas: html.Canvas = dom.create.canvas) extends CanvasView(c
 
   protected def preDraw(context: Context): Unit = {
     context.save()
-    context.translate(border.size(Compass.West) - 1.0, border.size(Compass.North) - 1.0)
-    border.background(width - border.width, height - border.height, context, background)
+    context.translate(border().size(Compass.West) - 1.0, border().size(Compass.North) - 1.0)
+    border().background(width - border().width, height - border().height, context, background)
     context.restore()
   }
 
@@ -35,7 +35,7 @@ class DrawableView(canvas: html.Canvas = dom.create.canvas) extends CanvasView(c
 
   protected def borderDraw(context: Context): Unit = {
     context.save()
-    border.draw(width, height, context)
+    border().draw(width(), height(), context)
     context.restore()
   }
 }

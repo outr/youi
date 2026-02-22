@@ -1,6 +1,6 @@
 package io.youi.ajax
 
-import cats.effect.IO
+import rapid.Task
 import org.scalajs.dom
 import org.scalajs.dom.XMLHttpRequest
 import scribe.Logging
@@ -30,11 +30,11 @@ class AjaxManager(val maxConcurrent: Int) extends Logging {
     action
   }
 
-  def enqueue(action: AjaxAction): IO[Try[XMLHttpRequest]] = {
+  def enqueue(action: AjaxAction): Task[Try[XMLHttpRequest]] = {
     _queue = _queue.enqueue(action)
     action._state @= ActionState.Enqueued
     checkQueue()
-    action.io
+    action.task
   }
 
   def checkQueue(): Unit = if (_running.size < maxConcurrent && _queue.nonEmpty) {

@@ -1,11 +1,12 @@
 package io.youi.example.ui
 
-import cats.effect.IO
+import rapid.Task
 import io.youi.Color
 import io.youi.component.support.{MeasuredSupport, PaddingSupport, PositionSupport, SizeSupport}
 import io.youi.component.types.PositionType
 import io.youi.component.{Container, TextView}
 import io.youi.example.screen.UIExampleScreen
+import io.youi._
 import io.youi.font.GoogleFont
 import spice.net._
 import reactify._
@@ -14,7 +15,7 @@ class TextViewExample extends UIExampleScreen {
   override def title: String = "TextView Example"
   override def path: URLPath = path"/examples/text.html"
 
-  override def createUI(): IO[Unit] = {
+  override def createUI(): Task[Unit] = {
     for {
       openSans <- GoogleFont.`Open Sans`.`regular`.load()
       pacifico <- GoogleFont.`Pacifico`.`regular`.load()

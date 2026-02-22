@@ -43,8 +43,8 @@ class MDCChip extends Component(dom.create.div) with EventSupport with InternalC
     }
     val label: TextView = new TextView {
       classes += "mdc-chip__text"
-      content := chip.content
-      display := (if (chip.content().isEmpty) Display.None else Display.InlineBlock)
+      this.content := MDCChip.this.content()
+      display := (if (MDCChip.this.content().isEmpty) Display.None else Display.InlineBlock)
     }
     val trailingCell: html.Span = {
       val span = dom.create.span
@@ -65,8 +65,8 @@ class MDCChip extends Component(dom.create.div) with EventSupport with InternalC
     val value: Var[MaterialIcon] = Var(Material.Icons.Empty)
 
     classes ++= List("material-icons", "mdc-chip__icon", s"mdc-chip__icon--$position")
-    color := MDCChip.this.color
+    color := MDCChip.this.color()
     display := (if (value().isEmpty) Display.None else Display.Block)
-    content := value().name
+    this.content := value().name
   }
 }

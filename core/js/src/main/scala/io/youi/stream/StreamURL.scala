@@ -1,6 +1,6 @@
 package io.youi.stream
 
-import cats.effect.IO
+import rapid.Task
 import io.youi.ajax.AjaxRequest
 import org.scalajs.dom.FormData
 import spice.http.HttpMethod
@@ -15,7 +15,7 @@ object StreamURL {
              timeout: Int = 0,
              headers: Map[String, String] = Map.empty,
              withCredentials: Boolean = true,
-             responseType: String = ""): IO[String] = {
+             responseType: String = ""): Task[String] = {
     val request = new AjaxRequest(url, method, data, timeout, headers + ("streaming" -> "true"), withCredentials, responseType)
     request.send().map {
       case Failure(throwable) => throw throwable

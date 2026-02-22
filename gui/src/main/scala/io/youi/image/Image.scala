@@ -1,6 +1,6 @@
 package io.youi.image
 
-import cats.effect.IO
+import rapid.Task
 import io.youi._
 import io.youi.drawable.{Context, Drawable}
 import io.youi.image.resize.ImageResizer
@@ -18,11 +18,11 @@ trait Image extends Drawable {
 
   def draw(context: Context, x: Double, y: Double, width: Double, height: Double): Unit
 
-  def resize(width: Double, height: Double): IO[Image]
+  def resize(width: Double, height: Double): Task[Image]
 
-  def resizeTo(canvas: html.Canvas, width: Double, height: Double, resizer: ImageResizer): IO[html.Canvas]
+  def resizeTo(canvas: html.Canvas, width: Double, height: Double, resizer: ImageResizer): Task[html.Canvas]
 
-  def clip(x1: Double, y1: Double, x2: Double, y2: Double): IO[Image] = {
+  def clip(x1: Double, y1: Double, x2: Double, y2: Double): Task[Image] = {
     val w = x2 - x1
     val h = y2 - y1
     val dataURL = CanvasPool.withCanvas(w, h) { clipped =>
@@ -41,7 +41,7 @@ trait Image extends Drawable {
 
   def isRaster: Boolean = !isVector
 
-  def toDataURL: IO[String]
+  def toDataURL: Task[String]
 
   def dispose(): Unit
 }
@@ -49,9 +49,9 @@ trait Image extends Drawable {
 object Image {
   def empty: Image = EmptyImage
 
-  def apply(source: String, width: Double, height: Double): IO[Image] = apply(source).flatMap(_.resize(width, height))
+  def apply(source: String, width: Double, height: Double): Task[Image] = apply(source).flatMap(_.resize(width, height))
 
-  def apply(source: String): IO[Image] = if (source.indexOf("<svg") != -1) {
+  def apply(source: String): Task[Image] = if (source.indexOf("<svg") != -1) {
     SVGImage(source)
   } else if (source.startsWith("data:image/") || source.startsWith("blob:")) {
     val img = dom.create[html.Image]("img")
@@ -61,13 +61,13 @@ object Image {
     apply(History.url.withPart(source))
   }
 
-  def apply(url: URL): IO[Image] = if (url.path.encoded.toLowerCase.endsWith(".svg")) {
+  def apply(url: URL): Task[Image] = if (url.path.toString.endsWith(".svg")) {
     SVGImage(url)
   } else {
     HTMLImage(url)
   }
 
-  def apply(file: File): IO[Image] = file.`type` match {
+  def apply(file: File): Task[Image] = file.`type` match {
     case "image/svg+xml" => FileUtility.loadText(file).flatMap { svgString =>
       SVGImage(svgString)
     }

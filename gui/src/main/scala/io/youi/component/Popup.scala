@@ -1,13 +1,12 @@
 package io.youi.component
 
-import cats.effect.IO
-import cats.effect.kernel.Deferred
+import rapid.Task
 import io.youi.component.support.{PositionSupport, SizeSupport}
 import io.youi.component.types.{Display, PositionType, UserSelect}
 import io.youi.easing.Easing
 import io.youi.task._
 import io.youi.{Chained, Initializable, ui}
-import reactify.{Mutable, Stateful, Var}
+import reactify._
 
 import scala.concurrent.duration._
 
@@ -40,39 +39,36 @@ class Popup(showGlassPane: Boolean = true) extends Container with SizeSupport wi
 
     // GlassPane set up
     glassPane.foreach { gp =>
-      gp.event.click.on(hide())
+      gp.event.click.on(hide().startUnit())
     }
   }
 
-  def show(): IO[Unit] = chained {
-    IO {
+  def show(): Task[Unit] = chained {
+    Task {
       init()
 
       Popup._active += this
-    }.flatMap { _ =>
+    }.map { _ =>
       val animation = sequential(
-        IO(position.center := ui.size.center),
-        IO(position.y @= ui.size.height),
-        IO(display @= Display.Block),
-        IO(glassPane.foreach(_.backgroundAlpha @= 0.0)),
-        IO(glassPane.foreach(_.display @= Display.Block)),
+        Task(position.center := ui.size.center),
+        Task(position.y @= ui.size.height),
+        Task(display @= Display.Block),
+        Task(glassPane.foreach(_.backgroundAlpha @= 0.0)),
+        Task(glassPane.foreach(_.display @= Display.Block)),
         parallel(
           positionProperty.to(positionDestination).in(speed).easing(easing),
           glassPane.map { gp =>
             gp.backgroundAlpha.to(0.5).in(speed).easing(easing)
-          }.getOrElse(Task.None)
+          }.getOrElse(Task.unit)
         ),
-        IO(positionProperty := positionDestination)
+        Task(positionProperty := positionDestination)
       )
-      Deferred[IO, Double].map { deferred =>
-        animation.start(deferred = Some(deferred))
-        deferred.get
-      }
+      animation.start()
     }
   }
 
-  def hide(): IO[Unit] = chained {
-    IO {
+  def hide(): Task[Unit] = chained {
+    Task {
       Popup._active -= this
       glassPane.foreach(_.element.style.pointerEvents = "none")
     }.flatMap { _ =>
@@ -81,20 +77,17 @@ class Popup(showGlassPane: Boolean = true) extends Container with SizeSupport wi
           position.y.to(ui.size.height).in(speed).easing(easing),
           glassPane.map { gp =>
             gp.backgroundAlpha.to(0.0).in(speed).easing(easing)
-          }.getOrElse(Task.None)
+          }.getOrElse(Task.unit)
         ),
-        IO(display @= Display.None),
-        IO(glassPane.foreach(_.display @= Display.None)),
-        IO(glassPane.foreach(_.element.style.pointerEvents = "auto"))
+        Task(display @= Display.None),
+        Task(glassPane.foreach(_.display @= Display.None)),
+        Task(glassPane.foreach(_.element.style.pointerEvents = "auto"))
       )
-      Deferred[IO, Double].flatMap { deferred =>
-        task.start(deferred = Some(deferred))
-        deferred.get.map(_ => ())
-      }
+      task.startDeferred().map(_ => ())
     }
   }
 
-  protected def positionProperty: Stateful[Double] with Mutable[Double] = position.middle
+  protected def positionProperty: Stateful[Double] & Mutable[Double] = position.middle
   protected def positionDestination: Double = ui.size.middle
 }
 

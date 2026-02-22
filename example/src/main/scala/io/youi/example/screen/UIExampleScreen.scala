@@ -1,26 +1,39 @@
 package io.youi.example.screen
 
-import cats.effect.IO
+import rapid.Task
+import io.youi._
 import io.youi.app.screen.UIScreen
-import io.youi.component.types.Display
+import io.youi.example.ExampleApp
 import io.youi.example.ui.component.Header
 import io.youi.ui
 import spice.net._
 
 trait UIExampleScreen extends UIScreen {
-  protected val header: Header = new Header
-  def url: URL = URL.parse(s"https://github.com/outr/youi/tree/master/example/js/src/main/scala/io/youi/example/ui/${getClass.getSimpleName}.scala")
+  /** Shared app header (same for all example screens). */
+  protected def header: Header = ExampleApp.appHeader
 
-  override protected def init(): IO[Unit] = {
+  def url: URL = URL.parse(s"https://github.com/outr/youi/tree/master/example/src/main/scala/io/youi/example/ui/${getClass.getSimpleName}.scala")
+
+  override protected def init(): Task[Unit] = {
     scribe.info(s"Initializing screen! ${getClass.getSimpleName}")
-    ui.children += header
-    super.init().map { _ =>
+    super.init().flatMap { _ =>
+      ui.children -= container
+      container.size.height := ui.size.height() - ExampleApp.appHeader.size.height()
       scribe.info("Screen initialized!")
-      container.size.height := ui.size.height - header.size.height
+      Task.unit
     }
   }
 
-  override protected def activate(): IO[Unit] = super.activate().map(_ => header.display @= Display.Block)
+  override protected def activate(): Task[Unit] = {
+    ExampleApp.contentContainer.children.clear()
+    ExampleApp.contentContainer.children += container
+    container.size.width := ExampleApp.contentContainer.size.width
+    container.size.height := ExampleApp.contentContainer.size.height
+    super.activate()
+  }
 
-  override protected def deactivate(): IO[Unit] = super.deactivate().map(_ => header.display @= Display.None)
+  override protected def deactivate(): Task[Unit] = {
+    ExampleApp.contentContainer.children -= container
+    super.deactivate()
+  }
 }

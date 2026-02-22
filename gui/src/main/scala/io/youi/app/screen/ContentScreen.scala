@@ -1,6 +1,6 @@
 package io.youi.app.screen
 
-import cats.effect.IO
+import rapid.Task
 import io.youi.dom._
 import io.youi.stream.StreamURL
 import io.youi.{History, dom}
@@ -13,29 +13,29 @@ trait ContentScreen extends Screen with PathActivation {
   private def pageTag: html.Element = dom.byTag[html.Element]("page").head
 
   private val contentOptionVar = Var[Option[html.Span]](None)
-  protected val contentOption: Val[Option[html.Span]] = Val(contentOptionVar)
+  protected val contentOption: Val[Option[html.Span]] = contentOptionVar
   protected def content: html.Span = contentOption().getOrElse(throw new RuntimeException("Content not set!"))
 
-  private lazy val preloaded: IO[Unit] = {
+  private lazy val preloaded: Task[Unit] = {
     // On load check to see if the screen tag is loaded already
     dom.byTag[html.Element]("screen").headOption.foreach { screen =>
       loadScreen(screen)
     }
 
-    if (contentOption.isEmpty) {      // Content hasn't been loaded yet
+    if (contentOption().isEmpty) {      // Content hasn't been loaded yet
       generateScreen().map(loadScreen)
     } else {                          // Content has already been loaded either by page load or by previous load
-      IO.unit
+      Task.unit
     }
   }
 
-  override protected def load(): IO[Unit] = super.load().flatMap { _ =>
+  override protected def load(): Task[Unit] = super.load().flatMap { _ =>
     preloaded
   }
 
-  def preload(): IO[Unit] = preloaded
+  def preload(): Task[Unit] = preloaded
 
-  protected def generateScreen(): IO[html.Element] = {
+  protected def generateScreen(): Task[html.Element] = {
     val url = History
       .url()
       .copy(path = path, parameters = Parameters.empty)
@@ -83,11 +83,11 @@ trait ContentScreen extends Screen with PathActivation {
     content.style.display = "none"
   }
 
-  override protected def activate(): IO[Unit] = super.activate().map { _ =>
-    contentOption.foreach(showContent)
+  override protected def activate(): Task[Unit] = super.activate().map { _ =>
+    contentOption().foreach(showContent)
   }
 
-  override protected def deactivate(): IO[Unit] = super.deactivate().map { _ =>
-    contentOption.foreach(hideContent)
+  override protected def deactivate(): Task[Unit] = super.deactivate().map { _ =>
+    contentOption().foreach(hideContent)
   }
 }

@@ -1,6 +1,6 @@
 package io.youi.example.ui.component
 
-import cats.effect.unsafe.implicits.global
+import rapid.Task
 import io.youi._
 import io.youi.app.screen.ScreenManager
 import io.youi.component.support._
@@ -62,12 +62,10 @@ class Header extends Container with SizeSupport { self =>
     position.top := heading.position.bottom - 10.0
   }
 
-  GoogleFont.`Open Sans`.`600`.load().unsafeRunAsync {
-    case Left(t) => scribe.error(s"Failed to load font", t)
-    case Right(font) =>
-      heading.font.weight @= font
-      link.font.weight @= font
-  }
+  GoogleFont.`Open Sans`.`600`.load().map { font =>
+    heading.font.weight @= font
+    link.font.weight @= font
+  }.handleError { t => Task(scribe.error(s"Failed to load font", t)) }.startUnit()
 
   children ++= List(logo, heading, link)
 }

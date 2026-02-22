@@ -6,7 +6,7 @@ class Pointers(event: Events) {
   private val _pointers = Var[Map[Int, Pointer]](Map.empty)
 
   val map: Val[Map[Int, Pointer]] = _pointers
-  lazy val all: Val[Vector[Pointer]] = Val(_pointers.values.toVector)
+  lazy val all: Val[Vector[Pointer]] = Val(_pointers().values.toVector)
   val added: Channel[Pointer] = Channel[Pointer]
   val dragged: Channel[Pointer] = Channel[Pointer]
   val removed: Channel[Pointer] = Channel[Pointer]

@@ -18,6 +18,13 @@ class MeasuredFeature(val component: Component) extends Feature with WidthFeatur
     w @= rect.width
     h @= rect.height
   }
+
+  // Always win the "width"/"height" slots regardless of trait mixin order.
+  // SizeFeature uses addFeatureIfAbsent (first-wins), so if it ran first we
+  // override it here; if MeasuredFeature ran first the no-op soft-register in
+  // SizeFeature will leave us in place.
+  FeatureParent.add("width", component, this)
+  FeatureParent.add("height", component, this)
 }
 
 object MeasuredFeature {

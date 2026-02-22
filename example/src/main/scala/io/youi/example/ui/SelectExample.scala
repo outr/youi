@@ -1,34 +1,36 @@
-//package io.youi.example.ui
-//
-//import io.youi.Color
-//import io.youi.component.HTMLSelect
-//import io.youi.example.screen.UIExampleScreen
-//import io.youi.font.GoogleFont
-//import spice.net._
-//
-//import scala.concurrent.Future
-//import scribe.Execution.global
-//
-//class SelectExample extends UIExampleScreen {
-//  override def title: String = "HTMLSelect Example"
-//  override def path: Path = path"/examples/select.html"
-//
-//  override def createUI(): Future[Unit] = for {
-//    pacifico <- GoogleFont.`Pacifico`.`regular`.load()
-//  } yield {
-//    val select = new HTMLSelect {
-//      items @= Vector("One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten")
-//      value @= "Three"
-//      font @= pacifico
-//      font.size @= 32.0
-//      color @= Color.Green
-//      position.center := container.size.center
-//      position.middle := container.size.middle
-//
-//      value.attach { v =>
-//        scribe.info(s"Selected: $v")
-//      }
-//    }
-//    container.children += select
-//  }
-//}
+package io.youi.example.ui
+
+import rapid.Task
+import io.youi._
+import io.youi.component.SelectList
+import io.youi.component.support.{FontSupport, PositionSupport, SizeSupport}
+import io.youi.example.screen.UIExampleScreen
+import io.youi.font.GoogleFont
+import spice.net._
+
+class SelectExample extends UIExampleScreen {
+  override def title: String = "HTMLSelect Example"
+  override def path: URLPath = path"/examples/select.html"
+
+  override def createUI(): Task[Unit] = for {
+    pacifico <- GoogleFont.`Pacifico`.`regular`.load()
+  } yield {
+    given (String => String) = identity
+
+    val select = new SelectList[String] with FontSupport with PositionSupport with SizeSupport {
+      list @= List("One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten")
+      selected @= Some("Three")
+      font.weight @= pacifico
+      font.size @= 32.0
+      color @= Color.Green
+      position.center := container.size.center
+      position.middle := container.size.middle
+
+      selected.attach {
+        case Some(v) => scribe.info(s"Selected: $v")
+        case None    =>
+      }
+    }
+    container.children += select
+  }
+}

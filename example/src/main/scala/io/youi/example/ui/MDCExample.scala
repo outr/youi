@@ -1,6 +1,6 @@
 package io.youi.example.ui
 
-import cats.effect.IO
+import rapid.Task
 import io.youi.{Color, dom}
 import io.youi.example.screen.UIExampleScreen
 import io.youi.material._
@@ -10,10 +10,10 @@ class MDCExample extends UIExampleScreen {
   override def title: String = "MDC Example"
   override def path: URLPath = path"/examples/mdc.html"
 
-  override def createUI(): IO[Unit] = for {
+  override def createUI(): Task[Unit] = for {
     _ <- MaterialComponents.waitForLoaded()
   } yield {
-    MaterialComponents.theme.primary := Color.DarkBlue //ClientExampleApplication.colors.blue.dark
+//    MaterialComponents.theme.primary := Color.DarkBlue //ClientExampleApplication.colors.blue.dark
 
     val chipSet = new MDCChipSet
     chipSet.children += new MDCChip("Chip One")

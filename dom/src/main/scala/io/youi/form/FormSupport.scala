@@ -1,7 +1,6 @@
 package io.youi.form
 
-import cats.effect.IO
-import cats.effect.unsafe.implicits.global
+import rapid.Task
 import io.youi.dom
 import io.youi.dom._
 import org.scalajs.dom.{Event, html}
@@ -131,9 +130,9 @@ trait FormSupport {
     alertContainer.appendChild(a)
 
     removeAfter.foreach { d =>
-      IO.sleep(d).map { _ =>
+      Task.sleep(d).map { _ =>
         a.remove()
-      }.unsafeRunAndForget()
+      }.startUnit()
     }
 
     a
@@ -155,15 +154,18 @@ trait FormSupport {
       process().map { result =>
         result.invoke(this)
       }.handleError { t =>
-        scribe.error(t)
-        alert.danger("An internal error occurred")
-      }.unsafeRunAndForget()
+        Task {
+          scribe.error(t)
+          alert.danger("An internal error occurred")
+          ()
+        }
+      }.startUnit()
     } else {
       enable()
     }
   }
 
-  protected def process(): IO[FormResult]
+  protected def process(): Task[FormResult]
 
   protected def onSuccess(): Unit = {
     clear()

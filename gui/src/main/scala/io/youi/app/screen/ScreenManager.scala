@@ -1,7 +1,7 @@
 package io.youi.app.screen
 
-import cats.effect.unsafe.implicits.global
-import cats.effect.{Deferred, FiberIO, IO}
+import rapid.Task
+import rapid.task.Completable
 import io.youi.task.TaskSupport
 import io.youi.{AnimationFrame, Chained, ErrorSupport}
 import org.scalajs.dom
@@ -29,27 +29,27 @@ trait ScreenManager extends TaskSupport {
       dom.window.addEventListener("load", (_: dom.Event) => {
         load().map { _ =>
           loaded.asInstanceOf[Var[Boolean]] @= true
-        }.unsafeRunAndForget()
+        }.startUnit()
       })
     } else {
       load().map { _ =>
         loaded.asInstanceOf[Var[Boolean]] @= true
-      }.unsafeRunAndForget()
+      }.startUnit()
     }
-  }.unsafeRunAndForget()
+  }.startUnit()
 
   active.changes {
     case (oldScreen, newScreen) => screenChange(oldScreen, newScreen)
   }
 
-  protected def init(): IO[Unit] = {
+  protected def init(): Task[Unit] = {
     AnimationFrame.delta.attach { d =>
       update(d)
     }
-    IO.unit
+    Task.unit
   }
 
-  protected def load(): IO[Unit] = IO.unit
+  protected def load(): Task[Unit] = Task.unit
 
   override def update(delta: Double): Unit = {
     super.update(delta)
@@ -59,17 +59,15 @@ trait ScreenManager extends TaskSupport {
 
   private def screenChange(oldScreen: Screen, newScreen: Screen): Unit = chained {
     scribe.info(s"Screen change from $oldScreen to $newScreen...")
-    val waitForLoaded: IO[Unit] = if (!loaded()) {
+    val waitForLoaded: Task[Unit] = if (!loaded()) {
       scribe.info("Waiting for the page to fully load...")
-      // Wait for the page to fully load before finishing screen change
-      Deferred[IO, Unit].flatMap { d =>
-        loaded.once { _ =>
-          d.complete(()).unsafeRunAndForget()
-        }
-        d.get
+      val c: Completable[Unit] = Task.completable[Unit]
+      loaded.once { _ =>
+        c.success(())
       }
+      c
     } else {
-      IO.unit
+      Task.unit
     }
     for {
       _ <- waitForLoaded
@@ -80,34 +78,34 @@ trait ScreenManager extends TaskSupport {
     } yield {
       ()
     }
-  }.unsafeRunAndForget()
+  }.startUnit()
 
-  protected def beforeScreenChange(oldScreen: Screen, newScreen: Screen): IO[Unit] = {
-    IO.unit
+  protected def beforeScreenChange(oldScreen: Screen, newScreen: Screen): Task[Unit] = {
+    Task.unit
   }
-  protected def afterScreenChange(oldScreen: Screen, newScreen: Screen): IO[Unit] = {
-    IO.unit
+  protected def afterScreenChange(oldScreen: Screen, newScreen: Screen): Task[Unit] = {
+    Task.unit
   }
 
   private[screen] def addScreen(screen: Screen): Unit = synchronized {
     allScreens @= (allScreens() ::: List(screen))
   }
 
-  def load(screen: Screen): IO[Unit] = chained {
+  def load(screen: Screen): Task[Unit] = chained {
     val state = screen.state()
 
     def set(applying: ScreenState,
                    applied: ScreenState,
-                   call: IO[Unit]): IO[Unit] = if (state.index < applying.index || state == ScreenState.Disposed) {
+                   call: Task[Unit]): Task[Unit] = if (state.index < applying.index || state == ScreenState.Disposed) {
       for {
-        _ <- IO(screen.currentState @= applying)
+        _ <- Task(screen.currentState @= applying)
         _ <- call
-        _ <- IO(screen.currentState @= applied)
+        _ <- Task(screen.currentState @= applied)
       } yield {
         ()
       }
     } else {
-      IO.unit
+      Task.unit
     }
 
     for {
@@ -118,23 +116,23 @@ trait ScreenManager extends TaskSupport {
     }
   }
 
-  private def activate(screen: Screen): IO[Unit] = {
+  private def activate(screen: Screen): Task[Unit] = {
     val state = screen.state()
 
     def set(applying: ScreenState,
             applied: ScreenState,
-            call: IO[Unit],
-            applyToStates: ScreenState*): IO[Unit] = if (applyToStates.contains(state)) {
+            call: Task[Unit],
+            applyToStates: ScreenState*): Task[Unit] = if (applyToStates.contains(state)) {
       for {
-        _ <- IO(scribe.info(s"Applying: $applying, Current state: $state"))
-        _ <- IO(screen.currentState @= applying)
+        _ <- Task(scribe.info(s"Applying: $applying, Current state: $state"))
+        _ <- Task(screen.currentState @= applying)
         _ <- call
-        _ <- IO(screen.currentState @= applied)
+        _ <- Task(screen.currentState @= applied)
       } yield {
         ()
       }
     } else {
-      IO.unit
+      Task.unit
     }
 
     for {
@@ -146,25 +144,25 @@ trait ScreenManager extends TaskSupport {
     }
   }
 
-  private def deactivate(screen: Screen): IO[Unit] = {
+  private def deactivate(screen: Screen): Task[Unit] = {
     if (screen.state() == ScreenState.Activated) {
       screen.currentState @= ScreenState.Deactivating
       Screen.deactivate(screen).map { _ =>
         screen.currentState @= ScreenState.Deactivated
       }
     } else {
-      IO.unit
+      Task.unit
     }
   }
 
-  def dispose(screen: Screen): IO[Unit] = chained {
+  def dispose(screen: Screen): Task[Unit] = chained {
     if (screen.state() != ScreenState.Disposed) {
       screen.currentState @= ScreenState.Disposing
       Screen.dispose(screen).map { _ =>
         screen.currentState @= ScreenState.Disposed
       }
     } else {
-      IO.unit
+      Task.unit
     }
   }
 }

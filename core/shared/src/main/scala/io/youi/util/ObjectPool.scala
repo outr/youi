@@ -1,6 +1,6 @@
 package io.youi.util
 
-import cats.effect.IO
+import rapid.Task
 
 trait ObjectPool[T] {
   private var created = 0
@@ -34,9 +34,9 @@ trait ObjectPool[T] {
     }
   }
 
-  protected def io[R](f: T => IO[R]): IO[R] = {
-    IO(apply()).flatMap { value =>
-      IO(f(value)).flatten.guarantee(IO {
+  protected def io[R](f: T => Task[R]): Task[R] = {
+    Task(apply()).flatMap { value =>
+      f(value).guarantee(Task {
         restore(value)
       })
     }

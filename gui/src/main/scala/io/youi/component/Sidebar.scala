@@ -1,14 +1,14 @@
 package io.youi.component
 
-import cats.effect.IO
+import rapid.Task
 import io.youi._
 import io.youi.component.support.{MarginSupport, OverflowSupport, PositionSupport, SizeSupport}
 import io.youi.component.types.{Display, Overflow, PositionType, UserSelect}
 import io.youi.easing.Easing
 import io.youi.task._
-import reactify.{Val, Var}
+import reactify._
 
-class Sidebar(container: Option[Component with SizeSupport with MarginSupport],
+class Sidebar(container: Option[Component & SizeSupport & MarginSupport],
               showGlassPane: Boolean = isMobileDevice,
               val width: Double = 260.0) extends Container() with PositionSupport with SizeSupport with OverflowSupport {
   private val chained = Chained(1)
@@ -31,7 +31,7 @@ class Sidebar(container: Option[Component with SizeSupport with MarginSupport],
   val swiping: Val[Boolean] = Var(false)
   val swipeAcceleration: Var[Boolean] = Var(false)
 
-  val contents: Container with SizeSupport = new Container with SizeSupport {
+  val contents: Container & SizeSupport = new Container with SizeSupport {
     size.width @= width
     size.height := Sidebar.this.size.height
   }
@@ -122,17 +122,17 @@ class Sidebar(container: Option[Component with SizeSupport with MarginSupport],
     }
   }
 
-  private def show(): IO[Unit] = chained {
+  private def show(): Task[Unit] = chained {
     sequential(
-      IO(glassPane.foreach(_.display @= Display.Block)),
+      Task(glassPane.foreach(_.display @= Display.Block)),
       position.x.to(0.0).by(speed).easing(easing)
     ).startDeferred().map(_ => ())
   }
 
-  private def hide(): IO[Unit] = chained {
+  private def hide(): Task[Unit] = chained {
     sequential(
       position.x.to(-width).by(speed).easing(easing),
-      IO(glassPane.foreach(_.display @= Display.None))
+      Task(glassPane.foreach(_.display @= Display.None))
     ).startDeferred().map(_ => ())
   }
 }

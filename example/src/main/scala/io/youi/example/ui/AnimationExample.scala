@@ -1,6 +1,6 @@
 package io.youi.example.ui
 
-import cats.effect.IO
+import rapid.Task
 import io.youi._
 import io.youi.component.support.{MeasuredSupport, PositionSupport}
 import io.youi.component.types.{PositionType, WhiteSpace}
@@ -19,7 +19,7 @@ class AnimationExample extends UIExampleScreen {
   override def title: String = "Animation Example"
   override def path: URLPath = path"/examples/animation.html"
 
-  override def createUI(): IO[Unit] = {
+  override def createUI(): Task[Unit] = {
     Image("/images/icon.png").flatMap { img =>
       scribe.info(s"Image loaded! ${img.size}")
       GoogleFont.`Open Sans`.`regular`.load().map { fnt =>
@@ -42,9 +42,9 @@ class AnimationExample extends UIExampleScreen {
 
             forever(
               sequential(
-                label.position.right to container.size.width - 50.0 in 5.seconds easing easingFunction,
+                label.position.right `to` container.size.width - 50.0 `in` 5.seconds `easing` easingFunction,
                 sleep(2.seconds),
-                label.position.left to 50.0 in 5.seconds easing easingFunction,
+                label.position.left `to` 50.0 `in` 5.seconds `easing` easingFunction,
                 sleep(2.seconds)
               )
             ).start(this)
@@ -66,13 +66,13 @@ class AnimationExample extends UIExampleScreen {
           parallel(
             sequential(
               synchronous(imageView.rotation @= 0.0),
-              imageView.rotation to 6.0 in 20.seconds
+              imageView.rotation `to` 6.0 `in` 20.seconds
             ),
             sequential(
-              imageView.position.right to ui.size.width in 5.seconds easing Easing.bounceOut,
-              imageView.position.bottom to ui.size.height in 5.seconds easing Easing.bounceOut,
-              imageView.position.left to 0.0 in 5.seconds easing Easing.bounceOut,
-              imageView.position.top to header.size.height in 5.seconds easing Easing.bounceOut
+              imageView.position.right `to` ui.size.width `in` 5.seconds `easing` Easing.bounceOut,
+              imageView.position.bottom `to` ui.size.height `in` 5.seconds `easing` Easing.bounceOut,
+              imageView.position.left `to` 0.0 `in` 5.seconds `easing` Easing.bounceOut,
+              imageView.position.top `to` header.size.height `in` 5.seconds `easing` Easing.bounceOut
             )
           )
         ).start(this)

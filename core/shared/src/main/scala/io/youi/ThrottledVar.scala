@@ -1,10 +1,8 @@
 package io.youi
 
-import cats.effect.IO
-import cats.effect.unsafe.implicits.global
+import rapid.Task
 import reactify.Var
 
-import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
 
 /**
@@ -13,10 +11,9 @@ import scala.concurrent.duration._
   *
   * @param initialValue the initial value of this Var
   * @param throttle the minimum number of time between updates (additional updates between get lost only keeping the newest)
-  * @param ec the execution context
   * @tparam T the type
   */
-class ThrottledVar[T](initialValue: => T, throttle: FiniteDuration)(implicit ec: ExecutionContext) extends Var[T] {
+class ThrottledVar[T](initialValue: => T, throttle: FiniteDuration) extends Var[T] {
   private val throttleMillis = throttle.toMillis
   private var lastModification = 0L
   private var pending: Option[() => Unit] = None
@@ -34,18 +31,18 @@ class ThrottledVar[T](initialValue: => T, throttle: FiniteDuration)(implicit ec:
         lastModification = now
       } else {
         pending = Some(() => super.set(value))
-        IO.sleep(delay.milli).map { _ =>
+        Task.sleep(delay.milli).map { _ =>
           pending.foreach(f => f())
           pending = None
           lastModification = System.currentTimeMillis()
-        }.unsafeRunAndForget()
+        }.startUnit()
       }
     }
   }
 }
 
 object ThrottledVar {
-  def apply[T](value: => T, throttle: FiniteDuration)(implicit ec: ExecutionContext): ThrottledVar[T] = {
+  def apply[T](value: => T, throttle: FiniteDuration): ThrottledVar[T] = {
     val v = new ThrottledVar[T](value, throttle)
     v := value
     v

@@ -1,6 +1,6 @@
 package io.youi.component
 
-import cats.effect.IO
+import rapid.Task
 import io.youi._
 import io.youi.component.support._
 import io.youi.component.types.{Display, DropType, Overflow, PositionType}
@@ -11,7 +11,7 @@ class Drop extends Collapsible with PositionSupport with BorderSupport with Init
   private var showing: Option[Component] = None
   private var `type`: DropType = DropType.Auto
 
-  override lazy val container: Container with MeasuredSupport with PaddingSupport = new Container with MeasuredSupport with PaddingSupport
+  override lazy val container: Container & MeasuredSupport & PaddingSupport = new Container with MeasuredSupport with PaddingSupport
   val offsetDown: Var[Double] = Var(0.0)
   val offsetUp: Var[Double] = Var(0.0)
 
@@ -27,10 +27,14 @@ class Drop extends Collapsible with PositionSupport with BorderSupport with Init
 
     overflow @= Overflow.Hidden
     ui.children += this
+
+    val _ = size.height.on {
+      if (!collapsed()) updatePosition()
+    }
   }
 
-  def show(target: Component, `type`: DropType = DropType.Auto): IO[Unit] = chained {
-    IO {
+  def show(target: Component, `type`: DropType = DropType.Auto): Task[Unit] = chained {
+    Task {
       init()
       showing = Some(target)
       this.`type` = `type`
@@ -54,15 +58,15 @@ class Drop extends Collapsible with PositionSupport with BorderSupport with Init
     }
   }
 
-  def hide(): IO[Unit] = chained {
-    IO {
+  def hide(): Task[Unit] = chained {
+    Task {
       showing = None
       Drop._open = None
       collapsed @= true
     }
   }
 
-  def toggle(target: Component, `type`: DropType = DropType.Auto): IO[Unit] = if (showing.isEmpty) {
+  def toggle(target: Component, `type`: DropType = DropType.Auto): Task[Unit] = if (showing.isEmpty) {
     show(target, `type`)
   } else {
     hide()
@@ -86,7 +90,7 @@ object Drop {
     _open = Some(drop)
   }
 
-  def hide(): Unit = _open.foreach(_.hide())
+  def hide(): Unit = _open.foreach(_.hide().startUnit())
 
   ui.event.click.attach { evt =>
     if (System.currentTimeMillis() - openStart > 250L) {

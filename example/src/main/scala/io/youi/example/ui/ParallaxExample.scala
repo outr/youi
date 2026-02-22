@@ -1,39 +1,55 @@
-//package io.youi.example.ui
-//
-//import io.youi._
-//import io.youi.component.HTMLTextView
-//import io.youi.example.screen.UIExampleScreen
-//import io.youi.font.GoogleFont
-//import spice.net._
-//import io.youi.spatial.Dim
-//import io.youi.style.{Overflow, Position}
-//import reactify._
-//
-//import scala.concurrent.ExecutionContext.Implicits.global
-//import scala.concurrent.Future
-//
-//class ParallaxExample extends UIExampleScreen {
-//  override def title: String = "Parallax Example"
-//  override def path: Path = path"/examples/parallax.html"
-//
-//  override def createUI(): Future[Unit] = GoogleFont.`Lobster`.load().map { fnt =>
-//    register(component.overflow.y, Overflow.Auto)
-//    register(component.size.height, Dim(4000))
-//
-//    val textView = new HTMLTextView {
-//      value @= s"Hello, World"
-//      font @= fnt
-//      font.size := {
-//        val p = component.position.scroll.percent.y()
-//        val modifier = 24.0 * ((p - 0.5) * 2.0)
-//        64.0 + modifier
-//      }
-//      color := Color.DarkBlue.withRed(component.position.scroll.percent.y())
-//      position.center := container.size.center()
-//      position.top := header.size.height - math.min(header.size.height, -component.position.scroll.y())
-//      position.`type` @= Position.Fixed
-//      position.depth @= 100
-//    }
-//    container.children += textView
-//  }
-//}
+package io.youi.example.ui
+
+import rapid.Task
+import io.youi._
+import io.youi.component.support.{MeasuredSupport, OverflowSupport, PositionSupport, ScrollSupport, SizeSupport}
+import io.youi.component.types.{Overflow, PositionType}
+import io.youi.component.{Container, TextView}
+import io.youi.example.screen.UIExampleScreen
+import io.youi.font.GoogleFont
+import spice.net._
+
+class ParallaxExample extends UIExampleScreen {
+  override def title: String = "Parallax Example"
+  override def path: URLPath = path"/examples/parallax.html"
+
+  override def createUI(): Task[Unit] = GoogleFont.`Lobster`.`regular`.load().map { fnt =>
+    // Tall scrollable container that fills the content area
+    val scrollContainer = new Container with SizeSupport with ScrollSupport with OverflowSupport {
+      size.width  := container.size.width
+      size.height := container.size.height
+      overflow    @= Overflow.Auto
+    }
+
+    // Inner content taller than the viewport to enable scrolling
+    val inner = new Container with SizeSupport {
+      size.width  := scrollContainer.size.width
+      size.height @= 4000.0
+    }
+    scrollContainer.children += inner
+
+    // Parallax text: fixed position within the scrollable area, moves with scroll
+    val textView = new TextView with PositionSupport with MeasuredSupport {
+      content @= "Hello, World"
+      font.weight @= fnt
+      // Font size varies with scroll position
+      font.size := {
+        val maxScroll = 4000.0 - scrollContainer.size.height()
+        val p = if (maxScroll > 0) scrollContainer.scroll.y() / maxScroll else 0.0
+        64.0 + 24.0 * ((p - 0.5) * 2.0)
+      }
+      // Color shifts from dark blue to red as you scroll
+      color := {
+        val maxScroll = 4000.0 - scrollContainer.size.height()
+        val p = if (maxScroll > 0) scrollContainer.scroll.y() / maxScroll else 0.0
+        Color.DarkBlue.withRed(p)
+      }
+      position.`type` @= PositionType.Sticky
+      position.top    @= 20.0
+      position.center := scrollContainer.size.center
+    }
+    inner.children += textView
+
+    container.children += scrollContainer
+  }
+}

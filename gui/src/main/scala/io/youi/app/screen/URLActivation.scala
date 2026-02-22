@@ -1,6 +1,6 @@
 package io.youi.app.screen
 
-import cats.effect.IO
+import rapid.Task
 import io.youi.{History, HistoryStateChange}
 import spice.net.{URL, URLMatcher}
 
@@ -27,7 +27,7 @@ trait URLActivation extends Screen {
     */
   def urlChanged(url: URL): Unit = {}
 
-  override protected def activate(): IO[Unit] = {
+  override protected def activate(): Task[Unit] = {
     super.activate().map { _ =>
       val currentURL = History.url()
       updateURL(currentURL).foreach { change =>

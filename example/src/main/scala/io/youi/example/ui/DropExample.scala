@@ -1,6 +1,6 @@
 package io.youi.example.ui
 
-import cats.effect.IO
+import rapid.Task
 import io.youi._
 import io.youi.component._
 import io.youi.component.support.{MeasuredSupport, PaddingSupport, PositionSupport}
@@ -24,7 +24,7 @@ class DropExample extends UIExampleScreen {
     position.middle := ui.size.middle
   }
 
-  override def createUI(): IO[Unit] = for {
+  override def createUI(): Task[Unit] = for {
     fnt <- GoogleFont.`Lobster`.load()
   } yield {
     text.font.family @= fnt.family
@@ -39,8 +39,8 @@ class DropExample extends UIExampleScreen {
     }
     container.children += dropdown
 
-    text.event.click.attach { evt =>
-      dropdown.toggle(text, DropType.Up)
+    text.event.click.attach { _ =>
+      dropdown.toggle(text, DropType.Up).startUnit()
     }
     dropdown.event.click.attach { evt =>
       evt.preventDefault()

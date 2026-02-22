@@ -1,77 +1,60 @@
-//package io.youi.example.ui
-//
-//import io.youi._
-//import io.youi.component.{Container, HTMLTextView, UIModal}
-//import io.youi.easing.Easing
-//import io.youi.example.screen.UIExampleScreen
-//import io.youi.font.GoogleFont
-//import spice.net._
-//import io.youi.style.{Display, HTMLBorder, HTMLBorderStyle}
-//import io.youi.task._
-//
-//import scala.concurrent.Future
-//import scala.concurrent.duration._
-//import scribe.Execution.global
-//
-//class ModalExample extends UIExampleScreen {
-//  override def title: String = "Modal Example"
-//  override def path: Path = path"/examples/modal.html"
-//
-//  override def createUI(): Future[Unit] = GoogleFont.`Open Sans`.load().map { fnt =>
-//    val myModal = new Container with UIModal {
-//      size.width @= 800.0
-//      size.height @= 500.0
-//      background @= Color.White
-//      htmlBorder.radius @= 20.0
-//      htmlBorder @= HTMLBorder(1.0, HTMLBorderStyle.Outset, Color.Black)
-//
-//      children += new HTMLTextView {
-//        value @= "This is a modal!"
-//        font @= fnt
-//        font.size @= 50.px
-//        color @= Color.DarkSlateBlue
-//        position.center @= 400.0
-//        position.middle @= 250.0
-//      }
-//
-//      position.top @= 100.0
-//
-//      override def show(): Unit = {
-//        position.bottom @= 0.0
-//        opacity @= 0.0
-//        parallel(
-//          position.top to 100.0 in 250.millis easing Easing.quadraticOut,
-//          opacity to 1.0 in 250.millis
-//        ).start(this)
-//
-//        super.show()
-//      }
-//
-//      override def hide(): Unit = {
-//        UIModal.active @= None
-//        parallel(
-//          position.bottom to 0.0 in 500.millis,
-//          opacity to 0.0 in 250.millis
-//        )
-//          .andThen(synchronous(display @= Display.None))
-//          .start(this)
-//      }
-//    }
-//    val button = new HTMLTextView {
-//      value @= "Open Modal"
-//      font @= fnt
-//      font.size @= 64.px
-//      cursor @= Cursor.Pointer
-//      background @= Color.Blue
-//      color @= Color.White
-//      htmlBorder.radius @= 10.0
-//      position.center := container.size.center()
-//      position.middle := container.size.middle()
-//      event.click.on {
-//        myModal.show()
-//      }
-//    }
-//    container.children += button
-//    container.children += myModal
-//  }
-//}
+package io.youi.example.ui
+
+import rapid.Task
+import io.youi._
+import io.youi.component.support.{BorderSupport, MeasuredSupport, PaddingSupport, PositionSupport}
+import io.youi.component.types.{BoxShadow, Cursor, PositionType}
+import io.youi.component.{Popup, TextView}
+import io.youi.event.EventSupport
+import io.youi.example.screen.UIExampleScreen
+import io.youi.font.GoogleFont
+import spice.net._
+
+class ModalExample extends UIExampleScreen {
+  override def title: String = "Modal Example"
+  override def path: URLPath = path"/examples/modal.html"
+
+  override def createUI(): Task[Unit] = GoogleFont.`Open Sans`.`regular`.load().map { fnt =>
+    val popup = new Popup(showGlassPane = true) with BorderSupport {
+      override def preferredWidth: Double  = 600.0
+      override def preferredHeight: Double = 400.0
+    }
+    popup.backgroundColor @= Color.White
+    popup.border.radius @= 12.0
+    popup.boxShadow @= BoxShadow(0.0, 4.0, 32.0, 0.0, Color.Black.withAlpha(0.25))
+    popup.init()
+
+    val popupText = new TextView with PositionSupport with MeasuredSupport {
+      content @= "This is a modal!"
+      font.weight @= fnt
+      font.size   @= 48.0
+      color       @= Color.DarkSlateBlue
+      position.`type` @= PositionType.Absolute
+      position.center := popup.size.center
+      position.middle := popup.size.middle
+    }
+    popup.children += popupText
+
+    val button = new TextView with PositionSupport with MeasuredSupport with EventSupport with BorderSupport with PaddingSupport {
+      content @= "Open Modal"
+      font.weight @= fnt
+      font.size   @= 48.0
+      color       @= Color.White
+      backgroundColor @= Color.RoyalBlue
+      border.radius @= 8.0
+      padding.top    @= 12.0
+      padding.bottom @= 12.0
+      padding.left   @= 24.0
+      padding.right  @= 24.0
+      cursor @= Cursor.Pointer
+      position.`type` @= PositionType.Absolute
+      position.center := container.size.center
+      position.middle := container.size.middle
+    }
+    button.event.click.on {
+      popup.show().startUnit()
+    }
+
+    container.children ++= Seq(button, popup)
+  }
+}

@@ -1,10 +1,8 @@
 package io.youi.util
 
-import cats.effect.IO
+import rapid.Task
 
 import scala.concurrent.duration.FiniteDuration
-import scala.concurrent.ExecutionContext
-import cats.effect.unsafe.implicits.global
 
 /**
   * @see Time.repeat for convenient usage
@@ -12,7 +10,7 @@ import cats.effect.unsafe.implicits.global
 case class Repeatable(delay: FiniteDuration,
                       initialDelay: Option[FiniteDuration],
                       stopOnError: Boolean,
-                      task: () => IO[Unit],
+                      task: () => Task[Unit],
                       errorHandler: Throwable => Unit) {
   private var running = false
   private var keepAlive = true
@@ -27,18 +25,18 @@ case class Repeatable(delay: FiniteDuration,
 
   private def run(delay: FiniteDuration): Unit = synchronized {
     if (keepAlive && Repeatable.keepAlive) {
-      IO.sleep(delay).flatMap { _ =>
+      Task.sleep(delay).flatMap { _ =>
         if (keepAlive && Repeatable.keepAlive) {
           task()
         } else {
-          IO.unit
+          Task.unit
         }
       }.attempt.map {
-        case Left(throwable) =>
+        case scala.util.Failure(throwable) =>
           errorHandler(throwable)
           if (!stopOnError) reSchedule()
-        case Right(_) => reSchedule()
-      }.unsafeRunAndForget()
+        case scala.util.Success(_) => reSchedule()
+      }.startUnit()
     }
   }
 

@@ -1,8 +1,7 @@
 package io.youi.image
 
-import cats.effect.IO
-import cats.effect.kernel.Deferred
-import cats.effect.unsafe.implicits.global
+import rapid.Task
+import rapid.task.Completable
 import io.youi.dom
 import io.youi.drawable.Context
 import io.youi.image.resize.ImageResizer
@@ -23,21 +22,21 @@ class HTMLImage(private[image] val img: html.Image) extends Image {
   // TODO: make this top-level to Image
   def source: String = img.src
 
-  override def resize(width: Double, height: Double): IO[Image] = resize(width, height, ImageResizer.Smooth)
+  override def resize(width: Double, height: Double): Task[Image] = resize(width, height, ImageResizer.Smooth)
 
-  def resize(width: Double, height: Double, resizer: ImageResizer): IO[Image] = if (this.width == width && this.height == height) {
-    IO.pure(this)
+  def resize(width: Double, height: Double, resizer: ImageResizer): Task[Image] = if (this.width == width && this.height == height) {
+    Task.pure(this)
   } else {
     ResizedHTMLImage(this, width, height, resizer)
   }
 
-  override def resizeTo(canvas: html.Canvas, width: Double, height: Double, resizer: ImageResizer): IO[html.Canvas] = {
+  override def resizeTo(canvas: html.Canvas, width: Double, height: Double, resizer: ImageResizer): Task[html.Canvas] = {
     ResizedHTMLImage.resizeTo(this, canvas, width, height, resizer)
   }
 
   override def isVector: Boolean = false
 
-  override def toDataURL: IO[String] = ImageUtility.toDataURL(img)
+  override def toDataURL: Task[String] = ImageUtility.toDataURL(img)
 
   override def dispose(): Unit = {}
 
@@ -45,24 +44,22 @@ class HTMLImage(private[image] val img: html.Image) extends Image {
 }
 
 object HTMLImage {
-  def apply(url: URL): IO[HTMLImage] = {
+  def apply(url: URL): Task[HTMLImage] = {
     val img = dom.create[html.Image]("img")
     img.src = url.toString
     apply(img)
   }
 
-  def apply(img: html.Image): IO[HTMLImage] = if (img.width > 0 && img.height > 0) {
-    IO.pure(new HTMLImage(img))
+  def apply(img: html.Image): Task[HTMLImage] = if (img.width > 0 && img.height > 0) {
+    Task.pure(new HTMLImage(img))
   } else {
-    Deferred[IO, HTMLImage].flatMap { d =>
-      var listener: js.Function1[Event, _] = null
-      listener = (_: Event) => {
-        d.complete(new HTMLImage(img)).map { _ =>
-          img.removeEventListener("load", listener)
-        }.unsafeRunAndForget()
-      }
-      img.addEventListener("load", listener)
-      d.get
+    val c: Completable[HTMLImage] = Task.completable[HTMLImage]
+    var listener: js.Function1[Event, ?] = null
+    listener = (_: Event) => {
+      img.removeEventListener("load", listener)
+      c.success(new HTMLImage(img))
     }
+    img.addEventListener("load", listener)
+    c
   }
 }

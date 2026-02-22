@@ -3,7 +3,7 @@ package io.youi.task
 import scala.concurrent.Future
 
 class FutureTask[R](futureFunction: () => Future[R]) extends Task {
-  private var future: Future[R] = _
+  private var future: Future[R] = scala.compiletime.uninitialized
 
   override def update(delta: Double, reset: Boolean): Conclusion = {
     if (reset) {

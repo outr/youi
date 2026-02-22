@@ -1,6 +1,6 @@
 package io.youi.maintenance
 
-import cats.effect.IO
+import rapid.Task
 
 import scala.concurrent.duration.FiniteDuration
 
@@ -13,7 +13,7 @@ trait MaintenanceTask {
 
   def onFail: TaskResult = TaskResult.Continue
 
-  def apply(status: TaskStatus): IO[TaskResult]
+  def apply(status: TaskStatus): Task[TaskResult]
 
   def schedule(): MaintenanceTaskInstance = Maintenance.schedule(
     name = name,

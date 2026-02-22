@@ -1,6 +1,6 @@
 package io.youi.image
 
-import cats.effect.IO
+import rapid.Task
 import io.youi.drawable.Context
 import io.youi.image.resize.ImageResizer
 import io.youi.util.{CanvasPool, ImageUtility}
@@ -18,7 +18,7 @@ trait CanvasImage extends Image {
 
   override def isVector: Boolean = false
 
-  override def toDataURL: IO[String] = IO.pure(canvas.toDataURL("image/png"))
+  override def toDataURL: Task[String] = Task.pure(canvas.toDataURL("image/png"))
 
   override def dispose(): Unit = CanvasPool.restore(canvas)
 
@@ -32,22 +32,22 @@ object CanvasImage {
     val c = canvas
     new CanvasImage {
       override protected def canvas: Canvas = c
-      override def resize(width: Double, height: Double): IO[Image] = if (this.width == width && this.height == height) {
-        IO.pure(this)
+      override def resize(width: Double, height: Double): Task[Image] = if (this.width == width && this.height == height) {
+        Task.pure(this)
       } else if (original.map(_.width.toDouble).contains(width) && original.map(_.height.toDouble).contains(height)) {
-        IO(apply(original.get, resizer, None))
+        Task(apply(original.get, resizer, None))
       } else {
         CanvasImage.resize(original.getOrElse(c), width, height, resizer)
       }
 
-      override def resizeTo(canvas: html.Canvas, width: Double, height: Double, resizer: ImageResizer): IO[html.Canvas] = {
+      override def resizeTo(canvas: html.Canvas, width: Double, height: Double, resizer: ImageResizer): Task[html.Canvas] = {
         val source: html.Canvas = original.getOrElse(c)
         ImageUtility.drawToCanvas(source, canvas, resizer)(0.0, 0.0, width, height)
       }
     }
   }
 
-  def resize(canvas: html.Canvas, width: Double, height: Double, resizer: ImageResizer): IO[CanvasImage] = {
+  def resize(canvas: html.Canvas, width: Double, height: Double, resizer: ImageResizer): Task[CanvasImage] = {
     ImageUtility.drawToCanvas(canvas, CanvasPool(width, height), resizer)().map { resized =>
       apply(resized, resizer, Some(canvas))
     }

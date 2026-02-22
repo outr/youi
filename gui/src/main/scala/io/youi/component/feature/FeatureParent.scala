@@ -15,6 +15,7 @@ trait FeatureParent {
 
   private val colorNone: Color = Color.fromLong(0xFFFFFF00)
 
+  lazy val boxShadow: Prop[BoxShadow] = Prop.stringify(css.boxShadow, css.boxShadow_=, BoxShadow, BoxShadow.none)
   lazy val color: Prop[Color] = Prop.stringify(css.color, css.color_=, Color, colorNone)
   lazy val background: Prop[Paint] = Prop.stringify(css.background, css.background_=, Paint, Paint.none)
   lazy val backgroundColor: Prop[Color] = Prop.stringify(css.backgroundColor, css.backgroundColor_=, Color, colorNone)

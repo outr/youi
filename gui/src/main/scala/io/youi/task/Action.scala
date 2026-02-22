@@ -1,19 +1,20 @@
 package io.youi.task
 
-import cats.effect.IO
-import cats.effect.unsafe.implicits.global
-
-class Action(action: () => IO[Unit]) extends Task {
+class Action(action: () => rapid.Task[Unit]) extends Task {
   private var running = false
   private var finished = false
 
   override def update(delta: Double, reset: Boolean): Conclusion = {
+    if (reset) {
+      finished = false
+      running = false
+    }
     if (!finished && !running) {
       running = true
       action().map { _ =>
         finished = true
         running = false
-      }.unsafeRunAndForget()
+      }.startUnit()
       Conclusion.Continue
     } else if (!finished) {
       Conclusion.Continue
@@ -24,5 +25,5 @@ class Action(action: () => IO[Unit]) extends Task {
 }
 
 object Action {
-  def apply(f: => IO[Unit]): Action = new Action(() => f)
+  def apply(f: => rapid.Task[Unit]): Action = new Action(() => f)
 }

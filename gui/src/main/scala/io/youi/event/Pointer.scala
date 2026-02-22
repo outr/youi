@@ -1,6 +1,6 @@
 package io.youi.event
 
-import reactify.Var
+import reactify._
 
 case class Pointer(identifier: Int,
                    start: PointerEvent,
@@ -26,9 +26,9 @@ case class Pointer(identifier: Int,
   def withEvent(evt: PointerEvent): Pointer = {
     val moved = Moved(move, evt)
     val movedFromStart = Moved(start, evt)
-    val mx = (moved.deltaX :: meanX).take(Pointer.sampleSize)
-    val my = (moved.deltaY :: meanY).take(Pointer.sampleSize)
-    val mt = (elapsed :: meanTime).take(Pointer.sampleSize)
+    val mx = (moved.deltaX :: meanX).take(Pointer.sampleSize())
+    val my = (moved.deltaY :: meanY).take(Pointer.sampleSize())
+    val mt = (elapsed :: meanTime).take(Pointer.sampleSize())
     copy(
       move = evt,
       previous = move,

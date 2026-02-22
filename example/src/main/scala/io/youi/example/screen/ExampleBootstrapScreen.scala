@@ -1,6 +1,6 @@
 package io.youi.example.screen
 
-import cats.effect.IO
+import rapid.Task
 import io.youi.app.screen.PathActivation
 import io.youi.dom
 import org.scalajs.dom.{document, html}
@@ -13,7 +13,7 @@ object ExampleBootstrapScreen extends PathActivation {
 
   implicit def bc2E[E <: html.Element, T <: BootstrapComponent[E, T]](bc: BootstrapComponent[E, T]): E = bc.element
 
-  override protected def init(): IO[Unit] = super.init().map { _ =>
+  override protected def init(): Task[Unit] = super.init().map { _ =>
     document.body.appendChild(bootstrap.button.content("Primary"))
   }
 }

@@ -14,7 +14,7 @@ class ContainerFeature[Child <: Component](val component: Component) extends Var
     case (old, current) => if (verifyChanges) {
       val removed = old.diff(current)
       removed.foreach(_.element.remove())
-      component.element.verifyChildrenInOrder(get.map(_.element): _*)
+      component.element.verifyChildrenInOrder(get.map(_.element)*)
       component.measure.trigger()
     }
   }

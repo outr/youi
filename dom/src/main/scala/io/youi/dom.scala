@@ -1,8 +1,7 @@
 package io.youi
 
-import cats.effect.{IO, Ref}
-import cats.effect.kernel.Deferred
-import cats.effect.unsafe.implicits.global
+import rapid.Task
+import rapid.task.Completable
 import io.youi.util.Time
 import org.scalajs.dom.{DOMList, Element, ErrorEvent, Event, HTMLElement, Node, Text, document, html, window}
 import org.scalajs.dom.html.Div
@@ -78,12 +77,12 @@ object dom extends ExtendedElement(None) {
   private lazy val addedScripts: mutable.Map[String, ScriptStatus] = mutable.Map(
     loadedScripts.map { script =>
       script -> ScriptStatus.Loaded
-    }: _*
+    }*
   )
 
   private def scriptStatus(url: URL): ScriptStatus = addedScripts.getOrElse(url.toString(), ScriptStatus.NotAdded)
 
-  def addScript(url: URL, addToHead: Boolean = false): IO[Unit] = scriptStatus(url) match {
+  def addScript(url: URL, addToHead: Boolean = false): Task[Unit] = scriptStatus(url) match {
     case ScriptStatus.NotAdded =>
       val script = create.script
       script.addEventListener("load", (_: Event) => {
@@ -98,7 +97,7 @@ object dom extends ExtendedElement(None) {
       Time.waitFor(scriptStatus(url) == ScriptStatus.Loaded, timeout = 30.seconds)
     case ScriptStatus.Loading =>
       Time.waitFor(scriptStatus(url) == ScriptStatus.Loaded, timeout = 30.seconds)
-    case ScriptStatus.Loaded => IO.unit
+    case ScriptStatus.Loaded => Task.unit
   }
 
   def getCSSVariable(name: String): String = {
@@ -132,36 +131,30 @@ object dom extends ExtendedElement(None) {
     * @param url the image URL to load
     * @return Either[Throwable, URL]
     */
-  def reloadImage(url: URL): IO[Either[Throwable, URL]] = {
+  def reloadImage(url: URL): Task[Either[Throwable, URL]] = {
     val iframe = create.iframe
     iframe.style.display = "none"
     document.body.appendChild(iframe)
     var counter = 0
-    val d = Deferred[IO, Either[Throwable, URL]]
+    val c: Completable[Either[Throwable, URL]] = Task.completable[Either[Throwable, URL]]
     iframe.addEventListener("load", (_: Event) => {
       if (counter == 0) {
         counter += 1
         iframe.contentWindow.location.reload()
       } else {
-        d.flatMap { d =>
-          d.complete(Right(url))
-        }.unsafeRunAndForget()
+        c.success(Right(url))
       }
     }, useCapture = false)
-    val src = if (url.base != History.url.base) { // Cross-Domain
-      History.url.withPath(path"/wrap-image").withParam("src", url.toString).toString
+    val src = if (url.base != History.url().base) { // Cross-Domain
+      History.url().withPath(path"/wrap-image").withParam("src", url.toString).toString
     } else {
       url.toString
     }
     iframe.src = src
     iframe.addEventListener("error", (evt: ErrorEvent) => {
-      d.flatMap { d =>
-        d.complete(Left(new RuntimeException(s"Error loading: $url - ${evt.message}")))
-      }
+      c.success(Left(new RuntimeException(s"Error loading: $url - ${evt.message}")))
     }, useCapture = false)
-    d.flatMap { d =>
-      d.get
-    }
+    c
   }
 
   implicit class StringExtras(s: String) {

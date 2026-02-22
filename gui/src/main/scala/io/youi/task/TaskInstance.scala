@@ -1,12 +1,11 @@
 package io.youi.task
 
-import cats.effect.unsafe.implicits.global
-import cats.effect.{Deferred, IO}
+import rapid.task.Completable
 import io.youi.Updates
 import reactify.reaction.Reaction
 
-case class TaskInstance(task: Task, updates: Updates, deferred: Option[Deferred[IO, Double]]) {
-  private var reaction: Reaction[Double] = _
+case class TaskInstance(task: Task, updates: Updates, deferred: Option[Completable[Double]]) {
+  private var reaction: Reaction[Double] = scala.compiletime.uninitialized
   private var first = true
   private var elapsed: Double = 0.0
   private var paused: Boolean = false
@@ -26,7 +25,7 @@ case class TaskInstance(task: Task, updates: Updates, deferred: Option[Deferred[
           case Conclusion.Continue => // Keep going
           case Conclusion.Finished =>
             updates.delta.reactions -= reaction
-            deferred.foreach(_.complete(elapsed).unsafeRunAndForget())
+            deferred.foreach(_.success(elapsed))
         }
         first = false
       }

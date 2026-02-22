@@ -1,16 +1,17 @@
 package opentype
 
-import cats.effect.unsafe.implicits.global
-import cats.effect.{Deferred, IO}
+import rapid.Task
+import rapid.task.Completable
 
 object OpenType {
-  def load(url: String): IO[Either[Throwable, Font]] = Deferred[IO, Either[Throwable, Font]].flatMap { deferred =>
+  def load(url: String): Task[Either[Throwable, Font]] = {
+    val c: Completable[Either[Throwable, Font]] = Task.completable[Either[Throwable, Font]]
     TopLevel.load(url, (err: String, font: Font) => {
       Option(err) match {
-        case Some(message) => deferred.complete(Left(new OpenTypeException(message))).unsafeRunAndForget()
-        case None => deferred.complete(Right(font)).unsafeRunAndForget()
+        case Some(message) => c.success(Left(new OpenTypeException(message)))
+        case None => c.success(Right(font))
       }
     })
-    deferred.get
+    c
   }
 }

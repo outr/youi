@@ -1,7 +1,7 @@
 package io.youi.drawable
 
 trait Transformation extends Drawable {
-  modified := drawable.modified
+  modified := drawable.modified()
 
   protected def transform(context: Context): Unit
   protected def drawable: Drawable

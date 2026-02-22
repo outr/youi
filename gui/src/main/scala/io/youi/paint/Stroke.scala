@@ -2,6 +2,7 @@ package io.youi.paint
 
 import io.youi.drawable.Context
 import io.youi.path.{Path, PathAction}
+import reactify._
 
 import scala.scalajs.js
 
@@ -19,7 +20,7 @@ case class Stroke(paint: Paint,
     path match {
       case Some(p) => {
         context.stroke(this, apply = false)
-        context.ctx.asInstanceOf[js.Dynamic].stroke(p.path2d)
+        context.ctx.asInstanceOf[js.Dynamic].stroke(p.path2d())
       }
       case None => context.stroke(this, apply = true)
     }
@@ -48,7 +49,7 @@ object Stroke {
           lineJoin = lineJoin,
           apply = false
         )
-        context.ctx.asInstanceOf[js.Dynamic].stroke(p.path2d)
+        context.ctx.asInstanceOf[js.Dynamic].stroke(p.path2d())
       }
       case None => context.stroke(
         paint = paint,

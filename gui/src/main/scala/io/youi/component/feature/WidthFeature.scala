@@ -6,7 +6,7 @@ import reactify.Val
 trait WidthFeature extends Feature {
   def width: Val[Double]
 
-  addFeature("width")
+  addFeatureIfAbsent("width")
 }
 
 object WidthFeature {

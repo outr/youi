@@ -1,6 +1,6 @@
 package io.youi.upload
 
-import cats.effect.IO
+import rapid.Task
 import io.youi.History
 import io.youi.ajax.AjaxManager
 import io.youi.component.FileInput
@@ -24,40 +24,40 @@ import scala.util.{Failure, Success}
   * @param withCredentials whether credentials should be passed (defaults to false)
   * @param ajaxManager an AJAXManager to use (defaults to a new instance with four maximum concurrent)
   */
-case class UploadManager(url: URL = History.url.withPath(path"/upload"),
+case class UploadManager(url: URL = History.url().withPath(path"/upload"),
                          chunkSize: Long = 50L * 1000L * 1000L,
                          timeout: Int = 0,
                          headers: Headers = Headers.empty,
                          withCredentials: Boolean = false,
                          ajaxManager: AjaxManager = new AjaxManager(4)) {
-  private var verifier: File => IO[Boolean] = (_: File) => IO.pure(true)
+  private var verifier: File => Task[Boolean] = (_: File) => Task.pure(true)
   private var action: Uploading => Unit = (_: Uploading) => ()
   private val fileInput = new FileInput {
     files.attach { files =>
       if (files.nonEmpty) {
-        verifyAndUpload(files)
+        verifyAndUpload(files).startUnit()
         reset()
       }
     }
   }
 
-  private def verifyAndUpload(files: List[File]): IO[Unit] = if (files.nonEmpty) {
+  private def verifyAndUpload(files: List[File]): Task[Unit] = if (files.nonEmpty) {
     val file = files.head
     verifier(file).flatMap { verified =>
       if (verified) upload(file)
       verifyAndUpload(files.tail)
     }
   } else {
-    IO.unit
+    Task.unit
   }
 
   def select(multiple: Boolean = false,
-             verifier: File => IO[Boolean] = _ => IO.pure(true))
+             verifier: File => Task[Boolean] = _ => Task.pure(true))
             (action: Uploading => Unit): Unit = {
     this.verifier = verifier
     this.action = action
     fileInput.multiple @= multiple
-    fileInput.click()
+    fileInput.element.click()
   }
 
   def upload(file: File): Uploading = {
@@ -65,15 +65,15 @@ case class UploadManager(url: URL = History.url.withPath(path"/upload"),
       case (key, values) => key -> values.head
     }
     val progress = Var[Long](0)
-    val percentage = Val(progress / file.size)
-    val io = uploadSlice(
+    val percentage = Val(progress() / file.size)
+    val task = uploadSlice(
       file = file,
       offset = 0L,
       total = file.size.toLong,
       progress = progress,
       headers = headersMap
     )
-    val uploading = Uploading(file, progress, percentage, io)
+    val uploading = Uploading(file, progress, percentage, task)
     action(uploading)
     uploading
   }
@@ -83,7 +83,7 @@ case class UploadManager(url: URL = History.url.withPath(path"/upload"),
                           total: Long,
                           progress: Var[Long],
                           headers: Map[String, String],
-                          slices: Set[String] = Set.empty): IO[String] = {
+                          slices: Set[String] = Set.empty): Task[String] = {
     val start = offset
     val end = math.min(total, offset + chunkSize)
     val sliced = file.slice(start.toDouble, end.toDouble)
@@ -100,14 +100,14 @@ case class UploadManager(url: URL = History.url.withPath(path"/upload"),
       withCredentials = withCredentials
     )
     val reaction = action.loaded.attach(d => progress @= math.min(offset + d.toLong, total))
-    action.io.flatMap { t =>
+    action.task.flatMap { t =>
       action.loaded.reactions -= reaction
       t match {
         case Success(request) => {
           val partName = request.response.toString
           if (end == total) {
             if (offset == 0L) {   // Only one slice, no need to merge
-              IO.pure(partName)
+              Task.pure(partName)
             } else {
               mergeSlices(file.name, headers, slices + partName)
             }
@@ -115,12 +115,12 @@ case class UploadManager(url: URL = History.url.withPath(path"/upload"),
             uploadSlice(file, end, total, progress, headers, slices + partName)
           }
         }
-        case Failure(exception) => IO.raiseError(exception)
+        case Failure(exception) => Task(throw exception)
       }
     }
   }
 
-  private def mergeSlices(fileName: String, headers: Map[String, String], slices: Set[String]): IO[String] = {
+  private def mergeSlices(fileName: String, headers: Map[String, String], slices: Set[String]): Task[String] = {
     val action = ajaxManager.enqueue(
       url = url,
       data = Some(new FormData {
@@ -130,6 +130,6 @@ case class UploadManager(url: URL = History.url.withPath(path"/upload"),
       }),
       headers = headers
     )
-    action.io.map(_.get.response.toString)
+    action.task.map(_.get.response.toString)
   }
 }

@@ -29,7 +29,7 @@ class Touch(component: Component,
 }
 
 object Touch {
-  def tap(component: Component with EventSupport): Touch = new Touch(
+  def tap(component: Component & EventSupport): Touch = new Touch(
     component = component,
     event = component.event,
     identifier = None,
@@ -40,7 +40,7 @@ object Touch {
     lastTimeMax = Long.MaxValue
   )
 
-  def click(component: Component with EventSupport): Touch = new Touch(
+  def click(component: Component & EventSupport): Touch = new Touch(
     component = component,
     event = component.event,
     identifier = None,
@@ -51,7 +51,7 @@ object Touch {
     lastTimeMax = Long.MaxValue
   )
 
-  def longPress(component: Component with EventSupport): Touch = new Touch(
+  def longPress(component: Component & EventSupport): Touch = new Touch(
     component = component,
     event = component.event,
     identifier = None,
@@ -62,7 +62,7 @@ object Touch {
     lastTimeMax = Long.MaxValue
   )
 
-  def doubleClick(component: Component with EventSupport): Touch = new Touch(
+  def doubleClick(component: Component & EventSupport): Touch = new Touch(
     component = component,
     event = component.event,
     identifier = None,

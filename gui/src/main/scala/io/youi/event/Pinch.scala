@@ -7,8 +7,8 @@ import reactify.Channel
 class Pinch(component: Component, event: Events) extends Channel[PinchEvent] {
   event.pointers.dragged.attach(dragging)
 
-  private def dragging(pointer: Pointer): Unit = if (event.pointers.map.size == 2 && pointer.moved.distance != 0.0) {
-    val other = event.pointers.map.find(_._1 != pointer.identifier).get._2
+  private def dragging(pointer: Pointer): Unit = if (event.pointers.map().size == 2 && pointer.moved.distance != 0.0) {
+    val other = event.pointers.map().find(_._1 != pointer.identifier).get._2
 
     val ox = other.move.local.x
     val oy = other.move.local.y

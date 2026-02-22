@@ -18,7 +18,7 @@ trait Group extends Drawable {
   }
 
   def withDrawables(drawables: Drawable*): Group = {
-    Group(elements ::: drawables.toList: _*)
+    Group(elements ::: drawables.toList*)
   }
 }
 

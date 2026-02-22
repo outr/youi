@@ -1,6 +1,6 @@
 package io.youi.example.ui
 
-import cats.effect.IO
+import rapid.Task
 import io.youi._
 import io.youi.component.support.{OverflowSupport, ScrollSupport, SizeSupport}
 import io.youi.component.types.{Display, Overflow}
@@ -20,7 +20,7 @@ class ScrollingExample extends UIExampleScreen {
   override def title: String = "Scrolling Example"
   override def path: URLPath = path"/examples/scrolling.html"
 
-  override def createUI(): IO[Unit] = {
+  override def createUI(): Task[Unit] = {
     MaterialComponents.waitForLoaded().flatMap { _ =>
       GoogleFont.`Open Sans`.`regular`.load().map { fnt =>
         val scrollable = new Container with SizeSupport with ScrollSupport with OverflowSupport {
@@ -59,7 +59,7 @@ class ScrollingExample extends UIExampleScreen {
       content := text
       font.weight @= fnt
       backgroundColor := Color.White
-      color := Color.Black
+      this.color := Color.Black
       font.size := 24.0
     }
     size.width := w

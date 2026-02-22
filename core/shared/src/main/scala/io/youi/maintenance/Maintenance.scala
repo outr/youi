@@ -1,7 +1,6 @@
 package io.youi.maintenance
 
-import cats.effect.IO
-import cats.effect.unsafe.implicits.global
+import rapid.Task
 
 import java.util.{Calendar, TimeZone}
 import scala.concurrent.duration._
@@ -11,7 +10,7 @@ object Maintenance {
                schedule: => FiniteDuration,
                initialDelay: Option[FiniteDuration] = None,
                onFail: TaskResult = TaskResult.Continue)
-              (action: TaskStatus => IO[TaskResult]): MaintenanceTaskInstance = {
+              (action: TaskStatus => Task[TaskResult]): MaintenanceTaskInstance = {
     var normalSchedule = () => schedule
     var stat = TaskStatus().schedule(initialDelay.getOrElse(schedule))
     var cancelled = false
@@ -24,11 +23,11 @@ object Maintenance {
       override def cancel(): Unit = cancelled = true
     }
 
-    def scheduleNext(resultOption: Option[TaskResult]): IO[TaskResult] = {
+    def scheduleNext(resultOption: Option[TaskResult]): Task[TaskResult] = {
       stat = stat.copy(lastRun = Some(System.currentTimeMillis()), timesRun = stat.timesRun + 1)
       if (cancelled) {
         stat = stat.copy(nextRun = None, nextSchedule = None)
-        IO.pure(TaskResult.Stop)
+        Task.pure(TaskResult.Stop)
       } else {
         val nextRunOption = resultOption match {
           case None => Some(initialDelay.getOrElse(schedule))
@@ -43,23 +42,23 @@ object Maintenance {
         nextRunOption match {
           case Some(nextRun) =>
             stat = stat.schedule(nextRun)
-            IO.sleep(nextRun).flatMap { _ =>
-              val io = action(stat).handleError { throwable =>
+            Task.sleep(nextRun).flatMap { _ =>
+              val t = action(stat).handleError { throwable =>
                 scribe.error(s"$name maintenance task failed, will $onFail", throwable)
-                onFail
+                Task.pure(onFail)
               }
-              io.flatMap { result =>
+              t.flatMap { result =>
                 scheduleNext(Some(result))
               }
             }
           case None =>
             stat = stat.copy(nextRun = None, nextSchedule = None)
-            IO.pure(TaskResult.Stop)
+            Task.pure(TaskResult.Stop)
         }
       }
     }
 
-    scheduleNext(None).unsafeRunAndForget()
+    scheduleNext(None).startUnit()
 
     task
   }

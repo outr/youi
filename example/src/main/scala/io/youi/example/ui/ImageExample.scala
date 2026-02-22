@@ -1,6 +1,6 @@
 package io.youi.example.ui
 
-import cats.effect.IO
+import rapid.Task
 import io.youi.component._
 import io.youi.component.support.{MeasuredSupport, PositionSupport, SizeSupport}
 import io.youi.component.types.PositionType
@@ -17,7 +17,7 @@ class ImageExample extends UIExampleScreen {
   override def title: String = "Image Example"
   override def path: URLPath = path"/examples/image.html"
 
-  override def createUI(): IO[Unit] = Image("/images/icon.png").map { img =>
+  override def createUI(): Task[Unit] = Image("/images/icon.png").map { img =>
     container.children += Container(
       new ImageView with PositionSupport with SizeSupport {                       // Top-Left
         image @= img
@@ -54,8 +54,8 @@ class ImageExample extends UIExampleScreen {
         position.center := container.size.center
         position.middle := container.size.middle + header.size.height
           forever {
-          rotation to 1.0 in 1.seconds andThen(IO(rotation @= 0.0))
-        }.start(ImageExample.this)
+            rotation `to` 1.0 `in` 1.seconds `andThen` Task(rotation @= 0.0)
+          }.start(ImageExample.this)
       }
     )
   }

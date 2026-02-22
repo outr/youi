@@ -1,58 +1,66 @@
-//package io.youi.example.ui
-//
-//import io.youi._
-//import io.youi.component.{Container, HTMLTextView}
-//import io.youi.example.screen.UIExampleScreen
-//import io.youi.font.GoogleFont
-//import spice.net._
-//import io.youi.style.{HTMLBorder, HTMLBorderStyle, PointerEvents, WhiteSpace}
-//import reactify._
-//
-//import scala.concurrent.ExecutionContext.Implicits.global
-//import scala.concurrent.Future
-//
-//class MeasuredExample extends UIExampleScreen {
-//  override def title: String = "Measured Example"
-//  override def path: Path = path"/examples/measured.html"
-//
-//  override def createUI(): Future[Unit] = GoogleFont.`Lobster`.load().map { fnt =>
-//    val textView = new HTMLTextView {
-//      value @= "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.<br/><br/>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-//      font @= fnt
-//      font.size @= 24.px
-//      color @= Color.DarkBlue
-//      size.width @= 600.px
-//      position.center := container.size.center
-//      position.middle := container.size.middle
-//    }
-//    val heading = new HTMLTextView {
-//      value @= "Heading Test"
-//      font @= fnt
-//      font.size @= 36.px
-//      whiteSpace @= WhiteSpace.NoWrap
-//      color @= Color.DarkBlue
-//      position.center := container.size.center
-//      position.bottom := textView.position.top - 10.0
-//      event.click.on {
-//        font.size.option.static(Some(font.size() + 5.0))
-//      }
-//    }
-//    val textOutline = new Container {
-//      pointerEvents @= PointerEvents.None
-//      htmlBorder @= HTMLBorder(2.0, HTMLBorderStyle.Dotted, Color.DarkRed)
-//      size.width := textView.size.view.width
-//      size.height := textView.size.view.height
-//      position.center := container.size.center
-//      position.middle := container.size.middle
-//    }
-//    val headingOutline = new Container {
-//      pointerEvents @= PointerEvents.None
-//      htmlBorder @= HTMLBorder(2.0, HTMLBorderStyle.Dotted, Color.DarkGreen)
-//      position.left := heading.position.left
-//      position.top := heading.position.top
-//      size.width := heading.size.view.width
-//      size.height := heading.size.view.height
-//    }
-//    container.children ++= List(heading, textView, headingOutline, textOutline)
-//  }
-//}
+package io.youi.example.ui
+
+import rapid.Task
+import io.youi._
+import io.youi.component.support.{BorderSupport, MeasuredSupport, PositionSupport, SizeSupport}
+import io.youi.component.types.{Border, BorderStyle, Cursor, PointerEvents, PositionType, WhiteSpace}
+import io.youi.component.{Container, TextView}
+import io.youi.event.EventSupport
+import io.youi.example.screen.UIExampleScreen
+import io.youi.font.GoogleFont
+import spice.net._
+
+class MeasuredExample extends UIExampleScreen {
+  override def title: String = "Measured Example"
+  override def path: URLPath = path"/examples/measured.html"
+
+  override def createUI(): Task[Unit] = GoogleFont.`Lobster`.`regular`.load().map { fnt =>
+    val textView = new TextView with PositionSupport with SizeSupport with MeasuredSupport {
+      content @= "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+      font.weight @= fnt
+      font.size   @= 20.0
+      color       @= Color.DarkBlue
+      position.`type` @= PositionType.Absolute
+      size.width  @= 600.0
+      whiteSpace  @= WhiteSpace.Normal
+      position.center := container.size.center
+      position.middle := container.size.middle
+    }
+
+    val heading = new TextView with PositionSupport with MeasuredSupport with EventSupport {
+      content @= "Heading Test (click to grow)"
+      font.weight @= fnt
+      font.size   @= 36.0
+      color       @= Color.DarkBlue
+      cursor      @= Cursor.Pointer
+      position.`type` @= PositionType.Absolute
+      position.center := container.size.center
+      position.bottom := textView.position.top - 10.0
+      event.click.on {
+        font.size @= font.size() + 5.0
+      }
+    }
+
+    val textOutline = new Container with PositionSupport with SizeSupport with BorderSupport {
+      pointerEvents @= PointerEvents.None
+      border @= Border(2.0, BorderStyle.Dotted, Color.DarkRed)
+      position.`type` @= PositionType.Absolute
+      size.width  := textView.measured.width
+      size.height := textView.measured.height
+      position.center := container.size.center
+      position.middle := container.size.middle
+    }
+
+    val headingOutline = new Container with PositionSupport with SizeSupport with BorderSupport {
+      pointerEvents @= PointerEvents.None
+      border @= Border(2.0, BorderStyle.Dotted, Color.DarkGreen)
+      position.`type` @= PositionType.Absolute
+      position.left := heading.position.left
+      position.top  := heading.position.top
+      size.width    := heading.measured.width
+      size.height   := heading.measured.height
+    }
+
+    container.children ++= Seq(textView, heading, textOutline, headingOutline)
+  }
+}

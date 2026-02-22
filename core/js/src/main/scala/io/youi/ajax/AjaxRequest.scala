@@ -1,6 +1,7 @@
 package io.youi.ajax
 
-import cats.effect.{Deferred, IO}
+import rapid.Task
+import rapid.task.Completable
 import org.scalajs.dom
 import org.scalajs.dom.{FormData, ProgressEvent, XMLHttpRequest}
 import reactify._
@@ -19,18 +20,18 @@ class AjaxRequest(url: URL,
                   withCredentials: Boolean = true,
                   responseType: String = "") {
   val req = new dom.XMLHttpRequest()
-  val deferred: Deferred[IO, Try[XMLHttpRequest]] = Deferred.unsafe[IO, Try[XMLHttpRequest]]
+  val completable: Completable[Try[XMLHttpRequest]] = Task.completable[Try[XMLHttpRequest]]
   val loaded: Val[Double] = Var(0.0)
   val total: Val[Double] = Var(0.0)
   val percentage: Val[Int] = Var(0)
   val cancelled: Val[Boolean] = Var(false)
 
-  req.onreadystatechange = { _: dom.Event =>
+  req.onreadystatechange = { (_: dom.Event) =>
     if (req.readyState == 4) {
       if ((req.status >= 200 && req.status < 300) || req.status == 304) {
-        deferred.complete(Success(req))
+        completable.success(Success(req))
       } else {
-        deferred.complete(Failure(new RuntimeException(s"AjaxRequest failed: ${req.readyState}")))
+        completable.success(Failure(new RuntimeException(s"AjaxRequest failed: ${req.readyState}")))
       }
     }
   }
@@ -46,12 +47,12 @@ class AjaxRequest(url: URL,
   req.withCredentials = withCredentials
   headers.foreach(x => req.setRequestHeader(x._1, x._2))
 
-  def send(): IO[Try[XMLHttpRequest]] = {
+  def send(): Task[Try[XMLHttpRequest]] = {
     data match {
       case Some(formData) => req.send(formData.asInstanceOf[js.Any])
       case None => req.send()
     }
-    deferred.get
+    completable
   }
 
   def cancel(): Unit = if (percentage.get != 100) {

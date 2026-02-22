@@ -1,8 +1,8 @@
 package io
 
-import cats.effect.unsafe.implicits.global
-import cats.effect.{Deferred, IO}
-import io.youi.font.{FontAwesome, GoogleFont, GoogleFontWeight}
+import rapid.Task
+import rapid.task.Completable
+import io.youi.font.{GoogleFont, GoogleFontWeight, Phosphor}
 import io.youi.paint.Paint
 import io.youi.util.{CanvasPool, Time}
 import org.scalajs.dom.{CanvasRenderingContext2D, document, html, window}
@@ -14,6 +14,8 @@ import scala.language.implicitConversions
 import scala.scalajs.js
 
 package object youi {
+  export reactify.stateful2Value
+
   def devicePixelRatio: Double = window.devicePixelRatio
   def backingStoreRatio: Double = CanvasPool.withCanvas(1.0, 1.0) { canvas =>
     def opt(d: js.Dynamic): Option[Double] = d.asInstanceOf[js.UndefOr[Double]].toOption
@@ -46,14 +48,12 @@ package object youi {
   private def waitForComputed(e: html.Element,
                               key: String,
                               delay: FiniteDuration)
-                             (matcher: String => Boolean): IO[Unit] = {
+                             (matcher: String => Boolean): Task[Unit] = {
     val value = window.getComputedStyle(e).getPropertyValue(key)
     if (matcher(value)) {
-      // Finished
-      IO.unit
+      Task.unit
     } else {
-      // Delay and try again
-      IO.sleep(delay).flatMap(_ => waitForComputed(e, key, delay)(matcher))
+      Task.sleep(delay).flatMap(_ => waitForComputed(e, key, delay)(matcher))
     }
   }
 
@@ -63,54 +63,52 @@ package object youi {
     def context: CanvasRenderingContext2D = canvas.getContext("2d").asInstanceOf[CanvasRenderingContext2D]
   }
 
-  private lazy val fontAwesomeIO: IO[Unit] = {
+  private lazy val phosphorTask: Task[Unit] = {
     val e = dom.create[html.Element]("i")
-    e.classList.add("fas")
-    e.classList.add("fa-question")
+    e.classList.add("ph")
+    e.classList.add("ph-house")
     e.style.visibility = "hidden"
     document.body.appendChild(e)
-    dom.addScript(FontAwesome.url).flatMap { _ =>
-      waitForComputed(e, "font-family", 50.milliseconds) { value =>
-        val b = value.contains("Font Awesome")
-        if (b) document.body.removeChild(e)
-        b
-      }
+    dom.addCSS(Phosphor.url)
+    waitForComputed(e, "font-family", 50.milliseconds) { value =>
+      val b = value.contains("Phosphor")
+      if (b) document.body.removeChild(e)
+      b
     }
   }
-  implicit class ExtendedFontAwesome(font: FontAwesome) {
-    def load(): IO[FontAwesome] = fontAwesomeIO.map(_ => font)
+  implicit class ExtendedPhosphor(phosphor: Phosphor.type) {
+    def load(): Task[Unit] = phosphorTask
   }
 
-  private var googleFonts = Map.empty[GoogleFont, Deferred[IO, GoogleFont]]
+  private var googleFonts = Map.empty[GoogleFont, Completable[GoogleFont]]
 
   implicit class ExtendedGoogleFont(font: GoogleFont) {
-    def load(): IO[GoogleFont] = googleFonts.get(font) match {
-      case Some(d) =>
+    def load(): Task[GoogleFont] = googleFonts.get(font) match {
+      case Some(c) =>
         scribe.info("Existing!")
-        d.get
+        c
       case None =>
         scribe.info("Load font!")
-        Deferred[IO, GoogleFont].flatMap { d =>
-          val f: js.Function0[Unit] = () => {
-            scribe.info("Loaded!")
-            d.complete(font).unsafeRunAndForget()
-            ()
-          }
-          WebFont.load(new WebFontConfiguration {
-            google = new GoogleConfig {
-              families = js.Array(font.family)
-            }
-            active = f
-          })
-          // TODO: Figure out why this break things
-//          googleFonts += font -> d
-          d.get
+        val c: Completable[GoogleFont] = Task.completable[GoogleFont]
+        val f: js.Function0[Unit] = () => {
+          scribe.info("Loaded!")
+          c.success(font)
+          ()
         }
+        WebFont.load(new WebFontConfiguration {
+          google = new GoogleConfig {
+            families = js.Array(font.family)
+          }
+          active = f
+        })
+        // TODO: Figure out why this break things
+//        googleFonts += font -> c
+        c
     }
   }
 
   implicit class ExtendedGoogleFontWeight(weight: GoogleFontWeight) {
-    def load(): IO[GoogleFontWeight] = weight.font.load().map(_ => weight)
+    def load(): Task[GoogleFontWeight] = weight.font.load().map(_ => weight)
   }
 
   implicit class UINumericSize[T](t: T)(implicit n: Numeric[T]) {

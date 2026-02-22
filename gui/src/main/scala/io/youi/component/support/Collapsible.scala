@@ -1,13 +1,13 @@
 package io.youi.component.support
 
-import cats.effect.IO
+import rapid.Task
 import io.youi.{Chained, Initializable, Plane, dom}
 import io.youi.component.Component
 import io.youi.component.feature.{HeightFeature, WidthFeature}
 import io.youi.component.types.{Display, Overflow, SizeProperty, SizeType}
 import io.youi.easing.Easing
 import io.youi.task._
-import reactify.{Val, Var}
+import reactify._
 import scala.concurrent.duration._
 
 abstract class Collapsible extends Component(dom.create.div) with InternalContainerSupport[Component] with SizeSupport with OverflowSupport with Initializable {
@@ -60,21 +60,21 @@ abstract class Collapsible extends Component(dom.create.div) with InternalContai
     }
   }
 
-  private def expand(): IO[Unit] = {
+  private def expand(): Task[Unit] = {
     init()
     if (animate) {
       chained {
         sequential(
-          IO(prop @= 0.0),
-          IO(display @= Display.Block),
+          Task(prop @= 0.0),
+          Task(display @= Display.Block),
           prop.to(expanded).in(speed).easing(easing),
 //          prop := expanded
-          IO(prop.`type` @= SizeType.Auto)
+          Task(prop.`type` @= SizeType.Auto)
         ).startDeferred().map(_ => ())
       }
     } else {
       chained {
-        IO {
+        Task {
           prop.set(0.0, SizeType.Auto)
           display @= Display.Block
         }
@@ -82,20 +82,20 @@ abstract class Collapsible extends Component(dom.create.div) with InternalContai
     }
   }
 
-  private def collapse(): IO[Unit] = {
+  private def collapse(): Task[Unit] = {
     init()
     if (animate) {
       chained {
         sequential(
-          IO(prop.`type` @= SizeType.Pixel),
-          IO(prop @= expanded),
+          Task(prop.`type` @= SizeType.Pixel),
+          Task(prop @= expanded),
           prop.to(0.0).in(speed).easing(easing),
-          IO(display @= Display.None)
+          Task(display @= Display.None)
         ).startDeferred().map(_ => ())
       }
     } else {
       chained {
-        IO {
+        Task {
           prop.set(0.0, SizeType.Pixel)
           display @= Display.None
         }

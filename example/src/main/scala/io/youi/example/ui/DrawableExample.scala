@@ -1,11 +1,12 @@
 package io.youi.example.ui
 
-import cats.effect.IO
+import rapid.Task
 import io.youi.Color
 import io.youi.component.DrawableView
 import io.youi.component.support.PositionSupport
 import io.youi.drawable.{Group, TextDrawable, Transformation}
 import io.youi.example.screen.UIExampleScreen
+import io.youi._
 import io.youi.font.{CanvasFont, CanvasText, GoogleFont}
 import io.youi.image.Image
 import io.youi.paint.{Border, GradientPaint, Paint, Stroke}
@@ -15,7 +16,7 @@ class DrawableExample extends UIExampleScreen {
   override def title: String = "Drawable Example"
   override def path: URLPath = path"/examples/drawable.html"
 
-  override def createUI(): IO[Unit] = for {
+  override def createUI(): Task[Unit] = for {
     image <- Image("/images/cuteness.jpg")
     fnt <- GoogleFont.`Lobster`.`regular`.load()
   } yield {

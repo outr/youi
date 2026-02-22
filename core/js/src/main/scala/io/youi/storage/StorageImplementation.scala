@@ -1,10 +1,10 @@
 package io.youi.storage
 
-import cats.effect.IO
+import rapid.Task
 
 trait StorageImplementation {
-  def get(key: String): IO[Option[String]]
-  def set(key: String, value: String): IO[Unit]
-  def remove(key: String): IO[Unit]
-  def clear(): IO[Unit]
+  def get(key: String): Task[Option[String]]
+  def set(key: String, value: String): Task[Unit]
+  def remove(key: String): Task[Unit]
+  def clear(): Task[Unit]
 }

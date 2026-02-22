@@ -6,7 +6,7 @@ import reactify.Val
 trait HeightFeature extends Feature {
   def height: Val[Double]
 
-  addFeature("height")
+  addFeatureIfAbsent("height")
 }
 
 object HeightFeature {

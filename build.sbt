@@ -3,9 +3,13 @@ import org.scalajs.linker.interface.ESVersion
 name := "youi"
 ThisBuild / organization := "io.youi"
 ThisBuild / version := "1.0.0-SNAPSHOT"
-ThisBuild / scalaVersion := "2.13.18"
-ThisBuild / crossScalaVersions := List("2.13.18")
-ThisBuild / scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
+ThisBuild / scalaVersion := "3.8.1"
+ThisBuild / scalacOptions ++= Seq(
+  "-unchecked",
+  "-deprecation",
+  "-feature",
+  "-source:3.4-migration"
+)
 
 ThisBuild / publishTo := sonatypePublishToBundle.value
 ThisBuild / sonatypeProfileName := "io.youi"
@@ -24,7 +28,11 @@ ThisBuild / developers := List(
 
 ThisBuild / versionScheme := Some("semver-spec")
 
-val spiceVersion: String = "0.10.20"
+ThisBuild / outputStrategy := Some(StdoutOutput)
+
+val spiceVersion: String = "1.0.0"
+
+val rapidVersion: String = "2.7.0"
 
 val fabricVersion: String = "1.19.0"
 
@@ -46,13 +54,7 @@ val scalaJSDOMVersion: String = "2.8.1"
 
 val closureCompilerVersion: String = "v20260211"
 
-val catsVersion: String = "3.6.3"
-
-val fs2Version: String = "3.12.2"
-
 val scalaTestVersion: String = "3.2.19"
-
-val catsEffectTestVersion: String = "1.7.0"
 
 ThisBuild / evictionErrorLevel := Level.Info
 
@@ -76,10 +78,9 @@ lazy val core = crossProject(JSPlatform, JVMPlatform).in(file("core"))
       "com.outr" %%% "profig" % profigVersion,
       "com.outr" %%% "scribe" % scribeVersion,
       "com.outr" %%% "reactify" % reactifyVersion,
-      "org.typelevel" %%% "cats-effect" % catsVersion,
-      "co.fs2" %% "fs2-core" % fs2Version,
+      "com.outr" %%% "rapid-core" % rapidVersion,
       "org.scalatest" %%% "scalatest" % scalaTestVersion % Test,
-      "org.typelevel" %%% "cats-effect-testing-scalatest" % catsEffectTestVersion % Test
+      "com.outr" %%% "rapid-test" % rapidVersion % Test
     )
   )
   .jsSettings(
@@ -96,7 +97,7 @@ lazy val spatial = crossProject(JSPlatform, JVMPlatform).in(file("spatial"))
     name := "youi-spatial",
     libraryDependencies ++= Seq(
       "org.scalatest" %%% "scalatest" % scalaTestVersion % Test,
-      "org.typelevel" %%% "cats-effect-testing-scalatest" % catsEffectTestVersion % Test
+      "com.outr" %%% "rapid-test" % rapidVersion % Test
     )
   )
   .dependsOn(core)
@@ -112,7 +113,7 @@ lazy val dom = project.in(file("dom"))
       "com.outr" %%% "profig" % profigVersion,
       "com.outr" %% "spice-delta" % spiceVersion,
       "org.scalatest" %%% "scalatest" % scalaTestVersion % Test,
-      "org.typelevel" %%% "cats-effect-testing-scalatest" % catsEffectTestVersion % Test
+      "com.outr" %%% "rapid-test" % rapidVersion % Test
     ),
     test := {},     // TODO: figure out why this no longer works
     jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv()

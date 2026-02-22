@@ -1,7 +1,7 @@
 package io.youi.video
 
-import cats.effect.unsafe.implicits.global
-import cats.effect.{Deferred, IO}
+import rapid.Task
+import rapid.task.Completable
 import io.youi._
 import io.youi.drawable.{Context, Drawable}
 import io.youi.image.resize.ImageResizer
@@ -81,15 +81,15 @@ class Video(private[youi] val element: html.Video) extends Drawable {
   def isPaused: Boolean = element.paused
   def isEnded: Boolean = element.ended
 
-  def seek(position: Double): IO[Unit] = if (this.position() != position) {
-    val d = Deferred[IO, Unit]
+  def seek(position: Double): Task[Unit] = if (this.position() != position) {
+    val c: Completable[Unit] = Task.completable[Unit]
     this.position.once(_ => {
-      d.flatMap(_.complete(())).unsafeRunAndForget()
+      c.success(())
     }, d => math.abs(position - d) <= 1.0)
     this.position @= position
-    d.flatMap(_.get)
+    c
   } else {
-    IO.unit
+    Task.unit
   }
 
   def createImage(): Image = {
@@ -122,30 +122,30 @@ object Video {
 
   def isVideo(file: File): Boolean = file.`type`.startsWith("video/")
 
-  def apply(file: File, autoPlay: Boolean, loop: Boolean, muted: Boolean): IO[Video] = {
+  def apply(file: File, autoPlay: Boolean, loop: Boolean, muted: Boolean): Task[Video] = {
     val url = org.scalajs.dom.URL.createObjectURL(file)
     apply(url, autoPlay, loop, muted)
   }
 
-  def apply(url: URL, autoPlay: Boolean, loop: Boolean, muted: Boolean): IO[Video] = {
+  def apply(url: URL, autoPlay: Boolean, loop: Boolean, muted: Boolean): Task[Video] = {
     apply(url.toString, autoPlay, loop, muted)
   }
 
   def apply(url: String,
             autoPlay: Boolean,
             loop: Boolean,
-            muted: Boolean): IO[Video] = {
+            muted: Boolean): Task[Video] = {
     val element: html.Video = dom.create[html.Video]("video")
     element.autoplay = autoPlay
     element.loop = loop
     element.muted = muted
-    val d = Deferred[IO, Video]
+    val c: Completable[Video] = Task.completable[Video]
     element.addEventListener("loadedmetadata", (_: Event) => {
       val v = new Video(element)
       v.init(autoPlay, loop, muted)
-      d.flatMap(_.complete(v)).unsafeRunAndForget()
+      c.success(v)
     })
     element.src = url
-    d.flatMap(_.get)
+    c
   }
 }

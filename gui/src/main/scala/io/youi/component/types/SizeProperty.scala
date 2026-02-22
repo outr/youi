@@ -5,6 +5,7 @@ import reactify.Var
 import scala.util.matching.Regex
 
 class SizeProperty(get: => String, set: String => Unit, callbacks: (() => Unit)*) extends Var[Double](-1.0) {
+  private val setStyle = set
   val `type`: Var[SizeType] = Var(SizeType.Auto)
 
   refresh()
@@ -16,28 +17,29 @@ class SizeProperty(get: => String, set: String => Unit, callbacks: (() => Unit)*
       `type` @= SizeType.Pixel
       changed = true
     }
-    set()
+    syncToStyle()
     callbacks.foreach(_())
   }
-  `type`.on(set())
+  `type`.on(syncToStyle())
 
-  def set(value: Double, `type`: => SizeType): Unit = {
-    this.`type` := `type`
-    set(value)
+  def set(value: Double, sizeType: => SizeType): Unit = {
+    this.`type` := sizeType
+    this @= value
+    syncToStyle()
   }
 
-  private def set(): Unit = {
+  private def syncToStyle(): Unit = {
     val t = `type`() match {
       case SizeType.Auto => ""
-      case t => t.name
+      case st => st.name
     }
-    val value = if (`type`.includeNumeric) {
+    val value = if (`type`().includeNumeric) {
       val d = apply()
       s"$d$t"
     } else {
       t
     }
-    set(value)
+    setStyle(value)
   }
 
   def refresh(): Unit = {

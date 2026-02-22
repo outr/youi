@@ -1,6 +1,6 @@
 package io.youi.task
 
-import cats.effect.{Deferred, IO}
+import rapid.task.Completable
 import io.youi.ui
 
 trait Task {
@@ -10,12 +10,13 @@ trait Task {
 
   def andThen(that: Task): Task = new Sequential(List(this, that))
 
-  def start(taskSupport: TaskSupport = ui, deferred: Option[Deferred[IO, Double]] = None): TaskInstance =
+  def start(taskSupport: TaskSupport = ui, deferred: Option[Completable[Double]] = None): TaskInstance =
     taskSupport.start(this, deferred)
 
-  def startDeferred(taskSupport: TaskSupport = ui): IO[Double] = Deferred[IO, Double].flatMap { deferred =>
-    start(taskSupport, Some(deferred))
-    deferred.get
+  def startDeferred(taskSupport: TaskSupport = ui): rapid.Task[Double] = {
+    val c = rapid.Task.completable[Double]
+    start(taskSupport, Some(c))
+    c
   }
 }
 

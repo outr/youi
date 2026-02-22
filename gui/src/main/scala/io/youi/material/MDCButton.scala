@@ -8,7 +8,7 @@ import io.youi.dom._
 import io.youi.event.EventSupport
 import io.youi.material.impl.{MDCRipple, MDCRippleImplementation}
 import org.scalajs.dom.html
-import reactify.Var
+import reactify._
 
 class MDCButton extends Component(dom.create.button) with InternalContainerSupport[Component] {
   classes := List("mdc-button")

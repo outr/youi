@@ -1,6 +1,6 @@
 package io.youi.util
 
-import cats.effect.IO
+import rapid.Task
 import io.youi._
 import org.scalajs.dom.{CanvasRenderingContext2D, html}
 import org.scalajs.dom.html.Canvas
@@ -28,8 +28,8 @@ object CanvasPool extends ObjectPool[html.Canvas] {
     f(canvas)
   }
 
-  def withCanvasIO[R](width: Double, height: Double, ratio: Double = 1.0)
-                     (f: html.Canvas => IO[R]): IO[R] = io { canvas =>
+  def withCanvasTask[R](width: Double, height: Double, ratio: Double = 1.0)
+                       (f: html.Canvas => Task[R]): Task[R] = io { canvas =>
     update(canvas, width * ratio, height * ratio)
     f(canvas)
   }

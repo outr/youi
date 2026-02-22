@@ -1,6 +1,6 @@
 package io.youi.example.ui
 
-import cats.effect.IO
+import rapid.Task
 import io.youi.component.ImageView
 import io.youi.component.support.{MeasuredSupport, PositionSupport}
 import io.youi.event.EventSupport
@@ -12,16 +12,16 @@ class ImageChangeExample extends UIExampleScreen {
   override def title: String = "Image Change"
   override def path: URLPath = path"/examples/image-change.html"
 
-  lazy val imageView: ImageView with PositionSupport with MeasuredSupport with EventSupport = new ImageView with PositionSupport with MeasuredSupport with EventSupport
+  lazy val imageView: ImageView & PositionSupport & MeasuredSupport & EventSupport = new ImageView with PositionSupport with MeasuredSupport with EventSupport
 
-  override def createUI(): IO[Unit] = for {
+  override def createUI(): Task[Unit] = for {
     icon <- Image("/images/icon.png")
     cuteness <- Image("/images/cuteness.jpg")
     tiger <- Image("/images/tiger.svg")
   } yield {
     imageView.image @= tiger
-    imageView.position.center := container.size.center
-    imageView.position.middle := container.size.middle
+    imageView.position.center := container.size.center()
+    imageView.position.middle := container.size.middle()
 
     imageView.event.click.on {
       val img = imageView.image()

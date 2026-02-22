@@ -22,7 +22,7 @@ case class OpenTypeText(font: Font,
     bb.immutable
   }
 
-  lazy val path: Path = Path.merge(lines.flatten.map(cp => cp.path): _*)
+  lazy val path: Path = Path.merge(lines.flatten.map(cp => cp.path)*)
 
   override def draw(context: Context, x: Double, y: Double, fill: Paint, stroke: Stroke): Unit = {
     Fill.draw(context, fill, Some(path))

@@ -1,6 +1,6 @@
 package io.youi.font
 
-import cats.effect.IO
+import rapid.Task
 import spice.net.URL
 
 case class OpenTypeFont(otf: opentype.Font) extends Font {
@@ -34,13 +34,13 @@ case class OpenTypeFont(otf: opentype.Font) extends Font {
 object OpenTypeFont {
   private var pathMap = Map.empty[String, OpenTypeFont]
 
-  def fromPath(path: String, cached: Boolean = true): IO[Font] = {
+  def fromPath(path: String, cached: Boolean = true): Task[Font] = {
     val openTypeFuture = pathMap.get(path) match {
-      case Some(font) => IO.pure(font)
+      case Some(font) => Task.pure(font)
       case None =>
         opentype.OpenType.load(path).flatMap {
-          case Left(t) => IO.raiseError(t)
-          case Right(otf) => IO {
+          case Left(t) => Task(throw t)
+          case Right(otf) => Task {
             val font = new OpenTypeFont(otf)
             pathMap += path -> font
             font
@@ -54,5 +54,5 @@ object OpenTypeFont {
     }
   }
 
-  def fromURL(url: URL, cached: Boolean = true): IO[Font] = fromPath(url.toString)
+  def fromURL(url: URL, cached: Boolean = true): Task[Font] = fromPath(url.toString)
 }

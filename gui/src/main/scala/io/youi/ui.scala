@@ -19,6 +19,9 @@ object ui extends Container(document.body) with EventSupport with TaskSupport wi
 
   val size: SizeFeature = new SizeFeature(this)(setWidth = _ => (), setHeight = _ => ())
 
+  document.documentElement.asInstanceOf[html.Element].style.overflow = "hidden"
+  element.style.overflow = "hidden"
+
   measure.on {
     val measured = windowMeasurer()(mutableSize)
     size.width @= measured.width

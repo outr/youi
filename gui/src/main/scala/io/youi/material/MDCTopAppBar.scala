@@ -53,7 +53,7 @@ class MDCTopAppBar extends Component(dom.create[html.Element]("header")) {
   elements.row.appendChild(elements.right)
   element.appendChild(elements.row)
 
-  val menu: Component with EventSupport = new Component(elements.button) with EventSupport
+  val menu: Component & EventSupport = new Component(elements.button) with EventSupport
   val main: Container = new Container(elements.section)
   val controls: Container = new Container(elements.right)
 

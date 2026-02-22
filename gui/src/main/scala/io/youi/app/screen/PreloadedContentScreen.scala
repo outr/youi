@@ -1,6 +1,6 @@
 package io.youi.app.screen
 
-import cats.effect.IO
+import rapid.Task
 import org.scalajs.dom.html
 import org.scalajs.dom.html.Element
 
@@ -10,7 +10,7 @@ import org.scalajs.dom.html.Element
 trait PreloadedContentScreen extends ContentScreen {
   protected def preloadScreen: html.Element
 
-  override protected def generateScreen(): IO[Element] = {
-    IO.pure(preloadScreen)
+  override protected def generateScreen(): Task[Element] = {
+    Task.pure(preloadScreen)
   }
 }

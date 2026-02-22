@@ -1,6 +1,7 @@
 package io.youi.component
 
 import io.youi._
+import reactify._
 import io.youi.component.feature.{FeatureParent, HeightFeature, WidthFeature}
 import io.youi.component.types.Prop
 import io.youi.drawable.Context

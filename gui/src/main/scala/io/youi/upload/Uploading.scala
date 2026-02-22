@@ -1,7 +1,7 @@
 package io.youi.upload
 
-import cats.effect.IO
+import rapid.Task
 import org.scalajs.dom.File
 import reactify.Val
 
-case class Uploading(file: File, progress: Val[Long], percentage: Val[Double], io: IO[String])
+case class Uploading(file: File, progress: Val[Long], percentage: Val[Double], task: Task[String])

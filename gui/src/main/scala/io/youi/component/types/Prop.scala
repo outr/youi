@@ -32,7 +32,7 @@ object Prop {
                    callbacks: (() => Unit)*): Prop[T] = new Prop[T](
     stringify.fromString(get).getOrElse(default),
     t => set(stringify.toString(t).getOrElse("")),
-    callbacks: _*
+    callbacks*
   )
 
   def changing[T, Return](prop: Prop[T])(f: => Return): Return = {

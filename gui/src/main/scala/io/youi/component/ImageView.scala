@@ -1,6 +1,5 @@
 package io.youi.component
 
-import cats.effect.unsafe.implicits.global
 import io.youi.component.feature.{FeatureParent, HeightFeature, WidthFeature}
 import io.youi.component.types.Prop
 import io.youi.dom
@@ -15,12 +14,20 @@ class ImageView(img: html.Image = dom.create.image) extends Component(img) with 
   lazy val image: Var[Image] = {
     val v = Var[Image](Image.empty)
     v.attach {
-      case i: HTMLImage => src @= i.source
-      case EmptyImage => src @= ""
+      case i: HTMLImage =>
+        src @= i.source
+        width @= i.width
+        height @= i.height
+      case EmptyImage =>
+        src @= ""
+        width @= 0.0
+        height @= 0.0
       //      case i: SVGImage => element.src = s"data:image/svg+xml;charset=utf-8,${i.toXML}"
       case i: CanvasImage => i.toDataURL.map { url =>
         src @= url
-      }.unsafeRunAndForget()
+        width @= i.width
+        height @= i.height
+      }.startUnit()
       case _ => throw new RuntimeException(s"Unsupported Image type: $image")
     }
     v

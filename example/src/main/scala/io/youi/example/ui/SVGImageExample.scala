@@ -3,7 +3,6 @@ package io.youi.example.ui
 import rapid.Task
 import io.youi._
 import io.youi.component.ImageView
-import io.youi.component.support.{PositionSupport, SizeSupport}
 import io.youi.event.EventSupport
 import io.youi.example.screen.UIExampleScreen
 import io.youi.image.{Image, SVGImage}
@@ -25,13 +24,13 @@ class SVGImageExample extends UIExampleScreen {
     tiger  <- Image("/images/tiger.svg")
     circle <- SVGImage(svgString)
   } yield {
-    container.children += new ImageView with PositionSupport with SizeSupport {
+    container.children += new ImageView {
       image @= tiger
       position.left @= 10.0
       position.top @= 10.0
     }
 
-    val circleView = new ImageView with PositionSupport with EventSupport {
+    val circleView = new ImageView with EventSupport {
       image @= circle
       position.center := container.size.center
       position.middle := container.size.middle

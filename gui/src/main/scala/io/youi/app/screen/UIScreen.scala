@@ -2,15 +2,16 @@ package io.youi.app.screen
 
 import rapid.Task
 import io.youi.component.Container
-import io.youi.component.support.{MarginSupport, SizeSupport}
-import io.youi.component.types.Display
+import io.youi.component.support.MarginSupport
+import io.youi.component.types.{Display, PositionType}
 import io.youi.ui
 import reactify._
 
 trait UIScreen extends Screen with PathActivation {
-  protected lazy val container: Container & SizeSupport & MarginSupport = {
-    val c = new Container with SizeSupport with MarginSupport
+  protected lazy val container: Container & MarginSupport = {
+    val c = new Container with MarginSupport
     c.id @= title
+    c.position.`type` @= PositionType.Relative
     c
   }
 

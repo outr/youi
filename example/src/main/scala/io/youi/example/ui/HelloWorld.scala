@@ -3,7 +3,7 @@ package io.youi.example.ui
 import rapid.Task
 import io.youi._
 import io.youi.component._
-import io.youi.component.support.{MeasuredSupport, PositionSupport, SingletonThemedComponent}
+import io.youi.component.support.SingletonThemedComponent
 import io.youi.component.types.PositionType
 import io.youi.example.screen.UIExampleScreen
 import io.youi.font.GoogleFont
@@ -17,18 +17,16 @@ class HelloWorld extends UIExampleScreen {
   override def createUI(): Task[Unit] = for {
     fnt <- GoogleFont.`Lobster`.load()
   } yield {
-    HelloText.font.family @= fnt.family
-    container.children += HelloText
-  }
+    container.children += new TextView {
+      font.family @= fnt.family
+      font.size @= 64.px
 
-  object HelloText extends TextView with SingletonThemedComponent with MeasuredSupport with PositionSupport {
-    content @= "Hello, World!"
+      color @= Color.DarkBlue
+      
+      position.center := container.size.center
+      position.middle := container.size.middle
 
-    position.`type` @= PositionType.Absolute
-    position.center := ui.size.center
-    position.middle := ui.size.middle
-
-    theme.font.size @= 64.px
-    theme.color @= Color.DarkBlue
+      content @= "Hello, World!"
+    }
   }
 }

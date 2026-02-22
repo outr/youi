@@ -3,7 +3,6 @@ package io.youi.example.ui
 import rapid._
 import rapid.Task
 import io.youi.component.DrawableView
-import io.youi.component.support.PositionSupport
 import io.youi.example.screen.UIExampleScreen
 import io.youi.image.{AnimatedImage, Image}
 import org.scalajs.dom
@@ -22,7 +21,7 @@ class AnimatedImageExample extends UIExampleScreen {
     .tasks
     .map { frames =>
       val animated = new AnimatedImage(frames, 0.1)
-      val dv = new DrawableView with PositionSupport {
+      val dv = new DrawableView {
         width @= animated.width
         height @= animated.height
         position.center := container.size.center

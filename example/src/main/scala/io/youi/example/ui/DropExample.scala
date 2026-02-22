@@ -3,7 +3,7 @@ package io.youi.example.ui
 import rapid.Task
 import io.youi._
 import io.youi.component._
-import io.youi.component.support.{MeasuredSupport, PaddingSupport, PositionSupport}
+import io.youi.component.support.PaddingSupport
 import io.youi.component.types.{DropType, PositionType}
 import io.youi.event.EventSupport
 import io.youi.example.screen.UIExampleScreen
@@ -15,7 +15,7 @@ class DropExample extends UIExampleScreen {
   override def title: String = "Drop Example"
   override def path: URLPath = path"/examples/drop.html"
 
-  private val text = new TextView() with PositionSupport with MeasuredSupport with EventSupport {
+  private val text = new TextView() with EventSupport {
     content @= "Show Dropdown"
     font.size @= 64.px
     color @= Color.DarkBlue

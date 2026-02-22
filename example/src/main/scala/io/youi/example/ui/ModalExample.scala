@@ -2,7 +2,7 @@ package io.youi.example.ui
 
 import rapid.Task
 import io.youi._
-import io.youi.component.support.{BorderSupport, MeasuredSupport, PaddingSupport, PositionSupport}
+import io.youi.component.support.{BorderSupport, PaddingSupport}
 import io.youi.component.types.{BoxShadow, Cursor, PositionType}
 import io.youi.component.{Popup, TextView}
 import io.youi.event.EventSupport
@@ -24,7 +24,7 @@ class ModalExample extends UIExampleScreen {
     popup.boxShadow @= BoxShadow(0.0, 4.0, 32.0, 0.0, Color.Black.withAlpha(0.25))
     popup.init()
 
-    val popupText = new TextView with PositionSupport with MeasuredSupport {
+    val popupText = new TextView {
       content @= "This is a modal!"
       font.weight @= fnt
       font.size   @= 48.0
@@ -35,7 +35,7 @@ class ModalExample extends UIExampleScreen {
     }
     popup.children += popupText
 
-    val button = new TextView with PositionSupport with MeasuredSupport with EventSupport with BorderSupport with PaddingSupport {
+    val button = new TextView with EventSupport with BorderSupport with PaddingSupport {
       content @= "Open Modal"
       font.weight @= fnt
       font.size   @= 48.0

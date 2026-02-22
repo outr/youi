@@ -2,7 +2,6 @@ package io.youi.example.ui
 
 import rapid.Task
 import io.youi.component.ImageView
-import io.youi.component.support.{MeasuredSupport, PositionSupport}
 import io.youi.event.EventSupport
 import io.youi.example.screen.UIExampleScreen
 import io.youi.image.Image
@@ -12,7 +11,7 @@ class ImageChangeExample extends UIExampleScreen {
   override def title: String = "Image Change"
   override def path: URLPath = path"/examples/image-change.html"
 
-  lazy val imageView: ImageView & PositionSupport & MeasuredSupport & EventSupport = new ImageView with PositionSupport with MeasuredSupport with EventSupport
+  lazy val imageView: ImageView & EventSupport = new ImageView with EventSupport
 
   override def createUI(): Task[Unit] = for {
     icon <- Image("/images/icon.png")

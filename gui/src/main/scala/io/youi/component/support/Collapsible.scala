@@ -3,14 +3,13 @@ package io.youi.component.support
 import rapid.Task
 import io.youi.{Chained, Initializable, Plane, dom}
 import io.youi.component.Component
-import io.youi.component.feature.{HeightFeature, WidthFeature}
 import io.youi.component.types.{Display, Overflow, SizeProperty, SizeType}
 import io.youi.easing.Easing
 import io.youi.task._
 import reactify._
 import scala.concurrent.duration._
 
-abstract class Collapsible extends Component(dom.create.div) with InternalContainerSupport[Component] with SizeSupport with OverflowSupport with Initializable {
+abstract class Collapsible extends Component(dom.create.div) with InternalContainerSupport[Component] with OverflowSupport with Initializable {
   protected def container: Component
 
   protected lazy val chained = Chained(1)
@@ -23,8 +22,8 @@ abstract class Collapsible extends Component(dom.create.div) with InternalContai
   val collapsed: Var[Boolean] = Var(startCollapsed)
 
   protected def direction: Plane
-  protected lazy val width: Val[Double] = WidthFeature(container).getOrElse(throw new RuntimeException(s"No width support for $container"))
-  protected lazy val height: Val[Double] = HeightFeature(container).getOrElse(throw new RuntimeException(s"No height support for $container"))
+  protected lazy val width: Val[Double] = container.measured.width
+  protected lazy val height: Val[Double] = container.measured.height
   protected def expanded: Double = direction match {
     case Plane.Horizontal => width
     case Plane.Vertical => height

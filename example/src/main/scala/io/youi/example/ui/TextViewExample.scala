@@ -2,7 +2,7 @@ package io.youi.example.ui
 
 import rapid.Task
 import io.youi.Color
-import io.youi.component.support.{MeasuredSupport, PaddingSupport, PositionSupport, SizeSupport}
+import io.youi.component.support.PaddingSupport
 import io.youi.component.types.PositionType
 import io.youi.component.{Container, TextView}
 import io.youi.example.screen.UIExampleScreen
@@ -22,7 +22,7 @@ class TextViewExample extends UIExampleScreen {
       roboto <- GoogleFont.`Roboto`.`900`.load()
       berkshire <- GoogleFont.`Berkshire Swash`.`regular`.load()
     } yield {
-      val openSansView = new TextView with PositionSupport with MeasuredSupport {
+      val openSansView = new TextView {
         content @= "Open Sans"
         font.weight @= openSans
         font.size @= 96.0
@@ -31,7 +31,7 @@ class TextViewExample extends UIExampleScreen {
         position.x @= 100.0
         position.y @= 100.0
       }
-      container.children += new Container with PositionSupport with SizeSupport {
+      container.children += new Container {
         position.`type` @= PositionType.Absolute
         position.x @= 100.0
         position.y @= 100.0
@@ -39,7 +39,7 @@ class TextViewExample extends UIExampleScreen {
         size.height := openSansView.measured.height
         background @= Color.Yellow
       }
-      val pacificoView = new TextView with PositionSupport with PaddingSupport with MeasuredSupport {
+      val pacificoView = new TextView with PaddingSupport {
         content @= "Pacifico Regular"
         font.weight @= pacifico
         font.size @= 128.0
@@ -51,7 +51,7 @@ class TextViewExample extends UIExampleScreen {
 //        border := Border(Stroke(Color.Purple, None, 2.0), 10.0)
         padding @= 10.0
       }
-      val robotoView = new TextView with PositionSupport with MeasuredSupport {
+      val robotoView = new TextView {
         content @= "Roboto 900"
         font.weight @= roboto
         font.size @= 96.0
@@ -61,7 +61,7 @@ class TextViewExample extends UIExampleScreen {
         position.center := container.size.center
         position.bottom := pacificoView.position.top - 20.0
       }
-      val berkshireView = new TextView with PositionSupport with MeasuredSupport {
+      val berkshireView = new TextView {
         content @= "Berkshire Swash Regular"
 //        cache := false
 //        font.file := berkshire

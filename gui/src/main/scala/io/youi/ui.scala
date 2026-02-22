@@ -2,7 +2,7 @@ package io.youi
 
 import io.youi.component.Container
 import io.youi.component.feature.SizeFeature
-import io.youi.component.support.{MarginSupport, SizeSupport}
+import io.youi.component.support.MarginSupport
 import io.youi.component.types.Prop
 import io.youi.event.{EventSupport, Swipe}
 import io.youi.spatial.Size
@@ -17,15 +17,19 @@ object ui extends Container(document.body) with EventSupport with TaskSupport wi
 
   private val mutableSize = Size.mutable()
 
-  val size: SizeFeature = new SizeFeature(this)(setWidth = _ => (), setHeight = _ => ())
+  override val size: SizeFeature = new SizeFeature(this)(setWidth = _ => (), setHeight = _ => ())
 
   document.documentElement.asInstanceOf[html.Element].style.overflow = "hidden"
   element.style.overflow = "hidden"
 
   measure.on {
-    val measured = windowMeasurer()(mutableSize)
-    size.width @= measured.width
-    size.height @= measured.height
+    try {
+      val measured = windowMeasurer()(mutableSize)
+      size.width @= measured.width
+      size.height @= measured.height
+    } catch {
+      case t: Throwable => ErrorSupport.error @= t
+    }
   }
 
   measure.trigger()

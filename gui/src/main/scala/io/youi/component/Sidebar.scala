@@ -2,15 +2,15 @@ package io.youi.component
 
 import rapid.Task
 import io.youi._
-import io.youi.component.support.{MarginSupport, OverflowSupport, PositionSupport, SizeSupport}
+import io.youi.component.support.{MarginSupport, OverflowSupport}
 import io.youi.component.types.{Display, Overflow, PositionType, UserSelect}
 import io.youi.easing.Easing
 import io.youi.task._
 import reactify._
 
-class Sidebar(container: Option[Component & SizeSupport & MarginSupport],
+class Sidebar(container: Option[Component & MarginSupport],
               showGlassPane: Boolean = isMobileDevice,
-              val width: Double = 260.0) extends Container() with PositionSupport with SizeSupport with OverflowSupport {
+              val width: Double = 260.0) extends Container() with OverflowSupport {
   private val chained = Chained(1)
 
   private val glassPane: Option[GlassPane] = if (showGlassPane) {
@@ -31,7 +31,7 @@ class Sidebar(container: Option[Component & SizeSupport & MarginSupport],
   val swiping: Val[Boolean] = Var(false)
   val swipeAcceleration: Var[Boolean] = Var(false)
 
-  val contents: Container & SizeSupport = new Container with SizeSupport {
+  val contents: Container = new Container {
     size.width @= width
     size.height := Sidebar.this.size.height
   }

@@ -1,7 +1,6 @@
 package io.youi.component
 
 import rapid.Task
-import io.youi.component.support.{PositionSupport, SizeSupport}
 import io.youi.component.types.{Display, PositionType}
 import io.youi.easing.Easing
 import io.youi.event.EventSupport
@@ -11,7 +10,7 @@ import reactify._
 
 import scala.concurrent.duration._
 
-class GlassPane extends Component(dom.create.div) with SizeSupport with PositionSupport with EventSupport {
+class GlassPane extends Component(dom.create.div) with EventSupport {
   val backgroundAlpha: Var[Double] = Var(0.4)
 
   def isActive: Boolean = display() != Display.None

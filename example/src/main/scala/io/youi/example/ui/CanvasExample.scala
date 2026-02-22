@@ -1,22 +1,34 @@
 package io.youi.example.ui
 
 import rapid.Task
-import io.youi._
+import io.youi.*
 import io.youi.Color
-import io.youi.component.CanvasView
-import io.youi.component.support.PositionSupport
+import io.youi.component.support.SingletonThemedComponent
+import io.youi.component.{CanvasView, TextView}
+import io.youi.component.types.PositionType
 import io.youi.drawable.Context
+import io.youi.event.EventSupport
 import io.youi.example.screen.UIExampleScreen
-import spice.net._
+import io.youi.ui.margin
+import org.scalajs.dom.window
+import spice.net.*
 
 class CanvasExample extends UIExampleScreen {
   override def title: String = "Canvas Example"
   override def path: URLPath = path"/examples/canvas.html"
 
   override def createUI(): Task[Unit] = Task {
-    val canvas = new CanvasView with PositionSupport {
-      position.center := container.size.center()
-      position.middle := container.size.middle()
+    val canvas = new CanvasView with EventSupport {
+      position.`type` @= PositionType.Absolute
+      position.center := container.size.center
+      position.middle := container.size.middle
+
+      event.click.on {
+        val h = window.innerHeight
+        val mt = margin.top
+        val mb = margin.bottom
+        scribe.info(s"UI: ${ui.size.width()}x${ui.size.height()}, Container: ${container.size.width()}x${container.size.height()}, Component: ${width()}x${height()}, Position: ${position.x}x${position.y}, Height: $h, $mt, $mb")
+      }
 
       width @= 500.0
       height @= 500.0

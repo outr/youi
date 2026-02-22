@@ -2,7 +2,6 @@ package io.youi.component
 
 import rapid.Task
 import io.youi._
-import io.youi.component.support.{PositionSupport, SizeSupport}
 import io.youi.component.types.PositionType
 import io.youi.image.Image
 
@@ -20,7 +19,7 @@ class Scale9(val sourceImage: Image,
              val x1: Double,
              val x2: Double,
              val y1: Double,
-             val y2: Double) extends Container with SizeSupport with PositionSupport {
+             val y2: Double) extends Container {
 
   private val imgW: Double = sourceImage.width
   private val imgH: Double = sourceImage.height
@@ -29,7 +28,7 @@ class Scale9(val sourceImage: Image,
   private val topH: Double = y1
   private val bottomH: Double = imgH - y2
 
-  private def makeCell(): ImageView & PositionSupport = new ImageView with PositionSupport {
+  private def makeCell(): ImageView = new ImageView {
     position.`type` @= PositionType.Absolute
   }
 

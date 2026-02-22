@@ -3,7 +3,7 @@ package io.youi.example.ui
 import rapid.Task
 import io.youi.component.Component
 import io.youi.component.Container
-import io.youi.component.support.{ContentSupport, MarginSupport, OverflowSupport, SizeSupport}
+import io.youi.component.support.{ContentSupport, MarginSupport, OverflowSupport}
 import io.youi.component.types.{Clear, Overflow}
 import io.youi.event.EventSupport
 import io.youi.example.ExampleApp
@@ -15,8 +15,8 @@ class UIExamples extends UIExampleScreen {
   override def title: String = "UI Examples"
   override def path: URLPath = path"/ui-examples.html"
 
-  override protected lazy val container: Container & SizeSupport & MarginSupport & OverflowSupport = {
-    val c = new Container with SizeSupport with MarginSupport with OverflowSupport
+  override protected lazy val container: Container & MarginSupport & OverflowSupport = {
+    val c = new Container with MarginSupport with OverflowSupport
     c.id @= title
     c
   }
@@ -34,7 +34,7 @@ class UIExamples extends UIExampleScreen {
     }
   }
 
-  class ExampleButton(screen: UIExampleScreen) extends Component(dom.create.button) with SizeSupport with MarginSupport with EventSupport with ContentSupport {
+  class ExampleButton(screen: UIExampleScreen) extends Component(dom.create.button) with MarginSupport with EventSupport with ContentSupport {
     content @= screen.title
     size.width @= 250.0
     margin.top @= 10.0

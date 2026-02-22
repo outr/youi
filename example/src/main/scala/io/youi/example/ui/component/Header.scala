@@ -13,12 +13,12 @@ import io.youi.paint.Paint
 import reactify._
 import spice.net._
 
-class Header extends Container with SizeSupport { self =>
+class Header extends Container { self =>
   size.width := ui.size.width
   size.height @= 75.0
   background := Paint.vertical(75.0).distributeColors(Color.White, Color.LightGray, Color.DarkGray)
 
-  private val logo: ImageView = new ImageView with SizeSupport with MarginSupport with EventSupport {
+  private val logo: ImageView = new ImageView with MarginSupport with EventSupport {
     src @= "/images/youi.png"
     size.height @= 65.0
     margin.left @= 10.0
@@ -29,7 +29,7 @@ class Header extends Container with SizeSupport { self =>
     }
   }
 
-  private val heading = new Component(dom.create.span) with FontSupport with PositionSupport with MeasuredSupport with ContentSupport {
+  private val heading = new Component(dom.create.span) with FontSupport with ContentSupport {
     font.size @= 20.pt
     color @= Color.Blue //application.colors.blue.dark
     ScreenManager().active.attachAndFire { screen =>
@@ -41,7 +41,7 @@ class Header extends Container with SizeSupport { self =>
     position.top @= 15.0
   }
 
-  private val link = new Component(dom.create.span) with FontSupport with PositionSupport with MeasuredSupport with EventSupport with ContentSupport {
+  private val link = new Component(dom.create.span) with FontSupport with EventSupport with ContentSupport {
     font.size @= 14.pt
     color @= Color.Blue //application.colors.blue.dark
     content @= "View Source"

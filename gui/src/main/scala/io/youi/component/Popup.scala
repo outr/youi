@@ -1,7 +1,6 @@
 package io.youi.component
 
 import rapid.Task
-import io.youi.component.support.{PositionSupport, SizeSupport}
 import io.youi.component.types.{Display, PositionType, UserSelect}
 import io.youi.easing.Easing
 import io.youi.task._
@@ -10,7 +9,7 @@ import reactify._
 
 import scala.concurrent.duration._
 
-class Popup(showGlassPane: Boolean = true) extends Container with SizeSupport with PositionSupport with Initializable {
+class Popup(showGlassPane: Boolean = true) extends Container with Initializable {
   private val chained = Chained(1)
 
   def preferredWidth: Double = 600.0

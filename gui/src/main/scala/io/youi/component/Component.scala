@@ -1,6 +1,6 @@
 package io.youi.component
 
-import io.youi.component.feature.{FeatureParent, HeightFeature, WidthFeature}
+import io.youi.component.feature.{FeatureParent, HeightFeature, MeasuredFeature, PositionFeature, SizeFeature, WidthFeature}
 import io.youi.component.types.Prop
 import io.youi.path.Rectangle
 import org.scalajs.dom.{CSSStyleDeclaration, html}
@@ -28,6 +28,31 @@ class Component(val element: html.Element) extends FeatureParent {
 
   lazy val measure: Trigger = Trigger()
 
+  val size: SizeFeature = new SizeFeature(this)()
+  lazy val position: PositionFeature = new PositionFeature(this)
+  lazy val measured: MeasuredFeature = new MeasuredFeature(this)
+
+  private[component] lazy val effectiveWidth: Val[Double] = Val {
+    val sw = size.width()
+    if (sw >= 0.0) sw
+    else this match {
+      case wf: WidthFeature =>
+        val w = wf.width()
+        if (w >= 0.0) w else measured.width()
+      case _ => measured.width()
+    }
+  }
+  private[component] lazy val effectiveHeight: Val[Double] = Val {
+    val sh = size.height()
+    if (sh >= 0.0) sh
+    else this match {
+      case hf: HeightFeature =>
+        val h = hf.height()
+        if (h >= 0.0) h else measured.height()
+      case _ => measured.height()
+    }
+  }
+
   /**
     * Returns the absolute bounding rectangle for this element
     */
@@ -35,9 +60,4 @@ class Component(val element: html.Element) extends FeatureParent {
     val r = element.getBoundingClientRect()
     Rectangle(x = r.left, y = r.top, width = r.width, height = r.height)
   }
-}
-
-object Component {
-  def width(component: Component): Option[Val[Double]] = WidthFeature(component)
-  def height(component: Component): Option[Val[Double]] = HeightFeature(component)
 }

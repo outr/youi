@@ -2,7 +2,7 @@ package io.youi.example.ui
 
 import rapid.Task
 import io.youi._
-import io.youi.component.support.{OverflowSupport, ScrollSupport, SizeSupport}
+import io.youi.component.support.{OverflowSupport, ScrollSupport}
 import io.youi.component.types.{Display, Overflow}
 import io.youi.component.{Container, TextView}
 import io.youi.easing.Easing
@@ -23,7 +23,7 @@ class ScrollingExample extends UIExampleScreen {
   override def createUI(): Task[Unit] = {
     MaterialComponents.waitForLoaded().flatMap { _ =>
       GoogleFont.`Open Sans`.`regular`.load().map { fnt =>
-        val scrollable = new Container with SizeSupport with ScrollSupport with OverflowSupport {
+        val scrollable = new Container with ScrollSupport with OverflowSupport {
           size.width := container.size.width
           size.height := container.size.height
           background := Paint.vertical(container.size.height).distributeColors(Color.White, Color.Black)
@@ -50,7 +50,7 @@ class ScrollingExample extends UIExampleScreen {
     }
   }
 
-  class Box(val message: String, fnt: GoogleFontWeight, color: Color, w: Double, h: Double) extends Container with SizeSupport with EventSupport {
+  class Box(val message: String, fnt: GoogleFontWeight, color: Color, w: Double, h: Double) extends Container with EventSupport {
     val text: Var[String] = Var(message)
 
     background := color

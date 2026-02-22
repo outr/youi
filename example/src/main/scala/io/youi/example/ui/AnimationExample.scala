@@ -2,7 +2,6 @@ package io.youi.example.ui
 
 import rapid.Task
 import io.youi._
-import io.youi.component.support.{MeasuredSupport, PositionSupport}
 import io.youi.component.types.{PositionType, WhiteSpace}
 import io.youi.component.{ImageView, TextView}
 import io.youi.easing.Easing
@@ -27,7 +26,7 @@ class AnimationExample extends UIExampleScreen {
         var shift = header.size.height()
         Easing.map.toList.sortBy(_._1).foreach {
           case (name, easingFunction) => {
-            val label = new TextView with PositionSupport with MeasuredSupport {
+            val label = new TextView {
               content @= s"$name Example"
               font.size @= 24.0
               font.weight @= fnt
@@ -53,7 +52,7 @@ class AnimationExample extends UIExampleScreen {
           }
         }
 
-        val imageView = new ImageView with PositionSupport with MeasuredSupport {
+        val imageView = new ImageView {
           image @= img
           position.`type` @= PositionType.Absolute
           position.left @= 0.0

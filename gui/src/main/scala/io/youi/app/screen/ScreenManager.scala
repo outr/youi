@@ -23,19 +23,38 @@ trait ScreenManager extends TaskSupport {
 
   protected def waitForWindowLoad: Boolean = true
 
+  // Visual error display — show a red banner at the top of the page
+  ErrorSupport.error.attach { t =>
+    Option(dom.document.body).foreach { body =>
+      val errorDiv = dom.document.createElement("div")
+      errorDiv.setAttribute("style",
+        "position:fixed;top:0;left:0;right:0;background:#cc0000;color:white;padding:12px 16px;z-index:999999;" +
+          "font-family:monospace;font-size:13px;white-space:pre-wrap;max-height:50vh;overflow:auto;cursor:pointer;")
+      errorDiv.textContent = s"${t.getClass.getName}: ${t.getMessage}"
+      errorDiv.addEventListener("click", (_: dom.Event) => errorDiv.remove())
+      body.appendChild(errorDiv)
+    }
+  }
+
   scribe.info("Initializing application...")
   init().map { _ =>
     if (waitForWindowLoad && dom.document.readyState != DocumentReadyState.complete) {
       dom.window.addEventListener("load", (_: dom.Event) => {
         load().map { _ =>
           loaded.asInstanceOf[Var[Boolean]] @= true
+        }.handleError { t =>
+          Task(ErrorSupport.error @= t)
         }.startUnit()
       })
     } else {
       load().map { _ =>
         loaded.asInstanceOf[Var[Boolean]] @= true
+      }.handleError { t =>
+        Task(ErrorSupport.error @= t)
       }.startUnit()
     }
+  }.handleError { t =>
+    Task(ErrorSupport.error @= t)
   }.startUnit()
 
   active.changes {
@@ -78,6 +97,8 @@ trait ScreenManager extends TaskSupport {
     } yield {
       ()
     }
+  }.handleError { t =>
+    Task(ErrorSupport.error @= t)
   }.startUnit()
 
   protected def beforeScreenChange(oldScreen: Screen, newScreen: Screen): Task[Unit] = {

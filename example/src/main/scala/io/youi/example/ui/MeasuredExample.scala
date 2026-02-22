@@ -2,7 +2,7 @@ package io.youi.example.ui
 
 import rapid.Task
 import io.youi._
-import io.youi.component.support.{BorderSupport, MeasuredSupport, PositionSupport, SizeSupport}
+import io.youi.component.support.BorderSupport
 import io.youi.component.types.{Border, BorderStyle, Cursor, PointerEvents, PositionType, WhiteSpace}
 import io.youi.component.{Container, TextView}
 import io.youi.event.EventSupport
@@ -15,7 +15,7 @@ class MeasuredExample extends UIExampleScreen {
   override def path: URLPath = path"/examples/measured.html"
 
   override def createUI(): Task[Unit] = GoogleFont.`Lobster`.`regular`.load().map { fnt =>
-    val textView = new TextView with PositionSupport with SizeSupport with MeasuredSupport {
+    val textView = new TextView {
       content @= "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
       font.weight @= fnt
       font.size   @= 20.0
@@ -27,7 +27,7 @@ class MeasuredExample extends UIExampleScreen {
       position.middle := container.size.middle
     }
 
-    val heading = new TextView with PositionSupport with MeasuredSupport with EventSupport {
+    val heading = new TextView with EventSupport {
       content @= "Heading Test (click to grow)"
       font.weight @= fnt
       font.size   @= 36.0
@@ -41,7 +41,7 @@ class MeasuredExample extends UIExampleScreen {
       }
     }
 
-    val textOutline = new Container with PositionSupport with SizeSupport with BorderSupport {
+    val textOutline = new Container with BorderSupport {
       pointerEvents @= PointerEvents.None
       border @= Border(2.0, BorderStyle.Dotted, Color.DarkRed)
       position.`type` @= PositionType.Absolute
@@ -51,7 +51,7 @@ class MeasuredExample extends UIExampleScreen {
       position.middle := container.size.middle
     }
 
-    val headingOutline = new Container with PositionSupport with SizeSupport with BorderSupport {
+    val headingOutline = new Container with BorderSupport {
       pointerEvents @= PointerEvents.None
       border @= Border(2.0, BorderStyle.Dotted, Color.DarkGreen)
       position.`type` @= PositionType.Absolute

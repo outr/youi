@@ -2,7 +2,6 @@ package io.youi.example.ui
 
 import rapid.Task
 import io.youi.component._
-import io.youi.component.support.{MeasuredSupport, PositionSupport, SizeSupport}
 import io.youi.component.types.PositionType
 import io.youi.example.screen.UIExampleScreen
 import io.youi.image.Image
@@ -19,7 +18,7 @@ class ImageExample extends UIExampleScreen {
 
   override def createUI(): Task[Unit] = Image("/images/icon.png").map { img =>
     container.children += Container(
-      new ImageView with PositionSupport with SizeSupport {                       // Top-Left
+      new ImageView {                       // Top-Left
         image @= img
         position.`type` @= PositionType.Absolute
         position.left @= 50.0
@@ -27,20 +26,20 @@ class ImageExample extends UIExampleScreen {
         size.width @= 100.0
         size.height @= 100.0
       },
-      new ImageView with PositionSupport with MeasuredSupport {                       // Top-Right
+      new ImageView {                       // Top-Right
         image @= img
         position.`type` @= PositionType.Absolute
         position.right := container.size.width - 50.0
         position.top @= header.size.height + 50.0
         opacity @= 0.5
       },
-      new ImageView with PositionSupport with MeasuredSupport {                       // Bottom-Left
+      new ImageView {                       // Bottom-Left
         image @= img
         position.`type` @= PositionType.Absolute
         position.left @= 50.0
         position.bottom := ui.size.height - 50.0
       },
-      new ImageView with PositionSupport with SizeSupport {                       // Bottom-Right
+      new ImageView {                       // Bottom-Right
         image @= img
         position.`type` @= PositionType.Absolute
         position.right := ui.size.width - 50.0
@@ -48,7 +47,7 @@ class ImageExample extends UIExampleScreen {
         size.width @= 300.0
         size.height @= 300.0
       },
-      new ImageView with PositionSupport with MeasuredSupport {                       // Center
+      new ImageView {                       // Center
         image @= img
         position.`type` @= PositionType.Absolute
         position.center := container.size.center

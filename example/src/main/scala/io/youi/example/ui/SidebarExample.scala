@@ -3,7 +3,7 @@ package io.youi.example.ui
 import rapid.Task
 import io.youi._
 import io.youi.component._
-import io.youi.component.support._
+import io.youi.component.support.{BorderSupport, ContentSupport, MarginSupport}
 import io.youi.component.types.{Border, BorderStyle, PositionType}
 import io.youi.event.EventSupport
 import io.youi.example.screen.UIExampleScreen
@@ -15,7 +15,7 @@ class SidebarExample extends UIExampleScreen {
   override def title: String = "Sidebar Example"
   override def path: URLPath = path"/examples/sidebar.html"
 
-  private val text = new TextView() with PositionSupport with MeasuredSupport with EventSupport {
+  private val text = new TextView() with EventSupport {
     content @= "Toggle Sidebar"
     font.size @= 64.px
     color @= Color.DarkBlue
@@ -30,7 +30,7 @@ class SidebarExample extends UIExampleScreen {
     text.font.family @= fnt.family
     container.children += text
 
-    val example = new Container with MarginSupport with SizeSupport with BorderSupport with ContentSupport {
+    val example = new Container with MarginSupport with BorderSupport with ContentSupport {
       backgroundColor @= Color.Yellow
       color @= Color.Black
       border @= Border(2.0, BorderStyle.Solid, Color.Red)

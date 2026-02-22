@@ -3,7 +3,6 @@ package io.youi.example.ui
 import rapid.Task
 import io.youi._
 import io.youi.component.Container
-import io.youi.component.support.{PositionSupport, SizeSupport}
 import io.youi.example.screen.UIExampleScreen
 import spice.net._
 
@@ -26,7 +25,7 @@ class GridLayoutExample extends UIExampleScreen {
     val gridWidth  = columns * boxSize + (columns - 1) * gap
     val gridHeight = rows * boxSize + (rows - 1) * gap
 
-    val grid = new Container with SizeSupport with PositionSupport {
+    val grid = new Container {
       background @= Color.AliceBlue
       size.width  @= gridWidth + 30.0
       size.height @= gridHeight + 30.0
@@ -36,7 +35,7 @@ class GridLayoutExample extends UIExampleScreen {
       colors.zipWithIndex.foreach { case (boxColor, i) =>
         val col = i % columns
         val row = i / columns
-        val box = new Container with SizeSupport with PositionSupport {
+        val box = new Container {
           background @= boxColor
           size.width  @= boxSize
           size.height @= boxSize

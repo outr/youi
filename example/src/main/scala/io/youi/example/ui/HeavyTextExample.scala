@@ -3,7 +3,6 @@ package io.youi.example.ui
 import rapid.Task
 import io.youi.*
 import io.youi.component.DrawableView
-import io.youi.component.support.PositionSupport
 import io.youi.drawable.{Group, TextDrawable, Transformation}
 import io.youi.example.screen.UIExampleScreen
 import io.youi.font.{CanvasFont, CanvasText}
@@ -28,7 +27,7 @@ class HeavyTextExample extends UIExampleScreen {
       Transformation(y = size * index)(textDrawable)
     }
 
-    val view = new DrawableView with PositionSupport {
+    val view = new DrawableView {
       width := container.size.width
       height := container.size.height
       position.left @= 20.0

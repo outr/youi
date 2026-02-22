@@ -3,7 +3,6 @@ package io.youi.example.ui
 import rapid.Task
 import io.youi._
 import io.youi.component._
-import io.youi.component.support.{MeasuredSupport, PositionSupport}
 import io.youi.component.types.PositionType
 import io.youi.easing.Linear
 import io.youi.event.EventSupport
@@ -16,7 +15,7 @@ class PopupExample extends UIExampleScreen {
   override def title: String = "Popup Example"
   override def path: URLPath = path"/examples/popup.html"
 
-  private val text = new TextView() with PositionSupport with MeasuredSupport with EventSupport {
+  private val text = new TextView() with EventSupport {
     content @= "Show Popup"
     font.size @= 64.px
     color @= Color.DarkBlue

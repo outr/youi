@@ -29,22 +29,22 @@ class PositionFeature(override val parent: FeatureParent) extends Feature {
   }
 
   lazy val left: Var[Double] = x
-  lazy val center: Dep[Double, Double] = componentOption.flatMap(Component.width) match {
-    case Some(w) => Dep(left)(_ + (w / 2.0), _ - (w / 2.0))
+  lazy val center: Dep[Double, Double] = componentOption match {
+    case Some(c) => Dep(left)(_ + (c.effectiveWidth / 2.0), _ - (c.effectiveWidth / 2.0))
     case None => Dep(left)(identity, identity)
   }
-  lazy val right: Dep[Double, Double] = componentOption.flatMap(Component.width) match {
-    case Some(w) => Dep(left)(_ + w, _ - w)
+  lazy val right: Dep[Double, Double] = componentOption match {
+    case Some(c) => Dep(left)(_ + c.effectiveWidth, _ - c.effectiveWidth)
     case None => Dep(left)(identity, identity)
   }
 
   lazy val top: Var[Double] = y
-  lazy val middle: Dep[Double, Double] = componentOption.flatMap(Component.height) match {
-    case Some(h) => Dep(top)(_ + (h / 2.0), _ - (h / 2.0))
+  lazy val middle: Dep[Double, Double] = componentOption match {
+    case Some(c) => Dep(top)(_ + (c.effectiveHeight / 2.0), _ - (c.effectiveHeight / 2.0))
     case None => Dep(top)(identity, identity)
   }
-  lazy val bottom: Dep[Double, Double] = componentOption.flatMap(Component.height) match {
-    case Some(h) => Dep(top)(_ + h, _ - h)
+  lazy val bottom: Dep[Double, Double] = componentOption match {
+    case Some(c) => Dep(top)(_ + c.effectiveHeight, _ - c.effectiveHeight)
     case None => Dep(top)(identity, identity)
   }
 

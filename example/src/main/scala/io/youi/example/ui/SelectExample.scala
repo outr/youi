@@ -3,7 +3,7 @@ package io.youi.example.ui
 import rapid.Task
 import io.youi._
 import io.youi.component.SelectList
-import io.youi.component.support.{FontSupport, PositionSupport, SizeSupport}
+import io.youi.component.support.FontSupport
 import io.youi.example.screen.UIExampleScreen
 import io.youi.font.GoogleFont
 import spice.net._
@@ -17,7 +17,7 @@ class SelectExample extends UIExampleScreen {
   } yield {
     given (String => String) = identity
 
-    val select = new SelectList[String] with FontSupport with PositionSupport with SizeSupport {
+    val select = new SelectList[String] with FontSupport {
       list @= List("One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten")
       selected @= Some("Three")
       font.weight @= pacifico

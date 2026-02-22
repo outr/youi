@@ -2,7 +2,7 @@ package io.youi.example.ui
 
 import rapid.Task
 import io.youi._
-import io.youi.component.support.{MeasuredSupport, OverflowSupport, PositionSupport, ScrollSupport, SizeSupport}
+import io.youi.component.support.{OverflowSupport, ScrollSupport}
 import io.youi.component.types.{Overflow, PositionType}
 import io.youi.component.{Container, TextView}
 import io.youi.example.screen.UIExampleScreen
@@ -15,21 +15,21 @@ class ParallaxExample extends UIExampleScreen {
 
   override def createUI(): Task[Unit] = GoogleFont.`Lobster`.`regular`.load().map { fnt =>
     // Tall scrollable container that fills the content area
-    val scrollContainer = new Container with SizeSupport with ScrollSupport with OverflowSupport {
+    val scrollContainer = new Container with ScrollSupport with OverflowSupport {
       size.width  := container.size.width
       size.height := container.size.height
       overflow    @= Overflow.Auto
     }
 
     // Inner content taller than the viewport to enable scrolling
-    val inner = new Container with SizeSupport {
+    val inner = new Container {
       size.width  := scrollContainer.size.width
       size.height @= 4000.0
     }
     scrollContainer.children += inner
 
     // Parallax text: fixed position within the scrollable area, moves with scroll
-    val textView = new TextView with PositionSupport with MeasuredSupport {
+    val textView = new TextView {
       content @= "Hello, World"
       font.weight @= fnt
       // Font size varies with scroll position

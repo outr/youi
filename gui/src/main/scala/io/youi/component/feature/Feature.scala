@@ -29,7 +29,17 @@ trait Feature {
 }
 
 object Feature {
+  private val Pixels = """([0-9.-]+)px""".r
+
   def nameFor[F <: Feature](tag: ClassTag[F]): String = tag.runtimeClass.getName
 
   def nameFor[F <: Feature](feature: F): String = feature.getClass.getName
+
+  def sizeOption(s: String): Option[Double] = s match {
+    case "" | null => None
+    case Pixels(d) => Some(d.toDouble)
+    case _ => throw new RuntimeException(s"Unsupported size: [$s]")
+  }
+  
+  def size(s: String): Double = sizeOption(s).getOrElse(0.0)
 }

@@ -80,28 +80,53 @@ package object youi {
     def load(): Task[Unit] = phosphorTask
   }
 
+  // Serialized font loading — webfontloader 1.6.26 drops callbacks when
+  // multiple WebFont.load() calls are in flight concurrently.
   private var googleFonts = Map.empty[GoogleFont, Completable[GoogleFont]]
+  private var fontLoadQueue: List[() => Unit] = Nil
+  private var fontLoading: Boolean = false
+
+  private def processNextFontLoad(): Unit = fontLoadQueue match {
+    case Nil => fontLoading = false
+    case next :: rest =>
+      fontLoadQueue = rest
+      next()
+  }
 
   implicit class ExtendedGoogleFont(font: GoogleFont) {
     def load(): Task[GoogleFont] = googleFonts.get(font) match {
       case Some(c) =>
-        scribe.info("Existing!")
+        scribe.info(s"Existing font: ${font.family}")
         c
       case None =>
-        scribe.info("Load font!")
+        scribe.info(s"Queuing font: ${font.family}")
         val c: Completable[GoogleFont] = Task.completable[GoogleFont]
-        val f: js.Function0[Unit] = () => {
-          scribe.info("Loaded!")
-          c.success(font)
-          ()
-        }
-        WebFont.load(new WebFontConfiguration {
-          google = new GoogleConfig {
-            families = js.Array(font.family)
+        def startLoad(): Unit = {
+          scribe.info(s"Loading font: ${font.family}")
+          val onActive: js.Function0[Unit] = () => {
+            scribe.info(s"Font loaded: ${font.family}")
+            c.success(font)
+            processNextFontLoad()
           }
-          active = f
-        })
-        // TODO: Figure out why this break things
+          val onInactive: js.Function0[Unit] = () => {
+            scribe.warn(s"Font failed to load: ${font.family}, proceeding with fallback")
+            c.success(font)
+            processNextFontLoad()
+          }
+          WebFont.load(new WebFontConfiguration {
+            google = new GoogleConfig {
+              families = js.Array(font.family)
+            }
+            active = onActive
+            inactive = onInactive
+          })
+        }
+        fontLoadQueue = fontLoadQueue :+ (() => startLoad())
+        if (!fontLoading) {
+          fontLoading = true
+          processNextFontLoad()
+        }
+        // TODO: Figure out why this breaks things
 //        googleFonts += font -> c
         c
     }

@@ -4,7 +4,7 @@ import rapid.Task
 import io.youi._
 import io.youi.app.screen.{EmptyScreen, ScreenManager}
 import io.youi.component.Container
-import io.youi.component.support.{MarginSupport, SizeSupport}
+import io.youi.component.support.MarginSupport
 import io.youi.example.screen.UIExampleScreen
 import io.youi.example.ui._
 import io.youi.example.ui.component.Header
@@ -16,8 +16,8 @@ object ExampleApp extends ScreenManager {
   lazy val appHeader: Header = new Header
 
   /** Single content area; active screen's container is swapped in as its only child. */
-  lazy val contentContainer: Container & SizeSupport & MarginSupport = {
-    val c = new Container with SizeSupport with MarginSupport
+  lazy val contentContainer: Container & MarginSupport = {
+    val c = new Container with MarginSupport
     c.id @= "example-content"
     c
   }

@@ -3,7 +3,6 @@ package io.youi.example.ui
 import rapid.Task
 import io.youi._
 import io.youi.component.Container
-import io.youi.component.support.{PositionSupport, SizeSupport}
 import io.youi.example.screen.UIExampleScreen
 import io.youi.paint.Paint
 import spice.net._
@@ -36,7 +35,7 @@ class SnapExample extends UIExampleScreen {
     container.children ++= List(box, blue, green, yellow)
   }
 
-  class Box extends Container with SizeSupport with PositionSupport {
+  class Box extends Container {
     size.width  @= 100.0
     size.height @= 100.0
   }

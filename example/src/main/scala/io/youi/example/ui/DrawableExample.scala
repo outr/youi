@@ -3,7 +3,6 @@ package io.youi.example.ui
 import rapid.Task
 import io.youi.Color
 import io.youi.component.DrawableView
-import io.youi.component.support.PositionSupport
 import io.youi.drawable.{Group, TextDrawable, Transformation}
 import io.youi.example.screen.UIExampleScreen
 import io.youi._
@@ -20,7 +19,7 @@ class DrawableExample extends UIExampleScreen {
     image <- Image("/images/cuteness.jpg")
     fnt <- GoogleFont.`Lobster`.`regular`.load()
   } yield {
-    val component: DrawableView = new DrawableView with PositionSupport {
+    val component: DrawableView = new DrawableView {
       border @= Border(Stroke(Color.Red, lineWidth = 2.0), radius = 5.0)
       width @= image.width
       height @= image.height

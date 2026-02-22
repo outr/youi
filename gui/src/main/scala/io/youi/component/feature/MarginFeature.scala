@@ -3,10 +3,10 @@ package io.youi.component.feature
 import io.youi.component.types.Prop
 
 class MarginFeature(override val parent: FeatureParent) extends Feature {
-  lazy val left: Prop[Double] = new Prop[Double](-1.0, d => parent.css.marginLeft = d.toString)
-  lazy val right: Prop[Double] = new Prop[Double](-1.0, d => parent.css.marginRight = d.toString)
-  lazy val top: Prop[Double] = new Prop[Double](-1.0, d => parent.css.marginTop = d.toString)
-  lazy val bottom: Prop[Double] = new Prop[Double](-1.0, d => parent.css.marginBottom = d.toString)
+  lazy val left: Prop[Double] = new Prop[Double](Feature.size(parent.css.marginLeft), d => parent.css.marginLeft = d.toString)
+  lazy val right: Prop[Double] = new Prop[Double](Feature.size(parent.css.marginRight), d => parent.css.marginRight = d.toString)
+  lazy val top: Prop[Double] = new Prop[Double](Feature.size(parent.css.marginTop), d => parent.css.marginTop = d.toString)
+  lazy val bottom: Prop[Double] = new Prop[Double](Feature.size(parent.css.marginBottom), d => parent.css.marginBottom = d.toString)
 
   def :=(value: => Double): Unit = {
     left := value

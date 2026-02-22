@@ -3,7 +3,6 @@ package io.youi.example.ui
 import rapid.Task
 import io.youi._
 import io.youi.component.TextInput
-import io.youi.component.support.{PositionSupport, SizeSupport}
 import io.youi.example.screen.UIExampleScreen
 import io.youi.font.GoogleFont
 import spice.net._
@@ -17,7 +16,7 @@ class TextInputExample extends UIExampleScreen {
     roboto    <- GoogleFont.`Roboto`.`900`.load()
     berkshire <- GoogleFont.`Berkshire Swash`.`regular`.load()
   } yield {
-    val pacificoView = new TextInput with PositionSupport with SizeSupport {
+    val pacificoView = new TextInput {
       value @= "Pacifico Regular"
       font.weight @= pacifico
       font.size @= 64.0
@@ -25,7 +24,7 @@ class TextInputExample extends UIExampleScreen {
       position.center := container.size.center
       position.middle := container.size.middle
     }
-    val robotoView = new TextInput with PositionSupport {
+    val robotoView = new TextInput {
       value @= "Roboto 900"
       font.weight @= roboto
       color @= Color.Green
@@ -33,7 +32,7 @@ class TextInputExample extends UIExampleScreen {
       position.center := container.size.center
       position.bottom := pacificoView.position.top - 150.0
     }
-    val berkshireView = new TextInput with PositionSupport with SizeSupport {
+    val berkshireView = new TextInput {
       value @= "Berkshire Swash Regular"
       font.weight @= berkshire
       color @= Color.Blue

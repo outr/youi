@@ -7,11 +7,11 @@ import io.youi.component.types.{Display, DropType, Overflow, PositionType}
 import org.scalajs.dom.html
 import reactify._
 
-class Drop extends Collapsible with PositionSupport with BorderSupport with Initializable {
+class Drop extends Collapsible with BorderSupport with Initializable {
   private var showing: Option[Component] = None
   private var `type`: DropType = DropType.Auto
 
-  override lazy val container: Container & MeasuredSupport & PaddingSupport = new Container with MeasuredSupport with PaddingSupport
+  override lazy val container: Container & PaddingSupport = new Container with PaddingSupport
   val offsetDown: Var[Double] = Var(0.0)
   val offsetUp: Var[Double] = Var(0.0)
 

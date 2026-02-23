@@ -4,16 +4,14 @@ import rapid.Task
 import io.youi._
 import io.youi.component.Container
 import io.youi.example.screen.UIExampleScreen
+import io.youi.layout.{GridLayout, LayoutSupport}
 import spice.net._
 
 class GridLayoutExample extends UIExampleScreen {
   override def title: String = "Grid Layout"
   override def path: URLPath = path"/examples/grid.html"
 
-  private val boxSize = 100.0
-  private val gap     = 10.0
-  private val columns = 3
-  private val colors  = List(
+  private val colors = List(
     Color.Black, Color.Red, Color.Green,
     Color.Blue, Color.Purple, Color.Pink,
     Color.Orange, Color.Yellow, Color.LightBlue,
@@ -21,26 +19,17 @@ class GridLayoutExample extends UIExampleScreen {
   )
 
   override def createUI(): Task[Unit] = Task {
-    val rows       = math.ceil(colors.length.toDouble / columns).toInt
-    val gridWidth  = columns * boxSize + (columns - 1) * gap
-    val gridHeight = rows * boxSize + (rows - 1) * gap
-
-    val grid = new Container {
+    val grid = new Container with LayoutSupport {
+      layout @= Some(GridLayout(columns = 3, horizontalSpacing = 10.0, verticalSpacing = 10.0))
       background @= Color.AliceBlue
-      size.width  @= gridWidth + 30.0
-      size.height @= gridHeight + 30.0
+      size.width @= 340.0
       position.center := container.size.center
-      position.middle := container.size.middle
+      position.top @= 20.0
 
-      colors.zipWithIndex.foreach { case (boxColor, i) =>
-        val col = i % columns
-        val row = i / columns
+      colors.foreach { boxColor =>
         val box = new Container {
           background @= boxColor
-          size.width  @= boxSize
-          size.height @= boxSize
-          position.left @= 15.0 + col * (boxSize + gap)
-          position.top  @= 15.0 + row * (boxSize + gap)
+          size.height @= 100.0
         }
         children += box
       }

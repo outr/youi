@@ -32,7 +32,7 @@ class Component(val element: html.Element) extends FeatureParent {
   lazy val position: PositionFeature = new PositionFeature(this)
   lazy val measured: MeasuredFeature = new MeasuredFeature(this)
 
-  private[component] lazy val effectiveWidth: Val[Double] = Val {
+  private[youi] lazy val effectiveWidth: Val[Double] = Val {
     val sw = size.width()
     if (sw >= 0.0) sw
     else this match {
@@ -42,7 +42,7 @@ class Component(val element: html.Element) extends FeatureParent {
       case _ => measured.width()
     }
   }
-  private[component] lazy val effectiveHeight: Val[Double] = Val {
+  private[youi] lazy val effectiveHeight: Val[Double] = Val {
     val sh = size.height()
     if (sh >= 0.0) sh
     else this match {

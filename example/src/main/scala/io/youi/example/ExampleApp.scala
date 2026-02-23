@@ -45,9 +45,13 @@ object ExampleApp extends ScreenManager {
   val animatedImage: AnimatedImageExample = new AnimatedImageExample
   val animation: AnimationExample = new AnimationExample
   val canvas: CanvasExample = new CanvasExample
+  val dataTransfer: DataTransferExample = new DataTransferExample
   val drawable: DrawableExample = new DrawableExample
   val drop: DropExample = new DropExample
+  val flow: FlowLayoutExample = new FlowLayoutExample
+  val gestures: GesturesExample = new GesturesExample
   val grid: GridLayoutExample = new GridLayoutExample
+  val horizontal: HorizontalLayoutExample = new HorizontalLayoutExample
   val heavyText: HeavyTextExample = new HeavyTextExample
   val materialIcons: MaterialIconsExample = new MaterialIconsExample
   val phosphor: PhosphorExample = new PhosphorExample
@@ -62,11 +66,13 @@ object ExampleApp extends ScreenManager {
   val snap: SnapExample = new SnapExample
   val scrolling: ScrollingExample = new ScrollingExample
   val select: SelectExample = new SelectExample
+  val selection: SelectionExample = new SelectionExample
   val sidebar: SidebarExample = new SidebarExample
   val svgImage: SVGImageExample = new SVGImageExample
   val text: TextViewExample = new TextViewExample
   val textInput: TextInputExample = new TextInputExample
   val vertical: VerticalLayoutExample = new VerticalLayoutExample
+  val video: VideoExample = new VideoExample
 
   val examples: UIExamples = new UIExamples
 

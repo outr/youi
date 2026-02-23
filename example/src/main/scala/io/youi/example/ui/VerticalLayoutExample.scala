@@ -4,33 +4,29 @@ import rapid.Task
 import io.youi._
 import io.youi.component.Container
 import io.youi.example.screen.UIExampleScreen
+import io.youi.layout.{LayoutSupport, VerticalLayout}
 import spice.net._
 
 class VerticalLayoutExample extends UIExampleScreen {
   override def title: String = "Vertical Layout"
   override def path: URLPath = path"/examples/vertical.html"
 
-  private val boxSize    = 100.0
-  private val spacing    = 10.0
-  private val colors     = List(Color.Black, Color.Red, Color.Green, Color.Blue, Color.Orange)
+  private val colors = List(Color.Black, Color.Red, Color.Green, Color.Blue, Color.Orange)
 
   override def createUI(): Task[Unit] = Task {
-    val totalHeight = colors.length * boxSize + (colors.length - 1) * spacing
-
-    val boxes = new Container {
+    val boxes = new Container with LayoutSupport {
+      layout @= Some(VerticalLayout(10.0))
       background @= Color.LightBlue
-      size.width  @= 120.0
-      size.height @= totalHeight
+      size.width @= 120.0
       position.center := container.size.center
-      position.middle := container.size.middle
+      position.top @= 20.0
 
-      colors.zipWithIndex.foreach { case (boxColor, i) =>
+      colors.foreach { boxColor =>
         val box = new Container {
           background @= boxColor
-          size.width  @= 100.0
-          size.height @= boxSize
+          size.width @= 100.0
+          size.height @= 100.0
           position.left @= 10.0
-          position.top  @= i * (boxSize + spacing)
         }
         children += box
       }

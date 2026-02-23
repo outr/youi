@@ -3,12 +3,22 @@ package io.youi.example.screen
 import rapid.Task
 import io.youi._
 import io.youi.app.screen.UIScreen
+import io.youi.component.Container
+import io.youi.component.support.{MarginSupport, OverflowSupport}
+import io.youi.component.types.{Overflow, PositionType}
 import io.youi.example.ExampleApp
 import io.youi.example.ui.component.Header
 import io.youi.ui
 import spice.net._
 
 trait UIExampleScreen extends UIScreen {
+  override protected lazy val container: Container & MarginSupport & OverflowSupport = {
+    val c = new Container with MarginSupport with OverflowSupport
+    c.id @= title
+    c.position.`type` @= PositionType.Relative
+    c.overflow.y @= Overflow.Auto
+    c
+  }
   /** Shared app header (same for all example screens). */
   protected def header: Header = ExampleApp.appHeader
 

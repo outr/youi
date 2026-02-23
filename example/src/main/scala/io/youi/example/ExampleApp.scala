@@ -75,6 +75,7 @@ object ExampleApp extends ScreenManager {
   val vertical: VerticalLayoutExample = new VerticalLayoutExample
   val video: VideoExample = new VideoExample
   val monacoEditor: MonacoExample = new MonacoExample
+  val xterm: XTermExample = new XTermExample
 
   val examples: UIExamples = new UIExamples
 

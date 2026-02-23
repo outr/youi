@@ -42,6 +42,7 @@ object ExampleApp extends ScreenManager {
 
   val hello: HelloWorld = new HelloWorld
 
+  val chat: ChatExample = new ChatExample
   val animatedImage: AnimatedImageExample = new AnimatedImageExample
   val animation: AnimationExample = new AnimationExample
   val canvas: CanvasExample = new CanvasExample
@@ -73,6 +74,7 @@ object ExampleApp extends ScreenManager {
   val textInput: TextInputExample = new TextInputExample
   val vertical: VerticalLayoutExample = new VerticalLayoutExample
   val video: VideoExample = new VideoExample
+  val monacoEditor: MonacoExample = new MonacoExample
 
   val examples: UIExamples = new UIExamples
 

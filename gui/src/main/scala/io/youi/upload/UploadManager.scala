@@ -2,12 +2,12 @@ package io.youi.upload
 
 import rapid.Task
 import io.youi.History
-import io.youi.ajax.AjaxManager
 import io.youi.component.FileInput
 import org.scalajs.dom.{File, FormData}
 import reactify.{Val, Var}
+import spice.ajax.AjaxManager
 import spice.http.{Headers, HttpMethod}
-import spice.net._
+import spice.net.*
 
 import scala.util.{Failure, Success}
 

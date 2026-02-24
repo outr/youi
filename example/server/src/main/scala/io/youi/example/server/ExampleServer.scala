@@ -14,7 +14,7 @@ import scala.language.implicitConversions
 
 object ExampleServer extends RapidApp with StaticHttpServer {
   config.listeners @= List(
-    HttpServerListener(port = Some(8888))
+    HttpServerListener(host = "0.0.0.0", port = Some(8888))
   )
 
   private lazy val classLoader = ClassLoaderPath(classPathRoot = "site", pathTransform = (s: String) => {

@@ -1,8 +1,8 @@
 package io.youi.stream
 
 import rapid.Task
-import io.youi.ajax.AjaxRequest
 import org.scalajs.dom.FormData
+import spice.ajax.AjaxRequest
 import spice.http.HttpMethod
 import spice.net.URL
 

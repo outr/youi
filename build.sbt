@@ -30,9 +30,9 @@ ThisBuild / versionScheme := Some("semver-spec")
 
 ThisBuild / outputStrategy := Some(StdoutOutput)
 
-val spiceVersion: String = "1.0.1-SNAPSHOT"
+val spiceVersion: String = "1.1.0"
 
-val rapidVersion: String = "2.7.0"
+val rapidVersion: String = "2.7.1"
 
 val fabricVersion: String = "1.19.0"
 
@@ -85,7 +85,8 @@ lazy val core = crossProject(JSPlatform, JVMPlatform).in(file("core"))
   )
   .jsSettings(
     libraryDependencies ++= Seq(
-      "org.scala-js" %%% "scalajs-dom" % scalaJSDOMVersion
+      "org.scala-js" %%% "scalajs-dom" % scalaJSDOMVersion,
+      "com.outr" %%% "spice-client" % spiceVersion
     )
   )
 

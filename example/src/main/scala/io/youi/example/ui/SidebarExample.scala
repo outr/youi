@@ -38,11 +38,12 @@ class SidebarExample extends UIExampleScreen {
 
       content @= "Hello, world!"
     }
-    val sidebar = new Sidebar(container = Some(example)) with ContentSupport
+    val sidebar = new Sidebar(container = Some(example)) with ContentSupport with BorderSupport
     sidebar.backgroundColor @= Color.Green
+    sidebar.border @= Border(2.0, BorderStyle.Solid, Color.Red)
     if (!isMobileDevice) {
-      sidebar.position.top := header.size.height
-      sidebar.size.height := ui.size.height - header.size.height
+      sidebar.position.top := 0.0
+      sidebar.size.height := container.size.height
     }
     sidebar.content @= "Hello, world! Hello, world! Hello, world! Hello, world! Hello, world! Hello, world! Hello, world! Hello, world! Hello, world!"
     container.children += sidebar

@@ -23,7 +23,7 @@ class AnimationExample extends UIExampleScreen {
       scribe.info(s"Image loaded! ${img.size}")
       GoogleFont.`Open Sans`.`regular`.load().map { fnt =>
         scribe.info(s"Font loaded! ${fnt.name}")
-        var shift = header.size.height()
+        var shift = 0.0
         Easing.map.toList.sortBy(_._1).foreach {
           case (name, easingFunction) => {
             val label = new TextView {

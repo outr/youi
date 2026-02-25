@@ -1,6 +1,7 @@
 package io.youi.example.ui
 
 import rapid.Task
+import io.youi.example.ExampleApp
 import io.youi.example.screen.UIExampleScreen
 import io.youi.monaco.{MonacoEditorView, MonacoLoader}
 import reactify.stateful2Value
@@ -14,9 +15,14 @@ class MonacoExample extends UIExampleScreen {
     val editor = new MonacoEditorView
     editor.size.width := container.size.width
     editor.size.height := container.size.height
+    editor.theme @= (if (ExampleApp.darkMode()) "vs-dark" else "vs")
     editor.value @= sampleCode
     container.children += editor
     editor.initialize()
+
+    ExampleApp.darkMode.attach { isDark =>
+      editor.theme @= (if (isDark) "vs-dark" else "vs")
+    }
   }
 
   private val sampleCode: String =

@@ -5,6 +5,7 @@ import io.youi._
 import io.youi.component.types.{PositionType, WhiteSpace}
 import io.youi.component.{ImageView, TextView}
 import io.youi.easing.Easing
+import io.youi.example.ExampleApp
 import io.youi.example.screen.UIExampleScreen
 import io.youi.font.GoogleFont
 import io.youi.image.Image
@@ -33,7 +34,7 @@ class AnimationExample extends UIExampleScreen {
               position.`type` @= PositionType.Absolute
               position.top @= shift
               position.left @= 50.0
-              color @= Color.DarkSlateBlue
+              color := ExampleApp.textColor
               whiteSpace @= WhiteSpace.NoWrap
 
               shift += 25.0

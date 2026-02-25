@@ -4,6 +4,7 @@ import rapid.Task
 import io.youi.*
 import io.youi.component.Container
 import io.youi.event.EventSupport
+import io.youi.example.ExampleApp
 import io.youi.example.screen.UIExampleScreen
 import io.youi.layout.{HorizontalLayout, LayoutSupport}
 import spice.net.*
@@ -17,7 +18,7 @@ class HorizontalLayoutExample extends UIExampleScreen {
 
   private lazy val row = new Container with LayoutSupport {
     layout @= Some(HorizontalLayout(10.0))
-    background @= Color.LightGray
+    backgroundColor := ExampleApp.subtleBg
     position.center := container.size.center
     position.middle @= container.size.middle
 

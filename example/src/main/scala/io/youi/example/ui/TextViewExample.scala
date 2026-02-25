@@ -5,6 +5,7 @@ import io.youi.Color
 import io.youi.component.support.PaddingSupport
 import io.youi.component.types.PositionType
 import io.youi.component.{Container, TextView}
+import io.youi.example.ExampleApp
 import io.youi.example.screen.UIExampleScreen
 import io.youi._
 import io.youi.font.GoogleFont
@@ -26,7 +27,7 @@ class TextViewExample extends UIExampleScreen {
         content @= "Open Sans"
         font.weight @= openSans
         font.size @= 96.0
-        color @= Color.Black
+        color := ExampleApp.textColor
         position.`type` @= PositionType.Absolute
         position.x @= 100.0
         position.y @= 100.0
@@ -37,7 +38,7 @@ class TextViewExample extends UIExampleScreen {
         position.y @= 100.0
         size.width := openSansView.measured.width
         size.height := openSansView.measured.height
-        background @= Color.Yellow
+        backgroundColor := ExampleApp.subtleBg
       }
       val pacificoView = new TextView with PaddingSupport {
         content @= "Pacifico Regular"

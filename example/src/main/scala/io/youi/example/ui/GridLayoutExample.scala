@@ -3,6 +3,7 @@ package io.youi.example.ui
 import rapid.Task
 import io.youi._
 import io.youi.component.Container
+import io.youi.example.ExampleApp
 import io.youi.example.screen.UIExampleScreen
 import io.youi.layout.{GridLayout, LayoutSupport}
 import spice.net._
@@ -21,7 +22,7 @@ class GridLayoutExample extends UIExampleScreen {
   override def createUI(): Task[Unit] = Task {
     val grid = new Container with LayoutSupport {
       layout @= Some(GridLayout(columns = 3, horizontalSpacing = 10.0, verticalSpacing = 10.0))
-      background @= Color.AliceBlue
+      backgroundColor := ExampleApp.subtleBg
       size.width @= 340.0
       position.center := container.size.center
       position.top @= 20.0

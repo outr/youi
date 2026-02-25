@@ -6,6 +6,7 @@ import io.youi.component._
 import io.youi.component.types.PositionType
 import io.youi.easing.Linear
 import io.youi.event.EventSupport
+import io.youi.example.ExampleApp
 import io.youi.example.screen.UIExampleScreen
 import io.youi.font.GoogleFont
 import spice.net._
@@ -18,7 +19,7 @@ class PopupExample extends UIExampleScreen {
   private val text = new TextView() with EventSupport {
     content @= "Show Popup"
     font.size @= 64.px
-    color @= Color.DarkBlue
+    color := ExampleApp.textColor
     position.`type` @= PositionType.Absolute
     position.center := ui.size.center
     position.middle := ui.size.middle

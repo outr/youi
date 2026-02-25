@@ -7,8 +7,10 @@ import io.youi.component.support._
 import io.youi.component.types.{Cursor, Display, PositionType, WhiteSpace}
 import io.youi.component.{Component, Container, ImageView}
 import io.youi.event.EventSupport
+import io.youi.example.ExampleApp
 import io.youi.example.screen.UIExampleScreen
 import io.youi.font.GoogleFont
+import io.youi.material.Material
 import io.youi.paint.Paint
 import reactify._
 import spice.net._
@@ -29,21 +31,31 @@ class Header extends Container { self =>
     }
   }
 
+  private val darkModeToggle = new Component(dom.create.i) with FontSupport with EventSupport with ContentSupport {
+    classes += "material-icons"
+    content @= Material.Icons.Image.Brightness7.name
+    font.size @= 24.px
+    cursor @= Cursor.Pointer
+    position.`type` @= PositionType.Absolute
+    position.right := ui.size.width - 25.0
+    position.middle := self.size.middle
+    event.click.on {
+      ExampleApp.darkMode @= !ExampleApp.darkMode()
+    }
+  }
+
   private val heading = new Component(dom.create.span) with FontSupport with ContentSupport {
     font.size @= 20.pt
-    color @= Color.Blue //application.colors.blue.dark
     ScreenManager().active.attachAndFire { screen =>
       content @= screen.title
     }
     whiteSpace @= WhiteSpace.NoWrap
     position.`type` @= PositionType.Absolute
-    position.right := ui.size.width - 25.0
-    position.top @= 15.0
+    position.right := darkModeToggle.position.left - 10.0
   }
 
   private val link = new Component(dom.create.span) with FontSupport with EventSupport with ContentSupport {
     font.size @= 14.pt
-    color @= Color.Blue //application.colors.blue.dark
     content @= "View Source"
     cursor @= Cursor.Pointer
     ScreenManager().active.attachAndFire {
@@ -58,14 +70,33 @@ class Header extends Container { self =>
     }
     whiteSpace @= WhiteSpace.NoWrap
     position.`type` @= PositionType.Absolute
-    position.right := ui.size.width - 25.0
+    position.right := darkModeToggle.position.left - 10.0
     position.top := heading.position.bottom - 10.0
   }
+
+  // Center heading+link block vertically within the header
+  heading.position.top := (self.size.height - (heading.measured.height + link.measured.height - 10.0)) / 2.0
 
   GoogleFont.`Open Sans`.`600`.load().map { font =>
     heading.font.weight @= font
     link.font.weight @= font
   }.handleError { t => Task(scribe.error(s"Failed to load font", t)) }.startUnit()
 
-  children ++= List(logo, heading, link)
+  heading.color := ExampleApp.accentColor
+  link.color := ExampleApp.accentColor
+  darkModeToggle.color := ExampleApp.accentColor
+
+  ExampleApp.darkMode.attachAndFire { isDark =>
+    if (isDark) {
+      background @= Paint.vertical(75.0).distributeColors(
+        Color.fromHex("1a1a2e"), Color.fromHex("16213e"), Color.fromHex("0f3460")
+      )
+      darkModeToggle.content @= Material.Icons.Image.Brightness4.name
+    } else {
+      background @= Paint.vertical(75.0).distributeColors(Color.White, Color.LightGray, Color.DarkGray)
+      darkModeToggle.content @= Material.Icons.Image.Brightness7.name
+    }
+  }
+
+  children ++= List(logo, darkModeToggle, heading, link)
 }

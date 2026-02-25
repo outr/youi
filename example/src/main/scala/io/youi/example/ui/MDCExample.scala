@@ -1,9 +1,10 @@
 package io.youi.example.ui
 
 import rapid.Task
-import io.youi.dom
+import io.youi._
 import io.youi.component.{Container, TextView}
 import io.youi.component.types.Display
+import io.youi.example.ExampleApp
 import io.youi.example.screen.UIExampleScreen
 import io.youi.material._
 import spice.net._
@@ -12,9 +13,93 @@ class MDCExample extends UIExampleScreen {
   override def title: String = "MDC Example"
   override def path: URLPath = path"/examples/mdc.html"
 
+  // MDC CSS for dark mode theming
+  private val mdcDarkCSS: String =
+    """|.mdc-dark-mode .mdc-card {
+       |  background-color: #1e1e1e !important;
+       |  color: #e0e0e0;
+       |}
+       |.mdc-dark-mode .mdc-tab .mdc-tab__text-label {
+       |  color: #b0b0b0 !important;
+       |}
+       |.mdc-dark-mode .mdc-tab--active .mdc-tab__text-label {
+       |  color: #90caf9 !important;
+       |}
+       |.mdc-dark-mode .mdc-tab .mdc-tab__icon {
+       |  color: #b0b0b0 !important;
+       |}
+       |.mdc-dark-mode .mdc-tab--active .mdc-tab__icon {
+       |  color: #90caf9 !important;
+       |}
+       |.mdc-dark-mode .mdc-tab-indicator .mdc-tab-indicator__content--underline {
+       |  border-color: #90caf9 !important;
+       |}
+       |.mdc-dark-mode .mdc-text-field:not(.mdc-text-field--disabled) .mdc-floating-label,
+       |.mdc-dark-mode .mdc-text-field:not(.mdc-text-field--disabled) .mdc-text-field__input {
+       |  color: #e0e0e0;
+       |}
+       |.mdc-dark-mode .mdc-text-field--filled:not(.mdc-text-field--disabled) {
+       |  background-color: #2c2c2c;
+       |}
+       |.mdc-dark-mode .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-notched-outline__leading,
+       |.mdc-dark-mode .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-notched-outline__notch,
+       |.mdc-dark-mode .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-notched-outline__trailing {
+       |  border-color: #555555;
+       |}
+       |.mdc-dark-mode .mdc-form-field label {
+       |  color: #e0e0e0;
+       |}
+       |.mdc-dark-mode .mdc-select:not(.mdc-select--disabled) .mdc-select__anchor {
+       |  background-color: #2c2c2c;
+       |}
+       |.mdc-dark-mode .mdc-select:not(.mdc-select--disabled) .mdc-floating-label,
+       |.mdc-dark-mode .mdc-select:not(.mdc-select--disabled) .mdc-select__selected-text {
+       |  color: #e0e0e0;
+       |}
+       |.mdc-dark-mode .mdc-dialog .mdc-dialog__surface {
+       |  background-color: #1e1e1e;
+       |  color: #e0e0e0;
+       |}
+       |.mdc-dark-mode .mdc-dialog .mdc-dialog__title,
+       |.mdc-dark-mode .mdc-dialog .mdc-dialog__content {
+       |  color: #e0e0e0;
+       |}
+       |.mdc-dark-mode .mdc-snackbar .mdc-snackbar__surface {
+       |  background-color: #333333;
+       |}
+       |.mdc-dark-mode .mdc-top-app-bar {
+       |  background-color: #1a1a2e;
+       |  color: #e0e0e0;
+       |}
+       |.mdc-dark-mode .mdc-chip {
+       |  background-color: #2c2c2c;
+       |  color: #e0e0e0;
+       |}
+       |.mdc-dark-mode .mdc-evolution-chip {
+       |  --mdc-chip-elevated-container-color: #2c2c2c;
+       |}
+       |.mdc-dark-mode .mdc-icon-button {
+       |  color: #90caf9;
+       |}
+       |""".stripMargin
+
   override def createUI(): Task[Unit] = for {
     _ <- MaterialComponents.waitForLoaded()
   } yield {
+    dom.addCSS(mdcDarkCSS)
+
+    ExampleApp.darkMode.attachAndFire { isDark =>
+      if (isDark) {
+        container.element.classList.add("mdc-dark-mode")
+        dom.setCSSVariable("mdc-theme-primary", Color.fromHex("90caf9").toRGBA)
+        dom.setCSSVariable("mdc-theme-on-surface", Color.fromHex("e0e0e0").toRGBA)
+      } else {
+        container.element.classList.remove("mdc-dark-mode")
+        dom.setCSSVariable("mdc-theme-primary", Color.fromHex("6200ee").toRGBA)
+        dom.setCSSVariable("mdc-theme-on-surface", Color.fromHex("000000").toRGBA)
+      }
+    }
+
     // --- Tab Bar ---
     val tabBar = new MDCTabBar
     val buttonsTab = new MDCTab("Buttons")
@@ -73,6 +158,7 @@ class MDCExample extends UIExampleScreen {
     content @= text
     font.size @= 18.0
     font.weight @= "500"
+    color := ExampleApp.textColor
     element.style.display = "block"
     element.style.marginTop = "16px"
     element.style.marginBottom = "8px"
@@ -199,7 +285,7 @@ class MDCExample extends UIExampleScreen {
 
     switchCard.children += sectionHeading("Switch")
 
-    val switchLabel = new TextView { content @= "Off" }
+    val switchLabel = new TextView { content @= "Off"; color := ExampleApp.textColor }
     val sw = new MDCSwitch
     sw.selected.attach { sel =>
       switchLabel.content @= (if (sel) "On" else "Off")
@@ -216,7 +302,7 @@ class MDCExample extends UIExampleScreen {
 
     sliderCard.children += sectionHeading("Slider")
 
-    val sliderLabel = new TextView { content @= "Value: 50" }
+    val sliderLabel = new TextView { content @= "Value: 50"; color := ExampleApp.textColor }
     val slider = new MDCSlider
     slider.value @= 50.0
     slider.element.style.width = "300px"
@@ -235,7 +321,7 @@ class MDCExample extends UIExampleScreen {
 
     selectCard.children += sectionHeading("Select")
 
-    val selectLabel = new TextView { content @= "Selected: (none)" }
+    val selectLabel = new TextView { content @= "Selected: (none)"; color := ExampleApp.textColor }
     val select = new MDCSelect
     select.label @= "Pick a fruit"
     select.addOption("", "")
@@ -280,7 +366,7 @@ class MDCExample extends UIExampleScreen {
 
     dialogCard.children += sectionHeading("Dialog")
 
-    val dialogResult = new TextView { content @= "Result: (none)" }
+    val dialogResult = new TextView { content @= "Result: (none)"; color := ExampleApp.textColor }
 
     val dialog = new MDCDialog
     dialog.titleText @= "Confirm Action"
@@ -399,12 +485,12 @@ class MDCExample extends UIExampleScreen {
     val outlined = new MDCCard(isOutlined = true)
     outlined.element.style.padding = "16px"
     outlined.element.style.marginBottom = "8px"
-    outlined.children += new TextView { content @= "This is an outlined card" }
+    outlined.children += new TextView { content @= "This is an outlined card"; color := ExampleApp.textColor }
     cardCard.children += outlined
 
     val elevated = new MDCCard
     elevated.element.style.padding = "16px"
-    elevated.children += new TextView { content @= "This is an elevated card" }
+    elevated.children += new TextView { content @= "This is an elevated card"; color := ExampleApp.textColor }
     cardCard.children += elevated
 
     panel.children += cardCard
@@ -425,7 +511,7 @@ class MDCExample extends UIExampleScreen {
     nestedTabCard.children += nestedTabBar
     nestedTabBar.init()
 
-    val nestedLabel = new TextView { content @= "Active tab: Alpha" }
+    val nestedLabel = new TextView { content @= "Active tab: Alpha"; color := ExampleApp.textColor }
     nestedTabBar.onActivated.attach { index =>
       val names = List("Alpha", "Beta", "Gamma")
       nestedLabel.content @= s"Active tab: ${names(index)}"

@@ -6,6 +6,7 @@ import io.youi.component.{Container, Selection, TextView}
 import io.youi.component.support.BorderSupport
 import io.youi.component.types.{Border, BorderStyle}
 import io.youi.event.EventSupport
+import io.youi.example.ExampleApp
 import io.youi.example.screen.UIExampleScreen
 import io.youi.layout.{GridLayout, LayoutSupport}
 import spice.net._
@@ -26,7 +27,7 @@ class SelectionExample extends UIExampleScreen {
     val status = new TextView {
       content @= "Click to select, Ctrl+click to toggle, Shift+click for range"
       font.size @= 16.0
-      color @= Color.DarkSlateGray
+      color := ExampleApp.textColor
       position.center := container.size.center
       position.top @= 10.0
     }

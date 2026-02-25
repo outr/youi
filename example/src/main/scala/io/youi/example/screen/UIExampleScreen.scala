@@ -39,6 +39,7 @@ trait UIExampleScreen extends UIScreen {
     ExampleApp.contentContainer.children += container
     container.size.width := ExampleApp.contentContainer.size.width
     container.size.height := ExampleApp.contentContainer.size.height
+    container.backgroundColor := ExampleApp.bgColor
     super.activate()
   }
 

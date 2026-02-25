@@ -5,6 +5,7 @@ import io.youi._
 import io.youi.component.{TextView, VideoView}
 import io.youi.component.types.Cursor
 import io.youi.event.EventSupport
+import io.youi.example.ExampleApp
 import io.youi.example.screen.UIExampleScreen
 import io.youi.video.Video
 import spice.net._
@@ -25,7 +26,7 @@ class VideoExample extends UIExampleScreen {
     val status = new TextView {
       content @= "Playing (click video to pause)"
       font.size @= 16.0
-      color @= Color.DarkSlateGray
+      color := ExampleApp.textColor
       position.center := container.size.center
       position.top @= 10.0
     }

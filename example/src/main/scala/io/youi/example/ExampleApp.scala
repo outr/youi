@@ -9,9 +9,25 @@ import io.youi.example.screen.UIExampleScreen
 import io.youi.example.ui._
 import io.youi.example.ui.component.Header
 import io.youi.component.types.Display
+import io.youi.storage.LocalStorage
 import io.youi.ui
+import fabric.rw._
+import reactify._
 
 object ExampleApp extends ScreenManager {
+  val darkMode: Var[Boolean] = Var(false)
+
+  // Reactive theme colors derived from darkMode
+  val textColor: Val[Color] = Val(if (darkMode()) Color.fromHex("e0e0e0") else Color.fromHex("212121"))
+  val secondaryText: Val[Color] = Val(if (darkMode()) Color.fromHex("b0b0b0") else Color.fromHex("666666"))
+  val accentColor: Val[Color] = Val(if (darkMode()) Color.fromHex("90caf9") else Color.fromHex("3949ab"))
+  val bgColor: Val[Color] = Val(if (darkMode()) Color.fromHex("121212") else Color.White)
+  val surfaceColor: Val[Color] = Val(if (darkMode()) Color.fromHex("1e1e1e") else Color.White)
+  val subtleBg: Val[Color] = Val(if (darkMode()) Color.fromHex("1a1a2e") else Color.fromHex("f0f4ff"))
+  val borderColor: Val[Color] = Val(if (darkMode()) Color.fromHex("444444") else Color.fromHex("e0e0e0"))
+  val buttonBg: Val[Color] = Val(if (darkMode()) Color.fromHex("5c6bc0") else Color.SteelBlue)
+  val buttonText: Val[Color] = Val(Color.White)
+
   /** Single shared header; always first child of ui when visible. */
   lazy val appHeader: Header = new Header
 
@@ -22,16 +38,20 @@ object ExampleApp extends ScreenManager {
     c
   }
 
-  override protected def load(): Task[Unit] = super.load().map { _ =>
-    contentContainer.size.width := ui.size.width
-    contentContainer.size.height := ui.size.height() - appHeader.size.height()
-    ui.children += appHeader
-    ui.children += contentContainer
-    appHeader.display @= Display.None
+  override protected def load(): Task[Unit] = super.load().flatMap { _ =>
+    // Restore dark mode preference from localStorage
+    LocalStorage.connect[Boolean]("youi-dark-mode", darkMode).map { _ =>
+      contentContainer.size.width := ui.size.width
+      contentContainer.size.height := ui.size.height() - appHeader.size.height()
+      contentContainer.backgroundColor := bgColor
+      ui.children += appHeader
+      ui.children += contentContainer
+      appHeader.display @= Display.None
 
-    // If no screen matched the URL (e.g. root "/" or an unknown path),
-    // fall back to the examples index so the user sees something useful.
-    if (active() == EmptyScreen) active @= examples
+      // If no screen matched the URL (e.g. root "/" or an unknown path),
+      // fall back to the examples index so the user sees something useful.
+      if (active() == EmptyScreen) active @= examples
+    }
   }
 
   override protected def afterScreenChange(oldScreen: io.youi.app.screen.Screen, newScreen: io.youi.app.screen.Screen): Task[Unit] =

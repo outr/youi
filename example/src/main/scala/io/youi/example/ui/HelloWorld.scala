@@ -5,6 +5,7 @@ import io.youi._
 import io.youi.component._
 import io.youi.component.support.SingletonThemedComponent
 import io.youi.component.types.PositionType
+import io.youi.example.ExampleApp
 import io.youi.example.screen.UIExampleScreen
 import io.youi.font.GoogleFont
 import spice.net._
@@ -21,7 +22,7 @@ class HelloWorld extends UIExampleScreen {
       font.family @= fnt.family
       font.size @= 64.px
 
-      color @= Color.DarkBlue
+      color := ExampleApp.accentColor
       
       position.center := container.size.center
       position.middle := container.size.middle

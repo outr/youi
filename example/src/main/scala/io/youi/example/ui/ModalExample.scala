@@ -6,6 +6,7 @@ import io.youi.component.support.{BorderSupport, PaddingSupport}
 import io.youi.component.types.{BoxShadow, Cursor, PositionType}
 import io.youi.component.{Popup, TextView}
 import io.youi.event.EventSupport
+import io.youi.example.ExampleApp
 import io.youi.example.screen.UIExampleScreen
 import io.youi.font.GoogleFont
 import spice.net._
@@ -19,7 +20,7 @@ class ModalExample extends UIExampleScreen {
       override def preferredWidth: Double  = 600.0
       override def preferredHeight: Double = 400.0
     }
-    popup.backgroundColor @= Color.White
+    popup.backgroundColor := ExampleApp.surfaceColor
     popup.border.radius @= 12.0
     popup.boxShadow @= BoxShadow(0.0, 4.0, 32.0, 0.0, Color.Black.withAlpha(0.25))
     popup.init()
@@ -28,7 +29,7 @@ class ModalExample extends UIExampleScreen {
       content @= "This is a modal!"
       font.weight @= fnt
       font.size   @= 48.0
-      color       @= Color.DarkSlateBlue
+      color       := ExampleApp.textColor
       position.`type` @= PositionType.Absolute
       position.center := popup.size.center
       position.middle := popup.size.middle
@@ -40,7 +41,7 @@ class ModalExample extends UIExampleScreen {
       font.weight @= fnt
       font.size   @= 48.0
       color       @= Color.White
-      backgroundColor @= Color.RoyalBlue
+      backgroundColor := ExampleApp.buttonBg
       border.radius @= 8.0
       padding.top    @= 12.0
       padding.bottom @= 12.0

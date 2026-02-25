@@ -1,6 +1,7 @@
 package io.youi.example.ui
 
 import rapid.Task
+import io.youi.example.ExampleApp
 import io.youi.example.screen.UIExampleScreen
 import io.youi.xterm.{TerminalCommand, TerminalShell, XTermLoader, XTermView}
 import reactify.stateful2Value
@@ -17,6 +18,12 @@ class XTermExample extends UIExampleScreen {
     val term = new XTermView with TerminalShell
     term.size.width := container.size.width
     term.size.height := container.size.height
+
+    // Set initial theme based on current dark mode state
+    if (!ExampleApp.darkMode()) {
+      term.termBackground @= "#ffffff"
+      term.termForeground @= "#333333"
+    }
 
     term.prompt @= s"${ANSI.fg.BrightGreen("youi")}${ANSI.fg.BrightYellow(">")} "
     term.banner @= s"${ANSI.fg.BrightCyan("╔══════════════════════════════════════╗")}\r\n" +
@@ -51,5 +58,15 @@ class XTermExample extends UIExampleScreen {
 
     container.children += term
     term.initialize()
+
+    ExampleApp.darkMode.attach { isDark =>
+      if (isDark) {
+        term.termBackground @= "#1e1e1e"
+        term.termForeground @= "#d4d4d4"
+      } else {
+        term.termBackground @= "#ffffff"
+        term.termForeground @= "#333333"
+      }
+    }
   }
 }

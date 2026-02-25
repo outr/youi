@@ -6,6 +6,7 @@ import io.youi.component.support.BorderSupport
 import io.youi.component.types.{Border, BorderStyle, Cursor, PointerEvents, PositionType, WhiteSpace}
 import io.youi.component.{Container, TextView}
 import io.youi.event.EventSupport
+import io.youi.example.ExampleApp
 import io.youi.example.screen.UIExampleScreen
 import io.youi.font.GoogleFont
 import spice.net._
@@ -19,7 +20,7 @@ class MeasuredExample extends UIExampleScreen {
       content @= "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
       font.weight @= fnt
       font.size   @= 20.0
-      color       @= Color.DarkBlue
+      color       := ExampleApp.textColor
       position.`type` @= PositionType.Absolute
       size.width  @= 600.0
       whiteSpace  @= WhiteSpace.Normal
@@ -31,7 +32,7 @@ class MeasuredExample extends UIExampleScreen {
       content @= "Heading Test (click to grow)"
       font.weight @= fnt
       font.size   @= 36.0
-      color       @= Color.DarkBlue
+      color       := ExampleApp.textColor
       cursor      @= Cursor.Pointer
       position.`type` @= PositionType.Absolute
       position.center := container.size.center

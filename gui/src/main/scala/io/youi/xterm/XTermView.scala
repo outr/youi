@@ -90,20 +90,14 @@ class XTermView extends Component(dom.create.div) {
     disableStdin.attach { v =>
       terminal.foreach(t => t.asInstanceOf[js.Dynamic].options.disableStdin = v)
     }
-    termBackground.attach { v =>
-      terminal.foreach { t =>
-        val th = new ITheme {}
-        th.background = v
-        t.asInstanceOf[js.Dynamic].options.theme = th
-      }
+    def applyTheme(): Unit = terminal.foreach { t =>
+      val th = new ITheme {}
+      th.background = termBackground()
+      th.foreground = termForeground()
+      t.asInstanceOf[js.Dynamic].options.theme = th
     }
-    termForeground.attach { v =>
-      terminal.foreach { t =>
-        val th = new ITheme {}
-        th.foreground = v
-        t.asInstanceOf[js.Dynamic].options.theme = th
-      }
-    }
+    termBackground.attach(_ => applyTheme())
+    termForeground.attach(_ => applyTheme())
 
     // Auto-fit when component size changes
     size.width.attach { _ => this.fit() }

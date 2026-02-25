@@ -3,6 +3,7 @@ package io.youi.example.ui
 import rapid.Task
 import io.youi._
 import io.youi.component.Container
+import io.youi.example.ExampleApp
 import io.youi.example.screen.UIExampleScreen
 import io.youi.layout.{LayoutSupport, VerticalLayout}
 import spice.net._
@@ -16,7 +17,7 @@ class VerticalLayoutExample extends UIExampleScreen {
   override def createUI(): Task[Unit] = Task {
     val boxes = new Container with LayoutSupport {
       layout @= Some(VerticalLayout(10.0))
-      background @= Color.LightBlue
+      backgroundColor := ExampleApp.subtleBg
       size.width @= 120.0
       position.center := container.size.center
       position.top @= 20.0

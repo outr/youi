@@ -4,6 +4,7 @@ import rapid.Task
 import io.youi._
 import io.youi.component.SelectList
 import io.youi.component.support.FontSupport
+import io.youi.example.ExampleApp
 import io.youi.example.screen.UIExampleScreen
 import io.youi.font.GoogleFont
 import spice.net._
@@ -22,7 +23,7 @@ class SelectExample extends UIExampleScreen {
       selected @= Some("Three")
       font.weight @= pacifico
       font.size @= 32.0
-      color @= Color.Green
+      color := ExampleApp.accentColor
       position.center := container.size.center
       position.middle := container.size.middle
 

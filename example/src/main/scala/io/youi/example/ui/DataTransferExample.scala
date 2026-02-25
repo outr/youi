@@ -7,6 +7,7 @@ import io.youi.component.support.{BorderSupport, PaddingSupport}
 import io.youi.component.types.{Border, BorderStyle, Cursor}
 import io.youi.datatransfer.DataTransferManager
 import io.youi.event.EventSupport
+import io.youi.example.ExampleApp
 import io.youi.example.screen.UIExampleScreen
 import io.youi.layout.{LayoutSupport, VerticalLayout}
 import spice.net._
@@ -19,16 +20,16 @@ class DataTransferExample extends UIExampleScreen {
     val status = new TextView {
       content @= "Drop files below or click the button to browse"
       font.size @= 16.0
-      color @= Color.DarkSlateGray
+      color := ExampleApp.textColor
       position.center := container.size.center
       position.top @= 10.0
     }
 
     val dropZone = new Container with BorderSupport with PaddingSupport {
-      background @= Color.AliceBlue
+      backgroundColor := ExampleApp.subtleBg
       size.width @= 500.0
       size.height @= 200.0
-      border @= Border(2.0, BorderStyle.Dashed, Color.SteelBlue)
+      border := Border(2.0, BorderStyle.Dashed, ExampleApp.borderColor())
       border.radius @= 8.0
       position.center := container.size.center
       position.top @= 50.0
@@ -37,7 +38,7 @@ class DataTransferExample extends UIExampleScreen {
     val dropLabel = new TextView {
       content @= "Drop files here"
       font.size @= 24.0
-      color @= Color.SteelBlue
+      color := ExampleApp.accentColor
       position.center := dropZone.size.center
       position.middle := dropZone.size.middle
     }
@@ -48,8 +49,8 @@ class DataTransferExample extends UIExampleScreen {
     val browseButton = new TextView with EventSupport with BorderSupport with PaddingSupport {
       content @= "Browse Files"
       font.size @= 16.0
-      color @= Color.White
-      backgroundColor @= Color.SteelBlue
+      color := ExampleApp.buttonText
+      backgroundColor := ExampleApp.buttonBg
       border.radius @= 6.0
       padding.top @= 8.0
       padding.bottom @= 8.0
@@ -77,7 +78,7 @@ class DataTransferExample extends UIExampleScreen {
       val entry = new TextView {
         content @= s"${dtf.path} — ${sizeKB} KB"
         font.size @= 14.0
-        color @= Color.DarkSlateGray
+        color := ExampleApp.secondaryText
       }
       fileList.children += entry
       status.content @= s"${fileList.children.length} file(s) received"

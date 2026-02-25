@@ -7,6 +7,7 @@ import io.youi.component.types.{Display, Overflow}
 import io.youi.component.{Container, TextView}
 import io.youi.easing.Easing
 import io.youi.event.EventSupport
+import io.youi.example.ExampleApp
 import io.youi.example.screen.UIExampleScreen
 import io.youi.font.{GoogleFont, GoogleFontWeight}
 import io.youi.material.{MDCButton, MaterialComponents}
@@ -26,7 +27,7 @@ class ScrollingExample extends UIExampleScreen {
         val scrollable = new Container with ScrollSupport with OverflowSupport {
           size.width := container.size.width
           size.height := container.size.height
-          background := Paint.vertical(container.size.height).distributeColors(Color.White, Color.Black)
+          background := Paint.vertical(container.size.height).distributeColors(ExampleApp.bgColor(), Color.Black)
           overflow @= Overflow.Auto
         }
 
@@ -58,8 +59,8 @@ class ScrollingExample extends UIExampleScreen {
     children += new TextView {
       content := text
       font.weight @= fnt
-      backgroundColor := Color.White
-      this.color := Color.Black
+      backgroundColor := ExampleApp.surfaceColor
+      this.color := ExampleApp.textColor
       font.size := 24.0
     }
     size.width := w

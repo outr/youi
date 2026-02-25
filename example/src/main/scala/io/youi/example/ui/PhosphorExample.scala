@@ -3,6 +3,7 @@ package io.youi.example.ui
 import rapid.Task
 import io.youi._
 import io.youi.component.PhosphorView
+import io.youi.example.ExampleApp
 import io.youi.example.screen.UIExampleScreen
 import io.youi.font.Phosphor
 import spice.net._
@@ -15,7 +16,7 @@ class PhosphorExample extends UIExampleScreen {
     val iconView = new PhosphorView {
       icon @= Phosphor.AndroidLogo
       font.size @= 128.0
-      color @= Color.Blue
+      color := ExampleApp.accentColor
       position.center := container.size.center
       position.middle := container.size.middle
     }

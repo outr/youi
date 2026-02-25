@@ -5,6 +5,7 @@ import io.youi._
 import io.youi.component.{Container, TextView}
 import io.youi.component.support.{BorderSupport, PaddingSupport}
 import io.youi.event.{EventSupport, Gestures}
+import io.youi.example.ExampleApp
 import io.youi.example.screen.UIExampleScreen
 import spice.net._
 
@@ -16,7 +17,7 @@ class GesturesExample extends UIExampleScreen {
     val status = new TextView {
       content @= "Interact with the box below"
       font.size @= 20.0
-      color @= Color.DarkSlateGray
+      color := ExampleApp.textColor
       position.center := container.size.center
       position.top @= 20.0
     }

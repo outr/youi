@@ -96,6 +96,7 @@ object ExampleApp extends ScreenManager {
   val video: VideoExample = new VideoExample
   val monacoEditor: MonacoExample = new MonacoExample
   val xterm: XTermExample = new XTermExample
+  val tabulator: TabulatorExample = new TabulatorExample
 
   val examples: UIExamples = new UIExamples
 

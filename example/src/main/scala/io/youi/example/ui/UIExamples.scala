@@ -59,6 +59,7 @@ class UIExamples extends UIExampleScreen {
     ExampleEntry(ExampleApp.chat, "Real-time chat view integration", "Integrations"),
     ExampleEntry(ExampleApp.monacoEditor, "Monaco code editor embedding", "Integrations"),
     ExampleEntry(ExampleApp.xterm, "XTerm.js terminal emulator", "Integrations"),
+    ExampleEntry(ExampleApp.tabulator, "Interactive data table with sorting, filtering, and editing", "Integrations"),
     ExampleEntry(ExampleApp.hello, "Minimal hello world example", "Other"),
     ExampleEntry(ExampleApp.materialIcons, "Material Design icon browser", "Other"),
     ExampleEntry(ExampleApp.phosphor, "Phosphor icon set showcase", "Other"),

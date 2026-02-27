@@ -82,6 +82,9 @@ class Header extends Container { self =>
     link.font.weight @= font
   }.handleError { t => Task(scribe.error(s"Failed to load font", t)) }.startUnit()
 
+  // Load Material Icons font for the dark mode toggle icon
+  Material.load().handleError { t => Task(scribe.error(s"Failed to load Material Icons", t)) }.startUnit()
+
   heading.color := ExampleApp.accentColor
   link.color := ExampleApp.accentColor
   darkModeToggle.color := ExampleApp.accentColor

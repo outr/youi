@@ -1,7 +1,7 @@
 import org.scalajs.linker.interface.ESVersion
 
 name := "youi"
-ThisBuild / organization := "io.youi"
+ThisBuild / organization := "com.outr"
 ThisBuild / version := "1.0.0-SNAPSHOT"
 ThisBuild / scalaVersion := "3.8.1"
 ThisBuild / scalacOptions ++= Seq(
@@ -12,7 +12,7 @@ ThisBuild / scalacOptions ++= Seq(
 )
 
 ThisBuild / publishTo := sonatypePublishToBundle.value
-ThisBuild / sonatypeProfileName := "io.youi"
+ThisBuild / sonatypeProfileName := "com.outr"
 ThisBuild / licenses := Seq("MIT" -> url("https://github.com/outr/youi/blob/master/LICENSE"))
 ThisBuild / sonatypeProjectHosting := Some(xerial.sbt.Sonatype.GitHubHosting("outr", "youi", "matt@outr.com"))
 ThisBuild / homepage := Some(url("https://github.com/outr/youi"))
@@ -48,8 +48,6 @@ val openTypeVersion: String = "1.1.0"
 
 val webFontLoaderVersion: String = "1.6.28_2"
 
-val canvgVersion: String = "1.4.0_3"
-
 val scalaJSDOMVersion: String = "2.8.1"
 
 val closureCompilerVersion: String = "v20260218"
@@ -60,7 +58,7 @@ ThisBuild / evictionErrorLevel := Level.Info
 
 lazy val root = project.in(file("."))
   .aggregate(
-    coreJS, coreJVM, spatialJS, spatialJVM, dom, gui, capacitor, optimizer,
+    coreJS, coreJVM, spatialJS, spatialJVM, dom, ui, capacitor, optimizer,
     example, exampleServer
   )
   .settings(
@@ -121,11 +119,11 @@ lazy val dom = project.in(file("dom"))
   )
   .dependsOn(coreJS)
 
-lazy val gui = project.in(file("gui"))
+lazy val ui = project.in(file("ui"))
   .enablePlugins(ScalaJSPlugin)
   .enablePlugins(JSDependenciesPlugin)
   .settings(
-    name := "youi-gui",
+    name := "youi-ui",
 //    jsDependencies += ProvidedJS / "webfontloader.js",
 //    jsDependencies += ProvidedJS / "opentype.min.js",
 //    jsDependencies += ProvidedJS / "opentype.min.map",
@@ -160,7 +158,7 @@ lazy val example = project.in(file("example"))
     packageJSDependencies / skip := false,
     scalaJSLinkerConfig ~= { _.withESFeatures(_.withESVersion(ESVersion.ES2018)) }
   )
-  .dependsOn(gui)
+  .dependsOn(ui)
 
 lazy val exampleServer = project.in(file("example/server"))
   .settings(
@@ -179,7 +177,7 @@ lazy val example = crossApplication.in(file("example"))
     jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv()
   )
 
-lazy val exampleJS = example.js.dependsOn(gui)
+lazy val exampleJS = example.js.dependsOn(ui)
 lazy val exampleJVM = example.jvm
 
 lazy val utilities = project.in(file("utilities"))

@@ -1,0 +1,18 @@
+package youi.component.feature
+
+import youi.component.types.{Overflow, Prop}
+
+class OverflowFeature(override val parent: FeatureParent) extends Feature {
+  lazy val x: Prop[Overflow] = Prop.stringify(parent.css.overflowX, parent.css.overflowX_=, Overflow, Overflow.Visible)
+  lazy val y: Prop[Overflow] = Prop.stringify(parent.css.overflowY, parent.css.overflowY_=, Overflow, Overflow.Visible)
+
+  def :=(overflow: => Overflow): Unit = {
+    x := overflow
+    y := overflow
+  }
+
+  def @=(overflow: Overflow): Unit = {
+    x @= overflow
+    y @= overflow
+  }
+}

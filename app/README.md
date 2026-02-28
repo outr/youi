@@ -29,7 +29,7 @@ heavy and add some useful features.
 In order to add the plugin you simply need add the following line to your `project/plugins.sbt` file:
 
 ```scala
-addSbtPlugin("io.youi" % "youi-plugin" % "1.0.2")
+addSbtPlugin("com.outr" % "youi-plugin" % "1.0.2")
 ```
 
 This will also add Scala.js and other necessary dependencies.
@@ -72,9 +72,9 @@ interfaces that can be leveraged between client and server.
 The first thing we want to define is the `Communication` interface:
 
 ```scala
-package io.youi.example
+package youi.example
 
-import io.youi.communication.{Communication, client, server}
+import youi.communication.{Communication, client, server}
 
 import scala.concurrent.Future
 
@@ -109,9 +109,9 @@ remain perfectly type-safe.
 All YouI applications need an application interface which is the launching point on both client and server:
 
 ```scala
-package io.youi.example
+package youi.example
 
-import io.youi.app.{CommunicationManager, YouIApplication}
+import youi.app.{CommunicationManager, YouIApplication}
 
 /**
   * Shared definition of the application. This is used to define the interface between client and server. Primarily
@@ -138,7 +138,7 @@ resources and communication to and from the server.
 #### Communication Implementation
 
 ```scala
-package io.youi.example
+package youi.example
 import scala.concurrent.Future
 
 /**
@@ -157,10 +157,10 @@ how to invoke more complex operations on the server driven by calls from the cli
 #### Application Implementation
 
 ```scala
-package io.youi.example
+package youi.example
 
-import io.youi.app.ServerApplication
-import io.youi.http._
+import youi.app.ServerApplication
+import youi.http._
 
 /**
   * The server application implementation. Notice that it requires two mix-ins:
@@ -195,7 +195,7 @@ complete our application.
 #### Communication Implementation
 
 ```scala
-package io.youi.example
+package youi.example
 
 import scala.concurrent.Future
 import org.scalajs.dom._
@@ -216,10 +216,10 @@ Similar to `ServerExampleCommunication` we need only define the methods in our t
 #### Application Implementation
 
 ```scala
-package io.youi.example
+package youi.example
 
-import io.youi._
-import io.youi.app.ClientApplication
+import youi._
+import youi.app.ClientApplication
 
 import scala.scalajs.js.annotation.JSExportTopLevel
 
@@ -255,12 +255,12 @@ many more advanced features out of the scope of this tutorial. For this tutorial
 how it can be done and to show something in the browser with our resulting application:
 
 ```scala
-package io.youi.example
+package youi.example
 
-import io.youi._
-import io.youi.app.screen.{UIScreen, URLActivation}
-import io.youi.component.BasicText
-import io.youi.net.{URL, URLMatcher}
+import youi._
+import youi.app.screen.{UIScreen, URLActivation}
+import youi.component.BasicText
+import youi.net.{URL, URLMatcher}
 
 /**
   * HelloScreen is an example of a simple screen leveraging the canvas-based UI functionality. Though there are many

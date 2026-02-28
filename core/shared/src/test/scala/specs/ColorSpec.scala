@@ -1,6 +1,6 @@
 package specs
 
-import io.youi.Color
+import youi.Color
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 

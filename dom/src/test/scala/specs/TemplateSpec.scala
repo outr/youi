@@ -1,6 +1,6 @@
 package specs
 
-import io.youi.Template
+import youi.Template
 import org.scalajs.dom.html
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec

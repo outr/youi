@@ -5,9 +5,9 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Coverage/c0425ea823824cd7ab60659e8b9542dc)](https://www.codacy.com/app/matthicks/youi?utm_source=github.com&utm_medium=referral&utm_content=outr/youi&utm_campaign=Badge_Coverage)
 [![Stories in Ready](https://badge.waffle.io/outr/youi.png?label=ready&title=Ready)](https://waffle.io/outr/youi)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/outr/youi)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.youi/youi-core_2.12/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.youi/youi-core_2.12)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.outr/youi-core_2.12/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.outr/youi-core_2.12)
 [![Latest version](https://index.scala-lang.org/outr/youi/youi-core/latest.svg)](https://index.scala-lang.org/outr/youi)
-[![Javadocs](https://javadoc.io/badge/io.youi/youi-core_2.12.svg)](https://javadoc.io/doc/io.youi/youi-core_2.12)
+[![Javadocs](https://javadoc.io/badge/com.outr/youi-core_2.12.svg)](https://javadoc.io/doc/com.outr/youi-core_2.12)
 
 Next generation user interface and application development in Scala and Scala.js for web, mobile, and desktop.
 

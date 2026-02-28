@@ -1,0 +1,34 @@
+package youi.font
+
+import youi.drawable.{Context, TextDrawable}
+import youi.paint.{Paint, Stroke}
+import youi.spatial.BoundingBox
+
+trait Text {
+  def font: Font
+  def text: String
+  def size: Double
+  def maxWidth: Double
+  def kerning: Boolean
+  def boundingBox: BoundingBox
+
+  def lineHeight: Double = font.lineHeight(size)
+
+  def draw(context: Context, x: Double, y: Double, fill: Paint, stroke: Stroke): Unit
+
+  def toDrawable(fill: Paint = Paint.none,
+                 stroke: Stroke = Stroke.none): TextDrawable = new TextDrawable(this, fill, stroke)
+}
+
+object Text {
+  case object empty extends Text {
+    override def font: Font = Font.empty
+    override def text: String = ""
+    override def size: Double = 0.0
+    override def maxWidth: Double = 0.0
+    override def kerning: Boolean = false
+    override def boundingBox: BoundingBox = BoundingBox.zero
+
+    override def draw(context: Context, x: Double, y: Double, fill: Paint, stroke: Stroke): Unit = {}
+  }
+}

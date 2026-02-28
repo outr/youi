@@ -5,7 +5,7 @@
 youi is published to Sonatype OSS and Maven Central and utilizes JVM and Scala.js with 2.11 and 2.12:
 
 ```
-libraryDependencies += "io.youi" %%% "youi-core" % latestVersion // Scala and Scala.js
+libraryDependencies += "com.outr" %%% "youi-core" % latestVersion // Scala and Scala.js
 ```
 
 ## Main Features
@@ -46,11 +46,11 @@ Generates a unique String. Similar concept to UUID, but much faster, slightly le
 Generating a 32 character with number and letters (upper and lower):
 
 ```
-val id = io.youi.Unique()
+val id = youi.Unique()
 ```
 
 For an 8 character string with lowercase letters and numbers:
 
 ```
-val id = io.youi.Unique(length = 8, characters = io.youi.Unique.LettersAndNumbers)
+val id = youi.Unique(length = 8, characters = youi.Unique.LettersAndNumbers)
 ```

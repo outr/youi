@@ -50,7 +50,7 @@ val webFontLoaderVersion: String = "1.6.28_2"
 
 val scalaJSDOMVersion: String = "2.8.1"
 
-val closureCompilerVersion: String = "v20260218"
+val closureCompilerVersion: String = "v20260225"
 
 val scalaTestVersion: String = "3.2.19"
 

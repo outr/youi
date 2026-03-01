@@ -25,8 +25,8 @@ object ExampleServer extends RapidApp with StaticHttpServer {
   })
 
   override protected val handler: HttpHandler = filters(
-    "main.js" / Content.file(new File("../target/scala-3.8.1/youi-example-fastopt/main.js")),
-    "main.js.map" / Content.file(new File("../target/scala-3.8.1/youi-example-fastopt/main.js.map")),
+    "main.js" / Content.file(new File("../target/scala-3.8.2/youi-example-fastopt/main.js")),
+    "main.js.map" / Content.file(new File("../target/scala-3.8.2/youi-example-fastopt/main.js.map")),
     classLoader
   )
 

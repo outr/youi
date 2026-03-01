@@ -3,7 +3,7 @@ import org.scalajs.linker.interface.ESVersion
 name := "youi"
 ThisBuild / organization := "com.outr"
 ThisBuild / version := "1.0.0-SNAPSHOT"
-ThisBuild / scalaVersion := "3.8.1"
+ThisBuild / scalaVersion := "3.8.2"
 ThisBuild / scalacOptions ++= Seq(
   "-unchecked",
   "-deprecation",

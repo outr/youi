@@ -78,7 +78,11 @@ class MessageListView(renderer: MessageRenderer) extends Container with ScrollSu
 
     children += handle.component
     scrollToBottom()
-    handle
+    // Wrap appendText to also scroll to bottom as content grows
+    handle.copy(appendText = text => {
+      handle.appendText(text)
+      scrollToBottom()
+    })
   }
 
   def replaceMessage(id: String, newMsg: ChatMessage): Unit = {
@@ -149,7 +153,7 @@ class MessageListView(renderer: MessageRenderer) extends Container with ScrollSu
 
   private def alignForRole(role: String): String = role match {
     case "user"   => "flex-end"
-    case "system" => "center"
+    case "system" => "flex-start"
     case _        => "stretch"
   }
 }

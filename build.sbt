@@ -2,8 +2,8 @@ import org.scalajs.linker.interface.ESVersion
 
 name := "youi"
 ThisBuild / organization := "com.outr"
-ThisBuild / version := "1.0.0-SNAPSHOT"
-ThisBuild / scalaVersion := "3.8.1"
+ThisBuild / version := "1.0.0-SNAPSHOT1"
+ThisBuild / scalaVersion := "3.8.2"
 ThisBuild / scalacOptions ++= Seq(
   "-unchecked",
   "-deprecation",
@@ -30,15 +30,15 @@ ThisBuild / versionScheme := Some("semver-spec")
 
 ThisBuild / outputStrategy := Some(StdoutOutput)
 
-val spiceVersion: String = "1.1.0"
+val spiceVersion: String = "1.2.2-SNAPSHOT1"
 
-val rapidVersion: String = "2.7.1"
+val rapidVersion: String = "2.8.0"
 
-val fabricVersion: String = "1.19.0"
+val fabricVersion: String = "1.19.1"
 
 val profigVersion: String = "3.4.18"
 
-val scribeVersion: String = "3.17.0"
+val scribeVersion: String = "3.18.0"
 
 val reactifyVersion: String = "4.2.0"
 
@@ -134,8 +134,13 @@ lazy val ui = project.in(file("ui"))
 lazy val capacitor = project.in(file("capacitor"))
   .enablePlugins(ScalaJSPlugin)
   .settings(
-    name := "youi-capacitor"
+    name := "youi-capacitor",
+    libraryDependencies ++= Seq(
+      "org.scala-js" %%% "scalajs-dom" % scalaJSDOMVersion,
+      "com.outr" %%% "rapid-core" % rapidVersion
+    )
   )
+  .dependsOn(coreJS)
 
 lazy val optimizer = project.in(file("optimizer"))
   .settings(

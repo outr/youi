@@ -13,6 +13,8 @@ object Monaco extends js.Object {
 @js.native
 trait MonacoEditorModule extends js.Object {
   def create(element: org.scalajs.dom.Element, options: js.UndefOr[EditorOptions] = js.undefined): IStandaloneCodeEditor = js.native
+  def createDiffEditor(element: org.scalajs.dom.Element, options: js.UndefOr[DiffEditorOptions] = js.undefined): IStandaloneDiffEditor = js.native
+  def createModel(value: String, language: js.UndefOr[String] = js.undefined): ITextModel = js.native
   def setTheme(themeName: String): Unit = js.native
 }
 
@@ -73,4 +75,26 @@ trait MinimapOptions extends js.Object {
 trait EditorDimension extends js.Object {
   var width: Double
   var height: Double
+}
+
+@js.native
+trait IStandaloneDiffEditor extends js.Object {
+  def setModel(model: IDiffEditorModel): Unit = js.native
+  def dispose(): Unit = js.native
+  def layout(dimension: js.UndefOr[EditorDimension] = js.undefined): Unit = js.native
+}
+
+trait IDiffEditorModel extends js.Object {
+  var original: ITextModel
+  var modified: ITextModel
+}
+
+trait DiffEditorOptions extends js.Object {
+  var theme: js.UndefOr[String] = js.undefined
+  var readOnly: js.UndefOr[Boolean] = js.undefined
+  var renderSideBySide: js.UndefOr[Boolean] = js.undefined
+  var automaticLayout: js.UndefOr[Boolean] = js.undefined
+  var originalEditable: js.UndefOr[Boolean] = js.undefined
+  var fontSize: js.UndefOr[Int] = js.undefined
+  var minimap: js.UndefOr[MinimapOptions] = js.undefined
 }

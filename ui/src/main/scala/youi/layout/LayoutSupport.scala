@@ -1,9 +1,8 @@
 package youi.layout
 
-import youi.component.Component
 import youi.component.support.ContainerSupport
 import youi.component.types.Display
-import reactify.Var
+import reactify.{Val, Var}
 
 trait LayoutSupport extends ContainerSupport {
   val layout: Var[Option[Layout]] = Var(None)
@@ -12,6 +11,26 @@ trait LayoutSupport extends ContainerSupport {
   private var _userSetWidth = false
   private var _userSetHeight = false
 
+  private val totalWidth: Val[Double] = Val(children().map(_.size.width()).sum)
+  private val totalHeight : Val[Double] = Val(children().map(_.size.height()).sum)
+
+  val contentWidth: Val[Double] = Val {
+    val all = children.get
+    if (all.nonEmpty) {
+      all.filter(_.display() != Display.None).map(c => c.position.right()).maxOption.getOrElse(0.0)
+    } else 0.0
+  }
+
+  val contentHeight: Val[Double] = Val {
+    val all = children.get
+    if (all.nonEmpty) {
+      all.filter(_.display() != Display.None).map(c => c.position.bottom()).maxOption.getOrElse(0.0)
+    } else 0.0
+  }
+
+  size.width := contentWidth()
+  size.height := contentHeight()
+
   layout.changes {
     case (old, current) =>
       old.foreach(_.disconnect(this, children))
@@ -19,7 +38,6 @@ trait LayoutSupport extends ContainerSupport {
         _layoutInProgress = true
         try {
           l.connect(this, children)
-          updateContentBounds()
         } finally {
           _layoutInProgress = false
         }
@@ -27,62 +45,36 @@ trait LayoutSupport extends ContainerSupport {
   }
 
   children.changes { case (_, current) =>
+    withLayout() { l =>
+      l.childrenChanged(this, current)
+    }
+  }
+  size.width.on(withLayout(widthSet = true) { l =>
+    l.resized(this, children)
+  })
+  size.height.on(withLayout(heightSet = true) { l =>
+    l.resized(this, children)
+  })
+  totalWidth.on(withLayout() { l =>
+    l.resized(this, children)
+  })
+  totalHeight.on(withLayout() { l =>
+    l.resized(this, children)
+  })
+
+  private def withLayout(widthSet: Boolean = false,
+                         heightSet: Boolean = false)(f: Layout => Unit): Unit = {
     if (!_layoutInProgress) {
+      if (widthSet) _userSetWidth = true
+      if (heightSet) _userSetHeight = true
       _layoutInProgress = true
       try {
         layout().foreach { l =>
-          l.childrenChanged(this, current)
-          updateContentBounds()
+          f(l)
         }
       } finally {
         _layoutInProgress = false
       }
-    }
-  }
-
-  size.width.on {
-    if (!_layoutInProgress) {
-      _userSetWidth = true
-      _layoutInProgress = true
-      try {
-        layout().foreach { l =>
-          l.resized(this, children)
-          updateContentBounds()
-        }
-      } finally {
-        _layoutInProgress = false
-      }
-    }
-  }
-
-  size.height.on {
-    if (!_layoutInProgress) {
-      _userSetHeight = true
-      _layoutInProgress = true
-      try {
-        layout().foreach { l =>
-          l.resized(this, children)
-          updateContentBounds()
-        }
-      } finally {
-        _layoutInProgress = false
-      }
-    }
-  }
-
-  private def updateContentBounds(): Unit = {
-    val all = children.get
-    if (all.nonEmpty) {
-      var maxRight = 0.0
-      var maxBottom = 0.0
-      all.foreach { child =>
-        if (child.display() != Display.None) {
-          maxRight = math.max(maxRight, child.position.left() + child.effectiveWidth())
-          maxBottom = math.max(maxBottom, child.position.top() + child.effectiveHeight())
-        }
-      }
-      if (!_userSetWidth && maxRight > 0.0) size.width @= maxRight
-      if (!_userSetHeight && maxBottom > 0.0) size.height @= maxBottom
     }
   }
 }

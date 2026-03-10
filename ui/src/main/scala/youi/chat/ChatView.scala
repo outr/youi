@@ -27,6 +27,8 @@ class ChatView(
     case Some(input) =>
       messageList.size.height := math.max(0.0, size.height() - input.size.height())
       input.size.width := size.width
+      input.position.`type` @= youi.component.types.PositionType.Absolute
+      input.position.left @= 0.0
       input.position.top := math.max(0.0, size.height() - input.size.height())
 
       input.sent.attach { msg =>

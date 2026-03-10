@@ -9,6 +9,7 @@ import spice.streamer.Streamer
 import spice.streamer.{file2Writer, string2Reader, url2Reader}
 
 import scala.collection.mutable.ListBuffer
+import scala.language.implicitConversions
 
 object HTMLOptimizer {
   import spice.delta.Selector._
@@ -36,7 +37,7 @@ object HTMLOptimizer {
             val minified = src.toLowerCase.endsWith(".min.js")
             if (src.startsWith("http://") || src.startsWith("https://") || src.startsWith("//")) {    // Remote script
               val file = createTempFile("remote", "js")
-              val url = URI.create(src).toURL()
+              val url = URI.create(src).toURL
               Streamer(url, file).sync()
               val map = if (minified) {
                 try {

@@ -25,7 +25,7 @@ sealed trait Size extends SpatialValue[Size] {
   }
 
   def scale(width: Option[Double] = None,
-            height: Option[Double] = None): Size = SizeUtility.size(width, height, this)
+            height: Option[Double] = None): Size = SizeUtility.size(this, width, height)
 
   override def toString: String = s"Size(width: $width, height: $height)"
 }

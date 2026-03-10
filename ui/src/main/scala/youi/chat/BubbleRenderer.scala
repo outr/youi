@@ -95,9 +95,16 @@ object BubbleRenderer extends MessageRenderer {
     wrapper
   }
 
+  private val months = Array("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec")
+
   private def makeTimestamp(timestamp: Long): TextView = {
     val date = new js.Date(timestamp.toDouble)
-    val timeStr = s"${pad(date.getHours().toInt)}:${pad(date.getMinutes().toInt)}"
+    val month = months(date.getMonth().toInt)
+    val day = date.getDate().toInt
+    val hours = date.getHours().toInt
+    val h12 = if (hours == 0) 12 else if (hours > 12) hours - 12 else hours
+    val ampm = if (hours < 12) "AM" else "PM"
+    val timeStr = s"$month $day, $h12:${pad(date.getMinutes().toInt)}:${pad(date.getSeconds().toInt)} $ampm"
     new TextView {
       content @= timeStr
       classes += "chat-timestamp"

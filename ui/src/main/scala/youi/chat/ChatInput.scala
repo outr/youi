@@ -119,16 +119,16 @@ class ChatInput extends Container with OverflowSupport {
 
   // Position: attach at left, send at right, text input fills middle
   // Y offset accounts for preview row when visible
-  private def inputTop: Double = if (pendingImage() != scala.None) previewHeight + pad else pad
+  private def previewOffset: Double = if (pendingImage() != scala.None) previewHeight + pad else 0.0
 
   attachButton.position.left @= pad
-  attachButton.position.top := inputTop
+  attachButton.position.top := previewOffset + (inputBarHeight - 44.0) / 2.0
 
-  sendButton.position.top := inputTop
+  sendButton.position.top := previewOffset + (inputBarHeight - 44.0) / 2.0
   sendButton.position.left := math.max(0.0, size.width() - sendButton.effectiveWidth() - pad)
 
   textInput.position.left := attachButton.effectiveWidth() + pad + pad
-  textInput.position.top := inputTop
+  textInput.position.top := previewOffset + (inputBarHeight - 36.0) / 2.0
   textInput.size.width := math.max(50.0,
     size.width() - attachButton.effectiveWidth() - sendButton.effectiveWidth() - pad * 4
   )

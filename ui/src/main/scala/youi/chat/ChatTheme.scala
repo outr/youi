@@ -14,13 +14,13 @@ object ChatTheme {
   def isNarrow: Boolean = ui.size.width() <= narrowBreakpoint
 
   /** Reactive font size for chat body text */
-  def fontSize: Double = if (isNarrow) 16.0 else 14.0
+  def fontSize: Double = if (isNarrow) 18.0 else 16.0
 
   /** Reactive font size for timestamps */
-  def timestampFontSize: Double = if (isNarrow) 12.0 else 11.0
+  def timestampFontSize: Double = if (isNarrow) 14.0 else 13.0
 
   /** Reactive font size for meta text (group toggle, load earlier) */
-  def metaFontSize: Double = if (isNarrow) 14.0 else 12.0
+  def metaFontSize: Double = if (isNarrow) 16.0 else 14.0
 
   def installDefaults(): Unit = if (!installed) {
     installed = true

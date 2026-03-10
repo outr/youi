@@ -28,9 +28,12 @@ class Component(val element: html.Element) extends FeatureParent {
 
   lazy val measure: Trigger = Trigger()
 
-  val size: SizeFeature = new SizeFeature(this)()
-  lazy val position: PositionFeature = new PositionFeature(this)
   lazy val measured: MeasuredFeature = new MeasuredFeature(this)
+  val size: SizeFeature = new SizeFeature(this)(
+    measuredWidth = measured.width,
+    measuredHeight = measured.height
+  )
+  lazy val position: PositionFeature = new PositionFeature(this)
 
   private[youi] lazy val effectiveWidth: Val[Double] = Val {
     val sw = size.width()

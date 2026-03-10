@@ -21,25 +21,22 @@ object SizeUtility {
     }
   }
 
-  def size(width: Option[Double], height: Option[Double], original: Size): Size = width match {
+  def size(original: Size,
+           width: Option[Double] = None,
+           height: Option[Double] = None): Size = width match {
     case Some(w) => height match {
-      case Some(h) => {
-        Size(w, h)
-      }
-      case None => {
+      case Some(h) => Size(w, h)
+      case None =>
         val aspectRatio = original.height / original.width
         Size(w, w * aspectRatio)
-      }
     }
-    case None => {
+    case None =>
       height match {
-        case Some(h) => {
+        case Some(h) =>
           val aspectRatio = original.width / original.height
           Size(h * aspectRatio, h)
-        }
         case None => Size(original.width, original.height)
       }
-    }
   }
 }
 

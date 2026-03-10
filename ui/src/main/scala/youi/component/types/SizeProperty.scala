@@ -1,31 +1,61 @@
 package youi.component.types
 
-import reactify.Var
+import reactify.{Val, Var}
 
 import scala.util.matching.Regex
 
-class SizeProperty(get: => String, set: String => Unit, callbacks: (() => Unit)*) extends Var[Double](-1.0) {
-  private val setStyle = set
+class SizeProperty(cssGet: => String, cssSet: String => Unit, measured: Val[Double] = Val(0.0), callbacks: (() => Unit)*) extends Var[Double](measured()) {
+  private val setStyle = cssSet
   val `type`: Var[SizeType] = Var(SizeType.Auto)
+  private var _explicitlySet = false
 
-  refresh()
-
-  private var changed = false
+  // If CSS already has an explicit value, use it instead of measured
+  locally {
+    val (v, t) = SizeProperty(cssGet)
+    if (v >= 0.0) {
+      _explicitlySet = true
+      `type`.static(t)
+      static(v)
+    }
+  }
 
   attach { d =>
-    if (d != -1.0 && `type`() == SizeType.Auto && !changed) {
-      `type` @= SizeType.Pixel
-      changed = true
+    if (_explicitlySet) {
+      if (`type`() == SizeType.Auto) `type` @= SizeType.Pixel
+      syncToStyle()
     }
-    syncToStyle()
     callbacks.foreach(_())
   }
-  `type`.on(syncToStyle())
+  `type`.on(if (_explicitlySet) syncToStyle())
+
+  override def @=(value: Double): Unit = {
+    val wasExplicit = _explicitlySet
+    _explicitlySet = true
+    if (!wasExplicit || get != value) {
+      // Force reactions on first explicit set (even if same value as measured)
+      // or when value actually changes
+      val prev = option
+      static(value)
+      reactify.Reactive.fire(this, value, prev, reactions())
+    }
+  }
+
+  override def :=(value: => Double): Unit = {
+    val wasExplicit = _explicitlySet
+    _explicitlySet = true
+    val evaluated = value
+    if (!wasExplicit || get != evaluated) {
+      val prev = option
+      static(evaluated)
+      reactify.Reactive.fire(this, evaluated, prev, reactions())
+    }
+    // Also store as reactive function for future re-evaluation
+    super.:=(value)
+  }
 
   def set(value: Double, sizeType: => SizeType): Unit = {
     this.`type` := sizeType
     this @= value
-    syncToStyle()
   }
 
   private def syncToStyle(): Unit = {
@@ -43,9 +73,11 @@ class SizeProperty(get: => String, set: String => Unit, callbacks: (() => Unit)*
   }
 
   def refresh(): Unit = {
-    val (v, t) = SizeProperty(get)
-    this @= v
-    `type`.static(t)
+    val (v, t) = SizeProperty(cssGet)
+    if (v >= 0.0) {
+      `type`.static(t)
+      this @= v
+    }
   }
 }
 

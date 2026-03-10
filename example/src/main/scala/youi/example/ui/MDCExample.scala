@@ -3,7 +3,7 @@ package youi.example.ui
 import rapid.Task
 import youi._
 import youi.component.{Container, TextView}
-import youi.component.types.Display
+import youi.component.types.{Display, FontWeight}
 import youi.example.ExampleApp
 import youi.example.screen.UIExampleScreen
 import youi.material._
@@ -157,7 +157,7 @@ class MDCExample extends UIExampleScreen {
   private def sectionHeading(text: String): TextView = new TextView {
     content @= text
     font.size @= 18.0
-    font.weight @= "500"
+    font.weight @= FontWeight.W500
     color := ExampleApp.textColor
     element.style.display = "block"
     element.style.marginTop = "16px"

@@ -30,7 +30,7 @@ ThisBuild / versionScheme := Some("semver-spec")
 
 ThisBuild / outputStrategy := Some(StdoutOutput)
 
-val spiceVersion: String = "1.2.2-SNAPSHOT1"
+val spiceVersion: String = "1.2.4"
 
 val rapidVersion: String = "2.8.0"
 

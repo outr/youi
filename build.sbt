@@ -52,7 +52,7 @@ val scalaJSDOMVersion: String = "2.8.1"
 
 val closureCompilerVersion: String = "v20260218"
 
-val scalaTestVersion: String = "3.2.19"
+val scalaTestVersion: String = "3.2.20"
 
 ThisBuild / evictionErrorLevel := Level.Info
 

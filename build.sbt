@@ -36,7 +36,7 @@ val rapidVersion: String = "2.8.0"
 
 val fabricVersion: String = "1.19.1"
 
-val profigVersion: String = "3.4.18"
+val profigVersion: String = "3.5.1"
 
 val scribeVersion: String = "3.18.0"
 

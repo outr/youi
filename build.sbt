@@ -32,7 +32,7 @@ ThisBuild / outputStrategy := Some(StdoutOutput)
 
 val spiceVersion: String = "1.2.2-SNAPSHOT1"
 
-val rapidVersion: String = "2.8.0"
+val rapidVersion: String = "2.9.1"
 
 val fabricVersion: String = "1.19.1"
 

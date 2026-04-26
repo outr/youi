@@ -34,7 +34,7 @@ val spiceVersion: String = "1.2.2-SNAPSHOT1"
 
 val rapidVersion: String = "2.8.0"
 
-val fabricVersion: String = "1.19.1"
+val fabricVersion: String = "1.26.0"
 
 val profigVersion: String = "3.4.18"
 
